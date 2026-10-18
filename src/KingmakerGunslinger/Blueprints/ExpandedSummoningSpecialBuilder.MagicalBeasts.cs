@@ -100,7 +100,7 @@ namespace KingmakerGunslinger.Blueprints
                 safe, available, parameters,
                 ExpandedSummoningAbilityBuilder.DeepCloneComponent(descriptor) };
             DescribeMagicalBeast(breath, prefix + "Breath", "Petrifying Breath",
-                "Breathe a 60-foot cone, Fortitude DC 10 + half racial HD + Constitution modifier. A failed first exposure petrifies temporarily with recovery saves each round; a distinct later breath while petrified makes it permanent. Recharges in 1d4+1 rounds. Cast only when the native cone excludes allies.", nativeStone.Icon);
+                "Breathe a 60-foot cone, Fortitude DC 10 + half racial HD + Constitution modifier. A failed first exposure petrifies temporarily with recovery saves each round; a distinct later breath while petrified makes it permanent. Recharges in 1d4+1 rounds. The cone cannot be aimed through allies.", nativeStone.Icon);
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] { breath }).ToArray();
             ConfigureUngulateTrample(library, bySymbol, Sprint26MagicalBeastRules.GorgonUnit,
                 prefix + "Trample", "gorgon");

@@ -240,5 +240,33 @@ class ReleasedArtTests(unittest.TestCase):
             gate.check_released_art_owned(self.root)
 
 
+class ReleasedPublicationTests(unittest.TestCase):
+    released = {"deinonychus", "tyrannosaurus", "elephant"}
+    current = released | {"gorgon", "bulette"}
+
+    def test_new_withheld_pair_preserves_every_released_creature(self):
+        gate.check_released_publication(self.released, self.current, set(), {"gorgon", "bulette"})
+
+    def test_public_candidate_with_no_withheld_keys_passes(self):
+        gate.check_released_publication(self.released, self.current, set(), set())
+
+    def test_one_or_both_released_theropods_cannot_be_hidden(self):
+        for keys in ({"deinonychus"}, {"deinonychus", "tyrannosaurus"}):
+            with self.assertRaisesRegex(AssertionError, "Released public creatures"):
+                gate.check_released_publication(self.released, self.current, set(), keys)
+
+    def test_other_released_creature_cannot_be_hidden(self):
+        with self.assertRaisesRegex(AssertionError, "Released public creatures"):
+            gate.check_released_publication(self.released, self.current, set(), {"elephant", "gorgon"})
+
+    def test_unregistered_suppression_key_is_refused(self):
+        with self.assertRaisesRegex(AssertionError, "no registered creature"):
+            gate.check_released_publication(self.released, self.current, set(), {"unknown"})
+
+    def test_missing_released_catalog_key_is_refused(self):
+        with self.assertRaisesRegex(AssertionError, "disappeared"):
+            gate.check_released_publication(self.released, self.current - {"elephant"}, set(), {"gorgon"})
+
+
 if __name__ == "__main__":
     unittest.main()

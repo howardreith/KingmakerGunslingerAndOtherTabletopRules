@@ -200,7 +200,7 @@ Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-albedo
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\ungulates') -Force | Out-Null
-foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros','gorgon')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
 }
