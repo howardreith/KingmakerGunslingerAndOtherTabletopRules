@@ -92,6 +92,8 @@ namespace KingmakerGunslinger.Summoning
                 { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
                 { 9, "da6417809bdedfa468dd2fd0cc74be92" },
                 { 10, "4179c5c08d606a6439a62bf178b738e1" },
+                // Private Gorgon chassis: the reconstruction catalog has no +11 native binding.
+                { 11, "3d4461a55b224472ad2853699c596b4f" },
                 { 12, "0b2d92c6aac8093489dfdadf1e448280" },
                 { 14, "209a2920891b580418b4e5e80466e134" },
                 { 15, "72c294dca841e3944869fb087bacf272" },
@@ -127,7 +129,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 59 || Values.Select(value => value.Key)
+            if (Values.Length != 61 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -455,6 +457,19 @@ namespace KingmakerGunslinger.Summoning
         private static NaturalSummonProfile[] Build()
         {
             return new[] {
+                PSK("gorgon", "Gorgon", "MagicalBeast", 8, "Large",
+                    24, 10, 24, 2, 16, 9, 30, 11, "GorgonGore2d8",
+                    A(), A("GorgonHoof1d6", "GorgonHoof1d6"),
+                    A("ImprovedInitiative", "IronWill", "PowerAttack", "SkillFocusPerception",
+                        "ReducedReach", "TripDefenseFourLegs"),
+                    A("Perception"), "Charter-selected SM VIII extension; passive senses unmodeled."),
+                PK("bulette", "Bulette", "MagicalBeast", 8, "Huge",
+                    23, 15, 20, 2, 13, 6, 40, 12, "BuletteBite2d8",
+                    A("BuletteClaw2d6", "BuletteClaw2d6"),
+                    A("ImprovedInitiative", "IronWill", "SkillFocusPerception", "WeaponFocusBite",
+                        "ReducedReach", "TripDefenseFourLegs", "BuletteChassis"),
+                    A("Mobility", "Perception"),
+                    "Surface-only legal charge/leap; burrow 20 feet and tremorsense unsupported."),
                 PK("viper", "Viper", "Animal", 2, "Medium",
                     8, 13, 14, 1, 13, 2, 20, 3, "Bite1d4",
                     Array.Empty<string>(),
@@ -745,7 +760,7 @@ namespace KingmakerGunslinger.Summoning
                     "Space is 20 feet and printed reach is 20 feet. This is the creature whose reach does equal its space, which is exactly why the released Elephant must not be read as evidence that a large body grants reach equal to space - there it is 15 and 10.",
                     "Twenty-foot reach is composed, not stated: a Gargantuan body exposes fifteen feet, the chassis adds the final five, and the private tail weapon type stores nine to expose five feet before body reach, the same arithmetic the released Stegosaurus tail uses. Native proof must confirm the uniform twenty feet before publication rather than trusting the composition.",
                     "Greater Overrun uses this creature's private carrier and ordinary one-target Overrun command, separate from auto-success Trample. The installed-stack feat ee24c02cc68c4c9b9b54ebef9f9f8133 is absent standalone: when present its kept components are deep-cloned without success-only ManeuverProvokeAttack; when absent the carrier uses native ManeuverBonus for the same printed +2. No Improved Overrun feat is added. The exact-owner rider reads native IsPartialSuccess and knockdown eligibility, and provokes only for a knockdown this overrun caused. Other actors' feats and Trample remain unchanged. Great Cleave still uses the recorded native CleaveAction wiring rather than a global repair. Functional native qualification of these commands remains required; registration is not proof.",
-                    "Trample is registered as a player-commandable full-round action on the Sprint 23 qualified path/contact/response carrier, so it inherits that carrier’s interrupt, duplicate-response, path and leave-combat guards rather than a second copy of them. 2d6+19 with a live DC 32, both derived rather than stated: one and a half times the Strength modifier for +19, and 10 + 18 hit dice halved + Strength 37 for DC 32. Separate from the tail, grants no powerful charge, and changes no released trampler. Registered is not qualified: native proof of the command in play is still required before publication.",
+                    "Trample is registered as a player-commandable full-round action on the Sprint 23 qualified path/contact/response carrier, so it inherits that carrierÃ¢â‚¬â„¢s interrupt, duplicate-response, path and leave-combat guards rather than a second copy of them. 2d6+19 with a live DC 32, both derived rather than stated: one and a half times the Strength modifier for +19, and 10 + 18 hit dice halved + Strength 37 for DC 32. Separate from the tail, grants no powerful charge, and changes no released trampler. Registered is not qualified: native proof of the command in play is still required before publication.",
                     "The donor rig is measured, not assumed. The 2026-10-16 census recorded the frozen quadruped donor as 40 real skinning joints with a twelve-joint tail chain, which the tail attack wants, but exactly one neck joint and one head joint. A long raised sauropod neck on this rig is therefore a two-segment rigid structure. That is a measured limitation of the frozen donor and is recorded before any geometry is authored against it."),
                 PS("mastodon", "Mastodon", "Animal", 14, "Huge",
                     34, 12, 21, 2, 13, 7, 40, 12, "Gore2d8",

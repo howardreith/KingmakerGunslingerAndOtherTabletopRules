@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.DomainTests
             SummonVariantSpec[] withheld = all.Where(value =>
                 !SummonVisibilityCatalog.IsPublished(value)).ToArray();
 
-            Assertions.Equal(GiantBodyRulesPolicy.PublicSuppressedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.PublicSuppressedLogicalPlacements,
                 withheld.Length,
                 "No qualified root remains withheld after publication.");
             Assertions.Equal(3, all.Count(value =>
@@ -129,11 +129,11 @@ namespace KingmakerGunslinger.DomainTests
                 SummonVisibilityCatalog.IsPublished(value)),
                 "The three new SNA roots are public without reallocation.");
             Assertions.Equal(
-                GiantBodyRulesPolicy.RegisteredLogicalPlacements,
+                SummoningCurrentSurface.RegisteredLogicalPlacements,
                 SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
                 "Registration allocated every placement once.");
             Assertions.Equal(
-                GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
+                SummoningCurrentSurface.FinalPublishedLogicalPlacements,
                 SummonVisibilityCatalog.PublishedLogicalPlacementCount,
                 "The published surface retains every pre-Sprint-25 placement, which is "
                 + "this test's real subject: a later sprint must not reach back and "
@@ -145,7 +145,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Publication adds only the three allocated Brachiosaurus roots.");
 
             foreach (SummonVariantSpec variant in all.Where(value =>
-                !GiantBodyRulesPolicy.IsWithheldThisSprint(value.Creature.Key)))
+                !SummoningCurrentSurface.IsWithheld(value.Creature.Key)))
                 Assertions.True(SummonVisibilityCatalog.IsPublished(variant),
                     "Every pre-Sprint-25 placement is published, this creature's included: "
                     + variant.StableKey);
@@ -710,22 +710,22 @@ namespace KingmakerGunslinger.DomainTests
 
             IReadOnlyList<SummoningIdentitySpec> identities =
                 ExpandedSummoningIdentityCatalog.Build();
-            string[] tail = identities.Skip(identities.Count -
-                PrivateIdentityTail.Length).Select(value => value.Symbol)
+            string[] tail = identities.Skip(identities.Count - Sprint26MagicalBeastRules.AppendedPrivateIdentityCount -
+                PrivateIdentityTail.Length).Take(PrivateIdentityTail.Length).Select(value => value.Symbol)
                 .ToArray();
             Assertions.True(tail.SequenceEqual(PrivateIdentityTail,
                     StringComparer.Ordinal),
                 "The eight private carriers append last, in frozen order.");
 
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 ExpandedSummoningIdentityCatalog.UnitCount,
                 "One unit identity joins for the one new creature.");
             Assertions.Equal(
-                GiantBodyRulesPolicy.RegisteredLogicalPlacements,
+                SummoningCurrentSurface.RegisteredLogicalPlacements,
                 ExpandedSummoningIdentityCatalog.LogicalAbilityCount,
                 "Three logical ability identities join.");
             Assertions.Equal(
-                GiantBodyRulesPolicy.RegisteredTemplatedPlacements,
+                SummoningCurrentSurface.RegisteredTemplatedPlacements,
                 ExpandedSummoningIdentityCatalog.TemplatedPlacementCount,
                 "No templated placement joins, because the new creature has no Monster row.");
 

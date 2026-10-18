@@ -169,7 +169,8 @@ namespace KingmakerGunslinger.DomainTests
                     StringComparison.Ordinal) >= 0) continue;
 
                 Match constant = Regex.Match(catalog,
-                    @"internal const string (?<symbol>\w+)\s*=\s*?
+                    @"internal const string (?<symbol>\w+)\s*=\s*
+?
 ?\s*""" +
                     Regex.Escape(name) + @"""");
                 if (!constant.Success)

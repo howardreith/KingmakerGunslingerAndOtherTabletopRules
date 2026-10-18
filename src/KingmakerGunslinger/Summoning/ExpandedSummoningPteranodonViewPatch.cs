@@ -129,6 +129,7 @@ namespace KingmakerGunslinger.Summoning
                 // wearing a Giant Spider.
                 { BebelithBlueprintName, Sprint14BonePolicy.BebelithKey },
                 { "KMG_Summoning_Unit_Crocodile", "crocodile" },
+                { "KMG_Summoning_Unit_Gorgon", "gorgon" },
                 { "KMG_Summoning_Unit_DireCrocodile", "dire-crocodile" },
                 { AnkylosaurusVisualPolicy.BlueprintName, AnkylosaurusRulesPolicy.Key },
                 { GiantBodyVisualPolicy.BrachiosaurusBlueprintName,
@@ -146,7 +147,7 @@ namespace KingmakerGunslinger.Summoning
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
-            { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros" };
+            { "aurochs", "bison", "rhinoceros", "woolly-rhinoceros", "gorgon" };
         private static readonly HashSet<string> Sprint12QuadrupedKeys =
             new HashSet<string>(StringComparer.Ordinal)
             { "dire-rat", "hyena", "goblin-dog" };

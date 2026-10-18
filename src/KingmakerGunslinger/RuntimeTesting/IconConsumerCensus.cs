@@ -120,6 +120,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             "KMG.Feats.ImprovedCriticalRifle",
             "KMG.Feats.ImprovedCriticalRevolver",
             "KMG.Feats.ImprovedCriticalWithFirearms",
+            "KMG.Summoning.Special.Bulette.Leap",
         };
         private static readonly string[][] NativeReuse = {
             new[] { "KMG.ElementalRaces.Ifrit.BurningHandsFeature", "4783c3709a74a794dbe7c8e7e0b1b038" },

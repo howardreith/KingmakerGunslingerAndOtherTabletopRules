@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 108) throw new InvalidOperationException("Expanded Summoning unique creature count must be 108.");
+            if (Creatures.Length != 110) throw new InvalidOperationException("Expanded Summoning unique creature count must be 110.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
@@ -48,8 +48,8 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 95, 543);
-            ValidateFamily(SummonFamily.NaturesAlly, 96, 553);
+            ValidateFamily(SummonFamily.Monster, 96, 545);
+            ValidateFamily(SummonFamily.NaturesAlly, 97, 557);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -132,7 +132,10 @@ namespace KingmakerGunslinger.Summoning
                 // not re-registered here: Sprint 25 completes the existing
                 // released creature and its eight roots stay exactly as they
                 // are.
-                C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon")
+                C("brachiosaurus","Brachiosaurus",null,false,7,"Mastodon"),
+                // Sprint 26 charter-selected, untemplated magical beasts.
+                C("gorgon","Gorgon",8,false,null,"Horse"),
+                C("bulette","Bulette",null,false,6,"Bulette")
             };
         }
 

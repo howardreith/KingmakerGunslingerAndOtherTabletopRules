@@ -173,7 +173,7 @@ namespace KingmakerGunslinger.DomainTests
             // NOT a Sprint 24 exact-rank theropod, so the Brachiosaurus
             // painting's arrival moved it by one. The identities below are
             // what this test guards.
-            Assertions.Equal(118, SummonIconCatalog.All.Count(value =>
+            Assertions.Equal(SummoningCurrentSurface.IconConceptCount - TheropodRulesPolicy.AppendedCreatureCount, SummonIconCatalog.All.Count(value =>
                     !TheropodRulesPolicy.UsesExactRanks(value.Key)),
                 "Every non-theropod icon concept remains without changing Sprint 6 " +
                 "identities.");

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using KingmakerGunslinger.Firearms;
 using KingmakerGunslinger.Qualification;
 using KingmakerGunslinger.Recovery;
