@@ -2204,7 +2204,7 @@ function Test-KmgSprint25ReviewPhaseScope {
 
 function Test-KmgSprint27ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
-    return $Scenario -ceq 'disposable-expanded-summoning-sprint27-native-review' -and $null -ne $Parameters -and $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('rtwp-foundation','pounce-rtwp','pounce-turn-based')
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint27-native-review' -and $null -ne $Parameters -and $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','rtwp-ai','charge-boundaries')
 }
 
 function Test-KmgSprint26ReviewPhaseScope {

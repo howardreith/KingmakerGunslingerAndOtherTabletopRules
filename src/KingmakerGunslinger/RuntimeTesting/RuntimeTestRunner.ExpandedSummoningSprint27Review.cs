@@ -50,6 +50,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.Commands.InterruptAll(true);
                         SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();
                         foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
+                    } else if(phase=="rtwp-ai") {
+                        foreach(int f in Sprint27Ai(fixture,owner))yield return f;
+                    } else if(phase=="charge-boundaries") {
+                        foreach(int f in Sprint27CancelCharge(fixture,owner,false))yield return f;
+                        foreach(int f in Sprint27CancelCharge(fixture,owner,true))yield return f;
+                        foreach(int f in Sprint27Opportunity(fixture,owner))yield return f;
+                        Sprint27PlanReentry(fixture,owner);
                     } else throw new InvalidOperationException("Unimplemented Griffon phase: "+phase);
                 } finally {
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();

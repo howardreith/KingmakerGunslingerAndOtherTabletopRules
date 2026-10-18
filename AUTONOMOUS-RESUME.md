@@ -11,7 +11,8 @@ and [evidence map](planning/SPRINT27-EVIDENCE.json) supersede earlier next-actio
 Original painting/export, native-Manticore-based original body, adult rules and
 six hidden SNA roots are integrated. All released identities/icons preserved.
 Focused production/early observer compilation and6 targeted checks PASS. No full
-or native product qualification. One bounded research capture PASS with exact
+or native product qualification. Two foundation attempts failed bootstrap; exact
+old/current tuples and narrow fixes are retained in the evidence map. One research capture PASS with exact
 current118-save/settings/Mods/private restoration and no game/lease/owned tasks.
 HumanReview NOT_PERFORMED_NONBLOCKING; rough static wings/proportions remain debt.
 

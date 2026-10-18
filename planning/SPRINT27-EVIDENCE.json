@@ -57,6 +57,31 @@
         "leaseAbsent": true,
         "ownedTasksRemoved": true
       }
+    },
+    {
+      "scope": "standalone rtwp-foundation attempt; typed native Charge registration failure before fixture",
+      "candidateKind": "development",
+      "source": "2b0483745bd5ef6ee722cf566b6c5e99ed4a633a",
+      "sourceStateSha256": "663e4413d31f53b25164abe8bc3a91ccb4bddb60d41105945fcbae14d6ea62fa",
+      "zipSha256": "cd481ab3e086672d2e797365e0a424d7dde4194b7ef6994f3fc000d30fd0e2cb",
+      "dllSha256": "ff4837325f9aabf95606c83bdc6e20513529ffe41e4649b44fcc9ffc7a588d36",
+      "mvid": "98b4c69d-53e5-4710-a708-e51a9e2a92c7",
+      "runId": "20261018T2005059378167Z-dde17c840bf0468593481ea11e71d083",
+      "transactionRunId": "compat-20261018T200309Z-68d57b5aacab",
+      "result": "FAIL",
+      "nativeMilliseconds": 65053,
+      "outerSeconds": 211.13990909999998,
+      "rawResultSha256": "db937bf1b6faa3b6de36521eb2179f36db86e179b769ee1e6282072b35fa5b7f",
+      "cause": "NativeCharge exact c78506dd... is BlueprintAbility, not BlueprintFeature. Registration failed closed and rolled back. Typed exact Griffon ability-fact resolution added. No fixture/combat assertions executed.",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
     }
   ],
   "checks": [
@@ -159,6 +184,14 @@
       "compileSeconds": 16.3,
       "testSeconds": 4.9,
       "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
+    },
+    {
+      "scope": "typed native Charge correction and small AI/cancellation/opportunity/reentrant-plan observers; focused production compile",
+      "result": "PASS",
+      "tests": 6,
+      "compileSeconds": 16.8,
+      "testSeconds": 1,
+      "nativeQualification": false
     }
   ],
   "policyChange": {
@@ -180,7 +213,8 @@
     "Prototypeb51a00 development build FAIL213.301s after successful production compile: both output/package validators still pinned122 summon icons. Controlled authority has123. Replaced duplicated counts with hash-pinned authoring/runtime identity validation. No deployed package or gameplay transaction occurred.",
     "Packaging-only reproduction exposed the deterministic writer missing exact387/389 file-count choices. Added only those Sprint27 hidden-development counts; repeated packaging and strict one-DLL/content/hash validation passed. Diagnostic ZIP is not a qualified candidate.",
     "First native foundation bf53ccd5 failed before fixture on the compiled icon-catalog122 immutability count; exact machine118-save restoration PASS in198.078s. Raw result and registration stack retained. Updated exact approved123 count; guards remain enabled.",
-    "A speculative neighboring profile-count edit63 failed the newly selected pure guard test. Reflection measured62 actual profiles including Griffon; preserved the existing62 guard, all pure bootstrap catalog guards now pass."
+    "A speculative neighboring profile-count edit63 failed the newly selected pure guard test. Reflection measured62 actual profiles including Griffon; preserved the existing62 guard, all pure bootstrap catalog guards now pass.",
+    "Native foundation2b048374 advanced past icon guards but registration requested native ChargeAbility as BlueprintFeature. Actual previously captured graph proves BlueprintAbility. Exact typed Griffon-only grant corrected;65.053s native/211.140s transaction, all118 saves and current intake restored. No unchanged relaunch."
   ],
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",

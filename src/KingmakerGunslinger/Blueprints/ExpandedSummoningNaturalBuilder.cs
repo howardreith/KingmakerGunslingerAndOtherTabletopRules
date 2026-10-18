@@ -1767,7 +1767,12 @@ namespace KingmakerGunslinger.Blueprints
                 // success alone, where the printed rider follows a
                 // knockdown the overrun caused. Keyed on the creature as
                 // well as the fact, so no other profile can pick it up.
-                BlueprintUnitFact value = fact == "GriffonChassis"
+                // Native Charge is an ability fact, not a feat. The exact
+                // Griffon grant retains the real native charge implementation.
+                BlueprintUnitFact value = fact == "NativeCharge" && profile.Key == "griffon"
+                    ? (BlueprintUnitFact)BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        library, FactGuids[fact], "Griffon native charge ability")
+                    : fact == "GriffonChassis"
                     ? Require<BlueprintFeature>(bySymbol, "KMG.Summoning.Natural.Griffon.Chassis")
                     : fact == "GreaterOverrun" &&
                         profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey
