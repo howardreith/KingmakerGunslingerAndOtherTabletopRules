@@ -32,6 +32,31 @@
         "leaseAbsent": true,
         "ownedTasksRemoved": true
       }
+    },
+    {
+      "scope": "standalone rtwp-foundation attempt; bootstrap failed before fixture",
+      "candidateKind": "development",
+      "source": "bf53ccd592f2125870680e8e85b5a85f5530f151",
+      "sourceStateSha256": "0c5122086b5b904bc0eae33ffc4e0215f91777a1aa5881969fb58d483a96b53c",
+      "zipSha256": "2a413e7d372af2bcdbc37684ffa9df5d903cf15ed0a818b9389008769b9f2738",
+      "dllSha256": "1f921f783b38c572aa28f61a771cb1fedc32ebd3961b61f3a8fe6b27270309d1",
+      "mvid": "b7225acb-f3cb-4a5a-9b31-7a207ceb6753",
+      "runId": "20261018T1953121268433Z-53420bbfd278470483cec3b14da3cebd",
+      "transactionRunId": "compat-20261018T195116Z-bce0bef6ebfd",
+      "result": "FAIL",
+      "nativeMilliseconds": 51789,
+      "outerSeconds": 198.0783759,
+      "rawResultSha256": "4163a1c86d53c2bc53491cde9829c68cc36e47cbe7440f37f36e7bcceddd8923",
+      "cause": "SummonIconCatalog.Validate retained122-entry guard; real registered and painted catalog is123. No fixture or combat assertions executed.",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
     }
   ],
   "checks": [
@@ -126,6 +151,14 @@
       "diagnosticPackage": "artifacts/sprint27-packaging-repro.zip",
       "qualification": false,
       "note": "Reproduction uses existing b51a00 compiled bytes with corrected package tooling; not a deployable development candidate or native evidence."
+    },
+    {
+      "scope": "all pure summoning bootstrap guards plus Griffon/shared rake and observer wiring; affected production compile",
+      "result": "PASS",
+      "tests": 6,
+      "compileSeconds": 16.3,
+      "testSeconds": 4.9,
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
     }
   ],
   "policyChange": {
@@ -145,7 +178,9 @@
     "Prototype81433 preflight FAIL47.7809s: exact documented-scenarios inventory omitted the new Griffon review string. No build/deployment/game transaction occurred. Corrected exact inventory; affected preflight rerun required.",
     "Prototypeba6dd7 build wrapper stopped on one of30 icon corruption fixtures: current delegated-authority hash still pinned the Sprint26-only manifest. Updated exact Griffon-inclusive pin and retained the actual old hash as the stale-authority negative case. No package/deployment/native transaction occurred.",
     "Prototypeb51a00 development build FAIL213.301s after successful production compile: both output/package validators still pinned122 summon icons. Controlled authority has123. Replaced duplicated counts with hash-pinned authoring/runtime identity validation. No deployed package or gameplay transaction occurred.",
-    "Packaging-only reproduction exposed the deterministic writer missing exact387/389 file-count choices. Added only those Sprint27 hidden-development counts; repeated packaging and strict one-DLL/content/hash validation passed. Diagnostic ZIP is not a qualified candidate."
+    "Packaging-only reproduction exposed the deterministic writer missing exact387/389 file-count choices. Added only those Sprint27 hidden-development counts; repeated packaging and strict one-DLL/content/hash validation passed. Diagnostic ZIP is not a qualified candidate.",
+    "First native foundation bf53ccd5 failed before fixture on the compiled icon-catalog122 immutability count; exact machine118-save restoration PASS in198.078s. Raw result and registration stack retained. Updated exact approved123 count; guards remain enabled.",
+    "A speculative neighboring profile-count edit63 failed the newly selected pure guard test. Reflection measured62 actual profiles including Griffon; preserved the existing62 guard, all pure bootstrap catalog guards now pass."
   ],
   "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
   "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
