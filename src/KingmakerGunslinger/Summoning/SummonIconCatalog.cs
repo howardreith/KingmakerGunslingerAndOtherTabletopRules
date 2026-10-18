@@ -64,7 +64,7 @@ namespace KingmakerGunslinger.Summoning
             // IsRegisteredSomewhere already expected it, and its source
             // painting and 128x128 export now exist and are pinned by
             // the icon manifests.
-            if (Values.Length != 120 || expected.Length != 120 ||
+            if (Values.Length != 122 || expected.Length != 122 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||

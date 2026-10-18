@@ -92,6 +92,8 @@ namespace KingmakerGunslinger.Summoning
                 { 8, "b9342e2a6dc5165489ba3412c50ca3d1" },
                 { 9, "da6417809bdedfa468dd2fd0cc74be92" },
                 { 10, "4179c5c08d606a6439a62bf178b738e1" },
+                // Private Gorgon chassis: the reconstruction catalog has no +11 native binding.
+                { 11, "3d4461a55b224472ad2853699c596b4f" },
                 { 12, "0b2d92c6aac8093489dfdadf1e448280" },
                 { 14, "209a2920891b580418b4e5e80466e134" },
                 { 15, "72c294dca841e3944869fb087bacf272" },
@@ -127,7 +129,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 59 || Values.Select(value => value.Key)
+            if (Values.Length != 61 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -455,6 +457,19 @@ namespace KingmakerGunslinger.Summoning
         private static NaturalSummonProfile[] Build()
         {
             return new[] {
+                PSK("gorgon", "Gorgon", "MagicalBeast", 8, "Large",
+                    24, 10, 24, 2, 16, 9, 30, 11, "GorgonGore2d8",
+                    A(), A("GorgonHoof1d6", "GorgonHoof1d6"),
+                    A("ImprovedInitiative", "IronWill", "PowerAttack", "SkillFocusPerception",
+                        "ReducedReach", "TripDefenseFourLegs"),
+                    A("Perception"), "Charter-selected SM VIII extension; passive senses unmodeled."),
+                PK("bulette", "Bulette", "MagicalBeast", 8, "Huge",
+                    23, 15, 20, 2, 13, 6, 40, 12, "BuletteBite2d8",
+                    A("BuletteClaw2d6", "BuletteClaw2d6"),
+                    A("ImprovedInitiative", "IronWill", "SkillFocusPerception", "WeaponFocusBite",
+                        "ReducedReach", "TripDefenseFourLegs", "BuletteChassis"),
+                    A("Mobility", "Perception"),
+                    "Surface-only legal charge/leap; burrow 20 feet and tremorsense unsupported."),
                 PK("viper", "Viper", "Animal", 2, "Medium",
                     8, 13, 14, 1, 13, 2, 20, 3, "Bite1d4",
                     Array.Empty<string>(),

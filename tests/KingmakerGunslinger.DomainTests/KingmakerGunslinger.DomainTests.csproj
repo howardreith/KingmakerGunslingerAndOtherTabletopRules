@@ -316,6 +316,8 @@
     <Compile Include="Sprint24CensusTests.cs" />
     <Compile Include="ExpandedSummoningSprint24Tests.cs" />
     <Compile Include="ExpandedSummoningSprint25Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint26Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\Sprint26MagicalBeastRules.cs"><Link>Summoning\Sprint26MagicalBeastRules.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusRulesPolicy.cs"><Link>Summoning\AnkylosaurusRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ArmoredDinosaurRulesPolicy.cs"><Link>Summoning\ArmoredDinosaurRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\TheropodRulesPolicy.cs"><Link>Summoning\TheropodRulesPolicy.cs</Link></Compile>

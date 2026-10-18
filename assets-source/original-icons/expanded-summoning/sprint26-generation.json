@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "generatedUtcDate": "2026-10-18",
+  "images": [
+    {
+      "key": "gorgon",
+      "source": "assets-source/original-icons/expanded-summoning/sources/gorgon.png",
+      "sourceSha256": "3ad08001ecf64e3c644a6a113b056fe069f171e7062a36d5d0df1f84ae0e32f3",
+      "width": 1254,
+      "height": 1254,
+      "tool": "image_gen.imagegen (built-in)",
+      "providerModel": "not exposed by tool; not inferred",
+      "transparentBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: one square painted fantasy CRPG summon-choice icon, final export 128px. Create an ORIGINAL GORGON creature portrait matching the warm painted medallion family of the first two actual reference images (aurochs and rhinoceros). These are STYLE references only; do not edit or recolor their bodies. The third beetle image is not a style reference. Subject: PF1 gorgon, a powerful living armored BULL with two upward-curving horns, bovine broad muzzle, four stout cloven-hoofed legs, overlapping iron-gray metallic armor plates over flesh, small green breath plumes at mouth. A recognizable bull body, not a human gorgon, medusa, snake, construct robot, rhino or minotaur. Three-quarter front view in the medallion, head and horns dominant, full or near-full body silhouette, large enough to read at 32px. Rich hand-painted fantasy illustration, restrained bronze edge lighting on cool iron armor, smoky dark warm brown backdrop, thin circular aged-gold medallion ring matching aurochs family, square dark corners. No ornate square UI frame, text, letters, counters, numbers, badges, extra creatures, weapons or watermark. Keep horns within canvas. This is the creature identity painting, not a cinematic poster. Preserve no copyrighted pixels from references. Deliver exactly one square image.",
+      "inputMechanism": "num_last_images_to_include; actual conversation image pixels supplied",
+      "referenceImages": [
+        {
+          "path": "assets-source/original-icons/expanded-summoning/sources/aurochs.png",
+          "sha256": "474e36b58c79b7b6a9a84c1e4be2faee2a70fc8e8cc1d46b98c43c70d55f7138",
+          "role": "style reference"
+        },
+        {
+          "path": "assets-source/original-icons/expanded-summoning/sources/rhinoceros.png",
+          "sha256": "c9ca0a0e1cce68a011382744193140b8a9cc8c33c0b9885fecd9c335d2896e93",
+          "role": "style reference"
+        },
+        {
+          "path": "assets-source/original-icons/expanded-summoning/sources/giant-stag-beetle.png",
+          "sha256": "b961e23aa4a6c8461ae14846c24ae68382221fcb532c98ccfefb1ac4441549eb",
+          "role": "explicitly excluded style reference"
+        }
+      ],
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "cryptographicCredentialVerification": "NOT_PERFORMED",
+      "integration": "original preserved; runtime export and consumer integration pending"
+    },
+    {
+      "key": "bulette",
+      "source": "assets-source/original-icons/expanded-summoning/sources/bulette.png",
+      "sourceSha256": "66b537744e14bcc0a470b47f4e2cf536532e33950476aba091da619c5f0afac9",
+      "width": 1254,
+      "height": 1254,
+      "tool": "image_gen.imagegen (built-in)",
+      "providerModel": "not exposed by tool; not inferred",
+      "transparentBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: a single square fantasy CRPG summon-choice creature painting for final 128px export. Use the actual attached Gorgon icon ONLY as a STYLE reference: match its warm dark painted circular gold medallion family, readable central creature, material shading, dark corners and thin aged-gold ring. Make an ORIGINAL BULETTE (PF1 landshark), entirely different anatomy from that bull. Subject: a low massive four-legged armored landshark, wedge-shaped blunt shark-like armored head with a wide toothy hinged jaw, small deep-set eyes, thick slate blue-gray overlapping armored back, raised triangular dorsal crest/fin, pale underbelly, four short powerful splayed legs with large ivory digging claws and short heavy tail. Recognizable squat bulette body, no horns, no bull features, not a dragon, ordinary shark, mole, crocodile, dinosaur or construct. Pose: leaping a short distance above rocky ground, three-quarter front/side, foreclaws reaching downward, mouth partly open, clear dorsal fin and quadruped silhouette filling circle. Four legs total; no wings, no limbs on its back. Hand-painted bestiary portrait with broad readable anatomy for 32px display, bronze rim light, smoky earth backdrop. No cinematic landscape, extra creatures, glyph, text, numbers, badges, square UI border or watermark. Keep anatomy within canvas. Exactly one square image.",
+      "inputMechanism": "num_last_images_to_include; actual conversation image pixels supplied",
+      "referenceImages": [
+        {
+          "path": "assets-source/original-icons/expanded-summoning/sources/gorgon.png",
+          "sha256": "3ad08001ecf64e3c644a6a113b056fe069f171e7062a36d5d0df1f84ae0e32f3",
+          "role": "style reference"
+        }
+      ],
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "cryptographicCredentialVerification": "NOT_PERFORMED",
+      "integration": "original preserved; runtime export and consumer integration pending"
+    }
+  ]
+}

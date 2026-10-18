@@ -513,6 +513,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureArmoredDinosaurs(library, bySymbol);
             ConfigureTheropods(library, bySymbol);
             ConfigureGiantBodies(library, bySymbol);
+            ConfigureSprint26MagicalBeasts(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1495,7 +1496,8 @@ namespace KingmakerGunslinger.Blueprints
                 profile.Key == AnkylosaurusRulesPolicy.Key ||
                 ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key) ||
                 TheropodRulesPolicy.UsesExactRanks(profile.Key) ||
-                GiantBodyRulesPolicy.UsesExactRanks(profile.Key);
+                GiantBodyRulesPolicy.UsesExactRanks(profile.Key) ||
+                profile.Key == "gorgon" || profile.Key == "bulette";
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1504,6 +1506,10 @@ namespace KingmakerGunslinger.Blueprints
             levels.SelectSpells = Array.Empty<BlueprintAbility>();
             levels.MemorizeSpells = Array.Empty<BlueprintAbility>();
             levels.Selections = Array.Empty<SelectionEntry>();
+            // These new donors carry native preallocated skill rows. The own
+            // creation-only rank component must start from an empty row.
+            if (Sprint26MagicalBeastRules.UsesExactRanks(profile.Key))
+                unit.Skills = new BlueprintUnit.UnitSkills();
             unit.ComponentsArray = new BlueprintComponent[] { levels };
             if (crocodilian)
             {
@@ -1519,7 +1525,14 @@ namespace KingmakerGunslinger.Blueprints
                     SummonExactSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
-                if (profile.Key == AnkylosaurusRulesPolicy.Key)
+                if (profile.Key == "gorgon" || profile.Key == "bulette")
+                {
+                    ranks.MobilityRanks = profile.Key == "bulette" ? 4 : 0;
+                    ranks.PerceptionRanks = profile.Key == "gorgon" ? 8 : 4;
+                    ranks.StealthRanks = 0;
+                    ranks.BaseHitPoints = 44;
+                }
+                else if (profile.Key == AnkylosaurusRulesPolicy.Key)
                 {
                     ranks.MobilityRanks = ranks.StealthRanks = 0;
                     ranks.PerceptionRanks = AnkylosaurusRulesPolicy.PerceptionRanks;
@@ -1655,7 +1668,10 @@ namespace KingmakerGunslinger.Blueprints
             // Without this a creature keeps whatever unit type its donor
             // had. Only the Wasp used to ask, so all three Sprint 14 insects
             // would have been classified as the Giant Spider they borrow.
-            if (profile.Key == "giant-wasp")
+            if (profile.Key == "gorgon" || profile.Key == "bulette")
+                unit.Type = Require<BlueprintUnitType>(bySymbol,
+                    "KMG.Summoning.Natural." + Token(profile.Key) + ".UnitType");
+            else if (profile.Key == "giant-wasp")
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     WaspUnitTypeSymbol);
             else if (profile.Key == "fire-beetle")
@@ -1703,6 +1719,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol);
+            if (profile.Key == "gorgon" || profile.Key == "bulette")
+                unit.Type = Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Natural." +
+                    (profile.Key == "gorgon" ? "Gorgon" : "Bulette") + ".UnitType");
             // Both theropods borrow only the Lizardfolk rig. Its playable
             // Human race carrier otherwise adds a selected +2 Constitution
             // and keeps Medium combat-size arithmetic on a unit whose native
@@ -1727,9 +1746,10 @@ namespace KingmakerGunslinger.Blueprints
             {
                 string armorGuid = ExpandedSummoningNaturalProfiles
                     .NaturalArmorGuid(profile.NaturalArmor);
-                facts.Add(BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
-                    library, armorGuid, "natural armor +" +
-                        profile.NaturalArmor));
+                facts.Add(profile.Key == "gorgon"
+                    ? Require<BlueprintFeature>(bySymbol, "KMG.Summoning.Natural.Gorgon.Chassis")
+                    : BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(
+                        library, armorGuid, "natural armor +" + profile.NaturalArmor));
             }
             foreach (string fact in profile.Facts)
             {
@@ -1789,6 +1809,9 @@ namespace KingmakerGunslinger.Blueprints
                         GiantCrabRacialSkillsSymbol)
                     : fact == "AnkylosaurusStun"
                     ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.StunFeatureSymbol)
+                    : fact == "GorgonChassis" || fact == "BuletteChassis"
+                    ? Require<BlueprintFeature>(bySymbol,
+                        "KMG.Summoning.Natural." + Token(profile.Key) + ".Chassis")
                     : fact == "AnkylosaurusChassis"
                     ? Require<BlueprintFeature>(bySymbol, AnkylosaurusRulesPolicy.ChassisFeatureSymbol)
                     : fact == "TriceratopsChassis"
@@ -1866,6 +1889,13 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintItemWeapon Weapon(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, string key)
         {
+            if (key == "GorgonGore2d8" || key == "GorgonHoof1d6" ||
+                key == "BuletteBite2d8" || key == "BuletteClaw2d6")
+            {
+                string creature = key.StartsWith("Gorgon", StringComparison.Ordinal) ? "Gorgon" : "Bulette";
+                return Require<BlueprintItemWeapon>(bySymbol, "KMG.Summoning.Natural." +
+                    creature + "." + key.Substring(creature.Length));
+            }
             if (key == "Hoof1d3") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeSmallHoof1d3Guid, "1d3 hoof");
             if (key == "Hoof1d4") return BlueprintLibraryLookup.RequireExact<

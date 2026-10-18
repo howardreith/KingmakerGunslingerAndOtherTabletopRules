@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  120,
+    "count":  122,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1077,6 +1077,24 @@
                       "key":  "stegosaurus",
                       "file":  "stegosaurus.png",
                       "sha256":  "dfa37b0bdff97f5bda5a2772a64096ad9c39f283d7618fb99c9b8e34f15890e4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "gorgon",
+                      "file":  "gorgon.png",
+                      "sha256":  "73e297daa18abec90aec316eb09d97b658a698b884b94a1d9e428a1564536efd",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "bulette",
+                      "file":  "bulette.png",
+                      "sha256":  "83c3959b973f7f99bb561ca4a2e1dc03e3f22fc90906dd800b215dba94078b82",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

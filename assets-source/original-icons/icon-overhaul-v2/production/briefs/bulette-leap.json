@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "key": "bulette-leap",
+  "behavior": "Legal surface charge and DC20 jump check: success replaces the attack with four claws and no bite; failure retains one ordinary charge attack. No burrowing or teleportation.",
+  "implementationReferences": [
+    "src/KingmakerGunslinger/Summoning/BuletteLeapCombat.cs"
+  ],
+  "source": "assets-source/original-icons/icon-overhaul-v2/production/sources/bulette-leap.png",
+  "sourceSha256": "ffef3ac833e83f40cb54f5353e765d277e74931a1a17c9e1fe5a338ac83b9786",
+  "tool": "Original vector construction in tools/icon-art/New-BuletteLeapEmblem.ps1; Windows System.Drawing GDI+",
+  "referenceImages": [
+    {
+      "path": "assets/game/icons/rapid-reload.png",
+      "role": "Approved combat-emblem-64 scaffold, muted #A6533F ink, ring weight and transparent negative space; no copied pixels."
+    },
+    {
+      "path": "docs/art/ICON-REFERENCE-INDEX.md",
+      "role": "Inspected native-10 screenshot's neighboring combat emblems; local-only reference, no redistributed pixels."
+    }
+  ],
+  "prompt": "Original low landshark with dorsal fin and four extended claws above a ground stroke. Muted #A6533F ring and transparent negative space, no text or magic.",
+  "visualStatus": "HumanReview: NOT_PERFORMED_NONBLOCKING",
+  "subjectAndSilhouette": "Low armored landshark airborne over ground, dorsal ridge and four claws.",
+  "artFamily": "combat-emblem",
+  "reviewGroup": "magical-beasts",
+  "confusedWith": [
+    "crocodilian-sprint"
+  ],
+  "uiSurfaces": [
+    "summon action bar and Leap ability tooltip"
+  ],
+  "exportProfile": "combat-emblem-64",
+  "forbiddenInterpretations": [
+    "No burrow, flight or teleportation.",
+    "No owner visual approval inferred."
+  ]
+}

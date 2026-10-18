@@ -66,7 +66,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.159') { throw "Build-Local supports only active version 0.0.159, observed $($info.Version)." }
+if ($info.Version -ne '0.0.160') { throw "Build-Local supports only active version 0.0.160, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -200,7 +200,7 @@ Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\giant-wasp-albedo
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-mesh.json') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\flying-animals\stirge-albedo.png') -Destination (Join-Path $buildOutput 'assets\flying-animals') -Force
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\ungulates') -Force | Out-Null
-foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros')) {
+foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros','gorgon')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
 }

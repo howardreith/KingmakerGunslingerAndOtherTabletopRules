@@ -655,4 +655,18 @@ finally {
     Remove-Item -LiteralPath $temporary -Recurse -Force -ErrorAction SilentlyContinue
 }
 
+foreach($name in @('observe-expanded-summoning-inventory',
+    'observe-expanded-summoning-sprint26-native-inputs',
+    'disposable-expanded-summoning-sprint22-native-review',
+    'disposable-expanded-summoning-sprint23-native-review',
+    'disposable-expanded-summoning-sprint24-native-review',
+    'disposable-expanded-summoning-sprint25-native-review',
+    'disposable-expanded-summoning-sprint26-native-review')) {
+    Assert-True (Test-KmgExactSummoningRuntimeBoundary $name) 'Released and new observations require exact receipts and settings rollback'
+    Assert-True (-not (Test-KmgExactSummoningRuntimeBoundary ($name+'-suffix'))) 'A suffix cannot opt into a named restoration contract'
+    Assert-True (-not (Test-KmgExactSummoningRuntimeBoundary $name.ToUpperInvariant())) 'Runtime boundary names stay ordinal'
+}
+foreach($name in @('', $null, 'mod-load-smoke', 'observe-expanded-summoning')) {
+    Assert-True (-not (Test-KmgExactSummoningRuntimeBoundary $name)) 'Unselected scenarios do not inherit a different restoration contract'
+}
 Write-Host "Expanded Summoning orchestration tests passed: $script:Passed assertions."

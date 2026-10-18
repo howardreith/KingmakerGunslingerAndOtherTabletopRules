@@ -14,23 +14,23 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void ShippedSurfaceMatchesFrozenBaseline()
         {
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredCreatureCount,
                 ExpandedSummoningBaselineInventory.UniqueCreatures,
                 "Baseline unique creature count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredMonsterCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredMonsterCreatureCount,
                 ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.Monster), "Baseline SM roster count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyCreatureCount,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredNatureAllyCreatureCount,
                 ExpandedSummoningBaselineInventory.RosterEntries(
                 SummonFamily.NaturesAlly), "Baseline SNA roster count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredMonsterPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredMonsterPlacements,
                 ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.Monster),
                 "Baseline SM registered placements changed.");
             // Sprint 21's Giant Crab and Sprint 23's Stegosaurus are Nature's
             // Ally-only creatures. Their placements remain on that side after
             // publication.
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyPlacements,
+            Assertions.Equal(SummoningCurrentSurface.RegisteredNatureAllyPlacements,
                 ExpandedSummoningBaselineInventory
                 .RegisteredPlacements(SummonFamily.NaturesAlly),
                 "Baseline SNA registered placements changed.");
@@ -52,7 +52,7 @@ namespace KingmakerGunslinger.DomainTests
             // roots and six Summon Nature's Ally roots.
             // Sprint 24 publishes nine Summon Monster theropod choices:
             // six Deinonychus and three Tyrannosaurus.
-            Assertions.Equal(560, ExpandedSummoningBaselineInventory
+            Assertions.Equal(SummoningCurrentSurface.PublishedMonsterPlacements + SummonNativeExpansionCatalog.All.Count(value => value.Family == SummonFamily.Monster), ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.Monster),
                 "Baseline SM visible choice count changed.");
             // Sprint 21 publishes the Giant Crab's seven roots, every
@@ -62,7 +62,7 @@ namespace KingmakerGunslinger.DomainTests
             // the Nature's Ally side; Triceratops adds four to Monster.
             // Sprint 24 publishes nine Nature's Ally theropod choices:
             // six Deinonychus and three Tyrannosaurus.
-            Assertions.Equal(GiantBodyRulesPolicy.RegisteredNatureAllyPlacements +
+            Assertions.Equal(SummoningCurrentSurface.PublishedNatureAllyPlacements +
                 SummonNativeExpansionCatalog.All.Count(value =>
                     value.Family == SummonFamily.NaturesAlly), ExpandedSummoningBaselineInventory
                 .VisibleChoices(SummonFamily.NaturesAlly),
@@ -78,14 +78,14 @@ namespace KingmakerGunslinger.DomainTests
         {
             int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
             int wrappers = SummonNativeExpansionCatalog.All.Count;
-            Assertions.Equal(GiantBodyRulesPolicy.FinalPublishedLogicalPlacements,
+            Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements,
                 generated, "Published generated placements changed.");
             Assertions.Equal(GiantBodyRulesPolicy.RetainedNativeWrappers,
                 wrappers, "Native wrapper count changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
+            Assertions.Equal(SummoningCurrentSurface.PublicVisibleChoices,
                 generated + wrappers,
                 "The combined visible choice total changed.");
-            Assertions.Equal(GiantBodyRulesPolicy.PublicVisibleChoices,
+            Assertions.Equal(SummoningCurrentSurface.PublicVisibleChoices,
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.Monster) +
                 ExpandedSummoningBaselineInventory.VisibleChoices(SummonFamily.NaturesAlly),
                 "Per-parent census disagrees with the catalog totals.");
@@ -138,12 +138,12 @@ namespace KingmakerGunslinger.DomainTests
             // Sprint 25 publication removes only Brachiosaurus, so the
             // registered-but-hidden set is empty again.
             Assertions.True(ExpandedSummoningBaselineInventory
-                    .RegisteredButHiddenCreatures.SequenceEqual(new string[0],
+                    .RegisteredButHiddenCreatures.SequenceEqual(SummoningCurrentSurface.WithheldKeys,
                     StringComparer.Ordinal),
                 "No qualified Sprint 25 creature remains hidden: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
-            Assertions.Equal(0,
+            Assertions.Equal(SummoningCurrentSurface.WithheldKeys.Length,
                 ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
                 "No creature is registered but withheld: " + string.Join(", ",
@@ -162,7 +162,7 @@ namespace KingmakerGunslinger.DomainTests
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
             Assertions.Equal(43 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount + 1,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count,
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
@@ -201,7 +201,7 @@ namespace KingmakerGunslinger.DomainTests
                 "{\n  \"schema\": \"" + ExpandedSummoningBaselineInventory.BaselineSchema + "\""),
                 "The census must declare its schema first so evidence stays comparable.");
             Assertions.True(first.Contains("\"totalVisibleChoices\": " +
-                GiantBodyRulesPolicy.PublicVisibleChoices),
+                SummoningCurrentSurface.PublicVisibleChoices),
                 "The emitted census lost the frozen visible-choice total.");
         }
 
@@ -236,7 +236,7 @@ namespace KingmakerGunslinger.DomainTests
             var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
                 System.IO.File.ReadAllText(System.IO.Path.Combine(
                     System.Environment.CurrentDirectory, "planning",
-                    "SPRINT25-GIANT-BODIES-LEDGER.json")));
+                    "SPRINT26-GORGON-BULETTE-LEDGER.json")));
             var surface = activeLedger["surface"]["target"];
             Assertions.Equal(generated, (int)surface["generatedPlacements"],
                 "Machine-readable public placement count.");

@@ -1038,6 +1038,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-expanded-summoning-sprint26-native-review' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'observe-magic-circle-native-contracts' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1082,6 +1088,13 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'observe-expanded-summoning-sprint22-contracts' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    # Sprint 26: bounded native input metadata and reference pixels only.
+    'observe-expanded-summoning-sprint26-native-inputs' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
@@ -2176,6 +2189,15 @@ function Test-KmgSprint25ReviewPhaseScope {
             'rtwp-ai', 'routes', 'visual-lifecycle', 'overrun', 'great-cleave')
 }
 
+function Test-KmgSprint26ReviewPhaseScope {
+    param([string]$Scenario, [hashtable]$Parameters)
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
+        $null -ne $Parameters -and $Parameters.Count -eq 1 -and
+        $Parameters.ContainsKey('reviewPhase') -and
+        $Parameters.reviewPhase -is [string] -and
+        $Parameters.reviewPhase -cin @('rtwp-foundation', 'turn-based-commands', 'gorgon-breath-rtwp', 'gorgon-breath-turn-based', 'bulette-leap-rtwp', 'bulette-leap-turn-based', 'rtwp-ai', 'routes', 'visual-lifecycle')
+}
+
 function Assert-KmgRuntimeScenarioPreflight {
     param(
         [Parameter(Mandatory = $true)][string]$Scenario,
@@ -2221,6 +2243,10 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint25-native-review' -and
         (-not $ExitAfterCompletion -or -not (Test-KmgSprint25ReviewPhaseScope $Scenario $Parameters))) {
         throw 'Sprint25 native review requires automatic exit and exactly one allowlisted reviewPhase.'
+    }
+    if ($Scenario -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
+        (-not $ExitAfterCompletion -or -not (Test-KmgSprint26ReviewPhaseScope $Scenario $Parameters))) {
+        throw 'Sprint26 native review requires automatic exit and exactly one allowlisted reviewPhase.'
     }
     if ($Scenario -ceq 'observe-whiteout-disposable-weather-fixture' -and -not $ExitAfterCompletion) {
         throw 'Disposable Whiteout weather fixture requires automatic exit.'
@@ -2376,8 +2402,8 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies') -or -not $ExitAfterCompletion)) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods or giant-bodies and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies or magical-beasts and automatic exit.'
         }
         $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
@@ -2537,6 +2563,11 @@ function Assert-KmgRuntimeScenarioPreflight {
     }
     elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint25-native-review') {
         if (-not (Test-KmgSprint25ReviewPhaseScope $Scenario $Parameters)) {
+            throw "$Scenario requires exactly one allowlisted reviewPhase."
+        }
+    }
+    elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint26-native-review') {
+        if (-not (Test-KmgSprint26ReviewPhaseScope $Scenario $Parameters)) {
             throw "$Scenario requires exactly one allowlisted reviewPhase."
         }
     }
@@ -2748,7 +2779,8 @@ function New-KmgRuntimeRequest {
             'disposable-expanded-summoning-sprint22-native-review',
             'disposable-expanded-summoning-sprint23-native-review',
             'disposable-expanded-summoning-sprint24-native-review',
-            'disposable-expanded-summoning-sprint25-native-review')) {
+            'disposable-expanded-summoning-sprint25-native-review',
+            'disposable-expanded-summoning-sprint26-native-review')) {
             [ordered]@{ reviewPhase = [string]$Parameters.reviewPhase }
         } elseif ($Scenario -ceq
             'observe-kmg-compatibility-asset-attribution') {

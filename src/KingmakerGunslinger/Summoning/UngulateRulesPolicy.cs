@@ -247,6 +247,8 @@ namespace KingmakerGunslinger.Summoning
             // charge arithmetic has honest inputs; it has no powerful
             // charge and no Stampede.
             new UngulateRulesProfile("elephant", 11, 30, 2, 8,
+                2, 8, 0, 0, 0, false, true),
+            new UngulateRulesProfile("gorgon", 8, 24, 2, 8,
                 2, 8, 0, 0, 0, false, true)
         };
 
@@ -258,8 +260,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 8 || Values.Select(value => value.Key)
-                    .Distinct(StringComparer.Ordinal).Count() != 8 ||
+            if (Values.Length != 9 || Values.Select(value => value.Key)
+                    .Distinct(StringComparer.Ordinal).Count() != 9 ||
                 Values.Any(value => value.HitDice < 1 || value.Strength < 1 ||
                     value.GoreDiceCount < 1 || value.GoreDieSides < 1 ||
                     !value.HasTrample && !value.HasPowerfulCharge))

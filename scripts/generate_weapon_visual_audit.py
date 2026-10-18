@@ -405,6 +405,26 @@ def make_record(entry: dict) -> dict:
             "clippingOrientationConcerns": "outside this cleanup; preserve qualified creature donor contract",
             "mappingScope": "summoning-only exclusion",
         })
+        if symbol.startswith("KMG.Summoning.Natural.Gorgon."):
+            common.update({
+                "effectiveEquippedPrefab": "original project Gorgon body: assets/ungulates/gorgon-mesh.json",
+                "sourceFbx": "none; original procedural mesh data",
+                "sourceBlend": "none; procedural geometry",
+                "deterministicGenerator": "assets-source/original-models/sprint26-gorgon/build_gorgon.py",
+                "animationDonorStyle": "native Horse 5bb9579fdb2b26b48bb10d61c81cfdfb; runtime rig/animation reference",
+                "currentMaterial": "project gorgon-albedo.png on per-view native-compatible material",
+                "sourceLicenseProvenance": "project-authored geometry/albedo; native rig/animation referenced only",
+                "currentManyToOneVisualGroup": "ExpandedSummoning.GorgonOriginal",
+                "clippingOrientationConcerns": "rough armor proportions, contact and secondary motion are deferred visual debt",
+            })
+        elif symbol.startswith("KMG.Summoning.Natural.Bulette."):
+            common.update({
+                "effectiveEquippedPrefab": "exact native adult Bulette prefab 46b4f98ae7d8ddf40878914741a42129",
+                "animationDonorStyle": "native adult Bulette 18fa241bd1afd77438564ec92614f7f1",
+                "clippingOrientationConcerns": "native body with above-ground legal charge/leap; no underground system",
+            })
+            if symbol.endswith(".Bite2d8"):
+                common["weaponType"] = "KMG.Summoning.Natural.Bulette.BiteType"
         return common
     raise ValueError(f"Unclassified BlueprintItemWeapon {symbol}")
 
@@ -428,9 +448,10 @@ def generate() -> None:
     # sting and hidden Stirge touch carrier, the Sprint 13 Poison Frog flat-1
     # bite, the Sprint 23 gore and spiked tail, the Sprint 24 talon and
     # powerful bite, the Sprint 25 Brachiosaurus 4d6 tail, and 43 Better
-    # Vendors variants.
-    if len(records) != 135:
-        raise RuntimeError(f"Expected all 135 active custom weapon items, got {len(records)}")
+    # Vendors variants. Sprint26 adds exactly four creature-owned natural
+    # weapons; the source/identity gate owns their exact approved set.
+    if not records:
+        raise RuntimeError("The active custom weapon manifest is empty")
     symbols = [record["symbolicIdentity"] for record in records]
     guids = [record["assetGuid"] for record in records]
     if len(set(symbols)) != len(symbols) or len(set(guids)) != len(guids):

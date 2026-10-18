@@ -10,6 +10,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "rtwp-ai" || phase == "routes" || phase == "visual-lifecycle" ||
                 phase == "overrun" || phase == "great-cleave";
         }
+        internal static bool Sprint26Phase(string phase)
+        {
+            return phase == "rtwp-foundation" ||
+                phase == "turn-based-commands" ||
+                phase == "gorgon-breath-rtwp" ||
+                phase == "gorgon-breath-turn-based" ||
+                phase == "bulette-leap-rtwp" ||
+                phase == "bulette-leap-turn-based" ||
+                phase == "rtwp-ai" ||
+                phase == "routes" ||
+                phase == "visual-lifecycle";
+        }
+
         public static bool BiteArmorControl(bool biteWeapon, bool firstHit,
             bool secondHit, bool dismantled, bool exactArmorUnchanged)
         {
@@ -78,6 +91,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint25NativeReview)
                 return parameters == 1 && Sprint25Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview)
+                return parameters == 1 && Sprint26Phase(reviewPhase);
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,

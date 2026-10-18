@@ -1,5 +1,11 @@
 # Windows 10 autonomous runtime testing
 
+Sprint 26 adds `observe-expanded-summoning-sprint26-native-inputs`: a bounded,
+read-only mod-load lookup for Gorgon/Bulette identities, conditional Horse/Hodag
+donor metadata and native petrification/cure/charge/sense graphs and pixels.
+It creates no actor, loads no save and mutates no native asset. This is research
+input, never gameplay, body or cure qualification. Parameters are empty.
+
 ## Design status
 
 Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` to the
@@ -12,6 +18,13 @@ body attachment/fault/death/teardown. It uses the existing native
 first-area fixture, never loads/writes a save, requires automatic exit, and
 restores its request-owned world/clock/settings. Additional qualification
 phases remain under implementation; this registration is not native PASS.
+
+Sprint26 uses `disposable-expanded-summoning-sprint26-native-review` with exactly
+one `reviewPhase`: `rtwp-foundation`, `turn-based-commands`, `gorgon-breath-rtwp`,
+`gorgon-breath-turn-based`, `bulette-leap-rtwp`, `bulette-leap-turn-based`,
+`rtwp-ai`, `routes` or `visual-lifecycle`. The same disposable first-area fixture,
+exact-owner clock and restoration boundary apply. An incomplete phase fails;
+registration and request dispatch do not establish gameplay qualification.
 
 Steam Offline Mode is supported. The owner must have a usable signed-in
 session; online connectivity is not required. The approved executable, App ID,
@@ -557,3 +570,17 @@ published KMG racial selectors, and the native ordinary Trait roots when the ins
 optional contract enables them. KMG and Helpful reconciliation remain active. Missing
 optional background Traits are NOT-RUN. This control does not claim new trait commits;
 those use the separately qualified ON creator and native Player-respec scenarios.
+
+Sprint26 uses the same save-free first-area fixture, native clock, exact-owner controller and restoration path. Its closed `reviewPhase` union is `rtwp-foundation`, `turn-based-commands`, `gorgon-breath-rtwp`, `gorgon-breath-turn-based`, `bulette-leap-rtwp`, `bulette-leap-turn-based`, `rtwp-ai`, `routes`, `visual-lifecycle`. No fixture animation event or attack routine is awarded on behalf of these new creatures.
+
+Sprint26 adds only `persistenceScope=magical-beasts` to the existing three
+`working-save-expanded-summoning-*` stages. Its exact roster is Gorgon/Bulette,
+plus two receipt-owned disposable condition victims outside the human party.
+Preparation uses production state calls solely to arrange the saved boundary;
+separate native commands qualify breath/Leap. Cold load checks source-gone
+temporary/permanent stone, saved DC/source strings, an unrefreshed source
+cooldown, module ON/OFF, real round recovery and exact cleanup/fresh absence.
+This registration does not authorize a development package to enter the
+installed-stack wrapper or establish native persistence PASS. The existing
+exact working descriptor, immutable baseline, protected unrelated saves, native
+write sentinel and transactional installation/settings restoration still apply.

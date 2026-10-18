@@ -7,6 +7,9 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
@@ -28,7 +31,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool RosterPersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
-            Sprint24PersistenceScope || Sprint25PersistenceScope; } }
+            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope; } }
+        private bool Sprint26PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope; } }
         private bool Sprint25PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GiantBodiesScope; } }
         private bool Sprint22PersistenceScope
@@ -42,6 +47,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint23PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ArmoredDinosaurKeys :
             Sprint24PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.TheropodKeys :
             Sprint25PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantBodyKeys :
+            Sprint26PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.MagicalBeastKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
@@ -169,6 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             try
             {
+                if (Sprint26PersistenceScope && _sprint26PersistenceRolls == null) _sprint26PersistenceRolls = new Sprint26PersistenceRolls();
                 if (_rosterPersistenceSteps == null) _rosterPersistenceSteps = RunRosterPersistence().GetEnumerator();
                 _rosterPersistenceSteps.MoveNext();
             }
@@ -206,7 +213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static JObject RosterPersistenceProfile(UnitEntityData unit)
         {
             var s = unit.Stats;
-            return new JObject { ["blueprint"] = unit.Blueprint.AssetGuid, ["size"] = unit.Descriptor.State.Size.ToString(),
+            var profile=new JObject { ["blueprint"] = unit.Blueprint.AssetGuid, ["size"] = unit.Descriptor.State.Size.ToString(),
                 ["str"] = s.Strength.BaseValue, ["dex"] = s.Dexterity.BaseValue, ["con"] = s.Constitution.BaseValue,
                 ["int"] = s.Intelligence.BaseValue, ["wis"] = s.Wisdom.BaseValue, ["cha"] = s.Charisma.BaseValue,
                 ["hpBase"] = s.HitPoints.BaseValue, ["bab"] = s.BaseAttackBonus.BaseValue,
@@ -217,6 +224,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["limbs"] = new JArray(unit.Body.AdditionalLimbs.Select(l => l.MaybeWeapon?.Blueprint.AssetGuid)),
                 ["secondary"] = new JArray(unit.Body.AdditionalLimbs.Where(l => l.MaybeWeapon != null && l.MaybeWeapon.IsSecondary)
                     .Select(l => l.MaybeWeapon.Blueprint.AssetGuid)) };
+            if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid||unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.BuletteUnitGuid){
+                var chassis=unit.Descriptor.Progression.Features.Enumerable.Where(v=>v.Blueprint.GetComponent<MagicalBeastPrimaryStrength>()!=null).ToArray();
+                var names=chassis.SelectMany(v=>v.SelectComponents<GameLogicComponent>()).Select(v=>v.name).ToArray();
+                if(chassis.Length!=1||names.Length!=3||names.Any(string.IsNullOrWhiteSpace)||names.Distinct(StringComparer.Ordinal).Count()!=names.Length)
+                    throw new InvalidOperationException("Sprint26 exact runtime chassis/component identities unavailable.");
+                profile["chassisComponentNames"]=new JArray(names);
+                profile["composed"]=new JObject{["hp"]=s.HitPoints.ModifiedValue,["ac"]=s.AC.ModifiedValue,["touch"]=s.AC.Touch,["flatFooted"]=s.AC.FlatFooted,
+                    ["fort"]=s.SaveFortitude.ModifiedValue,["ref"]=s.SaveReflex.ModifiedValue,["will"]=s.SaveWill.ModifiedValue,
+                    ["perception"]=s.SkillPerception.ModifiedValue,["mobility"]=s.SkillMobility.ModifiedValue};
+                profile["attacks"]=new JArray(Sprint19Limbs(unit).Select(w=>{
+                    var calc=Rulebook.Trigger(new RuleCalculateWeaponStats(unit,w,null));
+                    return new JObject{["weapon"]=w.Blueprint.AssetGuid,["secondary"]=w.IsSecondary,
+                        ["bonus"]=Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(unit,w,0)).Result,
+                        ["damage"]=Sprint16DamageLine(calc.DamageDescription[0].CreateDamage()),["reachFeet"]=w.AttackRange.Value,["threat"]=w.Blueprint.CriticalRollEdge};
+                }));
+                if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid){
+                    var breath=unit.Descriptor.Abilities.Enumerable.Single(v=>v.Blueprint.name=="KMG_Summoning_Special_Gorgon_Breath");
+                    profile["breathDc"]=new AbilityData(breath).CalculateParams().DC;
+                }
+            }
+            return profile;
         }
 
         private static UnityEngine.Object[] RosterPersistenceResources(UnitEntityData unit)
@@ -270,7 +298,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (!Sprint22PersistenceScope ||
                         u.Get<UnitPartSprint22ControlReceipt>() == null) &&
                     (!Sprint24PersistenceScope ||
-                        u.Get<UnitPartSprint24StateReceipt>() == null))
+                        u.Get<UnitPartSprint24StateReceipt>() == null) &&
+                    (!Sprint26PersistenceScope || u.Get<UnitPartSprint26StateReceipt>() == null))
                 .Select(u => new { Unit=u, u.Destroyed, u.HoldingState, u.Blueprint }).ToArray();
             int published;
             bool publication = ExpandedSummoningPublisher.RequiredBasePublicationIsExact(BlueprintBootstrap.Library,
@@ -285,6 +314,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint24PersistenceScope)
                     foreach (int step in Sprint24PersistentStates(caster,
                         existing, false, false)) yield return step;
+                if (Sprint26PersistenceScope)
+                    foreach (int step in Sprint26PersistentStates(caster, existing, false, false)) yield return step;
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -370,7 +401,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
-                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope) && verify;
+                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -397,6 +428,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // are evidence, not a second serialized feature schema.
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
+                JObject moduleExpectedProfile = null;
+                if (Sprint26PersistenceScope && !moduleOn) {
+                    // The saved fixture was prepared ON. The exact-owner reach
+                    // correction is module-gated like released natural reach.
+                    // Compare its precise OFF delta while preserving every
+                    // other saved field and any additional native reach bonus.
+                    moduleExpectedProfile = JObject.Parse(receipt.Profile);
+                    var attacks = moduleExpectedProfile["attacks"] as JArray;
+                    if (attacks == null) throw new InvalidOperationException("Saved magical-beast attacks are absent.");
+                    foreach (JObject attack in attacks) {
+                        int correction = Sprint26MagicalBeastRules.ReachAdjustment(unit.Blueprint.AssetGuid, (string)attack["weapon"]);
+                        attack["reachFeet"] = (int)attack["reachFeet"] - correction;
+                    }
+                    // The native JObject's string-null tokens serialize as
+                    // JSON null and parse back with a different JToken type.
+                    // Use the same serialized contract as the saved receipt.
+                    profileSame = moduleExpectedProfile.ToString(Formatting.None) == profile.ToString(Formatting.None);
+                }
                 bool giantFactsAbilitiesExact = true;
                 if (Sprint25PersistenceScope && moduleOn && GiantBodyRulesPolicy.IsGiantBody(receipt.Key))
                 {
@@ -466,11 +515,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (moduleOn ? originalBodyOutcome.StartsWith("visual:attached;", StringComparison.Ordinal) && giantOwned.Length >= 2 :
                     ExpandedSummoningRosterPersistencePolicy.ModuleOffArmoredBodyIsClean(originalBodyOutcome, giantOwned.Length));
                 visual &= giantBodyExact;
+                var gorgonOwned = unit.View == null ? new UnityEngine.Object[0] : ExpandedSummoningPteranodonViewPatch.CaptureGorgonOwnedResources(unit.View);
+                bool magicalBodyExact = !Sprint26PersistenceScope || receipt.Key != "gorgon" || (moduleOn
+                    ? originalBodyOutcome.StartsWith("visual:attached;", StringComparison.Ordinal) && gorgonOwned.Length >= 2
+                    : ExpandedSummoningRosterPersistencePolicy.ModuleOffArmoredBodyIsClean(originalBodyOutcome, gorgonOwned.Length));
+                visual &= magicalBodyExact;
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
+                        ["expectedProfileForModule"] = moduleExpectedProfile, ["profileSerializedEqual"] = profileSame, ["visualExact"] = visual,
                         ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
                         ["variantOwnership"] = variantOwner, ["rimLookupAbsent"] = rimAbsent, ["rimControllerState"] = rimState,
@@ -481,7 +536,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             theropodOwned.Length,
                         ["theropodBodyExact"] = theropodBodyExact,
                         ["giantBodyPrivateResourceCount"] = giantOwned.Length,
-                        ["giantBodyExact"] = giantBodyExact,
+                        ["giantBodyExact"] = giantBodyExact, ["magicalBeastBodyExact"] = magicalBodyExact, ["gorgonPrivateObjects"] = gorgonOwned.Length,
                         ["giantFactsAbilitiesExact"] = giantFactsAbilitiesExact,
                         ["rendererMaterials"] = new JArray(unit.View == null ? new string[0] :
                             unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)
@@ -501,6 +556,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint24PersistenceScope)
                 foreach (int step in Sprint24PersistentStates(caster,
                     units, prepare, verify)) yield return step;
+            if (Sprint26PersistenceScope)
+                foreach (int step in Sprint26PersistentStates(caster, units, prepare, verify)) yield return step;
             if (verify) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,
@@ -516,6 +573,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private void CompleteRosterPersistence(string status, string warning)
         {
             if (_rosterPersistencePause.HasValue) { Game.Instance.IsPaused = _rosterPersistencePause.Value; _rosterPersistencePause=null; }
+            _sprint26PersistenceRolls?.Dispose(); _sprint26PersistenceRolls = null;
             var evidence = _workingSaveSmoke.Stop();
             bool writes = _request.Scenario != RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent &&
                 !(_request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup && RosterResourceReport.DiagnosisOnly);

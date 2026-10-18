@@ -173,11 +173,13 @@ $expected = @(
     'disposable-expanded-summoning-sprint23-native-review',
     'disposable-expanded-summoning-sprint24-native-review',
     'disposable-expanded-summoning-sprint25-native-review',
+    'disposable-expanded-summoning-sprint26-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
     'observe-expanded-summoning-sprint22-contracts',
     'observe-expanded-summoning-sprint24-theropod-census',
+    'observe-expanded-summoning-sprint26-native-inputs',
     'observe-alternate-summoning-sources',
     'observe-alternate-summoning-blocked-family',
     'disposable-alternate-summoning-contracts',
@@ -861,6 +863,16 @@ foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint25-review-rejects-extra-missing-or-unimplemented-phase'
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
+$sprint26ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint26-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+foreach($phase in @('rtwp-foundation','turn-based-commands','gorgon-breath-rtwp','gorgon-breath-turn-based','bulette-leap-rtwp','bulette-leap-turn-based','rtwp-ai','routes','visual-lifecycle')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint26ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint26-review-admits-$phase"
+    $sprint26Request = New-KmgRuntimeRequest @sprint26ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint26-review-request-test')
+    Assert-True ($sprint26Request.parameters.reviewPhase -ceq $phase) "sprint26-phase-serialized-$phase"
+}
+foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}, @{reviewPhase='rtwp-foundation';saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint26ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint26-review-rejects-extra-missing-or-unimplemented-phase'
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint26ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint26-review-requires-exit'
 $sprint24ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint24-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 foreach ($phase in @(
     'rtwp-foundation',

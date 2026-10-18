@@ -101,7 +101,9 @@ namespace KingmakerGunslinger.Summoning
                 // unchanged; the guarded census must still confirm the rest
                 // and capture whatever rest, bind and contact facts are
                 // missing before any geometry is authored.
-                "brachiosaurus|028cc6f46e7998f46855a33ffde89567|0"
+                "brachiosaurus|028cc6f46e7998f46855a33ffde89567|0",
+                "gorgon|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
+                "bulette|18fa241bd1afd77438564ec92614f7f1|0"
             });
         }
 

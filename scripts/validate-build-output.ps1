@@ -34,6 +34,8 @@ $requiredFiles = @(
     'assets\flying-animals\giant-wasp-albedo.png',
     'assets\flying-animals\stirge-mesh.json',
     'assets\flying-animals\stirge-albedo.png',
+    'assets\ungulates\gorgon-mesh.json',
+    'assets\ungulates\gorgon-albedo.png',
     'assets\ungulates\aurochs-mesh.json',
     'assets\ungulates\aurochs-albedo.png',
     'assets\ungulates\bison-mesh.json',
@@ -115,7 +117,7 @@ foreach ($name in @('firearm-monogram-rifle','firearm-monogram-revolver')) {
 }
 $summonManifest = Get-Content -LiteralPath (Join-Path $repositoryRoot `
     'assets\game\icons\expanded-summoning\icon-manifest.json') -Raw | ConvertFrom-Json
-if ($summonManifest.count -ne 120 -or @($summonManifest.icons).Count -ne 120) {
+if ($summonManifest.count -ne 122 -or @($summonManifest.icons).Count -ne 122) {
     throw 'Expanded Summoning runtime icon manifest is malformed.'
 }
 $requiredFiles += 'assets\icons\expanded-summoning\icon-manifest.json'
@@ -149,6 +151,8 @@ $allowedRelativePaths = @{
     'assets\flying-animals\giant-wasp-albedo.png' = $true
     'assets\flying-animals\stirge-mesh.json' = $true
     'assets\flying-animals\stirge-albedo.png' = $true
+    'assets\ungulates\gorgon-mesh.json' = $true
+    'assets\ungulates\gorgon-albedo.png' = $true
     'assets\ungulates\aurochs-mesh.json' = $true
     'assets\ungulates\aurochs-albedo.png' = $true
     'assets\ungulates\bison-mesh.json' = $true

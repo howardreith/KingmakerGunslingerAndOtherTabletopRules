@@ -35,7 +35,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(89 + KingmakerGunslinger.Acquisition
                     .ProgressionWeaponCatalog.NewBlueprintCount +
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
-                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount,
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
+                    Sprint26MagicalBeastRules.AppendedWeaponIdentityCount,
                 expected.Length,
                 "The active custom-weapon baseline changed without an audit update.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -101,7 +102,8 @@ namespace KingmakerGunslinger.DomainTests
             // blueprint carries at twenty-foot reach.
             Assertions.Equal(29 +
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
-                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount,
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
+                    Sprint26MagicalBeastRules.AppendedWeaponIdentityCount,
                 audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion"),
                 "Expanded Summoning weapon scope changed.");
