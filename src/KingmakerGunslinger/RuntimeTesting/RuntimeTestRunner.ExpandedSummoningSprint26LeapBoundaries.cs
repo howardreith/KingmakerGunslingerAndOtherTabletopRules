@@ -158,26 +158,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                 flanker.CombatState.AttackOfOpportunityCount=flanker.CombatState.AttackOfOpportunityPerRound;
                 // This exact native environment dependency acquires/disengages
                 // through its own geometry; no attack is requested by this fixture.
-                for(int i=0;i<25;i++){tick.Invoke(controller,new object[]{flanker});yield return 0;}
+                Game.Instance.Player.UpdateIsInCombat();
+                new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+                new Kingmaker.Controllers.Combat.UnitCombatPrepareController().Tick();
+                int readyFrames=0;DateTime readyDeadline=DateTime.UtcNow.AddSeconds(10);
+                while(!flanker.CombatState.CanActInCombat&&readyFrames++<1500&&DateTime.UtcNow<readyDeadline){
+                    tick.Invoke(controller,new object[]{flanker});yield return 0;
+                }
+                // These flags belong to fixture placement, not the subsequent
+                // real movement. Reuse the released disposable-responder setup.
+                flanker.CombatState.PreventAttacksOfOpporunityNextFrame=false;
+                owner.CombatState.PreventAttacksOfOpporunityNextFrame=false;
+                for(int i=0;i<5;i++){tick.Invoke(controller,new object[]{flanker});yield return 0;}
                 bool engaged=flanker.CombatState.EngagedUnits.Contains(owner);
                 bool available=flanker.CombatState.CanAttackOfOpportunity;
                 bool chargeAvailable=data.CanTarget(selected);
-                Sprint25Check("leap-opportunity-preconditions",engaged&&available&&chargeAvailable,
+                int beforeSimulation=flanker.CombatState.AttackOfOpportunityCount;
+                // Native simulate=true issues no command or budget debit.
+                bool reactionEligible=flanker.CombatState.AttackOfOpportunity(owner,true);
+                bool disengageEligible=flanker.CombatState.ShouldAttackOnDisengage(owner,true);
+                bool simulationReadOnly=beforeSimulation==flanker.CombatState.AttackOfOpportunityCount;
+                Func<string,JObject> state=stage=>new JObject{["stage"]=stage,["frame"]=Time.frameCount,
+                    ["ownerPosition"]=SurveyVector(owner.Position),["flankerPosition"]=SurveyVector(flanker.Position),
+                    ["engaged"]=flanker.CombatState.EngagedUnits.Contains(owner),["canActInCombat"]=flanker.CombatState.CanActInCombat,
+                    ["waitingInitiative"]=flanker.CombatState.IsWaitingInitiative,["initiativeCooldown"]=flanker.CombatState.Cooldown.Initiative,
+                    ["flankerHasMotion"]=flanker.HasMotionThisTick,["ownerPreventsReaction"]=owner.CombatState.PreventAttacksOfOpporunityNextFrame,
+                    ["flankerPreventsReaction"]=flanker.CombatState.PreventAttacksOfOpporunityNextFrame,
+                    ["ownerForceMoveProvoke"]=owner.Get<Kingmaker.UnitLogic.Parts.UnitPartForceMove>()?.ProvokeAttackOfOpportunity,
+                    ["opportunityCount"]=flanker.CombatState.AttackOfOpportunityCount};
+                var movementStates=new JArray{state("before-charge")};
+                Sprint25Check("leap-opportunity-preconditions",engaged&&available&&chargeAvailable&&reactionEligible&&disengageEligible&&simulationReadOnly,
                     new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,
                         ["engaged"]=engaged,["opportunityAvailable"]=available,["chargeAvailable"]=chargeAvailable,
+                        ["nativeReactionEligible"]=reactionEligible,["nativeDisengageEligible"]=disengageEligible,["simulationReadOnly"]=simulationReadOnly,
+                        ["readinessFrames"]=readyFrames,["nativeState"]=state("ready"),
                         ["count"]=flanker.CombatState.AttackOfOpportunityCount,["canAct"]=flanker.Descriptor.State.CanAct,
                         ["sleeping"]=flanker.IsSleeping,["awakePool"]=Game.Instance.State.AwakeUnits.Contains(flanker),
                         ["enemy"]=flanker.IsEnemy(owner),["group"]=flanker.GroupId,["ownerGroup"]=owner.GroupId,["primaryWeapon"]=flanker.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
                         ["engagedIds"]=new JArray(flanker.CombatState.EngagedUnits.Select(v=>v.UniqueId)),["protectedActorsOutsideThreat"]=parked},
                     "Real native engagement, opportunity budget and legal charge are obtained outside every protected actor before the production command.");
-                if(!engaged||!available||!chargeAvailable)yield break;
+                if(!engaged||!available||!chargeAvailable||!reactionEligible||!disengageEligible||!simulationReadOnly)yield break;
                 EventBus.Subscribe(observer);
                 using(var seed=new Sprint26JumpSeed(owner,20))using(var queued=new Sprint26QueueTrace(owner)){
                     var command=new UnitUseAbility(data,selected);owner.Commands.Run(command);
-                    int frames=0;DateTime deadline=DateTime.UtcNow.AddSeconds(30);
+                    int frames=0;bool movingSample=false,disengagedSample=false;DateTime deadline=DateTime.UtcNow.AddSeconds(30);
                     while(frames++<3500&&DateTime.UtcNow<deadline){
                         if(command.ExecutionProcess!=null&&!command.ExecutionProcess.IsEnded)command.ExecutionProcess.Tick();
                         tick.Invoke(controller,new object[]{flanker});yield return 0;
+                        if(!movingSample&&Vector3.Distance(start,owner.Position)>.1f){movementStates.Add(state("moving"));movingSample=true;}
+                        if(!disengagedSample&&!flanker.CombatState.EngagedUnits.Contains(owner)){movementStates.Add(state("disengaged"));disengagedSample=true;}
                         if(command.IsFinished&&queued.Commands.Count>0&&queued.Commands.All(v=>v.IsFinished)&&observer.WeaponAttacks.Count>0)break;
                     }
                     var attacks=observer.WeaponAttacks.Where(v=>v.IsAttackOfOpportunity).ToArray();
@@ -185,6 +214,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         queued.Commands.Count==1&&BuletteLeapRuntime.Observation(queued.Commands[0])!=null,
                         new JObject{["owner"]=owner.UniqueId,["flanker"]=flanker.UniqueId,["route"]=route,["engagedBefore"]=engaged,["opportunityAvailableBefore"]=available,
                             ["start"]=SurveyVector(start),["landing"]=SurveyVector(owner.Position),["flankerPosition"]=SurveyVector(flanker.Position),
+                            ["movementStates"]=movementStates,["finalNativeState"]=state("after-charge"),
                             ["attacks"]=observer.WeaponAttacks.Count,["nativeOpportunityAttacks"]=attacks.Length,["opportunitiesAfter"]=flanker.CombatState.AttackOfOpportunityCount,
                             ["fixtureAttackCommands"]=0,["onlyExactFlankerEngagementTick"]=true,["protectedActorsOutsideThreat"]=parked},
                         "Legal real Leap movement leaves an actual disposable enemy's native threat, provoking its native opportunity command without teleporting, suppressing opportunity rules or fixture attacks.");

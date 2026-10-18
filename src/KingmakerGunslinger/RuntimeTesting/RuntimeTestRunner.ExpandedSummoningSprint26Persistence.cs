@@ -5,6 +5,8 @@ using System.Reflection;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Blueprints.Facts;
+using Harmony12;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -34,6 +36,85 @@ namespace KingmakerGunslinger.RuntimeTesting
 
     internal sealed partial class RuntimeTestRunner
     {
+        private Sprint26StateLoadTrace _sprint26StateTrace;
+        private void StartSprint26StateTrace()
+        {
+            if (Sprint26PersistenceScope) _sprint26StateTrace=new Sprint26StateLoadTrace(_context.Harmony);
+        }
+        private void StopSprint26StateTrace(RuntimeTestResult result)
+        {
+            if(_sprint26StateTrace==null)return;
+            try {
+                _sprint26StateTrace.Dispose();
+                string path=System.IO.Path.Combine(_request.EvidenceDirectory,"sprint26-state-load-trace.json");
+                RuntimeTestResultWriter.WriteAtomic(path,_sprint26StateTrace.Rows.ToString(Newtonsoft.Json.Formatting.Indented));
+                if(result.EvidenceFiles==null)result.EvidenceFiles=new List<string>();result.EvidenceFiles.Add(path);
+                if(_sprint26StateTrace.Errors!=0)throw new InvalidOperationException("Sprint26 state trace errors="+_sprint26StateTrace.Errors);
+            }catch(Exception e){result.Status=RuntimeTestStatuses.Fail;result.Diagnostics.Add("Sprint26 state observer: "+e);}
+            finally{_sprint26StateTrace=null;}
+        }
+        // Request-local read-only attribution, armed before the native cold load.
+        // No buff, life state, save, condition counter or roll is changed here.
+        private sealed class Sprint26StateLoadTrace : IDisposable
+        {
+            private static Sprint26StateLoadTrace _active;
+            private readonly HarmonyInstance _harmony;
+            private readonly List<KeyValuePair<MethodInfo,MethodInfo>> _patches=new List<KeyValuePair<MethodInfo,MethodInfo>>();
+            internal readonly JArray Rows=new JArray();
+            internal int Errors;
+            internal Sprint26StateLoadTrace(HarmonyInstance harmony)
+            {
+                if(_active!=null)throw new InvalidOperationException("Sprint26 state observer already active.");
+                _active=this;_harmony=harmony;
+                try{
+                    Patch(typeof(Buff).GetMethod("PostLoad"),"BeforeBuffLoad","AfterBuffLoad");
+                    Patch(typeof(Buff).GetMethod("PreSave"),null,"AfterBuffSave");
+                    Patch(typeof(FactCollection).GetMethod("RemoveFact",new[]{typeof(Fact)}),"BeforeRemoval",null);
+                    Patch(typeof(UnitDescriptor).GetMethod("PostLoad"),"BeforeUnitLoad","AfterUnitLoad");
+                    Patch(typeof(UnitDescriptor).GetMethod("Resurrect",BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic,null,new[]{typeof(float),typeof(bool),typeof(bool)},null),"BeforeResurrection",null);
+                }catch{Dispose();throw;}
+            }
+            private void Patch(MethodInfo original,string prefix,string postfix)
+            {
+                if(original==null)throw new MissingMethodException("Sprint26 exact native observer seam missing.");
+                foreach(string name in new[]{prefix,postfix}.Where(v=>v!=null)){
+                    var method=typeof(Sprint26StateLoadTrace).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic);
+                    _harmony.Patch(original,name==prefix?new HarmonyMethod(method):null,name==postfix?new HarmonyMethod(method):null,null);
+                    _patches.Add(new KeyValuePair<MethodInfo,MethodInfo>(original,method));
+                }
+            }
+            private static bool Own(Buff buff){return buff?.Blueprint.AssetGuid==Sprint26MagicalBeastRules.PetrificationGuid;}
+            private static Buff Stone(UnitDescriptor unit){return unit?.Buffs?.Enumerable.FirstOrDefault(Own);}
+            private static bool Victim(UnitDescriptor unit){return unit?.Unit?.Get<UnitPartSprint26StateReceipt>()!=null||Stone(unit)!=null;}
+            private static void BeforeBuffLoad(Buff __instance){if(Own(__instance))_active?.Capture("buff-load-before",__instance.Owner,__instance,true);}
+            private static void AfterBuffLoad(Buff __instance){if(Own(__instance))_active?.Capture("buff-load-after",__instance.Owner,__instance,false);}
+            private static void AfterBuffSave(Buff __instance){if(Own(__instance))_active?.Capture("buff-save-after",__instance.Owner,__instance,true);}
+            private static void BeforeRemoval(Fact __0){var b=__0 as Buff;if(Own(b))_active?.Capture("buff-remove",b.Owner,b,false);}
+            private static void BeforeUnitLoad(UnitDescriptor __instance){if(Victim(__instance))_active?.Capture("unit-load-before",__instance,Stone(__instance),false);}
+            private static void AfterUnitLoad(UnitDescriptor __instance){if(Victim(__instance))_active?.Capture("unit-load-after",__instance,Stone(__instance),false);}
+            private static void BeforeResurrection(UnitDescriptor __instance){if(Victim(__instance))_active?.Capture("native-resurrect",__instance,Stone(__instance),false);}
+            private void Capture(string stage,UnitDescriptor owner,Buff buff,bool raw)
+            {
+                try{
+                    if(Rows.Count>=128){Errors++;return;}
+                    var r=new JObject{["stage"]=stage,["frame"]=Time.frameCount,["unit"]=owner?.Unit?.UniqueId,
+                        ["dead"]=owner?.State.IsDead,["finallyDead"]=owner?.State.IsFinallyDead,["damage"]=owner?.Damage,
+                        ["conditionCount"]=owner==null?(int?)null:GorgonPetrificationLife.ConditionCount(owner.State),
+                        ["stayOnDeath"]=buff?.Blueprint.StayOnDeath,["removeOnResurrect"]=buff?.Blueprint.RemoveOnResurrect,
+                        ["contextCaster"]=buff?.MaybeContext?.MaybeCaster?.UniqueId,
+                        ["stone"]=buff!=null&&(stage=="buff-load-after"||stage=="buff-save-after")?Sprint26SavedStone(owner.Unit,buff.Blueprint):null,
+                        ["stack"]=Environment.StackTrace};
+                    if(raw&&buff!=null){
+                        var field=typeof(Fact).GetField("m_ComponentsData",BindingFlags.Instance|BindingFlags.NonPublic);
+                        var data=field.GetValue(buff) as System.Collections.IEnumerable;
+                        r["savedComponents"]=data==null?JValue.CreateNull():JToken.FromObject(data);
+                    }
+                    Rows.Add(r);
+                }catch(Exception e){Errors++;Rows.Add(new JObject{["stage"]=stage,["observerError"]=e.ToString()});}
+            }
+            public void Dispose(){foreach(var p in _patches)_harmony.Unpatch(p.Key,p.Value);_patches.Clear();if(ReferenceEquals(_active,this))_active=null;}
+        }
+
         private const string Sprint26StateScope="KMG_Sprint26_MagicalBeast_State_v1";
         private Sprint26PersistenceRolls _sprint26PersistenceRolls;
         private static UnitEntityData[] Sprint26StateActors(UnitEntityData caster)
