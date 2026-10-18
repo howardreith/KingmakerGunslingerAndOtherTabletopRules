@@ -248,6 +248,11 @@ foreach ($kind in @('brachiosaurus','elephant')) {
     Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-mesh.json") -Destination $giantBodyDestination
     Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-albedo.png") -Destination $giantBodyDestination
 }
+$griffonDestination=Join-Path $modDirectory 'assets\sprint27-griffon'
+New-Item -ItemType Directory -Path $griffonDestination -Force | Out-Null
+foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\sprint27-griffon\$part") -Destination $griffonDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -269,7 +274,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
 # the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
 # v0.0.160 notes: six files. The optional bank/manifest remain a two-file delta.
-$basePackageFileCount = 384
+$basePackageFileCount = 384 + 3 # Griffon medallion and original mesh/albedo; release notes are added at the release stage.
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

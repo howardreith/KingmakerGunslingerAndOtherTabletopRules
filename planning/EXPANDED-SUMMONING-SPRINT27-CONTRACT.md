@@ -59,9 +59,11 @@ Intake found no Griffon source/export or model in the existing catalogs.
 One built-in image_gen call supplied actual Gorgon/Eagle family pixels and
 produced the pinned original recorded in sprint27-generation.json. Export uses
 tools/New-ExpandedSummoningIcons.ps1. HumanReview: NOT_PERFORMED_NONBLOCKING.
-Model donor/attachment feasibility remains unmeasured. Choose one low-detail
-prototype; preserve native animation/fader/material ownership, rollback, bounded
-cache/private ownership and safe fallback. Shipped success must show the actual
+Fresh guarded research proved no exact native Griffon and one57-bone Manticore
+renderer with jaw/legs/tail/wings and native attack events. One original low-detail
+prototype is integrated through existing attachment/ownership/rollback machinery.
+Static read-only review found no functional recognizability blocker; native body
+and combat behavior remain unqualified. Shipped success must show the actual
 hybrid body, never donor fallback. No proprietary art redistribution.
 
 ## Qualification and stop

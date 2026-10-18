@@ -7,7 +7,33 @@
   "productBranch": "codex/expanded-summoning-sprint27-griffon",
   "recordsBranch": "codex/expanded-summoning-sprint27-release-records",
   "qualifiedArtifact": null,
-  "nativeExecutions": [],
+  "nativeExecutions": [
+    {
+      "scope": "research metadata only; no gameplay/body qualification",
+      "candidateKind": "development",
+      "source": "7b546260df8a1fa91d44abb1e0ff4d32b7a7ae6b",
+      "sourceStateSha256": "c670adcbe39a5757dbed19520faee253cf53cdeb5a9a66151940d36f5eaac415",
+      "zipSha256": "420691cbfcdf7c68066422d2a1e4b48598633732286ea1769616438e38f4f27b",
+      "dllSha256": "03e405e5476380f39ab3ee74502325180423b6e760f848aa81620345a951fb79",
+      "mvid": "fee9f435-42c1-4a72-9044-9ed9c7c91f4d",
+      "runId": "20261018T1908024534978Z-8e67ec8d62a942138635653896862dbe",
+      "transactionRunId": "compat-20261018T190610Z-27192acb3e3a",
+      "result": "PASS",
+      "nativeMilliseconds": 67376,
+      "outerSeconds": 208.8124718,
+      "rawResultSha256": "6388b0eea040d970dea73988b576562869862445ba26fcecb0d34ca5f5e8cb5a",
+      "captureSha256": "3a5707417402fec2bddb6c1c4e55ff27f53f7e778c7bb8d2e314bb94533022ad",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    }
+  ],
   "checks": [
     {
       "scope": "source compilation and focused scenario wiring",
@@ -28,6 +54,50 @@
       "command": "scripts/Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot C:/Dev/KingmakerGunslingerLab/wt/s27/scripts",
       "result": "PASS",
       "assertions": 203
+    },
+    {
+      "scope": "production profile/rake/body/early observer compilation and focused rules",
+      "result": "PASS",
+      "compileSeconds": 17,
+      "testSeconds": 4.2,
+      "tests": 6,
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
+    },
+    {
+      "scope": "append-only identities",
+      "result": "PASS",
+      "preservedPrefix": 6961,
+      "appended": 29,
+      "foundation": 2202,
+      "adapters": 3788,
+      "total": 6990
+    },
+    {
+      "scope": "icon authoring/export/catalog",
+      "result": "PASS",
+      "priorRecordsUnchanged": 122,
+      "newConcepts": 1,
+      "griffonConsumers": 8,
+      "uiSizes": [
+        32,
+        48,
+        64
+      ]
+    },
+    {
+      "scope": "read-only actual mesh functional review",
+      "result": "NO_STATIC_FUNCTIONAL_BLOCKER",
+      "nativeProof": false,
+      "vertices": 2930,
+      "triangles": 5560,
+      "meshSha256": "4694292d3cc275590fddade1e68169968884185573cc172455daf8b875e048ac",
+      "albedoSha256": "997a14e3fc55a642136c2bf33612c650c36dd3f4153f5abfb7d8642f0912ec78"
+    },
+    {
+      "scope": "new Griffon exact runtime boundary and unchanged neighbors",
+      "result": "PASS",
+      "assertions": 206,
+      "command": "scripts/Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot C:/Dev/KingmakerGunslingerLab/wt/s27/scripts"
     }
   ],
   "policyChange": {
@@ -38,10 +108,15 @@
   },
   "failuresRetained": [
     "Unconfigured new-worktree domain compiler could not resolve Newtonsoft; local private-reference props configured, same focused check passed.",
-    "Orchestration test default ScriptRoot was empty; explicit supported ScriptRoot passed."
+    "Orchestration test default ScriptRoot was empty; explicit supported ScriptRoot passed.",
+    "Manifest generator current parsed-creature and runtime donor-name invariants needed scoped Griffon extension; identities allocated once and preserved.",
+    "First model render used relative texture input; same mesh rendered with absolute paths.",
+    "New domain test used nonexistent Create factory; corrected to actual Build and6 focused checks passed.",
+    "Observer attempted read-only IsFullAttack setter; corrected to verified ForceFullAttack/IsSingleAttack fields; affected compile passed.",
+    "Readability-sheet Python Pillow unavailable; no dependency installed, installed System.Drawing used."
   ],
-  "bodyStatus": "NOT_IMPLEMENTED",
-  "iconStatus": "ORIGINAL_GENERATED_EXPORT_PENDING",
+  "bodyStatus": "ORIGINAL_INTEGRATED_STATIC_FUNCTIONAL_REVIEW_PASS_NATIVE_PENDING",
+  "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
   "humanReview": "NOT_PERFORMED_NONBLOCKING",
   "sprint28Started": false
 }

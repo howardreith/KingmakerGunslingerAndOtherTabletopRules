@@ -2226,6 +2226,19 @@ namespace KingmakerGunslinger.Summoning
     public sealed class SummonRakeComponent :
         RuleInitiatorLogicComponent<RuleAttackRoll>
     {
+        // Opt-in for the Griffon: no serialized charge state and no Grab carrier.
+        public bool RequireNativeChargeCommand;
+        internal static SummonRakeComponent Find(UnitEntityData owner)
+        {
+            if (owner == null || owner.Descriptor == null) return null;
+            foreach (Buff buff in owner.Descriptor.Buffs.RawFacts.OfType<Buff>())
+            {
+                var live=buff.Components == null ? null : buff.Components.OfType<SummonRakeComponent>().FirstOrDefault();
+                if(live!=null)return live;
+            }
+            return null;
+        }
+
         public override void OnEventAboutToTrigger(RuleAttackRoll evt)
         {
             if (evt == null || Owner == null) return;
@@ -2234,6 +2247,11 @@ namespace KingmakerGunslinger.Summoning
             bool isRakeWeapon = IsRakeWeapon(owner, evt.Weapon);
             bool isCharge = evt.RuleAttackWithWeapon != null &&
                 evt.RuleAttackWithWeapon.IsCharge;
+            if (isCharge && RequireNativeChargeCommand)
+            {
+                var command=owner.Commands == null ? null : owner.Commands.Attack;
+                isCharge=command!=null && command.IsCharge && ReferenceEquals(command.Executor,owner) && ReferenceEquals(command.TargetUnit,evt.Target) && !command.IsFinished;
+            }
             bool heldTargetSinceRoundStart = SummonHoldComponent.IsHeldSinceRoundStart(
                 owner, evt.Target);
             if (ExpandedSummoningSpecialProfiles.ShouldRakeApply(isRakeWeapon,
@@ -2322,7 +2340,9 @@ namespace KingmakerGunslinger.Summoning
                 if (__instance == null || __result == null) return;
                 UnitEntityData owner = __instance.Executor;
                 SummonGrabComponent grab = SummonGrabComponent.Find(owner);
-                if (grab == null) return;
+                SummonRakeComponent rake = SummonRakeComponent.Find(owner);
+                if (grab == null && rake == null) return;
+                int rakeCount = rake != null ? ExpandedSummoningSpecialProfiles.CatRakeSlotCount : grab.RakeLimbCount;
                 UnitEntityData target = __instance.TargetUnit;
                 // One target per mouth: a limb holding or engulfing someone
                 // else is not part of this full attack at all.
@@ -2330,7 +2350,7 @@ namespace KingmakerGunslinger.Summoning
                     IsOccupiedElsewhere(owner, info.Hand, target));
                 if (shut > 0)
                     Record(owner, "mouthsShut=" + shut + ";attacks=" + __result.Count);
-                if (grab.RakeLimbCount <= 0) return;
+                if (rakeCount <= 0) return;
                 bool heldSinceRoundStart = SummonHoldComponent.IsHeldSinceRoundStart(owner, target);
                 if (ExpandedSummoningSpecialProfiles.ShouldRakeApply(true, __instance.IsCharge,
                         heldSinceRoundStart))
@@ -2340,7 +2360,7 @@ namespace KingmakerGunslinger.Summoning
                     return;
                 }
                 int removed = __result.RemoveAll(info => info != null && info.Hand != null &&
-                    SummonLimbs.IsRakeSlot(owner, info.Hand, grab.RakeLimbCount));
+                    SummonLimbs.IsRakeSlot(owner, info.Hand, rakeCount));
                 Record(owner, "removed=" + removed + ";attacks=" + __result.Count);
             }
             catch (Exception)

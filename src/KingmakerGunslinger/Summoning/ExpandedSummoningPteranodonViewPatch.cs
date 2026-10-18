@@ -102,6 +102,7 @@ namespace KingmakerGunslinger.Summoning
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
                 { PteranodonBlueprintName, "pteranodon" },
+                { GriffonVisualPolicy.BlueprintName, GriffonVisualPolicy.Key },
                 { DireBatBlueprintName, "dire-bat" },
                 { EagleBlueprintName, "eagle" },
                 { GiantWaspBlueprintName, "giant-wasp" },
@@ -354,7 +355,14 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
-            if (attachment.VisualKey == "dire-bat")
+            if (attachment.VisualKey == GriffonVisualPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetGriffonVisual(out source,out boneNames,out albedo,out status)) return Fallback(status);
+                if(view.EntityData.Blueprint.AssetGuid!=GriffonVisualPolicy.BlueprintGuid || view.EntityData.Blueprint.Prefab.AssetId!=GriffonVisualPolicy.PrefabGuid)
+                    return "donor-visual:griffon-identity-mismatch";
+            }
+            else if (attachment.VisualKey == "dire-bat")
             {
                 if (!PteranodonAssetRuntime.TryGetDireBatVisual(out source,
                     out boneNames, out albedo))
@@ -500,6 +508,9 @@ namespace KingmakerGunslinger.Summoning
                 donor = donors[0];
             }
 
+            if (attachment.VisualKey == GriffonVisualPolicy.Key &&
+                (donor.name != "manticoreMesh" || donor.bones.Length != 57 || donor.rootBone == null || donor.rootBone.name != "Torso_Lower"))
+                return "donor-visual:griffon-binding-mismatch";
             Transform[] bones;
             Matrix4x4[] bindposes;
             string reason;
@@ -551,7 +562,7 @@ namespace KingmakerGunslinger.Summoning
                                         attachment.VisualKey) ||
                                     TheropodVisualPolicy.Handles(
                                         attachment.VisualKey) ||
-                                    GiantBodyVisualPolicy.Handles(attachment.VisualKey))
+                                    (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
                 mesh.name = visualName;
@@ -685,7 +696,7 @@ namespace KingmakerGunslinger.Summoning
                 if (material != null) rollbackMaterials.Add(material);
                 if (swapped && (attachment.VisualKey == "gorgon" || IsCrocodilian(attachment.VisualKey) ||
                     TheropodVisualPolicy.Handles(attachment.VisualKey) ||
-                    GiantBodyVisualPolicy.Handles(attachment.VisualKey)))
+                    (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
                     foreach (Material candidate in donor.sharedMaterials)
@@ -1071,7 +1082,7 @@ namespace KingmakerGunslinger.Summoning
                     attachment.VisualKey) &&
                  !TheropodVisualPolicy.Handles(
                     attachment.VisualKey) &&
-                 !GiantBodyVisualPolicy.Handles(attachment.VisualKey))) return;
+                 !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
                     ? GiantWaspVisualName

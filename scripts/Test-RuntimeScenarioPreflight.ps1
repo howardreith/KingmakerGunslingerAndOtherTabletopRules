@@ -864,6 +864,16 @@ foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint25-review-rejects-extra-missing-or-unimplemented-phase'
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
+$sprint27ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint27-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+foreach($phase in @('rtwp-foundation','pounce-rtwp','pounce-turn-based')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint27ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint27-review-admits-$phase"
+    $sprint27Request = New-KmgRuntimeRequest @sprint27ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint27-review-request-test')
+    Assert-True ($sprint27Request.parameters.reviewPhase -ceq $phase) "sprint27-phase-serialized-$phase"
+}
+foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='routes'}, @{reviewPhase='rtwp-foundation';saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint27ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint27-review-rejects-extra-missing-or-unimplemented-phase'
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint27ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint27-review-requires-exit'
 $sprint26ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint26-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 foreach($phase in @('rtwp-foundation','turn-based-commands','gorgon-breath-rtwp','gorgon-breath-turn-based','bulette-leap-rtwp','bulette-leap-turn-based','rtwp-ai','routes','visual-lifecycle')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint26ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint26-review-admits-$phase"
