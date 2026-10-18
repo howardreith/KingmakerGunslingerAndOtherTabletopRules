@@ -1,9 +1,37 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "PUBLIC_INVENTORY_OBSERVER_AND_SETTINGS_BOUNDARY_REPAIR_FULL_GATE_NEXT",
+  "status": "RELEASED_STOP",
   "current": {
     "latestCheckpoint": {
+      "released": {
+        "status": "RELEASED_STOP",
+        "tag": "v0.0.159",
+        "stableLatestNonDraftNonPrerelease": true,
+        "productPr": 49,
+        "productMerge": "ae624504a0493e4ed3870783d797e726c774bb64",
+        "testedSource": "d81ac44546997cc6c812ebec51d9fe6cc962a3e4",
+        "sourceFingerprint": "fa7e9e4817151889442fbfd298f6f3dc40eb9fc4e12f9e5a54e5432dfdd2c54f",
+        "zipSha256": "2625a976a16639127b104ceccec5a37e92b591adb9c5756459a33947163ad278",
+        "dllSha256": "49d07e626bcd9613b4b71fffcf8ca567871a53f55ed8b785255d3bacec7c0489",
+        "dllMvid": "bb13331b-6fca-4910-b4cc-62f355f907af",
+        "gate": "PASS2678/2678 unfiltered,exact build/strict380;313.0576032s;2026-10-18T02:57:47.3924517Z; exact archive source-build-d81ac445.",
+        "freshPublic": "PASS all3 inventory/combined-routes/standalone-routes cells948.6521793s;2026-10-18T03:13:46.7507591Z;50 inventory assertions,0 failures;11 roots plus template branches both profiles,actual icons/slot/duration/quantity/cleanup. Native32px sprite capture inspected unaltered.",
+        "freshPublicReceiptSha256": "5ea515bcb82dd61db840cd6832150dfd12a386bccd77cb216833f3eb6317746e",
+        "reuse": "Original cb mechanics/Overrun/body both profiles;082 TB/Cleave;EE5 exact-owner AI;9f ON/OFF cold cleanup/absence with6914 initial prepare; scoped inherited Sprint24. Full original tuples/proof hashes and dependency arguments in public release manifest and pinned qualification ledger; never relabeled as execution on d81.",
+        "publisher": "70 refusals,exact draft preflight and post-merge dry-run PASS. Product merge parents80fe5df6/d81ac445 and tree identity verified. Exact artifact promoted with explicit confirmation; no rebuild.",
+        "qualificationLedgerSha256": "16d7471c924fe3dd1b2d9b05609e3dc100270a22d33102a59bba658a0240d043",
+        "publicReleaseManifestSha256": "9d79646d9d5cb820084be32ed32a84d1309f3a9045068fdc2993f663554d8c2d",
+        "publicDownloadAuditSha256": "a9e4229a15842e30c3da6b2227230a16a1ed15c7998d2e7da2e19630e60367ab",
+        "restorationAuditSha256": "b3c603a84d78b63f0045d470e10ba99294e81594ae6bc0240d1cacf0dfde5496",
+        "restoration": "Final PASS actual current installation/settings/bank/private refs and all118 protected save metadata/hashes; Working cleanSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850. No owned game/lease/runtime staging/backup or permanent candidate deployment. Baseline never loaded/mutated. Steam Offline accepted.",
+        "functionalArt": "Both original meshes visible/usable; actual supplied icon integrated,120 icons/no missing consumers. Source/export bytes preserved. HumanReview NOT_PERFORMED_NONBLOCKING; accepted rough visual backlog only, no further visual R&D.",
+        "finalRecordsBranch": "codex/expanded-summoning-sprint25-release-records",
+        "finalRecordsPr": 57,
+        "finalRecordsKind": "Documentation-only; no tooling/product/package input changes and no rebuild.",
+        "sprint26Started": false,
+        "next": "STOP after final-records PR57 master synchronization. No remaining native/release work."
+      },
       "publicInventoryRepair": {
         "source": "b299c4625757c25f1a4bd6bebfa136b6fabc5c53",
         "sourceFingerprint": "989aa0ef0ab6afaf2fac8244c5de929fb6629dbc350a9cf5722838706ee455f5",
@@ -98,7 +126,7 @@
         "coherentNextObservation": "Request-local entry/exit hooks now capture exact native Did inputs and actual public controller/queue versus scoped controller. Before command dispatch the fixture records its intended service and re-establishes it only if a native mode transition replaced that prerequisite. This does not synthesize a maneuver, knockdown, provocation or attack, and does not bypass UI/cost rules. Controller absence remains a source hypothesis until actual service/callback records establish it. Hooks/subscriptions/references unwind in finally. Compile17.5s,23/23 focused cases1.3s PASS."
       },
       "requestLocalObservation": "2026-10-18T00:13Z: normal master integration committed/pushed as a65f469e7319bc78240ac3b29bcae57d40c240c7. Added bounded exact rider/component/fact/native subscriber/pending/eligibility snapshots before native About, after native resolution before initiator Did, and after callbacks return. All cases exclude independent get-up provocation; duplicate notification probes run only after the real callback consumed its event, never supplying missing first behavior. No production mechanic change. Initial compile caught a local-scope observer variable and was repaired before packaging. Final compile16.6s and23/23 focused cases PASS;70 publisher refusal checks PASS at159.",
-      "asOfUtc": "2026-10-18T02:34:00Z",
+      "asOfUtc": "2026-10-18T03:18:21.4416828Z",
       "sourceBuildCheckpoint": {
         "source": "0825699d9ec8cefb0232c5df8ccc5eaea017be37",
         "sourceFingerprint": "6677ce4fd40ba29a27410c5d681508455d5d51dabb323c4d8a1a638cbae06c3f",
@@ -124,7 +152,7 @@
         "checks": "PASS compile17.5s;73/73 focused cases (2678 registered),domain2.4s; actual hidden source/6916 IDs;19 source refusals;17 real dispatch checks including retained158 visual child and new159 Sprint25;30 icon protection/refusals12.522s. Full new candidate/native not yet run.",
         "impact": "Brachiosaurus/Elephant original payloads/icon and mechanical rules unchanged by master. Fresh functional visuals/resources and Triceratops control cover inherited shared glow/refined control view; native Overrun diagnostic and targeted ON/OFF cold loads remain mandatory. Prior mechanics/AI/Cleave retain original artifact identities with dependency arguments, not relabeled execution."
       },
-      "next": "Finish focused public checks, commit/push one public candidate/full gate, fresh3-cell public inventory/icon/eleven-root batch; then publisher preflight while49 draft,ready/merge,exact stable publication/download/lineage/restoration audit,final-records merge,STOP. Preserve original reused evidence identities; no Sprint26.",
+      "next": "RELEASED_STOP. Final-records synchronization is PR57; no remaining native/release work or Sprint26.",
       "acceptance": "PR49 draft/unmerged; Brachiosaurus hidden. HumanReview NOT_PERFORMED_NONBLOCKING for new giants. Steam Offline Mode accepted; no runtime safety waiver."
     },
     "previousCheckpoint20261017T2109Z": {
@@ -972,7 +1000,7 @@
     ],
     "sprint26Started": false
   },
-  "nextAction": "Freeze public-only candidate/full gate; fresh3-cell public inventory/icon/eleven-root qualification,preflight,merge49,exact stable release/download/lineage/restoration audit,final-records merge,STOP. Hidden mechanics/body/persistence qualified with original identities. Steam Offline accepted; no Sprint26.",
+  "nextAction": "RELEASED_STOP. Final-records synchronization PR57; no further gameplay, runtime, publication or Sprint26 work.",
   "registration": {
     "complete": true,
     "commit": "a7b1481a8bf5caaf290d66d9c3522ecd58d29862",
@@ -1861,8 +1889,8 @@
     "whatItIsNot": "A package passing structural checks is not native qualification. Nothing has been deployed, launched or observed in game."
   },
   "remainingNativeCampaign": {
-    "status": "HIDDEN_MECHANICS_BODY_AND_TARGETED_ON_OFF_PERSISTENCE_PASS; EXACT_PUBLIC_ARTIFACT_QUALIFICATION_REMAINS",
-    "candidateBoundary": "Commit/push public-only visibility/current-total/controlled-roster/release-record changes; one public Sprint candidate. Preserve all original hidden artifacts, including9b55df81 source/build checkpoint. No rebuild per profile.",
+    "status": "COMPLETE_RELEASED_STOP",
+    "candidateBoundary": "Frozen d81ac445 public artifact qualified and published unchanged; actual public assets/tag verified. Original9b55df81 and all later checkpoint identities/history preserved. No rebuild for records.",
     "coverageMap": [
       {
         "required": "Profiles, signed Strength, reach, trample/live DC, feats and RTWP/TB commands",
@@ -1882,7 +1910,7 @@
       {
         "required": "Original bodies/icon, navigation/fallback/private resources/load",
         "observation": "cb fresh original attachment/motion/quantities/death/fault/OFF-ON/private teardown/donor isolation PASS both profiles; captures inspected. E8 registered icon/route proof remains historical.",
-        "missing": "Only exact final public icon/consumer/root checks; affected cold-load original attachment/private teardown/cache accounting now PASS9f."
+        "missing": "None: fresh d81 public icons/consumers/roots PASS; affected cold-load original attachment/private teardown/cache accounting PASS9f with original identity."
       },
       {
         "required": "Targeted prepare/cold-cleanup/fresh-absence ON/OFF",
@@ -1892,12 +1920,12 @@
       {
         "required": "Exact public artifact, merge/stable release/download/restoration/final records",
         "observation": "Existing Sprint25 publisher70 refusal checks, pinned-root/remote/ancestry/sidecar/proof/confirmation guards; approved master80fe5df6 and released158 preserved.",
-        "missing": "After targeted persistence passes, remove ONLY Brach suppression, regenerate/derive counts, one public artifact/full gate, fresh inventory/icon/all11 roots, premerge preflight, merge49, next-free stable patch(expected159,recheck), actual public download audit, final-records merge,STOP."
+        "missing": "None: exact public qualification,preflight/dry-run,product49merge,stable159publication,actual download/hash/content/DLL/MVID/tag lineage and final restoration audit PASS. This final-records PR synchronizes master,thenSTOP."
       }
     ],
     "batches": [
-      "Hidden persistence complete29.09min. New public full candidate then three-cell public inventory/routes batch (planning15-25min plus build; actual duration recorded, restoration has no deadline). Reuse exact public package across supported profile transactions.",
-      "Public boundary/full candidate/fresh three-cell inventory+routes batch, publisher preflight, authorized merge/release/download/restoration audit, final-records branch/PR/master synchronization. No Sprint26."
+      "Complete: targeted persistence29.09min; public candidate313.06s; public3-cell batch15.81min. Full exact restoration completed without deadline interruption.",
+      "RELEASED_STOP; no Sprint26."
     ]
   }
 }
