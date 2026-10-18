@@ -6,7 +6,7 @@ namespace KingmakerGunslinger.Summoning
     {
         internal const int AppendedCreatureCount = 2;
         internal const int AppendedRootCount = 6;
-        internal const int AppendedPrivateIdentityCount = 18;
+        internal const int AppendedPrivateIdentityCount = 19;
         internal const int AppendedCatalogIdentityCount = AppendedCreatureCount + AppendedRootCount + AppendedPrivateIdentityCount;
         internal static bool UsesExactRanks(string key) { return key == "gorgon" || key == "bulette"; }
 
@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.Summoning
             return 0;
         }
 
+        internal const string BreathProjectileGuid = "fa7ec7798c9e475595e79ae419fe6241";
         internal const string PetrificationGuid = "139703f90a8d4929992b783ad0e30bd7";
         internal static bool SuppliesOwnPetrifiedStatus(string buffGuid, bool sameOwner,
             int conditionCount, bool immune)

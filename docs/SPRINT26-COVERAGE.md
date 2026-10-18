@@ -1,3 +1,23 @@
+## Current R14 development checkpoint (2026-10-18)
+
+R13 is retained as FAIL. Both transactions restored their actual intake: mods,
+settings, private references and all 118 saves (content and protected metadata),
+with no owned game or lease remaining. Gorgon baseline staged breath/cure and
+Bulette charge/landing/cancellation/native-donor controls passed their individual
+assertions; neither aggregate is qualification.
+
+- Gorgon RTWP: `20261018T1020108290190Z-c71adc97022f42b7beb46a5f35aa0d71`, `FAIL`, 41 assertions / 188.627s; raw result SHA256 `efa97ab2bd17fa4c4095959ef1f624ca07f907044055fd902e9d6925586a374a`. Failed predicates: sprint26-breath-native-range-wall, sprint26-gorgon-native-boundary-live-hd-con-trample.
+- Bulette RTWP: `20261018T1029419023153Z-871007dada0140a1b9b48f1765d89f99`, `FAIL`, 40 assertions / 159.822s; raw result SHA256 `05be9945ccd0879bce87a06cd02cea0a7ed8ad42f3485cd0604be0792d79c82e`. Failed predicates: sprint26-leap-opportunity-preconditions, sprint26-execution.
+
+R14 adds one private jaw-anchored cone projectile (45 appended identities total,
+19 private; released 6,916-entry prefix unchanged). Public roots remain withheld.
+The request-local wall fixture now uses a real native FogOfWarBlocker; the DC
+reader records live racial HD, Constitution, native bonuses and enemy difficulty;
+the opportunity flanker obtains its own native group before hostile engagement.
+All original scene victims are explicitly excluded from cone experiment lanes.
+Production compilation PASS (17.6s), eight named Sprint26 domain tests PASS (4.3s).
+Fresh affected native evidence remains required. No release qualification claimed.
+
 # Sprint26 - implementation checkpoint
 
 Status: IMPLEMENTING / WITHHELD. Foundation gameplay proof is partial; no complete

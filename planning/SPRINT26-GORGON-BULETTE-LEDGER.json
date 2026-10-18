@@ -371,6 +371,14 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.Gorgon.BreathProjectile",
+      "guid": "fa7ec7798c9e475595e79ae419fe6241",
+      "plannedType": "BlueprintProjectile",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Private native cone visual with an exact Gorgon jaw origin; native donor and other consumers remain unchanged."
     }
   ],
   "nativeQualification": "NOT_PERFORMED",

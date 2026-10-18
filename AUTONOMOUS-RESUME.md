@@ -17,7 +17,11 @@ current evidence and retained failures are in docs/SPRINT26-COVERAGE.md.
 Exactly110 registered creatures /1,102 placements. Only Gorgon and Bulette are
 withheld. Current public surface:1,096 generated placements +29 retained native
 wrappers =1,125 visible choices. Their six untemplated roots will expose1,131.
-The exact released6,916-entry identity prefix is intact with44 appended entries.
+The exact released6,916-entry identity prefix is intact with45 appended entries.
+R14 narrows the remaining native experiments: explicit jaw projectile, native
+wall fixture, complete DC inputs and separate hostile opportunity group. R13
+aggregate failures are preserved in the coverage map. Neither creature is yet
+qualified; continue affected runs, strict candidate/persistence and publication.
 Both painted medallions and the Leap emblem are integrated. Gorgon uses original
 Horse-frame geometry; Bulette uses the exact normal adult native body. Actual
 native frames show both visible/selectable. Gorgon's rough proportions, plates,

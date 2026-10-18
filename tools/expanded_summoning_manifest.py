@@ -657,8 +657,9 @@ def planned():
         ("KMG.Summoning.Special.Bulette.Leap", "BlueprintAbility"),
         ("KMG.Summoning.Special.Bulette.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.Bulette.LeapAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Special.Gorgon.BreathProjectile", "BlueprintProjectile"),
     ))
-    if len(rows) != 2188 or len({symbol for symbol, _ in rows}) != 2188:
+    if len(rows) != 2189 or len({symbol for symbol, _ in rows}) != 2189:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
