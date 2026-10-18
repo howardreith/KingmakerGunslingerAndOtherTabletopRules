@@ -1,67 +1,77 @@
 # Sprint26 current coverage
 
-## Controlling state: IMPLEMENTING_WITHHELD / R21 observer checkpoint
+## Controlling state: IMPLEMENTING_WITHHELD / R22 observer checkpoint
 
-Continue the full authorized campaign through PR58, exact-byte stable promotion,
-public downloads/restoration and final records merge. STOP before Sprint27.
-No product merge, qualified public candidate or release. Fixed source/build/
-native/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s26.
+Continue the authorized full campaign through product PR58, exact-byte stable
+promotion, public downloads/restoration and final records merge. STOP before
+Sprint27. No product merge, qualified public candidate or release. Fixed root:
+C:/Dev/KingmakerGunslingerLab/wt/s26 for source/build/native/promotion.
 
-Released 6,916 identities intact; 45 append-only identities. Registered 110
-creatures, Monster96/545, Nature97/557, 1,102 placements. Current public:
-1,096 roots + 29 wrappers = 1,125 choices; only Gorgon/Bulette withheld; final1,131.
+Released6,916 identities intact;45 appended. Registered110 creatures,
+Monster96/545, Nature97/557,1,102 placements. Current public1,096 generated
+placements +29 wrappers =1,125 choices; only two keys withheld; final1,131.
 
-## Retained exact R20 artifact
+## Latest exact retained artifact
 
-Source946fa668fecc3e63d652e572b4f08d32897e17cd; strict Sprint PASS378.5016122s,
-all2,687 tests, zero failures, exact386 files. ZIP
-803c4b659b21a54477a289aa96775e7f2aafdc7b7b926253bd543c5c7b8d03aa; DLL
-1258e9fb04b014580148d9a36acb9eedea678d35d0624fcc55933fd326569e1d;
-MVID178bb16a-2dae-4849-b34e-53f62ccc4cc4; fingerprint
-8d03fb291981b79c3919fdf4a511c51d8eed70d0b678709ea594fa9318392e92.
-Archived byte-exact (165 files) under artifacts/sprint26-strict-hidden-r20.
-Incomplete hidden qualification: never promote these bytes.
+R21b source00b3be846ff2bce63e0c8b1a55fb3df490fb3587; strict Sprint PASS
+371.0712614s, all2,687 tests/zero failures, exact386 files. ZIP
+f74b3ff8a2f304eab2c93c1462cae4762adc002509b3c4d57d5911af21761c1c;
+DLL253b04a7e3bb1b44d12491fb9588ad7d9e3cf3a56e5240999256e776d6a12763;
+MVIDfe771045-42ec-457f-b46b-1e7ee8f0e3c3; fingerprint
+483d45bed7a1c8558a4717f4ebfa0a4ea6c87515f958f4a5cca51479805bab93.
+Archived byte-exact,165 files, artifacts/sprint26-strict-hidden-r21b.
+Incomplete hidden coverage: these bytes cannot be promoted.
 
 | Coverage | Actual proof / remaining work |
 | --- | --- |
-| Profiles, attack roles, skills, signed/live damage/reach | R20 PASS28 including released Elephant; per-strike PA-off precondition corrected |
-| Gorgon RTWP/TB | R19 PASS41 including actual native permanent cure; R17 TB PASS19; affected observer-clock reconciliation/fresh checks pending |
-| Bulette Leap | R18 TB PASS16. R20 RTWP41/42; parent finishes and real opportunity occurs, but native child is ordinary. Fresh timing/queue experiment required |
-| Targeted persistence | R20 ON prepare/recovery-cleanup/absence and second prepare PASS. OFF stone/cooldown/recovery PASS, whole stage FAIL due only reach profile expectation and no-save consequence. Fresh corrected OFF cleanup/absence required |
-| Bodies/icons/lifecycle/cache/donor | 19a2b61a PASS38; R19 real mouth/body pixels inspected; final public presentation/reuse justification pending |
+| Profiles/roles/skills/signed/live damage/reach | R20 PASS28 including released Elephant; dependency reconciliation pending |
+| Gorgon RTWP/TB | R19 PASS41 incl native permanent cure; R17 TB PASS19; affected clock checks/reuse pending |
+| Bulette Leap | R18 TB PASS16. R21b RTWP41/42: one native opportunity, finished parent, but early ordinary fallback; native iterator attribution pending |
+| Targeted persistence | R20 ON prepare/recovery-cleanup/absence and second prepare PASS. R21b OFF state/recovery PASS, profile comparisons FAIL from JSON null representation. No cleanup save/final absence; fresh corrected two-stage remainder pending |
+| Bodies/icons/lifecycle/cache/donor | 19a2b61a lifecycle38 PASS; R19 actual Gorgon mouth/body pixels inspected; final public presentation/reuse pending |
 | Exact-owner AI / ordinary TB | 19a2b61a AI16/TB20 PASS; affected clock checks pending |
-| Current high-risk combined | Bounded affected phases pending; no historical full matrix selected |
-| Six public roots/slots/quantity/duration/alignment | Final public source/artifact pending |
-| Publisher / full public gate | Refusal/dispatch tests pass; final ledger, preflight/dry-run, merge/promotion/public downloads remain pending |
+| Current highest-risk combined | Bounded affected checks pending; no old full matrix selected |
+| Six public roots/slots/quantity/duration/alignment | Pending final public source/package |
+| Publisher / final public complete gate | Refusal/dispatch checks PASS; qualified ledger/preflight/dry-run/merge/promotion/public downloads pending |
 
-R20 persistence batch1803.855s stops after the OFF profile failures. Every other
-profile field matches: only module-gated reach is5->2 Gorgon and10->5 Bulette.
-OFF conditions/DC/source loss/cooldown/recovery and fixture actor teardown pass,
-but no cleanup save or fresh absence is claimed. Exact prepared disposable
-snapshot SHA f002d9f25d8d94428e465dbfb2ecb7dcc759552242c0e3ca9604bad6b332ea1e
-is preserved for the guarded two-stage rerun; today's actual Working is backed
-up/restored separately. Actual installation/settings/private references and
-all118 saves/content/protected metadata restored exactly. No game/lease.
-Baseline never loaded/written; Steam Offline preserved.
+## R21b native failures and R22 scope
 
-## R21 change and next boundary
+Leap324.6718357s outer:63 allowed ability execution ticks,60 blocked duplicates,
+max1 allowed per process/frame. Yet native queues an ordinary child while still
+moving, distance10.8744m versus5.5480m approach, after about1.25m of travel and
+before the enemy opportunity. Clock duplication exists but is not sufficient
+to explain the exit. Parent finishes; one native opportunity and later ordinary
+three-attack routine occur. No four-claw completion PASS; no production fix inferred.
 
-Production remains f40de45a. Three observer files change: one measured allowed
-ability-process Tick per Unity frame; all native owner attack queue visits
-(including fallback); completed four-claw/no-bite opportunity proof; exact
-known owner/weapon OFF reach delta with every other saved field still compared.
-Double native/manual execution is a hypothesis, not a proven cause. No
-production movement fix or relaxed mandatory outcome. Old FAIL records retained.
-Compilation PASS18.1s, nine named tests PASS0.8s, exact source boundary PASS.
+OFF remainder345.4234863s batch:14/17 PASS. State/DC/source loss/cooldown, real
+temporary round recovery, permanent no-save/automatic-recovery guard and actor
+teardown PASS. Expected/actual serialized profiles are byte-identical (1,513/
+1,482 characters) but DeepEquals fails. Actual game Newtonsoft8 probe reproduces
+string-null token -> JSON null token, DeepEquals false/serialization equal.
+R22 restores the existing serialized receipt comparison after only the exact
+known module-OFF reach delta; it logs separate profile/visual verdicts. No
+field is omitted. Save stays unarmed after FAIL; final absence is unrun.
 
-Push/freeze strict R21, then fresh Leap and only the missing OFF cleanup/absence
-from its exact prior fixture. Complete affected both-mode/AI and bounded combined
-checks plus dependency-justified reuse. After mandatory hidden coverage, remove
-only two suppression keys, regenerate controlled artifacts and qualify public
-source once: fresh complete gate and six real roots/inventory/icons required.
-Then final qualified ledger, publisher preflight/dry-run, current upstream/version
-check, authorized product merge/stable promotion of actual tested bytes, real
-public downloads/lineage, exact restoration and final records merge. No Sprint27.
+Every transaction restored actual installation/settings/private references and
+all118 saves/content/protected metadata; original Working bytes/creation/write/
+attributes exact. No game/lease, baseline never loaded/written, Offline preserved.
+The exact R20 disposable prepared snapshot f002d9f25d8d94428e465dbfb2ecb7dcc759552242c0e3ca9604bad6b332ea1e
+remains pinned for the two-stage remainder, separately from actual intake.
+
+R22 adds a compact exact-owner read-only native charge MoveNext trace: actual
+max/passed distance, source/previous position, threat-hand/navigation/range/motion
+checks, coroutine result and verified unpatch. Production remains f40de45a.
+No movement/attack/result is supplied by the observer. Compilation PASS20.9s,
+ten named tests PASS1.0s, source boundary PASS. No R22 native claim yet.
+
+Next freeze hidden-r22 once, then focused Leap attribution and corrected OFF
+cleanup/absence. Finish affected both-mode/AI and bounded combined checks with
+source-bound reuse. After mandatory hidden proof remove only two suppression
+keys, regenerate controlled outputs and qualify public source once with fresh
+complete gate and six actual routes/inventory/icons. Then qualified ledger,
+publisher preflight/dry-run, upstream/version refresh, authorized merge/stable
+promotion of tested bytes, real public downloads/lineage, exact restoration and
+final records merge. No Sprint27. All prior failures remain in development history.
 
 ## Art and accepted scope
 
@@ -75,12 +85,3 @@ is ordinary placement. Both untemplated. Explicit surface adaptation leaves
 printed20-foot burrow and unsupported tremorsense unmodeled; no substituted
 blindsight or underground travel. See the frozen contract and development
 history for exact source-bound observations and failures.
-
-### R21 gate records correction
-
-Strict attempt on a6826faf2488cc64148f355cafd458573595d6e8 stopped after
-312.5038091s: all2,687 tests ran, with one existing active-resume equation
-wording assertion failing and2,686 PASS. No exact-reference candidate DLL or
-package was produced. Restore the explicit source-derived generated/visible
-phrases; the one named records test passes. No production/observer change.
-Keep the failed receipt; freeze strict hidden-r21b next.

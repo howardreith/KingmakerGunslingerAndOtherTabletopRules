@@ -764,3 +764,54 @@ Restore those truthful derived phrases. The one named records check passes;
 no production/observer edits, no candidate DLL/package existed to archive.
 The failed gate receipt/logs remain at artifacts/sprint26-gate-hidden-r21.
 Next strict freeze is hidden-r21b.
+
+## R21b exact candidate and narrowed R22 observers
+
+Source00b3be846ff2bce63e0c8b1a55fb3df490fb3587 strict Sprint gate PASS
+371.0712614s, all2,687 tests, zero failures,386 files. ZIP
+f74b3ff8a2f304eab2c93c1462cae4762adc002509b3c4d57d5911af21761c1c; DLL
+253b04a7e3bb1b44d12491fb9588ad7d9e3cf3a56e5240999256e776d6a12763;
+MVIDfe771045-42ec-457f-b46b-1e7ee8f0e3c3; fingerprint
+483d45bed7a1c8558a4717f4ebfa0a4ea6c87515f958f4a5cca51479805bab93.
+Whole strict root archived byte-exact (165 files) after restoration. Failed
+R21 records gate remains separately preserved; no candidate existed there.
+
+Leap RTWP FAIL42 (41 PASS),324.6718357s outer; RunId
+20261018T1528391869047Z-1f485129f63e430db362e56f993a5c1d; result SHA256
+a57a1e3863ebe8e942d6cd34416a4f0c82aa21a709800df69b9482b826392f20.
+Raw output SHAaa906ed4cce5cea56f0ec51b2d9fca37c38932adb2243e6b0e97eb6757df8288.
+Clock63 allowed/60 duplicate blocked/max1 per frame. Despite that, native charge
+queues ordinary attack at frame5264, distance10.874402m vs5.54800034m approach,
+while still moving, about1.25m after start. It precedes actual disengagement/
+opportunity frame5278. Owner later ordinary bite/two claws; parent Success;
+owner alive with damage12, can act/move; target alive. Clock double ticking is
+not a sufficient cause. All old FAIL verdicts retained; no whole-phase PASS.
+
+Exact R20 prepared fixture f002d9f25d8d94428e465dbfb2ecb7dcc759552242c0e3ca9604bad6b332ea1e
+was staged only over authorized Working after today's intake backup. R21b OFF
+remainder FAIL345.4234863s batch (357.2667266s envelope); no second stage run.
+Native RunId20261018T1536481305409Z-8537934e206243c1aafb18fa4156127e,
+result SHAc9c5f82770df8432755fe86d809a1c8f85fb59ebc85af53c330ef9439bd830e2;
+14/17 PASS. Both profiles FAIL and consequently save sentinel FAIL; save unarmed.
+State/cooldown/recovery/source-loss/automatic-recovery guard and actor teardown
+PASS including module OFF. Every raw visual gate is true and actual/expected
+profile object substrings are byte-identical (1513 Gorgon/1482 Bulette chars).
+
+Minimal actual-library probe identifies the comparison bug: assigning string
+null creates JValue.String, while parsing its serialized JSON null creates
+JValue.Null. DeepEquals false; exact serialized equality true. Game Newtonsoft8
+SHA3a23988f473e9e8304fbbcfff16872cca919bd1a1f3dee1e374acc1f0cbbbc80
+as recorded in the private probe receipt. R22 uses
+the original serialized receipt contract after the same precise OFF reach delta,
+logging profile/visual subverdicts. It does not omit fields or alter production.
+This identifies an observer defect; it does not reclassify the whole failed
+stage or invent a cleanup save/absence PASS. Fresh remainder is still required.
+
+Every R21b native transaction restored actual installation/settings/references
+and118 saves. Envelope restored original Working bytes/times/attributes;
+no game/lease, baseline never loaded/written, Steam Offline preserved.
+R22 additionally observes actual native private RuntimeRoutine.MoveNext fields/
+exit prerequisites and verifies both hooks unpatched, exact-owner/request-local.
+No native branch/result/command changes. Two observer files only.
+Focused compilation PASS20.9s;10 named Sprint26/records tests PASS1.0s; source
+boundary PASS. Freeze/push strict hidden-r22 then the narrowed experiments.

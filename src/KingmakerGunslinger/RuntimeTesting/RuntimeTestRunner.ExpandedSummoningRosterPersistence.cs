@@ -441,7 +441,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         int correction = Sprint26MagicalBeastRules.ReachAdjustment(unit.Blueprint.AssetGuid, (string)attack["weapon"]);
                         attack["reachFeet"] = (int)attack["reachFeet"] - correction;
                     }
-                    profileSame = JToken.DeepEquals(moduleExpectedProfile, profile);
+                    // The native JObject's string-null tokens serialize as
+                    // JSON null and parse back with a different JToken type.
+                    // Use the same serialized contract as the saved receipt.
+                    profileSame = moduleExpectedProfile.ToString(Formatting.None) == profile.ToString(Formatting.None);
                 }
                 bool giantFactsAbilitiesExact = true;
                 if (Sprint25PersistenceScope && moduleOn && GiantBodyRulesPolicy.IsGiantBody(receipt.Key))
@@ -522,7 +525,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
-                        ["expectedProfileForModule"] = moduleExpectedProfile,
+                        ["expectedProfileForModule"] = moduleExpectedProfile, ["profileSerializedEqual"] = profileSame, ["visualExact"] = visual,
                         ["projectResourceCount"] = project.Length, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["variantRegisteredForSaveCompatibility"] = registeredVariant, ["variantOutcome"] = variantOutcome,
                         ["variantOwnership"] = variantOwner, ["rimLookupAbsent"] = rimAbsent, ["rimControllerState"] = rimState,
