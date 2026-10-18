@@ -655,3 +655,30 @@ disengagement query. DefaultPlayerCharacter fixture victims also receive ordinar
 living ability scores; human party/quest units are never those victims. Initial
 focused compilation failed missing observer imports; corrected compilation
 PASS17.8s, all9 named Sprint26 tests PASS4.3s runner. No R19 native PASS yet.
+
+
+## R19 production persistence repair: native outcomes and remaining observer gaps
+
+Source f40de45a831d8670b6c880004b13acea578936bd; strict Sprint gate
+PASS404.697s, all2,687 registered tests/zero failures. ZIP
+d027470bab7829ea0de423c34d1a4951af50a902bc7b6fb96248db176071da66;
+DLL b656a47e3a6ca7a19784590eea5a3393473eaa0482f4f4ab05a6d95ea094af10;
+MVIDac4327d5-a2f7-4e63-9d74-befdf5d05882;
+fingerprint65bc8c942e92bf8eddef009b91d65661462c820ebc9c11383bf0ed56ab227c7f.
+Whole strict directory archived byte-exact at artifacts/sprint26-strict-hidden-r19
+only after all native processes/leases closed. Hidden/incomplete, never promoted.
+
+- Gorgon RTWP PASS41,319.756s outer: run20261018T1326321564497Z-458289fc6d914aaea2b6f59bb0e627d8; result SHA256ad736aa1b6b2e69c266fe78eb92814256a26474f1ac0e0dd1a610450d746c26c. Real Stone to Flesh e243740dfdb17a246b116b334ed0b165 removed permanent own stone and returned the disposable eligible actor alive. Actual fresh mouth/body image inspected, rough visual finish retained.
+- Bulette RTWP FAIL42,327.881s outer: run20261018T1332220589120Z-a2e0c9e929f240d38d3d763f5efc4f59; result SHA256ebc04678648436d36d78c2183403aec5860df6a86cb1b1e3a61c121875de5a80. One real native opportunity attack and budget1-to0 at disengagement were observed; final budget later1. The failed predicate actually requires parent completion, one queue visit and a bound Leap attempt; it does not test the final budget. Raw data omits those completion gates, so the whole predicate cannot be reclassified PASS. A user-facing initial late-budget attribution was corrected explicitly; it is not the diagnosis. Add exact completion/queue/interruption/cost/owner-attack fields and rerun.
+- Working prepare PASS15: run20261018T1340495791753Z-510f1212d90144a7892fec5353f4d468; result SHA256089944177bf1686a4405ff0fa00c1052807a1c7c1a31281fe1488e5b895b2b4e. Native serialized components now have unique names, correct stages/DC/source strings and indefinite lifetime.
+- Cold cleanup-on FAIL12: run20261018T1347024121563Z-0656456fe7cc42679c5ac53142b22db1; result SHA25638b4f23790d7e170a6cdf38d1b926e2b24b38f419eb23a220f18ee53af794f4d. Both composed source profiles, victim stages/condition1/DC21/source strings and absent original source matched; temporary alive/damage0, permanent dead/damage100010; cooldown end470592630000 retained with28.765s left and fresh activation absent. The real automatic-recovery guard was observed on the permanent victim. The observer incorrectly required it on both victims: native IsConscious is LifeState==Conscious, and the temporary healthy stage already takes the native skip. No cleanup save was armed; recovery/cleanup/remaining four stages unrun. Batch716.959s; exact original Working/envelope and all118 saves restored.
+- Foundation FAIL28,251.535s outer: run20261018T1354267511597Z-9975d19f1e3846379d2f151cc42d5b31; result SHA2568f5ed8c320630ed9a7633e5b3cbfccb3bc3ee960b9c23bb9d60ce01030a19d5c. Adult profiles, ordinary roles/reach/CMD/skills, signed/zero/increased Strength matrix and released Elephant control passed. Only the new live+3 damage case failed on both Gorgon hooves, bonus9 versus expected6. Its setup omitted the per-strike Power Attack-off operation used by the passing signed matrix. Cause remains unproven; align that precondition and record actual toggle/buff/native multipliers, then rerun. No rule or expected number is changed.
+
+Every R19 transaction audited actual installation/settings/private inputs and
+all118 saves equal; no owned game/lease remains. Original Working restored after
+the failed cold batch, baseline untouched, Steam Offline preserved. Upstream
+read-only check at2026-10-18T13:48Z: master555b16e0, Latest stable v0.0.159;
+refresh/fetch again before publication. R20 changes only three runtime observer
+files. Initial compilation failed a nonexistent public PlannedAttackIndex read;
+use the established m_AttackIndex reader. Corrected compilation PASS17.0s and9
+focused tests PASS0.8s runner. No R20 native qualification is inferred.
