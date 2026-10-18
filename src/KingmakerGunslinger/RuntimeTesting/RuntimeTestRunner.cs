@@ -36233,6 +36233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Complete(RuntimeTestResult result)
         {
+            _sprint26PersistenceRolls?.Dispose(); _sprint26PersistenceRolls = null;
             StopSprint17LoadResetTrace(result);
             StopSprint17Bodies(result);
             StopSprint18Review(result);

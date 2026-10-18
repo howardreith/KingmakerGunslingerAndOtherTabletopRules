@@ -431,12 +431,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (!success || observer.WeaponAttacks.All(v => ReferenceEquals(v.Weapon.Blueprint, attempt.Claw))) &&
                             economy.Count(command) == 1 && economy.Exact(command, turnBased) && childUnchanged &&
                             !BuletteLeapRuntime.IsArmed(owner) && attack.IsCharge && legalLanding &&
-                            Vector3.Distance(start, owner.Position) > .25f && maximumVelocity > 0f;
+                            Sprint26MagicalBeastRules.ChargeTravelIsLegal(Vector3.Distance(start, owner.Position)) &&
+                            attempt.EligibleAtStart && Sprint26MagicalBeastRules.ChargeTravelIsLegal(attempt.TravelAtQueue) && maximumVelocity > 0f;
                         Sprint25Check("leap-" + turnBased + "-" + success, exact, new JObject { ["route"] = route,
                             ["finished"] = command.IsFinished, ["result"] = command.Result.ToString(), ["frames"] = frames,
                             ["start"] = SurveyVector(start), ["landing"] = SurveyVector(owner.Position),
                             ["travel"] = Vector3.Distance(start, owner.Position), ["legalLanding"] = legalLanding,
-                            ["maximumNativeVelocity"] = maximumVelocity, ["childAddsNoCost"] = childUnchanged,
+                            ["maximumNativeVelocity"] = maximumVelocity, ["eligibleRunupAtStart"] = attempt?.EligibleAtStart,
+                            ["nativeTravelAtQueue"] = attempt?.TravelAtQueue, ["minimumTravelMeters"] = Sprint26MagicalBeastRules.ChargeMinimumMeters, ["childAddsNoCost"] = childUnchanged,
                             ["ownerInCombat"] = owner.IsInCombat, ["childIsCharge"] = attack?.IsCharge, ["childIgnoresCooldown"] = attack?.IsIgnoreCooldown,
                             ["checkCount"] = seed.Count, ["checkTotal"] = attempt?.Check.BaseRollResult,
                             ["checkSuccess"] = attempt?.Check.IsPassed, ["jumpBonus"] = attempt?.JumpBonus,

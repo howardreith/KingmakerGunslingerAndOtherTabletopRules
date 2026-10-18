@@ -683,7 +683,7 @@ namespace KingmakerGunslinger.Summoning
                 // Revert drops its references. Donor/cache materials survive.
                 var rollbackMaterials = new HashSet<Material>();
                 if (material != null) rollbackMaterials.Add(material);
-                if (swapped && (IsCrocodilian(attachment.VisualKey) ||
+                if (swapped && (attachment.VisualKey == "gorgon" || IsCrocodilian(attachment.VisualKey) ||
                     TheropodVisualPolicy.Handles(attachment.VisualKey) ||
                     GiantBodyVisualPolicy.Handles(attachment.VisualKey)))
                 {

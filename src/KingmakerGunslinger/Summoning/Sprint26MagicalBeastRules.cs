@@ -65,6 +65,12 @@ namespace KingmakerGunslinger.Summoning
                 !string.Equals(lastActivation, activation, StringComparison.Ordinal);
         }
 
+        internal const float ChargeMinimumMeters = 3.048f;
+        internal static bool ChargeTravelIsLegal(float meters)
+        { return !float.IsNaN(meters) && !float.IsInfinity(meters) && meters >= ChargeMinimumMeters; }
+        internal static bool ChargeHasRunup(float distance, float approachRadius)
+        { return !float.IsNaN(approachRadius) && !float.IsInfinity(approachRadius) && approachRadius >= 0f && ChargeTravelIsLegal(distance - approachRadius); }
+
         internal static int JumpOnlyBonus(int speedFeet)
         {
             if (speedFeet < 0) throw new ArgumentOutOfRangeException("speedFeet");

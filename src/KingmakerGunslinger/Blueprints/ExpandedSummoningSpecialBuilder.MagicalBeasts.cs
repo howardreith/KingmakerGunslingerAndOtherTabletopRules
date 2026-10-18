@@ -126,9 +126,11 @@ namespace KingmakerGunslinger.Blueprints
             onCast.OwningBlueprint = unit;
             onCast.Leap = leap;
             onCast.Claw = Require<BlueprintItemWeapon>(bySymbol, "KMG.Summoning.Natural.Bulette.Claw2d6");
-            leap.ComponentsArray = leap.ComponentsArray.Concat(new BlueprintComponent[] { onCast }).ToArray();
+            var geometry = ScriptableObject.CreateInstance<BuletteLeapChargeGeometry>();
+            geometry.OwningBlueprint = unit;
+            leap.ComponentsArray = leap.ComponentsArray.Concat(new BlueprintComponent[] { onCast, geometry }).ToArray();
             DescribeMagicalBeast(leap, prefix + "Leap", "Leap",
-                "Make a legal above-ground charge and a DC 20 jump check. Success replaces the charge attack with four primary claws and no bite; failure retains only the ordinary single charge attack. The racial jump bonus and speed adjustment apply only to this check. No burrowing or teleportation.", null);
+                "Make a legal above-ground charge with at least 10 feet of movement and a DC 20 jump check. Success replaces the charge attack with four primary claws and no bite; failure retains only the ordinary single charge attack. The racial jump bonus and speed adjustment apply only to this check. No burrowing or teleportation.", null);
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] { leap }).ToArray();
             ConfigureMagicalBeastBrain(bySymbol, unit, prefix, "LeapAi", leap);
         }

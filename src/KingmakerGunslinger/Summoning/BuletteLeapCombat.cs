@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Harmony12;
+using UnityEngine;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.EntitySystem.Entities;
@@ -29,6 +30,9 @@ namespace KingmakerGunslinger.Summoning
         internal RuleSkillCheck Check;
         internal int JumpBonus;
         internal int PlannedClaws;
+        internal bool EligibleAtStart;
+        internal Vector3 StartPosition;
+        internal float TravelAtQueue;
     }
 
     internal static class BuletteLeapRuntime
@@ -46,38 +50,49 @@ namespace KingmakerGunslinger.Summoning
                 !ReferenceEquals(context.AbilityBlueprint, ability) || claw == null)
                 throw new InvalidOperationException("Bulette Leap requires its exact owner and charge ability.");
             Armed.Remove(owner);
+            var attempt = new BuletteLeapAttempt {
+                Context = new WeakReference<AbilityExecutionContext>(context),
+                Ability = ability, Claw = claw, Target = context.MainTarget?.Unit,
+                StartPosition = owner.Position
+            };
+            Armed.Add(owner, attempt);
             var charge = ability.GetComponent<AbilityCustomCharge>();
-            if (charge == null || context.MainTarget == null || context.MainTarget.Unit == null ||
-                !charge.CanTarget(owner, context.MainTarget)) return;
-            // This modifier belongs to this real check alone. Ordinary Mobility
-            // and every other creature's checks remain native and unchanged.
+            attempt.EligibleAtStart = charge != null && attempt.Target != null &&
+                charge.CanTarget(owner, context.MainTarget) && BuletteLeapChargeGeometry.HasRunup(owner, attempt.Target);
+            if (!attempt.EligibleAtStart) return;
             int bonus = Sprint26MagicalBeastRules.JumpOnlyBonus(owner.Stats.Speed.ModifiedValue);
             var check = new RuleSkillCheck(owner, StatType.SkillMobility, 20) {
                 IgnoreDifficultyBonusToDC = true, Reason = context
             };
             check.Bonus.BaseValue = bonus;
             context.TriggerRule(check);
-            Armed.Add(owner, new BuletteLeapAttempt {
-                Context = new WeakReference<AbilityExecutionContext>(context),
-                Ability = ability, Claw = claw, Target = context.MainTarget.Unit,
-                Check = check, JumpBonus = bonus
-            });
+            attempt.Check = check; attempt.JumpBonus = bonus;
         }
 
-        internal static void BindQueued(UnitAttack command)
+        internal static bool BindQueued(UnitAttack command)
         {
-            if (command == null || !command.IsCharge || command.Executor == null) return;
+            if (command == null || !command.IsCharge || command.Executor == null) return true;
             BuletteLeapAttempt attempt;
-            if (!Armed.TryGetValue(command.Executor, out attempt)) return;
+            if (!Armed.TryGetValue(command.Executor, out attempt)) return true;
             AbilityExecutionContext context;
             if (!attempt.Context.TryGetTarget(out context) ||
                 !ReferenceEquals(context.AbilityBlueprint, attempt.Ability) ||
                 !ReferenceEquals(context.Caster, command.Executor) ||
                 !ReferenceEquals(command.Target, attempt.Target) ||
-                (attempt.Command != null && !ReferenceEquals(attempt.Command, command))) return;
+                (attempt.Command != null && !ReferenceEquals(attempt.Command, command))) return true;
             attempt.Command = command;
+            attempt.TravelAtQueue = Vector3.Distance(attempt.StartPosition, command.Executor.Position);
             BuletteLeapAttempt recorded;
             if (!Commands.TryGetValue(command, out recorded)) Commands.Add(command, attempt);
+            // An enemy can move inward during real-time charge. Native charge
+            // target validation alone permits a sub-ten-foot run-up with this
+            // Huge body's reach. Retain its spent parent action but withhold
+            // the now-illegal strike; never grant four claws or a free attack.
+            if (!attempt.EligibleAtStart || !Sprint26MagicalBeastRules.ChargeTravelIsLegal(attempt.TravelAtQueue)) {
+                command.Interrupt(true);
+                return false;
+            }
+            return true;
         }
 
         internal static void Prepare(UnitAttack command)
@@ -90,14 +105,14 @@ namespace KingmakerGunslinger.Summoning
             BuletteLeapAttempt attempt;
             if (!Commands.TryGetValue(command, out attempt)) return;
             if (!ReferenceEquals(command.Target, attempt.Target) || !ReferenceEquals(command, attempt.Command)) return;
-            if (attempt.Check.IsPassed) command.ForceFullAttack = true;
+            if (attempt.Check != null && attempt.Check.IsPassed && Sprint26MagicalBeastRules.ChargeTravelIsLegal(attempt.TravelAtQueue)) command.ForceFullAttack = true;
         }
 
         internal static void Substitute(UnitAttack command, ref List<AttackHandInfo> attacks)
         {
             BuletteLeapAttempt attempt;
             if (command == null || !command.IsCharge || !Commands.TryGetValue(command, out attempt) ||
-                !attempt.Check.IsPassed) return;
+                attempt.Check == null || !attempt.Check.IsPassed || !Sprint26MagicalBeastRules.ChargeTravelIsLegal(attempt.TravelAtQueue)) return;
             var claws = attacks.Where(row => row.Hand != null && row.Hand.MaybeWeapon != null &&
                 ReferenceEquals(row.Hand.MaybeWeapon.Blueprint, attempt.Claw)).ToArray();
             if (claws.Length == 0)
@@ -130,6 +145,23 @@ namespace KingmakerGunslinger.Summoning
     }
 
     [Serializable]
+    public sealed class BuletteLeapChargeGeometry : BlueprintComponent, IAbilityTargetChecker
+    {
+        public BlueprintUnit OwningBlueprint;
+        public bool CanTarget(UnitEntityData caster, Kingmaker.Utility.TargetWrapper target)
+        { return caster != null && ReferenceEquals(caster.Blueprint, OwningBlueprint) && target?.Unit != null && HasRunup(caster, target.Unit); }
+        internal static bool HasRunup(UnitEntityData caster, UnitEntityData target)
+        {
+            if (caster?.View == null || target == null || target.Destroyed || !target.IsInState) return false;
+            // Inspected native Init only builds the attack list, records target
+            // consciousness and calculates this approach radius. It neither
+            // queues nor runs an attack. Retain current native reach/radii.
+            var probe = new UnitAttack(target); probe.Init(caster);
+            return Sprint26MagicalBeastRules.ChargeHasRunup(caster.DistanceTo(target), probe.ApproachRadius);
+        }
+    }
+
+    [Serializable]
     public sealed class BuletteLeapOnCast : BlueprintComponent, IAbilityOnCastLogic
     {
         public BlueprintUnit OwningBlueprint;
@@ -141,7 +173,7 @@ namespace KingmakerGunslinger.Summoning
 
     [HarmonyPatch(typeof(UnitCommands), "AddToQueueFirst")]
     internal static class BuletteLeapQueuePatch
-    { private static void Prefix(UnitCommand __0) { BuletteLeapRuntime.BindQueued(__0 as UnitAttack); } }
+    { private static bool Prefix(UnitCommand __0) { return BuletteLeapRuntime.BindQueued(__0 as UnitAttack); } }
 
     [HarmonyPatch(typeof(UnitAttack), "InitAttacks")]
     internal static class BuletteLeapPreparePatch

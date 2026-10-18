@@ -1213,6 +1213,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint26.native-status-mirror", ExpandedSummoningSprint26Tests.OwnCarrierDoesNotMirrorIntoPermanentNativeStone),
             Case("expanded-summoning.sprint26.breath-stage", ExpandedSummoningSprint26Tests.BreathStagesRequireAnotherActivation),
             Case("expanded-summoning.sprint26.live-math", ExpandedSummoningSprint26Tests.BreathMathRemainsLive),
+            Case("expanded-summoning.sprint26.charge-runup", ExpandedSummoningSprint26Tests.ChargeRequiresActualRunupBeyondCurrentReach),
+            Case("expanded-summoning.sprint26.persistence-scope", ExpandedSummoningSprint26Tests.PersistenceOwnsOnlyTheTwoAssignedCreatures),
             Case("expanded-summoning.sprint26.leap-and-bite", ExpandedSummoningSprint26Tests.LeapBonusAndSavageBiteAreConditionalAndSigned),
             Case("expanded-summoning.sprint25-routes", ExpandedSummoningSprint25Tests.RoutesAreExactlyThreeNatureAllyRootsAndNoMonsterRow),
             Case("expanded-summoning.sprint25-elephant-completed", ExpandedSummoningSprint25Tests.ElephantIsCompletedAndNeverReRegisteredOrSuppressed),
