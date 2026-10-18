@@ -41,7 +41,7 @@ passed content/metadata preservation. Every subsequent transaction must capture
 its own actual intake and restore its exact RunId. Baseline remains immutable.
 Steam Offline Mode is supported. Preserve wt/s25 and frozen artifacts.
 
-Remaining work: complete breath/Leap native cases and negative controls, AI,
+Remaining work: complete breath/Leap native cases and negative controls, qualify AI,
 lifecycle/icons/module boundaries, six public roots, targeted cold-load/condition/
 cooldown persistence, standalone/high-risk compatibility, publisher selector and
 refusal checks, one final strict Sprint candidate from this root, actual tested
@@ -52,3 +52,16 @@ The local push wrapper has exactly the two authorized branch names appended;
 byte-preserving backup/hash/round-trip proof and23 isolated refusal checks are
 retained under ignored artifacts/sprint26-intake. Use that wrapper for pushes.
 The closed preceding resume is preserved in docs/history/SPRINT25-FINAL-RESUME-2026-10-18.md.
+
+Current native update: f192d10c's composed profiles, signed damage, reach, native
+Power Attack, trample and bite critical-confirmation probes passed. Its foundation
+verdict remains FAIL: the ordinary-command reader required Success although the
+engine ends exhausted attack lists with Interrupt; Bulette delivered only two
+attacks and needs the new read-only end/target trace. The Elephant control used
+the quiet helper's intentional100000 base HP; that fixture choice is corrected.
+The separate breath attempt obtained ally refusal but no safe lane and cast no
+breath. Both exact transactions restored; their118-save audits and independent
+installation/private/settings comparisons pass. Full details and prior verdicts
+remain in coverage and ignored raw evidence. The next source includes a bounded
+safe-cone survey, explicit60-foot projectile range, outward Gorgon lighting
+normals and implemented exact-owner AI observer, all still requiring native runs.

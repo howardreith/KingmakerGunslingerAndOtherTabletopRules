@@ -26,3 +26,9 @@ remain a short refinement backlog after actual visibility/command checks.
 HumanReview: NOT_PERFORMED_NONBLOCKING. Native visual/lifecycle qualification is
 required separately. Bulette reuses the actual installed adult Bulette body;
 it does not inherit this skin or the Horse view.
+
+Native prototype review found mixed closed-surface winding, then inward lighting
+normals after winding normalization. The Gorgon-only exporter now normalizes
+faces to its observed native-visible plate orientation and emits outward normals.
+The actual prior frames and verdicts remain machine-local. This is a functional
+legibility correction, pending fresh game inspection, without owner art approval.

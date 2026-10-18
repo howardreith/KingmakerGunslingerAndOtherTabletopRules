@@ -4,6 +4,7 @@ Only original geometry/UVs/albedo and native bone NAMES are exported. The
 geometry-free native capture and editable rig preview remain machine-local.
 """
 import argparse
+import base64
 import hashlib
 import json
 import math
@@ -138,6 +139,13 @@ def main():
     path = output / "gorgon-mesh.json"
     shared.write_mesh_data(path, obj, mesh, indexed, uv_indexed, report, albedo)
     payload = json.loads(path.read_text(encoding="utf-8"))
+    # Preserve the native-visible face orientation while lighting the closed
+    # surfaces outward. Reversing Blender faces also reversed its vertex normals;
+    # the shared exporter stores those separately from its handedness flip.
+    data = bytearray(base64.b64decode(payload["data"]))
+    for offset in range(payload["vertexCount"] * 12, payload["vertexCount"] * 24, 4):
+        struct.pack_into("<f", data, offset, -struct.unpack_from("<f", data, offset)[0])
+    payload["data"] = base64.b64encode(data).decode("ascii")
     payload.update({"creature": "gorgon", "nativeDonor": DONOR,
                     "space": SPACE, "visibleLegs": 4, "horns": 2,
                     "armourPlates": True})

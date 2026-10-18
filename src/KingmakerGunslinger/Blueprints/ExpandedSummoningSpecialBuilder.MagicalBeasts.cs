@@ -60,6 +60,7 @@ namespace KingmakerGunslinger.Blueprints
                 "native blocked cone delivery");
             breath.name = InternalName(prefix + "Breath");
             breath.Type = AbilityType.Supernatural;
+            breath.Range = AbilityRange.Projectile;
             breath.Parent = null;
             breath.Hidden = false;
             breath.ActionBarAutoFillIgnored = false;
