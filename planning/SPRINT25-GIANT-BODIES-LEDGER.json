@@ -1,9 +1,27 @@
 {
   "schemaVersion": 1,
   "mission": "Sprint25BrachiosaurusElephant",
-  "status": "HIDDEN_NATIVE_AND_TARGETED_PERSISTENCE_PASS_PUBLIC_CANDIDATE_NEXT",
+  "status": "PUBLIC_INVENTORY_OBSERVER_AND_SETTINGS_BOUNDARY_REPAIR_FULL_GATE_NEXT",
   "current": {
     "latestCheckpoint": {
+      "publicInventoryRepair": {
+        "source": "b299c4625757c25f1a4bd6bebfa136b6fabc5c53",
+        "sourceFingerprint": "989aa0ef0ab6afaf2fac8244c5de929fb6629dbc350a9cf5722838706ee455f5",
+        "zipSha256": "f60f515efba778ac3b7b855dc3a08193975a01414694677ed8fa4a1f49925085",
+        "dllSha256": "30bc83ea5e597bb927ed2ff8b697b3873d5a6365a1d1aa41868a8c5dd213de7c",
+        "dllMvid": "b7a3d9a0-9fee-48df-8229-9e5abf9d5fdf",
+        "gate": "PASS2678/2678, exact build/strict380;312.5025971s;2026-10-18T02:37:26.7253862Z; exact archive source-build-b299c462.",
+        "native": "FAIL first public inventory,433.2600845s;2026-10-18T02:44:42.0150715Z. Only failed assertion tier-five-seven-naturals:elephant unknown-facts=Endurance,ElephantChassis. Intended existing facts, not a missing grant or rule defect. Both route cells unrun; no public qualification claimed.",
+        "nativeRunId": "20261018T0239280468854Z-94d0bad27b6346599d74fef90d0e3562",
+        "failedBatchSha256": "93a3027f6a1fdaf86ffc6c9940040628f7af2549a44e458ada1a1b194384326f",
+        "rawLogSha256": "3f733912ba131daf5d3b4cc2358869c93700a6bef72660978eae694eced6a7f7",
+        "restoration": "Exact RunId compat-20261018T023739Z-bd60a1d5652a installation Restored/verified; independent audit confirms current installation/bank,all118 save metadata/hashes,private refs unchanged and no game/lease. Generic inventory had no fresh settings intake/receipt. Only Unity session count/id differed from immediately preceding actual restored settings; unique intervening owned launch and count+1 established a two-key reconstructed rollback, verified exact prior actual state without gameplay-setting changes. Missing fresh intake and native FAIL remain historical failures, not PASS.",
+        "auditSha256": "f1c8b65dd44ab22bb737293a281511825b24baad31ea8468c0d4ece3fd0132b4",
+        "sessionOnlyRollbackSha256": "54cb3d1f940e7e15b599ecdd06b6d22f0753a24371a06214d86cc7c13cb4eac7",
+        "repair": "Exact Elephant owner only: translate the two canonical existing fact GUIDs in actual inventory reader; unknown/case/spoof/other-owner refusals unchanged. Add inventory to existing independent settings snapshot/rollback and exact launcher receipt classifiers, eliminating recency selection for this route. Compiled observer and runtime tooling, not docs-only; no gameplay/art/schema change.",
+        "focused": "PASS compile17.3s,19/19 domain cases0.8s (2678 registered),19 source refusals,18 executed real settings/receipt classifier positives/refusals and30 existing independent-boundary safety predicates. Fresh new-candidate native inventory and both route profiles remain mandatory.",
+        "next": "Commit/push one repaired public candidate/full gate, then fresh three-cell public inventory/icon/eleven-root batch; preserve original hidden mechanical/body/persistence identities. Preflight while49 draft,ready/merge,exact stable release/public download/restoration audit,final records merge,STOP."
+      },
       "hiddenQualified9f571da5": {
         "source": "9f571da5b6fead4e37c149bfb164307bb738f544",
         "sourceFingerprint": "d90b9eed9908f29d429b68e2f08a1f3e18c14ab987e9ce08f8802823f2d81a80",

@@ -6,6 +6,17 @@ namespace KingmakerGunslinger.RuntimeTesting
     // Evidence interpretation only. Never grants a fact or changes sanitation.
     internal static class ExpandedSummoningInventoryObservationPolicy
     {
+        // Read only the two profile facts the public census previously lacked.
+        // These exact identities already exist on the qualified Elephant; this
+        // does not grant facts, accept a name prefix or exempt unknown facts.
+        internal static string GiantProfileFactGuid(string unitGuid, string fact)
+        {
+            if (unitGuid != "9dd8544097234f05bcd35d400d91b510") return null;
+            if (fact == "Endurance") return "54ee847996c25cd4ba8773d7b8555174";
+            if (fact == "ElephantChassis") return "bd380912f7c74843966c363ab281c0c2";
+            return null;
+        }
+
         private static readonly string[][] References = {
             new[] { "714b04102eae4cd2be200a8f09f04bc3", "KMG_Summoning_Unit_FireBeetle", "cec8ed5eaae2452799e8e56230ee6a92", "KMG_Summoning_Natural_FireBeetle_Luminescence", "AddFacts" },
             new[] { "9db94712f7b540679b8ff650dbaf746a", "KMG_Summoning_Unit_GiantAntWorker", "d20e4532fc324720952eac8af51b1f49", "KMG_Summoning_Natural_GiantAnt_RacialSkills", "AddFacts" },

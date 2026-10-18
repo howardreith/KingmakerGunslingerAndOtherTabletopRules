@@ -327,6 +327,7 @@ $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 $sprint22Boundary=@($Scenario | Where-Object { $_ -cin @(
+    'observe-expanded-summoning-inventory',
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review',
     'disposable-expanded-summoning-sprint24-native-review',
@@ -515,6 +516,7 @@ try {
         }
         $arguments.RuntimeLease = $compatRuntimeLease
         $exactSprint22=$name -cin @(
+            'observe-expanded-summoning-inventory',
             'disposable-expanded-summoning-sprint22-native-review',
             'disposable-expanded-summoning-sprint23-native-review',
             'disposable-expanded-summoning-sprint24-native-review',
