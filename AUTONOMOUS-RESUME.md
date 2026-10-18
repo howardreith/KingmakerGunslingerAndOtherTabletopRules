@@ -21,27 +21,30 @@ appended identities preserve the released 6,916 prefix. Current public equation:
 Original icons and recognizable bodies are integrated; rough visual backlog,
 HumanReview NOT_PERFORMED_NONBLOCKING.
 
-R20 strict gate PASS: 2,687 tests; archive byte-exact. Foundation PASS28. Leap
-RTWP FAIL42: real opportunity occurs, parent finishes, but native charge falls
-back to ordinary attacks. R19 Gorgon41 and R18 TB Leap16 remain source-bound proof.
-R20 ON persistence sequence and second preparation pass; OFF stone/cooldown
-behavior passes but profile observer wrongly compares module-ON reach to OFF.
-No cleanup save armed or final absence run. All118 saves and actual Working
-bytes/creation/write/attributes restored; installation/settings/references exact;
-no game/lease, Steam Offline preserved.
+Latest strict hidden R21b: source00b3be846ff2bce63e0c8b1a55fb3df490fb3587,
+all2,687 tests PASS, exact386-file package archived byte-exact. ZIP
+f74b3ff8a2f304eab2c93c1462cae4762adc002509b3c4d57d5911af21761c1c; DLL
+253b04a7e3bb1b44d12491fb9588ad7d9e3cf3a56e5240999256e776d6a12763;
+MVIDfe771045-42ec-457f-b46b-1e7ee8f0e3c3. Incomplete hidden qualification.
 
-R21 changes only request-local observers: one ability-process Tick per frame
-(measured), full native queue handoff data, stricter completed four-claw/no-bite
-opportunity proof, exact known module-OFF reach comparison. Production unchanged.
-Compilation/nine focused tests/source-boundary PASS; no R21 native claim.
+R21b Leap still FAIL42 (41 pass). Clock blocked60 duplicate ability ticks,
+maximum allowed1/frame, but native routine queues an ordinary child after
+about1.25m, before the enemy opportunity. The timing fix is insufficient.
+R21b OFF stone/cooldown/recovery/actor teardown pass; whole stage FAIL17
+(14 pass) because DeepEquals rejects identical serialized profiles. Actual
+game Newtonsoft8 probe confirms string-null -> JSON null changes token type;
+serialized equality remains true. No cleanup save or fresh absence claimed.
+All118 saves/metadata and actual Working bytes/times/attributes restored;
+installation/settings/references exact, no game/lease, Steam Offline preserved.
 
-Next: push/freeze one strict R21 hidden candidate in this same root; fresh Leap
-and guarded two-stage OFF cleanup/absence from exact preserved disposable fixture.
-Then affected both-mode/AI and bounded combined coverage; public six-root source/
-strict gate; qualified ledger/preflight/merge/promotion/downloads/restoration;
-final RELEASED/STOP records merge. Preserve wt/s25 and do not begin Sprint27.
+R22 changes only two observer files: read actual native charge iterator fields/
+exit prerequisites and verify hook cleanup; compare the exact OFF-adjusted
+serialized profile using the existing receipt contract, with decomposed verdicts.
+No production change, forced movement or relaxed Leap outcome. Compile PASS20.9s,
+10 named tests PASS1.0s, exact source boundary PASS; no R22 native claim.
 
-The first strict R21 attempt on a6826faf ran all2,687 tests and failed only the
-active-resume equation wording (2,686 PASS). No candidate DLL/package was built.
-The exact equation is restored; its one named records check passes. Production
-and observers are unchanged. Freeze the records fix as strict hidden-r21b.
+Next: push/freeze strict hidden-r22 in this same root; fresh focused Leap
+attribution and two-stage OFF cleanup/absence from the exact R20 disposable
+fixture. Then affected both-mode/AI and bounded combined coverage; public six-
+root source/gate; qualified ledger/preflight/merge/promotion/downloads/exact
+restoration; final RELEASED/STOP records merge. Preserve wt/s25; no Sprint27.

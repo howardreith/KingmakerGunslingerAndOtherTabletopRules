@@ -233,7 +233,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["frames"]=frames,["ownerDamage"]=owner.Descriptor.Damage,["ownerDead"]=owner.Descriptor.State.IsDead,
                             ["ownerCanAct"]=owner.Descriptor.State.CanAct,["ownerCanMove"]=owner.Descriptor.State.CanMove,
                             ["targetDead"]=target.Descriptor.State.IsDead,["targetDestroyed"]=target.Destroyed,
-                            ["allAttackQueueVisits"]=queued.QueueVisits.DeepClone(),["queuedVisits"]=queued.Commands.Count,["distinctCommands"]=queued.Commands.Distinct().Count(),["minimumOpportunityBudget"]=minimumBudget,
+                            ["nativeChargeSteps"]=queued.NativeSteps.DeepClone(),["allAttackQueueVisits"]=queued.QueueVisits.DeepClone(),["queuedVisits"]=queued.Commands.Count,["distinctCommands"]=queued.Commands.Distinct().Count(),["minimumOpportunityBudget"]=minimumBudget,
                             ["queuedCommands"]=new JArray(queued.Commands.Select(q=>{var a=BuletteLeapRuntime.Observation(q);return new JObject{
                                 ["referenceId"]=System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(q),["finished"]=q.IsFinished,["result"]=q.Result.ToString(),
                                 ["target"]=q.Target?.UniqueId,["planned"]=q.AllAttacks.Count,["plannedIndex"]=(int)ReadExpandedSummoningOptionalMember(q,"m_AttackIndex"),["plannedAbsent"]=q.PlannedAttack==null,
@@ -255,8 +255,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly MethodInfo method=typeof(UnitCommands).GetMethod("AddToQueueFirst");
             internal readonly List<UnitAttack> Commands=new List<UnitAttack>();
             internal readonly JArray QueueVisits=new JArray();
-            internal Sprint26QueueTrace(UnitEntityData owner){if(active!=null)throw new InvalidOperationException("Nested exact queue observation.");this.owner=owner;harmony=Harmony12.HarmonyInstance.Create(id);
-                try{harmony.Patch(method,null,new Harmony12.HarmonyMethod(typeof(Sprint26QueueTrace).GetMethod("After",BindingFlags.Static|BindingFlags.NonPublic)));active=this;}catch{Dispose();throw;}}
+            internal readonly JArray NativeSteps=new JArray();
+            private readonly MethodInfo nativeStep;
+            internal Sprint26QueueTrace(UnitEntityData owner){
+                if(active!=null)throw new InvalidOperationException("Nested exact queue observation.");
+                var routine=typeof(Kingmaker.UnitLogic.Abilities.Components.AbilityCustomCharge).GetNestedType("<RuntimeRoutine>d__4",BindingFlags.NonPublic);
+                nativeStep=routine?.GetMethod("MoveNext",BindingFlags.Instance|BindingFlags.NonPublic);
+                if(nativeStep==null||nativeStep.ReturnType!=typeof(bool)||new[]{"caster","attack","target","<maxDistance>5__2","<passedDistance>5__3","<>1__state"}.Any(n=>routine.GetField(n,BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic)==null))
+                    throw new InvalidOperationException("Inspected native charge iterator fields are unavailable.");
+                this.owner=owner;harmony=Harmony12.HarmonyInstance.Create(id);
+                try{
+                    harmony.Patch(method,null,new Harmony12.HarmonyMethod(typeof(Sprint26QueueTrace).GetMethod("After",BindingFlags.Static|BindingFlags.NonPublic)));
+                    harmony.Patch(nativeStep,null,new Harmony12.HarmonyMethod(typeof(Sprint26QueueTrace).GetMethod("NativeStep",BindingFlags.Static|BindingFlags.NonPublic)));
+                    active=this;
+                }catch{Dispose();throw;}
+            }
+            // Read the actual 2.1.7b iterator after each native MoveNext. No
+            // branch, command, field or result is changed by this observation.
+            private static void NativeStep(object __instance,bool __result){
+                var trace=active;if(trace==null)return;
+                var caster=ReadExpandedSummoningOptionalMember(__instance,"caster") as UnitEntityData;
+                if(!ReferenceEquals(caster,trace.owner))return;
+                var attack=ReadExpandedSummoningOptionalMember(__instance,"attack") as UnitAttack;
+                var target=ReadExpandedSummoningOptionalMember(__instance,"target") as UnitEntityData;
+                var destination=target==null?caster.Position:target.Position;
+                var projected=Kingmaker.View.ObstacleAnalyzer.TraceAlongNavmesh(caster.Position,destination);
+                trace.NativeSteps.Add(new JObject{["frame"]=Time.frameCount,["yielded"]=__result,
+                    ["coroutineState"]=(int)ReadExpandedSummoningOptionalMember(__instance,"<>1__state"),
+                    ["passedDistance"]=(float)ReadExpandedSummoningOptionalMember(__instance,"<passedDistance>5__3"),
+                    ["maxDistance"]=(float)ReadExpandedSummoningOptionalMember(__instance,"<maxDistance>5__2"),
+                    ["combatSpeedMps"]=caster.CombatSpeedMps,["speedStat"]=caster.Stats.Speed.ModifiedValue,
+                    ["position"]=SurveyVector(caster.Position),["previousPosition"]=SurveyVector(caster.PreviousPosition),
+                    ["frameTravel"]=Vector3.Distance(caster.Position,caster.PreviousPosition),["target"]=target?.UniqueId,["targetPosition"]=SurveyVector(destination),
+                    ["nativeTracePoint"]=SurveyVector(projected),["nativeTraceExactlyTarget"]=projected==destination,["nativeTraceGap"]=Vector3.Distance(projected,destination),
+                    ["threatHandPresent"]=Kingmaker.Controllers.Combat.UnitEngagementExtension.GetThreatHand(caster)!=null,
+                    ["shouldApproach"]=attack?.ShouldUnitApproach,["enoughClose"]=attack?.IsUnitEnoughClose,["isCharge"]=attack?.IsCharge,
+                    ["movementAgentType"]=caster.View.MovementAgent.GetType().FullName,["nativeReallyMoving"]=caster.View.MovementAgent.IsReallyMoving,
+                    ["aspReallyMoving"]=caster.View.AgentASP.IsReallyMoving});
+            }
             private static void After(UnitCommand __0){
                 var value=active;var attack=__0 as UnitAttack;
                 if(value==null||attack==null||!ReferenceEquals(attack.Executor,value.owner))return;
@@ -270,7 +306,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["canAct"]=owner.Descriptor.State.CanAct,["canMove"]=owner.Descriptor.State.CanMove,["leapArmed"]=BuletteLeapRuntime.IsArmed(owner),
                     ["bound"]=BuletteLeapRuntime.Observation(attack)!=null,["callers"]=new JArray(new System.Diagnostics.StackTrace().GetFrames().Skip(1).Take(8).Select(f=>f.GetMethod().DeclaringType?.FullName+"."+f.GetMethod().Name))});
             }
-            public void Dispose(){harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);if(ReferenceEquals(active,this))active=null;Commands.Clear();QueueVisits.Clear();}
+            public void Dispose(){
+                if(ReferenceEquals(active,this))active=null;
+                harmony.Unpatch(method,Harmony12.HarmonyPatchType.All,id);harmony.Unpatch(nativeStep,Harmony12.HarmonyPatchType.All,id);
+                var q=harmony.GetPatchInfo(method);var n=harmony.GetPatchInfo(nativeStep);
+                if((q!=null&&q.Postfixes.Any(v=>v.owner==id))||(n!=null&&n.Postfixes.Any(v=>v.owner==id)))throw new InvalidOperationException("Native charge observer hooks remain.");
+                Commands.Clear();QueueVisits.Clear();NativeSteps.Clear();
+            }
         }
     }
 }
