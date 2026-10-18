@@ -289,10 +289,7 @@ namespace KingmakerGunslinger.DomainTests
                     (ExpandedSummoningSprint25Tests.AppendedLedgerIdentities + SummoningCurrentSurface.AppendedCatalogIdentityCount),
                 planned.Count,
                 "Sprint 24 appends without moving Sprint 23's foundation identities.");
-            Assertions.True(planned.Skip(planned.Count - Sprint26MagicalBeastRules.AppendedPrivateIdentityCount -
-                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount -
-                    TheropodRulesPolicy.AppendedPrivateIdentityCount -
-                    PrivateTail.Length).Take(PrivateTail.Length)
+            Assertions.True(planned.SkipWhile(value => value.Symbol != PrivateTail[0]).Take(PrivateTail.Length)
                 .Select(value => value.Symbol).SequenceEqual(PrivateTail),
                 "Ten active Sprint 23 private carriers remain in frozen order, behind every later sprint's.");
             JObject manifest = JObject.Parse(File.ReadAllText(

@@ -1,10 +1,20 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
 {
     internal static class SummoningCurrentSurface
     {
+        internal static IReadOnlyList<string> SourceRepresentedKeys { get {
+            return ExpandedSummoningCatalog.All.Select(value => value.Key)
+                .Concat(SummonNativeExpansionCatalog.All.Select(value => ExpandedSummoningCoveragePolicy.CanonicalKey(value.CreatureKey)))
+                .Distinct(StringComparer.Ordinal).ToArray();
+        } }
+        internal static int SourceUnrepresentedCount { get {
+            return ExpandedSummoningIdealRosterCatalog.All.Count(value => !SourceRepresentedKeys.Contains(value.Key));
+        } }
         internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount;
         internal const int RegisteredCreatureCount = 111;
         internal const int RegisteredMonsterCreatureCount = 96;

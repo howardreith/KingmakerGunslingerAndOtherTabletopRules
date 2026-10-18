@@ -1208,6 +1208,16 @@
       "registered": 2693,
       "failures": 0,
       "testGateSeconds": 1.8
+    },
+    {
+      "command": "scripts/Invoke-KmgGate.ps1 -Level Sprint",
+      "source": "28bce30a7ddfe4980dc9f9e2c0f1928b86a2ac66",
+      "result": "FAIL",
+      "seconds": 314.2465546,
+      "executed": 2693,
+      "failures": 39,
+      "scope": "23 missing local native IL prerequisites; 16 legacy source/version/count/weapon-audit fixture failures; no final ZIP or native transaction produced",
+      "evidence": "artifacts/sprint27-gate-public-f1/result.json"
     }
   ],
   "policyChange": {
@@ -1359,6 +1369,34 @@
       "registeredTests": 2693,
       "failures": 0,
       "testGateSeconds": 4.1
+    }
+  },
+  "publicSurface": {
+    "generatedPlacements": 1108,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1137
+  },
+  "gateReadinessRepair": {
+    "status": "FOCUSED_PASS",
+    "selectedTests": 172,
+    "registeredTests": 2693,
+    "failures": 0,
+    "runnerSeconds": 4.7,
+    "wallSeconds": 9.1741214,
+    "productionRulesChanged": false,
+    "weaponAuditOldRowsEqual": true,
+    "weaponAuditAddedSymbols": [
+      "KMG.Summoning.Natural.Griffon.Bite1d6",
+      "KMG.Summoning.Natural.Griffon.Talon1d6",
+      "KMG.Summoning.Natural.Griffon.Rake1d4"
+    ],
+    "nativeIl": {
+      "status": "PASS",
+      "referenceSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "referenceMvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+      "retainedIlSha256": "531453dade33ded432da4368f42d8fe0ec73005b0beaa0f77a960290a2c30177",
+      "source": "C:/Dev/KingmakerGunslingerLab/wt/s26/artifacts/inspection/bodyguard-native/Assembly-CSharp.il",
+      "copiedTo": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27\\artifacts\\inspection\\bodyguard-native"
     }
   }
 }

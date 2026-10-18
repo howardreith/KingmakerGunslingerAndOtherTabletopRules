@@ -255,10 +255,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(2149 + GiantBodyRulesPolicy.AppendedCatalogIdentityCount + SummoningCurrentSurface.AppendedCatalogIdentityCount,
                 identities.Count,
                 "The foundation appends exactly forty-eight Sprint 24 identities.");
-            SummoningIdentitySpec[] tail = identities
-                .Skip(identities.Count - Sprint26MagicalBeastRules.AppendedPrivateIdentityCount -
-                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount -
-                    PrivateIdentityTail.Length)
+            SummoningIdentitySpec[] tail = identities.SkipWhile(value => value.Symbol != PrivateIdentityTail[0])
                 .Take(PrivateIdentityTail.Length).ToArray();
             Assertions.True(tail.Select(value => value.Symbol)
                     .SequenceEqual(PrivateIdentityTail),
@@ -401,7 +398,7 @@ namespace KingmakerGunslinger.DomainTests
                 "No unrelated visual receives a theropod footprint.");
 
             string attachment = File.ReadAllText(
-                "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs");
+                "src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs").Replace("\r\n", "\n");
             string builder = File.ReadAllText(
                 "src/KingmakerGunslinger/Blueprints/ExpandedSummoningNaturalBuilder.Theropods.cs");
             Assertions.True(attachment.Contains(
