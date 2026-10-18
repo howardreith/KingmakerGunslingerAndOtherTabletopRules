@@ -1,5 +1,11 @@
 # Windows 10 autonomous runtime testing
 
+Sprint 26 adds `observe-expanded-summoning-sprint26-native-inputs`: a bounded,
+read-only mod-load lookup for Gorgon/Bulette identities, conditional Horse/Hodag
+donor metadata and native petrification/cure/charge/sense graphs and pixels.
+It creates no actor, loads no save and mutates no native asset. This is research
+input, never gameplay, body or cure qualification. Parameters are empty.
+
 ## Design status
 
 Sprint 25 adds `disposable-expanded-summoning-sprint25-native-review` to the

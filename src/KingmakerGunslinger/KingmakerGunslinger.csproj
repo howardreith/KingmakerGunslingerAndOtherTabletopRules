@@ -1270,6 +1270,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint22Survey.cs" />
     <Compile Include="RuntimeTesting\Sprint24TheropodCensusPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Census.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoning.cs" />
     <Compile Include="RuntimeTesting\AlternateSummoningFaultDrillControl.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.AlternateSummoningContracts.cs" />
