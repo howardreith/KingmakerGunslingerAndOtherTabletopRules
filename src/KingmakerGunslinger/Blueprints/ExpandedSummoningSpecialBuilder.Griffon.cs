@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.Blueprints
             var rake=ScriptableObject.CreateInstance<SummonRakeComponent>();
             rake.RequireNativeChargeCommand=true;
             traits.name=InternalName(symbol);traits.IsClassFeature=true;traits.Stacking=StackingType.Replace;
-            traits.ComponentsArray=new BlueprintComponent[]{rake};SetBuffFlags(traits,false,true);
+            traits.ComponentsArray=new BlueprintComponent[]{rake,ScriptableObject.CreateInstance<GriffonLifetimeBoundary>()};SetBuffFlags(traits,false,true);
             ExpandedSummoningNaturalBuilder.NameMagicalBeastRuntimeComponents(traits);
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(symbol+".Name","Griffon Pounce and Rake"),

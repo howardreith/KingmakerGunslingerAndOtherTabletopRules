@@ -56,3 +56,25 @@ PASS; the preflight ran alone49.137s to preserve its artifact-mutation guard. Ve
 hidden functional/safety observations before unsuppression/version161, then one
 coherent Sprint gate and fresh eligible artifact campaign. No product merge,
 tag/release mutation, final-records merge, or Sprint28 work has occurred.
+
+On a91232c686c0, the compact combat batch recorded103 checks/2 failures
+(307.882s native,452.591s transaction): real RTWP/TB pounce, misses, signed
+Strength plus extra damage forms, action costs, reactions, two owners, target
+loss and death passed; AI approach and moving-charge expiry remain FAIL.
+The independent presentation batch retained Tiger control failures while all
+Griffon lifecycle/hidden routes and Eagle/Bulette ordinary controls passed
+(330.653s transaction). Matched native control proves absent DismemberUnitFX:
+no dissolve is claimed; native delayed despawn/private cleanup pass.
+Outdoor12 checks PASS (240.216s transaction): actual Oleg outdoor classification,
+selection, native movement and ordinary full routine. All three transactions
+restored current Mods/settings/private references and all118 saves exactly.
+Actual source/ZIP/DLL/MVID and all raw verdicts are preserved in the map.
+
+The reviewed correction adds only exact-Griffon summon-marker expiry command
+interruption, leaving native delayed presentation/destruction intact. AI now
+surveys a straight native-approved lane and records command/movement state;
+the Tiger control uses a legal Huge foe to exclude automatic Grab. These
+changes compiled18.2s and17 related tests passed1.1s; native reruns pending.
+Outdoor reviewer found no new blocker, but fog/tree occlusion limits those
+pixels; structured mechanical proof is separate. HumanReview remains
+NOT_PERFORMED_NONBLOCKING. Version160 and six-route suppression remain.

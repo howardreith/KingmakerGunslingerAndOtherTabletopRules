@@ -95,6 +95,7 @@ ALLOWED_PRODUCTION=['src/KingmakerGunslinger/Assets/PteranodonAssetRuntime.Griff
  'src/KingmakerGunslinger/Summoning/ExpandedSummoningPteranodonViewPatch.cs',
  'src/KingmakerGunslinger/Summoning/ExpandedSummoningSpecialCombatComponents.cs',
  'src/KingmakerGunslinger/Summoning/GriffonReachPatch.cs',
+ 'src/KingmakerGunslinger/Summoning/GriffonLifetimeBoundary.cs',
  'src/KingmakerGunslinger/Summoning/GriffonRules.cs',
  'src/KingmakerGunslinger/Summoning/GriffonVisualPolicy.cs',
  'src/KingmakerGunslinger/Summoning/SummonIconCatalog.cs',
