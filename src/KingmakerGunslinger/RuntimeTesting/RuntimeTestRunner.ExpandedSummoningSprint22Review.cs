@@ -65,6 +65,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly ExpandedSummoningCorrectionFixture _fixture;
             private readonly TimeSpan _timeBefore;
             private readonly float _step;
+            private readonly bool _frameSynchronous;
+            private readonly Sprint26ClockGate _tickGate;
             private readonly Action<UnitEntityData> _lifeTick;
             private readonly GameMode _tickMode = new GameMode(
                 GameModeType.Default, new IController[0]);
@@ -85,10 +87,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Restored { get; private set; }
 
             internal Sprint22NativeClock(
-                ExpandedSummoningCorrectionFixture fixture, float step = .25f, Action<UnitEntityData> lifeTick = null)
+                ExpandedSummoningCorrectionFixture fixture, float step = .25f, Action<UnitEntityData> lifeTick = null, bool frameSynchronous = false)
             {
                 if (step <= 0 || step > .25f) throw new ArgumentOutOfRangeException("step");
                 _step = step;
+                _frameSynchronous = frameSynchronous;
                 _lifeTick = lifeTick;
                 _fixture = fixture ?? throw new ArgumentNullException("fixture");
                 _timeBefore = Game.Instance.Player.GameTime;
@@ -97,11 +100,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_tickAction == null)
                     throw new MissingMethodException(
                         "Sprint 22 native command tick surface");
+                if (frameSynchronous) _tickGate = new Sprint26ClockGate(
+                    unit => NativeProfileUnits().Any(value => ReferenceEquals(value, unit)));
             }
 
             internal void Pulse()
             {
                 if (_disposed || Game.Instance.IsPaused) return;
+                float step = _frameSynchronous ? Time.deltaTime : _step;
+                if (float.IsNaN(step) || float.IsInfinity(step) || step < 0f || step > 1f)
+                    throw new InvalidOperationException("Invalid native Unity frame delta.");
+                if (step == 0f) return;
                 FieldInfo field = typeof(Game).GetField("m_GameModes", Members);
                 var modes = field == null ? null : field.GetValue(
                     Game.Instance) as Stack<GameMode>;
@@ -117,9 +126,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 modes.Push(_tickMode);
                 try
                 {
+                    _tickGate?.BeginPulse();
                     Game.Instance.IsPaused = false;
-                    time.SetDeltaTime(_step);
-                    time.SetGameDeltaTime(_step);
+                    time.SetDeltaTime(step);
+                    time.SetGameDeltaTime(step);
                     new SleepingUnitsController().Tick();
                     _join.Tick();
                     _prepare.Tick();
@@ -149,7 +159,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     else
                     {
                         Game.Instance.Player.GameTime +=
-                            TimeSpan.FromSeconds(_step);
+                            TimeSpan.FromSeconds(step);
                     }
                     foreach (UnitEntityData unit in tickUnits)
                     {
@@ -170,7 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var agent = view == null ? null : view.MovementAgent;
                         if (!unit.Destroyed && agent != null)
                         {
-                            agent.TickMovement(_step);
+                            agent.TickMovement(step);
                             if (!unit.Destroyed && ReferenceEquals(unit.View,
                                 view)) unit.Position = view.transform.position;
                             MovementTicks++;
@@ -182,6 +192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    _tickGate?.EndPulse();
                     time.SetDeltaTime(delta);
                     time.SetGameDeltaTime(gameDelta);
                     Game.Instance.IsPaused = pause;
@@ -237,12 +248,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 };
             }
 
+            internal JObject DescribeTickOwnership()
+            {
+                var row = _tickGate == null ? new JObject() : _tickGate.Snapshot();
+                row["frameSynchronous"] = _frameSynchronous;
+                row["pulses"] = Pulses;
+                row["advancedGameSeconds"] = AdvancedSeconds;
+                return row;
+            }
+
             public void Dispose()
             {
                 if (_disposed) return;
                 _disposed = true;
-                Game.Instance.Player.GameTime = _timeBefore;
-                Restored = Game.Instance.Player.GameTime == _timeBefore;
+                try { Game.Instance.Player.GameTime = _timeBefore; }
+                finally { _tickGate?.Dispose(); }
+                Restored = Game.Instance.Player.GameTime == _timeBefore && (_tickGate == null || _tickGate.Restored);
                 if (!Restored)
                     throw new InvalidOperationException(
                         "Sprint 22 request-local GameTime did not restore.");

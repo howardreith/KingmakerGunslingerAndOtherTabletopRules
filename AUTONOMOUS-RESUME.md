@@ -65,3 +65,13 @@ installation/private/settings comparisons pass. Full details and prior verdicts
 remain in coverage and ignored raw evidence. The next source includes a bounded
 safe-cone survey, explicit60-foot projectile range, outward Gorgon lighting
 normals and implemented exact-owner AI observer, all still requiring native runs.
+
+Latest attribution:5ebfce1b still fails only the Bulette ordinary routine. The
+Gorgon complete command and corrected Elephant control pass. Actual Gorgon
+lighting now exposes the horned armored quadruped; rough visual debt remains,
+HumanReview NOT_PERFORMED_NONBLOCKING. The trace proves ambient native action
+controller ticking outside the request clock. The next observer gives Sprint26
+one frame-synchronous action/cooldown tick owner, with measured suppression and
+hook cleanup; older defaults remain unchanged. Its source compiles and50 focused
+checks pass, but the correction still needs fresh native reproduction. Do not
+call the remaining work a blocker or declare a final candidate yet.

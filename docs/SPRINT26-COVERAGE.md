@@ -201,3 +201,36 @@ Request-local AI special/fallback observation is implemented, not executed; it
 uses the existing exact-owner brain sequence and issues no fixture attack or
 ability command. Revised observer production compilation and50 focused checks
 PASS,1.8s tests. Visual lifecycle, negative cases and persistence remain pending.
+
+## 5ebfce1b command attribution
+
+Development build242.01s,529 selected tests PASS; ZIP
+bacabc33f8473658e110b17338fd6c8dd13dc4c883073810f4c70eb2c82f81bf;
+DLL9461641edf774f63e7ccf253173cfd3c99cc71644775857e03479d1db0270cb5;
+MVIDfbab9aa6-1d60-443a-b678-1e800c460d6a. Foundation RunId
+20261018T0725104700256Z-50f0b8dbdab74f078c22d1602c915d47 retained FAIL.
+Transaction compat-20261018T072323Z-0c4734029b1e is Restored /verified;
+all118 saves and independent installation/private/settings comparisons pass,
+with no game or lease. The corrected Elephant control and complete Gorgon
+ordinary command pass. Both profiles, damage, reach, trample and critical probes
+continue to pass. The Gorgon normal correction is actually visible in native
+frames: the armored horned quadruped is legible, with rough plates and proportions.
+This is functional inspection, not owner aesthetic approval or polish.
+
+Bulette still stopped after two attacks. The read-only trace captured a native
+ambient UnitActionController tick, outside the fixture pulse (GameDelta0), with
+third claw still planned, animation not acted, conscious live target and legal
+5.548m approach radius versus3.285m distance. The installed UnitCommand.Tick also
+has a9-second timer limit. Ambient plus explicit fixture action ticking is an
+observed duplicate path; its contribution to the early stop is being narrowed,
+not relabeled as a production PASS. No breadth replay was launched on unchanged
+bytes after this attribution.
+
+The next observer opts only Sprint26 into frame-synchronous native ticking. Its
+request-local exact actor gate owns action/cooldown ticks once per Unity frame,
+records suppressed ambient counts and verifies removal of its own Harmony hooks.
+Earlier scenario defaults remain unchanged; no brain is ticked by this clock.
+Recovery/permanent/cooldown waits now use bounded actual game seconds rather than
+assuming a fixed number of synthetic frames. Compilation and50 focused checks
+PASS (1.7s tests); fresh native reproduction is required. The safe-cone/AI paths
+on5ebfce1b were not executed and receive no new verdict.
