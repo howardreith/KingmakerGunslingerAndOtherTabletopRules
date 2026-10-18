@@ -1,6 +1,6 @@
 # Sprint 27 contract: Griffon
 
-Status: IMPLEMENTATION; NOT QUALIFIED; NOT RELEASED.
+Status: PUBLIC CANDIDATE v0.0.161; NOT QUALIFIED; NOT RELEASED.
 Owner mission dated 2026-10-18 selects Sprint 27 through its own stable release,
 exact restoration and final-records merge. Sprint 26 remains closed at v0.0.160.
 Production root selected before candidate bytes: C:/Dev/KingmakerGunslingerLab/wt/s27.
@@ -49,8 +49,9 @@ retain PASSIVE_CREATURE_SENSES_UNMODELED where no faithful engine consumer exist
 ## Publication and assets
 
 Only untemplated SNA IV one, V1d3, VI-IX1d4+1: six roots; no SM, template,
-feat gate, hippogriff, mount, companion or polymorph. Keep Griffon suppressed
-until required hidden qualification passes. Preserve every released GUID/icon.
+feat gate, hippogriff, mount, companion or polymorph. Hidden qualification has
+passed; only Griffon is now unsuppressed for final artifact qualification.
+Preserve every released GUID/icon.
 Expected arithmetic, to be derived from source:111 distinct creatures;
 Monster96/545 unchanged; Nature98/563;1108 generated roots;29 retained native
 wrappers;1137 visible choices. Exact new manifests/dependencies advance together.
@@ -62,8 +63,8 @@ tools/New-ExpandedSummoningIcons.ps1. HumanReview: NOT_PERFORMED_NONBLOCKING.
 Fresh guarded research proved no exact native Griffon and one57-bone Manticore
 renderer with jaw/legs/tail/wings and native attack events. One original low-detail
 prototype is integrated through existing attachment/ownership/rollback machinery.
-Static read-only review found no functional recognizability blocker; native body
-and combat behavior remain unqualified. Shipped success must show the actual
+Read-only review and development native observations found no functional body
+blocker; fresh final-artifact qualification remains required. Success shows the actual
 hybrid body, never donor fallback. No proprietary art redistribution.
 
 ## Qualification and stop

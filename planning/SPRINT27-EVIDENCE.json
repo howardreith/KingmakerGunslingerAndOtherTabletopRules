@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sprint": 27,
-  "status": "IMPLEMENTATION_NOT_QUALIFIED",
+  "status": "PUBLIC_CANDIDATE_NOT_QUALIFIED",
   "baseCommit": "2a0873d8a8848b0f1109415f1e4da14641d9456e",
   "productionRoot": "C:/Dev/KingmakerGunslingerLab/wt/s27",
   "productBranch": "codex/expanded-summoning-sprint27-griffon",
@@ -1013,6 +1013,32 @@
         "protectedSaves": 118,
         "leaseAbsent": true
       }
+    },
+    {
+      "candidateKind": "development",
+      "source": "8c61bbde87adc52a88c3350bc454d8647bd0b31d",
+      "sourceStateSha256": "a9b57ce3bdb2f03728757c6d09a991c40cae119a2d63d3201a6a9ac848325c48",
+      "zipSha256": "37c0905c314e7c9d36f78fd4542380171c43a7e71359625da82c32648b62f647",
+      "dllSha256": "75e904fcd745684144cb256b57b236bee6bef4e048ef43c4ad8399cfd212a67f",
+      "mvid": "7ff328ca-b7d2-4c7a-9754-23ef0857bbf4",
+      "runId": "20261018T2342076531963Z-33990f02529048e8aaceffa4cef98b02",
+      "result": "PASS",
+      "nativeMilliseconds": 112370,
+      "rawResultSha256": "ab1a90deb9762d45e53123395b08811c1023f8aa24e66946a8a17f98a4fab163",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2342075528882Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "expiry-boundary: automatic cancellation, zero attacks, full detachment; actual native disposal return-to-position movement origin observed",
+      "outerSeconds": 256.36169259999997,
+      "assertionCount": 13,
+      "failedPredicates": [],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true,
+        "ownedTaskRemoved": true
+      }
     }
   ],
   "checks": [
@@ -1316,5 +1342,23 @@
     "restoration": "EXACT_CURRENT_INTAKE_118_SAVES",
     "workingRestored": true,
     "baselineImmutable": true
+  },
+  "publicStaging": {
+    "version": "0.0.161",
+    "routesUnsuppressed": 6,
+    "stage": "SOURCE_ONLY_NOT_QUALIFIED",
+    "sourceBoundaryChecks": 9,
+    "finalGate": "PENDING",
+    "freshEligibleNative": "PENDING",
+    "release": "NOT_PERFORMED",
+    "scriptCorrection": "Controlled roster generator uses supported --emit-roster; initial --write refusal retained in tool output, no candidate build or runtime was attempted with stale output.",
+    "focusedGate": {
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint27;expanded-summoning.sprint26;expanded-summoning.visibility'",
+      "productionSeconds": 18,
+      "selectedTests": 15,
+      "registeredTests": 2693,
+      "failures": 0,
+      "testGateSeconds": 4.1
+    }
   }
 }

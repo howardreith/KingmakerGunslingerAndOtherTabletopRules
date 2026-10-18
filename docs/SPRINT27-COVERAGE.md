@@ -1,93 +1,67 @@
-# Sprint 27 ? current Griffon coverage
+# Sprint 27 - current Griffon coverage
 
-Status: DEVELOPMENT; six Griffon routes remain hidden; version remains0.0.160.
-No product merge, stable tag/publication, records merge or Sprint28 work.
-Production/build/qualification root: C:/Dev/KingmakerGunslingerLab/wt/s27.
-Product branch: codex/expanded-summoning-sprint27-griffon; draft PR60 to master.
-Exact artifact tuples, raw digests, durations and all failures are in
-[SPRINT27-EVIDENCE.json](../planning/SPRINT27-EVIDENCE.json).
+Status: PUBLIC CANDIDATE; NOT QUALIFIED; NOT RELEASED. Version 0.0.161.
+The six Griffon routes are staged for final qualification; PR60 remains draft.
+Fixed source/build/qualification/promotion root: C:/Dev/KingmakerGunslingerLab/wt/s27.
+All verdicts, exact source/ZIP/DLL/MVID tuples, durations and retained failures
+are in [SPRINT27-EVIDENCE.json](../planning/SPRINT27-EVIDENCE.json).
+The [contract](../planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md) governs scope.
 
-The compact [contract](../planning/EXPANDED-SUMMONING-SPRINT27-CONTRACT.md)
-selects one untemplated adult Griffon, SNA IV?IX only: one/1d3/1d4+1.
-Source-derived surface:111 project creatures; Monster96/545 unchanged;
-Nature's Ally98/563;1,108 registered roots. Six suppressed roots currently leave
-1,102 public generated roots plus29 retained wrappers (1,131 choices).
-All6,961 released identity-prefix entries and all122 old icon records/pixels
-are preserved;29 exact new identities and one painting/body are added.
+The source-derived public surface is 111 project creatures; Monster 96/545
+unchanged; Nature's Ally 98/563; 1,108 generated roots, 29 retained wrappers,
+1,137 choices. Griffon is untemplated SNA IV one, V 1d3, VI-IX 1d4+1 only.
+All 6,961 released identity-prefix entries and 122 old icon records/pixels
+remain exact; 29 new identities, one painting and one original body are added.
 
-| Exact development source | Fresh native result and scope |
+| Development source | Fresh native result and limits |
 | --- | --- |
-| b27dcff8 | Original body, selection and ordinary attacks observed; overall FAIL on measured reach and pre-action flat-footed comparison; retained. |
-| de85aefe | Foundation and RTWP five-attack pounce PASS; TB/AI/cancellation setup and unmatched fade checks FAIL; retained. |
-| a91232c6 | RTWP/TB pounce, native misses/costs, ordinary signed damage/extra forms, reach, reactions, two owners, target loss and death pass inside mixed FAIL campaign. Matched native lifecycle/rollback/resources and all six hidden root effects pass; Tiger control failures retained. Outdoor12 checks PASS. |
-|5e565f9f | Exact-owner AI10 checks PASS: one genuine native brain tick,5.012m approach and real bite event, no fixture attack/forced roll. Boundary45 checks retain only expiry failure; released controls retain invalid target-size setup failure. |
+| b27dcff8 / de85aefe | Original body and ordinary/RTWP pounce established; reach, pre-action CMD, TB/AI/cancellation setup and unmatched fade failures retained and corrected. |
+| a91232c6 | Real RTWP/TB pounce, misses, costs, signed damage/extra forms, reach, reactions, two owners, target loss/death, native lifecycle and hidden root effects pass within mixed FAIL batches; outdoor 12 checks PASS. |
+| 5e565f9f | Exact-owner AI 10 checks PASS: one native brain tick, 5.012m approach and real bite, no supplied attack/roll. Boundary/control failures retained. |
+| 51c14014 | Released Tiger/Eagle/Bulette controls 14 checks PASS. Six current-stack Griffon persistence stages PASS: ON and OFF cleanup/fresh absence, 18.4/18.5 minutes. Expiry observer failure retained. |
+| ef007e4b | Cancellation and complete detachment pass; assumed summon-follow identity fails. Retained with exact restoration. |
+| 8c61bbde | Expiry 12 checks PASS, 256.362s transaction: callback cancels the charge, no attacks/queued child, full destruction/detachment. Read-only native runner hook identifies the inert move as LeaveCombat/ReturnToStartingPositionIfNeeded during disposal. |
 
-Every completed transaction restored fresh current Mods/settings/private
-references and all118 saves exactly. No owned game, lease or task remains.
-Build5e565f181.146s; AI transaction239.104s; boundary/control batch619.420s.
-No failed case was relaunched unchanged. The latest correction uses the actual
-native predicate interruption overload: the bool overload skips uninterruptible
-commands. Its narrow expiry-only phase records the automatic marker callback
-before/after command state; it never invokes the lifetime/rule handler directly.
-Tiger target size is now applied after reset and before each command. Latest
-production compilation17.1s and17/2,693 focused tests PASS (test gate4.3s).
-New phase registration needs fresh preflight; affected native reruns pending.
+Every completed transaction restored current Mods/settings/private references
+and all 118 saves exactly. Both persistence envelopes restored fresh Working
+bytes/metadata; baseline remained immutable. Completed owned tasks were removed.
+Development evidence cannot qualify stable publication and is not relabeled.
 
-Original body: eagle head/beak, foretalons/wings, feline torso/hindquarters on
-the measured Manticore rig, with private per-view mesh/material ownership.
-Native selection, real navigation, ordinary and pounce events, death,
-failed-attach rollback, quantity isolation and bounded cleanup are observed.
-The matched untouched native-body/effect control proves absent DismemberUnitFX:
-no dissolve is claimed; both follow native delayed despawn with exact cleanup.
-Icon: real pinned family painting, readable at32/48/64px; native species image
-and all six root consumers pass. Prior icon assignments remain unchanged.
+The shipped project-owned eagle/lion mesh uses the measured Manticore rig:
+eagle head/beak, foretalons, wings, feline torso/hindquarters. Native selection,
+real navigation/attacks, rollback, quantity isolation and bounded teardown are
+observed. Matched native donor/effect has no DismemberUnitFX; both follow native
+delayed despawn, with no dissolve claimed. The real pinned family painting is
+readable at 32/48/64px; species and six root icon consumers are verified.
 
-HumanReview: NOT_PERFORMED_NONBLOCKING. Read-only reviewer found no new
-blocking body defect. Coarse anatomy, rigid pointed wings and simplified
-transitions remain visual debt. Outdoor fog/tree occlusion limits whole-body
-pixel evidence; structured outdoor placement/selection/navigation proof is
-separate. These observations are not owner aesthetic approval.
+HumanReview: NOT_PERFORMED_NONBLOCKING. Read-only review found no new blocking
+body defect. Coarse anatomy, rigid pointed wings and simplified transitions
+remain visual debt. Outdoor tree/fog occlusion limits whole-body pixel proof;
+structured selection/navigation observations are separate.
 
-Rules reconciliation: no automatic Grab, carry, Rend or wing/tail attacks.
-Shared lawful held-target rake restrictions remain; Griffon has no grapple
-initiation product path. Flight is one effective80-foot ordinary-map aerial
-route; separate30-foot land mode, Fly3 ranks/checks/maneuverability and Z-axis
-flight are unmodeled. Passive darkvision/low-light/scent retain the existing
-PASSIVE_CREATURE_SENSES_UNMODELED policy without replacement detection.
+No automatic Grab, carry, Rend or wing/tail attacks. Existing lawful held-target
+rake restrictions remain shared behavior; Griffon has no grapple-initiation path.
+Flight is one effective 80-foot ordinary-map aerial route; separate 30-foot land
+mode, Fly 3 ranks/checks/maneuverability and Z-axis flight are unmodeled. Printed
+darkvision/low-light/scent retain PASSIVE_CREATURE_SENSES_UNMODELED.
 
-Offline support: publisher86 refusal/decision checks, exact development-save
-authority9, source boundary9, persistence27 request round trips/252 refusals,
-launcher39 valid/23 refused routes and prior scenario preflight659 PASS.
-Required next work: narrow expiry/control reruns; exact Working ON/OFF
-prepare/cleanup/fresh-absence trios; finish publication inputs/unsuppress only
-Griffon; one coherent Sprint gate and bounded fresh eligible native campaign;
-publisher preflight/dry-run, product merge/stable release/download verification,
-exact restoration and final-records merge. Stop before Sprint28.
+Offline support includes publisher 86 refusals, development-save authority 9,
+source-boundary 9, persistence 27 round trips/252 refusals, launcher 39 valid/23
+refused routes, and scenario preflight 661 PASS. Latest observer focused gate:
+production 17.8s; 7 tests PASS in 0.9s. New DEV build 181.933s; 17 tests PASS.
 
-On51c14014, all14 released-control checks PASS: Tiger ordinary/pounce/misses
-with the intended Huge target, Eagle and Bulette ordinary routines. The
-expiry-only run retains FAIL, while recording the automatic callback once,
-uninterruptible charge before/zero active commands after, Interrupted result,
-zero queued/weapon attacks and native destruction. Its later raw UnitMoveTo
-follow object is not a surviving charge; the revised observer now requires
-complete view/holding-state detachment and exact native-follow identity.
-This reader correction compiled19.9s;17 focused tests PASS (gate1.8s).
+Final campaign plan: one Sprint gate (~4 minutes), standalone combat (~8),
+public presentation/roots (~6), outdoor (~4), combined combat/presentation (~16),
+and six fresh eligible current-stack persistence stages (~37). Publication,
+download verification and final restoration bring the planned total to ~90
+minutes. Reuse the exact final ZIP across fresh transactions. Reuse unaffected
+released qualification only with its original tuple and a dependency audit.
+No old-roster, five-profile or 16-module campaign is selected.
 
-Six fresh native Griffon persistence stages PASS under the actual eleven-mod
-installed stack: ON prepare/cleanup/absence (1104.705s), then independent
-prepare/OFF cleanup/ON fresh absence (1111.640s). Both envelopes restored their
-fresh Working bytes/metadata and all118 saves; baseline immutable; exact current
-Mods/settings/private references restored. No native game, owned task or lease
-remains. Combined-profile WhatIf PASS16.916s with no deployment or mutation.
-Fresh closed-phase preflight661 checks PASS. The corrected expiry observer is
-the only pending hidden rerun before publication staging; no failed raw result
-is relabeled, and development proof cannot qualify a stable release.
+Public focused gate PASS: production 18.0s; 15/2,693 selected tests, zero failures
+(test gate 4.1s). Source boundary and nine corruption fixtures PASS.
 
-The ef007e expiry rerun retained FAIL only on the assumed summon-follow identity.
-Cancellation, zero attacks, complete native detachment/destruction and exact
-118-save/install restoration passed. A scoped read-only UnitCommands.Run hook
-now records the actual native movement origin; it permits only those exact
-movement objects on detached data, never attack/ability or charge/rake state.
-Its focused compilation and one narrow native rerun are required.
-
-Native-origin observer correction: production compilation17.8s and7 focused tests PASS (0.9s gate); phase/parser/metadata unchanged, reusing661-check preflight. This is a narrow observer rerun, not another broad campaign.
+Remaining: final Sprint gate; fresh eligible native
+campaign; publisher preflight/dry-run; conditional product merge, stable release,
+actual downloaded-asset verification, exact restoration and final-records merge.
+Sprint 26 remains closed. Sprint 28 has not started; stop after Sprint 27.
