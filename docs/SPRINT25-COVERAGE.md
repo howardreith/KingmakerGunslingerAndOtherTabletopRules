@@ -4,7 +4,8 @@
 is non-draft/non-prerelease. [Product PR49](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/49)
 merged as `ae624504a0493e4ed3870783d797e726c774bb64`; its tree equals the tested
 source below. The assigned product root remains frozen; publication and this
-documentation-only final-records branch do not rebuild it. Sprint26 was not started.
+documentation-only [final-records PR57](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/57)
+do not rebuild it. Sprint26 was not started.
 
 ## Exact public artifact
 
