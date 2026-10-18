@@ -32,6 +32,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "stonetoflesh", "tremorsense" };
                 var selected = all.Where(v => !string.IsNullOrEmpty(v.name) &&
                     (terms.Any(t => v.name.IndexOf(t, StringComparison.OrdinalIgnoreCase) >= 0) ||
+                    v.AssetGuid == "fa5ee5f4cd5c6394f8b497c773f8e14a" ||
                     v.name == "ChargeAbility" || v.name == "ChargeBuff" ||
                     v.name == "Pounce" || v.name == "OverrunAbility"))
                     .OrderBy(v => v.name, StringComparer.Ordinal).ToArray();
