@@ -153,3 +153,51 @@ Build95c21171 stopped before package/native use after528 of529 selected tests
 passed: the shortened resume omitted the exact current public equation wording
 required by the records check. The wording is repaired; the focused failed
 records reproduction passes. The build/dispatch refusal remains preserved.
+
+## f192d10c development observations
+
+Development ZIP6ac10d861a79a15e32275cdbf050b07be822a9bb89f90a5dde0fd1efd3ba243d;
+DLLd1111f32244b5b94b965456f67035dc5e4a43deb1aaba99cfe9f07e686ef9983;
+MVID876d1e75-87ba-4587-805d-805d93847940. Build184.50s /529 selected tests PASS.
+Dispatch preflight632 was reused from95c21171 with its hash and proof that only
+two records files changed; no changed observer was labeled as old execution.
+
+Foundation RunId20261018T0659367975968Z-cadd6d9ae74445a2b3999d6b5add0418,
+transaction compat-20261018T065749Z-c5f87ddd11ae: FAIL. The repaired composed
+profiles, all signed damage, all limb ranges, actual native Power Attack, unforced
+trample2d8+10/DC21 and genuine bite threat/confirmation probes passed. Gorgon
+completed all three actual attacks with one native cost; the observer's stronger
+Success-result requirement was incorrect because installed UnitAttack.OnTick
+calls Interrupt when TryStartNextAttack has no planned attack. The new read-only
+trace records this seam and permits native exhaustion only alongside the complete
+actual routine. Bulette still recorded two actual attacks; it is unresolved,
+with alive actors, legal measured reach and more than113 seconds of summon time.
+The released Elephant's rules matched except HP: the selected quiet helper
+intentionally sets100000 base HP. Its control now uses the unchanged own-tier
+cast and ordinary brain-disable path, preserving its actual profile.
+
+Breath RunId20261018T0706057262010Z-61f60b201b0b4706bfb74d6f1dadb8d8,
+transaction compat-20261018T070421Z-2a224ab9f157: setup precondition not obtained;
+RuntimeResult FAIL,95.51s native /226.38s outer. Ally refusal was seen, but the
+selected mansion lane never admitted the safe cast. No exposure or petrification
+experiment occurred. The next observer searches a bounded connected set with
+native WouldTargetUnit and CanTarget, retains unobtained setup evidence and
+checks the actual60-foot range. The production range explicitly selects the
+native Projectile mode; no native cone spell or wall rule is changed.
+
+Both transactions are Restored /restorationVerified=true; all118 saves passed.
+Independent direct comparisons match968 installation entries,16 private-reference
+entries and83 settings values; game/lease/live backup/staging are absent. The
+first supplemental reader accidentally wrapped JSON arrays in one outer array;
+its false verdict remains beside corrected r2 proof with observed cardinalities.
+No machine content difference was found.
+
+The actual Gorgon pixels still exposed dark, poorly legible anatomy. Inspection
+found inward normals on the normalized closed surfaces. Only the Gorgon exporter
+now reverses those lighting normals while preserving the native-visible face
+orientation. Mesh0f3c8ce10c4c0d50650ecb5a042985d1b242977716c5b7a0286754d370fdc508;
+albedo unchanged. Fresh native recognition and presentation are still required.
+Request-local AI special/fallback observation is implemented, not executed; it
+uses the existing exact-owner brain sequence and issues no fixture attack or
+ability command. Revised observer production compilation and50 focused checks
+PASS,1.8s tests. Visual lifecycle, negative cases and persistence remain pending.

@@ -96,7 +96,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (key == "gorgon") foreach (int frame in Sprint26Trample(fixture, turnBased)) yield return frame;
                     }
                     if (!turnBased) {
-                        var control = CastExpandedSummoningQuietUnit(fixture, "elephant");
+                        var control = CastExpandedSummoningOwnTier(fixture, "elephant");
+                        SetExpandedSummoningBrainActive(control, false);
                         try {
                             foreach (int frame in Sprint26Appearance(control, "released-elephant-control", false)) yield return frame;
                             foreach (int frame in Sprint22SetPowerAttack(control, false)) yield return frame;
@@ -105,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     yield break;
                 }
+                if (phase == "rtwp-ai") { foreach (int frame in Sprint26Ai(fixture)) yield return frame; yield break; }
                 if (phase.StartsWith("bulette-leap-", StringComparison.Ordinal))
                 {
                     foreach (bool success in new[] { true, false })
@@ -179,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["bodyCount"] = bodies.Length, ["assetStatus"] = asset,
                 ["pose"] = pose,
                 ["partyCamera"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
-                    "sprint26-" + key + "-" + state + ".png") }, "The exact original Gorgon or native Bulette body is visible, finite and selectable.");
+                    "sprint26-" + key + "-" + state + "-" + owner.UniqueId.Substring(0, 8) + "-" + Time.frameCount + ".png") }, "The exact original Gorgon or native Bulette body is visible, finite and selectable.");
         }
 
         private static JObject Sprint26Pose(SkinnedMeshRenderer body)
@@ -316,18 +318,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observer = new Sprint24AttackObserver { Owner = owner, Target = target };
             var costs = new JArray();
             var command = new UnitAttack(target) { ForceFullAttack = true, IsSingleAttack = false };
+            var endings = new JArray();
             EventBus.Subscribe(observer);
             try
             {
                 using (var economy = new FirearmReviewCosts(owner, costs))
+                using (var trace = new Sprint26CommandTrace(owner, endings))
                 {
                     owner.Commands.Run(command);
                     int frames = 0; DateTime deadline = DateTime.UtcNow.AddSeconds(30);
                     while (!command.IsFinished && frames++ < 3000 && DateTime.UtcNow < deadline) yield return 0;
-                    bool exact = command.IsFinished && command.Result == UnitCommand.ResultType.Success && observer.WeaponAttacks.Count == 3 && command.AllAttacks.Count == 3 &&
+                    bool exact = command.IsFinished && (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) && observer.WeaponAttacks.Count == 3 && command.AllAttacks.Count == 3 &&
                         economy.Count(command) == 1 && economy.Exact(command, turnBased) && !command.Cutscene && !command.IsIgnoreCooldown;
                     Sprint25Check("ordinary-" + key + "-" + turnBased, exact, new JObject { ["finished"] = command.IsFinished,
-                        ["result"] = command.Result.ToString(), ["frames"] = frames, ["planned"] = command.AllAttacks.Count,
+                        ["result"] = command.Result.ToString(), ["frames"] = frames, ["planned"] = command.AllAttacks.Count, ["nativeEnds"] = endings, ["nativeListExhausted"] = trace.Exhausted(command),
+                        ["allOwnerAttacks"] = new JArray(observer.OwnerWeaponAttacks.Select(v => new JObject { ["target"] = v.Target?.UniqueId, ["weapon"] = v.Weapon?.Blueprint?.AssetGuid })),
                         ["weapons"] = new JArray(observer.WeaponAttacks.Select(v => v.Weapon.Blueprint.AssetGuid)),
                         ["costs"] = costs, ["ownerDestroyed"] = owner.Destroyed, ["ownerDead"] = owner.Descriptor.State.IsDead,
                         ["ownerPosition"] = SurveyVector(owner.Position), ["targetPosition"] = SurveyVector(target.Position),
@@ -477,21 +482,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Sprint26Appearance(owner, "gorgon")) yield return frame;
                 foreach (int frame in Sprint26Appearance(second, "gorgon")) yield return frame;
                 owner.JoinCombat(); target.JoinCombat(); second.JoinCombat();
-                Vector3 far; string lane, direction;
-                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 10f, out far, out lane, out direction);
-                Vector3 forward = (far - origin).normalized;
-                PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                PlaceExpandedSummoningUnit(second, origin - forward * 5f);
+                Vector3 origin, forward; JObject lane;
+                bool safeLane = Sprint26FindBreathLane(fixture, owner, second, target, breath, out origin, out forward, out lane);
+                Sprint25Check("breath-safe-cone-" + turnBased, safeLane, lane,
+                    "One legal native 60-foot cone reaches the disposable target, refuses the fixture ally and accepts the restored safe layout.");
+                if (!safeLane) throw new InvalidOperationException("Safe cone precondition not obtained in bounded native search.");
                 var data = new AbilityData(owner.Descriptor.Abilities.GetAbility(breath));
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + forward * 4f);
-                bool allyRefused = !data.CanTarget(new TargetWrapper(target));
-                PlaceExpandedSummoningUnit(fixture.Caster, origin - forward * 7f);
-                bool safeAccepted = data.CanTarget(new TargetWrapper(target));
-                Sprint25Check("breath-safe-cone-" + turnBased, allyRefused && safeAccepted,
-                    new JObject { ["allyRefused"] = allyRefused, ["safeAccepted"] = safeAccepted, ["lane"] = lane,
-                        ["lengthFeet"] = breath.GetComponent<Kingmaker.UnitLogic.Abilities.Components.AbilityDeliverProjectile>().Length.Value },
-                    "The exact native 60-foot blocked cone refuses an ally in its area and admits the safe cast.");
-                if (!allyRefused || !safeAccepted) throw new InvalidOperationException("Safe cone precondition not obtained.");
                 if (turnBased)
                 {
                     var admission = new JObject();
@@ -512,6 +508,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var activeClock = owner.Buffs.GetBuff(cooldown);
                         if (activeClock != null && !clockSeen) {
                             clockSeen = !data.IsAvailable;
+                            Sprint26Body(owner, "gorgon", "breath-" + turnBased);
                             independentSeen = second.Buffs.GetBuff(cooldown) == null;
                             initialSeconds = (activeClock.EndTime - Game.Instance.TimeController.GameTime).TotalSeconds;
                         }
@@ -618,6 +615,77 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static bool Sprint26WalkablePoint(Vector3 requested, Pathfinding.NNInfo anchor, out Vector3 point)
+        {
+            var nearest = AstarPath.active.GetNearest(requested);
+            point = nearest.clampedPosition;
+            return nearest.node != null && nearest.node.Walkable && nearest.node.Area == anchor.node.Area &&
+                nearest.node.GraphIndex == anchor.node.GraphIndex && Vector3.Distance(requested, point) <= .6f;
+        }
+
+        private static bool Sprint26FindBreathLane(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData second, UnitEntityData target, BlueprintAbility breath,
+            out Vector3 origin, out Vector3 forward, out JObject report)
+        {
+            var anchor = AstarPath.active.GetNearest(fixture.Caster.Position);
+            if (anchor.node == null || !anchor.node.Walkable) throw new InvalidOperationException("No native cone survey anchor.");
+            var delivery = breath.GetComponent<Kingmaker.UnitLogic.Abilities.Components.AbilityDeliverProjectile>();
+            var data = new AbilityData(owner.Descriptor.Abilities.GetAbility(breath));
+            var party = fixture.PartyBefore.OfType<UnitEntityData>().Where(v => v != null && !v.Destroyed).ToArray();
+            int origins = 0, connected = 0, reached = 0, safe = 0;
+            var lastBlockers = new JArray();
+            origin = forward = Vector3.zero;
+            report = new JObject { ["rangeMode"] = breath.Range.ToString(), ["effectiveRangeFeet"] = breath.GetRange().Value,
+                ["deliveryLengthFeet"] = delivery.Length.Value, ["sourceEnemy"] = owner.IsEnemy(target),
+                ["sourceCanAttack"] = owner.CanAttack(target) };
+            foreach (int distance in new[] { 6, 10, 14 })
+                for (int dx = -15; dx <= 15; dx += 3)
+                    for (int dz = -15; dz <= 15; dz += 3)
+                    {
+                        Vector3 candidate;
+                        if (!Sprint26WalkablePoint(anchor.clampedPosition + new Vector3(dx, 0, dz), anchor, out candidate)) continue;
+                        origins++;
+                        foreach (Vector3 direction in CompassOffsets)
+                        {
+                            Vector3 point, behind, other, middle;
+                            if (!Sprint26WalkablePoint(candidate + direction * distance, anchor, out point) ||
+                                !Sprint26WalkablePoint(candidate - direction * 4, anchor, out behind) ||
+                                !Sprint26WalkablePoint(candidate - direction * 2, anchor, out other) ||
+                                !Sprint26WalkablePoint(candidate + direction * (distance / 2f), anchor, out middle)) continue;
+                            if (party.Any(v => Math.Min(Vector3.Distance(v.Position, candidate), Vector3.Distance(v.Position, point)) < 3.5f)) continue;
+                            connected++;
+                            PlaceExpandedSummoningUnit(owner, candidate); PlaceExpandedSummoningUnit(target, point);
+                            if (second != null) PlaceExpandedSummoningUnit(second, other); PlaceExpandedSummoningUnit(fixture.Caster, behind);
+                            if (!delivery.WouldTargetUnit(data, target.Position, target)) continue;
+                            reached++;
+                            if (!data.CanTarget(new TargetWrapper(target))) {
+                                lastBlockers = new JArray(Game.Instance.State.Units.All.Where(v => v != null && !v.Destroyed &&
+                                    !ReferenceEquals(v, owner) && !owner.IsEnemy(v) && delivery.WouldTargetUnit(data, target.Position, v))
+                                    .Select(v => v.UniqueId));
+                                continue;
+                            }
+                            safe++;
+                            PlaceExpandedSummoningUnit(fixture.Caster, middle);
+                            bool allyReached = delivery.WouldTargetUnit(data, target.Position, fixture.Caster);
+                            bool allyRefused = allyReached && !data.CanTarget(new TargetWrapper(target));
+                            PlaceExpandedSummoningUnit(fixture.Caster, behind);
+                            bool restoredSafe = data.CanTarget(new TargetWrapper(target));
+                            if (!allyRefused || !restoredSafe) continue;
+                            origin = candidate; forward = (point - candidate).normalized;
+                            report["originCandidates"] = origins; report["connectedCandidates"] = connected;
+                            report["targetReachedCandidates"] = reached; report["safeCandidates"] = safe;
+                            report["origin"] = SurveyVector(origin); report["target"] = SurveyVector(point);
+                            report["allyReached"] = allyReached; report["allyRefused"] = allyRefused; report["safeAccepted"] = restoredSafe;
+                            return breath.GetRange().Value == 60 && delivery.Length.Value == 60;
+                        }
+                    }
+            report["originCandidates"] = origins; report["connectedCandidates"] = connected;
+            report["targetReachedCandidates"] = reached; report["safeCandidates"] = safe;
+            report["lastNonenemyHits"] = lastBlockers;
+            report["setupPreconditionObtained"] = false;
+            return false;
+        }
+
         private IEnumerable<int> Sprint26PowerAttack(UnitEntityData owner)
         {
             var weapons = Sprint19Limbs(owner);
@@ -692,6 +760,210 @@ namespace KingmakerGunslinger.RuntimeTesting
             }finally{EventBus.Unsubscribe(observer);SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();
                 owner.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{owner});target.Descriptor.State.Size=originalSize;
                 target.Stats.SaveReflex.BaseValue=reflex;ResetExpandedSummoningHostile(fixture);}
+        }
+
+        private IEnumerable<int> Sprint26Ai(ExpandedSummoningCorrectionFixture fixture)
+        {
+            foreach (string key in new[] { "gorgon", "bulette" })
+                foreach (bool fallback in new[] { false, true })
+                    foreach (int frame in Sprint26AiCase(fixture, key, fallback)) yield return frame;
+        }
+
+        private IEnumerable<int> Sprint26AiCase(ExpandedSummoningCorrectionFixture fixture, string key, bool fallback)
+        {
+            ResetExpandedSummoningHostile(fixture);
+            // Keep the summoned runtime brain and its production actions intact.
+            var owner = CastExpandedSummoningOwnTier(fixture, key);
+            var target = fixture.Hostile;
+            var casterPosition = fixture.Caster.Position;
+            int fort = target.Stats.SaveFortitude.BaseValue;
+            var random = UnityEngine.Random.state;
+            var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
+            var commands = new HashSet<UnitCommand>();
+            var ambient = new HashSet<string>(StringComparer.Ordinal);
+            var specialName = "KMG_Summoning_Special_" + (key == "gorgon" ? "Gorgon_Breath" : "Bulette_Leap");
+            var special = owner.Descriptor.Abilities.Enumerable.Single(v => v.Blueprint.name == specialName);
+            var data = new AbilityData(special);
+            string lane, direction; Vector3 far;
+            int ticks = 0; bool effect = false; bool fallbackPrecondition = false;
+            GorgonBreathActivation activation = null;
+            BuletteLeapAttempt leap = null;
+            var saves = new Sprint26Saves(target);
+            try
+            {
+                foreach (int frame in Sprint26Appearance(owner, key)) yield return frame;
+                owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
+                owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
+                owner.JoinCombat(); target.JoinCombat();
+                float distance = key == "gorgon" ? 8f : fallback ? owner.Corpulence + target.Corpulence + .2f : 10f;
+                Vector3 origin, forward;
+                if (key == "gorgon") {
+                    JObject cone;
+                    if (!Sprint26FindBreathLane(fixture, owner, null, target, special.Blueprint, out origin, out forward, out cone))
+                        throw new InvalidOperationException("AI safe cone precondition not obtained: " + cone);
+                    far = target.Position; lane = cone.ToString(Newtonsoft.Json.Formatting.None);
+                    if (fallback) {
+                        var point = AstarPath.active.GetNearest(origin + forward * 3f);
+                        if (point.node == null || !point.node.Walkable) throw new InvalidOperationException("AI fallback ally point unavailable.");
+                        PlaceExpandedSummoningUnit(fixture.Caster, point.clampedPosition);
+                    }
+                } else if (!fallback) {
+                    var selected = Sprint23FindChargeRoute(fixture, owner, target, data, out origin, out lane);
+                    if (selected == null) throw new InvalidOperationException("AI Leap lane unavailable: " + lane);
+                    far = target.Position; forward = (far - origin).normalized;
+                } else {
+                    origin = Sprint24AiCombatLane(fixture.Caster, owner, target, distance, out far, out lane, out direction);
+                    PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
+                    forward = (far - origin).normalized;
+                }
+                fallbackPrecondition = !fallback || !data.CanTarget(new TargetWrapper(target));
+                if (!fallbackPrecondition) throw new InvalidOperationException("AI fallback precondition not obtained: " + key);
+                if (!fallback && !data.CanTarget(new TargetWrapper(target))) throw new InvalidOperationException("AI special target is not legal: " + key);
+                target.Stats.SaveFortitude.BaseValue = -100; saves.DesiredRoll = 2;
+                foreach (var unit in new[] { owner, target }) {
+                    unit.Wake(0f);
+                    if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+                }
+                owner.Memory.Add(target); target.Memory.Add(owner);
+                owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                SetExpandedSummoningBrainActive(owner, true);
+                owner.Brain.RestoreAvailableActions();
+                owner.JoinCombat(); target.JoinCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+                new Kingmaker.Controllers.Combat.UnitCombatPrepareController().Tick();
+                EventBus.Subscribe(attacks);
+                float travel = 0;
+                DateTime deadline = DateTime.UtcNow.AddSeconds(30);
+                using (var seed = new Sprint26JumpSeed(owner, 20))
+                {
+                    for (int frame = 0; frame < 1800 && DateTime.UtcNow < deadline; frame++)
+                    {
+                        if (frame == 0 || frame % 60 == 0 && !owner.Commands.Raw.Any(v => v != null && !v.IsFinished))
+                        {
+                            foreach (string id in Sprint24TickExactAi(owner)) ambient.Add(id);
+                            ticks++;
+                        }
+                        foreach (var command in owner.Commands.Raw.Where(v => v != null)) {
+                            commands.Add(command);
+                            var cast = command as UnitUseAbility;
+                            if (cast?.ExecutionProcess != null && !cast.ExecutionProcess.IsEnded) cast.ExecutionProcess.Tick();
+                            var attack = command as UnitAttack;
+                            if (attack != null) leap = BuletteLeapRuntime.Observation(attack) ?? leap;
+                        }
+                        travel = Math.Max(travel, Vector3.Distance(origin, owner.Position));
+                        activation = GorgonBreathRuntime.Latest(owner) ?? activation;
+                        effect = fallback ? attacks.WeaponAttacks.Count > 0 : key == "gorgon"
+                            ? target.Buffs.Enumerable.Any(v => v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrificationGuid)
+                            : leap != null && leap.PlannedClaws == 4 && attacks.WeaponAttacks.Count == 4;
+                        if (effect) break;
+                        Game.Instance.IsPaused = false;
+                        yield return 0;
+                    }
+                    bool selected = fallback ? commands.OfType<UnitAttack>().Any(v => v.AiAction != null)
+                        : commands.OfType<UnitUseAbility>().Any(v => v.AiAction != null && ReferenceEquals(v.Spell.Blueprint, special.Blueprint));
+                    bool exact = selected && effect && ticks > 0 && owner.IsBrainActive && fallbackPrecondition &&
+                        (fallback || (key == "gorgon" ? activation != null : leap != null && leap.Check.IsPassed && seed.Count == 1));
+                    Sprint25Check("ai-" + key + "-" + (fallback ? "fallback" : "special"), exact,
+                        new JObject { ["unit"] = owner.UniqueId, ["target"] = target.UniqueId, ["productionBrain"] = owner.Blueprint.Brain.name,
+                            ["lane"] = lane, ["fallbackPrecondition"] = fallbackPrecondition, ["specialAvailable"] = data.IsAvailable,
+                            ["exactOwnerTicks"] = ticks, ["ambientCandidatesNeverTicked"] = new JArray(ambient),
+                            ["fixtureAttackCommands"] = 0, ["fixtureAbilityCommands"] = 0, ["effectObserved"] = effect,
+                            ["travel"] = travel, ["weapons"] = new JArray(attacks.WeaponAttacks.Select(v => v.Weapon.Blueprint.AssetGuid)),
+                            ["selected"] = selected, ["commands"] = new JArray(commands.Select(v => new JObject {
+                                ["type"] = v.GetType().Name, ["aiAction"] = v.AiAction?.name,
+                                ["finished"] = v.IsFinished, ["result"] = v.Result.ToString() })) },
+                        "The exact owner's unmodified native brain selects and executes a useful special or lawful ordinary fallback without fixture-issued combat commands.");
+                }
+            }
+            finally
+            {
+                EventBus.Unsubscribe(attacks); saves.Dispose(); UnityEngine.Random.state = random;
+                SetExpandedSummoningBrainActive(owner, false); owner.Commands.InterruptAll(true);
+                target.Buffs.Enumerable.FirstOrDefault(v => v.Blueprint.AssetGuid == Sprint26MagicalBeastRules.PetrificationGuid)?.Remove();
+                target.Stats.SaveFortitude.BaseValue = fort; PlaceExpandedSummoningUnit(fixture.Caster, casterPosition);
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }); ResetExpandedSummoningHostile(fixture);
+            }
+        }
+
+        // Request-local read-only traces distinguish native attack-list exhaustion
+        // from early target/range/animation interruption. No command is advanced
+        // or completed by this observer.
+        private sealed class Sprint26CommandTrace : IDisposable
+        {
+            private static Sprint26CommandTrace active;
+            private readonly UnitEntityData owner;
+            private readonly JArray rows;
+            private readonly HashSet<UnitCommand> exhausted = new HashSet<UnitCommand>();
+            internal bool Exhausted(UnitCommand command) { return exhausted.Contains(command); }
+            private readonly Harmony12.HarmonyInstance harmony;
+            private readonly string id = "KMG.Sprint26.CommandTrace." + Guid.NewGuid().ToString("N");
+            private readonly System.Reflection.MethodInfo interrupt = typeof(UnitCommand).GetMethod("Interrupt", new[] {typeof(bool)});
+            private readonly System.Reflection.MethodInfo target = typeof(UnitAttack).GetMethod("UpdateTarget", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            internal Sprint26CommandTrace(UnitEntityData owner, JArray rows)
+            {
+                if (active != null || interrupt == null || target == null) throw new InvalidOperationException("Native command trace boundary unavailable or nested.");
+                this.owner = owner; this.rows = rows;
+                harmony = Harmony12.HarmonyInstance.Create(id);
+                var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+                try {
+                    harmony.Patch(interrupt, new Harmony12.HarmonyMethod(typeof(Sprint26CommandTrace).GetMethod("Interrupting", flags)));
+                    harmony.Patch(target, null, new Harmony12.HarmonyMethod(typeof(Sprint26CommandTrace).GetMethod("Targeted", flags)));
+                    active = this;
+                } catch {
+                    harmony.Unpatch(interrupt, Harmony12.HarmonyPatchType.All, id);
+                    harmony.Unpatch(target, Harmony12.HarmonyPatchType.All, id);
+                    throw;
+                }
+            }
+            private static void Interrupting(UnitCommand __instance)
+            {
+                var trace = active;
+                if (trace == null || __instance.IsFinished || !ReferenceEquals(__instance.Executor, trace.owner)) return;
+                var attack = __instance as UnitAttack;
+                JObject row = Snapshot(attack);
+                row["event"] = "native-Interrupt";
+                row["commandType"] = __instance.GetType().FullName;
+                row["callers"] = new JArray(new System.Diagnostics.StackTrace().GetFrames().Skip(1).Take(10).Select(v =>
+                    v.GetMethod().DeclaringType?.FullName + "." + v.GetMethod().Name));
+                if (attack != null && (bool)row["plannedAbsent"] && (int)row["plannedIndex"] >= attack.AllAttacks.Count &&
+                    row["callers"].Values<string>().Any(v => v.Contains("UnitAttack.OnTick"))) trace.exhausted.Add(attack);
+                trace.rows.Add(row);
+            }
+            private static void Targeted(UnitAttack __instance, bool __result)
+            {
+                var trace = active;
+                if (__result || trace == null || !ReferenceEquals(__instance.Executor, trace.owner)) return;
+                JObject row = Snapshot(__instance);
+                row["event"] = "native-UpdateTarget-false";
+                trace.rows.Add(row);
+            }
+            private static JObject Snapshot(UnitAttack attack)
+            {
+                if (attack == null) return new JObject();
+                var planned = ReadExpandedSummoningOptionalMember(attack, "PlannedAttack") as AttackHandInfo;
+                return new JObject {
+                    ["frame"] = Time.frameCount, ["plannedIndex"] = (int)ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex"),
+                    ["plannedCount"] = attack.AllAttacks.Count, ["plannedAbsent"] = planned == null,
+                    ["plannedWeapon"] = planned?.Hand?.MaybeWeapon?.Blueprint?.AssetGuid, ["plannedRange"] = planned?.WeaponRange,
+                    ["target"] = attack.Target?.UniqueId, ["targetDestroyed"] = attack.Target?.Destroyed,
+                    ["targetDead"] = attack.Target?.Descriptor?.State?.IsDead,
+                    ["targetUnconscious"] = attack.Target?.Descriptor?.State?.IsUnconscious,
+                    ["approachRadius"] = attack.ApproachRadius, ["enoughClose"] = attack.IsUnitEnoughClose,
+                    ["distance"] = attack.Target == null ? -1f : attack.Executor.DistanceTo(attack.Target),
+                    ["ownerCanAct"] = attack.Executor.Descriptor.State.CanAct,
+                    ["animationActed"] = attack.Animation?.IsActed, ["animationFinished"] = attack.Animation?.IsFinished,
+                    ["unityFrameDelta"] = Time.deltaTime, ["nativeGameDelta"] = Game.Instance.TimeController.GameDeltaTime,
+                    ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds
+                };
+            }
+            public void Dispose()
+            {
+                harmony.Unpatch(interrupt, Harmony12.HarmonyPatchType.All, id);
+                harmony.Unpatch(target, Harmony12.HarmonyPatchType.All, id);
+                if (ReferenceEquals(active, this)) active = null;
+            }
         }
 
         private void Sprint26ProgressTurn(UnitEntityData owner)
