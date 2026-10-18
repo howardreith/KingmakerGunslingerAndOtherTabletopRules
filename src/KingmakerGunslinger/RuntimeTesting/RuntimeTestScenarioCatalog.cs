@@ -158,6 +158,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ObserveExpandedSummoningSprint24TheropodCensus =
             "observe-expanded-summoning-sprint24-theropod-census";
         /// <summary>Bounded read-only Sprint 26 native inputs; no actor or save.</summary>
+        internal const string ObserveExpandedSummoningSprint27Inputs =
+            "observe-expanded-summoning-sprint27-native-inputs";
         internal const string ObserveExpandedSummoningSprint26Inputs =
             "observe-expanded-summoning-sprint26-native-inputs";
         /// <summary>
@@ -860,6 +862,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint22Contracts,
                 ObserveExpandedSummoningSprint24TheropodCensus,
                 ObserveExpandedSummoningSprint26Inputs,
+                ObserveExpandedSummoningSprint27Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,

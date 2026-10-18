@@ -1362,6 +1362,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Complete(RunExpandedSummoningSprint24TheropodCensus());
                     return;
                 }
+                if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint27Inputs)
+                {
+                    Complete(RunExpandedSummoningSprint27Inputs());
+                    return;
+                }
                 if (_request.Scenario == RuntimeTestScenarioCatalog.ObserveExpandedSummoningSprint26Inputs)
                 {
                     Complete(RunExpandedSummoningSprint26Inputs());
