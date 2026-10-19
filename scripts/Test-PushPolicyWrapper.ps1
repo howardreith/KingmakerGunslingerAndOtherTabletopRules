@@ -364,6 +364,13 @@ try {
     Invoke-Case -Name 'sprint27 differently cased branch is refused' `
         -Scenario @{ branch = 'codex/Expanded-Summoning-Sprint27-Griffon' } `
         -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Refusing to push non-allowlisted branch'
+    Invoke-Case -Name 'sprint28 product branch in permitted worktree' `
+        -Scenario @{ branch = 'codex/expanded-summoning-sprint28-hill-stone-fire-giants' } -Expect push -ExpectedPushCalls 1
+    Invoke-Case -Name 'sprint28 records branch in permitted worktree' `
+        -Scenario @{ branch = 'codex/expanded-summoning-sprint28-release-records' } -Expect push -ExpectedPushCalls 1
+    Invoke-Case -Name 'sprint28 differently cased branch is refused' `
+        -Scenario @{ branch = 'codex/Expanded-Summoning-Sprint28-Hill-Stone-Fire-Giants' } `
+        -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Refusing to push non-allowlisted branch'
     Invoke-Case -Name 'sprint25 product branch in permitted worktree' `
         -Scenario @{ branch = $sprint25[0] } -Expect push -ExpectedPushCalls 1
     Invoke-Case -Name 'sprint25 records branch in permitted worktree' `

@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "generatedUtcDate": "2026-10-19",
+  "images": [
+    {
+      "key": "hill-giant",
+      "source": "assets-source/original-icons/expanded-summoning/sources/hill-giant.png",
+      "sourceSha256": "4ea37f9c964b93d2bbfb0970d807068814be05678b6f378ea9f2e78210733545",
+      "tool": "image_gen.imagegen (built-in)",
+      "providerModel": "not exposed by tool; not inferred",
+      "transparentBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create a single square oil-painted medallion of an ordinary adult Pathfinder hill giant: huge rough humanoid brute, weathered tan skin, unkempt dark hair, coarse hide armor, gripping a massive wooden greatclub. Chest-up three-quarter view, head and greatclub silhouette unmistakable at small size. Earthy brown hillside atmosphere, warm directional light, rich painterly material detail, dark outer field and a fine antique bronze circular rim matching a fantasy creature portrait family. One figure only. No text, numbers, runes, game logo, watermark, loot objects, or modern objects. Avoid frost motifs, stone skin, fire, and ornate plate armor.",
+      "inputMechanism": "brand-new generation; no image path or conversation image supplied to tool",
+      "familyReferencesInspected": [
+        "frost-giant.png",
+        "cyclops.png",
+        "griffon.png"
+      ],
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15428-c1df-7792-a4d6-c7d39f309da7/exec-033703ba-f498-4f66-afcb-a561a6f50770.png",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "integration": "Original source preserved; export, consumer binding and native UI qualification pending.",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "key": "stone-giant",
+      "source": "assets-source/original-icons/expanded-summoning/sources/stone-giant.png",
+      "sourceSha256": "813ef8cba7164209ed9be07a52fce7d1cde8edabffe2b74b36c32bcf273e735e",
+      "tool": "image_gen.imagegen (built-in)",
+      "providerModel": "not exposed by tool; not inferred",
+      "transparentBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create one square painted medallion of an ordinary adult Pathfinder stone giant. Lean, tall muscular humanoid with chiseled facial planes, gray stone-colored skin, plain thick leather garments, holding a giant carved-stone greatclub. Chest-up three-quarter view; distinctly leaner and cooler than a rough hill giant; clear face and club silhouette at tiny scale. Rocky mountain backdrop, restrained gray ochre palette, rich painterly detail, fine antique bronze circular rim of a fantasy creature portrait. One figure only. No text, numbers, runes, game logo, watermark, loot objects, elemental magic, glowing skin, ornate armor, frost or flames. Do not depict an elder or spellcaster.",
+      "inputMechanism": "brand-new generation; no image path or conversation image supplied to tool",
+      "familyReferencesInspected": [
+        "frost-giant.png",
+        "cyclops.png",
+        "griffon.png"
+      ],
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15428-c1df-7792-a4d6-c7d39f309da7/exec-a300b7b3-2b63-470e-b6dd-a94b02b6f18b.png",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "integration": "Original source preserved; export, consumer binding and native UI qualification pending.",
+      "width": 1254,
+      "height": 1254
+    },
+    {
+      "key": "fire-giant",
+      "source": "assets-source/original-icons/expanded-summoning/sources/fire-giant.png",
+      "sourceSha256": "73a6bbda46ea635adf1ab56ab50048ad833ad58e063ab9091a648db20601d3cc",
+      "tool": "image_gen.imagegen (built-in)",
+      "providerModel": "not exposed by tool; not inferred",
+      "transparentBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create one square painted medallion of an ordinary adult Pathfinder fire giant warrior: broad muscular humanoid, powerful arms and shorter legs implied, copper-red skin, fiery orange hair and beard, wearing blackened steel half-plate armor, holding a massive two-handed greatsword. Chest-up three-quarter view with a very clear greatsword and armored silhouette at tiny scale. Warm volcanic mountain atmosphere, rich oil-painted material detail, strong orange rim lighting and a fine antique bronze circular portrait rim. One figure only. No text, numbers, runes, game logo, watermark, magical flaming weapon, loot objects, or modern objects. Show bodily fire association through hair and ambience; do not depict a spellcaster or place fire on the sword.",
+      "inputMechanism": "brand-new generation; no image path or conversation image supplied to tool",
+      "familyReferencesInspected": [
+        "frost-giant.png",
+        "cyclops.png",
+        "griffon.png"
+      ],
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15428-c1df-7792-a4d6-c7d39f309da7/exec-60af2144-a9f5-4e07-ad15-7ef628b7dfac.png",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "integration": "Original source preserved; export, consumer binding and native UI qualification pending.",
+      "width": 1254,
+      "height": 1254
+    }
+  ]
+}

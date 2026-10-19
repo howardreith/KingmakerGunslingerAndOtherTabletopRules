@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Owner 2026-10-12: Sprint22 Ankylosaurus Completion on HOWARD-LAPTOP through qualified release/restoration. Only Sprint22; Sprint23 not started. See docs/SPRINT22-ANKYLOSAURUS-MISSION.md and planning/SPRINT22-ANKYLOSAURUS-LEDGER.json.",
+    "activeTask": "Owner 2026-10-19: Sprint28 Hill, Stone and Fire Giants on HOWARD-LAPTOP through scoped implementation, qualification, exact restoration and release. Only Sprint28; see planning/SPRINT28-STATUS.md and planning/EXPANDED-SUMMONING-SPRINT28-CONTRACT.md.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },
