@@ -81,6 +81,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["persuasion"] = DescribeSprint16Skill(stats.SkillPersuasion),
                             ["stealth"] = DescribeSprint16Skill(stats.SkillStealth)
                         }, "Actual adult giant instance has its printed base profile with live class, size, feat and equipment effects.");
+                        // The native non-player Power Attack watcher starts this
+                        // toggle on. Printed PF1 stat blocks compare with it off;
+                        // preserve and test the actual native ON contribution.
+                        var toggle = owner.Descriptor.ActivatableAbilities.Enumerable
+                            .Single(value => value.Blueprint.AssetGuid ==
+                                "a7b339e4f6ff93a4697df5d7a87ff619");
+                        JObject initialPowerAttack = Sprint22PowerAttackState(owner, toggle);
+                        foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                         var weapon = owner.Body.PrimaryHand.MaybeWeapon;
                         var calculated = Rulebook.Trigger(new RuleCalculateWeaponStats(owner, weapon, null));
                         var damage = calculated.DamageDescription[0].CreateDamage();
@@ -92,8 +100,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["itemOwner"] = weapon.Owner == owner.Descriptor,
                             ["attack"] = attack, ["damage"] = Sprint16DamageLine(damage),
                             ["nativeStrengthMultiplier"] = calculated.DamageBonusStatMultiplier,
-                            ["damageForms"] = calculated.DamageDescription.Count
-                        }, "Actual equipped Large manufactured weapon resolves its printed attack and damage line once.");
+                            ["damageForms"] = calculated.DamageDescription.Count,
+                            ["initialPowerAttack"] = initialPowerAttack,
+                            ["offPowerAttack"] = Sprint22PowerAttackState(owner, toggle)
+                        }, "Actual equipped Large manufactured weapon resolves its printed line with native Power Attack temporarily off.");
+                        foreach (int frame in Sprint22SetPowerAttack(owner, true)) yield return frame;
+                        int onAttack = Rulebook.Trigger(new RuleCalculateAttackBonusWithoutTarget(
+                            owner, weapon, 0)).Result;
+                        int onDamage = Rulebook.Trigger(new RuleCalculateWeaponStats(
+                            owner, weapon, null)).DamageDescription[0].CreateDamage().Bonus;
+                        int penalty = 1 + spec.Bab / 4;
+                        Sprint25Check("s28-"+spec.Key+"-power-attack",
+                            toggle.IsOn && toggle.IsRunning && onAttack == attack - penalty &&
+                            onDamage == damage.Bonus + 3 * penalty,
+                            new JObject { ["owner"] = owner.UniqueId,
+                                ["offAttack"] = attack, ["offDamage"] = damage.Bonus,
+                                ["onAttack"] = onAttack, ["onDamage"] = onDamage,
+                                ["nativeState"] = Sprint22PowerAttackState(owner, toggle) },
+                            "The actual native two-handed Power Attack toggle adds its BAB-scaled attack penalty and damage once.");
+                        foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
                         var icon = ExpandedSummoningProjectIcons.Require(spec.Key);
                         var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
                             .Where(value => value.Creature.Key == spec.Key).ToArray();
