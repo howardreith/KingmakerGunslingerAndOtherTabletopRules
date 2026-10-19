@@ -97,12 +97,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 index == 1 ? spec.SlamDamage : spec.RockDamage;
                             int expectedRolls = index == 0 && spec.Key == "fire-giant" ? 3 :
                                 index == 0 ? 2 : 1;
-                            bool exact = planned.Count == expectedCount &&
+                            JObject heat = stats.DamageDescription.Count > 1 ?
+                                Sprint16DamageLine(stats.DamageDescription[1].CreateDamage()) : null;
+                            bool heatExact = index != 2 || spec.Key != "fire-giant" ||
+                                heat != null && (string)heat["type"] == "Energy" &&
+                                (string)heat["dice"] == "1d6" &&
+                                (int)heat["bonus"] == 0 &&
+                                (string)heat["energy"] == "Fire";
+                            bool exact = heatExact && planned.Count == expectedCount &&
                                 bonus == expectedAttack && damage.Bonus == expectedDamage &&
                                 damage.Dice.Rolls == expectedRolls &&
-                                (index != 2 || weapon.AttackRange.Value == spec.Range) &&
+                                (index != 2 || weapon.Blueprint.Type.AttackRange.Value == spec.Range) &&
                                 ReferenceEquals(weapon.Owner, owner.Descriptor) &&
                                 weapon.IsNonRemovable &&
+                                (index != 2 || spec.Key != "stone-giant" ||
+                                    planned.Count == 2 &&
+                                    planned[1].AttackBonusPenalty == 5) &&
                                 (index != 2 || stats.DamageDescription.Count ==
                                     (spec.Key == "fire-giant" ? 2 : 1));
                             Sprint25Check("s28-"+spec.Key+"-mode-"+index,
@@ -120,7 +130,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["damage"] = Sprint16DamageLine(damage),
                                     ["forms"] = new JArray(stats.DamageDescription.Select(
                                         value => Sprint16DamageLine(value.CreateDamage()))),
-                                    ["rangeFeet"] = weapon.AttackRange.Value },
+                                    ["configuredIncrementFeet"] = weapon.Blueprint.Type.AttackRange.Value,
+                                    ["nativeEquippedRangeFeet"] = weapon.AttackRange.Value },
                                 "Native active mode resolves only its own printed attacks, damage forms and range increment.");
                             int original = owner.Stats.Strength.BaseValue;
                             var signed = new JArray();

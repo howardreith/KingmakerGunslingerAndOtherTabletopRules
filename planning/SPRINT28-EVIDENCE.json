@@ -90,7 +90,22 @@
                                  "reviewSha256":  "c5b0ac391b30f2e1fa961db468284176872cf10287b681261761f423c43c7369",
                                  "transactionSha256":  "1d37c0443d5f3817f81d0f5467e7ce9b041f73347ae8d79dcdd05544a4445192",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free native hand-set switches and attack-mode plan",
+                                 "candidateKind":  "development",
+                                 "source":  "e81fdfba39178f7c7a0ff24d527a8a2728fa8981",
+                                 "packageSha256":  "8aec7e0fd8975e1ba7966c68cf6db809feb5486ae1669966cf7b08970632c05c",
+                                 "dllSha256":  "fa0d29bc2015d6405fcc960834d1d6a47ef66dffb0e0129168f71be8f4adb571",
+                                 "mvid":  "9ad4be1a-6272-4855-b8b1-fa60280a5c08",
+                                 "runId":  "20261019T1539041324126Z-5caad9abd11b433fa297b4bfa8a08737",
+                                 "transactionRunId":  "compat-20261019T153711Z-34d188dc82d0",
+                                 "result":  "FAIL_THIRD_SLAM_AND_OBSERVER_RANGE_WITH_STONE_ITERATIVE_SIGN_DEFECT",
+                                 "rawResultSha256":  "eaad221a83748782bbe0c7debd9fb589e2323ed6da9e22974e5a7cf32df2414b",
+                                 "reviewSha256":  "ebac8e659051fba7c36c8b6e7b27a3af909cf92638025abb19fff7d3ba953f22",
+                                 "transactionSha256":  "0d91dfef86ba2de690f03e01d472e4bd60a3aacbc06e3bd334d9970e2148cc5c",
+                                 "restorationVerified":  true
                              }
                          ],
-    "restoration":  "Five native transactions restored exactly, including one preserved failed observer and its successful narrowed rerun. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Commands, ownership lifecycle, rock and release unqualified."
+    "restoration":  "Six native transactions restored exactly, including two preserved failed observers. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
 }

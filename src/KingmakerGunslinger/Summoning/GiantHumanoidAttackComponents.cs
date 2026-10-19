@@ -125,7 +125,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 AttackHandInfo first = shots[0];
                 __result.Add(new AttackHandInfo(first.Hand,
-                    first.AttackBonusPenalty - 5,
+                    first.AttackBonusPenalty + 5,
                     first.AttackNumber + 1));
             }
         }

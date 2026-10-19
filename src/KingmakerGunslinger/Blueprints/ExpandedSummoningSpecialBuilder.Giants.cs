@@ -279,7 +279,7 @@ namespace KingmakerGunslinger.Blueprints
                 PrimaryHandAlternative1 = slam,
                 PrimaryHandAlternative2 = rock,
                 EmptyHandWeapon = slam,
-                AdditionalLimbs = new[] { slam },
+                AdditionalLimbs = Array.Empty<BlueprintItemWeapon>(),
                 AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
                 Armor = armor,
                 ActiveHandSet = 0,
