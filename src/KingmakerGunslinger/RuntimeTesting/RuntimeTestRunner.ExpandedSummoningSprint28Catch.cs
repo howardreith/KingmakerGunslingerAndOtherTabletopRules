@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
@@ -144,6 +146,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Game.Instance.State.AwakeUnits.Add(unit);
                         }
                         thrower.JoinCombat(); target.JoinCombat();
+                        new UnitCombatJoinController().Tick();
+                        new UnitCombatPrepareController().Tick();
+                        thrower.CombatState.OnNewRound();
+                        target.CombatState.OnNewRound();
                         thrower.Memory.Add(target);
                         target.Memory.Add(thrower);
                         thrower.SightCache.ClearIfNeeded();
@@ -155,6 +161,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // noticed before testing the free defensive response.
                         thrower.Memory.Add(target).Visible = true;
                         target.Memory.Add(thrower).Visible = true;
+                        // Catch is unavailable to a flat-footed target.
+                        // Admit both actors through the native combat/round
+                        // controllers, then verify the actual defensive rule.
+                        for (int frame = 0; frame < 16; frame++) yield return 0;
+                        bool flatFooted = Rulebook.Trigger(
+                            new RuleCheckTargetFlatFooted(thrower, target))
+                            .IsFlatFooted;
                         var probe = new UnitAttack(target);
                         probe.Init(thrower);
                         int unrelatedEnemies = fixture.UnitsBefore
@@ -168,7 +181,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             thrower.HasLOS(target) &&
                             target.HasLOS(thrower) &&
                             target.Memory.ContainsVisible(thrower) &&
-                            probe.IsUnitEnoughClose &&
+                            !flatFooted && probe.IsUnitEnoughClose &&
                             target.Descriptor.State.CanAct;
                         Sprint25Check("s28-catch-" + spec.Target + "-lane",
                             ready, new JObject {
@@ -203,6 +216,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["targetLos"] = target.HasLOS(thrower),
                                 ["targetAware"] =
                                     target.Memory.ContainsVisible(thrower),
+                                ["nativeFlatFooted"] = flatFooted,
                                 ["inRange"] = probe.IsUnitEnoughClose,
                                 ["canAct"] =
                                     target.Descriptor.State.CanAct },
@@ -210,6 +224,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!ready) throw new InvalidOperationException(
                             "Rock catching lacks an aware visible target.");
                         int before = target.Descriptor.Damage;
+                        int projectilesBefore =
+                            Game.Instance.ProjectileController.Projectiles.Count();
                         SummonGiantRockCatch.ClearOutcomes();
                         var observer = new Sprint24AttackObserver {
                             Owner = thrower, Target = target };
@@ -232,11 +248,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 int impactFrames = 0;
                                 DateTime impactDeadline =
                                     DateTime.UtcNow.AddSeconds(10);
-                                while (saves.Saves.Count == 1 &&
-                                    !saves.Saves[0].IsPassed &&
-                                    observer.Damage.Count == 0 &&
-                                    impactFrames++ < 600 &&
-                                    DateTime.UtcNow < impactDeadline)
+                                while (impactFrames++ < 600 &&
+                                    DateTime.UtcNow < impactDeadline &&
+                                    ((saves.Saves.Count == 0 &&
+                                      observer.Damage.Count == 0) ||
+                                     (saves.Saves.Count == 1 &&
+                                      !saves.Saves[0].IsPassed &&
+                                      observer.Damage.Count == 0) ||
+                                     Game.Instance.ProjectileController
+                                         .Projectiles.Count() > projectilesBefore))
                                     yield return 0;
                                 for (int frame = 0; frame < 12; frame++)
                                     yield return 0;
@@ -247,6 +267,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 bool caught = save != null &&
                                     save.IsPassed;
                                 bool exact = command.IsFinished &&
+                                    impactFrames < 600 &&
+                                    Game.Instance.ProjectileController
+                                        .Projectiles.Count() == projectilesBefore &&
                                     observer.OwnerWeaponAttacks.Count == 1 &&
                                     observer.WeaponAttacks.Count == 1 &&
                                     ReferenceEquals(attack?.Weapon.Blueprint,
@@ -272,6 +295,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         command.Result.ToString(),
                                     ["frames"] = frames,
                                     ["impactFrames"] = impactFrames,
+                                    ["projectilesBefore"] =
+                                        projectilesBefore,
+                                    ["projectilesAfter"] =
+                                        Game.Instance.ProjectileController
+                                            .Projectiles.Count(),
+                                    ["nativeFlatFootedBefore"] = flatFooted,
                                     ["attacks"] =
                                         observer.WeaponAttacks.Count,
                                     ["natural"] =
