@@ -1358,8 +1358,8 @@
     "routesUnsuppressed": 6,
     "stage": "SOURCE_ONLY_NOT_QUALIFIED",
     "sourceBoundaryChecks": 9,
-    "finalGate": "F2_PASS_SUPERSEDED_BY_OBSERVER_CORRECTION",
-    "freshEligibleNative": "F2_FAILED_FIRST_STANDALONE_COMBAT",
+    "finalGate": "F3_PASS_SUPERSEDED_BY_CLOCK_TRACE",
+    "freshEligibleNative": "F3_TURN_ABORT_PASS_TARGET_LOSS_TURN_ADMISSION_FAIL",
     "release": "NOT_PERFORMED",
     "scriptCorrection": "Controlled roster generator uses supported --emit-roster; initial --write refusal retained in tool output, no candidate build or runtime was attempted with stale output.",
     "focusedGate": {
@@ -1419,6 +1419,17 @@
       "zipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017",
       "dllSha256": "240bf88fc42c11c362f663c3417d2228b56804bcf3423e76a93646d7c97a3d98",
       "mvid": "88e1c4fc-5e1e-4a43-ac1f-a2ea271681c7"
+    },
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "record": "artifacts/sprint27-gate-public-f3/result.json",
+      "status": "PASS",
+      "registeredTests": 2693,
+      "failures": 0,
+      "seconds": 382.1569316,
+      "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
+      "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
+      "mvid": "80200e94-4488-4591-9795-bfc6caf54d00"
     }
   ],
   "publicNativeFailures": [
@@ -1435,6 +1446,20 @@
       "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0008550349568Z-disposable-expanded-summoning-sprint27-native-review",
       "outerSeconds": 286.6500627,
       "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    },
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
+      "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
+      "mvid": "80200e94-4488-4591-9795-bfc6caf54d00",
+      "runId": "20261019T0226542913010Z-3bc0429a0cdf42a5a63f6a238ee19f5f",
+      "scope": "gunslinger-only turn-based-target-loss",
+      "status": "FAIL",
+      "failedPredicate": "turn-based-target-loss-boundary-turn-admission-True",
+      "rawResultSha256": "48f9728730219ca3d4da2531c5282d5c85257dafc14c249611d20c13400c278f",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0226542680499Z-disposable-expanded-summoning-sprint27-native-review",
+      "outerSeconds": 253.1885716,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
     }
   ],
   "observerCorrectionReadiness": {
@@ -1447,5 +1472,41 @@
     "releasePolicyChanged": false,
     "archivedF2Zip": "artifacts/frozen-candidates/public-f2/KingmakerGunslinger-0.0.161-local-runtime.zip",
     "archivedF2ZipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017"
+  },
+  "publicNativePasses": [
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
+      "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
+      "mvid": "80200e94-4488-4591-9795-bfc6caf54d00",
+      "runId": "20261019T0221530993096Z-e84bb43fc3ab4cca90c5f8d5cdcf7717",
+      "scope": "gunslinger-only turn-based-abort",
+      "status": "PASS",
+      "assertions": 13,
+      "rawResultSha256": "c3701c8aff1262b8db7fa7e57df076e09065dca8fa87057085ff01af45cf54bd",
+      "outerSeconds": 257.0735271,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    }
+  ],
+  "publicSupervisorFailures": [
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "record": "artifacts/sprint27-final-public-f3-tb-abort/result.json",
+      "cause": "Relative evidence path resolved under C:/Windows/System32 before any game launch; no lease or save mutation."
+    },
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "scheduledTask": "KMG-S27-F3-TB-Abort-R1",
+      "cause": "First absolute-root edit still joined an absolute root to Get-Location and stopped before evidence or game launch; corrected with direct CreateDirectory(root)."
+    }
+  ],
+  "turnClockTraceReadiness": {
+    "status": "FOCUSED_PASS",
+    "productionCompilationSeconds": 17.2,
+    "selectedTests": 6,
+    "testSeconds": 0.9,
+    "fixtureChangesOnly": true,
+    "archivedF3Zip": "artifacts/frozen-candidates/public-f3/KingmakerGunslinger-0.0.161-local-runtime.zip",
+    "archivedF3ZipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37"
   }
 }

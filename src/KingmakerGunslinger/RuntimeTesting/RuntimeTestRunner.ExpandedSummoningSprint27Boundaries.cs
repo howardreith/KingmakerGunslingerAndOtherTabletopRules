@@ -77,7 +77,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.JoinCombat();target.JoinCombat();
                 if(turnBased){
                     var admission=new JObject();foreach(int f in Sprint22EnrollTurnBasedOwners(new[]{owner},target,admission))yield return f;
-                    int waited=0;while(!Sprint18OwnerIsActing(owner)&&waited++<500)yield return 0;
+                    var turnClock=new JArray();int waited=0;
+                    while(!Sprint18OwnerIsActing(owner)&&waited++<500){
+                        if(waited==1||waited==8||waited==60||waited==240||waited==500)
+                            turnClock.Add(Sprint27TurnClockSnapshot(waited));
+                        yield return 0;
+                    }
+                    turnClock.Add(Sprint27TurnClockSnapshot(waited));admission["turnClock"]=turnClock;
                     admission["acting"]=Sprint18OwnerIsActing(owner);admission["nativeTurnWaitFrames"]=waited;
                     bool admitted=(bool)admission["admitted"]&&Sprint18OwnerIsActing(owner);
                     Sprint27Check("boundary-turn-admission-"+loseTarget,admitted,admission,"A real exact-owner active turn precedes a native turn-based abort or target-loss command.");
@@ -110,6 +116,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             }finally{EventBus.Unsubscribe(observer);owner.Commands.InterruptAll(true);DisposeExpandedSummoningUnits(fixture.Created,new[]{target});UnityEngine.Object.Destroy(targetBlueprint);}
             if(turnBased){Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();}
             if(removeOwner==null)foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
+        }
+        private static JObject Sprint27TurnClockSnapshot(int waited)
+        {
+            var controller=Game.Instance.TurnBasedCombatController;
+            var field=typeof(TurnBased.Controllers.CombatController).GetField("m_NextUnit",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
+            if(field==null)throw new InvalidOperationException("Native next-unit observation contract missing.");
+            var next=field.GetValue(controller) as UnitEntityData;
+            var turn=controller.CurrentTurn;
+            return new JObject{["waitedFrames"]=waited,["initialized"]=controller.Initialized,
+                ["round"]=controller.RoundNumber,["timeSinceStart"]=controller.TimeSinceStart,
+                ["waitingForUi"]=controller.WaitingForUI.Value,["uiGuardCount"]=controller.WaitingForUI.GuardCount,
+                ["currentMode"]=Game.Instance.CurrentMode.ToString(),["playerInCombat"]=Game.Instance.Player.IsInCombat,
+                ["paused"]=Game.Instance.IsPaused,["gameDeltaTime"]=Game.Instance.TimeController.GameDeltaTime,
+                ["nextUnit"]=next?.UniqueId,["nextTimeToTurn"]=next!=null&&!next.Destroyed?(float?)next.GetTimeToNextTurn():null,
+                ["currentTurn"]=turn?.Unit?.UniqueId,["currentStatus"]=turn?.Status.ToString()};
         }
         private sealed class Sprint27ExpiryTrace : IDisposable
         {
