@@ -675,6 +675,27 @@
       "subjectPrompt": "Use case: stylized-concept. Asset type: one square painted fantasy CRPG summon-choice creature icon, deterministic final export 128px RGBA. Input images: the first actual reference image is Gorgon and the second is Eagle; both are STYLE references only for the established warm painted circular aged-gold medallion family, material shading, thin ring and dark square corners. Do not edit or copy their creatures. Primary request: create one ORIGINAL adult PF1 GRIFFON, unmistakably a winged LION-bodied creature with a proud eagle-like head, large hooked beak, feathered neck/chest and two eagle forelegs/talons; tawny feline torso, muscular lion hindquarters with two lion hind paws, and long tufted lion tail. Exactly four legs and two broad feathered wings attached at shoulders. No horse anatomy, hooves, dragon, hippogriff, rider or mount tack. Composition: readable three-quarter side/front full-body pose, head and beak prominent; wings raised enough to reveal the feline torso and hindquarters, but contained within canvas and medallion. Broad strong anatomy readable at 32px. Painterly bestiary illustration, warm restrained bronze rim light, cream eagle head, dark brown/gold feathers, tawny lion fur, smoky dark earthy backdrop. Thin circular aged-gold ring matching references; dark corners. No ornate square UI frame, text, letters, counters, numbers, badges, extra creatures, weapons, lightning or watermark. This painting identifies the creature; do not add attack glyphs or status overlays. Deliver exactly one square image.",
       "generator": "image_gen.imagegen (built-in)",
       "generationProvenance": "assets-source/original-icons/expanded-summoning/sprint27-generation.json"
+    },
+    {
+        "key":  "hill-giant",
+        "displayName":  "Hill Giant",
+        "subjectPrompt":  "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create a single square oil-painted medallion of an ordinary adult Pathfinder hill giant: huge rough humanoid brute, weathered tan skin, unkempt dark hair, coarse hide armor, gripping a massive wooden greatclub. Chest-up three-quarter view, head and greatclub silhouette unmistakable at small size. Earthy brown hillside atmosphere, warm directional light, rich painterly material detail, dark outer field and a fine antique bronze circular rim matching a fantasy creature portrait family. One figure only. No text, numbers, runes, game logo, watermark, loot objects, or modern objects. Avoid frost motifs, stone skin, fire, and ornate plate armor.",
+        "generator":  "image_gen.imagegen (built-in)",
+        "generationProvenance":  "assets-source/original-icons/expanded-summoning/sprint28-generation.json"
+    },
+    {
+        "key":  "stone-giant",
+        "displayName":  "Stone Giant",
+        "subjectPrompt":  "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create one square painted medallion of an ordinary adult Pathfinder stone giant. Lean, tall muscular humanoid with chiseled facial planes, gray stone-colored skin, plain thick leather garments, holding a giant carved-stone greatclub. Chest-up three-quarter view; distinctly leaner and cooler than a rough hill giant; clear face and club silhouette at tiny scale. Rocky mountain backdrop, restrained gray ochre palette, rich painterly detail, fine antique bronze circular rim of a fantasy creature portrait. One figure only. No text, numbers, runes, game logo, watermark, loot objects, elemental magic, glowing skin, ornate armor, frost or flames. Do not depict an elder or spellcaster.",
+        "generator":  "image_gen.imagegen (built-in)",
+        "generationProvenance":  "assets-source/original-icons/expanded-summoning/sprint28-generation.json"
+    },
+    {
+        "key":  "fire-giant",
+        "displayName":  "Fire Giant",
+        "subjectPrompt":  "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create one square painted medallion of an ordinary adult Pathfinder fire giant warrior: broad muscular humanoid, powerful arms and shorter legs implied, copper-red skin, fiery orange hair and beard, wearing blackened steel half-plate armor, holding a massive two-handed greatsword. Chest-up three-quarter view with a very clear greatsword and armored silhouette at tiny scale. Warm volcanic mountain atmosphere, rich oil-painted material detail, strong orange rim lighting and a fine antique bronze circular portrait rim. One figure only. No text, numbers, runes, game logo, watermark, magical flaming weapon, loot objects, or modern objects. Show bodily fire association through hair and ambience; do not depict a spellcaster or place fire on the sword.",
+        "generator":  "image_gen.imagegen (built-in)",
+        "generationProvenance":  "assets-source/original-icons/expanded-summoning/sprint28-generation.json"
     }
   ]
 }

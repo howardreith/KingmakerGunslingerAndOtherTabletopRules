@@ -104,7 +104,12 @@ namespace KingmakerGunslinger.Summoning
                 "brachiosaurus|028cc6f46e7998f46855a33ffde89567|0",
                 "gorgon|5bb9579fdb2b26b48bb10d61c81cfdfb|1",
                 "bulette|18fa241bd1afd77438564ec92614f7f1|0",
-                "griffon|da807351572c540478b703957d863e68|0"
+                "griffon|da807351572c540478b703957d863e68|0",
+                // Sprint 28 exact installed adult Hill body; Stone borrows that
+                // visual shell. Fire borrows the retained armored Frost body.
+                "hill-giant|61dd71e874b16f742a0f783314105553|0",
+                "stone-giant|61dd71e874b16f742a0f783314105553|0",
+                "fire-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1"
             });
         }
 

@@ -15,21 +15,21 @@ namespace KingmakerGunslinger.DomainTests
         internal static int SourceUnrepresentedCount { get {
             return ExpandedSummoningIdealRosterCatalog.All.Count(value => !SourceRepresentedKeys.Contains(value.Key));
         } }
-        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount;
-        internal const int RegisteredCreatureCount = 111;
+        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount;
+        internal const int RegisteredCreatureCount = 114;
         internal const int RegisteredMonsterCreatureCount = 96;
-        internal const int RegisteredNatureAllyCreatureCount = 98;
+        internal const int RegisteredNatureAllyCreatureCount = 101;
         internal const int RegisteredMonsterPlacements = 545;
-        internal const int RegisteredNatureAllyPlacements = 563;
+        internal const int RegisteredNatureAllyPlacements = 574;
         internal const int RegisteredLogicalPlacements = RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
         internal const int RegisteredTemplatedPlacements = 319;
-        internal const int PublicSuppressedLogicalPlacements = 0;
+        internal const int PublicSuppressedLogicalPlacements = 11;
         internal const int FinalPublishedLogicalPlacements = RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements;
         internal const int PublicVisibleChoices = FinalPublishedLogicalPlacements + 29;
         internal static int PublishedMonsterPlacements { get { return RegisteredMonsterPlacements - (IsWithheld("gorgon") ? 2 : 0); } }
-        internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0) - (IsWithheld("griffon") ? 6 : 0); } }
-        internal const int IconConceptCount = 123;
-        internal static readonly string[] WithheldKeys = Array.Empty<string>();
+        internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0) - (IsWithheld("griffon") ? 6 : 0) - (IsWithheld("hill-giant") ? 4 : 0) - (IsWithheld("stone-giant") ? 4 : 0) - (IsWithheld("fire-giant") ? 3 : 0); } }
+        internal const int IconConceptCount = 126;
+        internal static readonly string[] WithheldKeys = { "fire-giant", "hill-giant", "stone-giant" };
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

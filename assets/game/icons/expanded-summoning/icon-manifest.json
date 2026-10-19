@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  123,
+    "count":  126,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1104,6 +1104,33 @@
                       "key":  "griffon",
                       "file":  "griffon.png",
                       "sha256":  "eef3de6182d7db3c6d25033e83c8eb5792c7c9aa094c54b997d2c86459ca16e3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "hill-giant",
+                      "file":  "hill-giant.png",
+                      "sha256":  "fbb909c017ea447566cb167e5e6dd0d918491950c65cc9c187e4f57d59dd5478",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "stone-giant",
+                      "file":  "stone-giant.png",
+                      "sha256":  "fa89836b7e34621bfbc8bd09363acc8538b12078db6483152e863edc122da558",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "fire-giant",
+                      "file":  "fire-giant.png",
+                      "sha256":  "dd4866cec136b98caf0bea44f87787de85abc7c0d601ec4c065dceefb88b543e",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

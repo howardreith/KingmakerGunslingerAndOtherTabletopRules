@@ -53,6 +53,10 @@ function Get-Consumers([string]$Key, [object[]]$Entries) {
         $matches += 'KMG.Summoning.Special.Salamander.CombatTraits'
         $matches += 'KMG.Summoning.Special.Salamander.UnitType'
     }
+    if ($Key -cin @('hill-giant','stone-giant','fire-giant')) {
+        $giantTypes = @{ 'hill-giant' = 'HillUnitType'; 'stone-giant' = 'StoneUnitType'; 'fire-giant' = 'FireUnitType' }
+        $matches += 'KMG.Summoning.Giant.' + $giantTypes[$Key]
+    }
     return @($matches | Sort-Object -Unique)
 }
 
