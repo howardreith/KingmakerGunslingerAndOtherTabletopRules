@@ -63,13 +63,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     } else if(phase=="pounce-rtwp" || phase=="pounce-turn-based") {
                         bool tb=phase=="pounce-turn-based";
                         foreach(int f in Sprint27Pounce(fixture,owner,tb,tb))yield return f;
-                        if(tb){
-                            foreach(int f in Sprint27CancelCharge(fixture,owner,false,null,true))yield return f;
-                            foreach(int f in Sprint27CancelCharge(fixture,owner,true,null,true))yield return f;
-                        }
                         owner.Commands.InterruptAll(true);
                         SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();
                         foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
+                    } else if(phase=="turn-based-abort" || phase=="turn-based-target-loss") {
+                        // A completed turn-based charge can leave the native controller without
+                        // a current turn after a mode toggle. Each negative case therefore
+                        // obtains its own fresh guarded process and exact active owner turn.
+                        foreach(int f in Sprint27CancelCharge(fixture,owner,phase=="turn-based-target-loss",null,true))yield return f;
                     } else if(phase=="rtwp-ai") {
                         foreach(int f in Sprint27Ai(fixture,owner))yield return f;
                     } else if(phase=="charge-boundaries") {
