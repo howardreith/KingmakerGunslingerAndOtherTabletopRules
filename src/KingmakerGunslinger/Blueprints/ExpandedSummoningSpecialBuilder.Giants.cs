@@ -63,6 +63,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string NativePointBlankShot = "0da0c194d6e1d43419eb8d990b28e0ab";
         private const string NativePreciseShot = "8f3d1e6b4be006f4d896081f2f889665";
         private const string NativeImprovedSunder = "9719015edcbf142409592e2cbaab7fe1";
+        private const string NativeImprovedOverrun = "978c9bf7b08342619f68d0b01bf40fa9";
 
         private static void ConfigureGiantHumanoids(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -118,7 +119,8 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar,
                 new[] { "d809b6c4ff2aaff4fa70d712a70f7d7b",
                     "cc9c862ef2e03af4f89be5088851ea35",
-                    NativeImprovedSunder, "175d1577bb6c9a04baf88eec99c66334",
+                    NativeImprovedSunder, NativeImprovedOverrun,
+                    "175d1577bb6c9a04baf88eec99c66334",
                     "9972f33f977fc724c838e59641b2fca5" }, true,
                 new[] { FireSubtypeGuid, FireImmunityGuid, ColdVulnerabilityGuid });
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
