@@ -9,6 +9,11 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+# All validation writes are confined to the private temporary extraction.
+# A caller's -WhatIf must not suppress module-scoped hashing or cleanup.
+$originalGlobalWhatIfPreference = $global:WhatIfPreference
+$global:WhatIfPreference = $false
+try {
 
 . (Join-Path $PSScriptRoot 'common.ps1')
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
@@ -20,10 +25,12 @@ if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
 }
 
 $tempDirectory = Join-Path ([IO.Path]::GetTempPath()) ("KmgPackageValidation-" + [Guid]::NewGuid().ToString('N'))
-New-Item -ItemType Directory -Path $tempDirectory -Force | Out-Null
+# Strict validation must use and remove only its private temp extraction even
+# when the caller is a dry-run wrapper. No installation path is mutated.
+New-Item -ItemType Directory -Path $tempDirectory -Force -WhatIf:$false | Out-Null
 
 try {
-    Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -Force
+    Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -Force -WhatIf:$false
     $roots = @(Get-ChildItem -LiteralPath $tempDirectory -Directory)
     if ($roots.Count -ne 1 -or $roots[0].Name -ne $info.Id) {
         throw "Package must contain exactly one root directory named '$($info.Id)'."
@@ -290,8 +297,13 @@ try {
 }
 finally {
     if (Test-Path -LiteralPath $tempDirectory) {
-        Remove-Item -LiteralPath $tempDirectory -Recurse -Force
+        # Package validation owns this temporary extraction even when a caller
+        # is in -WhatIf mode; keep that preference from leaking the scratch.
+        Remove-Item -LiteralPath $tempDirectory -Recurse -Force -WhatIf:$false
     }
 }
 
 Write-Host "Strict standalone UMM package validation passed: $PackagePath"
+} finally {
+    $global:WhatIfPreference = $originalGlobalWhatIfPreference
+}
