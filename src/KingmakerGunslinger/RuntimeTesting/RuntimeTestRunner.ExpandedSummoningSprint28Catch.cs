@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.Controllers.Projectiles;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
@@ -44,6 +45,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void Dispose() { EventBus.Unsubscribe(this); }
         }
 
+        private static void CaptureSprint28CatchProjectiles(
+            IList<Projectile> owned, Projectile[] prior,
+            UnitEntityData thrower)
+        {
+            foreach (Projectile projectile in Game.Instance.ProjectileController
+                .Projectiles.Where(value => value != null &&
+                    !prior.Contains(value) &&
+                    ReferenceEquals(value.Launcher, thrower) &&
+                    !owned.Contains(value)))
+                owned.Add(projectile);
+        }
+
+        private static JObject DescribeSprint28CatchProjectile(
+            Projectile projectile)
+        {
+            return new JObject {
+                ["blueprint"] = projectile.Blueprint == null ? null :
+                    projectile.Blueprint.name,
+                ["launcher"] = projectile.Launcher == null ? null :
+                    projectile.Launcher.UniqueId,
+                ["target"] = projectile.Target?.Unit?.UniqueId,
+                ["cleared"] = projectile.Cleared,
+                ["destroyed"] = projectile.Destroyed,
+                ["isHit"] = projectile.IsHit,
+                ["result"] = projectile.AttackResult.ToString(),
+                ["rollResult"] = projectile.AttackRoll?.Result.ToString(),
+                ["speed"] = projectile.Blueprint?.Speed,
+                ["lifetimeAfterHit"] =
+                    projectile.Blueprint?.LifetimeParticlesAfterHit,
+                ["passedTime"] = ReadExpandedSummoningOptionalMember(
+                    projectile, "PassedTime")?.ToString(),
+                ["timeAfterHit"] = ReadExpandedSummoningOptionalMember(
+                    projectile, "TimeAfterHit")?.ToString(),
+                ["passedDistance"] = ReadExpandedSummoningOptionalMember(
+                    projectile, "PassedDistance")?.ToString()
+            };
+        }
+
         private static void ConfigureSprint28CatchFaction(
             BlueprintFaction faction, BlueprintFaction enemy)
         {
@@ -70,6 +109,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
+                if (Game.Instance.ProjectileController.Projectiles.Any())
+                    throw new InvalidOperationException(
+                        "Native catch fixture began with unrelated projectiles.");
                 var results = new JArray();
                 foreach (var spec in new[] {
                     new { Target="hill-giant", Reflex=40, Dc=15 },
@@ -96,6 +138,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintFaction targetFaction = null;
                     bool casterPartyAdded = false;
                     bool casterJoined = false;
+                    var ownedProjectiles = new List<Projectile>();
+                    Projectile[] priorProjectiles =
+                        Game.Instance.ProjectileController.Projectiles.ToArray();
                     try
                     {
                         // Both factions are unregistered clones owned by this
@@ -261,8 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!ready) throw new InvalidOperationException(
                             "Rock catching lacks an aware visible target.");
                         int before = target.Descriptor.Damage;
-                        int projectilesBefore =
-                            Game.Instance.ProjectileController.Projectiles.Count();
+                        int projectilesBefore = priorProjectiles.Length;
                         SummonGiantRockCatch.ClearOutcomes();
                         var observer = new Sprint24AttackObserver {
                             Owner = thrower, Target = target };
@@ -281,7 +325,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     DateTime.UtcNow < deadline &&
                                     (!command.IsFinished ||
                                      observer.WeaponAttacks.Count == 0))
+                                {
+                                    CaptureSprint28CatchProjectiles(
+                                        ownedProjectiles, priorProjectiles,
+                                        thrower);
                                     yield return 0;
+                                }
                                 int impactFrames = 0;
                                 DateTime impactDeadline =
                                     DateTime.UtcNow.AddSeconds(10);
@@ -294,35 +343,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                                       observer.Damage.Count == 0) ||
                                      Game.Instance.ProjectileController
                                          .Projectiles.Count() > projectilesBefore))
+                                {
+                                    CaptureSprint28CatchProjectiles(
+                                        ownedProjectiles, priorProjectiles,
+                                        thrower);
                                     yield return 0;
+                                }
                                 for (int frame = 0; frame < 12; frame++)
+                                {
+                                    CaptureSprint28CatchProjectiles(
+                                        ownedProjectiles, priorProjectiles,
+                                        thrower);
                                     yield return 0;
+                                }
+                                CaptureSprint28CatchProjectiles(
+                                    ownedProjectiles, priorProjectiles, thrower);
                                 RuleSavingThrow save =
                                     saves.Saves.SingleOrDefault();
                                 var attack = observer.WeaponAttacks
                                     .SingleOrDefault();
                                 bool caught = save != null &&
                                     save.IsPassed;
+                                bool normalMiss = save == null &&
+                                    SummonGiantRockCatch.ObservedOutcomes.Count == 0 &&
+                                    attack?.AttackRoll != null &&
+                                    !attack.AttackRoll.IsHit &&
+                                    observer.Damage.Count == 0 &&
+                                    target.Descriptor.Damage == before;
+                                int activeOwned = ownedProjectiles.Count(value =>
+                                    Game.Instance.ProjectileController.Projectiles
+                                        .Contains(value));
                                 bool exact = command.IsFinished &&
                                     impactFrames < 600 &&
+                                    activeOwned == 0 &&
                                     Game.Instance.ProjectileController
-                                        .Projectiles.Count() == projectilesBefore &&
+                                        .Projectiles.SequenceEqual(priorProjectiles) &&
                                     observer.OwnerWeaponAttacks.Count == 1 &&
                                     observer.WeaponAttacks.Count == 1 &&
                                     ReferenceEquals(attack?.Weapon.Blueprint,
                                         rock.Blueprint) &&
-                                    save != null &&
-                                    save.DifficultyClass == spec.Dc &&
-                                    SummonGiantRockCatch.ObservedOutcomes.Count == 1 &&
-                                    (caught
-                                        ? attack.AttackRoll != null &&
-                                          !attack.AttackRoll.IsHit &&
-                                          observer.Damage.Count == 0 &&
-                                          target.Descriptor.Damage == before
-                                        : attack.AttackRoll != null &&
-                                          attack.AttackRoll.IsHit &&
-                                          observer.Damage.Count == 1 &&
-                                          target.Descriptor.Damage > before);
+                                    (normalMiss || save != null &&
+                                     save.DifficultyClass == spec.Dc &&
+                                     SummonGiantRockCatch.ObservedOutcomes.Count == 1 &&
+                                     (caught
+                                         ? attack.AttackRoll != null &&
+                                           !attack.AttackRoll.IsHit &&
+                                           observer.Damage.Count == 0 &&
+                                           target.Descriptor.Damage == before
+                                         : attack.AttackRoll != null &&
+                                           attack.AttackRoll.IsHit &&
+                                           observer.Damage.Count == 1 &&
+                                           target.Descriptor.Damage > before));
                                 var row = new JObject {
                                     ["thrower"] = thrower.UniqueId,
                                     ["target"] = target.UniqueId,
@@ -337,6 +408,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["projectilesAfter"] =
                                         Game.Instance.ProjectileController
                                             .Projectiles.Count(),
+                                    ["ownedProjectiles"] =
+                                        ownedProjectiles.Count,
+                                    ["activeOwnedProjectiles"] = activeOwned,
+                                    ["projectileStates"] = new JArray(
+                                        ownedProjectiles.Select(
+                                            DescribeSprint28CatchProjectile)),
+                                    ["normalMiss"] = normalMiss,
                                     ["nativeFlatFootedBefore"] = flatFooted,
                                     ["attacks"] =
                                         observer.WeaponAttacks.Count,
@@ -363,6 +441,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 results.Add(new JObject {
                                     ["target"] = spec.Target,
                                     ["caught"] = caught,
+                                    ["eligible"] = save != null,
+                                    ["normalMiss"] = normalMiss,
                                     ["exact"] = exact });
                                 Sprint25Check("s28-catch-" + spec.Target +
                                     "-resolved", exact, row,
@@ -375,6 +455,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         thrower.Commands.InterruptAll(true);
                         target.Commands.InterruptAll(true);
+                        CaptureSprint28CatchProjectiles(
+                            ownedProjectiles, priorProjectiles, thrower);
+                        foreach (Projectile projectile in ownedProjectiles)
+                            projectile.Cleared = true;
+                        Game.Instance.ProjectileController.Tick();
+                        Game.Instance.ProjectileController.Tick();
+                        Sprint25Check("s28-catch-" + spec.Target +
+                            "-owned-projectile-cleanup",
+                            Game.Instance.ProjectileController.Projectiles
+                                .SequenceEqual(priorProjectiles),
+                            new JObject {
+                                ["owned"] = ownedProjectiles.Count,
+                                ["remaining"] = Game.Instance.ProjectileController
+                                    .Projectiles.Count(),
+                                ["clearedByFixture"] =
+                                    ownedProjectiles.Count(value => value.Cleared)
+                            }, "Only this fixture's launched projectiles are cleared after natural lifecycle observation; all prior projectile references are preserved.");
                         if (thrower.IsInCombat) thrower.LeaveCombat();
                         if (target.IsInCombat) target.LeaveCombat();
                         if (casterJoined && fixture.Caster.IsInCombat)
@@ -390,8 +487,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             UnityEngine.Object.Destroy(targetFaction);
                     }
                 }
-                bool both = results.Any(value => (bool)value["caught"]) &&
-                    results.Any(value => !(bool)value["caught"]) &&
+                bool both = results.Any(value => (bool)value["eligible"] &&
+                    (bool)value["caught"]) &&
+                    results.Any(value => (bool)value["eligible"] &&
+                        !(bool)value["caught"]) &&
                     results.All(value => (bool)value["exact"]);
                 Sprint25Check("s28-catch-both-outcomes", both,
                     new JObject { ["cases"] = results },
