@@ -17,19 +17,24 @@ owned tasks are removed; no native game or lease remains. HumanReview remains
 NOT_PERFORMED_NONBLOCKING; coarse wings/transitions are visual debt.
 
 Version 0.0.161 and six public Griffon roots are staged but NOT QUALIFIED.
-Complete the public focused checks, commit/push, then one Sprint gate from this
-physical root. Run the declared bounded fresh eligible native campaign on that
-exact ZIP, including current-stack ON/OFF persistence. Retain DEV evidence only
-as development provenance; use original tuples for audited unaffected reuse.
-Then publisher refusal/preflight/dry-run, conditional product PR60 merge, stable
-Latest publication, actual downloaded-asset/lineage verification, exact machine
-and Working restoration, and RELEASED/STOP records merge. No release has occurred.
+After the targeted turn-clock diagnosis, run the declared bounded native
+campaign on one new exact ZIP, including current-stack ON/OFF persistence.
+Retain earlier evidence under its original tuple; use unchanged released
+qualification only with a dependency audit. Then publisher refusal/preflight/
+dry-run, conditional product PR60 merge, stable Latest publication, actual
+downloaded-asset/lineage verification, exact machine and Working restoration,
+and RELEASED/STOP records merge. No release has occurred.
 
 Source-derived public equation: 1,108 generated placements + 29 retained native
 wrappers = 1,137 visible choices.
 
-The first public gate on 28bce30a failed before package/native work. Its complete
-39-failure result is retained. A batched legacy fixture/current weapon-audit
-repair plus matching private IL prerequisite passes 172 affected tests. Creature
-rules are unchanged. Freeze the corrected source, gate that new candidate once,
-and continue the final campaign; never qualify the failed source.
+F3 gate on 498a81fe passed 2,693/2,693 tests and strict packaging. Its fresh
+turn-based abort transaction passed 13 native assertions with exact restoration.
+The separate target-loss observer failed before command issue: sorted native
+order admitted owner/target but had no active turn after 501 frames. F2 also
+failed a repeated turn enrollment after a valid pounce. All failed artifacts
+and raw verdicts remain bound to their original ZIP/DLL/MVID and intact machine
+restoration; they are not release proof. The current read-only clock trace
+inspects native next-unit/UI-wait state in that exact setup. Compile and test
+it focused, then freeze a new source candidate and run only the affected native
+phase before the remaining final campaign. No release has occurred.

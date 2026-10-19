@@ -100,3 +100,23 @@ A development-only package attempt correctly refused the unreleased 0.0.161
 tag before producing a new ZIP; its released-version guard remains unchanged.
 The failed F2 ZIP and manifest were archived under ignored
 `artifacts/frozen-candidates/public-f2` with the same verified ZIP digest.
+
+The changed-source F3 gate on 498a81fe passed all 2,693 tests and strict
+packaging in 382.157s: ZIP
+2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37,
+DLL b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42,
+MVID 80200e94-4488-4591-9795-bfc6caf54d00. Fresh turn-based abort passed
+13 native assertions with a legal moving charge, exact active turn, native
+interruption, no attacks and ordinary recovery; its 257.074s transaction
+restored exact current intake. Fresh turn-based target loss failed before its
+command because the native order contained the owner and target but had no
+active turn after 501 frames. Its 253.189s transaction also restored exact
+intake. This is an observer setup failure, not proof of target-loss behavior.
+The 2.1.7b controller has separate next-unit and UI-wait gates; a bounded
+read-only clock trace now records both during that exact precondition. No native
+turn, attack or roll is supplied by the fixture, and no failed result is
+relabeled. Two earlier supervisor attempts stopped before a game launch because
+of an evidence-directory path error; the supervisor now uses an absolute root.
+The trace compiled in 17.2s and six focused tests passed in 0.9s. F3's exact
+ZIP and manifest were hash-verified and archived under ignored
+`artifacts/frozen-candidates/public-f3` before another candidate build.
