@@ -182,7 +182,7 @@ foreach ($parameters in @(@{}, @{reviewPhase='RTWP-FOUNDATION'}, @{reviewPhase='
 Write-Host "PASS actual Sprint26 profile dispatch: $dispatchChecks candidate-boundary/refusal checks; no profile entered."
 $dispatchScenario = 'disposable-expanded-summoning-sprint28-native-review'
 $sprint28DispatchChecks = 0
-foreach ($phase in @('profiles', 'modes', 'commands')) {
+foreach ($phase in @('profiles', 'modes', 'commands', 'ownership')) {
     $caught = $null
     try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
     catch { $caught = $_.Exception.Message }

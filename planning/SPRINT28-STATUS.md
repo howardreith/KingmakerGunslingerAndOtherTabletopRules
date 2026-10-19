@@ -21,6 +21,10 @@ Checks selected under `docs/VALIDATION-POLICY.md`:
 
 The first preflight attempt used an elevated shell and correctly refused with `Runtime tests must run without administrator elevation`; it was rerun unelevated and passed. The first compile command lacked this new worktree's local `GamePath.props`; the explicit installed game directory resolved it. The first development package attempt also stopped at the domain-test assembly reference for that ignored local configuration. Copying the current checkout's ignored `GamePath.props` resolved it, without changing Git state. None of these refused attempts launched the game or staged a package.
 
+## Ownership observer checkpoint awaiting native execution
+
+A focused save-free `ownership` phase now invokes each species' highest quantity route, records exact actor/item instance ownership across all three hand sets and printed armor, and checks native no-loot/non-removal flags plus exact party-inventory references and counts. It then observes native death for one actor and scheduler-driven summon expiry for the remaining actors before fixture cleanup. This is a new observer, not a PASS for corpse transfer, disarm or persistence until the native run and follow-up boundary checks complete. Focused production compilation and three S28 domain tests passed (~22 s). A limited Howard no-game request preflight passed 672 checks (Run task `KMG-S28-OwnershipPreflight-20261019T165817Z`, exit 0); actual compatibility dispatch/refusal passed nine S28 candidate-boundary checks (`KMG-S28-OwnershipDispatch-20261019T170006Z`, exit 0). Both tasks completed and were removed; no game launched.
+
 ## Fresh native input and restoration evidence
 
 The independent HOWARD-LAPTOP intake record is `C:/Users/howar/AppData/Local/Temp/KMG-S28-intake-20261019T130020Z.json` (SHA-256 `1043164661214f447f80f87aa4fbe384c9e224badc39a21a8d72f39a2770d84b`): 900 installed mod files, 118 save files, one authorized Working and one protected baseline, 16 private reference files, 83 native settings values, no Kingmaker process, lease, active transaction, staged Mods directory or sentinel. It is local evidence, never a source artifact.
