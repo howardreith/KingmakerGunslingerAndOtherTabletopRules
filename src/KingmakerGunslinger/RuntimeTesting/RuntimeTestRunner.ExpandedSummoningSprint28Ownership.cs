@@ -103,16 +103,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["partyInventoryExact"] =
                                     Sprint28PartyInventoryExact(before, counts) },
                             "The highest quantity route creates distinct exact-owner weapon and armor instances with native no-loot and no-removal flags, leaving the party inventory untouched.");
+                        // ItemsCollection.Transfer is the native route for
+                        // an equipped item into another inventory. Exercise
+                        // every resolved owned instance against a disposable
+                        // destination, including inactive weapon modes. A
+                        // broken transfer is contained to these fixture
+                        // actors and reported before death/expiry work.
+                        var destination = fixture.Hostile.Descriptor.Inventory;
+                        ItemEntity[] destinationBefore =
+                            destination.Items.ToArray();
+                        int[] destinationCounts = destinationBefore
+                            .Select(value => value.Count).ToArray();
+                        var transfers = new JArray();
+                        bool transfersRefused = true;
+                        foreach (UnitEntityData unit in group)
+                        foreach (ItemEntity item in unit.Descriptor.Inventory
+                            .Items.ToArray())
+                        {
+                            var source = unit.Descriptor.Inventory;
+                            var collectionBefore = item.Collection;
+                            var slot = item.HoldingSlot;
+                            bool slotBlocks = slot != null &&
+                                !slot.CanRemoveItem();
+                            ItemEntity moved = null;
+                            string error = null;
+                            try { moved = source.Transfer(item,
+                                item.Count, destination); }
+                            catch (Exception exception)
+                            { error = exception.GetType().Name; }
+                            bool refused = error == null && moved == null &&
+                                slotBlocks &&
+                                ReferenceEquals(item.Collection,
+                                    collectionBefore) &&
+                                ReferenceEquals(item.Owner, unit.Descriptor) &&
+                                Sprint28InventoryExact(destination,
+                                    destinationBefore, destinationCounts) &&
+                                Sprint28PartyInventoryExact(before, counts);
+                            transfersRefused &= refused;
+                            transfers.Add(new JObject {
+                                ["unit"] = unit.UniqueId,
+                                ["item"] = item.Blueprint.AssetGuid,
+                                ["instance"] = RuntimeHelpers.GetHashCode(item),
+                                ["slot"] = slot?.GetType().Name,
+                                ["slotBlocks"] = slotBlocks,
+                                ["returnedItem"] = moved == null ? null :
+                                    RuntimeHelpers.GetHashCode(moved).ToString(),
+                                ["exception"] = error,
+                                ["ownerUnchanged"] =
+                                    ReferenceEquals(item.Owner,
+                                        unit.Descriptor),
+                                ["destinationExact"] =
+                                    Sprint28InventoryExact(destination,
+                                        destinationBefore, destinationCounts),
+                                ["refused"] = refused });
+                            if (moved != null &&
+                                ReferenceEquals(moved.Collection, destination))
+                            {
+                                destination.Remove(moved);
+                                moved.Dispose();
+                            }
+                        }
+                        Sprint25Check("s28-" + key +
+                            "-native-transfer-boundary", transfersRefused,
+                            new JObject { ["cases"] = transfers,
+                                ["destinationExact"] = Sprint28InventoryExact(destination,
+                                    destinationBefore, destinationCounts),
+                                ["partyInventoryExact"] =
+                                    Sprint28PartyInventoryExact(before, counts) },
+                            "Native item transfer refuses every exact-owned giant weapon and armor, including inactive modes, without changing disposable destination or party inventory.");
+                        if (!transfersRefused)
+                            throw new InvalidOperationException(
+                                "A disposable giant item crossed the native transfer boundary.");
                         UnitEntityData dead = group[0];
                         GameHelper.KillUnit(dead, fixture.Hostile);
                         for (int frame = 0; frame < 80; frame++) yield return 0;
                         bool death = dead.Descriptor.State.IsDead &&
+                            !dead.IsDeadAndHasLoot &&
                             all.All(value => !value.IsLootable) &&
                             Sprint28PartyInventoryExact(before, counts) &&
                             !inventory.Items.Any(value => all.Contains(value));
                         Sprint25Check("s28-" + key + "-death-items", death,
                             new JObject { ["unit"] = dead.UniqueId,
                                 ["dead"] = dead.Descriptor.State.IsDead,
+                                ["deadAndHasLoot"] = dead.IsDeadAndHasLoot,
                                 ["corpseInventory"] = new JArray(dead.Descriptor
                                     .Inventory.Items.Select(value =>
                                         new JObject {
@@ -183,7 +256,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool Sprint28PartyInventoryExact(ItemEntity[] before,
             int[] counts)
         {
-            ItemEntity[] after = Game.Instance.Player.Inventory.Items.ToArray();
+            return Sprint28InventoryExact(Game.Instance.Player.Inventory,
+                before, counts);
+        }
+
+        private static bool Sprint28InventoryExact(ItemsCollection inventory,
+            ItemEntity[] before, int[] counts)
+        {
+            ItemEntity[] after = inventory.Items.ToArray();
             return after.Length == before.Length &&
                 after.Select((value, index) =>
                     ReferenceEquals(value, before[index]) &&
