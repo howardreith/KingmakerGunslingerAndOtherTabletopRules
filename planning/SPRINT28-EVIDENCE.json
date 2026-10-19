@@ -75,7 +75,22 @@
                                  "reviewSha256":  "d1e70cf70e08ea99d3205fffa4e3515d0a982671f8b52f11cf8d363abd5d360b",
                                  "transactionSha256":  "56d6dbf1b57c0edcceeb397df9e7ce7f8b6d75362016f0ec9e948f360ec48cf3",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free live adult instance profiles and genuine Power Attack ON/OFF",
+                                 "candidateKind":  "development",
+                                 "source":  "b2690bef693f6f7dda86cf4b3caa9860ab8fd007",
+                                 "packageSha256":  "ade37e8cc0076ef5425254a94792b51ea376cfe9b1b008b0d636f7e7ced449b1",
+                                 "dllSha256":  "ac74def3b6752079aad6ce29aa1103b5ef1f4a65c8f454b68139874cdbc68f20",
+                                 "mvid":  "c9a46d23-001f-4a07-9f28-6400dbb9c5cd",
+                                 "runId":  "20261019T1524503366218Z-5e5aeb5587cf4110884c9b445b85e978",
+                                 "transactionRunId":  "compat-20261019T152253Z-be94cbc14211",
+                                 "result":  "PASS_PROFILES_ONLY",
+                                 "rawResultSha256":  "c6bfd5e7ee6fcd4879f64637d1b7733fb28759ec31fd7dc0ddb431531d1d9e0a",
+                                 "reviewSha256":  "c5b0ac391b30f2e1fa961db468284176872cf10287b681261761f423c43c7369",
+                                 "transactionSha256":  "1d37c0443d5f3817f81d0f5467e7ce9b041f73347ae8d79dcdd05544a4445192",
+                                 "restorationVerified":  true
                              }
                          ],
-    "restoration":  "Four native transactions restored exactly, including one honestly failed live-instance observer. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Combat, ownership lifecycle and release unqualified."
+    "restoration":  "Five native transactions restored exactly, including one preserved failed observer and its successful narrowed rerun. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Commands, ownership lifecycle, rock and release unqualified."
 }
