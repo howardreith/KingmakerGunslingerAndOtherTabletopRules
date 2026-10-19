@@ -72,20 +72,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             if(charge==null)throw new InvalidOperationException("Canonical native Charge ability absent.");
             var data=new AbilityData(charge);var observer=new Sprint24AttackObserver{Owner=owner,Target=target};
             try{
-                Vector3 start;string lane;var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out lane,startDistances:new[]{20f,16f,12f});
+                Vector3 start;string lane;
+                Func<UnitEntityData,UnitEntityData,bool> visibleTurnOwner=turnBased?
+                    (Func<UnitEntityData,UnitEntityData,bool>)((unit,opponent)=>unit.IsVisibleForPlayer):null;
+                float[] distances=turnBased?new[]{12f,11f,10f,9f,8f}:new[]{20f,16f,12f};
+                var selected=Sprint23FindChargeRoute(fixture,owner,target,data,out start,out lane,
+                    extraAdmission:visibleTurnOwner,startDistances:distances);
                 if(selected==null)throw new InvalidOperationException("No legal Griffon cancellation lane: "+lane);
                 owner.JoinCombat();target.JoinCombat();
                 if(turnBased){
-                    var admission=new JObject();foreach(int f in Sprint22EnrollTurnBasedOwners(new[]{owner},target,admission))yield return f;
+                    var admission=new JObject{["route"]=lane,["ownerVisibleAtSelection"]=owner.IsVisibleForPlayer};
+                    foreach(int f in Sprint22EnrollTurnBasedOwners(new[]{owner},target,admission))yield return f;
                     var turnClock=new JArray();int waited=0;
                     while(!Sprint18OwnerIsActing(owner)&&waited++<500){
                         if(waited==1||waited==8||waited==60||waited==240||waited==500)
-                            turnClock.Add(Sprint27TurnClockSnapshot(waited));
+                            turnClock.Add(Sprint27TurnClockSnapshot(waited,owner,target));
                         yield return 0;
                     }
-                    turnClock.Add(Sprint27TurnClockSnapshot(waited));admission["turnClock"]=turnClock;
+                    turnClock.Add(Sprint27TurnClockSnapshot(waited,owner,target));admission["turnClock"]=turnClock;
                     admission["acting"]=Sprint18OwnerIsActing(owner);admission["nativeTurnWaitFrames"]=waited;
-                    bool admitted=(bool)admission["admitted"]&&Sprint18OwnerIsActing(owner);
+                    bool admitted=(bool)admission["admitted"]&&owner.IsVisibleForPlayer&&Sprint18OwnerIsActing(owner);
                     Sprint27Check("boundary-turn-admission-"+loseTarget,admitted,admission,"A real exact-owner active turn precedes a native turn-based abort or target-loss command.");
                     if(!admitted)throw new InvalidOperationException("Exact boundary turn absent.");
                 }
@@ -117,7 +123,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if(turnBased){Kingmaker.UI.SettingsUI.SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue=false;Game.Instance.TurnBasedCombatController.Activate();}
             if(removeOwner==null)foreach(int f in Sprint27Ordinary(fixture,owner,true))yield return f;
         }
-        private static JObject Sprint27TurnClockSnapshot(int waited)
+        private static JObject Sprint27TurnClockSnapshot(int waited,UnitEntityData owner,UnitEntityData target)
         {
             var controller=Game.Instance.TurnBasedCombatController;
             var field=typeof(TurnBased.Controllers.CombatController).GetField("m_NextUnit",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic);
@@ -129,6 +135,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["waitingForUi"]=controller.WaitingForUI.Value,["uiGuardCount"]=controller.WaitingForUI.GuardCount,
                 ["currentMode"]=Game.Instance.CurrentMode.ToString(),["playerInCombat"]=Game.Instance.Player.IsInCombat,
                 ["paused"]=Game.Instance.IsPaused,["gameDeltaTime"]=Game.Instance.TimeController.GameDeltaTime,
+                ["ownerVisibleForPlayer"]=owner.IsVisibleForPlayer,["ownerEnemyToParty"]=Game.Instance.Player.Group.IsEnemy(owner),
+                ["ownerTimeToNextTurn"]=owner.GetTimeToNextTurn(),["targetVisibleForPlayer"]=target.IsVisibleForPlayer,
                 ["nextUnit"]=next?.UniqueId,["nextTimeToTurn"]=next!=null&&!next.Destroyed?(float?)next.GetTimeToNextTurn():null,
                 ["currentTurn"]=turn?.Unit?.UniqueId,["currentStatus"]=turn?.Status.ToString()};
         }
