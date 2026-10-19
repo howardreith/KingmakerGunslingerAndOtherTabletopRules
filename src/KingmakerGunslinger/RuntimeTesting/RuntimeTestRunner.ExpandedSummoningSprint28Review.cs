@@ -186,6 +186,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }, "Only the exact giant owns its equipped weapon and printed armor; corpse and transfer checks remain separate.");
                         if (spec.Key == "fire-giant")
                         {
+                            if (fixture.Hostile == null)
+                                CreateExpandedSummoningCorrectionHostile(fixture);
+                            UnitEntityData source = fixture.Hostile;
+                            bool legal = source != null &&
+                                !source.IsPlayerFaction &&
+                                source.CanAttack(owner);
+                            Sprint25Check("s28-fire-defense-source", legal,
+                                new JObject {
+                                    ["source"] = source?.UniqueId,
+                                    ["sourcePlayerFaction"] =
+                                        source?.IsPlayerFaction,
+                                    ["target"] = owner.UniqueId,
+                                    ["canAttack"] = source != null &&
+                                        source.CanAttack(owner)
+                                }, "The incoming energy source is an exact disposable hostile that native damage permits to attack this giant.");
+                            if (!legal) throw new InvalidOperationException(
+                                "Fire defense lacks a legal hostile damage source.");
                             int injury = owner.Descriptor.Damage;
                             try
                             {
@@ -196,7 +213,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         new DiceFormula(1, DiceType.D6), energy)
                                         { PreRolledValue = 6 };
                                     var rule = Rulebook.Trigger(new RuleDealDamage(
-                                        fixture.Caster, owner,
+                                        source, owner,
                                         new DamageBundle(packet)));
                                     var result = rule.ResultDamage?.SingleOrDefault(
                                         value => ReferenceEquals(value.Source,
@@ -211,7 +228,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     Sprint25Check("s28-fire-" + energy +
                                         "-defense", correct, new JObject {
                                         ["owner"] = owner.UniqueId,
-                                        ["source"] = fixture.Caster.UniqueId,
+                                        ["source"] = source.UniqueId,
                                         ["energy"] = energy.ToString(),
                                         ["fixturePreRoll"] = 6,
                                         ["nativeImmune"] = packet.Immune,
