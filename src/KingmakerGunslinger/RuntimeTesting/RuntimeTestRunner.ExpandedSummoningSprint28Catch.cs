@@ -332,6 +332,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             using (var saves = new Sprint28CatchSaves(target))
                             {
+                                // Rulebook-only negative controls run while the
+                                // same legal lane and non-flat-footed target
+                                // are intact. Neither produces a projectile or
+                                // spends a native attack command.
+                                ItemEntityWeapon club = thrower.Descriptor
+                                    .Inventory.Items.OfType<ItemEntityWeapon>()
+                                    .Single(value => ReferenceEquals(
+                                        value.Blueprint,
+                                        thrower.Blueprint.Body.PrimaryHand));
+                                var controls = new JArray();
+                                RuleAttackRoll nonrock = null;
+                                for (int attempt = 0; attempt < 8; attempt++)
+                                {
+                                    nonrock = Rulebook.Trigger(new RuleAttackRoll(
+                                        thrower, target, club, 0));
+                                    controls.Add(new JObject {
+                                        ["kind"] = "nonrock",
+                                        ["natural"] = nonrock.Roll.Value,
+                                        ["result"] = nonrock.Result.ToString() });
+                                    if (nonrock.Roll.Value != 1) break;
+                                }
+                                bool nonrockExcluded = nonrock != null &&
+                                    nonrock.Roll.Value != 1 && nonrock.IsHit &&
+                                    saves.Saves.Count == 0 &&
+                                    target.Get<UnitPartSummonGiantRockCatch>() == null &&
+                                    SummonGiantRockCatch.ObservedOutcomes.Count == 0;
+                                Sprint25Check("s28-catch-" + spec.Target +
+                                    "-nonrock-control", nonrockExcluded,
+                                    new JObject { ["target"] = target.UniqueId,
+                                        ["attacks"] = controls,
+                                        ["saves"] = saves.Saves.Count,
+                                        ["ledger"] = target.Get<
+                                            UnitPartSummonGiantRockCatch>() != null },
+                                    "A would-hit manufactured club rule cannot spend the target's rock catch or prompt a Reflex save.");
+                                RuleAttackRoll unaware = null;
+                                target.Memory.Add(thrower).Visible = false;
+                                bool unawareAtRollStart =
+                                    target.Memory.ContainsVisible(thrower);
+                                bool unawareAfterRoll = false;
+                                try
+                                {
+                                    for (int attempt = 0; attempt < 8;
+                                        attempt++)
+                                    {
+                                        unaware = Rulebook.Trigger(
+                                            new RuleAttackRoll(thrower,
+                                                target, rock, 0));
+                                        controls.Add(new JObject {
+                                            ["kind"] = "unaware-rock",
+                                            ["natural"] =
+                                                unaware.Roll.Value,
+                                            ["result"] =
+                                                unaware.Result.ToString(),
+                                            ["flatFooted"] =
+                                                unaware.IsTargetFlatFooted });
+                                        unawareAfterRoll =
+                                            target.Memory.ContainsVisible(thrower);
+                                        if (unaware.Roll.Value != 1) break;
+                                    }
+                                }
+                                finally
+                                { target.Memory.Add(thrower).Visible = true; }
+                                bool unawareExcluded = unaware != null &&
+                                    unaware.Roll.Value != 1 && unaware.IsHit &&
+                                    !unawareAtRollStart && !unawareAfterRoll &&
+                                    target.Memory.ContainsVisible(thrower) &&
+                                    saves.Saves.Count == 0 &&
+                                    target.Get<UnitPartSummonGiantRockCatch>() == null &&
+                                    SummonGiantRockCatch.ObservedOutcomes.Count == 0;
+                                Sprint25Check("s28-catch-" + spec.Target +
+                                    "-unaware-control", unawareExcluded,
+                                    new JObject { ["target"] = target.UniqueId,
+                                        ["attacks"] = controls,
+                                        ["saves"] = saves.Saves.Count,
+                                        ["visibleAtRollStart"] =
+                                            unawareAtRollStart,
+                                        ["visibleAfterRoll"] =
+                                            unawareAfterRoll,
+                                        ["visibilityRestored"] =
+                                            target.Memory.ContainsVisible(thrower),
+                                        ["ledger"] = target.Get<
+                                            UnitPartSummonGiantRockCatch>() != null },
+                                    "A would-hit unseen rock cannot prompt the defensive catch; exact actor memory is restored before the native command.");
                                 thrower.Commands.Run(command);
                                 DateTime deadline =
                                     DateTime.UtcNow.AddSeconds(35);
@@ -481,6 +564,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Sprint25Check("s28-catch-" + spec.Target +
                                     "-resolved", exact, row,
                                     "A would-hit native rock prompts one exact-owner Reflex check; its actual result either prevents harm before damage or permits one physical packet.");
+                                // Exercise the same target-side rulebook seam
+                                // again in this native round without issuing a
+                                // second command or supplying a hit. These
+                                // roll-only probes cannot create projectiles
+                                // or damage; the command above proves impact.
+                                long round = ContextActionUngulateTrample.CurrentRound();
+                                var probes = new JArray();
+                                for (int attempt = 0; attempt < 8 &&
+                                    target.Get<UnitPartSummonGiantRockCatch>() == null;
+                                    attempt++)
+                                {
+                                    RuleAttackRoll spendProbe = Rulebook.Trigger(
+                                        new RuleAttackRoll(thrower, target,
+                                            rock, 0));
+                                    probes.Add(new JObject {
+                                        ["kind"] = "first-eligible",
+                                        ["natural"] = spendProbe.Roll.Value,
+                                        ["result"] = spendProbe.Result.ToString(),
+                                        ["saveCount"] = saves.Saves.Count });
+                                }
+                                var spent = target.Get<UnitPartSummonGiantRockCatch>();
+                                int spentSaves = saves.Saves.Count;
+                                RuleAttackRoll repeat = null;
+                                for (int attempt = 0; attempt < 8; attempt++)
+                                {
+                                    repeat = Rulebook.Trigger(new RuleAttackRoll(
+                                        thrower, target, rock, 0));
+                                    probes.Add(new JObject {
+                                        ["kind"] = "same-round-repeat",
+                                        ["natural"] = repeat.Roll.Value,
+                                        ["result"] = repeat.Result.ToString(),
+                                        ["saveCount"] = saves.Saves.Count });
+                                    if (repeat.Roll.Value != 1) break;
+                                }
+                                bool once = spent != null &&
+                                    spent.LastRound == round && spentSaves == 1 &&
+                                    ContextActionUngulateTrample.CurrentRound() == round &&
+                                    repeat != null && repeat.Roll.Value != 1 &&
+                                    repeat.IsHit && saves.Saves.Count == spentSaves &&
+                                    SummonGiantRockCatch.ObservedOutcomes.Count == 1;
+                                Sprint25Check("s28-catch-" + spec.Target +
+                                    "-once-round", once, new JObject {
+                                        ["target"] = target.UniqueId,
+                                        ["round"] = round,
+                                        ["ledgerRound"] = spent?.LastRound,
+                                        ["savesAfterSpend"] = spentSaves,
+                                        ["savesAfterRepeat"] = saves.Saves.Count,
+                                        ["probes"] = probes,
+                                        ["fixtureGrantedHit"] = false,
+                                        ["fixtureIssuedCommand"] = false },
+                                    "The exact target's serialized catch ledger permits one Reflex attempt this round; a later ordinary native rock attack roll gets no second save.");
                             }
                         }
                         finally { EventBus.Unsubscribe(observer); }
