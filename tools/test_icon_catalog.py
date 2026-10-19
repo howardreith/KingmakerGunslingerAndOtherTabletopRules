@@ -48,9 +48,9 @@ class IconCatalogTests(unittest.TestCase):
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
         # Combined authority: delivered Brachiosaurus plus the owner-approved
-        # released Dire Rat edit, Sprint26 medallions and authorized Griffon painting.
+        # released Dire Rat edit, Sprint26 medallions, authorized Griffon painting and the three Sprint28 portraits.
         # Every released source/export row remains unchanged.
-        self.assertEqual("987d02bdaefd09c94b83c588a30e7878108a978634e478ad1f42ca74035ea4fe", actual)
+        self.assertEqual("d8ed35550296f17020abc2e4dd297f72cdfcbe4a67b053938459e80d071c791d", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
