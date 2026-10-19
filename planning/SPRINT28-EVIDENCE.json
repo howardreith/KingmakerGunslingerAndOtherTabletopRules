@@ -105,6 +105,21 @@
                                  "reviewSha256":  "ebac8e659051fba7c36c8b6e7b27a3af909cf92638025abb19fff7d3ba953f22",
                                  "transactionSha256":  "0d91dfef86ba2de690f03e01d472e4bd60a3aacbc06e3bd334d9970e2148cc5c",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free native three giant hand-set switches and exact attack-mode plans",
+                                 "candidateKind":  "development",
+                                 "source":  "5a56eedb6f0417f9f7edf6a2add7a8324f2cb0b4",
+                                 "packageSha256":  "6006b842526f067974a5c81122f49b15144635bb56cd5be6330cc4cf59898b37",
+                                 "dllSha256":  "f6f47489eccf28df80974233adf3e8fdcb2df460db2daf7ba1bc3fc84dfd29e8",
+                                 "mvid":  "8e8145f7-6090-46bc-bc61-f6fa64ca312b",
+                                 "runId":  "20261019T1614324902685Z-2b027da2b7364d35b86585841310b75f",
+                                 "transactionRunId":  "compat-20261019T161231Z-16abb03554d1",
+                                 "result":  "PASS_MODE_PLANS_ONLY",
+                                 "rawResultSha256":  "301e6fa72ddc2a854afabeda385e77d98d1b8156001fb52899e63343926b027a",
+                                 "reviewSha256":  "de1613bfd43114e4097da8e1cf317917e8e81941f9e983ca7d77627811b9a8df",
+                                 "transactionSha256":  "6b736a39ded833602a7c9238d2adbbcf7637e2eb86ff3185882508ac7ce75434",
+                                 "restorationVerified":  true
                              }
                          ],
     "guardedPrelaunchFailures":  [
@@ -129,5 +144,5 @@
                                         "restorationVerified":  true
                                     }
                                 ],
-    "restoration":  "Six native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
+    "restoration":  "Seven native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
 }
