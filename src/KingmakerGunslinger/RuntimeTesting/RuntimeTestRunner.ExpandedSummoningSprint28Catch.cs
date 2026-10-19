@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -94,6 +94,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     SetExpandedSummoningBrainActive(target, false);
                     BlueprintFaction throwerFaction = null;
                     BlueprintFaction targetFaction = null;
+                    bool casterPartyAdded = false;
+                    bool casterJoined = false;
                     try
                     {
                         // Both factions are unregistered clones owned by this
@@ -145,7 +147,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!Game.Instance.State.AwakeUnits.Contains(unit))
                                 Game.Instance.State.AwakeUnits.Add(unit);
                         }
+                        // The native preparation controller requires a
+                        // controllable group in combat. Enroll only this
+                        // request-owned caster, then restore its party and
+                        // combat membership in this case's finally block.
+                        if (!Game.Instance.Player.Party.Contains(fixture.Caster))
+                        {
+                            Game.Instance.Player.Party.Add(fixture.Caster);
+                            casterPartyAdded = true;
+                        }
+                        if (!fixture.Caster.CombatState.IsInCombat)
+                        {
+                            fixture.Caster.JoinCombat();
+                            casterJoined = true;
+                        }
                         thrower.JoinCombat(); target.JoinCombat();
+                        Game.Instance.Player.UpdateIsInCombat();
                         new UnitCombatJoinController().Tick();
                         new UnitCombatPrepareController().Tick();
                         thrower.CombatState.OnNewRound();
@@ -164,7 +181,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // Catch is unavailable to a flat-footed target.
                         // Admit both actors through the native combat/round
                         // controllers, then verify the actual defensive rule.
-                        for (int frame = 0; frame < 16; frame++) yield return 0;
+                        int initiativeFrames = 0;
+                        while (!target.CombatState.CanActInCombat &&
+                            initiativeFrames++ < 160) yield return 0;
                         bool flatFooted = Rulebook.Trigger(
                             new RuleCheckTargetFlatFooted(thrower, target))
                             .IsFlatFooted;
@@ -216,6 +235,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["targetLos"] = target.HasLOS(thrower),
                                 ["targetAware"] =
                                     target.Memory.ContainsVisible(thrower),
+                                ["targetMemoryContainsThrower"] =
+                                    target.Memory.Contains(thrower),
+                                ["playerInCombat"] =
+                                    Game.Instance.Player.IsInCombat,
+                                ["casterPartyAdded"] = casterPartyAdded,
+                                ["casterGroupCombat"] =
+                                    fixture.Caster.Group.IsInCombat.ToString(),
+                                ["throwerCombat"] =
+                                    thrower.CombatState.IsInCombat,
+                                ["targetCombat"] =
+                                    target.CombatState.IsInCombat,
+                                ["targetPrepared"] =
+                                    target.CombatState.Prepared.ToString(),
+                                ["targetCanActInCombat"] =
+                                    target.CombatState.CanActInCombat,
+                                ["targetInitiativeCooldown"] =
+                                    target.CombatState.Cooldown.Initiative,
+                                ["initiativeFrames"] = initiativeFrames,
                                 ["nativeFlatFooted"] = flatFooted,
                                 ["inRange"] = probe.IsUnitEnoughClose,
                                 ["canAct"] =
@@ -340,6 +377,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         target.Commands.InterruptAll(true);
                         if (thrower.IsInCombat) thrower.LeaveCombat();
                         if (target.IsInCombat) target.LeaveCombat();
+                        if (casterJoined && fixture.Caster.IsInCombat)
+                            fixture.Caster.LeaveCombat();
+                        if (casterPartyAdded)
+                            Game.Instance.Player.Party.Remove(fixture.Caster);
+                        Game.Instance.Player.UpdateIsInCombat();
                         DisposeExpandedSummoningUnits(fixture.Created,
                             new[] { thrower, target });
                         if (throwerFaction != null)
