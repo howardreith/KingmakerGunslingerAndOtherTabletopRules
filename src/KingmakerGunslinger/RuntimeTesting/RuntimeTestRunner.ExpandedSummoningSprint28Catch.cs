@@ -9,6 +9,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -102,8 +103,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         targetFaction.name = "KMG_Runtime_S28_CatchTargetFaction";
                         ConfigureSprint28CatchFaction(throwerFaction, targetFaction);
                         ConfigureSprint28CatchFaction(targetFaction, throwerFaction);
-                        thrower.Descriptor.Faction = throwerFaction;
-                        target.Descriptor.Faction = targetFaction;
+                        // Native IsEnemy reads per-group cached attack
+                        // factions. Isolate each owned actor before touching
+                        // that cache; no player or campaign group is modified.
+                        thrower.Descriptor.SwitchFactions(throwerFaction, false);
+                        thrower.GroupId = "KMG_Runtime_S28_CatchThrower_" + thrower.UniqueId;
+                        target.Descriptor.SwitchFactions(targetFaction, false);
+                        target.GroupId = "KMG_Runtime_S28_CatchTarget_" + target.UniqueId;
+                        thrower.AttackFactions.Match(new[] { targetFaction });
+                        target.AttackFactions.Match(new[] { throwerFaction });
+                        thrower.Group.UpdateAttackFactionsCache();
+                        target.Group.UpdateAttackFactionsCache();
                         thrower.Stats.BaseAttackBonus.BaseValue = 50;
                         target.Stats.SaveReflex.BaseValue = spec.Reflex;
                         var switchCommand = new UnitSwitchHandEquipmentSet(2);
@@ -147,7 +157,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         target.Memory.Add(thrower).Visible = true;
                         var probe = new UnitAttack(target);
                         probe.Init(thrower);
-                        bool ready = thrower.IsEnemy(target) &&
+                        int unrelatedEnemies = fixture.UnitsBefore
+                            .OfType<UnitEntityData>().Count(value =>
+                                value.IsEnemy(thrower) || thrower.IsEnemy(value) ||
+                                value.IsEnemy(target) || target.IsEnemy(value));
+                        bool ready = !thrower.Group.IsPlayerParty &&
+                            !target.Group.IsPlayerParty && unrelatedEnemies == 0 &&
+                            thrower.IsEnemy(target) &&
                             target.IsEnemy(thrower) &&
                             thrower.HasLOS(target) &&
                             target.HasLOS(thrower) &&
@@ -168,6 +184,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ? null : target.Faction.name,
                                 ["throwerPlayerFaction"] =
                                     thrower.IsPlayerFaction,
+                                ["throwerGroup"] = thrower.GroupId,
+                                ["targetGroup"] = target.GroupId,
+                                ["throwerGroupIsParty"] =
+                                    thrower.Group.IsPlayerParty,
+                                ["targetGroupIsParty"] =
+                                    target.Group.IsPlayerParty,
+                                ["unrelatedEnemies"] = unrelatedEnemies,
+                                ["throwerAttackFactions"] = new JArray(
+                                    thrower.AttackFactions.Select(value =>
+                                        value.name)),
+                                ["targetAttackFactions"] = new JArray(
+                                    target.AttackFactions.Select(value =>
+                                        value.name)),
                                 ["targetPlayerFaction"] =
                                     target.IsPlayerFaction,
                                 ["los"] = thrower.HasLOS(target),
