@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -39,7 +39,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
                         fixture, key);
                     UnitEntityData target = fixture.Hostile;
-                    SetExpandedSummoningBrainActive(owner, false);
+                    // Preserve the summoned brain's native action lists.
+                    // The quiet-unit helper clears them irreversibly.
                     try
                     {
                         owner.Commands.InterruptAll(true);
