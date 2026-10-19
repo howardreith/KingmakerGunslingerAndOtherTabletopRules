@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
@@ -351,13 +351,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     DateTime.UtcNow.AddSeconds(10);
                                 while (impactFrames++ < 600 &&
                                     DateTime.UtcNow < impactDeadline &&
-                                    ((saves.Saves.Count == 0 &&
+                                    (!command.IsFinished ||
+                                     observer.WeaponAttacks.Count == 0 ||
+                                     ownedProjectiles.Count == 0 ||
+                                     ownedProjectiles.Any(value => !value.IsHit) ||
+                                     (observer.WeaponAttacks.Count == 1 &&
+                                      observer.WeaponAttacks[0].AttackRoll.IsHit &&
+                                      saves.Saves.Count == 0 &&
                                       observer.Damage.Count == 0) ||
                                      (saves.Saves.Count == 1 &&
                                       !saves.Saves[0].IsPassed &&
-                                      observer.Damage.Count == 0) ||
-                                     Game.Instance.ProjectileController
-                                         .Projectiles.Count() > projectilesBefore))
+                                      observer.Damage.Count == 0)))
                                 {
                                     CaptureSprint28CatchProjectiles(
                                         ownedProjectiles, priorProjectiles,
@@ -388,11 +392,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 int activeOwned = ownedProjectiles.Count(value =>
                                     Game.Instance.ProjectileController.Projectiles
                                         .Contains(value));
+                                // Native impact resolves before the rock's
+                                // 20-second visual particle lifetime expires.
+                                // Check the exact owned projectile and preserve
+                                // every prior projectile; fixture cleanup below
+                                // removes only this case's lingering visual.
+                                bool projectileExact =
+                                    ownedProjectiles.Count == 1 &&
+                                    ownedProjectiles[0].IsHit &&
+                                    ReferenceEquals(ownedProjectiles[0].Launcher,
+                                        thrower) &&
+                                    ownedProjectiles[0].AttackResult ==
+                                        attack?.AttackRoll?.Result &&
+                                    activeOwned <= 1 &&
+                                    Game.Instance.ProjectileController.Projectiles
+                                        .Where(value => !ownedProjectiles.Contains(value))
+                                        .SequenceEqual(priorProjectiles);
                                 bool exact = command.IsFinished &&
                                     impactFrames < 600 &&
-                                    activeOwned == 0 &&
-                                    Game.Instance.ProjectileController
-                                        .Projectiles.SequenceEqual(priorProjectiles) &&
+                                    projectileExact &&
                                     observer.OwnerWeaponAttacks.Count == 1 &&
                                     observer.WeaponAttacks.Count == 1 &&
                                     ReferenceEquals(attack?.Weapon.Blueprint,
@@ -426,6 +444,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["ownedProjectiles"] =
                                         ownedProjectiles.Count,
                                     ["activeOwnedProjectiles"] = activeOwned,
+                                    ["projectileExact"] = projectileExact,
                                     ["projectileStates"] = new JArray(
                                         ownedProjectiles.Select(
                                             DescribeSprint28CatchProjectile)),
