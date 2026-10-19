@@ -180,3 +180,25 @@ foreach ($parameters in @(@{}, @{reviewPhase='RTWP-FOUNDATION'}, @{reviewPhase='
     $dispatchChecks++
 }
 Write-Host "PASS actual Sprint26 profile dispatch: $dispatchChecks candidate-boundary/refusal checks; no profile entered."
+$dispatchScenario = 'disposable-expanded-summoning-sprint28-native-review'
+$sprint28DispatchChecks = 0
+foreach ($phase in @('profiles', 'modes', 'commands')) {
+    $caught = $null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught = $_.Exception.Message }
+    if ($caught -cne 'Compatibility package version does not match the current repository; no profile was entered.') {
+        throw "Actual Sprint28 profile dispatch failed before candidate boundary for ${phase}: $caught"
+    }
+    $sprint28DispatchChecks++
+}
+foreach ($parameters in @(@{}, @{reviewPhase='COMMANDS'}, @{reviewPhase='all'},
+    @{reviewPhase=@('commands')}, @{reviewPhase='commands';saveName='KMG_AUTOMATION_WORKING'})) {
+    $caught = $null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters $parameters -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught = $_.Exception.Message }
+    if ($caught -cne 'Sprint 22/23/24/25 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.') {
+        throw "Actual Sprint28 profile dispatch did not reject invalid parameters: $caught"
+    }
+    $sprint28DispatchChecks++
+}
+Write-Host "PASS actual Sprint28 profile dispatch: $sprint28DispatchChecks candidate-boundary/refusal checks; no profile entered."
