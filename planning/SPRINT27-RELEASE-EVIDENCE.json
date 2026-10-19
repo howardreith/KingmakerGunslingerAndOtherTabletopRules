@@ -1,0 +1,384 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprint27Griffon",
+  "status": "RELEASED_STOP",
+  "sprint28Started": false,
+  "releasedVersion": "v0.0.161",
+  "releaseUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.161",
+  "product": {
+    "pr": 60,
+    "mergeCommit": "05d75068e2f49a914c5cbeb2499944ff1298273c",
+    "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+    "sourceFingerprint": "8dbff59d8609a8e6d990d8b8b6b88286cdf397f63be098d8e9931be017dec36e",
+    "qualifiedRoot": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27",
+    "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+    "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+    "dllMvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+  },
+  "gate": {
+    "result": "PASS",
+    "registered": 2693,
+    "executed": 2693,
+    "failures": 0,
+    "evidence": "artifacts/sprint27-gate-public-f5/result.json",
+    "evidenceSha256": "b7a7f681620c2ab20b325edf1446583e4124edc691d6c410b1204e02d30a80c2"
+  },
+  "publication": {
+    "stable": true,
+    "draft": false,
+    "prerelease": false,
+    "latest": true,
+    "peeledTagEqualsProductMerge": true,
+    "assets": [
+      {
+        "name": "KingmakerGunslinger-0.0.161-expanded-summoning-sprint27-griffon.zip",
+        "id": 655236748,
+        "size": 55435940,
+        "sha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.161/KingmakerGunslinger-0.0.161-expanded-summoning-sprint27-griffon.zip"
+      },
+      {
+        "name": "release-manifest.json",
+        "id": 655236749,
+        "size": 155485,
+        "sha256": "16ebf9d08fbdfd018094e4817a9a2ebd0b0d55835a334e8a24a5357127c8b7eb",
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.161/release-manifest.json"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "id": 655236750,
+        "size": 135,
+        "sha256": "a01b3f37c41086055d6a95ed0903f6c063f3789f3c465d04c81fc04031209b6f",
+        "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.161/SHA256SUMS.txt"
+      }
+    ],
+    "downloadVerification": "artifacts/sprint27-download-public-f5-r2/result.json",
+    "downloadVerificationSha256": "7378f272c2c8f13cfdf09c0e595ab8a27374fd551499693b38e15c5f2a881cc6"
+  },
+  "surface": {
+    "projectCreatures": 111,
+    "monsterCreatures": 96,
+    "monsterRoots": 545,
+    "natureCreatures": 98,
+    "natureRoots": 563,
+    "generatedRoots": 1108,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1137,
+    "griffonRoutes": [
+      "SNA IV: one",
+      "SNA V: 1d3",
+      "SNA VI: 1d4+1",
+      "SNA VII: 1d4+1",
+      "SNA VIII: 1d4+1",
+      "SNA IX: 1d4+1"
+    ]
+  },
+  "qualification": {
+    "ledger": "artifacts/sprint27-qualification-public-f5/qualification-ledger.json",
+    "ledgerSha256": "12f169dd392228b9fe40fd5aef73d922b0e8819803f41ae25c7d8f513e20b5d3",
+    "coverageRows": [
+      {
+        "id": "composed-profile-ordinary-signed-damage-reach-movement",
+        "result": "PASS"
+      },
+      {
+        "id": "rtwp-and-turn-based-native-pounce-rake",
+        "result": "PASS"
+      },
+      {
+        "id": "charge-negative-owner-target-state-and-reactions",
+        "result": "PASS"
+      },
+      {
+        "id": "exact-owner-ai-and-functional-hybrid-body",
+        "result": "PASS"
+      },
+      {
+        "id": "lifecycle-cache-donor-rollback-module-boundary",
+        "result": "PASS"
+      },
+      {
+        "id": "targeted-persistence-on-off-cleanup-fresh-absence",
+        "result": "PASS"
+      },
+      {
+        "id": "six-public-roots-slots-quantities-duration-alignment-icons",
+        "result": "PASS"
+      },
+      {
+        "id": "standalone-and-high-risk-shared-controls",
+        "result": "PASS"
+      },
+      {
+        "id": "inherited-unaffected-qualification",
+        "result": "REUSED_PASS"
+      },
+      {
+        "id": "complete-public-source-build-package-gate",
+        "result": "PASS"
+      },
+      {
+        "id": "public-inventory-icon-six-roots",
+        "result": "PASS"
+      },
+      {
+        "id": "exact-package-release-qualification",
+        "result": "PASS"
+      }
+    ],
+    "freshNativeExecutions": [
+      {
+        "scope": "standalone-combat",
+        "result": "PASS",
+        "runId": "20261019T0312196228171Z-33a0b26acefb4c0a9f70eddad9bb86c7",
+        "assertions": 93,
+        "runtimeResultSha256": "d2fc4ea6eb6b9345be4771fa5cd38275720dcee329dab1f36f32b8188682a175",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "standalone-presentation",
+        "result": "PASS",
+        "runId": "20261019T0318556391913Z-8fa5123da6114e718d7def91091475d5",
+        "assertions": 46,
+        "runtimeResultSha256": "1920320d12e6dcca89a076135bb94bb87181512575a89369a8f9ce9e57aa81fa",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "outdoor",
+        "result": "PASS",
+        "runId": "20261019T0324017662829Z-3be92523c53c430696d92f1d32ba3d44",
+        "assertions": 13,
+        "runtimeResultSha256": "bbfb42e37acf22943e4d75d116f294ad3dc8d9fa6039ee4a8923fd22baec9afd",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "combined-combat",
+        "result": "PASS",
+        "runId": "20261019T0328290355006Z-e140f0b75c6144f5afc4ca292e354f16",
+        "assertions": 93,
+        "runtimeResultSha256": "e93cf352474f74cee383bbd80a67bddc1154ec3aeee0cee748bc408bce76e7f3",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "turn-based-abort",
+        "result": "PASS",
+        "runId": "20261019T0306592093100Z-b43eac729cc6461ab565e1c3b0a18028",
+        "assertions": 13,
+        "runtimeResultSha256": "cba66e7328af145921828c7f4541beba4f7d41c6549f0d2e10ab880acc6b6178",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "turn-based-target-loss",
+        "result": "PASS",
+        "runId": "20261019T0301490682308Z-5b2f15196b30493687bd4cd5f9f6483e",
+        "assertions": 13,
+        "runtimeResultSha256": "de15957d091729e45e3834803794ebe9e53e22e90bc6b57a72d0dd2c753a5865",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "combined-presentation",
+        "result": "PASS_NATIVE_POSTPROCESS_RECOVERED",
+        "runId": "20261019T0336168545092Z-0f829339cd1c4f53a3ffa9faba92e9a5",
+        "assertions": 46,
+        "runtimeResultSha256": "f7bbef8d5bf91daecc2b1a93a7d187672a95d77c180d3955f23ee553047c4331",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "persistence-on/prepare-on",
+        "result": "PASS",
+        "runId": "20261019T0348276242220Z-ec6d72e73ad34d449955889383a4d936",
+        "assertions": 14,
+        "runtimeResultSha256": "7e7bbe24947e911d9a298de2c3ac69a733ad0e5eb927843224aeb01c083626ba",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "persistence-on/cleanup-on",
+        "result": "PASS",
+        "runId": "20261019T0354448573015Z-21253c509fb94a76b6d340d42ff5b6ad",
+        "assertions": 13,
+        "runtimeResultSha256": "5c664e5fb856044ca0916bddd7ec74ada143b5869c3ea1c5b519d5101899be2d",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "persistence-on/absent-on",
+        "result": "PASS",
+        "runId": "20261019T0400548573320Z-0982a12b1fce4846b3e0b119fca17089",
+        "assertions": 6,
+        "runtimeResultSha256": "4a4270004518799eb063458c5dd0c351d7f4abce91e3c23eab59ea5f1a5a0af3",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "persistence-off/prepare-on",
+        "result": "PASS",
+        "runId": "20261019T0407377036952Z-fe0d6d0fd94445fb8a6a5addf8e15487",
+        "assertions": 14,
+        "runtimeResultSha256": "77d3cc5de62f394e958cae3a20bda6cc9a820aaed8b002239919b36e260a6c3b",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "persistence-off/cleanup-off",
+        "result": "PASS",
+        "runId": "20261019T0413544623728Z-5c8f89b33a7e4a51b24a0f6596839524",
+        "assertions": 14,
+        "runtimeResultSha256": "b0e57652fb765bdae73ae535f256c1803dbc144075893a6784a17dd75e6b679e",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      },
+      {
+        "scope": "persistence-off/absent-on",
+        "result": "PASS",
+        "runId": "20261019T0420068809414Z-bc5e1a31dea44e80b4f8d4362c8aa1a7",
+        "assertions": 6,
+        "runtimeResultSha256": "11784bd17e90161158ef4d61d9f24e4facbbea0ce1978aaa4c10aadbc484d189",
+        "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+        "zipSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+        "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+        "mvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47"
+      }
+    ],
+    "reuseAudit": "artifacts/sprint27-qualification-public-f5/reuse-audit.json",
+    "reuseAuditSha256": "df48d6bf7d3c972aa8b34287f2e1120260e5fe1adae48fabdbd83704195a5228",
+    "reuseScope": "Released identity prefix, all prior art and profile placements protected by fresh source gate. Shared rake/full-attack seam has fresh Tiger ordinary/pounce/miss controls, Eagle flyer and Bulette ordinary controls; exact Griffon keys guard reach, lifetime, chassis and original attachment. Other rules/systems retain original qualification only; no claim of native execution on current DLL.",
+    "postprocessIncident": {
+      "status": "RECOVERED_NATIVE_PASS",
+      "scope": "combined-presentation",
+      "originalSupervisor": {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27\\artifacts\\sprint27-final-public-f5-combined-presentation\\result.json",
+        "sha256": "209313fb7afe43c9f8a26193ed5c3076a660a3f4dbb5189788629ae4e4ed59fb"
+      },
+      "firstRecoveryFailure": {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27\\artifacts\\sprint27-postprocess-recovery-public-f5\\result.json",
+        "sha256": "e4acd1141f785641b999959150a210d8a7ebb5d9dd6a07aafe5ca43d7bb28751"
+      },
+      "verifiedRecovery": {
+        "path": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27\\artifacts\\sprint27-postprocess-recovery-public-f5-r1\\result.json",
+        "sha256": "83968a23577060a6a336a3f68fca1e203b0d8158cf3a8c106bfa12186196d985"
+      },
+      "reason": "Native 46/46 PASS and exact machine restoration; only unbounded attribution-log ConfigurationId failed. Short bounded log collection verified original run without replay."
+    }
+  },
+  "retainedFailures": [
+    {
+      "kind": "postprocess",
+      "evidence": "artifacts/sprint27-final-public-f5-combined-presentation/result.json",
+      "status": "FAIL",
+      "nativeGameStatus": "PASS_46_OF_46",
+      "resolution": "artifacts/sprint27-postprocess-recovery-public-f5-r1/result.json"
+    },
+    {
+      "kind": "recovery-reader",
+      "evidence": "artifacts/sprint27-postprocess-recovery-public-f5/result.json",
+      "status": "FAIL",
+      "effect": "read-only strict-mode field assumption; no game run"
+    },
+    {
+      "kind": "download-verifier-alias",
+      "evidence": "artifacts/sprint27-download-public-f5/result.json",
+      "status": "FAIL",
+      "effect": "stopped before download"
+    },
+    {
+      "kind": "download-verifier-array",
+      "evidence": "artifacts/sprint27-download-public-f5-r1/result.json",
+      "status": "FAIL",
+      "effect": "downloaded assets passed; nested JSON array made final manifest comparison false"
+    }
+  ],
+  "restoration": {
+    "finalAudit": "artifacts/sprint27-final-audit-public-f5/result.json",
+    "finalAuditSha256": "2c64bcea93612a2e1eb88807de1f3285a9dbd5b0ea44f157021a3a668e2a15bf",
+    "allSavesExact": true,
+    "preexistingSaves": 118,
+    "workingFixtureRestored": true,
+    "modsExact": true,
+    "settingsExact": true,
+    "privateReferencesExact": true,
+    "ownedTasksRemaining": 0,
+    "gameProcessesRemaining": 0,
+    "leasePresent": false,
+    "activeCompatibilitySentinelPresent": false,
+    "stagedModsDirectories": 0,
+    "runIdDuplicateMarkersRetained": true
+  },
+  "scope": {
+    "automaticGrab": false,
+    "newGrappleFramework": false,
+    "effectiveOrdinaryMapAerialSpeedFeet": 80,
+    "separateLandModeSimulated": false,
+    "zAxisFlight": false,
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "visualDebt": [
+      "coarse anatomy",
+      "rigid pointed wings",
+      "simplified flight and landing transitions"
+    ]
+  },
+  "history": {
+    "developmentEvidence": "planning/SPRINT27-EVIDENCE.json",
+    "sprint26Status": "CLOSED_UNCHANGED"
+  },
+  "art": {
+    "bodySource": {
+      "path": "assets-source/original-models/sprint27-griffon/build_griffon.py",
+      "sha256": "e1c9346f6da77c1087a1d9bddd21bcbe32f7799fd5e6437e12c293a021784ae9"
+    },
+    "bodyProvenance": {
+      "path": "assets-source/original-models/sprint27-griffon/SOURCE.md",
+      "sha256": "48c7a94407ed582b8e8fab8191d4bd42b3356dd3b833ea363f813d8bbfc28191"
+    },
+    "bodyMesh": {
+      "path": "assets/sprint27-griffon/griffon-mesh.json",
+      "sha256": "4694292d3cc275590fddade1e68169968884185573cc172455daf8b875e048ac"
+    },
+    "bodyAlbedo": {
+      "path": "assets/sprint27-griffon/griffon-albedo.png",
+      "sha256": "997a14e3fc55a642136c2bf33612c650c36dd3f4153f5abfb7d8642f0912ec78"
+    },
+    "iconPainting": {
+      "path": "assets-source/original-icons/expanded-summoning/sources/griffon.png",
+      "sha256": "a6e77016a0d118a5d59a17cfe6cde92693ace0afa7d3c2115791caa7a0a7afca"
+    },
+    "iconExport": {
+      "path": "assets/game/icons/expanded-summoning/griffon.png",
+      "sha256": "eef3de6182d7db3c6d25033e83c8eb5792c7c9aa094c54b997d2c86459ca16e3"
+    },
+    "bodyStatus": "ORIGINAL_PROJECT_OWNED_NATIVE_ATTACHED",
+    "iconStatus": "REAL_PAINTING_AND_EXPORTED_SPRITE",
+    "humanReview": "NOT_PERFORMED_NONBLOCKING"
+  }
+}

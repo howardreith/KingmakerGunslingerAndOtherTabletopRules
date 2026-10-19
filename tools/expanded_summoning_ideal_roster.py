@@ -296,7 +296,8 @@ def trace_doc(entries):
             14: "Internally complete and published under PASSIVE_CREATURE_SENSES_UNMODELED; owner visual review pending",
             15: "Internally complete and published; owner visual review pending",
             16: "Internally complete and published: exact e3aeae63 hidden and 155ada89 publication PASS, all twenty public roots; accepted engine limitations/adaptation retained; owner visual review pending",
-            17: "In progress; exact f507 native-rig research PASS 8/8 with restoration, not gameplay/visual qualification; original snake and separate Salamander weapon prototypes next"}
+            17: "In progress; exact f507 native-rig research PASS 8/8 with restoration, not gameplay/visual qualification; original snake and separate Salamander weapon prototypes next",
+            27: "Released v0.0.161; functional native qualification and exact restoration PASS; owner visual review not performed (nonblocking)"}
     for number, phase, name, weight in SPRINTS:
         owned = by_sprint.get(number, [])
         if number in AUDIT_SPRINTS:
