@@ -116,6 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Giant command has no legal visible lane.");
                         owner.JoinCombat(); target.JoinCombat();
                         owner.Memory.Add(target); target.Memory.Add(owner);
+                        int targetDamageBefore = target.Descriptor.Damage;
                         ItemEntityWeapon weapon = owner.Body.PrimaryHand.MaybeWeapon;
                         int expected = !attackCase.Full ? 1 :
                             attackCase.Set == 0 ? spec.WeaponAttacks :
@@ -143,11 +144,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     (!command.IsFinished ||
                                      observer.WeaponAttacks.Count < expected))
                                     yield return 0;
-                                for (int frame = 0; frame < 12; frame++)
-                                    yield return 0;
                                 int hits = observer.WeaponAttacks.Count(value =>
                                     value.AttackRoll != null &&
                                     value.AttackRoll.IsHit);
+                                int impactFrames = 0;
+                                DateTime impactDeadline = DateTime.UtcNow.AddSeconds(10);
+                                while (attackCase.Set == 2 &&
+                                    observer.Damage.Count < hits &&
+                                    impactFrames++ < 600 &&
+                                    DateTime.UtcNow < impactDeadline)
+                                    yield return 0;
+                                for (int frame = 0; frame < 12; frame++)
+                                    yield return 0;
                                 bool exact = command.IsFinished &&
                                     (command.Result == UnitCommand.ResultType.Success ||
                                      trace.Exhausted(command)) &&
@@ -182,11 +190,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                                 ["hit"] = value.AttackRoll?.IsHit,
                                                 ["natural"] = value.AttackRoll?.Roll.Value,
                                                 ["attackBonus"] = value.AttackRoll?.AttackBonus,
-                                                ["autoMiss"] = value.AttackRoll?.AutoMiss })),
+                                                ["autoMiss"] = value.AttackRoll?.AutoMiss,
+                                                ["nativeDamageRule"] = value.MeleeDamage != null })),
                                         ["damage"] = new JArray(observer.Damage.Select(
                                             Sprint16DamageEvent)),
                                         ["hits"] = hits,
                                         ["damagePackets"] = observer.Damage.Count,
+                                        ["impactWaitFrames"] = impactFrames,
+                                        ["targetDamageBefore"] = targetDamageBefore,
+                                        ["targetDamageAfter"] = target.Descriptor.Damage,
                                         ["costs"] = costs,
                                         ["nativeEnds"] = endings,
                                         ["forcedRolls"] = 0,
