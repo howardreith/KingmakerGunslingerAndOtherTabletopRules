@@ -61,8 +61,8 @@ No old-roster, five-profile or 16-module campaign is selected.
 Public focused gate PASS: production 18.0s; 15/2,693 selected tests, zero failures
 (test gate 4.1s). Source boundary and nine corruption fixtures PASS.
 
-Remaining: final Sprint gate; fresh eligible native
-campaign; publisher preflight/dry-run; conditional product merge, stable release,
+Remaining: affected native retests and a new exact Sprint candidate; fresh eligible
+native campaign; publisher preflight/dry-run; conditional product merge, stable release,
 actual downloaded-asset verification, exact restoration and final-records merge.
 Sprint 26 remains closed. Sprint 28 has not started; stop after Sprint 27.
 
@@ -78,3 +78,21 @@ reproductions and affected neighbors PASS: 172 tests, 4.7s runner/9.2s wall.
 A new coherent candidate boundary is required; the failed source produced no
 final package or native execution. Readiness repair added about ten minutes;
 the declared bounded native batches and exact-artifact reuse remain unchanged.
+
+The repaired public gate on de74484e passed all 2,693 tests in 374.347s,
+producing ZIP d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017,
+DLL 240bf88fc42c11c362f663c3417d2228b56804bcf3423e76a93646d7c97a3d98,
+MVID 88e1c4fc-5e1e-4a43-ac1f-a2ea271681c7. Its first standalone combat
+transaction restored exact intake but failed after a successful genuine
+turn-based five-attack pounce. A second native turn-order enrollment admitted
+the Griffon yet exposed no active turn for 501 frames. This is retained as
+observer failure, not product PASS. The two negative turn-based cases now use
+separate fresh guarded processes; the combat union retains positive turn-based
+pounce and RTWP abort/target-loss checks. First retest those two affected phases,
+then freeze a new exact candidate for the remaining final campaign. The original
+~90-minute plan is exceeded by the gate repair and this additional native cycle;
+no unchanged batch will be relaunched.
+The observer correction compiled in 17.2s; six selected Sprint 27 domain tests
+passed in 4.0s, source-only runtime preflight passed 665 checks, and the public
+source boundary passed. The guarded final-campaign task was removed after its
+failed first cell and verified restoration.

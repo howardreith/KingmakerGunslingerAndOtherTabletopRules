@@ -2,12 +2,14 @@
 
 Sprint 27 adds `disposable-expanded-summoning-sprint27-native-review`, requiring
 automatic exit and one exact `reviewPhase`: `rtwp-foundation`, `pounce-rtwp`,
-`pounce-turn-based`, `rtwp-ai`, `charge-boundaries`, `visual-lifecycle`, `routes`,
-`outdoor-locomotion`, `shared-controls`, `expiry-boundary`, `qualification-combat`, or
+`pounce-turn-based`, `turn-based-abort`, `turn-based-target-loss`, `rtwp-ai`,
+`charge-boundaries`, `visual-lifecycle`, `routes`, `outdoor-locomotion`,
+`shared-controls`, `expiry-boundary`, `qualification-combat`, or
 `qualification-presentation`. The combat union groups foundation, both pounce
-modes, AI and boundaries; presentation groups lifecycle, roots and released
-controls. Each stage retains its own assertions and exact actors. Outdoor uses
-the established non-DLC Oleg area/entry with actual local-map indoor/outdoor
+modes, AI and RTWP boundaries; the two turn-based negative cases each use a
+fresh guarded process and exact active owner turn. Presentation groups lifecycle,
+roots and released controls. Each stage retains its own assertions and exact
+actors. Outdoor uses the established non-DLC Oleg area/entry with actual local-map indoor/outdoor
 classification. It preserves the shared save-free scene/clock/restoration guards.
 
 The existing working-save prepare/cleanup/absence trio also accepts the exact

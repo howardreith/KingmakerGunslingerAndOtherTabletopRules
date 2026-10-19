@@ -1358,8 +1358,8 @@
     "routesUnsuppressed": 6,
     "stage": "SOURCE_ONLY_NOT_QUALIFIED",
     "sourceBoundaryChecks": 9,
-    "finalGate": "PENDING",
-    "freshEligibleNative": "PENDING",
+    "finalGate": "F2_PASS_SUPERSEDED_BY_OBSERVER_CORRECTION",
+    "freshEligibleNative": "F2_FAILED_FIRST_STANDALONE_COMBAT",
     "release": "NOT_PERFORMED",
     "scriptCorrection": "Controlled roster generator uses supported --emit-roster; initial --write refusal retained in tool output, no candidate build or runtime was attempted with stale output.",
     "focusedGate": {
@@ -1398,5 +1398,43 @@
       "source": "C:/Dev/KingmakerGunslingerLab/wt/s26/artifacts/inspection/bodyguard-native/Assembly-CSharp.il",
       "copiedTo": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27\\artifacts\\inspection\\bodyguard-native"
     }
-  }
+  },
+  "publicGateAttempts": [
+    {
+      "source": "28bce30a7ddfe4980dc9f9e2c0f1928b86a2ac66",
+      "record": "artifacts/sprint27-gate-public-f1/result.json",
+      "status": "FAIL",
+      "registeredTests": 2693,
+      "failures": 39,
+      "seconds": 314.2465546,
+      "nativeLaunches": 0
+    },
+    {
+      "source": "de74484eb8c7d5ed5b89cd06e2d094b3cbf91631",
+      "record": "artifacts/sprint27-gate-public-f2/result.json",
+      "status": "PASS",
+      "registeredTests": 2693,
+      "failures": 0,
+      "seconds": 374.3471096,
+      "zipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017",
+      "dllSha256": "240bf88fc42c11c362f663c3417d2228b56804bcf3423e76a93646d7c97a3d98",
+      "mvid": "88e1c4fc-5e1e-4a43-ac1f-a2ea271681c7"
+    }
+  ],
+  "publicNativeFailures": [
+    {
+      "source": "de74484eb8c7d5ed5b89cd06e2d094b3cbf91631",
+      "zipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017",
+      "dllSha256": "240bf88fc42c11c362f663c3417d2228b56804bcf3423e76a93646d7c97a3d98",
+      "mvid": "88e1c4fc-5e1e-4a43-ac1f-a2ea271681c7",
+      "runId": "20261019T0008550631705Z-2dfd41dd32b549df9e38e40ad4652455",
+      "scope": "gunslinger-only qualification-combat",
+      "status": "FAIL",
+      "failedPredicate": "pounce-turn-based-boundary-turn-admission-False",
+      "rawResultSha256": "96e0693944ffb2e1a777dfddc27c4f49ab8f72622f79c81f987f50252d53bcb3",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0008550349568Z-disposable-expanded-summoning-sprint27-native-review",
+      "outerSeconds": 286.6500627,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    }
+  ]
 }
