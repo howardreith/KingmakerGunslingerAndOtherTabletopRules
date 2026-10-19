@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
             Sprint25Check("s28-phase", phase == "profiles" || phase == "modes" ||
-                phase == "commands", new JObject {
+                phase == "commands" || phase == "ownership", new JObject {
                 ["phase"] = phase }, "One exact implemented Sprint 28 review phase.");
             if (phase == "modes")
             {
@@ -37,6 +37,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (phase == "commands")
             {
                 foreach (int frame in ReviewSprint28Commands(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == "ownership")
+            {
+                foreach (int frame in ReviewSprint28Ownership(fixture)) yield return frame;
                 yield break;
             }
             try
