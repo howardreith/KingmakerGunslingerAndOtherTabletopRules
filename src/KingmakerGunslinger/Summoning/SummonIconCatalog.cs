@@ -58,13 +58,9 @@ namespace KingmakerGunslinger.Summoning
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            // 120 since 2026-10-17. The count is an immutability guard,
-            // so it moves only when a creature legitimately joins the
-            // roster WITH its painting: Brachiosaurus is registered, so
-            // IsRegisteredSomewhere already expected it, and its source
-            // painting and 128x128 export now exist and are pinned by
-            // the icon manifests.
-            if (Values.Length != 122 || expected.Length != 122 ||
+            // Sprint27 registers one Griffon with its real pinned painting.
+            // Keep the immutability guard in addition to exact key equality.
+            if (Values.Length != 123 || expected.Length != 123 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||

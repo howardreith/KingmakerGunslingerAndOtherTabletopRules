@@ -46,11 +46,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["passed"] = passed;
             row["runId"] = _request.RunId;
             _sprint25Rows.Add(row);
-            _sprint25Assertions.Add(Assertion((_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-" : "sprint25-") + predicate,
+            _sprint25Assertions.Add(Assertion((IsSprint27Review ? "sprint27-" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-" : "sprint25-") + predicate,
                 expected, row.ToString(Formatting.None), passed,
                 "Exact request-owned summons in the native first-area fixture."));
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(
-                _request.EvidenceDirectory, _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review-progress.json" : "sprint25-review-progress.json"),
+                _request.EvidenceDirectory, IsSprint27Review ? "sprint27-review-progress.json" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review-progress.json" : "sprint25-review-progress.json"),
                 _sprint25Rows.ToString(Formatting.Indented));
         }
 
@@ -61,12 +61,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_sprint25Steps == null)
                 {
                     _sprint25Fixture = BeginExpandedSummoningCorrectionFixture(
-                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "KMG_Runtime_Sprint26_Caster" : "KMG_Runtime_Sprint25_Caster");
+                        IsSprint27Review ? "KMG_Runtime_Sprint27_Caster" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "KMG_Runtime_Sprint26_Caster" : "KMG_Runtime_Sprint25_Caster");
                     _sprint25Clock = new Sprint22NativeClock(_sprint25Fixture,
-                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? .05f : .25f,
-                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? (Action<UnitEntityData>)Sprint26TickLife : null,
-                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview);
-                    _sprint25Steps = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review) ? .05f : .25f,
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review) ? (Action<UnitEntityData>)Sprint26TickLife : null,
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review));
+                    _sprint25Steps = (IsSprint27Review ? ReviewSprint27(_sprint25Fixture) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
                         ? ReviewSprint26(_sprint25Fixture) : ReviewSprint25(_sprint25Fixture)).GetEnumerator();
                 }
                 if (!_sprint25WaitingForUnityAppearance) _sprint25Clock.Pulse();
@@ -80,7 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             CleanupSprint25NativeReview();
             string report = Path.Combine(_request.EvidenceDirectory,
-                _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review.json" : "sprint25-review.json");
+                IsSprint27Review ? "sprint27-review.json" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review.json" : "sprint25-review.json");
             RuntimeTestResultWriter.WriteAtomic(report,
                 _sprint25Rows.ToString(Formatting.Indented));
             _summoningProfileResult = CreateResult(

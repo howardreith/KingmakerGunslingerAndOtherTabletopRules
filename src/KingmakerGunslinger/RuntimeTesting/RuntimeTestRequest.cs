@@ -154,6 +154,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = (string)request.Parameters["reviewPhase"];
             return ExpandedSummoningNativeProfilePolicy.Sprint25Phase(phase) ? phase : null;
         }
+        internal static string Sprint27ReviewPhase(RuntimeTestRequest request)
+        {
+            if(request==null || request.Scenario!=RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview || request.Parameters==null || request.Parameters.Count!=1 || request.Parameters["reviewPhase"]?.Type!=JTokenType.String)return null;
+            string phase=(string)request.Parameters["reviewPhase"];
+            return ExpandedSummoningNativeProfilePolicy.Sprint27Phase(phase) ? phase : null;
+        }
         internal static string Sprint26ReviewPhase(RuntimeTestRequest request)
         {
             if (request == null || request.Scenario != RuntimeTestScenarioCatalog
@@ -323,6 +329,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .DisposableExpandedSummoningSprint25NativeReview &&
                 (!request.ExitAfterCompletion || Sprint25ReviewPhase(request) == null))
                 return "sprint25-native-review-phase-and-exit-required";
+            if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && (!request.ExitAfterCompletion || Sprint27ReviewPhase(request)==null))return "sprint27-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint26NativeReview &&
                 (!request.ExitAfterCompletion || Sprint26ReviewPhase(request) == null))
@@ -548,6 +555,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.TheropodsScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GiantBodiesScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope &&
+                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GriffonScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";
                 // The ordinary native-control case joins the two same-turn
@@ -725,6 +733,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     return "scenario-timeouts-not-allowed";
                 if (Sprint26ReviewPhase(request) == null)
                     return "sprint26-native-review-phase-invalid";
+            }
+            else if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview)
+            {
+                if(request.MainMenuTimeoutSeconds!=0 || request.ActionResolutionTimeoutSeconds!=0 || request.ActionInvocationTimeoutSeconds!=0 || request.DescriptorResolutionTimeoutSeconds!=0 || request.LoadEntryTimeoutSeconds!=0 || request.FingerprintTimeoutSeconds!=0)return "scenario-timeouts-not-allowed";
+                if(Sprint27ReviewPhase(request)==null)return "sprint27-native-review-phase-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)

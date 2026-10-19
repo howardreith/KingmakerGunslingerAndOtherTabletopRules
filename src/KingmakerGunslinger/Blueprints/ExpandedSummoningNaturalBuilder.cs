@@ -249,6 +249,7 @@ namespace KingmakerGunslinger.Blueprints
                 { "ReducedReach", "c33f2d68d93ceee488aa4004347dffca" },
                 { "Ferocity", "955e356c813de1743a98ab3485d5bc69" },
                 { "Pounce", "1a8149c09e0bdfc48a305ee6ac3729a8" },
+                { "NativeCharge", "c78506dd0e14f7c45a599990e4e65038" },
                 { "SkillFocusStealth", "3a8d34905eae4a74892aae37df3352b9" },
                 { "GreatFortitude", "79042cb55f030614ea29956177977c52" },
                 { "MonitorLizardPoison", "d88236a83413baa45ae9c8e5ddce5a6c" },
@@ -514,6 +515,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureTheropods(library, bySymbol);
             ConfigureGiantBodies(library, bySymbol);
             ConfigureSprint26MagicalBeasts(library, bySymbol);
+            ConfigureGriffon(library, bySymbol);
             foreach (NaturalSummonProfile profile in
                 ExpandedSummoningNaturalProfiles.All)
                 ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
@@ -1497,7 +1499,7 @@ namespace KingmakerGunslinger.Blueprints
                 ArmoredDinosaurRulesPolicy.UsesExactRanks(profile.Key) ||
                 TheropodRulesPolicy.UsesExactRanks(profile.Key) ||
                 GiantBodyRulesPolicy.UsesExactRanks(profile.Key) ||
-                profile.Key == "gorgon" || profile.Key == "bulette";
+                profile.Key == "gorgon" || profile.Key == "bulette" || profile.Key == "griffon";
             levels.Skills = crocodilian ||
                 SerpentineRulesPolicy.IsSnake(profile.Key) || exactRanks
                 ? Array.Empty<StatType>() :
@@ -1508,7 +1510,7 @@ namespace KingmakerGunslinger.Blueprints
             levels.Selections = Array.Empty<SelectionEntry>();
             // These new donors carry native preallocated skill rows. The own
             // creation-only rank component must start from an empty row.
-            if (Sprint26MagicalBeastRules.UsesExactRanks(profile.Key))
+            if (Sprint26MagicalBeastRules.UsesExactRanks(profile.Key) || profile.Key == "griffon")
                 unit.Skills = new BlueprintUnit.UnitSkills();
             unit.ComponentsArray = new BlueprintComponent[] { levels };
             if (crocodilian)
@@ -1525,7 +1527,14 @@ namespace KingmakerGunslinger.Blueprints
                     SummonExactSkillRanks>();
                 ranks.CreatureKey = profile.Key;
                 ranks.OwningBlueprint = unit;
-                if (profile.Key == "gorgon" || profile.Key == "bulette")
+                if (profile.Key == "griffon")
+                {
+                    ranks.MobilityRanks = 1; ranks.PerceptionRanks = 1;
+                    ranks.StealthRanks = 0;
+                    // Five d10 racial dice: floor(5 * 5.5) before live Constitution.
+                    ranks.BaseHitPoints = profile.HitDice * (10 + 1) / 2;
+                }
+                else if (profile.Key == "gorgon" || profile.Key == "bulette")
                 {
                     ranks.MobilityRanks = profile.Key == "bulette" ? 4 : 0;
                     ranks.PerceptionRanks = profile.Key == "gorgon" ? 8 : 4;
@@ -1668,7 +1677,7 @@ namespace KingmakerGunslinger.Blueprints
             // Without this a creature keeps whatever unit type its donor
             // had. Only the Wasp used to ask, so all three Sprint 14 insects
             // would have been classified as the Giant Spider they borrow.
-            if (profile.Key == "gorgon" || profile.Key == "bulette")
+            if (profile.Key == "gorgon" || profile.Key == "bulette" || profile.Key == "griffon")
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     "KMG.Summoning.Natural." + Token(profile.Key) + ".UnitType");
             else if (profile.Key == "giant-wasp")
@@ -1719,9 +1728,9 @@ namespace KingmakerGunslinger.Blueprints
             else if (profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey)
                 unit.Type = Require<BlueprintUnitType>(bySymbol,
                     GiantBodyRulesPolicy.BrachiosaurusUnitTypeSymbol);
-            if (profile.Key == "gorgon" || profile.Key == "bulette")
+            if (profile.Key == "gorgon" || profile.Key == "bulette" || profile.Key == "griffon")
                 unit.Type = Require<BlueprintUnitType>(bySymbol, "KMG.Summoning.Natural." +
-                    (profile.Key == "gorgon" ? "Gorgon" : "Bulette") + ".UnitType");
+                    Token(profile.Key) + ".UnitType");
             // Both theropods borrow only the Lizardfolk rig. Its playable
             // Human race carrier otherwise adds a selected +2 Constitution
             // and keeps Medium combat-size arithmetic on a unit whose native
@@ -1758,7 +1767,14 @@ namespace KingmakerGunslinger.Blueprints
                 // success alone, where the printed rider follows a
                 // knockdown the overrun caused. Keyed on the creature as
                 // well as the fact, so no other profile can pick it up.
-                BlueprintUnitFact value = fact == "GreaterOverrun" &&
+                // Native Charge is an ability fact, not a feat. The exact
+                // Griffon grant retains the real native charge implementation.
+                BlueprintUnitFact value = fact == "NativeCharge" && profile.Key == "griffon"
+                    ? (BlueprintUnitFact)BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                        library, FactGuids[fact], "Griffon native charge ability")
+                    : fact == "GriffonChassis"
+                    ? Require<BlueprintFeature>(bySymbol, "KMG.Summoning.Natural.Griffon.Chassis")
+                    : fact == "GreaterOverrun" &&
                         profile.Key == GiantBodyRulesPolicy.BrachiosaurusKey
                     ? Require<BlueprintFeature>(bySymbol,
                         GiantBodyRulesPolicy.BrachiosaurusGreaterOverrunSymbol)
@@ -1921,6 +1937,8 @@ namespace KingmakerGunslinger.Blueprints
                 Bite1d3Symbol);
             if (key == "Bite1") return Require<BlueprintItemWeapon>(bySymbol,
                 Bite1Symbol);
+            if (key == "GriffonBite1d6" || key == "GriffonTalon1d6" || key == "GriffonRake1d4")
+                return Require<BlueprintItemWeapon>(bySymbol, "KMG.Summoning.Natural.Griffon." + key.Substring(7));
             if (key == "Bite1d6") return BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, NativeBite1d6Guid, "1d6 bite");
             if (key == "Bite1d8") return BlueprintLibraryLookup.RequireExact<

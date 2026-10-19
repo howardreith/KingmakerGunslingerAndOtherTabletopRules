@@ -40,6 +40,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Assets\PteranodonAssetRuntime.Griffon.cs" />
+    <Compile Include="Summoning\GriffonVisualPolicy.cs" />
+    <Compile Include="Summoning\GriffonRules.cs" />
+    <Compile Include="Summoning\GriffonReachPatch.cs" />
+    <Compile Include="Summoning\GriffonLifetimeBoundary.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Lifecycle.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Extras.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Griffon.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Griffon.cs" />
     <Compile Include="Compatibility\CotwSpontaneousSlotCompatibility.cs" />
     <Compile Include="Acquisition\CampaignWeaponRegistry.cs" />
     <Compile Include="Acquisition\CampaignWeaponNativeReference.cs" />
@@ -1277,6 +1286,9 @@
     <Compile Include="RuntimeTesting\Sprint24TheropodCensusPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint24Census.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Boundaries.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Lifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Persistence.cs" />
@@ -1757,6 +1769,10 @@
     </Content>
     <Content Include="..\..\assets\sprint23-armored-dinosaurs\*-albedo.png">
       <Link>assets\sprint23-armored-dinosaurs\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\sprint27-griffon\*">
+      <Link>assets\sprint27-griffon\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\sprint24-theropods\*-mesh.json">

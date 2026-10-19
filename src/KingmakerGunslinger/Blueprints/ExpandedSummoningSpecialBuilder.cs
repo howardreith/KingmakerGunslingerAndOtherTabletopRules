@@ -668,6 +668,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureGrapplers(library, bySymbol);
             ConfigureTheropodSpecials(library, bySymbol);
             ConfigureSprint26Specials(library, bySymbol);
+            ConfigureGriffonSpecials(bySymbol);
             // After the grapplers, because ConfigureGrabber replaces
             // the traits buff's component array and these append to it.
             ConfigureXillDefences(library, bySymbol);

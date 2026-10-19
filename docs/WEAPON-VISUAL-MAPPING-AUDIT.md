@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **139** active
+The blueprint manifest contains exactly **142** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -23,7 +23,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | equipped project weapon | 101 |
 | mechanics-only exclusion | 2 |
-| summoning-only exclusion | 36 |
+| summoning-only exclusion | 39 |
 
 ### Family counts
 
@@ -31,7 +31,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | Blunderbuss | 12 |
 | Elven Branched Spear | 16 |
-| Expanded Summoning creature weapon | 36 |
+| Expanded Summoning creature weapon | 39 |
 | Katana | 14 |
 | Musket | 15 |
 | Nodachi | 14 |
@@ -184,6 +184,9 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Gorgon.Hoof1d6 | fab6e52557c5426e8e09fbd714443c2c | Hoof1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GorgonOriginal | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Bulette.Bite2d8 | f7801f4601554a478920e839ec40d9a4 | Bite2d8 | Expanded Summoning creature weapon | KMG.Summoning.Natural.Bulette.BiteType | 8b42eea07bc7444ca874e76a55571f6d | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Bulette.Claw2d6 | d70dfa263eff44f2a547c9f47be0f87e | Claw2d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.NativeDonor | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.Griffon.Bite1d6 | 67549c5f756c495a8592ab27a019fec8 | Bite1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GriffonOriginal | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.Griffon.Talon1d6 | 130a92b8f9d64a46908cf05258fbb2b0 | Talon1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GriffonOriginal | not applicable | summoning-only exclusion |
+| KMG.Summoning.Natural.Griffon.Rake1d4 | 4807a234c116416988cd388e5a923776 | Rake1d4 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GriffonOriginal | not applicable | summoning-only exclusion |
 
 ## Exact presentation and provenance contracts
 
@@ -328,6 +331,9 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Gorgon.Hoof1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Gorgon body: assets/ungulates/gorgon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint26-gorgon/build_gorgon.py | native Horse 5bb9579fdb2b26b48bb10d61c81cfdfb; runtime rig/animation reference | creature-specific natural or manufactured attack | project gorgon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | rough armor proportions, contact and secondary motion are deferred visual debt |
 | KMG.Summoning.Natural.Bulette.Bite2d8 | native donor clone configured by Expanded Summoning builders | native donor presentation | exact native adult Bulette prefab 46b4f98ae7d8ddf40878914741a42129 | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native adult Bulette 18fa241bd1afd77438564ec92614f7f1 | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | native body with above-ground legal charge/leap; no underground system |
 | KMG.Summoning.Natural.Bulette.Claw2d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | exact native adult Bulette prefab 46b4f98ae7d8ddf40878914741a42129 | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native adult Bulette 18fa241bd1afd77438564ec92614f7f1 | creature-specific natural or manufactured attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | native body with above-ground legal charge/leap; no underground system |
+| KMG.Summoning.Natural.Griffon.Bite1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Griffon body: assets/sprint27-griffon/griffon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint27-griffon/build_griffon.py | native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference | creature-specific natural or manufactured attack | project griffon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt |
+| KMG.Summoning.Natural.Griffon.Talon1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Griffon body: assets/sprint27-griffon/griffon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint27-griffon/build_griffon.py | native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference | creature-specific natural or manufactured attack | project griffon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt |
+| KMG.Summoning.Natural.Griffon.Rake1d4 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Griffon body: assets/sprint27-griffon/griffon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint27-griffon/build_griffon.py | native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference | creature-specific natural or manufactured attack | project griffon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt |
 
 ## Audit conclusion before asset authoring
 

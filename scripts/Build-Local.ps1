@@ -66,7 +66,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.160') { throw "Build-Local supports only active version 0.0.160, observed $($info.Version)." }
+if ($info.Version -ne '0.0.161') { throw "Build-Local supports only active version 0.0.161, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -298,6 +298,10 @@ if ($spearManifest.Count -ne 1 -or $easternManifest.Count -ne 1 -or
 Copy-Item -LiteralPath $spearBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath $easternBundle -Destination (Join-Path $buildOutput 'assets\bundles') -Force
 Copy-Item -LiteralPath (Join-Path $root 'assets\bundles\asset-bundle-manifest.json') -Destination (Join-Path $buildOutput 'assets\bundles') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint27-griffon') -Force | Out-Null
+foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\sprint27-griffon\$part") -Destination (Join-Path $buildOutput 'assets\sprint27-griffon') -Force
+}
 # package.ps1 owns output validation, one assembly and strict validation.
 $packagePath = if ($development) { $developmentLayout.PackagePath } else {
     Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"

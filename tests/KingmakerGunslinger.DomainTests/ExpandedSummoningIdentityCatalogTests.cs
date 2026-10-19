@@ -11,6 +11,9 @@ namespace KingmakerGunslinger.DomainTests
         {
             var first = ExpandedSummoningIdentityCatalog.Build();
             var second = ExpandedSummoningIdentityCatalog.Build();
+            // Historical released-type baseline; Sprint 27 checks its own exact manifest separately.
+            var released = first.Where(value => value.Symbol != "KMG.Summoning.Unit.Griffon" &&
+                !value.Symbol.Contains(".Griffon.")).ToArray();
             Assertions.Equal(ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 first.Count, "Foundation identity count changed.");
             Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount,
@@ -18,42 +21,42 @@ namespace KingmakerGunslinger.DomainTests
                 "Unit identity count changed.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
                     GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9,
-                first.Count(value => value.PlannedType == "BlueprintAbility"),
+                released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
             Assertions.Equal(82 + TheropodRulesPolicy.AppendedBuffIdentityCount + 2,
-                first.Count(value => value.PlannedType == "BlueprintBuff"),
+                released.Count(value => value.PlannedType == "BlueprintBuff"),
                 "Buff identity count changed.");
-            Assertions.Equal(29, first.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(17, first.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
-            Assertions.Equal(1, first.Count(value => value.PlannedType == "IsEngagedConsideration"),
+            Assertions.Equal(29, released.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(17, released.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(1, released.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(29 + TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     GiantBodyRulesPolicy.AppendedWeaponIdentityCount + 4,
-                first.Count(value => value.PlannedType == "BlueprintItemWeapon"),
+                released.Count(value => value.PlannedType == "BlueprintItemWeapon"),
                 "Weapon identity count changed.");
             Assertions.Equal(5 + GiantBodyRulesPolicy.AppendedWeaponTypeIdentityCount + 1,
-                first.Count(value => value.PlannedType == "BlueprintWeaponType"),
+                released.Count(value => value.PlannedType == "BlueprintWeaponType"),
                 "Weapon-type identity count changed.");
             Assertions.Equal(16 + TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
                     GiantBodyRulesPolicy.AppendedUnitTypeIdentityCount + 2,
-                first.Count(value => value.PlannedType == "BlueprintUnitType"),
+                released.Count(value => value.PlannedType == "BlueprintUnitType"),
                 "Unit-type identity count changed.");
-            Assertions.Equal(18, first.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
+            Assertions.Equal(18, released.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
             // The Sprint 25 chassis, plus its cloned Greater Overrun
             // carrier: a feature, because the native feat it clones is.
             Assertions.Equal(39 + TheropodRulesPolicy.AppendedFeatureIdentityCount +
                     GiantBodyRulesPolicy.AppendedFeatureIdentityCount +
                     GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount + 2,
-                first.Count(value => value.PlannedType == "BlueprintFeature"),
+                released.Count(value => value.PlannedType == "BlueprintFeature"),
                 "Feature identity count changed.");
-            Assertions.Equal(2, first.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
+            Assertions.Equal(2, released.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a
             // free action and therefore a player-facing toggle.
-            Assertions.Equal(2, first.Count(value => value.PlannedType ==
+            Assertions.Equal(2, released.Count(value => value.PlannedType ==
                 "BlueprintActivatableAbility"),
                 "Activatable toggle identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
@@ -360,8 +363,8 @@ namespace KingmakerGunslinger.DomainTests
             // policy count and this stays true.
             Assertions.Equal(56 + TheropodRulesPolicy.AppendedCreatureCount
                     + GiantBodyRulesPolicy.AppendedCreatureCount + Sprint26MagicalBeastRules.AppendedCreatureCount,
-                ExpandedSummoningNaturalProfiles.All.Count,
-                "Natural reconstruction count changed.");
+                ExpandedSummoningNaturalProfiles.All.Count(value => value.Key != "griffon"),
+                "Pre-Griffon natural reconstruction count changed; Griffon has its own profile fixture.");
             NaturalSummonProfile dog = ExpandedSummoningNaturalProfiles.For("dog");
             Assertions.Equal("Small", dog.Size, "Dog size changed.");
             Assertions.Equal(1, dog.HitDice, "Dog HD changed.");
