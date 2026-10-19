@@ -107,5 +107,27 @@
                                  "restorationVerified":  true
                              }
                          ],
-    "restoration":  "Six native transactions restored exactly, including two preserved failed observers. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
+    "guardedPrelaunchFailures":  [
+                                    {
+                                        "source":  "3ed9640976f0c8767c6a0b2c4e88c1c59680a7b4",
+                                        "packageSha256":  "c872fdb3eb41e910baef07ba9e6d23736b5ea77389179c229f94c939f7580a24",
+                                        "dllSha256":  "48c7a641ab4a264a6bf99c945eb034e4200c91e9a8fef160df99bfbb5628ed7b",
+                                        "transactionRunId":  "compat-20261019T155021Z-08a90a0fe951",
+                                        "result":  "FAIL_ARCHIVE_TEMP_CLEANUP_NO_GAME",
+                                        "taskLogSha256":  "f8d47e3021545162559773ea819c77f817f3e0120a68ee7a19cc2199aa001bde",
+                                        "transactionSha256":  "ede582542ccffe3ab9aaa1469b37ced0dec31d0fc169caa2eb4bc4fb2612cc57",
+                                        "restorationVerified":  true
+                                    },
+                                    {
+                                        "source":  "3ed9640976f0c8767c6a0b2c4e88c1c59680a7b4",
+                                        "packageSha256":  "c872fdb3eb41e910baef07ba9e6d23736b5ea77389179c229f94c939f7580a24",
+                                        "dllSha256":  "48c7a641ab4a264a6bf99c945eb034e4200c91e9a8fef160df99bfbb5628ed7b",
+                                        "transactionRunId":  "compat-20261019T155443Z-34ba7364b07d",
+                                        "result":  "FAIL_DISK_FULL_PREPARING_MANUALLY_RESTORED_NO_GAME",
+                                        "taskLogSha256":  "b9dc1c37f38e84584b58799a3bdc67c712dd32cd6657e56c2ae6512f037fcb88",
+                                        "transactionSha256":  "2cc8f770dea0c7e35721a01cd1903ddd102c9bb784633b2d30df18f73233d873",
+                                        "restorationVerified":  true
+                                    }
+                                ],
+    "restoration":  "Six native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
 }
