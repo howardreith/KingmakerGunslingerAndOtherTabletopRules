@@ -120,3 +120,21 @@ of an evidence-directory path error; the supervisor now uses an absolute root.
 The trace compiled in 17.2s and six focused tests passed in 0.9s. F3's exact
 ZIP and manifest were hash-verified and archived under ignored
 `artifacts/frozen-candidates/public-f3` before another candidate build.
+
+F4 on 51e2d104 passed all 2,693 tests and strict packaging in 374.710s:
+ZIP b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e,
+DLL 5cd56db5315777c845247689e1c4677c47d377f221ec8268a6376c744b397e6e,
+MVID 942fc374-74e6-4d9f-9b91-4cd184a25f15. Fresh target loss again stopped
+before command issue and restored exact intake in 252.835s. Its bounded clock
+trace shows the native controller advancing rounds 1 through 4; the UI wait
+guard varies and is not a permanent stall, while the selected friendly owner
+never becomes current. The native next-unit logic skips a non-enemy invisible
+to the player. The cancellation survey previously allowed far lanes without
+a visibility prerequisite, so offscreen selection is the leading inference,
+not an established product failure. The revised observer selects only an
+actually legal charge lane with an owner visible to the player, using the
+nearer route distances already proven by the pounce observer; it records
+visibility throughout admission and still requires a real active turn.
+No turn, attack, roll or combat state is fabricated. Focused compilation
+passed in 17.6s and six selected tests in 0.9s. F4 ZIP/manifest are preserved
+under ignored `artifacts/frozen-candidates/public-f4` with exact digest.

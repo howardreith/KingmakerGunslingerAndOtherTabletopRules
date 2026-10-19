@@ -31,10 +31,14 @@ wrappers = 1,137 visible choices.
 F3 gate on 498a81fe passed 2,693/2,693 tests and strict packaging. Its fresh
 turn-based abort transaction passed 13 native assertions with exact restoration.
 The separate target-loss observer failed before command issue: sorted native
-order admitted owner/target but had no active turn after 501 frames. F2 also
+order admitted owner/target but had no active turn after 501 frames. F4's
+read-only trace showed native rounds advancing with only intermittent UI wait.
+The engine can skip friendly units outside player visibility; the old lane
+survey did not check that condition. The current observer selects a legal
+visible owner route and records visibility throughout admission. F2 also
 failed a repeated turn enrollment after a valid pounce. All failed artifacts
 and raw verdicts remain bound to their original ZIP/DLL/MVID and intact machine
-restoration; they are not release proof. The current read-only clock trace
-inspects native next-unit/UI-wait state in that exact setup. Compile and test
-it focused, then freeze a new source candidate and run only the affected native
-phase before the remaining final campaign. No release has occurred.
+restoration; they are not release proof. The visibility change compiled and
+passed six focused tests. Freeze a new source candidate, run only the affected
+native phase, then the remaining final campaign if it passes. No release has
+occurred.

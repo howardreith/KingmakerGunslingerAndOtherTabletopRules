@@ -1358,8 +1358,8 @@
     "routesUnsuppressed": 6,
     "stage": "SOURCE_ONLY_NOT_QUALIFIED",
     "sourceBoundaryChecks": 9,
-    "finalGate": "F3_PASS_SUPERSEDED_BY_CLOCK_TRACE",
-    "freshEligibleNative": "F3_TURN_ABORT_PASS_TARGET_LOSS_TURN_ADMISSION_FAIL",
+    "finalGate": "F4_PASS_SUPERSEDED_BY_VISIBLE_ROUTE_OBSERVER",
+    "freshEligibleNative": "F4_TARGET_LOSS_TURN_ADMISSION_FAIL",
     "release": "NOT_PERFORMED",
     "scriptCorrection": "Controlled roster generator uses supported --emit-roster; initial --write refusal retained in tool output, no candidate build or runtime was attempted with stale output.",
     "focusedGate": {
@@ -1430,6 +1430,17 @@
       "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
       "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
       "mvid": "80200e94-4488-4591-9795-bfc6caf54d00"
+    },
+    {
+      "source": "51e2d1044c4d3e7d52c30646ce02e90e4718e896",
+      "record": "artifacts/sprint27-gate-public-f4/result.json",
+      "status": "PASS",
+      "registeredTests": 2693,
+      "failures": 0,
+      "seconds": 374.7098174,
+      "zipSha256": "b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e",
+      "dllSha256": "5cd56db5315777c845247689e1c4677c47d377f221ec8268a6376c744b397e6e",
+      "mvid": "942fc374-74e6-4d9f-9b91-4cd184a25f15"
     }
   ],
   "publicNativeFailures": [
@@ -1459,6 +1470,20 @@
       "rawResultSha256": "48f9728730219ca3d4da2531c5282d5c85257dafc14c249611d20c13400c278f",
       "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0226542680499Z-disposable-expanded-summoning-sprint27-native-review",
       "outerSeconds": 253.1885716,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    },
+    {
+      "source": "51e2d1044c4d3e7d52c30646ce02e90e4718e896",
+      "zipSha256": "b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e",
+      "dllSha256": "5cd56db5315777c845247689e1c4677c47d377f221ec8268a6376c744b397e6e",
+      "mvid": "942fc374-74e6-4d9f-9b91-4cd184a25f15",
+      "runId": "20261019T0244532099620Z-8b778d7903a044c79cb14360d8f5d0e7",
+      "scope": "gunslinger-only turn-based-target-loss clock trace",
+      "status": "FAIL",
+      "failedPredicate": "turn-based-target-loss-boundary-turn-admission-True",
+      "rawResultSha256": "927b468f7536355f20615a254756b5d6496f475e5f68523d9d58c73810cefd96",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0244531877790Z-disposable-expanded-summoning-sprint27-native-review",
+      "outerSeconds": 252.8350148,
       "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
     }
   ],
@@ -1508,5 +1533,15 @@
     "fixtureChangesOnly": true,
     "archivedF3Zip": "artifacts/frozen-candidates/public-f3/KingmakerGunslinger-0.0.161-local-runtime.zip",
     "archivedF3ZipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37"
+  },
+  "visibleRouteReadiness": {
+    "status": "FOCUSED_PASS",
+    "inference": "Native next-unit filters a non-enemy invisible to player; the old long charge-lane survey did not require visibility. F4 trace observed four native rounds without an exact owner turn and only intermittent UI wait.",
+    "sourceBoundary": "Legal native charge and exact visible owner required before admission; no turn or roll supplied.",
+    "productionCompilationSeconds": 17.6,
+    "selectedTests": 6,
+    "testSeconds": 0.9,
+    "archivedF4Zip": "artifacts/frozen-candidates/public-f4/KingmakerGunslinger-0.0.161-local-runtime.zip",
+    "archivedF4ZipSha256": "b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e"
   }
 }
