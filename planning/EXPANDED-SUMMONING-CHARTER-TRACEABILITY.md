@@ -36,7 +36,7 @@ forbids an automatic Sprint 46.
 | S24 | 3 | Theropod Dinosaurs - Deinonychus and Tyrannosaurus | 6 | Deinonychus, Tyrannosaurus | Not started |
 | S25 | 3 | Giant Bodies - Brachiosaurus and Elephant | 5 | Brachiosaurus, Elephant | Not started |
 | S26 | 3 | Gorgon and Bulette | 6 | Bulette, Gorgon | Not started |
-| S27 | 3 | Griffon | 4 | Griffon | Not started |
+| S27 | 3 | Griffon | 4 | Griffon | Released v0.0.161; functional native qualification and exact restoration PASS; owner visual review not performed (nonblocking) |
 | S28 | 3 | Giant Humanoids I - Hill, Stone, and Fire Giants | 6 | Fire Giant, Hill Giant, Stone Giant | Not started |
 | S29 | 3 | Giant Humanoids II - Cloud, Storm, and Ettin | 7 | Cloud Giant, Ettin, Storm Giant | Not started |
 | S30 | 4 | Low-Tier Outsiders - Lemure, Dretch, and Hound Archon | 7 | Dretch, Hound Archon, Lemure | Not started |
