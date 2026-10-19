@@ -219,8 +219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         value => ReferenceEquals(value.Source,
                                             packet));
                                     bool correct = energy == DamageEnergyType.Fire
-                                        ? packet.Immune && (!result.HasValue ||
-                                          result.Value.FinalValue == 0) &&
+                                        ? packet.Immune && result.HasValue &&
+                                          result.Value.FinalValue == 6 &&
                                           rule.Damage == 0
                                         : !packet.Immune && result.HasValue &&
                                           result.Value.FinalValue == 9 &&
@@ -237,6 +237,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["nativeDamage"] = rule.Damage
                                     }, "Actual owned Fire Giant receives native fire immunity and cold vulnerability through resolved energy damage.");
                                 }
+                                // Let native queued hit effects settle while both exact fixture actors are live.
+                                for (int settled = 0; settled < 3; settled++) yield return 0;
+                                Sprint25Check("s28-fire-defense-settled",
+                                    !owner.Destroyed && owner.View != null &&
+                                    !source.Destroyed && source.View != null,
+                                    new JObject { ["owner"] = owner.UniqueId,
+                                        ["source"] = source.UniqueId,
+                                        ["frames"] = 3 },
+                                    "Native damage effects settle before request-owned actor cleanup.");
                             }
                             finally { owner.Descriptor.Damage = injury; }
                         }
