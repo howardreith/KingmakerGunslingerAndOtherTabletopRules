@@ -5,7 +5,10 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Items.Armors;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Blueprints;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -21,12 +24,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var units = new JArray();
             var carrierGraphs = new JArray();
             var weapons = new JArray();
+            var followUp = new JObject();
             var document = new JObject {
                 ["runId"] = _request.RunId,
                 ["scope"] = "Sprint 28 giant donor and rock/feat input audit; detached native metadata only, not gameplay qualification",
                 ["units"] = units,
                 ["carrierGraphs"] = carrierGraphs,
-                ["weapons"] = weapons
+                ["weapons"] = weapons,
+                ["followUp"] = followUp
             };
             try
             {
@@ -80,6 +85,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                     weapons.Add(new JObject { ["name"] = weapon.name,
                         ["guid"] = weapon.AssetGuid,
                         ["weapon"] = DescribeWeapon(weapon) });
+                // One bounded follow-up after the first census found no
+                // Stone or Fire donor. Read only the retained Frost control
+                // and exact rock, Large weapon and armor input seams.
+                BlueprintUnit frost = BlueprintLibraryLookup.RequireExact<
+                    BlueprintUnit>(BlueprintBootstrap.Library,
+                        "590cd3d5e76fdc649a5f97bc984cd3c4",
+                        "retained Frost Giant visual control");
+                var frostRow = new JObject { ["nativeUnit"] = DescribeNativeUnit(frost) };
+                if (frost.Prefab != null && !string.IsNullOrEmpty(frost.Prefab.AssetId))
+                {
+                    var prefab = frost.Prefab.Load(false);
+                    frostRow["view"] = prefab == null ? null :
+                        CapturePrimateCensusViewMetadata(prefab,
+                            "sprint28-frost-control", frost.AssetGuid,
+                            frost.name, frost.Prefab.AssetId);
+                }
+                followUp["frostControl"] = frostRow;
+                BlueprintAbility rock = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "d73548e22f8a6304f9073912565c6c90",
+                        "Hill Giant RockThrowSpell");
+                followUp["rockSpellGraph"] = DescribeGraph(rock, 0,
+                    new HashSet<object>(NativeDonorReferenceComparer.Instance), 5);
+                string[] selected = { "TrollRockThrow", "TrollRockThrowStandart",
+                    "HugeRockThrow", "LargeStandardGreatclub",
+                    "LargeStandardGreatsword", "StandardGreatclub",
+                    "StandardGreatsword" };
+                followUp["selectedWeapons"] = new JArray(all.OfType<
+                    BlueprintItemWeapon>().Where(value => selected.Contains(
+                        value.name, StringComparer.Ordinal)).OrderBy(value =>
+                            value.name, StringComparer.Ordinal).Select(weapon =>
+                        new JObject { ["name"] = weapon.name,
+                            ["guid"] = weapon.AssetGuid,
+                            ["attackType"] = weapon.AttackType.ToString(),
+                            ["isNatural"] = weapon.IsNatural,
+                            ["isNonRemovable"] = weapon.IsNonRemovable,
+                            ["typeName"] = weapon.Type == null ? null : weapon.Type.name,
+                            ["rangeFeet"] = weapon.Type == null ? 0 :
+                                weapon.Type.AttackRange.Value,
+                            ["baseDamage"] = weapon.Type == null ? null :
+                                weapon.Type.BaseDamage.ToString(),
+                            ["twoHanded"] = weapon.Type != null &&
+                                weapon.Type.IsTwoHanded }).ToArray());
+                followUp["armors"] = new JArray(all.OfType<
+                    BlueprintItemArmor>().Where(value => value.name != null &&
+                        (value.name.IndexOf("HideArmor",
+                            StringComparison.OrdinalIgnoreCase) >= 0 ||
+                         value.name.IndexOf("HalfPlate",
+                            StringComparison.OrdinalIgnoreCase) >= 0))
+                    .OrderBy(value => value.name, StringComparer.Ordinal).Take(24)
+                    .Select(armor => new JObject { ["name"] = armor.name,
+                        ["guid"] = armor.AssetGuid,
+                        ["type"] = armor.Type == null ? null : armor.Type.name,
+                        ["proficiency"] = armor.Type == null ? null :
+                            armor.Type.ProficiencyGroup.ToString() }).ToArray());
                 checks.Add(Assertion("sprint28-native-input-capture",
                     "bounded detached library metadata captured",
                     "units=" + units.Count + ";carriers=" + carrierGraphs.Count +

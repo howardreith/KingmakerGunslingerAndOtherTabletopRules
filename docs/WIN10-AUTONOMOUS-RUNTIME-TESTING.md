@@ -1,6 +1,6 @@
 # Windows 10 autonomous runtime testing
 
-Sprint 28 adds `observe-expanded-summoning-sprint28-native-inputs`: a bounded read-only mod-load audit of actual installed Hill, Stone and Fire Giant unit candidates, detached prefab metadata, selected weapon blueprints and rock/feat carriers. It accepts no parameters, spawns no actor, reads no save, and mutates no native asset. Its PASS means only that the audit completed; donor absence and mechanics still need separate review.
+Sprint 28 adds `observe-expanded-summoning-sprint28-native-inputs`: a bounded read-only mod-load audit of actual installed Hill, Stone and Fire Giant unit candidates, detached prefab metadata, selected weapon blueprints and rock/feat carriers. It accepts no parameters, spawns no actor, reads no save, and mutates no native asset. Its PASS means only that the audit completed; donor absence and mechanics still need separate review. A focused follow-up of the same read-only scenario inspects the retained Frost Giant visual control, native rock ability graph, selected Large weapon properties, and hide/half-plate candidates after Stone and Fire proved absent from the first named-unit census.
 
 Sprint 27 adds `disposable-expanded-summoning-sprint27-native-review`, requiring
 automatic exit and one exact `reviewPhase`: `rtwp-foundation`, `pounce-rtwp`,
