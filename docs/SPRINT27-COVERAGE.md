@@ -96,3 +96,7 @@ The observer correction compiled in 17.2s; six selected Sprint 27 domain tests
 passed in 4.0s, source-only runtime preflight passed 665 checks, and the public
 source boundary passed. The guarded final-campaign task was removed after its
 failed first cell and verified restoration.
+A development-only package attempt correctly refused the unreleased 0.0.161
+tag before producing a new ZIP; its released-version guard remains unchanged.
+The failed F2 ZIP and manifest were archived under ignored
+`artifacts/frozen-candidates/public-f2` with the same verified ZIP digest.

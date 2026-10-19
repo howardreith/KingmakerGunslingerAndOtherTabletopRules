@@ -1436,5 +1436,16 @@
       "outerSeconds": 286.6500627,
       "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
     }
-  ]
+  ],
+  "observerCorrectionReadiness": {
+    "sourceCheckpoint": "83890b63296859b6b1c967ce987fad5ac8379e30",
+    "focusedCompilationSeconds": 17.2,
+    "focusedTests": 6,
+    "preflightChecks": 665,
+    "sourceBoundary": "PASS",
+    "developmentPackageAttempt": "REFUSED_UNRELEASED_V0.0.161_TAG_BEFORE_PACKAGE",
+    "releasePolicyChanged": false,
+    "archivedF2Zip": "artifacts/frozen-candidates/public-f2/KingmakerGunslinger-0.0.161-local-runtime.zip",
+    "archivedF2ZipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017"
+  }
 }
