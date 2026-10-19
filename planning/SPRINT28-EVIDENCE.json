@@ -198,6 +198,22 @@
                                  "taskLogSha256":  "45b5911d3b9a2c041dcce9f767846849bbec043b9ef34e3ebd06787601f7d6c4",
                                  "transactionSha256":  "caeb6a55bee6bd55c9a8ffc3d04dbd51e5b56f29928fc67c15c82a205b5642b0",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free rock catch blocked by invalid same-party attacker/awareness fixture",
+                                 "candidateKind":  "development",
+                                 "source":  "3d43dff149ccdf9a15dbc3deddff3fb84715f35f",
+                                 "packageSha256":  "5cc43b5ec8eb858b6cf09ed4ca20e00c61097d4b202f76462b2ee8c65db572ef",
+                                 "dllSha256":  "6577c8959c55c4f452c83e463f7852454ac03887dac2508e623de2514e53c406",
+                                 "mvid":  "08d10aa6-447e-43b5-b8b1-00b2f779ec71",
+                                 "runId":  "20261019T1812363743300Z-d707738511344a49a6304f975a1f82a6",
+                                 "transactionRunId":  "compat-20261019T181041Z-bb6b1f792ed2",
+                                 "result":  "FAIL_FIXTURE_SAME_PARTY_AND_UNAWARE_NO_CATCH_MECHANIC_OBSERVED",
+                                 "rawResultSha256":  "f698c68ad807960b6420414b63eab15b86052e82b39568b43b3126a327dcf022",
+                                 "reviewSha256":  "38624bae156d3cf7ab361a581df0fa50192fdeb0ec8090e2903e87157197fa0d",
+                                 "taskLogSha256":  "ab4503e3e964051209dfb1734c41469ce2ca1c7e5b6274bd5a5d45d2df4b75a9",
+                                 "transactionSha256":  "12f1be52cdd3f482db95649282a2ed9cae552c299acf511267ba3c1f3b6d57d1",
+                                 "restorationVerified":  true
                              }
                          ],
     "guardedPrelaunchFailures":  [
@@ -220,7 +236,17 @@
                                         "taskLogSha256":  "b9dc1c37f38e84584b58799a3bdc67c712dd32cd6657e56c2ae6512f037fcb88",
                                         "transactionSha256":  "2cc8f770dea0c7e35721a01cd1903ddd102c9bb784633b2d30df18f73233d873",
                                         "restorationVerified":  true
+                                    },
+                                    {
+                                        "source":  "3d43dff149ccdf9a15dbc3deddff3fb84715f35f",
+                                        "packageSha256":  "5cc43b5ec8eb858b6cf09ed4ca20e00c61097d4b202f76462b2ee8c65db572ef",
+                                        "dllSha256":  "6577c8959c55c4f452c83e463f7852454ac03887dac2508e623de2514e53c406",
+                                        "transactionRunId":  "compat-20261019T180251Z-6636dfd86d24",
+                                        "result":  "FAIL_DISK_FULL_DEPLOY_ARCHIVE_NO_GAME_RESTORED",
+                                        "taskLogSha256":  "77dcc75ad74c80497895635e32a70802a460dc6882d86289097bc672b682e92b",
+                                        "transactionSha256":  "3deb84608c69137e3e818a41c6c348bdac8825b9706cc7eb68d2870a0529f546",
+                                        "restorationVerified":  true
                                     }
                                 ],
-    "restoration":  "Twelve native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
+    "restoration":  "Thirteen native executions and three prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
 }

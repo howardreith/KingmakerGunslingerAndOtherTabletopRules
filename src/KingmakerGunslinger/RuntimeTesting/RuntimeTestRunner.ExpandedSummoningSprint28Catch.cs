@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
@@ -63,8 +64,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { Target="fire-giant", Reflex=40, Dc=15 }
                 })
                 {
-                    UnitEntityData thrower = CastExpandedSummoningOwnTier(
-                        fixture, "hill-giant");
+                    // A second party summon remains in the same native
+                    // group even if its descriptor faction is reassigned.
+                    // Spawn the exact project giant as a disposable
+                    // nonparty enemy; the target remains a real summon.
+                    BlueprintUnit hill = fixture.Blueprints
+                        .OfType<BlueprintUnit>().Single(value =>
+                            value.name == "KMG_Summoning_Unit_HillGiant");
+                    UnitEntityData thrower = Game.Instance.EntityCreator
+                        .SpawnUnit(hill, fixture.Caster.Position +
+                            Vector3.right * 3f, Quaternion.identity,
+                            fixture.Scene);
+                    fixture.Created.Add(thrower);
+                    PlaceExpandedSummoningUnit(thrower, thrower.Position);
                     UnitEntityData target = CastExpandedSummoningOwnTier(
                         fixture, spec.Target);
                     SetExpandedSummoningBrainActive(thrower, false);
@@ -103,11 +115,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Game.Instance.State.AwakeUnits.Add(unit);
                         }
                         thrower.JoinCombat(); target.JoinCombat();
-                        thrower.Memory.Add(target); target.Memory.Add(thrower);
+                        thrower.Memory.Add(target);
+                        target.Memory.Add(thrower);
                         thrower.SightCache.ClearIfNeeded();
                         target.SightCache.ClearIfNeeded();
                         new Kingmaker.Controllers.Units.UnitMemoryController()
                             .Tick();
+                        // Both real geometry checks below must still pass.
+                        // The fixture marks an already visible enemy as
+                        // noticed before testing the free defensive response.
+                        thrower.Memory.Add(target).Visible = true;
+                        target.Memory.Add(thrower).Visible = true;
                         var probe = new UnitAttack(target);
                         probe.Init(thrower);
                         bool ready = thrower.IsEnemy(target) &&
@@ -125,6 +143,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     thrower.DistanceTo(target),
                                 ["enemy"] = thrower.IsEnemy(target),
                                 ["targetEnemy"] = target.IsEnemy(thrower),
+                                ["throwerFaction"] = thrower.Faction == null
+                                    ? null : thrower.Faction.name,
+                                ["targetFaction"] = target.Faction == null
+                                    ? null : target.Faction.name,
+                                ["throwerPlayerFaction"] =
+                                    thrower.IsPlayerFaction,
+                                ["targetPlayerFaction"] =
+                                    target.IsPlayerFaction,
                                 ["los"] = thrower.HasLOS(target),
                                 ["targetLos"] = target.HasLOS(thrower),
                                 ["targetAware"] =
