@@ -4,6 +4,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums.Damage;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.Enums;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -182,6 +184,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["armorEntity"] = armor == null ? 0 : RuntimeHelpers.GetHashCode(armor),
                             ["armorNonRemovable"] = armor?.IsNonRemovable
                         }, "Only the exact giant owns its equipped weapon and printed armor; corpse and transfer checks remain separate.");
+                        if (spec.Key == "fire-giant")
+                        {
+                            int injury = owner.Descriptor.Damage;
+                            try
+                            {
+                                foreach (DamageEnergyType energy in new[] {
+                                    DamageEnergyType.Fire, DamageEnergyType.Cold })
+                                {
+                                    var packet = new EnergyDamage(
+                                        new DiceFormula(1, DiceType.D6), energy)
+                                        { PreRolledValue = 6 };
+                                    var rule = Rulebook.Trigger(new RuleDealDamage(
+                                        fixture.Caster, owner,
+                                        new DamageBundle(packet)));
+                                    var result = rule.ResultDamage.Single(value =>
+                                        ReferenceEquals(value.Source, packet));
+                                    bool correct = energy == DamageEnergyType.Fire
+                                        ? packet.Immune && result.FinalValue == 0 &&
+                                          rule.Damage == 0
+                                        : !packet.Immune &&
+                                          result.FinalValue == 9 &&
+                                          rule.Damage > 0;
+                                    Sprint25Check("s28-fire-" + energy +
+                                        "-defense", correct, new JObject {
+                                        ["owner"] = owner.UniqueId,
+                                        ["source"] = fixture.Caster.UniqueId,
+                                        ["energy"] = energy.ToString(),
+                                        ["fixturePreRoll"] = 6,
+                                        ["nativeImmune"] = packet.Immune,
+                                        ["finalBeforeDifficulty"] =
+                                            result.FinalValue,
+                                        ["nativeDamage"] = rule.Damage
+                                    }, "Actual owned Fire Giant receives native fire immunity and cold vulnerability through resolved energy damage.");
+                                }
+                            }
+                            finally { owner.Descriptor.Damage = injury; }
+                        }
                     }
                     finally
                     {

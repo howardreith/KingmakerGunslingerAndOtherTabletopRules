@@ -181,6 +181,8 @@ namespace KingmakerGunslinger.Summoning
                 evt.IsTargetFlatFooted || target.Descriptor.State.IsHelpless ||
                 evt.Weapon == null || evt.Weapon.Blueprint == null ||
                 !IsEligibleRock(evt.Weapon.Blueprint) ||
+                evt.Initiator == null || target.Memory == null ||
+                !target.Memory.ContainsVisible(evt.Initiator) ||
                 ReferenceEquals(evt.Initiator, target) ||
                 ResultField == null)
                 return;
