@@ -150,6 +150,22 @@
                                  "reviewSha256":  "796954c7ff375bf9cc52f653f79805918570ab536dfae9bc5ec8bb01a6f61cc3",
                                  "transactionSha256":  "970461b16a40c690b66703dbcf92d17a61729960b89d7822f4c8f39988fc726b",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free quantity equipment, native death and expiry observer",
+                                 "candidateKind":  "development",
+                                 "source":  "8bfd6a21965c0762f2aa8fcf51a0ed59c67a2069",
+                                 "packageSha256":  "fbb8da03cb209bb03c31c1edfa3b701e484ff0d5fdccbf6032494d604f81aaac",
+                                 "dllSha256":  "c0e14c76305da5254c08479bbf3f94d14d315fca56d489340c300fcbf50e4608",
+                                 "mvid":  "964ccb04-9fc6-4f4b-aa94-e79e411dcf4a",
+                                 "runId":  "20261019T1708330189036Z-25f4968861104d6898f08558921e7f35",
+                                 "transactionRunId":  "compat-20261019T170627Z-db62c92bf853",
+                                 "result":  "FAIL_OBSERVER_INACTIVE_HAND_FALLBACK;_NATIVE_DEATH_AND_EXPIRY_ROWS_PASS",
+                                 "rawResultSha256":  "4a0fb309bbc196fd7490cc7e2a082e10179763306a319aa107ac572813a2f25b",
+                                 "reviewSha256":  "af232d918c03a812255308185a5b7ac9c417b0269cba065a036aefab38089d56",
+                                 "taskLogSha256":  "d6e13a3acb3d220b5ff3ab259ad5a8b0620ca7e0e6c1e30307715c7ff8a7a90",
+                                 "transactionSha256":  "8e964b6aeb2c5282d81373edbc1b160607863717a31cd3200be03e374fab7295",
+                                 "restorationVerified":  true
                              }
                          ],
     "guardedPrelaunchFailures":  [
