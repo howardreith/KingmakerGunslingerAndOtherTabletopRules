@@ -568,6 +568,12 @@ try {
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $configurationId += '-' + [string]$Parameters.assetConfiguration
         }
+        if ($name -ceq 'disposable-expanded-summoning-sprint27-native-review' -and
+            $configurationId.Length -gt 120) {
+            # Only the evidence basename is shortened; collector validation and
+            # the original native request/profile identity remain unchanged.
+            $configurationId = 's27-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
+        }
         $collection = & (Join-Path $PSScriptRoot `
             'Collect-KmgCompatibilityAttributionLog.ps1') `
             -EvidenceDirectory $evidence.FullName `
