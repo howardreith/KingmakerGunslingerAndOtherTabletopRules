@@ -198,13 +198,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     var rule = Rulebook.Trigger(new RuleDealDamage(
                                         fixture.Caster, owner,
                                         new DamageBundle(packet)));
-                                    var result = rule.ResultDamage.Single(value =>
-                                        ReferenceEquals(value.Source, packet));
+                                    var result = rule.ResultDamage?.SingleOrDefault(
+                                        value => ReferenceEquals(value.Source,
+                                            packet));
                                     bool correct = energy == DamageEnergyType.Fire
-                                        ? packet.Immune && result.FinalValue == 0 &&
+                                        ? packet.Immune && (!result.HasValue ||
+                                          result.Value.FinalValue == 0) &&
                                           rule.Damage == 0
-                                        : !packet.Immune &&
-                                          result.FinalValue == 9 &&
+                                        : !packet.Immune && result.HasValue &&
+                                          result.Value.FinalValue == 9 &&
                                           rule.Damage > 0;
                                     Sprint25Check("s28-fire-" + energy +
                                         "-defense", correct, new JObject {
@@ -214,7 +216,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["fixturePreRoll"] = 6,
                                         ["nativeImmune"] = packet.Immune,
                                         ["finalBeforeDifficulty"] =
-                                            result.FinalValue,
+                                            result?.FinalValue,
                                         ["nativeDamage"] = rule.Damage
                                     }, "Actual owned Fire Giant receives native fire immunity and cold vulnerability through resolved energy damage.");
                                 }
