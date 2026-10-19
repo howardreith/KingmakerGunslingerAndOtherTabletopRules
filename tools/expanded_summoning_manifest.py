@@ -76,6 +76,8 @@ def suppressed_keys():
 
 DONOR_NAMES = {
     "da807351572c540478b703957d863e68": "CR5_ManticoreStandard",
+    "61dd71e874b16f742a0f783314105553": "CR7_HillGiantStandart",
+    "590cd3d5e76fdc649a5f97bc984cd3c4": "FrostGiantSummoned",
     "028cc6f46e7998f46855a33ffde89567": "MastodonSummon",
     "03dd28e92faf2e44eb9564a6ba01fdd0": "DireWolfSummon",
     "04944455200bc224d955a8e9bbd64f3f": "SummonedAirElementalSmall",
@@ -227,8 +229,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 111:
-        raise SystemExit(f"Expected 111 parsed creatures; observed {len(values)}")
+    if len(values) != 114:
+        raise SystemExit(f"Expected 114 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -666,9 +668,28 @@ def planned():
         ("KMG.Summoning.Natural.Griffon.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.Natural.Griffon.Chassis", "BlueprintFeature"),
         ("KMG.Summoning.Special.Griffon.CombatTraits", "BlueprintBuff"),
+        # Sprint 28: project-owned adult giant equipment and traits.
+        ("KMG.Summoning.Giant.Greatclub2d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Greatsword3d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Slam1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.HillRock1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.StoneRock1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.FireRock1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.HillRockType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.StoneRockType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.FireRockType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.HillHideArmor", "BlueprintItemArmor"),
+        ("KMG.Summoning.Giant.FireHalfPlate", "BlueprintItemArmor"),
+        ("KMG.Summoning.Giant.HillUnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Giant.StoneUnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Giant.FireUnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Giant.StoneNaturalArmor11", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.HillTraits", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.StoneTraits", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.FireTraits", "BlueprintFeature"),
 
     ))
-    if len(rows) != 2202 or len({symbol for symbol, _ in rows}) != 2202:
+    if len(rows) != 2234 or len({symbol for symbol, _ in rows}) != 2234:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

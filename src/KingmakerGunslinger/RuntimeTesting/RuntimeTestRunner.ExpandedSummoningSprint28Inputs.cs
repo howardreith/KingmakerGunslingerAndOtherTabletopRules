@@ -140,6 +140,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["type"] = armor.Type == null ? null : armor.Type.name,
                         ["proficiency"] = armor.Type == null ? null :
                             armor.Type.ProficiencyGroup.ToString() }).ToArray());
+                var registered = new JArray();
+                var set = ExpandedSummoningBlueprints.Registered;
+                if (set == null) throw new InvalidOperationException(
+                    "Sprint 28 registered set is absent after bootstrap.");
+                foreach (string token in new[] { "HillGiant", "StoneGiant",
+                    "FireGiant" })
+                {
+                    var unit = (BlueprintUnit)set.BySymbol[
+                        "KMG.Summoning.Unit." + token];
+                    var body = unit.Body;
+                    var row = new JObject {
+                        ["unit"] = DescribeNativeUnit(unit),
+                        ["startingInventoryCount"] = unit.StartingInventory == null ?
+                            0 : unit.StartingInventory.Length,
+                        ["alternativeSlam"] = body == null ? null :
+                            DescribeWeapon(body.PrimaryHandAlternative1),
+                        ["alternativeRock"] = body == null ? null :
+                            DescribeWeapon(body.PrimaryHandAlternative2),
+                        ["armor"] = body == null || body.Armor == null ? null :
+                            body.Armor.name,
+                        ["armorGuid"] = body == null || body.Armor == null ? null :
+                            body.Armor.AssetGuid
+                    };
+                    registered.Add(row);
+                    bool exact = unit.Prefab != null &&
+                        !string.IsNullOrEmpty(unit.Prefab.AssetId) &&
+                        unit.Size == Kingmaker.Enums.Size.Large &&
+                        unit.StartingInventory != null &&
+                        unit.StartingInventory.Length == 0 &&
+                        body != null && body.PrimaryHand != null &&
+                        body.PrimaryHandAlternative1 != null &&
+                        body.PrimaryHandAlternative2 != null;
+                    checks.Add(Assertion("sprint28-registered-" + token,
+                        "large visible shell and exact three attack-mode items",
+                        row.ToString(Formatting.None), exact,
+                        "Read-only bootstrap graph; live stats, actions, ownership and appearance still require native qualification."));
+                }
+                document["registered"] = registered;
                 checks.Add(Assertion("sprint28-native-input-capture",
                     "bounded detached library metadata captured",
                     "units=" + units.Count + ";carriers=" + carrierGraphs.Count +

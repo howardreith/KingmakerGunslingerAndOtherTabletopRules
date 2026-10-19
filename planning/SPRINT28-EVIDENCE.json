@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "sprint": 28,
+  "status": "HIDDEN_DEVELOPMENT_NOT_QUALIFIED",
+  "baseCommit": "dc9b83c71ff61f14a43d9cdabff37822796f43f2",
+  "productionRoot": "C:/Dev/KingmakerGunslingerLab/wt/s28",
+  "productBranch": "codex/expanded-summoning-sprint28-hill-stone-fire-giants",
+  "qualifiedArtifact": null,
+  "publicSurface": {
+    "monsterCreatures": 96,
+    "monsterGeneratedPlacements": 545,
+    "naturesAllyCreatures": 98,
+    "naturesAllyGeneratedPlacements": 563,
+    "generatedPlacements": 1108,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1137
+  },
+  "registeredPending": {
+    "creatures": [
+      "hill-giant",
+      "stone-giant",
+      "fire-giant"
+    ],
+    "withheldSnaRoots": 11,
+    "newPrivateIdentities": 18
+  },
+  "nativeExecutions": [
+    {
+      "scope": "read-only installed giant donor metadata",
+      "candidateKind": "development",
+      "source": "0d201872c4720215d5b555e00fe93bfe0910f935",
+      "runId": "20261019T1307485137347Z-c8342dcaed024bfa9f859c19d57a4e08",
+      "transactionRunId": "compat-20261019T130553Z-b47d8c46ca88",
+      "result": "PASS_METADATA_ONLY",
+      "rawResultSha256": "0c4811614e867d324d90ca59a0dc1af2d364b7d7aec27ccaa53335f683de6c20",
+      "restorationVerified": true
+    },
+    {
+      "scope": "read-only Frost, rock, weapon and armor metadata",
+      "candidateKind": "development",
+      "source": "678751d957e68895d3bca0f7c69464deeaa4d0b5",
+      "runId": "20261019T1325587122532Z-db5b194f8f7a422aad0ca97a6d610335",
+      "transactionRunId": "compat-20261019T132402Z-04655f11d798",
+      "result": "PASS_METADATA_ONLY",
+      "rawResultSha256": "602dd03f2511cc6ae57b308dea89a70fc1d4e8487bca47b1a0fe26342ad9af78",
+      "restorationVerified": true
+    }
+  ],
+  "restoration": "See planning/SPRINT28-STATUS.md; two read-only audit transactions restored exactly; no gameplay acceptance yet."
+}

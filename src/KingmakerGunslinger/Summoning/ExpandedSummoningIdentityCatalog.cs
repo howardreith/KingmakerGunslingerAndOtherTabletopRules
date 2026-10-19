@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 111;
-        internal const int LogicalAbilityCount = 1108;
+        internal const int UnitCount = 114;
+        internal const int LogicalAbilityCount = 1119;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 303;
+        internal const int SpecialIdentityCount = 321;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -607,6 +607,26 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.Chassis", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Griffon.CombatTraits", "BlueprintBuff"));
+
+            // Sprint 28 private giant equipment, types and exact traits.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Greatclub2d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Greatsword3d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Slam1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.HillRock1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.StoneRock1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.FireRock1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.HillRockType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.StoneRockType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.FireRockType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.HillHideArmor", "BlueprintItemArmor"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.FireHalfPlate", "BlueprintItemArmor"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.HillUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.StoneUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.FireUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.StoneNaturalArmor11", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.HillTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.StoneTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.FireTraits", "BlueprintFeature"));
 
             Validate(result);
             return result.AsReadOnly();

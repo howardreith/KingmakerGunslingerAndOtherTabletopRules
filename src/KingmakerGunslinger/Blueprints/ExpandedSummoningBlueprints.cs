@@ -13,6 +13,7 @@ using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Localization;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using KingmakerGunslinger.Summoning;
@@ -101,6 +102,9 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintItemWeapon")
                     blueprint = registry.Register<BlueprintItemWeapon>(
                         identity.Symbol, () => CreateWeaponShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintItemArmor")
+                    blueprint = registry.Register<BlueprintItemArmor>(
+                        identity.Symbol, () => CreateArmorShell(identity.Symbol));
                 else if (identity.PlannedType == "BlueprintWeaponType")
                     blueprint = registry.Register<BlueprintWeaponType>(
                         identity.Symbol, () => CreateWeaponTypeShell(
@@ -183,6 +187,14 @@ namespace KingmakerGunslinger.Blueprints
         {
             BlueprintItemWeapon result =
                 ScriptableObject.CreateInstance<BlueprintItemWeapon>();
+            result.name = InternalName(symbol);
+            result.ComponentsArray = Array.Empty<BlueprintComponent>();
+            return result;
+        }
+
+        private static BlueprintItemArmor CreateArmorShell(string symbol)
+        {
+            BlueprintItemArmor result = ScriptableObject.CreateInstance<BlueprintItemArmor>();
             result.name = InternalName(symbol);
             result.ComponentsArray = Array.Empty<BlueprintComponent>();
             return result;

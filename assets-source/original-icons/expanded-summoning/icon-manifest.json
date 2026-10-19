@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  123,
+    "count":  126,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3635,6 +3635,65 @@
                                                "KMG.Summoning.Ability.SNA.Tier9.Griffon.OneD4PlusOne",
                                                "KMG.Summoning.Natural.Griffon.UnitType",
                                                "KMG.Summoning.Unit.Griffon"
+                                           ]
+                  },
+                  {
+                      "key":  "hill-giant",
+                      "displayName":  "Hill Giant",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/hill-giant.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/hill-giant.png",
+                      "sourceSha256":  "4ea37f9c964b93d2bbfb0970d807068814be05678b6f378ea9f2e78210733545",
+                      "outputSha256":  "fbb909c017ea447566cb167e5e6dd0d918491950c65cc9c187e4f57d59dd5478",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier6.HillGiant.One",
+                                               "KMG.Summoning.Ability.SNA.Tier7.HillGiant.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier8.HillGiant.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.HillGiant.OneD4PlusOne",
+                                               "KMG.Summoning.Giant.HillUnitType",
+                                               "KMG.Summoning.Unit.HillGiant"
+                                           ]
+                  },
+                  {
+                      "key":  "stone-giant",
+                      "displayName":  "Stone Giant",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/stone-giant.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/stone-giant.png",
+                      "sourceSha256":  "813ef8cba7164209ed9be07a52fce7d1cde8edabffe2b74b36c32bcf273e735e",
+                      "outputSha256":  "fa89836b7e34621bfbc8bd09363acc8538b12078db6483152e863edc122da558",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier6.StoneGiant.One",
+                                               "KMG.Summoning.Ability.SNA.Tier7.StoneGiant.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier8.StoneGiant.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.StoneGiant.OneD4PlusOne",
+                                               "KMG.Summoning.Giant.StoneUnitType",
+                                               "KMG.Summoning.Unit.StoneGiant"
+                                           ]
+                  },
+                  {
+                      "key":  "fire-giant",
+                      "displayName":  "Fire Giant",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/fire-giant.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/fire-giant.png",
+                      "sourceSha256":  "73a6bbda46ea635adf1ab56ab50048ad833ad58e063ab9091a648db20601d3cc",
+                      "outputSha256":  "dd4866cec136b98caf0bea44f87787de85abc7c0d601ec4c065dceefb88b543e",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SNA.Tier7.FireGiant.One",
+                                               "KMG.Summoning.Ability.SNA.Tier8.FireGiant.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier9.FireGiant.OneD4PlusOne",
+                                               "KMG.Summoning.Giant.FireUnitType",
+                                               "KMG.Summoning.Unit.FireGiant"
                                            ]
                   }
               ]
