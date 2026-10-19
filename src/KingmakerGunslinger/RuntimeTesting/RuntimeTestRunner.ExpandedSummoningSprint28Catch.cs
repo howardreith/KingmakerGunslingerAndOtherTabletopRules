@@ -41,6 +41,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void Dispose() { EventBus.Unsubscribe(this); }
         }
 
+        private static void ConfigureSprint28CatchFaction(
+            BlueprintFaction faction, BlueprintFaction enemy)
+        {
+            faction.Peaceful = false;
+            faction.AlwaysEnemy = false;
+            faction.Neutral = false;
+            faction.IsDirectlyControllable = false;
+            faction.Dummy = null;
+            faction.AttackFactions = new[] { enemy };
+        }
+
         // The fixture positions and wakes two disposable exact-owned giants.
         // It does not fabricate a hit or save. A native rock command supplies
         // the attack, and a target-side rule handler supplies the catch.
@@ -50,7 +61,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
             Game.Instance.IsPaused = true;
-            CreateExpandedSummoningCorrectionHostile(fixture);
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -64,10 +74,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { Target="fire-giant", Reflex=40, Dc=15 }
                 })
                 {
-                    // A second party summon remains in the same native
-                    // group even if its descriptor faction is reassigned.
-                    // Spawn the exact project giant as a disposable
-                    // nonparty enemy; the target remains a real summon.
+                    // Use an exact project giant as the disposable thrower;
+                    // the target remains a real summon.
                     BlueprintUnit hill = fixture.Blueprints
                         .OfType<BlueprintUnit>().Single(value =>
                             value.name == "KMG_Summoning_Unit_HillGiant");
@@ -81,10 +89,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture, spec.Target);
                     SetExpandedSummoningBrainActive(thrower, false);
                     SetExpandedSummoningBrainActive(target, false);
+                    BlueprintFaction throwerFaction = null;
+                    BlueprintFaction targetFaction = null;
                     try
                     {
-                        thrower.Descriptor.Faction =
-                            fixture.Hostile.Descriptor.Faction;
+                        // Both factions are unregistered clones owned by this
+                        // disposable case. No shared native faction graph or
+                        // protected party actor is changed.
+                        throwerFaction = UnityEngine.Object.Instantiate(thrower.Faction);
+                        targetFaction = UnityEngine.Object.Instantiate(target.Faction);
+                        throwerFaction.name = "KMG_Runtime_S28_CatchThrowerFaction";
+                        targetFaction.name = "KMG_Runtime_S28_CatchTargetFaction";
+                        ConfigureSprint28CatchFaction(throwerFaction, targetFaction);
+                        ConfigureSprint28CatchFaction(targetFaction, throwerFaction);
+                        thrower.Descriptor.Faction = throwerFaction;
+                        target.Descriptor.Faction = targetFaction;
                         thrower.Stats.BaseAttackBonus.BaseValue = 50;
                         target.Stats.SaveReflex.BaseValue = spec.Reflex;
                         var switchCommand = new UnitSwitchHandEquipmentSet(2);
@@ -265,6 +284,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (target.IsInCombat) target.LeaveCombat();
                         DisposeExpandedSummoningUnits(fixture.Created,
                             new[] { thrower, target });
+                        if (throwerFaction != null)
+                            UnityEngine.Object.Destroy(throwerFaction);
+                        if (targetFaction != null)
+                            UnityEngine.Object.Destroy(targetFaction);
                     }
                 }
                 bool both = results.Any(value => (bool)value["caught"]) &&

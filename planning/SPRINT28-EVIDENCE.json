@@ -214,7 +214,8 @@
                                  "taskLogSha256":  "ab4503e3e964051209dfb1734c41469ce2ca1c7e5b6274bd5a5d45d2df4b75a9",
                                  "transactionSha256":  "12f1be52cdd3f482db95649282a2ed9cae552c299acf511267ba3c1f3b6d57d1",
                                  "restorationVerified":  true
-                             }
+                             },
+                             {"scope": "save-free rock catch blocked by neutral Mobs/Summoned relation despite exact project thrower and visible lane", "candidateKind": "development", "source": "6ac3dc6ed4256c6e94952151824fae429633e714", "packageSha256": "df4619dceef955aef32f1143d38d6fa46770b341bae24696c6455fc056af5a30", "dllSha256": "49c5661de04a8350885fda51495426b0e5414dd4b66a0f5396d576493bfb968f", "mvid": "c15be664-56e0-4c22-b290-c877de59c950", "runId": "20261019T1831200176712Z-7a7e03766b094023ad11b17c6c82f77d", "transactionRunId": "compat-20261019T182913Z-2de748c8f977", "result": "FAIL_FIXTURE_NEUTRAL_FACTIONS_NO_CATCH_MECHANIC_OBSERVED", "rawResultSha256": "ea437ef576bdc6627dab497ffe315887305b4d61d858e5489a897961e4f5c401", "reviewSha256": "853c0e9a2761b6e99f50ef230cf1a8684603040fd378396c84282f11a964f223", "taskLogSha256": "414208bd040aa37b43aa9d8423841ae2e0ebe4e3b459cb7a7578d10b15d1f60b", "transactionSha256": "82c0fa3c07c267ec8ee2fba428840968fbfd34f2aa400c0a097e6c6b3ef577af", "restorationVerified": true}
                          ],
     "guardedPrelaunchFailures":  [
                                     {
@@ -248,5 +249,5 @@
                                         "restorationVerified":  true
                                     }
                                 ],
-    "restoration":  "Thirteen native executions and three prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
+    "restoration":  "Fourteen native executions and three prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison after compat-20261019T182913Z-2de748c8f977: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0; no game process, S28 task or lease. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
 }
