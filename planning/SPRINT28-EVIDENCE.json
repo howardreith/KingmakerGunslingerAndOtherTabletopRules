@@ -166,6 +166,22 @@
                                  "taskLogSha256":  "d6e13a3acb3d220b5ff3ab259ad5a8b0620ca7e0e6c1e30307715c7ff8a7a90",
                                  "transactionSha256":  "8e964b6aeb2c5282d81373edbc1b160607863717a31cd3200be03e374fab7295",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free three giant quantity inventory ownership, native death and expiry",
+                                 "candidateKind":  "development",
+                                 "source":  "ed426b551a55dffe21e28bb662a89b381e88ab56",
+                                 "packageSha256":  "81c544f4606e790b1d15db591e20aaaee260666e4b5730c608ebb846b2e081e1",
+                                 "dllSha256":  "16917315b8d08c1ec3644a49f42a1810249d8d89e0d4077e5d681cad1f5afc7b",
+                                 "mvid":  "64b21ef1-df9d-4f5e-8f3f-82e0a79a6728",
+                                 "runId":  "20261019T1724174413466Z-bed90cd54c994f10b6102f4e73a83a88",
+                                 "transactionRunId":  "compat-20261019T172141Z-8d56d7470b57",
+                                 "result":  "PASS_QUANTITY_OWNED_ITEMS_NATIVE_DEATH_AND_EXPIRY",
+                                 "rawResultSha256":  "c7ef5630eb41d4c572a93db720ba7ad379eae18bd35d3a9a74223a0912bc6311",
+                                 "reviewSha256":  "de0326dca0373f01d08cbc1b267e7315ed90bf9d4bb7ff1e34dd54af5f55d524",
+                                 "taskLogSha256":  "2dfed8fb7b8b6070edd8a2962b9e528c071c6e12fb759200dd9725b98f4a9a63",
+                                 "transactionSha256":  "1d9e69d4375834ded03c193f93ed0d46a4714bfeffa78dab45e0632fa4f792ace",
+                                 "restorationVerified":  true
                              }
                          ],
     "guardedPrelaunchFailures":  [
@@ -190,5 +206,5 @@
                                         "restorationVerified":  true
                                     }
                                 ],
-    "restoration":  "Nine native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
+    "restoration":  "Eleven native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
 }
