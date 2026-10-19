@@ -22,7 +22,7 @@
                                                 "fire-giant"
                                             ],
                               "withheldSnaRoots":  11,
-                              "newPrivateIdentities":  18,
+                              "newPrivateIdentities":  19,
                               "derivedExistingNatureCallerAdapters":  28
                           },
     "nativeExecutions":  [
@@ -182,6 +182,22 @@
                                  "taskLogSha256":  "2dfed8fb7b8b6070edd8a2962b9e528c071c6e12fb759200dd9725b98f4a9a63",
                                  "transactionSha256":  "1d9e69d4375834ded03c193f93ed0d46a4714bfeffa78dab45e0632fa4f792ace",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free rock catch observer blocked before gameplay by absent installed-stack Fire Improved Overrun feature",
+                                 "candidateKind":  "development",
+                                 "source":  "cfc6ed96b9bf5ae2a4e234c987de1537bbeacb2b",
+                                 "packageSha256":  "9313eabe79ecea55ce2bc6728cf277426c930a3a599def4ddcf886b23fe690dd",
+                                 "dllSha256":  "ce3158af60364d16dc9cbf773879764857833d7bd9454df0c7170ac7c83c5468",
+                                 "mvid":  "cd76581b-d51d-4938-8cd6-5dad2d6338b4",
+                                 "runId":  "20261019T1745427866526Z-b260d0b4048b4905b16fc6ee960775d7",
+                                 "transactionRunId":  "compat-20261019T174339Z-ae5b12241545",
+                                 "result":  "FAIL_BOOTSTRAP_MISSING_INSTALLED_IMPROVED_OVERRUN_NO_CATCH_OBSERVATION",
+                                 "rawResultSha256":  "7558a7b8df9e29567b8281dd642c2a53c5f6022c324a6c4141d196bf0f27144a",
+                                 "bootstrapLogSha256":  "edb0e23c7eca048623421807b38e51708ab351921254770137dd22b5a2cd80f4",
+                                 "taskLogSha256":  "45b5911d3b9a2c041dcce9f767846849bbec043b9ef34e3ebd06787601f7d6c4",
+                                 "transactionSha256":  "caeb6a55bee6bd55c9a8ffc3d04dbd51e5b56f29928fc67c15c82a205b5642b0",
+                                 "restorationVerified":  true
                              }
                          ],
     "guardedPrelaunchFailures":  [
@@ -206,5 +222,5 @@
                                         "restorationVerified":  true
                                     }
                                 ],
-    "restoration":  "Eleven native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
+    "restoration":  "Twelve native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands and quantity ownership lifecycle passed on their exact development artifacts; interactive loot, rock catching, AI, persistence and release remain unqualified."
 }

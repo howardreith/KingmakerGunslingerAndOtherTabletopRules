@@ -687,9 +687,10 @@ def planned():
         ("KMG.Summoning.Giant.HillTraits", "BlueprintFeature"),
         ("KMG.Summoning.Giant.StoneTraits", "BlueprintFeature"),
         ("KMG.Summoning.Giant.FireTraits", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.FireImprovedOverrun", "BlueprintFeature"),
 
     ))
-    if len(rows) != 2234 or len({symbol for symbol, _ in rows}) != 2234:
+    if len(rows) != 2235 or len({symbol for symbol, _ in rows}) != 2235:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
