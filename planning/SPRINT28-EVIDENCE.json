@@ -1,51 +1,66 @@
 {
-  "schemaVersion": 1,
-  "sprint": 28,
-  "status": "HIDDEN_DEVELOPMENT_NOT_QUALIFIED",
-  "baseCommit": "dc9b83c71ff61f14a43d9cdabff37822796f43f2",
-  "productionRoot": "C:/Dev/KingmakerGunslingerLab/wt/s28",
-  "productBranch": "codex/expanded-summoning-sprint28-hill-stone-fire-giants",
-  "qualifiedArtifact": null,
-  "publicSurface": {
-    "monsterCreatures": 96,
-    "monsterGeneratedPlacements": 545,
-    "naturesAllyCreatures": 98,
-    "naturesAllyGeneratedPlacements": 563,
-    "generatedPlacements": 1108,
-    "retainedNativeWrappers": 29,
-    "visibleChoices": 1137
-  },
-  "registeredPending": {
-    "creatures": [
-      "hill-giant",
-      "stone-giant",
-      "fire-giant"
-    ],
-    "withheldSnaRoots": 11,
-    "newPrivateIdentities": 18,
-    "derivedExistingNatureCallerAdapters": 28
-  },
-  "nativeExecutions": [
-    {
-      "scope": "read-only installed giant donor metadata",
-      "candidateKind": "development",
-      "source": "0d201872c4720215d5b555e00fe93bfe0910f935",
-      "runId": "20261019T1307485137347Z-c8342dcaed024bfa9f859c19d57a4e08",
-      "transactionRunId": "compat-20261019T130553Z-b47d8c46ca88",
-      "result": "PASS_METADATA_ONLY",
-      "rawResultSha256": "0c4811614e867d324d90ca59a0dc1af2d364b7d7aec27ccaa53335f683de6c20",
-      "restorationVerified": true
-    },
-    {
-      "scope": "read-only Frost, rock, weapon and armor metadata",
-      "candidateKind": "development",
-      "source": "678751d957e68895d3bca0f7c69464deeaa4d0b5",
-      "runId": "20261019T1325587122532Z-db5b194f8f7a422aad0ca97a6d610335",
-      "transactionRunId": "compat-20261019T132402Z-04655f11d798",
-      "result": "PASS_METADATA_ONLY",
-      "rawResultSha256": "602dd03f2511cc6ae57b308dea89a70fc1d4e8487bca47b1a0fe26342ad9af78",
-      "restorationVerified": true
-    }
-  ],
-  "restoration": "See planning/SPRINT28-STATUS.md; two read-only audit transactions restored exactly; no gameplay acceptance yet."
+    "schemaVersion":  1,
+    "sprint":  28,
+    "status":  "HIDDEN_DEVELOPMENT_NOT_QUALIFIED",
+    "baseCommit":  "dc9b83c71ff61f14a43d9cdabff37822796f43f2",
+    "productionRoot":  "C:/Dev/KingmakerGunslingerLab/wt/s28",
+    "productBranch":  "codex/expanded-summoning-sprint28-hill-stone-fire-giants",
+    "qualifiedArtifact":  null,
+    "publicSurface":  {
+                          "monsterCreatures":  96,
+                          "monsterGeneratedPlacements":  545,
+                          "naturesAllyCreatures":  98,
+                          "naturesAllyGeneratedPlacements":  563,
+                          "generatedPlacements":  1108,
+                          "retainedNativeWrappers":  29,
+                          "visibleChoices":  1137
+                      },
+    "registeredPending":  {
+                              "creatures":  [
+                                                "hill-giant",
+                                                "stone-giant",
+                                                "fire-giant"
+                                            ],
+                              "withheldSnaRoots":  11,
+                              "newPrivateIdentities":  18,
+                              "derivedExistingNatureCallerAdapters":  28
+                          },
+    "nativeExecutions":  [
+                             {
+                                 "scope":  "read-only installed giant donor metadata",
+                                 "candidateKind":  "development",
+                                 "source":  "0d201872c4720215d5b555e00fe93bfe0910f935",
+                                 "runId":  "20261019T1307485137347Z-c8342dcaed024bfa9f859c19d57a4e08",
+                                 "transactionRunId":  "compat-20261019T130553Z-b47d8c46ca88",
+                                 "result":  "PASS_METADATA_ONLY",
+                                 "rawResultSha256":  "0c4811614e867d324d90ca59a0dc1af2d364b7d7aec27ccaa53335f683de6c20",
+                                 "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "read-only Frost, rock, weapon and armor metadata",
+                                 "candidateKind":  "development",
+                                 "source":  "678751d957e68895d3bca0f7c69464deeaa4d0b5",
+                                 "runId":  "20261019T1325587122532Z-db5b194f8f7a422aad0ca97a6d610335",
+                                 "transactionRunId":  "compat-20261019T132402Z-04655f11d798",
+                                 "result":  "PASS_METADATA_ONLY",
+                                 "rawResultSha256":  "602dd03f2511cc6ae57b308dea89a70fc1d4e8487bca47b1a0fe26342ad9af78",
+                                 "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "read-only registered giant bootstrap metadata",
+                                 "candidateKind":  "development",
+                                 "source":  "7908fb9db4f176e9d4296799ed07743226df7c0b",
+                                 "packageSha256":  "90e34ce2ce60e593b7bbddca04d0f22159cdf2aa1d9ed42dad6b041b3248fe18",
+                                 "dllSha256":  "8fded14c517413a771aeaa018dfe05c24608e481bd1bc5756a8544c97420dc5b",
+                                 "mvid":  "71cf2d40-968d-4d74-be18-ca038dbcd6f3",
+                                 "runId":  "20261019T1449060718151Z-a871098703834f2cb2efc287ada3b127",
+                                 "transactionRunId":  "compat-20261019T144713Z-36a8f64a6fd2",
+                                 "result":  "PASS_BOOTSTRAP_METADATA_ONLY",
+                                 "rawResultSha256":  "79102bf2be13071ea4e48309ffc93a99cf080e0622339b87a64fbabd4a74b18a",
+                                 "inputSha256":  "a574af6f328bb1bfc926df79b1b04069335ffdf125d87f71633a0e2af6bf687a",
+                                 "transactionSha256":  "d5a3d05815d3d2c619c5c5d073851ca730bf34570eac2dd2f40712bcb77753ff",
+                                 "restorationVerified":  true
+                             }
+                         ],
+    "restoration":  "Three read-only/bootstrapping native transactions restored exactly; most recent independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0; no gameplay acceptance yet."
 }
