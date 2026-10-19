@@ -226,9 +226,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // Catch is unavailable to a flat-footed target.
                         // Admit both actors through the native combat/round
                         // controllers, then verify the actual defensive rule.
+                        float initialInitiativeCooldown =
+                            target.CombatState.Cooldown.Initiative;
+                        DateTime initiativeDeadline =
+                            DateTime.UtcNow.AddSeconds(30);
                         int initiativeFrames = 0;
+                        // The native prepared actor is still flat-footed
+                        // while its real initiative cooldown is positive.
+                        // Wait for that exact state to clear, with a bounded
+                        // clock and frame limit; never assign initiative.
                         while (!target.CombatState.CanActInCombat &&
-                            initiativeFrames++ < 160) yield return 0;
+                            target.CombatState.Cooldown.Initiative > 0f &&
+                            initiativeFrames++ < 1000 &&
+                            DateTime.UtcNow < initiativeDeadline)
+                            yield return 0;
                         bool flatFooted = Rulebook.Trigger(
                             new RuleCheckTargetFlatFooted(thrower, target))
                             .IsFlatFooted;
@@ -295,9 +306,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     target.CombatState.Prepared.ToString(),
                                 ["targetCanActInCombat"] =
                                     target.CombatState.CanActInCombat,
+                                ["initialInitiativeCooldown"] =
+                                    initialInitiativeCooldown,
                                 ["targetInitiativeCooldown"] =
                                     target.CombatState.Cooldown.Initiative,
                                 ["initiativeFrames"] = initiativeFrames,
+                                ["initiativeDeadlineReached"] =
+                                    DateTime.UtcNow >= initiativeDeadline,
                                 ["nativeFlatFooted"] = flatFooted,
                                 ["inRange"] = probe.IsUnitEnoughClose,
                                 ["canAct"] =
