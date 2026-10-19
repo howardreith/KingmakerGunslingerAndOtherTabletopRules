@@ -44,6 +44,10 @@ namespace KingmakerGunslinger.Blueprints
                 SummonNativeExpansionCatalog.All)
                 Set(bySymbol, native.Symbol,
                     ExpandedSummoningProjectIcons.Require(native.IconKey));
+            BlueprintScriptableObject griffonType;
+            if (!bySymbol.TryGetValue("KMG.Summoning.Natural.Griffon.UnitType", out griffonType) || !(griffonType is BlueprintUnitType))
+                throw new InvalidOperationException("Exact Griffon type icon consumer is missing.");
+            ((BlueprintUnitType)griffonType).Image = ExpandedSummoningProjectIcons.Require("griffon");
             // The published Wasp's inspectable creature type is its own
             // visible consumer, separate from the summon menu abilities.
             BlueprintScriptableObject waspType;

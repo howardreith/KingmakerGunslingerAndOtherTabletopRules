@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 110;
-        internal const int LogicalAbilityCount = 1102;
+        internal const int UnitCount = 111;
+        internal const int LogicalAbilityCount = 1108;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 297;
+        internal const int SpecialIdentityCount = 303;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -601,6 +601,13 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bulette.Brain", "BlueprintBrain"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Bulette.LeapAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Gorgon.BreathProjectile", "BlueprintProjectile"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.Bite1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.Talon1d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.Rake1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Natural.Griffon.Chassis", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Special.Griffon.CombatTraits", "BlueprintBuff"));
+
             Validate(result);
             return result.AsReadOnly();
         }

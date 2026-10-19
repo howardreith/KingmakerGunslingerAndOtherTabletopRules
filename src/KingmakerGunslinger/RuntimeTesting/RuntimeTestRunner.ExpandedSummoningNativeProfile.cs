@@ -9,6 +9,9 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Area;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Globalmap.Blueprints;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.EntitySystem.Persistence.Scenes;
@@ -67,7 +70,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
                         !(bool)entered.GetValue(_summoningProfileMenu) &&
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
-                    string nativeReviewPhase = _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                    string nativeReviewPhase = IsSprint27Review ? RuntimeTestRequestParser.Sprint27ReviewPhase(_request) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
                         ? RuntimeTestRequestParser.Sprint26ReviewPhase(_request)
                         : _request.Scenario ==
                             RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint25NativeReview
@@ -80,14 +83,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .DisposableExpandedSummoningSprint23NativeReview
                             ? RuntimeTestRequestParser.Sprint23ReviewPhase(_request)
                             : RuntimeTestRequestParser.Sprint22ReviewPhase(_request);
+                    int worldUnits=game.State.Units.All.Count(), partyCharacters=game.Player.PartyCharacters.Count,
+                        crossSceneEntities=game.Player.CrossSceneState.AllEntityData.Count;
+                    bool loadedArea=game.CurrentlyLoadedArea!=null || game.State.LoadedAreaState!=null,
+                        hasMain=game.Player.MainCharacter.Value!=null, hasImport=Game.ImportSave!=null,
+                        pendingNewUnit=Game.NewGameUnit!=null;
+                    _summoningProfileEvidence["admission"]=new JObject{
+                        ["scenario"]=_request.Scenario,["phase"]=nativeReviewPhase,["parameters"]=_request.Parameters?.Count??0,
+                        ["parameterScope"]=ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(_request.Scenario,_request.Parameters?.Count??0,nativeReviewPhase),
+                        ["automaticExit"]=_request.ExitAfterCompletion,["worldUnits"]=worldUnits,["partyCharacters"]=partyCharacters,
+                        ["crossSceneEntities"]=crossSceneEntities,["loadedArea"]=loadedArea,["mainCharacter"]=hasMain,
+                        ["importSave"]=hasImport,["pendingNewGameUnit"]=pendingNewUnit,["idleSubscribedMenu"]=idleMenu};
                     if (!ExpandedSummoningNativeProfilePolicy.CanStart(
                         _request.ExitAfterCompletion, _request.Scenario,
                         _request.Parameters?.Count ?? 0, nativeReviewPhase,
-                        game.State.Units.All.Count(), game.Player.PartyCharacters.Count,
-                        game.Player.CrossSceneState.AllEntityData.Count,
-                        game.CurrentlyLoadedArea != null || game.State.LoadedAreaState != null,
-                        game.Player.MainCharacter.Value != null, Game.ImportSave != null,
-                        Game.NewGameUnit != null, idleMenu))
+                        worldUnits,partyCharacters,crossSceneEntities,loadedArea,hasMain,hasImport,pendingNewUnit,idleMenu))
                         throw new InvalidOperationException("Native summoning profile requires a fresh empty main-menu process and only its exact save-free fixture parameters.");
                     _summoningProfileOriginal = BlueprintRoot.Instance.NewGamePreset;
                     if (_summoningProfileOriginal == null || _summoningProfileOriginal.Area == null ||
@@ -98,6 +108,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset = UnityEngine.Object.Instantiate(_summoningProfileOriginal);
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
+                    if(IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request)=="outdoor-locomotion") {
+                        var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
+                            "758559f44d15fc844bf30a10a83154d5","established native Oleg outdoor fixture").AreaEntrance;
+                        if(entry?.Area==null || entry.Area.AssetGuid!="ead426a6c23d39548a670ee515d77df4")
+                            throw new InvalidOperationException("Exact non-DLC outdoor fixture identity unavailable.");
+                        _summoningProfilePreset.Area=entry.Area;_summoningProfilePreset.EnterPoint=entry;
+                    }
                     // Request-owned fixture setup omits narrative start actions;
                     // production content and all summon commands remain intact.
                     _summoningProfilePreset.StartGameActions = new ActionList();
@@ -162,12 +179,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     var baseScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(SceneName.BaseMechanics);
                     bool baseLoaded = baseScene.IsValid() && baseScene.isLoaded;
-                    bool exactArea = game.CurrentlyLoadedArea == _summoningProfileOriginal.Area;
+                    bool exactArea = game.CurrentlyLoadedArea == _summoningProfilePreset.Area;
                     bool loadedState = game.State.LoadedAreaState != null;
                     bool mainPresent = game.Player.MainCharacter.Value != null;
                     bool partyState = game.Player.Party.Any(unit => unit != null && unit.HoldingState != null);
                     _summoningProfileEvidence["baseMechanicsLoaded"] = baseLoaded;
-                    _summoningProfileEvidence["expectedArea"] = _summoningProfileOriginal.Area.AssetGuid;
+                    _summoningProfileEvidence["expectedArea"] = _summoningProfilePreset.Area.AssetGuid;
                     _summoningProfileEvidence["actualArea"] = game.CurrentlyLoadedArea?.AssetGuid;
                     _summoningProfileEvidence["loadedAreaState"] = loadedState;
                     _summoningProfileEvidence["mainCharacterUid"] = game.Player.MainCharacter.Value?.UniqueId;
@@ -187,7 +204,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .DisposableExpandedSummoningSprint24NativeReview ||
                         _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint25NativeReview ||
-                        _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview)
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review))
                     { _summoningProfileStage=4; return; }
                     _summoningProfileResult = _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableAlternateSummoningPlayerPaths
@@ -200,7 +217,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                         throw new TimeoutException("Expanded Summoning native review exceeded its declared scenario deadline.");
-                    bool complete = _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                    bool complete = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review)
                         ? PollSprint25NativeReview()
                         : _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint25NativeReview
@@ -235,7 +252,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint25NativeReview ||
-                            _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview)
+                            (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review))
                             CleanupSprint25NativeReview();
                         else if (_request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint24NativeReview)

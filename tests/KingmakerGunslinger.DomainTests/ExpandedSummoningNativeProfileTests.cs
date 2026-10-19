@@ -85,6 +85,14 @@ namespace KingmakerGunslinger.DomainTests
             string sprint22 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint22NativeReview;
             string sprint23 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint23NativeReview;
             string sprint25 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint25NativeReview;
+            string sprint27 = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview;
+            foreach(string phase in new[]{"rtwp-foundation","pounce-rtwp","pounce-turn-based","rtwp-ai","charge-boundaries","visual-lifecycle","routes","outdoor-locomotion","shared-controls","expiry-boundary","qualification-combat","qualification-presentation"})
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true,sprint27,1,phase,0,0,0,false,false,false,false,true), "Exact Sprint27 bounded phase enters only a fresh empty owned menu: "+phase);
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false,sprint27,1,"rtwp-foundation",0,0,0,false,false,false,false,true), "Sprint27 requires automatic exit.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true,sprint27,1,"rtwp-foundation",1,0,0,false,false,false,false,true), "Sprint27 cannot replace an existing world.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint27,2,"rtwp-foundation"), "Sprint27 forbids save/import and extra parameters.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint27,1,"all"), "Sprint27 forbids an unimplemented campaign.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint27,1,"RTWP-FOUNDATION"), "Sprint27 phase identity is exact.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,1,"rtwp-foundation"), "Sprint 25 admits the implemented bounded phase.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,0,null), "Sprint 25 requires its phase.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(sprint25,2,"rtwp-foundation"), "Sprint 25 rejects a save/import parameter.");

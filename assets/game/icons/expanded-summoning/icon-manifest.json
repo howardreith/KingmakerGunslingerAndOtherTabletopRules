@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  122,
+    "count":  123,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1095,6 +1095,15 @@
                       "key":  "bulette",
                       "file":  "bulette.png",
                       "sha256":  "83c3959b973f7f99bb561ca4a2e1dc03e3f22fc90906dd800b215dba94078b82",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "griffon",
+                      "file":  "griffon.png",
+                      "sha256":  "eef3de6182d7db3c6d25033e83c8eb5792c7c9aa094c54b997d2c86459ca16e3",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

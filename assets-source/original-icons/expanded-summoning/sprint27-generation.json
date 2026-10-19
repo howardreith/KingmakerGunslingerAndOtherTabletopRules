@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "generatedUtcDate": "2026-10-18",
+  "images": [
+    {
+      "key": "griffon",
+      "source": "assets-source/original-icons/expanded-summoning/sources/griffon.png",
+      "sourceSha256": "a6e77016a0d118a5d59a17cfe6cde92693ace0afa7d3c2115791caa7a0a7afca",
+      "tool": "image_gen.imagegen (built-in)",
+      "providerModel": "not exposed by tool; not inferred",
+      "transparentBackground": false,
+      "prompt": "Use case: stylized-concept. Asset type: one square painted fantasy CRPG summon-choice creature icon, deterministic final export 128px RGBA. Input images: the first actual reference image is Gorgon and the second is Eagle; both are STYLE references only for the established warm painted circular aged-gold medallion family, material shading, thin ring and dark square corners. Do not edit or copy their creatures. Primary request: create one ORIGINAL adult PF1 GRIFFON, unmistakably a winged LION-bodied creature with a proud eagle-like head, large hooked beak, feathered neck/chest and two eagle forelegs/talons; tawny feline torso, muscular lion hindquarters with two lion hind paws, and long tufted lion tail. Exactly four legs and two broad feathered wings attached at shoulders. No horse anatomy, hooves, dragon, hippogriff, rider or mount tack. Composition: readable three-quarter side/front full-body pose, head and beak prominent; wings raised enough to reveal the feline torso and hindquarters, but contained within canvas and medallion. Broad strong anatomy readable at 32px. Painterly bestiary illustration, warm restrained bronze rim light, cream eagle head, dark brown/gold feathers, tawny lion fur, smoky dark earthy backdrop. Thin circular aged-gold ring matching references; dark corners. No ornate square UI frame, text, letters, counters, numbers, badges, extra creatures, weapons, lightning or watermark. This painting identifies the creature; do not add attack glyphs or status overlays. Deliver exactly one square image.",
+      "inputMechanism": "num_last_images_to_include=2; actual images displayed with view_image before call",
+      "referenceImages": [
+        {
+          "path": "assets-source/original-icons/expanded-summoning/sources/gorgon.png",
+          "sha256": "3ad08001ecf64e3c644a6a113b056fe069f171e7062a36d5d0df1f84ae0e32f3",
+          "role": "style reference"
+        },
+        {
+          "path": "assets-source/original-icons/expanded-summoning/sources/eagle.png",
+          "sha256": "1a3dfd4d85e3f4330a87f8b764266e0c27d9304953556817df676963320803d1",
+          "role": "style reference"
+        }
+      ],
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a1505a-8976-7583-b38b-5dc986aca4c8/exec-4b988112-c1c3-4adb-b5b3-c542e4e2d09e.png",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "integration": "Preserved original; established128px RGBA export and eight exact unit/type/root consumers integrated; native UI pending.",
+      "width": 1254,
+      "height": 1254,
+      "export": "assets/game/icons/expanded-summoning/griffon.png",
+      "exportSha256": "eef3de6182d7db3c6d25033e83c8eb5792c7c9aa094c54b997d2c86459ca16e3"
+    }
+  ]
+}

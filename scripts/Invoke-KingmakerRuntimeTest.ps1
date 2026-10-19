@@ -1,4 +1,4 @@
-﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [Parameter(Mandatory = $true)]
     [string]$Scenario,
@@ -126,8 +126,8 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
         if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts') -or -not $ExitAfterCompletion) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies or magical-beasts and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts or griffon and automatic exit.'
         }
         $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
     } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and

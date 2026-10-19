@@ -48,12 +48,12 @@ class IconCatalogTests(unittest.TestCase):
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
         # Combined authority: delivered Brachiosaurus plus the owner-approved
-        # released Dire Rat edit and the two authorized Sprint26 medallions.
+        # released Dire Rat edit, Sprint26 medallions and authorized Griffon painting.
         # Every released source/export row remains unchanged.
-        self.assertEqual("00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe", actual)
+        self.assertEqual("987d02bdaefd09c94b83c588a30e7878108a978634e478ad1f42ca74035ea4fe", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
-        next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "f8f1a2e6dba3d420067befb2d5ea3cc4c40bc1c776a351debf61253467f712e6"
+        next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
         self.rejects("Hash mismatch: " + path, catalog=stale)
     def test_crocodilian_emblems_retain_the_approved_size_family(self):
         for key in ("crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"):

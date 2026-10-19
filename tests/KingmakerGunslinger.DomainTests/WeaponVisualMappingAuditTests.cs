@@ -37,8 +37,8 @@ namespace KingmakerGunslinger.DomainTests
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
                     Sprint26MagicalBeastRules.AppendedWeaponIdentityCount,
-                expected.Length,
-                "The active custom-weapon baseline changed without an audit update.");
+                expected.Count(value => !((string)value["symbol"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal)),
+                "The released pre-Griffon custom-weapon baseline changed.");
             Assertions.Equal(expected.Length, actual.Length,
                 "The visual audit does not cover every active custom weapon.");
             string[] expectedIdentities = expected.Select(value =>
@@ -105,7 +105,8 @@ namespace KingmakerGunslinger.DomainTests
                     GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
                     Sprint26MagicalBeastRules.AppendedWeaponIdentityCount,
                 audit["items"].Count(value =>
-                (string)value["mappingScope"] == "summoning-only exclusion"),
+                (string)value["mappingScope"] == "summoning-only exclusion" &&
+                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal)),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
                     (string)value["mappingScope"] == "equipped project weapon")

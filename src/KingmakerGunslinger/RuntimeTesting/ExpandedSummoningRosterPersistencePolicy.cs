@@ -216,6 +216,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string ArmoredDinosaursScope = "armored-dinosaurs";
         internal const string TheropodsScope = "theropods";
         internal const string GiantBodiesScope = "giant-bodies";
+        internal const string GriffonScope = "griffon";
+        internal static string[] GriffonKeys { get { return new[] { "griffon" }; } }
         internal const string MagicalBeastsScope = "magical-beasts";
         internal static string[] MagicalBeastKeys { get { return new[] { "gorgon", "bulette" }; } }
         internal static string[] GiantBodyKeys
@@ -274,6 +276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == TheropodsScope ? TheropodKeys :
                 scope == GiantBodiesScope ? GiantBodyKeys :
                 scope == MagicalBeastsScope ? MagicalBeastKeys :
+                scope == GriffonScope ? GriffonKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
             if (!permitted.Contains(key, StringComparer.Ordinal))
@@ -299,6 +302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ArmoredDinosaurKeys : scope == TheropodsScope ?
                 TheropodKeys : scope == GiantBodiesScope ? GiantBodyKeys :
                 scope == MagicalBeastsScope ? MagicalBeastKeys :
+                scope == GriffonScope ? GriffonKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
@@ -318,7 +322,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
-                scope == GiantBodiesScope || scope == MagicalBeastsScope) &&
+                scope == GiantBodiesScope || scope == MagicalBeastsScope || scope == GriffonScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

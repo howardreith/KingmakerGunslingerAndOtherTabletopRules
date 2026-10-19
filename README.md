@@ -1,6 +1,13 @@
 # Kingmaker Gunslinger
 
-The **0.0.159-expanded-summoning-sprint25-giant-bodies** release adds
+The **0.0.161-expanded-summoning-sprint27-griffon** release adds the adult
+Griffon to Summon Nature's Ally IV-IX, with six quantity roots, native Pounce
+and conditional Rake, an original hybrid body and a painted summon medallion.
+It has no automatic Grab or Summon Monster/template entry. Flight follows the
+existing ordinary-map route; see the
+[v0.0.161 release notes](docs/RELEASE-NOTES-0.0.161.md).
+
+The earlier **0.0.159-expanded-summoning-sprint25-giant-bodies** release adds
 Brachiosaurus to Summon Nature's Ally VII–IX and completes the existing
 Elephant, with original bodies and the supplied Brachiosaurus icon. All eight
 Elephant roots and released identities remain intact. It includes the

@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "Expanded Summoning Sprint 26 Gorgon and Bulette candidate",
+  "milestone": "Expanded Summoning Sprint 27 - Griffon",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.160",
+  "version": "0.0.161",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2596,6 +2596,13 @@
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "qualificationEvidence": "Separate exact-artifact release ledger; no runtime pass inferred by this source record.",
     "scope": "Two untemplated creatures, six selected roots; Gorgon charter extension, Bulette surface-only leap; no generalized burrowing.",
+    "stage": "public"
+  },
+  "expandedSummoningSprint27161": {
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "qualificationEvidence": "Separate exact-artifact release ledger; no runtime pass inferred by this source record.",
+    "scope": "One untemplated Griffon, six SNA roots; no automatic Grab, second species or Z-axis flight.",
     "stage": "public"
   }
 }

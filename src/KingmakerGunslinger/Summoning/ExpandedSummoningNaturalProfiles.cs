@@ -129,7 +129,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Values.Length != 61 || Values.Select(value => value.Key)
+            if (Values.Length != 62 || Values.Select(value => value.Key)
                     .Distinct(StringComparer.Ordinal).Count() != Values.Length)
                 throw new InvalidOperationException(
                     "The natural reconstruction catalog is incomplete or duplicated.");
@@ -622,6 +622,15 @@ namespace KingmakerGunslinger.Summoning
                     "Kingmaker exposes one movement speed; the 20-foot ground speed is used and swim movement is omitted.",
                     "Land-use skills allocate one Perception and two Stealth ranks, yielding +8 and +5 through native ability, class-skill, size and Skill Focus modifiers. No Mobility ranks, Swim or water-only Stealth bonus is added.",
                     "Grab, live-bite Death Roll and Sprint are implemented but NOT QUALIFIED. Sprint is a one-round +20-foot untyped land-speed modifier on a ten-round native buff cooldown, a bounded CRPG adaptation rather than a temporary base-speed rewrite. Hold Breath is omitted because there is no swimming/drowning consumer; low-light vision is omitted under OwnerAcceptedEngineLimitation: PASSIVE_CREATURE_SENSES_UNMODELED."),
+                PK("griffon", "Griffon", "MagicalBeast", 5, "Large",
+                    16, 15, 16, 5, 13, 8, 80, 6, "GriffonBite1d6",
+                    A("GriffonTalon1d6", "GriffonTalon1d6", "GriffonRake1d4", "GriffonRake1d4"),
+                    A("ReducedReach", "Airborne", "NativeCharge", "Pounce", "TripDefenseFourLegs",
+                        "IronWill", "SkillFocusPerception", "WeaponFocusBite", "GriffonChassis"),
+                    A("Mobility", "Perception"),
+                    "Ordinary bite and two primary talons; two final rake slots occur only on a qualifying charge, or against a genuine existing foe held since round start. No Grab, grapple bonus, Rend, wing or tail attack.",
+                    "Kingmaker exposes one speed in this established ordinary-map flyer abstraction: fly 80 is used with Airborne navigation; land 30 and Fly skill ranks are omitted, never summed or redistributed. No selectable altitude or obstacle bypass system.",
+                    "One Acrobatics rank plus Dex2/class3/racial4 yields10; one Perception rank plus Wis1/class3/racial4/SkillFocus3 yields12. Three printed Fly ranks have no engine consumer. Darkvision60, low-light vision and scent retain PASSIVE_CREATURE_SENSES_UNMODELED."),
                 P("dire-bat", "Dire Bat", "Animal", 4, "Large",
                     17, 15, 13, 2, 14, 6, 40, 3, "Bite1d8",
                     Array.Empty<string>(),

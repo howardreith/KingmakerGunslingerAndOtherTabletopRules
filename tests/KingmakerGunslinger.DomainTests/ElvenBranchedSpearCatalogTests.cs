@@ -56,21 +56,26 @@ namespace KingmakerGunslinger.DomainTests
             string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
                 "Build-Local.ps1"));
 
-            Assertions.True(info.Contains("\"Version\": \"0.0.160\"") &&
-                props.Contains("<KmgVersion>0.0.160</KmgVersion>") &&
-                props.Contains("<KmgInformationalVersion>0.0.160-expanded-summoning-sprint26-gorgon-bulette</KmgInformationalVersion>") &&
-                assembly.Contains("AssemblyVersion(\"0.0.160\")") &&
-                assembly.Contains("AssemblyFileVersion(\"0.0.160\")") &&
-                assembly.Contains("AssemblyInformationalVersion(\"0.0.160-expanded-summoning-sprint26-gorgon-bulette\")"),
-                "Release and assembly identity are not transactionally pinned to the current Sprint 26 magical-beast release.");
-            Assertions.True(package.Contains(
-                "$($info.Id)-$($info.Version)-expanded-summoning-sprint26-gorgon-bulette.zip") &&
+            string version = (string)Newtonsoft.Json.Linq.JObject.Parse(info)["Version"];
+            string propertyVersion = System.Text.RegularExpressions.Regex.Match(props,
+                @"<KmgVersion>([^<]+)</KmgVersion>").Groups[1].Value;
+            string informational = System.Text.RegularExpressions.Regex.Match(props,
+                @"<KmgInformationalVersion>([^<]+)</KmgInformationalVersion>").Groups[1].Value;
+            Assertions.True(!string.IsNullOrWhiteSpace(version) && propertyVersion == version &&
+                informational.StartsWith(version + "-", StringComparison.Ordinal) &&
+                assembly.Contains("AssemblyVersion(\"" + version + "\")") &&
+                assembly.Contains("AssemblyFileVersion(\"" + version + "\")") &&
+                assembly.Contains("AssemblyInformationalVersion(\"" + informational + "\")"),
+                "Release and assembly identity must agree with the active source version.");
+            string suffix = informational.Substring(version.Length + 1);
+            Assertions.True(package.Contains("$($info.Id)-$($info.Version)-" + suffix + ".zip") &&
                 !package.Contains("expanded-summoning.zip"),
-                "Package identity is not pinned to the Sprint 26 magical-beast release archive.");
-            Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") && runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&
-                localBuild.Contains("active version 0.0.160") &&
+                "Default package identity must use the active informational-version suffix.");
+            Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") &&
+                runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&
+                localBuild.Contains("active version " + version) &&
                 localBuild.Contains("artifacts\\local-runtime\\$($info.Version)"),
-                "Build or guarded-runtime version enforcement is stale.");
+                "Build and guarded-runtime version enforcement must follow the active version.");
         }
 
         internal static void CategoryDisplayNeverLeaksRawIdentity()

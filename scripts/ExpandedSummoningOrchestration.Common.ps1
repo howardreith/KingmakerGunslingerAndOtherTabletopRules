@@ -31,11 +31,13 @@ function Test-KmgExactSummoningRuntimeBoundary {
     return $Scenario -cin @(
         'observe-expanded-summoning-inventory',
         'observe-expanded-summoning-sprint26-native-inputs',
+        'observe-expanded-summoning-sprint27-native-inputs',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
         'disposable-expanded-summoning-sprint25-native-review',
-        'disposable-expanded-summoning-sprint26-native-review')
+        'disposable-expanded-summoning-sprint26-native-review',
+        'disposable-expanded-summoning-sprint27-native-review')
 }
 
 function Invoke-KmgIndependentBoundaryRestoration {
@@ -559,4 +561,16 @@ function Test-KmgCompatibilityLockOwned {
     # marginally before the wrapper records its own start.
     return $stamp -ge $BatchStartedUtc.ToUniversalTime().AddSeconds(-5) -and
         $stamp -le $NowUtc.ToUniversalTime().AddSeconds(5)
+}
+
+# Only this owner-selected named development purpose may use the existing
+# mutable Working-save trio before Griffon publication. Existing release
+# manifest/deployment/refusal guards and the exact save boundary remain intact.
+function Test-KmgGriffonDevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'griffon' -or $Purpose -cne 'sprint27-native-prototype') {
+        throw 'Development installed-stack persistence permits only exact Griffon scope and sprint27-native-prototype purpose.'
+    }
+    return $true
 }

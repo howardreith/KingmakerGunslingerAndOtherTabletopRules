@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint26-gorgon-bulette.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint27-griffon.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -79,6 +79,7 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.157.md',
     'docs\RELEASE-NOTES-0.0.158.md',
     'docs\RELEASE-NOTES-0.0.159.md',
+    'docs\RELEASE-NOTES-0.0.161.md',
     'docs\RELEASE-NOTES-0.0.160.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
@@ -248,6 +249,11 @@ foreach ($kind in @('brachiosaurus','elephant')) {
     Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-mesh.json") -Destination $giantBodyDestination
     Copy-Item -LiteralPath (Join-Path $giantBodySource "$kind-albedo.png") -Destination $giantBodyDestination
 }
+$griffonDestination=Join-Path $modDirectory 'assets\sprint27-griffon'
+New-Item -ItemType Directory -Path $griffonDestination -Force | Out-Null
+foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\sprint27-griffon\$part") -Destination $griffonDestination
+}
 $soundBankSource=Join-Path $repositoryRoot 'assets\soundbanks'
 if(Test-Path -LiteralPath (Join-Path $soundBankSource 'KMG_Firearms.bnk') -PathType Leaf){
     $soundBankDestination=Join-Path $modDirectory 'assets\soundbanks'
@@ -269,7 +275,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
 # the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
 # v0.0.160 notes: six files. The optional bank/manifest remain a two-file delta.
-$basePackageFileCount = 384
+$basePackageFileCount = 384 + 4 # Griffon medallion, original mesh/albedo and v0.0.161 notes.
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

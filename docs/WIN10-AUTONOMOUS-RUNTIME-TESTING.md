@@ -1,5 +1,32 @@
 # Windows 10 autonomous runtime testing
 
+Sprint 27 adds `disposable-expanded-summoning-sprint27-native-review`, requiring
+automatic exit and one exact `reviewPhase`: `rtwp-foundation`, `pounce-rtwp`,
+`pounce-turn-based`, `turn-based-abort`, `turn-based-target-loss`, `rtwp-ai`,
+`charge-boundaries`, `visual-lifecycle`, `routes`, `outdoor-locomotion`,
+`shared-controls`, `expiry-boundary`, `qualification-combat`, or
+`qualification-presentation`. The combat union groups foundation, both pounce
+modes, AI and RTWP boundaries; the two turn-based negative cases each use a
+fresh guarded process and exact active owner turn. Presentation groups lifecycle,
+roots and released controls. Each stage retains its own assertions and exact
+actors. Outdoor uses the established non-DLC Oleg area/entry with actual local-map indoor/outdoor
+classification. It preserves the shared save-free scene/clock/restoration guards.
+
+The existing working-save prepare/cleanup/absence trio also accepts the exact
+`persistenceScope=griffon`, selecting one Griffon only. Its installed-stack
+wrapper permits development bytes only with the exact named purpose
+`sprint27-native-prototype`; those records remain development proof and cannot
+qualify publication. Only KMG_AUTOMATION_WORKING may be mutable, under fresh
+intake, exact restoration and the existing owned-save procedure. No new victim
+condition or save-loading route is introduced.
+
+Sprint 27 adds `observe-expanded-summoning-sprint27-native-inputs`: one bounded,
+read-only exact Griffon lookup and at most two detached native donor prefabs
+(Manticore/GiantEagle if no exact Griffon exists), plus exact charge/pounce/feat
+carriers. It captures binding metadata, never native geometry or animation
+curves. No actor, save, input or native asset mutation. Parameters are empty.
+This is research only; it cannot qualify product behavior or the shipped body.
+
 Sprint 26 adds `observe-expanded-summoning-sprint26-native-inputs`: a bounded,
 read-only mod-load lookup for Gorgon/Bulette identities, conditional Horse/Hodag
 donor metadata and native petrification/cure/charge/sense graphs and pixels.

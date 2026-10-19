@@ -1,0 +1,1547 @@
+{
+  "schemaVersion": 1,
+  "sprint": 27,
+  "status": "PUBLIC_CANDIDATE_NOT_QUALIFIED",
+  "baseCommit": "2a0873d8a8848b0f1109415f1e4da14641d9456e",
+  "productionRoot": "C:/Dev/KingmakerGunslingerLab/wt/s27",
+  "productBranch": "codex/expanded-summoning-sprint27-griffon",
+  "recordsBranch": "codex/expanded-summoning-sprint27-release-records",
+  "qualifiedArtifact": null,
+  "nativeExecutions": [
+    {
+      "scope": "research metadata only; no gameplay/body qualification",
+      "candidateKind": "development",
+      "source": "7b546260df8a1fa91d44abb1e0ff4d32b7a7ae6b",
+      "sourceStateSha256": "c670adcbe39a5757dbed19520faee253cf53cdeb5a9a66151940d36f5eaac415",
+      "zipSha256": "420691cbfcdf7c68066422d2a1e4b48598633732286ea1769616438e38f4f27b",
+      "dllSha256": "03e405e5476380f39ab3ee74502325180423b6e760f848aa81620345a951fb79",
+      "mvid": "fee9f435-42c1-4a72-9044-9ed9c7c91f4d",
+      "runId": "20261018T1908024534978Z-8e67ec8d62a942138635653896862dbe",
+      "transactionRunId": "compat-20261018T190610Z-27192acb3e3a",
+      "result": "PASS",
+      "nativeMilliseconds": 67376,
+      "outerSeconds": 208.8124718,
+      "rawResultSha256": "6388b0eea040d970dea73988b576562869862445ba26fcecb0d34ca5f5e8cb5a",
+      "captureSha256": "3a5707417402fec2bddb6c1c4e55ff27f53f7e778c7bb8d2e314bb94533022ad",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    },
+    {
+      "scope": "standalone rtwp-foundation attempt; bootstrap failed before fixture",
+      "candidateKind": "development",
+      "source": "bf53ccd592f2125870680e8e85b5a85f5530f151",
+      "sourceStateSha256": "0c5122086b5b904bc0eae33ffc4e0215f91777a1aa5881969fb58d483a96b53c",
+      "zipSha256": "2a413e7d372af2bcdbc37684ffa9df5d903cf15ed0a818b9389008769b9f2738",
+      "dllSha256": "1f921f783b38c572aa28f61a771cb1fedc32ebd3961b61f3a8fe6b27270309d1",
+      "mvid": "b7225acb-f3cb-4a5a-9b31-7a207ceb6753",
+      "runId": "20261018T1953121268433Z-53420bbfd278470483cec3b14da3cebd",
+      "transactionRunId": "compat-20261018T195116Z-bce0bef6ebfd",
+      "result": "FAIL",
+      "nativeMilliseconds": 51789,
+      "outerSeconds": 198.0783759,
+      "rawResultSha256": "4163a1c86d53c2bc53491cde9829c68cc36e47cbe7440f37f36e7bcceddd8923",
+      "cause": "SummonIconCatalog.Validate retained122-entry guard; real registered and painted catalog is123. No fixture or combat assertions executed.",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    },
+    {
+      "scope": "standalone rtwp-foundation attempt; typed native Charge registration failure before fixture",
+      "candidateKind": "development",
+      "source": "2b0483745bd5ef6ee722cf566b6c5e99ed4a633a",
+      "sourceStateSha256": "663e4413d31f53b25164abe8bc3a91ccb4bddb60d41105945fcbae14d6ea62fa",
+      "zipSha256": "cd481ab3e086672d2e797365e0a424d7dde4194b7ef6994f3fc000d30fd0e2cb",
+      "dllSha256": "ff4837325f9aabf95606c83bdc6e20513529ffe41e4649b44fcc9ffc7a588d36",
+      "mvid": "98b4c69d-53e5-4710-a708-e51a9e2a92c7",
+      "runId": "20261018T2005059378167Z-dde17c840bf0468593481ea11e71d083",
+      "transactionRunId": "compat-20261018T200309Z-68d57b5aacab",
+      "result": "FAIL",
+      "nativeMilliseconds": 65053,
+      "outerSeconds": 211.13990909999998,
+      "rawResultSha256": "db937bf1b6faa3b6de36521eb2179f36db86e179b769ee1e6282072b35fa5b7f",
+      "cause": "NativeCharge exact c78506dd... is BlueprintAbility, not BlueprintFeature. Registration failed closed and rolled back. Typed exact Griffon ability-fact resolution added. No fixture/combat assertions executed.",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    },
+    {
+      "scope": "foundation attempt; blueprint bootstrap completed, native fixture admission refused before world/summon creation",
+      "candidateKind": "development",
+      "source": "4d015eed77686f9e7401fa0b929b4d9e2638c058",
+      "sourceStateSha256": "0bd908891abf1c37303bcf5c94fc6c4de6abb46875d3d1aa98a0e8af34eaf92a",
+      "zipSha256": "874f34cfd6fcaeae06ab595ac0d74edbb393ffce9393b2a7be909fdb8f0619a4",
+      "dllSha256": "571186d2f1e5caa8239686880dc4d8427b697974dcde9d69666f1dfcc2ae6b1f",
+      "mvid": "a58fd98d-f3d8-4c50-a321-23267aeb7f5b",
+      "runId": "20261018T2017333443192Z-75d3a56b7468485284cec0a3636f23b1",
+      "result": "FAIL",
+      "nativeMilliseconds": 69649,
+      "outerSeconds": 211.95743209999998,
+      "buildAndNativeSeconds": 446.0926131,
+      "rawResultSha256": "edd30946925882e25e83c6841cd8f3cd412a74231607e036080b4cc8ca8e8c49",
+      "cause": "Exact Sprint27 scenario missing from save-free native fixture policy; default refusal. Initial admission counters were not captured. Native fixture empty-world assertion also FAIL and remains FAIL. No scene, body or combat proof.",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    },
+    {
+      "scope": "standalone rtwp-foundation; overall FAIL with actual original-body and ordinary-command partial proof",
+      "candidateKind": "development",
+      "source": "b27dcff807d7b66a20afaf1a9d9d5cbd335619e9",
+      "sourceStateSha256": "9a390f42006fc78b55933b9091a971445406838585eb6bcb3179294a12ef3a2f",
+      "zipSha256": "21f3bea0ce16062b6581fdb1c62e230d9d194e29109c7d5bc84577a65d3233ba",
+      "dllSha256": "9f221d208996f88b9f307c0c39da82397fff3c2dc21f579a80e7e718395c7065",
+      "mvid": "095c2efc-cac7-418d-ad20-9a572862118a",
+      "runId": "20261018T2031000626136Z-8f5a6254b02e405e8e0add13af9b162f",
+      "transactionRunId": "compat-20261018T202907Z-777ef8b073e1",
+      "result": "FAIL",
+      "nativeMilliseconds": 110958,
+      "outerSeconds": 253.5111543,
+      "cause": "Native weapon range2ft needs exact Grif+3ft correction; CMD19/23 sampled flat-footed with Dexterity denied, observer must measure after real ordinary action. No product CMD adjustment.",
+      "partialProof": [
+        "real original body and native selection; finite idle/single/full poses in indoor fixture",
+        "native ordinary single1 and full3 actual weapon events and action costs, no forced rolls or animation events",
+        "signed Strength native stat calculations16/17/18/19/9/7 with independent damage0/3",
+        "all other printed composed fields and exact unit/type correct"
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "readOnlyVisualReview": "Actual native idle/full PNGs identifiable eagle head/beak, wings, foretalons and feline body; no visible functional defect. Coarse anatomy, angular rigid wings and occlusion remain visual debt.",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2031000021386Z-disposable-expanded-summoning-sprint27-native-review",
+      "rawResultSha256": "21e14c82d4e6c07867f3be0e3e84f74ae12d8a1227af64ec2f0890a5fdd51ac5"
+    },
+    {
+      "scope": "standalone rtwp-foundation",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2047271996692Z-a571313cac144764ba7e7b4e87187d93",
+      "transactionRunId": "compat-20261018T204530Z-72c360afeacd",
+      "result": "PASS",
+      "nativeMilliseconds": 106755,
+      "outerSeconds": 254.0220976,
+      "rawResultSha256": "747d8206f995a73e90773d42c92021dce366a0613426aec11a17d77f60ae55d2",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2047271093818Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-signed-strength-stat-calculation",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-reach-False",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-single-command",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-single-attack",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-reach-True",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-full-command",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-composed-profile",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-full-attack",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      }
+    },
+    {
+      "scope": "standalone pounce-rtwp",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2051424685789Z-5a9b1a77ba534c0f9e417bb67e772d02",
+      "transactionRunId": "compat-20261018T204948Z-6edc448d7aaa",
+      "result": "PASS",
+      "nativeMilliseconds": 109828,
+      "outerSeconds": 253.5376183,
+      "rawResultSha256": "85a090079fcb0435131da80000c036b7d8926a37b463cfa9f378459a32aa8592",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2051423686564Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-pounce-False",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-pounce-False",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-reach-True",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-full-command",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-full-attack",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "nativeSummary": "9.457869m native legal charge; bite/two talons/two rakes, one natural talon1 miss followed by both rakes; one parent cost and no child cost; following ordinary3. No supplied roll, rule attack or animation event.",
+      "readOnlyVisualReview": "Post-pounce and following ordinary PNGs functionally recognizable/selectable; rigid pointed wings, coarse anatomy and rear-view head occlusion remain debt.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "scope": "standalone pounce-turn-based",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2055589348072Z-3547313780ff4712b9959c3d621ce855",
+      "transactionRunId": "compat-20261018T205402Z-adb69c48b4ea",
+      "result": "FAIL",
+      "nativeMilliseconds": 93408,
+      "outerSeconds": 241.0139671,
+      "rawResultSha256": "a44a2fc5f60ebea53926dd396726ecf8fc3241197844c65e058ea4de1c3ee3d4",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2055589035124Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-execution",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Observer checked native order membership but omitted exact active-owner-turn wait; native Charge.CanTarget null-reference before attack. Failed result retained; use qualified active-turn wait and structured admission."
+    },
+    {
+      "scope": "standalone rtwp-ai",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2100558996238Z-d5b97d83f7a94caf95c333fb4c7e693e",
+      "transactionRunId": "compat-20261018T205850Z-3a83ad2d0eed",
+      "result": "FAIL",
+      "nativeMilliseconds": 129254,
+      "outerSeconds": 285.5149011,
+      "rawResultSha256": "22f9a48f37f837c81f1101b3881a50cd7110b4b92ce9929abbb0806be95fd445",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2100557976468Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ai-native-approach-attack",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-body-ai",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Observer quieting cleared Brain.Actions; RestoreAvailableActions cannot rebuild an empty action list. Zero commands/events. Preserve fresh native actions for AI phase and measure actual readiness; no product brain change."
+    },
+    {
+      "scope": "standalone charge-boundaries",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2105291781140Z-2e6041e1d85f401c8401ff7140e4fddf",
+      "transactionRunId": "compat-20261018T210335Z-bd58f033bd33",
+      "result": "FAIL",
+      "nativeMilliseconds": 92446,
+      "outerSeconds": 235.0774774,
+      "rawResultSha256": "dde3ea1db4626a7276439c81c30e6f322b57ae10b21d2a97ddf1dee5827a3c68",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2105291406020Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-execution",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Observer Single over native Charge instances failed before command. Canonical GetAbility already works for pounce; use it consistently rather than require one provider."
+    },
+    {
+      "scope": "standalone visual-lifecycle",
+      "candidateKind": "development",
+      "source": "de85aefe039d47789aff787ba40de7d771941393",
+      "sourceStateSha256": "bb2f09e333ac7585e6ba89f5addefbd5b7132bda4eb4c0b98bbe5c979b4b3139",
+      "zipSha256": "df7117c681e15dbb054cf4ccd3e9e2c9b5d5950f01bd9c2b4d4467c94f87deac",
+      "dllSha256": "74ab49dc1d7cd38a67a748887f573a53e6341e2b78f3e17b030fdb932d9e3862",
+      "mvid": "abc930f7-ea6e-4cb0-9e05-3c9fafd1e022",
+      "runId": "20261018T2109249234824Z-c3654486ae5640b2a7ad8b9e1b75ab96",
+      "transactionRunId": "compat-20261018T210731Z-903e8a95648d",
+      "result": "FAIL",
+      "nativeMilliseconds": 108268,
+      "outerSeconds": 250.62050359999998,
+      "rawResultSha256": "141d5b43f8b8c185461ab2c33061034c1ca238ecb279d107cc5d5a4e12aba9e4",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2109248977270Z-disposable-expanded-summoning-sprint27-native-review",
+      "assertions": [
+        {
+          "name": "sprint27-phase",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-idle",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-icon-consumers",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon-rollback",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-post-suppression-rollback",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-rollback-bounded-resources",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon-quantity",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-appearance-griffon-quantity",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-quantity-instance-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-ordinary-map-airborne-movement",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-body-movement",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-native-death",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-native-expiry-fading",
+          "status": "FAIL"
+        },
+        {
+          "name": "sprint27-private-cleanup-cache-survives",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-native-manticore-donor-isolation",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-single-native-frame-tick",
+          "status": "PASS"
+        },
+        {
+          "name": "sprint27-fixture-restored",
+          "status": "PASS"
+        },
+        {
+          "name": "expanded-summoning-native-profile-restored",
+          "status": "PASS"
+        }
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "protectedSavesExact": true,
+        "leaseAbsent": true,
+        "ownedTasksRemoved": true
+      },
+      "cause": "Movement, native death, instance isolation, failed-attach rollback, exact private cleanup and donor isolation PASS. Expiry destroyed both units but maxDissolve0; fade assertion FAIL. Add matched untouched native-body/effect control using existing qualified policy; do not infer a missing carrier from original-body failure."
+    },
+    {
+      "scope": "standalone qualification-combat",
+      "candidateKind": "development",
+      "source": "a91232c686c0f19bb442b95d39236b51ae68f3a7",
+      "sourceStateSha256": "312920f6f814c702a24afa6a371d2f4c958b3086d0e0567560acf7d856e11c0e",
+      "zipSha256": "ca9ab111c23facb00a7c21f4dca750e439904e1f1e7678425918d8b2360dfa4a",
+      "dllSha256": "eb53809c023f286893951ef1220300b0ac51203d2745af03d0085e305e1a408a",
+      "mvid": "39d9c637-f7e1-49ca-a889-947803b841fc",
+      "runId": "20261018T2142100565052Z-348bc2eda0544977a1affd142888d165",
+      "transactionRunId": "compat-20261018T214015Z-900d64b39184",
+      "result": "FAIL",
+      "nativeMilliseconds": 307882,
+      "outerSeconds": 452.5913203,
+      "assertionCount": 103,
+      "failedPredicates": [
+        "rtwp-ai-ai-native-approach-attack",
+        "charge-boundaries-charge-expiry"
+      ],
+      "rawResultSha256": "d4352fe41aa26e4895af27208271a358307d3a10593132cb3355a9eeea0e20db",
+      "rawReviewSha256": "eba76b10f43f5ab9bc33ff1902e2c4a0f9bc3c1912c8e3222601c928116c75b1",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2142100226865Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone qualification-presentation",
+      "candidateKind": "development",
+      "source": "a91232c686c0f19bb442b95d39236b51ae68f3a7",
+      "sourceStateSha256": "312920f6f814c702a24afa6a371d2f4c958b3086d0e0567560acf7d856e11c0e",
+      "zipSha256": "ca9ab111c23facb00a7c21f4dca750e439904e1f1e7678425918d8b2360dfa4a",
+      "dllSha256": "eb53809c023f286893951ef1220300b0ac51203d2745af03d0085e305e1a408a",
+      "mvid": "39d9c637-f7e1-49ca-a889-947803b841fc",
+      "runId": "20261018T2150225572199Z-c12007edc3a541a9bfc0c7cba1a05f0c",
+      "transactionRunId": "compat-20261018T214828Z-1afe0317bd9f",
+      "result": "FAIL",
+      "nativeMilliseconds": 186323,
+      "outerSeconds": 330.6534049,
+      "assertionCount": 45,
+      "failedPredicates": [
+        "shared-controls-released-ordinary-tiger",
+        "shared-controls-pounce-False",
+        "shared-controls-native-miss-does-not-retry"
+      ],
+      "rawResultSha256": "931610896a5f22ee55760828910f85416f8663ceb255ad698998c8481f85e580",
+      "rawReviewSha256": "4182e4a696342079eadaabd58f4a605907f12dae881579d6b65ac80a3c8195f7",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2150225259510Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone outdoor-locomotion",
+      "candidateKind": "development",
+      "source": "a91232c686c0f19bb442b95d39236b51ae68f3a7",
+      "sourceStateSha256": "312920f6f814c702a24afa6a371d2f4c958b3086d0e0567560acf7d856e11c0e",
+      "zipSha256": "ca9ab111c23facb00a7c21f4dca750e439904e1f1e7678425918d8b2360dfa4a",
+      "dllSha256": "eb53809c023f286893951ef1220300b0ac51203d2745af03d0085e305e1a408a",
+      "mvid": "39d9c637-f7e1-49ca-a889-947803b841fc",
+      "runId": "20261018T2156395846427Z-d9556313fb51466e8c5c45e209465071",
+      "transactionRunId": "compat-20261018T215447Z-da5cfdb6959d",
+      "result": "PASS",
+      "nativeMilliseconds": 98559,
+      "outerSeconds": 240.2158603,
+      "assertionCount": 12,
+      "failedPredicates": [],
+      "rawResultSha256": "b52055333c888eea2083fc8254aabade71b75c9481025926f7c808227521984a",
+      "rawReviewSha256": "7003c71f41b0c95a9e3113e346a3f616dba82e3cb21dac969128f33a525cc545",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2156395624463Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone rtwp-ai",
+      "candidateKind": "development",
+      "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+      "sourceStateSha256": "5982be57b464d42c16f289f9e2901758cd1890d1418e258a9369e2790b1d73ff",
+      "zipSha256": "62947818c516f2dce439636968df655a45411ea92283479053025fcb1e19161d",
+      "dllSha256": "89d5bdcd5010834467629baf39ec5baa3f5f9c0d0b8795544ee69c3d60889886",
+      "mvid": "3f019873-31a4-479c-88e8-0e73390ae77a",
+      "runId": "20261018T2206586320171Z-904c8f105279416ba5df4eeee8510e7b",
+      "transactionRunId": "compat-20261018T220504Z-3d27775cb327",
+      "result": "PASS",
+      "nativeMilliseconds": 95674,
+      "outerSeconds": 239.1044617,
+      "assertionCount": 10,
+      "failedPredicates": [],
+      "rawResultSha256": "797fbc7afd089d27710c18e2bac9b84f068158672d0052b9386799f4dc7f6d51",
+      "rawReviewSha256": "d6e42b2de4a24e49f599b02b43f6e9a08548c753107f9e8d07e6eb1aee7b48dc",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2206585786277Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone charge-boundaries",
+      "candidateKind": "development",
+      "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+      "sourceStateSha256": "5982be57b464d42c16f289f9e2901758cd1890d1418e258a9369e2790b1d73ff",
+      "zipSha256": "62947818c516f2dce439636968df655a45411ea92283479053025fcb1e19161d",
+      "dllSha256": "89d5bdcd5010834467629baf39ec5baa3f5f9c0d0b8795544ee69c3d60889886",
+      "mvid": "3f019873-31a4-479c-88e8-0e73390ae77a",
+      "runId": "20261018T2212180403406Z-68ba38de853045ca91cfc2f743cccfda",
+      "transactionRunId": "compat-20261018T221027Z-5cf1fb1f9bb6",
+      "result": "FAIL",
+      "nativeMilliseconds": 176932,
+      "outerSeconds": 316.29739459999996,
+      "assertionCount": 45,
+      "failedPredicates": [
+        "charge-boundaries-charge-expiry"
+      ],
+      "rawResultSha256": "25a50a6aeb92e9ad77ddfc4a35b2c6cb1c238cd485770154b76c2b2e0f23974a",
+      "rawReviewSha256": "71aa09e81f494a031ead984d2c3a03727d7791581ced4ca5f976491d009c40f2",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2212179446499Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "scope": "standalone shared-controls",
+      "candidateKind": "development",
+      "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+      "sourceStateSha256": "5982be57b464d42c16f289f9e2901758cd1890d1418e258a9369e2790b1d73ff",
+      "zipSha256": "62947818c516f2dce439636968df655a45411ea92283479053025fcb1e19161d",
+      "dllSha256": "89d5bdcd5010834467629baf39ec5baa3f5f9c0d0b8795544ee69c3d60889886",
+      "mvid": "3f019873-31a4-479c-88e8-0e73390ae77a",
+      "runId": "20261018T2217383915484Z-8d0cc0f45676495489ee630166074519",
+      "transactionRunId": "compat-20261018T221544Z-234e8e5017b4",
+      "result": "FAIL",
+      "nativeMilliseconds": 158223,
+      "outerSeconds": 301.94569839999997,
+      "assertionCount": 14,
+      "failedPredicates": [
+        "shared-controls-released-ordinary-tiger",
+        "shared-controls-pounce-False",
+        "shared-controls-native-miss-does-not-retry"
+      ],
+      "rawResultSha256": "1dc1a733705865b1284f27b957c10575baf8492edb35da6e358de37078554421",
+      "rawReviewSha256": "670fa68727391bb3985f5012ba8f13867800f271a4448f43e2eb922dcd0637ae",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2217383537685Z-disposable-expanded-summoning-sprint27-native-review",
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "protectedSaves": 118,
+        "allSavesExact": true,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2232228287686Z-28bf4dc0367d4c1b983fe26cf39f9865",
+      "result": "FAIL",
+      "nativeMilliseconds": 111623,
+      "rawResultSha256": "9458ce9ccb0ab26b895b09e85a636c4d40c958109fcbd3026dbf1d1d4ef4321d",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2232227435977Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "standalone expiry-boundary",
+      "transactionRunId": "compat-20261018T223028Z-2381783515b9",
+      "outerSeconds": 253.909629,
+      "assertionCount": 12,
+      "failedPredicates": [
+        "expiry-boundary-charge-expiry"
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "mechanicalObservation": "Real marker callback once; uninterruptible UnitUseAbility before, zero active commands immediately after; native result Interrupt, zero queued/weapon attacks; native despawn. Overall FAIL retained because later UnitMoveTo follow data violates the old terminal predicate. New observer additionally requires view/holding-state detachment and exact native-follow identity."
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2238126118992Z-646d8d2038fe495aad43acee84d258f6",
+      "result": "PASS",
+      "nativeMilliseconds": 127179,
+      "rawResultSha256": "153237f40da620cd607a1a13f5e94235945a1e5a0ba6eb7ef5ba3cc411015d31",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2238125271072Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "standalone shared-controls",
+      "transactionRunId": "compat-20261018T223622Z-7c7d4ae24b0a",
+      "outerSeconds": 266.7472568,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2245583536045Z-e8b441e74c5641baa440f255cb150af1",
+      "result": "PASS",
+      "nativeMilliseconds": 210961,
+      "rawResultSha256": "531e36da5df03954810760ae489c71a864511f9ab451502432835074df9b0fed",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2245582973683Z-working-save-expanded-summoning-prepare",
+      "scope": "installed current eleven-mod stack Griffon on trio prepare-on",
+      "transactionRunId": "sprint27-stack-20261018T224406Z-6f05e5ada5d5",
+      "outerBatchSeconds": 1104.7052598999999,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "144909698f3af376efae323e2602040a9256115789f4fcae6121b207ca275511"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2252188068767Z-a8a9ea09124a4fdfb4d9563da5061008",
+      "result": "PASS",
+      "nativeMilliseconds": 203906,
+      "rawResultSha256": "2076fd62caa07837534190f85e9eafa9fe787b7d8dbd98e8e9a16fc85e80c5ce",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2252188068767Z-working-save-expanded-summoning-verify-cleanup",
+      "scope": "installed current eleven-mod stack Griffon on trio cleanup-on",
+      "transactionRunId": "sprint27-stack-20261018T225026Z-76b3c54a3cac",
+      "outerBatchSeconds": 1104.7052598999999,
+      "assertionCount": 13,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "144909698f3af376efae323e2602040a9256115789f4fcae6121b207ca275511"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2258320116083Z-44c9fafdb02047fe8b789eedd1d33bd2",
+      "result": "PASS",
+      "nativeMilliseconds": 176469,
+      "rawResultSha256": "b43050d5f48abad8b1495308e24adbe495e045a316e2f91aaa3042c396984da3",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2258319947583Z-working-save-expanded-summoning-verify-absent",
+      "scope": "installed current eleven-mod stack Griffon on trio absent-on",
+      "transactionRunId": "sprint27-stack-20261018T225640Z-de45d1094d4e",
+      "outerBatchSeconds": 1104.7052598999999,
+      "assertionCount": 6,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "144909698f3af376efae323e2602040a9256115789f4fcae6121b207ca275511"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2306037783523Z-d328296628304eeeb6ff5ca251ad6fb5",
+      "result": "PASS",
+      "nativeMilliseconds": 210115,
+      "rawResultSha256": "51b8191c17b21f50ad932eaf841fa3e8ce6629bfcbc742f0cba67076cc4bb3ac",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2306037561356Z-working-save-expanded-summoning-prepare",
+      "scope": "installed current eleven-mod stack Griffon off trio prepare-on",
+      "transactionRunId": "sprint27-stack-20261018T230412Z-5cf9a871d3ab",
+      "outerBatchSeconds": 1111.6397428999999,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2312234575803Z-9c12792c91af406890ddb6f78f9b132c",
+      "result": "PASS",
+      "nativeMilliseconds": 208709,
+      "rawResultSha256": "8d683ac52bf3ae1f1b3922f8c4740e0b30fdc6ece771ad73d64a2296aea48738",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2312234575803Z-working-save-expanded-summoning-verify-cleanup",
+      "scope": "installed current eleven-mod stack Griffon off trio cleanup-off",
+      "transactionRunId": "sprint27-stack-20261018T231031Z-f37ef0522966",
+      "outerBatchSeconds": 1111.6397428999999,
+      "assertionCount": 14,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
+    },
+    {
+      "candidateKind": "development",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "sourceStateSha256": "84b4dbd2de45604a9f13bf462c4cf18e992d76df125e2a5a2253cd23e9ead961",
+      "zipSha256": "c3a8e00db70eed1e861f7cf99418b8f98584e7b7be159f1ce2be38d023145c4d",
+      "dllSha256": "185df4941a8b8546597adceb7f87ee83c1c8b074b0060144bffbac219f80820b",
+      "mvid": "3001771d-0522-4888-bec1-ca500d00041b",
+      "runId": "20261018T2318405083220Z-33839363ee124c3189dfc8c6ad889aa2",
+      "result": "PASS",
+      "nativeMilliseconds": 180706,
+      "rawResultSha256": "0b7b5797dab788470bb8caf4d2a51203d961a66bb611d43ebf2bfb5a8f4c394d",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2318405083220Z-working-save-expanded-summoning-verify-absent",
+      "scope": "installed current eleven-mod stack Griffon off trio absent-on",
+      "transactionRunId": "sprint27-stack-20261018T231648Z-1d39484c2fef",
+      "outerBatchSeconds": 1111.6397428999999,
+      "assertionCount": 6,
+      "failedPredicates": [],
+      "restoration": {
+        "transactionExact": true,
+        "privateReferencesExact": true,
+        "workingIntakeRestored": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      },
+      "outerResultSha256": "b5e9578da13f0ab38f15ccb2c5e448548b1bfc7acd6907d1d81dae4340449a68"
+    },
+    {
+      "candidateKind": "development",
+      "source": "ef007e4b96aed085f3c73e39fada18fbc0eaa88b",
+      "sourceStateSha256": "a3a4a5e7dc9750a8981919ac90b08bad0b3651c1860492da6e70420cf7be26ac",
+      "zipSha256": "5c2576bf7a8ac8ad319b9635d5556a010e23be635f48e19fd7f18e50445caca9",
+      "dllSha256": "1cc9c8e111b7fbad972421a97c7255bfc138c33bf8eef7ed5339885873b7bc93",
+      "mvid": "75b83a1a-8706-43a7-aedc-640f9bdd8175",
+      "runId": "20261018T2332123681229Z-20f83101c5964e2ab936b2e2278574f4",
+      "result": "FAIL",
+      "nativeMilliseconds": 117340,
+      "rawResultSha256": "6bcf9a08f47357e71108359835f82051a80b53287a94e4ad6851ff6c6f5552e7",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2332122677432Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "expiry-boundary: automatic cancellation and complete detachment pass; assumed summon-follow identity FAIL",
+      "outerSeconds": 298.8760863,
+      "assertionCount": 13,
+      "failedPredicates": [
+        "sprint27-expiry-boundary-charge-expiry"
+      ],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true
+      }
+    },
+    {
+      "candidateKind": "development",
+      "source": "8c61bbde87adc52a88c3350bc454d8647bd0b31d",
+      "sourceStateSha256": "a9b57ce3bdb2f03728757c6d09a991c40cae119a2d63d3201a6a9ac848325c48",
+      "zipSha256": "37c0905c314e7c9d36f78fd4542380171c43a7e71359625da82c32648b62f647",
+      "dllSha256": "75e904fcd745684144cb256b57b236bee6bef4e048ef43c4ad8399cfd212a67f",
+      "mvid": "7ff328ca-b7d2-4c7a-9754-23ef0857bbf4",
+      "runId": "20261018T2342076531963Z-33990f02529048e8aaceffa4cef98b02",
+      "result": "PASS",
+      "nativeMilliseconds": 112370,
+      "rawResultSha256": "ab1a90deb9762d45e53123395b08811c1023f8aa24e66946a8a17f98a4fab163",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261018T2342075528882Z-disposable-expanded-summoning-sprint27-native-review",
+      "scope": "expiry-boundary: automatic cancellation, zero attacks, full detachment; actual native disposal return-to-position movement origin observed",
+      "outerSeconds": 256.36169259999997,
+      "assertionCount": 13,
+      "failedPredicates": [],
+      "restoration": {
+        "modsExact": true,
+        "settingsExact": true,
+        "privateExact": true,
+        "allSavesExact": true,
+        "protectedSaves": 118,
+        "leaseAbsent": true,
+        "ownedTaskRemoved": true
+      }
+    }
+  ],
+  "checks": [
+    {
+      "scope": "source compilation and focused scenario wiring",
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.scenario-timeout-wiring",
+      "result": "PASS",
+      "tests": 1,
+      "compileSeconds": 20.6,
+      "testSeconds": 4.7
+    },
+    {
+      "scope": "external push policy isolated behavior; fake Git only",
+      "command": "scripts/Test-PushPolicyWrapper.ps1 -PermittedRoot C:/Dev/KingmakerGunslingerLab/wt/s27",
+      "result": "PASS",
+      "cases": 26
+    },
+    {
+      "scope": "exact receipt and restoration orchestration, isolated",
+      "command": "scripts/Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot C:/Dev/KingmakerGunslingerLab/wt/s27/scripts",
+      "result": "PASS",
+      "assertions": 203
+    },
+    {
+      "scope": "production profile/rake/body/early observer compilation and focused rules",
+      "result": "PASS",
+      "compileSeconds": 17,
+      "testSeconds": 4.2,
+      "tests": 6,
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
+    },
+    {
+      "scope": "append-only identities",
+      "result": "PASS",
+      "preservedPrefix": 6961,
+      "appended": 29,
+      "foundation": 2202,
+      "adapters": 3788,
+      "total": 6990
+    },
+    {
+      "scope": "icon authoring/export/catalog",
+      "result": "PASS",
+      "priorRecordsUnchanged": 122,
+      "newConcepts": 1,
+      "griffonConsumers": 8,
+      "uiSizes": [
+        32,
+        48,
+        64
+      ]
+    },
+    {
+      "scope": "read-only actual mesh functional review",
+      "result": "NO_STATIC_FUNCTIONAL_BLOCKER",
+      "nativeProof": false,
+      "vertices": 2930,
+      "triangles": 5560,
+      "meshSha256": "4694292d3cc275590fddade1e68169968884185573cc172455daf8b875e048ac",
+      "albedoSha256": "997a14e3fc55a642136c2bf33612c650c36dd3f4153f5abfb7d8642f0912ec78"
+    },
+    {
+      "scope": "new Griffon exact runtime boundary and unchanged neighbors",
+      "result": "PASS",
+      "assertions": 206,
+      "command": "scripts/Test-ExpandedSummoningRuntimeOrchestration.ps1 -ScriptRoot C:/Dev/KingmakerGunslingerLab/wt/s27/scripts"
+    },
+    {
+      "scope": "strict early Griffon runtime phase requests/inventory serialization/refusals",
+      "result": "PASS",
+      "assertions": 643,
+      "source": "ba6dd7d7eafc7c889a9b1648ca7d40cd10b05394"
+    },
+    {
+      "scope": "delegated icon authority positive/stale-authority refusal and29 other corruption fixtures",
+      "result": "PASS",
+      "tests": 30,
+      "seconds": 12.428,
+      "command": "python tools/test_icon_catalog.py"
+    },
+    {
+      "scope": "explicit racial HP/native lore derivation and early observer compile",
+      "result": "PASS",
+      "compileSeconds": 17.5,
+      "testSeconds": 0.9,
+      "tests": 6
+    },
+    {
+      "scope": "strict package icon authority and exact new asset counts",
+      "result": "PASS",
+      "isolatedAuthorityCases": 7,
+      "diagnosticPackage": "artifacts/sprint27-packaging-repro.zip",
+      "qualification": false,
+      "note": "Reproduction uses existing b51a00 compiled bytes with corrected package tooling; not a deployable development candidate or native evidence."
+    },
+    {
+      "scope": "all pure summoning bootstrap guards plus Griffon/shared rake and observer wiring; affected production compile",
+      "result": "PASS",
+      "tests": 6,
+      "compileSeconds": 16.3,
+      "testSeconds": 4.9,
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
+    },
+    {
+      "scope": "typed native Charge correction and small AI/cancellation/opportunity/reentrant-plan observers; focused production compile",
+      "result": "PASS",
+      "tests": 6,
+      "compileSeconds": 16.8,
+      "testSeconds": 1,
+      "nativeQualification": false
+    },
+    {
+      "scope": "exact fixture-admission reproduction and all nine shared native-profile safety neighbors; Griffon/rake/wiring; production compile",
+      "result": "PASS",
+      "tests": 15,
+      "compileSeconds": 17.1,
+      "testSeconds": 1.1,
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.native-profile;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate"
+    },
+    {
+      "command": "Invoke-KmgGate.ps1 -Filter expanded-summoning.sprint27;expanded-summoning.native-profile;expanded-summoning.scenario-timeout-wiring;expanded-summoning.sprint7-rake-gate",
+      "result": "PASS",
+      "scope": "de85aefe inputs; production compile16.6s;16 of2692 selected domain cases1.1s; development, no release qualification"
+    },
+    {
+      "scope": "post-native bounded correction focused build",
+      "result": "PASS",
+      "sourceScope": "uncommitted successor of a91232c686c0; no native qualification inferred",
+      "productionCompilationSeconds": 18.2,
+      "selected": 17,
+      "registered": 2693,
+      "failures": 0,
+      "testSeconds": 1.1
+    },
+    {
+      "scope": "native-force expiry and precise callback/control correction",
+      "result": "PASS",
+      "sourceScope": "uncommitted successor of5e565f9ffc02; native pending",
+      "productionSeconds": 17.1,
+      "selected": 17,
+      "registered": 2693,
+      "failures": 0,
+      "testGateSeconds": 4.3,
+      "retainedFailure": "Initial observer compilation lacked Summoning import; corrected before passing compilation."
+    },
+    {
+      "scope": "closed phase/source preflight including expiry-boundary",
+      "result": "PASS",
+      "checks": 661,
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9"
+    },
+    {
+      "scope": "highest-risk combined WhatIf route",
+      "result": "PASS",
+      "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+      "seconds": 16.9155369,
+      "nativeExecution": false,
+      "all118SavesExact": true,
+      "modsExact": true
+    },
+    {
+      "scope": "terminal expiry observer focused successor",
+      "result": "PASS",
+      "sourceScope": "uncommitted successor of51c14014; no native pass inferred",
+      "productionSeconds": 19.9,
+      "selected": 17,
+      "registered": 2693,
+      "failures": 0,
+      "testGateSeconds": 1.8
+    },
+    {
+      "command": "scripts/Invoke-KmgGate.ps1 -Level Sprint",
+      "source": "28bce30a7ddfe4980dc9f9e2c0f1928b86a2ac66",
+      "result": "FAIL",
+      "seconds": 314.2465546,
+      "executed": 2693,
+      "failures": 39,
+      "scope": "23 missing local native IL prerequisites; 16 legacy source/version/count/weapon-audit fixture failures; no final ZIP or native transaction produced",
+      "evidence": "artifacts/sprint27-gate-public-f1/result.json"
+    }
+  ],
+  "policyChange": {
+    "beforeSha256": "85b8a01a60c8e8fac3534a26c4cf54ee108af0939c7bb2af3da545bf99a1e09f",
+    "afterSha256": "db46ee3853aea85d5d622a2eedfd3d9f1c58195e40411a8296a7d028b17aae4a",
+    "exactNamesOnly": true,
+    "verifiedSafetyCopy": true
+  },
+  "failuresRetained": [
+    "Unconfigured new-worktree domain compiler could not resolve Newtonsoft; local private-reference props configured, same focused check passed.",
+    "Orchestration test default ScriptRoot was empty; explicit supported ScriptRoot passed.",
+    "Manifest generator current parsed-creature and runtime donor-name invariants needed scoped Griffon extension; identities allocated once and preserved.",
+    "First model render used relative texture input; same mesh rendered with absolute paths.",
+    "New domain test used nonexistent Create factory; corrected to actual Build and6 focused checks passed.",
+    "Observer attempted read-only IsFullAttack setter; corrected to verified ForceFullAttack/IsSingleAttack fields; affected compile passed.",
+    "Readability-sheet Python Pillow unavailable; no dependency installed, installed System.Drawing used.",
+    "Prototype81433 preflight FAIL47.7809s: exact documented-scenarios inventory omitted the new Griffon review string. No build/deployment/game transaction occurred. Corrected exact inventory; affected preflight rerun required.",
+    "Prototypeba6dd7 build wrapper stopped on one of30 icon corruption fixtures: current delegated-authority hash still pinned the Sprint26-only manifest. Updated exact Griffon-inclusive pin and retained the actual old hash as the stale-authority negative case. No package/deployment/native transaction occurred.",
+    "Prototypeb51a00 development build FAIL213.301s after successful production compile: both output/package validators still pinned122 summon icons. Controlled authority has123. Replaced duplicated counts with hash-pinned authoring/runtime identity validation. No deployed package or gameplay transaction occurred.",
+    "Packaging-only reproduction exposed the deterministic writer missing exact387/389 file-count choices. Added only those Sprint27 hidden-development counts; repeated packaging and strict one-DLL/content/hash validation passed. Diagnostic ZIP is not a qualified candidate.",
+    "First native foundation bf53ccd5 failed before fixture on the compiled icon-catalog122 immutability count; exact machine118-save restoration PASS in198.078s. Raw result and registration stack retained. Updated exact approved123 count; guards remain enabled.",
+    "A speculative neighboring profile-count edit63 failed the newly selected pure guard test. Reflection measured62 actual profiles including Griffon; preserved the existing62 guard, all pure bootstrap catalog guards now pass.",
+    "Native foundation2b048374 advanced past icon guards but registration requested native ChargeAbility as BlueprintFeature. Actual previously captured graph proves BlueprintAbility. Exact typed Griffon-only grant corrected;65.053s native/211.140s transaction, all118 saves and current intake restored. No unchanged relaunch.",
+    "4d015eed reached completed blueprint bootstrap but native fixture policy omitted Sprint27 and refused entry. Internal empty-world assertion FAIL retained; external current-intake118-save restoration PASS. Exact admission branch added with legacy world/save/exit protections unchanged and structured inputs recorded.",
+    "a91232 combat FAIL: AI chose a native attack but did not reach a weapon event; native expiry during moving charge queued one attack before delayed removal. No unchanged retry.",
+    "a91232 presentation FAIL: Tiger ordinary and pounce controls incomplete against the original fixture; matched donor expiry, rollback, resources, navigation, all six hidden root effects, Eagle and Bulette ordinary controls passed. No baseline product defect claimed.",
+    "5e565f charge-boundaries FAIL: native marker removal observed, but bool InterruptAll skips uninterruptible charge. Installed IL proves the predicate overload forces interruption and clears queue; no failed case relaunched unchanged.",
+    "5e565f shared-controls FAIL: recorded targetSize Medium/grabExcludedBySize false proves fixture reset overwrote the intended Huge size before command; no baseline creature defect inferred.",
+    "Read-only interruption IL reader initially failed on mixed Mono/framework System metadata; framework-resolved reader succeeded; no native or source state changed by inspection.",
+    "51c140 expiry-boundary overall FAIL retained: actual charge cancellation passes; old observer rejects an inert native UnitMoveTo on a destroyed summon. New observer requires full view/holding-state removal and permits only the exact native PartSummonedMonster.MoveTo reference; no charge/attack/ability action is allowed."
+  ],
+  "bodyStatus": "Original body functional indoors and outdoors; matched native donor lacks DismemberUnitFX, both follow native delayed despawn and exact private cleanup. No dissolve claimed.",
+  "iconStatus": "ORIGINAL_EXPORTED_CATALOG_PASS_NATIVE_UI_PENDING",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "sprint28Started": false,
+  "sourceReviewCorrections": [
+    "Racial base HP derives floor(5*(10+1)/2) from d10 HD before live Constitution.",
+    "Own Griffon type keeps the actual installed Manticore magical-beast KnowledgeStat; native observer records the resulting type/consumer.",
+    "A later natural-unit type selector still chose Bulette for Griffon after the earlier correct assignment. Both selectors now use the exact creature token; native observer requires Griffon type GUID b31bad4d5053482d85d35d0ae27fac72. No native unit-type PASS existed on the faulty source.",
+    "Add an exact-Griffon module-gated summon-marker removal listener to interrupt native commands at expiration while preserving native delayed presentation/destruction; no mutable serialized command state.",
+    "Narrow AI to a native-approved straight route, with read-only command/movement timeline; native brain remains sole command chooser. Tiger uses a stated legal Huge opponent to exclude its automatic Grab from the charge-plan control.",
+    "Use verified native InterruptAll(Func<UnitCommand,bool>) at exact Grif marker removal. Add expiry-boundary phase and a read-only automatic-callback trace. Do not manually tick an already-finished parent command while waiting for native despawn.",
+    "Apply/assert Huge target after hostile reset and again before Tiger pounce; record actual target size. Native brain/rolls, released creature code and assets remain unchanged.",
+    "Terminal reader correction only: fully detach expired owner, identify native summon-follow by reference, preserve the original failed verdict. No product mechanics/assets or saved schemas change after the six passing native persistence stages.",
+    "ef007e expiry run retained FAIL: unit destroyed, view/holding/state detached, callback cancellation correct, but residual UnitMoveTo is not correlated to UnitPartSummonedMonster.MoveTo. New read-only runner hook records actual native movement command origins instead of assuming the source."
+  ],
+  "integratedDevelopmentChecks": {
+    "productionCompilation": {
+      "result": "PASS",
+      "seconds": 17.5,
+      "selectedDomainTests": 17,
+      "registeredDomainTests": 2693,
+      "domainSeconds": 1.1,
+      "scope": "focused development; no full suite or release qualification"
+    },
+    "publisherRefusals": {
+      "result": "PASS",
+      "cases": 86
+    },
+    "developmentPersistenceAuthority": {
+      "result": "PASS",
+      "cases": 9
+    },
+    "sourceBoundaryRefusals": {
+      "result": "PASS",
+      "tests": 9
+    },
+    "targetedPersistenceRequests": {
+      "result": "PASS",
+      "exactJsonRoundTrips": 27,
+      "refusalCases": 252
+    },
+    "actualLauncherWhatIf": {
+      "result": "PASS",
+      "valid": 39,
+      "rejected": 23,
+      "nativeLaunches": 0
+    },
+    "phasePreflight": {
+      "result": "PASS",
+      "checks": 659,
+      "seconds": 49.1365099,
+      "nativeLaunches": 0,
+      "record": "artifacts/sprint27-readiness-integrated-r3/result.json"
+    },
+    "preservedSetupFailures": [
+      {
+        "scope": "first integrated compilation",
+        "cause": "two missing namespace imports in new outdoor observer; corrected; no package/native attempt"
+      },
+      {
+        "scope": "launcher WhatIf invoked elevated",
+        "cause": "existing unelevated guard refused; retained guard and ran limited-owner task successfully"
+      },
+      {
+        "scope": "first integrated preflight",
+        "cause": "obsolete negative fixture still named routes, now an implemented phase; changed the excluded sentinel to hippogriff"
+      },
+      {
+        "scope": "second integrated preflight",
+        "cause": "parallel production compilation changed guarded artifact snapshot; reran preflight alone after compilation; guard unchanged"
+      }
+    ]
+  },
+  "outdoorVisualReview": {
+    "result": "NO_NEW_BLOCKING_DEFECT_DEMONSTRATED",
+    "humanReview": "NOT_PERFORMED_NONBLOCKING",
+    "scope": "actual a91232 outdoor movement/idle captures",
+    "limitations": "Movement enters dark fog; tree obscures idle torso/selection area. Whole-body outdoor presentation is not independently established by those pixels; structured selection/navigation/attack proof is separate.",
+    "backlog": [
+      "coarse anatomy",
+      "rigid pointed wings"
+    ]
+  },
+  "latestNativeAi": {
+    "result": "PASS",
+    "source": "5e565f9ffc027acd074190873b5bdacd27c73b5b",
+    "runId": "20261018T2206586320171Z-904c8f105279416ba5df4eeee8510e7b",
+    "nativeBrainTicks": 1,
+    "travelMetres": 5.01195431,
+    "weaponEvents": 1,
+    "fixtureAttacks": 0,
+    "forcedRolls": 0
+  },
+  "targetedPersistence": {
+    "result": "PASS",
+    "candidateKind": "development",
+    "source": "51c140141dd921bc23313830f1245d6cde04adc9",
+    "onSeconds": 1104.7052599,
+    "offSeconds": 1111.6397429,
+    "stages": 6,
+    "restoration": "EXACT_CURRENT_INTAKE_118_SAVES",
+    "workingRestored": true,
+    "baselineImmutable": true
+  },
+  "publicStaging": {
+    "version": "0.0.161",
+    "routesUnsuppressed": 6,
+    "stage": "SOURCE_ONLY_NOT_QUALIFIED",
+    "sourceBoundaryChecks": 9,
+    "finalGate": "F4_PASS_SUPERSEDED_BY_VISIBLE_ROUTE_OBSERVER",
+    "freshEligibleNative": "F4_TARGET_LOSS_TURN_ADMISSION_FAIL",
+    "release": "NOT_PERFORMED",
+    "scriptCorrection": "Controlled roster generator uses supported --emit-roster; initial --write refusal retained in tool output, no candidate build or runtime was attempted with stale output.",
+    "focusedGate": {
+      "command": "scripts/Invoke-KmgGate.ps1 -Filter 'expanded-summoning.sprint27;expanded-summoning.sprint26;expanded-summoning.visibility'",
+      "productionSeconds": 18,
+      "selectedTests": 15,
+      "registeredTests": 2693,
+      "failures": 0,
+      "testGateSeconds": 4.1
+    }
+  },
+  "publicSurface": {
+    "generatedPlacements": 1108,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1137
+  },
+  "gateReadinessRepair": {
+    "status": "FOCUSED_PASS",
+    "selectedTests": 172,
+    "registeredTests": 2693,
+    "failures": 0,
+    "runnerSeconds": 4.7,
+    "wallSeconds": 9.1741214,
+    "productionRulesChanged": false,
+    "weaponAuditOldRowsEqual": true,
+    "weaponAuditAddedSymbols": [
+      "KMG.Summoning.Natural.Griffon.Bite1d6",
+      "KMG.Summoning.Natural.Griffon.Talon1d6",
+      "KMG.Summoning.Natural.Griffon.Rake1d4"
+    ],
+    "nativeIl": {
+      "status": "PASS",
+      "referenceSha256": "3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb",
+      "referenceMvid": "07fa1e4d-8618-41b3-9b8d-faa17d3b26f7",
+      "retainedIlSha256": "531453dade33ded432da4368f42d8fe0ec73005b0beaa0f77a960290a2c30177",
+      "source": "C:/Dev/KingmakerGunslingerLab/wt/s26/artifacts/inspection/bodyguard-native/Assembly-CSharp.il",
+      "copiedTo": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s27\\artifacts\\inspection\\bodyguard-native"
+    }
+  },
+  "publicGateAttempts": [
+    {
+      "source": "28bce30a7ddfe4980dc9f9e2c0f1928b86a2ac66",
+      "record": "artifacts/sprint27-gate-public-f1/result.json",
+      "status": "FAIL",
+      "registeredTests": 2693,
+      "failures": 39,
+      "seconds": 314.2465546,
+      "nativeLaunches": 0
+    },
+    {
+      "source": "de74484eb8c7d5ed5b89cd06e2d094b3cbf91631",
+      "record": "artifacts/sprint27-gate-public-f2/result.json",
+      "status": "PASS",
+      "registeredTests": 2693,
+      "failures": 0,
+      "seconds": 374.3471096,
+      "zipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017",
+      "dllSha256": "240bf88fc42c11c362f663c3417d2228b56804bcf3423e76a93646d7c97a3d98",
+      "mvid": "88e1c4fc-5e1e-4a43-ac1f-a2ea271681c7"
+    },
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "record": "artifacts/sprint27-gate-public-f3/result.json",
+      "status": "PASS",
+      "registeredTests": 2693,
+      "failures": 0,
+      "seconds": 382.1569316,
+      "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
+      "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
+      "mvid": "80200e94-4488-4591-9795-bfc6caf54d00"
+    },
+    {
+      "source": "51e2d1044c4d3e7d52c30646ce02e90e4718e896",
+      "record": "artifacts/sprint27-gate-public-f4/result.json",
+      "status": "PASS",
+      "registeredTests": 2693,
+      "failures": 0,
+      "seconds": 374.7098174,
+      "zipSha256": "b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e",
+      "dllSha256": "5cd56db5315777c845247689e1c4677c47d377f221ec8268a6376c744b397e6e",
+      "mvid": "942fc374-74e6-4d9f-9b91-4cd184a25f15"
+    }
+  ],
+  "publicNativeFailures": [
+    {
+      "source": "de74484eb8c7d5ed5b89cd06e2d094b3cbf91631",
+      "zipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017",
+      "dllSha256": "240bf88fc42c11c362f663c3417d2228b56804bcf3423e76a93646d7c97a3d98",
+      "mvid": "88e1c4fc-5e1e-4a43-ac1f-a2ea271681c7",
+      "runId": "20261019T0008550631705Z-2dfd41dd32b549df9e38e40ad4652455",
+      "scope": "gunslinger-only qualification-combat",
+      "status": "FAIL",
+      "failedPredicate": "pounce-turn-based-boundary-turn-admission-False",
+      "rawResultSha256": "96e0693944ffb2e1a777dfddc27c4f49ab8f72622f79c81f987f50252d53bcb3",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0008550349568Z-disposable-expanded-summoning-sprint27-native-review",
+      "outerSeconds": 286.6500627,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    },
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
+      "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
+      "mvid": "80200e94-4488-4591-9795-bfc6caf54d00",
+      "runId": "20261019T0226542913010Z-3bc0429a0cdf42a5a63f6a238ee19f5f",
+      "scope": "gunslinger-only turn-based-target-loss",
+      "status": "FAIL",
+      "failedPredicate": "turn-based-target-loss-boundary-turn-admission-True",
+      "rawResultSha256": "48f9728730219ca3d4da2531c5282d5c85257dafc14c249611d20c13400c278f",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0226542680499Z-disposable-expanded-summoning-sprint27-native-review",
+      "outerSeconds": 253.1885716,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    },
+    {
+      "source": "51e2d1044c4d3e7d52c30646ce02e90e4718e896",
+      "zipSha256": "b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e",
+      "dllSha256": "5cd56db5315777c845247689e1c4677c47d377f221ec8268a6376c744b397e6e",
+      "mvid": "942fc374-74e6-4d9f-9b91-4cd184a25f15",
+      "runId": "20261019T0244532099620Z-8b778d7903a044c79cb14360d8f5d0e7",
+      "scope": "gunslinger-only turn-based-target-loss clock trace",
+      "status": "FAIL",
+      "failedPredicate": "turn-based-target-loss-boundary-turn-admission-True",
+      "rawResultSha256": "927b468f7536355f20615a254756b5d6496f475e5f68523d9d58c73810cefd96",
+      "rawEvidenceDirectory": "C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261019T0244531877790Z-disposable-expanded-summoning-sprint27-native-review",
+      "outerSeconds": 252.8350148,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    }
+  ],
+  "observerCorrectionReadiness": {
+    "sourceCheckpoint": "83890b63296859b6b1c967ce987fad5ac8379e30",
+    "focusedCompilationSeconds": 17.2,
+    "focusedTests": 6,
+    "preflightChecks": 665,
+    "sourceBoundary": "PASS",
+    "developmentPackageAttempt": "REFUSED_UNRELEASED_V0.0.161_TAG_BEFORE_PACKAGE",
+    "releasePolicyChanged": false,
+    "archivedF2Zip": "artifacts/frozen-candidates/public-f2/KingmakerGunslinger-0.0.161-local-runtime.zip",
+    "archivedF2ZipSha256": "d65320f0f6beb61b405fed241393eb9cbb07022dfccc37199fdc0f4f33d40017"
+  },
+  "publicNativePasses": [
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "zipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37",
+      "dllSha256": "b3d71573e3dc7d05d3ad5bd2da81a2a4a29de54bea73740e6847e1a2acbaaa42",
+      "mvid": "80200e94-4488-4591-9795-bfc6caf54d00",
+      "runId": "20261019T0221530993096Z-e84bb43fc3ab4cca90c5f8d5cdcf7717",
+      "scope": "gunslinger-only turn-based-abort",
+      "status": "PASS",
+      "assertions": 13,
+      "rawResultSha256": "c3701c8aff1262b8db7fa7e57df076e09065dca8fa87057085ff01af45cf54bd",
+      "outerSeconds": 257.0735271,
+      "restoration": "EXACT_118_SAVES_MODS_SETTINGS_PRIVATE_AND_LEASE_ABSENT"
+    }
+  ],
+  "publicSupervisorFailures": [
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "record": "artifacts/sprint27-final-public-f3-tb-abort/result.json",
+      "cause": "Relative evidence path resolved under C:/Windows/System32 before any game launch; no lease or save mutation."
+    },
+    {
+      "source": "498a81fea40688cf1dfbbb242c6af6ba3a4adc75",
+      "scheduledTask": "KMG-S27-F3-TB-Abort-R1",
+      "cause": "First absolute-root edit still joined an absolute root to Get-Location and stopped before evidence or game launch; corrected with direct CreateDirectory(root)."
+    }
+  ],
+  "turnClockTraceReadiness": {
+    "status": "FOCUSED_PASS",
+    "productionCompilationSeconds": 17.2,
+    "selectedTests": 6,
+    "testSeconds": 0.9,
+    "fixtureChangesOnly": true,
+    "archivedF3Zip": "artifacts/frozen-candidates/public-f3/KingmakerGunslinger-0.0.161-local-runtime.zip",
+    "archivedF3ZipSha256": "2fbf820147fde018d741fd9b6a09b6bec2fdbc4d4661a3b2f75b34d73d742f37"
+  },
+  "visibleRouteReadiness": {
+    "status": "FOCUSED_PASS",
+    "inference": "Native next-unit filters a non-enemy invisible to player; the old long charge-lane survey did not require visibility. F4 trace observed four native rounds without an exact owner turn and only intermittent UI wait.",
+    "sourceBoundary": "Legal native charge and exact visible owner required before admission; no turn or roll supplied.",
+    "productionCompilationSeconds": 17.6,
+    "selectedTests": 6,
+    "testSeconds": 0.9,
+    "archivedF4Zip": "artifacts/frozen-candidates/public-f4/KingmakerGunslinger-0.0.161-local-runtime.zip",
+    "archivedF4ZipSha256": "b82151c159eb418f44cee549d0feee4bae4e9871df5ad475c04f8ff750781d6e"
+  }
+}
