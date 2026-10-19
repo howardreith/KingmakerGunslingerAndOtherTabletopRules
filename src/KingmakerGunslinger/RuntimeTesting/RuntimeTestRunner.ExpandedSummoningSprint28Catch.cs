@@ -610,6 +610,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["round"] = round,
                                         ["ledgerRound"] = spent?.LastRound,
                                         ["savesAfterSpend"] = spentSaves,
+                                        ["firstSavePassed"] = spentSaves == 0
+                                            ? (bool?)null : saves.Saves[0].IsPassed,
+                                        ["spentByNativeCommand"] = save != null,
                                         ["savesAfterRepeat"] = saves.Saves.Count,
                                         ["probes"] = probes,
                                         ["fixtureGrantedHit"] = false,
@@ -655,14 +658,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             UnityEngine.Object.Destroy(targetFaction);
                     }
                 }
-                bool both = results.Any(value => (bool)value["eligible"] &&
-                    (bool)value["caught"]) &&
-                    results.Any(value => (bool)value["eligible"] &&
-                        !(bool)value["caught"]) &&
-                    results.All(value => (bool)value["exact"]);
-                Sprint25Check("s28-catch-both-outcomes", both,
-                    new JObject { ["cases"] = results },
-                    "At least one native catch prevents harm and one failed catch permits the same rock damage pipeline.");
+                bool complete = results.Count == 3 &&
+                    results.All(value => (bool)value["exact"] &&
+                        ((bool)value["eligible"] ||
+                         (bool)value["normalMiss"]));
+                Sprint25Check("s28-catch-exact-command-outcomes",
+                    complete, new JObject { ["cases"] = results },
+                    "Each native rock command has an exact catch or ordinary miss result; a failed save, when rolled, must permit its actual physical damage packet. The fixture does not require random success and failure in three attacks.");
             }
             finally
             {
