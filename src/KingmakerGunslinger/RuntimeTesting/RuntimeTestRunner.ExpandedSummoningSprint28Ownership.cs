@@ -53,17 +53,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool owned = group.Length >= 2 && group.Length <= 5;
                         foreach (UnitEntityData unit in group)
                         {
-                            var primaries = unit.Body.HandsEquipmentSets.Take(3)
-                                .Select(value => value?.PrimaryHand?.MaybeWeapon)
+                            // Inactive hand slots can resolve the shared
+                            // empty-hand fallback. The native inventory owns
+                            // every real mode item before any switch.
+                            var body = unit.Blueprint.Body;
+                            var expected = new List<string> {
+                                body.PrimaryHand.AssetGuid,
+                                body.PrimaryHandAlternative1.AssetGuid,
+                                body.PrimaryHandAlternative2.AssetGuid };
+                            if (body.Armor != null)
+                                expected.Add(body.Armor.AssetGuid);
+                            ItemEntity[] items = unit.Descriptor.Inventory.Items
                                 .ToArray();
-                            ItemEntity armor = unit.Body.Armor?.MaybeArmor;
-                            var items = primaries.Cast<ItemEntity>()
-                                .Concat(armor == null ? Array.Empty<ItemEntity>() :
-                                    new[] { armor }).ToArray();
-                            owned &= primaries.Length == 3 &&
-                                primaries.All(value => value != null) &&
-                                primaries.Distinct().Count() == 3 &&
-                                ((key == "stone-giant") == (armor == null)) &&
+                            owned &= items.Length == expected.Count &&
+                                expected.Distinct(StringComparer.Ordinal).Count() ==
+                                    expected.Count &&
+                                items.Select(value => value.Blueprint.AssetGuid)
+                                    .OrderBy(value => value, StringComparer.Ordinal)
+                                    .SequenceEqual(expected.OrderBy(value => value,
+                                        StringComparer.Ordinal)) &&
+                                ((key == "stone-giant") == (body.Armor == null)) &&
                                 items.All(value => value != null &&
                                     ReferenceEquals(value.Owner, unit.Descriptor) &&
                                     value.IsNonRemovable && !value.IsLootable);
@@ -78,9 +87,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["collection"] = value.Collection?.GetType().Name,
                                         ["nonRemovable"] = value.IsNonRemovable,
                                         ["lootable"] = value.IsLootable })),
-                                ["unitInventory"] = new JArray(unit.Descriptor
-                                    .Inventory.Items.Select(value =>
-                                        value.Blueprint.AssetGuid)) });
+                                ["expectedBlueprints"] = new JArray(expected),
+                                ["inactiveSetAccessors"] = new JArray(
+                                    unit.Body.HandsEquipmentSets.Take(3)
+                                        .Select(value =>
+                                            value?.PrimaryHand?.MaybeWeapon?
+                                                .Blueprint?.AssetGuid)) });
                         }
                         owned &= all.Count == all.Distinct().Count() &&
                             Sprint28PartyInventoryExact(before, counts);
