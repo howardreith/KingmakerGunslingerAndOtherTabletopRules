@@ -120,6 +120,21 @@
                                  "reviewSha256":  "de1613bfd43114e4097da8e1cf317917e8e81941f9e983ca7d77627811b9a8df",
                                  "transactionSha256":  "6b736a39ded833602a7c9238d2adbbcf7637e2eb86ff3185882508ac7ce75434",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free native exact-owner giant weapon, slam and rock commands",
+                                 "candidateKind":  "development",
+                                 "source":  "ea3d755c38b3c35a827affc1c4a2ca56e3dc076e",
+                                 "packageSha256":  "6f874301438d878784d7a1d09bac41bc09f2da53fafa4deb02b73290cca0241b",
+                                 "dllSha256":  "d129d2e590d977a81c0c4776b7920167adc70635152e48afc428da61730be502",
+                                 "mvid":  "fc0d986b-4f6d-4d9f-b8fd-515f1519be49",
+                                 "runId":  "20261019T1633472875968Z-79dfb575682a400fb5a08d7b8144a8fd",
+                                 "transactionRunId":  "compat-20261019T163146Z-7fe2a6757572",
+                                 "result":  "FAIL_FOUR_ROCK_HITS_WITHOUT_DAMAGE_IN_TWELVE_FRAME_WINDOW",
+                                 "rawResultSha256":  "5f63d8d183da8493feef62077490a4b17bc0f2fe9ecd4c581ae045ccde83e0e8",
+                                 "reviewSha256":  "786a686407300b2d632bc46f5d94a0e6ec01a2797f9b982967c6add92fca823b",
+                                 "transactionSha256":  "cd3d70171f77156b8f908fd6e7a3045e46d5744cd1f2cc7b92b2a5ccec5768f3",
+                                 "restorationVerified":  true
                              }
                          ],
     "guardedPrelaunchFailures":  [
@@ -144,5 +159,5 @@
                                         "restorationVerified":  true
                                     }
                                 ],
-    "restoration":  "Seven native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
+    "restoration":  "Eight native executions and two prelaunch transactions restored exactly; one prelaunch entry required repository-owned manual recovery after disk exhaustion. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Resolved commands, ownership lifecycle, rock and release unqualified."
 }
