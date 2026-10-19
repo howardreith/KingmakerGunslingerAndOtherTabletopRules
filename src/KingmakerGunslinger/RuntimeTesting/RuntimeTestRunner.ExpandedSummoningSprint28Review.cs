@@ -26,11 +26,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = RuntimeTestRequestParser.Sprint28ReviewPhase(_request);
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
-            Sprint25Check("s28-phase", phase == "profiles" || phase == "modes", new JObject {
+            Sprint25Check("s28-phase", phase == "profiles" || phase == "modes" ||
+                phase == "commands", new JObject {
                 ["phase"] = phase }, "One exact implemented Sprint 28 review phase.");
             if (phase == "modes")
             {
                 foreach (int frame in ReviewSprint28Modes(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == "commands")
+            {
+                foreach (int frame in ReviewSprint28Commands(fixture)) yield return frame;
                 yield break;
             }
             try
