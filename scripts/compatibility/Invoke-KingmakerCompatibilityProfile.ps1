@@ -109,6 +109,7 @@ param(
         'disposable-expanded-summoning-sprint25-native-review',
         'disposable-expanded-summoning-sprint26-native-review',
         'disposable-expanded-summoning-sprint27-native-review',
+        'disposable-expanded-summoning-sprint28-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -240,7 +241,8 @@ $sprint22ReviewScenario = @($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint24-native-review',
     'disposable-expanded-summoning-sprint25-native-review',
     'disposable-expanded-summoning-sprint26-native-review',
-    'disposable-expanded-summoning-sprint27-native-review') }).Count -gt 0
+    'disposable-expanded-summoning-sprint27-native-review',
+    'disposable-expanded-summoning-sprint28-native-review') }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
@@ -297,6 +299,7 @@ if ($moduleScenario) {
                 'rtwp-ai', 'routes', 'visual-lifecycle', 'overrun', 'great-cleave')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint27-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cne 'profiles') -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
@@ -496,7 +499,8 @@ try {
             'disposable-expanded-summoning-sprint24-native-review',
             'disposable-expanded-summoning-sprint25-native-review',
             'disposable-expanded-summoning-sprint26-native-review',
-            'disposable-expanded-summoning-sprint27-native-review')) {
+            'disposable-expanded-summoning-sprint27-native-review',
+            'disposable-expanded-summoning-sprint28-native-review')) {
             $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -563,11 +567,15 @@ try {
             'disposable-expanded-summoning-sprint24-native-review',
             'disposable-expanded-summoning-sprint25-native-review',
             'disposable-expanded-summoning-sprint26-native-review',
-            'disposable-expanded-summoning-sprint27-native-review')) {
+            'disposable-expanded-summoning-sprint27-native-review',
+            'disposable-expanded-summoning-sprint28-native-review')) {
             $configurationId += '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
             $configurationId += '-' + [string]$Parameters.assetConfiguration
+        }
+        if ($name -ceq 'disposable-expanded-summoning-sprint28-native-review') {
+            $configurationId = 's28-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'disposable-expanded-summoning-sprint27-native-review' -and
             $configurationId.Length -gt 120) {

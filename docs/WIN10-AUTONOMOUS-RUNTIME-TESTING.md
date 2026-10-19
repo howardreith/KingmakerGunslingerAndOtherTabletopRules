@@ -1,5 +1,7 @@
 # Windows 10 autonomous runtime testing
 
+Sprint 28 adds `disposable-expanded-summoning-sprint28-native-review` with automatic exit and exactly one `reviewPhase`. The initial implemented `profiles` phase uses the save-free native first-area fixture to summon Hill, Stone and Fire Giants and record composed adult stats, equipped weapon damage, distinct species icons, live native bodies, and actual owned weapon/armor instances. It has no save access and does not claim commands, AI, corpse/loot, rock catching, or persistence. Raw progress and final report remain request-local; the compatibility collector uses the short `s28-<profile>-profiles` basename while content retains the full RunId and scenario. Every run requires an exact guarded transaction, fresh deployment receipt and restoration.
+
 Sprint 28 adds `observe-expanded-summoning-sprint28-native-inputs`: a bounded read-only mod-load audit of actual installed Hill, Stone and Fire Giant unit candidates, detached prefab metadata, selected weapon blueprints and rock/feat carriers. It accepts no parameters, spawns no actor, reads no save, and mutates no native asset. Its PASS means only that the audit completed; donor absence and mechanics still need separate review. A focused follow-up of the same read-only scenario inspects the retained Frost Giant visual control, native rock ability graph, selected Large weapon properties, and hide/half-plate candidates after Stone and Fire proved absent from the first named-unit census.
 
 Sprint 27 adds `disposable-expanded-summoning-sprint27-native-review`, requiring

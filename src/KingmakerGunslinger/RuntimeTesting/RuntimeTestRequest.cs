@@ -154,6 +154,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = (string)request.Parameters["reviewPhase"];
             return ExpandedSummoningNativeProfilePolicy.Sprint25Phase(phase) ? phase : null;
         }
+        internal static string Sprint28ReviewPhase(RuntimeTestRequest request)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                request.Parameters["reviewPhase"]?.Type != JTokenType.String) return null;
+            string phase = (string)request.Parameters["reviewPhase"];
+            return ExpandedSummoningNativeProfilePolicy.Sprint28Phase(phase) ? phase : null;
+        }
         internal static string Sprint27ReviewPhase(RuntimeTestRequest request)
         {
             if(request==null || request.Scenario!=RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview || request.Parameters==null || request.Parameters.Count!=1 || request.Parameters["reviewPhase"]?.Type!=JTokenType.String)return null;
@@ -330,6 +338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (!request.ExitAfterCompletion || Sprint25ReviewPhase(request) == null))
                 return "sprint25-native-review-phase-and-exit-required";
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && (!request.ExitAfterCompletion || Sprint27ReviewPhase(request)==null))return "sprint27-native-review-phase-and-exit-required";
+            if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview && (!request.ExitAfterCompletion || Sprint28ReviewPhase(request)==null))return "sprint28-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint26NativeReview &&
                 (!request.ExitAfterCompletion || Sprint26ReviewPhase(request) == null))
@@ -734,10 +743,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprint26ReviewPhase(request) == null)
                     return "sprint26-native-review-phase-invalid";
             }
-            else if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview)
+            else if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview ||
+                    request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview)
             {
                 if(request.MainMenuTimeoutSeconds!=0 || request.ActionResolutionTimeoutSeconds!=0 || request.ActionInvocationTimeoutSeconds!=0 || request.DescriptorResolutionTimeoutSeconds!=0 || request.LoadEntryTimeoutSeconds!=0 || request.FingerprintTimeoutSeconds!=0)return "scenario-timeouts-not-allowed";
-                if(Sprint27ReviewPhase(request)==null)return "sprint27-native-review-phase-invalid";
+                if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && Sprint27ReviewPhase(request)==null)return "sprint27-native-review-phase-invalid";
+                if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview && Sprint28ReviewPhase(request)==null)return "sprint28-native-review-phase-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)
