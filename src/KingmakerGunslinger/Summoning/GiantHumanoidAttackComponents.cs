@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -17,6 +16,8 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Parts;
+using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -144,6 +145,27 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>Save-owned record of this unit's one rock catch attempt per round.</summary>
+    [Serializable]
+    public sealed class UnitPartSummonGiantRockCatch : UnitPart
+    {
+        // Native UnitPart serialization preserves the spent round across a
+        // Working-save reload of this exact summon. No global actor state is kept.
+        [JsonProperty] private long _lastRound = long.MinValue;
+
+        internal bool TrySpend(long round)
+        {
+            lock (this)
+            {
+                if (_lastRound == round) return false;
+                _lastRound = round;
+                return true;
+            }
+        }
+
+        internal long LastRound { get { return _lastRound; } }
+    }
+
     /// <summary>A target-side, once-per-round automatic defensive choice.
     /// The native attack has already rolled but has not resolved weapon
     /// damage. Only a would-hit legal rock can prompt a native Reflex save;
@@ -153,9 +175,6 @@ namespace KingmakerGunslinger.Summoning
         OwnedGameLogicComponent<UnitDescriptor>,
         ITargetRulebookHandler<RuleAttackRoll>
     {
-        private sealed class Ledger { internal long Round = long.MinValue; }
-        private static readonly ConditionalWeakTable<UnitEntityData, Ledger>
-            Ledgers = new ConditionalWeakTable<UnitEntityData, Ledger>();
         private static readonly FieldInfo ResultField =
             typeof(RuleAttackRoll).GetField("<Result>k__BackingField",
                 BindingFlags.Instance | BindingFlags.NonPublic);
@@ -189,12 +208,8 @@ namespace KingmakerGunslinger.Summoning
             Size size;
             if (!ProjectileSize(evt.Initiator, out size)) return;
             long round = ContextActionUngulateTrample.CurrentRound();
-            Ledger ledger = Ledgers.GetOrCreateValue(target);
-            lock (ledger)
-            {
-                if (ledger.Round == round) return;
-                ledger.Round = round;
-            }
+            if (!target.Ensure<UnitPartSummonGiantRockCatch>()
+                .TrySpend(round)) return;
             int enhancement = Math.Max(0,
                 GameHelper.GetItemEnhancementBonus(evt.Weapon));
             int dc = GiantHumanoidRulesPolicy.CatchDifficultyClass(
