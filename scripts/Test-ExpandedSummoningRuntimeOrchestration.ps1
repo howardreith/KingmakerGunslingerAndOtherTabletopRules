@@ -658,6 +658,7 @@ finally {
 foreach($name in @('observe-expanded-summoning-inventory',
     'observe-expanded-summoning-sprint26-native-inputs',
     'observe-expanded-summoning-sprint27-native-inputs',
+    'observe-expanded-summoning-sprint28-native-inputs',
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review',
     'disposable-expanded-summoning-sprint24-native-review',
