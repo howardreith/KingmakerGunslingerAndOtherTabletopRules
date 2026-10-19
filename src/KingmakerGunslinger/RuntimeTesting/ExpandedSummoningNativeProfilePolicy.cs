@@ -14,7 +14,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return phase == "profiles" || phase == "modes" ||
                 phase == "commands" || phase == "ownership" ||
-                phase == "catch";
+                phase == "catch" || phase == "ai";
         }
         internal static bool Sprint27Phase(string phase)
         {
