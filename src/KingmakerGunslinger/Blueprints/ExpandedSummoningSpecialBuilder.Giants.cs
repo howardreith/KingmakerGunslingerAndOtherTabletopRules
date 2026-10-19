@@ -14,7 +14,9 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Localization;
 using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
@@ -46,6 +48,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string HillTraits = GiantPrefix + "HillTraits";
         private const string StoneTraits = GiantPrefix + "StoneTraits";
         private const string FireTraits = GiantPrefix + "FireTraits";
+        private const string FireImprovedOverrun = GiantPrefix + "FireImprovedOverrun";
 
         private const string NativeHumanoidClass = "6ab4526f94d2e3e439af0599a29b6675";
         private const string NativeHill = "61dd71e874b16f742a0f783314105553";
@@ -63,7 +66,6 @@ namespace KingmakerGunslinger.Blueprints
         private const string NativePointBlankShot = "0da0c194d6e1d43419eb8d990b28e0ab";
         private const string NativePreciseShot = "8f3d1e6b4be006f4d896081f2f889665";
         private const string NativeImprovedSunder = "9719015edcbf142409592e2cbaab7fe1";
-        private const string NativeImprovedOverrun = "978c9bf7b08342619f68d0b01bf40fa9";
 
         private static void ConfigureGiantHumanoids(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -93,6 +95,8 @@ namespace KingmakerGunslinger.Blueprints
                 FireHalfPlate, NativeHalfPlate);
             ConfigureStoneNaturalArmor(Require<BlueprintFeature>(bySymbol,
                 StoneNaturalArmor));
+            ConfigureFireImprovedOverrun(library,
+                Require<BlueprintFeature>(bySymbol, FireImprovedOverrun));
             ConfigureGiantUnit(library, bySymbol, HillGiantUnit, HillType,
                 HillTraits, "HillGiant", "Hill Giant", Alignment.ChaoticEvil,
                 10, 25, 8, 19, 6, 10, 7, 45, 7, 3, 3, 3, 4, 0,
@@ -119,7 +123,7 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar,
                 new[] { "d809b6c4ff2aaff4fa70d712a70f7d7b",
                     "cc9c862ef2e03af4f89be5088851ea35",
-                    NativeImprovedSunder, NativeImprovedOverrun,
+                    NativeImprovedSunder,
                     "175d1577bb6c9a04baf88eec99c66334",
                     "9972f33f977fc724c838e59641b2fca5" }, true,
                 new[] { FireSubtypeGuid, FireImmunityGuid, ColdVulnerabilityGuid });
@@ -224,6 +228,36 @@ namespace KingmakerGunslinger.Blueprints
                     "Stone Giant Natural Armor"),
                 LocalizationService.Create(StoneNaturalArmor + ".Description",
                     "The adult stone giant's +11 natural armor."), null);
+        }
+
+        // The installed-stack feat is absent from standalone 2.1.7b.
+        // Grant the printed feat through a project-owned stock-native carrier.
+        private static void ConfigureFireImprovedOverrun(
+            LibraryScriptableObject library, BlueprintFeature feature)
+        {
+            BlueprintAbility overrun = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeOverrunAbilityGuid,
+                    "stock Fire Giant Overrun command");
+            var grant = ScriptableObject.CreateInstance<AddFacts>();
+            grant.Facts = new BlueprintUnitFact[] { overrun };
+            var attack = ScriptableObject.CreateInstance<ManeuverBonus>();
+            attack.Type = CombatManeuver.Overrun;
+            attack.Bonus = 2;
+            var defence = ScriptableObject.CreateInstance<ManeuverDefenceBonus>();
+            defence.Type = CombatManeuver.Overrun;
+            defence.Bonus = 2;
+            feature.name = InternalName(FireImprovedOverrun);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            feature.ComponentsArray = new BlueprintComponent[] {
+                grant, attack, defence };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(FireImprovedOverrun + ".Name",
+                    "Improved Overrun"),
+                LocalizationService.Create(FireImprovedOverrun + ".Description",
+                    "Grants the overrun action, with +2 on overrun checks "
+                    + "and defense against overrun."),
+                ExpandedSummoningProjectIcons.Require("fire-giant"));
         }
 
         private static void ConfigureGiantUnit(LibraryScriptableObject library,
@@ -342,6 +376,9 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar, traits };
             foreach (string guid in featGuids)
                 facts.Add(Feature(library, guid, displayName + " printed feat"));
+            if (token == "FireGiant")
+                facts.Add(Require<BlueprintFeature>(bySymbol,
+                    FireImprovedOverrun));
             if (extraFacts != null)
                 foreach (string guid in extraFacts)
                     facts.Add(Feature(library, guid, displayName + " subtype"));
