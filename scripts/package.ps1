@@ -275,7 +275,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
 # the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
 # v0.0.160 notes: six files. The optional bank/manifest remain a two-file delta.
-$basePackageFileCount = 384 + 4 # Griffon medallion, original mesh/albedo and v0.0.161 notes.
+$basePackageFileCount = 384 + 4 + 3 # Griffon assets/notes plus Hill, Stone and Fire portrait PNGs.
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
