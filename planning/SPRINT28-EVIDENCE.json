@@ -60,7 +60,22 @@
                                  "inputSha256":  "a574af6f328bb1bfc926df79b1b04069335ffdf125d87f71633a0e2af6bf687a",
                                  "transactionSha256":  "d5a3d05815d3d2c619c5c5d073851ca730bf34570eac2dd2f40712bcb77753ff",
                                  "restorationVerified":  true
+                             },
+                             {
+                                 "scope":  "save-free native adult instance profiles with original Power Attack state",
+                                 "candidateKind":  "development",
+                                 "source":  "fe26fab2858c6a7569674bee8c01dbb0f49fe023",
+                                 "packageSha256":  "41b935512eda6c85398bccd1d8365a6abfacff0f0e89b278a48b60b898798a6e",
+                                 "dllSha256":  "83aab07b5b034605e5847badcde6211b0f656864b1a90ef8ac1785c0b9f3ae67",
+                                 "mvid":  "207f01cb-0c7d-4944-9f2f-1429c5180c39",
+                                 "runId":  "20261019T1511580957309Z-d4ddb8f53894448ab001215bf894610d",
+                                 "transactionRunId":  "compat-20261019T151000Z-c752ddb8e56b",
+                                 "result":  "FAIL_OBSERVER_POWER_ATTACK_ON",
+                                 "rawResultSha256":  "a043e02521bfd8aaae8fff512e03e941c11cecafe6e03f04a90fe589f32a10235",
+                                 "reviewSha256":  "d1e70cf70e08ea99d3205fffa4e3515d0a982671f8b52f11cf8d363abd5d360b",
+                                 "transactionSha256":  "56d6dbf1b57c0edcceeb397df9e7ce7f8b6d75362016f0ec9e948f360ec48cf3",
+                                 "restorationVerified":  true
                              }
                          ],
-    "restoration":  "Three read-only/bootstrapping native transactions restored exactly; most recent independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0; no gameplay acceptance yet."
+    "restoration":  "Four native transactions restored exactly, including one honestly failed live-instance observer. Latest independent comparison: 968 Mods, 119 saves, 19 references, sound bank, game binaries and 83 settings diff0. Combat, ownership lifecycle and release unqualified."
 }
