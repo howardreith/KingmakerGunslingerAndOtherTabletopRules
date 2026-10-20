@@ -141,10 +141,10 @@ namespace KingmakerGunslinger.Blueprints
                     "fire-giant", 0.86f, 0.45f, 0.33f, null, null, null)));
         }
 
-        // The installed action tests the ordinary Cleave feature as its
-        // "greater" fact. Clone both carrier and action so Hill stops after
-        // one extra hit while Fire's actual Great Cleave fact lifts that cap.
-        // Nothing in the native library or another creature is rewritten.
+        // The installed discriminator has differed between standalone and
+        // combined profiles. Accept only the two audited native feat facts,
+        // then set our private delivery to Great Cleave explicitly: Hill has
+        // one follow-up and Fire can continue. Native facts stay untouched.
         private static void ConfigureGiantCleave(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
@@ -167,14 +167,16 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             AbilityCustomCleave nativeCustom = nativeAction.GetComponents<
                 AbilityCustomCleave>().Single();
-            if (nativeCustom.GreaterFeature == null ||
-                !string.Equals(nativeCustom.GreaterFeature.AssetGuid,
-                    nativeFeature.AssetGuid, StringComparison.OrdinalIgnoreCase))
+            string nativeDiscriminator = nativeCustom.GreaterFeature == null ?
+                null : nativeCustom.GreaterFeature.AssetGuid;
+            if (!string.Equals(nativeDiscriminator, nativeFeature.AssetGuid,
+                    StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(nativeDiscriminator, greater.AssetGuid,
+                    StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException(
                     "Installed Cleave consumer no longer has audited wiring: expected=" +
-                    nativeFeature.AssetGuid + "; actual=" +
-                    (nativeCustom.GreaterFeature == null ? "<null>" :
-                        nativeCustom.GreaterFeature.AssetGuid));
+                    nativeFeature.AssetGuid + " or " + greater.AssetGuid +
+                    "; actual=" + (nativeDiscriminator ?? "<null>"));
             int deliveryIndex = Array.FindIndex(action.ComponentsArray,
                 value => value is AbilityCustomCleave);
             if (deliveryIndex < 0 || action.ComponentsArray.Count(
