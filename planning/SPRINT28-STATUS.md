@@ -5,6 +5,50 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
+The pushed Stone Point-Blank Shot observer source
+720cba717994f09b67d30ca7057aab140c348227 passed focused production
+compilation and four selected Sprint 28 domain tests (~19 seconds). Its
+strict development ZIP SHA-256 is
+d1afc79e174012f15a911c8e2174983b3f9d1bc47e58440908188f7c4f7a4450,
+DLL SHA-256 9eb8ddf31a1da722daff455775f7d964763c062fe8e16e390428764651ba9e50,
+MVID 055c7a06-af27-42fc-977e-5e702da3913e. The exact 153-file
+compiler stage matched its entries in the strict 393-file ZIP (readback
+manifest SHA-256 7ef709307211d5809d0d912c340bf90f645ed559912c734323ae88d26ab73dd9).
+Only verified generated compiler scratch was removed to preserve disk
+headroom. The limited Howard exact-package no-game dry run passed (log
+SHA-256 ab26791969f07f842efa5df5695947db01fd83f5d64f8b6cdf114ab833137479);
+its completed task was removed.
+
+Fresh guarded modes RunId
+20261020T0523049484124Z-c5eba561291a4e749b5a599c93785f0d and
+supervisor passed all 35 native assertions. Stone's real
+RuleCalculateAttackBonus on its owned rock was +12 at 20 feet of edge
+separation and +11 at 35 feet. Hill and Fire retained the same attack
+bonus at both distances. The existing native second-increment rule
+and three mode/Strength controls also passed. The earlier real Stone
+rock command at eight meters, retained under its original source
+identity, recorded +12 attack and one target-related damage bonus;
+this is supporting reused evidence, not a new damage execution. Raw
+runtime result SHA-256 e47a85053a0f70a33ec95dec3a6b0efcfd5e336ea079f630053e8699ce493545;
+review SHA-256 b8a448a95d0c37f7ccf6ef7d823f00580a8fd2273b26a273ace8e3b4adb171d8;
+collector SHA-256 64ec467c051d1354b0143b2c1db0bdccea1debe808865c015d7c3eb6082750a6.
+Limited child exited zero and transaction
+compat-20261020T052049Z-d2fa7ef4583c returned Restored/verified.
+Its task was removed. The independent actual-intake audit SHA-256
+60a67eff9eda79429bfd2e3654aa525cf53478d75de0526a35732aea9a6ea6e8
+found only the previously authorized Working-save length/mtime/hash
+difference. All three redundant restored package copies matched all
+393 ZIP files (readback manifest SHA-256
+9219be7e31a36bb3d3ad21223caa0e3ddc997828bd6379875293496f93af87e9);
+only those copies were removed. Eleven public roots remain withheld.
+
+Visual inspection of prior profile captures found the giant renderers
+still at native dissolve=1 shortly after summoning; the Fire frame also
+shows roof occlusion. Existing mesh/selection checks alone do not prove
+an intact visible body. A settled in-game capture and clear Fire view
+remain required before publication. The bounded Cleave and Climb/Craft
+scope questions are pending owner choices.
+
 The pushed efd501593c0af39a6283d75e2fe6d72bb991b377 Fire feat
 observer candidate passed production compilation and four focused Sprint
 28 tests (~24 seconds). Exact development ZIP SHA-256
