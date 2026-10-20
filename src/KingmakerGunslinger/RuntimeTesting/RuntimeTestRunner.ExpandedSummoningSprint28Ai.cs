@@ -85,9 +85,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Tick();
                         owner.JoinCombat();
                         target.JoinCombat();
-                        Game.Instance.Player.UpdateIsInCombat();
-                        new UnitCombatJoinController().Tick();
-                        new UnitCombatPrepareController().Tick();
+                        // The proven turn command fixture lets the native
+                        // enrollment helper perform combat preparation.
+                        // An earlier extra Join/Prepare tick here admitted
+                        // four actors outside the request-local clock.
+                        if (!turnBased)
+                        {
+                            Game.Instance.Player.UpdateIsInCombat();
+                            new UnitCombatJoinController().Tick();
+                            new UnitCombatPrepareController().Tick();
+                        }
                         JObject admission = null;
                         if (turnBased)
                         {
