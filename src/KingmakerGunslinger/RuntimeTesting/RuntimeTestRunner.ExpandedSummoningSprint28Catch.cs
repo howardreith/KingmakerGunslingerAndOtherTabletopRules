@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.Controllers.Projectiles;
+using Kingmaker.Designers;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -14,6 +17,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.Blueprints;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -114,9 +118,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Native catch fixture began with unrelated projectiles.");
                 var results = new JArray();
                 foreach (var spec in new[] {
-                    new { Target="hill-giant", Reflex=40, Dc=15 },
-                    new { Target="stone-giant", Reflex=-40, Dc=11 },
-                    new { Target="fire-giant", Reflex=40, Dc=15 }
+                    new { Target="hill-giant", Reflex=40,
+                        ThrowerSize=Size.Large, Enhancement=0, Dc=15 },
+                    new { Target="stone-giant", Reflex=-40,
+                        ThrowerSize=Size.Huge, Enhancement=0, Dc=16 },
+                    new { Target="fire-giant", Reflex=40,
+                        ThrowerSize=Size.Gargantuan, Enhancement=1, Dc=26 }
                 })
                 {
                     // Use an exact project giant as the disposable thrower;
@@ -139,6 +146,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool casterPartyAdded = false;
                     bool casterJoined = false;
                     var ownedProjectiles = new List<Projectile>();
+                    ItemEntityWeapon enchantedRock = null;
+                    ItemEnchantment magicRock = null;
                     Projectile[] priorProjectiles =
                         Game.Instance.ProjectileController.Projectiles.ToArray();
                     try
@@ -164,6 +173,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         thrower.Group.UpdateAttackFactionsCache();
                         target.Group.UpdateAttackFactionsCache();
                         thrower.Stats.BaseAttackBonus.BaseValue = 50;
+                        // Scale only this disposable thrower so the same
+                        // native rock attack covers Small, Medium and Large
+                        // incoming projectiles. No donor or party size moves.
+                        thrower.Descriptor.State.Size = spec.ThrowerSize;
                         target.Stats.SaveReflex.BaseValue = spec.Reflex;
                         var switchCommand = new UnitSwitchHandEquipmentSet(2);
                         thrower.Commands.Run(switchCommand);
@@ -179,6 +192,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                             rock == null)
                             throw new InvalidOperationException(
                                 "Exact disposable thrower did not equip its rock.");
+                        if (spec.Enhancement != 0)
+                        {
+                            enchantedRock = rock;
+                            magicRock = rock.AddEnchantment(fixture.Blueprints
+                                .OfType<BlueprintWeaponEnchantment>()
+                                .Single(value => value.AssetGuid ==
+                                    EasternWeaponBlueprints
+                                        .NativeEnhancementOneGuid),
+                                null, null);
+                        }
+                        int nativeEnhancement = Math.Max(0,
+                            GameHelper.GetItemEnhancementBonus(rock));
+                        if (thrower.Descriptor.State.Size !=
+                                spec.ThrowerSize ||
+                            nativeEnhancement != spec.Enhancement)
+                            throw new InvalidOperationException(
+                                "Disposable incoming rock size or enhancement did not apply.");
                         Vector3 far; string lane, direction;
                         Vector3 origin = Sprint24AiCombatLane(fixture.Caster,
                             thrower, target, 8f, out far, out lane,
@@ -494,6 +524,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 bool exact = command.IsFinished &&
                                     impactFrames < 600 &&
                                     projectileExact &&
+                                    thrower.Descriptor.State.Size ==
+                                        spec.ThrowerSize &&
+                                    nativeEnhancement == spec.Enhancement &&
                                     observer.OwnerWeaponAttacks.Count == 1 &&
                                     observer.WeaponAttacks.Count == 1 &&
                                     ReferenceEquals(attack?.Weapon.Blueprint,
@@ -514,6 +547,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["thrower"] = thrower.UniqueId,
                                     ["target"] = target.UniqueId,
                                     ["rock"] = rock.Blueprint.AssetGuid,
+                                    ["throwerSize"] = spec.ThrowerSize.ToString(),
+                                    ["rockEnhancement"] = nativeEnhancement,
+                                    ["expectedEffectiveDc"] = spec.Dc,
                                     ["commandFinished"] = command.IsFinished,
                                     ["commandResult"] =
                                         command.Result.ToString(),
@@ -624,6 +660,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
+                        if (magicRock != null && enchantedRock != null)
+                            enchantedRock.RemoveEnchantment(magicRock);
                         thrower.Commands.InterruptAll(true);
                         target.Commands.InterruptAll(true);
                         CaptureSprint28CatchProjectiles(
