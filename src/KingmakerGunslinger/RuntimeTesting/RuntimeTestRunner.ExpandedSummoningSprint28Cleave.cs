@@ -119,7 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             for (int i = 0; i < 8; i++) yield return 0;
                             Vector3 far; string lane, direction;
                             Vector3 origin = Sprint24AiCombatLane(
-                                fixture.Caster, owner, targets[0], 2.6f,
+                                fixture.Caster, owner, fixture.Hostile, 2.6f,
                                 out far, out lane, out direction);
                             var floor = AstarPath.active.GetNearest(origin);
                             if (floor.node == null || !floor.node.Walkable)
@@ -130,6 +130,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             PlaceExpandedSummoningUnit(fixture.Hostile,
                                 origin - (far - origin).normalized * 30f);
                             bool laneReady = false;
+                            var attemptedPositions = new JArray();
                             foreach (Vector3 forward in new[] {
                                 (far - origin).normalized }.Concat(
                                     CompassOffsets))
@@ -161,12 +162,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             Vector3.up * 1.2f, 0)).Any())
                                     continue;
                                 for (int i = 0; i < 3; i++)
+                                {
+                                    targets[i].Commands.InterruptAll(true);
                                     PlaceExpandedSummoningUnit(targets[i],
                                         nodes[i].clampedPosition);
+                                }
                                 owner.SightCache.ClearIfNeeded();
                                 laneReady = targets.All(value =>
                                     UnitEngagementExtension.IsReach(owner,
                                         value, owner.Body.PrimaryHand));
+                                attemptedPositions.Add(new JObject {
+                                    ["requested"] = new JArray(points.Select(
+                                        SurveyVector)),
+                                    ["ground"] = new JArray(nodes.Select(
+                                        value => SurveyVector(
+                                            value.clampedPosition))),
+                                    ["owner"] = SurveyVector(owner.Position),
+                                    ["targets"] = new JArray(targets.Select(
+                                        value => SurveyVector(
+                                            value.Position))),
+                                    ["nativeReach"] = new JArray(targets.Select(
+                                        value => UnitEngagementExtension.IsReach(
+                                            owner, value,
+                                            owner.Body.PrimaryHand))) });
                                 if (laneReady) break;
                             }
                             if (!laneReady) throw new InvalidOperationException(
@@ -175,6 +193,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ";weaponRangeMeters=" + owner.Body.PrimaryHand?.MaybeWeapon?.AttackRange.Meters +
                                 ";reachFeet=" + owner.Stats.Reach.ModifiedValue +
                                 ";ownerCorpulence=" + owner.Corpulence +
+                                ";attempts=" + attemptedPositions +
                                 ";targets=" + string.Join("|", targets.Select(
                                     value => value.DistanceTo(owner).ToString("F2") +
                                         "/" + value.Corpulence +
