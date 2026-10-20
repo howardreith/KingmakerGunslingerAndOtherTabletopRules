@@ -5,6 +5,14 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
+A focused observer-only extension now checks Fire's exact native Overrun
+and Sunder action grants, then measures both maneuvers' live CMB and
+CMD against Trip on disposable actors. It supplies no maneuver hit or
+item damage and does not claim the commands execute. Production
+compilation and four selected Sprint 28 domain tests pass (~24 seconds);
+a fresh native result is pending. The separate native Cleave wiring
+finding is awaiting the owner's bounded Sprint 28 scope choice.
+
 The pushed observer-corrected source 062b482c02362efb68e2134c6e2094ae25bf61ee
 built as exact development ZIP SHA-256
 05f8f1bb10b2bce82e3998a3176eb2e7059706d872a2c0e43c3d2ba4965a7a8f,
