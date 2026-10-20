@@ -354,6 +354,13 @@ namespace KingmakerGunslinger.Blueprints
             rockCatch.OwningBlueprint = unit;
             rockCatch.ImprovedStoneCatch = token == "StoneGiant";
             components.Add(rockCatch);
+            if (token == "StoneGiant")
+            {
+                var rockyStealth = ScriptableObject.CreateInstance<
+                    SummonStoneRockyStealth>();
+                rockyStealth.OwningBlueprint = unit;
+                components.Add(rockyStealth);
+            }
             if (focus)
             {
                 var weaponFocus = ScriptableObject.CreateInstance<WeaponFocus>();

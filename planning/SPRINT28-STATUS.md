@@ -5,6 +5,27 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
+The owner selected **Hills and NaturalCaves** as Kingmaker 2.1.7b area
+settings for Stone Giant's printed conditional +8 Stealth. The scoped
+project-owned skill-check component now grants that racial bonus only to
+Stone's live native Stealth check in those two settings; missing and other
+settings fail closed. The existing profiles observer will record the
+loaded area's native setting, raw Stealth, check result and actual delta
+for each giant. Focused production compilation and four selected Sprint 28
+tests passed (~18 seconds on the corrected source). Native terrain
+qualification, including a mapped positive area, is pending. The
+post-game collector repair is pushed as a1b52f33749ae5332671cd24b2c8bfa21b128a03:
+it rechecks the exact package, source, deployment and installed DLL/MVID
+through the prelaunch validated deployment record without a second ZIP
+extraction. The isolated collector test passed exact-package readback and
+tampered-package refusal (~1 second); script parsing passed. The prior
+turn-based supervisor failure remains preserved and is not relabeled PASS.
+Two older broad script fixtures were attempted once during this repair:
+Test-RuntimeDeployment.ps1 fails an unchanged legacy static pin
+assertion, and Test-CompatibilityCandidateReuse.ps1 omits an unchanged
+orchestration common file in its isolated fixture. Neither failure
+exercised the collector change; both remain deferred baseline failures.
+
 The pushed `3f3fcb150fd81be32e4c88ec8aecefb53fefc387` turn-based command observer compiled against installed 2.1.7b references and passed the three focused Sprint 28 tests (~23 seconds). Limited Howard no-game preflight passed 685 checks (~54 seconds). A clean-source strict development build produced ZIP SHA-256 `f0ae46b0be2f6954107670f8d44e11f337d01bd336c4b9ad68443cc1f89e8904`, DLL SHA-256 `a2200e62ba0ec8ea134c15a97973e99093cc7b6f74ebf7944f01462cddc1244d`, MVID `cc126136-530a-46f6-88f6-b50f77284012`; its exact-package limited dry run passed. Fresh guarded RunId `20261020T0322401060306Z-6df8dc914f2947d88fe393e37abc6332` recorded **native PASS, 40 assertions** in ten actual owner turns: Hill, Stone and Fire manufactured full attacks, two-slam full attacks and rock attacks, plus Stone's ordinary single rock, all with exact native selected attacks, impact packets and turn action costs. Raw result SHA-256 `7824bdd1146ba04f81cfc226e2f058499cb5ec54a449071e2f84e7f70e2495f1`; review SHA-256 `a5a9df12f84540cc8e1c6347757241e109d18b5ec9cbba78b4218df358bd9f8b`. The **supervisor remained FAIL**: its post-game strict package collector hit PowerShell Archive's missing temporary `CHANGELOG.md` cleanup path. Original orchestration SHA-256 `3613ce67f9bb81344ee82357f052147d16c7bbee96d8fb8cd3fa8873411291e5` is preserved. A separate no-game recovery SHA-256 `26a3cb460eb253b9ace2f178f020b02d3d5739124cba8096780dbf0ad6291fa5` verified every original assertion, request/artifact/run attribution, native empty-world reset and exact transaction restoration without relabeling the failed supervisor. Transaction `compat-20261020T032024Z-855eaacd7aff` returned `Restored`/verified, game and task ended, and independent actual-intake audit SHA-256 `1f4f109fc7042f5e2b1990abb2783ad0a26c38ff2c076fed8e76c2dcfd8c28bb` found only the authorized Working-save length/mtime/hash difference. Both completed duplicate 393-file copies were read back against the retained ZIP (manifest SHA-256 `7a48cb36480fa1a78252da2d21b58de3cc863c9fa68ae3f104e08a61cfe4542f`) and only those copies were removed. The collector's redundant post-game extraction is now the precise tooling repair target; no public roots or release are claimed.
 
 The pushed `06c660948ccb2778f2924cc0c06a818f65da5cfa` disarm observer compiled against the actual game references, passed three focused Sprint 28 tests and 684 limited-token no-game preflight checks, then built a strictly validated development ZIP SHA-256 `fcd19fd6e5737ae646711d9ad6b1cda25bafa5b3a93d1c8cf86ee4804a86bdf7` (DLL `7d8b3a054fdd62a7dc25a4429798d39149d6adacd1dc52947a1e0b0fc26a1e3f`, MVID `20aafb3a-c36c-49d6-9ac7-245dafd02f8c`). Its limited Howard exact-package dry run passed. Fresh guarded RunId `20261020T0224526389316Z-ce9b18ad8f0243b1a50284465aa47c28` passed 12 native assertions: a real native Disarm maneuver applied the temporary main-hand buff to each giant; its exact weapon and all other owned items remained nonlootable in the summon inventory, and a native switch selected its owned slams. The disposable attacker had raised BAB to guarantee a maneuver precondition; this run does not qualify Fire's own Sunder or Overrun actions. Raw result SHA-256 `2b4f224d3370352bfae2f2bd9e562c96c6a091d753aac92f438cf073c388d7eb`; original review `e9db11f0fb3cfb4e7d25da133d23dd56031435633c9a38f21a75a0ebf4bd3396`. Transaction `compat-20261020T022222Z-d8478f0120e8` was `Restored`/verified (SHA-256 `69c166b8a22e85641d8e45b2b9dcde10c2cc171fd51f9c83923aad46ca73fd71`); limited task exited zero and was removed. Independent audit SHA-256 `3fad631e932ea4aeb4e68b3c385047bf83f7c21dc4eb8996a450151240309da3` found only the already authorized Working-save length/mtime/hash difference. The exact completed duplicate deployment and backup copies were each read back against the retained ZIP, manifest SHA-256 `9c9ee4b5732659bdee1069608e3c6c931ea1014efd411a988361ac84cee92aa6`, and only those two redundant directories were removed. Eleven public roots remain withheld.

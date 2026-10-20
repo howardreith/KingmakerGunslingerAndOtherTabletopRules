@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums.Damage;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.Enums;
@@ -120,6 +121,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["persuasion"] = DescribeSprint16Skill(stats.SkillPersuasion),
                             ["stealth"] = DescribeSprint16Skill(stats.SkillStealth)
                         }, "Actual adult giant instance has its printed base profile with live class, size, feat and equipment effects.");
+                        string terrainSetting = Game.Instance.CurrentlyLoadedArea
+                            ?.LootSetting.ToString();
+                        int expectedTerrain = spec.Key == "stone-giant" &&
+                            GiantHumanoidRulesPolicy.IsStoneRockyTerrain(
+                                terrainSetting)
+                            ? GiantHumanoidRulesPolicy.StoneRockyStealthBonus : 0;
+                        var stealthCheck = Rulebook.Trigger(
+                            new RuleSkillCheck(owner, StatType.SkillStealth, 100)
+                            { IgnoreDifficultyBonusToDC = true });
+                        int actualTerrain = stealthCheck.StatValue -
+                            stats.SkillStealth.ModifiedValue;
+                        Sprint25Check("s28-" + spec.Key + "-terrain-stealth",
+                            actualTerrain == expectedTerrain,
+                            new JObject { ["owner"] = owner.UniqueId,
+                                ["area"] = Game.Instance.CurrentlyLoadedArea?.AssetGuid,
+                                ["setting"] = terrainSetting,
+                                ["rawStealth"] = stats.SkillStealth.ModifiedValue,
+                                ["checkStealth"] = stealthCheck.StatValue,
+                                ["eventBonus"] = actualTerrain,
+                                ["expectedBonus"] = expectedTerrain },
+                            "The native skill-check consumer grants only Stone's selected-area conditional racial Stealth bonus.");
                         // The native non-player Power Attack watcher starts this
                         // toggle on. Printed PF1 stat blocks compare with it off;
                         // preserve and test the actual native ON contribution.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Armors;
 using Kingmaker.Blueprints.Items.Weapons;
@@ -9,6 +10,8 @@ using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
 using Kingmaker.Items.Slots;
 using Kingmaker.PubSubSystem;
+using Kingmaker.Enums;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 
 namespace KingmakerGunslinger.Summoning
@@ -56,6 +59,36 @@ namespace KingmakerGunslinger.Summoning
         }
 
         public void OnEntityRemoved(UnitEntityData unit) { }
+    }
+
+    /// <summary>Stone's printed conditional racial Stealth bonus applies to
+    /// native Stealth checks in the two owner-selected area settings only.
+    /// It never changes Reflex, another skill or another giant's stat.</summary>
+    [Serializable]
+    public sealed class SummonStoneRockyStealth :
+        RuleInitiatorLogicComponent<RuleSkillCheck>
+    {
+        public BlueprintUnit OwningBlueprint;
+
+        public override void OnEventAboutToTrigger(RuleSkillCheck evt)
+        {
+            if (evt == null || evt.StatType != StatType.SkillStealth ||
+                Owner == null || Owner.Unit == null || Fact == null ||
+                !Fact.Active || !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit))
+                return;
+            var area = Game.Instance == null ? null :
+                Game.Instance.CurrentlyLoadedArea;
+            if (area == null ||
+                !GiantHumanoidRulesPolicy.IsStoneRockyTerrain(
+                    area.LootSetting.ToString()))
+                return;
+            evt.Bonus.AddModifier(
+                GiantHumanoidRulesPolicy.StoneRockyStealthBonus,
+                this, ModifierDescriptor.Racial);
+        }
+
+        public override void OnEventDidTrigger(RuleSkillCheck evt) { }
     }
 
     /// <summary>Only exact giant equipment instances are marked nonlootable.

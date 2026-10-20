@@ -1217,6 +1217,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint28.routes", ExpandedSummoningSprint28Tests.ElevenRoutesAreSnaOnlyAndWithheld),
             Case("expanded-summoning.sprint28.identities", ExpandedSummoningSprint28Tests.IdentitiesAppendAndDonorsRemainExact),
             Case("expanded-summoning.sprint28.rock-policy", ExpandedSummoningSprint28Tests.RockArithmeticAndCatchAreBounded),
+            Case("expanded-summoning.sprint28.stone-terrain", ExpandedSummoningSprint28Tests.StoneRockyStealthRequiresSelectedArea),
             Case("expanded-summoning.sprint26.reach", ExpandedSummoningSprint26Tests.ReachCorrectionPreservesOtherOwnersAndBonuses),
             Case("expanded-summoning.sprint26.temporary-life", ExpandedSummoningSprint26Tests.TemporaryStoneDoesNotAcquireNativeDeathDamage),
             Case("expanded-summoning.sprint26.native-status-mirror", ExpandedSummoningSprint26Tests.OwnCarrierDoesNotMirrorIntoPermanentNativeStone),
