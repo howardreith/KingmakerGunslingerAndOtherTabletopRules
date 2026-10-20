@@ -149,6 +149,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-Sprint26Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint27Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-GriffonDevelopmentPersistence.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint28DevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
 # The push wrapper lives outside this repository and had no behaviour test
 # until the Sprint 25 audit. It reports SKIP when the wrapper is absent, so a
