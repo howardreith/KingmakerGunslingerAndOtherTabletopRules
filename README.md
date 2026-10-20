@@ -1,5 +1,10 @@
 # Kingmaker Gunslinger
 
+The **0.0.162-expanded-summoning-sprint28-giants** release adds adult Hill,
+Stone, and Fire Giants as eleven Summon Nature's Ally-only roots with owned
+equipment, rock throwing/catching, distinct bodies, and painted icons. See the
+[v0.0.162 release notes](docs/RELEASE-NOTES-0.0.162.md).
+
 The **0.0.161-expanded-summoning-sprint27-griffon** release adds the adult
 Griffon to Summon Nature's Ally IV-IX, with six quantity roots, native Pounce
 and conditional Rake, an original hybrid body and a painted summon medallion.
