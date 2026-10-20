@@ -878,12 +878,14 @@ Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai'})) 'sprint28-ai-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai-turns'})) 'sprint28-ai-turns-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave'})) 'sprint28-cleave-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='routes'})) 'sprint28-routes-admitted'
 $sprint28CleaveRequest = New-KmgRuntimeRequest @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint28-cleave-request-test')
 Assert-True ($sprint28CleaveRequest.parameters.reviewPhase -ceq 'cleave') 'sprint28-cleave-serialized'
 $sprint28CommandRequest = New-KmgRuntimeRequest @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint28-command-request-test')
 Assert-True ($sprint28CommandRequest.parameters.reviewPhase -ceq 'commands') 'sprint28-commands-serialized'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='unknown'} } 'sprint28-rejects-unknown-phase'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='Cleave'} } 'sprint28-rejects-wrong-case-cleave'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='Routes'} } 'sprint28-rejects-wrong-case-routes'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave';saveName='KMG_AUTOMATION_WORKING'} } 'sprint28-rejects-cleave-save-parameter'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='cleave'} } 'sprint28-cleave-requires-exit'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='profiles'} } 'sprint28-requires-exit'

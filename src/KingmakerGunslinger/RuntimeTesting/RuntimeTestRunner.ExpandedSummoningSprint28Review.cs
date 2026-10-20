@@ -27,6 +27,38 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool IsSprint28Review { get { return _request.Scenario ==
             RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview; } }
 
+        private void ReviewSprint28Routes(ExpandedSummoningCorrectionFixture fixture)
+        {
+            string[] keys = { "hill-giant", "stone-giant", "fire-giant" };
+            var routes = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.NaturesAlly)
+                .Where(value => keys.Contains(value.Creature.Key))
+                .OrderBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .ThenBy(value => value.ParentTier).ToArray();
+            bool exact = routes.Length == 11 &&
+                !ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Any(value => keys.Contains(value.Creature.Key)) &&
+                routes.Where(value => value.Creature.Key == "hill-giant")
+                    .Select(value => value.ParentTier).SequenceEqual(new[] { 6, 7, 8, 9 }) &&
+                routes.Where(value => value.Creature.Key == "stone-giant")
+                    .Select(value => value.ParentTier).SequenceEqual(new[] { 6, 7, 8, 9 }) &&
+                routes.Where(value => value.Creature.Key == "fire-giant")
+                    .Select(value => value.ParentTier).SequenceEqual(new[] { 7, 8, 9 }) &&
+                routes.All(value => SummonVisibilityCatalog.IsPublished(value) &&
+                    !value.Creature.MonsterTemplated);
+            Sprint25Check("s28-eleven-public-route-census", exact,
+                new JObject {
+                    ["routes"] = new JArray(routes.Select(value => value.StableKey)),
+                    ["published"] = routes.Count(SummonVisibilityCatalog.IsPublished),
+                    ["monster"] = ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.Monster)
+                        .Count(value => keys.Contains(value.Creature.Key))
+                }, "Exactly eleven untemplated public SNA giant roots and no Monster giant routes.");
+            if (!exact) throw new InvalidOperationException(
+                "Sprint 28 public route census is not exact.");
+            Sprint24PlayerRoutes(fixture, routes, Sprint25Check, false);
+        }
+
         private IEnumerable<int> ReviewSprint28(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint28ReviewPhase(_request);
@@ -35,12 +67,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint25Check("s28-phase", phase == "profiles" || phase == "modes" ||
                 phase == "commands" || phase == "turns" || phase == "ownership" ||
                 phase == "disarm" || phase == "catch" || phase == "ai" ||
-                phase == "ai-turns" || phase == "cleave", new JObject {
+                phase == "ai-turns" || phase == "cleave" ||
+                phase == "routes", new JObject {
                 ["phase"] = phase }, "One exact implemented Sprint 28 review phase.");
             if (phase == "cleave")
             {
                 foreach (int frame in ReviewSprint28Cleave(fixture))
                     yield return frame;
+                yield break;
+            }
+            if (phase == "routes")
+            {
+                ReviewSprint28Routes(fixture);
                 yield break;
             }
             if (phase == "modes")
