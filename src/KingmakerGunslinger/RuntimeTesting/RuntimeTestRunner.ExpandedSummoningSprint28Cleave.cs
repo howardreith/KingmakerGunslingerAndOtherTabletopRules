@@ -136,11 +136,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             {
                                 Vector3 side = Vector3.Cross(forward,
                                     Vector3.up).normalized;
-                                // Brachiosaurus used a 5.5 m cluster; an
-                                // adult giant's native ten-foot reach needs
-                                // this closer, still disjoint target lane.
+                                // Native weapon range includes the giant's
+                                // Reach stat and both footprints at IsReach.
+                                // Keep all three targets disjoint and adjacent
+                                // inside that actual melee threshold.
                                 Vector3[] points = Enumerable.Range(0, 3)
-                                    .Select(index => origin + forward * 3.5f
+                                    .Select(index => origin + forward * 2.6f
                                         + side * (index - 1) * 1.2f).ToArray();
                                 var nodes = points.Select(value =>
                                     AstarPath.active.GetNearest(value))
@@ -171,10 +172,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!laneReady) throw new InvalidOperationException(
                                 "No native three-target Cleave lane: " + lane +
                                 ";hand=" + owner.Body.PrimaryHand?.MaybeWeapon?.Blueprint?.AssetGuid +
+                                ";weaponRangeMeters=" + owner.Body.PrimaryHand?.MaybeWeapon?.AttackRange.Meters +
+                                ";reachFeet=" + owner.Stats.Reach.ModifiedValue +
                                 ";ownerCorpulence=" + owner.Corpulence +
                                 ";targets=" + string.Join("|", targets.Select(
                                     value => value.DistanceTo(owner).ToString("F2") +
                                         "/" + value.Corpulence +
+                                        "/los=" + owner.HasLOS(value) +
                                         "/reach=" + UnitEngagementExtension.IsReach(
                                             owner, value, owner.Body.PrimaryHand))));
                             foreach (UnitEntityData target in targets)
