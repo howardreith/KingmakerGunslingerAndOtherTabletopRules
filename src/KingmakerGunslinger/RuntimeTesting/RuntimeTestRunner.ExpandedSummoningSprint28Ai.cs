@@ -238,6 +238,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         float travel = 0f;
                         int ticks = 0;
                         int nativeTurnFrames = 0;
+                        UnitAttack firstAiAttack = null;
+                        int expectedCadence = set == 2 ?
+                            key == "stone-giant" ? 2 : 1 :
+                            key == "fire-giant" ? 3 : 2;
                         EventBus.Subscribe(observer);
                         try
                         {
@@ -262,6 +266,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     owner.Commands.Raw.Where(value =>
                                         value != null))
                                     commands.Add(command);
+                                if (turnBased && firstAiAttack == null)
+                                    firstAiAttack = commands.OfType<UnitAttack>()
+                                        .FirstOrDefault(value =>
+                                            value.AiAction != null &&
+                                            ReferenceEquals(value.TargetUnit, target));
                                 travel = Math.Max(travel,
                                     Vector3.Distance(origin, owner.Position));
                                 if (frame % 60 == 0 ||
@@ -276,7 +285,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["commands"] = new JArray(owner.Commands
                                             .Raw.Where(value => value != null)
                                             .Select(Sprint27AiCommand)) });
-                                if (observer.WeaponAttacks.Count > 0) break;
+                                if (turnBased ? firstAiAttack != null &&
+                                    firstAiAttack.IsFinished :
+                                    observer.WeaponAttacks.Count > 0) break;
                                 Game.Instance.IsPaused = false;
                                 yield return 0;
                             }
@@ -318,6 +329,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["fixtureAttackCommands"] = 0,
                                     ["forcedRolls"] = 0
                                 }, "The unchanged exact giant brain selects its native melee or owned-rock attack, and real movement/weapon events reach only the disposable target.");
+                            if (turnBased)
+                            {
+                                bool cadence = firstAiAttack != null &&
+                                    firstAiAttack.IsFinished &&
+                                    firstAiAttack.IsFullAttack &&
+                                    firstAiAttack.AllAttacks.Count ==
+                                        expectedCadence &&
+                                    observer.OwnerWeaponAttacks.Count ==
+                                        expectedCadence &&
+                                    observer.WeaponAttacks.Count ==
+                                        expectedCadence &&
+                                    observer.Rolls.Count ==
+                                        expectedCadence &&
+                                    Sprint18OwnerIsActing(owner) &&
+                                    commands.OfType<UnitAttack>().Count(
+                                        value => value.AiAction != null &&
+                                            ReferenceEquals(value.TargetUnit,
+                                                target)) == 1;
+                                Sprint25Check(label + "-ai-full-cadence",
+                                    cadence, new JObject {
+                                        ["owner"] = owner.UniqueId,
+                                        ["target"] = target.UniqueId,
+                                        ["weapon"] = selected.Blueprint.AssetGuid,
+                                        ["expected"] = expectedCadence,
+                                        ["firstCommand"] = firstAiAttack == null ?
+                                            null : Sprint27AiCommand(firstAiAttack),
+                                        ["isFullAttack"] = firstAiAttack?.IsFullAttack,
+                                        ["planned"] = firstAiAttack?.AllAttacks.Count,
+                                        ["ownerAttacks"] =
+                                            observer.OwnerWeaponAttacks.Count,
+                                        ["targetAttacks"] =
+                                            observer.WeaponAttacks.Count,
+                                        ["rolls"] = observer.Rolls.Count,
+                                        ["sameTurn"] = Sprint18OwnerIsActing(owner),
+                                        ["aiAttacks"] = new JArray(commands
+                                            .OfType<UnitAttack>()
+                                            .Where(value => value.AiAction != null)
+                                            .Select(Sprint27AiCommand)),
+                                        ["fixtureAttackCommands"] = 0,
+                                        ["forcedRolls"] = 0
+                                    }, "One native AI-selected attack command completes its printed weapon or rock cadence on the original active turn.");
+                            }
                         }
                         finally { EventBus.Unsubscribe(observer); }
                     }
