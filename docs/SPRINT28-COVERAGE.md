@@ -1,7 +1,7 @@
 # Sprint 28 release coverage plan
 
 This plan applies only to Hill, Stone and Fire Giant on the frozen `wt/s28`
-candidate. The 67 earlier native executions retain their original source,
+candidate. The 69 earlier native executions retain their original source,
 package and observer identities. They diagnose development behavior; they do
 not qualify final bytes. A PASS requires its raw observation, exact package,
 true child completion and restored transaction. A failed or missing observation
