@@ -437,6 +437,19 @@ def make_record(entry: dict) -> dict:
             })
             if symbol.endswith(".Bite2d8"):
                 common["weaponType"] = "KMG.Summoning.Natural.Bulette.BiteType"
+        elif symbol.startswith("KMG.Summoning.Giant."):
+            name = symbol.rsplit(".", 1)[-1]
+            is_rock = "Rock" in name
+            common.update({
+                "familyOrFirearmKind": "Sprint 28 giant humanoid attack",
+                "weaponType": ("KMG.Summoning.Giant." + name.replace("1d8", "Type")) if is_rock else "native donor type configured per giant",
+                "currentItemLevelVisual": "summon-owned native weapon reference" if name.startswith(("Greatclub", "Greatsword")) else "native attack-mode presentation; no collectible item",
+                "effectiveEquippedPrefab": "summon-owned native manufactured weapon" if name.startswith(("Greatclub", "Greatsword")) else "giant attack mode; no transferable item",
+                "animationDonorStyle": "native giant attack animation",
+                "gripHandednessContract": "two-handed manufactured weapon" if name.startswith(("Greatclub", "Greatsword")) else ("ranged thrown-rock attack" if is_rock else "primary slam alternative"),
+                "currentManyToOneVisualGroup": "ExpandedSummoning.GiantNative" + ("Rock" if is_rock else "Melee"),
+                "clippingOrientationConcerns": "usable native giant body and attack presentation; visual proportions and motion remain backlog",
+            })
         return common
     raise ValueError(f"Unclassified BlueprintItemWeapon {symbol}")
 

@@ -36,7 +36,8 @@ namespace KingmakerGunslinger.DomainTests
                     .ProgressionWeaponCatalog.NewBlueprintCount +
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
-                    Sprint26MagicalBeastRules.AppendedWeaponIdentityCount,
+                    Sprint26MagicalBeastRules.AppendedWeaponIdentityCount +
+                    GiantHumanoidRulesPolicy.AppendedWeaponIdentityCount,
                 expected.Count(value => !((string)value["symbol"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal)),
                 "The released pre-Griffon custom-weapon baseline changed.");
             Assertions.Equal(expected.Length, actual.Length,
@@ -103,7 +104,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(29 +
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
-                    Sprint26MagicalBeastRules.AppendedWeaponIdentityCount,
+                    Sprint26MagicalBeastRules.AppendedWeaponIdentityCount +
+                    GiantHumanoidRulesPolicy.AppendedWeaponIdentityCount,
                 audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion" &&
                 !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal)),

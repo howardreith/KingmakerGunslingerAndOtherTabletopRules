@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
     "sprint":  28,
-    "status":  "HIDDEN_DEVELOPMENT_NOT_QUALIFIED",
+    "status":  "PUBLIC_SOURCE_CANDIDATE_NOT_QUALIFIED",
     "baseCommit":  "dc9b83c71ff61f14a43d9cdabff37822796f43f2",
     "productionRoot":  "C:/Dev/KingmakerGunslingerLab/wt/s28",
     "productBranch":  "codex/expanded-summoning-sprint28-hill-stone-fire-giants",
@@ -9,20 +9,20 @@
     "publicSurface":  {
                           "monsterCreatures":  96,
                           "monsterGeneratedPlacements":  545,
-                          "naturesAllyCreatures":  98,
-                          "naturesAllyGeneratedPlacements":  563,
-                          "generatedPlacements":  1108,
+                          "naturesAllyCreatures":  101,
+                          "naturesAllyGeneratedPlacements":  574,
+                          "generatedPlacements":  1119,
                           "retainedNativeWrappers":  29,
-                          "visibleChoices":  1137
+                          "visibleChoices":  1148
                       },
-    "registeredPending":  {
+    "sprint28Registration":  {
                               "creatures":  [
                                                 "hill-giant",
                                                 "stone-giant",
                                                 "fire-giant"
                                             ],
-                              "withheldSnaRoots":  11,
-                              "newPrivateIdentities":  19,
+                              "withheldSnaRoots":  0,
+                              "newPrivateIdentities":  21,
                               "derivedExistingNatureCallerAdapters":  28
                           },
     "nativeExecutions":  [
@@ -296,5 +296,5 @@
                              {"scope": "guarded exact-package catch attempt after successful dry run; local disk pressure during deployment extraction; no game launched", "candidateKind": "development", "source": "65873e5d23f87cf7187d205a9b683ada8072ab30", "packageSha256": "b634aefbc16a5f15eb358fa7b097b6da5685311cda0abf4598dca9b25ea6c87d", "dllSha256": "481cd498efd5ce59149d2f8918555509a400a61f557619625257212bbb1f81a4", "mvid": "c1cc3f7e-0145-4a70-87ce-4c16aa7d5139", "transactionRunId": "compat-20261019T194643Z-730dd0f085f4", "result": "FAIL_DISK_PRESSURE_DEPLOY_EXTRACTION_NO_GAME_RESTORED", "taskLogSha256": "62d669f59976791e1332fa38edad02dea35db4a93384f7bafd587db70932f2be", "transactionSha256": "83720d24e67d2cd30c3e17d9931be3f45f34d37bbfccbcf0be8f4e5b31e95669", "independentIntakeAuditSha256": "5d40cf042f6de1cca2df9a61a6ec603ddb0160ea4847752c3eaef9b30afd2b45", "restorationVerified": true},
 {"scope":"same exact candidate failed during low-space deploy extraction after passing package validation; no game launched","candidateKind":"development","source":"787cf9134b45a467140cbf30c4a13f23c16ed760","packageSha256":"1ec6860a9a6965b5bf3eed161808ed68f58d2cccb22d436a0ff3c4c9107a1f0e","dllSha256":"a767fd79d3a4f1a8b02be50cd72d50f045c21b9f683df2a998b9a4840cd8b469","transactionRunId":"compat-20261020T070431Z-185290812eec","result":"FAIL_LOW_SPACE_DEPLOY_EXTRACTION_NO_GAME_RESTORED","taskLogSha256":"3719ac5e5a4c207e76bf5b68258430a2e1e801a62245d0d9de22f57b07a710ef","transactionSha256":"5fe7e7c3039bf0d81a7641e52c82ce9b79445c7ae990e1f144f07817bff64b9e","independentIntakeAuditSha256":"b0d3a39d6cfcfe5df441cf5c9ef4be07c49183876f7dd35d3001b11ae0c9c637","backupZipAliasSha256":"4189c748e0e157781b10983a12e4164721736d8476a2e095f15660d9ffef4d54","restorationVerified":true}
 ],
-    "restoration":  "Fifty-nine native executions and five guarded prelaunch transactions restored. Six targeted Working-save native executions covered ON prepare/load-cleanup/fresh-absence and an OFF-sequence ON prepare/OFF load-cleanup/ON fresh-absence. ON trio and final absence supervisor PASS; OFF prepare/cleanup native PASS with post-game Expand-Archive collector failures preserved and independently recovered no-game. The validator unique-empty-directory Force removal passed normal, inherited-WhatIf and invalid-root checks; final absence on new source 3ccb4fc5e2614ed33d83acc19b41e1059049c8b9 and ZIP a7bcd888891a212a7baaff47193065e57803240dda23505cb1b64d71fb33743c passed its collector. Current actual intake differs only in authorized Working save length, mtime and hash; installation, other saves, references and settings exact; no game/task/lease. Working fixture is clean of owned actors but original Working bytes require closeout restoration. Rock/catch edge boundaries, feat decisions, public roots and final release qualification remain open; eleven roots withheld. Native disarm ownership and owned-slam fallback passed on all three giants."
+    "restoration":  "Fifty-nine native executions and five guarded prelaunch transactions restored. Six targeted Working-save native executions covered ON prepare/load-cleanup/fresh-absence and an OFF-sequence ON prepare/OFF load-cleanup/ON fresh-absence. ON trio and final absence supervisor PASS; OFF prepare/cleanup native PASS with post-game Expand-Archive collector failures preserved and independently recovered no-game. The validator unique-empty-directory Force removal passed normal, inherited-WhatIf and invalid-root checks; final absence on new source 3ccb4fc5e2614ed33d83acc19b41e1059049c8b9 and ZIP a7bcd888891a212a7baaff47193065e57803240dda23505cb1b64d71fb33743c passed its collector. The original Working save was restored from its verified pre-campaign envelope before final-candidate work; SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850. The modified fixture was preserved under ignored local evidence. Independent actual-intake audit found zero differences in 968 Mods entries, 119 saves, 19 references, game and sound files, and 83 settings; no game/task/lease. Native disarm ownership and owned-slam fallback passed on all three giants under their historical package. Eleven roots are exposed in the unpublished source candidate; Cleave native behavior and final fresh release qualification remain open."
 }

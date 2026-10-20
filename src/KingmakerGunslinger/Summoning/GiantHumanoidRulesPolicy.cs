@@ -13,6 +13,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int AppendedCreatureCount = 3;
         internal const int AppendedRootCount = 11;
         internal const int AppendedPrivateIdentityCount = 21;
+        internal const int AppendedWeaponIdentityCount = 6;
         internal const int AppendedCatalogIdentityCount =
             AppendedCreatureCount + AppendedRootCount +
             AppendedPrivateIdentityCount;
