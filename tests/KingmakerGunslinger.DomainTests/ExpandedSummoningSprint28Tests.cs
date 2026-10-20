@@ -88,6 +88,27 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(120,
                 GiantHumanoidRulesPolicy.RockRangeIncrementFeet("fire-giant"),
                 "Fire increment.");
+            Assertions.Equal(600,
+                GiantHumanoidRulesPolicy.RockMaximumRangeFeet("hill-giant"),
+                "Five Hill increments are command-reachable.");
+            Assertions.Equal(900,
+                GiantHumanoidRulesPolicy.RockMaximumRangeFeet("stone-giant"),
+                "Five Stone increments are command-reachable.");
+            foreach (var row in new[] {
+                new { EdgeFeet = 0f, Expected = 0 },
+                new { EdgeFeet = 120f, Expected = 0 },
+                new { EdgeFeet = 121f, Expected = -2 },
+                new { EdgeFeet = 240f, Expected = -2 },
+                new { EdgeFeet = 241f, Expected = -4 },
+                new { EdgeFeet = 600f, Expected = -8 } })
+                Assertions.Equal(row.Expected,
+                    GiantHumanoidRulesPolicy.RockRangePenalty(120,
+                        row.EdgeFeet * 0.3048f),
+                    "Live range penalty at " + row.EdgeFeet + " feet.");
+            Assertions.Equal(-2,
+                GiantHumanoidRulesPolicy.RockRangePenalty(180,
+                    181f * 0.3048f),
+                "Stone uses its own printed increment.");
             Assertions.Equal(1,
                 GiantHumanoidRulesPolicy.RockFullAttackCount("hill-giant"),
                 "Hill prepared throw.");

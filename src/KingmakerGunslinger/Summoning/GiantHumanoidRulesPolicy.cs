@@ -47,6 +47,27 @@ namespace KingmakerGunslinger.Summoning
                 "Only the three adult Sprint 28 giants throw these rocks.");
         }
 
+        internal static int RockMaximumRangeFeet(string key)
+        {
+            return RockRangeIncrementFeet(key) * LargestRockIncrementCount;
+        }
+
+        // Native AttackRange is a hard command radius, not a PF1 increment.
+        // The exact-owner attack-bonus carrier applies this missing penalty.
+        internal static int RockRangePenalty(int incrementFeet,
+            float edgeDistanceMeters)
+        {
+            if (incrementFeet <= 0 || edgeDistanceMeters < 0f ||
+                float.IsNaN(edgeDistanceMeters) ||
+                float.IsInfinity(edgeDistanceMeters))
+                throw new ArgumentOutOfRangeException("edgeDistanceMeters");
+            double incrementMeters = incrementFeet * 0.3048d;
+            int additional = Math.Max(0,
+                (int)Math.Ceiling((edgeDistanceMeters - 0.0001d) /
+                    incrementMeters) - 1);
+            return -2 * additional;
+        }
+
         internal static int RockFullAttackCount(string key)
         {
             if (key == Stone) return 2; // Its prepared Quick Draw routine.

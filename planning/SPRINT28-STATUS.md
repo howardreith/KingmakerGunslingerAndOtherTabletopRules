@@ -7,6 +7,17 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 The pushed `06c660948ccb2778f2924cc0c06a818f65da5cfa` disarm observer compiled against the actual game references, passed three focused Sprint 28 tests and 684 limited-token no-game preflight checks, then built a strictly validated development ZIP SHA-256 `fcd19fd6e5737ae646711d9ad6b1cda25bafa5b3a93d1c8cf86ee4804a86bdf7` (DLL `7d8b3a054fdd62a7dc25a4429798d39149d6adacd1dc52947a1e0b0fc26a1e3f`, MVID `20aafb3a-c36c-49d6-9ac7-245dafd02f8c`). Its limited Howard exact-package dry run passed. Fresh guarded RunId `20261020T0224526389316Z-ce9b18ad8f0243b1a50284465aa47c28` passed 12 native assertions: a real native Disarm maneuver applied the temporary main-hand buff to each giant; its exact weapon and all other owned items remained nonlootable in the summon inventory, and a native switch selected its owned slams. The disposable attacker had raised BAB to guarantee a maneuver precondition; this run does not qualify Fire's own Sunder or Overrun actions. Raw result SHA-256 `2b4f224d3370352bfae2f2bd9e562c96c6a091d753aac92f438cf073c388d7eb`; original review `e9db11f0fb3cfb4e7d25da133d23dd56031435633c9a38f21a75a0ebf4bd3396`. Transaction `compat-20261020T022222Z-d8478f0120e8` was `Restored`/verified (SHA-256 `69c166b8a22e85641d8e45b2b9dcde10c2cc171fd51f9c83923aad46ca73fd71`); limited task exited zero and was removed. Independent audit SHA-256 `3fad631e932ea4aeb4e68b3c385047bf83f7c21dc4eb8996a450151240309da3` found only the already authorized Working-save length/mtime/hash difference. The exact completed duplicate deployment and backup copies were each read back against the retained ZIP, manifest SHA-256 `9c9ee4b5732659bdee1069608e3c6c931ea1014efd411a988361ac84cee92aa6`, and only those two redundant directories were removed. Eleven public roots remain withheld.
 
+Read-only 2.1.7b IL inspection established that `UnitAttack.GetApproachRadius`
+uses the rock `AttackRange` as a hard command cap, while
+`RuleCalculateAttackBonus` has no range-increment calculation. A scoped
+source correction now extends only the three exact giant rock commands to
+five printed increments and applies -2 per later increment through the
+actual target-side bonus rule. The item still reports its 120/180-foot
+printed increment. Focused production compilation and three Sprint 28
+domain tests pass, including increment boundaries. Its native `modes`
+observer will check the real command radius and bonus rule; actual
+long-distance visible projectile commands remain a separate open check.
+
 The corrected Sprint 28 development source `ffd8e2f40d9e0212e3bf209b6321e4f599bcba36`
 produced exact ZIP SHA-256 `013b8363592fde0956d2f6e11c55f6d05fa11173e8ed52962951ad3fc3617412`,
 DLL SHA-256 `2f6731436d1c30639ae457a8c91bde2c1612adcdfcb88721b1541d289c2aa59c`,

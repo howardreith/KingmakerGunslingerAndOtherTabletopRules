@@ -11,6 +11,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -104,7 +105,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 (string)heat["dice"] == "1d6" &&
                                 (int)heat["bonus"] == 0 &&
                                 (string)heat["energy"] == "Fire";
-                            bool exact = heatExact && planned.Count == expectedCount &&
+                            float expectedRockRadius = owner.Corpulence +
+                                fixture.Hostile.Corpulence +
+                                spec.Range * GiantHumanoidRulesPolicy.
+                                    LargestRockIncrementCount * 0.3048f;
+                            bool reachExact = index != 2 ||
+                                Math.Abs(attack.ApproachRadius -
+                                    expectedRockRadius) < .05f;
+                            bool exact = heatExact && reachExact && planned.Count == expectedCount &&
                                 bonus == expectedAttack && damage.Bonus == expectedDamage &&
                                 damage.Dice.Rolls == expectedRolls &&
                                 (index != 2 || weapon.Blueprint.Type.AttackRange.Value == spec.Range) &&
@@ -131,8 +139,70 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["forms"] = new JArray(stats.DamageDescription.Select(
                                         value => Sprint16DamageLine(value.CreateDamage()))),
                                     ["configuredIncrementFeet"] = weapon.Blueprint.Type.AttackRange.Value,
-                                    ["nativeEquippedRangeFeet"] = weapon.AttackRange.Value },
-                                "Native active mode resolves only its own printed attacks, damage forms and range increment.");
+                                    ["nativeEquippedRangeFeet"] = weapon.AttackRange.Value,
+                                    ["nativeCommandRadiusMeters"] = attack.ApproachRadius,
+                                    ["expectedFiveIncrementRadiusMeters"] =
+                                        index == 2 ? expectedRockRadius : 0f,
+                                    ["rangeReachExact"] = reachExact },
+                                "Native active mode resolves printed attacks and damage while the exact rock command reaches five printed increments.");
+                            if (index == 2)
+                            {
+                                // Native RuleCalculateAttackBonus has no
+                                // increment calculation. Probe the owned
+                                // target-side component without issuing an
+                                // out-of-scene attack or mutating a party unit.
+                                UnitEntityData target = fixture.Hostile;
+                                Vector3 originalTarget = target.Position;
+                                Vector3 direction = (originalTarget -
+                                    owner.Position).normalized;
+                                if (direction.sqrMagnitude < .01f)
+                                    direction = Vector3.forward;
+                                int near = 0, far = 0;
+                                float nearEdge = 0f, farEdge = 0f;
+                                try
+                                {
+                                    float radii = owner.Corpulence +
+                                        target.Corpulence;
+                                    PlaceExpandedSummoningUnit(target,
+                                        owner.Position + direction *
+                                            (radii + 35f * .3048f));
+                                    nearEdge = Math.Max(0f,
+                                        owner.DistanceTo(target) - radii);
+                                    near = Rulebook.Trigger(new
+                                        RuleCalculateAttackBonus(owner,
+                                            target, weapon, 0)).Result;
+                                    PlaceExpandedSummoningUnit(target,
+                                        owner.Position + direction *
+                                            (radii + (spec.Range + 1f) * .3048f));
+                                    farEdge = Math.Max(0f,
+                                        owner.DistanceTo(target) - radii);
+                                    far = Rulebook.Trigger(new
+                                        RuleCalculateAttackBonus(owner,
+                                            target, weapon, 0)).Result;
+                                }
+                                finally
+                                {
+                                    PlaceExpandedSummoningUnit(target,
+                                        originalTarget);
+                                }
+                                Sprint25Check("s28-" + spec.Key +
+                                    "-rock-second-increment-accuracy",
+                                    nearEdge > 30f * .3048f &&
+                                    nearEdge < spec.Range * .3048f &&
+                                    farEdge > spec.Range * .3048f &&
+                                    farEdge < 2f * spec.Range * .3048f &&
+                                    far == near - 2,
+                                    new JObject { ["owner"] = owner.UniqueId,
+                                        ["target"] = target.UniqueId,
+                                        ["nearEdgeMeters"] = nearEdge,
+                                        ["farEdgeMeters"] = farEdge,
+                                        ["nearAttackBonus"] = near,
+                                        ["farAttackBonus"] = far,
+                                        ["targetRestored"] =
+                                            target.Position == originalTarget,
+                                        ["fixtureIssuedAttack"] = false },
+                                    "The exact rock's live target-side rule loses two attack bonus after its printed first increment; this rule-only probe does not claim an out-of-scene projectile command.");
+                            }
                             int original = owner.Stats.Strength.BaseValue;
                             var signed = new JArray();
                             bool signedExact = true;
