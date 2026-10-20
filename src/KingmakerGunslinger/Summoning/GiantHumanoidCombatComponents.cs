@@ -61,6 +61,32 @@ namespace KingmakerGunslinger.Summoning
         public void OnEntityRemoved(UnitEntityData unit) { }
     }
 
+    /// <summary>The giant subtype makes Intimidate a PF1 class skill.
+    /// Kingmaker's shared Persuasion stat does not carry that flag for the
+    /// copied humanoid class. Grant +3 only on actual Intimidate checks so
+    /// other Persuasion uses do not inherit an unprinted bonus.</summary>
+    [Serializable]
+    public sealed class SummonGiantIntimidateClassSkill :
+        RuleInitiatorLogicComponent<RuleSkillCheck>
+    {
+        public BlueprintUnit OwningBlueprint;
+
+        public override void OnEventAboutToTrigger(RuleSkillCheck evt)
+        {
+            if (evt == null || evt.StatType != StatType.CheckIntimidate ||
+                Owner == null || Owner.Unit == null || Fact == null ||
+                !Fact.Active || !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, Owner.Unit))
+                return;
+            var skill = Owner.Stats.SkillPersuasion as ModifiableValueSkill;
+            if (skill == null || skill.BaseValue <= 0 || skill.ClassSkill)
+                return;
+            evt.Bonus.AddModifier(3, this, ModifierDescriptor.UntypedStackable);
+        }
+
+        public override void OnEventDidTrigger(RuleSkillCheck evt) { }
+    }
+
     /// <summary>Stone's printed conditional racial Stealth bonus applies to
     /// native Stealth checks in the two owner-selected area settings only.
     /// It never changes Reflex, another skill or another giant's stat.</summary>
