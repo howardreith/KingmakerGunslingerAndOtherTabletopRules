@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.DomainTests
             var ids = ExpandedSummoningIdentityCatalog.Build().Where(value =>
                 GiantHumanoidRulesPolicy.IsNewIdentity(value.Symbol)).ToArray();
             Assertions.Equal(GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount,
-                ids.Length, "Exactly 35 new giant identities.");
+                ids.Length, "Exactly 38 new giant catalog identities.");
             Assertions.Equal(3, ids.Count(value =>
                 value.PlannedType == "BlueprintUnit"),
                 "Three project-owned unit identities.");
@@ -66,7 +66,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(GiantHumanoidRulesPolicy.AppendedPrivateIdentityCount,
                 ids.Count(value => value.PlannedType != "BlueprintUnit" &&
                     !value.Symbol.StartsWith("KMG.Summoning.Ability.", StringComparison.Ordinal)),
-                "Twenty-one private giant identities.");
+                "Twenty-four private giant identities.");
+            string[] reachTypes = { "GreatclubReachType",
+                "GreatswordReachType", "SlamReachType" };
+            Assertions.True(reachTypes.All(name => ids.Any(value =>
+                value.Symbol == "KMG.Summoning.Giant." + name &&
+                value.PlannedType == "BlueprintWeaponType")),
+                "The three project-only melee reach types are exact additions.");
             Assertions.Equal("61dd71e874b16f742a0f783314105553",
                 ExpandedSummoningDonorCatalog.For("hill-giant").Guid,
                 "Audited adult Hill donor.");

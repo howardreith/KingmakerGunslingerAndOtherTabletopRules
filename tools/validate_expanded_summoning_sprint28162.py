@@ -15,8 +15,8 @@ import validate_expanded_summoning_sprint21150 as common
 from expanded_summoning_manifest import ENTRY, parsed_creatures, suppressed_keys
 
 BASELINE = "dc9b83c71ff61f14a43d9cdabff37822796f43f2"
-TAIL_COUNT = 63
-TAIL_SHA256 = "58109ec4f6364fca7f2536f01cac9f53759757b248f931c93f60ff1ac4b98c03"
+TAIL_COUNT = 66
+TAIL_SHA256 = "7246e048f3a076d4f6be943304b90f42fc16b33a7f62b4854262dc9117226a37"
 EXPECTED_GIANTS = {("hill-giant", None, False, 6),
                    ("stone-giant", None, False, 6),
                    ("fire-giant", None, False, 7)}
@@ -143,7 +143,7 @@ def validate(root: Path):
         str(root / "tools/expanded_summoning_manifest.py")], cwd=root)
     if result.returncode:
         raise AssertionError("Controlled manifest/catalog reconciliation failed")
-    print("Sprint28 public source boundary PASS: three adult SNA giants, eleven roots, 63 append-only identities; native evidence is separate.")
+    print("Sprint28 public source boundary PASS: three adult SNA giants, eleven roots, 66 append-only identities; native evidence is separate.")
 
 
 def main():

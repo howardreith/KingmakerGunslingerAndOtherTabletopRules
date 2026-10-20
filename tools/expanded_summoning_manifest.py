@@ -690,9 +690,12 @@ def planned():
         ("KMG.Summoning.Giant.FireImprovedOverrun", "BlueprintFeature"),
         ("KMG.Summoning.Giant.CleaveAction", "BlueprintAbility"),
         ("KMG.Summoning.Giant.CleaveFeature", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.GreatclubReachType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.GreatswordReachType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.SlamReachType", "BlueprintWeaponType"),
 
     ))
-    if len(rows) != 2237 or len({symbol for symbol, _ in rows}) != 2237:
+    if len(rows) != 2240 or len({symbol for symbol, _ in rows}) != 2240:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

@@ -56431,6 +56431,30 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Project-owned Cleave grant for Hill and Fire only."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.GreatclubReachType",
+      "guid": "81f343d50f774520936111cd95d4d677",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.GreatswordReachType",
+      "guid": "41cce4f929b44a57a68dc6c02b037fc0",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.SlamReachType",
+      "guid": "a51e01183f844ce58be689fc075aa716",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }
