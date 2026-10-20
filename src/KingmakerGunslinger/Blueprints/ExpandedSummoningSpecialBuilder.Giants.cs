@@ -167,9 +167,14 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             AbilityCustomCleave nativeCustom = nativeAction.GetComponents<
                 AbilityCustomCleave>().Single();
-            if (nativeCustom.GreaterFeature != nativeFeature)
+            if (nativeCustom.GreaterFeature == null ||
+                !string.Equals(nativeCustom.GreaterFeature.AssetGuid,
+                    nativeFeature.AssetGuid, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException(
-                    "Installed Cleave consumer no longer has audited wiring.");
+                    "Installed Cleave consumer no longer has audited wiring: expected=" +
+                    nativeFeature.AssetGuid + "; actual=" +
+                    (nativeCustom.GreaterFeature == null ? "<null>" :
+                        nativeCustom.GreaterFeature.AssetGuid));
             int deliveryIndex = Array.FindIndex(action.ComponentsArray,
                 value => value is AbilityCustomCleave);
             if (deliveryIndex < 0 || action.ComponentsArray.Count(
@@ -190,7 +195,9 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             AddFacts grant = feature.GetComponents<AddFacts>().Single();
             if (grant.Facts == null || grant.Facts.Length != 1 ||
-                grant.Facts[0] != nativeAction)
+                !(grant.Facts[0] is BlueprintAbility) ||
+                !string.Equals(grant.Facts[0].AssetGuid, nativeAction.AssetGuid,
+                    StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException(
                     "Installed Cleave feature no longer has audited action grant.");
             grant.Facts = new BlueprintUnitFact[] { action };
