@@ -25,6 +25,19 @@
                               "newPrivateIdentities":  21,
                               "derivedExistingNatureCallerAdapters":  28
                           },
+    "candidateGateAttempts":  [
+                                  {
+                                      "source":  "548abb42586de755e1ec1703a6f30e1153c4673b",
+                                      "result":  "FAIL_PACKAGE_EXPECTED_393_OBSERVED_394_NO_GAME",
+                                      "completeSuite":  "2697/2697 PASS",
+                                      "compileCandidateSha256":  "d03289b217eb0035631c58726d27cdac5cd61111efbb4551b707a025e7d3c671",
+                                      "stdoutSha256":  "47cfdf29aad5e122aa4773f010596f57d0b148f96443b30f88e67e5abbe1bf0d",
+                                      "stderrSha256":  "5d9c63a62757b4877cb6db693b74bf929a583a9cbddf6abf6de48a0d94a2ee6d",
+                                      "failedStageAuditSha256":  "a2777e3c9b797465e86a6a29a5a179e200105d1fa447c5fff377ca897bbaa6a4",
+                                      "stageFiles":  394,
+                                      "onlyNewMember":  "KingmakerGunslinger/docs/RELEASE-NOTES-0.0.162.md"
+                                  }
+                              ],
     "nativeExecutions":  [
                              {
                                  "scope":  "read-only installed giant donor metadata",

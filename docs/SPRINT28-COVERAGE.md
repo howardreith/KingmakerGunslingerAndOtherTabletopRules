@@ -22,8 +22,8 @@ remains a failure or unknown.
 Plan on roughly 2–5 minutes per ordinary guarded execution plus restoration,
 and more for cold-load save sequences; the selected final campaign is likely
 several dozen minutes. These are estimates from development transactions, not
-timeouts or permission to skip cleanup. The next development check is only the
-new Cleave observer; it is not the public candidate gate.
+timeouts or permission to skip cleanup. The corrected public candidate still
+needs its full strict package gate before any final-byte native qualification.
 
 The owner's only new gameplay-scope disposition is the named Climb/Craft
 mapping omission for these summons: Hill Climb +10, Stone +12, Fire +14 and

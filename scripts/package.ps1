@@ -275,8 +275,10 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
 # the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
-# v0.0.160 notes: six files. The optional bank/manifest remain a two-file delta.
-$basePackageFileCount = 384 + 4 + 3 # Griffon assets/notes plus Hill, Stone and Fire portrait PNGs.
+# v0.0.160 notes: six files. Griffon adds its assets/notes; Sprint28 adds
+# three giant portraits and the v0.0.162 release notes. The optional
+# bank/manifest remain a two-file delta.
+$basePackageFileCount = 384 + 4 + 3 + 1
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
