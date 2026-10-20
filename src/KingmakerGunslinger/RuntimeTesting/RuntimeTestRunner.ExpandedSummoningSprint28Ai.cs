@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -126,18 +126,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         PlaceExpandedSummoningUnit(target,
                             turnBased && set != 2
                                 ? origin + forward * adjacent : far);
-                        foreach (UnitEntityData unit in new[] { owner, target })
+                        // The proven turn-command fixture enrolls only the
+                        // disposable combatants without global wake/memory
+                        // ticks. Keep those AI-only setup steps in RTWP while
+                        // turn-based admission stays request-owned.
+                        if (!turnBased)
                         {
-                            unit.Wake(0f);
-                            if (!Game.Instance.State.AwakeUnits.Contains(unit))
-                                Game.Instance.State.AwakeUnits.Add(unit);
+                            foreach (UnitEntityData unit in new[] { owner, target })
+                            {
+                                unit.Wake(0f);
+                                if (!Game.Instance.State.AwakeUnits.Contains(unit))
+                                    Game.Instance.State.AwakeUnits.Add(unit);
+                            }
                         }
                         owner.Memory.Add(target);
                         target.Memory.Add(owner);
                         owner.SightCache.ClearIfNeeded();
                         target.SightCache.ClearIfNeeded();
-                        new Kingmaker.Controllers.Units.UnitMemoryController()
-                            .Tick();
+                        if (!turnBased)
+                            new Kingmaker.Controllers.Units.UnitMemoryController()
+                                .Tick();
                         owner.JoinCombat();
                         target.JoinCombat();
                         // The proven turn command fixture lets the native
