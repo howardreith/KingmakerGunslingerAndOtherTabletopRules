@@ -5,6 +5,34 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
+The committed 02722e22dbb30b901498ec57667c1396378ceb31 skill candidate
+built as development ZIP SHA-256 2b118fef5eaac667fb12730ce64191c41cf407befca4c1edc0a4b1411f804a00,
+DLL SHA-256 6e1764b8da7475fe1dc7f31e8502be1327a45ca66c7db4be7e1b9cc65ad49dea,
+MVID 7e13d50c-61e5-474a-bfdb-db17b497ab14. Its unelevated
+685-check preflight and exact-package dry run passed. Fresh guarded
+profiles RunId 20261020T0424127794024Z-6f734baa619747968bbd301f486a622d
+failed five observer assertions: all three Intimidate totals and Stone's
+Hills/NaturalCaves Stealth totals. The raw native rows showed correct
+skill ranks and Stone's +4 ordinary Stealth, with actual native area
+metadata observed and restored. Read-only 2.1.7b IL proves
+RuleSkillCheck.StatValue excludes the event Bonus; BaseRollResult adds
+StatValue, Bonus and D20. The observer incorrectly read StatValue alone.
+The focused correction now asserts the separate +3 Intimidate and +8
+rocky-terrain event bonuses, the effective total and independent native
+BaseRollResult minus D20. Production compilation and four focused tests
+pass (~20 seconds). This failed native result is preserved as FAIL until
+the corrected observer passes freshly. Raw result SHA-256
+7645404a8fd9b993cf27040f582b937503b7ea6bf817d73e8badeb32990c4a0c;
+review SHA-256 098fa34c18296ce1bdfc169ed5c654ee00cb4c6e97bd0489bef24adb17186491;
+collector SHA-256 10c16e7455762e23d97367382e6f4168180cbe165554938feb1ed057aa7c10ea.
+Transaction compat-20261020T042156Z-6e60730a375a returned Restored and
+verified; its limited child exited 1, task was removed, and independent
+actual-intake audit SHA-256 8da9e802c9f6c31bd3fb558d34499877a64b88703233a65293809f6fa6e511e7
+found only the authorized Working-save length/mtime/hash difference.
+The three 393-file restored package copies matched the retained ZIP
+(readback manifest SHA-256 ef5352188aa7ef4714177b44bea76d5480094ed3651e88be329e148ec96912e1)
+and only those copies were removed. Public routes remain withheld.
+
 The pushed source 6a1f8f96f6842f37384bf08f729e67d685c35568 built as
 development ZIP SHA-256 82b504bd120ca9d4bc714d0e9a12f522465f4804f3c914a31c73d9d974c66518,
 DLL SHA-256 6c573c27579b90a5247d2f82b9334682a9ab4a651b2b7f4cb717ed5693f59f66,

@@ -129,16 +129,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                             { IgnoreDifficultyBonusToDC = true });
                         int printedIntimidate = spec.Key == "hill-giant" ||
                             spec.Key == "stone-giant" ? 12 : 11;
+                        // Kingmaker's RuleSkillCheck.StatValue excludes its
+                        // event Bonus; BaseRollResult includes both plus D20.
+                        int intimidateBonus = (int)intimidateCheck.Bonus;
+                        int effectiveIntimidate = intimidateCheck.StatValue +
+                            intimidateBonus;
                         Sprint25Check("s28-" + spec.Key + "-intimidate",
-                            intimidateCheck.StatValue == printedIntimidate &&
+                            effectiveIntimidate == printedIntimidate &&
+                            intimidateBonus == 3 &&
+                            intimidateCheck.BaseRollResult -
+                                (int)intimidateCheck.D20 == effectiveIntimidate &&
                             !(stats.SkillPersuasion as
                                 ModifiableValueSkill).ClassSkill,
                             new JObject { ["owner"] = owner.UniqueId,
                                 ["ranks"] = stats.SkillPersuasion.BaseValue,
                                 ["rawPersuasion"] =
                                     stats.SkillPersuasion.ModifiedValue,
-                                ["nativeIntimidate"] =
-                                    intimidateCheck.StatValue,
+                                ["baseStatValue"] = intimidateCheck.StatValue,
+                                ["eventBonus"] = intimidateBonus,
+                                ["nativeRollModifier"] =
+                                    intimidateCheck.BaseRollResult -
+                                    (int)intimidateCheck.D20,
+                                ["nativeIntimidate"] = effectiveIntimidate,
                                 ["printedIntimidate"] = printedIntimidate },
                             "Native Intimidate consumes the giant subtype's class-skill bonus once without raising other Persuasion uses.");
                         string terrainSetting = Game.Instance.CurrentlyLoadedArea
@@ -150,19 +162,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var stealthCheck = Rulebook.Trigger(
                             new RuleSkillCheck(owner, StatType.SkillStealth, 100)
                             { IgnoreDifficultyBonusToDC = true });
-                        int actualTerrain = stealthCheck.StatValue -
-                            stats.SkillStealth.ModifiedValue;
+                        int actualTerrain = (int)stealthCheck.Bonus;
+                        int effectiveStealth = stealthCheck.StatValue +
+                            actualTerrain;
                         Sprint25Check("s28-" + spec.Key + "-terrain-stealth",
                             actualTerrain == expectedTerrain &&
+                            stealthCheck.BaseRollResult -
+                                (int)stealthCheck.D20 == effectiveStealth &&
                             (spec.Key != "stone-giant" ||
                                 stats.SkillStealth.ModifiedValue == 4 &&
-                                stealthCheck.StatValue == 4 + expectedTerrain),
+                                effectiveStealth == 4 + expectedTerrain),
                             new JObject { ["owner"] = owner.UniqueId,
                                 ["area"] = Game.Instance.CurrentlyLoadedArea?.AssetGuid,
                                 ["setting"] = terrainSetting,
                                 ["rawStealth"] = stats.SkillStealth.ModifiedValue,
-                                ["checkStealth"] = stealthCheck.StatValue,
+                                ["baseStatValue"] = stealthCheck.StatValue,
+                                ["checkStealth"] = effectiveStealth,
                                 ["eventBonus"] = actualTerrain,
+                                ["nativeRollModifier"] =
+                                    stealthCheck.BaseRollResult -
+                                    (int)stealthCheck.D20,
                                 ["expectedBonus"] = expectedTerrain },
                             "The native skill-check consumer grants only Stone's selected-area conditional racial Stealth bonus.");
                         if (spec.Key == "stone-giant")
@@ -174,6 +193,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Sprint25Check("s28-stone-giant-" + setting +
                                     "-stealth", (int)terrain["rawStealth"] == 4 &&
                                     (int)terrain["checkStealth"] == 12 &&
+                                    (int)terrain["nativeRollModifier"] == 12 &&
                                     (int)terrain["eventBonus"] == 8 &&
                                     (bool)terrain["restored"], terrain,
                                     "Real installed area metadata supplies the selected rocky setting to Stone's native skill check and is restored in the same call.");
@@ -370,6 +390,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new MissingMethodException(
                     "SceneLoader.CurrentlyLoadedArea exact setter");
             int value = 0;
+            int nativeRollModifier = 0;
             bool observed = false;
             try
             {
@@ -381,7 +402,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var check = Rulebook.Trigger(new RuleSkillCheck(
                     owner, StatType.SkillStealth, 100) {
                     IgnoreDifficultyBonusToDC = true });
-                value = check.StatValue;
+                value = check.StatValue + (int)check.Bonus;
+                nativeRollModifier = check.BaseRollResult - (int)check.D20;
                 observed = true;
             }
             finally
@@ -398,6 +420,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["setting"] = setting,
                 ["rawStealth"] = owner.Stats.SkillStealth.ModifiedValue,
                 ["checkStealth"] = value,
+                ["nativeRollModifier"] = nativeRollModifier,
                 ["eventBonus"] = value -
                     owner.Stats.SkillStealth.ModifiedValue,
                 ["observed"] = observed,
