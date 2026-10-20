@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
-    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon')]
+    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids')]
     [string]$PersistenceScope='ankylosaurus',
     [string]$DevelopmentPurpose,
     [switch]$ExpandedSummoningDisabled,
@@ -16,7 +16,11 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 if($ExpandedSummoningDisabled -and $Scenario -cne 'working-save-expanded-summoning-verify-cleanup') { throw 'Module OFF is restricted to the exact cleanup stage.' }
-$development=Test-KmgGriffonDevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
+$development=if($PersistenceScope -ceq 'giant-humanoids') {
+    Test-KmgSprint28DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
+} else {
+    Test-KmgGriffonDevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
+}
 Assert-KmgNotRunning
 $candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose $DevelopmentPurpose
 if($development) {
@@ -29,7 +33,7 @@ if($development) {
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runPrefix=if($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runPrefix=if($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
 $runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {

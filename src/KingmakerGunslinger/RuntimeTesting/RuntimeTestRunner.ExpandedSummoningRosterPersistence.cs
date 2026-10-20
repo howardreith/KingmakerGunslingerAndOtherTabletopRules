@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Items;
 using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -31,9 +33,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool RosterPersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.Scope ||
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
-            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope || Sprint27PersistenceScope; } }
+            Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope ||
+            Sprint27PersistenceScope || Sprint28PersistenceScope; } }
         private bool Sprint27PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GriffonScope; } }
+        private bool Sprint28PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsScope; } }
         private bool Sprint26PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope; } }
         private bool Sprint25PersistenceScope
@@ -51,6 +56,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint25PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantBodyKeys :
             Sprint26PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.MagicalBeastKeys :
             Sprint27PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GriffonKeys :
+            Sprint28PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
@@ -227,6 +233,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["limbs"] = new JArray(unit.Body.AdditionalLimbs.Select(l => l.MaybeWeapon?.Blueprint.AssetGuid)),
                 ["secondary"] = new JArray(unit.Body.AdditionalLimbs.Where(l => l.MaybeWeapon != null && l.MaybeWeapon.IsSecondary)
                     .Select(l => l.MaybeWeapon.Blueprint.AssetGuid)) };
+            if (GiantHumanoidRulesPolicy.IsGiant(
+                unit.Get<UnitPartRelease143RosterReceipt>()?.Key))
+            {
+                profile["ownedEquipment"] = new JArray(unit.Descriptor.Inventory.Items
+                    .OrderBy(item => item.Blueprint.AssetGuid, StringComparer.Ordinal)
+                    .Select(item => new JObject {
+                        ["blueprint"] = item.Blueprint.AssetGuid,
+                        ["owner"] = item.Owner?.Unit?.UniqueId,
+                        ["nonRemovable"] = item.IsNonRemovable,
+                        ["lootable"] = item.IsLootable,
+                        ["count"] = item.Count
+                    }));
+                var catchPart = unit.Get<UnitPartSummonGiantRockCatch>();
+                profile["catchSpentRound"] = catchPart == null ? (JToken)JValue.CreateNull() :
+                    new JValue(catchPart.LastRound);
+            }
             if(unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.GorgonUnitGuid||unit.Blueprint.AssetGuid==Sprint26MagicalBeastRules.BuletteUnitGuid||unit.Blueprint.AssetGuid==GriffonVisualPolicy.BlueprintGuid){
                 var chassis=unit.Descriptor.Progression.Features.Enumerable.Where(v=>v.Blueprint.GetComponent<MagicalBeastPrimaryStrength>()!=null).ToArray();
                 var names=chassis.SelectMany(v=>v.SelectComponents<GameLogicComponent>()).Select(v=>v.name).ToArray();
@@ -270,6 +292,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Where(o => o != null && o.name.StartsWith("KMG_", StringComparison.Ordinal)).Distinct().ToArray();
         }
 
+        private void ObserveSprint28PersistentGiant(UnitEntityData unit,
+            UnitPartRelease143RosterReceipt receipt, JObject profile,
+            bool prepare, ItemEntity[] partyBefore, int[] partyCounts)
+        {
+            var body = unit.Blueprint.Body;
+            var expected = new List<string> {
+                body.PrimaryHand.AssetGuid,
+                body.PrimaryHandAlternative1.AssetGuid,
+                body.PrimaryHandAlternative2.AssetGuid
+            };
+            if (body.Armor != null) expected.Add(body.Armor.AssetGuid);
+            ItemEntity[] items = unit.Descriptor.Inventory.Items.ToArray();
+            bool exact = items.Length == expected.Count &&
+                expected.Distinct(StringComparer.Ordinal).Count() == expected.Count &&
+                items.Select(item => item.Blueprint.AssetGuid)
+                    .OrderBy(guid => guid, StringComparer.Ordinal)
+                    .SequenceEqual(expected.OrderBy(guid => guid, StringComparer.Ordinal)) &&
+                items.Distinct().Count() == items.Length &&
+                items.All(item => ReferenceEquals(item.Owner, unit.Descriptor) &&
+                    item.IsNonRemovable && !item.IsLootable && item.Count == 1) &&
+                ((receipt.Key == GiantHumanoidRulesPolicy.Stone) == (body.Armor == null)) &&
+                Sprint28PartyInventoryExact(partyBefore, partyCounts);
+            var catchPart = unit.Get<UnitPartSummonGiantRockCatch>();
+            bool stone = receipt.Key == GiantHumanoidRulesPolicy.Stone;
+            JToken savedRound = prepare ? profile["catchSpentRound"] :
+                JObject.Parse(receipt.Profile)["catchSpentRound"];
+            bool catchExact = stone ?
+                catchPart != null && savedRound != null &&
+                savedRound.Type == JTokenType.Integer &&
+                catchPart.LastRound == (long)savedRound &&
+                !catchPart.TrySpend(catchPart.LastRound) :
+                catchPart == null && (savedRound == null ||
+                    savedRound.Type == JTokenType.Null);
+            RosterPersistenceCheck("s28-owned-equipment-catch-" + receipt.Key,
+                exact && catchExact,
+                new JObject {
+                    ["key"] = receipt.Key, ["unit"] = unit.UniqueId,
+                    ["prepare"] = prepare, ["itemCount"] = items.Length,
+                    ["expectedBlueprints"] = new JArray(expected),
+                    ["items"] = new JArray(items.Select(item => new JObject {
+                        ["processInstance"] = RuntimeHelpers.GetHashCode(item),
+                        ["blueprint"] = item.Blueprint.AssetGuid,
+                        ["owner"] = item.Owner?.Unit?.UniqueId,
+                        ["nonRemovable"] = item.IsNonRemovable,
+                        ["lootable"] = item.IsLootable,
+                        ["count"] = item.Count
+                    })),
+                    ["partyInventoryExact"] =
+                        Sprint28PartyInventoryExact(partyBefore, partyCounts),
+                    ["savedCatchRound"] = savedRound?.DeepClone(),
+                    ["loadedCatchRound"] = catchPart == null ?
+                        (JToken)JValue.CreateNull() :
+                        new JValue(catchPart.LastRound),
+                    ["catchExact"] = catchExact
+                },
+                "Each saved giant owns its exact distinct nontransferable weapon/armor instances; Stone's spent-round catch ledger survives load without another attempt.");
+        }
+
         private IEnumerable<int> DestroyRosterPersistence(UnitEntityData[] units, string stage)
         {
             foreach (var step in ObserveRosterResourceCleanup(units, stage)) yield return step;
@@ -287,6 +367,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!loadReady) { CompleteRosterPersistence(RuntimeTestStatuses.Fail, "No native load boundary;no mutation/save."); yield break; }
             var party = Game.Instance.Player.Party.Where(u => u != null && u.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
+            ItemEntity[] giantPartyItems = Sprint28PersistenceScope ?
+                Game.Instance.Player.Inventory.Items.ToArray() : null;
+            int[] giantPartyCounts = giantPartyItems?.Select(item => item.Count).ToArray();
             var caster = party.First(u => u.HoldingState != null);
             try
             {
@@ -404,7 +487,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // clean up.
             bool moduleOn = _context.FeatureModules.Active.ExpandedSummoning;
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
-                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope || Sprint27PersistenceScope) && verify;
+                Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope ||
+                Sprint26PersistenceScope || Sprint27PersistenceScope || Sprint28PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -425,12 +509,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (var unit in units)
             {
                 var receipt = unit.Get<UnitPartRelease143RosterReceipt>();
+                if (Sprint28PersistenceScope && prepare && receipt.Key == GiantHumanoidRulesPolicy.Stone)
+                {
+                    // A request-owned spent catch is a saved precondition. The
+                    // real catch and its harm suppression are qualified by the
+                    // separate native combat observer.
+                    var catchPart = unit.Ensure<UnitPartSummonGiantRockCatch>();
+                    long round = ContextActionUngulateTrample.CurrentRound();
+                    if (!catchPart.TrySpend(round))
+                        throw new InvalidOperationException("Fresh Stone fixture already spent its catch.");
+                }
                 var profile = RosterPersistenceProfile(unit);
                 // Keep the stable racial/weapon receipt independent of
                 // module-ON-only observations added below. Those observations
                 // are evidence, not a second serialized feature schema.
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
+                if (Sprint28PersistenceScope)
+                    ObserveSprint28PersistentGiant(unit, receipt, profile, prepare,
+                        giantPartyItems, giantPartyCounts);
                 JObject moduleExpectedProfile = null;
                 if ((Sprint26PersistenceScope || Sprint27PersistenceScope) && !moduleOn) {
                     // The saved fixture was prepared ON. The exact-owner reach
@@ -556,6 +653,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             unit.View.GetComponentsInChildren<Renderer>(true).Where(r => r != null)
                                 .SelectMany(r => r.sharedMaterials).Select(m => m == null ? "<null>" : m.name)) },
                     "saved racial/profile/weapon identities retained exactly; each enabled armored dinosaur has one original-body receipt and module OFF deserializes natively without attachment");
+            }
+            if (Sprint28PersistenceScope)
+            {
+                ItemEntity[] allGiantItems = units.SelectMany(unit =>
+                    unit.Descriptor.Inventory.Items).ToArray();
+                RosterPersistenceCheck("s28-all-items-distinct",
+                    allGiantItems.Length == 11 &&
+                    allGiantItems.Distinct().Count() == allGiantItems.Length &&
+                    Sprint28PartyInventoryExact(giantPartyItems,
+                        giantPartyCounts),
+                    new JObject { ["items"] = allGiantItems.Length,
+                        ["distinct"] = allGiantItems.Distinct().Count(),
+                        ["processInstances"] = new JArray(allGiantItems
+                            .Select(RuntimeHelpers.GetHashCode)),
+                        ["partyInventoryExact"] =
+                            Sprint28PartyInventoryExact(giantPartyItems,
+                                giantPartyCounts) },
+                    "Three saved giant owners retain eleven distinct items and leave the party inventory unchanged.");
             }
             if (!_context.FeatureModules.Active.ExpandedSummoning)
             {

@@ -160,6 +160,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// <summary>Bounded read-only Sprint 26 native inputs; no actor or save.</summary>
         internal const string ObserveExpandedSummoningSprint27Inputs =
             "observe-expanded-summoning-sprint27-native-inputs";
+        internal const string ObserveExpandedSummoningSprint28Inputs =
+            "observe-expanded-summoning-sprint28-native-inputs";
         internal const string ObserveExpandedSummoningSprint26Inputs =
             "observe-expanded-summoning-sprint26-native-inputs";
         /// <summary>
@@ -248,6 +250,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint24-native-review";
         internal const string DisposableExpandedSummoningSprint25NativeReview =
             "disposable-expanded-summoning-sprint25-native-review";
+        internal const string DisposableExpandedSummoningSprint28NativeReview =
+            "disposable-expanded-summoning-sprint28-native-review";
         internal const string DisposableExpandedSummoningSprint27NativeReview =
             "disposable-expanded-summoning-sprint27-native-review";
         internal const string DisposableExpandedSummoningSprint26NativeReview =
@@ -261,7 +265,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSprint24NativeReview ||
                 scenario == DisposableExpandedSummoningSprint25NativeReview ||
                 scenario == DisposableExpandedSummoningSprint26NativeReview ||
-                scenario == DisposableExpandedSummoningSprint27NativeReview;
+                scenario == DisposableExpandedSummoningSprint27NativeReview ||
+                scenario == DisposableExpandedSummoningSprint28NativeReview;
         }
         internal const string DisposableExpandedSummoningPlayerPath =
             "disposable-expanded-summoning-player-path";
@@ -866,6 +871,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint24TheropodCensus,
                 ObserveExpandedSummoningSprint26Inputs,
                 ObserveExpandedSummoningSprint27Inputs,
+                ObserveExpandedSummoningSprint28Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
@@ -884,6 +890,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint25NativeReview,
                 DisposableExpandedSummoningSprint26NativeReview,
                 DisposableExpandedSummoningSprint27NativeReview,
+                DisposableExpandedSummoningSprint28NativeReview,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningProjectedMenu,
                 DisposableExpandedSummoningPteranodonFaultDrill,

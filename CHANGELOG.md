@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.162-expanded-summoning-sprint28-giants
+
+- Adds the adult Hill, Stone, and Fire Giants and eleven SNA-only quantity roots.
+- Adds their printed melee alternatives, ammunition-free rock attacks, heated
+  Fire Giant rock, eligible rock catching, and summon-owned equipment.
+- Provides visible native giant bodies and painted per-creature icons. Rough
+  appearance details remain visual backlog. See the
+  [v0.0.162 release notes](docs/RELEASE-NOTES-0.0.162.md).
+
 ## 0.0.161-expanded-summoning-sprint27-griffon
 
 - Adds the untemplated SNA IV Griffon and its six IV-IX quantity roots,

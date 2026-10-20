@@ -48,6 +48,19 @@ namespace KingmakerGunslinger.Blueprints
             if (!bySymbol.TryGetValue("KMG.Summoning.Natural.Griffon.UnitType", out griffonType) || !(griffonType is BlueprintUnitType))
                 throw new InvalidOperationException("Exact Griffon type icon consumer is missing.");
             ((BlueprintUnitType)griffonType).Image = ExpandedSummoningProjectIcons.Require("griffon");
+            foreach (var giant in new[] {
+                new { Key = "hill-giant", Type = "HillUnitType" },
+                new { Key = "stone-giant", Type = "StoneUnitType" },
+                new { Key = "fire-giant", Type = "FireUnitType" } })
+            {
+                BlueprintScriptableObject giantType;
+                if (!bySymbol.TryGetValue("KMG.Summoning.Giant." + giant.Type,
+                        out giantType) || !(giantType is BlueprintUnitType))
+                    throw new InvalidOperationException(
+                        "Exact giant type icon consumer is missing: " + giant.Key);
+                ((BlueprintUnitType)giantType).Image =
+                    ExpandedSummoningProjectIcons.Require(giant.Key);
+            }
             // The published Wasp's inspectable creature type is its own
             // visible consumer, separate from the summon menu abilities.
             BlueprintScriptableObject waspType;

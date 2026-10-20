@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 111) throw new InvalidOperationException("Expanded Summoning unique creature count must be 111.");
+            if (Creatures.Length != 114) throw new InvalidOperationException("Expanded Summoning unique creature count must be 111.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.Summoning
             // completed rather than re-registered, so they are already counted
             // in both families above.
             ValidateFamily(SummonFamily.Monster, 96, 545);
-            ValidateFamily(SummonFamily.NaturesAlly, 98, 563);
+            ValidateFamily(SummonFamily.NaturesAlly, 101, 574);
         }
 
         private static void ValidateFamily(SummonFamily family, int roster, int placements)
@@ -136,7 +136,11 @@ namespace KingmakerGunslinger.Summoning
                 // Sprint 26 charter-selected, untemplated magical beasts.
                 C("gorgon","Gorgon",8,false,null,"Horse"),
                 C("bulette","Bulette",null,false,6,"Bulette"),
-                C("griffon","Griffon",null,false,4,"Manticore")
+                C("griffon","Griffon",null,false,4,"Manticore"),
+                // Sprint 28: three adult, untemplated SNA-only humanoid giants.
+                C("hill-giant","Hill Giant",null,false,6,"Hill Giant"),
+                C("stone-giant","Stone Giant",null,false,6,"Hill Giant"),
+                C("fire-giant","Fire Giant",null,false,7,"Frost Giant")
             };
         }
 

@@ -55927,6 +55927,534 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.HillGiant",
+      "guid": "58770207fd8c4084a0d9addbac591616",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.StoneGiant",
+      "guid": "956501547dd54479b329a315aab07a05",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.FireGiant",
+      "guid": "65481592185641c99c502e21ba9a5fa2",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.HillGiant.One",
+      "guid": "d186002f0b994b6eae137746c59e62fd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier6.StoneGiant.One",
+      "guid": "e39e8278b1204bf281d78e98b862e2bb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.HillGiant.OneD3",
+      "guid": "018bd0b85dd645c3b4642ab03209c17c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.StoneGiant.OneD3",
+      "guid": "f2f8c6198b33474db2a627acf865a6ad",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier7.FireGiant.One",
+      "guid": "f5d16486c68b4dd9ace4d827f4220bdf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.HillGiant.OneD4PlusOne",
+      "guid": "a2a522db084e42718639cb54094a5e49",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.StoneGiant.OneD4PlusOne",
+      "guid": "386cf0a295db4cad8d4dc3081718d1a6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier8.FireGiant.OneD3",
+      "guid": "12063acf2fae498ebebda0588ecb6a30",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.HillGiant.OneD4PlusOne",
+      "guid": "2c7b4bce93ce47249240ee08de67fd1d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.StoneGiant.OneD4PlusOne",
+      "guid": "899026fbee9d4148ae0bf8efd904b689",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SNA.Tier9.FireGiant.OneD4PlusOne",
+      "guid": "40f23ceb6c444bdca4ffe5f33ea1ed53",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.Greatclub2d8",
+      "guid": "2b821e28b95d40f197f5fb847008b93f",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.Greatsword3d6",
+      "guid": "d33330230bc444a98c7f7b0b81778f1d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.Slam1d8",
+      "guid": "fe074f0010824f9cb2ab6864469e1852",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.HillRock1d8",
+      "guid": "a32cbf513a024dd5b91f140bc5dfa91d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.StoneRock1d8",
+      "guid": "20c088bbd36c4e43a7b26acde82345a1",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.FireRock1d8",
+      "guid": "80f42e4d54104df681f39637dfc43f25",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.HillRockType",
+      "guid": "6925ed3e113540649e9f220154d846e6",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.StoneRockType",
+      "guid": "c711974fd2f8479a885e34c0b3711880",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.FireRockType",
+      "guid": "28981505774b459dbf0e9871a9bd2dd3",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.HillHideArmor",
+      "guid": "f8edbbf328a548cdbd1ad38e54c5ce50",
+      "plannedType": "BlueprintItemArmor",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.FireHalfPlate",
+      "guid": "26ef8f57ab7645669b6f0fd2ed7b3c44",
+      "plannedType": "BlueprintItemArmor",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.HillUnitType",
+      "guid": "1056e4b17dda4ebd8bf28b361710f16e",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.StoneUnitType",
+      "guid": "da99562d3bdf438788d922214418db4f",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.FireUnitType",
+      "guid": "b2adda33d4684188bb18ed23f10b90fb",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.StoneNaturalArmor11",
+      "guid": "34cdbc0d44c441219d99cd332dde9f29",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.HillTraits",
+      "guid": "8c9560a29844441ea929f6da1384b60a",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.StoneTraits",
+      "guid": "206644422e4a4f0194dcb4bea7d150f2",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.FireTraits",
+      "guid": "724e7e13cce64adba5ac6a9e7b4635a5",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier6.HillGiant.One",
+      "guid": "ea324076e6435d22a06269aa6e128a60",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier6.StoneGiant.One",
+      "guid": "a35f916d0bd25275bc88be764a6319b7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier7.HillGiant.OneD3",
+      "guid": "d138e038d9b75c18ad6634858b7c9156",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier7.StoneGiant.OneD3",
+      "guid": "88d62877ff14532a91deb5fdb7e08614",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier7.FireGiant.One",
+      "guid": "a29f6aabf14c560fa89e97017b709b4e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier8.HillGiant.OneD4PlusOne",
+      "guid": "00bc924742f652d6a9f85b17ffd84862",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier8.StoneGiant.OneD4PlusOne",
+      "guid": "63fd71994700504ab7bf9ec7fc48730d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier8.FireGiant.OneD3",
+      "guid": "30a44dad3a795f3cb7de663ac36bb065",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier9.HillGiant.OneD4PlusOne",
+      "guid": "6f8aa279997a5ab7a7e77befb24efd31",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier9.StoneGiant.OneD4PlusOne",
+      "guid": "2f46756e32f959ab82a7f514eeefab7e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Naturalist.Tier9.FireGiant.OneD4PlusOne",
+      "guid": "bc46117f278551b29ea1852b2c4904c0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier6.HillGiant.One",
+      "guid": "e410755e8f1a525583aef66d77773186",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier6.StoneGiant.One",
+      "guid": "0b6dc5cf3dee5ee39464180c0d051b73",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier7.HillGiant.OneD3",
+      "guid": "3641e9155d2c5235879a0da6830d5058",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier7.StoneGiant.OneD3",
+      "guid": "713f655ce0f250f3b5e7e584dece36b9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier7.FireGiant.One",
+      "guid": "d69b989d3b095ebcb3648647a3ea582e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier8.HillGiant.OneD4PlusOne",
+      "guid": "5c971982150055138c141dc9e9810793",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier8.StoneGiant.OneD4PlusOne",
+      "guid": "a8df63892a5d5a6381da9fbf6d4c94e4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier8.FireGiant.OneD3",
+      "guid": "d3c3d16ad74e56b79224f11aca771550",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier9.HillGiant.OneD4PlusOne",
+      "guid": "80a8d03aeb0957eea6e613fe965f65ca",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier9.StoneGiant.OneD4PlusOne",
+      "guid": "6eca254fd35a56dabbd2b8e0cdd59953",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.FeralHunter.Tier9.FireGiant.OneD4PlusOne",
+      "guid": "0aef9210e4905d9aa2e203c6caa07fd8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier7.HillGiant.OneD3",
+      "guid": "9c85bbb6758a5b0abc434bafef9e47f7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier7.StoneGiant.OneD3",
+      "guid": "4bd9229abbd85473ab6b9edcb6ec4f61",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier7.FireGiant.One",
+      "guid": "7dc7e8cfc3d353bf8ca7f343f7dd6bac",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier9.HillGiant.OneD4PlusOne",
+      "guid": "51f5763254fe52c8bb35684f438e31fd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier9.StoneGiant.OneD4PlusOne",
+      "guid": "6566c0b24cf455a7868b0396ed42c189",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Preservationist.Tier9.FireGiant.OneD4PlusOne",
+      "guid": "f2b55930d08b5e1fa1b03b39c3df5beb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.FireImprovedOverrun",
+      "guid": "b45179f0d157465f899c0b9d096b67a6",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.CleaveAction",
+      "guid": "952dc5f831b2490caf0c6be723b18f0c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Project-owned native Cleave execution for Hill and Fire only."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.CleaveFeature",
+      "guid": "9b979adb2ff640a79ebc4dda5cbced22",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Project-owned Cleave grant for Hill and Fire only."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.GreatclubReachType",
+      "guid": "81f343d50f774520936111cd95d4d677",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.GreatswordReachType",
+      "guid": "41cce4f929b44a57a68dc6c02b037fc0",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.SlamReachType",
+      "guid": "a51e01183f844ce58be689fc075aa716",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

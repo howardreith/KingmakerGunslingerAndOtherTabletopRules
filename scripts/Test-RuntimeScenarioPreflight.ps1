@@ -175,6 +175,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint25-native-review',
     'disposable-expanded-summoning-sprint26-native-review',
     'disposable-expanded-summoning-sprint27-native-review',
+    'disposable-expanded-summoning-sprint28-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
@@ -182,6 +183,7 @@ $expected = @(
     'observe-expanded-summoning-sprint24-theropod-census',
     'observe-expanded-summoning-sprint26-native-inputs',
     'observe-expanded-summoning-sprint27-native-inputs',
+    'observe-expanded-summoning-sprint28-native-inputs',
     'observe-alternate-summoning-sources',
     'observe-alternate-summoning-blocked-family',
     'disposable-alternate-summoning-contracts',
@@ -865,6 +867,28 @@ foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint25-review-rejects-extra-missing-or-unimplemented-phase'
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
+$sprint28ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint28-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'})) 'sprint28-profiles-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='modes'})) 'sprint28-modes-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'})) 'sprint28-commands-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='turns'})) 'sprint28-turns-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ownership'})) 'sprint28-ownership-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='disarm'})) 'sprint28-disarm-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='catch'})) 'sprint28-catch-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai'})) 'sprint28-ai-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai-turns'})) 'sprint28-ai-turns-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave'})) 'sprint28-cleave-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='routes'})) 'sprint28-routes-admitted'
+$sprint28CleaveRequest = New-KmgRuntimeRequest @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint28-cleave-request-test')
+Assert-True ($sprint28CleaveRequest.parameters.reviewPhase -ceq 'cleave') 'sprint28-cleave-serialized'
+$sprint28CommandRequest = New-KmgRuntimeRequest @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint28-command-request-test')
+Assert-True ($sprint28CommandRequest.parameters.reviewPhase -ceq 'commands') 'sprint28-commands-serialized'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='unknown'} } 'sprint28-rejects-unknown-phase'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='Cleave'} } 'sprint28-rejects-wrong-case-cleave'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='Routes'} } 'sprint28-rejects-wrong-case-routes'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave';saveName='KMG_AUTOMATION_WORKING'} } 'sprint28-rejects-cleave-save-parameter'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='cleave'} } 'sprint28-cleave-requires-exit'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='profiles'} } 'sprint28-requires-exit'
 $sprint27ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint27-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 foreach($phase in @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint27ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "sprint27-review-admits-$phase"
@@ -1813,6 +1837,28 @@ foreach ($case in @(
     @{Parameters=@{saveName='KMG_AUTOMATION_WORKING';phase='prepare';planPath='relative.json'};Exit=$true;Label='existing-guarded-plan'}
 )) {
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight -Scenario 'elemental-character-traits-owned-save' -ExpectedVersion $activeVersion -TimeoutSeconds 900 -ExitAfterCompletion:$case.Exit -Parameters $case.Parameters } ('trait-owned-save-'+$case.Label)
+}
+
+foreach ($phase in @('working-save-expanded-summoning-prepare',
+    'working-save-expanded-summoning-verify-cleanup',
+    'working-save-expanded-summoning-verify-absent')) {
+    $s28RequestArgs = @{ Scenario = $phase; ExpectedVersion = $activeVersion;
+        TimeoutSeconds = 600; StartupTimeoutSeconds = 180;
+        CatalogTimeoutSeconds = 180; SelectionTimeoutSeconds = 300;
+        CompletionTimeoutSeconds = 600; MainMenuTimeoutSeconds = 180;
+        ActionResolutionTimeoutSeconds = 180;
+        ActionInvocationTimeoutSeconds = 30;
+        DescriptorResolutionTimeoutSeconds = 30;
+        LoadEntryTimeoutSeconds = 30;
+        FingerprintTimeoutSeconds = 180; ExitAfterCompletion = $true;
+        Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING';
+            persistenceScope = 'giant-humanoids' } }
+    Assert-True ((Assert-KmgRuntimeScenarioPreflight @s28RequestArgs) -ne $null) ('s28-save-accepted-' + $phase)
+    $s28RequestArgs.Parameters.persistenceScope = 'Giant-humanoids'
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s28RequestArgs } ('s28-save-reject-case-' + $phase)
+    $s28RequestArgs.Parameters.persistenceScope = 'giant-humanoids'
+    $s28RequestArgs.ExitAfterCompletion = $false
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s28RequestArgs } ('s28-save-reject-no-exit-' + $phase)
 }
 
 if ($failures.Count -ne 0) {

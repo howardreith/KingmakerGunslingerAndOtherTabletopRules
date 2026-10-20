@@ -105,9 +105,9 @@ namespace KingmakerGunslinger.Summoning
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(Array.Empty<string>(), StringComparer.Ordinal);
+            new HashSet<string>(StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1108;
+        internal const int RegisteredLogicalPlacementCount = 1119;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -128,11 +128,27 @@ namespace KingmakerGunslinger.Summoning
                 !IsPublished(value)).ToArray();
             SummonVariantSpec[] brachiosaurus = all.Where(value =>
                 value.Creature.Key == GiantBodyRulesPolicy.BrachiosaurusKey).ToArray();
+            SummonVariantSpec[] giants = all.Where(value =>
+                value.Creature.Key == "hill-giant" ||
+                value.Creature.Key == "stone-giant" ||
+                value.Creature.Key == "fire-giant").ToArray();
+            bool giantRoutes = new[] { "hill-giant", "stone-giant" }
+                .All(key => giants.Where(value => value.Creature.Key == key)
+                    .Select(value => value.ParentTier).OrderBy(value => value)
+                    .SequenceEqual(new[] { 6, 7, 8, 9 })) &&
+                giants.Where(value => value.Creature.Key == "fire-giant")
+                    .Select(value => value.ParentTier).OrderBy(value => value)
+                    .SequenceEqual(new[] { 7, 8, 9 }) &&
+                giants.All(value => value.Family == SummonFamily.NaturesAlly &&
+                    !value.Creature.MonsterTemplated);
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                SuppressedCreatureKeys.Count != 0 ||
-                !suppressed.Select(value => value.Creature.Key).Distinct().OrderBy(value => value).SequenceEqual(Array.Empty<string>()) ||
+                SuppressedCreatureKeys.Count != 0 || !giantRoutes ||
+                !giants.All(IsPublished) ||
+                !giants.Select(value => value.Creature.Key).Distinct()
+                    .OrderBy(value => value).SequenceEqual(
+                        new[] { "fire-giant", "hill-giant", "stone-giant" }) ||
                 brachiosaurus.Length != 3 ||
                 // Publication adds no Monster row or template child.
                 brachiosaurus.Any(value =>

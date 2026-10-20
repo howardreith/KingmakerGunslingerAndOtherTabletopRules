@@ -126,8 +126,8 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
         if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon') -or -not $ExitAfterCompletion) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts or griffon and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon or giant-humanoids and automatic exit.'
         }
         $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
     } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and
@@ -885,7 +885,8 @@ try {
     else {
         & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
             -EvidenceDirectory $evidence -PackagePath $package `
-            -DevelopmentPurpose $DevelopmentPurpose
+            -DevelopmentPurpose $DevelopmentPurpose `
+            -ValidatedDeploymentManifestPath $deploymentManifestPath
     }
     Write-Host "Runtime evidence manifest: $(Join-Path $evidence 'evidence-manifest.json')"
     Write-Host "Runtime result: $resultPath"
