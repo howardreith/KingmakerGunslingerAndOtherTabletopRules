@@ -74,9 +74,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             catch (Exception error)
             {
-                Sprint25Check("execution", false, new JObject {
-                    ["exception"] = error.ToString()
-                }, "The selected phase completes without setup or observer failure.");
+                var failure = new JObject { ["exception"] = error.ToString() };
+                if (IsSprint28Review && _sprint25Clock != null &&
+                    error.Message.Contains("native-clock-turn-order-coverage"))
+                    failure["turnCoverage"] =
+                        _sprint25Clock.DescribeTurnCoverage();
+                Sprint25Check("execution", false, failure,
+                    "The selected phase completes without setup or observer failure.");
             }
             CleanupSprint25NativeReview();
             string report = Path.Combine(_request.EvidenceDirectory,
