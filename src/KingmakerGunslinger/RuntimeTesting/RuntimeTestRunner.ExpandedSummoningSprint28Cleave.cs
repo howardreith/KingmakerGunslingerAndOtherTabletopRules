@@ -70,6 +70,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Single();
                 var nativeDelivery = nativeAction.GetComponents<
                     AbilityCustomCleave>().Single();
+                bool privatePenalty = delivery.MissPenalty != null &&
+                    action.ComponentsArray.Contains(delivery.MissPenalty) &&
+                    !nativeAction.ComponentsArray.Contains(
+                        delivery.MissPenalty);
                 bool graph = grant.Facts.Length == 1 &&
                     ReferenceEquals(grant.Facts[0], action) &&
                     ReferenceEquals(delivery.GreaterFeature, nativeGreater) &&
@@ -81,13 +85,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         nativeGreater.AssetGuid,
                         StringComparison.OrdinalIgnoreCase)) &&
                     !action.ComponentsArray.Intersect(
-                        nativeAction.ComponentsArray).Any();
+                        nativeAction.ComponentsArray).Any() &&
+                    privatePenalty;
                 Sprint25Check("s28-cleave-graph", graph, new JObject {
                     ["action"] = action.AssetGuid,
                     ["feature"] = feature.AssetGuid,
                     ["greaterFact"] = delivery.GreaterFeature?.AssetGuid,
                     ["nativeGreaterFact"] =
                         nativeDelivery.GreaterFeature?.AssetGuid,
+                    ["privateMissPenalty"] = privatePenalty,
                     ["sharedComponents"] = action.ComponentsArray.Intersect(
                         nativeAction.ComponentsArray).Count() },
                     "The private giant action has its own components and Great Cleave discriminator; native Cleave is unchanged.");
@@ -98,8 +104,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     var trials = new JArray();
                     bool passed = false;
-                    for (int trial = 0; trial < 3 && !passed; trial++)
+                    bool missObserved = false;
+                    bool missVerified = false;
+                    for (int trial = 0; trial < 7 &&
+                        (!passed || !missVerified); trial++)
                     {
+                        bool expectFirstMiss = !missObserved;
                         var created = new List<UnitEntityData>();
                         UnitUseAbility command = null;
                         var observer = new Sprint28CleaveAttacks();
@@ -158,6 +168,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 foreach (Vector3 forward in new[] {
                                     (far - surveyedOrigin).normalized }.Concat(
                                         CompassOffsets))
+                                {
                                 foreach (float distance in new[] { 2.6f, 3.4f })
                                 {
                                     Vector3 side = Vector3.Cross(forward,
@@ -234,6 +245,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ";clusterDistance=" + distance;
                                     laneReady = true;
                                     break;
+                                }
+                                if (laneReady) break;
                                 }
                                 if (laneReady) break;
                             }
@@ -313,6 +326,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 throw new InvalidOperationException(
                                     "Cleave grant, discriminator or native-action isolation failed.");
                             owner.Stats.AdditionalAttackBonus.BaseValue += 20;
+                            if (expectFirstMiss)
+                                targets[0].Stats.AC.BaseValue = 100;
                             int acBefore = owner.Stats.AC.ModifiedValue;
                             long roundBefore = ContextActionUngulateTrample.CurrentRound();
                             var costs = new JArray();
@@ -363,12 +378,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     cleavePart.LastAdditionalAttackRound <=
                                         ContextActionUngulateTrample.CurrentRound() :
                                     cleavePart == null;
-                                passed = command.IsStarted &&
+                                bool normalExecution = command.IsStarted &&
                                     command.IsFinished &&
                                     command.ExecutionProcess != null &&
                                     command.ExecutionProcess.IsEnded &&
                                     !command.Cutscene &&
-                                    !command.IsIgnoreCooldown &&
+                                    !command.IsIgnoreCooldown;
+                                bool exactCost = economy.Count(command) == 1 &&
+                                    economy.Exact(command, turnBased) &&
+                                    action.ActionType.ToString() == "Standard";
+                                if (expectFirstMiss)
+                                {
+                                    missObserved = rows.Count == 1 &&
+                                        rows[0].AttackRoll != null &&
+                                        !rows[0].AttackRoll.IsHit;
+                                    if (missObserved)
+                                        missVerified = normalExecution &&
+                                            exactCost &&
+                                            rows[0].Target == targets[0] &&
+                                            acAfter - acBefore == -2 &&
+                                            penaltyCount == 1 &&
+                                            (cleavePart == null ||
+                                             cleavePart.LastAdditionalAttackRound <
+                                                roundBefore);
+                                }
+                                else passed = normalExecution &&
+                                    exactCost &&
                                     allHit &&
                                     rows.Select(value => value.Target.UniqueId)
                                         .Distinct().Count() == expected &&
@@ -376,10 +411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         targets.Contains(value.Target)) &&
                                     acAfter - acBefore == -2 &&
                                     penaltyCount == 1 &&
-                                    roundLedger &&
-                                    economy.Count(command) == 1 &&
-                                    economy.Exact(command, turnBased) &&
-                                    action.ActionType.ToString() == "Standard";
+                                    roundLedger;
                                 trials.Add(new JObject {
                                     ["owner"] = owner.UniqueId,
                                     ["targets"] = new JArray(targets.Select(
@@ -389,6 +421,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["lane"] = lane,
                                     ["admission"] = admission,
                                     ["attackSetupBonus"] = 20,
+                                    ["expectFirstMiss"] = expectFirstMiss,
+                                    ["missObserved"] = missObserved,
+                                    ["missVerified"] = missVerified,
                                     ["finished"] = command.IsFinished,
                                     ["executionEnded"] =
                                         command.ExecutionProcess?.IsEnded,
@@ -435,7 +470,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             PlaceExpandedSummoningUnit(fixture.Hostile,
                                 hostileBefore);
                         }
+                        if (missObserved && !missVerified) break;
                     }
+                    Sprint25Check("s28-" + key + (turnBased ?
+                        "-tb" : "-rtwp") + "-cleave-first-miss",
+                        missVerified, new JObject { ["attempts"] = trials },
+                        "A native first miss spends one Standard action, makes no follow-up, and applies one -2 AC penalty without spending Hill's extra-attack ledger.");
                     Sprint25Check("s28-" + key + (turnBased ?
                         "-tb" : "-rtwp") + "-cleave", passed,
                         new JObject { ["attempts"] = trials,

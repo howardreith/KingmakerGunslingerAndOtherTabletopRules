@@ -40,5 +40,7 @@ The eleven SNA roots are Hill VI one, VII 1d3, VIII/IX 1d4+1; Stone the same; Fi
 Implementation status and native qualification are tracked in
 [SPRINT28-STATUS.md](SPRINT28-STATUS.md). The owner authorized a project-owned
 Hill/Fire Cleave correction; no global native Cleave, Overrun or durability
-project is authorized. The printed Climb/Craft omission above is the only new
+project is authorized. A spent Cleave Standard action applies one native-duration
+−2 AC penalty even when its first attack misses; a miss produces no follow-up.
+The printed Climb/Craft omission above is the only new
 owner-approved gameplay omission for Sprint 28.

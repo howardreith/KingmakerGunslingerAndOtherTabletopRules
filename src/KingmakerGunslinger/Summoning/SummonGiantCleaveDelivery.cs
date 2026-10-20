@@ -38,6 +38,7 @@ namespace KingmakerGunslinger.Summoning
     {
         private const float AdjacentMeters = 5f * 0.3048f;
         private const float GeometryTolerance = 0.02f;
+        public AbilityEffectRunAction MissPenalty;
 
         public override IEnumerator<AbilityDeliveryTarget> Deliver(
             AbilityExecutionContext context, TargetWrapper target)
@@ -84,7 +85,20 @@ namespace KingmakerGunslinger.Summoning
                     hand.Weapon, 0) { IsFirstAttack = used.Count == 1 };
                 context.TriggerRule(attack);
                 if (attack.AttackRoll == null || !attack.AttackRoll.IsHit)
+                {
+                    // Native ApplyEffect runs only for yielded hit targets.
+                    // A spent Cleave action still carries its AC penalty on
+                    // the first miss, using this ability's cloned native
+                    // action and its original duration/context rules.
+                    if (used.Count == 1 && attack.AttackRoll != null)
+                    {
+                        if (MissPenalty == null)
+                            throw new InvalidOperationException(
+                                "Giant Cleave has no private miss penalty.");
+                        MissPenalty.Apply(context, new TargetWrapper(caster));
+                    }
                     yield break;
+                }
                 yield return new AbilityDeliveryTarget(
                     new TargetWrapper(next));
                 previous = next;
