@@ -1,10 +1,12 @@
 {
     "schemaVersion":  1,
     "sprint":  28,
-    "status":  "PUBLIC_SOURCE_CANDIDATE_NOT_QUALIFIED",
+    "status":  "HISTORICAL_DEVELOPMENT_PRESERVED",
     "baseCommit":  "dc9b83c71ff61f14a43d9cdabff37822796f43f2",
     "productionRoot":  "C:/Dev/KingmakerGunslingerLab/wt/s28",
     "productBranch":  "codex/expanded-summoning-sprint28-hill-stone-fire-giants",
+    "releaseEvidence":  "planning/SPRINT28-RELEASE-EVIDENCE.json",
+    "historicalAsOf":  "pre-release development; dated failures retain their original verdicts",
     "qualifiedArtifact":  null,
     "publicSurface":  {
                           "monsterCreatures":  96,

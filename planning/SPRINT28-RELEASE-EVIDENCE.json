@@ -1,0 +1,483 @@
+{
+  "schemaVersion": 1,
+  "sprint": 28,
+  "status": "RELEASED_STOP",
+  "recordedAtUtc": "2026-10-20T20:55:09.884295+00:00",
+  "host": "HOWARD-LAPTOP",
+  "productionRoot": "C:\\Dev\\KingmakerGunslingerLab\\wt\\s28",
+  "productPr": 62,
+  "productMerge": "f590aa33ced091506510981598eab184bcb293a9",
+  "testedSource": "b0f5b4bac9d9c78ab30b7a32697d3960b0890ef6",
+  "sourceFingerprint": "6a934c22d6f3eed0b2e20099955cce6e15c2e674722c54eb4c72e72f3bfa9e26",
+  "tag": "v0.0.162",
+  "annotatedTagObject": "f51dffc2dd86a38c646dee721604bdbb5ffaa8da",
+  "tagPeel": "f590aa33ced091506510981598eab184bcb293a9",
+  "releaseUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.162",
+  "stableLatest": true,
+  "prerelease": false,
+  "draft": false,
+  "packageSha256": "4d806ea4d235db95a945ee93b0af4a47c0b92f50ecd9ee44ddb98b6b021c2f12",
+  "dllSha256": "04b7e0cafeb4f03ec6a6e2ec640bfac5aca88b0eea2b55c802da63d3bb13b6b2",
+  "dllMvid": "0ac0af6e-bad3-41d0-a2bd-73fe4bc5e508",
+  "releaseManifestSha256": "e6953765613d37dec32ff0f5c071b87f804f009db4fa286d11d97fdc43840c08",
+  "checksumsSha256": "be3bca32b2ad2d83803970e412cc543c4cf45cebd6667a390af77f1e27f3f1e1",
+  "qualifiedLedgerSha256": "e57faac735a9df69458d0951a7c84137ddbe5402d031fd1d4cd68b8276b7ca11",
+  "publicAssets": [
+    {
+      "name": "KingmakerGunslinger-0.0.162-expanded-summoning-sprint28-giants.zip",
+      "id": 660451304,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.162/KingmakerGunslinger-0.0.162-expanded-summoning-sprint28-giants.zip",
+      "length": 55623143,
+      "sha256": "4d806ea4d235db95a945ee93b0af4a47c0b92f50ecd9ee44ddb98b6b021c2f12"
+    },
+    {
+      "name": "release-manifest.json",
+      "id": 660451305,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.162/release-manifest.json",
+      "length": 86129,
+      "sha256": "e6953765613d37dec32ff0f5c071b87f804f009db4fa286d11d97fdc43840c08"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "id": 660451306,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.162/SHA256SUMS.txt",
+      "length": 134,
+      "sha256": "be3bca32b2ad2d83803970e412cc543c4cf45cebd6667a390af77f1e27f3f1e1"
+    }
+  ],
+  "gate": {
+    "level": "Sprint",
+    "suite": "2697/2697 PASS",
+    "productionCompilation": true,
+    "strictPackageFiles": 394,
+    "gateResultSha256": "e7907269d3546e16b6e59a8996e53ca492922d839267ebf7d7e3b91fa2d762bd",
+    "gateStdoutSha256": "54c22882ac325dc44017e4a151214d9b7efb99975943bf213e57720e21300991"
+  },
+  "publicSurface": {
+    "projectCreatures": 114,
+    "monsterCreatures": 96,
+    "monsterPlacements": 545,
+    "natureAllyCreatures": 101,
+    "natureAllyPlacements": 574,
+    "generatedRoots": 1119,
+    "nativeWrappers": 29,
+    "visibleChoices": 1148,
+    "newSnaRoots": 11,
+    "hill": [
+      "VI one",
+      "VII 1d3",
+      "VIII 1d4+1",
+      "IX 1d4+1"
+    ],
+    "stone": [
+      "VI one",
+      "VII 1d3",
+      "VIII 1d4+1",
+      "IX 1d4+1"
+    ],
+    "fire": [
+      "VII one",
+      "VIII 1d3",
+      "IX 1d4+1"
+    ]
+  },
+  "coverage": [
+    {
+      "id": "composed-adult-profiles-melee-rock-and-feats",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1903442014079Z-db52828666f74effa211daae360c8cba",
+        "20261020T1907586247327Z-64a998e7b5cd48338ea299ae39ae2b29",
+        "20261020T1911493458954Z-9dfd31083905425f818a20de09f1946e"
+      ],
+      "proofCount": 12
+    },
+    {
+      "id": "native-rock-range-catching-fire-damage-and-controls",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1925491411694Z-d5df768011de4c2faa38cba9af51ae95",
+        "20261020T1903442014079Z-db52828666f74effa211daae360c8cba",
+        "20261020T1953292155032Z-409ffb4c67464d1590b18e39ff3a35e1"
+      ],
+      "proofCount": 12
+    },
+    {
+      "id": "rtwp-and-turn-based-native-commands-and-ai",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1916077274494Z-6e21d6899fa640b6b118ed7b84fe3c36",
+        "20261020T1921014196463Z-e45cee57c3a94ee7852be17160d661c6",
+        "20261020T1938131878599Z-041af3894d384cba95f0cfa10e158818",
+        "20261020T1942250942722Z-b5b8f6287584434bb5fcc260f1232655"
+      ],
+      "proofCount": 16
+    },
+    {
+      "id": "owned-equipment-corpse-loot-and-functional-bodies-icons",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1930121468834Z-b85fa62051304a2a851f54cf171844da",
+        "20261020T1934237054161Z-23058c4382314111ae9e0d36565982b2",
+        "20261020T1903442014079Z-db52828666f74effa211daae360c8cba"
+      ],
+      "proofCount": 12
+    },
+    {
+      "id": "targeted-persistence-on-off-cleanup-fresh-absence",
+      "result": "PASS",
+      "runIds": [
+        "20261020T2005207131019Z-4bc1e02a758f4e86b4aab0cf8047916d",
+        "20261020T2013470006348Z-2da23224db764942b6d1725f2d54eead",
+        "20261020T2021003285159Z-9f97df88e64347bc88b2d5c0389e080c",
+        "20261020T2028200153899Z-06eddbbb821a41dd8c603d94bb76367a",
+        "20261020T2034537722858Z-79e0ba4c1f4649949efdf1f84c84d9ba",
+        "20261020T2042027591437Z-28cb92c2d95d44debe8dfbfa9f431dd9"
+      ],
+      "proofCount": 22
+    },
+    {
+      "id": "eleven-public-roots-quantities-and-protected-identity",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1856465108517Z-6b3be4b522c44d4b8b6de366f89d1ae5"
+      ],
+      "proofCount": 5
+    },
+    {
+      "id": "standalone-and-high-risk-shared-controls",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1903442014079Z-db52828666f74effa211daae360c8cba",
+        "20261020T1948076504496Z-ace4db43fdf449a49012df0d2a67d80d",
+        "20261020T1953292155032Z-409ffb4c67464d1590b18e39ff3a35e1"
+      ],
+      "proofCount": 12
+    },
+    {
+      "id": "inherited-unaffected-qualification",
+      "result": "REUSED_PASS",
+      "runIds": [],
+      "proofCount": 2
+    },
+    {
+      "id": "complete-public-source-build-package-gate",
+      "result": "PASS",
+      "runIds": [],
+      "proofCount": 5
+    },
+    {
+      "id": "public-inventory-icon-eleven-roots",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1856465108517Z-6b3be4b522c44d4b8b6de366f89d1ae5",
+        "20261020T1903442014079Z-db52828666f74effa211daae360c8cba"
+      ],
+      "proofCount": 10
+    },
+    {
+      "id": "exact-package-release-qualification",
+      "result": "PASS",
+      "runIds": [
+        "20261020T1856465108517Z-6b3be4b522c44d4b8b6de366f89d1ae5",
+        "20261020T1903442014079Z-db52828666f74effa211daae360c8cba",
+        "20261020T1907586247327Z-64a998e7b5cd48338ea299ae39ae2b29",
+        "20261020T1911493458954Z-9dfd31083905425f818a20de09f1946e",
+        "20261020T1916077274494Z-6e21d6899fa640b6b118ed7b84fe3c36",
+        "20261020T1921014196463Z-e45cee57c3a94ee7852be17160d661c6",
+        "20261020T1925491411694Z-d5df768011de4c2faa38cba9af51ae95",
+        "20261020T1930121468834Z-b85fa62051304a2a851f54cf171844da",
+        "20261020T1934237054161Z-23058c4382314111ae9e0d36565982b2",
+        "20261020T1938131878599Z-041af3894d384cba95f0cfa10e158818",
+        "20261020T1942250942722Z-b5b8f6287584434bb5fcc260f1232655",
+        "20261020T1948076504496Z-ace4db43fdf449a49012df0d2a67d80d",
+        "20261020T1953292155032Z-409ffb4c67464d1590b18e39ff3a35e1"
+      ],
+      "proofCount": 53
+    }
+  ],
+  "freshNative": [
+    {
+      "phase": "routes",
+      "profile": "standalone",
+      "runId": "20261020T1856465108517Z-6b3be4b522c44d4b8b6de366f89d1ae5",
+      "transaction": "compat-20261020T185444Z-0e1f175cdf0d",
+      "assertions": 15,
+      "rawResultSha256": "d5fb86daa4ac057daf8fbbf0fc79b7712b9ee4ea22e4799a64bae3a76d4b9292",
+      "reviewSha256": "88d030d334d523d42d0c7fc922ef118204fbc2cf273bd67b6148e209a1e452ed",
+      "intakeAuditSha256": "09b83b0040816ccac95e361fb97744067a21f293afb4ee29728b806e1b8ee44e",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "profiles",
+      "profile": "standalone",
+      "runId": "20261020T1903442014079Z-db52828666f74effa211daae360c8cba",
+      "transaction": "compat-20261020T190150Z-e52da31967fa",
+      "assertions": 42,
+      "rawResultSha256": "324d7520d8f4e3a83396af4ad4724a250d42a6dc6a059b21d0757a3e48a5bc59",
+      "reviewSha256": "a2e85f4930e8e85a288380a95c43764876d0c245221c9e4aad0ce9298ec4548d",
+      "intakeAuditSha256": "b7eaf93bfe2479dae4541f845aa652575410ca62a0d279e7594f84a0f4a60404",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "modes",
+      "profile": "standalone",
+      "runId": "20261020T1907586247327Z-64a998e7b5cd48338ea299ae39ae2b29",
+      "transaction": "compat-20261020T190602Z-b2b83d99a879",
+      "assertions": 36,
+      "rawResultSha256": "c4798822b6c2f12d1c2c58cea8b240ed8ff9fc14618c7212f367919351252867",
+      "reviewSha256": "d39c9440155c55cbb8e4fa3a63691841a34474387863130636d481f4dcaa403a",
+      "intakeAuditSha256": "e271daf73c2909c856802b7475cd2b54a37e8e3c404928d2be441db345bfd84b",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "cleave",
+      "profile": "standalone",
+      "runId": "20261020T1911493458954Z-9dfd31083905425f818a20de09f1946e",
+      "transaction": "compat-20261020T190956Z-9c7c6911b40e",
+      "assertions": 12,
+      "rawResultSha256": "5cdc28b9dd31ebb333d150c44a863fce58292fbf17233932fcf690c9fff545b2",
+      "reviewSha256": "217b263ec690f8208ce15b51fe437f99cfba7424dfcd4e28e238a858e1df8906",
+      "intakeAuditSha256": "1f1e686280624ecf7d2b4a586768999576688b0e1526a44582f4e8b6207fea1e",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "commands",
+      "profile": "standalone",
+      "runId": "20261020T1916077274494Z-6e21d6899fa640b6b118ed7b84fe3c36",
+      "transaction": "compat-20261020T191410Z-4ddf7b9939d9",
+      "assertions": 36,
+      "rawResultSha256": "71c65579fa97a96de69b45599f610ec79ecc8842007a9f0c93380865eb974dad",
+      "reviewSha256": "5965d9ff6672b3ae877936607e788795b0f17264f86fcfbb4dd44b5660adb127",
+      "intakeAuditSha256": "a02a03f31273167e72c27f769125069aa7d3ca058cb63db6adf05c8618ac8b45",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "turns",
+      "profile": "standalone",
+      "runId": "20261020T1921014196463Z-e45cee57c3a94ee7852be17160d661c6",
+      "transaction": "compat-20261020T191905Z-deafac864975",
+      "assertions": 40,
+      "rawResultSha256": "ca728e2758ac93bafb66270c207498ff1f7b452debae1a13891bf8b965571938",
+      "reviewSha256": "c8bfd58564368f413327c520094cff3112ef6383afba1938c6973395dd5dcb27",
+      "intakeAuditSha256": "dc01584eb0cdb09cab290238688ff32dfeddc3d543dcd914192764bb777e232c",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "catch",
+      "profile": "standalone",
+      "runId": "20261020T1925491411694Z-d5df768011de4c2faa38cba9af51ae95",
+      "transaction": "compat-20261020T192353Z-0649769684a9",
+      "assertions": 22,
+      "rawResultSha256": "ba74d9fef5b83f50111e0b64f53519e5a544f24f3d5a48141a0691718362a215",
+      "reviewSha256": "65a23c53ed62ba33af1bea9b59c35b6503abec111912226340bdddd1fdc2fc4c",
+      "intakeAuditSha256": "f65af8dfbf0711ee93aec6fd8fd94005eeedcd5a4398949e966bcd2f84f595b6",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "ownership",
+      "profile": "standalone",
+      "runId": "20261020T1930121468834Z-b85fa62051304a2a851f54cf171844da",
+      "transaction": "compat-20261020T192816Z-867c56ae0069",
+      "assertions": 15,
+      "rawResultSha256": "18122c999270b4c539c9bdb830967c2e5248d98243f62877b5f4b7f8d305c87f",
+      "reviewSha256": "1ea6852749c9b10295ecf860ed3eb41fefee0942e26d82fa5b34fad1e46ca7af",
+      "intakeAuditSha256": "874794ed1443277ad62e0b943050ae797325a57fe085aaa2ace4b8f0f01867cd",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "disarm",
+      "profile": "standalone",
+      "runId": "20261020T1934237054161Z-23058c4382314111ae9e0d36565982b2",
+      "transaction": "compat-20261020T193231Z-3a9171852c1b",
+      "assertions": 12,
+      "rawResultSha256": "d747e4bc6b37a18194383c8f191b4804b2d07f60b8609181dc297b537d5207c9",
+      "reviewSha256": "f90e2fe30d825e2000c8f7f15cdcce1dc145847615fa90e297986cb9a9e4e8f1",
+      "intakeAuditSha256": "3a7b6ac968a82d86d85f11ed76ce6d1bf175b6a9272884a9e169e49e925394d9",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "ai",
+      "profile": "standalone",
+      "runId": "20261020T1938131878599Z-041af3894d384cba95f0cfa10e158818",
+      "transaction": "compat-20261020T193618Z-3face4b09ba6",
+      "assertions": 15,
+      "rawResultSha256": "1e62dd0c3865f9e8a3527c5264a7fbb19fcd8d736c38126dd4253439c19baf39",
+      "reviewSha256": "69967eecf2575eb529489e1c25d3bdceaaac31a18c7815f3debe3b2469bb8ace",
+      "intakeAuditSha256": "f7b78572bb97cd31de15a9bc1f3f7dd35551d6d06c567800f27f8c50950e9fd8",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "ai-turns",
+      "profile": "standalone",
+      "runId": "20261020T1942250942722Z-b5b8f6287584434bb5fcc260f1232655",
+      "transaction": "compat-20261020T194031Z-607196db9b76",
+      "assertions": 33,
+      "rawResultSha256": "d59e258d90f2e0467a5645a7b9b122d7f2c01fd0ebbea3d6ee21fc36cc4cc227",
+      "reviewSha256": "703e9e14c8d257479b4084ffdfebd623ef3dfa30d0d9019bcbdf035cfc7ea4a3",
+      "intakeAuditSha256": "9d1ef40f169947051c18c62974e58b9d9905a1997355828127a21bb6e0c20ece",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "profiles",
+      "profile": "gunslinger-high-risk-combined",
+      "runId": "20261020T1948076504496Z-ace4db43fdf449a49012df0d2a67d80d",
+      "transaction": "compat-20261020T194604Z-73421adc0c8d",
+      "assertions": 42,
+      "rawResultSha256": "3afbe0f5e0a91584f3229dbdce71c7f9fd84dfa1150423394f0bf4be8194187c",
+      "reviewSha256": "75d12a5ae3f60a008d379cd5f54b05247b4abc18c98853d13b3aa92bb59fb8e0",
+      "intakeAuditSha256": "9abbdee357b025d1fcc7a6561347b4f3414e5dd5b1394d2efa55209d7a779fc6",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "catch",
+      "profile": "gunslinger-high-risk-combined",
+      "runId": "20261020T1953292155032Z-409ffb4c67464d1590b18e39ff3a35e1",
+      "transaction": "compat-20261020T195128Z-f6550f7736fc",
+      "assertions": 22,
+      "rawResultSha256": "9c69cec0e48ac72d0e386a37ffe07d4994eaf1ec7b026da386e5640a5b8aac61",
+      "reviewSha256": "d3a13a76dc937c04275f6990b1b27382029076ecb6e6c161f692fdb0147fcba2",
+      "intakeAuditSha256": "39a11eb81decac0dfc6aab29732764cca59a196194ee4d9406f6bb3c79cc1d6a",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "working-on-prepare",
+      "profile": "current-installed-stack",
+      "runId": "20261020T2005207131019Z-4bc1e02a758f4e86b4aab0cf8047916d",
+      "transaction": "sprint28-stack-20261020T200326Z-1c73cca68f28",
+      "assertions": 19,
+      "rawResultSha256": "51d5fd1ff76ac4b2f4a00cd000b52aa4a8d4edf160f49c691ee7d2901c90ce91",
+      "stackReceiptSha256": "92cb867513252dd5047d40d3f54546cc3275971037a2745d3f5c9042b114637c",
+      "intakeAuditSha256": "1ff27731d23794a10e49622e345033d4ac6abb6e4a4d53ae2d5cd96ae64000cb",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "working-on-cleanup",
+      "profile": "current-installed-stack",
+      "runId": "20261020T2013470006348Z-2da23224db764942b6d1725f2d54eead",
+      "transaction": "sprint28-stack-20261020T201152Z-7be1ae9cda88",
+      "assertions": 18,
+      "rawResultSha256": "f49291cbd3a0161a894bc5824d27e0685f5bc5d457b6ff167089319ce05ac14d",
+      "stackReceiptSha256": "34b9cb20d1a2325d571832daa560699ea4abcfab1f1e8f42da408221254f9474",
+      "intakeAuditSha256": "f2083adc450cdd821cf5071e6ae031c24df1ebac16e76d79a41a5edda4f308a4",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "working-on-absent",
+      "profile": "current-installed-stack",
+      "runId": "20261020T2021003285159Z-9f97df88e64347bc88b2d5c0389e080c",
+      "transaction": "sprint28-stack-20261020T201905Z-71e2a1dc07fd",
+      "assertions": 6,
+      "rawResultSha256": "46551b89166ee9a15abe0042739cc95a1fb3e7c83192ca5ac8e36cc8cb2395e9",
+      "stackReceiptSha256": "c429ce75e49849e98f4ce191d81ebb662d4afe2aa9aa737f6bd80bdc483c236f",
+      "intakeAuditSha256": "978c394e9f1a0703c55bc61f99bda5dd5303dbb2db0fec51f13678ee3927f405",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "working-off-prepare",
+      "profile": "current-installed-stack",
+      "runId": "20261020T2028200153899Z-06eddbbb821a41dd8c603d94bb76367a",
+      "transaction": "sprint28-stack-20261020T202626Z-19f89f7a59cb",
+      "assertions": 19,
+      "rawResultSha256": "10158cb2f484cd899c38ac856a46c0a2f3dce58f15d8e74a00a6c7d6af393c77",
+      "stackReceiptSha256": "679222b6f396de645e43c9d338c6175ea68ccdf142ce8d2742e7b9d0a3279649",
+      "intakeAuditSha256": "28e37117207ce3b625da02243f4cc86ecbe57dda6c734bfb49c47fc2cf993074",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "working-off-cleanup",
+      "profile": "current-installed-stack",
+      "runId": "20261020T2034537722858Z-79e0ba4c1f4649949efdf1f84c84d9ba",
+      "transaction": "sprint28-stack-20261020T203259Z-682dbe360135",
+      "assertions": 19,
+      "rawResultSha256": "4415082c6bb18bdf49f480dda20d949d3f93dd2b9180341e976d0c90c45fb996",
+      "stackReceiptSha256": "5bb168d3b17abbe40c6c9b06582eb89df29ee48dc55b9ca146baa064bfb10f24",
+      "intakeAuditSha256": "b8eb40e0464beae9e6e21422d49e3d097b72b96d9951b9fd48bc1fce7bcb88ab",
+      "native": "PASS",
+      "restored": true
+    },
+    {
+      "phase": "working-off-absent",
+      "profile": "current-installed-stack",
+      "runId": "20261020T2042027591437Z-28cb92c2d95d44debe8dfbfa9f431dd9",
+      "transaction": "sprint28-stack-20261020T204006Z-14a01a47b5c7",
+      "assertions": 6,
+      "rawResultSha256": "21316e9bb2a41ad99443537d4d804474132220c79080e8dc3bfbb6daf0e38153",
+      "stackReceiptSha256": "429e8dbd20e255c191ace0f4e33cdbe64d35f80450c72413f8fa8706f1609e4b",
+      "intakeAuditSha256": "7c3fd763416291b0f61f33453f2dec80bcab69045229d31a30c0f0bcba6619e3",
+      "native": "PASS",
+      "restored": true
+    }
+  ],
+  "reused": {
+    "scope": "Unchanged released roster, generic serialization and broad module dependencies only; new giant/item/projectile and affected old consumers are fresh.",
+    "source": "63ef0fa4845c7143daa6aa9a1505c059ef61096a",
+    "packageSha256": "7ae697de7b743ba58772a219e105d372a854461007cb4edd12952e11898129de",
+    "dllSha256": "616e49220471e04a63b90e48f498c698d52c5df1de71625651b3db95cd09d9aa",
+    "dllMvid": "bc2c2367-a836-4ef8-a603-a6537ce30d47",
+    "release": "v0.0.161"
+  },
+  "mechanics": {
+    "hillCleave": "ordinary project-owned; at most one conditional follow-up, first miss no follow-up",
+    "fireCleave": "project-owned Great Cleave; qualified three distinct target hit chain",
+    "stoneCleave": "neither",
+    "rock": "printed creature-specific routines, Stone Quick Draw repeated throw, catch once/round before harm, Fire heat separate fire component",
+    "equipment": "distinct summon-owned nontransferable instances; death/dismissal/disarm/expiry/loot and save cleanup qualified",
+    "bodiesAndIcons": "three visible usable native bodies and actual per-creature icons"
+  },
+  "skillDecision": {
+    "authority": "Owner Sprint 28 closeout directive 2026-10-20",
+    "deferred": "named Climb mapping for Hill/Stone/Fire and named Craft mapping for Fire; printed references preserved",
+    "printed": [
+      "Hill Climb +10",
+      "Stone Climb +12",
+      "Fire Climb +14",
+      "Fire Craft (any one) +8"
+    ],
+    "nativePitBehavior": "UNCHANGED",
+    "substituteBonuses": false,
+    "otherGameplayOmissions": [],
+    "effect": "printed climbing performance may differ; full skill fidelity not claimed"
+  },
+  "visualBacklog": "Modest proportions, coloration, animation seams and clipping; no owner aesthetic approval recorded.",
+  "restoration": {
+    "intakeSha256": "1043164661214f447f80f87aa4fbe384c9e224badc39a21a8d72f39a2770d84b",
+    "finalAuditSha256": "05110c0077a3e4a92512ec775f7080e642cde6815aacafbfd7330618e82a66f4",
+    "intakeDifferenceCount": 0,
+    "mods": 968,
+    "saves": 119,
+    "references": 19,
+    "settings": 83,
+    "workingSha256": "650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850",
+    "onEnvelopeSha256": "a2e9d5f7e939e90462a4b313d6236e064f2d8e14963cd1ae8c907057810a8c94",
+    "offEnvelopeSha256": "2b3a3c0e8d4fb5608913f79f2fc1e0b6334bb326636f769323333fc829c307ea",
+    "gameProcesses": 0,
+    "ownedTasks": 0,
+    "compatibilityLock": false,
+    "stagedMods": 0
+  },
+  "historicalDevelopment": {
+    "evidenceMap": "planning/SPRINT28-EVIDENCE.json",
+    "status": "preserved under original source/package/verdict",
+    "routeReaderFailure": "artifacts/sprint28-b0f5-native-phase-prehashfix.ps1 and reader recovery retained; native route result passed",
+    "publicationDryRunFailure": "original postmerge ledger without harness preserved locally, followed by successful unchanged-publisher dry run"
+  },
+  "sprint29Started": false
+}
