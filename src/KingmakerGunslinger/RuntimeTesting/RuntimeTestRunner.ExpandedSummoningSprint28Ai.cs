@@ -146,6 +146,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!turnBased)
                             new Kingmaker.Controllers.Units.UnitMemoryController()
                                 .Tick();
+                        else if (owner.HasLOS(target))
+                        {
+                            // Native geometry confirms sight. Mark only this
+                            // disposable owner's exact target as noticed;
+                            // no global memory tick or protected NPC changes.
+                            owner.Memory.Add(target).Visible = true;
+                        }
                         owner.JoinCombat();
                         target.JoinCombat();
                         // The proven turn command fixture lets the native
