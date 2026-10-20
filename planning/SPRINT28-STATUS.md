@@ -1,6 +1,6 @@
 # Sprint 28 current status
 
-Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working-save phases and native disarm complete, further combat and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
+Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working-save phases, native disarm and rock-range consumer checks complete, further combat and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
 
 
 ## Current checkpoint
@@ -26,7 +26,28 @@ assertions passed. Transaction `compat-20261020T024327Z-3d069967e35c`
 restored and an independent intake audit found only the authorized Working
 save difference. The failed raw result remains intact. The narrowed patch
 now replaces the command radius with exact footprints plus five printed
-increments; it still needs a fresh native result.
+increments. The fresh limited-token guarded `modes` retry on source
+`579fb46d3591a87ae4ac92d99dc8210f7d6d9f4e` passed all 33 native
+assertions, RunId
+`20261020T0300187814433Z-6b84bbbe1dd7425a856af128d47af2b4`.
+Hill and Fire had exact five-increment command radii of 184.48 m, Stone
+275.92 m, including their real footprints; all three lost exactly -2
+attack bonus in the second increment (6 to 4, 11 to 9, 10 to 8).
+The observer did not issue a projectile at those distant points; a
+lawful visible long-range command remains open. Exact development ZIP
+SHA-256 `a366b6e0aa4274ebb9469ab9b5a781df5cace8f6219a34b9d53de1642be9e390`,
+DLL `f8c63c42887cf527dc88ac82515bb79bb983f28d0f517e2a33b733d0f672f07a`,
+MVID `76d820cb-572d-4e5a-9d78-605723c1a6be`; raw result
+`ee562e8a40438fe62cec7410fbabb2a3dd39a56f7ce12e1e46106d1ecbb12652`.
+Transaction `compat-20261020T025811Z-0ab9165296eb` returned
+`Restored`/verified, SHA-256
+`7e5c13283d74846732bf46cfe3f07bf2678729fa459dcd82e0ff842c2f6aeea0`;
+limited task exited zero and was removed. Independent actual-intake
+audit SHA-256 `f12d2ed9730274c9a85ae3da06e5a831aa02e7a167be5136584cc60c64d5dc18`
+found only the authorized Working-save difference. Both completed
+duplicate copy trees matched the retained ZIP byte-for-byte, manifest
+SHA-256 `672ae726bc73e53e3bcd4424f3bc2c3acf1143339394caf18ae17b56b3bca883`,
+and only those exact redundant trees were removed.
 
 The corrected Sprint 28 development source `ffd8e2f40d9e0212e3bf209b6321e4f599bcba36`
 produced exact ZIP SHA-256 `013b8363592fde0956d2f6e11c55f6d05fa11173e8ed52962951ad3fc3617412`,
