@@ -1,9 +1,40 @@
 # Sprint 28 current status
 
-Status: **IN PROGRESS - three giants registered and withheld; native mechanics, presentation, ownership and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
+Status: **IN PROGRESS - three giants registered and withheld; Working-save, remaining native mechanics and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
 
 
 ## Current checkpoint
+
+The Sprint 28 Working-save scope now selects exactly Hill, Stone and Fire
+through the existing prepare/load-cleanup/fresh-absence trio. Its installed
+eleven-mod wrapper admits only `giant-humanoids` with development purpose
+`sprint28-native-prototype`, and the outer request launcher carries that
+scope. The observer saves stable native item IDs, exact owner/blueprint/no-loot
+profiles for all eleven giant weapons and armor pieces, and a request-owned
+Stone spent-round catch precondition. It checks those identities and the party
+inventory after native load, then requires cleanup and fresh absence. This
+source is a reviewable development checkpoint, not Working-save PASS. No save
+has been mutated yet.
+
+Focused production compilation and three Sprint 28 tests passed in 20.3
+seconds. The no-game summoning orchestration suite passed 212 assertions;
+the scoped development-purpose refusal suite passed 10. A limited Howard
+`-WhatIf` save preflight passed 19 checks and the full runtime scenario
+preflight passed 683 checks, including request serialization, case-sensitive
+scope refusal and automatic-exit enforcement. The exact finished tasks were
+removed. Earlier no-game preflight failures/stops remain in ignored artifact
+logs; one was an incomplete test timeout map, and a PowerShell automatic
+`$args` collision prompted inside a refusal scriptblock until narrowed.
+Neither staged the installation, started Kingmaker or touched a save.
+
+Next: commit and push this coherent development checkpoint, build its exact
+development ZIP from `wt/s28`, run the guarded limited-user installed-stack
+Working-save trio with actual intake comparison and restoration after each
+phase, and preserve failures separately. The eleven SNA roots remain withheld;
+full catch boundaries, disarm, turn-based/full-cadence AI, terrain/feat
+behavior, presentation and final release qualification remain open.
+
+## Dated native checkpoints
 
 The corrected native `catch` phase from source `8a096f67381acf7a27722d9a95a912e1eb762939` **PASS**ed 22 assertions on exact strict ZIP SHA-256 `a1b56621d10f8662b7b82d661370c16dd9a268763aaef76ada50af446a7e42f7`, DLL SHA-256 `e2f662ba6d26c431f43b253479ac00ff7c7928f005290c10d41ecaf0b5839305`, MVID `388aa37e-5b79-48e8-94ff-ad71e53d9d2c`. Native RunId `20261019T2357340167189Z-47e1175aac9b46e2900a3d1ce188a843` recorded real Hill and Fire rocks caught before damage, Stone's real rock failing its catch save with one physical packet, all three legal lanes, nonrock and unaware negative roll-only controls, one catch attempt per target per native round, exact projectile isolation/cleanup and empty-world reset. No hit, save, packet or AI action was supplied by the observer. Transaction `compat-20261019T235538Z-a4d2337a0bd5` finished `Restored`/verified with limited Howard child exit zero. Independent actual-intake audit SHA-256 `1ef11d857283017d25b780d3bbeeb5a372cfdb23d62d73caf2335dd773ae3914` is diff0 across 968 Mods entries, 119 saves, 19 references, sound bank, two game binaries and 83 settings; no game, task or lease remains. Projectile size/magical accuracy, catch persistence, equipment disarm/load, full AI cadence and turn-based behavior, Working-save ON/OFF, feats, public roots and final release remain open.
 

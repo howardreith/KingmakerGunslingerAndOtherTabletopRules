@@ -576,3 +576,15 @@ function Test-KmgGriffonDevelopmentPersistence {
     }
     return $true
 }
+
+# The Sprint 28 owner-selected development exception is exact and cannot
+# admit another scope, purpose, save, scenario, or release candidate.
+function Test-KmgSprint28DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'giant-humanoids' -or
+        $Purpose -cne 'sprint28-native-prototype') {
+        throw 'Development installed-stack persistence permits only exact giant-humanoids scope and sprint28-native-prototype purpose.'
+    }
+    return $true
+}
