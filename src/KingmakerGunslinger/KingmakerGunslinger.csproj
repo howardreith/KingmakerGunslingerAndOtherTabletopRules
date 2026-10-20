@@ -41,6 +41,7 @@
 
   <ItemGroup>
     <Compile Include="Summoning\GiantHumanoidRulesPolicy.cs" />
+    <Compile Include="Summoning\SummonGiantCleaveDelivery.cs" />
     <Compile Include="Summoning\GiantHumanoidCombatComponents.cs" />
     <Compile Include="Summoning\GiantHumanoidAttackComponents.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants.cs" />
@@ -1299,6 +1300,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Disarm.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Catch.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Ai.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Cleave.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Boundaries.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint26Review.cs" />

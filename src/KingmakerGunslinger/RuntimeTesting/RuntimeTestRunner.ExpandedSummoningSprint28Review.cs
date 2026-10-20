@@ -35,8 +35,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint25Check("s28-phase", phase == "profiles" || phase == "modes" ||
                 phase == "commands" || phase == "turns" || phase == "ownership" ||
                 phase == "disarm" || phase == "catch" || phase == "ai" ||
-                phase == "ai-turns", new JObject {
+                phase == "ai-turns" || phase == "cleave", new JObject {
                 ["phase"] = phase }, "One exact implemented Sprint 28 review phase.");
+            if (phase == "cleave")
+            {
+                foreach (int frame in ReviewSprint28Cleave(fixture))
+                    yield return frame;
+                yield break;
+            }
             if (phase == "modes")
             {
                 foreach (int frame in ReviewSprint28Modes(fixture)) yield return frame;

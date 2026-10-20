@@ -55,17 +55,18 @@ namespace KingmakerGunslinger.DomainTests
             var ids = ExpandedSummoningIdentityCatalog.Build().Where(value =>
                 GiantHumanoidRulesPolicy.IsNewIdentity(value.Symbol)).ToArray();
             Assertions.Equal(GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount,
-                ids.Length, "Exactly 33 new giant identities.");
+                ids.Length, "Exactly 35 new giant identities.");
             Assertions.Equal(3, ids.Count(value =>
                 value.PlannedType == "BlueprintUnit"),
                 "Three project-owned unit identities.");
             Assertions.Equal(11, ids.Count(value =>
-                value.PlannedType == "BlueprintAbility"),
+                value.PlannedType == "BlueprintAbility" &&
+                value.Symbol.StartsWith("KMG.Summoning.Ability.", StringComparison.Ordinal)),
                 "Eleven project-owned SNA roots.");
             Assertions.Equal(GiantHumanoidRulesPolicy.AppendedPrivateIdentityCount,
                 ids.Count(value => value.PlannedType != "BlueprintUnit" &&
-                    value.PlannedType != "BlueprintAbility"),
-                "Nineteen private giant identities.");
+                    !value.Symbol.StartsWith("KMG.Summoning.Ability.", StringComparison.Ordinal)),
+                "Twenty-one private giant identities.");
             Assertions.Equal("61dd71e874b16f742a0f783314105553",
                 ExpandedSummoningDonorCatalog.For("hill-giant").Guid,
                 "Audited adult Hill donor.");

@@ -17,6 +17,7 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
@@ -49,6 +50,8 @@ namespace KingmakerGunslinger.Blueprints
         private const string StoneTraits = GiantPrefix + "StoneTraits";
         private const string FireTraits = GiantPrefix + "FireTraits";
         private const string FireImprovedOverrun = GiantPrefix + "FireImprovedOverrun";
+        private const string GiantCleaveAction = GiantPrefix + "CleaveAction";
+        private const string GiantCleaveFeature = GiantPrefix + "CleaveFeature";
 
         private const string NativeHumanoidClass = "6ab4526f94d2e3e439af0599a29b6675";
         private const string NativeHill = "61dd71e874b16f742a0f783314105553";
@@ -66,6 +69,9 @@ namespace KingmakerGunslinger.Blueprints
         private const string NativePointBlankShot = "0da0c194d6e1d43419eb8d990b28e0ab";
         private const string NativePreciseShot = "8f3d1e6b4be006f4d896081f2f889665";
         private const string NativeImprovedSunder = "9719015edcbf142409592e2cbaab7fe1";
+        private const string NativeCleaveAction = "6447d104a2222c14d9c9b8a36e4eb242";
+        private const string NativeCleaveFeature = "d809b6c4ff2aaff4fa70d712a70f7d7b";
+        private const string NativeGreatCleaveFeature = "cc9c862ef2e03af4f89be5088851ea35";
 
         private static void ConfigureGiantHumanoids(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -97,14 +103,15 @@ namespace KingmakerGunslinger.Blueprints
                 StoneNaturalArmor));
             ConfigureFireImprovedOverrun(library,
                 Require<BlueprintFeature>(bySymbol, FireImprovedOverrun));
+            ConfigureGiantCleave(library, bySymbol);
             ConfigureGiantUnit(library, bySymbol, HillGiantUnit, HillType,
                 HillTraits, "HillGiant", "Hill Giant", Alignment.ChaoticEvil,
                 10, 25, 8, 19, 6, 10, 7, 45, 7, 3, 3, 3, 4, 0,
                 club, slam, hillRock, hide,
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library, NativeNaturalArmorNine, "hill natural armor"),
                 extraplanar,
-                new[] { "d809b6c4ff2aaff4fa70d712a70f7d7b",
-                    NativeIntimidatingProwess, "9972f33f977fc724c838e59641b2fca5" },
+                new[] { NativeIntimidatingProwess,
+                    "9972f33f977fc724c838e59641b2fca5" },
                 true);
             ConfigureGiantUnit(library, bySymbol, StoneGiantUnit, StoneType,
                 StoneTraits, "StoneGiant", "Stone Giant", Alignment.TrueNeutral,
@@ -121,8 +128,7 @@ namespace KingmakerGunslinger.Blueprints
                 sword, slam, fireRock, halfPlate,
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library, NativeNaturalArmorEight, "fire natural armor"),
                 extraplanar,
-                new[] { "d809b6c4ff2aaff4fa70d712a70f7d7b",
-                    "cc9c862ef2e03af4f89be5088851ea35",
+                new[] { NativeGreatCleaveFeature,
                     NativeImprovedSunder,
                     "175d1577bb6c9a04baf88eec99c66334",
                     "9972f33f977fc724c838e59641b2fca5" }, true,
@@ -133,6 +139,61 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
                 InternalName(FireGiantUnit), new SummonVisualTintProfile(
                     "fire-giant", 0.86f, 0.45f, 0.33f, null, null, null)));
+        }
+
+        // The installed action tests the ordinary Cleave feature as its
+        // "greater" fact. Clone both carrier and action so Hill stops after
+        // one extra hit while Fire's actual Great Cleave fact lifts that cap.
+        // Nothing in the native library or another creature is rewritten.
+        private static void ConfigureGiantCleave(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintAbility nativeAction = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeCleaveAction,
+                    "native Cleave execution");
+            BlueprintFeature nativeFeature = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeCleaveFeature,
+                    "native Cleave grant");
+            BlueprintFeature greater = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, NativeGreatCleaveFeature,
+                    "native Great Cleave discriminator");
+            BlueprintAbility action = Require<BlueprintAbility>(bySymbol,
+                GiantCleaveAction);
+            ExpandedSummoningAbilityBuilder.CopyFields(nativeAction, action);
+            action.name = InternalName(GiantCleaveAction);
+            action.ComponentsArray = (nativeAction.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AbilityCustomCleave nativeCustom = nativeAction.GetComponents<
+                AbilityCustomCleave>().Single();
+            if (nativeCustom.GreaterFeature != nativeFeature)
+                throw new InvalidOperationException(
+                    "Installed Cleave consumer no longer has audited wiring.");
+            int deliveryIndex = Array.FindIndex(action.ComponentsArray,
+                value => value is AbilityCustomCleave);
+            if (deliveryIndex < 0 || action.ComponentsArray.Count(
+                value => value is AbilityCustomCleave) != 1)
+                throw new InvalidOperationException(
+                    "Cloned Cleave has an ambiguous delivery component.");
+            var delivery = ScriptableObject.CreateInstance<
+                SummonGiantCleaveDelivery>();
+            delivery.GreaterFeature = greater;
+            action.ComponentsArray[deliveryIndex] = delivery;
+
+            BlueprintFeature feature = Require<BlueprintFeature>(bySymbol,
+                GiantCleaveFeature);
+            CopyFields(nativeFeature, feature);
+            feature.name = InternalName(GiantCleaveFeature);
+            feature.ComponentsArray = (nativeFeature.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            AddFacts grant = feature.GetComponents<AddFacts>().Single();
+            if (grant.Facts == null || grant.Facts.Length != 1 ||
+                grant.Facts[0] != nativeAction)
+                throw new InvalidOperationException(
+                    "Installed Cleave feature no longer has audited action grant.");
+            grant.Facts = new BlueprintUnitFact[] { action };
         }
 
         private static BlueprintItemWeapon GiantWeapon(
@@ -386,6 +447,9 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar, traits };
             foreach (string guid in featGuids)
                 facts.Add(Feature(library, guid, displayName + " printed feat"));
+            if (token == "HillGiant" || token == "FireGiant")
+                facts.Add(Require<BlueprintFeature>(bySymbol,
+                    GiantCleaveFeature));
             if (token == "FireGiant")
                 facts.Add(Require<BlueprintFeature>(bySymbol,
                     FireImprovedOverrun));

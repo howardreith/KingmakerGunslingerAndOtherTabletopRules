@@ -35,6 +35,22 @@ function Assert-KmgSprint28GiantsQualification {
         $Ledger.gameplayWaiver) {
         throw 'Sprint 28 has unresolved scope, failed qualification or a new gameplay waiver.'
     }
+    $skill=$Ledger.skillDecision
+    if($skill.ownerAuthorized -ne $true -or
+        $skill.authority -cne 'Owner Sprint 28 closeout directive 2026-10-20' -or
+        $skill.disposition -cne 'DEFER_NAMED_CLIMB_CRAFT_SPRINT28' -or
+        (@($skill.deferredSkillNames) -join '|') -cne 'Climb|Craft' -or
+        (@($skill.affectedCreatures) -join '|') -cne
+            'hill-giant|stone-giant|fire-giant' -or
+        (@($skill.printedValues) -join '|') -cne
+            'Hill Climb +10|Stone Climb +12|Fire Climb +14|Fire Craft (any one) +8' -or
+        $skill.nativePitBehavior -cne 'UNCHANGED' -or
+        $skill.newStats -ne $false -or $skill.rankReallocation -ne $false -or
+        $skill.substituteBonuses -ne $false -or
+        @($skill.otherGameplayOmissions).Count -ne 0 -or
+        $skill.disclosurePath -cne 'docs/RELEASE-NOTES-0.0.162.md') {
+        throw 'Sprint 28 named Climb/Craft decision or exact disclosure is missing or broadened.'
+    }
     foreach($pair in @(@('source','commit'),@('zipSha256','packageSha256'),
         @('dllSha256','dllSha256'),@('dllMvid','dllMvid'),@('sourceFingerprint','sourceStateSha256'))) {
         if([string]$Ledger.candidate.($pair[0]) -cne [string]$Candidate.($pair[1])) {
