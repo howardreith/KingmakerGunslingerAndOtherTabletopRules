@@ -6,7 +6,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint28Tests
     {
-        internal static void ElevenRoutesAreSnaOnlyAndWithheld()
+        internal static void ElevenRoutesAreSnaOnlyAndPublic()
         {
             string[] keys = { GiantHumanoidRulesPolicy.Hill,
                 GiantHumanoidRulesPolicy.Stone, GiantHumanoidRulesPolicy.Fire };
@@ -40,14 +40,14 @@ namespace KingmakerGunslinger.DomainTests
                     value.Multiplicity == SummonMultiplicity.OneD4PlusOne),
                     key + " one d4 plus one.");
                 Assertions.True(routes.All(value =>
-                    !SummonVisibilityCatalog.IsPublished(value)),
-                    key + " stays withheld until native qualification.");
+                    SummonVisibilityCatalog.IsPublished(value)),
+                    key + " has only its authorized public routes.");
                 Assertions.True(SummonIconCatalog.All.Any(value =>
                     value.Key == key), key + " has its own icon concept.");
             }
-            Assertions.Equal(1108, SummonVisibilityCatalog
+            Assertions.Equal(1119, SummonVisibilityCatalog
                 .PublishedLogicalPlacementCount,
-                "Hidden registration does not change the public surface.");
+                "Only the eleven registered giant roots become public.");
         }
 
         internal static void IdentitiesAppendAndDonorsRemainExact()

@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.161",
+  "version": "0.0.162",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2603,6 +2603,13 @@
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "qualificationEvidence": "Separate exact-artifact release ledger; no runtime pass inferred by this source record.",
     "scope": "One untemplated Griffon, six SNA roots; no automatic Grab, second species or Z-axis flight.",
+    "stage": "public"
+  },
+  "expandedSummoningSprint28162": {
+    "candidateOnly": true,
+    "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
+    "qualificationEvidence": "Separate exact-artifact Sprint 28 release ledger; no native or publication pass inferred by this source record.",
+    "scope": "Adult Hill, Stone and Fire Giants; eleven untemplated SNA-only roots; owner-deferred named Climb/Craft mappings only.",
     "stage": "public"
   }
 }
