@@ -636,6 +636,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 }
                                 bool once = spent != null &&
                                     spent.LastRound == round && spentSaves == 1 &&
+                                    saves.Saves[0].DifficultyClass == spec.Dc &&
                                     ContextActionUngulateTrample.CurrentRound() == round &&
                                     repeat != null && repeat.Roll.Value != 1 &&
                                     repeat.IsHit && saves.Saves.Count == spentSaves &&
@@ -646,6 +647,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["round"] = round,
                                         ["ledgerRound"] = spent?.LastRound,
                                         ["savesAfterSpend"] = spentSaves,
+                                        ["effectiveDc"] = spentSaves == 0
+                                            ? (int?)null :
+                                            saves.Saves[0].DifficultyClass,
+                                        ["expectedEffectiveDc"] = spec.Dc,
                                         ["firstSavePassed"] = spentSaves == 0
                                             ? (bool?)null : saves.Saves[0].IsPassed,
                                         ["spentByNativeCommand"] = save != null,
