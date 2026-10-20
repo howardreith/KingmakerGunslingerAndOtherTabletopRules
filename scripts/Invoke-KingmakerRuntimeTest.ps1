@@ -885,7 +885,8 @@ try {
     else {
         & (Join-Path $PSScriptRoot 'Collect-Runtime-Evidence.ps1') `
             -EvidenceDirectory $evidence -PackagePath $package `
-            -DevelopmentPurpose $DevelopmentPurpose
+            -DevelopmentPurpose $DevelopmentPurpose `
+            -ValidatedDeploymentManifestPath $deploymentManifestPath
     }
     Write-Host "Runtime evidence manifest: $(Join-Path $evidence 'evidence-manifest.json')"
     Write-Host "Runtime result: $resultPath"
