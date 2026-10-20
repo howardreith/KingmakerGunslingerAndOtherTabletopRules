@@ -1,50 +1,62 @@
 # Sprint 28 current status
 
-Status: **IN PROGRESS - three giants registered and withheld; Working-save, remaining native mechanics and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
+Status: **IN PROGRESS - three giants registered and withheld; ON/OFF Working-save native load and ownership checked, final release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
 
 
 ## Current checkpoint
 
-The Sprint 28 Working-save scope now selects exactly Hill, Stone and Fire
-through the existing prepare/load-cleanup/fresh-absence trio. Its installed
-eleven-mod wrapper admits only `giant-humanoids` with development purpose
-`sprint28-native-prototype`, and the outer request launcher carries that
-scope. The observer saves exact owner/blueprint/no-loot profiles for all eleven
-giant weapons and armor pieces, records distinct resolved item references
-within each process, and saves a request-owned Stone spent-round catch
-precondition. It checks the equipment profile and party inventory after native
-load, then requires cleanup and fresh absence. The first native attempt did
-not arm a save.
+The corrected Sprint 28 development source `ffd8e2f40d9e0212e3bf209b6321e4f599bcba36`
+produced exact ZIP SHA-256 `013b8363592fde0956d2f6e11c55f6d05fa11173e8ed52962951ad3fc3617412`,
+DLL SHA-256 `2f6731436d1c30639ae457a8c91bde2c1612adcdfcb88721b1541d289c2aa59c`,
+and MVID `4bd9cfad-4fd6-4af9-857e-dc73fb028719`. It is a development
+candidate, with all eleven new SNA roots withheld. The guarded installed-stack
+wrapper used the exact package path, `-PersistenceScope giant-humanoids`,
+`-DevelopmentPurpose sprint28-native-prototype`, Steam App ID 640820, and
+limited `HOWARD-LAPTOP\Howard` tasks. It did not grant release authority.
 
-Focused production compilation and three Sprint 28 tests passed in 20.3
-seconds. The no-game summoning orchestration suite passed 212 assertions;
-the scoped development-purpose refusal suite passed 10. A limited Howard
-`-WhatIf` save preflight passed 19 checks and the full runtime scenario
-preflight passed 683 checks, including request serialization, case-sensitive
-scope refusal and automatic-exit enforcement. The exact finished tasks were
-removed. Earlier no-game preflight failures/stops remain in ignored artifact
-logs; one was an incomplete test timeout map, and a PowerShell automatic
-`$args` collision prompted inside a refusal scriptblock until narrowed.
-Neither staged the installation, started Kingmaker or touched a save.
+The ON Working-save trio passed native prepare (19 assertions, 218 seconds),
+fresh-load cleanup (18, 213 seconds) and fresh absence (6, 180 seconds).
+The prepared fixture had Hill, Stone and Fire with eleven distinct owned,
+nonlootable weapon/armor instances and exact party inventory. Fresh load
+preserved their profiles and Stone's spent-round rock-catch ledger, then
+receipt-owned cleanup removed the giants and the fresh process observed
+absence. All three supervisor tasks exited zero. Each compatibility
+transaction returned `Restored`/verified and an independent actual-intake
+audit found only the authorized Working save length, mtime and hash changed.
 
-The first guarded prepare from source `7882ad4109f85aded25c57fa601a38bc00218fa9`
-and ZIP SHA-256 `4f541c5891e2b0345d5c4a963adab4b2204ad621d77fe1e077e050d646a939c5`
-returned **FAIL before save**: the observer required native item `UniqueId`,
-but Kingmaker 2.1.7b exposes no such member for this equipment. Raw RunId
-`20261020T0030056295664Z-c4e783004bab437da185d6af1110b7dd`
-is retained. The limited child exited 1, transaction
-`sprint28-stack-20261020T002812Z-bcda72ea396e` is
-`Restored`/`restorationVerified=true`, and independent intake audit SHA-256
-`468fff60d89007037a7d8f3b8dcfed0882a53111dceb6785accced6ce3e6c5a7`
-is diff0 across 968 Mods, 119 saves, 19 references and 83 settings.
-The narrowed observer compares serializable properties across load and
-actual distinct item references within each process.
+A second ON prepare for the OFF sequence passed 19 native assertions in 217
+seconds. OFF fresh-load cleanup passed 19 native assertions in 261 seconds:
+all three giant profiles, eleven distinct owned items, party inventory and
+Stone catch ledger survived load with Expanded Summoning disabled; the module
+allocated zero variants and cleanup saved. Both outer tasks exited one *after*
+the game result because PowerShell `Expand-Archive -Force` failed while cleaning
+an extracted `CHANGELOG.md`; each original orchestration ERROR remains in its
+evidence directory. Separate no-game recoveries SHA-256
+`91b24067e21062d53e6ab440ce0636d88b0eee8726b34b6b86422b5a16ce4ec8`
+and `fe18102cd8d69921baa1bb5fb4f2f35508772d58d2e3b5bd51e4501dd87c3de4`
+verified every original assertion, raw item rows, request/RunId, loaded DLL,
+ZIP, save-write receipt, exact restored transaction and actual intake. They
+qualify the native observations only; the supervisor failures are not relabeled.
 
-Next: build the corrected development candidate, run the guarded limited-user
-Working-save trio with actual intake comparison and restoration after each
-phase. The eleven SNA roots remain withheld;
-full catch boundaries, disarm, turn-based/full-cadence AI, terrain/feat
-behavior, presentation and final release qualification remain open.
+The demonstrated validator race is narrowed to an unnecessary `-Force` on its
+unique empty extraction directory. The targeted fix has passed strict package
+validation normally and with inherited `WhatIf`, plus invalid-root refusal;
+all three checks left zero temporary extractions. Seven earlier completed S28
+backup copies were archived and per-file reread, then content-addressed as
+401 verified blobs for 2,745 original file rows. Original transaction and
+native records remain. This recovered roughly 247 MB of system-drive space;
+the latest post-transaction free space was about 640 MB. The validator fix,
+this status and the evidence map are the current uncommitted reporting/tooling
+checkpoint and have not been compiled into a new DLL.
+
+The Working fixture is cleaned of request-owned giants but still differs from
+its immutable intake bytes. Other saves, installation, private references,
+sound bank, game binaries and 83 HKCU settings match intake; no game, task or
+lease remains. Restore the original Working bytes at closeout. Next: commit
+this coherent checkpoint, build a new exact development candidate, run the
+fresh-absence phase after OFF cleanup, then close the remaining combat,
+rock/catch boundaries, disarm, AI, feats, presentation, public roots and
+release gates. No release, visual approval or Sprint 29 work is claimed.
 
 ## Dated native checkpoints
 

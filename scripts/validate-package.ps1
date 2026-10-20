@@ -30,7 +30,9 @@ $tempDirectory = Join-Path ([IO.Path]::GetTempPath()) ("KmgPackageValidation-" +
 New-Item -ItemType Directory -Path $tempDirectory -Force -WhatIf:$false | Out-Null
 
 try {
-    Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -Force -WhatIf:$false
+    # The destination is unique and empty. Avoid the Force overwrite cleanup,
+    # which can race on a just-extracted file.
+    Expand-Archive -LiteralPath $PackagePath -DestinationPath $tempDirectory -WhatIf:$false
     $roots = @(Get-ChildItem -LiteralPath $tempDirectory -Directory)
     if ($roots.Count -ne 1 -or $roots[0].Name -ne $info.Id) {
         throw "Package must contain exactly one root directory named '$($info.Id)'."
