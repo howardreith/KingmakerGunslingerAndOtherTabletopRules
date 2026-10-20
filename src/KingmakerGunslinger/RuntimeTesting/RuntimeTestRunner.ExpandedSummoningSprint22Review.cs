@@ -244,7 +244,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["uncoveredLiveTurnUnits"] = new JArray(sorted
                         .Where(value => !tickUnits.Any(owned =>
                             ReferenceEquals(owned, value)))
-                        .Select(value => value.UniqueId))
+                        .Select(value => value.UniqueId)),
+                    ["uncoveredActors"] = new JArray(sorted
+                        .Where(value => !tickUnits.Any(owned =>
+                            ReferenceEquals(owned, value)))
+                        .Select(value => new JObject {
+                            ["id"] = value.UniqueId,
+                            ["blueprint"] = value.Blueprint?.name,
+                            ["group"] = value.GroupId,
+                            ["faction"] = value.Faction?.name,
+                            ["party"] = Game.Instance.Player.Party.Contains(value),
+                            ["fixtureCreated"] = _fixture.Created.Contains(value),
+                            ["fixtureIntake"] = _fixture.UnitsBefore.Any(prior =>
+                                ReferenceEquals(prior, value)),
+                            ["combat"] = value.IsInCombat,
+                            ["brainActive"] = value.IsBrainActive
+                        }))
                 };
             }
 

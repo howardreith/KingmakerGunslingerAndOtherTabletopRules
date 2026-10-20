@@ -218,6 +218,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string GiantBodiesScope = "giant-bodies";
         internal const string GriffonScope = "griffon";
         internal static string[] GriffonKeys { get { return new[] { "griffon" }; } }
+        internal const string GiantHumanoidsScope = "giant-humanoids";
+        internal static string[] GiantHumanoidKeys
+        { get { return new[] { GiantHumanoidRulesPolicy.Hill,
+            GiantHumanoidRulesPolicy.Stone, GiantHumanoidRulesPolicy.Fire }; } }
         internal const string MagicalBeastsScope = "magical-beasts";
         internal static string[] MagicalBeastKeys { get { return new[] { "gorgon", "bulette" }; } }
         internal static string[] GiantBodyKeys
@@ -277,6 +281,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantBodiesScope ? GiantBodyKeys :
                 scope == MagicalBeastsScope ? MagicalBeastKeys :
                 scope == GriffonScope ? GriffonKeys :
+                scope == GiantHumanoidsScope ? GiantHumanoidKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
             if (!permitted.Contains(key, StringComparer.Ordinal))
@@ -303,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 TheropodKeys : scope == GiantBodiesScope ? GiantBodyKeys :
                 scope == MagicalBeastsScope ? MagicalBeastKeys :
                 scope == GriffonScope ? GriffonKeys :
+                scope == GiantHumanoidsScope ? GiantHumanoidKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
@@ -322,7 +328,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return (scope == Scope || scope == AnkylosaurusScope ||
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
-                scope == GiantBodiesScope || scope == MagicalBeastsScope || scope == GriffonScope) &&
+                scope == GiantBodiesScope || scope == MagicalBeastsScope ||
+                scope == GriffonScope || scope == GiantHumanoidsScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

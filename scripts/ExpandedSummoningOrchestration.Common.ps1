@@ -32,12 +32,14 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'observe-expanded-summoning-inventory',
         'observe-expanded-summoning-sprint26-native-inputs',
         'observe-expanded-summoning-sprint27-native-inputs',
+        'observe-expanded-summoning-sprint28-native-inputs',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
         'disposable-expanded-summoning-sprint25-native-review',
         'disposable-expanded-summoning-sprint26-native-review',
-        'disposable-expanded-summoning-sprint27-native-review')
+        'disposable-expanded-summoning-sprint27-native-review',
+        'disposable-expanded-summoning-sprint28-native-review')
 }
 
 function Invoke-KmgIndependentBoundaryRestoration {
@@ -571,6 +573,18 @@ function Test-KmgGriffonDevelopmentPersistence {
     if([string]::IsNullOrEmpty($Purpose)){return $false}
     if($Scope -cne 'griffon' -or $Purpose -cne 'sprint27-native-prototype') {
         throw 'Development installed-stack persistence permits only exact Griffon scope and sprint27-native-prototype purpose.'
+    }
+    return $true
+}
+
+# The Sprint 28 owner-selected development exception is exact and cannot
+# admit another scope, purpose, save, scenario, or release candidate.
+function Test-KmgSprint28DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'giant-humanoids' -or
+        $Purpose -cne 'sprint28-native-prototype') {
+        throw 'Development installed-stack persistence permits only exact giant-humanoids scope and sprint28-native-prototype purpose.'
     }
     return $true
 }

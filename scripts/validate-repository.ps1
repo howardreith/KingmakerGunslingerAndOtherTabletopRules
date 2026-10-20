@@ -77,11 +77,11 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161')) {
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
@@ -108,7 +108,7 @@ if ($activeVersion -eq '0.0.160') {
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 26 corruption fixtures failed.' }
 }
 
-if ($activeVersion -eq '0.0.161') {
+if ($activeVersion -in @('0.0.161', '0.0.162')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint27161.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 27 corruption fixtures failed.' }
 }
@@ -148,7 +148,13 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-Sprint25Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint26Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint27Release.ps1')
+if ($activeVersion -eq '0.0.162') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint28162.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 28 public source-boundary corruption fixtures failed.' }
+    & (Join-Path $PSScriptRoot 'Test-Sprint28Release.ps1')
+}
 & (Join-Path $PSScriptRoot 'Test-GriffonDevelopmentPersistence.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint28DevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
 # The push wrapper lives outside this repository and had no behaviour test
 # until the Sprint 25 audit. It reports SKIP when the wrapper is absent, so a

@@ -60,7 +60,7 @@ namespace KingmakerGunslinger.Summoning
                 .ToArray();
             // Sprint27 registers one Griffon with its real pinned painting.
             // Keep the immutability guard in addition to exact key equality.
-            if (Values.Length != 123 || expected.Length != 123 ||
+            if (Values.Length != 126 || expected.Length != 126 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||

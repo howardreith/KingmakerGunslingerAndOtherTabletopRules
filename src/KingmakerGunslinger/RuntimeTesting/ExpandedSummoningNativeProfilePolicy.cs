@@ -10,6 +10,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "rtwp-ai" || phase == "routes" || phase == "visual-lifecycle" ||
                 phase == "overrun" || phase == "great-cleave";
         }
+        internal static bool Sprint28Phase(string phase)
+        {
+            return phase == "profiles" || phase == "modes" ||
+                phase == "commands" || phase == "turns" || phase == "ownership" ||
+                phase == "disarm" || phase == "catch" || phase == "ai" ||
+                phase == "ai-turns" || phase == "cleave" || phase == "routes";
+        }
         internal static bool Sprint27Phase(string phase)
         {
             return phase == "rtwp-foundation" || phase == "pounce-rtwp" ||
@@ -101,6 +108,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return parameters == 1 && Sprint26Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview)
                 return parameters == 1 && Sprint27Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview)
+                return parameters == 1 && Sprint28Phase(reviewPhase);
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,

@@ -606,7 +606,7 @@ namespace KingmakerGunslinger.DomainTests
                     TheropodRulesPolicy.AppendedWeaponIdentityCount +
                     TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
                     TheropodRulesPolicy.AppendedFeatureIdentityCount +
-                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount + Sprint26MagicalBeastRules.AppendedPrivateIdentityCount,
+                    GiantBodyRulesPolicy.AppendedPrivateIdentityCount + Sprint26MagicalBeastRules.AppendedPrivateIdentityCount + GiantHumanoidRulesPolicy.AppendedPrivateIdentityCount,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount - identities.Count(value =>
                     value.Symbol.StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) ||
                     value.Symbol.StartsWith("KMG.Summoning.Special.Griffon.", StringComparison.Ordinal)),
