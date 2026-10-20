@@ -1,6 +1,8 @@
-# Sprint 28 — IN PROGRESS / NOT QUALIFIED
+# Sprint 28 — RELEASED / STOP
 
-The unpublished Sprint 28 review branch exposes only the eleven Hill, Stone and Fire Giant SNA roots. Its source-derived surface is 1,119 generated placements + 29 retained wrappers = 1,148 visible choices. This public source candidate has not passed the full gate or fresh scoped native release qualification and is not a release. See [current status](planning/SPRINT28-STATUS.md) and [active evidence map](planning/SPRINT28-EVIDENCE.json). Sprint 27's stable v0.0.161 release remains unchanged.
+Hill, Stone and Fire Giants shipped in stable [v0.0.162](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.162) from product [PR #62](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/62), merge `f590aa33ced091506510981598eab184bcb293a9`, tested source `b0f5b4bac9d9c78ab30b7a32697d3960b0890ef6`. The exact downloaded ZIP SHA-256 is `4d806ea4d235db95a945ee93b0af4a47c0b92f50ecd9ee44ddb98b6b021c2f12`; DLL SHA-256 `04b7e0cafeb4f03ec6a6e2ec640bfac5aca88b0eea2b55c802da63d3bb13b6b2`; MVID `0ac0af6e-bad3-41d0-a2bd-73fe4bc5e508`.
+
+All eleven SNA-only roots are public. Nineteen fresh exact-candidate native RunIds and the full Sprint gate passed; the final machine and original Working save match intake exactly. See [current status](planning/SPRINT28-STATUS.md), [release coverage](docs/SPRINT28-COVERAGE.md), and [release evidence map](planning/SPRINT28-RELEASE-EVIDENCE.json). The only owner-approved gameplay omission is named Climb for these three and Fire Craft; a future focused pit/climbing review is backlog. Rough body/color/animation polish is backlog, with no owner aesthetic approval claimed. Sprint 29 was not started. STOP after this final records merge.
 
 # Sprint 27 historical release
 
