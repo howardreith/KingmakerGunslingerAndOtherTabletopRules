@@ -158,8 +158,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 // out-of-scene attack or mutating a party unit.
                                 UnitEntityData target = fixture.Hostile;
                                 Vector3 originalTarget = target.Position;
-                                Vector3 direction = (originalTarget -
-                                    owner.Position).normalized;
+                                // The disposable hostile can start on a
+                                // different height layer. Range increments
+                                // use ground distance; a 3-D direction would
+                                // spend most of a long probe moving upward,
+                                // then ForcePlaceAboveGround would snap it
+                                // back near the owner in the horizontal plane.
+                                Vector3 direction = originalTarget -
+                                    owner.Position;
+                                direction.y = 0f;
+                                direction.Normalize();
                                 if (direction.sqrMagnitude < .01f)
                                     direction = Vector3.forward;
                                 int pointBlank = 0, near = 0, far = 0;
