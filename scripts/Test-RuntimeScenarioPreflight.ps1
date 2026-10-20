@@ -876,6 +876,7 @@ Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='disarm'})) 'sprint28-disarm-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='catch'})) 'sprint28-catch-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai'})) 'sprint28-ai-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai-turns'})) 'sprint28-ai-turns-admitted'
 $sprint28CommandRequest = New-KmgRuntimeRequest @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'sprint28-command-request-test')
 Assert-True ($sprint28CommandRequest.parameters.reviewPhase -ceq 'commands') 'sprint28-commands-serialized'
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='unknown'} } 'sprint28-rejects-unknown-phase'

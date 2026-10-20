@@ -34,7 +34,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool pause = Game.Instance.IsPaused;
             Sprint25Check("s28-phase", phase == "profiles" || phase == "modes" ||
                 phase == "commands" || phase == "turns" || phase == "ownership" ||
-                phase == "disarm" || phase == "catch" || phase == "ai", new JObject {
+                phase == "disarm" || phase == "catch" || phase == "ai" ||
+                phase == "ai-turns", new JObject {
                 ["phase"] = phase }, "One exact implemented Sprint 28 review phase.");
             if (phase == "modes")
             {
@@ -68,7 +69,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (phase == "ai")
             {
-                foreach (int frame in ReviewSprint28Ai(fixture)) yield return frame;
+                foreach (int frame in ReviewSprint28Ai(fixture, false)) yield return frame;
+                yield break;
+            }
+            if (phase == "ai-turns")
+            {
+                foreach (int frame in ReviewSprint28Ai(fixture, true)) yield return frame;
                 yield break;
             }
             try
