@@ -11,7 +11,11 @@ param(
     [string]$EvidenceRoot = 'C:\Dev\KingmakerGunslingerLab\runtime-evidence',
     # The development purpose of -PackagePath, when it is a development
     # candidate. The evidence then says so, and qualification refuses it.
-    [string]$DevelopmentPurpose
+    [string]$DevelopmentPurpose,
+    # The runtime wrapper passes its freshly verified deployment record after
+    # native completion. Recheck its exact package hash and live DLL rather
+    # than re-extracting the same already validated ZIP into scarce temp space.
+    [string]$ValidatedDeploymentManifestPath
 )
 
 Set-StrictMode -Version Latest
@@ -69,9 +73,25 @@ if (([int][bool]$PackagePath + [int][bool]$QualifiedElementalRaces114DeploymentM
 if ($DevelopmentPurpose -and -not $PackagePath) {
     throw 'A development purpose describes an explicit development package.'
 }
+if ($ValidatedDeploymentManifestPath -and (-not $PackagePath -or
+        $QualifiedElementalRaces114DeploymentManifestPath -or
+        $QualifiedElementalRaces117DeploymentManifestPath)) {
+    throw 'Validated deployment reuse requires one exact current-source package.'
+}
 if ($PackagePath) {
-    $buildManifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
-        -DevelopmentPurpose $DevelopmentPurpose
+    if ($ValidatedDeploymentManifestPath) {
+        # Prelaunch and deployment each performed strict extraction. This
+        # postgame check binds their manifest to the unchanged ZIP, source,
+        # installed DLL/MVID, SoundBank and settings without another extract.
+        $validated = Assert-KmgReusableDeployment `
+            -DeploymentManifestPath $ValidatedDeploymentManifestPath `
+            -PackagePath $PackagePath -RepositoryRoot $root `
+            -ExpectedVersion $info.Version -DevelopmentPurpose $DevelopmentPurpose
+        $buildManifest = $validated.Build
+    } else {
+        $buildManifest = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root `
+            -DevelopmentPurpose $DevelopmentPurpose
+    }
     $builtHash = $buildManifest.dllSha256
     $packageVersion = $buildManifest.version
     $packageSha256 = $buildManifest.packageSha256
