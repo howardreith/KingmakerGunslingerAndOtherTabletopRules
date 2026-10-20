@@ -149,6 +149,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-Sprint26Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint27Release.ps1')
 if ($activeVersion -eq '0.0.162') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint28162.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 28 public source-boundary corruption fixtures failed.' }
     & (Join-Path $PSScriptRoot 'Test-Sprint28Release.ps1')
 }
 & (Join-Path $PSScriptRoot 'Test-GriffonDevelopmentPersistence.ps1')
