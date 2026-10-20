@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **142** active
+The blueprint manifest contains exactly **148** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -23,7 +23,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | equipped project weapon | 101 |
 | mechanics-only exclusion | 2 |
-| summoning-only exclusion | 39 |
+| summoning-only exclusion | 45 |
 
 ### Family counts
 
@@ -39,6 +39,7 @@ identity, character identity, and time are forbidden.
 | Pistol-Whip rule-event weapon | 2 |
 | Revolver | 1 |
 | Rifle | 1 |
+| Sprint 28 giant humanoid attack | 6 |
 | Wakizashi | 14 |
 
 ## Exact identity and variant mapping
@@ -187,6 +188,12 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Griffon.Bite1d6 | 67549c5f756c495a8592ab27a019fec8 | Bite1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GriffonOriginal | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Griffon.Talon1d6 | 130a92b8f9d64a46908cf05258fbb2b0 | Talon1d6 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GriffonOriginal | not applicable | summoning-only exclusion |
 | KMG.Summoning.Natural.Griffon.Rake1d4 | 4807a234c116416988cd388e5a923776 | Rake1d4 | Expanded Summoning creature weapon | native donor type configured per summoned creature | native-runtime-donor | mechanics-only | ExpandedSummoning.GriffonOriginal | not applicable | summoning-only exclusion |
+| KMG.Summoning.Giant.Greatclub2d8 | 2b821e28b95d40f197f5fb847008b93f | Greatclub2d8 | Sprint 28 giant humanoid attack | native donor type configured per giant | native-runtime-donor | mechanics-only | ExpandedSummoning.GiantNativeMelee | not applicable | summoning-only exclusion |
+| KMG.Summoning.Giant.Greatsword3d6 | d33330230bc444a98c7f7b0b81778f1d | Greatsword3d6 | Sprint 28 giant humanoid attack | native donor type configured per giant | native-runtime-donor | mechanics-only | ExpandedSummoning.GiantNativeMelee | not applicable | summoning-only exclusion |
+| KMG.Summoning.Giant.Slam1d8 | fe074f0010824f9cb2ab6864469e1852 | Slam1d8 | Sprint 28 giant humanoid attack | native donor type configured per giant | native-runtime-donor | mechanics-only | ExpandedSummoning.GiantNativeMelee | not applicable | summoning-only exclusion |
+| KMG.Summoning.Giant.HillRock1d8 | a32cbf513a024dd5b91f140bc5dfa91d | HillRock1d8 | Sprint 28 giant humanoid attack | KMG.Summoning.Giant.HillRockType | 6925ed3e113540649e9f220154d846e6 | mechanics-only | ExpandedSummoning.GiantNativeRock | not applicable | summoning-only exclusion |
+| KMG.Summoning.Giant.StoneRock1d8 | 20c088bbd36c4e43a7b26acde82345a1 | StoneRock1d8 | Sprint 28 giant humanoid attack | KMG.Summoning.Giant.StoneRockType | c711974fd2f8479a885e34c0b3711880 | mechanics-only | ExpandedSummoning.GiantNativeRock | not applicable | summoning-only exclusion |
+| KMG.Summoning.Giant.FireRock1d8 | 80f42e4d54104df681f39637dfc43f25 | FireRock1d8 | Sprint 28 giant humanoid attack | KMG.Summoning.Giant.FireRockType | 28981505774b459dbf0e9871a9bd2dd3 | mechanics-only | ExpandedSummoning.GiantNativeRock | not applicable | summoning-only exclusion |
 
 ## Exact presentation and provenance contracts
 
@@ -334,6 +341,12 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.Natural.Griffon.Bite1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Griffon body: assets/sprint27-griffon/griffon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint27-griffon/build_griffon.py | native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference | creature-specific natural or manufactured attack | project griffon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt |
 | KMG.Summoning.Natural.Griffon.Talon1d6 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Griffon body: assets/sprint27-griffon/griffon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint27-griffon/build_griffon.py | native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference | creature-specific natural or manufactured attack | project griffon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt |
 | KMG.Summoning.Natural.Griffon.Rake1d4 | native donor clone configured by Expanded Summoning builders | native donor presentation | original project Griffon body: assets/sprint27-griffon/griffon-mesh.json | none; original procedural mesh data | none; procedural geometry | assets-source/original-models/sprint27-griffon/build_griffon.py | native Manticore da807351572c540478b703957d863e68; runtime rig/animation reference | creature-specific natural or manufactured attack | project griffon-albedo.png on per-view native-compatible material | none | project-authored geometry/albedo; native rig/animation referenced only | coarse anatomy, rigid pointed wings and simplified transitions are deferred visual debt |
+| KMG.Summoning.Giant.Greatclub2d8 | summon-owned native weapon reference | native donor presentation | summon-owned native manufactured weapon | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native giant attack animation | two-handed manufactured weapon | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | usable native giant body and attack presentation; visual proportions and motion remain backlog |
+| KMG.Summoning.Giant.Greatsword3d6 | summon-owned native weapon reference | native donor presentation | summon-owned native manufactured weapon | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native giant attack animation | two-handed manufactured weapon | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | usable native giant body and attack presentation; visual proportions and motion remain backlog |
+| KMG.Summoning.Giant.Slam1d8 | native attack-mode presentation; no collectible item | native donor presentation | giant attack mode; no transferable item | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native giant attack animation | primary slam alternative | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | usable native giant body and attack presentation; visual proportions and motion remain backlog |
+| KMG.Summoning.Giant.HillRock1d8 | native attack-mode presentation; no collectible item | native donor presentation | giant attack mode; no transferable item | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native giant attack animation | ranged thrown-rock attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | usable native giant body and attack presentation; visual proportions and motion remain backlog |
+| KMG.Summoning.Giant.StoneRock1d8 | native attack-mode presentation; no collectible item | native donor presentation | giant attack mode; no transferable item | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native giant attack animation | ranged thrown-rock attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | usable native giant body and attack presentation; visual proportions and motion remain backlog |
+| KMG.Summoning.Giant.FireRock1d8 | native attack-mode presentation; no collectible item | native donor presentation | giant attack mode; no transferable item | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native giant attack animation | ranged thrown-rock attack | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | usable native giant body and attack presentation; visual proportions and motion remain backlog |
 
 ## Audit conclusion before asset authoring
 

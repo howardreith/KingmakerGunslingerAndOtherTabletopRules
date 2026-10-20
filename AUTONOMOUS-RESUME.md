@@ -1,6 +1,6 @@
 # Sprint 28 — IN PROGRESS / NOT QUALIFIED
 
-Hill, Stone and Fire Giants are registered on the Sprint 28 review branch with eleven SNA-only roots withheld. The current public surface remains 1,108 generated placements + 29 retained wrappers = 1,137 visible choices; registration allocates 1,119 roots, including eleven withheld giant roots. This is a development checkpoint, not a release or native mechanics PASS. See [current status](planning/SPRINT28-STATUS.md) and [active evidence map](planning/SPRINT28-EVIDENCE.json). Sprint 27's stable v0.0.161 release remains unchanged.
+The unpublished Sprint 28 review branch exposes only the eleven Hill, Stone and Fire Giant SNA roots. Its source-derived surface is 1,119 generated placements + 29 retained wrappers = 1,148 visible choices. This public source candidate has not passed the full gate or fresh scoped native release qualification and is not a release. See [current status](planning/SPRINT28-STATUS.md) and [active evidence map](planning/SPRINT28-EVIDENCE.json). Sprint 27's stable v0.0.161 release remains unchanged.
 
 # Sprint 27 historical release
 
