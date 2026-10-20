@@ -125,70 +125,123 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (floor.node == null || !floor.node.Walkable)
                                 throw new InvalidOperationException(
                                     "No walkable Cleave owner floor.");
-                            origin = floor.clampedPosition;
-                            PlaceExpandedSummoningUnit(owner, origin);
-                            PlaceExpandedSummoningUnit(fixture.Hostile,
-                                origin - (far - origin).normalized * 30f);
+                            Vector3 surveyedOrigin = floor.clampedPosition;
                             bool laneReady = false;
                             var attemptedPositions = new JArray();
-                            foreach (Vector3 forward in new[] {
-                                (far - origin).normalized }.Concat(
-                                    CompassOffsets))
+                            int connectedOrigins = 0;
+                            int graphClusters = 0;
+                            int nativeClusters = 0;
+                            foreach (Vector3 offset in Enumerable.Range(-2, 5)
+                                .SelectMany(dx => Enumerable.Range(-2, 5)
+                                    .Select(dz => new Vector3(dx * 3f, 0f,
+                                        dz * 3f)))
+                                .OrderBy(value => value.sqrMagnitude))
                             {
-                                Vector3 side = Vector3.Cross(forward,
-                                    Vector3.up).normalized;
-                                // Native weapon range includes the giant's
-                                // Reach stat and both footprints at IsReach.
-                                // Keep all three targets disjoint and adjacent
-                                // inside that actual melee threshold.
-                                Vector3[] points = Enumerable.Range(0, 3)
-                                    .Select(index => origin + forward * 2.6f
-                                        + side * (index - 1) * 1.2f).ToArray();
-                                var nodes = points.Select(value =>
-                                    AstarPath.active.GetNearest(value))
-                                    .ToArray();
-                                if (nodes.Where((node, index) =>
-                                    node.node == null || !node.node.Walkable ||
-                                    node.node.Area != floor.node.Area ||
-                                    node.node.GraphIndex !=
+                                Vector3 candidate = surveyedOrigin + offset;
+                                var ownerNode = AstarPath.active.GetNearest(
+                                    candidate);
+                                if (ownerNode.node == null ||
+                                    !ownerNode.node.Walkable ||
+                                    ownerNode.node.Area != floor.node.Area ||
+                                    ownerNode.node.GraphIndex !=
                                         floor.node.GraphIndex ||
-                                    Vector3.Distance(node.clampedPosition,
-                                        points[index]) > .6f ||
-                                    Kingmaker.Visual.FogOfWar
-                                        .LineOfSightGeometry.Instance
-                                        .HasObstacle(origin +
-                                            Vector3.up * 1.2f,
-                                            node.clampedPosition +
-                                            Vector3.up * 1.2f, 0)).Any())
+                                    Vector3.Distance(candidate,
+                                        ownerNode.clampedPosition) > .6f ||
+                                    Game.Instance.Player.Party.Any(value =>
+                                        value != null && value.IsInGame &&
+                                        Vector3.Distance(value.Position,
+                                            ownerNode.clampedPosition) < 3.5f))
                                     continue;
-                                for (int i = 0; i < 3; i++)
+                                connectedOrigins++;
+                                Vector3 trialOrigin = ownerNode.clampedPosition;
+                                PlaceExpandedSummoningUnit(owner, trialOrigin);
+                                foreach (Vector3 forward in new[] {
+                                    (far - surveyedOrigin).normalized }.Concat(
+                                        CompassOffsets))
+                                foreach (float distance in new[] { 2.6f, 3.4f })
                                 {
-                                    targets[i].Commands.InterruptAll(true);
-                                    PlaceExpandedSummoningUnit(targets[i],
-                                        nodes[i].clampedPosition);
+                                    Vector3 side = Vector3.Cross(forward,
+                                        Vector3.up).normalized;
+                                    Vector3[] points = Enumerable.Range(0, 3)
+                                        .Select(index => trialOrigin + forward *
+                                            distance + side * (index - 1) *
+                                            1.2f).ToArray();
+                                    var nodes = points.Select(value =>
+                                        AstarPath.active.GetNearest(value))
+                                        .ToArray();
+                                    if (nodes.Where((node, index) =>
+                                        node.node == null ||
+                                        !node.node.Walkable ||
+                                        node.node.Area != floor.node.Area ||
+                                        node.node.GraphIndex !=
+                                            floor.node.GraphIndex ||
+                                        Vector3.Distance(node.clampedPosition,
+                                            points[index]) > .6f ||
+                                        Kingmaker.Visual.FogOfWar
+                                            .LineOfSightGeometry.Instance
+                                            .HasObstacle(trialOrigin +
+                                                Vector3.up * 1.2f,
+                                                node.clampedPosition +
+                                                Vector3.up * 1.2f, 0)).Any())
+                                        continue;
+                                    graphClusters++;
+                                    for (int i = 0; i < 3; i++)
+                                    {
+                                        targets[i].Commands.InterruptAll(true);
+                                        PlaceExpandedSummoningUnit(targets[i],
+                                            nodes[i].clampedPosition);
+                                        targets[i].SightCache.ClearIfNeeded();
+                                    }
+                                    owner.SightCache.ClearIfNeeded();
+                                    bool reached = targets.All(value =>
+                                        owner.HasLOS(value) &&
+                                        UnitEngagementExtension.IsReach(owner,
+                                            value, owner.Body.PrimaryHand));
+                                    for (int first = 0; first < targets.Length;
+                                        first++)
+                                    for (int second = first + 1;
+                                        second < targets.Length; second++)
+                                    {
+                                        float separation = targets[first]
+                                            .DistanceTo(targets[second]);
+                                        float footprints = targets[first]
+                                            .Corpulence + targets[second]
+                                                .Corpulence;
+                                        reached &= separation >= footprints -
+                                            .05f && separation <= footprints +
+                                            5f * .3048f + .02f;
+                                    }
+                                    if (attemptedPositions.Count < 8)
+                                        attemptedPositions.Add(new JObject {
+                                            ["origin"] = SurveyVector(
+                                                owner.Position),
+                                            ["requested"] = new JArray(
+                                                points.Select(SurveyVector)),
+                                            ["targets"] = new JArray(
+                                                targets.Select(value =>
+                                                    SurveyVector(
+                                                        value.Position))),
+                                            ["nativeReach"] = new JArray(
+                                                targets.Select(value =>
+                                                    UnitEngagementExtension
+                                                        .IsReach(owner, value,
+                                                            owner.Body
+                                                                .PrimaryHand))) });
+                                    if (!reached) continue;
+                                    nativeClusters++;
+                                    origin = trialOrigin;
+                                    lane = lane + ";clusterOrigin=" + origin +
+                                        ";clusterDistance=" + distance;
+                                    laneReady = true;
+                                    break;
                                 }
-                                owner.SightCache.ClearIfNeeded();
-                                laneReady = targets.All(value =>
-                                    UnitEngagementExtension.IsReach(owner,
-                                        value, owner.Body.PrimaryHand));
-                                attemptedPositions.Add(new JObject {
-                                    ["requested"] = new JArray(points.Select(
-                                        SurveyVector)),
-                                    ["ground"] = new JArray(nodes.Select(
-                                        value => SurveyVector(
-                                            value.clampedPosition))),
-                                    ["owner"] = SurveyVector(owner.Position),
-                                    ["targets"] = new JArray(targets.Select(
-                                        value => SurveyVector(
-                                            value.Position))),
-                                    ["nativeReach"] = new JArray(targets.Select(
-                                        value => UnitEngagementExtension.IsReach(
-                                            owner, value,
-                                            owner.Body.PrimaryHand))) });
                                 if (laneReady) break;
                             }
                             if (!laneReady) throw new InvalidOperationException(
                                 "No native three-target Cleave lane: " + lane +
+                                ";connectedOrigins=" + connectedOrigins +
+                                ";graphClusters=" + graphClusters +
+                                ";nativeClusters=" + nativeClusters +
                                 ";hand=" + owner.Body.PrimaryHand?.MaybeWeapon?.Blueprint?.AssetGuid +
                                 ";weaponRangeMeters=" + owner.Body.PrimaryHand?.MaybeWeapon?.AttackRange.Meters +
                                 ";reachFeet=" + owner.Stats.Reach.ModifiedValue +
@@ -200,6 +253,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         "/los=" + owner.HasLOS(value) +
                                         "/reach=" + UnitEngagementExtension.IsReach(
                                             owner, value, owner.Body.PrimaryHand))));
+                            PlaceExpandedSummoningUnit(fixture.Hostile,
+                                origin - (far - surveyedOrigin).normalized *
+                                    30f);
                             foreach (UnitEntityData target in targets)
                             {
                                 target.Stats.HitPoints.BaseValue = 100000;
