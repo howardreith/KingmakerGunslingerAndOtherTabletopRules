@@ -5,13 +5,40 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
-A focused observer-only extension now checks Fire's exact native Overrun
-and Sunder action grants, then measures both maneuvers' live CMB and
-CMD against Trip on disposable actors. It supplies no maneuver hit or
-item damage and does not claim the commands execute. Production
-compilation and four selected Sprint 28 domain tests pass (~24 seconds);
-a fresh native result is pending. The separate native Cleave wiring
-finding is awaiting the owner's bounded Sprint 28 scope choice.
+The pushed efd501593c0af39a6283d75e2fe6d72bb991b377 Fire feat
+observer candidate passed production compilation and four focused Sprint
+28 tests (~24 seconds). Exact development ZIP SHA-256
+fe5dbd83e8b32c7d2f3ccc1288248f51c7849c76559fbc93a5fdfadf0308003a,
+DLL SHA-256 3abeafbd8b53c7d118919dddfbbc43692bed2c2db0b69a4b703b4a238b278ac6,
+MVID 57abb0d9-525a-4bb6-b102-b9decc68388a. The first limited Howard
+no-game dry run failed because disk cleanup had removed the domain-test
+helper (original log SHA-256 77331fccd2e7de17fbcd13aa97e536fddfeeb854774a497f01deaa08ffbcaa52).
+The helper was rebuilt with four selected Sprint 28 tests passing;
+the same ZIP then passed exact-package dry run (log SHA-256
+bd1e0fa2d68f9d7285e7f13dff4c62bd9dd19ad34ae91db34062a82a66160147).
+Both completed dry-run tasks were removed. This prelaunch failure stays
+recorded separately from native gameplay evidence.
+
+Fresh guarded profiles RunId
+20261020T0504263283300Z-a4d96bcdc224469286073096d434f255 and
+supervisor passed all 35 assertions. Fire had both actual Overrun and
+Sunder action facts; compared to ordinary Trip, each live CMB and CMD
+was exactly +2 (attack 22/24/24, defense 31/33/33). This is a native
+fact/modifier check, not a claim that either action executed. Raw runtime
+result SHA-256 79670a28b17a36484a7b917e539b10160e97e20d53a1fb13b7664db61c505571;
+review SHA-256 9cbc688a4600e9d11fffcfee52d2108b1bd6efc4a980d0e5139b7a6754c0982c;
+collector SHA-256 3d846fe2e2bb7c8ffbe21629b6e6461c0c01078b9817e35cbfb399d6356176e5.
+Limited child exited zero, transaction
+compat-20261020T050158Z-d259c8605f4a was Restored/verified, the task
+was removed, and independent actual-intake audit SHA-256
+d8530e65a54d7781e4b3ab5303016dbf4661174a0cc5bf8951f0486fe0742798
+found only the authorized Working-save length/mtime/hash difference.
+All three redundant restored package copies matched the exact retained
+393-file ZIP (readback manifest SHA-256
+94ff91a4d6349098f8d53fb7e361bed55dae11960c25fbe93a062c023ebff6f0);
+only those copies were removed. The separate native Cleave wiring finding
+is awaiting the owner's bounded Sprint 28 scope choice. Eleven public
+roots remain withheld.
 
 The pushed observer-corrected source 062b482c02362efb68e2134c6e2094ae25bf61ee
 built as exact development ZIP SHA-256
