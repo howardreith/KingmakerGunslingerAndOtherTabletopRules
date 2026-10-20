@@ -127,8 +127,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["appearBuff"] = owner.Descriptor.Buffs.GetBuff(
                                     Kingmaker.Blueprints.Root.BlueprintRoot
                                         .Instance.SystemMechanics
-                                        .SummonedUnitAppearBuff) != null },
+                                        .SummonedUnitAppearBuff) != null,
+                                ["variant"] = ExpandedSummoningVisualVariantPatch
+                                    .DescribeView(owner.View),
+                                ["variantOwnership"] =
+                                    ExpandedSummoningVisualVariantPatch
+                                        .DescribeOwnership(owner.View),
+                                ["bodyMaterials"] = new JArray(owner.View
+                                    .GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                                    .SelectMany(renderer => renderer.sharedMaterials)
+                                    .Where(material => material != null)
+                                    .Take(6).Select(material => new JObject {
+                                        ["name"] = material.name,
+                                        ["color"] = material.HasProperty("_Color")
+                                            ? material.GetColor("_Color").ToString()
+                                            : "<none>",
+                                        ["tint"] = material.HasProperty("_TintColor")
+                                            ? material.GetColor("_TintColor").ToString()
+                                            : "<none>" })) },
                             "The exact giant's summoned native body finishes its appearance and is no longer shader-dissolved.");
+                        string variantOutcome = ExpandedSummoningVisualVariantPatch
+                            .DescribeView(owner.View);
+                        bool shouldTint = spec.Key != "hill-giant";
+                        Sprint25Check("s28-" + spec.Key + "-variant-bound",
+                            shouldTint
+                                ? variantOutcome.StartsWith("variant:applied;",
+                                    StringComparison.Ordinal) &&
+                                  ExpandedSummoningVisualVariantPatch
+                                    .DescribeOwnership(owner.View) != "<none>"
+                                : variantOutcome == "<none>",
+                            new JObject { ["owner"] = owner.UniqueId,
+                                ["variant"] = variantOutcome,
+                                ["ownership"] = ExpandedSummoningVisualVariantPatch
+                                    .DescribeOwnership(owner.View) },
+                            "Only Stone and Fire giant views bind their private visual variant; Hill remains the native donor look.");
                         var stats = owner.Stats;
                         int[] scores = {stats.Strength.ModifiedValue, stats.Dexterity.ModifiedValue,
                             stats.Constitution.ModifiedValue, stats.Intelligence.ModifiedValue,
