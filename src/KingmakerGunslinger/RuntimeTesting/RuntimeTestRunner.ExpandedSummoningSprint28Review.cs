@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Kingmaker;
+using Kingmaker.Blueprints.Area;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums.Damage;
@@ -13,6 +15,7 @@ using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.SettingsUI;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -121,6 +124,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["persuasion"] = DescribeSprint16Skill(stats.SkillPersuasion),
                             ["stealth"] = DescribeSprint16Skill(stats.SkillStealth)
                         }, "Actual adult giant instance has its printed base profile with live class, size, feat and equipment effects.");
+                        var intimidateCheck = Rulebook.Trigger(
+                            new RuleSkillCheck(owner, StatType.CheckIntimidate, 100)
+                            { IgnoreDifficultyBonusToDC = true });
+                        int printedIntimidate = spec.Key == "hill-giant" ||
+                            spec.Key == "stone-giant" ? 12 : 11;
+                        Sprint25Check("s28-" + spec.Key + "-intimidate",
+                            intimidateCheck.StatValue == printedIntimidate &&
+                            !(stats.SkillPersuasion as
+                                ModifiableValueSkill).ClassSkill,
+                            new JObject { ["owner"] = owner.UniqueId,
+                                ["ranks"] = stats.SkillPersuasion.BaseValue,
+                                ["rawPersuasion"] =
+                                    stats.SkillPersuasion.ModifiedValue,
+                                ["nativeIntimidate"] =
+                                    intimidateCheck.StatValue,
+                                ["printedIntimidate"] = printedIntimidate },
+                            "Native Intimidate consumes the giant subtype's class-skill bonus once without raising other Persuasion uses.");
                         string terrainSetting = Game.Instance.CurrentlyLoadedArea
                             ?.LootSetting.ToString();
                         int expectedTerrain = spec.Key == "stone-giant" &&
@@ -133,7 +153,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         int actualTerrain = stealthCheck.StatValue -
                             stats.SkillStealth.ModifiedValue;
                         Sprint25Check("s28-" + spec.Key + "-terrain-stealth",
-                            actualTerrain == expectedTerrain,
+                            actualTerrain == expectedTerrain &&
+                            (spec.Key != "stone-giant" ||
+                                stats.SkillStealth.ModifiedValue == 4 &&
+                                stealthCheck.StatValue == 4 + expectedTerrain),
                             new JObject { ["owner"] = owner.UniqueId,
                                 ["area"] = Game.Instance.CurrentlyLoadedArea?.AssetGuid,
                                 ["setting"] = terrainSetting,
@@ -142,6 +165,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["eventBonus"] = actualTerrain,
                                 ["expectedBonus"] = expectedTerrain },
                             "The native skill-check consumer grants only Stone's selected-area conditional racial Stealth bonus.");
+                        if (spec.Key == "stone-giant")
+                            foreach (string setting in new[] {
+                                "Hills", "NaturalCaves" })
+                            {
+                                JObject terrain = Sprint28StoneAreaSkillCheck(
+                                    owner, setting);
+                                Sprint25Check("s28-stone-giant-" + setting +
+                                    "-stealth", (int)terrain["rawStealth"] == 4 &&
+                                    (int)terrain["checkStealth"] == 12 &&
+                                    (int)terrain["eventBonus"] == 8 &&
+                                    (bool)terrain["restored"], terrain,
+                                    "Real installed area metadata supplies the selected rocky setting to Stone's native skill check and is restored in the same call.");
+                            }
                         // The native non-player Power Attack watcher starts this
                         // toggle on. Printed PF1 stat blocks compare with it off;
                         // preserve and test the actual native ON contribution.
@@ -297,5 +333,78 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.IsPaused = pause;
             }
         }
+        // The fixture is Forest. Borrow a real installed area blueprint's
+        // metadata for one synchronous native skill check; no scene, area
+        // state, party or save changes. Restore before the next game frame.
+        private static JObject Sprint28StoneAreaSkillCheck(
+            UnitEntityData owner, string setting)
+        {
+            Game game = Game.Instance;
+            BlueprintArea before = game.CurrentlyLoadedArea;
+            object state = game.State.LoadedAreaState;
+            if (before == null || before.LootSetting.ToString() != "Forest" ||
+                owner == null || owner.Blueprint == null ||
+                owner.Stats.SkillStealth.ModifiedValue != 4 ||
+                !GiantHumanoidRulesPolicy.IsStoneRockyTerrain(setting))
+                throw new InvalidOperationException(
+                    "Stone terrain metadata preconditions are absent.");
+            BlueprintArea area = BlueprintBootstrap.Library.GetAllBlueprints()
+                .OfType<BlueprintArea>()
+                .Where(candidate => candidate != null && !candidate.IsCapital &&
+                    candidate.LootSetting.ToString() == setting)
+                .OrderBy(candidate => candidate.AssetGuid,
+                    StringComparer.Ordinal).FirstOrDefault();
+            if (area == null || ReferenceEquals(area, before))
+                throw new InvalidOperationException(
+                    "No distinct installed native area metadata for " + setting);
+            FieldInfo field = typeof(Game).GetField("m_SceneLoader",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            object loader = field == null ? null : field.GetValue(game);
+            PropertyInfo property = loader == null ? null :
+                loader.GetType().GetProperty("CurrentlyLoadedArea",
+                    BindingFlags.Instance | BindingFlags.Public |
+                    BindingFlags.NonPublic);
+            MethodInfo setter = property == null ? null :
+                property.GetSetMethod(true);
+            if (setter == null || property.PropertyType != typeof(BlueprintArea))
+                throw new MissingMethodException(
+                    "SceneLoader.CurrentlyLoadedArea exact setter");
+            int value = 0;
+            bool observed = false;
+            try
+            {
+                setter.Invoke(loader, new object[] { area });
+                if (!ReferenceEquals(game.CurrentlyLoadedArea, area) ||
+                    !ReferenceEquals(game.State.LoadedAreaState, state))
+                    throw new InvalidOperationException(
+                        "Request-local terrain metadata did not bind exactly.");
+                var check = Rulebook.Trigger(new RuleSkillCheck(
+                    owner, StatType.SkillStealth, 100) {
+                    IgnoreDifficultyBonusToDC = true });
+                value = check.StatValue;
+                observed = true;
+            }
+            finally
+            {
+                setter.Invoke(loader, new object[] { before });
+                if (!ReferenceEquals(game.CurrentlyLoadedArea, before) ||
+                    !ReferenceEquals(game.State.LoadedAreaState, state))
+                    throw new InvalidOperationException(
+                        "Native area metadata was not restored exactly.");
+            }
+            return new JObject { ["owner"] = owner.UniqueId,
+                ["loadedAreaBefore"] = before.AssetGuid,
+                ["borrowedNativeArea"] = area.AssetGuid,
+                ["setting"] = setting,
+                ["rawStealth"] = owner.Stats.SkillStealth.ModifiedValue,
+                ["checkStealth"] = value,
+                ["eventBonus"] = value -
+                    owner.Stats.SkillStealth.ModifiedValue,
+                ["observed"] = observed,
+                ["restored"] = ReferenceEquals(
+                    game.CurrentlyLoadedArea, before) &&
+                    ReferenceEquals(game.State.LoadedAreaState, state) };
+        }
+
     }
 }

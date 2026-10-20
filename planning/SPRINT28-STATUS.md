@@ -5,6 +5,40 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
+The pushed source 6a1f8f96f6842f37384bf08f729e67d685c35568 built as
+development ZIP SHA-256 82b504bd120ca9d4bc714d0e9a12f522465f4804f3c914a31c73d9d974c66518,
+DLL SHA-256 6c573c27579b90a5247d2f82b9334682a9ab4a651b2b7f4cb717ed5693f59f66,
+MVID 21dfeb6c-b4d0-488e-a428-bcdbb4bade11. The first deterministic
+package attempt failed for disk space; its logs and partial hashes remain
+under artifacts/sprint28-terrain-first-build-failure.json. After exact
+393-file readback of four restored older transaction package copies
+(manifest SHA-256 ec4b6695a080bf118df237150e9d0b0ba4c6d2ec3e18c556b0677e2060f3545a),
+only those extracted duplicates and generated failed-build scratch were
+removed. The unchanged retry passed strict 393-entry CRC validation and
+receipt readback. Unelevated Howard no-game preflight passed 685 checks and
+the exact-package dry run passed; both completed tasks were removed.
+
+Fresh guarded profiles RunId 20261020T0403384341101Z-0077aa7d312341f8816540aac5b29f14
+passed 28 native assertions and its supervisor, including all three adult
+chassis, weapons, icons, selectable meshes and Fire energy defenses. The
+repaired collector produced exact package/DLL/source evidence. Raw result
+SHA-256 f168f133aeee7dd2cdbf713013ad5298cb0316511c47163d5c82f343efa4926e;
+review SHA-256 b3b1f836b71dc2ff30f5ec1e1dd585fdeee6798c94f7a3add0867c2e2d900c63;
+collector SHA-256 821ba6bf2ca85622d04f00e2c5e7754a20849f738de46732a68cc6ae8a95929a.
+The loaded first area was Forest, so all three correctly received zero
+conditional terrain bonus. This also revealed Stone's raw Stealth was +1
+against its printed +4, and the native Persuasion stat lacked the giant
+subtype's +3 Intimidate class-skill effect. A focused in-scope source
+correction now assigns Stone six Stealth ranks and applies the subtype
+class-skill bonus only on owned native Intimidate checks. Production
+compilation and four focused Sprint 28 tests pass (~20 seconds); fresh
+native positive terrain and corrected skill totals remain pending.
+Transaction compat-20261020T040129Z-41fb29898a7f returned Restored
+with restoration verified; limited child/task exited zero and were
+removed. Independent actual-intake audit SHA-256
+2528c3bb548d0d4d7e979f9d4849073472ab2a727ff165d9ee4c8761b9c99fba
+found only the authorized Working-save length/mtime/hash difference.
+
 The owner selected **Hills and NaturalCaves** as Kingmaker 2.1.7b area
 settings for Stone Giant's printed conditional +8 Stealth. The scoped
 project-owned skill-check component now grants that racial bonus only to

@@ -108,7 +108,7 @@ namespace KingmakerGunslinger.Blueprints
                 true);
             ConfigureGiantUnit(library, bySymbol, StoneGiantUnit, StoneType,
                 StoneTraits, "StoneGiant", "Stone Giant", Alignment.TrueNeutral,
-                12, 27, 15, 19, 10, 12, 10, 54, 8, 4, 4, 8, 9, 3,
+                12, 27, 15, 19, 10, 12, 10, 54, 8, 4, 4, 8, 9, 6,
                 club, slam, stoneRock, null,
                 Require<BlueprintFeature>(bySymbol, StoneNaturalArmor),
                 extraplanar,
@@ -341,8 +341,11 @@ namespace KingmakerGunslinger.Blueprints
             equipment.Slam = slam;
             equipment.Rock = rock;
             equipment.Armor = armor;
+            var intimidate = ScriptableObject.CreateInstance<
+                SummonGiantIntimidateClassSkill>();
+            intimidate.OwningBlueprint = unit;
             var components = new List<BlueprintComponent> {
-                proficiency, equipment };
+                proficiency, equipment, intimidate };
             var rockAttack = ScriptableObject.CreateInstance<
                 SummonGiantRockAttack>();
             rockAttack.OwningBlueprint = unit;
