@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
@@ -16,6 +17,31 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private static void Sprint28SetBrainActivePreservingActions(
+            UnitEntityData unit, bool active)
+        {
+            // The quiet-unit helper clears its action lists when disabling
+            // AI. This fixture suspends only its disposable owner during
+            // native turn admission, then restores the original lists.
+            PropertyInfo property = typeof(UnitEntityData).GetProperty(
+                "IsBrainActive", BindingFlags.Instance |
+                BindingFlags.Public | BindingFlags.NonPublic);
+            MethodInfo setter = property?.GetSetMethod(true);
+            if (setter != null) setter.Invoke(unit, new object[] { active });
+            else
+            {
+                FieldInfo backing = typeof(UnitEntityData).GetField(
+                    "<IsBrainActive>k__BackingField",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (backing == null) throw new MissingFieldException(
+                    "UnitEntityData.IsBrainActive backing field");
+                backing.SetValue(unit, active);
+            }
+            if (unit.IsBrainActive != active)
+                throw new InvalidOperationException(
+                    "Disposable giant AI brain state did not change.");
+        }
+
         // The native brain owns every attack. This fixture only selects an
         // owned hand set, legal lane and exact disposable hostile target.
         private IEnumerable<int> ReviewSprint28Ai(
@@ -38,6 +64,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ResetExpandedSummoningHostile(fixture);
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
                         fixture, key);
+                    if (turnBased)
+                    {
+                        int actionsBefore = owner.Brain?.Actions?.Count ?? 0;
+                        int availableBefore = owner.Brain?.AvailableActions?.Count ?? 0;
+                        Sprint28SetBrainActivePreservingActions(owner, false);
+                        Sprint25Check("s28-" + key +
+                            (set == 2 ? "-rock" : "-weapon") +
+                            "-ai-brain-suspended", !owner.IsBrainActive &&
+                            (owner.Brain?.Actions?.Count ?? 0) == actionsBefore &&
+                            (owner.Brain?.AvailableActions?.Count ?? 0) == availableBefore,
+                            new JObject { ["owner"] = owner.UniqueId,
+                                ["actionsBefore"] = actionsBefore,
+                                ["actionsAfter"] = owner.Brain?.Actions?.Count ?? 0,
+                                ["availableBefore"] = availableBefore,
+                                ["availableAfter"] =
+                                    owner.Brain?.AvailableActions?.Count ?? 0 },
+                            "Only the disposable giant brain pauses during native turn admission; its action lists remain intact.");
+                    }
                     UnitEntityData target = fixture.Hostile;
                     // Preserve the summoned brain's native action lists.
                     // The quiet-unit helper clears them irreversibly.
@@ -132,7 +176,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!acting) throw new InvalidOperationException(
                                 "Giant AI native turn admission failed.");
                         }
-                        SetExpandedSummoningBrainActive(owner, true);
+                        if (turnBased)
+                            Sprint28SetBrainActivePreservingActions(owner, true);
+                        else SetExpandedSummoningBrainActive(owner, true);
                         owner.Brain.RestoreAvailableActions();
                         int actions = owner.Brain.Actions == null ? 0 :
                             owner.Brain.Actions.Count;
