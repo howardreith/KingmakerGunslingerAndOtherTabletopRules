@@ -1,9 +1,12 @@
 # Sprint 28 current status
 
-Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working-save phases, native disarm and rock-range consumer checks complete, further combat and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
+Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working-save phases, native disarm, rock-range and settled visible-body checks complete; further combat and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
 
 
 ## Current checkpoint
+
+Pushed source 43c1f05b3d881ec32fa11183ef4f04143c60b702 passed focused production compilation and four selected Sprint 28 tests (~22 s). Strict development ZIP SHA-256 617f49c48f355e1c755262b69812812a3bfcbc9c0857547c74c34dee1871025a; DLL SHA-256 17dfd293df26fb2711b80c4c584a1faa27d834599cf5f81ac3c6acbc678c1bab; MVID 95de98fa-0aa3-448c-bebf-fff2abbb4495. Exact-package limited Howard no-game dry run passed (log SHA-256 81a5c8eb89578994220718da6012e059dad399af32fcf98ccbe36937c9ba7e6d); its task was removed. Fresh guarded profiles RunId 20261020T0534462816341Z-b353bb74cdc34c4c97c0b0c49365e57e passed 38 review rows / 39 runtime assertions and its supervisor. Appearance settled after 82-84 frames: all three renderers had _Dissolve <= .02, visible faders, no appearance buff or screen fade. Oblique game captures show large usable bodies: Hill with club, Stone with club, Fire armored with sword. Three per-species portraits passed native icon checks. Stone appears brown and Fire pale/white; registered variant tint needs inspection before claiming species coloration. Screenshots do not prove combat arithmetic. Raw result SHA-256 e5eeddee589a97c4df1af32393cfd2fab2d283e38550097be0f896d6d0c8890f; review SHA-256 1d75e715c1c1b2fa0920ed6a2a3e8f2b4bdb4e43c9428ef4dfa932d90392c375; collector SHA-256 ec015cf68d135f09cdff8cc8d33952b12678a307f040f52f373bb1b9f0754baa. Transaction compat-20261020T053236Z-17cf9871fac6 returned Restored/verified, child exit zero, task removed. Actual-intake audit SHA-256 ba798a5998fbc4d42af01ca22832bcda936033117a1f4ba8d29d45deb9cf6b9e found only authorized Working-save differences. All three redundant restored copies matched all 393 ZIP files (readback manifest SHA-256 89dc41a24d389e087ad3f4ca5c02df63b94640a9d9e7d81bd0cd22fbf170c25e); only those copies were removed. This is the 47th native execution. Cleave and Climb/Craft decisions await owner answers. Eleven public roots remain withheld.
+
 
 The pushed Stone Point-Blank Shot observer source
 720cba717994f09b67d30ca7057aab140c348227 passed focused production
@@ -44,9 +47,7 @@ only those copies were removed. Eleven public roots remain withheld.
 
 Visual inspection of prior profile captures found the giant renderers
 still at native dissolve=1 shortly after summoning; the Fire frame also
-shows roof occlusion. Existing mesh/selection checks alone do not prove
-an intact visible body. A settled in-game capture and clear Fire view
-remain required before publication. The bounded Cleave and Climb/Craft
+shows roof occlusion. The later settled-body execution above supplies intact-body evidence; material coloration remains under inspection. The bounded Cleave and Climb/Craft
 scope questions are pending owner choices.
 
 The pushed efd501593c0af39a6283d75e2fe6d72bb991b377 Fire feat
