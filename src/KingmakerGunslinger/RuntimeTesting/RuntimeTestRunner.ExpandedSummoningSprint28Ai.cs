@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // The native brain owns every attack. This fixture only selects an
         // owned hand set, legal lane and exact disposable hostile target.
         private IEnumerable<int> ReviewSprint28Ai(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
@@ -85,11 +85,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .Tick();
                         owner.JoinCombat();
                         target.JoinCombat();
-                        SetExpandedSummoningBrainActive(owner, true);
-                        owner.Brain.RestoreAvailableActions();
                         Game.Instance.Player.UpdateIsInCombat();
                         new UnitCombatJoinController().Tick();
                         new UnitCombatPrepareController().Tick();
+                        JObject admission = null;
+                        if (turnBased)
+                        {
+                            admission = new JObject();
+                            foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                                new[] { owner }, target, admission)) yield return frame;
+                            int waited = 0;
+                            DateTime turnDeadline = DateTime.UtcNow.AddSeconds(30);
+                            while (waited++ < 500 &&
+                                DateTime.UtcNow < turnDeadline &&
+                                !Sprint18OwnerIsActing(owner)) yield return 0;
+                            bool acting = (bool)admission["admitted"] &&
+                                owner.IsVisibleForPlayer &&
+                                Sprint18OwnerIsActing(owner);
+                            Sprint25Check("s28-" + key +
+                                (set == 2 ? "-rock" : "-weapon") +
+                                "-ai-turn-admission", acting,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["target"] = target.UniqueId,
+                                    ["waitedFrames"] = waited,
+                                    ["admission"] = admission,
+                                    ["turn"] = Sprint22TurnState(owner, target) },
+                                "The exact visible giant receives its native active turn before its own brain selects an attack.");
+                            if (!acting) throw new InvalidOperationException(
+                                "Giant AI native turn admission failed.");
+                        }
+                        SetExpandedSummoningBrainActive(owner, true);
+                        owner.Brain.RestoreAvailableActions();
                         int actions = owner.Brain.Actions == null ? 0 :
                             owner.Brain.Actions.Count;
                         int available = owner.Brain.AvailableActions == null ?
@@ -101,7 +127,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner.HasLOS(target) &&
                             owner.Memory.ContainsVisible(target);
                         string label = "s28-" + key +
-                            (set == 2 ? "-rock" : "-weapon");
+                            (set == 2 ? "-rock" : "-weapon") +
+                            (turnBased ? "-ai-turn" : "");
                         Sprint25Check(label + "-ai-ready", ready,
                             new JObject {
                                 ["owner"] = owner.UniqueId,
@@ -109,6 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["handSet"] = set,
                                 ["weapon"] = selected?.Blueprint?.AssetGuid,
                                 ["brain"] = owner.Blueprint.Brain?.name,
+                                ["turnBased"] = turnBased,
+                                ["admission"] = admission,
                                 ["actions"] = actions,
                                 ["available"] = available,
                                 ["aiEnabled"] = owner.IsAIEnabled,
@@ -129,6 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var movement = new JArray();
                         float travel = 0f;
                         int ticks = 0;
+                        int nativeTurnFrames = 0;
                         EventBus.Subscribe(observer);
                         try
                         {
@@ -137,9 +167,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             for (int frame = 0; frame < 3000 &&
                                 DateTime.UtcNow < deadline; frame++)
                             {
-                                if (frame == 0 || frame % 60 == 0 &&
+                                if (!turnBased && (frame == 0 || frame % 60 == 0 &&
                                     !owner.Commands.Raw.Any(value =>
-                                        value != null && !value.IsFinished))
+                                        value != null && !value.IsFinished)))
                                 {
                                     foreach (string id in
                                         Sprint24TickExactAi(owner))
@@ -147,6 +177,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             ambient.Add(id);
                                     ticks++;
                                 }
+                                if (turnBased && Sprint18OwnerIsActing(owner))
+                                    nativeTurnFrames++;
                                 foreach (UnitCommand command in
                                     owner.Commands.Raw.Where(value =>
                                         value != null))
@@ -172,7 +204,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             bool aiCommand = commands.OfType<UnitAttack>()
                                 .Any(value => value.AiAction != null &&
                                     ReferenceEquals(value.TargetUnit, target));
-                            bool exact = aiCommand && ticks > 0 &&
+                            bool exact = aiCommand &&
+                                (turnBased ? nativeTurnFrames > 0 : ticks > 0) &&
                                 observer.WeaponAttacks.Count > 0 &&
                                 observer.WeaponAttacks.All(value =>
                                     ReferenceEquals(value.Weapon.Blueprint,
@@ -185,6 +218,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["selectedWeapon"] =
                                         selected.Blueprint.AssetGuid,
                                     ["ticks"] = ticks,
+                                    ["nativeTurnFrames"] = nativeTurnFrames,
+                                    ["turnBased"] = turnBased,
+                                    ["admission"] = admission,
                                     ["travel"] = travel,
                                     ["ambientCandidatesNeverTicked"] =
                                         new JArray(ambient),
@@ -209,6 +245,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally
                     {
                         SetExpandedSummoningBrainActive(owner, false);
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                        Game.Instance.TurnBasedCombatController.Activate();
                         owner.Commands.InterruptAll(true);
                         target.Commands.InterruptAll(true);
                         if (owner.IsInCombat) owner.LeaveCombat();
