@@ -21,7 +21,13 @@ Primary PF1 sources: [Hill](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=
 | Languages | Giant | Common, Giant | Common, Giant |
 | Senses | low-light | darkvision 60 ft., low-light | low-light |
 
-The printed skill totals use the adult racial rank budget: Hill has 3 Perception, 4 Intimidate and 3 Climb ranks (10 total); Stone has 8 Perception, 9 Intimidate, 6 Stealth and 1 Climb rank (24 total); Fire has 9 Perception, 8 Intimidate, 8 Climb and 5 Craft ranks (30 total). Giant-subtype Intimidate and Perception each receive the class-skill +3 once when ranked. Hill's Intimidating Prowess adds its Strength modifier only to Intimidate. Stone's ordinary Stealth is 6 ranks +2 Dexterity -4 Large size = +4, then +8 only in the selected rocky-area settings. Climb includes its class-skill bonus and Hill/Fire armor check penalties. Fire's chosen Craft is not a general Knowledge bonus. Native Climb/Craft consumers still require separate mapping review.
+The printed skill totals use the adult racial rank budget: Hill has 3 Perception, 4 Intimidate and 3 Climb ranks (10 total); Stone has 8 Perception, 9 Intimidate, 6 Stealth and 1 Climb rank (24 total); Fire has 9 Perception, 8 Intimidate, 8 Climb and 5 Craft ranks (30 total). Giant-subtype Intimidate and Perception each receive the class-skill +3 once when ranked. Hill's Intimidating Prowess adds its Strength modifier only to Intimidate. Stone's ordinary Stealth is 6 ranks +2 Dexterity -4 Large size = +4, then +8 only in the selected rocky-area settings. Climb includes its class-skill bonus and Hill/Fire armor check penalties. Fire's chosen Craft is not a general Knowledge bonus. The owner-approved Sprint 28 disposition leaves named Climb unmodeled for Hill,
+Stone and Fire and named Craft (one) unmodeled for Fire. The printed values and
+rank budgets above remain reference data, separate from implemented statistics.
+No pit-only Climb adapter, new stat, rank reallocation or substitute bonus is
+included. Ordinary native pit behavior remains unchanged. This can affect
+printed climbing performance and does not establish that a pit consumer is
+impossible. A future focused pit/climbing review is backlog, outside Sprint 28.
 
 Hill's feats are Cleave, Intimidating Prowess, Martial Weapon Proficiency (greatclub), Power Attack, and Weapon Focus (greatclub). Stone's are Iron Will, Martial Weapon Proficiency (greatclub), Point-Blank Shot, Power Attack, Precise Shot, and Quick Draw. Fire's are Cleave, Great Cleave, Improved Overrun, Improved Sunder, Iron Will, Martial Weapon Proficiency (greatsword), Power Attack, and Weapon Focus (greatsword). Printed hit/damage numbers already include Weapon Focus where named, size, Strength, armor and other embedded modifiers; Stone's Iron Will is included in its printed Will save. Point-Blank Shot is conditional on distance and is not baked into Stone's printed rock attack. Live buffs and conditions must still flow through native consumers.
 
@@ -31,4 +37,8 @@ Rock throwing has +1 racial to hit once, maximum five increments, and native ran
 
 The eleven SNA roots are Hill VI one, VII 1d3, VIII/IX 1d4+1; Stone the same; Fire VII one, VIII 1d3, IX 1d4+1. Source-derived totals must be recomputed after integration, with the existing 29 native wrappers left alone. Registration remains inert until icons, valid donor dependencies and owned equipment/rock behavior are ready.
 
-Unresolved implementation checks: inspect exact native adult donors and their copied component graphs; verify Stone's rocky-terrain Stealth consumer before mapping; inspect actual native feat components and bounded adapters, including Fire's item-affecting feats; inspect weapon switch, throw cadence, and pre-damage catch seam on Kingmaker 2.1.7b before claiming fidelity. No unprinted substitute or new global terrain, Cleave, Overrun, or durability project is authorized by this contract.
+Implementation status and native qualification are tracked in
+[SPRINT28-STATUS.md](SPRINT28-STATUS.md). The owner authorized a project-owned
+Hill/Fire Cleave correction; no global native Cleave, Overrun or durability
+project is authorized. The printed Climb/Craft omission above is the only new
+owner-approved gameplay omission for Sprint 28.

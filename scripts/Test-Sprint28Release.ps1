@@ -37,6 +37,17 @@ function New-Sprint28Fixture {
     [pscustomobject]@{schemaVersion=1;mission='Sprint28Giants';status='QUALIFIED';
         releaseEligible=$true;sprint29Started=$false;expandedScope=$false;gameplayWaiver=$false;
         baselineExceptions=@();unresolvedFindings=@();
+        skillDecision=[pscustomobject]@{ownerAuthorized=$true;
+            authority='Owner Sprint 28 closeout directive 2026-10-20';
+            disposition='DEFER_NAMED_CLIMB_CRAFT_SPRINT28';
+            deferredSkillNames=@('Climb','Craft');
+            affectedCreatures=@('hill-giant','stone-giant','fire-giant');
+            printedValues=@('Hill Climb +10','Stone Climb +12',
+                'Fire Climb +14','Fire Craft (any one) +8');
+            nativePitBehavior='UNCHANGED';newStats=$false;
+            rankReallocation=$false;substituteBonuses=$false;
+            otherGameplayOmissions=@();
+            disclosurePath='docs/RELEASE-NOTES-0.0.162.md'};
         ownerVisualReview='NOT_PERFORMED_NONBLOCKING';ownerVisualReviewEvidence=$null;
         candidate=[pscustomobject]@{source=$candidate.commit;zipSha256=$candidate.packageSha256;
             dllSha256=$candidate.dllSha256;dllMvid=$candidate.dllMvid;
@@ -79,6 +90,15 @@ foreach($row in @(
     @('status',{param($l)$l.status='IN_PROGRESS'}),
     @('unresolved',{param($l)$l.unresolvedFindings=@('uncertain catch')}),
     @('gameplay waiver',{param($l)$l.gameplayWaiver=$true}),
+    @('missing skill decision',{param($l)$l.skillDecision.ownerAuthorized=$false}),
+    @('wrong decision authority',{param($l)$l.skillDecision.authority='unrecorded'}),
+    @('broadened skill omission',{param($l)$l.skillDecision.deferredSkillNames=@('Climb','Craft','Swim')}),
+    @('unrelated creature',{param($l)$l.skillDecision.affectedCreatures=@('hill-giant','stone-giant','fire-giant','frost-giant')}),
+    @('wrong printed skill',{param($l)$l.skillDecision.printedValues[0]='Hill Climb +11'}),
+    @('pit behavior changed',{param($l)$l.skillDecision.nativePitBehavior='CHANGED'}),
+    @('substitute skill bonus',{param($l)$l.skillDecision.substituteBonuses=$true}),
+    @('other omitted behavior',{param($l)$l.skillDecision.otherGameplayOmissions=@('Cleave')}),
+    @('missing disclosure',{param($l)$l.skillDecision.disclosurePath=''}),
     @('scope',{param($l)$l.expandedScope=$true}),
     @('source',{param($l)$l.candidate.source=('f'*40)}),
     @('ZIP',{param($l)$l.candidate.zipSha256=('f'*64)}),

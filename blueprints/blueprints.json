@@ -56415,6 +56415,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.CleaveAction",
+      "guid": "952dc5f831b2490caf0c6be723b18f0c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Project-owned native Cleave execution for Hill and Fire only."
+    },
+    {
+      "symbol": "KMG.Summoning.Giant.CleaveFeature",
+      "guid": "9b979adb2ff640a79ebc4dda5cbced22",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Project-owned Cleave grant for Hill and Fire only."
     }
   ]
 }
