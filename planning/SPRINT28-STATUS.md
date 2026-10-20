@@ -5,6 +5,37 @@ Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working
 
 ## Current checkpoint
 
+The pushed observer-corrected source 062b482c02362efb68e2134c6e2094ae25bf61ee
+built as exact development ZIP SHA-256
+05f8f1bb10b2bce82e3998a3176eb2e7059706d872a2c0e43c3d2ba4965a7a8f,
+DLL SHA-256 558e2fcf5c4d738fb52a85ef9d80616246d827f9dcac0593033e9f870193f1dc,
+MVID eaa5c60c-7800-494d-b443-febf92980986. Its limited Howard
+exact-package dry run passed. Fresh guarded native profiles RunId
+20261020T0438336250713Z-488a39707ea346689049f0d1de4e5644 and
+supervisor passed all 33 assertions: actual native Intimidate roll
+modifiers were Hill +12, Stone +12 and Fire +11 with one +3 subtype
+bonus each; Stone Stealth was +4 in Forest and +12 in real Hills and
+NaturalCaves area metadata with one +8 event bonus. The observer
+independently matched each total to native BaseRollResult minus D20,
+and restored the original Forest area pointer in each synchronous
+metadata check. Exact collector source, ZIP and deployed DLL binding
+passed. Raw result SHA-256 de02ab7a04ffc3badaf9c3656590c04ef87e0759ada3f9b94e981c7ed6542e2f;
+review SHA-256 6c2c94946963dc10918979d20fa82966c3c28b362bda5ec94ca62bdd66f893bd;
+collector SHA-256 f383a3c0989f71894f55a51250bc2f1d69b1e8566d7c5f870b56dcf4c433cde8.
+The limited child exited zero; transaction
+compat-20261020T043620Z-a2c487eb7268 returned Restored/verified,
+task was removed, and independent actual-intake audit SHA-256
+60e50a5f623b37a0f23ffd25afc149a4660fc96d041f92775e81d7ff631ca544
+found only the authorized Working-save length/mtime/hash difference.
+Disk reached zero after deployment while the game was active; only
+completed, verified Sprint 28 compiler objects and domain-test binaries
+were removed, restoring 66 MB of headroom. The child and supervisor
+then completed successfully and the machine restored. All three
+transaction package copies matched the retained ZIP byte-for-byte
+(readback manifest SHA-256 0e7be9727b03602273c95dd981f7ab3e256d097057ea09d0f7c4a9fe8f85de07)
+and only those copies were removed. Eleven roots remain withheld and
+this development candidate is not release qualified.
+
 The committed 02722e22dbb30b901498ec57667c1396378ceb31 skill candidate
 built as development ZIP SHA-256 2b118fef5eaac667fb12730ce64191c41cf407befca4c1edc0a4b1411f804a00,
 DLL SHA-256 6e1764b8da7475fe1dc7f31e8502be1327a45ca66c7db4be7e1b9cc65ad49dea,
