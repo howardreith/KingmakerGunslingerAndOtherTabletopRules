@@ -77,6 +77,21 @@ namespace KingmakerGunslinger.DomainTests
                 "Fire borrows retained armored Frost visual shell.");
         }
 
+        internal static void StoneRockyStealthRequiresSelectedArea()
+        {
+            Assertions.Equal(8,
+                GiantHumanoidRulesPolicy.StoneRockyStealthBonus,
+                "Printed conditional racial Stealth increment.");
+            Assertions.True(GiantHumanoidRulesPolicy.IsStoneRockyTerrain("Hills"),
+                "Selected Hills area.");
+            Assertions.True(GiantHumanoidRulesPolicy.IsStoneRockyTerrain("NaturalCaves"),
+                "Selected natural cave area.");
+            foreach (string setting in new[] { null, "", "Plains", "Forest",
+                "Swamp", "FirstWorld", "Caves", "hills" })
+                Assertions.False(GiantHumanoidRulesPolicy.IsStoneRockyTerrain(setting),
+                    "Other or missing area does not grant a rocky bonus: " + setting);
+        }
+
         internal static void RockArithmeticAndCatchAreBounded()
         {
             Assertions.Equal(120,

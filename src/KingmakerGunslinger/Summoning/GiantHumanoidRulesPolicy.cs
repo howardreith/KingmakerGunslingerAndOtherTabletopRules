@@ -19,6 +19,16 @@ namespace KingmakerGunslinger.Summoning
         internal const int BorrowedVisualCount = 2;
         internal const int RacialRockAttackBonus = 1;
         internal const int StoneRockCatchBonus = 4;
+        internal const int StoneRockyStealthBonus = 8;
+
+        // Kingmaker 2.1.7b has area LootSetting, not a rocky-surface marker.
+        // The owner selected these two native settings for Stone's printed
+        // conditional +8; every other or unavailable setting fails closed.
+        internal static bool IsStoneRockyTerrain(string setting)
+        {
+            return string.Equals(setting, "Hills", StringComparison.Ordinal) ||
+                string.Equals(setting, "NaturalCaves", StringComparison.Ordinal);
+        }
         internal const int LargestRockIncrementCount = 5;
 
         internal static bool IsNewIdentity(string symbol)
