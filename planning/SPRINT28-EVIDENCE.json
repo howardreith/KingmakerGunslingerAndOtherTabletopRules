@@ -36,8 +36,32 @@
                                       "failedStageAuditSha256":  "a2777e3c9b797465e86a6a29a5a179e200105d1fa447c5fff377ca897bbaa6a4",
                                       "stageFiles":  394,
                                       "onlyNewMember":  "KingmakerGunslinger/docs/RELEASE-NOTES-0.0.162.md"
+                                  },
+                                  {
+                                      "source":  "16bf1620077a19ce3ab8f7a10235e5fdfe5b38df",
+                                      "result":  "PASS_FULL_GATE_NATIVE_PENDING_AT_THAT_SOURCE",
+                                      "completeSuite":  "2697/2697 PASS",
+                                      "packageSha256":  "7d8e0b4feeecf360317d1eea1f7bd98e0caa43b883c75516dece1c0409563395",
+                                      "dllSha256":  "4c156b64c65eb29ab3418b976c6e00de49b2ce2279e16e36cb1aff25ffb50d84",
+                                      "dllMvid":  "b3817662-1fa2-4098-9810-c9fd217e0a2f",
+                                      "sourceFingerprint":  "6f324f42f3f3d01c9b1d733d83fe226eef47e52e79d88c1e911903b1402d4ca7",
+                                      "stdoutSha256":  "5471726b554eeeaa25bda9d40a1b074cc9ec859f599314dbaad76a5921012091",
+                                      "stderrSha256":  "4e95910529a16fd6b62b9181aeb4d3ef7b1b99eea4aed4a04fe1f80cfebf7561",
+                                      "strictPackageFiles":  394
                                   }
                               ],
+    "prelaunchAttempts":  [
+                              {
+                                  "source":  "16bf1620077a19ce3ab8f7a10235e5fdfe5b38df",
+                                  "scope":  "Sprint 28 Cleave guarded native request",
+                                  "result":  "FAIL_INNER_REVIEW_PHASE_GUARD_NO_GAME_RESTORED",
+                                  "transactionRunId":  "compat-20261020T134029Z-2a61904461a9",
+                                  "taskLogSha256":  "7ba645cdef549377758d736390bba88c44035d62601a9aea73c2c7e095aefd22",
+                                  "transactionSha256":  "c1e082ccd6073b58521197c687006de2064f440d9f6550fb0343fd486eeb84e0",
+                                  "independentIntakeAuditSha256":  "6a6c3d5b62fc452b40e65838563face68316065673ba69bc882a4496b40dbdbf",
+                                  "restorationVerified":  true
+                              }
+                          ],
     "nativeExecutions":  [
                              {
                                  "scope":  "read-only installed giant donor metadata",
