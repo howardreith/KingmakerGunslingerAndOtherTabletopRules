@@ -157,12 +157,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     owner.Position).normalized;
                                 if (direction.sqrMagnitude < .01f)
                                     direction = Vector3.forward;
-                                int near = 0, far = 0;
+                                int pointBlank = 0, near = 0, far = 0;
+                                float pointBlankEdge = 0f;
                                 float nearEdge = 0f, farEdge = 0f;
                                 try
                                 {
                                     float radii = owner.Corpulence +
                                         target.Corpulence;
+                                    PlaceExpandedSummoningUnit(target,
+                                        owner.Position + direction *
+                                            (radii + 20f * .3048f));
+                                    pointBlankEdge = Math.Max(0f,
+                                        owner.DistanceTo(target) - radii);
+                                    pointBlank = Rulebook.Trigger(new
+                                        RuleCalculateAttackBonus(owner,
+                                            target, weapon, 0)).Result;
                                     PlaceExpandedSummoningUnit(target,
                                         owner.Position + direction *
                                             (radii + 35f * .3048f));
@@ -185,6 +194,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     PlaceExpandedSummoningUnit(target,
                                         originalTarget);
                                 }
+                                Sprint25Check("s28-" + spec.Key +
+                                    "-point-blank-shot",
+                                    pointBlankEdge > 0f &&
+                                    pointBlankEdge < 30f * .3048f &&
+                                    nearEdge > 30f * .3048f &&
+                                    nearEdge < spec.Range * .3048f &&
+                                    pointBlank - near ==
+                                        (spec.Key == "stone-giant" ? 1 : 0),
+                                    new JObject { ["owner"] = owner.UniqueId,
+                                        ["target"] = target.UniqueId,
+                                        ["pointBlankEdgeMeters"] = pointBlankEdge,
+                                        ["outsideEdgeMeters"] = nearEdge,
+                                        ["pointBlankAttackBonus"] = pointBlank,
+                                        ["outsideAttackBonus"] = near,
+                                        ["targetRestored"] =
+                                            target.Position == originalTarget },
+                                    "The native Point-Blank Shot feat grants Stone's actual rock +1 inside thirty feet only; Hill and Fire are negative controls.");
                                 Sprint25Check("s28-" + spec.Key +
                                     "-rock-second-increment-accuracy",
                                     nearEdge > 30f * .3048f &&
