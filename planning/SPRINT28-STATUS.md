@@ -475,9 +475,11 @@ Focused validation from the S28 worktree: `Invoke-KmgGate.ps1 -Level Focused -Fi
 
 ## Planned final campaign
 
-At the coherent product candidate boundary, budget roughly 10-20 minutes per isolated native phase and 10-15 minutes for focused diagnosis between phases: composed melee/throw/armor, rock/catch/Fire and feat boundaries, RTWP and turn-based commands/AI, body/icon and ownership lifecycle, Working-save ON/OFF persistence, and all eleven public roots on the exact release bytes. Run each as a fresh restored transaction where the fixture requires it. Then complete full Sprint build, publisher preflight/dry-run, product merge, exact-byte promotion/public downloads, restoration audit and final records. These are planning estimates, not timeout or PASS criteria.
+Resolve the two bounded owner rules choices, finish any scoped Cleave/skill disposition, activate only the eleven SNA roots, and finalize v0.0.162 publication inputs (estimated 20-45 minutes of source/review work). Freeze that clean source and run one full Sprint build from `wt/s28` (estimated 10-20 minutes). These are scheduling estimates, not timeouts or automatic PASS criteria.
 
-Next: implement compact native gameplay and ownership review, then repair any observed species, throwing/catching, item or presentation defects. Release and publication remain deferred until the mandatory mechanics, presentation and restoration evidence pass. No Sprint 29 work.
+On the exact frozen release ZIP, select fresh guarded transactions for: (1) composed profiles, melee/rock and Fire/feat consumers; (2) range/catch and affected Frost/Cyclops controls; (3) real RTWP and turn-based command/AI behavior; (4) quantity ownership, death/disarm, usable bodies/icons and all eleven public routes; and (5) the targeted current-stack ON/OFF Working-save prepare, cold-load cleanup and fresh-absence sequences. Budget about 10-20 minutes per isolated native transaction including collection/restoration, with 10-15 minutes for focused diagnosis between failed phases; the save sequence may need six separate fresh processes. Reuse unchanged older roster/model/general-serialization evidence under its original identity.
+
+After those pass, run publisher refusal/preflight/dry-run, review the exact candidate and remote state, merge product PR #62, promote the tested bytes, download/verify the public ZIP, manifest and checksums, restore the original Working-save bytes and machine intake, then merge the distinct final-records PR (estimated 30-60 minutes). The publication/root and restoration checks are mandatory; no Sprint 29 work.
 
 ## Dated Fire feat bootstrap correction and catch retry
 
