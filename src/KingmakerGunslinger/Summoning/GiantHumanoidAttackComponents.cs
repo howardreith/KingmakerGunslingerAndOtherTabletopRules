@@ -17,6 +17,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Parts;
+using Kingmaker.Utility;
 using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Summoning
@@ -27,7 +28,8 @@ namespace KingmakerGunslinger.Summoning
     [Serializable]
     public sealed class SummonGiantRockAttack :
         RuleInitiatorLogicComponent<RuleCalculateWeaponStats>,
-        IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>
+        IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>,
+        IInitiatorRulebookHandler<RuleCalculateAttackBonus>
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintItemWeapon Rock;
@@ -47,6 +49,26 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnEventDidTrigger(
             RuleCalculateAttackBonusWithoutTarget evt) { }
+
+        public void OnEventAboutToTrigger(RuleCalculateAttackBonus evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || evt.Target == null ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
+                !ReferenceEquals(evt.Weapon.Blueprint, Rock))
+                return;
+            string key = SummonGiantFullAttackSequence.GiantKey(owner);
+            if (key == null) return;
+            float edgeMeters = Math.Max(0f, owner.DistanceTo(evt.Target) -
+                owner.Corpulence - evt.Target.Corpulence);
+            int penalty = GiantHumanoidRulesPolicy.RockRangePenalty(
+                GiantHumanoidRulesPolicy.RockRangeIncrementFeet(key),
+                edgeMeters);
+            if (penalty != 0) evt.AddBonus(penalty, Fact);
+        }
+
+        public void OnEventDidTrigger(RuleCalculateAttackBonus evt) { }
 
         public override void OnEventAboutToTrigger(
             RuleCalculateWeaponStats evt) { }
@@ -142,6 +164,35 @@ namespace KingmakerGunslinger.Summoning
             if (name == "KMG_Summoning_Unit_FireGiant")
                 return GiantHumanoidRulesPolicy.Fire;
             return null;
+        }
+    }
+
+    /// <summary>Kingmaker's AttackRange is a hard UnitAttack approach radius.
+    /// For only the three exact project rocks, keep its displayed 120/180-foot
+    /// increment but let native command/LOS acquisition reach five increments.
+    /// The exact-owner rule handler above applies -2 for each later increment.
+    /// All other weapons retain the installed engine's range convention.</summary>
+    [HarmonyPatch(typeof(UnitAttack), "GetApproachRadius")]
+    internal static class SummonGiantRockMaximumRange
+    {
+        private static void Postfix(UnitAttack __instance, ref float __result)
+        {
+            UnitEntityData owner = __instance == null ? null :
+                __instance.Executor;
+            string key = SummonGiantFullAttackSequence.GiantKey(owner);
+            if (key == null || owner.Body == null ||
+                owner.Body.PrimaryHand == null) return;
+            ItemEntityWeapon active = owner.Body.PrimaryHand.MaybeWeapon;
+            string token = key == GiantHumanoidRulesPolicy.Hill ? "Hill" :
+                key == GiantHumanoidRulesPolicy.Stone ? "Stone" : "Fire";
+            if (active == null || active.Blueprint == null ||
+                active.Blueprint.name !=
+                    "KMG_Summoning_Giant_" + token + "Rock1d8")
+                return;
+            int additionalFeet = GiantHumanoidRulesPolicy.
+                RockMaximumRangeFeet(key) -
+                GiantHumanoidRulesPolicy.RockRangeIncrementFeet(key);
+            __result += new Feet(additionalFeet).Meters;
         }
     }
 
