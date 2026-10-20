@@ -148,6 +148,9 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-Sprint25Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint26Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint27Release.ps1')
+if ($activeVersion -eq '0.0.162') {
+    & (Join-Path $PSScriptRoot 'Test-Sprint28Release.ps1')
+}
 & (Join-Path $PSScriptRoot 'Test-GriffonDevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint28DevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
