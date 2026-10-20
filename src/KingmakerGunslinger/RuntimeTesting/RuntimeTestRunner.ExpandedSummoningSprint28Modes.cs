@@ -112,7 +112,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             bool reachExact = index != 2 ||
                                 Math.Abs(attack.ApproachRadius -
                                     expectedRockRadius) < .05f;
-                            bool exact = heatExact && reachExact && planned.Count == expectedCount &&
+                            bool meleeReachExact = index == 2 ||
+                                weapon.AttackRange.Value == 10;
+                            bool exact = heatExact && reachExact &&
+                                meleeReachExact && planned.Count == expectedCount &&
                                 bonus == expectedAttack && damage.Bonus == expectedDamage &&
                                 damage.Dice.Rolls == expectedRolls &&
                                 (index != 2 || weapon.Blueprint.Type.AttackRange.Value == spec.Range) &&
@@ -143,7 +146,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["nativeCommandRadiusMeters"] = attack.ApproachRadius,
                                     ["expectedFiveIncrementRadiusMeters"] =
                                         index == 2 ? expectedRockRadius : 0f,
-                                    ["rangeReachExact"] = reachExact },
+                                    ["rangeReachExact"] = reachExact,
+                                    ["meleeReachExact"] = meleeReachExact,
+                                    ["bodyReachFeet"] = owner.Stats.Reach.ModifiedValue },
                                 "Native active mode resolves printed attacks and damage while the exact rock command reaches five printed increments.");
                             if (index == 2)
                             {

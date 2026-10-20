@@ -52,6 +52,9 @@ namespace KingmakerGunslinger.Blueprints
         private const string FireImprovedOverrun = GiantPrefix + "FireImprovedOverrun";
         private const string GiantCleaveAction = GiantPrefix + "CleaveAction";
         private const string GiantCleaveFeature = GiantPrefix + "CleaveFeature";
+        private const string GiantGreatclubReachType = GiantPrefix + "GreatclubReachType";
+        private const string GiantGreatswordReachType = GiantPrefix + "GreatswordReachType";
+        private const string GiantSlamReachType = GiantPrefix + "SlamReachType";
 
         private const string NativeHumanoidClass = "6ab4526f94d2e3e439af0599a29b6675";
         private const string NativeHill = "61dd71e874b16f742a0f783314105553";
@@ -78,11 +81,11 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintFeature extraplanar)
         {
             BlueprintItemWeapon club = GiantWeapon(library, bySymbol, GiantGreatclub,
-                NativeGreatclub, 2, DiceType.D8);
+                GiantGreatclubReachType, NativeGreatclub, 2, DiceType.D8);
             BlueprintItemWeapon sword = GiantWeapon(library, bySymbol, GiantGreatsword,
-                NativeGreatsword, 3, DiceType.D6);
+                GiantGreatswordReachType, NativeGreatsword, 3, DiceType.D6);
             BlueprintItemWeapon slam = GiantWeapon(library, bySymbol, GiantSlam,
-                NativeSlam, 1, DiceType.D8);
+                GiantSlamReachType, NativeSlam, 1, DiceType.D8);
             BlueprintItemWeapon hillRock = GiantRock(library, bySymbol,
                 HillRock, HillRockType, 120);
             BlueprintItemWeapon stoneRock = GiantRock(library, bySymbol,
@@ -208,12 +211,26 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintItemWeapon GiantWeapon(
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
-            string symbol, string donorGuid, int count, DiceType die)
+            string symbol, string typeSymbol, string donorGuid, int count,
+            DiceType die)
         {
             BlueprintItemWeapon donor = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, donorGuid, symbol + " donor");
-            BlueprintItemWeapon result = Require<BlueprintItemWeapon>(bySymbol, symbol);
+            BlueprintWeaponType type = Require<BlueprintWeaponType>(bySymbol,
+                typeSymbol);
+            CopyFields(donor.Type, type);
+            type.name = InternalName(typeSymbol);
+            type.ComponentsArray = (donor.Type.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            // The installed type subtracts four feet from melee range.
+            // A raw ten-foot type plus the Large giant's ReachRange gives
+            // the equipped greatclub, greatsword and slams ten feet.
+            SetField(type, "m_AttackRange", new Feet(10));
+            BlueprintItemWeapon result = Require<BlueprintItemWeapon>(bySymbol,
+                symbol);
             CopyFields(donor, result);
+            SetField(result, "m_Type", type);
             result.name = InternalName(symbol);
             result.ComponentsArray = (donor.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(

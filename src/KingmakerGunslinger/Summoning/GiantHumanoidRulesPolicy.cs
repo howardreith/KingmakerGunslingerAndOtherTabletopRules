@@ -12,7 +12,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string Fire = "fire-giant";
         internal const int AppendedCreatureCount = 3;
         internal const int AppendedRootCount = 11;
-        internal const int AppendedPrivateIdentityCount = 21;
+        internal const int AppendedPrivateIdentityCount = 24;
         internal const int AppendedWeaponIdentityCount = 6;
         internal const int AppendedCatalogIdentityCount =
             AppendedCreatureCount + AppendedRootCount +

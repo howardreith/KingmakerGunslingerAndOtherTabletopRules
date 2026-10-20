@@ -3467,7 +3467,7 @@
       "displayedName": "Greatclub2d8",
       "tier": "mechanics-only",
       "familyOrFirearmKind": "Sprint 28 giant humanoid attack",
-      "weaponType": "native donor type configured per giant",
+      "weaponType": "KMG.Summoning.Giant.GreatclubReachType",
       "currentItemLevelVisual": "summon-owned native weapon reference",
       "currentTypeLevelVisual": "native donor presentation",
       "effectiveEquippedPrefab": "summon-owned native manufactured weapon",
@@ -3483,7 +3483,7 @@
       "proposedVisualVariant": "not applicable",
       "clippingOrientationConcerns": "usable native giant body and attack presentation; visual proportions and motion remain backlog",
       "mappingScope": "summoning-only exclusion",
-      "weaponTypeAssetGuid": "native-runtime-donor"
+      "weaponTypeAssetGuid": "81f343d50f774520936111cd95d4d677"
     },
     {
       "symbolicIdentity": "KMG.Summoning.Giant.Greatsword3d6",
@@ -3491,7 +3491,7 @@
       "displayedName": "Greatsword3d6",
       "tier": "mechanics-only",
       "familyOrFirearmKind": "Sprint 28 giant humanoid attack",
-      "weaponType": "native donor type configured per giant",
+      "weaponType": "KMG.Summoning.Giant.GreatswordReachType",
       "currentItemLevelVisual": "summon-owned native weapon reference",
       "currentTypeLevelVisual": "native donor presentation",
       "effectiveEquippedPrefab": "summon-owned native manufactured weapon",
@@ -3507,7 +3507,7 @@
       "proposedVisualVariant": "not applicable",
       "clippingOrientationConcerns": "usable native giant body and attack presentation; visual proportions and motion remain backlog",
       "mappingScope": "summoning-only exclusion",
-      "weaponTypeAssetGuid": "native-runtime-donor"
+      "weaponTypeAssetGuid": "41cce4f929b44a57a68dc6c02b037fc0"
     },
     {
       "symbolicIdentity": "KMG.Summoning.Giant.Slam1d8",
@@ -3515,7 +3515,7 @@
       "displayedName": "Slam1d8",
       "tier": "mechanics-only",
       "familyOrFirearmKind": "Sprint 28 giant humanoid attack",
-      "weaponType": "native donor type configured per giant",
+      "weaponType": "KMG.Summoning.Giant.SlamReachType",
       "currentItemLevelVisual": "native attack-mode presentation; no collectible item",
       "currentTypeLevelVisual": "native donor presentation",
       "effectiveEquippedPrefab": "giant attack mode; no transferable item",
@@ -3531,7 +3531,7 @@
       "proposedVisualVariant": "not applicable",
       "clippingOrientationConcerns": "usable native giant body and attack presentation; visual proportions and motion remain backlog",
       "mappingScope": "summoning-only exclusion",
-      "weaponTypeAssetGuid": "native-runtime-donor"
+      "weaponTypeAssetGuid": "a51e01183f844ce58be689fc075aa716"
     },
     {
       "symbolicIdentity": "KMG.Summoning.Giant.HillRock1d8",

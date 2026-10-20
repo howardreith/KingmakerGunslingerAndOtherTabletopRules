@@ -119,7 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             for (int i = 0; i < 8; i++) yield return 0;
                             Vector3 far; string lane, direction;
                             Vector3 origin = Sprint24AiCombatLane(
-                                fixture.Caster, owner, targets[0], 5.5f,
+                                fixture.Caster, owner, targets[0], 2.6f,
                                 out far, out lane, out direction);
                             var floor = AstarPath.active.GetNearest(origin);
                             if (floor.node == null || !floor.node.Walkable)
