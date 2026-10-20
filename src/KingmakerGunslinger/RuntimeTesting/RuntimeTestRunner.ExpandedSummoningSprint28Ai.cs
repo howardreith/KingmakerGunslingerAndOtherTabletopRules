@@ -70,7 +70,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner, target, set == 2 ? 8f : 5f,
                             out far, out lane, out direction);
                         PlaceExpandedSummoningUnit(owner, origin);
-                        PlaceExpandedSummoningUnit(target, far);
+                        // The proven native turn command fixture places its
+                        // melee target adjacent to the surveyed owner lane.
+                        // The wider AI melee separation enlisted four
+                        // protected first-area neutrals into turn order.
+                        // RTWP still observes the real approach; turn-based
+                        // AI needs its own selected attack, not that travel.
+                        Vector3 forward = (far - origin).normalized;
+                        float adjacent = owner.Corpulence +
+                            target.Corpulence + .8f;
+                        PlaceExpandedSummoningUnit(target,
+                            turnBased && set != 2
+                                ? origin + forward * adjacent : far);
                         foreach (UnitEntityData unit in new[] { owner, target })
                         {
                             unit.Wake(0f);
@@ -217,7 +228,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 observer.WeaponAttacks.All(value =>
                                     ReferenceEquals(value.Weapon.Blueprint,
                                         selected.Blueprint)) &&
-                                (set == 2 || travel > .1f);
+                                (turnBased || set == 2 || travel > .1f);
                             Sprint25Check(label + "-ai-attack", exact,
                                 new JObject {
                                     ["owner"] = owner.UniqueId,
