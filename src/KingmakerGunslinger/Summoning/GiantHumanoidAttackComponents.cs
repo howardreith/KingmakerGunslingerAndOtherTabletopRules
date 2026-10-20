@@ -189,10 +189,15 @@ namespace KingmakerGunslinger.Summoning
                 active.Blueprint.name !=
                     "KMG_Summoning_Giant_" + token + "Rock1d8")
                 return;
-            int additionalFeet = GiantHumanoidRulesPolicy.
-                RockMaximumRangeFeet(key) -
-                GiantHumanoidRulesPolicy.RockRangeIncrementFeet(key);
-            __result += new Feet(additionalFeet).Meters;
+            UnitEntityData target = __instance.Target;
+            if (target == null) return;
+            // ItemEntityWeapon.AttackRange adds the engine's four-foot
+            // allowance to the BlueprintWeaponType range. Replace that
+            // allowance for these three exact rocks so the fifth printed
+            // increment is the actual command boundary.
+            __result = owner.Corpulence + target.Corpulence +
+                new Feet(GiantHumanoidRulesPolicy.
+                    RockMaximumRangeFeet(key)).Meters;
         }
     }
 

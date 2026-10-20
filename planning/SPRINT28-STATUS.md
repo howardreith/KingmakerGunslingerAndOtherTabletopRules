@@ -17,6 +17,16 @@ printed increment. Focused production compilation and three Sprint 28
 domain tests pass, including increment boundaries. Its native `modes`
 observer will check the real command radius and bonus rule; actual
 long-distance visible projectile commands remain a separate open check.
+The first native `modes` review on `5e6ad1695b9fee89b7f6812eae51581f9a53b2b8`
+returned FAIL on three rock-radius assertions: Kingmaker's equipped item
+added a four-foot allowance to the blueprint range, so the initial additive
+adapter reached 604/904 feet rather than exactly 600/900. The three live
+second-increment attack-bonus observations passed at -2; all other mode
+assertions passed. Transaction `compat-20261020T024327Z-3d069967e35c`
+restored and an independent intake audit found only the authorized Working
+save difference. The failed raw result remains intact. The narrowed patch
+now replaces the command radius with exact footprints plus five printed
+increments; it still needs a fresh native result.
 
 The corrected Sprint 28 development source `ffd8e2f40d9e0212e3bf209b6321e4f599bcba36`
 produced exact ZIP SHA-256 `013b8363592fde0956d2f6e11c55f6d05fa11173e8ed52962951ad3fc3617412`,
