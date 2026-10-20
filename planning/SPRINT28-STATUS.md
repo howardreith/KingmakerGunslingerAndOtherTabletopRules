@@ -1,6 +1,6 @@
 # Sprint 28 current status
 
-Status: **IN PROGRESS - three giants registered and withheld; ON/OFF Working-save native load and ownership checked, final release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
+Status: **IN PROGRESS - three giants registered and withheld; six ON/OFF Working-save native phases complete, combat and release qualification pending**. Sprint 28 only. Current source branch `codex/expanded-summoning-sprint28-hill-stone-fire-giants` at `C:/Dev/KingmakerGunslingerLab/wt/s28`, forked from verified remote master `dc9b83c71ff61f14a43d9cdabff37822796f43f2`. Remote `v0.0.162` was absent at intake. The Sprint 27 v0.0.161 tag/package and all older branches/worktrees remain untouched.
 
 
 ## Current checkpoint
@@ -38,25 +38,49 @@ verified every original assertion, raw item rows, request/RunId, loaded DLL,
 ZIP, save-write receipt, exact restored transaction and actual intake. They
 qualify the native observations only; the supervisor failures are not relabeled.
 
-The demonstrated validator race is narrowed to an unnecessary `-Force` on its
-unique empty extraction directory. The targeted fix has passed strict package
-validation normally and with inherited `WhatIf`, plus invalid-root refusal;
-all three checks left zero temporary extractions. Seven earlier completed S28
-backup copies were archived and per-file reread, then content-addressed as
-401 verified blobs for 2,745 original file rows. Original transaction and
-native records remain. This recovered roughly 247 MB of system-drive space;
-the latest post-transaction free space was about 640 MB. The validator fix,
-this status and the evidence map are the current uncommitted reporting/tooling
-checkpoint and have not been compiled into a new DLL.
+The demonstrated validator race was narrowed to an unnecessary `-Force`
+on its unique empty extraction directory. Its fix was committed and pushed as
+`3ccb4fc5e2614ed33d83acc19b41e1059049c8b9`. Strict package validation
+passed normally, with inherited `WhatIf`, and invalid-root refusal, leaving
+zero temporary extractions. A new clean-source development package from that
+commit has ZIP SHA-256 `a7bcd888891a212a7baaff47193065e57803240dda23505cb1b64d71fb33743c`,
+DLL SHA-256 `9f89839ef87a11a076d01caa24aee17895824c43e4f5e074a713a3bfa31ff03c`,
+and MVID `8df76176-86cf-453c-b6b8-20b68909d16e`. Its strict offline build
+and three selected Sprint 28 tests passed; it is still a development package.
 
-The Working fixture is cleaned of request-owned giants but still differs from
+The final fresh-absence phase after OFF cleanup passed six native assertions
+in 185 seconds on that new package, RunId
+`20261020T0156312823602Z-58c913cd5b2f4d0c9b77ff9ef8e6ec06`. It
+loaded the exact Working descriptor, found zero fixture receipts, wrote no
+save, and the outer collector exited zero. Transaction
+`sprint28-stack-20261020T015409Z-b1cce3c98be0` returned `Restored` with
+`restorationVerified=true`; raw result SHA-256
+`67709c8288bd72fed2f89984d89c9df97761716c32465c5a1e373ebd594b26a1`,
+collector SHA-256
+`49ae5bdd0cee8bebe2ae206b0edcb25ddc491de5caccd0e800d3b70439d2e6f23`,
+transaction SHA-256
+`375cb1e230ca07a62bf61ff2bad9ae182f48acd638408f7fac8ec5fa9f181baf`,
+and independent intake audit SHA-256
+`d64a8c58546f7f2e887a4201da01c7c573c0a138c1c3b729954084cf62236bad`
+are preserved. All six targeted ON/OFF native save phases are complete; the
+two OFF-sequence supervisor failures remain dated with exact no-game recovery.
+
+Seven older completed S28 backup copies were per-file reread and
+content-addressed as 401 blobs for 2,745 rows. Two further old archive
+groups were per-file reread and content-addressed as 401 blobs for 3,144
+rows. Original transaction and native records and the source manifests
+remain. Exact redundant deployed/backup copies from the last transaction
+were read back against the new ZIP before removal. System-drive free space
+was about 560 MB after that cleanup.
+
+The Working fixture is clean of request-owned giants but still differs from
 its immutable intake bytes. Other saves, installation, private references,
 sound bank, game binaries and 83 HKCU settings match intake; no game, task or
-lease remains. Restore the original Working bytes at closeout. Next: commit
-this coherent checkpoint, build a new exact development candidate, run the
-fresh-absence phase after OFF cleanup, then close the remaining combat,
-rock/catch boundaries, disarm, AI, feats, presentation, public roots and
-release gates. No release, visual approval or Sprint 29 work is claimed.
+lease remains. Restore the original Working bytes at closeout. Next: close
+the remaining rock/catch boundaries, disarm, full AI cadence and turn-based
+actions, Fire feats, terrain-dependent Stone Stealth, presentation, public
+roots and final release gates. No release, visual approval or Sprint 29 work
+is claimed.
 
 ## Dated native checkpoints
 
