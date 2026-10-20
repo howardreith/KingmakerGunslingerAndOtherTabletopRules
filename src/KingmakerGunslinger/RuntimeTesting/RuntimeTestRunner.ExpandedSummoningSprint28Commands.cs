@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // attack commands, rule events and action costs are all observed; the
         // fixture supplies geometry and a durable hostile, never an attack.
         private IEnumerable<int> ReviewSprint28Commands(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
@@ -43,8 +43,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { Name="slam-full", Set=1, Full=true },
                     new { Name="rock-single", Set=2, Full=false },
                     new { Name="rock-full", Set=2, Full=true }
-                }.Where(value => value.Name != "rock-single" ||
-                    spec.Key == "stone-giant"))
+                }.Where(value => (value.Name != "rock-single" ||
+                    spec.Key == "stone-giant") &&
+                    (!turnBased || value.Full ||
+                    spec.Key == "stone-giant" && value.Name == "rock-single")))
                 {
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
                         fixture, spec.Key);
@@ -116,6 +118,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Giant command has no legal visible lane.");
                         owner.JoinCombat(); target.JoinCombat();
                         owner.Memory.Add(target); target.Memory.Add(owner);
+                        JObject admission = null;
+                        if (turnBased)
+                        {
+                            admission = new JObject();
+                            foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                                new[] { owner }, target, admission)) yield return frame;
+                            for (int frame = 0; frame < 500 &&
+                                !Sprint18OwnerIsActing(owner); frame++) yield return 0;
+                            bool acting = (bool)admission["admitted"] &&
+                                Sprint18OwnerIsActing(owner);
+                            Sprint25Check("s28-" + spec.Key + "-" +
+                                attackCase.Name + "-turn-admission", acting,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["target"] = target.UniqueId,
+                                    ["admission"] = admission,
+                                    ["turn"] = Sprint22TurnState(owner, target) },
+                                "The exact summoned giant receives a native turn before its own attack command.");
+                            if (!acting) throw new InvalidOperationException(
+                                "Giant native turn admission failed.");
+                        }
                         int targetDamageBefore = target.Descriptor.Damage;
                         ItemEntityWeapon weapon = owner.Body.PrimaryHand.MaybeWeapon;
                         int expected = !attackCase.Full ? 1 :
@@ -168,7 +190,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             weapon.Blueprint)) &&
                                     observer.Damage.Count == hits &&
                                     economy.Count(command) == 1 &&
-                                    economy.Exact(command, false) &&
+                                    economy.Exact(command, turnBased) &&
                                     !command.Cutscene &&
                                     !command.IsIgnoreCooldown &&
                                     !target.Descriptor.State.IsDead;
@@ -176,6 +198,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     attackCase.Name+"-resolved", exact,
                                     new JObject { ["owner"] = owner.UniqueId,
                                         ["target"] = target.UniqueId,
+                                        ["turnBased"] = turnBased,
+                                        ["admission"] = admission,
                                         ["weapon"] = weapon.Blueprint.AssetGuid,
                                         ["finished"] = command.IsFinished,
                                         ["result"] = command.Result.ToString(),
@@ -210,6 +234,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                        Game.Instance.TurnBasedCombatController.Activate();
                         owner.Commands.InterruptAll(true);
                         if (owner.IsInCombat) owner.LeaveCombat();
                         ResetExpandedSummoningHostile(fixture);
