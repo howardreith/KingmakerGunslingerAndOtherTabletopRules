@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
@@ -75,6 +76,7 @@ namespace KingmakerGunslinger.Blueprints
         private const string NativeCleaveAction = "6447d104a2222c14d9c9b8a36e4eb242";
         private const string NativeCleaveFeature = "d809b6c4ff2aaff4fa70d712a70f7d7b";
         private const string NativeGreatCleaveFeature = "cc9c862ef2e03af4f89be5088851ea35";
+        private const string NativeCleavePenalty = "914b04c279e3d3447848fecf5796cdcd";
 
         private static void ConfigureGiantHumanoids(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol,
@@ -189,6 +191,33 @@ namespace KingmakerGunslinger.Blueprints
             var delivery = ScriptableObject.CreateInstance<
                 SummonGiantCleaveDelivery>();
             delivery.GreaterFeature = greater;
+            // The installed action applies its AC buff through ApplyEffect,
+            // which is skipped when the first attack misses. Reuse only the
+            // private deep-cloned effect on that miss; hits retain the normal
+            // native path, so the buff cannot be applied twice.
+            AbilityEffectRunAction[] penaltyEffects = action.ComponentsArray
+                .OfType<AbilityEffectRunAction>().Where(effect =>
+                    effect.Actions != null && effect.Actions.Actions != null &&
+                    effect.Actions.Actions.OfType<ContextActionApplyBuff>()
+                        .Any(apply => apply.Buff != null &&
+                            string.Equals(apply.Buff.AssetGuid,
+                                NativeCleavePenalty,
+                                StringComparison.OrdinalIgnoreCase)))
+                .ToArray();
+            if (penaltyEffects.Length != 1 ||
+                penaltyEffects[0].Actions.Actions.Length != 1 ||
+                !(penaltyEffects[0].Actions.Actions[0] is
+                    ContextActionApplyBuff))
+                throw new InvalidOperationException(
+                    "Installed Cleave penalty is not one audited native buff action.");
+            var penalty = (ContextActionApplyBuff)
+                penaltyEffects[0].Actions.Actions[0];
+            if (!penalty.ToCaster || penalty.Buff == null ||
+                !string.Equals(penalty.Buff.AssetGuid, NativeCleavePenalty,
+                    StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException(
+                    "Installed Cleave penalty no longer targets the caster.");
+            delivery.MissPenalty = penaltyEffects[0];
             action.ComponentsArray[deliveryIndex] = delivery;
 
             BlueprintFeature feature = Require<BlueprintFeature>(bySymbol,

@@ -1,7 +1,7 @@
 # Sprint 28 release coverage plan
 
 This plan applies only to Hill, Stone and Fire Giant on the frozen `wt/s28`
-candidate. The 64 earlier native executions retain their original source,
+candidate. The 67 earlier native executions retain their original source,
 package and observer identities. They diagnose development behavior; they do
 not qualify final bytes. A PASS requires its raw observation, exact package,
 true child completion and restored transaction. A failed or missing observation
@@ -10,7 +10,7 @@ remains a failure or unknown.
 | Fresh candidate group | Required observation | Planned grouping |
 |---|---|---|
 | Full source gate | Unfiltered Sprint suite, production DLL, strict package, manifest, source fingerprint | One `Invoke-KmgGate.ps1 -Level Sprint` |
-| Adult combat | Three profiles, actual equipped ten-foot club/sword/slam reach, melee/slam/rock alternatives, live Strength and feat effects; Hill ordinary and Fire Great Cleave with actual hit chains, miss/cap and native-user graph control | Compact giant mechanics reviews in one compatible profile |
+| Adult combat | Three profiles, actual equipped ten-foot club/sword/slam reach, melee/slam/rock alternatives, live Strength and feat effects; Hill ordinary and Fire Great Cleave with actual hit chains, first-miss AC penalty, miss/cap and native-user graph control | Compact giant mechanics reviews in one compatible profile |
 | Rock and defenses | Range/LOS/cover and cadence; Small/Medium/Large catch DC, awareness and once-per-round; Stone's catch-only bonus; Fire heat and separate defenses; affected Cyclops/Frost controls | Focused rock reviews, isolated negative cases where needed |
 | Commands and AI | Real owner input, RTWP and turn-based attack actions, full-attack AI cadence, modes and costs | Existing exact-owner visible-lane and turn-admission fixture |
 | Equipment and presentation | Quantity ownership, disarm/death/dismissal/expiry/loot, visible bodies and three actual icons | Existing disposable owned-item and presentation fixture |
