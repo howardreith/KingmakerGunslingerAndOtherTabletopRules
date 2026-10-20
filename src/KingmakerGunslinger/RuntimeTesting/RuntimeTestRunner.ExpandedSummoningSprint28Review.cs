@@ -95,6 +95,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try
                     {
                         for (int i = 0; i < 8; i++) yield return 0;
+                        // A mesh can exist while its summon appearance shader
+                        // is fully dissolved. Wait for this exact native view
+                        // to settle before treating a frame as body evidence.
+                        int appearanceFrames = 0;
+                        DateTime appearanceDeadline = DateTime.UtcNow.AddSeconds(25);
+                        while (appearanceFrames < MotionReviewFadeBudget &&
+                            DateTime.UtcNow < appearanceDeadline &&
+                            (LoadingOrScreenFadeActive() ||
+                             !EntityFadedIn(owner) ||
+                             DissolveAmount(owner) > MotionReviewIntactDissolve ||
+                             owner.Descriptor.Buffs.GetBuff(Kingmaker.Blueprints
+                                .Root.BlueprintRoot.Instance.SystemMechanics
+                                .SummonedUnitAppearBuff) != null))
+                        {
+                            appearanceFrames++;
+                            yield return 0;
+                        }
+                        bool visible = !LoadingOrScreenFadeActive() &&
+                            EntityFadedIn(owner) &&
+                            DissolveAmount(owner) <= MotionReviewIntactDissolve &&
+                            owner.Descriptor.Buffs.GetBuff(Kingmaker.Blueprints
+                                .Root.BlueprintRoot.Instance.SystemMechanics
+                                .SummonedUnitAppearBuff) == null;
+                        Sprint25Check("s28-" + spec.Key + "-visible-body",
+                            visible, new JObject { ["owner"] = owner.UniqueId,
+                                ["appearanceFrames"] = appearanceFrames,
+                                ["screenFadeActive"] = LoadingOrScreenFadeActive(),
+                                ["faderVisible"] = EntityFadedIn(owner),
+                                ["dissolve"] = DissolveAmount(owner),
+                                ["appearBuff"] = owner.Descriptor.Buffs.GetBuff(
+                                    Kingmaker.Blueprints.Root.BlueprintRoot
+                                        .Instance.SystemMechanics
+                                        .SummonedUnitAppearBuff) != null },
+                            "The exact giant's summoned native body finishes its appearance and is no longer shader-dissolved.");
                         var stats = owner.Stats;
                         int[] scores = {stats.Strength.ModifiedValue, stats.Dexterity.ModifiedValue,
                             stats.Constitution.ModifiedValue, stats.Intelligence.ModifiedValue,
@@ -258,7 +292,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["meshes"] = new JArray(meshes.Select(value => value.sharedMesh.name)),
                             ["selection"] = Sprint22SelectionSurface(owner),
                             ["camera"] = WriteExpandedSummoningPartyCameraCapture(owner,
-                                _request.EvidenceDirectory, "s28-"+spec.Token+"-"+Time.frameCount+".png")
+                                _request.EvidenceDirectory, "s28-"+spec.Token+"-"+Time.frameCount+".png"),
+                            ["oblique"] = WriteExpandedSummoningOverheadStrikeCapture(
+                                owner, owner, _request.EvidenceDirectory,
+                                "s28-"+spec.Token+"-oblique-"+Time.frameCount+".png",
+                                cameraOffset: new Vector3(5f, 6f, -5f))
                         }, "Actual native giant mesh and selectable footprint are present in the live first-area scene.");
                         var armor = owner.Body.Armor == null ? null : owner.Body.Armor.MaybeArmor;
                         bool equipment = weapon.Owner == owner.Descriptor &&
