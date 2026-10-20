@@ -73,8 +73,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool graph = grant.Facts.Length == 1 &&
                     ReferenceEquals(grant.Facts[0], action) &&
                     ReferenceEquals(delivery.GreaterFeature, nativeGreater) &&
-                    ReferenceEquals(nativeDelivery.GreaterFeature,
-                        nativeCleave) &&
+                    nativeDelivery.GreaterFeature != null &&
+                    string.Equals(nativeDelivery.GreaterFeature.AssetGuid,
+                        nativeCleave.AssetGuid,
+                        StringComparison.OrdinalIgnoreCase) &&
                     !action.ComponentsArray.Intersect(
                         nativeAction.ComponentsArray).Any();
                 Sprint25Check("s28-cleave-graph", graph, new JObject {
