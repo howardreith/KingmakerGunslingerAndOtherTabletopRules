@@ -291,6 +291,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 }, "The incoming energy source is an exact disposable hostile that native damage permits to attack this giant.");
                             if (!legal) throw new InvalidOperationException(
                                 "Fire defense lacks a legal hostile damage source.");
+                            // Grant and arithmetic are native consumers; actual
+                            // Overrun/Sunder commands have a separate review.
+                            string[] actionGuids = owner.Descriptor.Abilities
+                                .Enumerable.Where(value => value?.Blueprint != null)
+                                .Select(value => value.Blueprint.AssetGuid)
+                                .ToArray();
+                            bool actions = actionGuids.Contains(
+                                "1a3b471ecea51f7439a946b23577fd70") &&
+                                actionGuids.Contains(
+                                "fa9bfb9fd997faf49a108c4b17a00504");
+                            Sprint25Check("s28-fire-maneuver-grants", actions,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["overrun"] = actionGuids.Contains(
+                                        "1a3b471ecea51f7439a946b23577fd70"),
+                                    ["sunder"] = actionGuids.Contains(
+                                        "fa9bfb9fd997faf49a108c4b17a00504") },
+                                "Fire's Improved Overrun and Improved Sunder grant their actual native commands to the exact summon.");
+                            int ordinaryCmb = Rulebook.Trigger(new RuleCalculateCMB(
+                                owner, source, CombatManeuver.Trip)).Result;
+                            int overrunCmb = Rulebook.Trigger(new RuleCalculateCMB(
+                                owner, source, CombatManeuver.Overrun)).Result;
+                            int sunderCmb = Rulebook.Trigger(new RuleCalculateCMB(
+                                owner, source, CombatManeuver.SunderArmor)).Result;
+                            Sprint25Check("s28-fire-maneuver-attack", overrunCmb ==
+                                ordinaryCmb + 2 && sunderCmb == ordinaryCmb + 2,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["ordinary"] = ordinaryCmb,
+                                    ["overrun"] = overrunCmb,
+                                    ["sunder"] = sunderCmb },
+                                "Native CMB grants each exact printed Improved maneuver +2 only for its own attack check.");
+                            int ordinaryCmd = Rulebook.Trigger(new RuleCalculateCMD(
+                                source, owner, CombatManeuver.Trip)).Result;
+                            int overrunCmd = Rulebook.Trigger(new RuleCalculateCMD(
+                                source, owner, CombatManeuver.Overrun)).Result;
+                            int sunderCmd = Rulebook.Trigger(new RuleCalculateCMD(
+                                source, owner, CombatManeuver.SunderArmor)).Result;
+                            Sprint25Check("s28-fire-maneuver-defense", overrunCmd ==
+                                ordinaryCmd + 2 && sunderCmd == ordinaryCmd + 2,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["ordinary"] = ordinaryCmd,
+                                    ["overrun"] = overrunCmd,
+                                    ["sunder"] = sunderCmd },
+                                "Native CMD grants +2 to Fire's Overrun and Sunder defenses without raising unrelated Trip.");
                             int injury = owner.Descriptor.Damage;
                             try
                             {
