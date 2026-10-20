@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
@@ -15,7 +16,6 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
-using KingmakerGunslinger.Development;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -239,7 +239,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 profile["ownedEquipment"] = new JArray(unit.Descriptor.Inventory.Items
                     .OrderBy(item => item.Blueprint.AssetGuid, StringComparer.Ordinal)
                     .Select(item => new JObject {
-                        ["instanceId"] = Sprint28PersistentItemId(item),
                         ["blueprint"] = item.Blueprint.AssetGuid,
                         ["owner"] = item.Owner?.Unit?.UniqueId,
                         ["nonRemovable"] = item.IsNonRemovable,
@@ -271,16 +270,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             return profile;
-        }
-
-        private static string Sprint28PersistentItemId(ItemEntity item)
-        {
-            object raw;
-            if (!ReflectionAccess.TryGetMember(item, "UniqueId", out raw) ||
-                raw == null || string.IsNullOrWhiteSpace(raw.ToString()))
-                throw new InvalidOperationException(
-                    "Native giant item has no persistent UniqueId.");
-            return raw.ToString();
         }
 
         private static UnityEngine.Object[] RosterPersistenceResources(UnitEntityData unit)
@@ -315,14 +304,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             };
             if (body.Armor != null) expected.Add(body.Armor.AssetGuid);
             ItemEntity[] items = unit.Descriptor.Inventory.Items.ToArray();
-            string[] itemIds = items.Select(Sprint28PersistentItemId).ToArray();
             bool exact = items.Length == expected.Count &&
                 expected.Distinct(StringComparer.Ordinal).Count() == expected.Count &&
                 items.Select(item => item.Blueprint.AssetGuid)
                     .OrderBy(guid => guid, StringComparer.Ordinal)
                     .SequenceEqual(expected.OrderBy(guid => guid, StringComparer.Ordinal)) &&
                 items.Distinct().Count() == items.Length &&
-                itemIds.Distinct(StringComparer.Ordinal).Count() == itemIds.Length &&
                 items.All(item => ReferenceEquals(item.Owner, unit.Descriptor) &&
                     item.IsNonRemovable && !item.IsLootable && item.Count == 1) &&
                 ((receipt.Key == GiantHumanoidRulesPolicy.Stone) == (body.Armor == null)) &&
@@ -345,7 +332,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["prepare"] = prepare, ["itemCount"] = items.Length,
                     ["expectedBlueprints"] = new JArray(expected),
                     ["items"] = new JArray(items.Select(item => new JObject {
-                        ["instanceId"] = Sprint28PersistentItemId(item),
+                        ["processInstance"] = RuntimeHelpers.GetHashCode(item),
                         ["blueprint"] = item.Blueprint.AssetGuid,
                         ["owner"] = item.Owner?.Unit?.UniqueId,
                         ["nonRemovable"] = item.IsNonRemovable,
@@ -671,19 +658,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 ItemEntity[] allGiantItems = units.SelectMany(unit =>
                     unit.Descriptor.Inventory.Items).ToArray();
-                string[] allGiantIds = allGiantItems
-                    .Select(Sprint28PersistentItemId).ToArray();
                 RosterPersistenceCheck("s28-all-items-distinct",
                     allGiantItems.Length == 11 &&
                     allGiantItems.Distinct().Count() == allGiantItems.Length &&
-                    allGiantIds.Distinct(StringComparer.Ordinal).Count() ==
-                        allGiantIds.Length &&
                     Sprint28PartyInventoryExact(giantPartyItems,
                         giantPartyCounts),
                     new JObject { ["items"] = allGiantItems.Length,
                         ["distinct"] = allGiantItems.Distinct().Count(),
-                        ["distinctPersistentIds"] = allGiantIds.Distinct(
-                            StringComparer.Ordinal).Count(),
+                        ["processInstances"] = new JArray(allGiantItems
+                            .Select(RuntimeHelpers.GetHashCode)),
                         ["partyInventoryExact"] =
                             Sprint28PartyInventoryExact(giantPartyItems,
                                 giantPartyCounts) },

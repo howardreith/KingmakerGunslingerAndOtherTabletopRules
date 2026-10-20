@@ -14,6 +14,9 @@ records the three saved unit receipts, eleven distinct owned item instances,
 and a request-owned spent-round Stone catch precondition. A later native load
 must recover the exact equipment profile, owners, no-loot flags and serialized
 catch ledger before cleanup; the final fresh load must find no fixture units.
+Resolved item references are compared within each native process; the saved
+receipt uses blueprint, owner and item properties because Kingmaker 2.1.7b
+does not expose a persistent `ItemEntity.UniqueId` for this equipment.
 These are development observations until the exact release candidate is
 qualified separately.
 

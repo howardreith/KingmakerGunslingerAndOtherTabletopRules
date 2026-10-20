@@ -9,12 +9,12 @@ The Sprint 28 Working-save scope now selects exactly Hill, Stone and Fire
 through the existing prepare/load-cleanup/fresh-absence trio. Its installed
 eleven-mod wrapper admits only `giant-humanoids` with development purpose
 `sprint28-native-prototype`, and the outer request launcher carries that
-scope. The observer saves stable native item IDs, exact owner/blueprint/no-loot
-profiles for all eleven giant weapons and armor pieces, and a request-owned
-Stone spent-round catch precondition. It checks those identities and the party
-inventory after native load, then requires cleanup and fresh absence. This
-source is a reviewable development checkpoint, not Working-save PASS. No save
-has been mutated yet.
+scope. The observer saves exact owner/blueprint/no-loot profiles for all eleven
+giant weapons and armor pieces, records distinct resolved item references
+within each process, and saves a request-owned Stone spent-round catch
+precondition. It checks the equipment profile and party inventory after native
+load, then requires cleanup and fresh absence. The first native attempt did
+not arm a save.
 
 Focused production compilation and three Sprint 28 tests passed in 20.3
 seconds. The no-game summoning orchestration suite passed 212 assertions;
@@ -27,10 +27,22 @@ logs; one was an incomplete test timeout map, and a PowerShell automatic
 `$args` collision prompted inside a refusal scriptblock until narrowed.
 Neither staged the installation, started Kingmaker or touched a save.
 
-Next: commit and push this coherent development checkpoint, build its exact
-development ZIP from `wt/s28`, run the guarded limited-user installed-stack
+The first guarded prepare from source `7882ad4109f85aded25c57fa601a38bc00218fa9`
+and ZIP SHA-256 `4f541c5891e2b0345d5c4a963adab4b2204ad621d77fe1e077e050d646a939c5`
+returned **FAIL before save**: the observer required native item `UniqueId`,
+but Kingmaker 2.1.7b exposes no such member for this equipment. Raw RunId
+`20261020T0030056295664Z-c4e783004bab437da185d6af1110b7dd`
+is retained. The limited child exited 1, transaction
+`sprint28-stack-20261020T002812Z-bcda72ea396e` is
+`Restored`/`restorationVerified=true`, and independent intake audit SHA-256
+`468fff60d89007037a7d8f3b8dcfed0882a53111dceb6785accced6ce3e6c5a7`
+is diff0 across 968 Mods, 119 saves, 19 references and 83 settings.
+The narrowed observer compares serializable properties across load and
+actual distinct item references within each process.
+
+Next: build the corrected development candidate, run the guarded limited-user
 Working-save trio with actual intake comparison and restoration after each
-phase, and preserve failures separately. The eleven SNA roots remain withheld;
+phase. The eleven SNA roots remain withheld;
 full catch boundaries, disarm, turn-based/full-cadence AI, terrain/feat
 behavior, presentation and final release qualification remain open.
 
