@@ -9,6 +9,7 @@ using Kingmaker.Blueprints.Items.Ecnchantments;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
@@ -42,6 +43,10 @@ namespace KingmakerGunslinger.Blueprints
             "15ba44b3fcf48ce418dc72fadac6408a";
         private const string NativeImprovedBullRush29 =
             "b3614622866fe7046b787a548bbd7f59";
+        private const string Awesome29Action =
+            Giant29Prefix + "AwesomeBlowAction";
+        private const string Awesome29Feature =
+            Giant29Prefix + "AwesomeBlowFeature";
 
         // Each new private identity is appended after the released Sprint 28
         // tail. No donor or campaign blueprint is patched in place.
@@ -50,6 +55,7 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             BlueprintFeature extraplanar)
         {
+            ConfigureSprint29AwesomeBlow(library, bySymbol);
             ConfigureSprint29Cloud(library, bySymbol, extraplanar);
             ConfigureSprint29Storm(library, bySymbol, extraplanar);
             ConfigureSprint29Ettin(library, bySymbol, extraplanar);
@@ -247,6 +253,7 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
                 Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
                 Require<BlueprintFeature>(bySymbol, improvedVitalSymbol),
+                Require<BlueprintFeature>(bySymbol, Awesome29Feature),
                 freedom }).ToArray();
 
             BlueprintAbilityResource callResource =
@@ -493,7 +500,8 @@ namespace KingmakerGunslinger.Blueprints
             // qualified private action with the greater-capable discriminator.
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
                 Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
-                Require<BlueprintFeature>(bySymbol, FireImprovedOverrun)
+                Require<BlueprintFeature>(bySymbol, FireImprovedOverrun),
+                Require<BlueprintFeature>(bySymbol, Awesome29Feature)
             }).ToArray();
             BlueprintFeature traits = Require<BlueprintFeature>(bySymbol,
                 traitsSymbol);
@@ -588,6 +596,63 @@ namespace KingmakerGunslinger.Blueprints
             SetField(item, "m_Cost", 0);
             item.IsNonRemovable = true;
             return item;
+        }
+
+        private static void ConfigureSprint29AwesomeBlow(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            BlueprintAbility native = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, NativeCleaveAction,
+                    "native standard melee ability carrier");
+            BlueprintAbility action = Require<BlueprintAbility>(bySymbol,
+                Awesome29Action);
+            CopyFields(native, action);
+            action.name = InternalName(Awesome29Action);
+            action.Type = AbilityType.Extraordinary;
+            action.ActionType = Kingmaker.UnitLogic.Commands.Base.UnitCommand
+                .CommandType.Standard;
+            action.Range = AbilityRange.Touch;
+            action.CanTargetEnemies = true;
+            action.CanTargetFriends = false;
+            action.CanTargetSelf = false;
+            action.CanTargetPoint = false;
+            var impact = ScriptableObject.CreateInstance<
+                Sprint29AwesomeBlow>();
+            impact.Cloud = Require<BlueprintUnit>(bySymbol, Cloud29Unit);
+            impact.Storm = Require<BlueprintUnit>(bySymbol, Storm29Unit);
+            impact.Incorporeal = BlueprintLibraryLookup.RequireExact<
+                BlueprintFeature>(library, IncorporealGuid,
+                    "native incorporeal exclusion for Awesome Blow");
+            impact.Knockdown = new ActionList { Actions = new GameAction[] {
+                ScriptableObject.CreateInstance<ContextActionKnockdownTarget>()
+            } };
+            var run = ScriptableObject.CreateInstance<
+                AbilityEffectRunAction>();
+            run.Actions = new ActionList { Actions = new GameAction[] {
+                impact
+            } };
+            action.ComponentsArray = new BlueprintComponent[] { run };
+            BlueprintUnitFactAccess.Resolve().Configure(action,
+                LocalizationService.Create(Awesome29Action + ".Name",
+                    "Awesome Blow"),
+                LocalizationService.Create(Awesome29Action + ".Description",
+                    "Standard action: make a combat maneuver against a smaller corporeal foe; on success deal slam damage, push 10 feet and knock prone."),
+                native.Icon);
+            BlueprintFeature feature = Require<BlueprintFeature>(bySymbol,
+                Awesome29Feature);
+            feature.name = InternalName(Awesome29Feature);
+            feature.IsClassFeature = false;
+            feature.HideInUI = false;
+            var grant = ScriptableObject.CreateInstance<AddFacts>();
+            grant.Facts = new BlueprintUnitFact[] { action };
+            feature.ComponentsArray = new BlueprintComponent[] { grant };
+            BlueprintUnitFactAccess.Resolve().Configure(feature,
+                LocalizationService.Create(Awesome29Feature + ".Name",
+                    "Awesome Blow"),
+                LocalizationService.Create(Awesome29Feature +
+                    ".Description", "Grants the owned Awesome Blow action."),
+                native.Icon);
         }
 
         private static void Sprint29NaturalArmor(BlueprintFeature feature,

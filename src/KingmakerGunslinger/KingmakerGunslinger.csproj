@@ -47,6 +47,7 @@
     <Compile Include="Summoning\EttinSecondHeadVisual.cs" />
     <Compile Include="Summoning\Sprint29FogAiSafety.cs" />
     <Compile Include="Summoning\Sprint29LightningAiSafety.cs" />
+    <Compile Include="Summoning\Sprint29AwesomeBlow.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants29.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Griffon.cs" />
@@ -1299,6 +1300,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Modes.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Commands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Ownership.cs" />

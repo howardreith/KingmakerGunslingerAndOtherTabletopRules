@@ -1,5 +1,11 @@
 # Sprint 29 adult giant contract
 
+## Current development state (2026-10-21)
+
+The source branch `codex/expanded-summoning-sprint29-cloud-storm-ettin` is a dormant development checkpoint. Three original icons are prepared, the private creature builder and first save-free `profiles` observer compile against the installed Kingmaker 2.1.7b references, and the no-game request preflight passes 700 checks under unelevated Howard. The exact runtime orchestration test passes 218 assertions. The last native input census was research only; no Cloud, Storm, or Ettin product unit has been registered, summoned, or qualified. Public roots and stable v0.0.162 remain unchanged.
+
+Automatic approval review twice rejected the proposed production catalog/bootstrap registration. Its stated concern is exposing three still-unqualified creatures and risking bootstrap/runtime breakage. The attempted patches made no production catalog changes. The worktree's actual Mods, saves, private references, settings, tasks and processes matched its captured intake after the no-game preflight. Hidden-candidate registration, actual combat/magic/body and persistence observations, public publication, merge, stable release, downloaded-asset audit and final records remain blocked at that review boundary; none is claimed PASS. The private Awesome Blow action's obstacle collision rider and native behavior still require proof or repair before release.
+
 Scope: Cloud Giant, Storm Giant, and Ettin as eight untemplated Summon Nature's Ally roots. Registration and publication remain withheld until their source art, equipment, magic, observers, and native behavior are qualified. This document freezes the tabletop target and names the permitted scope decisions; it does not claim implementation or runtime acceptance.
 
 Primary PF1 adult entries: [Cloud Giant](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Cloud%20Giant), [Storm Giant](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Storm%20Giant), [Ettin](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Ettin), and the [legacy Bestiary giant](https://legacy.aonprd.com/bestiary/giant.html) and [ettin](https://legacy.aonprd.com/bestiary/ettin.html) records. These rules establish the target, while installed Kingmaker 2.1.7b references and live observations must establish implementation.
