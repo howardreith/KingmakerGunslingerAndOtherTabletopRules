@@ -218,6 +218,16 @@
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "The exact Storm private Call Lightning state now refreshes its owner's native brain after its native AddFacts grant through a state-local component. Focused production compilation and two Sprint 29 domain tests pass; native recheck pending."
   },
+  "stormAiBoltRepairDevelopment": {
+    "source": "c288274747036dba4ee0823ed4150250f6553596",
+    "runId": "20261021T0736201866745Z-3b3d0739d4ac4283b11b9a03a24fe057",
+    "artifactZipSha256": "4a6d9da1aa944bfe35422df175d5e4fea85772047f04af44f1ea8fcabd285265",
+    "artifactDllSha256": "6b530df1cbb899bae32507f1344ad7a67c47254046e29928031f3e9bbc5f3213",
+    "artifactMvid": "bfaa377a-8e97-44bc-af4a-d4c6a6d1fbff",
+    "result": "FAIL 1/13 observer predicates: exact Storm Call Lightning state now refreshed its native brain, StormBoltAi appeared in Brain.AvailableActions, and the brain issued one successful UnitUseAbility for the granted bolt. The observer sampled immediately at command completion; only two seconds of state time had passed and no delayed native save/damage packet had arrived, so its synchronous effect assertion failed. This result proves AI command selection, not yet resolved bolt effect.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "nextObserver": "Wait after successful native command for its own target DC15 save and approximately one-minute state debit; count damage only as observed, without forcing a hit or save. Focused production compilation and two Sprint 29 domain tests passed; native effect recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
