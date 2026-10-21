@@ -302,9 +302,15 @@ namespace KingmakerGunslinger.Blueprints
             Sprint29LimitedNativeSpell(library, chain, chainSymbol,
                 "645558d63604747428d55f0dd3a4cb58",
                 15, 6, chainResource, "Chain Lightning");
+            var spellParams = ScriptableObject.CreateInstance<
+                Sprint29GiantSpellLikeParameters>();
+            spellParams.OwningBlueprint = unit;
+            spellParams.Abilities = new[] { call, bolt, chain };
+            spellParams.SpellLevels = new[] { 3, 3, 6 };
+            spellParams.CasterLevel = 15;
             traits.ComponentsArray = traits.ComponentsArray.Concat(
                 new BlueprintComponent[] { AddResource(callResource),
-                    AddResource(chainResource) }).ToArray();
+                    AddResource(chainResource), spellParams }).ToArray();
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
                 call, chain }).ToArray();
             BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
@@ -554,8 +560,15 @@ namespace KingmakerGunslinger.Blueprints
                 "KMG.ExpandedSummoning.CloudGiant.FogResource",
                 "Fog Cloud", "One fog cloud per summoning.", 1);
             Sprint29CloneFogSpell(library, fog, fogSymbol, true, resource);
+            var spellParams = ScriptableObject.CreateInstance<
+                Sprint29GiantSpellLikeParameters>();
+            spellParams.OwningBlueprint = unit;
+            spellParams.Abilities = new[] { mist, fog };
+            spellParams.SpellLevels = new[] { 1, 2 };
+            spellParams.CasterLevel = 16;
             traits.ComponentsArray = traits.ComponentsArray.Concat(
-                new BlueprintComponent[] { AddResource(resource) }).ToArray();
+                new BlueprintComponent[] { AddResource(resource), spellParams })
+                .ToArray();
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
                 mist, fog }).ToArray();
             BlueprintAbilityAreaEffect area = BlueprintLibraryLookup.RequireExact<

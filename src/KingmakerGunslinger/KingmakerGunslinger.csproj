@@ -48,6 +48,7 @@
     <Compile Include="Summoning\Sprint29FogAiSafety.cs" />
     <Compile Include="Summoning\Sprint29LightningAiSafety.cs" />
     <Compile Include="Summoning\Sprint29AwesomeBlow.cs" />
+    <Compile Include="Summoning\Sprint29GiantSpellLikeParameters.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants29.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Griffon.cs" />
