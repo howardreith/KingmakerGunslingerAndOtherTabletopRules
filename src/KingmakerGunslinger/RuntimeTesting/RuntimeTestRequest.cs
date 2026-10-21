@@ -575,6 +575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.MagicalBeastsScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GriffonScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsScope &&
+                     (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";
                 // The ordinary native-control case joins the two same-turn
