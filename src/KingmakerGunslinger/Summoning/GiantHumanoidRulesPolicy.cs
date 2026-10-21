@@ -37,8 +37,12 @@ namespace KingmakerGunslinger.Summoning
         internal static bool IsNewIdentity(string symbol)
         {
             if (symbol == null) return false;
-            return symbol.StartsWith("KMG.Summoning.Giant.",
-                StringComparison.Ordinal) ||
+            return (symbol.StartsWith("KMG.Summoning.Giant.",
+                StringComparison.Ordinal) &&
+                !symbol.StartsWith("KMG.Summoning.Giant.Sprint29.",
+                    StringComparison.Ordinal) &&
+                !symbol.StartsWith("KMG.Summoning.Giant.Cloud",
+                    StringComparison.Ordinal)) ||
                 symbol == "KMG.Summoning.Unit.HillGiant" ||
                 symbol == "KMG.Summoning.Unit.StoneGiant" ||
                 symbol == "KMG.Summoning.Unit.FireGiant" ||

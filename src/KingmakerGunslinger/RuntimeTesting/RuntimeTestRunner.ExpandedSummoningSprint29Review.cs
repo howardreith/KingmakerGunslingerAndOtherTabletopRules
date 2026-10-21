@@ -7,6 +7,9 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 
@@ -33,6 +36,45 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldPause = Game.Instance.IsPaused;
             try
             {
+                var hiddenRoutes = ExpandedSummoningCatalog
+                    .GenerateVariants(SummonFamily.NaturesAlly)
+                    .Where(value => value.Creature.Key == "ettin" ||
+                        value.Creature.Key == "cloud-giant" ||
+                        value.Creature.Key == "storm-giant").ToArray();
+                var hiddenIds = new HashSet<string>(hiddenRoutes.Select(value =>
+                    fixture.Blueprints.OfType<BlueprintAbility>().Single(ability =>
+                        ability.name == ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.AbilitySymbol(value)))
+                        .AssetGuid), StringComparer.Ordinal);
+                var parents = ExpandedSummoningInventoryObserver
+                    .CanonicalParentGuids.Select(guid =>
+                        BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                            BlueprintBootstrap.Library, guid,
+                            "Sprint 29 live summon parent")).ToArray();
+                var displayed = parents.SelectMany(parent =>
+                    parent.ComponentsArray.OfType<AbilityVariants>().Single()
+                        .Variants).ToArray();
+                var hill = ExpandedSummoningCatalog
+                    .GenerateVariants(SummonFamily.NaturesAlly).Single(value =>
+                        value.Creature.Key == "hill-giant" &&
+                        value.ParentTier == 6);
+                string hillGuid = fixture.Blueprints.OfType<BlueprintAbility>()
+                    .Single(ability => ability.name ==
+                        ExpandedSummoningInternalName(
+                            ExpandedSummoningIdentityCatalog.AbilitySymbol(hill)))
+                    .AssetGuid;
+                Sprint25Check("hidden-publication",
+                    hiddenRoutes.Length == 8 && hiddenIds.Count == 8 &&
+                    displayed.All(value => !hiddenIds.Contains(value.AssetGuid)) &&
+                    parents[14].ComponentsArray.OfType<AbilityVariants>()
+                        .Single().Variants.Any(value => value.AssetGuid == hillGuid),
+                    new JObject { ["hiddenRoots"] = hiddenRoutes.Length,
+                        ["hiddenInParents"] = displayed.Count(value =>
+                            hiddenIds.Contains(value.AssetGuid)),
+                        ["releasedHillTier6Present"] = parents[14]
+                            .ComponentsArray.OfType<AbilityVariants>().Single()
+                            .Variants.Any(value => value.AssetGuid == hillGuid) },
+                    "All new roots are absent from live parents and a released giant remains present.");
                 Game.Instance.IsPaused = true;
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();

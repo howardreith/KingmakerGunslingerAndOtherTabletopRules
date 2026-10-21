@@ -13,7 +13,18 @@ namespace KingmakerGunslinger.DomainTests
             var second = ExpandedSummoningIdentityCatalog.Build();
             // Historical released-type baseline; Sprint 27 checks its own exact manifest separately.
             var released = first.Where(value => value.Symbol != "KMG.Summoning.Unit.Griffon" &&
-                !value.Symbol.Contains(".Griffon.") && !GiantHumanoidRulesPolicy.IsNewIdentity(value.Symbol)).ToArray();
+                !value.Symbol.Contains(".Griffon.") &&
+                !GiantHumanoidRulesPolicy.IsNewIdentity(value.Symbol) &&
+                !value.Symbol.Contains(".Ettin.") &&
+                !value.Symbol.EndsWith(".Ettin", StringComparison.Ordinal) &&
+                !value.Symbol.Contains(".CloudGiant.") &&
+                !value.Symbol.EndsWith(".CloudGiant", StringComparison.Ordinal) &&
+                !value.Symbol.Contains(".StormGiant.") &&
+                !value.Symbol.EndsWith(".StormGiant", StringComparison.Ordinal) &&
+                !value.Symbol.StartsWith("KMG.Summoning.Giant.Sprint29.",
+                    StringComparison.Ordinal) &&
+                !value.Symbol.StartsWith("KMG.Summoning.Giant.Cloud",
+                    StringComparison.Ordinal)).ToArray();
             Assertions.Equal(ExpandedSummoningIdentityCatalog.FoundationIdentityCount,
                 first.Count, "Foundation identity count changed.");
             Assertions.Equal(ExpandedSummoningIdentityCatalog.UnitCount,

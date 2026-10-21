@@ -20,9 +20,8 @@ namespace KingmakerGunslinger.Summoning
         internal const string ObjectPrefix = "KMG_Ettin_SecondHead";
         internal const string DonorPrefabId =
             "635d6dee1c7831b41aa987bdbeff14bc";
-        // Filled with the append-only manifest GUID at the single atomic
-        // registration boundary. Empty means this private visual is inert.
-        internal const string EttinUnitGuid = "";
+        // Append-only project unit identity; the donor prefab remains unchanged.
+        internal const string EttinUnitGuid = "2481bc73abd64ef0ae581b48438b5404";
         private sealed class Attachment
         {
             internal GameObject Root;

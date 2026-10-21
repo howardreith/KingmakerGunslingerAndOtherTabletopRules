@@ -54,11 +54,8 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            // The three Sprint 29 source paintings are ready for the bounded
-            // native donor audit; creature registration remains inert until
-            // its builder and icon consumers are complete.
-            string[] prepared = { "remove-stirge", "cloud-giant",
-                "storm-giant", "ettin" };
+            // Registered hidden creatures enter through visibleCatalog too.
+            string[] prepared = { "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
@@ -97,10 +94,7 @@ namespace KingmakerGunslinger.Summoning
             // removal action remains a separate concept with no creature of
             // its own, so it stays an explicit entry.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "remove-stirge", "Remove Stirge",
-                "cloud-giant", "Cloud Giant",
-                "storm-giant", "Storm Giant",
-                "ettin", "Ettin");
+                "remove-stirge", "Remove Stirge");
             return result.ToArray();
         }
 
