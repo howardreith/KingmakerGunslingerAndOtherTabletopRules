@@ -208,4 +208,50 @@ namespace KingmakerGunslinger.Summoning
             item.IsNonRemovable = true;
         }
     }
+
+    /// <summary>Kingmaker reduces a 50-foot creature in medium armor to 40
+    /// feet. Storm's printed breastplate speed is 35 feet. Apply the remaining
+    /// five feet only while this exact project breastplate is equipped, so
+    /// removing or losing the armor restores its native 50-foot land speed.</summary>
+    [Serializable]
+    public sealed class SummonStormBreastplateSpeed :
+        OwnedGameLogicComponent<UnitDescriptor>, IUnitEquipmentHandler,
+        IUnitSubscriber
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemArmor Breastplate;
+        [NonSerialized] private ModifiableValue.Modifier _modifier;
+
+        public override void OnTurnOn() { Refresh(); }
+
+        public override void OnTurnOff()
+        {
+            if (_modifier != null) _modifier.Remove();
+            _modifier = null;
+        }
+
+        public void HandleEquipmentSlotUpdated(ItemSlot slot,
+            ItemEntity previousItem)
+        {
+            Refresh();
+        }
+
+        private void Refresh()
+        {
+            bool equipped = Owner != null && Owner.Unit != null &&
+                ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) &&
+                Owner.Body != null && Owner.Body.Armor != null &&
+                Owner.Body.Armor.MaybeArmor != null &&
+                ReferenceEquals(Owner.Body.Armor.MaybeArmor.Blueprint,
+                    Breastplate);
+            if (equipped && _modifier == null)
+                _modifier = Owner.Stats.Speed.AddModifier(-5, this,
+                    ModifierDescriptor.UntypedStackable);
+            else if (!equipped && _modifier != null)
+            {
+                _modifier.Remove();
+                _modifier = null;
+            }
+        }
+    }
 }
