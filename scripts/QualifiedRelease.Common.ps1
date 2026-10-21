@@ -1,10 +1,10 @@
 Set-StrictMode -Version Latest
 
 function Assert-KmgQualifiedCandidateInvocationMode {
-    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Publish,
+    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Publish,
         [switch]$ConfirmReleaseReady,[string]$MergedReleaseCommit,[string]$ExpectedBaseCommit)
     if($PreflightOnly) {
-        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
+        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
             $ExpectedBaseCommit -cnotmatch '^[0-9a-f]{40}$') {
             throw 'PreflightOnly requires one supported sprint and its pinned base, and forbids publication, confirmation or a claimed merge.'
         }

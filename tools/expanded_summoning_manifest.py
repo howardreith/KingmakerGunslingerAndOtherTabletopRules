@@ -34,6 +34,9 @@ SUPPRESSED = re.compile(
 # line. A creature that is withheld never appears here: what it is waiting for
 # is decided by the visibility catalog, not by this table.
 QUALIFICATION_NOTES = {
+    "ettin": "Public candidate; scoped hidden native combat, ownership, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
+    "cloud-giant": "Public candidate; scoped hidden native combat, fog, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
+    "storm-giant": "Public candidate; scoped hidden native combat, lightning, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
     "viper": "Independently qualified/published: all hidden gates47e8c121 PASS and all18 public roots996c5fe7 PASS; HumanReview NOT_PERFORMED_NONBLOCKING",
     "constrictor-snake": "Independently qualified/published: all hidden gates47e8c121 PASS and all14 public roots996c5fe7 PASS; HumanReview NOT_PERFORMED_NONBLOCKING",
     "salamander": "Five existing roots/identities preserved; mechanics/view/UI/crowd/persistence47e8c121 and public996c5fe7 PASS; final observation-only reach correctiondb1da016 profile/view73/73 PASS; Sprint17 technically qualified; HumanReview NOT_PERFORMED_NONBLOCKING",

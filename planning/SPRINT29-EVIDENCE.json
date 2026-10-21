@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
   "sprint": 29,
-  "status": "HIDDEN_GAMEPLAY_QUALIFICATION",
+  "status": "PUBLIC_CANDIDATE_SOURCE_ONLY",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
   "awesomeBlowObstacleDecision": "Owner approved documenting the installed static-wall HP-consumer limitation for the printed obstacle object's own 1d6. Victim collision 1d6 remains required and qualified on its recorded native artifact.",
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_AI_MAGIC_ITEMS_AWESOME_BLOW_LIFETIME_AND_TARGETED_ON_OFF_WORKING_PERSISTENCE_PASS; AFFECTED_CONTROLS_AND_PUBLIC_ROUTES_PENDING",
+  "nativeQualification": "HIDDEN_PROFILES_MODES_COMMANDS_AI_MAGIC_ITEMS_AWESOME_BLOW_CATCH_CLEAVE_VITAL_AND_TARGETED_ON_OFF_WORKING_PERSISTENCE_PASS_ON_RECORDED_DEVELOPMENT_ARTIFACTS; PUBLIC_ROUTES_AND_EXACT_RELEASE_CANDIDATE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -17,7 +17,8 @@
     "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below.",
     "itemsPreflight": "PASS: focused production compilation, two Sprint 29 domain tests and 715 no-game guarded scenario preflight checks including positive/negative items phase admission. Native item ownership, transfer, death and expiry remain pending.",
     "affectedControlsPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 740 no-game scenario preflight checks under Limited Interactive account; child/task exit zero, task removed. Native Cleave and first catch results are recorded below.",
-    "vitalPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 746 no-game guarded scenario preflight checks under Limited Interactive account for RTWP and turn-based phases; child/task exit zero, task removed. Direct native Vital Strike behavior has no verdict yet."
+    "vitalPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 746 no-game guarded scenario preflight checks under Limited Interactive account for RTWP and turn-based phases; direct native results are separately recorded below.",
+    "publicRoutesPreflight": "PASS: 749 no-game request/refusal checks, including exact routes phase admission and wrong-case refusal. Public native spellbook execution remains pending."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -559,6 +560,15 @@
     "result": "FAIL: turn-based ordinary control never reached exact owner turn. Native order included owner and target, but an unrelated first actor remained in Ended status throughout the bounded wait. No Vital command was issued, so this is an unmet fixture admission prerequisite rather than a Vital damage verdict. A later source correction gives the disposable Storm owner a temporary recorded initiative lead before native enrollment, then restores it; that correction has no native verdict yet.",
     "restoration": "PASS: guarded limited child/task exited one and were removed; raw FAIL retained. Fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
   },
+  "vitalTurnQualifiedB038": {
+    "source": "b038e355678904325994844af488748fb03df0ff",
+    "runId": "20261021T1458226764347Z-15529598c95a4ab099ceadc94c1aa574",
+    "artifactZipSha256": "589f63edee9b329f201a045390c516e9ac0714657583fc3d3142b0afd9bec512",
+    "artifactDllSha256": "d57dd82c39c96deb41f740dfd9feca0ecaa5cca2745c92faa67913cb84340c4d",
+    "artifactMvid": "bf9554ca-ac02-4437-b756-400ad10f6f73",
+    "result": "PASS: 17 native rows, zero failed; all three disposable Storm owners entered exact native turns with recorded fixture initiative base 0 to 100. The ordinary full command resolved three 4d6 hits with +21,+33,+33, matching per-roll native Power Attack buff presence, and spent a full-round turn action. Vital and Improved Vital each resolved one 8d6+21 or 12d6+21 greatsword hit and one native Standard action on its own owner turn. The temporary initiative base was restored in each fixture finally block.",
+    "restoration": "PASS: guarded limited child/task exited zero; fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
@@ -566,9 +576,9 @@
     "naturesAllyCreatures": 104,
     "naturesAllyRegisteredPlacements": 582,
     "registeredPlacements": 1127,
-    "suppressedPlacements": 8,
-    "generatedPlacements": 1119,
+    "suppressedPlacements": 0,
+    "generatedPlacements": 1127,
     "retainedNativeWrappers": 29,
-    "visibleChoices": 1148
+    "visibleChoices": 1156
   }
 }
