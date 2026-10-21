@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; EXACT_OWNER_MELEE_REACH_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_AND_MODES_PASS; RESOLVED_GAMEPLAY_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -94,6 +94,16 @@
     "artifactMvid": "98a02370-0a37-4ad6-b52e-30c8a6585e21",
     "result": "FAIL 4/18: setting the private raw melee type range to 8 feet produced 11-foot wielded range and 4.9528-m command radius. Native IL inspection then showed a threshold at raw 10 feet and a separate owner ReachRange addition; an exact-owner item getter correction is needed for 15 feet.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "hiddenModesQualification": {
+    "source": "431b6053f18a88d2e7d990b3de321e582f237433",
+    "runId": "20261021T0502429430775Z-581ed55643f046c3b6fbd13964d24598",
+    "artifactZipSha256": "8bdf596193a3efae78adb830be48b9a17f8f7806e9d86b02a6062ebea8ec4319",
+    "artifactDllSha256": "ce717dcbe0e8cf239d027f5744685bccd72352d0ada6f1a58b7099c276904624",
+    "artifactMvid": "a18e1a6e-cc9b-4d2a-a2cd-8d001fbd8b10",
+    "result": "PASS 18/18 native modes assertions: Ettin flails +12/+12 and javelins +5/+5 with full Strength and distinct arms; Cloud morningstar +22, Storm greatsword +27 and separate slam/ranged plans; all four Huge melee modes had 15-foot wielded range and 6.172-m native command radius including measured collision radii",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; observed plans and queried rules, not resolved attacks, magic, AI, ownership/disarm or persistence"
   },
   "publicSurface": {
     "registeredCreatures": 117,
