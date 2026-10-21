@@ -135,12 +135,12 @@ namespace KingmakerGunslinger.DomainTests
             // than a leftover, which is what this pin is for. Naming the
             // creature is the strongest form of it: an unexpected arrival and
             // a forgotten departure both fail.
-            // Sprint 25 publication removes only Brachiosaurus, so the
-            // registered-but-hidden set is empty again.
+            // Sprint 29 publication removes the three giant suppressions, so
+            // the registered-but-hidden set is empty again.
             Assertions.True(ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.SequenceEqual(SummoningCurrentSurface.WithheldKeys,
                     StringComparer.Ordinal),
-                "Only the three Sprint 29 candidates are withheld: "
+                "The public candidate has no withheld creatures: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
             Assertions.Equal(SummoningCurrentSurface.WithheldKeys.Length,
