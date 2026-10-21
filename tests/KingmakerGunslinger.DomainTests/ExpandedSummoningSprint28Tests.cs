@@ -45,9 +45,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(SummonIconCatalog.All.Any(value =>
                     value.Key == key), key + " has its own icon concept.");
             }
-            Assertions.Equal(1119, SummonVisibilityCatalog
-                .PublishedLogicalPlacementCount,
-                "Only the eleven registered giant roots become public.");
+            Assertions.Equal(GiantHumanoidRulesPolicy.AppendedRootCount,
+                ally.Count(SummonVisibilityCatalog.IsPublished),
+                "All eleven released giant roots remain public.");
         }
 
         internal static void IdentitiesAppendAndDonorsRemainExact()

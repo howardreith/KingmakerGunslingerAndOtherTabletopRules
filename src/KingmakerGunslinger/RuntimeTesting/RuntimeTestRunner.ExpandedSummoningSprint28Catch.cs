@@ -117,14 +117,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException(
                         "Native catch fixture began with unrelated projectiles.");
                 var results = new JArray();
-                foreach (var spec in new[] {
+                var cases = IsSprint29Review ? new[] {
+                    new { Target="cloud-giant", Reflex=40,
+                        ThrowerSize=Size.Large, Enhancement=0, Dc=15 },
+                    new { Target="storm-giant", Reflex=-40,
+                        ThrowerSize=Size.Huge, Enhancement=0, Dc=20 },
+                    new { Target="hill-giant", Reflex=40,
+                        ThrowerSize=Size.Large, Enhancement=0, Dc=15 }
+                } : new[] {
                     new { Target="hill-giant", Reflex=40,
                         ThrowerSize=Size.Large, Enhancement=0, Dc=15 },
                     new { Target="stone-giant", Reflex=-40,
                         ThrowerSize=Size.Huge, Enhancement=0, Dc=16 },
                     new { Target="fire-giant", Reflex=40,
                         ThrowerSize=Size.Gargantuan, Enhancement=1, Dc=26 }
-                })
+                };
+                string prefix = IsSprint29Review ? "s29-catch-" :
+                    "s28-catch-";
+                foreach (var spec in cases)
                 {
                     // Use an exact project giant as the disposable thrower;
                     // the target remains a real summon.
@@ -288,7 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             target.Memory.ContainsVisible(thrower) &&
                             !flatFooted && probe.IsUnitEnoughClose &&
                             target.Descriptor.State.CanAct;
-                        Sprint25Check("s28-catch-" + spec.Target + "-lane",
+                        Sprint25Check(prefix + spec.Target + "-lane",
                             ready, new JObject {
                                 ["thrower"] = thrower.UniqueId,
                                 ["target"] = target.UniqueId,
@@ -388,7 +398,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     saves.Saves.Count == 0 &&
                                     target.Get<UnitPartSummonGiantRockCatch>() == null &&
                                     SummonGiantRockCatch.ObservedOutcomes.Count == 0;
-                                Sprint25Check("s28-catch-" + spec.Target +
+                                Sprint25Check(prefix + spec.Target +
                                     "-nonrock-control", nonrockExcluded,
                                     new JObject { ["target"] = target.UniqueId,
                                         ["attacks"] = controls,
@@ -431,7 +441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     saves.Saves.Count == 0 &&
                                     target.Get<UnitPartSummonGiantRockCatch>() == null &&
                                     SummonGiantRockCatch.ObservedOutcomes.Count == 0;
-                                Sprint25Check("s28-catch-" + spec.Target +
+                                Sprint25Check(prefix + spec.Target +
                                     "-unaware-control", unawareExcluded,
                                     new JObject { ["target"] = target.UniqueId,
                                         ["attacks"] = controls,
@@ -597,7 +607,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["eligible"] = save != null,
                                     ["normalMiss"] = normalMiss,
                                     ["exact"] = exact });
-                                Sprint25Check("s28-catch-" + spec.Target +
+                                Sprint25Check(prefix + spec.Target +
                                     "-resolved", exact, row,
                                     "A would-hit native rock prompts one exact-owner Reflex check; its actual result either prevents harm before damage or permits one physical packet.");
                                 // Exercise the same target-side rulebook seam
@@ -607,9 +617,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 // or damage; the command above proves impact.
                                 long round = ContextActionUngulateTrample.CurrentRound();
                                 var probes = new JArray();
+                                var beforePart = target.Get<
+                                    UnitPartSummonGiantRockCatch>();
+                                long? commandLedgerRound = beforePart == null ?
+                                    (long?)null : beforePart.LastRound;
+                                int savesBeforeProbe = saves.Saves.Count;
+                                int outcomesBeforeProbe = SummonGiantRockCatch
+                                    .ObservedOutcomes.Count;
+                                // A real projectile can land just before a
+                                // native round boundary. In that case establish
+                                // one new-round save before testing the repeat;
+                                // never call a later round a same-round repeat.
+                                int expectedProbeSpend = beforePart == null ||
+                                    beforePart.LastRound != round ? 1 : 0;
                                 for (int attempt = 0; attempt < 8 &&
-                                    target.Get<UnitPartSummonGiantRockCatch>() == null;
-                                    attempt++)
+                                    (target.Get<UnitPartSummonGiantRockCatch>()
+                                        == null || target.Get<
+                                        UnitPartSummonGiantRockCatch>()
+                                            .LastRound != round); attempt++)
                                 {
                                     RuleAttackRoll spendProbe = Rulebook.Trigger(
                                         new RuleAttackRoll(thrower, target,
@@ -635,21 +660,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     if (repeat.Roll.Value != 1) break;
                                 }
                                 bool once = spent != null &&
-                                    spent.LastRound == round && spentSaves == 1 &&
-                                    saves.Saves[0].DifficultyClass == spec.Dc &&
+                                    spent.LastRound == round &&
+                                    spentSaves == savesBeforeProbe +
+                                        expectedProbeSpend &&
+                                    spentSaves > 0 &&
+                                    saves.Saves[spentSaves - 1]
+                                        .DifficultyClass == spec.Dc &&
                                     ContextActionUngulateTrample.CurrentRound() == round &&
                                     repeat != null && repeat.Roll.Value != 1 &&
                                     repeat.IsHit && saves.Saves.Count == spentSaves &&
-                                    SummonGiantRockCatch.ObservedOutcomes.Count == 1;
-                                Sprint25Check("s28-catch-" + spec.Target +
+                                    SummonGiantRockCatch.ObservedOutcomes.Count ==
+                                        outcomesBeforeProbe + expectedProbeSpend;
+                                Sprint25Check(prefix + spec.Target +
                                     "-once-round", once, new JObject {
                                         ["target"] = target.UniqueId,
                                         ["round"] = round,
                                         ["ledgerRound"] = spent?.LastRound,
+                                        ["commandLedgerRound"] =
+                                            commandLedgerRound,
+                                        ["savesBeforeProbe"] = savesBeforeProbe,
+                                        ["expectedProbeSpend"] =
+                                            expectedProbeSpend,
+                                        ["outcomesBeforeProbe"] =
+                                            outcomesBeforeProbe,
                                         ["savesAfterSpend"] = spentSaves,
                                         ["effectiveDc"] = spentSaves == 0
                                             ? (int?)null :
-                                            saves.Saves[0].DifficultyClass,
+                                            saves.Saves[spentSaves - 1]
+                                                .DifficultyClass,
                                         ["expectedEffectiveDc"] = spec.Dc,
                                         ["firstSavePassed"] = spentSaves == 0
                                             ? (bool?)null : saves.Saves[0].IsPassed,
@@ -675,7 +713,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             projectile.Cleared = true;
                         Game.Instance.ProjectileController.Tick();
                         Game.Instance.ProjectileController.Tick();
-                        Sprint25Check("s28-catch-" + spec.Target +
+                        Sprint25Check(prefix + spec.Target +
                             "-owned-projectile-cleanup",
                             Game.Instance.ProjectileController.Projectiles
                                 .SequenceEqual(priorProjectiles),
@@ -705,7 +743,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     results.All(value => (bool)value["exact"] &&
                         ((bool)value["eligible"] ||
                          (bool)value["normalMiss"]));
-                Sprint25Check("s28-catch-exact-command-outcomes",
+                Sprint25Check(prefix + "exact-command-outcomes",
                     complete, new JObject { ["cases"] = results },
                     "Each native rock command has an exact catch or ordinary miss result; a failed save, when rolled, must permit its actual physical damage packet. The fixture does not require random success and failure in three attacks.");
             }

@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="ExpandedSummoningSprint27Tests.cs" />
     <Compile Include="ExpandedSummoningSprint28Tests.cs" />
+    <Compile Include="ExpandedSummoningSprint29Tests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GriffonRules.cs"><Link>Summoning\GriffonRules.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GriffonVisualPolicy.cs"><Link>Summoning\GriffonVisualPolicy.cs</Link></Compile>
     <Compile Include="CraftMagicItemsCompatibilityTests.cs" />

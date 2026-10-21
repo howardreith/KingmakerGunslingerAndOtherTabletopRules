@@ -115,6 +115,29 @@ if ($Level -eq 'Focused') {
             if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
                 throw "Build-Local failed with exit code $LASTEXITCODE."
             }
+            # A nested PowerShell packaging error can otherwise leave a zero
+            # process exit while the suite/build output exists but no package
+            # was validated. The gate's own success requires the exact receipt.
+            $info = Get-Content -LiteralPath (Join-Path $root 'Info.json') -Raw |
+                ConvertFrom-Json
+            $package = Join-Path $root (
+                'artifacts\local-runtime\' + $info.Version + '\' +
+                $info.Id + '-' + $info.Version + '-local-runtime.zip')
+            $manifestPath = $package + '.build-local.json'
+            if (-not (Test-Path -LiteralPath $package -PathType Leaf) -or
+                -not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {
+                throw 'Full gate did not produce a validated candidate ZIP and manifest.'
+            }
+            $manifest = Get-Content -LiteralPath $manifestPath -Raw |
+                ConvertFrom-Json
+            if ($manifest.commit -cne $commit -or
+                $manifest.version -cne $info.Version -or
+                $manifest.validated -ne $true -or
+                $manifest.packagePath -cne $package -or
+                $manifest.packageSha256 -cne
+                    (Get-FileHash -LiteralPath $package -Algorithm SHA256).Hash.ToLowerInvariant()) {
+                throw 'Full gate candidate receipt does not match the current source and ZIP.'
+            }
         }
     }
     if ($Level -eq 'Sprint') {

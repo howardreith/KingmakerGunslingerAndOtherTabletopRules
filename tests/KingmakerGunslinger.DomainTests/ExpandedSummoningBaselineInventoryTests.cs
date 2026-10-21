@@ -135,18 +135,18 @@ namespace KingmakerGunslinger.DomainTests
             // than a leftover, which is what this pin is for. Naming the
             // creature is the strongest form of it: an unexpected arrival and
             // a forgotten departure both fail.
-            // Sprint 25 publication removes only Brachiosaurus, so the
-            // registered-but-hidden set is empty again.
+            // Sprint 29 publication removes the three giant suppressions, so
+            // the registered-but-hidden set is empty again.
             Assertions.True(ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.SequenceEqual(SummoningCurrentSurface.WithheldKeys,
                     StringComparer.Ordinal),
-                "Only the three Sprint 28 giants are withheld: "
+                "The public candidate has no withheld creatures: "
                 + string.Join(", ", ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures));
             Assertions.Equal(SummoningCurrentSurface.WithheldKeys.Length,
                 ExpandedSummoningBaselineInventory
                     .RegisteredButHiddenCreatures.Count,
-                "No creature is registered but withheld: " + string.Join(", ",
+                "Unexpected registered-but-withheld creature: " + string.Join(", ",
                     ExpandedSummoningBaselineInventory
                         .RegisteredButHiddenCreatures));
             Assertions.True(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
@@ -162,7 +162,7 @@ namespace KingmakerGunslinger.DomainTests
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
             Assertions.Equal(43 + TheropodRulesPolicy.AppendedCreatureCount +
-                    GiantBodyRulesPolicy.AppendedCreatureCount + 1 + GiantHumanoidRulesPolicy.BorrowedVisualCount,
+                    GiantBodyRulesPolicy.AppendedCreatureCount + 1 + GiantHumanoidRulesPolicy.BorrowedVisualCount + 3,
                 ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count(value => !value.StartsWith("griffon<", StringComparison.Ordinal)),
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
@@ -236,7 +236,7 @@ namespace KingmakerGunslinger.DomainTests
             var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
                 System.IO.File.ReadAllText(System.IO.Path.Combine(
                     System.Environment.CurrentDirectory, "planning",
-                    "SPRINT28-EVIDENCE.json")));
+                    "SPRINT29-EVIDENCE.json")));
             var surface = activeLedger["publicSurface"];
             Assertions.Equal(generated, (int)surface["generatedPlacements"],
                 "Machine-readable public placement count.");

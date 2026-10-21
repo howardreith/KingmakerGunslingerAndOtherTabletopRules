@@ -1,0 +1,590 @@
+{
+  "schemaVersion": 1,
+  "sprint": 29,
+  "status": "PUBLIC_CANDIDATE_SOURCE_ONLY",
+  "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
+  "productPr": 64,
+  "awesomeBlowObstacleDecision": "Owner approved documenting the installed static-wall HP-consumer limitation for the printed obstacle object's own 1d6. Victim collision 1d6 remains required and qualified on its recorded native artifact.",
+  "nativeQualification": "HIDDEN_PROFILES_MODES_COMMANDS_AI_MAGIC_ITEMS_AWESOME_BLOW_CATCH_CLEAVE_VITAL_AND_TARGETED_ON_OFF_WORKING_PERSISTENCE_PASS_ON_RECORDED_DEVELOPMENT_ARTIFACTS; PUBLIC_ROUTES_AND_EXACT_RELEASE_CANDIDATE_PENDING",
+  "sourceValidation": {
+    "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
+    "domain": "PASS: 2699/2699 on hidden-registration source",
+    "nativeBootstrap": "PASS: hidden profiles and Ettin modes on exact 3418074f development artifact; four earlier failed attempts retained below",
+    "modesPreflight": "PASS: 701 no-game assertions under Limited Interactive account; first elevated attempt correctly refused before launch",
+    "commandsPreflight": "PASS: 704 no-game assertions under Limited Interactive account; child and task exit zero; 218 separate orchestration assertions passed. Native issued commands separately qualified below.",
+    "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
+    "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below.",
+    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below.",
+    "itemsPreflight": "PASS: focused production compilation, two Sprint 29 domain tests and 715 no-game guarded scenario preflight checks including positive/negative items phase admission. Native item ownership, transfer, death and expiry remain pending.",
+    "affectedControlsPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 740 no-game scenario preflight checks under Limited Interactive account; child/task exit zero, task removed. Native Cleave and first catch results are recorded below.",
+    "vitalPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 746 no-game guarded scenario preflight checks under Limited Interactive account for RTWP and turn-based phases; direct native results are separately recorded below.",
+    "publicRoutesPreflight": "PASS: 749 no-game request/refusal checks, including exact routes phase admission and wrong-case refusal. Public native spellbook execution remains pending."
+  },
+  "publicPackagingFailure5a726a38": {
+    "source": "5a726a38a0833d18995fbadb3dea9341dba0fe2c",
+    "result": "FAIL: the complete 2700/2700 domain suite and exact-reference compilation passed, but deterministic packaging refused its correct staged count of 398 because the packager allowlist ended at 397. No qualified candidate ZIP or build-local manifest was produced. The supervised task and child incorrectly returned zero after the nested package error; their exit status is not a gate PASS.",
+    "rawLocalEvidence": "artifacts/s29-public-gate-5a726a38/gate.stdout.log, gate.stderr.log and gate-exit.json",
+    "repair": "Add only the observed 398 count, invoke package.ps1 without a pipeline that can swallow its error, require ZIP/checksum output, and make the full gate verify the current commit's validated ZIP manifest. A scratch 398-file package passed strict standalone validation; an isolated missing-manifest gate fixture now refuses the false-pass case. Full corrected source gate remains pending."
+  },
+  "firstNativeProfiles": {
+    "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
+    "runId": "20261021T0300317052797Z-666092e652724da4b598a1ac858c7a1e",
+    "artifactZipSha256": "17cb1659845ac9e661e71ec6d40ed4f18ed23168bc5cd9a62839492e5b1321de",
+    "artifactDllSha256": "13811dbe768a788fe6153b769a3a0828eabbde9174cd75adeb8c0cb285e7b6e2",
+    "artifactMvid": "bb588722-f31a-45b8-bc00-aba66905f5c7",
+    "result": "FAIL: all Will saves +2; Ettin offhand absent; Storm armored speed 40 versus 35; Cloud and Storm secondary slam recorded for attack-sequence review",
+    "verified": "all three private units instantiated with visible bodies; Ettin two heads attached; eight routes absent from live parents; released Hill route retained; initial actions and resources granted",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "secondNativeProfiles": {
+    "source": "40c38f3f3b0830e7bb3183432df4af06961f64da",
+    "runId": "20261021T0318229507924Z-55c33328990f4a0384fb7aa213f3aaf0",
+    "artifactZipSha256": "fc5a0aa019e3c0918cb83f0414e8efed814a4f823105ad56d5f6a5c64fb14ac1",
+    "artifactDllSha256": "fd7bcf0168e0b44bc4cf5a86815493821ac463c80e2bd5d1e37b833cc7aec8d3",
+    "artifactMvid": "f129cc50-64d3-4329-bd0c-30711de31bf0",
+    "result": "FAIL: Cloud and Storm profiles passed; Ettin configured offhand flail was absent from every live hand set; main one-handed flail was held in two hands",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "thirdNativeProfiles": {
+    "source": "9c0055103ade23c655cff018a8144ae684bbac67",
+    "runId": "20261021T0332196329428Z-c56215462d0a4b65846d650769117d0a",
+    "artifactZipSha256": "118df42e4bcea01518f55d19e3cc3a6518c0b1d10039ae0b25ef337c8ffa362b",
+    "artifactDllSha256": "8125c2f1cbeee51cbe3c20b8b002ac78af028a939144d8a34cb55f8bd2a29b88",
+    "artifactMvid": "76d1db6b-a8ec-421e-8ed3-70e192500ff8",
+    "result": "FAIL: initial-creation callback did not retain Ettin's offhand in the live equipment sets; Cloud and Storm profiles passed",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "fourthNativeProfiles": {
+    "source": "061d3118a65c13fc9bff1325f78a484f20a78d43",
+    "runId": "20261021T0343333952137Z-15bcaec64b8e4f428afdf15886d3b84f",
+    "artifactZipSha256": "5d52c161f882b7de75d892d1b9abd2d77ba823ba0e4921d2fc4bce3168f777a8",
+    "artifactDllSha256": "579e01a6191fa927e80d233ea994e3ee0374fb5b3bf5afdc9dd143fa42b95abd",
+    "result": "FAIL: Ettin had distinct live flails and released its two-hand grip, but the observer required the lazy alternate javelin set before its first native switch; Cloud and Storm profiles passed",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "bootstrapQualified": {
+    "source": "3418074fbe4ebc3277baba8d5c24f434c4337de3",
+    "artifactZipSha256": "73d6c0501a5edf7e020814ed190dfc71d0a7c4517d2bc5bd79ec897911234595",
+    "artifactDllSha256": "faf41676f6ffc0ae658246032994f63206e1887171354bb1414ea77ada9e9ef9",
+    "artifactMvid": "17b62b42-6ae6-497f-9e40-f503b1a23bdf",
+    "profilesRunId": "20261021T0358505567542Z-671d55f6142f45329e75a57ae9e3a48e",
+    "profiles": "PASS: 12/12 hidden public surface, all three adult chassis, bodies, initial actions and resources, Ettin distinct flails and one-hand grip",
+    "modesRunId": "20261021T0403342442373Z-1230a13f93364149bc996ffed9187568",
+    "modes": "PASS: 6/6 native Ettin switch; four flail plan attacks, two javelin plan attacks, exact return to the same flail instances",
+    "restoration": "PASS after both fresh transactions: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package only; no resolved attack rolls, magic effects, AI, disarm, persistence or public roots qualified"
+  },
+  "modeArithmeticDevelopment": {
+    "source": "b20cd99104b744a8ec3afe52fd203d25b31a868f",
+    "runId": "20261021T0416186111206Z-199df8fb432842eeb4cbc20ce5a70e13",
+    "artifactZipSha256": "a74070a3cb66b65419e5e1a6a85d2ded7a668404d15ce7a4223f638f924e069e",
+    "artifactDllSha256": "41a97962ecd62694ba862ab3514379b43c42a70017fdc9165a4c82aec9505bd7",
+    "artifactMvid": "41df813d-459e-48d8-aeeb-a07b97df30c6",
+    "result": "FAIL: Ettin native paired penalties gave flail first attacks +6/+2 and javelins -1/-5; Cloud oversized flat bonus gave morningstar +24; Cloud and Storm equipped melee range was 15 feet but observer wrongly required the engine's 12-foot body stat to equal 15",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "modeArithmeticFollowup": {
+    "source": "59e4425e0cc6708285a1887648b9908d35dc9f87",
+    "runId": "20261021T0431395417686Z-b7a49cf2e03c42c3bad001d73ee11941",
+    "artifactZipSha256": "18704a28b79bf79416e83ad194b4701b1e0ddc91cb4fa29268a310f4443fb99b",
+    "artifactDllSha256": "1a200b8bff5285ae4acd26fcbb3924dc5560ad2ac17e7f86e4650090c303fa93",
+    "artifactMvid": "3e2986fd-eb80-4415-8003-ee359b5c2fa6",
+    "result": "FAIL 4/18: all Ettin paired and Cloud/Storm attack-damage predicates passed; four Cloud/Storm melee modes failed the observer's raw 15-foot weapon range assertion. Native command radius was 8.3056 m, including owner and target collision radii. A revised command-radius check requires native rerun.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "modeReachDevelopment": {
+    "source": "ec8743dbf85975185ce903e52e7e58b15eceb31d",
+    "runId": "20261021T0441351129875Z-ddce7b0e788947e8acc20bfc1a5bcb96",
+    "artifactZipSha256": "6e913dc839b38d8aa664309dca0b9764c239c250e39798afdd2b08a7b3c2e9c9",
+    "artifactDllSha256": "672a0012dab5e1b1c8eeb16ada50f689f586632d85871be4ba00348d63ba5206",
+    "artifactMvid": "b3d02648-e887-4517-9757-178959a33c3e",
+    "result": "FAIL 4/18: Cloud and Storm private melee modes had native 22-foot weapon reach and 8.3056-m command radius; 15-foot printed reach plus measured collision radii required 6.172 m. Exact private type range repair pending native check.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "modeReachFollowup": {
+    "source": "f1233fe280276be5114bb5fb68418272f885aff0",
+    "runId": "20261021T0451305530485Z-89dbcecbf08b452a8d76a4c50870a0ea",
+    "artifactZipSha256": "17afe311c611ffc043d266c2662a90832023bb6f1cdb557d391e033090f4c2d3",
+    "artifactDllSha256": "b1f1cc0bec862fd6192229cd60473a04188238049f9261b159aed9eaf1e1521d",
+    "artifactMvid": "98a02370-0a37-4ad6-b52e-30c8a6585e21",
+    "result": "FAIL 4/18: setting the private raw melee type range to 8 feet produced 11-foot wielded range and 4.9528-m command radius. Native IL inspection then showed a threshold at raw 10 feet and a separate owner ReachRange addition; an exact-owner item getter correction is needed for 15 feet.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "hiddenModesQualification": {
+    "source": "431b6053f18a88d2e7d990b3de321e582f237433",
+    "runId": "20261021T0502429430775Z-581ed55643f046c3b6fbd13964d24598",
+    "artifactZipSha256": "8bdf596193a3efae78adb830be48b9a17f8f7806e9d86b02a6062ebea8ec4319",
+    "artifactDllSha256": "ce717dcbe0e8cf239d027f5744685bccd72352d0ada6f1a58b7099c276904624",
+    "artifactMvid": "a18e1a6e-cc9b-4d2a-a2cd-8d001fbd8b10",
+    "result": "PASS 18/18 native modes assertions: Ettin flails +12/+12 and javelins +5/+5 with full Strength and distinct arms; Cloud morningstar +22, Storm greatsword +27 and separate slam/ranged plans; all four Huge melee modes had 15-foot wielded range and 6.172-m native command radius including measured collision radii",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; observed plans and queried rules, not resolved attacks, magic, AI, ownership/disarm or persistence"
+  },
+  "hiddenCommandsQualification": {
+    "source": "40838b108f4bdecf5b6964b69d1cf09688aba996",
+    "runId": "20261021T0516414148005Z-cb124a7f147b482a9a040fbf2d05588a",
+    "artifactZipSha256": "928a465c1be0c7ecdf0e7b78239c6fab285037b73dd00ac5d6e59ce2b1e7b788",
+    "artifactDllSha256": "9da30f69538c1fc7ff96526df1c8bcf44c9b717dfe57792779bbe79df54fe12d",
+    "artifactMvid": "be22d52b-3ac1-4e8e-8fb0-632f3c02e950",
+    "result": "PASS 25/25 native RTWP predicates: nine fresh hidden-owner attack commands each had a legal visible lane, expected main/offhand rule events and one native action cost. Ettin standard flail 1, full flails 4 (2 per arm), javelins 2 (1 per arm); Cloud morningstar 3, slams 2, rock 1; Storm greatsword 3, slams 2, bow 3. Hits and misses were natural; damage packets matched actual hits. No fixture attack command or forced roll.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; turn-based commands, AI, magic, Awesome Blow collision, items/disarm, persistence and public routes remain pending"
+  },
+  "hiddenTurnCommandsQualification": {
+    "source": "01c09822a7b1669a5f9d14c75a9d6631ec3fe499",
+    "runId": "20261021T0529230954465Z-62b0798f776d4c47b9c30a2e45b35522",
+    "artifactZipSha256": "7a3edaeed073088175f361811aec03d135c5951a6a8955dc11e7fe508d38f879",
+    "artifactDllSha256": "4e2a3f2b3be71f264a97a9aca40e7240a4a5fe03e69f2753ed1d25edef717f2d",
+    "artifactMvid": "a5fc7bc7-92f2-4c78-a55b-72eadb96f7e6",
+    "result": "PASS 16/16 native turn-based predicates: Ettin full flails 4 (2 per arm), paired javelins 2 (1 per arm), Cloud morningstar 3 and Storm bow 3 after exact owner turn admission. Every issued native command had expected weapon/roll/damage events and one turn-based action cost; all hits were natural.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; autonomous AI, spell-like effects/resources, Awesome Blow collision, items/disarm, persistence and public routes remain pending"
+  },
+  "cloudDirectMagicDevelopment": {
+    "source": "b896633659d1fb4ab306231b9ae7129b2310ea8a",
+    "runId": "20261021T0547540805393Z-e7ac6bc0ec8e4664b0a7fec063eb443f",
+    "artifactZipSha256": "69b8bda52b91455409d4e5d7dfc2954e43691b62d9143f17bc03129824a7b230",
+    "artifactDllSha256": "cd53d30626752c151b58d12da5d040f77d3c5452b119bbe6388574c9771e584a",
+    "artifactMvid": "46e609fa-8112-4645-8998-a30fd0059b30",
+    "result": "PASS 10/10 native predicates: distinct direct Obscuring Mist and Fog Cloud commands each paid one standard action, made native all-creature areas of 960 and 9600 seconds at CL16, and Fog Cloud alone spent its owner's one use; sibling retained its resource.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; autonomous fog AI, effect lifetime/teardown, cold-load persistence and public routes remain pending"
+  },
+  "stormDirectMagicDevelopment": {
+    "source": "b896633659d1fb4ab306231b9ae7129b2310ea8a",
+    "runId": "20261021T0552459630736Z-d54f4211fd9c4656b3fa3f89359a145c",
+    "artifactZipSha256": "69b8bda52b91455409d4e5d7dfc2954e43691b62d9143f17bc03129824a7b230",
+    "artifactDllSha256": "cd53d30626752c151b58d12da5d040f77d3c5452b119bbe6388574c9771e584a",
+    "artifactMvid": "46e609fa-8112-4645-8998-a30fd0059b30",
+    "result": "FAIL: constant native Freedom of Movement and electricity immunity appeared on both siblings, but Call Lightning's direct AbilityData reported CL19/DC21/spell level9 rather than CL15/DC15/spell level3. The observer stopped before casting and preserved the raw failure.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Installed AbilityData.CalculateParams uses RuleCalculateAbilityParams, whereas the cloned spell's ContextCalculateAbilityParams only controls effect context. A private exact-owner/ability rule component now sets the printed parameters; focused production compilation and two sprint29 domain tests pass. Native recheck pending."
+  },
+  "stormDirectMagicQualification": {
+    "source": "32f8be8b48586176dc299aa94a9b18bdf3970735",
+    "runId": "20261021T0605515981304Z-3af7e32d7be64371804cbf60801d8df3",
+    "artifactZipSha256": "ee8884fc5134b32d47a086c1207a49ceb42f2cb80272c2ccdd1640ea2607691c",
+    "artifactDllSha256": "f273d5eab2e20dceb0d15b64c32069ce008bba8b12a9915831acb00ee3d5b577",
+    "artifactMvid": "9f6aa813-fbae-4622-82e8-4c22f2b5f0cf",
+    "result": "PASS 13/13 native predicates: both siblings carried constant Freedom of Movement and electricity immunity; Call Lightning activation and its granted bolt had CL15/DC15, spent only the owner's one activation and produced a finite native state; one bolt dealt damage after a native DC15 save and reduced state duration without refilling the use. Chain Lightning had CL15/DC18, dealt damage after its own native DC18 save and spent only its independent owner resource; the sibling retained both uses. Each issued command paid one standard action.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; autonomous AI, repeated bolt cadence, expiration/teardown, cold-load persistence, resistance, multiple Chain Lightning targets and public routes remain pending"
+  },
+  "hiddenAiDevelopment": {
+    "source": "a19cccdf5a7270a46bd3d0c728097e0dccd1daaf",
+    "runId": "20261021T0624096546908Z-3fca3e9ded4a4b0ea2c4b3168ce5e6aa",
+    "artifactZipSha256": "cada3087b0dc2daf19b955ed2aca940b3a1f7ebf3d4dcddcdb6a38e473a3b564",
+    "artifactDllSha256": "5658a2f356fbb4cc891e4a30ba00c27e10cffefadfad45f5e698a80747ecf385",
+    "artifactMvid": "834d4b3a-1d6d-4f0e-a1fd-cefc97115e3d",
+    "result": "FAIL: Ettin autonomously issued a successful native four-flail command and Storm autonomously issued successful Chain Lightning with one damage packet, but their observer predicate incorrectly demanded no ambient candidates even though only the exact owner was ticked. Cloud had no commands after 20 exact-owner ticks: its private brain had no ordinary attack fallback, while useful fog selection was unresolved.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Cloud and Storm private brains now retain the installed immutable ordinary attack action after their spell priorities; the observer no longer treats enumerated but unticked ambient candidates as touched actors. Focused production compilation and two sprint29 domain tests pass. Native recheck pending."
+  },
+  "hiddenAiQualification": {
+    "source": "790942d059d517f2508359bc344103e9053886a2",
+    "runId": "20261021T0635269544326Z-9a04e955172f4bae99c02701c711509e",
+    "artifactZipSha256": "04e0b9b8493f0510cfe0d564bf82e0d840b8c509e759493d024d14de0be775d9",
+    "artifactDllSha256": "cb6bae57ba4e3e23df86a874187e11accd18ca816acfe78ea4278acc632d21b2",
+    "artifactMvid": "dd4b97a0-dc80-4859-97f6-8de4aacb730d",
+    "result": "PASS 8/8 native predicates: exact Ettin AI selected one successful four-flail command with four real weapon/damage packets, Cloud AI selected one successful three-attack morningstar command while its fog actions were not selected, and Storm AI selected successful Chain Lightning with real damage. The observer ticked only each exact owner; no fixture attack command or forced roll was issued. This does not establish why Cloud fog was not selected or that safe fog AI works.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; safe autonomous Cloud fog selection, Storm Call Lightning/bolt priority, turn-based AI, negative target cases, item/disarm and persistence remain pending"
+  },
+  "cloudFogAiFixtureDevelopment": {
+    "source": "917d2e17a203ed1e868b38a1000f4a5365b97307",
+    "runId": "20261021T0648402100619Z-7f7280648e5649379028b551e8e4ae9a",
+    "artifactZipSha256": "a660b3c2dce2b6a52f045ffa8e5b7fabe9183b48b7111026bdf22dda72b478cb",
+    "artifactDllSha256": "2a94b014b4ba7c94be873990de4e54a3f1d1db21dd3a5a369dbe224f2ee5c30e",
+    "result": "FAIL: the shared lane survey selected a visible target only 4.27 m from an allied party member, so the independent 20-foot Fog Cloud safety precondition failed before a Cloud AI decision. Ettin still issued a successful four-flail command. This was an unmet fixture precondition, not evidence that Cloud's fog action failed.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "An opt-in ally-clear target-center condition now surveys the same native graph and LOS lanes for the Cloud AI case only; focused production compilation and two Sprint 29 domain tests passed before native recheck."
+  },
+  "cloudFogAiQualification": {
+    "source": "1e32bc57a2269fdb61d2ee261b407d7b2f1f6531",
+    "runId": "20261021T0659058364296Z-941455ef9a224357935fa07bc5b2ee1e",
+    "artifactZipSha256": "f391473aca2c63c97362389696f0251fd0fdb3abccbafbcc59813a36327525f3",
+    "artifactDllSha256": "2ed051c66fbfe2ccb4056db3b5e395bc8c1fc98e7808bf4476580aca6a9eea4a",
+    "artifactMvid": "b66465de-aad3-4fdb-aa70-7465fdccaf44",
+    "result": "PASS 10/10 native RTWP predicates: 16 native LOS lanes had ally-clear hostile centers; Cloud's exact brain issued one successful Fog Cloud UnitUseAbility without a fixture attack or forced roll, made its own CL16 native 9600-second area, and spent its own one use. Ettin independently chose four flail attacks; Storm independently chose Chain Lightning damage.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; Storm Call Lightning/bolt AI priority, fog redundancy/ally-near negative cases, turn-based AI, item/disarm safety, Awesome Blow obstacle rider and persistence remain pending"
+  },
+  "stormAiBoltDevelopment": {
+    "source": "0f259576800f7fd62f4007dea60c8f6e2b6716e6",
+    "runId": "20261021T0711514168121Z-5952efe0c922428e92c675c59a6fc96c",
+    "artifactZipSha256": "8b34d03f8af76f84d26800d3b7c5c695378452bdce78013c0742d854040bd036",
+    "artifactDllSha256": "a459655c62cda1e3b76e2d78bb808b6fa55457206796d4f0f71a3512f89ecec7",
+    "artifactMvid": "4eeaef8a-ad4e-4cf3-94d8-2a7dc1844bdb",
+    "result": "FAIL 1/13 native AI predicates: Ettin flail, safe Cloud fog and Storm Chain Lightning first actions passed; Storm then autonomously activated independent CL15 Call Lightning in one exact-owner tick and spent its one use, but six later AI decisions chose ordinary greatsword attacks, with no granted bolt command. The finite state remained. The product cannot claim autonomous bolt use.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "nextDiagnostic": "Record the live granted bolt's AbilityData availability/target legality and native brain action list after activation, then repair only the demonstrated exact-owner AI cause. The changed observer compiled with two focused Sprint 29 domain tests; no diagnostic native result yet."
+  },
+  "stormAiBoltDiagnostic": {
+    "source": "e8ac02a389af82c4d15e15e2eae41bdf39b2e7f3",
+    "runId": "20261021T0724014008198Z-d10857ad5f6240749e6e709345f40724",
+    "artifactZipSha256": "6ec4438a97d4f003d62106a0a076e84c358f8e101a166e45078a7f6d2ad8b0d9",
+    "artifactDllSha256": "f7d7100bf7a6f8443feb0cec30edaca7e9836ddc12e6a3694ee95f810c594be6",
+    "artifactMvid": "c96f719e-6d6f-43ba-987c-b03236447da7",
+    "result": "FAIL: after successful autonomous Call Lightning activation, the live granted bolt AbilityData was available and could target the hostile, but native Brain.AvailableActions contained only StormCallAi and AttackAiAction, never StormBoltAi; seven later decisions chose attacks. This isolates the missing AI action refresh after the state grants its child ability.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The exact Storm private Call Lightning state now refreshes its owner's native brain after its native AddFacts grant through a state-local component. Focused production compilation and two Sprint 29 domain tests pass; native recheck pending."
+  },
+  "stormAiBoltRepairDevelopment": {
+    "source": "c288274747036dba4ee0823ed4150250f6553596",
+    "runId": "20261021T0736201866745Z-3b3d0739d4ac4283b11b9a03a24fe057",
+    "artifactZipSha256": "4a6d9da1aa944bfe35422df175d5e4fea85772047f04af44f1ea8fcabd285265",
+    "artifactDllSha256": "6b530df1cbb899bae32507f1344ad7a67c47254046e29928031f3e9bbc5f3213",
+    "artifactMvid": "bfaa377a-8e97-44bc-af4a-d4c6a6d1fbff",
+    "result": "FAIL 1/13 observer predicates: exact Storm Call Lightning state now refreshed its native brain, StormBoltAi appeared in Brain.AvailableActions, and the brain issued one successful UnitUseAbility for the granted bolt. The observer sampled immediately at command completion; only two seconds of state time had passed and no delayed native save/damage packet had arrived, so its synchronous effect assertion failed. This result proves AI command selection, not yet resolved bolt effect.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "nextObserver": "Wait after successful native command for its own target DC15 save and approximately one-minute state debit; count damage only as observed, without forcing a hit or save. Focused production compilation and two Sprint 29 domain tests passed; native effect recheck pending."
+  },
+  "stormAiBoltQualification": {
+    "source": "b6dd3752a0eb7de4b07c7c5178d0acb6849333c0",
+    "runId": "20261021T0747353881419Z-a11467c4d53349fcb38ce8063f8c5c7d",
+    "artifactZipSha256": "3484e1667446eb974fe47918bd2da86de801094ff34480bfca301a666e4f817f",
+    "artifactDllSha256": "47abd1e2f8fd4437d0cd6ee4d7874b50cf8af3e873e658502d552c44b14f0c52",
+    "artifactMvid": "cbdd30d7-42bf-4962-9528-148ce0cb1b7f",
+    "result": "PASS 13/13 native RTWP AI predicates: Ettin chose four real flail attacks; Cloud chose an ally-clear hostile Fog Cloud at CL16 and spent its one use; Storm chose Chain Lightning, then independently activated CL15 Call Lightning and selected the newly granted native bolt. The bolt reached its target, produced a DC15 save and real damage, reduced finite state by about one minute, and did not refill the spent activation. No fixture attack command or forced roll.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; fog redundancy/unsafe-neighbor and immune/unreachable negative cases, later bolt cadence, turn-based AI, Awesome Blow obstacle rider, items/disarm and persistence remain pending"
+  },
+  "hiddenItemsDevelopment": {
+    "source": "c81a994143b6af13f096d62474e79396d59986fb",
+    "runId": "20261021T0803277139217Z-e9b46018f16f4dee9e331d359fea9d29",
+    "artifactZipSha256": "45e6473b5b01b6f04365d9024976dc4977e16cbc3f1f4833c625e0986598a1ce",
+    "artifactDllSha256": "ed1b11df43b75245558d61268619a4df17e82931a303e02b1efaa17510278345",
+    "artifactMvid": "112e3c1b-9236-4408-92e2-cd617f10a609",
+    "result": "FAIL: Ettin's actual 1d4+1 route produced two siblings. After native hand-set resolution, each had six inventory instances for five configured private items: the offhand flail blueprint appeared twice. Both copies were owner-bound, count one, nonremovable and nonlootable, and party inventory was exact, but the extra real item was not accepted as safe equipment. The observer stopped before transfer, death and expiry cases.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Installed body creation can leave the configured secondary flail unassigned in the owner's inventory before the grip resolves. Exact Ettin seeding now reuses the sole existing private inventory instance when present, refuses ambiguous copies, and creates only if absent. Focused production compilation and two Sprint 29 domain tests pass; native recheck pending."
+  },
+  "hiddenItemsFollowup": {
+    "source": "0ec04e744586fdffa011cadf7c1389f29058f2dc",
+    "runId": "20261021T0813519628459Z-9ed9368c632c4849983c7a8a06d7f317",
+    "artifactZipSha256": "44d13dc155709d9ff8eed4bbb40a4e18676b9a32d45e94abcbdf961754864507",
+    "artifactDllSha256": "fc09854c9fff1b8c19d3bc43eb76d908f841d3eab2d30e9cbc93e6a6db5ad96a",
+    "artifactMvid": "724c4482-1ed9-476a-9348-3b630630e2ef",
+    "result": "FAIL: Ettin's actual 1d4+1 route produced five siblings. Each again owned six inventory instances for five configured private items, with two exact offhand flail instances. The earlier reuse check did not prevent the later native duplicate. All observed copies remained nonremovable and nonlootable; party inventory was exact. Observer stopped before transfer, death and expiry.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "next": "Inspect the native hand-set and HoldingSlot association at each lazy switch, then make a narrow owner-bound correction and rerun affected items behavior."
+  },
+  "hiddenItemsSlotDiagnostic": {
+    "source": "6307228a23db14236ec5801167cbfcb65175dd53",
+    "runId": "20261021T0831092914675Z-8cc252ddc0594157808efc9b4e754afe",
+    "artifactZipSha256": "368b7210b2c05151b1b97b722a12a8fd4065c749acda2c20828ad5ba3b0629f0",
+    "artifactDllSha256": "52cfb97237e28f1a3cc58269234816040859aaf7e8a9172061cfaa3bdbd04601",
+    "artifactMvid": "4bb770de-0996-4df3-a7b0-d461396c441f",
+    "result": "FAIL: two actual quantity Ettins each had six owned instances before any hand-set switch. One offhand flail was the live set-0 secondary weapon; its duplicate carried a HandSlot reference but matched no live set's MaybeWeapon. The same six instances persisted through switches 1 and 0. This is a creation-time duplicate, not switch resupply. Observer stopped before transfer/death/expiry.",
+    "restoration": "PASS: exact fresh intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The Ettin blueprint no longer grants a competing native secondary flail. Its serialized exact-owner initial-arms component remains the single initial offhand source. The observer derives the fifth expected private identity from that component and still requires five distinct live owner-bound nonlootable items. Focused production compilation and two Sprint 29 domain tests passed; native recheck pending."
+  },
+  "hiddenItemsQualified": {
+    "source": "ff42de090340441de0f277856c7c244d2f9f89a5",
+    "runId": "20261021T0844264860869Z-41e6b59db571428ea3a8f338f3d777be",
+    "artifactZipSha256": "29c903efc3af96a03963599b3d0d627a59e46c9543076fdcb049df624454053a",
+    "artifactDllSha256": "ba4a19808715b9841ed31343c55d9c0ee401adee386fe9fe28b38cee7cb62018",
+    "artifactMvid": "bd4c2fd7-0310-43d9-9688-027d4e123fa1",
+    "result": "PASS 14/14 native item predicates: actual Ettin 1d4+1 route yielded three siblings, each with five distinct exact-owned nonlootable items and no extra offhand; Cloud 1d3 yielded one actor with four items and Storm one actor with four. Each group passed native transfer refusal, death no-loot and expiry no-loot; legitimate party inventory remained exact. This does not yet qualify disarm, cold-load hydration or all projectile attack cadences.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; disarm/one-weapon fallback, cold load, Awesome Blow collision, negative AI cases, affected controls and public routes remain pending"
+  },
+  "hiddenDisarmQualified": {
+    "source": "e4ea70d1f6e5ed44d9a15e656fee23831e747c90",
+    "runId": "20261021T0901339573590Z-c65d6e1a99e74db28ac1b268d75883d3",
+    "artifactZipSha256": "c3f56cc3b79afa1a111ab4d5251cf182a4eab13c27f307c1bdc58caf31784173",
+    "artifactDllSha256": "359ef95aa83982fbedf4b0e37dbf2655ddeda2d185e57a49eafe51036f80df0c",
+    "artifactMvid": "deeeb3b0-4e01-469b-80a7-7a500e67080c",
+    "result": "PASS 13/13 native disarm predicates: each exact hidden owner received native main-hand Disarm while its original item instances remained owner-bound and nonlootable. Ettin's disabled primary supplied zero attacks; its remaining flail retained two iteratives and resolved two real weapon attacks, rolls and damage packets in one RTWP full-attack action. Cloud and Storm selected their two-slam alternatives without item resupply. Source and party inventories remained exact.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; cold-load hydration, Awesome Blow collision, negative AI cases, affected controls, public routes and release remain pending"
+  },
+  "awesomeBlowDevelopment": {
+    "source": "ad90de97400cefdf599571ade034375d44a018ca",
+    "runId": "20261021T0926134015242Z-23c02f6433f24ba0be57071046c7d425",
+    "artifactZipSha256": "c6d2b50eeff5cbd8f77fd57b70166254320575fd7c636ed77d43b56929d300d5",
+    "artifactDllSha256": "964a586209ebfa7823d50880698499fbaa16b461a45695dc2727865119692381",
+    "artifactMvid": "906f8310-2abb-4a9b-9916-feb60ec91355",
+    "result": "FAIL: the native Cloud Awesome Blow action paid one standard action, succeeded on the native maneuver and dealt its 2d6+12 slam damage, but the late observer sample measured 34.53 m of target displacement for a 10-foot push and found no active prone state. Open lane and direct-command preconditions passed. Blocked, failure and immune cases did not execute after the first failure.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The exact-owner action now passes a unit direction to native Push. The observer records displacement and prone during the force-move chunk, separating its completed position from later target motion. Focused compilation and native recheck pending."
+  },
+  "awesomeBlowOvershootDiagnostic": {
+    "source": "4105be526fe789daa44a3a432c1fe50dbc1f24ba",
+    "runId": "20261021T0940225830375Z-895461a063184208b4c29abe55fca656",
+    "artifactZipSha256": "bc5750d41db5269d97be027a70d88170571c7fde238b078af49822a88a5b33e0",
+    "artifactDllSha256": "1baa7fa2fdbea6933dcf5cc3f565f8d42fb0c602842cb90801ff6aac5d16717c",
+    "artifactMvid": "7cc8b78c-80f1-4c43-9d3b-40006fc284be",
+    "result": "NONQUALIFYING despite runtime-result.json PASS 15/15: frame observations show the exact Cloud open force-move chunk traveled 34.53 m for a 3.048 m request. The observer had a lower bound but omitted an upper bound. Storm blocked movement stopped at 2.14 m with two target damage packets; failure and immune cases caused zero displacement/damage. The open overshoot is a product defect, not later AI motion.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The exact-owner Harmony prefix now caps each native force-move tick at its remaining 10-foot path before the installed navmesh trace, then removes the completed chunk. The observer requires an upper displacement bound and records native chunk distance/speed. Focused compilation and native recheck pending."
+  },
+  "awesomeBlowNativeDoublePush": {
+    "source": "ae770c321f0329ace308e656d0e2383c63f1f739",
+    "runId": "20261021T0954267635994Z-1c70166f74b5459b8aca4001fe9e2180",
+    "artifactZipSha256": "afc928ba6f0b68b5474eb92ffbefda19e88eece28f7c3273132eccb17a026999",
+    "artifactDllSha256": "cf2518260b07e1219a2f151df279a9f626dd46c668a06a4cb59a19ac364378c2",
+    "artifactMvid": "f33b1e06-c218-4b0b-8d92-242de0f5ebd8",
+    "result": "FAIL: bounded observer rejected the first Cloud open lane at 34.53 m. Its first live native force-move chunk had MaxDistance 42.0624 m and speed 10; this was the Bull Rush maneuver's margin-dependent push, queued before the separate private 3.048 m chunk. The prior exact-owner cap could not constrain that first chunk. Later cases did not execute.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The private action now snapshots force-move chunks before its native maneuver, adopts and caps its single new native chunk at 10 feet, and avoids a second push. The observer requires exactly one bounded active chunk. Focused compilation and native recheck pending."
+  },
+  "awesomeBlowBoundedDevelopment": {
+    "source": "3718fd94c8a0a1b6b38a7649f57db7a3314b910b",
+    "runId": "20261021T1007516981820Z-bc170c87da4a42519ea808c3caa4a24d",
+    "artifactZipSha256": "a6c9b3b1329eb08d72581be18a7a6fb36cedcf0f5d81281b457675ec7272f2db",
+    "artifactDllSha256": "7829568f60a76040ece1afaac9c5121c9f19d83c9507cd5dbf848f84bf33414f",
+    "artifactMvid": "5e9ff070-dfdf-46b3-8fb1-290102d7694a",
+    "result": "FAIL at blocked case: the Cloud open action passed with one native chunk capped to 3.048 m, actual 3.045 m displacement, one slam damage packet, native success and prone request. Storm blocked action had one capped chunk, 1.784 m displacement and one slam damage packet, but no victim collision packet was recorded and prone was false at frame samples. Failure and immune cases did not execute.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Installed UnitPartForceMove.Update removes the completed part before Harmony Postfix; the callback now inspects its retained exact chunk even when the part is absent, while still dropping interrupted chunks. The disposable target's native prone state is reset between independent cases and both requested and active state are recorded. Focused compilation and native recheck pending."
+  },
+  "awesomeBlowCoreQualification": {
+    "source": "37312bd2169ce058bcfe4e2f3b2b40a2a8335d2d",
+    "runId": "20261021T1019191596837Z-83316c07c50e4187a93eb471e308a350",
+    "artifactZipSha256": "f02344c7d31977427bc1f7b41fc5005a8f5ec709058b66d3c84bc917e29c802d",
+    "artifactDllSha256": "7ae1889f8349720d3a797d857b52d1059182bfd1d3f75bc40bf9b19a657c36a1",
+    "artifactMvid": "e0adf23b-d72f-4c49-9fc8-4d194bb168a8",
+    "result": "PASS 15/15 native save-free RTWP predicates: Cloud open Awesome Blow used one 3.048 m chunk, moved 3.045 m, dealt one 2d6+12 slam packet and knocked prone; Storm obstructed push stopped at 1.784 m, dealt 2d6+14 slam plus 1d6 victim collision and knocked prone. Native maneuver success, one standard action and exact damage initiator were recorded. High-CMD failure and maneuver-immune target produced no damage or displacement while spending the action. No hit/save was fabricated.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Printed obstacle-object damage remains an explicit gameplay scope decision; no installed damageable wall consumer was identified. Separate interruption, size/incorporeal negative, turn-based, continued AI and final public-artifact qualification remain."
+  },
+  "awesomeBlowExtendedQualification": {
+    "source": "f7a19f9fcd4947db3ad6046989393edcb921a9ac",
+    "runId": "20261021T1032281799337Z-70745cae5a004eb189c3ca5e45fb8212",
+    "artifactZipSha256": "21f4fd175a985f2291fe9c55341530aa4d5e275c59ca6402c07e508a4fddc345",
+    "artifactDllSha256": "4edb172c9cfa1b559dd65d576fe234f8235a906104cc96245473e67f2da5a6d6",
+    "artifactMvid": "a3e85bce-6142-4590-923a-cc1bbe33b1db",
+    "result": "PASS 24/24 native save-free RTWP predicates on seven actual Cloud/Storm actions: the bounded open 3.045 m push, obstructed 1.784 m push with separate victim 1d6 collision, high-CMD failed maneuver, maneuver-immune target, same-size target and native incorporeal target behaved as recorded; the three ineligible targets took no damage or displacement. Native StopMove cancelled the exact successful Cloud chunk before displacement; it dealt only its initial slam with no delayed collision packet. Each native command spent one standard action; no hit/save was fabricated.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Cancellation is an explicit native StopMove API test, not a player-issued interrupt. Printed obstacle-object damage remains an unresolved owner scope decision because the installed scene has no identified damageable wall consumer. Turn-based Awesome Blow and final public-artifact qualification remain."
+  },
+  "aiSafetyFixtureDevelopment": {
+    "source": "61c6c778c8a71baf4d53e812baec9c0cd19178a7",
+    "runId": "20261021T1048414809873Z-c9b6e506415a45108b606cae928e5419",
+    "artifactZipSha256": "773d41d6a8f27650efeb21dd13374b1654c2a51aa9ba73fdaf1c270943b68090",
+    "artifactDllSha256": "0fc05580a7e22906fc240d0704f3d00f07506391683b3d216553f609f69390e5",
+    "artifactMvid": "d005708f-123a-478b-bb6b-c9464254ad60",
+    "result": "FAIL before any AI decision: the disposable fixture caster stood 1.998 m from the hostile, but Cloud.IsAlly(caster) was false, so it was not a valid ally-obscuring precondition. The observer stopped before Storm's immune-target and later-bolt cases. No native AI safety verdict is claimed.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The negative Cloud case now uses a second request-owned Ettin summon as the nearby ally and checks Cloud.IsAlly(sibling) before a native AI tick. It no longer relocates the fixture caster. Focused compilation and native recheck pending."
+  },
+  "aiSafetyQualified": {
+    "source": "2187c8ed980a70656a59d72b3b1340b4da2e5420",
+    "runId": "20261021T1059314752209Z-f502c30b9e854d9f9258b08c1f9b539b",
+    "artifactZipSha256": "dfb68f94bd8e3adf8f93293d9d13f1aa833f38c7d7f3204e6ea6497026c6462b",
+    "artifactDllSha256": "1f031e8daea499427039a8517d406f864a0e1432114a57e57378eb990ca83289",
+    "artifactMvid": "d42a750a-747b-461b-9fc4-cbf2ad847413",
+    "result": "PASS native save-free RTWP AI review: Cloud.IsAlly(request-owned Ettin) was true with that ally 1.998 m from hostile, and Cloud chose one resolved attack rather than ally-obscuring fog; Storm saw a real electricity-immune hostile and chose a resolved attack without consuming either lightning resource. Positive controls retained Ettin's four resolved flail attacks, Cloud's safe CL16 Fog Cloud, Storm's Chain Lightning, CL15 Call Lightning activation and two subsequent autonomous granted bolt actions, each with real DC15 saves and damage. No fixture attack or forced roll was injected.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Turn-based AI, effect expiration and final public-artifact qualification remain."
+  },
+  "awesomeTurnObserverDevelopment": {
+    "source": "16441221e3419f44aa4630a41507c0a4099c19d6",
+    "runId": "20261021T1113332945229Z-6511b97a6327496ebd541d8fd2eb0b39",
+    "artifactZipSha256": "e3ba3cc4b1483eaef010f868860997ff4862c701220896cc378463ed3b702d78",
+    "artifactDllSha256": "c26656575721fbb9de59e307fa05dbe2d6d5098d62a5c877288c46f7c4e912c4",
+    "artifactMvid": "add305fc-a113-43ef-b72d-af1e10dc8a24",
+    "result": "FAIL in the open case's turn-based cost predicate. Native turn admission, command completion, one standard-action cost, one successful maneuver, one attributed 2d6+12 slam packet, 3.045 m bounded push and prone all occurred. The observer incorrectly called the RTWP cost comparator, so this is not a turn-based phase PASS; the obstructed case did not execute.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Use the same FirearmReviewCosts.Exact(command, turnBased) comparator already used in native turn command observations; focused compilation and native recheck pending."
+  },
+  "awesomeTurnTeardownDevelopment": {
+    "source": "b5978dde28b4d6ba94cb3140403be115ddef1884",
+    "runId": "20261021T1126015709820Z-b066aef16dbd4d619d05f7a48324d388",
+    "artifactZipSha256": "32bee81c0139d0e3b1ac95f008daae48c3d0ebf41d64772da574d3ee251272b8",
+    "artifactDllSha256": "abafa608bb26f67117d6a2d354f321592607f172f07519bf3045dbb8b7d0cf78",
+    "artifactMvid": "2cb0226c-6bc1-4ca0-9d8f-60a5a3d61f0a",
+    "result": "FAIL after the open turn case passed all native predicates: exact turn admission, one standard action, one successful maneuver, one attributed slam packet, 3.045 m bounded push and prone. The native turn controller then raised NullReferenceException during fixture teardown before the obstructed case ran. This is not a two-case turn-based qualification.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Disable turn mode through the native controller before per-case owner disposal, matching the qualified prior giant turn observer. Focused compilation and native recheck pending."
+  },
+  "awesomeTurnQualified": {
+    "source": "dcca52ef113cd7df8326bca7e18bbe551d434643",
+    "runId": "20261021T1135275024317Z-f40f76e078eb47aa878c52df7764d1f3",
+    "artifactZipSha256": "6da95d70a4bfca5e606add452f63fea2fa0b35c6fa08770258e98eebd38a1a72",
+    "artifactDllSha256": "dee9657b03f7d090738003aa289585780b1a7f11820d4a9e0c8e709b51ff3c49",
+    "artifactMvid": "47d12d57-edc3-4267-a86e-300679ec54c8",
+    "result": "PASS 11/11 native save-free turn-based assertions: exact Cloud and Storm owners received acting turns, completed one standard-action Awesome Blow each with a successful maneuver, one bounded 3.045 m open push and one obstructed 1.784 m push. Open dealt one attributed slam packet and prone; obstructed dealt slam plus victim 1d6 collision and prone. Both owner cases and turn teardown completed without a native controller exception. Obstacle-object damage remains a separate scope decision.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "aiTurnsQualified": {
+    "source": "dcca52ef113cd7df8326bca7e18bbe551d434643",
+    "runId": "20261021T1140115263712Z-09fa7c801f464d5a81ad227eb3e783ec",
+    "artifactZipSha256": "6da95d70a4bfca5e606add452f63fea2fa0b35c6fa08770258e98eebd38a1a72",
+    "artifactDllSha256": "dee9657b03f7d090738003aa289585780b1a7f11820d4a9e0c8e709b51ff3c49",
+    "artifactMvid": "47d12d57-edc3-4267-a86e-300679ec54c8",
+    "result": "PASS 12/12 native save-free turn-based assertions: each exact hidden owner entered acting turn order with a visible disposable hostile and intact brain. Ettin autonomously completed one full four-flail command with four real rolls and damage packets on that turn. Cloud autonomously cast one owned Fog Cloud; Storm autonomously cast Chain Lightning with native damage. All three finished one successful AI-selected command on the same active turn; fixture attack commands and forced rolls were zero.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Other spell priorities, effect expiration, cold-load hydration, affected controls and public routes remain distinct requirements."
+  },
+  "cloudLifetimeQualified": {
+    "source": "c24a7c1b06b3e5544ab13965888c25629bab68ee",
+    "runId": "20261021T1159145392728Z-d7117142f3c740bb9892d0febf5fafc2",
+    "artifactZipSha256": "5b25dca7866ffdb228ed71f3607e4773a4c5f2591caa75f0db168fea46cba49e",
+    "artifactDllSha256": "ca5e3ed6606f2372f417d1a4cb2e3429b0de919fdb0ba0e004c39b14d7df8b2b",
+    "artifactMvid": "0116fd85-90fa-48e3-b014-799f9cf7d6fa",
+    "result": "PASS 12/12 native save-free predicates: Cloud CL16 obscuring mist and fog cloud retained their distinct finite 960/9600-second area lifetimes after exact owner native summon expiry. Fog use fell from one to zero, while the sibling retained its own use.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; public routes and cold-load remain unqualified."
+  },
+  "stormLifetimeQualified": {
+    "source": "c24a7c1b06b3e5544ab13965888c25629bab68ee",
+    "runId": "20261021T1204069012414Z-e5c830dd6c77450e91c08cd3d382d4e5",
+    "artifactZipSha256": "5b25dca7866ffdb228ed71f3607e4773a4c5f2591caa75f0db168fea46cba49e",
+    "artifactDllSha256": "ca5e3ed6606f2372f417d1a4cb2e3429b0de919fdb0ba0e004c39b14d7df8b2b",
+    "artifactMvid": "0116fd85-90fa-48e3-b014-799f9cf7d6fa",
+    "result": "PASS 15/15 native save-free predicates: exact CL15/DC15 Call state, one real bolt, CL15/DC18 Chain save/damage, owner expiry removing Call state and active commands, sibling Freedom of Movement and independent Call/Chain one-use resources.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; public routes and cold-load remain unqualified."
+  },
+  "workingPrepareInventoryFailure": {
+    "source": "c24a7c1b06b3e5544ab13965888c25629bab68ee",
+    "runId": "20261021T1213526140974Z-c0c671b7a1234df4a0ce16a91681f27c",
+    "artifactZipSha256": "5b25dca7866ffdb228ed71f3607e4773a4c5f2591caa75f0db168fea46cba49e",
+    "artifactDllSha256": "ca5e3ed6606f2372f417d1a4cb2e3429b0de919fdb0ba0e004c39b14d7df8b2b",
+    "artifactMvid": "0116fd85-90fa-48e3-b014-799f9cf7d6fa",
+    "result": "FAIL: exact Working prepare loaded and instantiated three hidden owners, then found two dormant Ettin javelins and Storm's dormant bow lootable. Equipped items, Cloud equipment, all item ownership and counts, catch ledgers, spent magic and unrelated party inventory passed. Native save write did not occur. No cleanup/absent run was attempted.",
+    "restoration": "PASS by direct before/restored JSON comparison: original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and creation/write ticks/attributes exact; Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact. Parent final comparison separately failed from a helper stdout/string typing bug; scratch parent repaired before retry.",
+    "repair": "Extend exact-owner SummonGiantEquipmentOwnership sweep to private items in its own inventory, including dormant alternates; focused production compilation and 3/3 Sprint 29 source tests passed. Native recheck pending on new candidate."
+  },
+  "workingPrepareOwnershipQualified": {
+    "source": "0a57851424420595f950440a30b94f839a724bd4",
+    "runId": "20261021T1227157654721Z-a4be03ae509f4ade965e56fe6c9d71c8",
+    "artifactZipSha256": "860015873f56e63d08b6bd0a89e2dbf2dc2018f14391056a78cbb6e58ca63ba9",
+    "artifactDllSha256": "a8fbed5815b46a71650006be4bd22b55a6d48d520fb5b36ec211b2d1fa2bc084",
+    "result": "PASS 19/19 native Working prepare assertions: three hidden owners instantiated, thirteen distinct exact owned nonlootable equipment instances including dormant Ettin javelins and Storm bow, independent spent resources and catch ledgers, preserved unrelated party inventory, and actual Working save write.",
+    "restoration": "The Working envelope remained open for ON cleanup; protected intake outside Working matched after prepare. Final restoration is recorded with the cleanup failure."
+  },
+  "workingCleanupEttinResourceFailure": {
+    "source": "0a57851424420595f950440a30b94f839a724bd4",
+    "runId": "20261021T1233442284785Z-1185839c98a943e39a0c4b7776805d95",
+    "artifactZipSha256": "860015873f56e63d08b6bd0a89e2dbf2dc2018f14391056a78cbb6e58ca63ba9",
+    "artifactDllSha256": "a8fbed5815b46a71650006be4bd22b55a6d48d520fb5b36ec211b2d1fa2bc084",
+    "result": "FAIL 16 PASS/2 FAIL: all three saved owners loaded with exact profiles, thirteen distinct nonlootable owned items, spent Cloud/Storm magic and catch ledger; owner units/views were destroyed, but eight Ettin second-head renderer material instances survived and were UNRESOLVED to the resource observer. The second failure is the intentionally withheld cleanup save. Absent was not run.",
+    "restoration": "PASS: original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850, creation/write ticks and attributes exact; full before/restored intake JSON comparison exact for Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases.",
+    "repair": "Capture only project-created Ettin head root and its original plus renderer-instanced materials from the exact view ownership table; destroy those materials in native view teardown and register the same exact ownership for cleanup evidence. Focused compilation and 3/3 Sprint 29 source tests passed; native recheck pending."
+  },
+  "workingOnQualified": {
+    "source": "dd676afe48898477ae046e2979f544d5f2350f84",
+    "artifactZipSha256": "c48f85a835b653c3a13462693a483063b1bcfc722af5c48db0d533b7a703470c",
+    "artifactDllSha256": "80cb2cbb1cbdb152a35403f64ea47863d6c18c6e949ab2ac390ec5367e3fe611",
+    "artifactMvid": "bf7c32df-b1d5-4f64-bb95-d9f6463172ac",
+    "runIds": {
+      "prepare": "20261021T1246499439648Z-d67ae05286244285986663c39249e51b",
+      "cleanup": "20261021T1253196130388Z-9ca6d479c4d447fdae2c04b308a48e00",
+      "absent": "20261021T1300389031296Z-424fa7e9938f434c9d85c5a839f8a8f8"
+    },
+    "result": "PASS 19/19 prepare, 18/18 cleanup and 6/6 fresh absence native assertions in three Limited guarded processes. All three saved hidden owners retained exact profiles, thirteen unique nonlootable owned items, spent Cloud/Storm resources and catch ledgers. Cleanup destroyed the exact units and all thirteen recorded Ettin head resources: zero surviving, unresolved or shared; no unrelated party item changed. Fresh load found no receipt-owned units.",
+    "restoration": "PASS after every stage outside Working and full final intake: Mods 967, saves 118, private references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact; original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and timestamps/attributes restored exactly.",
+    "limits": "Exact hidden development package, not a public or release artifact."
+  },
+  "workingOffQualified": {
+    "source": "dd676afe48898477ae046e2979f544d5f2350f84",
+    "artifactZipSha256": "c48f85a835b653c3a13462693a483063b1bcfc722af5c48db0d533b7a703470c",
+    "artifactDllSha256": "80cb2cbb1cbdb152a35403f64ea47863d6c18c6e949ab2ac390ec5367e3fe611",
+    "artifactMvid": "bf7c32df-b1d5-4f64-bb95-d9f6463172ac",
+    "runIds": {
+      "prepare": "20261021T1307175726918Z-f768e1da46334cfeb5547e402cb12da8",
+      "cleanup": "20261021T1313397962092Z-5cc1de6c398c41f5a84494c21a3fb392",
+      "absent": "20261021T1319577289391Z-213243b671414ac186022319850fe936"
+    },
+    "result": "PASS 19/19 module-ON prepare, 19/19 module-OFF cleanup and 6/6 fresh module-ON absence native assertions in three Limited guarded processes. Exact saved identities deserialized with the module OFF, module publication/visual allocation stayed OFF, receipt-owned units and resources retired safely, and fresh ON load found no remnants.",
+    "restoration": "PASS after every stage outside Working and full final intake: Mods 967, saves 118, private references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact; original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and timestamps/attributes restored exactly.",
+    "limits": "Exact hidden development package, not a public or release artifact."
+  },
+  "affectedCatchFirstNative": {
+    "source": "04e00ea72b89ea1f8ed1a48043da4e5454995e9a",
+    "runId": "20261021T1345438849168Z-5701f5984d1f401ebd07ea30d0e16a9d",
+    "artifactZipSha256": "adda52bea24fab9ddb94453145229723a9e6b57c6de887e46dd980403d2fafac",
+    "artifactDllSha256": "06abc30c2217687822cfc255e658f5c51c796f5fca0955781fff5523bd5738e7",
+    "artifactMvid": "62c3c684-f243-4906-8d70-b0a5fcaa3eeb",
+    "result": "FAIL 3 of 19 catch assertions; phase and fixture-restoration assertions also passed. Cloud catch and released Hill control passed. Storm's real Huge-thrown rock prompted exactly one DC20 Reflex save, failed it and received exactly one physical damage packet; the reused observer incorrectly expected DC16, which belongs to Stone's separate +4 catch bonus. The final aggregate failed only because of those Storm predicates. The compiled observer is corrected to DC20 and requires a fresh native run.",
+    "restoration": "PASS: fresh intake and post-run comparison exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases. Child/task exited 1 and were removed; raw FAIL retained."
+  },
+  "affectedCleaveQualified": {
+    "source": "04e00ea72b89ea1f8ed1a48043da4e5454995e9a",
+    "runId": "20261021T1351271972944Z-b9eb89a94db64d4495baf45353e2b98d",
+    "artifactZipSha256": "adda52bea24fab9ddb94453145229723a9e6b57c6de887e46dd980403d2fafac",
+    "artifactDllSha256": "06abc30c2217687822cfc255e658f5c51c796f5fca0955781fff5523bd5738e7",
+    "artifactMvid": "62c3c684-f243-4906-8d70-b0a5fcaa3eeb",
+    "result": "PASS 21/21 Cleave mechanic assertions plus phase and fixture-restoration assertions: Cloud Great, Storm/Ettin ordinary, released Hill ordinary and Fire Great in RTWP and turn-based mode. Actual owner commands spent Standard actions, verified one -2 AC penalty, bounded chains and first-miss stop; no native donor action was granted.",
+    "restoration": "PASS: task/child exit zero, task removed; fresh intake and post-run comparison exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases.",
+    "limits": "Exact hidden development package; public and release artifact qualification remain separate."
+  },
+  "affectedCatchRoundBoundaryFollowup": {
+    "source": "ee9fe2cf4f5d00cefa3b8c52dd6f50b67d92f308",
+    "runId": "20261021T1411217084035Z-b5bfdc34412a4160b8cf01f2c179d154",
+    "artifactZipSha256": "2fe14b4abb1d39826613a064c7fb4f64934108e31e58d07d491bd250bbeebd8f",
+    "artifactDllSha256": "1aa2d0ab401c8cade59058c095cb8dc5087a4d8d638cab8b031a63bdb471d83f",
+    "artifactMvid": "268a094a-1bbb-4ba0-aa9e-46fd703d9157",
+    "result": "FAIL 1 of 19 catch assertions; phase and fixture-restoration assertions also passed. Cloud and Storm catch plus released Hill's real throw passed. Hill's command spent its catch ledger in round 7202, but the reused roll-only same-round probe began in round 7203; a second save was legitimate, and the old observer wrongly expected no new save. Source now establishes one fresh same-round save before its repeat when a projectile crosses the boundary; changed observer needs its own native run.",
+    "restoration": "PASS: fresh protected intake exact after run (Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases); child/task exit 1 and task removed; raw FAIL retained."
+  },
+  "vitalRtwpDevelopment": {
+    "source": "ee9fe2cf4f5d00cefa3b8c52dd6f50b67d92f308",
+    "runId": "20261021T1416466197250Z-bc092146c6494df0bbb8d674aca4d168",
+    "artifactZipSha256": "2fe14b4abb1d39826613a064c7fb4f64934108e31e58d07d491bd250bbeebd8f",
+    "artifactDllSha256": "1aa2d0ab401c8cade59058c095cb8dc5087a4d8d638cab8b031a63bdb471d83f",
+    "artifactMvid": "268a094a-1bbb-4ba0-aa9e-46fd703d9157",
+    "result": "FAIL 1 of 12 Vital mechanic assertions; phase and fixture-restoration assertions also passed. Ordinary full control delivered three real 4d6 attacks and one full-round cost but had damage bonuses +21,+33,+33 rather than a flat +21; native planned-attack exhaustion reported Interrupt. Separate Vital Strike and Improved Vital Strike commands each passed a native Standard action with one resolved greatsword packet of 8d6+21 and 12d6+21, respectively. Observer now records exact Power Attack buff state per roll and checks conditional native bonus, pending fresh run.",
+    "restoration": "PASS: fresh protected intake exact after run; child/task exit 1 and task removed; raw FAIL retained."
+  },
+  "vitalTurnDevelopment": {
+    "source": "ee9fe2cf4f5d00cefa3b8c52dd6f50b67d92f308",
+    "runId": "20261021T1422348695461Z-851280d2532b426d9d9c06c11d771e3e",
+    "artifactZipSha256": "2fe14b4abb1d39826613a064c7fb4f64934108e31e58d07d491bd250bbeebd8f",
+    "artifactDllSha256": "1aa2d0ab401c8cade59058c095cb8dc5087a4d8d638cab8b031a63bdb471d83f",
+    "artifactMvid": "268a094a-1bbb-4ba0-aa9e-46fd703d9157",
+    "result": "FAIL 1 of 15 Vital mechanic assertions; phase and fixture-restoration assertions also passed. Ordinary full control again delivered three 4d6 attacks with +21,+33,+33 and a full-round turn cost, but the flat +21 predicate failed. Both distinct Vital Strike actions were admitted on their exact owner turns and passed one Standard action, one greatsword hit, 8d6+21 and 12d6+21. Exact Power Attack attribution is pending the changed observer.",
+    "restoration": "PASS: fresh protected intake exact after run (Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases); child/task exit 1 and task removed; raw FAIL retained."
+  },
+  "catchQualifiedC811": {
+    "source": "c8110de2ce696c51445064e4f6cc2ad9f4ca3f95",
+    "runId": "20261021T1436293235215Z-3949e9a06b344efd97344e89162d934a",
+    "artifactZipSha256": "83903817e810bbdc1e8dda47f822c2b36181aef173ab6a0431f0decbb63d4db0",
+    "artifactDllSha256": "7443ed548c3d1d5bcba93757f96e901b61ab97b3662b77007b7d6193be7555cb",
+    "artifactMvid": "f57e0369-1438-499c-97d3-4eebe5a66336",
+    "result": "PASS: 23 native rows, zero failed, including phase and fixture restoration. Cloud and Storm rock catch, released Hill control, real command outcomes, native DC15/20, once-per-round ledger and exact projectile cleanup passed. The observer treats a crossed native round as a new eligibility window rather than a same-round repeat.",
+    "restoration": "PASS: guarded limited task and child exited zero; fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
+  "vitalRtwpQualifiedC811": {
+    "source": "c8110de2ce696c51445064e4f6cc2ad9f4ca3f95",
+    "runId": "20261021T1441339761078Z-42fab462af9841e5995d0c56ac71d675",
+    "artifactZipSha256": "83903817e810bbdc1e8dda47f822c2b36181aef173ab6a0431f0decbb63d4db0",
+    "artifactDllSha256": "7443ed548c3d1d5bcba93757f96e901b61ab97b3662b77007b7d6193be7555cb",
+    "artifactMvid": "f57e0369-1438-499c-97d3-4eebe5a66336",
+    "result": "PASS: 14 native rows, zero failed. The ordinary full attack resolved three 4d6 hits with bonuses +21,+33,+33; the latter two coincided with the native Power Attack buff at those rolls. Direct Vital and Improved Vital commands separately resolved one 8d6+21 or 12d6+21 greatsword packet and one Standard action each.",
+    "restoration": "PASS: guarded limited task and child exited zero; fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
+  "vitalTurnAdmissionFailureC811": {
+    "source": "c8110de2ce696c51445064e4f6cc2ad9f4ca3f95",
+    "runId": "20261021T1446343370401Z-deaa3e6499194e67b413607d9fb0db7d",
+    "artifactZipSha256": "83903817e810bbdc1e8dda47f822c2b36181aef173ab6a0431f0decbb63d4db0",
+    "artifactDllSha256": "7443ed548c3d1d5bcba93757f96e901b61ab97b3662b77007b7d6193be7555cb",
+    "artifactMvid": "f57e0369-1438-499c-97d3-4eebe5a66336",
+    "result": "FAIL: turn-based ordinary control never reached exact owner turn. Native order included owner and target, but an unrelated first actor remained in Ended status throughout the bounded wait. No Vital command was issued, so this is an unmet fixture admission prerequisite rather than a Vital damage verdict. A later source correction gives the disposable Storm owner a temporary recorded initiative lead before native enrollment, then restores it; that correction has no native verdict yet.",
+    "restoration": "PASS: guarded limited child/task exited one and were removed; raw FAIL retained. Fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
+  "vitalTurnQualifiedB038": {
+    "source": "b038e355678904325994844af488748fb03df0ff",
+    "runId": "20261021T1458226764347Z-15529598c95a4ab099ceadc94c1aa574",
+    "artifactZipSha256": "589f63edee9b329f201a045390c516e9ac0714657583fc3d3142b0afd9bec512",
+    "artifactDllSha256": "d57dd82c39c96deb41f740dfd9feca0ecaa5cca2745c92faa67913cb84340c4d",
+    "artifactMvid": "bf9554ca-ac02-4437-b756-400ad10f6f73",
+    "result": "PASS: 17 native rows, zero failed; all three disposable Storm owners entered exact native turns with recorded fixture initiative base 0 to 100. The ordinary full command resolved three 4d6 hits with +21,+33,+33, matching per-roll native Power Attack buff presence, and spent a full-round turn action. Vital and Improved Vital each resolved one 8d6+21 or 12d6+21 greatsword hit and one native Standard action on its own owner turn. The temporary initiative base was restored in each fixture finally block.",
+    "restoration": "PASS: guarded limited child/task exited zero; fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
+  "publicSurface": {
+    "registeredCreatures": 117,
+    "monsterCreatures": 96,
+    "monsterRegisteredPlacements": 545,
+    "naturesAllyCreatures": 104,
+    "naturesAllyRegisteredPlacements": 582,
+    "registeredPlacements": 1127,
+    "suppressedPlacements": 0,
+    "generatedPlacements": 1127,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1156
+  }
+}

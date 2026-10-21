@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 114;
-        internal const int LogicalAbilityCount = 1119;
+        internal const int UnitCount = 117;
+        internal const int LogicalAbilityCount = 1127;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 327;
+        internal const int SpecialIdentityCount = 379;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -634,6 +634,59 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.GreatclubReachType", "BlueprintWeaponType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.GreatswordReachType", "BlueprintWeaponType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.SlamReachType", "BlueprintWeaponType"));
+            // Sprint 29 appends exactly the private symbols consumed by its builder.
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.AwesomeBlowAction", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.AwesomeBlowFeature", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinFlailType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinMainFlail2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinOffFlail2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinJavelinType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinMainJavelin1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinOffJavelin1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinLeather", "BlueprintItemArmor"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinNaturalArmor8", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.EttinTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormGreatsword4d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormGreatswordType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormSlam2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormSlamType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormCompositeBow3d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormCompositeBowType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormBreastplate", "BlueprintItemArmor"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormNaturalArmor12", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormImprovedVitalStrike", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormBrain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormCallAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormBoltAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormChainAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormLightningSafety", "Sprint29LightningAiSafety"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormCallLightning", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormLightningBolt", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormLightningState", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormCallResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormChainLightning", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.StormChainResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudMorningstar4d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudMorningstarType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.CloudSlam2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudSlamType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.CloudRock2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.CloudRockType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudChainshirt", "BlueprintItemArmor"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudNaturalArmor12", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudObscuringMist", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudFogCloud", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudFogResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudBrain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudMistAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudFogAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudMistSafety", "Sprint29FogAiSafety"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudFogSafety", "Sprint29FogAiSafety"));
 
             Validate(result);
             return result.AsReadOnly();

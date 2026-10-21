@@ -21,8 +21,11 @@ class GiantBoundaryTests(unittest.TestCase):
         self.old = [{"symbol": "KMG.Released.A", "guid": "a"*32,
                      "plannedType": "BlueprintUnit", "status": "active",
                      "milestone": "released", "notes": "preserved"}]
-        self.tail = json.loads((self.root / "blueprints/blueprints.json")
-                               .read_text(encoding="utf-8-sig"))["entries"][-gate.TAIL_COUNT:]
+        # This refusal fixture describes the released Sprint 28 tail. Later
+        # append-only sprints move the current ledger tail without changing it.
+        self.tail = json.loads(gate.common.blob(
+            self.root, "v0.0.162", "blueprints/blueprints.json")
+            .decode("utf-8-sig"))["entries"][-gate.TAIL_COUNT:]
 
     def test_exact_public_rows_and_identity_tail(self):
         self.assertEqual("public", gate.check_scope(

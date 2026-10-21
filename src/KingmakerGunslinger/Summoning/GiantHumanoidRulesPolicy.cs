@@ -10,6 +10,8 @@ namespace KingmakerGunslinger.Summoning
         internal const string Hill = "hill-giant";
         internal const string Stone = "stone-giant";
         internal const string Fire = "fire-giant";
+        internal const string Cloud = "cloud-giant";
+        internal const string Storm = "storm-giant";
         internal const int AppendedCreatureCount = 3;
         internal const int AppendedRootCount = 11;
         internal const int AppendedPrivateIdentityCount = 24;
@@ -35,8 +37,12 @@ namespace KingmakerGunslinger.Summoning
         internal static bool IsNewIdentity(string symbol)
         {
             if (symbol == null) return false;
-            return symbol.StartsWith("KMG.Summoning.Giant.",
-                StringComparison.Ordinal) ||
+            return (symbol.StartsWith("KMG.Summoning.Giant.",
+                StringComparison.Ordinal) &&
+                !symbol.StartsWith("KMG.Summoning.Giant.Sprint29.",
+                    StringComparison.Ordinal) &&
+                !symbol.StartsWith("KMG.Summoning.Giant.Cloud",
+                    StringComparison.Ordinal)) ||
                 symbol == "KMG.Summoning.Unit.HillGiant" ||
                 symbol == "KMG.Summoning.Unit.StoneGiant" ||
                 symbol == "KMG.Summoning.Unit.FireGiant" ||
@@ -47,15 +53,17 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool IsGiant(string key)
         {
-            return key == Hill || key == Stone || key == Fire;
+            return key == Hill || key == Stone || key == Fire ||
+                key == Cloud || key == Storm;
         }
 
         internal static int RockRangeIncrementFeet(string key)
         {
             if (key == Stone) return 180;
+            if (key == Cloud) return 140;
             if (key == Hill || key == Fire) return 120;
             throw new ArgumentOutOfRangeException("key", key,
-                "Only the three adult Sprint 28 giants throw these rocks.");
+                "Only the four exact project giants throw these rocks.");
         }
 
         internal static int RockMaximumRangeFeet(string key)
@@ -82,9 +90,9 @@ namespace KingmakerGunslinger.Summoning
         internal static int RockFullAttackCount(string key)
         {
             if (key == Stone) return 2; // Its prepared Quick Draw routine.
-            if (key == Hill || key == Fire) return 1;
+            if (key == Hill || key == Fire || key == Cloud) return 1;
             throw new ArgumentOutOfRangeException("key", key,
-                "Only the three adult Sprint 28 giants throw these rocks.");
+                "Only the four exact project giants throw these rocks.");
         }
 
         /// <summary>Native Kingmaker applies a penalty once and truncates a

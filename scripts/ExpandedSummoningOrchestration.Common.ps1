@@ -33,13 +33,15 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'observe-expanded-summoning-sprint26-native-inputs',
         'observe-expanded-summoning-sprint27-native-inputs',
         'observe-expanded-summoning-sprint28-native-inputs',
+        'observe-expanded-summoning-sprint29-native-inputs',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
         'disposable-expanded-summoning-sprint25-native-review',
         'disposable-expanded-summoning-sprint26-native-review',
         'disposable-expanded-summoning-sprint27-native-review',
-        'disposable-expanded-summoning-sprint28-native-review')
+        'disposable-expanded-summoning-sprint28-native-review',
+        'disposable-expanded-summoning-sprint29-native-review')
 }
 
 function Invoke-KmgIndependentBoundaryRestoration {
@@ -585,6 +587,19 @@ function Test-KmgSprint28DevelopmentPersistence {
     if($Scope -cne 'giant-humanoids' -or
         $Purpose -cne 'sprint28-native-prototype') {
         throw 'Development installed-stack persistence permits only exact giant-humanoids scope and sprint28-native-prototype purpose.'
+    }
+    return $true
+}
+
+# The hidden Sprint 29 development package may enter only its exact selected
+# Working-save trio. This leaves candidate identity, save and release checks
+# in the installed-stack wrapper unchanged.
+function Test-KmgSprint29DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'giant-humanoids-ii' -or
+        $Purpose -cne 'sprint29-hidden-bootstrap') {
+        throw 'Development installed-stack persistence permits only exact giant-humanoids-ii scope and sprint29-hidden-bootstrap purpose.'
     }
     return $true
 }
