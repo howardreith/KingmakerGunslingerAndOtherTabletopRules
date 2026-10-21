@@ -104,6 +104,15 @@ namespace KingmakerGunslinger.Blueprints
             // claw plus one additional claw, with no synthetic empty-hand grant.
             unit.Body = NaturalBody(claw, new[] { claw },
                 Array.Empty<BlueprintItemWeapon>());
+            // The installed primary-hand rule otherwise assumes a lone
+            // natural attack and contributes 1.5x positive Strength. Reuse
+            // the exact-owner/weapon correction already qualified for a
+            // multiple-primary routine; the shared component is unchanged.
+            var fullStrength = ScriptableObject.CreateInstance<DeinonychusPrimaryTalonStrength>();
+            fullStrength.OwningBlueprint = unit;
+            fullStrength.Talon = claw;
+            traits.ComponentsArray = traits.ComponentsArray.Concat(
+                new BlueprintComponent[] { fullStrength }).ToArray();
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "unchanged native ordinary attack brain");
             // Zero is the hidden candidate's absent-score representation, not
