@@ -332,8 +332,14 @@ namespace KingmakerGunslinger.Blueprints
             };
             foreach (BlueprintAiCastSpell action in brain.Actions.OfType<
                 BlueprintAiCastSpell>())
-                action.TargetConsiderations = new Kingmaker.Controllers.Brain
-                    .Blueprints.Considerations.Consideration[] { safety };
+            {
+                if (ReferenceEquals(action.Ability, call))
+                    action.ActorConsiderations = new Kingmaker.Controllers.Brain
+                        .Blueprints.Considerations.Consideration[] { safety };
+                else
+                    action.TargetConsiderations = new Kingmaker.Controllers.Brain
+                        .Blueprints.Considerations.Consideration[] { safety };
+            }
             unit.Brain = brain;
         }
 

@@ -303,7 +303,7 @@ if ($moduleScenario) {
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint27-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')) -or
-        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
