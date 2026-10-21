@@ -18,7 +18,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "ai-turns" || phase == "cleave" || phase == "routes";
         }
         internal static bool Sprints30And31Phase(string phase)
-        { return phase == "bootstrap"; }
+        { return phase == "bootstrap" || phase == "lemure-core"; }
         internal static bool Sprint29Phase(string phase)
         { return phase == "profiles" || phase == "modes" ||
             phase == "commands" || phase == "turns" ||

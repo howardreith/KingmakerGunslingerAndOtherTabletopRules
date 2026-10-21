@@ -1,0 +1,379 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Controllers.Combat;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums.Damage;
+using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UI.SettingsUI;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.Utility;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        private const string Lemure30Claw = "118fdd03e569a66459ab01a20af6811a";
+
+        private IEnumerable<int> ReviewLemure30Core(ExpandedSummoningCorrectionFixture fixture)
+        {
+            bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            bool oldPause = Game.Instance.IsPaused;
+            Game.Instance.IsPaused = true;
+            CreateExpandedSummoningCorrectionHostile(fixture);
+            try
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = false;
+                for (int frame = 0; frame < 16; frame++) yield return 0;
+                var completed = new List<UnitEntityData>();
+                var targetBuffs = fixture.Hostile.Descriptor.Buffs.RawFacts.Select(value => value.Blueprint.AssetGuid)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
+                ResetExpandedSummoningHostile(fixture);
+                fixture.Hostile.Descriptor.Damage = fixture.HostileDamage + 1;
+                var dirty = Lemure30ResetState(fixture, completed, targetBuffs, areaBaseline);
+                Sprint25Check("lemure-core-residue-detected", !(bool)dirty["clean"] &&
+                    !(bool)dirty["damageReset"], dirty,
+                    "An intentionally introduced owned-target injury is noticed before the next case can start.");
+                ResetExpandedSummoningHostile(fixture);
+                Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "before-rules");
+                var owner = CastExpandedSummoningOwnTier(fixture, "lemure");
+                Sprint28SetBrainActivePreservingActions(owner, false);
+                try
+                {
+                    for (int frame = 0; frame < 8; frame++) yield return 0;
+                    ReviewLemure30Rules(owner, fixture.Hostile);
+                    // Let the exact disposable actors' native damage effects settle.
+                    for (int frame = 0; frame < 3; frame++) yield return 0;
+                }
+                finally
+                {
+                    owner.Commands.InterruptAll(true); fixture.Hostile.Commands.InterruptAll(true);
+                    if (owner.IsInCombat) owner.LeaveCombat();
+                    if (fixture.Hostile.IsInCombat) fixture.Hostile.LeaveCombat();
+                    if (fixture.Hostile.Memory.Contains(owner)) fixture.Hostile.Memory.Remove(owner);
+                    if (owner.Memory.Contains(fixture.Hostile)) owner.Memory.Remove(fixture.Hostile);
+                    Game.Instance.Player.UpdateIsInCombat();
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }); completed.Add(owner);
+                    ResetExpandedSummoningHostile(fixture);
+                }
+                foreach (bool full in new[] { false, true })
+                {
+                    for (int frame = 0; frame < 3; frame++) yield return 0;
+                    Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, full ? "before-full" : "before-single");
+                    foreach (int frame in ReviewLemure30Combat(fixture, false, full, completed)) yield return frame;
+                }
+                for (int frame = 0; frame < 3; frame++) yield return 0;
+                Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "before-ai");
+                foreach (int frame in ReviewLemure30Combat(fixture, true, false, completed)) yield return frame;
+                for (int frame = 0; frame < 3; frame++) yield return 0;
+                Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "after-ai");
+            }
+            finally
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private static JObject Lemure30ResetState(ExpandedSummoningCorrectionFixture fixture,
+            List<UnitEntityData> completed, string[] targetBuffs,
+            Kingmaker.EntitySystem.Entities.AreaEffectEntityData[] areaBaseline)
+        {
+            var target = fixture.Hostile;
+            bool noUnits = !Game.Instance.State.Units.All.Any(value => value != null && !value.Destroyed &&
+                value.Blueprint.AssetGuid == "80fd27e965b943b5b307a8c0a45cfb96") &&
+                completed.All(value => value.Destroyed && !fixture.Created.Contains(value));
+            bool noCommands = !target.Commands.Raw.Any(value => value != null && !value.IsFinished);
+            bool noMemory = completed.All(value => !target.Memory.Contains(value));
+            bool buffs = targetBuffs.SequenceEqual(target.Descriptor.Buffs.RawFacts.Select(value =>
+                value.Blueprint.AssetGuid).OrderBy(value => value, StringComparer.Ordinal));
+            var areas = Game.Instance.State.AreaEffects.All.ToArray();
+            bool areasExact = areas.Length == areaBaseline.Length && areas.All(value => areaBaseline.Contains(value));
+            bool damage = target.Descriptor.Damage == fixture.HostileDamage;
+            bool settings = !SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            return new JObject { ["clean"] = noUnits && noCommands && noMemory && buffs && areasExact && damage &&
+                    !target.IsInCombat && settings,
+                ["noPriorSummons"] = noUnits, ["noQueuedTargetCommands"] = noCommands,
+                ["noPriorOwnerMemory"] = noMemory, ["targetBuffsExact"] = buffs, ["areasExact"] = areasExact,
+                ["damageReset"] = damage, ["targetOutOfCombat"] = !target.IsInCombat,
+                ["rtwpSetting"] = settings, ["completedOwners"] = new JArray(completed.Select(value => value.UniqueId)) };
+        }
+
+        private void Lemure30RequireReset(ExpandedSummoningCorrectionFixture fixture,
+            List<UnitEntityData> completed, string[] targetBuffs,
+            Kingmaker.EntitySystem.Entities.AreaEffectEntityData[] areaBaseline, string stage)
+        {
+            var row = Lemure30ResetState(fixture, completed, targetBuffs, areaBaseline);
+            bool clean = (bool)row["clean"];
+            Sprint25Check("lemure-core-reset-" + stage, clean, row,
+                "Exact disposable owners, commands, target memory, buffs, areas, injury and combat state meet the next case's preconditions.");
+            if (!clean) throw new InvalidOperationException("Lemure shared fixture contamination: " + stage);
+        }
+        private void ReviewLemure30Rules(UnitEntityData owner, UnitEntityData source)
+        {
+            var stats = owner.Descriptor.Stats;
+            bool profile = stats.HitPoints.ModifiedValue == 13 &&
+                stats.BaseAttackBonus.ModifiedValue == 2 && stats.AC.ModifiedValue == 14 &&
+                stats.SaveFortitude.ModifiedValue == 4 && stats.SaveReflex.ModifiedValue == 3 &&
+                stats.SaveWill.ModifiedValue == 0 && stats.Speed.ModifiedValue == 20 &&
+                stats.Intelligence.BaseValue == 0 && owner.Descriptor.State.IsConscious;
+            Sprint25Check("lemure-core-profile", profile, new JObject {
+                ["owner"] = owner.UniqueId, ["hp"] = stats.HitPoints.ModifiedValue,
+                ["bab"] = stats.BaseAttackBonus.ModifiedValue, ["ac"] = stats.AC.ModifiedValue,
+                ["fort"] = stats.SaveFortitude.ModifiedValue, ["reflex"] = stats.SaveReflex.ModifiedValue,
+                ["will"] = stats.SaveWill.ModifiedValue, ["speed"] = stats.Speed.ModifiedValue,
+                ["intelligence"] = stats.Intelligence.BaseValue,
+                ["conscious"] = owner.Descriptor.State.IsConscious },
+                "Native adult bases include live Constitution and no intellect or generic undead substitution.");
+            if (!profile) throw new InvalidOperationException("Lemure core profile failed.");
+            int strength = stats.Strength.BaseValue;
+            try
+            {
+                foreach (var spec in new[] { new { Str=11, Attack=2, Bonus=0 },
+                    new { Str=15, Attack=4, Bonus=2 }, new { Str=7, Attack=0, Bonus=-2 } })
+                {
+                    stats.Strength.BaseValue = spec.Str;
+                    JObject rule = Sprint29WeaponRule(owner, owner.Body.PrimaryHand.MaybeWeapon);
+                    bool exact = (int)rule["attack"] == spec.Attack &&
+                        (int)rule["damageBonus"] == spec.Bonus && (int)rule["diceRolls"] == 1 &&
+                        (string)rule["dice"] == "D4" && (bool)rule["ownerExact"];
+                    rule["owner"] = owner.UniqueId; rule["fixtureStrength"] = spec.Str;
+                    rule["nativeStrengthModifier"] = stats.Strength.Bonus;
+                    Sprint25Check("lemure-core-strength-" + spec.Str, exact, rule,
+                        "Actual native attack and weapon-damage calculations retain signed live Strength scaling.");
+                    if (!exact) throw new InvalidOperationException("Lemure live Strength rule failed.");
+                }
+            }
+            finally { stats.Strength.BaseValue = strength; }
+            int hp = stats.HitPoints.BaseValue, injury = owner.Descriptor.Damage;
+            try
+            {
+                // Capacity only: protect this owned 13-HP fixture from difficulty-scaled probe damage.
+                stats.HitPoints.BaseValue = 10000;
+                foreach (string bypass in new[] { "mundane", "good", "silver", "good-and-silver", "cold-iron", "evil" })
+                {
+                    var packet = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Slashing);
+                    packet.AddBonus(12);
+                    if (bypass == "good" || bypass == "good-and-silver") packet.AddAlignment(DamageAlignment.Good);
+                    if (bypass == "evil") packet.AddAlignment(DamageAlignment.Evil);
+                    if (bypass == "silver" || bypass == "good-and-silver") packet.AddMaterial(PhysicalDamageMaterial.Silver);
+                    if (bypass == "cold-iron") packet.AddMaterial(PhysicalDamageMaterial.ColdIron);
+                    int expected = bypass == "good" || bypass == "silver" || bypass == "good-and-silver" ? 12 : 7;
+                    Lemure30DamageProbe(owner, source, packet, "physical-" + bypass, expected, false);
+                }
+                foreach (DamageEnergyType energy in new[] { DamageEnergyType.Fire, DamageEnergyType.Acid,
+                    DamageEnergyType.Cold, DamageEnergyType.Electricity, DamageEnergyType.Sonic })
+                {
+                    var packet = new EnergyDamage(new DiceFormula(0, DiceType.Zero), energy);
+                    packet.AddBonus(12);
+                    int expected = energy == DamageEnergyType.Acid || energy == DamageEnergyType.Cold ? 2 : 12;
+                    Lemure30DamageProbe(owner, source, packet, "energy-" + energy, expected,
+                        energy == DamageEnergyType.Fire);
+                }
+            }
+            finally { owner.Descriptor.Damage = injury; stats.HitPoints.BaseValue = hp; }
+            var transient = new List<UnityEngine.Object>();
+            try
+            {
+                foreach (var spec in new[] {
+                    new { Name="mind-affecting", Descriptor=SpellDescriptor.MindAffecting | SpellDescriptor.Fear, Immune=true },
+                    new { Name="poison", Descriptor=SpellDescriptor.Poison, Immune=true },
+                    new { Name="unrelated", Descriptor=SpellDescriptor.None, Immune=false } })
+                {
+                    var buff = TraitCondition("Lemure30-" + spec.Name, spec.Descriptor, transient);
+                    try
+                    {
+                        var control = ApplySprint12Buff(source, buff, source, TimeSpan.FromSeconds(6), 10);
+                        var rule = ApplySprint12Buff(owner, buff, source, TimeSpan.FromSeconds(6), 10);
+                        bool exact = control.AppliedBuff != null && !control.Immunity &&
+                            rule.Immunity == spec.Immune && (rule.AppliedBuff == null) == spec.Immune;
+                        Sprint25Check("lemure-core-descriptor-" + spec.Name, exact,
+                            new JObject { ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
+                                ["descriptor"] = spec.Descriptor.ToString(), ["nativeImmune"] = rule.Immunity,
+                                ["applied"] = rule.AppliedBuff != null, ["controlApplied"] = control.AppliedBuff != null,
+                                ["controlledDescriptorProbe"] = true },
+                            "Native RuleApplyBuff tests immunity with a positive susceptible control; this is not a Cause Fear or cloud cast.");
+                        if (!exact) throw new InvalidOperationException("Lemure descriptor immunity failed.");
+                    }
+                    finally { RemoveSprint12Buff(owner, buff); RemoveSprint12Buff(source, buff); }
+                }
+            }
+            finally { foreach (var value in transient) if (value != null) UnityEngine.Object.DestroyImmediate(value); }
+            var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                FcbMagicMissileGuid, "Lemure no-SR native rule probe");
+            var context = new MechanicsContext(source, source.Descriptor, missile, null, new TargetWrapper(owner));
+            context.Params.CasterLevel = 1;
+            var resistance = context.TriggerRule(new RuleSpellResistanceCheck(context, owner));
+            bool noSr = missile.SpellResistance && !resistance.HasSpellResistance &&
+                !resistance.IsSpellResisted && !resistance.TargetIsImmune;
+            Sprint25Check("lemure-core-no-sr", noSr, new JObject {
+                ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
+                ["spell"] = missile.AssetGuid, ["hasResistance"] = resistance.HasSpellResistance,
+                ["resisted"] = resistance.IsSpellResisted, ["immune"] = resistance.TargetIsImmune,
+                ["ruleOnlyNoCast"] = true }, "An actual SR-allowing native spell resistance check finds no invented Lemure SR.");
+            if (!noSr) throw new InvalidOperationException("Lemure no-SR consumer failed.");
+        }
+
+        private void Lemure30DamageProbe(UnitEntityData owner, UnitEntityData source,
+            BaseDamage packet, string id, int expected, bool immune)
+        {
+            owner.Descriptor.Damage = 0;
+            var rule = Rulebook.Trigger(new RuleDealDamage(source, owner, new DamageBundle(packet)));
+            var result = rule.ResultDamage?.SingleOrDefault(value => ReferenceEquals(value.Source, packet));
+            bool exact = result.HasValue && result.Value.FinalValue == expected && packet.Immune == immune &&
+                (immune ? rule.Damage == 0 : rule.Damage > 0) && owner.Descriptor.Damage == rule.Damage;
+            Sprint25Check("lemure-core-" + id, exact, new JObject {
+                ["owner"] = owner.UniqueId, ["source"] = source.UniqueId, ["fixedInput"] = 12,
+                ["controlledDamageProbeNoAttack"] = true, ["fixtureHpCapacity"] = 10000,
+                ["finalBeforeDifficulty"] = result?.FinalValue, ["nativeImmune"] = packet.Immune,
+                ["nativeDamage"] = rule.Damage, ["hpDelta"] = owner.Descriptor.Damage },
+                "Actual native damage reduction, resistance or immunity consumes this attributed packet independently.");
+            if (!exact) throw new InvalidOperationException("Lemure native defense failed: " + id);
+        }
+
+        private IEnumerable<int> ReviewLemure30Combat(ExpandedSummoningCorrectionFixture fixture, bool ai, bool full, List<UnitEntityData> completed)
+        {
+            ResetExpandedSummoningHostile(fixture);
+            var owner = CastExpandedSummoningOwnTier(fixture, "lemure");
+            var target = fixture.Hostile;
+            Sprint28SetBrainActivePreservingActions(owner, false);
+            string id = ai ? "ai" : full ? "full" : "single";
+            int targetAc = target.Descriptor.Stats.AC.BaseValue;
+            try
+            {
+                owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
+                owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
+                Vector3 far; string lane, direction;
+                Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 5f, out far, out lane, out direction);
+                PlaceExpandedSummoningUnit(owner, origin);
+                PlaceExpandedSummoningUnit(target, ai ? far : origin + (far - origin).normalized *
+                    (owner.Corpulence + target.Corpulence + .8f));
+                // Only the owned target's AC is lowered; rolls and hit decisions remain native.
+                target.Descriptor.Stats.AC.BaseValue = 0;
+                foreach (var unit in new[] { owner, target })
+                {
+                    unit.Wake(0f);
+                    if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+                }
+                owner.Memory.Add(target); target.Memory.Add(owner);
+                owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+                if (ai) { Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions(); }
+                var probe = new UnitAttack(target); probe.Init(owner);
+                bool powerAttackAbsent = !owner.Descriptor.HasFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
+                    BlueprintBootstrap.Library, "9972f33f977fc724c838e59641b2fca5", "native Power Attack control")) &&
+                    !owner.Descriptor.ActivatableAbilities.RawFacts.Any(value => value.Blueprint.AssetGuid ==
+                        "a7b339e4f6ff93a4697df5d7a87ff619");
+                bool ready = owner.Descriptor.State.CanAct && owner.IsEnemy(target) && target.IsEnemy(owner) &&
+                    owner.HasLOS(target) && owner.Memory.ContainsVisible(target) && powerAttackAbsent &&
+                    !target.Descriptor.State.IsDead && (ai ? owner.IsAIEnabled && owner.Brain.Actions.Count > 0 &&
+                        owner.Brain.AvailableActions.Count > 0 : probe.IsUnitEnoughClose);
+                Sprint25Check("lemure-core-" + id + "-ready", ready, new JObject {
+                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
+                    ["direction"] = direction, ["los"] = owner.HasLOS(target),
+                    ["visible"] = owner.Memory.ContainsVisible(target), ["distance"] = owner.DistanceTo(target),
+                    ["fixtureTargetAcBase"] = 0, ["nativeTargetAc"] = target.Descriptor.Stats.AC.ModifiedValue,
+                    ["powerAttackAbsent"] = powerAttackAbsent, ["actions"] = owner.Brain.Actions.Count,
+                    ["available"] = owner.Brain.AvailableActions.Count },
+                    "An awake visible disposable hostile and the native owner/action preconditions precede combat.");
+                if (!ready) throw new InvalidOperationException("Lemure combat fixture not ready: " + id);
+                var observer = new Sprint24AttackObserver { Owner = owner, Target = target };
+                var costs = new JArray(); var endings = new JArray();
+                var commands = new HashSet<UnitCommand>(); var ambient = new HashSet<string>();
+                UnitAttack issued = ai ? null : new UnitAttack(target) { ForceFullAttack = full, IsSingleAttack = !full };
+                int ticks = 0, frames = 0, impactFrames = 0;
+                EventBus.Subscribe(observer);
+                try
+                {
+                    using (var economy = new FirearmReviewCosts(owner, costs))
+                    using (var trace = new Sprint26CommandTrace(owner, endings))
+                    {
+                        if (issued != null) { commands.Add(issued); owner.Commands.Run(issued); }
+                        DateTime deadline = DateTime.UtcNow.AddSeconds(45);
+                        while (frames++ < 4000 && DateTime.UtcNow < deadline)
+                        {
+                            if (ai && (frames == 1 || frames % 60 == 0 &&
+                                !owner.Commands.Raw.Any(value => value != null && !value.IsFinished)))
+                            {
+                                foreach (string candidate in Sprint24TickExactAi(owner))
+                                    if (candidate != owner.UniqueId) ambient.Add(candidate);
+                                ticks++;
+                            }
+                            foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                            bool terminal = ai ? commands.OfType<UnitAttack>().Any(value => value.AiAction != null &&
+                                value.IsFinished && (value.Result == UnitCommand.ResultType.Success || trace.Exhausted(value))) :
+                                issued.IsFinished && observer.WeaponAttacks.Count >= (full ? 2 : 1);
+                            if (terminal && (!ai || observer.Damage.Any(value => value.Damage > 0))) break;
+                            Game.Instance.IsPaused = false; yield return 0;
+                        }
+                        int hits = observer.WeaponAttacks.Count(value => value.AttackRoll != null && value.AttackRoll.IsHit);
+                        DateTime impactDeadline = DateTime.UtcNow.AddSeconds(10);
+                        while (observer.Damage.Count < hits && impactFrames++ < 600 && DateTime.UtcNow < impactDeadline) yield return 0;
+                        bool packets = observer.WeaponAttacks.Count > 0 && observer.WeaponAttacks.All(value =>
+                            value.Weapon?.Blueprint?.AssetGuid == Lemure30Claw) &&
+                            observer.Damage.Count == hits && observer.Rolls.Count == observer.WeaponAttacks.Count;
+                        bool exact = packets && !target.Descriptor.State.IsDead && (ai ? ticks > 0 &&
+                            commands.OfType<UnitAttack>().Any(value => value.AiAction != null && value.IsFinished &&
+                                (value.Result == UnitCommand.ResultType.Success || trace.Exhausted(value))) &&
+                            observer.Damage.Any(value => value.Damage > 0) : issued.IsFinished &&
+                            (issued.Result == UnitCommand.ResultType.Success || trace.Exhausted(issued)) &&
+                            issued.AllAttacks.Count == (full ? 2 : 1) && observer.WeaponAttacks.Count == (full ? 2 : 1) &&
+                            observer.OwnerWeaponAttacks.Count == (full ? 2 : 1) &&
+                            economy.Count(issued) == 1 && economy.Exact(issued, false) && !issued.Cutscene && !issued.IsIgnoreCooldown);
+                        Sprint25Check("lemure-core-" + id + "-resolved", exact, new JObject {
+                            ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["frames"] = frames,
+                            ["issuedFinished"] = issued?.IsFinished, ["issuedResult"] = issued?.Result.ToString(),
+                            ["planned"] = issued?.AllAttacks.Count, ["weaponAttacks"] = observer.WeaponAttacks.Count,
+                            ["rolls"] = new JArray(observer.WeaponAttacks.Select(value => new JObject {
+                                ["weapon"] = value.Weapon?.Blueprint?.AssetGuid, ["hit"] = value.AttackRoll?.IsHit,
+                                ["natural"] = value.AttackRoll?.Roll.Value, ["attackBonus"] = value.AttackRoll?.AttackBonus })),
+                            ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)), ["hits"] = hits,
+                            ["impactWaitFrames"] = impactFrames, ["costs"] = costs, ["nativeEnds"] = endings,
+                            ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["aiTicks"] = ticks,
+                            ["ambientCandidatesNeverTicked"] = new JArray(ambient),
+                            ["fixtureAttackCommands"] = ai ? 0 : 1, ["forcedRolls"] = 0,
+                            ["powerAttackAbsent"] = powerAttackAbsent }, ai ?
+                            "The native brain chooses and finishes its own claw attack with resolved damage and no fixture attack command." :
+                            "One fixture-issued native attack spends its action and resolves exactly the selected claw routine without forced rolls.");
+                        if (!exact) throw new InvalidOperationException("Lemure combat consumer failed: " + id);
+                    }
+                }
+                finally { EventBus.Unsubscribe(observer); }
+            }
+            finally
+            {
+                Sprint28SetBrainActivePreservingActions(owner, false);
+                owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
+                if (owner.IsInCombat) owner.LeaveCombat(); if (target.IsInCombat) target.LeaveCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                if (target.Memory.Contains(owner)) target.Memory.Remove(owner);
+                if (owner.Memory.Contains(target)) owner.Memory.Remove(target);
+                target.Descriptor.Stats.AC.BaseValue = targetAc;
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
+                completed.Add(owner);
+                ResetExpandedSummoningHostile(fixture);
+            }
+        }
+    }
+}
