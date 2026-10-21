@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Designers;
 using Kingmaker.EntitySystem.Entities;
@@ -88,9 +90,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["items"] = Sprint29ItemSlots(unit) });
                             }
                             var body = unit.Blueprint.Body;
+                            string expectedOffhand = key == "ettin" ?
+                                unit.Blueprint.AddFacts.OfType<BlueprintFeature>()
+                                    .SelectMany(value =>
+                                    value.GetComponents<
+                                        SummonEttinInitialOffhands>())
+                                    .Single().OffhandFlail.AssetGuid :
+                                body.SecondaryHand?.AssetGuid;
                             string[] expected = new[] {
                                 body.PrimaryHand?.AssetGuid,
-                                body.SecondaryHand?.AssetGuid,
+                                expectedOffhand,
                                 body.PrimaryHandAlternative1?.AssetGuid,
                                 body.SecondaryHandAlternative1?.AssetGuid,
                                 body.PrimaryHandAlternative2?.AssetGuid,

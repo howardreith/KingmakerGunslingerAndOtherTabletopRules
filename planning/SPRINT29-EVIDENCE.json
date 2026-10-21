@@ -259,6 +259,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "next": "Inspect the native hand-set and HoldingSlot association at each lazy switch, then make a narrow owner-bound correction and rerun affected items behavior."
   },
+  "hiddenItemsSlotDiagnostic": {
+    "source": "6307228a23db14236ec5801167cbfcb65175dd53",
+    "runId": "20261021T0831092914675Z-8cc252ddc0594157808efc9b4e754afe",
+    "artifactZipSha256": "368b7210b2c05151b1b97b722a12a8fd4065c749acda2c20828ad5ba3b0629f0",
+    "artifactDllSha256": "52cfb97237e28f1a3cc58269234816040859aaf7e8a9172061cfaa3bdbd04601",
+    "artifactMvid": "4bb770de-0996-4df3-a7b0-d461396c441f",
+    "result": "FAIL: two actual quantity Ettins each had six owned instances before any hand-set switch. One offhand flail was the live set-0 secondary weapon; its duplicate carried a HandSlot reference but matched no live set's MaybeWeapon. The same six instances persisted through switches 1 and 0. This is a creation-time duplicate, not switch resupply. Observer stopped before transfer/death/expiry.",
+    "restoration": "PASS: exact fresh intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The Ettin blueprint no longer grants a competing native secondary flail. Its serialized exact-owner initial-arms component remains the single initial offhand source. The observer derives the fifth expected private identity from that component and still requires five distinct live owner-bound nonlootable items. Focused production compilation and two Sprint 29 domain tests passed; native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,

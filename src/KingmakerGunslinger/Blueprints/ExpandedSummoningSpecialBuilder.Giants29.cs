@@ -113,7 +113,12 @@ namespace KingmakerGunslinger.Blueprints
                 new[] { ImprovedInitiativeGuid, IronWillGuid,
                     PowerAttackGuid }, false);
             BlueprintUnit unit = Require<BlueprintUnit>(bySymbol, Ettin29Unit);
-            unit.Body.SecondaryHand = offFlail;
+            // Native body creation begins a second offhand instance while the
+            // versatile main flail still grips both hands. The exact-owner
+            // initial-arms component inserts the one intended offhand after
+            // the primary slot resolves; keep this body grant empty so there
+            // is only one source for that item.
+            unit.Body.SecondaryHand = null;
             unit.Body.PrimaryHandAlternative1 = mainJavelin;
             unit.Body.SecondaryHandAlternative1 = offJavelin;
             unit.Body.PrimaryHandAlternative2 = null;

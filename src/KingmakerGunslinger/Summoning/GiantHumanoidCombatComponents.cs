@@ -304,10 +304,9 @@ namespace KingmakerGunslinger.Summoning
                         "Ettin offhand has an unexpected item.");
                 return;
             }
-            // The installed body constructor can place its configured
-            // secondary flail into inventory before it resolves the grip.
-            // Reattach that exact unassigned instance instead of minting a
-            // second private weapon when the slot is still empty.
+            // Reattach an existing exact private instance if native setup or
+            // cold-load hydration has already placed it in this inventory.
+            // The Ettin body has no competing secondary flail grant.
             ItemEntityWeapon[] candidates = unit.Descriptor.Inventory.Items
                 .OfType<ItemEntityWeapon>().Where(value =>
                     ReferenceEquals(value.Blueprint, blueprint)).ToArray();
