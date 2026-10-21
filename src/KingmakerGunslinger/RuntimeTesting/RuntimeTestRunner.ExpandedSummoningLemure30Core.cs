@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Controllers.Combat;
@@ -18,6 +19,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -145,6 +147,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["conscious"] = owner.Descriptor.State.IsConscious },
                 "Native adult bases include live Constitution and no intellect or generic undead substitution.");
             if (!profile) throw new InvalidOperationException("Lemure core profile failed.");
+            var buffs = owner.Descriptor.Buffs.RawFacts.Select(value => new JObject {
+                ["name"] = value.Blueprint.name, ["guid"] = value.Blueprint.AssetGuid }).ToArray();
+            bool noTemplate = !buffs.Any(value => ExpandedSummoningAbilityBuilder.NativeTemplateIds.Contains((string)value["guid"]) ||
+                ((string)value["name"]).StartsWith("KMG_Summoning_Template_", StringComparison.Ordinal));
+            Sprint25Check("lemure-core-no-inherited-template", noTemplate,
+                new JObject { ["owner"] = owner.UniqueId, ["buffs"] = new JArray(buffs) },
+                "An untemplated outsider retains the native summon marker without inherited celestial/fiendish power.");
+            bool summonMarker = owner.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) != null;
+            Sprint25Check("lemure-core-native-summon-marker", summonMarker,
+                new JObject { ["owner"] = owner.UniqueId, ["summonMarker"] = summonMarker },
+                "The native summon-owned lifecycle marker remains after scoped inherited-template removal.");
+            if (!summonMarker) throw new InvalidOperationException("Lemure summon ownership marker is absent.");
             int strength = stats.Strength.BaseValue;
             try
             {
@@ -241,6 +255,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             BaseDamage packet, string id, int expected, bool immune)
         {
             owner.Descriptor.Damage = 0;
+            if (owner.Descriptor.State.IsDead || owner.Descriptor.Damage != 0 || owner.Descriptor.Stats.HitPoints.ModifiedValue < 10000)
+                throw new InvalidOperationException("Owned damage fixture cannot establish its next probe preconditions.");
+            var part = owner.Get<UnitPartDamageReduction>();
+            var sources = part == null ? new JArray() : new JArray(part.AllSources.Select(value => new JObject {
+                ["component"] = value.GetType().FullName, ["value"] = value.GetCurrentValue(),
+                ["bypassedForPacket"] = value.Bypassed(packet, null) }));
             var rule = Rulebook.Trigger(new RuleDealDamage(source, owner, new DamageBundle(packet)));
             var result = rule.ResultDamage?.SingleOrDefault(value => ReferenceEquals(value.Source, packet));
             bool exact = result.HasValue && result.Value.FinalValue == expected && packet.Immune == immune &&
@@ -249,9 +269,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["owner"] = owner.UniqueId, ["source"] = source.UniqueId, ["fixedInput"] = 12,
                 ["controlledDamageProbeNoAttack"] = true, ["fixtureHpCapacity"] = 10000,
                 ["finalBeforeDifficulty"] = result?.FinalValue, ["nativeImmune"] = packet.Immune,
-                ["nativeDamage"] = rule.Damage, ["hpDelta"] = owner.Descriptor.Damage },
+                ["nativeDamage"] = rule.Damage, ["hpDelta"] = owner.Descriptor.Damage,
+                ["packetType"] = packet.GetType().FullName, ["resistanceSources"] = sources },
                 "Actual native damage reduction, resistance or immunity consumes this attributed packet independently.");
-            if (!exact) throw new InvalidOperationException("Lemure native defense failed: " + id);
+            // A clean product mismatch remains a failed row. Other independent
+            // probes may continue only while this owned fixture is still safe;
+            // the next probe separately resets and verifies its injury state.
+            if (owner.Descriptor.State.IsDead || owner.Descriptor.Damage != rule.Damage)
+                throw new InvalidOperationException("Owned damage fixture lost injury/actor integrity: " + id);
         }
 
         private IEnumerable<int> ReviewLemure30Combat(ExpandedSummoningCorrectionFixture fixture, bool ai, bool full, List<UnitEntityData> completed)
