@@ -21,20 +21,13 @@ Append-only identities: baseline 7140 retained exactly. Current 7185 entries / 7
 
 ## Latest native artifact
 
-Development source `38a948644eb1a77d79f0fa1263d6c85515aa9aa1`, purpose `sprints30-31-lemure-core`, remains immutable in this root.
+Development source `55f86bc2fd189b5e4d514ea0d8e20fd7ac23ec33`, purpose `sprints30-31-lemure-core`, remains immutable in this root. ZIP SHA256 `585d24ea70f6a445f13892ee51eeddfa8e31a293bd8364191e351db1c7cc757c`; DLL `87f31861c12b9ba6d5913ba3fac72dc6de861aa3b5404080aa5fb82d9b6bb67d`; MVID `73b4fc7d-d26e-41b9-b988-21c6815455e6`; source-state `195b376a58fc21fb0cc1db4648738621764282ba2fd57a4bfdf16f409e45a5d8`.
 
-| Identity | Value |
-|---|---|
-| ZIP SHA256 | `aaf458050c1063a73e81058b8ff06c90603e9502ad5121ff48e66c753c18dad7` |
-| DLL SHA256 | `9875777cb2a8d8acb86f45320afd919f3b63945d535d32abf3a1574f5e5e79a9` |
-| MVID | `4254999d-ae7d-4e7c-aa08-df57dd4e8d72` |
-| Source-state SHA256 | `d5bd7ce84640ffcaa477c0a8011084da7b46d8a254b887c61ba75a3591d42505` |
+Build 23:45:29.4632374Z-23:48:55.1164347Z: 15 selected tests, exact production compile and strict399-file package PASS. Ninth game/transaction 23:49:55.4834218Z-23:53:54.2543607Z: 30 PASS/1 FAIL. Request `20261021T2352010417935Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261021T2352010725243Z-de110c3f1319480982fdb1c74ba4872d`. Private claw, signed Strength, defenses, separate buff/ability immunity with susceptible controls and rules-to-single reset passed. Actual standard attack: native12,+2,1d4=1, lawful/evil packet, one action, no forced roll. Reach alone remained2ft.
 
-Build 22:58:28.5486318Z-23:01:52.8065994Z: 15 selected tests, exact 2.1.7b/Harmony12/UMM compile and strict 399-file package PASS. Eighth game/transaction 23:02:44.8311828Z-23:06:39.3532555Z: FAIL, 28 PASS/3 FAIL. Request `20261021T2304479604491Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261021T2304479917675Z-0f890d574e594af9bb03b359fde01f7b`; native-result interval 23:04:55.4792468Z-23:06:31.4880007Z (96004ms) includes fixture setup.
+Bounded installed getter inspection explains it: BlueprintWeaponType subtracts4ft for raw ranges<=10ft. The private raw5ft therefore yielded2ft minimum. Current correction uses raw9ft to obtain the printed effective5ft without changing a donor or adding a reach patch. Observer now retains raw/type/entity reach and exact private weapon GUID. Core/full/AI on this corrected artifact remain required; full/AI stay separate fresh processes after the earlier detected combat residue.
 
-Observed: all existing adult/signed-claw/DR/energy/descriptor-buff/no-SR checks passed; native template absent and summon marker retained. The borrowed claw actually has two-foot reach: an independent printed-five-foot check failed. The original 2.2m contact was outside native ApproachRadius 2.0096m; measured 1.9596m contact admitted the issued single attack. Native roll 17, attack +2, one 1d4 claw packet dealt 4; command Success and one ordinary standard-action cost, fixture attack commands=1, forced rolls=0. CanAct/conscious/enemy/view predicates were true. Then reset-before-full detected targetOutOfCombat=false (all other recorded reset predicates true); it stopped and left full/AI unrun. No forced protected-party cleanup.
-
-Last successful bootstrap: 08cb4271, 6/6, actual conscious Int0/HP13/BAB2/two-primary-claw plan and exact 1156 public choices with 8 hidden routes. Every artifact/receipt here is development evidence, never release qualification.
+Last successful bootstrap08cb4271:6/6, conscious Int0/HP13/BAB2/two-primary-claw plan and exact1156 public choices/8hidden routes. These are development observations, never release qualification. Earlier tuples/verdicts remain in immutable local evidence and git history.
 
 ## Current coherent correction and disposition
 
@@ -53,7 +46,7 @@ Owner decision: Hound uses general PF1 attack-role rules with live Strength; dis
 
 ## Transactions and final dependency plan
 
-All eight game transactions restored actual protected intake exactly, including independent comparison: current human mod v0.0.117, Mods967 entries, 118 saves/metadata/original Working, 18 references, sound bank, 83 settings, tasks0/processes1(Steam), no owned game/lease/lock. Counts are observations, never future restoration authority. No save has been loaded/written. Current laptop is restored.
+All nine game transactions restored actual protected intake exactly, including independent comparison: current human mod v0.0.117, Mods967 entries, 118 saves/metadata/original Working, 18 references, sound bank, 83 settings, tasks0/processes1(Steam), no owned game/lease/lock. Counts are observations, never future restoration authority. No save has been loaded/written. Current laptop is restored.
 
 One writer/runtime owner. Current guarded unelevated Steam App640820 and fresh intake each transaction; immutable baseline/other saves. Complete the corrected small Lemure slice, then early Dretch cloud; prove Hound/Lantern shared archon source isolation and one support decision, then early Trumpet prepared-slot/action/ownership before bulk caster setup/final art. Pause dependent expansion behind shared failures. For Dretch use the general native cloud: the existing mephit helper intentionally excludes allies under a different charter and is not its mapping.
 
@@ -81,5 +74,6 @@ Bounded capture resolved four exact donors/canonical consumers; six species-name
 | e908e25b | Seventh game readiness stopped before attack; missing predicate attribution repaired. Eighth game measured the borrowed contact out of native range and succeeded at legal contact. |
 | 38a94864 | Eighth game: two-foot reach product defect, actual single attack PASS, retained target combat state detected before full. Separate fixed fresh-process phases selected; full/AI unrun. |
 | 410e7231 | No-game build stopped before compile: private-claw ledger append left the authoring registry hash stale. Updated only its current hash/authorization; historical published pin, protected images and rejection tests preserved. |
+| 55f86bc2 | Ninth game30 PASS/1 FAIL: private raw5ft still native2ft. Getter subtracts4ft; scoped raw9ft correction selected. New ability immunities and private-item single attack passed. Full/AI unrun. |
 
-Eight completed development packages; failed attempts/refusals remain immutable and compiler/build-attempt totals will use actual logs. Backup per-file Host listing alone previously took at least173.3s before copying. Moving only that listing to Verbose preserved all guards/copy/restoration; later backup-stamp-to-deployment intervals were about10-12s inclusive, a different interval. Native-result durations include fixture setup; useful-observation/restoration subdivisions remain unmeasured where timestamps do not establish them. No clean throughput ratio or overall speedup inferred; final combined qualification/publication and comparable S28/S29 timing assessment remain.
+Nine completed development packages; failed attempts/refusals remain immutable and compiler/build-attempt totals will use actual logs. Backup per-file Host listing alone previously took at least173.3s before copying. Moving only that listing to Verbose preserved all guards/copy/restoration; later backup-stamp-to-deployment intervals were about10-12s inclusive, a different interval. Native-result durations include fixture setup; useful-observation/restoration subdivisions remain unmeasured where timestamps do not establish them. No clean throughput ratio or overall speedup inferred; final combined qualification/publication and comparable S28/S29 timing assessment remain.
