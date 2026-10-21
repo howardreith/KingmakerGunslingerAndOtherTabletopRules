@@ -522,7 +522,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         plan.Count == spec.Counts[index] &&
                         primary == (index == 1 ? 1 : spec.Counts[index]) &&
                         secondary == (index == 1 ? 1 : 0) &&
-                        (index == 2 || weapon.AttackRange.Value == 15) &&
+                        (index == 2 || Math.Abs(attack.ApproachRadius -
+                            (owner.Corpulence + fixture.Hostile.Corpulence +
+                                15f * 0.3048f)) < .05f) &&
                         (bool)rule["ownerExact"] &&
                         (bool)rule["nonRemovable"] &&
                         (index != 0 || spec.Key != "cloud-giant" ||
@@ -550,8 +552,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 weapon.Blueprint.Type.CriticalRollEdge,
                             ["configuredRangeFeet"] =
                                 weapon.Blueprint.Type.AttackRange.Value,
+                            ["expectedMeleeCommandRadiusMeters"] =
+                                owner.Corpulence + fixture.Hostile.Corpulence +
+                                15f * 0.3048f,
                             ["commandRadiusMeters"] = attack.ApproachRadius },
-                        "Native equipped mode matches printed attack, damage, melee range and separate full-attack routine.");
+                        "Native equipped mode matches printed attack, damage, command reach beyond collision radii, and separate full-attack routine.");
                 }
             }
         }

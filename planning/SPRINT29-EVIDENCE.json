@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; MODE_ARITHMETIC_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; MODE_REACH_OBSERVER_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -66,6 +66,15 @@
     "artifactDllSha256": "41a97962ecd62694ba862ab3514379b43c42a70017fdc9165a4c82aec9505bd7",
     "artifactMvid": "41df813d-459e-48d8-aeeb-a07b97df30c6",
     "result": "FAIL: Ettin native paired penalties gave flail first attacks +6/+2 and javelins -1/-5; Cloud oversized flat bonus gave morningstar +24; Cloud and Storm equipped melee range was 15 feet but observer wrongly required the engine's 12-foot body stat to equal 15",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "modeArithmeticFollowup": {
+    "source": "59e4425e0cc6708285a1887648b9908d35dc9f87",
+    "runId": "20261021T0431395417686Z-b7a49cf2e03c42c3bad001d73ee11941",
+    "artifactZipSha256": "18704a28b79bf79416e83ad194b4701b1e0ddc91cb4fa29268a310f4443fb99b",
+    "artifactDllSha256": "1a200b8bff5285ae4acd26fcbb3924dc5560ad2ac17e7f86e4650090c303fa93",
+    "artifactMvid": "3e2986fd-eb80-4415-8003-ee359b5c2fa6",
+    "result": "FAIL 4/18: all Ettin paired and Cloud/Storm attack-damage predicates passed; four Cloud/Storm melee modes failed the observer's raw 15-foot weapon range assertion. Native command radius was 8.3056 m, including owner and target collision radii. A revised command-radius check requires native rerun.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
