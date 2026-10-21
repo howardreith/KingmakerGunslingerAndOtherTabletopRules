@@ -319,6 +319,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "The private action now snapshots force-move chunks before its native maneuver, adopts and caps its single new native chunk at 10 feet, and avoids a second push. The observer requires exactly one bounded active chunk. Focused compilation and native recheck pending."
   },
+  "awesomeBlowBoundedDevelopment": {
+    "source": "3718fd94c8a0a1b6b38a7649f57db7a3314b910b",
+    "runId": "20261021T1007516981820Z-bc170c87da4a42519ea808c3caa4a24d",
+    "artifactZipSha256": "a6c9b3b1329eb08d72581be18a7a6fb36cedcf0f5d81281b457675ec7272f2db",
+    "artifactDllSha256": "7829568f60a76040ece1afaac9c5121c9f19d83c9507cd5dbf848f84bf33414f",
+    "artifactMvid": "5e9ff070-dfdf-46b3-8fb1-290102d7694a",
+    "result": "FAIL at blocked case: the Cloud open action passed with one native chunk capped to 3.048 m, actual 3.045 m displacement, one slam damage packet, native success and prone request. Storm blocked action had one capped chunk, 1.784 m displacement and one slam damage packet, but no victim collision packet was recorded and prone was false at frame samples. Failure and immune cases did not execute.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Installed UnitPartForceMove.Update removes the completed part before Harmony Postfix; the callback now inspects its retained exact chunk even when the part is absent, while still dropping interrupted chunks. The disposable target's native prone state is reset between independent cases and both requested and active state are recorded. Focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
