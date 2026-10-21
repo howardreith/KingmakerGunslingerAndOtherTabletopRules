@@ -17,6 +17,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "disarm" || phase == "catch" || phase == "ai" ||
                 phase == "ai-turns" || phase == "cleave" || phase == "routes";
         }
+        internal static bool Sprints30And31Phase(string phase)
+        { return phase == "bootstrap"; }
         internal static bool Sprint29Phase(string phase)
         { return phase == "profiles" || phase == "modes" ||
             phase == "commands" || phase == "turns" ||
@@ -122,6 +124,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return parameters == 1 && Sprint28Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview)
                 return parameters == 1 && Sprint29Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview)
+                return parameters == 1 && Sprints30And31Phase(reviewPhase);
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,

@@ -185,6 +185,12 @@ namespace KingmakerGunslinger.Blueprints
                 descriptor.Descriptor |= celestial ? SpellDescriptor.Good :
                     SpellDescriptor.Evil;
             }
+            // The S30 Lemure has lawful/evil subtypes. Set the actual spell
+            // descriptors on this new owned route, preserving class-specific
+            // native eligibility rather than imposing a global caster alignment.
+            if (variant.Creature.Key == "lemure")
+                target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
+                    .Descriptor |= SpellDescriptor.Law | SpellDescriptor.Evil;
             if (alignmentMode.HasValue)
                 AppendAlignmentAction(target.ComponentsArray,
                     alignmentMode.Value);

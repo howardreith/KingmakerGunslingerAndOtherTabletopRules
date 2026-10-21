@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  129,
+    "count":  130,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3708,7 +3708,9 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
-
+                                               "KMG.Summoning.Ability.SNA.Tier8.CloudGiant.One",
+                                               "KMG.Summoning.Ability.SNA.Tier9.CloudGiant.OneD3",
+                                               "KMG.Summoning.Unit.CloudGiant"
                                            ]
                   },
                   {
@@ -3723,7 +3725,8 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
-
+                                               "KMG.Summoning.Ability.SNA.Tier9.StormGiant.One",
+                                               "KMG.Summoning.Unit.StormGiant"
                                            ]
                   },
                   {
@@ -3738,7 +3741,35 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
-
+                                               "KMG.Summoning.Ability.SNA.Tier5.Ettin.One",
+                                               "KMG.Summoning.Ability.SNA.Tier6.Ettin.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Ettin.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Ettin.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Ettin.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Ettin"
+                                           ]
+                  },
+                  {
+                      "key":  "lemure",
+                      "displayName":  "Lemure",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/lemure.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/lemure.png",
+                      "sourceSha256":  "b742a9462547674ecde44fac7e52a3b0cbcc6b278fe84c76a678d48cc30faf18",
+                      "outputSha256":  "c03bc1c797069cb6646d59519ca7ba8859a34ef9152d7f309cef98ffc05790b9",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier2.Lemure.One",
+                                               "KMG.Summoning.Ability.SM.Tier3.Lemure.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier4.Lemure.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier5.Lemure.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier6.Lemure.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier7.Lemure.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.Lemure.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.Lemure.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Lemure"
                                            ]
                   }
               ]

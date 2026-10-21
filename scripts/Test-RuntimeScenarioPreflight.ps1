@@ -177,6 +177,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
+    'disposable-expanded-summoning-sprints30-31-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
@@ -1930,6 +1931,13 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
     $s29RequestArgs.ExitAfterCompletion = $false
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s29RequestArgs } ('s29-save-reject-no-exit-' + $phase)
 }
+
+$s3031Args = @{Scenario='disposable-expanded-summoning-sprints30-31-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='bootstrap'})) 's30-31-hidden-bootstrap-admitted'
+foreach($bag in @(@{}, @{reviewPhase='Bootstrap'}, @{reviewPhase='profiles'}, @{reviewPhase='bootstrap';extra='x'}, @{ReviewPhase='bootstrap'})) {
+    Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters $bag} 's30-31-hidden-bootstrap-invalid-scope-refused'
+}
+Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='bootstrap'}} 's30-31-hidden-bootstrap-no-exit-refused'
 
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"
