@@ -33,9 +33,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint29ReviewPhase(_request);
-            Sprint25Check("phase", phase == "profiles" || phase == "modes",
+            Sprint25Check("phase", phase == "profiles" || phase == "modes" ||
+                phase == "commands",
                 new JObject { ["phase"] = phase },
                 "Exactly one implemented Sprint 29 native review phase.");
+            if (phase == "commands")
+            {
+                foreach (int frame in ReviewSprint29Commands(fixture))
+                    yield return frame;
+                yield break;
+            }
             if (phase == "modes")
             {
                 foreach (int frame in ReviewSprint29Modes(fixture))
