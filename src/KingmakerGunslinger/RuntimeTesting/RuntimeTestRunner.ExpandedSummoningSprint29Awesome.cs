@@ -160,6 +160,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             UnitPartForceMove part = target
                                 .Get<UnitPartForceMove>();
+                            UnitPartForceMove.Chunk active = part == null ?
+                                null : part.Chunks.FirstOrDefault();
                             bool force = part != null &&
                                 part.Chunks.Any();
                             if (force) sawForce = true;
@@ -182,6 +184,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["frame"] = sampledFrames,
                                     ["displacement"] = displacement,
                                     ["force"] = force,
+                                    ["chunkPassed"] = active == null ?
+                                        (float?)null : active.PassedDistance,
+                                    ["chunkMaximum"] = active == null ?
+                                        (float?)null : active.MaxDistance,
+                                    ["chunkSpeed"] = active == null ?
+                                        (float?)null : active.Speed,
                                     ["prone"] = proneNow,
                                     ["damageCount"] =
                                         events.Damage.Count });
@@ -230,7 +238,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     economy.Exact(command, false);
                                 bool expected = spec.Case == "open" ?
                                     success && events.Damage.Count == 1 &&
-                                    moved >= 2.85f &&
+                                    moved >= 2.85f && moved <=
+                                        new Feet(10).Meters + .1f &&
                                     proneSeen :
                                     spec.Case == "blocked" ?
                                     success && events.Damage.Count == 2 &&

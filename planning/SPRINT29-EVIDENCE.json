@@ -299,6 +299,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "The exact-owner action now passes a unit direction to native Push. The observer records displacement and prone during the force-move chunk, separating its completed position from later target motion. Focused compilation and native recheck pending."
   },
+  "awesomeBlowOvershootDiagnostic": {
+    "source": "4105be526fe789daa44a3a432c1fe50dbc1f24ba",
+    "runId": "20261021T0940225830375Z-895461a063184208b4c29abe55fca656",
+    "artifactZipSha256": "bc5750d41db5269d97be027a70d88170571c7fde238b078af49822a88a5b33e0",
+    "artifactDllSha256": "1baa7fa2fdbea6933dcf5cc3f565f8d42fb0c602842cb90801ff6aac5d16717c",
+    "artifactMvid": "7cc8b78c-80f1-4c43-9d3b-40006fc284be",
+    "result": "NONQUALIFYING despite runtime-result.json PASS 15/15: frame observations show the exact Cloud open force-move chunk traveled 34.53 m for a 3.048 m request. The observer had a lower bound but omitted an upper bound. Storm blocked movement stopped at 2.14 m with two target damage packets; failure and immune cases caused zero displacement/damage. The open overshoot is a product defect, not later AI motion.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The exact-owner Harmony prefix now caps each native force-move tick at its remaining 10-foot path before the installed navmesh trace, then removes the completed chunk. The observer requires an upper displacement bound and records native chunk distance/speed. Focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
