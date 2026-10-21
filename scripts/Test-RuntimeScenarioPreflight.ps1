@@ -878,7 +878,7 @@ Assert-True (-not $cleanup2Metadata.RequiresSaveName -and $null -eq $cleanup2Met
     -not $cleanup2Metadata.RequiresManualInteraction -and $cleanup2Metadata.ReadinessBehavior -ceq 'mod-load' -and
     -not $cleanup2Metadata.UsesCatalogTimeout -and -not $cleanup2Metadata.UsesSelectionTimeouts -and
     -not $cleanup2Metadata.UsesWorkingStageTimeouts) 'cleanup2-is-save-free-mod-load-review'
-foreach($phase in @('giant-lineup','menus','elementals','bodies')) {
+foreach($phase in @('giant-lineup','menus','elementals','bodies','cloth-probe')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "cleanup2-admits-$phase"
     $cleanup2Request=New-KmgRuntimeRequest @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot ('cleanup2-preflight-'+$phase))
     $cleanup2RoundTrip=$cleanup2Request | ConvertTo-Json -Depth 10 | ConvertFrom-Json

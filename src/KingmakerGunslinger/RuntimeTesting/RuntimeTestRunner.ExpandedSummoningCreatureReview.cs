@@ -662,6 +662,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Ungulate art review has no walkable party anchor.");
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
+            // Save-free callers own a caster without putting it in the human
+            // party. Use that exact anchor for separation rather than treating
+            // an empty party as zero clearance at every candidate point.
+            if (party.Length == 0) party = new[] { anchorCaster };
             Vector3 selected = Vector3.zero;
             int bestClearance = -1, candidates = 0;
             float bestPartyGap = float.MaxValue;
@@ -1799,11 +1803,90 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager manager =
                 unit.View == null ? null : unit.View.AnimationManager;
-            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle handle =
-                manager == null ? null : manager.CreateHandle(type, false);
+            RecordRefinementAnimationInventory(unit, manager, type);
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle handle = null;
+            if (manager != null && type ==
+                Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.MainHandAttack)
+            {
+                // This command is never queued or executed. Native planning
+                // chooses the actor's real available hand; native animation
+                // creation then selects its special/natural attack or weapon
+                // style, attack count and variant. MainHandAttack alone is
+                // not the native animation type for most animal weapons.
+                var planning = new UnitAttack(unit);
+                planning.Init(unit);
+                List<AttackHandInfo> attacks = planning.CreateSingleAttack();
+                AttackHandInfo attack = attacks == null ? null : attacks.FirstOrDefault();
+                if (attack != null)
+                {
+                    Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType actual;
+                    Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType special;
+                    int previous;
+                    attack.GetAnimationType(out actual, out special, out previous, null);
+                    bool actionPresent = actual == Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.SpecialAttack
+                        ? special != Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType.None &&
+                            manager.GetAction(special) != null
+                        : actual != Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.None &&
+                            manager.GetAction(actual) != null;
+                    _refinementRecords.Add("animation-native-attack:weapon=" + attack.Weapon.Blueprint.AssetGuid +
+                        ";hand=" + attack.Hand.GetType().Name + ";type=" + actual + ";special=" + special +
+                        ";previous=" + previous + ";actionPresent=" + actionPresent);
+                    if (actionPresent)
+                    {
+                        attack.CreateAnimationHandleForAttack(null);
+                        handle = attack.AnimationHandle;
+                    }
+                }
+                else _refinementRecords.Add("animation-native-attack:no-native-single-attack-hand");
+            }
+            else if (manager != null) handle = manager.CreateHandle(type, false);
             if (handle != null) manager.Execute(handle);
             _refinementRecords.Add("animation:" + type + ";handle=" + (handle != null));
+            if (handle != null)
+                _refinementRecords.Add("animation-state:" + type + ";started=" + handle.IsStarted +
+                    ";finished=" + handle.IsFinished + ";interrupted=" + handle.IsInterrupted +
+                    ";activeAnimation=" + (handle.ActiveAnimation != null) +
+                    ";action=" + (handle.Action == null ? "<null>" : handle.Action.GetType().FullName));
             return handle;
+        }
+
+        private void RecordRefinementAnimationInventory(UnitEntityData unit,
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager manager,
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType requested)
+        {
+            // Diagnostic reads only. Missing Hit must remain a missing handle;
+            // another enum/action/clip is never relabelled as a hit reaction.
+            try
+            {
+                if (manager == null)
+                {
+                    _refinementRecords.Add("animation-inventory:requested=" + requested + ";manager=<null>");
+                    return;
+                }
+                var actions = manager.ActionSet.Take(65).ToArray();
+                _refinementRecords.Add("animation-inventory:requested=" + requested +
+                    ";manager=" + manager.GetInstanceID() + ";type=" + manager.GetType().FullName +
+                    ";animationSet=" + (manager.AnimationSet == null ? "<null>" : manager.AnimationSet.name) +
+                    ";viewMatches=" + ReferenceEquals(manager.View, unit.View) +
+                    ";isStopping=" + manager.IsStopping + ";hasRequestedAction=" +
+                    (manager.GetAction(requested) != null) + ";actions=" + Math.Min(actions.Length, 64) +
+                    ";truncated=" + (actions.Length > 64));
+                foreach (var action in actions.Take(64))
+                {
+                    var clips = (action.Clips ?? Enumerable.Empty<AnimationClip>()).Where(value => value != null)
+                        .Take(9).ToArray();
+                    _refinementRecords.Add("animation-action:requested=" + requested + ";type=" + action.Type +
+                        ";class=" + action.GetType().FullName + ";name=" + action.name +
+                        ";clips=" + string.Join("|", clips.Take(8).Select(value => value.name + ":" +
+                            value.length.ToString("0.###", CultureInfo.InvariantCulture)).ToArray()) +
+                        ";clipsTruncated=" + (clips.Length > 8));
+                }
+            }
+            catch (Exception error)
+            {
+                _refinementRecords.Add("animation-inventory:requested=" + requested + ";error=" +
+                    error.GetType().Name + ":" + error.Message);
+            }
         }
 
         private void EndRefinementAnimation()

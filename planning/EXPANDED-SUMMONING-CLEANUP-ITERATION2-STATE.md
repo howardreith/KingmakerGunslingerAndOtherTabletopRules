@@ -283,6 +283,63 @@ inactive parent effect/rank graphs while retaining active child, source-book,
 identity-sensitive feature and special-source differences; no equivalence waiver
 has been applied.
 
+### Frozen review2 and baseline motion observations
+
+Review2 sourcef357ef09249a995fcb72fca974000bbf3f3f1d24 has a valid development
+receipt for purpose summon-cleanup-iteration2. Build outer exit0;72/72 selected
+tests PASS of2716, runner4.7s, exact-reference production/package validation PASS.
+Package SHA-256f3a2df78e2a9e2047203bd94238a624c4bef5b907858012c48bdf187da70fc06;
+DLL45df5f642234a0b554af4216a9ce5c82e7ea91afdeda62666a8e6c6547bb309c;
+MVIDcfb63206-f16a-49fa-83d2-e52f527322b8;
+source fingerprint e873be0ad1cfdec490d2a4571f7f74bedb065503e599be3ede39714486605846.
+Its own frozen worktree and receipt remain immutable as main observer work continues.
+
+Baseline489 bodies run20261021T2344278771330Z-14d505db922b48e9bade083969db346c
+FAILED in279.724s. All nine actual canonical casts/appearances passed and every
+target has9still/108tracking files plus5.686–6.061m native travel. Seven attack
+handles and all nine hit handles were null (Girallon/Ettin attack handles were
+present), so no complete motion/attack acceptance is claimed. Native PNGs for
+Crab, Griffon and Stag Beetle were inspected: baseline anatomy complaints are
+visible; Griffon also has foreground caster overlap. Preserve this failure and
+reuse its valid still/movement evidence where appropriate. A narrow actual
+animation-contract fix is underway; no unchanged failing bodies run is selected.
+
+The art floor helper also assumes a nonempty human party. In the save-free
+fixture partyGap became0 for every candidate and placement always retained the
+summon location. The current fix uses only the exact fixture anchor when party
+is empty; ordinary working-save party logic is unchanged. This changed observer
+needs affected native evidence. Baseline body transaction restoration was
+verified before entering the independent review2 Elemental diagnostic.
+
+Review2 Elemental run20261021T2351004630520Z-1c7e731b1f884824a0734fbc6bacbe88
+FAILED in70.280s before the census: the save-free observer dereferenced a null
+working-save monitor. Reflection-only decoding of its exact compiled iterator
+IL0152–0158 established the cause. The guard now checks monitor presence; no
+production equivalence or visibility rule was relaxed. Transaction
+compat-20261021T234958Z-11ce4f762478 restored/verified true before the next phase.
+
+Review2 giant run20261021T2355189188122Z-a2a19d9b20c94769901ae09549a8aef6
+FAILED in71.790s. All seven settled actor identity/hierarchy/material observations
+were retained. The report's JObject.FromObject(dictionary) met the game's global
+dictionary-as-array serializer and threw before publishing ground results.
+The report now builds explicit JProperty entries. Neither a common plane nor
+height calibration is claimed from that failure. The current actor material
+metadata also records Texture2D format/readability and active color space for
+future exact palette admission; this is diagnostic, not palette activation.
+
+The next batched observer uses actual native AttackHandInfo animation selection
+and bounded action/clip inventory; missing native Hit actions remain missing.
+See CLEANUP2-BODY-ANIMATION-NOTES.md. A targeted Frost Cloth probe is admitted
+without Cloth/collider/skeleton/scale writes; it must demonstrate actual positive
+pose and geometry updates before a render-only cape approach can be chosen.
+Cloud/Storm scoped palette source and four cases are integrated but proof
+registry/hooks remain empty. No active scale or palette success is claimed.
+Current combined source compiled in11.2s and31/31 selected tests PASS (runner0.3s,
+domain2.4s). The first compile's JArray/JObject observer type mismatch was fixed;
+its log remains. Isolated runtime preflight now800/800 PASS. New Cloth reference
+is exported from the actual2.1.7b installation into a separate private bundle;
+all older source-bound bundles/artifacts remain unchanged.
+
 ### Revised asset identities at the first checkpoint
 
 | Project file | SHA-256 |

@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "overrun" || phase == "great-cleave";
         }
         internal static bool Cleanup2Phase(string phase)
-        { return phase == "giant-lineup" || phase == "menus" || phase == "elementals" || phase == "bodies"; }
+        { return phase == "giant-lineup" || phase == "menus" || phase == "elementals" || phase == "bodies" || phase == "cloth-probe"; }
         internal static bool Sprint28Phase(string phase)
         {
             return phase == "profiles" || phase == "modes" ||

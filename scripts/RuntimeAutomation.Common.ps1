@@ -2250,7 +2250,7 @@ function Test-KmgCleanup2ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     return $Scenario -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and @($Parameters.Keys)[0] -ceq 'reviewPhase' -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('giant-lineup','menus','elementals','bodies')
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('giant-lineup','menus','elementals','bodies','cloth-probe')
 }
 
 function Test-KmgSprint27ReviewPhaseScope {
