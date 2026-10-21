@@ -295,7 +295,7 @@ namespace KingmakerGunslinger.Blueprints
                 boltSymbol);
             BlueprintBuff state = Require<BlueprintBuff>(bySymbol,
                 stateSymbol);
-            Sprint29CallLightning(library, call, bolt, state,
+            Sprint29CallLightning(library, unit, call, bolt, state,
                 callSymbol, boltSymbol, stateSymbol, callResource);
             BlueprintAbility chain = Require<BlueprintAbility>(bySymbol,
                 chainSymbol);
@@ -403,7 +403,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void Sprint29CallLightning(
-            LibraryScriptableObject library, BlueprintAbility activation,
+            LibraryScriptableObject library, BlueprintUnit unit,
+            BlueprintAbility activation,
             BlueprintAbility bolt, BlueprintBuff state,
             string activationSymbol, string boltSymbol, string stateSymbol,
             BlueprintAbilityResource resource)
@@ -449,6 +450,13 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException(
                     "Native Call Lightning state changed its bolt grant.");
             grant.Facts = new BlueprintUnitFact[] { bolt };
+            var refresh = ScriptableObject.CreateInstance<
+                Sprint29StormLightningBrainRefresh>();
+            refresh.OwningBlueprint = unit;
+            refresh.State = state;
+            refresh.Bolt = bolt;
+            state.ComponentsArray = state.ComponentsArray.Concat(
+                new BlueprintComponent[] { refresh }).ToArray();
             BlueprintComponent replacement = state.ComponentsArray.Single(value =>
                 value != null && value.GetType().Name ==
                     "ReplaceAbilityParamsWithContext");

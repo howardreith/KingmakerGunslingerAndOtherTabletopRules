@@ -208,6 +208,16 @@
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "nextDiagnostic": "Record the live granted bolt's AbilityData availability/target legality and native brain action list after activation, then repair only the demonstrated exact-owner AI cause. The changed observer compiled with two focused Sprint 29 domain tests; no diagnostic native result yet."
   },
+  "stormAiBoltDiagnostic": {
+    "source": "e8ac02a389af82c4d15e15e2eae41bdf39b2e7f3",
+    "runId": "20261021T0724014008198Z-d10857ad5f6240749e6e709345f40724",
+    "artifactZipSha256": "6ec4438a97d4f003d62106a0a076e84c358f8e101a166e45078a7f6d2ad8b0d9",
+    "artifactDllSha256": "f7d7100bf7a6f8443feb0cec30edaca7e9836ddc12e6a3694ee95f810c594be6",
+    "artifactMvid": "c96f719e-6d6f-43ba-987c-b03236447da7",
+    "result": "FAIL: after successful autonomous Call Lightning activation, the live granted bolt AbilityData was available and could target the hostile, but native Brain.AvailableActions contained only StormCallAi and AttackAiAction, never StormBoltAi; seven later decisions chose attacks. This isolates the missing AI action refresh after the state grants its child ability.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The exact Storm private Call Lightning state now refreshes its owner's native brain after its native AddFacts grant through a state-local component. Focused production compilation and two Sprint 29 domain tests pass; native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
