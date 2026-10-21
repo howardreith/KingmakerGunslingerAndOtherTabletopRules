@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // owner and an awake visible hostile per case. Rolls remain random;
         // the fixture neither issues an attack nor supplies a hit.
         private IEnumerable<int> ReviewSprint29Commands(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
@@ -68,7 +68,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Full=true, Count=3, Off=0,
                         Main="KMG_Summoning_Giant_Sprint29_StormCompositeBow3d6",
                         Secondary="" }
-                })
+                }.Where(value => !turnBased ||
+                    value.Key == "ettin" &&
+                        (value.Name == "flail-full" ||
+                         value.Name == "javelin-full") ||
+                    value.Key == "cloud-giant" &&
+                        value.Name == "morningstar-full" ||
+                    value.Key == "storm-giant" &&
+                        value.Name == "bow-full"))
                 {
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
                         fixture, spec.Key);
@@ -132,6 +139,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Sprint 29 command has no legal visible lane.");
                         owner.JoinCombat(); target.JoinCombat();
                         owner.Memory.Add(target); target.Memory.Add(owner);
+                        JObject admission = null;
+                        if (turnBased)
+                        {
+                            admission = new JObject();
+                            foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                                new[] { owner }, target, admission))
+                                yield return frame;
+                            for (int frame = 0; frame < 500 &&
+                                !Sprint18OwnerIsActing(owner); frame++)
+                                yield return 0;
+                            bool acting = (bool)admission["admitted"] &&
+                                Sprint18OwnerIsActing(owner);
+                            Sprint25Check(spec.Key + "-" + spec.Name +
+                                "-turn-admission", acting,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["target"] = target.UniqueId,
+                                    ["admission"] = admission,
+                                    ["turn"] = Sprint22TurnState(owner, target) },
+                                "The exact hidden owner receives a native turn before its own command.");
+                            if (!acting) throw new InvalidOperationException(
+                                "Sprint 29 native owner turn admission failed.");
+                        }
                         int before = target.Descriptor.Damage;
                         ItemEntityWeapon main = owner.Body.PrimaryHand.MaybeWeapon;
                         ItemEntityWeapon off = owner.Body.SecondaryHand.MaybeWeapon;
@@ -190,7 +219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         owner.Descriptor)) &&
                                     observer.Damage.Count == hits &&
                                     economy.Count(command) == 1 &&
-                                    economy.Exact(command, false) &&
+                                    economy.Exact(command, turnBased) &&
                                     !command.Cutscene &&
                                     !command.IsIgnoreCooldown &&
                                     !target.Descriptor.State.IsDead;
@@ -198,6 +227,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     "-resolved", exact,
                                     new JObject { ["owner"] = owner.UniqueId,
                                         ["target"] = target.UniqueId,
+                                        ["turnBased"] = turnBased,
+                                        ["admission"] = admission,
                                         ["weapon"] = main?.Blueprint?.name,
                                         ["offhand"] = off?.Blueprint?.name,
                                         ["finished"] = command.IsFinished,
