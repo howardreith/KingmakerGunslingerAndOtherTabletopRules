@@ -62,7 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ReviewSprint29Awesome(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture, bool turnBased)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
@@ -89,7 +89,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { Key="cloud-giant", Case="same-size" },
                     new { Key="storm-giant", Case="incorporeal" },
                     new { Key="cloud-giant", Case="cancel" }
-                })
+                }.Where(value => !turnBased ||
+                    value.Case == "open" || value.Case == "blocked"))
                 {
                     ResetExpandedSummoningHostile(fixture);
                     // Every case starts with the same disposable standing
@@ -175,6 +176,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // A preexisting disposable-target command must not
                         // contaminate the post-impact displacement sample.
                         target.Commands.InterruptAll(true);
+                        JObject admission = null;
+                        if (turnBased)
+                        {
+                            admission = new JObject();
+                            foreach (int frame in Sprint22EnrollTurnBasedOwners(
+                                new[] { owner }, target, admission))
+                                yield return frame;
+                            for (int frame = 0; frame < 500 &&
+                                !Sprint18OwnerIsActing(owner); frame++)
+                                yield return 0;
+                            bool acting = (bool)admission["admitted"] &&
+                                Sprint18OwnerIsActing(owner);
+                            Sprint25Check("s29-awesome-" + spec.Case +
+                                "-turn-admission", acting, new JObject {
+                                    ["owner"] = owner.UniqueId,
+                                    ["target"] = target.UniqueId,
+                                    ["admission"] = admission,
+                                    ["turn"] = Sprint22TurnState(owner, target) },
+                                "The exact hidden giant receives a native turn before its Awesome Blow action.");
+                            if (!acting) throw new InvalidOperationException(
+                                "Sprint 29 Awesome Blow turn admission failed.");
+                        }
                         int damageBefore = target.Descriptor.Damage;
                         Vector3 start = target.Position;
                         var events = new Sprint29AwesomeEvents {
@@ -354,6 +377,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["proneRequested"] = target.Descriptor
                                             .State.Prone.ShouldBeActive,
                                         ["costs"] = costs,
+                                        ["turnBased"] = turnBased,
+                                        ["admission"] = admission,
                                         ["commandFinished"] = command
                                             ?.IsFinished,
                                         ["commandResult"] = command
