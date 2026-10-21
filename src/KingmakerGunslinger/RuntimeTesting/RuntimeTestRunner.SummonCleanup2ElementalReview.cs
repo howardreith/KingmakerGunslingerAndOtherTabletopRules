@@ -41,7 +41,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Parameters.Count != 1 || (string)_request.Parameters["reviewPhase"] != "elementals" ||
                 fixture == null || fixture.Caster == null || fixture.Caster.Blueprint != fixture.CasterBlueprint ||
                 fixture.CasterBlueprint == BlueprintRoot.Instance.DefaultPlayerCharacter ||
-                fixture.UnitsBefore.Any(value => ReferenceEquals(value, fixture.Caster)) || _workingSaveSmoke.WriteObserved)
+                fixture.UnitsBefore.Any(value => ReferenceEquals(value, fixture.Caster)) ||
+                (_workingSaveSmoke != null && _workingSaveSmoke.WriteObserved))
                 throw new InvalidOperationException("Exact save-free disposable elemental review fixture required.");
 
             BlueprintSpellList[] ordinaryLists = fixture.Blueprints.OfType<BlueprintSpellList>()

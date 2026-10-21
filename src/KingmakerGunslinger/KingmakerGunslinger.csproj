@@ -154,6 +154,8 @@
     <Compile Include="Summoning\SummonChoicePresentationPolicy.cs" />
     <Compile Include="Summoning\GiantSummonPresentationPolicy.cs" />
     <Compile Include="Summoning\GiantSummonPresentationPatch.cs" />
+    <Compile Include="Summoning\GiantSummonPalettePolicy.cs" />
+    <Compile Include="Summoning\GiantSummonPaletteRuntime.cs" />
     <Compile Include="Summoning\StandaloneElementalPresentationPolicy.cs" />
     <Compile Include="Summoning\StandaloneElementalDiscoveryPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalInvocationContract.cs" />
@@ -473,6 +475,10 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.ClothModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
@@ -1313,6 +1319,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Bodies.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ClothProbe.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Commands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Magic.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Ai.cs" />
@@ -1852,6 +1859,7 @@
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.CoreModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.ClothModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.UI.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.UIModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.TextRenderingModule.dll" />

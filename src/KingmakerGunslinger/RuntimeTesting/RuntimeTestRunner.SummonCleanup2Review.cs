@@ -119,6 +119,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2Bodies(fixture, book)) yield return frame;
                 else if (phase == "elementals")
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
+                else if (phase == "cloth-probe")
+                    foreach (int frame in ReviewSummonCleanup2ClothProbe(fixture, book)) yield return frame;
                 else if (phase == "menus")
                 {
                     _sprint25WaitingForUnityAppearance = true;
@@ -515,7 +517,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["candidateCount"] = attempts.Count, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                 ["candidateLimit"] = 1764, ["wallLimitSeconds"] = 15,
                 ["selected"] = selected?.Document, ["attempts"] = attempts,
-                ["refusals"] = JObject.FromObject(refusals),
+                ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
                 ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
             Cleanup2Check("lineup-ground-survey", selected != null, diagnostic,
                 "A bounded courtyard search finds seven adequately separated native ground positions on a nondegenerate measured common plane.");
@@ -709,11 +711,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["name"] = value.name, ["instance"] = value.GetInstanceID(),
                     ["width"] = value.width, ["height"] = value.height,
                     ["type"] = value.GetType().FullName,
+                    ["texture2DFormat"] = value is Texture2D ? ((Texture2D)value).format.ToString() : null,
+                    ["texture2DReadable"] = value is Texture2D ? (JToken)new JValue(((Texture2D)value).isReadable) : JValue.CreateNull(),
                     ["scale"] = new JArray(material.GetTextureScale(name).x, material.GetTextureScale(name).y),
                     ["offset"] = new JArray(material.GetTextureOffset(name).x, material.GetTextureOffset(name).y) };
             }
             Texture texture = material.HasProperty("_MainTex") ? material.GetTexture("_MainTex") : null;
             return new JObject { ["name"] = material.name, ["instance"] = material.GetInstanceID(),
+                ["activeColorSpace"] = QualitySettings.activeColorSpace.ToString(),
                 ["shader"] = material.shader?.name, ["renderQueue"] = material.renderQueue,
                 ["properties"] = properties, ["colors"] = colors, ["textures"] = textures,
                 ["color"] = material.HasProperty("_Color") ? new JArray(material.color.r, material.color.g, material.color.b, material.color.a) : null,

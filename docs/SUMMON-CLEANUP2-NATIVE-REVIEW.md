@@ -3,7 +3,7 @@
 This mission adds one exact save-free request scenario:
 `disposable-expanded-summoning-cleanup2-native-review`.
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
-The admitted phases are `giant-lineup`, `menus`, `elementals` and `bodies`; no save, import, extra
+The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies` and `cloth-probe`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
 ## Execution boundaries
@@ -57,6 +57,15 @@ casts, resources and positive-owned summon provenance. This phase does not open
 an unowned level-up controller or claim visible PC/console learning UI evidence;
 installed transpiler state and helper behavior are separate observations.
 A setup, measurement, visibility or restoration failure remains FAIL/unknown.
+
+`cloth-probe` narrows the native Frost cape blocker before any giant scale
+activation. It uses an exact canonical Frost summon and observes actual Cloth,
+baked skin and source-bone motion across visible, renderer-disabled, restored
+and ShadowsOnly stages. It temporarily changes only the exact owned cape's
+render flags and restores them conditionally. No Cloth, collider, skeleton,
+root scale, save or mechanical state is adapted. Finite geometry, positive
+motion and coordinate agreement are required; static agreement cannot pass.
+Only aggregate measurements and identity metadata leave memory.
 Inspect it before changing a fixture; do not repeat an unchanged failing run.
 Raw evidence and development packages remain machine-local/ignored. The active
 lane state records exact artifact identity, commands, verdicts and limitations.
