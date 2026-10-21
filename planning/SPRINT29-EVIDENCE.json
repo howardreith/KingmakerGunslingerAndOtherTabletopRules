@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_AND_CLOUD_DIRECT_MAGIC_PASS; STORM_DIRECT_MAGIC_FAILED_ON_PARAMETERS; AI_ITEMS_PERSISTENCE_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_AND_DIRECT_MAGIC_PASS; AI_ITEMS_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -147,6 +147,16 @@
     "result": "FAIL: constant native Freedom of Movement and electricity immunity appeared on both siblings, but Call Lightning's direct AbilityData reported CL19/DC21/spell level9 rather than CL15/DC15/spell level3. The observer stopped before casting and preserved the raw failure.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Installed AbilityData.CalculateParams uses RuleCalculateAbilityParams, whereas the cloned spell's ContextCalculateAbilityParams only controls effect context. A private exact-owner/ability rule component now sets the printed parameters; focused production compilation and two sprint29 domain tests pass. Native recheck pending."
+  },
+  "stormDirectMagicQualification": {
+    "source": "32f8be8b48586176dc299aa94a9b18bdf3970735",
+    "runId": "20261021T0605515981304Z-3af7e32d7be64371804cbf60801d8df3",
+    "artifactZipSha256": "ee8884fc5134b32d47a086c1207a49ceb42f2cb80272c2ccdd1640ea2607691c",
+    "artifactDllSha256": "f273d5eab2e20dceb0d15b64c32069ce008bba8b12a9915831acb00ee3d5b577",
+    "artifactMvid": "9f6aa813-fbae-4622-82e8-4c22f2b5f0cf",
+    "result": "PASS 13/13 native predicates: both siblings carried constant Freedom of Movement and electricity immunity; Call Lightning activation and its granted bolt had CL15/DC15, spent only the owner's one activation and produced a finite native state; one bolt dealt damage after a native DC15 save and reduced state duration without refilling the use. Chain Lightning had CL15/DC18, dealt damage after its own native DC18 save and spent only its independent owner resource; the sibling retained both uses. Each issued command paid one standard action.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; autonomous AI, repeated bolt cadence, expiration/teardown, cold-load persistence, resistance, multiple Chain Lightning targets and public routes remain pending"
   },
   "publicSurface": {
     "registeredCreatures": 117,
