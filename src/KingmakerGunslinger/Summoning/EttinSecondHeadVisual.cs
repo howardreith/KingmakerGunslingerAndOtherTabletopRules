@@ -152,13 +152,42 @@ namespace KingmakerGunslinger.Summoning
         private static void Release(Attachment owned)
         {
             if (owned == null) return;
+            // Native renderer setup can instantiate one material per primitive
+            // after our four shared originals have been assigned. Every
+            // renderer below this exact project-created root belongs to this
+            // head, so capture those instances before destroying the root.
+            var materials = OwnedMaterials(owned);
             if (owned.Root != null)
                 UnityEngine.Object.DestroyImmediate(owned.Root);
             owned.Root = null;
-            foreach (Material material in owned.Materials)
+            foreach (Material material in materials)
                 if (material != null)
                     UnityEngine.Object.DestroyImmediate(material);
             owned.Materials.Clear();
+        }
+
+        private static Material[] OwnedMaterials(Attachment owned)
+        {
+            if (owned == null) return new Material[0];
+            var assigned = owned.Root == null ? Enumerable.Empty<Material>() :
+                owned.Root.GetComponentsInChildren<Renderer>(true)
+                    .SelectMany(renderer => renderer.sharedMaterials);
+            return owned.Materials.Concat(assigned).Where(material =>
+                    material != null)
+                .GroupBy(material => material.GetInstanceID())
+                .Select(group => group.First()).ToArray();
+        }
+
+        internal static UnityEngine.Object[] CaptureOwnedResources(
+            UnitEntityView view)
+        {
+            Attachment owned;
+            if (view == null || !Applied.TryGetValue(view, out owned))
+                return new UnityEngine.Object[0];
+            return (owned.Root == null ? Enumerable.Empty<UnityEngine.Object>() :
+                    new UnityEngine.Object[] { owned.Root })
+                .Concat(OwnedMaterials(owned).Cast<UnityEngine.Object>())
+                .ToArray();
         }
 
         internal static void ReleaseView(UnitEntityView view)

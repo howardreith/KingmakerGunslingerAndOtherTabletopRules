@@ -438,6 +438,23 @@
     "restoration": "PASS by direct before/restored JSON comparison: original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and creation/write ticks/attributes exact; Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact. Parent final comparison separately failed from a helper stdout/string typing bug; scratch parent repaired before retry.",
     "repair": "Extend exact-owner SummonGiantEquipmentOwnership sweep to private items in its own inventory, including dormant alternates; focused production compilation and 3/3 Sprint 29 source tests passed. Native recheck pending on new candidate."
   },
+  "workingPrepareOwnershipQualified": {
+    "source": "0a57851424420595f950440a30b94f839a724bd4",
+    "runId": "20261021T1227157654721Z-a4be03ae509f4ade965e56fe6c9d71c8",
+    "artifactZipSha256": "860015873f56e63d08b6bd0a89e2dbf2dc2018f14391056a78cbb6e58ca63ba9",
+    "artifactDllSha256": "a8fbed5815b46a71650006be4bd22b55a6d48d520fb5b36ec211b2d1fa2bc084",
+    "result": "PASS 19/19 native Working prepare assertions: three hidden owners instantiated, thirteen distinct exact owned nonlootable equipment instances including dormant Ettin javelins and Storm bow, independent spent resources and catch ledgers, preserved unrelated party inventory, and actual Working save write.",
+    "restoration": "The Working envelope remained open for ON cleanup; protected intake outside Working matched after prepare. Final restoration is recorded with the cleanup failure."
+  },
+  "workingCleanupEttinResourceFailure": {
+    "source": "0a57851424420595f950440a30b94f839a724bd4",
+    "runId": "20261021T1233442284785Z-1185839c98a943e39a0c4b7776805d95",
+    "artifactZipSha256": "860015873f56e63d08b6bd0a89e2dbf2dc2018f14391056a78cbb6e58ca63ba9",
+    "artifactDllSha256": "a8fbed5815b46a71650006be4bd22b55a6d48d520fb5b36ec211b2d1fa2bc084",
+    "result": "FAIL 16 PASS/2 FAIL: all three saved owners loaded with exact profiles, thirteen distinct nonlootable owned items, spent Cloud/Storm magic and catch ledger; owner units/views were destroyed, but eight Ettin second-head renderer material instances survived and were UNRESOLVED to the resource observer. The second failure is the intentionally withheld cleanup save. Absent was not run.",
+    "restoration": "PASS: original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850, creation/write ticks and attributes exact; full before/restored intake JSON comparison exact for Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases.",
+    "repair": "Capture only project-created Ettin head root and its original plus renderer-instanced materials from the exact view ownership table; destroy those materials in native view teardown and register the same exact ownership for cleanup evidence. Focused compilation and 3/3 Sprint 29 source tests passed; native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
