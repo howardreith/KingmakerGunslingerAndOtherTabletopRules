@@ -16,7 +16,8 @@
     "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below.",
     "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below.",
     "itemsPreflight": "PASS: focused production compilation, two Sprint 29 domain tests and 715 no-game guarded scenario preflight checks including positive/negative items phase admission. Native item ownership, transfer, death and expiry remain pending.",
-    "affectedControlsPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 740 no-game scenario preflight checks under Limited Interactive account; child/task exit zero, task removed. These source checks do not qualify native catch/Cleave behavior."
+    "affectedControlsPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 740 no-game scenario preflight checks under Limited Interactive account; child/task exit zero, task removed. Native Cleave and first catch results are recorded below.",
+    "vitalPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 746 no-game guarded scenario preflight checks under Limited Interactive account for RTWP and turn-based phases; child/task exit zero, task removed. Direct native Vital Strike behavior has no verdict yet."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -484,6 +485,25 @@
     "result": "PASS 19/19 module-ON prepare, 19/19 module-OFF cleanup and 6/6 fresh module-ON absence native assertions in three Limited guarded processes. Exact saved identities deserialized with the module OFF, module publication/visual allocation stayed OFF, receipt-owned units and resources retired safely, and fresh ON load found no remnants.",
     "restoration": "PASS after every stage outside Working and full final intake: Mods 967, saves 118, private references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact; original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and timestamps/attributes restored exactly.",
     "limits": "Exact hidden development package, not a public or release artifact."
+  },
+  "affectedCatchFirstNative": {
+    "source": "04e00ea72b89ea1f8ed1a48043da4e5454995e9a",
+    "runId": "20261021T1345438849168Z-5701f5984d1f401ebd07ea30d0e16a9d",
+    "artifactZipSha256": "adda52bea24fab9ddb94453145229723a9e6b57c6de887e46dd980403d2fafac",
+    "artifactDllSha256": "06abc30c2217687822cfc255e658f5c51c796f5fca0955781fff5523bd5738e7",
+    "artifactMvid": "62c3c684-f243-4906-8d70-b0a5fcaa3eeb",
+    "result": "FAIL 3/21 native assertions. Cloud catch and released Hill control passed. Storm's real Huge-thrown rock prompted exactly one DC20 Reflex save, failed it and received exactly one physical damage packet; the reused observer incorrectly expected DC16, which belongs to Stone's separate +4 catch bonus. The final aggregate failed only because of those Storm predicates. The compiled observer is corrected to DC20 and requires a fresh native run.",
+    "restoration": "PASS: fresh intake and post-run comparison exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases. Child/task exited 1 and were removed; raw FAIL retained."
+  },
+  "affectedCleaveQualified": {
+    "source": "04e00ea72b89ea1f8ed1a48043da4e5454995e9a",
+    "runId": "20261021T1351271972944Z-b9eb89a94db64d4495baf45353e2b98d",
+    "artifactZipSha256": "adda52bea24fab9ddb94453145229723a9e6b57c6de887e46dd980403d2fafac",
+    "artifactDllSha256": "06abc30c2217687822cfc255e658f5c51c796f5fca0955781fff5523bd5738e7",
+    "artifactMvid": "62c3c684-f243-4906-8d70-b0a5fcaa3eeb",
+    "result": "PASS 21/21 native Cleave assertions: Cloud Great, Storm/Ettin ordinary, released Hill ordinary and Fire Great in RTWP and turn-based mode. Actual owner commands spent Standard actions, verified one -2 AC penalty, bounded chains and first-miss stop; no native donor action was granted.",
+    "restoration": "PASS: task/child exit zero, task removed; fresh intake and post-run comparison exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases.",
+    "limits": "Exact hidden development package; public and release artifact qualification remain separate."
   },
   "publicSurface": {
     "registeredCreatures": 117,

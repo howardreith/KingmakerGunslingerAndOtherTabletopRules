@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { Target="cloud-giant", Reflex=40,
                         ThrowerSize=Size.Large, Enhancement=0, Dc=15 },
                     new { Target="storm-giant", Reflex=-40,
-                        ThrowerSize=Size.Huge, Enhancement=0, Dc=16 },
+                        ThrowerSize=Size.Huge, Enhancement=0, Dc=20 },
                     new { Target="hill-giant", Reflex=40,
                         ThrowerSize=Size.Large, Enhancement=0, Dc=15 }
                 } : new[] {
