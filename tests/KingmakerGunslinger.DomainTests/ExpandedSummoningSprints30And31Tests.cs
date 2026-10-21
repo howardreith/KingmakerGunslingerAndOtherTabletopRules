@@ -9,6 +9,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void FirstSliceKeepsExactHiddenRoutesAndReleasedSurface()
         {
             ExpandedSummoningCatalog.Validate();
+            SummonIconCatalog.Validate();
             SummonVisibilityCatalog.Validate();
             ExpandedSummoningIdentityCatalog.Build();
             var monster = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
