@@ -47,9 +47,10 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Combined authority includes the three new Sprint 29 portraits.
-        # Every released source/export row remains unchanged.
-        self.assertEqual("4908af334c7f21de6b92da05b675edc1c5aef5b4a170585579db07851f1c6cd7", actual)
+        # Authorized S30/S31 Lemure append, with the three prior giant rows
+        # now enumerating their already-released unit/root consumers. Pixels
+        # and production assignments are unchanged; stale metadata still fails.
+        self.assertEqual("80c39bc0cadf03bf5a0ef618369be95ca140ea26af6c82954f420e35a48f0fa4", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"

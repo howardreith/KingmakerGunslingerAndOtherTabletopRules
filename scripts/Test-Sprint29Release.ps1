@@ -8,10 +8,22 @@ $actual=Get-KmgSprint29SourceSurface
 if(-not $actual.sprint29RosterExact -or $actual.sprint29Placements -ne 8 -or
     $actual.registeredRoots -ne ($actual.monsterPlacements+$actual.natureAllyPlacements) -or
     $actual.choices -ne ($actual.generatedRoots+$actual.nativeWrappers) -or
-    $actual.suppressedLogicalPlacements -ne 0) {
+    $actual.sprint29SuppressedPlacements -ne 0) {
     throw 'Sprint 29 source reader does not reconcile the actual public registration.'
 }
-$script:publicSurface=$actual | ConvertTo-Json | ConvertFrom-Json
+# Exercise today's production reader above, but bind the historical decision
+# fixture to the actual immutable S29 release rather than a later hidden cohort.
+# This changes no production publisher function or refusal.
+$releasedRecord=Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'planning/SPRINT29-RELEASE-EVIDENCE.json') -Raw | ConvertFrom-Json
+if($releasedRecord.status -cne 'RELEASED_STOP' -or $releasedRecord.tag -cne 'v0.0.163' -or $releasedRecord.productPr -ne 64){throw 'Exact Sprint29 released fixture authority is missing.'}
+$released=$releasedRecord.publicSurface
+$script:publicSurface=[pscustomobject]@{
+    sprint29RosterExact=$true;sprint29Placements=$released.newSnaRoots;sprint29SuppressedPlacements=0
+    projectCreatures=$released.projectCreatures;monsterCreatures=$released.monsterCreatures;monsterPlacements=$released.monsterPlacements
+    natureAllyCreatures=$released.natureAllyCreatures;natureAllyPlacements=$released.natureAllyPlacements
+    registeredRoots=$released.registeredRoots;generatedRoots=$released.generatedRoots
+    nativeWrappers=$released.nativeWrappers;choices=$released.visibleChoices;suppressedLogicalPlacements=0
+}
 function Get-KmgSprint29SourceSurface { return $script:publicSurface }
 $notesPath=Join-Path (Split-Path -Parent $PSScriptRoot) 'docs/RELEASE-NOTES-0.0.163.md'
 $notes=[IO.File]::ReadAllText($notesPath)
@@ -112,6 +124,13 @@ foreach($row in @(
     @('wrong fresh bytes',{param($l)$l.coverage[1].evidenceSources[0].packageSha256=('f'*64)}),
     @('missing proof',{param($l)$l.coverage[1].proofs=@()}))) {
     MustRefuse -name $row[0] -mutation $row[1]
+}
+if($actual.suppressedLogicalPlacements -gt 0) {
+    MustRefuse -name 'later hidden cohort cannot qualify as Sprint29' -mutation {
+        param($ledger)
+        $ledger.roster.registeredRoots=$actual.registeredRoots
+        $ledger.roster.suppressedLogicalPlacements=$actual.suppressedLogicalPlacements
+    }
 }
 MustRefuse -name 'wrong product PR' -Premerge -mutation {param($l)$l.publication.productPr=63}
 MustRefuse -name 'claimed premerge' -Premerge -mutation {param($l)$l.publication.mergeContainsTestedSource=$true}
