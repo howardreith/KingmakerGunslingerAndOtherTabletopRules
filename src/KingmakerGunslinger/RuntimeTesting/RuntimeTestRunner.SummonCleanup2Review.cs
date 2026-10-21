@@ -298,9 +298,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The retained native Frost Giant also appears through the actual SM VIII wrapper.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { monsterFrost });
 
+                // Retain every actor's identity/material/hierarchy even if a
+                // later terrain survey or a different actor's skin proof fails.
+                for (int i = 0; i < actors.Count; i++)
+                    foreach (int frame in Cleanup2WaitAppearance(actors[i], keys[i])) yield return frame;
+                _sprint25WaitingForUnityAppearance = true;
+                for (int i = 0; i < actors.Count; i++)
+                {
+                    UnitEntityData actor = actors[i];
+                    Cleanup2Check("pre-survey-actor-" + keys[i], actor.View != null, new JObject {
+                        ["key"] = keys[i], ["unit"] = actor.UniqueId,
+                        ["blueprint"] = actor.Blueprint.AssetGuid, ["prefab"] = actor.Blueprint.Prefab?.AssetId,
+                        ["nativePosition"] = SurveyVector(actor.Position), ["viewInstance"] = actor.View.GetInstanceID(),
+                        ["viewLocalScale"] = SurveyVector(actor.View.transform.localScale),
+                        ["mechanicalSize"] = actor.Descriptor.State.Size.ToString(),
+                        ["exactSummonProvenance"] = i == 0 ? (JToken)JValue.CreateNull() : new JValue(ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster)),
+                        ["shapeHierarchy"] = Cleanup2ShapeHierarchy(actor),
+                        ["renderers"] = new JArray(actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(skin => new JObject {
+                            ["name"] = skin.name, ["path"] = Cleanup2TransformPath(actor.View.transform, skin.transform),
+                            ["mesh"] = skin.sharedMesh?.name, ["rootBonePath"] = Cleanup2TransformPath(actor.View.transform, skin.rootBone),
+                            ["enabled"] = skin.enabled, ["active"] = skin.gameObject.activeInHierarchy,
+                            ["materials"] = new JArray(skin.sharedMaterials.Select(Cleanup2Material)) })),
+                        ["scope"] = "Settled pre-placement diagnostics only; no comparable standing height or calibration claimed." },
+                        "Every canonically created lineup actor retains safe identity, hierarchy and material observations before the ground survey.");
+                }
                 Vector3 origin = fixture.Caster.Position;
-                List<Vector3> groundPoints = Cleanup2LineupGround(origin, actors.Count);
-                Vector3 rowAxis = (groundPoints.Last() - groundPoints.First()).normalized;
+                Cleanup2GroundSurvey ground = Cleanup2LineupGround(origin, actors);
+                List<Vector3> groundPoints = ground.Points;
+                Vector3 rowAxis = groundPoints.Last() - groundPoints.First();
+                rowAxis.y = 0f;
+                rowAxis.Normalize();
                 Vector3 cameraForward = Vector3.Cross(rowAxis, Vector3.up).normalized;
                 for (int i = 0; i < actors.Count; i++)
                 {
@@ -308,13 +335,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     actors[i].View.transform.rotation = Quaternion.LookRotation(-cameraForward, Vector3.up);
                 }
                 float groundSpread = groundPoints.Max(p => p.y) - groundPoints.Min(p => p.y);
-                Cleanup2Check("common-ground", groundSpread <= .05f, new JObject {
+                Cleanup2Check("common-ground", ground.Valid, new JObject {
                     ["origin"] = SurveyVector(groundPoints[0]), ["up"] = SurveyVector(Vector3.up),
                     ["right"] = SurveyVector(rowAxis), ["cameraForward"] = SurveyVector(cameraForward),
                     ["groundYSpreadMeters"] = groundSpread,
                     ["points"] = new JArray(groundPoints.Select(SurveyVector)),
+                    ["provenTerrainPlane"] = ground.Document,
                     ["placement"] = "Native walkable graph, request-owned actors only; no model scale or calibration change." },
-                    "All seven actors stand on the same measured world-up ground plane within five centimetres.");
+                    "All seven actors use one geometrically proven gently graded terrain plane with <=5cm residual; vertical anatomy remains world-up and contact is checked at each actor's own ground point.");
                 for (int i = 0; i < actors.Count; i++)
                     foreach (int frame in Cleanup2WaitAppearance(actors[i], keys[i])) yield return frame;
                 // Retain Unity idle samples while suspending synthetic game-time
@@ -334,7 +362,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "Transient baked current-pose body vertices yield finite crown/sole metrics with a verified world transformation; no native vertices are exported.");
                 }
                 var summary = new JArray();
-                bool standing = groundSpread <= .05f;
+                bool standing = ground.Valid;
                 for (int i = 0; i < actors.Count; i++)
                 {
                     float[] heights = samples.Select(v => v[i].Height).ToArray();
@@ -371,27 +399,155 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static List<Vector3> Cleanup2LineupGround(Vector3 anchor, int count)
+        private sealed class Cleanup2GroundSurvey
         {
-            if (AstarPath.active == null) throw new InvalidOperationException("No native lineup ground graph.");
-            // Survey before moving anything; the first-area anchor can stand
-            // beside a wall, so a blindly chosen +X line is not a fixture.
-            foreach (Vector3 axis in new[] { Vector3.right, Vector3.forward,
-                (Vector3.right + Vector3.forward).normalized, (Vector3.right - Vector3.forward).normalized })
-            foreach (float shift in new[] { -(count - 1) * 2f, 0f, -(count - 1) * 4f })
+            internal List<Vector3> Points;
+            internal JObject Document;
+            internal bool Valid;
+        }
+
+        private Cleanup2GroundSurvey Cleanup2LineupGround(Vector3 anchor, IList<UnitEntityData> actors)
+        {
+            if (AstarPath.active == null || !Cleanup2Finite(anchor))
+                throw new InvalidOperationException("No finite native lineup ground anchor/graph.");
+            var anchorNode = AstarPath.active.GetNearest(anchor);
+            if (anchorNode.node == null || !anchorNode.node.Walkable || !Cleanup2Finite(anchorNode.clampedPosition))
+                throw new InvalidOperationException("Lineup anchor has no finite walkable native graph node.");
+            // Fit a genuinely two-dimensional surface, not an underdetermined
+            // plane through seven collinear points. Each actor center plus
+            // terrain one metre to both sides must lie on the same gentle
+            // plane. Y variation from grade is distinct from plane residual.
+            float[] minimumGaps = Enumerable.Range(1, actors.Count - 1).Select(i =>
+                Mathf.Max(2.5f, actors[i - 1].Corpulence + actors[i].Corpulence + .35f)).ToArray();
+            if (minimumGaps.Any(value => !Cleanup2Finite(value)))
+                throw new InvalidOperationException("Non-finite native footprint spacing in lineup.");
+            var attempts = new JArray();
+            var refusals = new Dictionary<string, int>(StringComparer.Ordinal);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Cleanup2GroundSurvey selected = null;
+            float[] offsets = { 0f, 6f, -6f, 12f, -12f, 18f, -18f };
+            foreach (float spacingFactor in new[] { 1.35f, 1.15f, 1f })
             {
-                var points = new List<Vector3>();
-                for (int i = 0; i < count; i++)
+                var along = new float[actors.Count];
+                for (int i = 1; i < along.Length; i++) along[i] = along[i - 1] + minimumGaps[i - 1] * spacingFactor;
+                float span = along.Last();
+                for (int direction = 0; direction < 12 && selected == null; direction++)
                 {
-                    Vector3 requested = anchor + axis * (shift + i * 4f);
-                    var nearest = AstarPath.active.GetNearest(requested);
-                    if (nearest.node == null || !nearest.node.Walkable ||
-                        Vector3.Distance(requested, nearest.clampedPosition) > .4f) break;
-                    points.Add(nearest.clampedPosition);
+                    Vector3 axis = Quaternion.Euler(0f, direction * 15f, 0f) * Vector3.right;
+                    Vector3 across = Vector3.Cross(axis, Vector3.up).normalized;
+                    foreach (float longitudinal in offsets)
+                    foreach (float lateral in offsets)
+                    {
+                        if (selected != null) break;
+                        if (attempts.Count >= 1764 || watch.Elapsed.TotalSeconds > 15)
+                            goto SurveyFinished;
+                        Vector3 center = anchor + axis * longitudinal + across * lateral;
+                        var centers = new List<Vector3>();
+                        var support = new List<Vector3>();
+                        string refusal = null;
+                        float maximumHorizontalClamp = 0f;
+                        for (int actor = 0; actor < actors.Count && refusal == null; actor++)
+                        foreach (float side in new[] { 0f, -1f, 1f })
+                        {
+                            Vector3 requested = center + axis * (along[actor] - span * .5f) + across * side;
+                            var nearest = AstarPath.active.GetNearest(requested);
+                            Vector3 point = nearest.clampedPosition;
+                            if (nearest.node == null || !nearest.node.Walkable)
+                                refusal = "missing-or-unwalkable-node";
+                            else if (nearest.node.Area != anchorNode.node.Area || nearest.node.GraphIndex != anchorNode.node.GraphIndex)
+                                refusal = "different-native-connected-graph";
+                            else if (!Cleanup2Finite(point)) refusal = "non-finite-ground";
+                            else
+                            {
+                                Vector3 clamp = point - requested;
+                                float horizontal = new Vector2(clamp.x, clamp.z).magnitude;
+                                maximumHorizontalClamp = Mathf.Max(maximumHorizontalClamp, horizontal);
+                                if (horizontal > .35f) refusal = "horizontal-clamp-over-35cm";
+                                else if (Mathf.Abs(point.y - anchor.y) > 2f) refusal = "terrain-over-2m-from-anchor-level";
+                                else if (Vector3.Distance(point, anchor) > 40f) refusal = "terrain-outside-40m-search-radius";
+                            }
+                            if (refusal != null) break;
+                            support.Add(point);
+                            if (side == 0f) centers.Add(point);
+                        }
+                        if (refusal == null)
+                            for (int i = 1; i < centers.Count; i++)
+                            {
+                                Vector3 separation = centers[i] - centers[i - 1]; separation.y = 0f;
+                                if (separation.magnitude < minimumGaps[i - 1] - .05f)
+                                { refusal = "insufficient-native-footprint-separation"; break; }
+                            }
+                        var row = new JObject { ["candidate"] = attempts.Count + 1,
+                            ["center"] = SurveyVector(center), ["yawDegrees"] = direction * 15,
+                            ["longitudinalOffset"] = longitudinal, ["lateralOffset"] = lateral,
+                            ["spacingFactor"] = spacingFactor, ["requestedSpanMeters"] = span,
+                            ["centerCount"] = centers.Count, ["terrainSupportCount"] = support.Count,
+                            ["maximumHorizontalClamp"] = maximumHorizontalClamp };
+                        JObject plane = null;
+                        if (refusal == null)
+                        {
+                            plane = Cleanup2FitGroundPlane(support);
+                            row["plane"] = plane;
+                            if (!(bool)plane["finiteNondegenerate"]) refusal = "degenerate-or-nonfinite-plane";
+                            else if ((float)plane["grade"] > .03f) refusal = "plane-grade-over-3-percent";
+                            else if ((float)plane["maximumVerticalResidualMeters"] > .05f) refusal = "plane-residual-over-5cm";
+                        }
+                        row["refusal"] = refusal;
+                        attempts.Add(row);
+                        if (refusal == null)
+                        {
+                            selected = new Cleanup2GroundSurvey { Points = centers, Valid = true,
+                                Document = new JObject { ["candidate"] = row, ["plane"] = plane,
+                                    ["terrainSupportPoints"] = new JArray(support.Select(SurveyVector)),
+                                    ["minimumAdjacentCenterGaps"] = new JArray(minimumGaps),
+                                    ["actualAdjacentCenterGaps"] = new JArray(Enumerable.Range(1, centers.Count - 1).Select(i => {
+                                        Vector3 delta = centers[i] - centers[i - 1]; delta.y = 0f; return delta.magnitude; })) } };
+                        }
+                        else { int count; refusals.TryGetValue(refusal, out count); refusals[refusal] = count + 1; }
+                    }
                 }
-                if (points.Count == count && points.Max(p => p.y) - points.Min(p => p.y) <= .05f) return points;
+                if (selected != null) break;
             }
-            throw new InvalidOperationException("No native walkable seven-actor common-plane line exists in the bounded surveyed first-area lanes; no scale calibration is authorized.");
+        SurveyFinished:
+            var diagnostic = new JObject { ["anchor"] = SurveyVector(anchor),
+                ["nativeAnchorGround"] = SurveyVector(anchorNode.clampedPosition),
+                ["nativeGraphIndex"] = anchorNode.node.GraphIndex, ["nativeConnectedArea"] = anchorNode.node.Area,
+                ["candidateCount"] = attempts.Count, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
+                ["candidateLimit"] = 1764, ["wallLimitSeconds"] = 15,
+                ["selected"] = selected?.Document, ["attempts"] = attempts,
+                ["refusals"] = JObject.FromObject(refusals),
+                ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
+            Cleanup2Check("lineup-ground-survey", selected != null, diagnostic,
+                "A bounded courtyard search finds seven adequately separated native ground positions on a nondegenerate measured common plane.");
+            if (selected == null)
+                throw new InvalidOperationException("No proven native seven-actor terrain plane within the recorded bounded courtyard survey; no scale calibration is authorized.");
+            return selected;
+        }
+
+        private static JObject Cleanup2FitGroundPlane(IList<Vector3> points)
+        {
+            Vector3 mean = points.Aggregate(Vector3.zero, (sum, point) => sum + point) / points.Count;
+            double xx = 0, xz = 0, zz = 0, xy = 0, zy = 0;
+            foreach (Vector3 point in points)
+            {
+                Vector3 delta = point - mean;
+                xx += delta.x * (double)delta.x; xz += delta.x * (double)delta.z;
+                zz += delta.z * (double)delta.z; xy += delta.x * (double)delta.y; zy += delta.z * (double)delta.y;
+            }
+            double determinant = xx * zz - xz * xz;
+            if (determinant <= .0001 || double.IsNaN(determinant) || double.IsInfinity(determinant))
+                return new JObject { ["finiteNondegenerate"] = false, ["determinant"] = determinant };
+            float gradeX = (float)((xy * zz - zy * xz) / determinant);
+            float gradeZ = (float)((zy * xx - xy * xz) / determinant);
+            float grade = new Vector2(gradeX, gradeZ).magnitude;
+            float residual = points.Max(point => Mathf.Abs(point.y - mean.y -
+                gradeX * (point.x - mean.x) - gradeZ * (point.z - mean.z)));
+            return new JObject { ["finiteNondegenerate"] = Cleanup2Finite(mean) && Cleanup2Finite(grade) && Cleanup2Finite(residual),
+                ["origin"] = SurveyVector(mean), ["worldXGrade"] = gradeX, ["worldZGrade"] = gradeZ,
+                ["grade"] = grade, ["slopeDegrees"] = Mathf.Atan(grade) * Mathf.Rad2Deg,
+                ["normal"] = SurveyVector(new Vector3(-gradeX, 1f, -gradeZ).normalized),
+                ["maximumVerticalResidualMeters"] = residual, ["supportCount"] = points.Count,
+                ["determinant"] = determinant };
         }
 
         private IEnumerable<int> Cleanup2WaitAppearance(UnitEntityData unit, string key)
