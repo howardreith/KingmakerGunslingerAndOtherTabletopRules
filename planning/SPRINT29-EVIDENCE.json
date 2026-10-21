@@ -329,6 +329,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Installed UnitPartForceMove.Update removes the completed part before Harmony Postfix; the callback now inspects its retained exact chunk even when the part is absent, while still dropping interrupted chunks. The disposable target's native prone state is reset between independent cases and both requested and active state are recorded. Focused compilation and native recheck pending."
   },
+  "awesomeBlowCoreQualification": {
+    "source": "37312bd2169ce058bcfe4e2f3b2b40a2a8335d2d",
+    "runId": "20261021T1019191596837Z-83316c07c50e4187a93eb471e308a350",
+    "artifactZipSha256": "f02344c7d31977427bc1f7b41fc5005a8f5ec709058b66d3c84bc917e29c802d",
+    "artifactDllSha256": "7ae1889f8349720d3a797d857b52d1059182bfd1d3f75bc40bf9b19a657c36a1",
+    "artifactMvid": "e0adf23b-d72f-4c49-9fc8-4d194bb168a8",
+    "result": "PASS 15/15 native save-free RTWP predicates: Cloud open Awesome Blow used one 3.048 m chunk, moved 3.045 m, dealt one 2d6+12 slam packet and knocked prone; Storm obstructed push stopped at 1.784 m, dealt 2d6+14 slam plus 1d6 victim collision and knocked prone. Native maneuver success, one standard action and exact damage initiator were recorded. High-CMD failure and maneuver-immune target produced no damage or displacement while spending the action. No hit/save was fabricated.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Printed obstacle-object damage remains an explicit gameplay scope decision; no installed damageable wall consumer was identified. Separate interruption, size/incorporeal negative, turn-based, continued AI and final public-artifact qualification remain."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
