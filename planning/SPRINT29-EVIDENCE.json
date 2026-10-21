@@ -239,6 +239,16 @@
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; fog redundancy/unsafe-neighbor and immune/unreachable negative cases, later bolt cadence, turn-based AI, Awesome Blow obstacle rider, items/disarm and persistence remain pending"
   },
+  "hiddenItemsDevelopment": {
+    "source": "c81a994143b6af13f096d62474e79396d59986fb",
+    "runId": "20261021T0803277139217Z-e9b46018f16f4dee9e331d359fea9d29",
+    "artifactZipSha256": "45e6473b5b01b6f04365d9024976dc4977e16cbc3f1f4833c625e0986598a1ce",
+    "artifactDllSha256": "ed1b11df43b75245558d61268619a4df17e82931a303e02b1efaa17510278345",
+    "artifactMvid": "112e3c1b-9236-4408-92e2-cd617f10a609",
+    "result": "FAIL: Ettin's actual 1d4+1 route produced two siblings. After native hand-set resolution, each had six inventory instances for five configured private items: the offhand flail blueprint appeared twice. Both copies were owner-bound, count one, nonremovable and nonlootable, and party inventory was exact, but the extra real item was not accepted as safe equipment. The observer stopped before transfer, death and expiry cases.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Installed body creation can leave the configured secondary flail unassigned in the owner's inventory before the grip resolves. Exact Ettin seeding now reuses the sole existing private inventory instance when present, refuses ambiguous copies, and creates only if absent. Focused production compilation and two Sprint 29 domain tests pass; native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
