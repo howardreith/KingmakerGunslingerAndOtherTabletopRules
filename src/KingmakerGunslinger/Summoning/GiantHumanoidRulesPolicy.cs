@@ -11,6 +11,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string Stone = "stone-giant";
         internal const string Fire = "fire-giant";
         internal const string Cloud = "cloud-giant";
+        internal const string Storm = "storm-giant";
         internal const int AppendedCreatureCount = 3;
         internal const int AppendedRootCount = 11;
         internal const int AppendedPrivateIdentityCount = 24;
@@ -48,7 +49,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool IsGiant(string key)
         {
-            return key == Hill || key == Stone || key == Fire || key == Cloud;
+            return key == Hill || key == Stone || key == Fire ||
+                key == Cloud || key == Storm;
         }
 
         internal static int RockRangeIncrementFeet(string key)

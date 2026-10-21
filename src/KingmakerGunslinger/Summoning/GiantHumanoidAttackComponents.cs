@@ -102,6 +102,173 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>Storm's printed composite longbow is rated for +14 Strength.
+    /// Native bow damage follows current Strength; this exact owner clamps
+    /// the contribution to the weapon's fixed rating and leaves masterwork
+    /// accuracy, feat damage and every other bow alone.</summary>
+    [Serializable]
+    public sealed class SummonStormCompositeBowRating :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>,
+        IInitiatorRulebookHandler<RuleCalculateAttackBonusWithoutTarget>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Bow;
+        public int StrengthRating;
+
+        public void OnEventAboutToTrigger(
+            RuleCalculateAttackBonusWithoutTarget evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || Fact == null || !Fact.Active ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
+                !ReferenceEquals(evt.Weapon.Blueprint, Bow) ||
+                StrengthRating < 0) return;
+            // A fixed-rating composite bow never increases its printed
+            // damage when Strength rises. A weakened archer still incurs
+            // the native tabletop -2 attack penalty below the rating.
+            if (owner.Descriptor.Stats.Strength.Bonus < StrengthRating)
+                evt.AddBonus(-2, Fact);
+        }
+
+        public void OnEventDidTrigger(
+            RuleCalculateAttackBonusWithoutTarget evt) { }
+
+        public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
+
+        public override void OnEventDidTrigger(RuleCalculateWeaponStats evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || Fact == null || !Fact.Active ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
+                !ReferenceEquals(evt.Weapon.Blueprint, Bow) ||
+                evt.DamageDescription == null || evt.DamageDescription.Count == 0 ||
+                StrengthRating < 0 || evt.DamageBonusStat != StatType.Strength)
+                return;
+            int strength = owner.Descriptor.Stats.Strength.Bonus;
+            int native = strength > 0 ?
+                (int)(strength * evt.DamageBonusStatMultiplier) : strength;
+            int desired = Math.Min(strength, StrengthRating);
+            int correction = desired - native;
+            if (correction == 0) return;
+            var row = evt.DamageDescription[0];
+            row.Bonus += correction;
+            evt.DamageDescription[0] = row;
+        }
+    }
+
+    /// <summary>Cloud's Oversized Weapon exempts only its own Gargantuan
+    /// morningstar from the one-step wrong-size attack penalty. It does not
+    /// change the giant's Huge size or any alternate weapon.</summary>
+    [Serializable]
+    public sealed class SummonCloudOversizedMorningstar :
+        RuleInitiatorLogicComponent<RuleCalculateAttackBonusWithoutTarget>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon Morningstar;
+        public override void OnEventAboutToTrigger(
+            RuleCalculateAttackBonusWithoutTarget evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || Fact == null || !Fact.Active ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
+                !ReferenceEquals(evt.Weapon.Blueprint, Morningstar))
+                return;
+            evt.AddBonus(2, Fact);
+        }
+        public override void OnEventDidTrigger(
+            RuleCalculateAttackBonusWithoutTarget evt) { }
+    }
+
+    /// <summary>Only Ettin's own second arm receives full Strength damage.
+    /// The unit's full-attack list is governed separately, so this does not
+    /// duplicate a standard action, opportunity attack or ranged command.</summary>
+    [Serializable]
+    public sealed class SummonEttinOffhandStrength :
+        RuleInitiatorLogicComponent<RuleCalculateWeaponStats>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon OffhandFlail;
+        public BlueprintItemWeapon OffhandJavelin;
+
+        public override void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
+
+        public override void OnEventDidTrigger(RuleCalculateWeaponStats evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || Fact == null || !Fact.Active ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
+                (!ReferenceEquals(evt.Weapon.Blueprint, OffhandFlail) &&
+                 !ReferenceEquals(evt.Weapon.Blueprint, OffhandJavelin)) ||
+                evt.DamageDescription == null || evt.DamageDescription.Count == 0 ||
+                evt.DamageBonusStat != StatType.Strength)
+                return;
+            int strength = owner.Descriptor.Stats.Strength.Bonus;
+            int native = strength > 0 ?
+                (int)(strength * evt.DamageBonusStatMultiplier) : strength;
+            int correction = strength - native;
+            if (correction == 0) return;
+            var row = evt.DamageDescription[0];
+            row.Bonus += correction;
+            evt.DamageDescription[0] = row;
+        }
+    }
+
+    /// <summary>Ettin's superior two-weapon routine is a full attack only.
+    /// Each equipped arm gets its own normal BAB pair with no ordinary TWF
+    /// penalties. A thrown javelin set gets one attack per arm. Missing arms
+    /// or one disarmed hand fall back to the weapon that remains equipped.</summary>
+    [HarmonyPatch(typeof(UnitAttack), "CreateFullAttack")]
+    internal static class SummonEttinFullAttackSequence
+    {
+        private static void Postfix(UnitAttack __instance,
+            List<AttackHandInfo> __result)
+        {
+            UnitEntityData owner = __instance == null ? null :
+                __instance.Executor;
+            if (owner == null || owner.Blueprint == null || __result == null ||
+                __instance.IsCharge || owner.Blueprint.name !=
+                    "KMG_Summoning_Unit_Ettin" || owner.Body == null)
+                return;
+            ItemEntityWeapon main = owner.Body.PrimaryHand == null ? null :
+                owner.Body.PrimaryHand.MaybeWeapon;
+            ItemEntityWeapon off = owner.Body.SecondaryHand == null ? null :
+                owner.Body.SecondaryHand.MaybeWeapon;
+            bool mainFlail = main != null && main.Blueprint != null &&
+                main.Blueprint.name ==
+                    "KMG_Summoning_Giant_Sprint29_EttinMainFlail2d6";
+            bool mainJavelin = main != null && main.Blueprint != null &&
+                main.Blueprint.name ==
+                    "KMG_Summoning_Giant_Sprint29_EttinMainJavelin1d8";
+            bool offFlail = off != null && off.Blueprint != null &&
+                off.Blueprint.name ==
+                    "KMG_Summoning_Giant_Sprint29_EttinOffFlail2d6";
+            bool offJavelin = off != null && off.Blueprint != null &&
+                off.Blueprint.name ==
+                    "KMG_Summoning_Giant_Sprint29_EttinOffJavelin1d8";
+            if (!mainFlail && !mainJavelin && !offFlail && !offJavelin)
+                return;
+            __result.Clear();
+            if (mainFlail || mainJavelin)
+            {
+                __result.Add(new AttackHandInfo(owner.Body.PrimaryHand, 0, 0));
+                if (mainFlail)
+                    __result.Add(new AttackHandInfo(owner.Body.PrimaryHand,
+                        -5, 1));
+            }
+            if (offFlail || offJavelin)
+            {
+                __result.Add(new AttackHandInfo(owner.Body.SecondaryHand, 0, 0));
+                if (offFlail)
+                    __result.Add(new AttackHandInfo(owner.Body.SecondaryHand,
+                        -5, 1));
+            }
+        }
+    }
+
     /// <summary>Only the three project giant units have their native full
     /// attack list adjusted. An armed or rock-wielding giant does not also
     /// swing its two-slam alternative. Stone prepares a second rock through
@@ -168,6 +335,8 @@ namespace KingmakerGunslinger.Summoning
                 return GiantHumanoidRulesPolicy.Fire;
             if (name == "KMG_Summoning_Unit_CloudGiant")
                 return GiantHumanoidRulesPolicy.Cloud;
+            if (name == "KMG_Summoning_Unit_StormGiant")
+                return GiantHumanoidRulesPolicy.Storm;
             return null;
         }
     }
@@ -185,7 +354,8 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = __instance == null ? null :
                 __instance.Executor;
             string key = SummonGiantFullAttackSequence.GiantKey(owner);
-            if (key == null || owner.Body == null ||
+            if (key == null || key == GiantHumanoidRulesPolicy.Storm ||
+                owner.Body == null ||
                 owner.Body.PrimaryHand == null) return;
             ItemEntityWeapon active = owner.Body.PrimaryHand.MaybeWeapon;
             string token = key == GiantHumanoidRulesPolicy.Hill ? "Hill" :
