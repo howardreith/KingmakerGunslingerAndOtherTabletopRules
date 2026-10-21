@@ -4,7 +4,7 @@
   "status": "HIDDEN_REGISTERED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "FIRST_PROFILES_FAILED_RESTORED; REPAIR_IN_PROGRESS",
+  "nativeQualification": "TWO_PROFILES_FAILED_RESTORED; REPAIR_IN_PROGRESS",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -18,6 +18,15 @@
     "artifactMvid": "bb588722-f31a-45b8-bc00-aba66905f5c7",
     "result": "FAIL: all Will saves +2; Ettin offhand absent; Storm armored speed 40 versus 35; Cloud and Storm secondary slam recorded for attack-sequence review",
     "verified": "all three private units instantiated with visible bodies; Ettin two heads attached; eight routes absent from live parents; released Hill route retained; initial actions and resources granted",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "secondNativeProfiles": {
+    "source": "40c38f3f3b0830e7bb3183432df4af06961f64da",
+    "runId": "20261021T0318229507924Z-55c33328990f4a0384fb7aa213f3aaf0",
+    "artifactZipSha256": "fc5a0aa019e3c0918cb83f0414e8efed814a4f823105ad56d5f6a5c64fb14ac1",
+    "artifactDllSha256": "fd7bcf0168e0b44bc4cf5a86815493821ac463c80e2bd5d1e37b833cc7aec8d3",
+    "artifactMvid": "f129cc50-64d3-4329-bd0c-30711de31bf0",
+    "result": "FAIL: Cloud and Storm profiles passed; Ettin configured offhand flail was absent from every live hand set; main one-handed flail was held in two hands",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {

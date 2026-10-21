@@ -209,6 +209,63 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>Kingmaker creates the Ettin's primary flail before attempting
+    /// its blueprint secondary item, so the versatile one-handed flail takes
+    /// a two-hand grip and the second slot remains empty. Seed the two exact
+    /// offhand sets once on initial entity creation. Native item slots then
+    /// own switching, disarm and save hydration; this callback does not run
+    /// on deserialization and never replenishes a lost item.</summary>
+    [Serializable]
+    public sealed class SummonEttinInitialOffhands :
+        OwnedGameLogicComponent<UnitDescriptor>,
+        IHandleEntityComponent<UnitEntityData>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon MainFlail;
+        public BlueprintItemWeapon OffhandFlail;
+        public BlueprintItemWeapon OffhandJavelin;
+
+        public void OnEntityCreated(UnitEntityData unit)
+        {
+            if (unit == null || !ReferenceEquals(unit.Blueprint,
+                    OwningBlueprint) || unit.Body == null ||
+                unit.Body.HandsEquipmentSets.Count < 2 ||
+                !ReferenceEquals(unit.Body.HandsEquipmentSets[0].PrimaryHand
+                    .MaybeWeapon?.Blueprint, MainFlail))
+                throw new InvalidOperationException(
+                    "Ettin offhands require the exact initial owner and primary flail.");
+            Seed(unit.Body.HandsEquipmentSets[0].SecondaryHand,
+                OffhandFlail);
+            Seed(unit.Body.HandsEquipmentSets[1].SecondaryHand,
+                OffhandJavelin);
+        }
+
+        public void OnEntityRemoved(UnitEntityData unit) { }
+
+        private static void Seed(WeaponSlot slot,
+            BlueprintItemWeapon blueprint)
+        {
+            if (slot == null || blueprint == null)
+                throw new InvalidOperationException(
+                    "Ettin offhand slot or private weapon is missing.");
+            ItemEntityWeapon existing = slot.MaybeWeapon;
+            if (existing != null)
+            {
+                if (!ReferenceEquals(existing.Blueprint, blueprint))
+                    throw new InvalidOperationException(
+                        "Ettin offhand has an unexpected item.");
+                return;
+            }
+            var item = new ItemEntityWeapon(blueprint);
+            slot.InsertItem(item);
+            if (!ReferenceEquals(slot.MaybeWeapon, item))
+                throw new InvalidOperationException(
+                    "Native Ettin offhand insertion did not retain its item.");
+            item.MakeNotLootable();
+            item.IsNonRemovable = true;
+        }
+    }
+
     /// <summary>Kingmaker reduces a 50-foot creature in medium armor to 40
     /// feet. Storm's printed breastplate speed is 35 feet. Apply the remaining
     /// five feet only while this exact project breastplate is equipped, so
