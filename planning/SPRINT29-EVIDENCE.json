@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_AND_MODES_PASS; RESOLVED_GAMEPLAY_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_AND_RTWP_COMMANDS_PASS; MAGIC_AI_ITEMS_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -105,6 +105,16 @@
     "result": "PASS 18/18 native modes assertions: Ettin flails +12/+12 and javelins +5/+5 with full Strength and distinct arms; Cloud morningstar +22, Storm greatsword +27 and separate slam/ranged plans; all four Huge melee modes had 15-foot wielded range and 6.172-m native command radius including measured collision radii",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; observed plans and queried rules, not resolved attacks, magic, AI, ownership/disarm or persistence"
+  },
+  "hiddenCommandsQualification": {
+    "source": "40838b108f4bdecf5b6964b69d1cf09688aba996",
+    "runId": "20261021T0516414148005Z-cb124a7f147b482a9a040fbf2d05588a",
+    "artifactZipSha256": "928a465c1be0c7ecdf0e7b78239c6fab285037b73dd00ac5d6e59ce2b1e7b788",
+    "artifactDllSha256": "9da30f69538c1fc7ff96526df1c8bcf44c9b717dfe57792779bbe79df54fe12d",
+    "artifactMvid": "be22d52b-3ac1-4e8e-8fb0-632f3c02e950",
+    "result": "PASS 25/25 native RTWP predicates: nine fresh hidden-owner attack commands each had a legal visible lane, expected main/offhand rule events and one native action cost. Ettin standard flail 1, full flails 4 (2 per arm), javelins 2 (1 per arm); Cloud morningstar 3, slams 2, rock 1; Storm greatsword 3, slams 2, bow 3. Hits and misses were natural; damage packets matched actual hits. No fixture attack command or forced roll.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; turn-based commands, AI, magic, Awesome Blow collision, items/disarm, persistence and public routes remain pending"
   },
   "publicSurface": {
     "registeredCreatures": 117,
