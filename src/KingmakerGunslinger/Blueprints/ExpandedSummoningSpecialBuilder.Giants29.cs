@@ -194,12 +194,17 @@ namespace KingmakerGunslinger.Blueprints
             const string chainSymbol = Giant29Prefix + "StormChainLightning";
             const string chainResourceSymbol = Giant29Prefix + "StormChainResource";
 
+            // On the installed Huge unit, 15 in this private type yields a
+            // 22-foot native attack range. Eight yields the printed 15-foot
+            // command reach after the engine's size allowance. The observer
+            // measures the resulting command radius beyond collision bodies.
+            const int hugeMeleeTypeRange = 8;
             BlueprintItemWeapon sword = Sprint29Weapon(library, bySymbol,
                 swordSymbol, swordType, NativeGreatsword, Size.Huge,
-                4, DiceType.D6, 15);
+                4, DiceType.D6, hugeMeleeTypeRange);
             BlueprintItemWeapon slam = Sprint29Weapon(library, bySymbol,
                 slamSymbol, slamType, NativeSlam, Size.Huge,
-                2, DiceType.D6, 15);
+                2, DiceType.D6, hugeMeleeTypeRange);
             BlueprintItemWeapon bow = Sprint29Weapon(library, bySymbol,
                 bowSymbol, bowType, "7998cd1409fe1194583b64180df4f216",
                 Size.Huge, 3, DiceType.D6, 0);
@@ -473,9 +478,13 @@ namespace KingmakerGunslinger.Blueprints
             const string mistSafetySymbol = Giant29Prefix + "CloudMistSafety";
             const string fogSafetySymbol = Giant29Prefix + "CloudFogSafety";
 
+            // Same installed Huge-owner reach mapping as Storm. The item
+            // remains Gargantuan for Cloud's actual Oversized Weapon use.
+            const int hugeMeleeTypeRange = 8;
             BlueprintItemWeapon morningstar = Sprint29Weapon(library,
                 bySymbol, morningstarSymbol, morningstarType,
-                NativeMorningstar29, Size.Gargantuan, 4, DiceType.D6, 15);
+                NativeMorningstar29, Size.Gargantuan, 4, DiceType.D6,
+                hugeMeleeTypeRange);
             // Kingmaker's installed morningstar items use HeavyMace as their
             // type. Preserve that native animation/weapon action, but the
             // project clone carries the printed bludgeoning/piercing form.
@@ -489,7 +498,7 @@ namespace KingmakerGunslinger.Blueprints
             });
             BlueprintItemWeapon slam = Sprint29Weapon(library, bySymbol,
                 slamSymbol, slamType, NativeSlam, Size.Huge, 2,
-                DiceType.D6, 15);
+                DiceType.D6, hugeMeleeTypeRange);
             BlueprintItemWeapon rock = GiantRock(library, bySymbol,
                 rockSymbol, rockType, 140);
             SetField(rock, "m_Size", Size.Huge);

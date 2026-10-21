@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; MODE_REACH_OBSERVER_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; MODE_NATIVE_REACH_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -75,6 +75,15 @@
     "artifactDllSha256": "1a200b8bff5285ae4acd26fcbb3924dc5560ad2ac17e7f86e4650090c303fa93",
     "artifactMvid": "3e2986fd-eb80-4415-8003-ee359b5c2fa6",
     "result": "FAIL 4/18: all Ettin paired and Cloud/Storm attack-damage predicates passed; four Cloud/Storm melee modes failed the observer's raw 15-foot weapon range assertion. Native command radius was 8.3056 m, including owner and target collision radii. A revised command-radius check requires native rerun.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "modeReachDevelopment": {
+    "source": "ec8743dbf85975185ce903e52e7e58b15eceb31d",
+    "runId": "20261021T0441351129875Z-ddce7b0e788947e8acc20bfc1a5bcb96",
+    "artifactZipSha256": "6e913dc839b38d8aa664309dca0b9764c239c250e39798afdd2b08a7b3c2e9c9",
+    "artifactDllSha256": "672a0012dab5e1b1c8eeb16ada50f689f586632d85871be4ba00348d63ba5206",
+    "artifactMvid": "b3d02648-e887-4517-9757-178959a33c3e",
+    "result": "FAIL 4/18: Cloud and Storm private melee modes had native 22-foot weapon reach and 8.3056-m command radius; 15-foot printed reach plus measured collision radii required 6.172 m. Exact private type range repair pending native check.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
