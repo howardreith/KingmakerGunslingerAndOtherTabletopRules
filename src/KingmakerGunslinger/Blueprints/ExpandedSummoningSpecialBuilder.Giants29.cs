@@ -194,11 +194,10 @@ namespace KingmakerGunslinger.Blueprints
             const string chainSymbol = Giant29Prefix + "StormChainLightning";
             const string chainResourceSymbol = Giant29Prefix + "StormChainResource";
 
-            // On the installed Huge unit, 15 in this private type yields a
-            // 22-foot native attack range. Eight yields the printed 15-foot
-            // command reach after the engine's size allowance. The observer
-            // measures the resulting command radius beyond collision bodies.
-            const int hugeMeleeTypeRange = 8;
+            // Preserve the printed type range. The native wielded-item getter
+            // adds Huge owner reach; the exact private-item patch below the
+            // builder supplies the actual 15-foot command range.
+            const int hugeMeleeTypeRange = 15;
             BlueprintItemWeapon sword = Sprint29Weapon(library, bySymbol,
                 swordSymbol, swordType, NativeGreatsword, Size.Huge,
                 4, DiceType.D6, hugeMeleeTypeRange);
@@ -478,9 +477,9 @@ namespace KingmakerGunslinger.Blueprints
             const string mistSafetySymbol = Giant29Prefix + "CloudMistSafety";
             const string fogSafetySymbol = Giant29Prefix + "CloudFogSafety";
 
-            // Same installed Huge-owner reach mapping as Storm. The item
+            // Same exact-owner item range correction as Storm. The item
             // remains Gargantuan for Cloud's actual Oversized Weapon use.
-            const int hugeMeleeTypeRange = 8;
+            const int hugeMeleeTypeRange = 15;
             BlueprintItemWeapon morningstar = Sprint29Weapon(library,
                 bySymbol, morningstarSymbol, morningstarType,
                 NativeMorningstar29, Size.Gargantuan, 4, DiceType.D6,

@@ -18,10 +18,40 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>The installed getter adds seven feet of Huge owner reach to
+    /// each private 15-foot melee type. Values at or below ten feet instead
+    /// pass through its four-foot allowance, so the type cannot represent an
+    /// effective 15 feet alone. Correct only these four owned melee items;
+    /// rock, bow, Ettin and every campaign weapon keep native range.</summary>
+    [HarmonyPatch(typeof(ItemEntityWeapon), "get_AttackRange")]
+    internal static class SummonSprint29HugeMeleeReach
+    {
+        private static void Postfix(ItemEntityWeapon __instance,
+            ref Feet __result)
+        {
+            UnitEntityData owner = __instance?.Wielder?.Unit;
+            string item = __instance?.Blueprint?.name;
+            if (owner?.Blueprint == null || item == null) return;
+            ModContext context;
+            if (!ModContext.TryGet(out context) ||
+                context.FeatureModules?.Active?.ExpandedSummoning != true)
+                return;
+            string unit = owner.Blueprint.name;
+            bool cloud = unit == "KMG_Summoning_Unit_CloudGiant" &&
+                (item == "KMG_Summoning_Giant_Sprint29_CloudMorningstar4d6" ||
+                 item == "KMG_Summoning_Giant_CloudSlam2d6");
+            bool storm = unit == "KMG_Summoning_Unit_StormGiant" &&
+                (item == "KMG_Summoning_Giant_Sprint29_StormGreatsword4d6" ||
+                 item == "KMG_Summoning_Giant_Sprint29_StormSlam2d6");
+            if (cloud || storm) __result = new Feet(15);
+        }
+    }
+
     /// <summary>Exact project rock accuracy and live damage, plus the alternate
     /// slam's plain Strength contribution. Manufactured weapons retain their
     /// ordinary native two-handed calculation.</summary>
