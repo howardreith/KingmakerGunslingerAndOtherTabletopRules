@@ -310,7 +310,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     command.Result ==
                                         UnitCommand.ResultType.Success &&
                                     economy.Count(command) == 1 &&
-                                    economy.Exact(command, false);
+                                    economy.Exact(command, turnBased);
                                 bool expected = spec.Case == "open" ?
                                     success && events.Damage.Count == 1 &&
                                     moved >= 2.85f && moved <=
