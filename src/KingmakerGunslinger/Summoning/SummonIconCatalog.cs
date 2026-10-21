@@ -54,13 +54,17 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
-            string[] prepared = { "remove-stirge" };
+            // The three Sprint 29 source paintings are ready for the bounded
+            // native donor audit; creature registration remains inert until
+            // its builder and icon consumers are complete.
+            string[] prepared = { "remove-stirge", "cloud-giant",
+                "storm-giant", "ettin" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
             // Sprint27 registers one Griffon with its real pinned painting.
             // Keep the immutability guard in addition to exact key equality.
-            if (Values.Length != 126 || expected.Length != 126 ||
+            if (Values.Length != 129 || expected.Length != 129 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -93,7 +97,10 @@ namespace KingmakerGunslinger.Summoning
             // removal action remains a separate concept with no creature of
             // its own, so it stays an explicit entry.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "remove-stirge", "Remove Stirge");
+                "remove-stirge", "Remove Stirge",
+                "cloud-giant", "Cloud Giant",
+                "storm-giant", "Storm Giant",
+                "ettin", "Ettin");
             return result.ToArray();
         }
 
