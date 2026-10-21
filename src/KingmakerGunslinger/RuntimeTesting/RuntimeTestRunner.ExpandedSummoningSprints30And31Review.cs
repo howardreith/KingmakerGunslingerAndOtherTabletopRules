@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using KingmakerGunslinger.Blueprints;
@@ -53,6 +54,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stats.Wisdom.BaseValue == 11 && stats.Charisma.BaseValue == 5 &&
                 stats.HitPoints.ModifiedValue == 13 && stats.BaseAttackBonus.ModifiedValue == 2 &&
                 owner.Descriptor.State.IsConscious && !owner.Descriptor.State.IsDead &&
+                owner.Body.HandsAreEnabled &&
                 hand != null && hand.Blueprint.AssetGuid == "118fdd03e569a66459ab01a20af6811a" &&
                 additional == 1 && blueprint.Body.AdditionalSecondaryLimbs.Length == 0;
             Sprint25Check("bootstrap-lemure-instantiation", profile,
@@ -64,10 +66,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["bab"] = stats.BaseAttackBonus.ModifiedValue,
                     ["conscious"] = owner.Descriptor.State.IsConscious,
                     ["primaryWeapon"] = hand == null ? null : hand.Blueprint.AssetGuid,
+                    ["handsEnabled"] = owner.Body.HandsAreEnabled,
+                    ["configuredDisableHands"] = blueprint.Body.DisableHands,
+                    ["emptyHandWeapon"] = owner.Body.EmptyHandWeapon == null ? null :
+                        owner.Body.EmptyHandWeapon.Blueprint.AssetGuid,
                     ["additionalLimbs"] = additional,
                     ["visualStatus"] = "borrowed biped proxy; original Lemure body and presentation not qualified" },
                 "Actual hidden Lemure is conscious at zero Intelligence, has its own adult bases and two claw slots. Combat, defenses, AI and body remain separate required proof.");
             if (!profile) throw new InvalidOperationException("First hidden Lemure instantiation failed; stop dependent expansion.");
+            // Native plan only: this is not a hit, resolved attack or AI claim.
+            var attack = new UnitAttack(owner);
+            attack.Init(owner);
+            var plan = attack.CreateFullAttack();
+            bool claws = plan.Count == 2 && plan.All(value =>
+                value != null && value.Hand != null &&
+                value.Hand.MaybeWeapon != null &&
+                value.Hand.MaybeWeapon.Blueprint.AssetGuid ==
+                    "118fdd03e569a66459ab01a20af6811a" &&
+                value.AttackBonusPenalty == 0);
+            Sprint25Check("bootstrap-native-claw-plan", claws,
+                new JObject { ["owner"] = owner.UniqueId, ["planOnly"] = true,
+                    ["plan"] = new JArray(plan.Select(value => new JObject {
+                        ["weapon"] = value?.Hand?.MaybeWeapon?.Blueprint?.AssetGuid,
+                        ["penalty"] = value?.AttackBonusPenalty,
+                        ["number"] = value?.AttackNumber })) },
+                "Native UnitAttack.CreateFullAttack produces exactly two primary claw entries; no attack is issued and no hit or AI verdict is claimed.");
+            if (!claws) throw new InvalidOperationException(
+                "Native first-slice claw plan failed; stop dependent expansion.");
         }
     }
 }
