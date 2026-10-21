@@ -7,6 +7,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using KingmakerGunslinger.Blueprints;
@@ -29,9 +30,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint29ReviewPhase(_request);
-            Sprint25Check("phase", phase == "profiles",
+            Sprint25Check("phase", phase == "profiles" || phase == "modes",
                 new JObject { ["phase"] = phase },
                 "Exactly one implemented Sprint 29 native review phase.");
+            if (phase == "modes")
+            {
+                foreach (int frame in ReviewSprint29Modes(fixture))
+                    yield return frame;
+                yield break;
+            }
             if (phase != "profiles") yield break;
             bool oldTurnBased = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
@@ -141,14 +148,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }).ToArray());
                     bool ettinHands = spec.Key != "ettin" ||
                         mainHeldInTwoHands == false &&
-                        owner.Body.HandsEquipmentSets.Count >= 2 &&
-                        owner.Body.HandsEquipmentSets[1].SecondaryHand?
-                            .MaybeWeapon?.Blueprint?.name ==
-                            "KMG_Summoning_Giant_Sprint29_EttinOffJavelin1d8" &&
                         !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon,
                             owner.Body.SecondaryHand.MaybeWeapon);
-                    bool? ettinSeeded = spec.Key == "ettin" ?
-                        owner.Get<UnitPartSummonEttinInitialArms>()?.Seeded : null;
+                    UnitPartSummonEttinInitialArms armMarker =
+                        spec.Key == "ettin" ?
+                        owner.Get<UnitPartSummonEttinInitialArms>() : null;
+                    bool? ettinFlailSeeded = armMarker?.FlailSeeded;
+                    bool? ettinJavelinSeeded = armMarker?.JavelinSeeded;
                     int perception = stats.SkillPerception.ModifiedValue;
                     bool profile = scores.SequenceEqual(spec.Scores) &&
                         owner.Descriptor.State.Size == spec.Size &&
@@ -162,7 +168,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         stats.SaveWill.ModifiedValue == spec.Will &&
                         stats.Speed.ModifiedValue == spec.Speed &&
                         perception == spec.Perception &&
-                        main == spec.Main && off == spec.Off && ettinHands;
+                        main == spec.Main && off == spec.Off && ettinHands &&
+                        (spec.Key != "ettin" || ettinFlailSeeded == true);
                     Sprint25Check(spec.Key + "-profile", profile,
                         new JObject { ["owner"] = owner.UniqueId,
                             ["scores"] = new JArray(scores),
@@ -182,7 +189,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["mainTypeTwoHanded"] = mainTwoHanded,
                             ["mainHeldInTwoHands"] = mainHeldInTwoHands,
                             ["ettinHands"] = ettinHands,
-                            ["ettinSeeded"] = ettinSeeded,
+                            ["ettinFlailSeeded"] = ettinFlailSeeded,
+                            ["ettinJavelinSeeded"] = ettinJavelinSeeded,
                             ["handSets"] = handSets },
                         "Native adult profile and resolved equipment match the printed anchor.");
                     bool visible = owner.View != null &&
@@ -265,6 +273,128 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["resources"] = resourceRows },
                         "Direct actions and independent limited resources are granted to the exact new unit.");
                 }
+            }
+            finally
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
+                    oldTurnBased;
+                Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        // A switch command lazily constructs the alternate hand set. The
+        // project must provision that set's second distinct projectile only
+        // when its own primary javelin is present, and never refill after a
+        // disarm/load. These are plans and item observations, not attacks.
+        private IEnumerable<int> ReviewSprint29Modes(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            bool oldTurnBased = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            bool oldPause = Game.Instance.IsPaused;
+            try
+            {
+                Game.Instance.IsPaused = true;
+                CreateExpandedSummoningCorrectionHostile(fixture);
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate();
+                Game.Instance.IsPaused = false;
+                for (int i = 0; i < 12; i++) yield return 0;
+                UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
+                    "ettin");
+                SetExpandedSummoningBrainActive(owner, false);
+                for (int i = 0; i < 8; i++) yield return 0;
+                var initialMain = owner.Body.PrimaryHand.MaybeWeapon;
+                var initialOff = owner.Body.SecondaryHand.MaybeWeapon;
+                var initialMarker = owner.Get<UnitPartSummonEttinInitialArms>();
+                var flailAttack = new UnitAttack(fixture.Hostile);
+                flailAttack.Init(owner);
+                var flailPlan = flailAttack.CreateFullAttack();
+                bool flails = initialMain?.Blueprint?.name ==
+                        "KMG_Summoning_Giant_Sprint29_EttinMainFlail2d6" &&
+                    initialOff?.Blueprint?.name ==
+                        "KMG_Summoning_Giant_Sprint29_EttinOffFlail2d6" &&
+                    !initialMain.HoldInTwoHands &&
+                    initialMarker?.FlailSeeded == true &&
+                    initialMarker.JavelinSeeded == false &&
+                    flailPlan.Count == 4 &&
+                    flailPlan.Count(row => ReferenceEquals(row.Hand,
+                        owner.Body.PrimaryHand)) == 2 &&
+                    flailPlan.Count(row => ReferenceEquals(row.Hand,
+                        owner.Body.SecondaryHand)) == 2;
+                Sprint25Check("ettin-flail-plan", flails,
+                    new JObject { ["owner"] = owner.UniqueId,
+                        ["main"] = initialMain?.Blueprint?.name,
+                        ["off"] = initialOff?.Blueprint?.name,
+                        ["twoHandGrip"] = initialMain?.HoldInTwoHands,
+                        ["flailSeeded"] = initialMarker?.FlailSeeded,
+                        ["javelinSeeded"] = initialMarker?.JavelinSeeded,
+                        ["planCount"] = flailPlan.Count,
+                        ["primaryCount"] = flailPlan.Count(row =>
+                            ReferenceEquals(row.Hand, owner.Body.PrimaryHand)),
+                        ["secondaryCount"] = flailPlan.Count(row =>
+                            ReferenceEquals(row.Hand, owner.Body.SecondaryHand)) },
+                    "Native flail plan has two ordinary attacks per distinct arm.");
+                var toJavelin = new UnitSwitchHandEquipmentSet(1);
+                owner.Commands.Run(toJavelin);
+                int frames = 0;
+                DateTime deadline = DateTime.UtcNow.AddSeconds(20);
+                while (!toJavelin.IsFinished && frames++ < 1000 &&
+                    DateTime.UtcNow < deadline) yield return 0;
+                bool switched = toJavelin.IsFinished &&
+                    owner.Body.CurrentHandEquipmentSetIndex == 1;
+                Sprint25Check("ettin-javelin-switch", switched,
+                    new JObject { ["owner"] = owner.UniqueId,
+                        ["finished"] = toJavelin.IsFinished,
+                        ["result"] = toJavelin.Result.ToString(),
+                        ["active"] = owner.Body.CurrentHandEquipmentSetIndex,
+                        ["frames"] = frames },
+                    "A native hand-set command selects Ettin's projectile set.");
+                if (!switched) yield break;
+                var javelinMain = owner.Body.PrimaryHand.MaybeWeapon;
+                var javelinOff = owner.Body.SecondaryHand.MaybeWeapon;
+                var javelinAttack = new UnitAttack(fixture.Hostile);
+                javelinAttack.Init(owner);
+                var javelinPlan = javelinAttack.CreateFullAttack();
+                var marker = owner.Get<UnitPartSummonEttinInitialArms>();
+                bool javelins = javelinMain?.Blueprint?.name ==
+                        "KMG_Summoning_Giant_Sprint29_EttinMainJavelin1d8" &&
+                    javelinOff?.Blueprint?.name ==
+                        "KMG_Summoning_Giant_Sprint29_EttinOffJavelin1d8" &&
+                    !ReferenceEquals(javelinMain, javelinOff) &&
+                    marker?.JavelinSeeded == true &&
+                    javelinPlan.Count == 2 &&
+                    javelinPlan.Count(row => ReferenceEquals(row.Hand,
+                        owner.Body.PrimaryHand)) == 1 &&
+                    javelinPlan.Count(row => ReferenceEquals(row.Hand,
+                        owner.Body.SecondaryHand)) == 1;
+                Sprint25Check("ettin-javelin-plan", javelins,
+                    new JObject { ["owner"] = owner.UniqueId,
+                        ["main"] = javelinMain?.Blueprint?.name,
+                        ["off"] = javelinOff?.Blueprint?.name,
+                        ["javelinSeeded"] = marker?.JavelinSeeded,
+                        ["planCount"] = javelinPlan.Count },
+                    "Native javelin plan has one attack per distinct arm.");
+                var toFlail = new UnitSwitchHandEquipmentSet(0);
+                owner.Commands.Run(toFlail);
+                frames = 0;
+                deadline = DateTime.UtcNow.AddSeconds(20);
+                while (!toFlail.IsFinished && frames++ < 1000 &&
+                    DateTime.UtcNow < deadline) yield return 0;
+                bool returned = toFlail.IsFinished &&
+                    owner.Body.CurrentHandEquipmentSetIndex == 0 &&
+                    ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon,
+                        initialMain) &&
+                    ReferenceEquals(owner.Body.SecondaryHand.MaybeWeapon,
+                        initialOff);
+                Sprint25Check("ettin-flail-return", returned,
+                    new JObject { ["owner"] = owner.UniqueId,
+                        ["finished"] = toFlail.IsFinished,
+                        ["active"] = owner.Body.CurrentHandEquipmentSetIndex,
+                        ["sameMain"] = ReferenceEquals(
+                            owner.Body.PrimaryHand.MaybeWeapon, initialMain),
+                        ["sameOff"] = ReferenceEquals(
+                            owner.Body.SecondaryHand.MaybeWeapon, initialOff) },
+                    "Returning to flails preserves both exact initial items.");
             }
             finally
             {

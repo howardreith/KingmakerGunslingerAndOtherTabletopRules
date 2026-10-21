@@ -216,9 +216,12 @@ namespace KingmakerGunslinger.Summoning
     [Serializable]
     public sealed class UnitPartSummonEttinInitialArms : UnitPart
     {
-        [JsonProperty] private bool _seeded;
-        public bool Seeded { get { return _seeded; } }
-        public void MarkSeeded() { _seeded = true; }
+        [JsonProperty] private bool _flailSeeded;
+        [JsonProperty] private bool _javelinSeeded;
+        public bool FlailSeeded { get { return _flailSeeded; } }
+        public bool JavelinSeeded { get { return _javelinSeeded; } }
+        public void MarkFlailSeeded() { _flailSeeded = true; }
+        public void MarkJavelinSeeded() { _javelinSeeded = true; }
     }
 
     /// <summary>Kingmaker initializes a versatile primary flail with a
@@ -229,10 +232,11 @@ namespace KingmakerGunslinger.Summoning
     [Serializable]
     public sealed class SummonEttinInitialOffhands :
         OwnedGameLogicComponent<UnitDescriptor>, IUnitEquipmentHandler,
-        IUnitSubscriber
+        IUnitActiveEquipmentSetHandler, IUnitSubscriber
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintItemWeapon MainFlail;
+        public BlueprintItemWeapon MainJavelin;
         public BlueprintItemWeapon OffhandFlail;
         public BlueprintItemWeapon OffhandJavelin;
         [NonSerialized] private bool _seeding;
@@ -245,26 +249,42 @@ namespace KingmakerGunslinger.Summoning
             TrySeed();
         }
 
+        public void HandleUnitChangeActiveEquipmentSet(UnitDescriptor unit)
+        {
+            if (ReferenceEquals(unit, Owner)) TrySeed();
+        }
+
         private void TrySeed()
         {
             UnitEntityData unit = Owner == null ? null : Owner.Unit;
             if (_seeding || unit == null || unit.Body == null ||
                 !ReferenceEquals(unit.Blueprint, OwningBlueprint) ||
-                unit.Body.HandsEquipmentSets.Count < 2 ||
-                !ReferenceEquals(unit.Body.HandsEquipmentSets[0].PrimaryHand
-                    .MaybeWeapon?.Blueprint, MainFlail))
+                unit.Body.HandsEquipmentSets.Count < 2)
                 return;
             UnitPartSummonEttinInitialArms marker =
                 unit.Ensure<UnitPartSummonEttinInitialArms>();
-            if (marker.Seeded) return;
+            bool flailReady = !marker.FlailSeeded &&
+                ReferenceEquals(unit.Body.HandsEquipmentSets[0].PrimaryHand
+                    .MaybeWeapon?.Blueprint, MainFlail);
+            bool javelinReady = !marker.JavelinSeeded &&
+                ReferenceEquals(unit.Body.HandsEquipmentSets[1].PrimaryHand
+                    .MaybeWeapon?.Blueprint, MainJavelin);
+            if (!flailReady && !javelinReady) return;
             _seeding = true;
             try
             {
-                Seed(unit.Body.HandsEquipmentSets[0].SecondaryHand,
-                    OffhandFlail);
-                Seed(unit.Body.HandsEquipmentSets[1].SecondaryHand,
-                    OffhandJavelin);
-                marker.MarkSeeded();
+                if (flailReady)
+                {
+                    Seed(unit.Body.HandsEquipmentSets[0].SecondaryHand,
+                        OffhandFlail);
+                    marker.MarkFlailSeeded();
+                }
+                if (javelinReady)
+                {
+                    Seed(unit.Body.HandsEquipmentSets[1].SecondaryHand,
+                        OffhandJavelin);
+                    marker.MarkJavelinSeeded();
+                }
             }
             finally { _seeding = false; }
         }

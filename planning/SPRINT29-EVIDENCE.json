@@ -4,11 +4,12 @@
   "status": "HIDDEN_REGISTERED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "THREE_PROFILES_FAILED_RESTORED; REPAIR_IN_PROGRESS",
+  "nativeQualification": "FOUR_PROFILES_FAILED_RESTORED; MODES_REPAIR_IN_PROGRESS",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
-    "nativeBootstrap": "MODULE_INITIALIZED; FIRST_PROFILES_FAILED"
+    "nativeBootstrap": "MODULE_INITIALIZED; FOUR_PROFILES_FAILED",
+    "modesPreflight": "PASS: 701 no-game assertions under Limited Interactive account; first elevated attempt correctly refused before launch"
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -36,6 +37,14 @@
     "artifactDllSha256": "8125c2f1cbeee51cbe3c20b8b002ac78af028a939144d8a34cb55f8bd2a29b88",
     "artifactMvid": "76d1db6b-a8ec-421e-8ed3-70e192500ff8",
     "result": "FAIL: initial-creation callback did not retain Ettin's offhand in the live equipment sets; Cloud and Storm profiles passed",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "fourthNativeProfiles": {
+    "source": "061d3118a65c13fc9bff1325f78a484f20a78d43",
+    "runId": "20261021T0343333952137Z-15bcaec64b8e4f428afdf15886d3b84f",
+    "artifactZipSha256": "5d52c161f882b7de75d892d1b9abd2d77ba823ba0e4921d2fc4bce3168f777a8",
+    "artifactDllSha256": "579e01a6191fa927e80d233ea994e3ee0374fb5b3bf5afdc9dd143fa42b95abd",
+    "result": "FAIL: Ettin had distinct live flails and released its two-hand grip, but the observer required the lazy alternate javelin set before its first native switch; Cloud and Storm profiles passed",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
