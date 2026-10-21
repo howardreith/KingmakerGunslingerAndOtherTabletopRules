@@ -389,6 +389,25 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Disable turn mode through the native controller before per-case owner disposal, matching the qualified prior giant turn observer. Focused compilation and native recheck pending."
   },
+  "awesomeTurnQualified": {
+    "source": "dcca52ef113cd7df8326bca7e18bbe551d434643",
+    "runId": "20261021T1135275024317Z-f40f76e078eb47aa878c52df7764d1f3",
+    "artifactZipSha256": "6da95d70a4bfca5e606add452f63fea2fa0b35c6fa08770258e98eebd38a1a72",
+    "artifactDllSha256": "dee9657b03f7d090738003aa289585780b1a7f11820d4a9e0c8e709b51ff3c49",
+    "artifactMvid": "47d12d57-edc3-4267-a86e-300679ec54c8",
+    "result": "PASS 11/11 native save-free turn-based assertions: exact Cloud and Storm owners received acting turns, completed one standard-action Awesome Blow each with a successful maneuver, one bounded 3.045 m open push and one obstructed 1.784 m push. Open dealt one attributed slam packet and prone; obstructed dealt slam plus victim 1d6 collision and prone. Both owner cases and turn teardown completed without a native controller exception. Obstacle-object damage remains a separate scope decision.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "aiTurnsQualified": {
+    "source": "dcca52ef113cd7df8326bca7e18bbe551d434643",
+    "runId": "20261021T1140115263712Z-09fa7c801f464d5a81ad227eb3e783ec",
+    "artifactZipSha256": "6da95d70a4bfca5e606add452f63fea2fa0b35c6fa08770258e98eebd38a1a72",
+    "artifactDllSha256": "dee9657b03f7d090738003aa289585780b1a7f11820d4a9e0c8e709b51ff3c49",
+    "artifactMvid": "47d12d57-edc3-4267-a86e-300679ec54c8",
+    "result": "PASS 12/12 native save-free turn-based assertions: each exact hidden owner entered acting turn order with a visible disposable hostile and intact brain. Ettin autonomously completed one full four-flail command with four real rolls and damage packets on that turn. Cloud autonomously cast one owned Fog Cloud; Storm autonomously cast Chain Lightning with native damage. All three finished one successful AI-selected command on the same active turn; fixture attack commands and forced rolls were zero.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Other spell priorities, effect expiration, cold-load hydration, affected controls and public routes remain distinct requirements."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
