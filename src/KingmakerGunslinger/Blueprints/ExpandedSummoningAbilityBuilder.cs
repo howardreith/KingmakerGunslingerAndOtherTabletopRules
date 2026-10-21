@@ -39,6 +39,8 @@ namespace KingmakerGunslinger.Blueprints
             "ec906031bb8766f42a37a52cf1d89836",
             "4b808ccd7e0b7bd43b10b2d47733b1a4" };
 
+        internal static IReadOnlyList<string> NativeTemplateIds { get { return Array.AsReadOnly(NativeMonsterTemplateBuffs); } }
+
         internal static void Configure(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
@@ -97,7 +99,7 @@ namespace KingmakerGunslinger.Blueprints
                         replacedNativeTemplateBuffs);
                 }
                 else ConfigureOne(ability, native, unit, variant, null, null,
-                    Array.Empty<BlueprintBuff>(), false,
+                    replacedNativeTemplateBuffs, false,
                     family == SummonFamily.NaturesAlly ?
                         SummonAlignmentMode.Caster : (SummonAlignmentMode?)null);
             }
@@ -184,6 +186,21 @@ namespace KingmakerGunslinger.Blueprints
                     .OfType<SpellDescriptorComponent>().Single();
                 descriptor.Descriptor |= celestial ? SpellDescriptor.Good :
                     SpellDescriptor.Evil;
+            }
+            // Native SM carriers retain native celestial/fiendish after-spawn
+            // behavior even when the project creature is untemplated. Repair
+            // this scoped new route only; released unrelated graphs are untouched.
+            if (variant.Family == SummonFamily.Monster && variant.Creature.Key == "lemure")
+            {
+                foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
+                {
+                    if (spawn.AfterSpawn == null) spawn.AfterSpawn = new ActionList();
+                    var remove = ScriptableObject.CreateInstance<ContextActionRemoveInheritedSummonTemplates>();
+                    remove.OwningBlueprint = unit;
+                    remove.NativeTemplates = (BlueprintBuff[])replacedNativeTemplateBuffs.Clone();
+                    spawn.AfterSpawn.Actions = (spawn.AfterSpawn.Actions ?? Array.Empty<GameAction>())
+                        .Concat(new GameAction[] { remove }).ToArray();
+                }
             }
             // The S30 Lemure has lawful/evil subtypes. Set the actual spell
             // descriptors on this new owned route, preserving class-specific
