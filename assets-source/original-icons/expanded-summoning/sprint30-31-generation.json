@@ -17,6 +17,15 @@
       "prompt": "Use case: stylized-concept. Asset type: original square painted creature-choice icon for a Pathfinder fantasy RPG, intended for 128px export. Create ONE Lemure devil: a low, roiling mound of pale pink-grey melting flesh, with one miserable half-formed face and TWO thick short arms ending in dark claws, lower body a sluglike surge of flesh rather than legs. Simple forceful forward-facing three-quarter silhouette; both claws and face readable at 48px. No horns or wings, no weapons, no skeleton, no other creatures, no blood or gore. Dark smoky umber infernal background, controlled warm rim light, painterly material texture and broad shapes matching the two project creature reference paintings. The local dog and eagle paintings are STYLE REFERENCES ONLY: do not copy their subjects, rings or frames. Full-bleed artwork, NO frame, ring, border, letters, numbers, UI overlays, text or watermark. Keep face and both claws inside the central 80 percent with clear negative space. Output a single 1024x1024 opaque painted icon.",
       "humanReview": "NOT_PERFORMED_NONBLOCKING",
       "status": "source candidate; not registered; export review pending"
+    },
+    {
+      "key": "dretch",
+      "source": "assets-source/original-icons/expanded-summoning/sources/dretch.png",
+      "sourceSha256": "1e5b158b197a6a5a9099adf85c0c148d1c5bfc59bd37e0202864b4e33fe87527",
+      "originalToolOutput": "C:\\Dev\\KingmakerBuffPlannerLab\\codex-home\\generated_images\\01a15fe6-3857-70c3-8feb-e57193228e09\\exec-8f855ea9-c8b3-4639-9fa0-2147e1882aa5.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square painted creature-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Dretch demon: short squat hunched hairless blue-grey humanoid with a huge sagging bloated belly, large pointed ears, broad flat ugly face, short tusklike teeth, TWO long arms with clawed hands and TWO short bent legs. Full torso and both claws visible, jaws snarling. Strong simple silhouette that remains readable at 48px; clearly a distinct stocky little demon with legs, not a melting Lemure or horned giant. Painterly fantasy realism, broad brush textures, smoky dark brown cavern backdrop and restrained warm edge light. Dog/Eagle project paintings supplied only as STYLE references; do not copy animal anatomy or ornamental framing. Full-bleed opaque square, NO frame/ring/border, no text/numbers/UI overlays/watermark, no weapon/wings/extra limbs/other creatures, no gore. Keep head and claws within central 80 percent.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "status": "source candidate; not registered; export review pending"
     }
   ]
 }
