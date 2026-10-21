@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_PROFILES_AND_ETTIN_PLANS_PASS; RESOLVED_GAMEPLAY_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; MODE_ARITHMETIC_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -58,6 +58,15 @@
     "modes": "PASS: 6/6 native Ettin switch; four flail plan attacks, two javelin plan attacks, exact return to the same flail instances",
     "restoration": "PASS after both fresh transactions: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package only; no resolved attack rolls, magic effects, AI, disarm, persistence or public roots qualified"
+  },
+  "modeArithmeticDevelopment": {
+    "source": "b20cd99104b744a8ec3afe52fd203d25b31a868f",
+    "runId": "20261021T0416186111206Z-199df8fb432842eeb4cbc20ce5a70e13",
+    "artifactZipSha256": "a74070a3cb66b65419e5e1a6a85d2ded7a668404d15ce7a4223f638f924e069e",
+    "artifactDllSha256": "41a97962ecd62694ba862ab3514379b43c42a70017fdc9165a4c82aec9505bd7",
+    "artifactMvid": "41df813d-459e-48d8-aeeb-a07b97df30c6",
+    "result": "FAIL: Ettin native paired penalties gave flail first attacks +6/+2 and javelins -1/-5; Cloud oversized flat bonus gave morningstar +24; Cloud and Storm equipped melee range was 15 feet but observer wrongly required the engine's 12-foot body stat to equal 15",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
     "registeredCreatures": 117,

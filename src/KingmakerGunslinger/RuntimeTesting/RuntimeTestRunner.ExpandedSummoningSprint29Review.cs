@@ -522,9 +522,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         plan.Count == spec.Counts[index] &&
                         primary == (index == 1 ? 1 : spec.Counts[index]) &&
                         secondary == (index == 1 ? 1 : 0) &&
-                        owner.Stats.Reach.ModifiedValue == 15 &&
+                        (index == 2 || weapon.AttackRange.Value == 15) &&
                         (bool)rule["ownerExact"] &&
                         (bool)rule["nonRemovable"] &&
+                        (index != 0 || spec.Key != "cloud-giant" ||
+                            weapon.Blueprint.Size == Size.Gargantuan &&
+                            owner.Descriptor.State.Size == Size.Huge) &&
+                        (index != 0 || spec.Key != "storm-giant" ||
+                            weapon.Blueprint.Type.CriticalRollEdge == 17) &&
                         (index != 2 || spec.Key != "cloud-giant" ||
                             weapon.Blueprint.Type.AttackRange.Value == 140);
                     Sprint25Check(spec.Key + "-mode-" + index, exact,
@@ -538,11 +543,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["hand"] = row.Hand?.ToString(),
                                     ["penalty"] = row.AttackBonusPenalty,
                                     ["number"] = row.AttackNumber })),
-                            ["reachFeet"] = owner.Stats.Reach.ModifiedValue,
+                            ["bodyReachFeet"] = owner.Stats.Reach.ModifiedValue,
+                            ["equippedRangeFeet"] = weapon.AttackRange.Value,
+                            ["itemSize"] = weapon.Blueprint.Size.ToString(),
+                            ["threatMinimum"] =
+                                weapon.Blueprint.Type.CriticalRollEdge,
                             ["configuredRangeFeet"] =
                                 weapon.Blueprint.Type.AttackRange.Value,
                             ["commandRadiusMeters"] = attack.ApproachRadius },
-                        "Native mode matches printed attack, damage, reach and separate full-attack routine.");
+                        "Native equipped mode matches printed attack, damage, melee range and separate full-attack routine.");
                 }
             }
         }
