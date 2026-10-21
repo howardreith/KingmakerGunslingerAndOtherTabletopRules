@@ -3666,7 +3666,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
             UnitEntityData owner, UnitEntityData targetUnit, float distance,
-            out Vector3 target, out string survey, out string direction)
+            out Vector3 target, out string survey, out string direction,
+            float targetAllyExclusionRadius = 0f)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3696,6 +3697,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int originCandidates = 0;
             int laneCandidates = 0;
             int nativeLosCandidates = 0;
+            int allyClearCandidates = 0;
             for (int dx = -15; dx <= 15; dx += 3)
                 for (int dz = -15; dz <= 15; dz += 3)
                 {
@@ -3744,6 +3746,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!owner.HasLOS(targetUnit) ||
                             !targetUnit.HasLOS(owner)) continue;
                         nativeLosCandidates++;
+                        if (targetAllyExclusionRadius > 0f &&
+                            Game.Instance.State.Units.All.Any(value =>
+                                value != null && !value.Destroyed &&
+                                !ReferenceEquals(value, owner) &&
+                                !ReferenceEquals(value, targetUnit) &&
+                                owner.IsAlly(value) &&
+                                Vector3.Distance(value.Position,
+                                    targetPoint.clampedPosition) <=
+                                    targetAllyExclusionRadius + value.Corpulence))
+                            continue;
+                        allyClearCandidates++;
                         float anchorGap = Vector3.Distance(
                             anchor.clampedPosition, origin.clampedPosition);
                         if (anchorGap > selectedAnchorGap + .01f ||
@@ -3764,6 +3777,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             survey = "originCandidates=" + originCandidates +
                 ";laneCandidates=" + laneCandidates +
                 ";nativeLosCandidates=" + nativeLosCandidates +
+                ";allyClearCandidates=" + allyClearCandidates +
                 ";partyGap=" +
                 selectedPartyGap.ToString("0.##",
                     System.Globalization.CultureInfo.InvariantCulture) +
