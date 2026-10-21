@@ -81,6 +81,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 })
                 {
                     ResetExpandedSummoningHostile(fixture);
+                    // Every case starts with the same disposable standing
+                    // target; a prior native stand-up transition must not
+                    // make the next knockdown appear already consumed.
+                    target.Descriptor.State.RemoveCondition(
+                        UnitCondition.Prone);
+                    target.Descriptor.State.Prone.Active = false;
+                    target.Descriptor.State.Prone.ShouldBeActive = false;
                     target.Stats.HitPoints.BaseValue = 100000;
                     target.Descriptor.Damage = 0;
                     target.Stats.AdditionalCMD.BaseValue = oldCmd;
@@ -155,6 +162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool sawForce = false, forceFinished = false;
                         bool chunkBounded = true;
                         bool proneSeen = false, priorForce = false;
+                        bool proneActiveSeen = false;
                         float forceMoveMeters = float.NaN;
                         int sampledFrames = 0, priorDamage = 0;
                         Action<UnitUseAbility> sample = value =>
@@ -173,9 +181,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         new Feet(10).Meters) < .01f;
                             float displacement = Vector3.Dot(
                                 target.Position - start, lane.Direction);
-                            bool proneNow = target.Descriptor.State.Prone
-                                .ShouldBeActive;
+                            bool proneRequested = target.Descriptor.State
+                                .Prone.ShouldBeActive;
+                            bool proneActive = target.Descriptor.State.Prone
+                                .Active;
+                            bool proneNow = proneRequested || proneActive;
                             proneSeen |= proneNow;
+                            proneActiveSeen |= proneActive;
                             if (priorForce && !force && !forceFinished)
                             {
                                 forceFinished = true;
@@ -199,6 +211,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["chunkSpeed"] = active == null ?
                                         (float?)null : active.Speed,
                                     ["prone"] = proneNow,
+                                    ["proneRequested"] = proneRequested,
+                                    ["proneActive"] = proneActive,
                                     ["damageCount"] =
                                         events.Damage.Count });
                             priorForce = force;
@@ -285,6 +299,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["forceFinished"] = forceFinished,
                                         ["chunkBounded"] = chunkBounded,
                                         ["proneSeen"] = proneSeen,
+                                        ["proneActiveSeen"] =
+                                            proneActiveSeen,
                                         ["movement"] = movement,
                                         ["maneuvers"] = new JArray(
                                             events.Maneuvers.Select(value =>

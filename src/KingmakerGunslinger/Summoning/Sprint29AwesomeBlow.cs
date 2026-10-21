@@ -187,7 +187,7 @@ namespace KingmakerGunslinger.Summoning
             UnitPartForceMove part = unit.Get<UnitPartForceMove>();
             foreach (Pending pending in bucket.Entries.ToArray())
             {
-                if (unit.Destroyed || part == null)
+                if (unit.Destroyed)
                 {
                     bucket.Entries.Remove(pending);
                     continue;
@@ -195,7 +195,8 @@ namespace KingmakerGunslinger.Summoning
                 if (pending.Chunk.PassedDistance + .001f <
                     pending.Distance)
                 {
-                    if (!part.Chunks.Contains(pending.Chunk))
+                    if (part == null ||
+                        !part.Chunks.Contains(pending.Chunk))
                         bucket.Entries.Remove(pending);
                     continue;
                 }
