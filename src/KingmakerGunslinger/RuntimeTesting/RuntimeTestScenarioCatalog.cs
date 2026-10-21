@@ -162,6 +162,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-sprint27-native-inputs";
         internal const string ObserveExpandedSummoningSprint28Inputs =
             "observe-expanded-summoning-sprint28-native-inputs";
+        internal const string ObserveExpandedSummoningSprints30And31Inputs =
+            "observe-expanded-summoning-sprints30-31-native-inputs";
         internal const string ObserveExpandedSummoningSprint29Inputs =
             "observe-expanded-summoning-sprint29-native-inputs";
         internal const string ObserveExpandedSummoningSprint26Inputs =
@@ -878,6 +880,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint27Inputs,
                 ObserveExpandedSummoningSprint28Inputs,
                 ObserveExpandedSummoningSprint29Inputs,
+                ObserveExpandedSummoningSprints30And31Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,

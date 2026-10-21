@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "tool": "image_gen.imagegen (built-in)",
+  "providerModel": "not exposed by tool; not inferred",
+  "transparentBackground": false,
+  "styleReferences": [
+    "assets-source/original-icons/expanded-summoning/sources/dog.png",
+    "assets-source/original-icons/expanded-summoning/sources/eagle.png"
+  ],
+  "styleReferenceRole": "Inspected style references only; original composition and pixels.",
+  "images": [
+    {
+      "key": "lemure",
+      "source": "assets-source/original-icons/expanded-summoning/sources/lemure.png",
+      "sourceSha256": "b742a9462547674ecde44fac7e52a3b0cbcc6b278fe84c76a678d48cc30faf18",
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15fe6-3857-70c3-8feb-e57193228e09/exec-6fd4c8b2-2ce9-4cfe-b62a-84db7b4a7ec4.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square painted creature-choice icon for a Pathfinder fantasy RPG, intended for 128px export. Create ONE Lemure devil: a low, roiling mound of pale pink-grey melting flesh, with one miserable half-formed face and TWO thick short arms ending in dark claws, lower body a sluglike surge of flesh rather than legs. Simple forceful forward-facing three-quarter silhouette; both claws and face readable at 48px. No horns or wings, no weapons, no skeleton, no other creatures, no blood or gore. Dark smoky umber infernal background, controlled warm rim light, painterly material texture and broad shapes matching the two project creature reference paintings. The local dog and eagle paintings are STYLE REFERENCES ONLY: do not copy their subjects, rings or frames. Full-bleed artwork, NO frame, ring, border, letters, numbers, UI overlays, text or watermark. Keep face and both claws inside the central 80 percent with clear negative space. Output a single 1024x1024 opaque painted icon.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "status": "source candidate; not registered; export review pending"
+    }
+  ]
+}
