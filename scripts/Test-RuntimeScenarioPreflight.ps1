@@ -872,6 +872,7 @@ Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfte
 $sprint28ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint28-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 $sprint29ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint29-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'})) 'sprint29-profiles-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='modes'})) 'sprint29-modes-admitted'
 $sprint29ProfileRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight')
 Assert-True ($sprint29ProfileRequest.parameters.reviewPhase -ceq 'profiles') 'sprint29-profiles-serialized'
 foreach ($invalid in @(@{}, @{reviewPhase='Profiles'}, @{reviewPhase='magic'}, @{reviewPhase='profiles';saveName='KMG_AUTOMATION_WORKING'})) {

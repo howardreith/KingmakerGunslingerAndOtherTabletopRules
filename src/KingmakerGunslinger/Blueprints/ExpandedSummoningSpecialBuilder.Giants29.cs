@@ -139,6 +139,7 @@ namespace KingmakerGunslinger.Blueprints
                 SummonEttinInitialOffhands>();
             initialOffhands.OwningBlueprint = unit;
             initialOffhands.MainFlail = mainFlail;
+            initialOffhands.MainJavelin = mainJavelin;
             initialOffhands.OffhandFlail = offFlail;
             initialOffhands.OffhandJavelin = offJavelin;
             var perception = ScriptableObject.CreateInstance<AddStatBonus>();
