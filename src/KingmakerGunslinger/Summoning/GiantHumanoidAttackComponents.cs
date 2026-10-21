@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Harmony12;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Designers;
 using Kingmaker.EntitySystem.Entities;
@@ -250,6 +251,12 @@ namespace KingmakerGunslinger.Summoning
                 owner.Body.PrimaryHand.MaybeWeapon;
             ItemEntityWeapon off = owner.Body.SecondaryHand == null ? null :
                 owner.Body.SecondaryHand.MaybeWeapon;
+            // Native Disarm temporarily disables the primary hand without
+            // removing its item. The paired correction belongs only to two
+            // usable weapons; leave the remaining arm to native accounting.
+            if (owner.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance
+                    .SystemMechanics.DisarmMainHandBuff) != null)
+                return;
             bool flails = main != null && off != null &&
                 ReferenceEquals(main.Blueprint, MainFlail) &&
                 ReferenceEquals(off.Blueprint, OffhandFlail);
@@ -285,10 +292,15 @@ namespace KingmakerGunslinger.Summoning
                 owner.Body.PrimaryHand.MaybeWeapon;
             ItemEntityWeapon off = owner.Body.SecondaryHand == null ? null :
                 owner.Body.SecondaryHand.MaybeWeapon;
+            bool mainDisarmed = owner.Descriptor.Buffs.GetBuff(
+                BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff)
+                != null;
             bool mainFlail = main != null && main.Blueprint != null &&
+                !mainDisarmed &&
                 main.Blueprint.name ==
                     "KMG_Summoning_Giant_Sprint29_EttinMainFlail2d6";
             bool mainJavelin = main != null && main.Blueprint != null &&
+                !mainDisarmed &&
                 main.Blueprint.name ==
                     "KMG_Summoning_Giant_Sprint29_EttinMainJavelin1d8";
             bool offFlail = off != null && off.Blueprint != null &&
