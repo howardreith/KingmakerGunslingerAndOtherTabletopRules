@@ -369,6 +369,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package. Turn-based AI, effect expiration and final public-artifact qualification remain."
   },
+  "awesomeTurnObserverDevelopment": {
+    "source": "16441221e3419f44aa4630a41507c0a4099c19d6",
+    "runId": "20261021T1113332945229Z-6511b97a6327496ebd541d8fd2eb0b39",
+    "artifactZipSha256": "e3ba3cc4b1483eaef010f868860997ff4862c701220896cc378463ed3b702d78",
+    "artifactDllSha256": "c26656575721fbb9de59e307fa05dbe2d6d5098d62a5c877288c46f7c4e912c4",
+    "artifactMvid": "add305fc-a113-43ef-b72d-af1e10dc8a24",
+    "result": "FAIL in the open case's turn-based cost predicate. Native turn admission, command completion, one standard-action cost, one successful maneuver, one attributed 2d6+12 slam packet, 3.045 m bounded push and prone all occurred. The observer incorrectly called the RTWP cost comparator, so this is not a turn-based phase PASS; the obstructed case did not execute.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Use the same FirearmReviewCosts.Exact(command, turnBased) comparator already used in native turn command observations; focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
