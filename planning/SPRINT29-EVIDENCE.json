@@ -532,6 +532,33 @@
     "result": "FAIL 1 of 15 Vital mechanic assertions; phase and fixture-restoration assertions also passed. Ordinary full control again delivered three 4d6 attacks with +21,+33,+33 and a full-round turn cost, but the flat +21 predicate failed. Both distinct Vital Strike actions were admitted on their exact owner turns and passed one Standard action, one greatsword hit, 8d6+21 and 12d6+21. Exact Power Attack attribution is pending the changed observer.",
     "restoration": "PASS: fresh protected intake exact after run (Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases); child/task exit 1 and task removed; raw FAIL retained."
   },
+  "catchQualifiedC811": {
+    "source": "c8110de2ce696c51445064e4f6cc2ad9f4ca3f95",
+    "runId": "20261021T1436293235215Z-3949e9a06b344efd97344e89162d934a",
+    "artifactZipSha256": "83903817e810bbdc1e8dda47f822c2b36181aef173ab6a0431f0decbb63d4db0",
+    "artifactDllSha256": "7443ed548c3d1d5bcba93757f96e901b61ab97b3662b77007b7d6193be7555cb",
+    "artifactMvid": "f57e0369-1438-499c-97d3-4eebe5a66336",
+    "result": "PASS: 23 native rows, zero failed, including phase and fixture restoration. Cloud and Storm rock catch, released Hill control, real command outcomes, native DC15/20, once-per-round ledger and exact projectile cleanup passed. The observer treats a crossed native round as a new eligibility window rather than a same-round repeat.",
+    "restoration": "PASS: guarded limited task and child exited zero; fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
+  "vitalRtwpQualifiedC811": {
+    "source": "c8110de2ce696c51445064e4f6cc2ad9f4ca3f95",
+    "runId": "20261021T1441339761078Z-42fab462af9841e5995d0c56ac71d675",
+    "artifactZipSha256": "83903817e810bbdc1e8dda47f822c2b36181aef173ab6a0431f0decbb63d4db0",
+    "artifactDllSha256": "7443ed548c3d1d5bcba93757f96e901b61ab97b3662b77007b7d6193be7555cb",
+    "artifactMvid": "f57e0369-1438-499c-97d3-4eebe5a66336",
+    "result": "PASS: 14 native rows, zero failed. The ordinary full attack resolved three 4d6 hits with bonuses +21,+33,+33; the latter two coincided with the native Power Attack buff at those rolls. Direct Vital and Improved Vital commands separately resolved one 8d6+21 or 12d6+21 greatsword packet and one Standard action each.",
+    "restoration": "PASS: guarded limited task and child exited zero; fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
+  "vitalTurnAdmissionFailureC811": {
+    "source": "c8110de2ce696c51445064e4f6cc2ad9f4ca3f95",
+    "runId": "20261021T1446343370401Z-deaa3e6499194e67b413607d9fb0db7d",
+    "artifactZipSha256": "83903817e810bbdc1e8dda47f822c2b36181aef173ab6a0431f0decbb63d4db0",
+    "artifactDllSha256": "7443ed548c3d1d5bcba93757f96e901b61ab97b3662b77007b7d6193be7555cb",
+    "artifactMvid": "f57e0369-1438-499c-97d3-4eebe5a66336",
+    "result": "FAIL: turn-based ordinary control never reached exact owner turn. Native order included owner and target, but an unrelated first actor remained in Ended status throughout the bounded wait. No Vital command was issued, so this is an unmet fixture admission prerequisite rather than a Vital damage verdict. A later source correction gives the disposable Storm owner a temporary recorded initiative lead before native enrollment, then restores it; that correction has no native verdict yet.",
+    "restoration": "PASS: guarded limited child/task exited one and were removed; raw FAIL retained. Fresh protected intake compared exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,

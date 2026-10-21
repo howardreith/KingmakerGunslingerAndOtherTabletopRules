@@ -63,6 +63,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
                         fixture, "storm-giant");
                     SetExpandedSummoningBrainActive(owner, false);
+                    int originalInitiativeBase = owner.Stats.Initiative.BaseValue;
+                    if (turnBased)
+                    {
+                        // A fixture caster can win native initiative and
+                        // remain in Ended while this isolated test waits.
+                        // Re-enter combat with a bounded fixture-only lead;
+                        // the owner must still receive its real native turn.
+                        if (owner.IsInCombat) owner.LeaveCombat();
+                        owner.Stats.Initiative.BaseValue =
+                            originalInitiativeBase + 100;
+                    }
                     UnitEntityData target = fixture.Hostile;
                     int originalHitPoints = target.Stats.HitPoints.BaseValue;
                     try
@@ -114,6 +125,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "-turn-admission", acting,
                                 new JObject { ["owner"] = owner.UniqueId,
                                     ["target"] = target.UniqueId,
+                                    ["initiativeBaseBefore"] =
+                                        originalInitiativeBase,
+                                    ["fixtureInitiativeBase"] =
+                                        owner.Stats.Initiative.BaseValue,
                                     ["admission"] = admission,
                                     ["turn"] = Sprint22TurnState(owner,
                                         target) },
@@ -306,6 +321,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally
                     {
                         target.Stats.HitPoints.BaseValue = originalHitPoints;
+                        owner.Stats.Initiative.BaseValue =
+                            originalInitiativeBase;
                         SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
                             false;
                         Game.Instance.TurnBasedCombatController.Activate();
