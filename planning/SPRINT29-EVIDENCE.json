@@ -13,7 +13,7 @@
     "commandsPreflight": "PASS: 704 no-game assertions under Limited Interactive account; child and task exit zero; 218 separate orchestration assertions passed. Native issued commands separately qualified below.",
     "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
     "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below.",
-    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. AI native behavior pending."
+    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. First AI native result below; safe Fog Cloud AI target-center correction compiled but awaits native recheck."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -165,7 +165,7 @@
     "artifactZipSha256": "cada3087b0dc2daf19b955ed2aca940b3a1f7ebf3d4dcddcdb6a38e473a3b564",
     "artifactDllSha256": "5658a2f356fbb4cc891e4a30ba00c27e10cffefadfad45f5e698a80747ecf385",
     "artifactMvid": "834d4b3a-1d6d-4f0e-a1fd-cefc97115e3d",
-    "result": "FAIL: Ettin autonomously issued a successful native four-flail command and Storm autonomously issued successful Chain Lightning with one damage packet, but their observer predicate incorrectly demanded no ambient candidates even though only the exact owner was ticked. Cloud had no commands after 20 exact-owner ticks because its two unsafe fog actions had no ordinary attack fallback.",
+    "result": "FAIL: Ettin autonomously issued a successful native four-flail command and Storm autonomously issued successful Chain Lightning with one damage packet, but their observer predicate incorrectly demanded no ambient candidates even though only the exact owner was ticked. Cloud had no commands after 20 exact-owner ticks: its private brain had no ordinary attack fallback, while useful fog selection was unresolved.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Cloud and Storm private brains now retain the installed immutable ordinary attack action after their spell priorities; the observer no longer treats enumerated but unticked ambient candidates as touched actors. Focused production compilation and two sprint29 domain tests pass. Native recheck pending."
   },
@@ -175,7 +175,7 @@
     "artifactZipSha256": "04e0b9b8493f0510cfe0d564bf82e0d840b8c509e759493d024d14de0be775d9",
     "artifactDllSha256": "cb6bae57ba4e3e23df86a874187e11accd18ca816acfe78ea4278acc632d21b2",
     "artifactMvid": "dd4b97a0-dc80-4859-97f6-8de4aacb730d",
-    "result": "PASS 8/8 native predicates: exact Ettin AI selected one successful four-flail command with four real weapon/damage packets, Cloud AI selected one successful three-attack morningstar fallback when nearby allies made fog unsafe, and Storm AI selected successful Chain Lightning with real damage. The observer ticked only each exact owner; no fixture attack command or forced roll was issued.",
+    "result": "PASS 8/8 native predicates: exact Ettin AI selected one successful four-flail command with four real weapon/damage packets, Cloud AI selected one successful three-attack morningstar command while its fog actions were not selected, and Storm AI selected successful Chain Lightning with real damage. The observer ticked only each exact owner; no fixture attack command or forced roll was issued. This does not establish why Cloud fog was not selected or that safe fog AI works.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; safe autonomous Cloud fog selection, Storm Call Lightning/bolt priority, turn-based AI, negative target cases, item/disarm and persistence remain pending"
   },
