@@ -143,11 +143,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 UnitCondition.ImmuneToCombatManeuvers, null);
                         owner.JoinCombat(); target.JoinCombat();
                         owner.Memory.Add(target); target.Memory.Add(owner);
+                        // A preexisting disposable-target command must not
+                        // contaminate the post-impact displacement sample.
+                        target.Commands.InterruptAll(true);
                         int damageBefore = target.Descriptor.Damage;
                         Vector3 start = target.Position;
                         var events = new Sprint29AwesomeEvents {
                             Owner = owner, Target = target };
                         var costs = new JArray();
+                        var movement = new JArray();
+                        bool sawForce = false, forceFinished = false;
+                        bool proneSeen = false, priorForce = false;
+                        float forceMoveMeters = float.NaN;
+                        int sampledFrames = 0, priorDamage = 0;
+                        Action<UnitUseAbility> sample = value =>
+                        {
+                            UnitPartForceMove part = target
+                                .Get<UnitPartForceMove>();
+                            bool force = part != null &&
+                                part.Chunks.Any();
+                            if (force) sawForce = true;
+                            float displacement = Vector3.Dot(
+                                target.Position - start, lane.Direction);
+                            bool proneNow = target.Descriptor.State.Prone
+                                .ShouldBeActive;
+                            proneSeen |= proneNow;
+                            if (priorForce && !force && !forceFinished)
+                            {
+                                forceFinished = true;
+                                forceMoveMeters = displacement;
+                            }
+                            if (sampledFrames < 12 ||
+                                priorForce != force ||
+                                priorDamage != events.Damage.Count ||
+                                (sampledFrames % 30 == 0 &&
+                                    movement.Count < 48))
+                                movement.Add(new JObject {
+                                    ["frame"] = sampledFrames,
+                                    ["displacement"] = displacement,
+                                    ["force"] = force,
+                                    ["prone"] = proneNow,
+                                    ["damageCount"] =
+                                        events.Damage.Count });
+                            priorForce = force;
+                            priorDamage = events.Damage.Count;
+                            sampledFrames++;
+                        };
                         UnitUseAbility command = null;
                         EventBus.Subscribe(events);
                         try
@@ -157,18 +198,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                             {
                                 foreach (int frame in Sprint26Cast(owner,
                                     blueprint, wrapper,
-                                    value => command = value)) yield return frame;
+                                    value => command = value,
+                                    sample)) yield return frame;
                                 DateTime deadline = DateTime.UtcNow
                                     .AddSeconds(5);
                                 for (int frame = 0; frame < 500 &&
                                     DateTime.UtcNow < deadline &&
                                     target.Get<UnitPartForceMove>() != null &&
                                     target.Get<UnitPartForceMove>().Chunks.Any();
-                                    frame++) yield return 0;
-                                for (int frame = 0; frame < 8; frame++)
+                                    frame++)
+                                {
+                                    sample(command);
                                     yield return 0;
-                                float moved = Vector3.Dot(target.Position -
+                                }
+                                for (int frame = 0; frame < 8; frame++)
+                                {
+                                    sample(command);
+                                    yield return 0;
+                                }
+                                float finalMoved = Vector3.Dot(target.Position -
                                     start, lane.Direction);
+                                float moved = forceFinished ?
+                                    forceMoveMeters : finalMoved;
                                 bool success = events.Maneuvers.Count == 1 &&
                                     events.Maneuvers[0].Success;
                                 bool cost = command != null &&
@@ -180,13 +231,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 bool expected = spec.Case == "open" ?
                                     success && events.Damage.Count == 1 &&
                                     moved >= 2.85f &&
-                                    target.Descriptor.State.Prone
-                                        .ShouldBeActive :
+                                    proneSeen :
                                     spec.Case == "blocked" ?
                                     success && events.Damage.Count == 2 &&
                                     moved >= 0f && moved < 2.85f &&
-                                    target.Descriptor.State.Prone
-                                        .ShouldBeActive :
+                                    proneSeen :
                                     spec.Case == "failure" ?
                                     events.Maneuvers.Count == 1 &&
                                     !success && events.Damage.Count == 0 &&
@@ -194,7 +243,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     events.Maneuvers.Count == 0 &&
                                     events.Damage.Count == 0 &&
                                     moved < .15f;
+                                bool forceExpected = success ?
+                                    sawForce && forceFinished :
+                                    !sawForce;
                                 bool exact = cost && expected &&
+                                    forceExpected &&
                                     events.Damage.All(value =>
                                         ReferenceEquals(value.Initiator,
                                             owner) &&
@@ -210,6 +263,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["nativeAvailableMeters"] =
                                             lane.Available,
                                         ["movedMeters"] = moved,
+                                        ["finalMovedMeters"] = finalMoved,
+                                        ["sawForce"] = sawForce,
+                                        ["forceFinished"] = forceFinished,
+                                        ["proneSeen"] = proneSeen,
+                                        ["movement"] = movement,
                                         ["maneuvers"] = new JArray(
                                             events.Maneuvers.Select(value =>
                                                 new JObject {
