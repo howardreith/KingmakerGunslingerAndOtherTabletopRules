@@ -760,6 +760,8 @@ def planned():
         ("KMG.Summoning.Giant.Sprint29.CloudFogSafety", "Sprint29FogAiSafety"),
         ("KMG.Summoning.OutsiderCelestial.Lemure.UnitType", "BlueprintUnitType"),
         ("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.ClawType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.Claw1d4", "BlueprintItemWeapon"),
 
     ))
     expected = sum(identity_count(name) for name in (

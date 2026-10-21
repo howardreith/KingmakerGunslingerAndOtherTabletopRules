@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -30,9 +31,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        private const string Lemure30Claw = "118fdd03e569a66459ab01a20af6811a";
+        private const string Lemure30Claw = "780c5819371c4b5b88d72d12fc43a9f2";
 
-        private IEnumerable<int> ReviewLemure30Core(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewLemure30Core(ExpandedSummoningCorrectionFixture fixture, string phase)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
@@ -49,6 +50,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .OrderBy(value => value, StringComparer.Ordinal).ToArray();
                 var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
                 ResetExpandedSummoningHostile(fixture);
+                if (phase == "lemure-full" || phase == "lemure-ai")
+                {
+                    // The representative shared attempt detected retained
+                    // combat state after a command. These cases therefore
+                    // enter through separate fresh guarded processes.
+                    Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "fresh-" + phase);
+                    foreach (int frame in ReviewLemure30Combat(fixture, phase == "lemure-ai",
+                        phase == "lemure-full", completed)) yield return frame;
+                    yield break;
+                }
+                if (phase != "lemure-core") throw new InvalidOperationException("Unsupported isolated Lemure phase.");
                 fixture.Hostile.Descriptor.Damage = fixture.HostileDamage + 1;
                 var dirty = Lemure30ResetState(fixture, completed, targetBuffs, areaBaseline);
                 Sprint25Check("lemure-core-residue-detected", !(bool)dirty["clean"] &&
@@ -76,17 +88,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }); completed.Add(owner);
                     ResetExpandedSummoningHostile(fixture);
                 }
-                foreach (bool full in new[] { false, true })
-                {
-                    for (int frame = 0; frame < 3; frame++) yield return 0;
-                    Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, full ? "before-full" : "before-single");
-                    foreach (int frame in ReviewLemure30Combat(fixture, false, full, completed)) yield return frame;
-                }
                 for (int frame = 0; frame < 3; frame++) yield return 0;
-                Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "before-ai");
-                foreach (int frame in ReviewLemure30Combat(fixture, true, false, completed)) yield return frame;
-                for (int frame = 0; frame < 3; frame++) yield return 0;
-                Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "after-ai");
+                Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "before-single");
+                foreach (int frame in ReviewLemure30Combat(fixture, false, false, completed)) yield return frame;
+                // Native world/clock teardown closes this transaction. Do not
+                // erase or tick protected party state to force another case.
             }
             finally
             {
@@ -137,14 +143,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stats.BaseAttackBonus.ModifiedValue == 2 && stats.AC.ModifiedValue == 14 &&
                 stats.SaveFortitude.ModifiedValue == 4 && stats.SaveReflex.ModifiedValue == 3 &&
                 stats.SaveWill.ModifiedValue == 0 && stats.Speed.ModifiedValue == 20 &&
-                stats.Intelligence.BaseValue == 0 && owner.Descriptor.State.IsConscious;
+                stats.Intelligence.BaseValue == 0 && owner.Descriptor.State.IsConscious &&
+                owner.Descriptor.Alignment.Value == Alignment.LawfulEvil && !owner.Descriptor.Spellbooks.Any();
             Sprint25Check("lemure-core-profile", profile, new JObject {
                 ["owner"] = owner.UniqueId, ["hp"] = stats.HitPoints.ModifiedValue,
                 ["bab"] = stats.BaseAttackBonus.ModifiedValue, ["ac"] = stats.AC.ModifiedValue,
                 ["fort"] = stats.SaveFortitude.ModifiedValue, ["reflex"] = stats.SaveReflex.ModifiedValue,
                 ["will"] = stats.SaveWill.ModifiedValue, ["speed"] = stats.Speed.ModifiedValue,
                 ["intelligence"] = stats.Intelligence.BaseValue,
-                ["conscious"] = owner.Descriptor.State.IsConscious },
+                ["conscious"] = owner.Descriptor.State.IsConscious,
+                ["alignment"] = owner.Descriptor.Alignment.Value.ToString(),
+                ["spellbooks"] = new JArray(owner.Descriptor.Spellbooks.Select(value => value.Blueprint.AssetGuid)),
+                ["activeAbilities"] = new JArray(owner.Descriptor.Abilities.RawFacts.Select(value => new JObject {
+                    ["name"] = value.Blueprint.name, ["guid"] = value.Blueprint.AssetGuid })) },
                 "Native adult bases include live Constitution and no intellect or generic undead substitution.");
             if (!profile) throw new InvalidOperationException("Lemure core profile failed.");
             Sprint25Check("lemure-core-weapon-reach", owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value == 5,
@@ -253,6 +264,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["resisted"] = resistance.IsSpellResisted, ["immune"] = resistance.TargetIsImmune,
                 ["ruleOnlyNoCast"] = true }, "An actual SR-allowing native spell resistance check finds no invented Lemure SR.");
             if (!noSr) throw new InvalidOperationException("Lemure no-SR consumer failed.");
+            foreach (var spec in new[] {
+                new { Name="mind-affecting-ability", Guid="bd81a3931aa285a4f9844585b5d97e51", Cl=2 },
+                new { Name="poison-ability", Guid="68a9e6d7256f1354289a39003a46d826", Cl=2 } })
+            {
+                var ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    spec.Guid, "Lemure native descriptor ability consumer");
+                var immunityContext = new MechanicsContext(source, source.Descriptor, ability, null, new TargetWrapper(owner));
+                immunityContext.Params.CasterLevel = spec.Cl;
+                var check = immunityContext.TriggerRule(new RuleSpellResistanceCheck(immunityContext, owner));
+                var controlContext = new MechanicsContext(source, source.Descriptor, ability, null, new TargetWrapper(source));
+                controlContext.Params.CasterLevel = spec.Cl;
+                var control = controlContext.TriggerRule(new RuleSpellResistanceCheck(controlContext, source));
+                Sprint25Check("lemure-core-" + spec.Name, check.TargetIsImmune && !control.TargetIsImmune,
+                    new JObject { ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
+                        ["ability"] = ability.AssetGuid, ["nativeSpellDescriptor"] = immunityContext.SpellDescriptor.ToString(),
+                        ["targetImmune"] = check.TargetIsImmune, ["controlImmune"] = control.TargetIsImmune,
+                        ["ruleOnlyNoCast"] = true },
+                    "Actual native ability-immunity eligibility is distinct from buff immunity and finite spell casts.");
+            }
         }
 
         private void Lemure30DamageProbe(UnitEntityData owner, UnitEntityData source,
@@ -411,6 +441,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["weapon"] = value.Weapon?.Blueprint?.AssetGuid, ["hit"] = value.AttackRoll?.IsHit,
                                 ["natural"] = value.AttackRoll?.Roll.Value, ["attackBonus"] = value.AttackRoll?.AttackBonus })),
                             ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)), ["hits"] = hits,
+                            ["physicalAlignments"] = new JArray(observer.Damage.SelectMany(value => value.DamageBundle
+                                .OfType<PhysicalDamage>()).Select(value => value.AlignmentsMask.ToString())),
                             ["impactWaitFrames"] = impactFrames, ["costs"] = costs, ["nativeEnds"] = endings,
                             ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["aiTicks"] = ticks,
                             ["ambientCandidatesNeverTicked"] = new JArray(ambient),

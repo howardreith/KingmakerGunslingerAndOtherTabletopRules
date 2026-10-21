@@ -72,8 +72,11 @@ namespace KingmakerGunslinger.Blueprints
             immunity.Descriptor = SpellDescriptor.MindAffecting | SpellDescriptor.Poison;
             immunity.FactToCheck = null;
             immunity.IgnoreFeature = null;
+            var spellImmunity = ScriptableObject.CreateInstance<SpellImmunityToSpellDescriptor>();
+            spellImmunity.Descriptor = SpellDescriptor.MindAffecting | SpellDescriptor.Poison;
+            spellImmunity.CasterIgnoreImmunityFact = null;
             traits.ComponentsArray = new BlueprintComponent[] {
-                dr, immunity, Energy(DamageEnergyType.Acid, 10),
+                dr, immunity, spellImmunity, Energy(DamageEnergyType.Acid, 10),
                 Energy(DamageEnergyType.Cold, 10)
             };
             BlueprintUnitFactAccess.Resolve().Configure(traits,
@@ -97,8 +100,8 @@ namespace KingmakerGunslinger.Blueprints
             unit.Skills = new BlueprintUnit.UnitSkills();
             unit.Race = null;
             unit.Type = type;
-            var claw = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
-                library, NativeClaw1d4Guid, "native Medium 1d4 claw");
+            var claw = Sprint29Weapon(library, bySymbol, Lemure30Prefix + "Claw1d4",
+                Lemure30Prefix + "ClawType", NativeClaw1d4Guid, Size.Medium, 1, DiceType.D4, 5);
             // Native UnitAttack skips the primary attack when hands are
             // disabled. Reuse the established natural-body path: one primary
             // claw plus one additional claw, with no synthetic empty-hand grant.
@@ -111,8 +114,11 @@ namespace KingmakerGunslinger.Blueprints
             var fullStrength = ScriptableObject.CreateInstance<DeinonychusPrimaryTalonStrength>();
             fullStrength.OwningBlueprint = unit;
             fullStrength.Talon = claw;
+            var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();
+            equipment.OwningBlueprint = unit;
+            equipment.GreatWeapon = claw;
             traits.ComponentsArray = traits.ComponentsArray.Concat(
-                new BlueprintComponent[] { fullStrength }).ToArray();
+                new BlueprintComponent[] { fullStrength, equipment }).ToArray();
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "unchanged native ordinary attack brain");
             // Zero is the hidden candidate's absent-score representation, not
