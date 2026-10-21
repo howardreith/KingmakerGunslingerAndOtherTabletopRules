@@ -102,6 +102,7 @@ namespace KingmakerGunslinger.Summoning
             internal Vector3 Start;
             internal Vector3 Direction;
             internal float Distance;
+            internal float NativeSpeed;
         }
 
         private sealed class Bucket
@@ -124,7 +125,33 @@ namespace KingmakerGunslinger.Summoning
             PendingByVictim.GetOrCreateValue(victim).Entries.Add(
                 new Pending { Caster = caster, Chunk = chunk,
                     Start = start, Direction = direction,
-                    Distance = distance });
+                    Distance = distance, NativeSpeed = chunk.Speed });
+        }
+
+        private static void Prefix(UnitEntityData unit)
+        {
+            Bucket bucket;
+            if (unit == null || !PendingByVictim.TryGetValue(unit,
+                out bucket)) return;
+            UnitPartForceMove part = unit.Get<UnitPartForceMove>();
+            float delta = Kingmaker.Game.Instance.TimeController.DeltaTime;
+            if (part == null || delta <= 0f) return;
+            foreach (Pending pending in bucket.Entries)
+            {
+                if (!part.Chunks.Contains(pending.Chunk)) continue;
+                // Installed TickOnUnit advances at Speed * DeltaTime and
+                // checks MaxDistance only after moving. Bound this exact
+                // Awesome Blow chunk before the native navmesh trace.
+                float traveled = Vector3.Dot(unit.Position -
+                    pending.Start, pending.Direction);
+                float remaining = Mathf.Max(0f,
+                    pending.Distance - traveled);
+                pending.Chunk.Speed = Mathf.Min(pending.NativeSpeed,
+                    remaining / delta);
+                if (remaining <= .001f)
+                    pending.Chunk.PassedDistance =
+                        pending.Chunk.MaxDistance.Value;
+            }
         }
 
         private static void Postfix(UnitEntityData unit)
