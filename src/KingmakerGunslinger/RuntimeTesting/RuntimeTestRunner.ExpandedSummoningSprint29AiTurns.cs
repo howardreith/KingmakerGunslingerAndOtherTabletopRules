@@ -160,8 +160,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             bool meaningful = key == "ettin" ? attack :
                                 key == "cloud-giant" ? attack || fog :
                                 attack || lightning;
+                            UnitAttack ettinAttack = key == "ettin" ?
+                                commands.OfType<UnitAttack>().FirstOrDefault(
+                                    value => value.AiAction != null &&
+                                        ReferenceEquals(value.TargetUnit,
+                                            target)) : null;
+                            bool ettinCadence = key != "ettin" ||
+                                ettinAttack != null &&
+                                ettinAttack.IsFullAttack &&
+                                ettinAttack.AllAttacks.Count == 4 &&
+                                observer.OwnerWeaponAttacks.Count == 4 &&
+                                observer.WeaponAttacks.Count == 4 &&
+                                observer.Rolls.Count == 4;
                             bool exact = aiCommand && nativeTurnFrames > 0 &&
-                                meaningful &&
+                                Sprint18OwnerIsActing(owner) && meaningful &&
+                                ettinCadence &&
                                 commands.Count(value => value.AiAction != null &&
                                     value.IsFinished) == 1;
                             Sprint25Check("s29-" + key + "-ai-turn-action",
@@ -175,6 +188,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["weaponAttacks"] =
                                         observer.WeaponAttacks.Count,
                                     ["damagePackets"] = observer.Damage.Count,
+                                    ["ettinFullAttack"] =
+                                        ettinAttack?.IsFullAttack,
+                                    ["ettinPlanned"] =
+                                        ettinAttack?.AllAttacks.Count,
+                                    ["ettinRolls"] = observer.Rolls.Count,
                                     ["ownedFogAreasBefore"] = fogBefore,
                                     ["ownedFogAreasAfter"] = fogArea == null ? 0 :
                                         Sprint29OwnedAreas(owner, fogArea).Length,

@@ -379,6 +379,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Use the same FirearmReviewCosts.Exact(command, turnBased) comparator already used in native turn command observations; focused compilation and native recheck pending."
   },
+  "awesomeTurnTeardownDevelopment": {
+    "source": "b5978dde28b4d6ba94cb3140403be115ddef1884",
+    "runId": "20261021T1126015709820Z-b066aef16dbd4d619d05f7a48324d388",
+    "artifactZipSha256": "32bee81c0139d0e3b1ac95f008daae48c3d0ebf41d64772da574d3ee251272b8",
+    "artifactDllSha256": "abafa608bb26f67117d6a2d354f321592607f172f07519bf3045dbb8b7d0cf78",
+    "artifactMvid": "2cb0226c-6bc1-4ca0-9d8f-60a5a3d61f0a",
+    "result": "FAIL after the open turn case passed all native predicates: exact turn admission, one standard action, one successful maneuver, one attributed slam packet, 3.045 m bounded push and prone. The native turn controller then raised NullReferenceException during fixture teardown before the obstructed case ran. This is not a two-case turn-based qualification.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Disable turn mode through the native controller before per-case owner disposal, matching the qualified prior giant turn observer. Focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
