@@ -158,30 +158,6 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    /// <summary>Cloud's Oversized Weapon exempts only its own Gargantuan
-    /// morningstar from the one-step wrong-size attack penalty. It does not
-    /// change the giant's Huge size or any alternate weapon.</summary>
-    [Serializable]
-    public sealed class SummonCloudOversizedMorningstar :
-        RuleInitiatorLogicComponent<RuleCalculateAttackBonusWithoutTarget>
-    {
-        public BlueprintUnit OwningBlueprint;
-        public BlueprintItemWeapon Morningstar;
-        public override void OnEventAboutToTrigger(
-            RuleCalculateAttackBonusWithoutTarget evt)
-        {
-            UnitEntityData owner = Owner == null ? null : Owner.Unit;
-            if (evt == null || owner == null || Fact == null || !Fact.Active ||
-                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
-                !ReferenceEquals(evt.Initiator, owner) || evt.Weapon == null ||
-                !ReferenceEquals(evt.Weapon.Blueprint, Morningstar))
-                return;
-            evt.AddBonus(2, Fact);
-        }
-        public override void OnEventDidTrigger(
-            RuleCalculateAttackBonusWithoutTarget evt) { }
-    }
-
     /// <summary>Only Ettin's own second arm receives full Strength damage.
     /// The unit's full-attack list is governed separately, so this does not
     /// duplicate a standard action, opportunity attack or ranged command.</summary>
@@ -215,6 +191,48 @@ namespace KingmakerGunslinger.Summoning
             row.Bonus += correction;
             evt.DamageDescription[0] = row;
         }
+    }
+
+    /// <summary>Kingmaker applies its ordinary -6/-10 two-weapon penalties
+    /// to this Ettin's paired one-handed flails and thrown javelins. Superior
+    /// Two-Weapon Fighting removes those penalties for the exact active
+    /// private pair. A lost hand or unrelated item receives no correction.</summary>
+    [Serializable]
+    public sealed class SummonEttinSuperiorTwoWeaponAccuracy :
+        RuleInitiatorLogicComponent<RuleCalculateAttackBonusWithoutTarget>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public BlueprintItemWeapon MainFlail;
+        public BlueprintItemWeapon OffhandFlail;
+        public BlueprintItemWeapon MainJavelin;
+        public BlueprintItemWeapon OffhandJavelin;
+
+        public override void OnEventAboutToTrigger(
+            RuleCalculateAttackBonusWithoutTarget evt)
+        {
+            UnitEntityData owner = Owner == null ? null : Owner.Unit;
+            if (evt == null || owner == null || Fact == null || !Fact.Active ||
+                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Initiator, owner) ||
+                owner.Body == null || evt.Weapon == null)
+                return;
+            ItemEntityWeapon main = owner.Body.PrimaryHand == null ? null :
+                owner.Body.PrimaryHand.MaybeWeapon;
+            ItemEntityWeapon off = owner.Body.SecondaryHand == null ? null :
+                owner.Body.SecondaryHand.MaybeWeapon;
+            bool flails = main != null && off != null &&
+                ReferenceEquals(main.Blueprint, MainFlail) &&
+                ReferenceEquals(off.Blueprint, OffhandFlail);
+            bool javelins = main != null && off != null &&
+                ReferenceEquals(main.Blueprint, MainJavelin) &&
+                ReferenceEquals(off.Blueprint, OffhandJavelin);
+            if (!flails && !javelins) return;
+            if (ReferenceEquals(evt.Weapon, main)) evt.AddBonus(6, Fact);
+            else if (ReferenceEquals(evt.Weapon, off)) evt.AddBonus(10, Fact);
+        }
+
+        public override void OnEventDidTrigger(
+            RuleCalculateAttackBonusWithoutTarget evt) { }
     }
 
     /// <summary>Ettin's superior two-weapon routine is a full attack only.

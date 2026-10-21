@@ -135,6 +135,13 @@ namespace KingmakerGunslinger.Blueprints
             strength.OwningBlueprint = unit;
             strength.OffhandFlail = offFlail;
             strength.OffhandJavelin = offJavelin;
+            var accuracy = ScriptableObject.CreateInstance<
+                SummonEttinSuperiorTwoWeaponAccuracy>();
+            accuracy.OwningBlueprint = unit;
+            accuracy.MainFlail = mainFlail;
+            accuracy.OffhandFlail = offFlail;
+            accuracy.MainJavelin = mainJavelin;
+            accuracy.OffhandJavelin = offJavelin;
             var initialOffhands = ScriptableObject.CreateInstance<
                 SummonEttinInitialOffhands>();
             initialOffhands.OwningBlueprint = unit;
@@ -149,7 +156,7 @@ namespace KingmakerGunslinger.Blueprints
             traits.ComponentsArray = traits.ComponentsArray.Where(value =>
                 !(value is SummonGiantRockAttack) &&
                 !(value is SummonGiantRockCatch)).Concat(
-                    new BlueprintComponent[] { strength, perception,
+                    new BlueprintComponent[] { strength, accuracy, perception,
                         initialOffhands }).ToArray();
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
                 Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
@@ -517,15 +524,15 @@ namespace KingmakerGunslinger.Blueprints
             }).ToArray();
             BlueprintFeature traits = Require<BlueprintFeature>(bySymbol,
                 traitsSymbol);
-            var oversized = ScriptableObject.CreateInstance<
-                SummonCloudOversizedMorningstar>();
-            oversized.OwningBlueprint = unit;
-            oversized.Morningstar = morningstar;
+            // The installed weapon rule does not impose a wrong-size attack
+            // penalty on this Gargantuan item. Cloud's Oversized Weapon is
+            // satisfied by keeping the actual item; adding a flat +2 would
+            // overshoot the printed +22 attack on the native consumer.
             var intimidateRanks = ScriptableObject.CreateInstance<
                 SummonCloudIntimidateRanks>();
             intimidateRanks.OwningBlueprint = unit;
             traits.ComponentsArray = traits.ComponentsArray.Concat(
-                new BlueprintComponent[] { oversized, intimidateRanks })
+                new BlueprintComponent[] { intimidateRanks })
                 .ToArray();
 
             BlueprintAbility mist = Require<BlueprintAbility>(bySymbol,
