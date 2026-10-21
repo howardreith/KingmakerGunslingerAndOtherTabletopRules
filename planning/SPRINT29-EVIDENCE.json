@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "sprint": 29,
-  "status": "HIDDEN_REGISTERED",
+  "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "FOUR_PROFILES_FAILED_RESTORED; MODES_REPAIR_IN_PROGRESS",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_PROFILES_AND_ETTIN_PLANS_PASS; RESOLVED_GAMEPLAY_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
-    "nativeBootstrap": "MODULE_INITIALIZED; FOUR_PROFILES_FAILED",
+    "nativeBootstrap": "PASS: hidden profiles and Ettin modes on exact 3418074f development artifact; four earlier failed attempts retained below",
     "modesPreflight": "PASS: 701 no-game assertions under Limited Interactive account; first elevated attempt correctly refused before launch"
   },
   "firstNativeProfiles": {
@@ -46,6 +46,18 @@
     "artifactDllSha256": "579e01a6191fa927e80d233ea994e3ee0374fb5b3bf5afdc9dd143fa42b95abd",
     "result": "FAIL: Ettin had distinct live flails and released its two-hand grip, but the observer required the lazy alternate javelin set before its first native switch; Cloud and Storm profiles passed",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "bootstrapQualified": {
+    "source": "3418074fbe4ebc3277baba8d5c24f434c4337de3",
+    "artifactZipSha256": "73d6c0501a5edf7e020814ed190dfc71d0a7c4517d2bc5bd79ec897911234595",
+    "artifactDllSha256": "faf41676f6ffc0ae658246032994f63206e1887171354bb1414ea77ada9e9ef9",
+    "artifactMvid": "17b62b42-6ae6-497f-9e40-f503b1a23bdf",
+    "profilesRunId": "20261021T0358505567542Z-671d55f6142f45329e75a57ae9e3a48e",
+    "profiles": "PASS: 12/12 hidden public surface, all three adult chassis, bodies, initial actions and resources, Ettin distinct flails and one-hand grip",
+    "modesRunId": "20261021T0403342442373Z-1230a13f93364149bc996ffed9187568",
+    "modes": "PASS: 6/6 native Ettin switch; four flail plan attacks, two javelin plan attacks, exact return to the same flail instances",
+    "restoration": "PASS after both fresh transactions: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package only; no resolved attack rolls, magic effects, AI, disarm, persistence or public roots qualified"
   },
   "publicSurface": {
     "registeredCreatures": 117,
