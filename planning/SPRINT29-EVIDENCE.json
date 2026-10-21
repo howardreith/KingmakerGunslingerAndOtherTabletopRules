@@ -359,6 +359,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "The negative Cloud case now uses a second request-owned Ettin summon as the nearby ally and checks Cloud.IsAlly(sibling) before a native AI tick. It no longer relocates the fixture caster. Focused compilation and native recheck pending."
   },
+  "aiSafetyQualified": {
+    "source": "2187c8ed980a70656a59d72b3b1340b4da2e5420",
+    "runId": "20261021T1059314752209Z-f502c30b9e854d9f9258b08c1f9b539b",
+    "artifactZipSha256": "dfb68f94bd8e3adf8f93293d9d13f1aa833f38c7d7f3204e6ea6497026c6462b",
+    "artifactDllSha256": "1f031e8daea499427039a8517d406f864a0e1432114a57e57378eb990ca83289",
+    "artifactMvid": "d42a750a-747b-461b-9fc4-cbf2ad847413",
+    "result": "PASS native save-free RTWP AI review: Cloud.IsAlly(request-owned Ettin) was true with that ally 1.998 m from hostile, and Cloud chose one resolved attack rather than ally-obscuring fog; Storm saw a real electricity-immune hostile and chose a resolved attack without consuming either lightning resource. Positive controls retained Ettin's four resolved flail attacks, Cloud's safe CL16 Fog Cloud, Storm's Chain Lightning, CL15 Call Lightning activation and two subsequent autonomous granted bolt actions, each with real DC15 saves and damage. No fixture attack or forced roll was injected.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Turn-based AI, effect expiration and final public-artifact qualification remain."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
