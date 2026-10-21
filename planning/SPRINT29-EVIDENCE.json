@@ -269,6 +269,16 @@
     "restoration": "PASS: exact fresh intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "The Ettin blueprint no longer grants a competing native secondary flail. Its serialized exact-owner initial-arms component remains the single initial offhand source. The observer derives the fifth expected private identity from that component and still requires five distinct live owner-bound nonlootable items. Focused production compilation and two Sprint 29 domain tests passed; native recheck pending."
   },
+  "hiddenItemsQualified": {
+    "source": "ff42de090340441de0f277856c7c244d2f9f89a5",
+    "runId": "20261021T0844264860869Z-41e6b59db571428ea3a8f338f3d777be",
+    "artifactZipSha256": "29c903efc3af96a03963599b3d0d627a59e46c9543076fdcb049df624454053a",
+    "artifactDllSha256": "ba4a19808715b9841ed31343c55d9c0ee401adee386fe9fe28b38cee7cb62018",
+    "artifactMvid": "bd4c2fd7-0310-43d9-9688-027d4e123fa1",
+    "result": "PASS 14/14 native item predicates: actual Ettin 1d4+1 route yielded three siblings, each with five distinct exact-owned nonlootable items and no extra offhand; Cloud 1d3 yielded one actor with four items and Storm one actor with four. Each group passed native transfer refusal, death no-loot and expiry no-loot; legitimate party inventory remained exact. This does not yet qualify disarm, cold-load hydration or all projectile attack cadences.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; disarm/one-weapon fallback, cold load, Awesome Blow collision, negative AI cases, affected controls and public routes remain pending"
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
