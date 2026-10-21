@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_AND_TURN_COMMANDS_PASS; MAGIC_AI_ITEMS_PERSISTENCE_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_AND_CLOUD_DIRECT_MAGIC_PASS; STORM_DIRECT_MAGIC_FAILED_ON_PARAMETERS; AI_ITEMS_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -12,7 +12,7 @@
     "modesPreflight": "PASS: 701 no-game assertions under Limited Interactive account; first elevated attempt correctly refused before launch",
     "commandsPreflight": "PASS: 704 no-game assertions under Limited Interactive account; child and task exit zero; 218 separate orchestration assertions passed. Native issued commands separately qualified below.",
     "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
-    "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Cloud and Storm native direct effects pending."
+    "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -127,6 +127,26 @@
     "result": "PASS 16/16 native turn-based predicates: Ettin full flails 4 (2 per arm), paired javelins 2 (1 per arm), Cloud morningstar 3 and Storm bow 3 after exact owner turn admission. Every issued native command had expected weapon/roll/damage events and one turn-based action cost; all hits were natural.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; autonomous AI, spell-like effects/resources, Awesome Blow collision, items/disarm, persistence and public routes remain pending"
+  },
+  "cloudDirectMagicDevelopment": {
+    "source": "b896633659d1fb4ab306231b9ae7129b2310ea8a",
+    "runId": "20261021T0547540805393Z-e7ac6bc0ec8e4664b0a7fec063eb443f",
+    "artifactZipSha256": "69b8bda52b91455409d4e5d7dfc2954e43691b62d9143f17bc03129824a7b230",
+    "artifactDllSha256": "cd53d30626752c151b58d12da5d040f77d3c5452b119bbe6388574c9771e584a",
+    "artifactMvid": "46e609fa-8112-4645-8998-a30fd0059b30",
+    "result": "PASS 10/10 native predicates: distinct direct Obscuring Mist and Fog Cloud commands each paid one standard action, made native all-creature areas of 960 and 9600 seconds at CL16, and Fog Cloud alone spent its owner's one use; sibling retained its resource.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; autonomous fog AI, effect lifetime/teardown, cold-load persistence and public routes remain pending"
+  },
+  "stormDirectMagicDevelopment": {
+    "source": "b896633659d1fb4ab306231b9ae7129b2310ea8a",
+    "runId": "20261021T0552459630736Z-d54f4211fd9c4656b3fa3f89359a145c",
+    "artifactZipSha256": "69b8bda52b91455409d4e5d7dfc2954e43691b62d9143f17bc03129824a7b230",
+    "artifactDllSha256": "cd53d30626752c151b58d12da5d040f77d3c5452b119bbe6388574c9771e584a",
+    "artifactMvid": "46e609fa-8112-4645-8998-a30fd0059b30",
+    "result": "FAIL: constant native Freedom of Movement and electricity immunity appeared on both siblings, but Call Lightning's direct AbilityData reported CL19/DC21/spell level9 rather than CL15/DC15/spell level3. The observer stopped before casting and preserved the raw failure.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Installed AbilityData.CalculateParams uses RuleCalculateAbilityParams, whereas the cloned spell's ContextCalculateAbilityParams only controls effect context. A private exact-owner/ability rule component now sets the printed parameters; focused production compilation and two sprint29 domain tests pass. Native recheck pending."
   },
   "publicSurface": {
     "registeredCreatures": 117,
