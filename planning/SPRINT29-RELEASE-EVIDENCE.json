@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "sprint": 29,
+  "status": "RELEASED_STOP",
+  "recordedAtUtc": "2026-10-21T18:16:12.605423+00:00",
+  "host": "HOWARD-LAPTOP",
+  "productPr": 64,
+  "productPrUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/64",
+  "reviewedBase": "f3e68aab30701df268ae559c2850159b7b3a52f7",
+  "productMerge": "c8c7054b3472e433ecb4bc74ae70a961620655ee",
+  "testedSource": "a4c409c7cad4fdab5c83a6205255e52c29212662",
+  "sourceFingerprint": "525993e33cb5191ee81748ac920bfe6e82f524745810c6d56fe61f7680992e64",
+  "tag": "v0.0.163",
+  "annotatedTagObject": "ac10522c627ca0af7ea4b5d6f6be261f7612ea3b",
+  "tagPeel": "c8c7054b3472e433ecb4bc74ae70a961620655ee",
+  "releaseUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.163",
+  "releaseId": 419892834,
+  "stableLatest": true,
+  "prerelease": false,
+  "draft": false,
+  "packageSha256": "82a4d09d6394d47d3adc6a36bb5d7ee55460fe12793382133779b52d47172df4",
+  "dllSha256": "a7e03aeea0e65dafffffc45bf29f4dbb5a3795d83da947e4effa749d6b946b51",
+  "dllMvid": "d30f4d47-6f91-4ff7-ad58-0f87c56388aa",
+  "releaseManifestSha256": "208fe8bf2c398190363bab4167ea9f55e519fac377eb52647558c6740b5a72f6",
+  "checksumsSha256": "81ed97c2e8930f479b3c6e248776f7ae6a8c95615b536c645d24a2f4f3a1ff39",
+  "qualifiedLedgerPremergeSha256": "007d86d853e2d6c7c13ef81fec2b4eff32651181fe7243396e817e2503e2132e",
+  "qualifiedLedgerPostmergeSha256": "0c655cbf53415012f8890fce11cda16528ae9f827c06b2ebff32e7abf96bcc3f",
+  "publicAssets": [
+    {
+      "name": "KingmakerGunslinger-0.0.163-expanded-summoning-sprint29-giants.zip",
+      "id": 663375649,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.163/KingmakerGunslinger-0.0.163-expanded-summoning-sprint29-giants.zip",
+      "length": 55829182,
+      "sha256": "82a4d09d6394d47d3adc6a36bb5d7ee55460fe12793382133779b52d47172df4"
+    },
+    {
+      "name": "release-manifest.json",
+      "id": 663375651,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.163/release-manifest.json",
+      "length": 122628,
+      "sha256": "208fe8bf2c398190363bab4167ea9f55e519fac377eb52647558c6740b5a72f6"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "id": 663375650,
+      "url": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/download/v0.0.163/SHA256SUMS.txt",
+      "length": 134,
+      "sha256": "81ed97c2e8930f479b3c6e248776f7ae6a8c95615b536c645d24a2f4f3a1ff39"
+    }
+  ],
+  "gate": {
+    "level": "Sprint",
+    "suite": "2700/2700 PASS",
+    "productionCompilation": true,
+    "strictPackageFiles": 398,
+    "gateExitSha256": "c78eb85542e988ab01ee4f1f6c5bf8f2de99b93c40bd198157b943db78e0a216",
+    "gateStdoutSha256": "d91f83609c6c53848d0bd40dc9f7a6d00a89c00ce0eac89720d0b64ac692da93"
+  },
+  "publicSurface": {
+    "projectCreatures": 117,
+    "monsterCreatures": 96,
+    "monsterPlacements": 545,
+    "natureAllyCreatures": 104,
+    "natureAllyPlacements": 582,
+    "registeredRoots": 1127,
+    "generatedRoots": 1127,
+    "nativeWrappers": 29,
+    "visibleChoices": 1156,
+    "newSnaRoots": 8,
+    "ettin": [
+      "V one",
+      "VI 1d3",
+      "VII 1d4+1",
+      "VIII 1d4+1",
+      "IX 1d4+1"
+    ],
+    "cloud": [
+      "VIII one",
+      "IX 1d3"
+    ],
+    "storm": [
+      "IX one"
+    ]
+  },
+  "qualification": {
+    "freshNativeExecutions": 16,
+    "freshNativeReviewRows": 265,
+    "freshWorkingProcesses": 6,
+    "freshWorkingAssertions": 87,
+    "nativePhases": {
+      "routes": {
+        "runId": "20261021T1603467133754Z-735e4ca319304ba7a70c94781c63772b",
+        "rows": 11
+      },
+      "profiles": {
+        "runId": "20261021T1609227483233Z-f766637d838d41dfbadf7470562a81f4",
+        "rows": 12
+      },
+      "commands": {
+        "runId": "20261021T1614261765375Z-73939254fbcb42a085dfdf9d2ca31db0",
+        "rows": 25
+      },
+      "items": {
+        "runId": "20261021T1619363668321Z-82f07f2efb134f118d2d1e42f3e0c1f9",
+        "rows": 14
+      },
+      "cloud-magic": {
+        "runId": "20261021T1624355176077Z-21159bdf9a98446eba78411c43a5be4e",
+        "rows": 11
+      },
+      "storm-magic": {
+        "runId": "20261021T1629264471769Z-aa568cc14d7f42878fef89c2577af698",
+        "rows": 14
+      },
+      "ai": {
+        "runId": "20261021T1634156350058Z-c253a82d3fb0492faf7fde0dd651ff9a",
+        "rows": 19
+      },
+      "ai-turns": {
+        "runId": "20261021T1640029787628Z-a2713b7425634dc7bd658cbc9f808701",
+        "rows": 11
+      },
+      "turns": {
+        "runId": "20261021T1644523232837Z-18bd274204be4781bb510c7d775e3720",
+        "rows": 16
+      },
+      "catch": {
+        "runId": "20261021T1649436525783Z-ce1f404a1c9a4039bd631e0543c8db98",
+        "rows": 21
+      },
+      "cleave": {
+        "runId": "20261021T1654350800198Z-c053e0316f814ac1b07046be6ec1624b",
+        "rows": 23
+      },
+      "vital-turn": {
+        "runId": "20261021T1700158389295Z-3a1de45b5525431195102eacd87e8b39",
+        "rows": 17
+      },
+      "awesome": {
+        "runId": "20261021T1705182545092Z-0b120bd92bed4d2da79d8b9b98f4c434",
+        "rows": 23
+      },
+      "disarm": {
+        "runId": "20261021T1710072053934Z-77800f86885148e88980ad0df9bd840f",
+        "rows": 13
+      },
+      "profiles-highrisk": {
+        "runId": "20261021T1715022105888Z-3ac9917d828a426eabc75dbe8d55dd96",
+        "rows": 12
+      },
+      "cleave-highrisk": {
+        "runId": "20261021T1720321693112Z-35459930ea00488e9b30df9cb1b1274e",
+        "rows": 23
+      }
+    },
+    "workingStages": {
+      "on-prepare": {
+        "runId": "20261021T1727150461913Z-eee15a1ea9da4b90bcc6c42544e4e0a8",
+        "assertions": 19,
+        "stackRunId": "sprint29-stack-20261021T172516Z-ac51b1b3cda4"
+      },
+      "on-cleanup": {
+        "runId": "20261021T1733298429000Z-d07392994037469a85e3b9d83678513d",
+        "assertions": 18,
+        "stackRunId": "sprint29-stack-20261021T173130Z-ddf13663463e"
+      },
+      "on-absent": {
+        "runId": "20261021T1739389814976Z-308edc9eb21048abbe79d6607a8a05e0",
+        "assertions": 6,
+        "stackRunId": "sprint29-stack-20261021T173743Z-a63955ec8bd1"
+      },
+      "off-prepare": {
+        "runId": "20261021T1745527897622Z-5db495bf2afc4bb1bece6c5a829b39fd",
+        "assertions": 19,
+        "stackRunId": "sprint29-stack-20261021T174355Z-3c0892466b9a"
+      },
+      "off-cleanup": {
+        "runId": "20261021T1753092597986Z-198c09a28a1542359fd68d56527fea20",
+        "assertions": 19,
+        "stackRunId": "sprint29-stack-20261021T175052Z-5bf6c6c33151"
+      },
+      "off-absent": {
+        "runId": "20261021T1759201173988Z-103861f4164844148f265b1ba7e268f2",
+        "assertions": 6,
+        "stackRunId": "sprint29-stack-20261021T175721Z-b2e51383ca64"
+      }
+    },
+    "inheritedUnaffectedSource": "b0f5b4bac9d9c78ab30b7a32697d3960b0890ef6",
+    "highRiskCombined": [
+      "Call of the Wild",
+      "Arms and Armor",
+      "Toggle Custom Soundpacks"
+    ],
+    "scopeDecisions": {
+      "ownerAuthority": "Sprint 29 mission and Awesome Blow owner decision 2026-10-21",
+      "skills": "DEFER_NAMED_UNSUPPORTED_CONSUMERS",
+      "movement": "DEFER_UNSUPPORTED_VERTICAL_AQUATIC",
+      "weather": "FILTER_CONTROL_WEATHER",
+      "awesomeBlowWall": "TARGET_COLLISION_1D6_ONLY_STATIC_WALL_NO_HP",
+      "nativePitUnchanged": true,
+      "rankReallocation": false,
+      "substituteBonuses": false,
+      "signatureCombatMagicRequired": true,
+      "otherGameplayOmissions": [],
+      "disclosurePath": "docs/RELEASE-NOTES-0.0.163.md"
+    },
+    "ownerVisualReview": "NOT_PERFORMED_NONBLOCKING"
+  },
+  "restoration": {
+    "finalAuditSha256": "831cfa72b2f700379dbc518e404d46d33ff9ca1c9aa2d1028906b0a512a516d7",
+    "exactIntake": true,
+    "modsEntries": 967,
+    "canonicalModsManifestEntries": 968,
+    "saves": 118,
+    "privateReferences": 18,
+    "settings": 83,
+    "workingSha256": "650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850",
+    "workingMetadataExact": true,
+    "gameProcesses": 0,
+    "ownedTasks": 0,
+    "compatibilityLock": false,
+    "stagedMods": 0,
+    "humanInstalledVersion": "0.0.117",
+    "permanentDevelopmentDeployment": false
+  },
+  "visualBacklog": "Coarse proportions, simple second-head motion, seams, harmless clipping, textures and choreography; no owner aesthetic approval.",
+  "historicalDevelopmentEvidence": "planning/SPRINT29-EVIDENCE.json",
+  "sprint30Started": false
+}
