@@ -99,14 +99,11 @@ namespace KingmakerGunslinger.Blueprints
             unit.Type = type;
             var claw = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(
                 library, NativeClaw1d4Guid, "native Medium 1d4 claw");
-            unit.Body = new BlueprintUnit.UnitBody {
-                DisableHands = true,
-                PrimaryHand = claw,
-                EmptyHandWeapon = claw,
-                AdditionalLimbs = new[] { claw },
-                AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
-                QuickSlots = Array.Empty<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>()
-            };
+            // Native UnitAttack skips the primary attack when hands are
+            // disabled. Reuse the established natural-body path: one primary
+            // claw plus one additional claw, with no synthetic empty-hand grant.
+            unit.Body = NaturalBody(claw, new[] { claw },
+                Array.Empty<BlueprintItemWeapon>());
             unit.Brain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "unchanged native ordinary attack brain");
             // Zero is the hidden candidate's absent-score representation, not
