@@ -19,7 +19,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         internal static bool Sprint29Phase(string phase)
         { return phase == "profiles" || phase == "modes" ||
-            phase == "commands" || phase == "turns"; }
+            phase == "commands" || phase == "turns" ||
+            phase == "cloud-magic" || phase == "storm-magic"; }
         internal static bool Sprint27Phase(string phase)
         {
             return phase == "rtwp-foundation" || phase == "pounce-rtwp" ||
