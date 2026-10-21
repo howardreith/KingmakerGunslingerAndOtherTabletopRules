@@ -40,7 +40,7 @@ Write-Host "Backup source: $live"
 Write-Host "Backup destination: $destination"
 $sourceFiles | ForEach-Object {
         $relative = $_.FullName.Substring($live.Length).TrimStart('\')
-        Write-Host "  $($_.FullName) -> $(Join-Path $destination $relative)"
+        Write-Verbose "  $($_.FullName) -> $(Join-Path $destination $relative)"
     }
 
 if ($PSCmdlet.ShouldProcess($destination, "Copy only $live")) {
