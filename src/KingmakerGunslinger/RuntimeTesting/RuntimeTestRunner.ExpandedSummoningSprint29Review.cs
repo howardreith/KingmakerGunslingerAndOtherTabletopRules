@@ -34,12 +34,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string phase = RuntimeTestRequestParser.Sprint29ReviewPhase(_request);
             Sprint25Check("phase", phase == "profiles" || phase == "modes" ||
-                phase == "commands",
+                phase == "commands" || phase == "turns",
                 new JObject { ["phase"] = phase },
                 "Exactly one implemented Sprint 29 native review phase.");
-            if (phase == "commands")
+            if (phase == "commands" || phase == "turns")
             {
-                foreach (int frame in ReviewSprint29Commands(fixture))
+                foreach (int frame in ReviewSprint29Commands(fixture,
+                    phase == "turns"))
                     yield return frame;
                 yield break;
             }
