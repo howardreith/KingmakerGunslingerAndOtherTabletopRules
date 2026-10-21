@@ -30,7 +30,10 @@ namespace KingmakerGunslinger.RuntimeTesting
               "giant-scorpion", "dire-bat", "pteranodon", "giant-wasp",
               "ape", "dire-ape", "xill", "salamander",
               "eagle", "stirge", "fire-beetle", "giant-stag-beetle",
-              "girallon", "giant-crab", "stegosaurus" };
+              "girallon", "giant-crab", "stegosaurus",
+              // Cleanup2 uses the existing complete still/travel/action packet
+              // for the remaining revised bodies and the requested Gorgon audit.
+              "elephant", "brachiosaurus", "griffon", "ettin", "gorgon" };
 
         // Single-renderer donors only; the Tyrannosaurus' two-renderer
         // Lizardfolk frame comes from its own Sprint 24 census.

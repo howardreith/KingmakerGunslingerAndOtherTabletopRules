@@ -10,10 +10,10 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>One original second head on the retained humanoid giant rig.
-    /// Geometry, colors and ownership are project-created at runtime. The
-    /// donor's first head, native animations, meshes and materials stay intact.
-    /// The second head follows the existing head bone; independent facial
-    /// animation is deliberately outside this sprint's visual standard.</summary>
+    /// Original sculpted geometry bridges the native neck and an owned skull
+    /// control. The skull copies head rotation at a fixed neck-relative offset;
+    /// turning the first head no longer orbits the second head around it.
+    /// Native animation and the donor's first head remain intact.</summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class EttinSecondHeadVisual
     {
@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.Summoning
         private sealed class Attachment
         {
             internal GameObject Root;
+            internal Mesh Mesh;
             internal readonly List<Material> Materials = new List<Material>();
             internal string Outcome;
         }
@@ -59,7 +60,11 @@ namespace KingmakerGunslinger.Summoning
             lock (Applied)
             {
                 Attachment ignored;
-                if (Applied.TryGetValue(__instance, out ignored)) return;
+                if (Applied.TryGetValue(__instance, out ignored))
+                {
+                    if (ignored.Outcome != "released") return;
+                    Applied.Remove(__instance);
+                }
                 var owned = new Attachment { Outcome = "attach-started" };
                 Applied.Add(__instance, owned);
                 try
@@ -72,43 +77,52 @@ namespace KingmakerGunslinger.Summoning
                         throw new InvalidOperationException(
                             "The audited Hill Giant rig no longer has one head bone: " +
                             heads.Length);
+                    Transform head = heads[0];
+                    Transform neck = head.parent;
+                    if (neck == null)
+                        throw new InvalidOperationException(
+                            "The audited Hill Giant head has no neck parent.");
                     owned.Root = new GameObject(ObjectPrefix + "_Root");
-                    owned.Root.transform.SetParent(heads[0], false);
-                    owned.Root.transform.localPosition =
-                        new Vector3(.63f, .04f, .02f);
+                    owned.Root.transform.SetParent(neck, false);
+                    owned.Root.transform.localPosition = Vector3.zero;
                     owned.Root.transform.localRotation = Quaternion.identity;
+                    owned.Root.transform.localScale = Vector3.one;
+                    Transform skull = new GameObject(ObjectPrefix +
+                        "_SkullControl").transform;
+                    skull.SetParent(owned.Root.transform, false);
+                    Vector3 offset = head.localRotation *
+                        Vector3.Scale(head.localScale,
+                            new Vector3(.63f, .04f, .02f));
+                    var driver = owned.Root.AddComponent<EttinHeadPoseDriver>();
+                    driver.Configure(head, skull, offset);
+                    owned.Mesh = EttinAuthoredHeadMesh.Build(
+                        owned.Root.transform.worldToLocalMatrix *
+                            head.localToWorldMatrix);
+                    owned.Mesh.bindposes = new[] {
+                        neck.worldToLocalMatrix *
+                            owned.Root.transform.localToWorldMatrix,
+                        skull.worldToLocalMatrix *
+                            owned.Root.transform.localToWorldMatrix
+                    };
                     Material skin = MakeMaterial(owned, "Skin",
                         new Color(.55f, .43f, .39f, 1f));
                     Material shadow = MakeMaterial(owned, "Shadow",
-                        new Color(.31f, .25f, .23f, 1f));
+                        new Color(.19f, .13f, .10f, 1f));
                     Material hair = MakeMaterial(owned, "Hair",
-                        new Color(.19f, .17f, .16f, 1f));
+                        new Color(.17f, .14f, .12f, 1f));
                     Material eye = MakeMaterial(owned, "Eye",
-                        new Color(.89f, .83f, .68f, 1f));
-                    Part(owned, "Skull", skin, new Vector3(0f, .12f, 0f),
-                        new Vector3(.48f, .59f, .43f));
-                    Part(owned, "Jaw", shadow,
-                        new Vector3(0f, -.18f, .15f),
-                        new Vector3(.34f, .18f, .31f));
-                    Part(owned, "Nose", skin,
-                        new Vector3(0f, .08f, .38f),
-                        new Vector3(.16f, .22f, .22f));
-                    Part(owned, "BrowLeft", hair,
-                        new Vector3(-.20f, .23f, .34f),
-                        new Vector3(.20f, .08f, .10f));
-                    Part(owned, "BrowRight", hair,
-                        new Vector3(.20f, .23f, .34f),
-                        new Vector3(.20f, .08f, .10f));
-                    Part(owned, "EyeLeft", eye,
-                        new Vector3(-.20f, .15f, .39f),
-                        new Vector3(.09f, .07f, .05f));
-                    Part(owned, "EyeRight", eye,
-                        new Vector3(.20f, .15f, .39f),
-                        new Vector3(.09f, .07f, .05f));
-                    Part(owned, "Crown", hair,
-                        new Vector3(0f, .39f, -.04f),
-                        new Vector3(.47f, .19f, .42f));
-                    owned.Outcome = "attached;heads=2;original=1;project=1;parts=8";
+                        new Color(.80f, .73f, .57f, 1f));
+                    var renderer = owned.Root.AddComponent<SkinnedMeshRenderer>();
+                    renderer.sharedMesh = owned.Mesh;
+                    renderer.bones = new[] { neck, skull };
+                    renderer.rootBone = neck;
+                    renderer.sharedMaterials = new[] { skin, shadow, hair, eye };
+                    Bounds bounds = owned.Mesh.bounds;
+                    bounds.Expand(.55f);
+                    renderer.localBounds = bounds;
+                    renderer.updateWhenOffscreen = true;
+                    owned.Outcome = "attached;heads=2;original=1;project=1;" +
+                        "authored=1;continuous-neck=1;orbit=0";
                 }
                 catch (Exception error)
                 {
@@ -133,26 +147,15 @@ namespace KingmakerGunslinger.Summoning
                 color = color
             };
             owned.Materials.Add(material);
+            if (material.HasProperty("_Glossiness"))
+                material.SetFloat("_Glossiness", .12f);
             return material;
-        }
-
-        private static void Part(Attachment owned, string name,
-            Material material, Vector3 position, Vector3 scale)
-        {
-            GameObject part = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            part.name = ObjectPrefix + "_" + name;
-            part.transform.SetParent(owned.Root.transform, false);
-            part.transform.localPosition = position;
-            part.transform.localScale = scale;
-            var collider = part.GetComponent<Collider>();
-            if (collider != null) UnityEngine.Object.DestroyImmediate(collider);
-            part.GetComponent<MeshRenderer>().sharedMaterial = material;
         }
 
         private static void Release(Attachment owned)
         {
             if (owned == null) return;
-            // Native renderer setup can instantiate one material per primitive
+            // Native renderer setup can instantiate materials for this skin
             // after our four shared originals have been assigned. Every
             // renderer below this exact project-created root belongs to this
             // head, so capture those instances before destroying the root.
@@ -160,6 +163,9 @@ namespace KingmakerGunslinger.Summoning
             if (owned.Root != null)
                 UnityEngine.Object.DestroyImmediate(owned.Root);
             owned.Root = null;
+            if (owned.Mesh != null)
+                UnityEngine.Object.DestroyImmediate(owned.Mesh);
+            owned.Mesh = null;
             foreach (Material material in materials)
                 if (material != null)
                     UnityEngine.Object.DestroyImmediate(material);
@@ -187,6 +193,8 @@ namespace KingmakerGunslinger.Summoning
             return (owned.Root == null ? Enumerable.Empty<UnityEngine.Object>() :
                     new UnityEngine.Object[] { owned.Root })
                 .Concat(OwnedMaterials(owned).Cast<UnityEngine.Object>())
+                .Concat(owned.Mesh == null ? Enumerable.Empty<UnityEngine.Object>() :
+                    new UnityEngine.Object[] { owned.Mesh })
                 .ToArray();
         }
 
@@ -196,6 +204,34 @@ namespace KingmakerGunslinger.Summoning
             if (view == null || !Applied.TryGetValue(view, out owned)) return;
             Release(owned);
             owned.Outcome = "released";
+        }
+    }
+
+    /// <summary>Two heads share expression motion, while the second skull has
+    /// its own neck-relative pivot. Owned by the attachment root.</summary>
+    internal sealed class EttinHeadPoseDriver : MonoBehaviour
+    {
+        private Transform _source;
+        private Transform _skull;
+        private Vector3 _offset;
+
+        internal void Configure(Transform source, Transform skull,
+            Vector3 offset)
+        {
+            _source = source;
+            _skull = skull;
+            _offset = offset;
+            Follow();
+        }
+
+        private void LateUpdate() { Follow(); }
+
+        private void Follow()
+        {
+            if (_source == null || _skull == null) return;
+            _skull.localPosition = _source.localPosition + _offset;
+            _skull.localRotation = _source.localRotation;
+            _skull.localScale = _source.localScale;
         }
     }
 

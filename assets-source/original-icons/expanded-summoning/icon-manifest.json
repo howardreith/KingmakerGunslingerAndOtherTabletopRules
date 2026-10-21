@@ -1582,10 +1582,10 @@
                   {
                       "key":  "horse",
                       "displayName":  "Horse",
-                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/horse.png",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/edits/horse/horse.png",
                       "productionFile":  "assets/game/icons/expanded-summoning/horse.png",
-                      "sourceSha256":  "72771a50f3e41f5df831d771401845487728f139ec3cba73448acfee45a10a54",
-                      "outputSha256":  "c52d920b00a6dfc0f00763df3cc0a03d340d709f69351b8e0adcd4d459a31ea1",
+                      "sourceSha256":  "d70b28852dd0fc1080f1ae687b5db269673da4cc292274b3413b319ee9f8ce1f",
+                      "outputSha256":  "3bf6ac8d8c7b08869bf262c4018937d5aa6b72cf3e0b809efec916c6e0cf67c1",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
@@ -1624,7 +1624,9 @@
                                                "KMG.Summoning.Ability.SNA.Tier8.Horse.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SNA.Tier9.Horse.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Horse"
-                                           ]
+                                           ],
+                      "originalSourceFile":  "assets-source/original-icons/expanded-summoning/sources/horse.png",
+                      "originalSourceSha256":  "72771a50f3e41f5df831d771401845487728f139ec3cba73448acfee45a10a54"
                   },
                   {
                       "key":  "huge-air-elemental",
@@ -3708,7 +3710,9 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
-
+                                               "KMG.Summoning.Ability.SNA.Tier8.CloudGiant.One",
+                                               "KMG.Summoning.Ability.SNA.Tier9.CloudGiant.OneD3",
+                                               "KMG.Summoning.Unit.CloudGiant"
                                            ]
                   },
                   {
@@ -3723,7 +3727,8 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
-
+                                               "KMG.Summoning.Ability.SNA.Tier9.StormGiant.One",
+                                               "KMG.Summoning.Unit.StormGiant"
                                            ]
                   },
                   {
@@ -3738,7 +3743,12 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog",
                       "blueprintSymbols":  [
-
+                                               "KMG.Summoning.Ability.SNA.Tier5.Ettin.One",
+                                               "KMG.Summoning.Ability.SNA.Tier6.Ettin.OneD3",
+                                               "KMG.Summoning.Ability.SNA.Tier7.Ettin.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier8.Ettin.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SNA.Tier9.Ettin.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Ettin"
                                            ]
                   }
               ]

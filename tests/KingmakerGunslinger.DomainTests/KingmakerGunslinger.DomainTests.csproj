@@ -184,6 +184,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Firearms\FirearmConditionNotificationDispatcher.cs"><Link>Domain\FirearmConditionNotificationDispatcher.cs</Link></Compile>
     <Compile Include="SummonUnitSanitizationPolicyTests.cs" />
     <Compile Include="ExpandedSummoningIdentityCatalogTests.cs" />
+    <Compile Include="Cleanup2SummonPresentationTests.cs" />
+    <Compile Include="Cleanup2GiantPresentationTests.cs" />
+    <Compile Include="Cleanup2ElementalPresentationTests.cs" />
     <Compile Include="ExpandedSummoningBaselineInventoryTests.cs" />
     <Compile Include="ExpandedSummoningIdealRosterTests.cs" />
     <Compile Include="ExpandedSummoningMenuScalabilityTests.cs" />
@@ -240,6 +243,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonTemplatePolicy.cs"><Link>Summoning\SummonTemplatePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonCreatureSpec.cs"><Link>Summoning\SummonCreatureSpec.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantSpec.cs"><Link>Summoning\SummonVariantSpec.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonChoicePresentationPolicy.cs"><Link>Summoning\SummonChoicePresentationPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantSummonPresentationPolicy.cs"><Link>Summoning\GiantSummonPresentationPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StandaloneElementalPresentationPolicy.cs"><Link>Summoning\StandaloneElementalPresentationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMenuLayoutPolicy.cs"><Link>Summoning\SummonVariantMenuLayoutPolicy.cs</Link></Compile>

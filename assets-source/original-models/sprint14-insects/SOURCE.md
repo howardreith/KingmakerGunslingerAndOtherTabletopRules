@@ -206,3 +206,34 @@ UVs, weights and bones are unchanged.
 To reproduce the shipped bytes, run the generator, then the repair on its
 output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
 the result and checks it is lit from the front.
+
+## Cleanup 2 Stag Beetle revision (2026-10-21)
+
+`build_giant_stag_beetle.py` now owns the Stag Beetle export. The Fire Beetle
+and all ant bytes remain unchanged. The Stag Beetle has a distinct head and
+pronotum, convex paired wing cases with longitudinal paint grooves, curved
+branched antler mandibles, compact clubbed antennae and six connected legs
+with readable femur/tibia/tarsus changes. It replaces the former very thick
+wedge legs and coarse cases, rather than enlarging the entire view.
+
+The same private Sprint 14 Giant Spider frame is used, SHA-256
+`60074cc2edb939cd4ab3e49961eec470866f94096d40e97f490dedae60faa19b`.
+All fourth-leg drivers remain absent; chelicerae carry the two jaws. No
+native geometry, textures or animation curves are read.
+
+```text
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint14-insects/build_giant_stag_beetle.py -- --capture <private sprint14-giant-spider-bind-rig.json> --albedo <out>/giant-stag-beetle-albedo.png --mesh-data <out>/giant-stag-beetle-mesh.json --report <private report.json> --blend-out <private source.blend>
+```
+
+| Current file | SHA-256 |
+| --- | --- |
+| `giant-stag-beetle-mesh.json` | `2ecf222413eb857051b70df8b5fd61592a939108c7661ccdfb96f20fbcea794d` |
+| `giant-stag-beetle-albedo.png` | `967d506b96019914fd40363cc80b21b0ce08f80662ef96ef259f5e0a8caecde4` |
+
+Two clean Blender 4.5.10 processes reproduce mesh and painting exactly. The
+new scoped verifier at `../sprint21-arthropods/verify_cleanup2_bodies.py` checks
+the actual exported topology, normals, skin weights, six legs and empty fourth
+pair. Synthetic poses in that directory probe leg and jaw deformation; they
+do not establish native walking/contact or owner aesthetic acceptance.
+
+Earlier sections are retained historical records.

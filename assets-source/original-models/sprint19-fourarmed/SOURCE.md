@@ -189,3 +189,46 @@ It now declares `triangleWinding: outward-visual-refinement`, which
 To reproduce the shipped bytes, run the generator, then the repair on its
 output with `--marker outward-visual-refinement`. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
 the result and checks it is lit from the front.
+
+## Cleanup 2 Girallon hand revision (2026-10-21)
+
+`generate_fourarmed.py --kind girallon` now calls
+`girallon_connected_hands.py` for each of its four arms. Every arm through
+palm, thumb and three fingers is a single closed union surface, with roots
+buried into the torso and blended elbow/wrist weights. The first hands ended
+the palm at the average knuckle line, then began separate capped digits on
+their own bones. That construction could expose gaps under wrist/digit motion.
+Texture-seam copies now have identical positions, weights and averaged
+normals. The original Girallon albedo remains unchanged. Xill bytes and its
+continuous builder remain unchanged.
+
+The same 61-bone Troll guard capture and all 56 reviewed drivers are retained.
+The donor supplies only two wrist/knuckle pivots. Synthetic extreme probes
+showed that copying those upper pivots to the offset lower hands made their
+digits orbit/stretch. The lower pair are therefore authored simplified hands
+carried rigidly by the local forearm-twist driver, with their rooted claws on
+that same driver. Upper hands retain the donor's digit articulation. The
+existing `FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS` limitation remains, and
+`lowerHandsUseForearmDriver=true` makes the narrower lower-hand adaptation
+explicit in the shipped payload. No new mechanics or animations are added.
+
+Regenerate with the existing Girallon command above. Two clean Blender
+4.5.10 processes reproduce the mesh bytes exactly. The new helper's
+`girallon-hand-stress-poses.json` is consumed by
+`../continuous-bodies/review_continuous_body.py --poses <file>` to probe wrist,
+shoulder, digit-curl/splay and hit/turn extremes. These are synthetic authoring
+checks, not native animation observations.
+
+| Current file | SHA-256 |
+| --- | --- |
+| `girallon-mesh.json` | `e5c4e59878ff6aae7b704f8fb49925e849f348817fc160e97a1f76907ee683cb` |
+| `girallon-albedo.png` | `21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6` (unchanged) |
+
+The scoped verifier `../sprint21-arthropods/verify_cleanup2_bodies.py` proves
+two connected arm/hand surfaces per side, upper wrist/digit chain continuity,
+equal texture-seam skin weights, normalized influences and closed outward
+components. The original baseline fails the connected upper-hand contract.
+Native near/far hand motion, hit reactions and owner aesthetic acceptance
+remain with the integrator.
+
+Earlier sections are retained historical records.

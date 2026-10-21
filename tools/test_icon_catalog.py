@@ -47,9 +47,9 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Combined authority includes the three new Sprint 29 portraits.
-        # Every released source/export row remains unchanged.
-        self.assertEqual("4908af334c7f21de6b92da05b675edc1c5aef5b4a170585579db07851f1c6cd7", actual)
+        # Cleanup iteration 2 changes only the Horse source/export row.
+        # The original and every unrelated source/export remain preserved.
+        self.assertEqual("5d310b34c1dc2278f997f257d4d3f556b3ae352ffab14de79777c0b8fdac9271", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
