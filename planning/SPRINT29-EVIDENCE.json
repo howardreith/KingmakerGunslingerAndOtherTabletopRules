@@ -20,6 +20,12 @@
     "vitalPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 746 no-game guarded scenario preflight checks under Limited Interactive account for RTWP and turn-based phases; direct native results are separately recorded below.",
     "publicRoutesPreflight": "PASS: 749 no-game request/refusal checks, including exact routes phase admission and wrong-case refusal. Public native spellbook execution remains pending."
   },
+  "publicPackagingFailure5a726a38": {
+    "source": "5a726a38a0833d18995fbadb3dea9341dba0fe2c",
+    "result": "FAIL: the complete 2700/2700 domain suite and exact-reference compilation passed, but deterministic packaging refused its correct staged count of 398 because the packager allowlist ended at 397. No qualified candidate ZIP or build-local manifest was produced. The supervised task and child incorrectly returned zero after the nested package error; their exit status is not a gate PASS.",
+    "rawLocalEvidence": "artifacts/s29-public-gate-5a726a38/gate.stdout.log, gate.stderr.log and gate-exit.json",
+    "repair": "Add only the observed 398 count, invoke package.ps1 without a pipeline that can swallow its error, require ZIP/checksum output, and make the full gate verify the current commit's validated ZIP manifest. A scratch 398-file package passed strict standalone validation; an isolated missing-manifest gate fixture now refuses the false-pass case. Full corrected source gate remains pending."
+  },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
     "runId": "20261021T0300317052797Z-666092e652724da4b598a1ac858c7a1e",
