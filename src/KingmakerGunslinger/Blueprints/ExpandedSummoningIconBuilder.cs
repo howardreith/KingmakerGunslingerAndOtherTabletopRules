@@ -51,7 +51,10 @@ namespace KingmakerGunslinger.Blueprints
             foreach (var giant in new[] {
                 new { Key = "hill-giant", Type = "HillUnitType" },
                 new { Key = "stone-giant", Type = "StoneUnitType" },
-                new { Key = "fire-giant", Type = "FireUnitType" } })
+                new { Key = "fire-giant", Type = "FireUnitType" },
+                new { Key = "ettin", Type = "Sprint29.EttinUnitType" },
+                new { Key = "cloud-giant", Type = "Sprint29.CloudUnitType" },
+                new { Key = "storm-giant", Type = "Sprint29.StormUnitType" } })
             {
                 BlueprintScriptableObject giantType;
                 if (!bySymbol.TryGetValue("KMG.Summoning.Giant." + giant.Type,

@@ -87,7 +87,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !action.ComponentsArray.Intersect(
                         nativeAction.ComponentsArray).Any() &&
                     privatePenalty;
-                Sprint25Check("s28-cleave-graph", graph, new JObject {
+                Sprint25Check(IsSprint29Review ? "s29-cleave-graph" :
+                    "s28-cleave-graph", graph, new JObject {
                     ["action"] = action.AssetGuid,
                     ["feature"] = feature.AssetGuid,
                     ["greaterFact"] = delivery.GreaterFeature?.AssetGuid,
@@ -100,8 +101,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!graph) throw new InvalidOperationException(
                     "Giant Cleave graph mismatch.");
                 foreach (bool turnBased in new[] { false, true })
-                foreach (string key in new[] { "hill-giant", "fire-giant" })
+                foreach (string key in IsSprint29Review ?
+                    new[] { "cloud-giant", "storm-giant", "ettin",
+                        "hill-giant", "fire-giant" } :
+                    new[] { "hill-giant", "fire-giant" })
                 {
+                    bool ordinary = key == "hill-giant" ||
+                        key == "storm-giant" || key == "ettin";
+                    string prefix = IsSprint29Review ? "s29-" : "s28-";
                     var trials = new JArray();
                     bool passed = false;
                     bool missObserved = false;
@@ -317,7 +324,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .HasFact(feature) &&
                                 !owner.Descriptor.Progression.Features
                                     .HasFact(nativeCleave) &&
-                                greater == (key == "fire-giant") &&
+                                greater == !ordinary &&
                                 owner.Descriptor.Abilities.GetAbility(
                                     nativeAction) == null;
                             Ability granted = owner.Descriptor.Abilities
@@ -358,7 +365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         command.ExecutionProcess.IsEnded)
                                         break;
                                 }
-                                int expected = key == "hill-giant" ? 2 : 3;
+                                int expected = ordinary ? 2 : 3;
                                 var rows = observer.Rows;
                                 bool allHit = rows.Count == expected &&
                                     rows.All(value =>
@@ -371,7 +378,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         "914b04c279e3d3447848fecf5796cdcd");
                                 var cleavePart = owner.Get<
                                     UnitPartSummonGiantCleave>();
-                                bool roundLedger = key == "hill-giant" ?
+                                bool roundLedger = ordinary ?
                                     cleavePart != null &&
                                     cleavePart.LastAdditionalAttackRound >=
                                         roundBefore &&
@@ -472,15 +479,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         if (missObserved && !missVerified) break;
                     }
-                    Sprint25Check("s28-" + key + (turnBased ?
+                    Sprint25Check(prefix + key + (turnBased ?
                         "-tb" : "-rtwp") + "-cleave-first-miss",
                         missVerified, new JObject { ["attempts"] = trials },
                         "A native first miss spends one Standard action, makes no follow-up, and applies one -2 AC penalty without spending Hill's extra-attack ledger.");
-                    Sprint25Check("s28-" + key + (turnBased ?
+                    Sprint25Check(prefix + key + (turnBased ?
                         "-tb" : "-rtwp") + "-cleave", passed,
                         new JObject { ["attempts"] = trials,
                             ["expectedAttacks"] =
-                                key == "hill-giant" ? 2 : 3 },
+                                ordinary ? 2 : 3 },
                         "The project-only native Standard action uses the real owner turn, attack rolls, two/three-target chain, and one -2 AC buff.");
                 }
             }

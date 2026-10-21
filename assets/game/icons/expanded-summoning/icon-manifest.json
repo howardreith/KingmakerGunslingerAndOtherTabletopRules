@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  126,
+    "count":  129,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1131,6 +1131,33 @@
                       "key":  "fire-giant",
                       "file":  "fire-giant.png",
                       "sha256":  "dd4866cec136b98caf0bea44f87787de85abc7c0d601ec4c065dceefb88b543e",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "cloud-giant",
+                      "file":  "cloud-giant.png",
+                      "sha256":  "95df006858e71636d19e3a0db3dffc45696baaa4d44e231fb046cb4fbfbe4fba",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "storm-giant",
+                      "file":  "storm-giant.png",
+                      "sha256":  "94d21b78bb96a48a5816d55c1a2f4738830150b3214d47905b21c8544b5272e4",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "ettin",
+                      "file":  "ettin.png",
+                      "sha256":  "230b7b479f28f94fae8f32e48f3d65ab358f8bda29d42b25a9bbccd40b92c900",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

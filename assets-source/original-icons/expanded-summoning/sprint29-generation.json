@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "generatedUtcDate": "2026-10-20",
+  "tool": "image_gen.imagegen (built-in)",
+  "providerModel": "not exposed by tool; not inferred",
+  "transparentBackground": false,
+  "styleReferences": [
+    "assets-source/original-icons/expanded-summoning/sources/hill-giant.png",
+    "assets-source/original-icons/expanded-summoning/sources/stone-giant.png",
+    "assets-source/original-icons/expanded-summoning/sources/fire-giant.png"
+  ],
+  "styleReferenceRole": "Style only; all three new source paintings have original composition and pixels.",
+  "images": [
+    {
+      "key": "cloud-giant",
+      "source": "assets-source/original-icons/expanded-summoning/sources/cloud-giant.png",
+      "sourceSha256": "ff80e2f8068f2ef6537363499660f0723126c00cf20485bbf48b183205ffae9f",
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15bb4-c47b-7bf0-9284-de0ab8d3807b/exec-1cc8ad0c-9f86-4082-b2c4-d36cc9bb1db9.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square fantasy CRPG painted summon-choice icon, high-resolution source intended for 128x128 export. Create one adult Pathfinder cloud giant, a towering pale powder-blue-skinned woman with refined chiseled face and long wispy white hair lifted by wind, wearing a modest chain shirt, gripping a massive spiked morningstar. Distinct silhouette from a rugged hill giant or stone giant. Chest-up three-quarter portrait, head and weapon prominent and within central 85 percent. Painterly high-detail fantasy realism, warm engraved bronze circular portrait rim, dark outer corners, misty sunlit mountain clouds behind her, restrained pearly blue and bronze palette. Match the attached Hill/Stone/Fire Giant source paintings as STYLE references only; create wholly original pixels and composition. No text, numbers, logo, badges, UI overlay, or extra characters. Opaque square background.",
+      "width": 1254,
+      "height": 1254,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "key": "storm-giant",
+      "source": "assets-source/original-icons/expanded-summoning/sources/storm-giant.png",
+      "sourceSha256": "b6d619772c2eb44b097975f1048beb7694e3dde7ee7ab52f80c5e0f0feeca5cc",
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15bb4-c47b-7bf0-9284-de0ab8d3807b/exec-490e8fb9-9c8d-4bac-9f7e-039b62c5a0ca.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square fantasy CRPG painted summon-choice icon, high-resolution source intended for 128x128 export. Create one adult Pathfinder storm giant, heroic towering male with bronze skin, dark wind-swept hair and striking green eyes, wearing a practical polished breastplate, holding a massive greatsword upright. Chest-up three-quarter portrait, face and sword prominent within central 85 percent. Coastal storm clouds, distant sea, restrained blue lightning only in background. Painterly high-detail fantasy realism, warm engraved bronze circular portrait rim, dark outer corners. Match the attached Hill/Stone/Fire Giant paintings as STYLE references only; wholly original pixels and composition. Clearly distinct from Fire Giant; no red hair, fire, text, numbers, logos, badges, UI overlay, or extra characters. Opaque square background.",
+      "width": 1254,
+      "height": 1254,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    },
+    {
+      "key": "ettin",
+      "source": "assets-source/original-icons/expanded-summoning/sources/ettin.png",
+      "sourceSha256": "10ea3f8184227c9dc3f4fa5454514a91f2a19fc693e419de74b0fa0b9e249b98",
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15bb4-c47b-7bf0-9284-de0ab8d3807b/exec-4a7e20cd-f9af-48f5-b782-b51dd198dae1.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square fantasy CRPG painted summon-choice icon, high-resolution source intended for 128x128 export. One adult Pathfinder ettin: a SINGLE broad-shouldered Large humanoid with EXACTLY TWO distinct tusked heads on separate short necks, both visible side by side above ONE torso. Each head has its own face and neck; one looks left, the other looks right. Grimy gray-pink skin, rough dark hair, tattered leather armor, two arms each holding a flail with spiked metal head. Chest-up three-quarter portrait; keep BOTH heads large enough for clarity at small size and all important anatomy within central 85 percent. Painterly high-detail fantasy realism, engraved warm bronze circular portrait rim and dark outer corners, rugged cave background. Match attached Hill/Stone/Fire Giant source paintings as STYLE references only; entirely original pixels and composition. Avoid merging the heads into one face, a third face, extra limbs, text, numbers, logos, badges, UI overlays, or other characters. Opaque square background.",
+      "width": 1254,
+      "height": 1254,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING"
+    }
+  ]
+}

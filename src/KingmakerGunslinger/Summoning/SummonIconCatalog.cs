@@ -54,13 +54,14 @@ namespace KingmakerGunslinger.Summoning
             string[] split = { "redcap", "axiomite", "soul-eater", "bogeyman",
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
+            // Registered hidden creatures enter through visibleCatalog too.
             string[] prepared = { "remove-stirge" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
             // Sprint27 registers one Griffon with its real pinned painting.
             // Keep the immutability guard in addition to exact key equality.
-            if (Values.Length != 126 || expected.Length != 126 ||
+            if (Values.Length != 129 || expected.Length != 129 ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||

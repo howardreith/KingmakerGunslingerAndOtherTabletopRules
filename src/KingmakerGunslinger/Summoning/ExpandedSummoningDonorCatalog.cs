@@ -109,7 +109,10 @@ namespace KingmakerGunslinger.Summoning
                 // visual shell. Fire borrows the retained armored Frost body.
                 "hill-giant|61dd71e874b16f742a0f783314105553|0",
                 "stone-giant|61dd71e874b16f742a0f783314105553|0",
-                "fire-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1"
+                "fire-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1",
+                "ettin|61dd71e874b16f742a0f783314105553|0",
+                "cloud-giant|61dd71e874b16f742a0f783314105553|0",
+                "storm-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1"
             });
         }
 

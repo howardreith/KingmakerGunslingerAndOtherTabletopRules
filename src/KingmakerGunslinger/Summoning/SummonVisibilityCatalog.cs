@@ -105,9 +105,11 @@ namespace KingmakerGunslinger.Summoning
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(
+                new string[0],
+                StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1119;
+        internal const int RegisteredLogicalPlacementCount = 1127;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
@@ -126,6 +128,18 @@ namespace KingmakerGunslinger.Summoning
                         SummonFamily.NaturesAlly)).ToArray();
             SummonVariantSpec[] suppressed = all.Where(value =>
                 !IsPublished(value)).ToArray();
+            string[] sprint29Keys = { "ettin", "cloud-giant", "storm-giant" };
+            SummonVariantSpec[] sprint29 = all.Where(value =>
+                sprint29Keys.Contains(value.Creature.Key)).ToArray();
+            bool sprint29Routes =
+                sprint29.Length == 8 &&
+                sprint29.All(value => value.Family == SummonFamily.NaturesAlly &&
+                    !value.Creature.MonsterTemplated && IsPublished(value)) &&
+                sprint29Keys.All(key => sprint29.Where(value =>
+                    value.Creature.Key == key).Select(value => value.ParentTier)
+                    .OrderBy(value => value).SequenceEqual(key == "ettin" ?
+                        new[] { 5, 6, 7, 8, 9 } : key == "cloud-giant" ?
+                        new[] { 8, 9 } : new[] { 9 }));
             SummonVariantSpec[] brachiosaurus = all.Where(value =>
                 value.Creature.Key == GiantBodyRulesPolicy.BrachiosaurusKey).ToArray();
             SummonVariantSpec[] giants = all.Where(value =>
@@ -144,7 +158,8 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                SuppressedCreatureKeys.Count != 0 || !giantRoutes ||
+                SuppressedCreatureKeys.Count != 0 ||
+                !sprint29Routes || !giantRoutes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()
                     .OrderBy(value => value).SequenceEqual(

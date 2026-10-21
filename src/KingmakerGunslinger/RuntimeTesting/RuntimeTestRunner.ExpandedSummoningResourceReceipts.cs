@@ -227,6 +227,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             () => pair.Key != null && pair.Key.sharedMaterials.Any(m => ReferenceEquals(m, material)));
                 }
             }
+            // The second head is attached only to the exact private Ettin
+            // view. Include both its four originals and any renderer-created
+            // material instances; name-only scanning cannot establish owner.
+            foreach (var value in EttinSecondHeadVisual.CaptureOwnedResources(view))
+                add(value, "Ettin second-head attachment",
+                    "EttinSecondHeadVisual.Applied.Attachment", true,
+                    false, true,
+                    () => EttinSecondHeadVisual.CaptureOwnedResources(view)
+                        .Any(item => ReferenceEquals(item, value)));
             // Sprints 18 and 19 attach through this seam - both apes, the
             // Girallon and the Xill - and it has exposed CaptureOwnedResources
             // since the day it shipped. This observer simply never asked it,
