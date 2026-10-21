@@ -2237,7 +2237,7 @@ function Test-KmgSprint29ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     return $Scenario -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('profiles','modes','commands','turns','cloud-magic','storm-magic')
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai')
 }
 
 function Test-KmgSprint27ReviewPhaseScope {
