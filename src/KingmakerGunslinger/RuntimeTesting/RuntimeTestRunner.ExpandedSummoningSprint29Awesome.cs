@@ -393,6 +393,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
+                        if (turnBased)
+                        {
+                            SettingsRoot.Instance.EnableTurnBasedMode
+                                .CurrentValue = false;
+                            Game.Instance.TurnBasedCombatController.Activate();
+                        }
                         target.Descriptor.State.RemoveCondition(
                             UnitCondition.ImmuneToCombatManeuvers);
                         if (addedIncorporeal)
