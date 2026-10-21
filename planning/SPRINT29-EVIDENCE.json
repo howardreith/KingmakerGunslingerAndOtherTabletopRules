@@ -279,6 +279,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; disarm/one-weapon fallback, cold load, Awesome Blow collision, negative AI cases, affected controls and public routes remain pending"
   },
+  "hiddenDisarmQualified": {
+    "source": "e4ea70d1f6e5ed44d9a15e656fee23831e747c90",
+    "runId": "20261021T0901339573590Z-c65d6e1a99e74db28ac1b268d75883d3",
+    "artifactZipSha256": "c3f56cc3b79afa1a111ab4d5251cf182a4eab13c27f307c1bdc58caf31784173",
+    "artifactDllSha256": "359ef95aa83982fbedf4b0e37dbf2655ddeda2d185e57a49eafe51036f80df0c",
+    "artifactMvid": "deeeb3b0-4e01-469b-80a7-7a500e67080c",
+    "result": "PASS 13/13 native disarm predicates: each exact hidden owner received native main-hand Disarm while its original item instances remained owner-bound and nonlootable. Ettin's disabled primary supplied zero attacks; its remaining flail retained two iteratives and resolved two real weapon attacks, rolls and damage packets in one RTWP full-attack action. Cloud and Storm selected their two-slam alternatives without item resupply. Source and party inventories remained exact.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; cold-load hydration, Awesome Blow collision, negative AI cases, affected controls, public routes and release remain pending"
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
