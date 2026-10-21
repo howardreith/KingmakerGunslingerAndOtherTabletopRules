@@ -59,9 +59,10 @@ namespace KingmakerGunslinger.Summoning
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            // Sprint27 registers one Griffon with its real pinned painting.
-            // Keep the immutability guard in addition to exact key equality.
-            if (Values.Length != 129 || expected.Length != 129 ||
+            // Compare the actual registered and retained concepts. Released
+            // identity/pixel preservation is enforced by the append-only ledger
+            // and icon manifest; a historical count cannot admit a new slice.
+            if (Values.Length != expected.Length ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
