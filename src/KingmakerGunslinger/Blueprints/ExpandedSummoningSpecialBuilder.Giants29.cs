@@ -119,14 +119,6 @@ namespace KingmakerGunslinger.Blueprints
             unit.Body.PrimaryHandAlternative2 = null;
             unit.Body.SecondaryHandAlternative2 = null;
             unit.Body.EmptyHandWeapon = null;
-            var initialOffhands = ScriptableObject.CreateInstance<
-                SummonEttinInitialOffhands>();
-            initialOffhands.OwningBlueprint = unit;
-            initialOffhands.MainFlail = mainFlail;
-            initialOffhands.OffhandFlail = offFlail;
-            initialOffhands.OffhandJavelin = offJavelin;
-            unit.ComponentsArray = unit.ComponentsArray.Concat(
-                new BlueprintComponent[] { initialOffhands }).ToArray();
             BlueprintFeature traits = Require<BlueprintFeature>(bySymbol,
                 traitsSymbol);
             AddProficiencies proficiency = traits.GetComponents<
@@ -143,6 +135,12 @@ namespace KingmakerGunslinger.Blueprints
             strength.OwningBlueprint = unit;
             strength.OffhandFlail = offFlail;
             strength.OffhandJavelin = offJavelin;
+            var initialOffhands = ScriptableObject.CreateInstance<
+                SummonEttinInitialOffhands>();
+            initialOffhands.OwningBlueprint = unit;
+            initialOffhands.MainFlail = mainFlail;
+            initialOffhands.OffhandFlail = offFlail;
+            initialOffhands.OffhandJavelin = offJavelin;
             var perception = ScriptableObject.CreateInstance<AddStatBonus>();
             perception.Stat = StatType.SkillPerception;
             perception.Descriptor = ModifierDescriptor.Racial;
@@ -150,7 +148,8 @@ namespace KingmakerGunslinger.Blueprints
             traits.ComponentsArray = traits.ComponentsArray.Where(value =>
                 !(value is SummonGiantRockAttack) &&
                 !(value is SummonGiantRockCatch)).Concat(
-                    new BlueprintComponent[] { strength, perception }).ToArray();
+                    new BlueprintComponent[] { strength, perception,
+                        initialOffhands }).ToArray();
             unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] {
                 Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
                 Require<BlueprintFeature>(bySymbol, FireImprovedOverrun)

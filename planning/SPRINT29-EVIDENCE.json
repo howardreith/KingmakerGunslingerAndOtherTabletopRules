@@ -4,7 +4,7 @@
   "status": "HIDDEN_REGISTERED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "TWO_PROFILES_FAILED_RESTORED; REPAIR_IN_PROGRESS",
+  "nativeQualification": "THREE_PROFILES_FAILED_RESTORED; REPAIR_IN_PROGRESS",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -27,6 +27,15 @@
     "artifactDllSha256": "fd7bcf0168e0b44bc4cf5a86815493821ac463c80e2bd5d1e37b833cc7aec8d3",
     "artifactMvid": "f129cc50-64d3-4329-bd0c-30711de31bf0",
     "result": "FAIL: Cloud and Storm profiles passed; Ettin configured offhand flail was absent from every live hand set; main one-handed flail was held in two hands",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "thirdNativeProfiles": {
+    "source": "9c0055103ade23c655cff018a8144ae684bbac67",
+    "runId": "20261021T0332196329428Z-c56215462d0a4b65846d650769117d0a",
+    "artifactZipSha256": "118df42e4bcea01518f55d19e3cc3a6518c0b1d10039ae0b25ef337c8ffa362b",
+    "artifactDllSha256": "8125c2f1cbeee51cbe3c20b8b002ac78af028a939144d8a34cb55f8bd2a29b88",
+    "artifactMvid": "76d1db6b-a8ec-421e-8ed3-70e192500ff8",
+    "result": "FAIL: initial-creation callback did not retain Ettin's offhand in the live equipment sets; Cloud and Storm profiles passed",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
