@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Armors;
@@ -275,13 +276,13 @@ namespace KingmakerGunslinger.Summoning
             {
                 if (flailReady)
                 {
-                    Seed(unit.Body.HandsEquipmentSets[0].SecondaryHand,
+                    Seed(unit, unit.Body.HandsEquipmentSets[0].SecondaryHand,
                         OffhandFlail);
                     marker.MarkFlailSeeded();
                 }
                 if (javelinReady)
                 {
-                    Seed(unit.Body.HandsEquipmentSets[1].SecondaryHand,
+                    Seed(unit, unit.Body.HandsEquipmentSets[1].SecondaryHand,
                         OffhandJavelin);
                     marker.MarkJavelinSeeded();
                 }
@@ -289,10 +290,10 @@ namespace KingmakerGunslinger.Summoning
             finally { _seeding = false; }
         }
 
-        private static void Seed(WeaponSlot slot,
+        private static void Seed(UnitEntityData unit, WeaponSlot slot,
             BlueprintItemWeapon blueprint)
         {
-            if (slot == null || blueprint == null)
+            if (unit == null || slot == null || blueprint == null)
                 throw new InvalidOperationException(
                     "Ettin offhand slot or private weapon is missing.");
             ItemEntityWeapon existing = slot.MaybeWeapon;
@@ -303,7 +304,19 @@ namespace KingmakerGunslinger.Summoning
                         "Ettin offhand has an unexpected item.");
                 return;
             }
-            var item = new ItemEntityWeapon(blueprint);
+            // The installed body constructor can place its configured
+            // secondary flail into inventory before it resolves the grip.
+            // Reattach that exact unassigned instance instead of minting a
+            // second private weapon when the slot is still empty.
+            ItemEntityWeapon[] candidates = unit.Descriptor.Inventory.Items
+                .OfType<ItemEntityWeapon>().Where(value =>
+                    ReferenceEquals(value.Blueprint, blueprint)).ToArray();
+            if (candidates.Length > 1 || candidates.Any(value =>
+                value.HoldingSlot != null))
+                throw new InvalidOperationException(
+                    "Ettin offhand inventory has ambiguous prior items.");
+            var item = candidates.Length == 1 ? candidates[0] :
+                new ItemEntityWeapon(blueprint);
             slot.InsertItem(item);
             if (!ReferenceEquals(slot.MaybeWeapon, item))
                 throw new InvalidOperationException(
