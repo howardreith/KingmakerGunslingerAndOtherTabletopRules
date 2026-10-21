@@ -183,6 +183,11 @@ namespace KingmakerGunslinger.Summoning
                 !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
                 Owner.Body == null)
                 return;
+            // Native body alternatives can sit in the owner's inventory
+            // without ever occupying an active hand. Mark those exact items
+            // during creation and load reactivation as well as hand switches.
+            foreach (ItemEntity item in Owner.Inventory.Items.ToArray())
+                Mark(item);
             foreach (HandsEquipmentSet set in Owner.Body.HandsEquipmentSets)
             {
                 if (set == null) continue;

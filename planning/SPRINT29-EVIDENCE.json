@@ -408,6 +408,36 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package. Other spell priorities, effect expiration, cold-load hydration, affected controls and public routes remain distinct requirements."
   },
+  "cloudLifetimeQualified": {
+    "source": "c24a7c1b06b3e5544ab13965888c25629bab68ee",
+    "runId": "20261021T1159145392728Z-d7117142f3c740bb9892d0febf5fafc2",
+    "artifactZipSha256": "5b25dca7866ffdb228ed71f3607e4773a4c5f2591caa75f0db168fea46cba49e",
+    "artifactDllSha256": "ca5e3ed6606f2372f417d1a4cb2e3429b0de919fdb0ba0e004c39b14d7df8b2b",
+    "artifactMvid": "0116fd85-90fa-48e3-b014-799f9cf7d6fa",
+    "result": "PASS 12/12 native save-free predicates: Cloud CL16 obscuring mist and fog cloud retained their distinct finite 960/9600-second area lifetimes after exact owner native summon expiry. Fog use fell from one to zero, while the sibling retained its own use.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; public routes and cold-load remain unqualified."
+  },
+  "stormLifetimeQualified": {
+    "source": "c24a7c1b06b3e5544ab13965888c25629bab68ee",
+    "runId": "20261021T1204069012414Z-e5c830dd6c77450e91c08cd3d382d4e5",
+    "artifactZipSha256": "5b25dca7866ffdb228ed71f3607e4773a4c5f2591caa75f0db168fea46cba49e",
+    "artifactDllSha256": "ca5e3ed6606f2372f417d1a4cb2e3429b0de919fdb0ba0e004c39b14d7df8b2b",
+    "artifactMvid": "0116fd85-90fa-48e3-b014-799f9cf7d6fa",
+    "result": "PASS 15/15 native save-free predicates: exact CL15/DC15 Call state, one real bolt, CL15/DC18 Chain save/damage, owner expiry removing Call state and active commands, sibling Freedom of Movement and independent Call/Chain one-use resources.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; public routes and cold-load remain unqualified."
+  },
+  "workingPrepareInventoryFailure": {
+    "source": "c24a7c1b06b3e5544ab13965888c25629bab68ee",
+    "runId": "20261021T1213526140974Z-c0c671b7a1234df4a0ce16a91681f27c",
+    "artifactZipSha256": "5b25dca7866ffdb228ed71f3607e4773a4c5f2591caa75f0db168fea46cba49e",
+    "artifactDllSha256": "ca5e3ed6606f2372f417d1a4cb2e3429b0de919fdb0ba0e004c39b14d7df8b2b",
+    "artifactMvid": "0116fd85-90fa-48e3-b014-799f9cf7d6fa",
+    "result": "FAIL: exact Working prepare loaded and instantiated three hidden owners, then found two dormant Ettin javelins and Storm's dormant bow lootable. Equipped items, Cloud equipment, all item ownership and counts, catch ledgers, spent magic and unrelated party inventory passed. Native save write did not occur. No cleanup/absent run was attempted.",
+    "restoration": "PASS by direct before/restored JSON comparison: original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and creation/write ticks/attributes exact; Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact. Parent final comparison separately failed from a helper stdout/string typing bug; scratch parent repaired before retry.",
+    "repair": "Extend exact-owner SummonGiantEquipmentOwnership sweep to private items in its own inventory, including dormant alternates; focused production compilation and 3/3 Sprint 29 source tests passed. Native recheck pending on new candidate."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
