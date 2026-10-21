@@ -97,6 +97,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Sprint 29 AI owner lacks a native decision precondition.");
                         var observer = new Sprint24AttackObserver {
                             Owner = owner, Target = target };
+                        var stormSaves = key == "storm-giant" ?
+                            new Sprint29MagicSaves(target) : null;
                         var commands = new HashSet<UnitCommand>();
                         var ambient = new HashSet<string>();
                         int ticks = 0;
@@ -130,6 +132,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     "Cloud fog AI fixture has no safe target center.");
                         }
                         EventBus.Subscribe(observer);
+                        if (stormSaves != null) EventBus.Subscribe(stormSaves);
                         try
                         {
                             DateTime deadline = DateTime.UtcNow.AddSeconds(35);
@@ -227,11 +230,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (key == "storm-giant")
                             {
                                 foreach (int frame in Sprint29StormAiLightning(
-                                    fixture, owner, target, observer))
+                                    fixture, owner, target, observer,
+                                    stormSaves))
                                     yield return frame;
                             }
                         }
-                        finally { EventBus.Unsubscribe(observer); }
+                        finally
+                        {
+                            if (stormSaves != null)
+                                EventBus.Unsubscribe(stormSaves);
+                            EventBus.Unsubscribe(observer);
+                        }
                     }
                     finally
                     {
@@ -258,7 +267,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Sprint29StormAiLightning(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target,
-            Sprint24AttackObserver observer)
+            Sprint24AttackObserver observer,
+            Sprint29MagicSaves saves)
         {
             var chainResource = Sprint29MagicResource(fixture,
                 "StormChainResource");
@@ -346,6 +356,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value => value.Blueprint?.name).ToArray();
             owner.Commands.RemoveFinishedAndUpdateQueue();
             later.Clear();
+            saves.Rows.Clear();
             int damageBefore = observer.Damage.Count;
             double stateBefore = active.TimeLeft.TotalSeconds;
             ticks = 0;
@@ -369,20 +380,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.IsPaused = false;
                 yield return 0;
             }
+            // UnitUseAbility can finish before its native lightning delivery.
+            // Observe the actual DC15 save and the state's one-minute bolt
+            // debit rather than treating command completion as impact.
+            DateTime effectDeadline = DateTime.UtcNow.AddSeconds(20);
+            for (int frame = 0; frame < 1200 &&
+                DateTime.UtcNow < effectDeadline &&
+                (saves.Rows.Count == 0 ||
+                    owner.Descriptor.Buffs.GetBuff(state)?.TimeLeft
+                        .TotalSeconds > stateBefore - 50); frame++)
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
             Buff after = owner.Descriptor.Buffs.GetBuff(state);
             bool bolt = later.OfType<UnitUseAbility>().Any(value =>
                     value.AiAction != null && value.AiAction.name.EndsWith(
                         "StormBoltAi", StringComparison.Ordinal) &&
                     value.IsFinished &&
                     value.Result == UnitCommand.ResultType.Success) &&
-                observer.Damage.Count > damageBefore &&
-                after != null && after.TimeLeft.TotalSeconds < stateBefore &&
+                saves.Rows.Count > 0 && saves.Rows.OfType<JObject>().All(
+                    value => (int)value["dc"] == 15) &&
+                after != null &&
+                after.TimeLeft.TotalSeconds < stateBefore - 50 &&
                 owner.Descriptor.Resources.GetResourceAmount(callResource) == 0;
             Sprint25Check("s29-storm-ai-granted-bolt", bolt,
                 new JObject { ["owner"] = owner.UniqueId,
                     ["ticks"] = ticks,
                     ["damageBefore"] = damageBefore,
                     ["damageAfter"] = observer.Damage.Count,
+                    ["saves"] = saves.Rows.DeepClone(),
                     ["stateBefore"] = stateBefore,
                     ["stateAfter"] = after?.TimeLeft.TotalSeconds,
                     ["callUses"] = owner.Descriptor.Resources
