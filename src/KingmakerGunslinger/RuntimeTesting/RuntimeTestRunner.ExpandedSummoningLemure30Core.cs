@@ -153,11 +153,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     stats.Strength.BaseValue = spec.Str;
                     JObject rule = Sprint29WeaponRule(owner, owner.Body.PrimaryHand.MaybeWeapon);
-                    bool exact = (int)rule["attack"] == spec.Attack &&
+                    JObject other = Sprint29WeaponRule(owner, owner.Body.AdditionalLimbs.Single().MaybeWeapon);
+                    bool exact = (int)other["attack"] == spec.Attack && (int)other["damageBonus"] == spec.Bonus &&
+                        (int)other["diceRolls"] == 1 && (string)other["dice"] == "D4" &&
+                        (bool)other["ownerExact"] && (int)rule["attack"] == spec.Attack &&
                         (int)rule["damageBonus"] == spec.Bonus && (int)rule["diceRolls"] == 1 &&
                         (string)rule["dice"] == "D4" && (bool)rule["ownerExact"];
                     rule["owner"] = owner.UniqueId; rule["fixtureStrength"] = spec.Str;
                     rule["nativeStrengthModifier"] = stats.Strength.Bonus;
+                    rule["additionalClaw"] = other;
                     Sprint25Check("lemure-core-strength-" + spec.Str, exact, rule,
                         "Actual native attack and weapon-damage calculations retain signed live Strength scaling.");
                     if (!exact) throw new InvalidOperationException("Lemure live Strength rule failed.");
