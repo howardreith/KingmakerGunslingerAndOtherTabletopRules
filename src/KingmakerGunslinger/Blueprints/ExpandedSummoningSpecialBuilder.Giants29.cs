@@ -761,7 +761,12 @@ namespace KingmakerGunslinger.Blueprints
                 ability.CanTargetPoint = true;
                 ability.CanTargetSelf = false;
                 ability.CanTargetFriends = false;
-                ability.CanTargetEnemies = false;
+                // Native BlueprintAiCastSpell chooses an Enemy target type
+                // only when this flag is set. It can then center the same
+                // stationary point effect at that enemy's position; the
+                // actual area remains all-creature and the safety
+                // consideration still screens nearby allies.
+                ability.CanTargetEnemies = true;
                 ability.Range = AbilityRange.Medium;
                 spawn.OnUnit = false;
                 spawn.DurationValue = new ContextDurationValue {

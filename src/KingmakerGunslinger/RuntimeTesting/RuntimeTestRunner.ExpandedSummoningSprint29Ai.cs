@@ -10,6 +10,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json.Linq;
@@ -103,6 +104,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "Cloud native fog AI area") : null;
                         int fogBefore = fogArea == null ? 0 :
                             Sprint29OwnedAreas(owner, fogArea).Length;
+                        bool safeFogCenter = fogArea == null ||
+                            !Game.Instance.State.Units.All.Any(value =>
+                                value != null && !value.Destroyed &&
+                                !ReferenceEquals(value, owner) &&
+                                owner.IsAlly(value) &&
+                                Vector3.Distance(value.Position,
+                                    target.Position) <=
+                                    new Feet(20).Meters + value.Corpulence);
+                        if (fogArea != null)
+                        {
+                            Sprint25Check("s29-cloud-fog-ai-safe-lane",
+                                safeFogCenter,
+                                new JObject { ["owner"] = owner.UniqueId,
+                                    ["target"] = target.UniqueId,
+                                    ["safeCenter"] = safeFogCenter,
+                                    ["lane"] = lane },
+                                "The hostile-centered fog lane excludes each actual allied unit before the native AI decision.");
+                            if (!safeFogCenter)
+                                throw new InvalidOperationException(
+                                    "Cloud fog AI fixture has no safe target center.");
+                        }
                         EventBus.Subscribe(observer);
                         try
                         {
@@ -163,6 +185,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["fixtureAttackCommands"] = 0,
                                     ["forcedRolls"] = 0 },
                                 "The exact native brain chooses a successful useful attack or spell without a fixture command or forced roll.");
+                            if (fogArea != null)
+                            {
+                                var fogAreas = Sprint29OwnedAreas(owner,
+                                    fogArea);
+                                var fogResource = Sprint29MagicResource(fixture,
+                                    "CloudFogResource");
+                                bool remoteFog = fogAreas.Any(value =>
+                                    Sprint29AreaDuration(value) > 9500 &&
+                                    Sprint29AreaDuration(value) <= 9600.1 &&
+                                    value.Context?.Params.CasterLevel == 16) &&
+                                    owner.Descriptor.Resources.GetResourceAmount(
+                                        fogResource) == 0 &&
+                                    commands.OfType<UnitUseAbility>().Any(
+                                        value => value.AiAction != null &&
+                                            value.IsFinished &&
+                                            value.Result ==
+                                                UnitCommand.ResultType.Success);
+                                Sprint25Check("s29-cloud-fog-ai-cast",
+                                    remoteFog, new JObject {
+                                        ["owner"] = owner.UniqueId,
+                                        ["target"] = target.UniqueId,
+                                        ["safeCenter"] = safeFogCenter,
+                                        ["areas"] = new JArray(fogAreas.Select(
+                                            value => new JObject {
+                                                ["durationSeconds"] =
+                                                    Sprint29AreaDuration(value),
+                                                ["casterLevel"] = value
+                                                    .Context?.Params.CasterLevel })),
+                                        ["fogResource"] = owner.Descriptor
+                                            .Resources.GetResourceAmount(
+                                                fogResource),
+                                        ["commands"] = new JArray(commands
+                                            .Select(Sprint27AiCommand)) },
+                                    "Native Cloud AI centers its distinct limited CL16 fog on a safe hostile lane and spends only its own one use.");
+                            }
                         }
                         finally { EventBus.Unsubscribe(observer); }
                     }
