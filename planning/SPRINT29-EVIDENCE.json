@@ -13,7 +13,8 @@
     "commandsPreflight": "PASS: 704 no-game assertions under Limited Interactive account; child and task exit zero; 218 separate orchestration assertions passed. Native issued commands separately qualified below.",
     "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
     "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below.",
-    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below."
+    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below.",
+    "itemsPreflight": "PASS: focused production compilation, two Sprint 29 domain tests and 715 no-game guarded scenario preflight checks including positive/negative items phase admission. Native item ownership, transfer, death and expiry remain pending."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
