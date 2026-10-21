@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_DIRECT_MAGIC_AND_FIRST_RTWP_AI_PASS; MAGIC_AI_BOUNDARIES_ITEMS_PERSISTENCE_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_DIRECT_MAGIC_AND_SAFE_CLOUD_FOG_RTWP_AI_PASS; MAGIC_AI_BOUNDARIES_ITEMS_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -13,7 +13,7 @@
     "commandsPreflight": "PASS: 704 no-game assertions under Limited Interactive account; child and task exit zero; 218 separate orchestration assertions passed. Native issued commands separately qualified below.",
     "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
     "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below.",
-    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. First AI native result below; safe Fog Cloud AI target-center correction compiled but awaits native recheck."
+    "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -178,6 +178,25 @@
     "result": "PASS 8/8 native predicates: exact Ettin AI selected one successful four-flail command with four real weapon/damage packets, Cloud AI selected one successful three-attack morningstar command while its fog actions were not selected, and Storm AI selected successful Chain Lightning with real damage. The observer ticked only each exact owner; no fixture attack command or forced roll was issued. This does not establish why Cloud fog was not selected or that safe fog AI works.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; safe autonomous Cloud fog selection, Storm Call Lightning/bolt priority, turn-based AI, negative target cases, item/disarm and persistence remain pending"
+  },
+  "cloudFogAiFixtureDevelopment": {
+    "source": "917d2e17a203ed1e868b38a1000f4a5365b97307",
+    "runId": "20261021T0648402100619Z-7f7280648e5649379028b551e8e4ae9a",
+    "artifactZipSha256": "a660b3c2dce2b6a52f045ffa8e5b7fabe9183b48b7111026bdf22dda72b478cb",
+    "artifactDllSha256": "2a94b014b4ba7c94be873990de4e54a3f1d1db21dd3a5a369dbe224f2ee5c30e",
+    "result": "FAIL: the shared lane survey selected a visible target only 4.27 m from an allied party member, so the independent 20-foot Fog Cloud safety precondition failed before a Cloud AI decision. Ettin still issued a successful four-flail command. This was an unmet fixture precondition, not evidence that Cloud's fog action failed.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "An opt-in ally-clear target-center condition now surveys the same native graph and LOS lanes for the Cloud AI case only; focused production compilation and two Sprint 29 domain tests passed before native recheck."
+  },
+  "cloudFogAiQualification": {
+    "source": "1e32bc57a2269fdb61d2ee261b407d7b2f1f6531",
+    "runId": "20261021T0659058364296Z-941455ef9a224357935fa07bc5b2ee1e",
+    "artifactZipSha256": "f391473aca2c63c97362389696f0251fd0fdb3abccbafbcc59813a36327525f3",
+    "artifactDllSha256": "2ed051c66fbfe2ccb4056db3b5e395bc8c1fc98e7808bf4476580aca6a9eea4a",
+    "artifactMvid": "b66465de-aad3-4fdb-aa70-7465fdccaf44",
+    "result": "PASS 10/10 native RTWP predicates: 16 native LOS lanes had ally-clear hostile centers; Cloud's exact brain issued one successful Fog Cloud UnitUseAbility without a fixture attack or forced roll, made its own CL16 native 9600-second area, and spent its own one use. Ettin independently chose four flail attacks; Storm independently chose Chain Lightning damage.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; Storm Call Lightning/bolt AI priority, fog redundancy/ally-near negative cases, turn-based AI, item/disarm safety, Awesome Blow obstacle rider and persistence remain pending"
   },
   "publicSurface": {
     "registeredCreatures": 117,
