@@ -10,6 +10,8 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -221,6 +223,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             .Select(Sprint27AiCommand)) },
                                     "Native Cloud AI centers its distinct limited CL16 fog on a safe hostile lane and spends only its own one use.");
                             }
+                            if (key == "storm-giant")
+                            {
+                                foreach (int frame in Sprint29StormAiLightning(
+                                    fixture, owner, target, observer))
+                                    yield return frame;
+                            }
                         }
                         finally { EventBus.Unsubscribe(observer); }
                     }
@@ -244,6 +252,131 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        private IEnumerable<int> Sprint29StormAiLightning(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData target,
+            Sprint24AttackObserver observer)
+        {
+            var chainResource = Sprint29MagicResource(fixture,
+                "StormChainResource");
+            var callResource = Sprint29MagicResource(fixture,
+                "StormCallResource");
+            BlueprintBuff state = fixture.Blueprints.OfType<BlueprintBuff>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Giant_Sprint29_StormLightningState");
+            bool ready = !target.Descriptor.State.IsDead &&
+                owner.Descriptor.Resources.GetResourceAmount(chainResource) == 0 &&
+                owner.Descriptor.Resources.GetResourceAmount(callResource) == 1 &&
+                owner.Descriptor.Buffs.GetBuff(state) == null &&
+                owner.Memory.ContainsVisible(target) && owner.HasLOS(target);
+            Sprint25Check("s29-storm-ai-call-ready", ready,
+                new JObject { ["owner"] = owner.UniqueId,
+                    ["target"] = target.UniqueId,
+                    ["chainUses"] = owner.Descriptor.Resources
+                        .GetResourceAmount(chainResource),
+                    ["callUses"] = owner.Descriptor.Resources
+                        .GetResourceAmount(callResource),
+                    ["targetAlive"] = !target.Descriptor.State.IsDead,
+                    ["visible"] = owner.Memory.ContainsVisible(target),
+                    ["los"] = owner.HasLOS(target) },
+                "The first autonomous Chain Lightning left a live visible target and an unused independent Call Lightning activation.");
+            if (!ready) throw new InvalidOperationException(
+                "Storm AI Call Lightning precondition is unavailable.");
+
+            owner.Commands.RemoveFinishedAndUpdateQueue();
+            var later = new HashSet<UnitCommand>();
+            int ticks = 0;
+            DateTime deadline = DateTime.UtcNow.AddSeconds(45);
+            for (int frame = 0; frame < 3600 && DateTime.UtcNow < deadline;
+                frame++)
+            {
+                if (frame == 0 || frame % 60 == 0 &&
+                    !owner.Commands.Raw.Any(value =>
+                        value != null && !value.IsFinished))
+                {
+                    Sprint24TickExactAi(owner);
+                    ticks++;
+                }
+                foreach (UnitCommand command in owner.Commands.Raw.Where(
+                    value => value != null)) later.Add(command);
+                if (owner.Descriptor.Buffs.GetBuff(state) != null &&
+                    later.OfType<UnitUseAbility>().Any(value =>
+                        value.AiAction != null && value.AiAction.name.EndsWith(
+                            "StormCallAi", StringComparison.Ordinal) &&
+                        value.IsFinished)) break;
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Buff active = owner.Descriptor.Buffs.GetBuff(state);
+            bool activated = active != null &&
+                active.TimeLeft.TotalSeconds > 0 &&
+                active.Context?.Params.CasterLevel == 15 &&
+                owner.Descriptor.Resources.GetResourceAmount(callResource) == 0 &&
+                later.OfType<UnitUseAbility>().Any(value =>
+                    value.AiAction != null && value.AiAction.name.EndsWith(
+                        "StormCallAi", StringComparison.Ordinal) &&
+                    value.IsFinished &&
+                    value.Result == UnitCommand.ResultType.Success);
+            Sprint25Check("s29-storm-ai-call-activation", activated,
+                new JObject { ["owner"] = owner.UniqueId,
+                    ["ticks"] = ticks,
+                    ["stateRemaining"] = active?.TimeLeft.TotalSeconds,
+                    ["casterLevel"] = active?.Context?.Params.CasterLevel,
+                    ["callUses"] = owner.Descriptor.Resources
+                        .GetResourceAmount(callResource),
+                    ["commands"] = new JArray(later.Select(
+                        Sprint27AiCommand)) },
+                "After spending Chain Lightning, native Storm AI uses its independently limited CL15 Call Lightning activation.");
+            if (!activated) yield break;
+
+            owner.Commands.RemoveFinishedAndUpdateQueue();
+            later.Clear();
+            int damageBefore = observer.Damage.Count;
+            double stateBefore = active.TimeLeft.TotalSeconds;
+            ticks = 0;
+            deadline = DateTime.UtcNow.AddSeconds(45);
+            for (int frame = 0; frame < 3600 && DateTime.UtcNow < deadline;
+                frame++)
+            {
+                if (frame == 0 || frame % 60 == 0 &&
+                    !owner.Commands.Raw.Any(value =>
+                        value != null && !value.IsFinished))
+                {
+                    Sprint24TickExactAi(owner);
+                    ticks++;
+                }
+                foreach (UnitCommand command in owner.Commands.Raw.Where(
+                    value => value != null)) later.Add(command);
+                if (later.OfType<UnitUseAbility>().Any(value =>
+                    value.AiAction != null && value.AiAction.name.EndsWith(
+                        "StormBoltAi", StringComparison.Ordinal) &&
+                    value.IsFinished)) break;
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Buff after = owner.Descriptor.Buffs.GetBuff(state);
+            bool bolt = later.OfType<UnitUseAbility>().Any(value =>
+                    value.AiAction != null && value.AiAction.name.EndsWith(
+                        "StormBoltAi", StringComparison.Ordinal) &&
+                    value.IsFinished &&
+                    value.Result == UnitCommand.ResultType.Success) &&
+                observer.Damage.Count > damageBefore &&
+                after != null && after.TimeLeft.TotalSeconds < stateBefore &&
+                owner.Descriptor.Resources.GetResourceAmount(callResource) == 0;
+            Sprint25Check("s29-storm-ai-granted-bolt", bolt,
+                new JObject { ["owner"] = owner.UniqueId,
+                    ["ticks"] = ticks,
+                    ["damageBefore"] = damageBefore,
+                    ["damageAfter"] = observer.Damage.Count,
+                    ["stateBefore"] = stateBefore,
+                    ["stateAfter"] = after?.TimeLeft.TotalSeconds,
+                    ["callUses"] = owner.Descriptor.Resources
+                        .GetResourceAmount(callResource),
+                    ["commands"] = new JArray(later.Select(
+                        Sprint27AiCommand)) },
+                "Native Storm AI spends a granted Call Lightning bolt action and finite state without spending a new daily activation.");
         }
     }
 }
