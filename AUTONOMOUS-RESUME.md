@@ -1,6 +1,6 @@
-# Sprint 29 — HIDDEN_REGISTERED
+# Sprint 29 — BOOTSTRAP_QUALIFIED
 
-Cloud Giant, Storm Giant and Ettin are registered as hidden development candidates on branch `codex/expanded-summoning-sprint29-cloud-storm-ettin`. Four guarded profile runs initialized and instantiated all three. Cloud and Storm matched their corrected profiles; Ettin's fourth run had distinct live flails and a one-hand grip, while the observer failed on the as-yet-unselected alternate javelin set. A native switch/modes check is in progress. Every transaction restored actual intake exactly. The source-derived public equation remains **1,119 generated placements + 29 retained wrappers = 1,148 visible choices**. Eight new SNA roots are registered and suppressed. The current contract and coverage map are in [planning/EXPANDED-SUMMONING-SPRINT29-CONTRACT.md](planning/EXPANDED-SUMMONING-SPRINT29-CONTRACT.md); historical Sprint 28 release evidence remains below.
+Cloud Giant, Storm Giant and Ettin are hidden development candidates on branch `codex/expanded-summoning-sprint29-cloud-storm-ettin`. Exact source `3418074f` passed fresh guarded native profiles (12/12) and Ettin equipment-mode plans (6/6); both transactions restored actual intake exactly. Resolved combat, magic, AI, items/disarm, persistence, public routes and release remain. The source-derived public equation is **1,119 generated placements + 29 retained wrappers = 1,148 visible choices**; all eight new SNA roots remain suppressed. See [the current contract](planning/EXPANDED-SUMMONING-SPRINT29-CONTRACT.md) and [evidence map](planning/SPRINT29-EVIDENCE.json). Historical Sprint 28 release evidence remains below.
 
 # Sprint 28 — RELEASED / STOP
 

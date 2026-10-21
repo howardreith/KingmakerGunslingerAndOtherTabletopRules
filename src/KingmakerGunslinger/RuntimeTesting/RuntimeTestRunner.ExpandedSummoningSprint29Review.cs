@@ -5,6 +5,9 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
+using Kingmaker.Items;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
@@ -303,6 +306,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "ettin");
                 SetExpandedSummoningBrainActive(owner, false);
                 for (int i = 0; i < 8; i++) yield return 0;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
                 var initialMain = owner.Body.PrimaryHand.MaybeWeapon;
                 var initialOff = owner.Body.SecondaryHand.MaybeWeapon;
                 var initialMarker = owner.Get<UnitPartSummonEttinInitialArms>();
@@ -334,6 +339,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["secondaryCount"] = flailPlan.Count(row =>
                             ReferenceEquals(row.Hand, owner.Body.SecondaryHand)) },
                     "Native flail plan has two ordinary attacks per distinct arm.");
+                JObject mainFlailRule = Sprint29WeaponRule(owner, initialMain);
+                JObject offFlailRule = Sprint29WeaponRule(owner, initialOff);
+                Sprint25Check("ettin-flail-rules",
+                    (int)mainFlailRule["attack"] == 12 &&
+                    (int)offFlailRule["attack"] == 12 &&
+                    (int)mainFlailRule["damageBonus"] == 6 &&
+                    (int)offFlailRule["damageBonus"] == 6 &&
+                    (int)mainFlailRule["diceRolls"] == 2 &&
+                    (int)offFlailRule["diceRolls"] == 2,
+                    new JObject { ["main"] = mainFlailRule,
+                        ["off"] = offFlailRule },
+                    "Both native flails use printed attack and full Strength damage without two-weapon penalties.");
                 var toJavelin = new UnitSwitchHandEquipmentSet(1);
                 owner.Commands.Run(toJavelin);
                 int frames = 0;
@@ -374,6 +391,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["javelinSeeded"] = marker?.JavelinSeeded,
                         ["planCount"] = javelinPlan.Count },
                     "Native javelin plan has one attack per distinct arm.");
+                JObject mainJavelinRule = Sprint29WeaponRule(owner, javelinMain);
+                JObject offJavelinRule = Sprint29WeaponRule(owner, javelinOff);
+                Sprint25Check("ettin-javelin-rules",
+                    (int)mainJavelinRule["attack"] == 5 &&
+                    (int)offJavelinRule["attack"] == 5 &&
+                    (int)mainJavelinRule["damageBonus"] == 6 &&
+                    (int)offJavelinRule["damageBonus"] == 6 &&
+                    (int)mainJavelinRule["diceRolls"] == 1 &&
+                    (int)offJavelinRule["diceRolls"] == 1,
+                    new JObject { ["main"] = mainJavelinRule,
+                        ["off"] = offJavelinRule },
+                    "Both native javelins keep printed attack and full Strength damage.");
                 var toFlail = new UnitSwitchHandEquipmentSet(0);
                 owner.Commands.Run(toFlail);
                 frames = 0;
@@ -395,12 +424,126 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["sameOff"] = ReferenceEquals(
                             owner.Body.SecondaryHand.MaybeWeapon, initialOff) },
                     "Returning to flails preserves both exact initial items.");
+                foreach (int frame in ReviewSprint29GiantModePlans(fixture))
+                    yield return frame;
             }
             finally
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue =
                     oldTurnBased;
                 Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private static JObject Sprint29WeaponRule(UnitEntityData owner,
+            ItemEntityWeapon weapon)
+        {
+            if (owner == null || weapon == null)
+                throw new InvalidOperationException(
+                    "Sprint 29 weapon rule needs an actual equipped item.");
+            var stats = Rulebook.Trigger(new RuleCalculateWeaponStats(owner,
+                weapon, null));
+            var damage = stats.DamageDescription[0].CreateDamage();
+            return new JObject { ["weapon"] = weapon.Blueprint.name,
+                ["attack"] = Rulebook.Trigger(new
+                    RuleCalculateAttackBonusWithoutTarget(owner,
+                        weapon, 0)).Result,
+                ["damageBonus"] = damage.Bonus,
+                ["diceRolls"] = damage.Dice.Rolls,
+                ["dice"] = damage.Dice.Dice.ToString(),
+                ["ownerExact"] = ReferenceEquals(weapon.Owner,
+                    owner.Descriptor),
+                ["nonRemovable"] = weapon.IsNonRemovable };
+        }
+
+        private IEnumerable<int> ReviewSprint29GiantModePlans(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            foreach (var spec in new[] {
+                new { Key="cloud-giant", Names=new[] {
+                    "KMG_Summoning_Giant_Sprint29_CloudMorningstar4d6",
+                    "KMG_Summoning_Giant_CloudSlam2d6",
+                    "KMG_Summoning_Giant_CloudRock2d6" },
+                    Attacks=new[]{22,22,12}, Bonuses=new[]{18,12,18},
+                    Rolls=new[]{4,2,2}, Counts=new[]{3,2,1} },
+                new { Key="storm-giant", Names=new[] {
+                    "KMG_Summoning_Giant_Sprint29_StormGreatsword4d6",
+                    "KMG_Summoning_Giant_Sprint29_StormSlam2d6",
+                    "KMG_Summoning_Giant_Sprint29_StormCompositeBow3d6" },
+                    Attacks=new[]{27,26,15}, Bonuses=new[]{21,14,14},
+                    Rolls=new[]{4,2,3}, Counts=new[]{3,2,3} }
+            })
+            {
+                UnitEntityData owner = CastExpandedSummoningOwnTier(fixture,
+                    spec.Key);
+                SetExpandedSummoningBrainActive(owner, false);
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
+                for (int index = 0; index < 3; index++)
+                {
+                    if (index > 0)
+                    {
+                        var command = new UnitSwitchHandEquipmentSet(index);
+                        owner.Commands.Run(command);
+                        int frames = 0;
+                        DateTime deadline = DateTime.UtcNow.AddSeconds(20);
+                        while (!command.IsFinished && frames++ < 1000 &&
+                            DateTime.UtcNow < deadline) yield return 0;
+                        bool switched = command.IsFinished &&
+                            owner.Body.CurrentHandEquipmentSetIndex == index;
+                        Sprint25Check(spec.Key + "-mode-" + index + "-switch",
+                            switched, new JObject {
+                                ["owner"] = owner.UniqueId,
+                                ["finished"] = command.IsFinished,
+                                ["result"] = command.Result.ToString(),
+                                ["active"] = owner.Body.CurrentHandEquipmentSetIndex,
+                                ["frames"] = frames },
+                            "Native switch selects the exact giant's alternate armament.");
+                        if (!switched) yield break;
+                    }
+                    ItemEntityWeapon weapon = owner.Body.PrimaryHand.MaybeWeapon;
+                    if (weapon == null)
+                        throw new InvalidOperationException(
+                            "Sprint 29 giant mode has no primary item: " +
+                            spec.Key + "/" + index);
+                    JObject rule = Sprint29WeaponRule(owner, weapon);
+                    var attack = new UnitAttack(fixture.Hostile);
+                    attack.Init(owner);
+                    var plan = attack.CreateFullAttack();
+                    int primary = plan.Count(row => ReferenceEquals(row.Hand,
+                        owner.Body.PrimaryHand));
+                    int secondary = plan.Count(row => ReferenceEquals(row.Hand,
+                        owner.Body.SecondaryHand));
+                    bool exact = weapon.Blueprint.name == spec.Names[index] &&
+                        (int)rule["attack"] == spec.Attacks[index] &&
+                        (int)rule["damageBonus"] == spec.Bonuses[index] &&
+                        (int)rule["diceRolls"] == spec.Rolls[index] &&
+                        plan.Count == spec.Counts[index] &&
+                        primary == (index == 1 ? 1 : spec.Counts[index]) &&
+                        secondary == (index == 1 ? 1 : 0) &&
+                        owner.Stats.Reach.ModifiedValue == 15 &&
+                        (bool)rule["ownerExact"] &&
+                        (bool)rule["nonRemovable"] &&
+                        (index != 2 || spec.Key != "cloud-giant" ||
+                            weapon.Blueprint.Type.AttackRange.Value == 140);
+                    Sprint25Check(spec.Key + "-mode-" + index, exact,
+                        new JObject { ["owner"] = owner.UniqueId,
+                            ["index"] = index, ["rule"] = rule,
+                            ["planned"] = plan.Count,
+                            ["primaryCount"] = primary,
+                            ["secondaryCount"] = secondary,
+                            ["plan"] = new JArray(plan.Select(row =>
+                                new JObject {
+                                    ["hand"] = row.Hand?.ToString(),
+                                    ["penalty"] = row.AttackBonusPenalty,
+                                    ["number"] = row.AttackNumber })),
+                            ["reachFeet"] = owner.Stats.Reach.ModifiedValue,
+                            ["configuredRangeFeet"] =
+                                weapon.Blueprint.Type.AttackRange.Value,
+                            ["commandRadiusMeters"] = attack.ApproachRadius },
+                        "Native mode matches printed attack, damage, reach and separate full-attack routine.");
+                }
             }
         }
     }
