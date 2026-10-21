@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 381;
+        internal const int SpecialIdentityCount = 383;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -690,6 +690,8 @@ namespace KingmakerGunslinger.Summoning
 
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.UnitType", "BlueprintUnitType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.Claw1d4", "BlueprintItemWeapon"));
             Validate(result);
             return result.AsReadOnly();
         }

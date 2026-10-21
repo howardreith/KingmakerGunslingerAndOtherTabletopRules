@@ -20,9 +20,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprints30And31(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprints30And31ReviewPhase(_request);
-            if (phase == "lemure-core")
+            if (phase == "lemure-core" || phase == "lemure-full" || phase == "lemure-ai")
             {
-                foreach (int frame in ReviewLemure30Core(fixture)) yield return frame;
+                foreach (int frame in ReviewLemure30Core(fixture, phase)) yield return frame;
                 yield break;
             }
             if (phase != "bootstrap") throw new InvalidOperationException("Unimplemented S30/S31 phase.");
@@ -60,7 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 stats.HitPoints.ModifiedValue == 13 && stats.BaseAttackBonus.ModifiedValue == 2 &&
                 owner.Descriptor.State.IsConscious && !owner.Descriptor.State.IsDead &&
                 owner.Body.HandsAreEnabled &&
-                hand != null && hand.Blueprint.AssetGuid == "118fdd03e569a66459ab01a20af6811a" &&
+                hand != null && hand.Blueprint.AssetGuid == Lemure30Claw &&
                 additional == 1 && blueprint.Body.AdditionalSecondaryLimbs.Length == 0;
             Sprint25Check("bootstrap-lemure-instantiation", profile,
                 new JObject { ["unit"] = blueprint.AssetGuid, ["owner"] = owner.UniqueId,
@@ -87,7 +87,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value != null && value.Hand != null &&
                 value.Hand.MaybeWeapon != null &&
                 value.Hand.MaybeWeapon.Blueprint.AssetGuid ==
-                    "118fdd03e569a66459ab01a20af6811a" &&
+                    Lemure30Claw &&
                 value.AttackBonusPenalty == 0);
             Sprint25Check("bootstrap-native-claw-plan", claws,
                 new JObject { ["owner"] = owner.UniqueId, ["planOnly"] = true,
