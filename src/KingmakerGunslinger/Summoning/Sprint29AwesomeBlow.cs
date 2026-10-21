@@ -1,6 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using Harmony12;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums.Damage;
 using Kingmaker.RuleSystem;
@@ -8,7 +13,9 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -62,11 +69,93 @@ namespace KingmakerGunslinger.Summoning
             Context.TriggerRule(new RuleDealDamage(caster, victim, impact));
             if (!victim.Descriptor.State.IsDead)
             {
-                victim.Ensure<Kingmaker.UnitLogic.Parts.UnitPartForceMove>()
-                    .Push(victim.Position - caster.Position,
-                        new Feet(10).Meters, false);
+                Vector3 start = victim.Position;
+                float distance = new Feet(10).Meters;
+                UnitPartForceMove.Chunk push = victim
+                    .Ensure<UnitPartForceMove>().Push(start -
+                        caster.Position, distance, false);
+                Sprint29AwesomeBlowCollision.Register(caster, victim,
+                    push, start, distance);
                 if (Knockdown != null) Knockdown.Run();
             }
+        }
+    }
+
+    /// <summary>The installed force-move controller clamps at navmesh
+    /// obstacles but has no Awesome Blow damage callback. Observe only the
+    /// chunk returned by the exact Cloud/Storm action and apply the printed
+    /// 1d6 bludgeoning to its victim when movement ends short. Unrelated
+    /// pushes and interrupted chunks never enter this ledger.</summary>
+    [HarmonyPatch(typeof(UnitForceMoveController), "TickOnUnit")]
+    internal static class Sprint29AwesomeBlowCollision
+    {
+        private sealed class Pending
+        {
+            internal UnitEntityData Caster;
+            internal UnitPartForceMove.Chunk Chunk;
+            internal Vector3 Start;
+            internal Vector3 Direction;
+            internal float Distance;
+        }
+
+        private sealed class Bucket
+        {
+            internal readonly List<Pending> Entries = new List<Pending>();
+        }
+
+        private static readonly ConditionalWeakTable<UnitEntityData, Bucket>
+            PendingByVictim = new ConditionalWeakTable<UnitEntityData,
+                Bucket>();
+
+        internal static void Register(UnitEntityData caster,
+            UnitEntityData victim, UnitPartForceMove.Chunk chunk,
+            Vector3 start, float distance)
+        {
+            if (caster == null || victim == null || chunk == null ||
+                distance <= 0f) return;
+            Vector3 direction = chunk.Dir;
+            if (direction == Vector3.zero) return;
+            PendingByVictim.GetOrCreateValue(victim).Entries.Add(
+                new Pending { Caster = caster, Chunk = chunk,
+                    Start = start, Direction = direction,
+                    Distance = distance });
+        }
+
+        private static void Postfix(UnitEntityData unit)
+        {
+            Bucket bucket;
+            if (unit == null || !PendingByVictim.TryGetValue(unit,
+                out bucket)) return;
+            UnitPartForceMove part = unit.Get<UnitPartForceMove>();
+            foreach (Pending pending in bucket.Entries.ToArray())
+            {
+                if (unit.Destroyed || part == null)
+                {
+                    bucket.Entries.Remove(pending);
+                    continue;
+                }
+                if (pending.Chunk.PassedDistance + .001f <
+                    pending.Distance)
+                {
+                    if (!part.Chunks.Contains(pending.Chunk))
+                        bucket.Entries.Remove(pending);
+                    continue;
+                }
+                bucket.Entries.Remove(pending);
+                float traveled = Vector3.Dot(unit.Position -
+                    pending.Start, pending.Direction);
+                if (traveled + .15f >= pending.Distance ||
+                    pending.Caster == null || pending.Caster.Destroyed ||
+                    unit.Descriptor == null ||
+                    unit.Descriptor.State.IsDead) continue;
+                var collision = new PhysicalDamage(
+                    new DiceFormula(1, DiceType.D6),
+                    PhysicalDamageForm.Bludgeoning);
+                Rulebook.Trigger(new RuleDealDamage(pending.Caster,
+                    unit, collision));
+            }
+            if (bucket.Entries.Count == 0)
+                PendingByVictim.Remove(unit);
         }
     }
 }
