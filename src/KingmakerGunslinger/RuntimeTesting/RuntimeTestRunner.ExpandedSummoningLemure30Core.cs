@@ -147,6 +147,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["conscious"] = owner.Descriptor.State.IsConscious },
                 "Native adult bases include live Constitution and no intellect or generic undead substitution.");
             if (!profile) throw new InvalidOperationException("Lemure core profile failed.");
+            Sprint25Check("lemure-core-weapon-reach", owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value == 5,
+                new JObject { ["owner"] = owner.UniqueId,
+                    ["rangeFeet"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value },
+                "The actual native claw retains the adult five-foot reach.");
             var buffs = owner.Descriptor.Buffs.RawFacts.Select(value => new JObject {
                 ["name"] = value.Blueprint.name, ["guid"] = value.Blueprint.AssetGuid }).ToArray();
             bool noTemplate = !buffs.Any(value => ExpandedSummoningAbilityBuilder.NativeTemplateIds.Contains((string)value["guid"]) ||
@@ -289,6 +293,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             int targetAc = target.Descriptor.Stats.AC.BaseValue;
             try
             {
+                // Match the final successful native command fixture: allow
+                // fresh spawn/view state to settle before checking readiness.
+                for (int frame = 0; frame < 8; frame++) yield return 0;
                 owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
                 owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
                 Vector3 far; string lane, direction;
@@ -310,17 +317,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 if (ai) { Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions(); }
                 var probe = new UnitAttack(target); probe.Init(owner);
+                float beforeRangePlacement = owner.DistanceTo(target);
+                bool inRangeBefore = probe.IsUnitEnoughClose;
+                if (!ai)
+                {
+                    // Derive contact from this actual native command instead
+                    // of borrowing a giant weapon's fixed separation margin.
+                    float contact = Math.Max(owner.Corpulence + target.Corpulence + .01f,
+                        probe.ApproachRadius - .05f);
+                    PlaceExpandedSummoningUnit(target, origin + (far - origin).normalized * contact);
+                    owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                }
                 bool powerAttackAbsent = !owner.Descriptor.HasFact(BlueprintLibraryLookup.RequireExact<BlueprintFeature>(
                     BlueprintBootstrap.Library, "9972f33f977fc724c838e59641b2fca5", "native Power Attack control")) &&
                     !owner.Descriptor.ActivatableAbilities.RawFacts.Any(value => value.Blueprint.AssetGuid ==
                         "a7b339e4f6ff93a4697df5d7a87ff619");
-                bool ready = owner.Descriptor.State.CanAct && owner.IsEnemy(target) && target.IsEnemy(owner) &&
+                bool ready = owner.IsInGame && owner.View != null && owner.View.IsInGame &&
+                    target.IsInGame && target.View != null && target.View.IsInGame &&
+                    owner.Descriptor.State.CanAct && owner.IsEnemy(target) && target.IsEnemy(owner) &&
                     owner.HasLOS(target) && owner.Memory.ContainsVisible(target) && powerAttackAbsent &&
                     !target.Descriptor.State.IsDead && (ai ? owner.IsAIEnabled && owner.Brain.Actions.Count > 0 &&
                         owner.Brain.AvailableActions.Count > 0 : probe.IsUnitEnoughClose);
                 Sprint25Check("lemure-core-" + id + "-ready", ready, new JObject {
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
                     ["direction"] = direction, ["los"] = owner.HasLOS(target),
+                    ["canAct"] = owner.Descriptor.State.CanAct,
+                    ["conscious"] = owner.Descriptor.State.IsConscious,
+                    ["ownerEnemy"] = owner.IsEnemy(target), ["targetEnemy"] = target.IsEnemy(owner),
+                    ["ownerInCombat"] = owner.IsInCombat, ["targetAlive"] = !target.Descriptor.State.IsDead,
+                    ["aiEnabled"] = owner.IsAIEnabled, ["ownerInGame"] = owner.IsInGame,
+                    ["viewInGame"] = owner.View != null && owner.View.IsInGame,
+                    ["targetInGame"] = target.IsInGame,
+                    ["targetViewInGame"] = target.View != null && target.View.IsInGame,
+                    ["nativeInRange"] = probe.IsUnitEnoughClose, ["approachRadius"] = probe.ApproachRadius,
+                    ["weaponReachFeet"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value,
+                    ["ownerRadius"] = owner.Corpulence, ["targetRadius"] = target.Corpulence,
+                    ["distanceBeforeContact"] = beforeRangePlacement, ["inRangeBeforeContact"] = inRangeBefore,
+                    ["spawnSettlingFrames"] = 8,
                     ["visible"] = owner.Memory.ContainsVisible(target), ["distance"] = owner.DistanceTo(target),
                     ["fixtureTargetAcBase"] = 0, ["nativeTargetAc"] = target.Descriptor.Stats.AC.ModifiedValue,
                     ["powerAttackAbsent"] = powerAttackAbsent, ["actions"] = owner.Brain.Actions.Count,
