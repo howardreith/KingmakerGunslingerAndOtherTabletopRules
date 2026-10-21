@@ -875,12 +875,16 @@ Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='modes'})) 'sprint29-modes-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'})) 'sprint29-commands-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='turns'})) 'sprint29-turns-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cloud-magic'})) 'sprint29-cloud-magic-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='storm-magic'})) 'sprint29-storm-magic-admitted'
 $sprint29ProfileRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight')
 Assert-True ($sprint29ProfileRequest.parameters.reviewPhase -ceq 'profiles') 'sprint29-profiles-serialized'
 $sprint29CommandRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-commands')
 Assert-True ($sprint29CommandRequest.parameters.reviewPhase -ceq 'commands') 'sprint29-commands-serialized'
 $sprint29TurnRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='turns'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-turns')
 Assert-True ($sprint29TurnRequest.parameters.reviewPhase -ceq 'turns') 'sprint29-turns-serialized'
+$sprint29MagicRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cloud-magic'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-magic')
+Assert-True ($sprint29MagicRequest.parameters.reviewPhase -ceq 'cloud-magic') 'sprint29-cloud-magic-serialized'
 foreach ($invalid in @(@{}, @{reviewPhase='Profiles'}, @{reviewPhase='Commands'}, @{reviewPhase='magic'}, @{reviewPhase='profiles';saveName='KMG_AUTOMATION_WORKING'})) {
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint29-rejects-extra-missing-or-unimplemented-phase'
 }

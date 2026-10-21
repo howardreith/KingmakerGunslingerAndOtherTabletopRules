@@ -11,7 +11,8 @@
     "nativeBootstrap": "PASS: hidden profiles and Ettin modes on exact 3418074f development artifact; four earlier failed attempts retained below",
     "modesPreflight": "PASS: 701 no-game assertions under Limited Interactive account; first elevated attempt correctly refused before launch",
     "commandsPreflight": "PASS: 704 no-game assertions under Limited Interactive account; child and task exit zero; 218 separate orchestration assertions passed. Native issued commands separately qualified below.",
-    "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands pending."
+    "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
+    "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Cloud and Storm native direct effects pending."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
