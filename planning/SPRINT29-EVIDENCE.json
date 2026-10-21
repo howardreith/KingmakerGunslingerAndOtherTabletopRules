@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_AND_DIRECT_MAGIC_PASS; AI_ITEMS_PERSISTENCE_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_DIRECT_MAGIC_AND_FIRST_RTWP_AI_PASS; MAGIC_AI_BOUNDARIES_ITEMS_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -168,6 +168,16 @@
     "result": "FAIL: Ettin autonomously issued a successful native four-flail command and Storm autonomously issued successful Chain Lightning with one damage packet, but their observer predicate incorrectly demanded no ambient candidates even though only the exact owner was ticked. Cloud had no commands after 20 exact-owner ticks because its two unsafe fog actions had no ordinary attack fallback.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Cloud and Storm private brains now retain the installed immutable ordinary attack action after their spell priorities; the observer no longer treats enumerated but unticked ambient candidates as touched actors. Focused production compilation and two sprint29 domain tests pass. Native recheck pending."
+  },
+  "hiddenAiQualification": {
+    "source": "790942d059d517f2508359bc344103e9053886a2",
+    "runId": "20261021T0635269544326Z-9a04e955172f4bae99c02701c711509e",
+    "artifactZipSha256": "04e0b9b8493f0510cfe0d564bf82e0d840b8c509e759493d024d14de0be775d9",
+    "artifactDllSha256": "cb6bae57ba4e3e23df86a874187e11accd18ca816acfe78ea4278acc632d21b2",
+    "artifactMvid": "dd4b97a0-dc80-4859-97f6-8de4aacb730d",
+    "result": "PASS 8/8 native predicates: exact Ettin AI selected one successful four-flail command with four real weapon/damage packets, Cloud AI selected one successful three-attack morningstar fallback when nearby allies made fog unsafe, and Storm AI selected successful Chain Lightning with real damage. The observer ticked only each exact owner; no fixture attack command or forced roll was issued.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; safe autonomous Cloud fog selection, Storm Call Lightning/bolt priority, turn-based AI, negative target cases, item/disarm and persistence remain pending"
   },
   "publicSurface": {
     "registeredCreatures": 117,
