@@ -99,6 +99,20 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "Sprint29FogAiSafety")
+                    blueprint = registry.Register<Sprint29FogAiSafety>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<Sprint29FogAiSafety>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
+                else if (identity.PlannedType == "Sprint29LightningAiSafety")
+                    blueprint = registry.Register<Sprint29LightningAiSafety>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<Sprint29LightningAiSafety>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "BlueprintItemWeapon")
                     blueprint = registry.Register<BlueprintItemWeapon>(
                         identity.Symbol, () => CreateWeaponShell(identity.Symbol));

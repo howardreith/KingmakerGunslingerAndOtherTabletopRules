@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "sprint": 29,
+  "status": "HIDDEN_REGISTERED",
+  "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
+  "productPr": 64,
+  "nativeQualification": "PENDING",
+  "sourceValidation": {
+    "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
+    "domain": "PASS: 2699/2699 on hidden-registration source",
+    "nativeBootstrap": "NOT_RUN"
+  },
+  "publicSurface": {
+    "registeredCreatures": 117,
+    "monsterCreatures": 96,
+    "monsterRegisteredPlacements": 545,
+    "naturesAllyCreatures": 104,
+    "naturesAllyRegisteredPlacements": 582,
+    "registeredPlacements": 1127,
+    "suppressedPlacements": 8,
+    "generatedPlacements": 1119,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1148
+  }
+}

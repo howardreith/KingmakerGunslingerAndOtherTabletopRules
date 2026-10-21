@@ -450,6 +450,34 @@ def make_record(entry: dict) -> dict:
                 "currentManyToOneVisualGroup": "ExpandedSummoning.GiantNative" + ("Rock" if is_rock else "Melee"),
                 "clippingOrientationConcerns": "usable native giant body and attack presentation; visual proportions and motion remain backlog",
             })
+            sprint29_types = {
+                "EttinMainFlail2d6": "Sprint29.EttinFlailType",
+                "EttinOffFlail2d6": "Sprint29.EttinFlailType",
+                "EttinMainJavelin1d8": "Sprint29.EttinJavelinType",
+                "EttinOffJavelin1d8": "Sprint29.EttinJavelinType",
+                "StormGreatsword4d6": "Sprint29.StormGreatswordType",
+                "StormSlam2d6": "Sprint29.StormSlamType",
+                "StormCompositeBow3d6": "Sprint29.StormCompositeBowType",
+                "CloudMorningstar4d6": "Sprint29.CloudMorningstarType",
+                "CloudSlam2d6": "Sprint29.CloudSlamType",
+                "CloudRock2d6": "CloudRockType",
+            }
+            if name in sprint29_types:
+                weapon_type = sprint29_types[name]
+                common.update({
+                    "familyOrFirearmKind": "Sprint 29 hidden giant humanoid attack",
+                    "weaponType": "KMG.Summoning.Giant." + weapon_type,
+                    "currentItemLevelVisual": "summon-owned native weapon reference",
+                    "effectiveEquippedPrefab": "summon-owned native weapon; no transferable item",
+                    "gripHandednessContract": (
+                        "paired independent hands" if name.startswith("Ettin") else
+                        "ranged bow attack" if "Bow" in name else
+                        "ranged thrown attack" if "Javelin" in name or is_rock else
+                        "primary slam alternative" if "Slam" in name else
+                        "manufactured melee attack"),
+                    "currentManyToOneVisualGroup": "ExpandedSummoning.Sprint29Native",
+                    "clippingOrientationConcerns": "native giant armament; live body and attack presentation pending qualification",
+                })
         return common
     raise ValueError(f"Unclassified BlueprintItemWeapon {symbol}")
 

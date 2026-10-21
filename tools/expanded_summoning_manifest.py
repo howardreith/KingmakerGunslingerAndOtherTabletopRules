@@ -229,8 +229,8 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 114:
-        raise SystemExit(f"Expected 114 parsed creatures; observed {len(values)}")
+    if len(values) != 117:
+        raise SystemExit(f"Expected 117 parsed creatures; observed {len(values)}")
     return values
 
 
@@ -693,9 +693,62 @@ def planned():
         ("KMG.Summoning.Giant.GreatclubReachType", "BlueprintWeaponType"),
         ("KMG.Summoning.Giant.GreatswordReachType", "BlueprintWeaponType"),
         ("KMG.Summoning.Giant.SlamReachType", "BlueprintWeaponType"),
+        # Sprint 29 private builder dependencies, append-only.
+        ("KMG.Summoning.Giant.Sprint29.AwesomeBlowAction", "BlueprintAbility"),
+        ("KMG.Summoning.Giant.Sprint29.AwesomeBlowFeature", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.EttinFlailType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.Sprint29.EttinMainFlail2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.EttinOffFlail2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.EttinJavelinType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.Sprint29.EttinMainJavelin1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.EttinOffJavelin1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.EttinLeather", "BlueprintItemArmor"),
+        ("KMG.Summoning.Giant.Sprint29.EttinNaturalArmor8", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.EttinUnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Giant.Sprint29.EttinTraits", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.StormGreatsword4d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.StormGreatswordType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.Sprint29.StormSlam2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.StormSlamType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.Sprint29.StormCompositeBow3d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.StormCompositeBowType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.Sprint29.StormBreastplate", "BlueprintItemArmor"),
+        ("KMG.Summoning.Giant.Sprint29.StormNaturalArmor12", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.StormUnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Giant.Sprint29.StormTraits", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.StormImprovedVitalStrike", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.StormBrain", "BlueprintBrain"),
+        ("KMG.Summoning.Giant.Sprint29.StormCallAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Giant.Sprint29.StormBoltAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Giant.Sprint29.StormChainAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Giant.Sprint29.StormLightningSafety", "Sprint29LightningAiSafety"),
+        ("KMG.Summoning.Giant.Sprint29.StormCallLightning", "BlueprintAbility"),
+        ("KMG.Summoning.Giant.Sprint29.StormLightningBolt", "BlueprintAbility"),
+        ("KMG.Summoning.Giant.Sprint29.StormLightningState", "BlueprintBuff"),
+        ("KMG.Summoning.Giant.Sprint29.StormCallResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Giant.Sprint29.StormChainLightning", "BlueprintAbility"),
+        ("KMG.Summoning.Giant.Sprint29.StormChainResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Giant.Sprint29.CloudMorningstar4d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.CloudMorningstarType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.CloudSlam2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.Sprint29.CloudSlamType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.CloudRock2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.Giant.CloudRockType", "BlueprintWeaponType"),
+        ("KMG.Summoning.Giant.Sprint29.CloudChainshirt", "BlueprintItemArmor"),
+        ("KMG.Summoning.Giant.Sprint29.CloudNaturalArmor12", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.CloudUnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.Giant.Sprint29.CloudTraits", "BlueprintFeature"),
+        ("KMG.Summoning.Giant.Sprint29.CloudObscuringMist", "BlueprintAbility"),
+        ("KMG.Summoning.Giant.Sprint29.CloudFogCloud", "BlueprintAbility"),
+        ("KMG.Summoning.Giant.Sprint29.CloudFogResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.Giant.Sprint29.CloudBrain", "BlueprintBrain"),
+        ("KMG.Summoning.Giant.Sprint29.CloudMistAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Giant.Sprint29.CloudFogAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.Giant.Sprint29.CloudMistSafety", "Sprint29FogAiSafety"),
+        ("KMG.Summoning.Giant.Sprint29.CloudFogSafety", "Sprint29FogAiSafety"),
 
     ))
-    if len(rows) != 2240 or len({symbol for symbol, _ in rows}) != 2240:
+    if len(rows) != 2303 or len({symbol for symbol, _ in rows}) != 2303:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 
