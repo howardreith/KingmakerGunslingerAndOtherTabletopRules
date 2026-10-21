@@ -289,8 +289,27 @@ namespace KingmakerGunslinger.Summoning
             if (active == null || active.Blueprint == null) return;
             bool isSlam = active.Blueprint.name ==
                 "KMG_Summoning_Giant_Slam1d8" ||
-                active.Blueprint.name == "KMG_Summoning_Giant_CloudSlam2d6";
+                active.Blueprint.name == "KMG_Summoning_Giant_CloudSlam2d6" ||
+                active.Blueprint.name ==
+                    "KMG_Summoning_Giant_Sprint29_StormSlam2d6";
             if (isSlam) return;
+            // The engine equips EmptyHandWeapon as the secondary natural
+            // hand even beside a manufactured primary. The adult giants'
+            // slam pair is an alternative routine, never an extra offhand
+            // attack with morningstar, greatsword, bow or rock.
+            if (key == GiantHumanoidRulesPolicy.Cloud ||
+                key == GiantHumanoidRulesPolicy.Storm)
+            {
+                ItemEntityWeapon secondary = owner.Body.SecondaryHand == null
+                    ? null : owner.Body.SecondaryHand.MaybeWeapon;
+                string expected = key == GiantHumanoidRulesPolicy.Cloud
+                    ? "KMG_Summoning_Giant_CloudSlam2d6"
+                    : "KMG_Summoning_Giant_Sprint29_StormSlam2d6";
+                if (secondary != null && secondary.Blueprint != null &&
+                    secondary.Blueprint.name == expected)
+                    __result.RemoveAll(info => info != null &&
+                        ReferenceEquals(info.Hand, owner.Body.SecondaryHand));
+            }
             var limbs = owner.Body.AdditionalLimbs;
             if (limbs != null)
                 __result.RemoveAll(info => info != null &&

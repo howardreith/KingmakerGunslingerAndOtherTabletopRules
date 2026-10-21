@@ -108,7 +108,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureGiantUnit(library, bySymbol, Ettin29Unit,
                 typeSymbol, traitsSymbol, "Ettin", "Ettin",
                 Alignment.ChaoticEvil, 10, 23, 8, 15, 6, 10, 11,
-                45, 7, 3, 5, 5, 0, 0,
+                45, 7, 3, 3, 5, 0, 0,
                 mainFlail, null, null, leather, natural, extraplanar,
                 new[] { ImprovedInitiativeGuid, IronWillGuid,
                     PowerAttackGuid }, false);
@@ -212,7 +212,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureGiantUnit(library, bySymbol, Storm29Unit,
                 typeSymbol, traitsSymbol, "StormGiant", "Storm Giant",
                 Alignment.ChaoticGood, 19, 39, 14, 23, 16, 20, 15,
-                85, 11, 6, 8, 19, 15, 0,
+                85, 11, 6, 6, 19, 15, 0,
                 sword, slam, null, breastplate, natural, extraplanar,
                 new[] { "0f8939ae6f220984e8fb568abbdfba95",
                     NativeImprovedBullRush29,
@@ -241,8 +241,12 @@ namespace KingmakerGunslinger.Blueprints
             rating.OwningBlueprint = unit;
             rating.Bow = bow;
             rating.StrengthRating = 14;
+            var armoredSpeed = ScriptableObject.CreateInstance<
+                SummonStormBreastplateSpeed>();
+            armoredSpeed.OwningBlueprint = unit;
+            armoredSpeed.Breastplate = breastplate;
             traits.ComponentsArray = traits.ComponentsArray.Concat(
-                new BlueprintComponent[] { rating }).ToArray();
+                new BlueprintComponent[] { rating, armoredSpeed }).ToArray();
 
             // Constant Freedom of Movement is carried on this summoned unit
             // only. The native buff supplies its exact movement protections.
@@ -487,7 +491,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureGiantUnit(library, bySymbol, Cloud29Unit,
                 typeSymbol, traitsSymbol, "CloudGiant", "Cloud Giant",
                 Alignment.NeutralGood, 16, 35, 13, 23, 12, 16, 12,
-                72, 10, 5, 7, 11, 8, 0,
+                72, 10, 5, 5, 11, 8, 0,
                 morningstar, slam, rock, chainshirt, natural, extraplanar,
                 new[] { NativeGreatCleaveFeature, NativeImprovedBullRush29,
                     NativeIntimidatingProwess, IronWillGuid, PowerAttackGuid },

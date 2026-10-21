@@ -92,13 +92,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Ac=25, Touch=9, Flat=24, Fort=16, Ref=6, Will=10,
                         Speed=50, Perception=17,
                         Main="KMG_Summoning_Giant_Sprint29_CloudMorningstar4d6",
-                        Off=(string)null },
+                        Off="KMG_Summoning_Giant_CloudSlam2d6" },
                     new { Key="storm-giant", Token="StormGiant", Size=Size.Huge,
                         Scores=new[]{39,14,23,16,20,15}, Bab=14, Hp=199,
                         Ac=28, Touch=10, Flat=26, Fort=17, Ref=8, Will=13,
                         Speed=35, Perception=27,
                         Main="KMG_Summoning_Giant_Sprint29_StormGreatsword4d6",
-                        Off=(string)null }
+                        Off="KMG_Summoning_Giant_Sprint29_StormSlam2d6" }
                 })
                 {
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
@@ -127,6 +127,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         stats.Charisma.ModifiedValue };
                     string main = owner.Body.PrimaryHand.MaybeWeapon?.Blueprint?.name;
                     string off = owner.Body.SecondaryHand?.MaybeWeapon?.Blueprint?.name;
+                    string configuredOff = owner.Blueprint.Body.SecondaryHand?.name;
+                    bool? mainTwoHanded = owner.Body.PrimaryHand.MaybeWeapon?
+                        .Blueprint?.Type?.IsTwoHanded;
+                    bool? mainHeldInTwoHands = owner.Body.PrimaryHand.MaybeWeapon?
+                        .HoldInTwoHands;
+                    var handSets = new JArray(owner.Body.HandsEquipmentSets.Select(
+                        (set, index) => new JObject {
+                            ["index"] = index,
+                            ["main"] = set.PrimaryHand?.MaybeWeapon?.Blueprint?.name,
+                            ["off"] = set.SecondaryHand?.MaybeWeapon?.Blueprint?.name
+                        }).ToArray());
                     int perception = stats.SkillPerception.ModifiedValue;
                     bool profile = scores.SequenceEqual(spec.Scores) &&
                         owner.Descriptor.State.Size == spec.Size &&
@@ -155,8 +166,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["will"] = stats.SaveWill.ModifiedValue,
                             ["speed"] = stats.Speed.ModifiedValue,
                             ["perception"] = perception,
-                            ["main"] = main, ["off"] = off },
-                        "Native adult profile and two distinct equipped hands match the printed anchor.");
+                            ["main"] = main, ["off"] = off,
+                            ["configuredOff"] = configuredOff,
+                            ["mainTypeTwoHanded"] = mainTwoHanded,
+                            ["mainHeldInTwoHands"] = mainHeldInTwoHands,
+                            ["handSets"] = handSets },
+                        "Native adult profile and resolved equipment match the printed anchor.");
                     bool visible = owner.View != null &&
                         !LoadingOrScreenFadeActive() &&
                         EntityFadedIn(owner) &&

@@ -4,11 +4,21 @@
   "status": "HIDDEN_REGISTERED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "PENDING",
+  "nativeQualification": "FIRST_PROFILES_FAILED_RESTORED; REPAIR_IN_PROGRESS",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
-    "nativeBootstrap": "NOT_RUN"
+    "nativeBootstrap": "MODULE_INITIALIZED; FIRST_PROFILES_FAILED"
+  },
+  "firstNativeProfiles": {
+    "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
+    "runId": "20261021T0300317052797Z-666092e652724da4b598a1ac858c7a1e",
+    "artifactZipSha256": "17cb1659845ac9e661e71ec6d40ed4f18ed23168bc5cd9a62839492e5b1321de",
+    "artifactDllSha256": "13811dbe768a788fe6153b769a3a0828eabbde9174cd75adeb8c0cb285e7b6e2",
+    "artifactMvid": "bb588722-f31a-45b8-bc00-aba66905f5c7",
+    "result": "FAIL: all Will saves +2; Ettin offhand absent; Storm armored speed 40 versus 35; Cloud and Storm secondary slam recorded for attack-sequence review",
+    "verified": "all three private units instantiated with visible bodies; Ettin two heads attached; eight routes absent from live parents; released Hill route retained; initial actions and resources granted",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
     "registeredCreatures": 117,
