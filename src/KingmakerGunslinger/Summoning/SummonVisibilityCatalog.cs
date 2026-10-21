@@ -105,8 +105,9 @@ namespace KingmakerGunslinger.Summoning
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal) {
-                "ettin", "cloud-giant", "storm-giant" };
+            new HashSet<string>(
+                new[] { "ettin", "cloud-giant", "storm-giant" },
+                StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1127;
         internal const int SuppressedLogicalPlacementCount = 8;
