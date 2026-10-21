@@ -32,6 +32,7 @@ namespace KingmakerGunslinger.Summoning
         public int PerceptionRanks;
         public int PersuasionRanks;
         public int StealthRanks;
+        public int MobilityRanks;
 
         public void OnEntityCreated(UnitEntityData unit)
         {
@@ -48,6 +49,8 @@ namespace KingmakerGunslinger.Summoning
             SetRank(stats.GetStat(StatType.SkillPerception), PerceptionRanks);
             SetRank(stats.GetStat(StatType.SkillPersuasion), PersuasionRanks);
             SetRank(stats.GetStat(StatType.SkillStealth), StealthRanks);
+            if (MobilityRanks > 0)
+                SetRank(stats.GetStat(StatType.SkillMobility), MobilityRanks);
         }
 
         private static void SetRank(ModifiableValue stat, int ranks)
@@ -84,6 +87,28 @@ namespace KingmakerGunslinger.Summoning
             evt.Bonus.AddModifier(3, this, ModifierDescriptor.UntypedStackable);
         }
 
+        public override void OnEventDidTrigger(RuleSkillCheck evt) { }
+    }
+
+    /// <summary>Cloud has different printed Diplomacy and Intimidate ranks,
+    /// while Kingmaker combines them into Persuasion. The shared stat holds
+    /// Diplomacy's eight ranks; these two additional ranks affect only an
+    /// exact Cloud Giant's Intimidate check.</summary>
+    [Serializable]
+    public sealed class SummonCloudIntimidateRanks :
+        RuleInitiatorLogicComponent<RuleSkillCheck>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public override void OnEventAboutToTrigger(RuleSkillCheck evt)
+        {
+            if (evt == null || evt.StatType != StatType.CheckIntimidate ||
+                Owner == null || Owner.Unit == null || Fact == null ||
+                !Fact.Active || !ReferenceEquals(evt.Initiator, Owner.Unit) ||
+                !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint))
+                return;
+            evt.Bonus.AddModifier(2, this,
+                ModifierDescriptor.UntypedStackable);
+        }
         public override void OnEventDidTrigger(RuleSkillCheck evt) { }
     }
 
@@ -133,6 +158,7 @@ namespace KingmakerGunslinger.Summoning
         // compared by reference and only on this component's exact unit.
         public BlueprintItemWeapon RangedWeapon;
         public BlueprintItemWeapon OffhandWeapon;
+        public BlueprintItemWeapon OffhandRangedWeapon;
         public BlueprintItemArmor Armor;
 
         public override void OnTurnOn() { Sweep(); }
@@ -174,6 +200,7 @@ namespace KingmakerGunslinger.Summoning
                 !ReferenceEquals(item.Blueprint, Rock) &&
                 !ReferenceEquals(item.Blueprint, RangedWeapon) &&
                 !ReferenceEquals(item.Blueprint, OffhandWeapon) &&
+                !ReferenceEquals(item.Blueprint, OffhandRangedWeapon) &&
                 !ReferenceEquals(item.Blueprint, Armor))
                 return;
             if (!ReferenceEquals(item.Owner, Owner)) return;

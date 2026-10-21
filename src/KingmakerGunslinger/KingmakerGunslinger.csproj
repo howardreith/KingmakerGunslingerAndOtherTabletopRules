@@ -44,7 +44,11 @@
     <Compile Include="Summoning\SummonGiantCleaveDelivery.cs" />
     <Compile Include="Summoning\GiantHumanoidCombatComponents.cs" />
     <Compile Include="Summoning\GiantHumanoidAttackComponents.cs" />
+    <Compile Include="Summoning\EttinSecondHeadVisual.cs" />
+    <Compile Include="Summoning\Sprint29FogAiSafety.cs" />
+    <Compile Include="Summoning\Sprint29LightningAiSafety.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Giants29.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Griffon.cs" />
     <Compile Include="Summoning\GriffonVisualPolicy.cs" />
     <Compile Include="Summoning\GriffonRules.cs" />
