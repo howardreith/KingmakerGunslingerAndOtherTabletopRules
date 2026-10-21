@@ -6,7 +6,7 @@ Single product PR: [#66](https://github.com/howardreith/KingmakerGunslingerAndOt
 
 | Charter | Creature | Exact routes | Current proof | Mandatory next work |
 |---|---|---|---|---|
-| S30 | Lemure, new | SM II one; III1d3; IV?IX1d4+1 (8 new) | Bootstrap PASS; actual signed claws/adult profile/physical DR/fire/acid/cold pass onae141430; unrelated electricity fails | Remove inherited native-template power with attributed proof; resolved single/full attacks, autonomous attack, remaining immunities; original usable body, route quantities/expiry, persistence |
+| S30 | Lemure, new | SM II one; III1d3; IV?IX1d4+1 (8 new) | Core rules/defenses/immunities PASS one908e25b; native marker retained/no templates; combat readiness unresolved | Resolve exact combat readiness; resolved single/full attacks and autonomous attack; original usable body, route quantities/expiry, persistence |
 | S30 | Dretch, new | SM III one; IV1d3; V?IX1d4+1 (7 new) | Original painting preserved; inert | Early CL2 finite Cause Fear/Stinking Cloud path, actual poison/nausea/lifetime and ally-safe target choice; claw/bite routine; no nested summon |
 | S30 | Hound Archon, new | SM IV one; V1d3; VI?IX1d4+1 (6 new) | Original painting preserved; inert | Shared archon behavior/source isolation and useful Aid; owned sword/bite vs alternative natural routine; usable canine/humanoid body; general PF1 attack roles selected; disclose printed damage discrepancies |
 | S31 | Lantern Archon, in place | Preserve7 SM III?IX identities/order | Released implementation unchanged | Owned luminous orb; one-standard/two-full ray distinction, range/touch/DR; shared archon isolation/support; retain valid icon |
@@ -19,27 +19,28 @@ Baseline:117 creatures; Monster96/545; Nature104/582;1127 roots+29 wrappers=1156
 
 ## Latest artifact and native checkpoint
 
-Latest native-tested development source `ae14143005f56509e07ea45f968491cf13a5cd4d`, purpose `sprints30-31-lemure-core`, is immutable in this product root:
+Latest native-tested development source `e908e25b2086308dd2874a0ba34ea711633f7ee4`, purpose `sprints30-31-lemure-core`, is immutable in this product root:
 
 | Identity | Value |
 |---|---|
-| ZIP SHA256 | `1d387333f8d4a1ad5f33421fbdac8e524ac5ebe205f5e5782f668a79695e1bf2` |
-| DLL SHA256 | `8043e888e1fed0b27e56b902a74f9b7b1b8e0b8caaa562ff650c75a0d0a5e5fd` |
-| MVID | `bc856487-072a-4efa-93cc-f46b950e50c8` |
-| Source-state SHA256 | `9fd4bda99eba3d8e3a19c45189ce17312842a5399dc829d3a04b97ee604a5212` |
+| ZIP SHA256 | `afa81229623f1f6a1f00fc37af35cf149d1aa1dd5b838d5ed3416494ed4a0531` |
+| DLL SHA256 | `771ef09f66a0f24ca728a431fad22413b0f2c6b0d37147444e066a914d10618e` |
+| MVID | `1553f5c7-1c08-485c-8ff2-36f4cafc8195` |
+| Source-state SHA256 | `82f734b009b562fb14314f25aced698c74501fb2507f8757972197e9873f380c` |
 
-Build22:26:25.7508640Z–22:29:50.4943976Z:15 selected behavior tests, exact Kingmaker2.1.7b/Harmony12/UMM compile and strict399-file package PASS. Sixth game launch/guarded transaction22:30:26.0571747Z–22:34:16.5848843Z: native FAIL17 PASS/2 FAIL. RunId`20261021T2232292802989Z-e42ae3bd766f4a99a2667bc73045ce38`, request`20261021T2232292112626Z-disposable-expanded-summoning-sprints30-31-native-review`; native-result interval22:32:38.3501984Z–22:34:08.7017838Z (90349ms) includes fixture setup. Both claws passed actual signed Strength11/15/7 calculations; actual adult HP/AC/saves/speed, independent physical OR bypasses, fire immunity and acid/cold10 passed. Unrelated electricity unexpectedly lost5; sonic/descriptor/SR/commands/AI remained unrun. Exact native DR bypass excludes nonphysical packets. Source trace shows the untemplated SM carrier retains native template behavior; a narrowly guarded Lemure-only after-spawn removal candidate now needs fresh native attribution/qualification. No global resistance rewrite or unselected-creature correction.
+Build22:44:03.7407885Z–22:47:25.1818341Z:15 selected behavior tests, exact compile and strict399-file package PASS. Seventh guarded game transaction`compat-20261021T224832Z-65a885261af8`,22:48:31.0563915Z–22:52:22.8671655Z: native FAIL26 PASS/2 FAIL. Request`20261021T2250362287203Z-disposable-expanded-summoning-sprints30-31-native-review`, RunId`20261021T2250362602923Z-3216c91468f34ed8b249c16faa69c265`; native-result interval22:50:44.0101000Z–22:52:15.2037246Z (91187ms) includes fixture setup. Actual adult profile, both signed claws, physical DR OR alternatives, fire immunity, acid/cold10, unrelated electricity/sonic, mind-affecting/poison immunity with susceptible controls and no SR all passed. No inherited native template; native summon marker retained. Scoped template boundary is qualified on this artifact. The rules-to-command reset passed, then single-attack readiness failed before issuing any attack. Its row lacked every decisive predicate, so the exact readiness cause remains unresolved; single/full/AI combat are unrun, not product PASS.
 
+Readiness observer repair: match final successful command fixture's eight-frame spawn settling, record every predicate/actor/view/relation/range value, derive melee contact from native UnitAttack.ApproachRadius and retain an independent printed five-foot reach assertion. No production behavior or expected defense/attack outcome changed. Focused compile18.7s/tests0.9s,2 selected PASS, then final stricter in-game/view guards added; exact candidate compile/native rerun pending.
 Last successful bootstrap:08cb4271,6/6, exact1156 public choices/eight hidden roots and conscious Int0/two-primary-claw plan. This and all later records are development evidence. No complete combat/body/persistence/release claim.
 
-All six guarded game transactions restored current protected intake exactly, including independent comparison after each: actual human modv0.0.117, Mods967 entries,118 saves/metadata/original Working,18 references,sound bank,83 settings,tasks0/processes1(Steam), no owned game/lease/lock. Counts are observations, not future restoration authority. No save has been loaded/written. Original failures remain immutable. Focused final template-boundary compile18.2s/tests0.9s,8 selected registration/request/composition checks PASS; candidate build/native rerun pending.
+All seven guarded game transactions restored current protected intake exactly, including independent comparison after each: actual human modv0.0.117, Mods967 entries,118 saves/metadata/original Working,18 references,sound bank,83 settings,tasks0/processes1(Steam), no owned game/lease/lock. Counts are observations, not future restoration authority. No save has been loaded/written. Original failures remain immutable. Template-boundary focused compile18.2s/tests0.9s and8 selected registration/request/composition checks passed before its native run.
 
 ## Per-ability disposition
 
 | Ability | Native mapping/access/priority | CL/DC/uses | Ownership/lifetime | State |
 |---|---|---|---|---|
 | Lemure claws | Established NaturalBody: native Medium1d4 primary claw+one additional; native DumbBrain | HD2; ordinary attack actions | Exact summoned owner, no carried stock | Native plan and signed calculations for both claws proven; resolved attacks/AI pending |
-| Lemure defenses | Own DR5 with good OR silver; native fire immunity; own mind-affecting/poison descriptor immunity; acid/cold10 | No casting/resource | Own private trait carrier, no donor mutation | Actual physical OR bypass/fire/acid/cold passed; inherited electricity5 failure and remaining controls pending |
+| Lemure defenses | Own DR5 with good OR silver; native fire immunity; own mind-affecting/poison descriptor immunity; acid/cold10 | No casting/resource | Own private trait carrier, no donor mutation | All independent physical/energy/descriptor/no-SR consumers passed one908e25b; final-package integration remains |
 | Lemure mindlessness | Int0; no ranks/selections/feats; exact-owner creation-only racial HP/save bases | No intellect granted | No generic undead traits | Native consciousness proven; AI/stat-damage consumers pending |
 | Lemure senses | Printed darkvision60/see in darkness retained as references | Passive | Established ordinary-map/passive-sense convention | No new illumination/sense framework |
 
@@ -73,7 +74,9 @@ Bounded native input capture now resolves four exact retained donors and canonic
 |077e33ca native | Fifth launch/request`20261021T2221542661537Z-disposable-expanded-summoning-sprints30-31-native-review`, RunId`20261021T2221543005434Z-5466c99519584c9eabfc85e0ec288542`, transaction22:19:18.2716624Z–22:23:52.1254019Z:6 PASS/2 FAIL. Primary claw at Str15 incorrectly+3. Reused unchanged qualified exact-owner multiple-primary carrier; both claws now pass positive/negative native calculations. |
 |ae141430 native | Sixth launch/tuple above: electricity12 became7. Investigated exact resistance/packet consumers, preserving private metadata captures. Candidate removes only four known native template buffs from the exact new Lemure and observes actual resistance sources/retained summon marker. Other independent damage mismatches may remain failed rows while safe injury reset is verified; infrastructure/ownership failure still stops. Fresh corrected proof pending. |
 
-Raw original records/artifacts remain immutable locally; earlier detailed development chronology is retained in Git history, not rewritten as PASS. Six successful development packages so far(input-only73cd,failed-native9c05/bb44,successful-bootstrap08cb,failed-core077e/ae14); total compiler/build-attempt breakdown will use actual logs, not assumptions. No process sharing/final native/release/persistence coverage claimed.
+|e908e25b native | Seventh launch/tuple above: all core rule/defense consumers and native template/summon-marker boundary passed; single-command readiness stopped before any attack. Missing predicate attribution is an observer defect; underlying readiness cause unknown. Eight-frame final-fixture settling/native contact and complete predicate observations are prepared; production unchanged. |
+
+Raw original records/artifacts remain immutable locally; earlier detailed development chronology is retained in Git history, not rewritten as PASS. Seven successful development packages so far(input-only73cd,failed-native9c05/bb44,successful-bootstrap08cb,core077e/ae14/e908); total compiler/build-attempt breakdown will use actual logs, not assumptions. No process sharing/final native/release/persistence coverage claimed.
 
 Observed setup issue: Backup-Live-Mod began at21:44:49.0730288Z; at21:47:42.4011645Z its destination still did not exist while per-file Host output advanced. At least173.3s elapsed before copying. The next checkpoint moves only that listing to Verbose; default source/destination/completion, copying, manifests, guards and exact restoration remain. No mid-transaction edit. Measure subsequent setup; do not infer a clean throughput speedup or call this native startup amortization.
 
