@@ -121,7 +121,8 @@ namespace KingmakerGunslinger.Summoning
             ItemEntityWeapon active = owner.Body.PrimaryHand.MaybeWeapon;
             if (active == null || active.Blueprint == null) return;
             bool isSlam = active.Blueprint.name ==
-                "KMG_Summoning_Giant_Slam1d8";
+                "KMG_Summoning_Giant_Slam1d8" ||
+                active.Blueprint.name == "KMG_Summoning_Giant_CloudSlam2d6";
             if (isSlam) return;
             var limbs = owner.Body.AdditionalLimbs;
             if (limbs != null)
@@ -131,7 +132,9 @@ namespace KingmakerGunslinger.Summoning
                 "KMG_Summoning_Giant_" +
                     (key == GiantHumanoidRulesPolicy.Hill ? "Hill" :
                      key == GiantHumanoidRulesPolicy.Stone ? "Stone" :
-                     "Fire") + "Rock1d8";
+                     key == GiantHumanoidRulesPolicy.Fire ? "Fire" :
+                     "Cloud") + (key == GiantHumanoidRulesPolicy.Cloud ?
+                         "Rock2d6" : "Rock1d8");
             if (!rock) return;
             var shots = __result.Where(info => info != null &&
                 ReferenceEquals(info.Hand, owner.Body.PrimaryHand)).ToArray();
@@ -163,6 +166,8 @@ namespace KingmakerGunslinger.Summoning
                 return GiantHumanoidRulesPolicy.Stone;
             if (name == "KMG_Summoning_Unit_FireGiant")
                 return GiantHumanoidRulesPolicy.Fire;
+            if (name == "KMG_Summoning_Unit_CloudGiant")
+                return GiantHumanoidRulesPolicy.Cloud;
             return null;
         }
     }
@@ -184,10 +189,13 @@ namespace KingmakerGunslinger.Summoning
                 owner.Body.PrimaryHand == null) return;
             ItemEntityWeapon active = owner.Body.PrimaryHand.MaybeWeapon;
             string token = key == GiantHumanoidRulesPolicy.Hill ? "Hill" :
-                key == GiantHumanoidRulesPolicy.Stone ? "Stone" : "Fire";
+                key == GiantHumanoidRulesPolicy.Stone ? "Stone" :
+                key == GiantHumanoidRulesPolicy.Fire ? "Fire" : "Cloud";
             if (active == null || active.Blueprint == null ||
                 active.Blueprint.name !=
-                    "KMG_Summoning_Giant_" + token + "Rock1d8")
+                    "KMG_Summoning_Giant_" + token +
+                        (key == GiantHumanoidRulesPolicy.Cloud ?
+                            "Rock2d6" : "Rock1d8"))
                 return;
             UnitEntityData target = __instance.Target;
             if (target == null) return;
@@ -295,7 +303,8 @@ namespace KingmakerGunslinger.Summoning
             return type == "RockThrow" ||
                 type == "KMG_Summoning_Giant_HillRockType" ||
                 type == "KMG_Summoning_Giant_StoneRockType" ||
-                type == "KMG_Summoning_Giant_FireRockType";
+                type == "KMG_Summoning_Giant_FireRockType" ||
+                type == "KMG_Summoning_Giant_CloudRockType";
         }
 
         private static bool ProjectileSize(UnitEntityData thrower, out Size size)
