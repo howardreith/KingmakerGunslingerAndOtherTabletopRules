@@ -62,6 +62,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             // real switch commands before taking ownership
                             // or transfer evidence, especially for Ettin's
                             // second javelin and Storm's bow.
+                            var switchRows = new JArray(new JObject {
+                                ["set"] = unit.Body.CurrentHandEquipmentSetIndex,
+                                ["items"] = Sprint29ItemSlots(unit) });
                             foreach (int index in new[] { 1, 2, 0 })
                             {
                                 if (index == 2 && key == "ettin") continue;
@@ -80,6 +83,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             .UnitCommand.ResultType.Success &&
                                     unit.Body.CurrentHandEquipmentSetIndex ==
                                         index;
+                                switchRows.Add(new JObject {
+                                    ["set"] = index,
+                                    ["items"] = Sprint29ItemSlots(unit) });
                             }
                             var body = unit.Blueprint.Body;
                             string[] expected = new[] {
@@ -120,6 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["count"] = value.Count,
                                         ["nonRemovable"] = value.IsNonRemovable,
                                         ["lootable"] = value.IsLootable })),
+                                ["switches"] = switchRows,
                                 ["exact"] = unitExact });
                         }
                         exact &= owned.Count == owned.Distinct().Count() &&
@@ -276,6 +283,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        private static JArray Sprint29ItemSlots(UnitEntityData unit)
+        {
+            return new JArray(unit.Descriptor.Inventory.Items.Select(item =>
+            {
+                var slots = new JArray();
+                for (int index = 0;
+                    index < unit.Body.HandsEquipmentSets.Count; index++)
+                {
+                    var set = unit.Body.HandsEquipmentSets[index];
+                    if (ReferenceEquals(set.PrimaryHand?.MaybeWeapon, item))
+                        slots.Add(index + ":main");
+                    if (ReferenceEquals(set.SecondaryHand?.MaybeWeapon, item))
+                        slots.Add(index + ":off");
+                }
+                if (ReferenceEquals(unit.Body.Armor?.MaybeArmor, item))
+                    slots.Add("armor");
+                return new JObject {
+                    ["blueprint"] = item.Blueprint?.AssetGuid,
+                    ["instance"] = RuntimeHelpers.GetHashCode(item),
+                    ["holdingSlot"] = item.HoldingSlot?.GetType().Name,
+                    ["slots"] = slots
+                };
+            }));
         }
     }
 }
