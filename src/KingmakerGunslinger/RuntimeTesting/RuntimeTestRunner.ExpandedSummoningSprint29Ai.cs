@@ -9,6 +9,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -331,6 +332,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "After spending Chain Lightning, native Storm AI uses its independently limited CL15 Call Lightning activation.");
             if (!activated) yield break;
 
+            BlueprintAbility boltBlueprint = Sprint29MagicAbility(fixture,
+                "StormLightningBolt");
+            var grantedBolt = owner.Descriptor.Abilities.GetAbility(
+                boltBlueprint);
+            var boltData = grantedBolt == null ? null :
+                new AbilityData(grantedBolt);
+            bool boltAvailable = boltData != null &&
+                boltData.IsAvailable;
+            bool boltTarget = boltData != null &&
+                boltData.CanTarget(new TargetWrapper(target));
+            string[] availableBefore = owner.Brain.AvailableActions.Select(
+                value => value.Blueprint?.name).ToArray();
             owner.Commands.RemoveFinishedAndUpdateQueue();
             later.Clear();
             int damageBefore = observer.Damage.Count;
@@ -374,6 +387,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["stateAfter"] = after?.TimeLeft.TotalSeconds,
                     ["callUses"] = owner.Descriptor.Resources
                         .GetResourceAmount(callResource),
+                    ["boltGranted"] = grantedBolt != null,
+                    ["boltAvailable"] = boltAvailable,
+                    ["boltCanTarget"] = boltTarget,
+                    ["brainAvailableBefore"] = new JArray(availableBefore),
+                    ["brainAvailableAfter"] = new JArray(
+                        owner.Brain.AvailableActions.Select(value =>
+                            value.Blueprint?.name)),
                     ["commands"] = new JArray(later.Select(
                         Sprint27AiCommand)) },
                 "Native Storm AI spends a granted Call Lightning bolt action and finite state without spending a new daily activation.");

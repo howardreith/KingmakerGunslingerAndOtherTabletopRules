@@ -198,6 +198,16 @@
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; Storm Call Lightning/bolt AI priority, fog redundancy/ally-near negative cases, turn-based AI, item/disarm safety, Awesome Blow obstacle rider and persistence remain pending"
   },
+  "stormAiBoltDevelopment": {
+    "source": "0f259576800f7fd62f4007dea60c8f6e2b6716e6",
+    "runId": "20261021T0711514168121Z-5952efe0c922428e92c675c59a6fc96c",
+    "artifactZipSha256": "8b34d03f8af76f84d26800d3b7c5c695378452bdce78013c0742d854040bd036",
+    "artifactDllSha256": "a459655c62cda1e3b76e2d78bb808b6fa55457206796d4f0f71a3512f89ecec7",
+    "artifactMvid": "4eeaef8a-ad4e-4cf3-94d8-2a7dc1844bdb",
+    "result": "FAIL 1/13 native AI predicates: Ettin flail, safe Cloud fog and Storm Chain Lightning first actions passed; Storm then autonomously activated independent CL15 Call Lightning in one exact-owner tick and spent its one use, but six later AI decisions chose ordinary greatsword attacks, with no granted bolt command. The finite state remained. The product cannot claim autonomous bolt use.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "nextDiagnostic": "Record the live granted bolt's AbilityData availability/target legality and native brain action list after activation, then repair only the demonstrated exact-owner AI cause. The changed observer compiled with two focused Sprint 29 domain tests; no diagnostic native result yet."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
