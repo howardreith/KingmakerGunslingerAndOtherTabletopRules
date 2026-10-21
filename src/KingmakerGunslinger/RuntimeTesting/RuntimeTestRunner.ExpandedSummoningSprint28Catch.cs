@@ -617,9 +617,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 // or damage; the command above proves impact.
                                 long round = ContextActionUngulateTrample.CurrentRound();
                                 var probes = new JArray();
+                                var beforePart = target.Get<
+                                    UnitPartSummonGiantRockCatch>();
+                                long? commandLedgerRound = beforePart == null ?
+                                    (long?)null : beforePart.LastRound;
+                                int savesBeforeProbe = saves.Saves.Count;
+                                int outcomesBeforeProbe = SummonGiantRockCatch
+                                    .ObservedOutcomes.Count;
+                                // A real projectile can land just before a
+                                // native round boundary. In that case establish
+                                // one new-round save before testing the repeat;
+                                // never call a later round a same-round repeat.
+                                int expectedProbeSpend = beforePart == null ||
+                                    beforePart.LastRound != round ? 1 : 0;
                                 for (int attempt = 0; attempt < 8 &&
-                                    target.Get<UnitPartSummonGiantRockCatch>() == null;
-                                    attempt++)
+                                    (target.Get<UnitPartSummonGiantRockCatch>()
+                                        == null || target.Get<
+                                        UnitPartSummonGiantRockCatch>()
+                                            .LastRound != round); attempt++)
                                 {
                                     RuleAttackRoll spendProbe = Rulebook.Trigger(
                                         new RuleAttackRoll(thrower, target,
@@ -645,21 +660,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     if (repeat.Roll.Value != 1) break;
                                 }
                                 bool once = spent != null &&
-                                    spent.LastRound == round && spentSaves == 1 &&
-                                    saves.Saves[0].DifficultyClass == spec.Dc &&
+                                    spent.LastRound == round &&
+                                    spentSaves == savesBeforeProbe +
+                                        expectedProbeSpend &&
+                                    spentSaves > 0 &&
+                                    saves.Saves[spentSaves - 1]
+                                        .DifficultyClass == spec.Dc &&
                                     ContextActionUngulateTrample.CurrentRound() == round &&
                                     repeat != null && repeat.Roll.Value != 1 &&
                                     repeat.IsHit && saves.Saves.Count == spentSaves &&
-                                    SummonGiantRockCatch.ObservedOutcomes.Count == 1;
+                                    SummonGiantRockCatch.ObservedOutcomes.Count ==
+                                        outcomesBeforeProbe + expectedProbeSpend;
                                 Sprint25Check(prefix + spec.Target +
                                     "-once-round", once, new JObject {
                                         ["target"] = target.UniqueId,
                                         ["round"] = round,
                                         ["ledgerRound"] = spent?.LastRound,
+                                        ["commandLedgerRound"] =
+                                            commandLedgerRound,
+                                        ["savesBeforeProbe"] = savesBeforeProbe,
+                                        ["expectedProbeSpend"] =
+                                            expectedProbeSpend,
+                                        ["outcomesBeforeProbe"] =
+                                            outcomesBeforeProbe,
                                         ["savesAfterSpend"] = spentSaves,
                                         ["effectiveDc"] = spentSaves == 0
                                             ? (int?)null :
-                                            saves.Saves[0].DifficultyClass,
+                                            saves.Saves[spentSaves - 1]
+                                                .DifficultyClass,
                                         ["expectedEffectiveDc"] = spec.Dc,
                                         ["firstSavePassed"] = spentSaves == 0
                                             ? (bool?)null : saves.Saves[0].IsPassed,

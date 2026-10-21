@@ -492,7 +492,7 @@
     "artifactZipSha256": "adda52bea24fab9ddb94453145229723a9e6b57c6de887e46dd980403d2fafac",
     "artifactDllSha256": "06abc30c2217687822cfc255e658f5c51c796f5fca0955781fff5523bd5738e7",
     "artifactMvid": "62c3c684-f243-4906-8d70-b0a5fcaa3eeb",
-    "result": "FAIL 3/21 native assertions. Cloud catch and released Hill control passed. Storm's real Huge-thrown rock prompted exactly one DC20 Reflex save, failed it and received exactly one physical damage packet; the reused observer incorrectly expected DC16, which belongs to Stone's separate +4 catch bonus. The final aggregate failed only because of those Storm predicates. The compiled observer is corrected to DC20 and requires a fresh native run.",
+    "result": "FAIL 3 of 19 catch assertions; phase and fixture-restoration assertions also passed. Cloud catch and released Hill control passed. Storm's real Huge-thrown rock prompted exactly one DC20 Reflex save, failed it and received exactly one physical damage packet; the reused observer incorrectly expected DC16, which belongs to Stone's separate +4 catch bonus. The final aggregate failed only because of those Storm predicates. The compiled observer is corrected to DC20 and requires a fresh native run.",
     "restoration": "PASS: fresh intake and post-run comparison exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases. Child/task exited 1 and were removed; raw FAIL retained."
   },
   "affectedCleaveQualified": {
@@ -501,9 +501,36 @@
     "artifactZipSha256": "adda52bea24fab9ddb94453145229723a9e6b57c6de887e46dd980403d2fafac",
     "artifactDllSha256": "06abc30c2217687822cfc255e658f5c51c796f5fca0955781fff5523bd5738e7",
     "artifactMvid": "62c3c684-f243-4906-8d70-b0a5fcaa3eeb",
-    "result": "PASS 21/21 native Cleave assertions: Cloud Great, Storm/Ettin ordinary, released Hill ordinary and Fire Great in RTWP and turn-based mode. Actual owner commands spent Standard actions, verified one -2 AC penalty, bounded chains and first-miss stop; no native donor action was granted.",
+    "result": "PASS 21/21 Cleave mechanic assertions plus phase and fixture-restoration assertions: Cloud Great, Storm/Ettin ordinary, released Hill ordinary and Fire Great in RTWP and turn-based mode. Actual owner commands spent Standard actions, verified one -2 AC penalty, bounded chains and first-miss stop; no native donor action was granted.",
     "restoration": "PASS: task/child exit zero, task removed; fresh intake and post-run comparison exact across Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases.",
     "limits": "Exact hidden development package; public and release artifact qualification remain separate."
+  },
+  "affectedCatchRoundBoundaryFollowup": {
+    "source": "ee9fe2cf4f5d00cefa3b8c52dd6f50b67d92f308",
+    "runId": "20261021T1411217084035Z-b5bfdc34412a4160b8cf01f2c179d154",
+    "artifactZipSha256": "2fe14b4abb1d39826613a064c7fb4f64934108e31e58d07d491bd250bbeebd8f",
+    "artifactDllSha256": "1aa2d0ab401c8cade59058c095cb8dc5087a4d8d638cab8b031a63bdb471d83f",
+    "artifactMvid": "268a094a-1bbb-4ba0-aa9e-46fd703d9157",
+    "result": "FAIL 1 of 19 catch assertions; phase and fixture-restoration assertions also passed. Cloud and Storm catch plus released Hill's real throw passed. Hill's command spent its catch ledger in round 7202, but the reused roll-only same-round probe began in round 7203; a second save was legitimate, and the old observer wrongly expected no new save. Source now establishes one fresh same-round save before its repeat when a projectile crosses the boundary; changed observer needs its own native run.",
+    "restoration": "PASS: fresh protected intake exact after run (Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases); child/task exit 1 and task removed; raw FAIL retained."
+  },
+  "vitalRtwpDevelopment": {
+    "source": "ee9fe2cf4f5d00cefa3b8c52dd6f50b67d92f308",
+    "runId": "20261021T1416466197250Z-bc092146c6494df0bbb8d674aca4d168",
+    "artifactZipSha256": "2fe14b4abb1d39826613a064c7fb4f64934108e31e58d07d491bd250bbeebd8f",
+    "artifactDllSha256": "1aa2d0ab401c8cade59058c095cb8dc5087a4d8d638cab8b031a63bdb471d83f",
+    "artifactMvid": "268a094a-1bbb-4ba0-aa9e-46fd703d9157",
+    "result": "FAIL 1 of 12 Vital mechanic assertions; phase and fixture-restoration assertions also passed. Ordinary full control delivered three real 4d6 attacks and one full-round cost but had damage bonuses +21,+33,+33 rather than a flat +21; native planned-attack exhaustion reported Interrupt. Separate Vital Strike and Improved Vital Strike commands each passed a native Standard action with one resolved greatsword packet of 8d6+21 and 12d6+21, respectively. Observer now records exact Power Attack buff state per roll and checks conditional native bonus, pending fresh run.",
+    "restoration": "PASS: fresh protected intake exact after run; child/task exit 1 and task removed; raw FAIL retained."
+  },
+  "vitalTurnDevelopment": {
+    "source": "ee9fe2cf4f5d00cefa3b8c52dd6f50b67d92f308",
+    "runId": "20261021T1422348695461Z-851280d2532b426d9d9c06c11d771e3e",
+    "artifactZipSha256": "2fe14b4abb1d39826613a064c7fb4f64934108e31e58d07d491bd250bbeebd8f",
+    "artifactDllSha256": "1aa2d0ab401c8cade59058c095cb8dc5087a4d8d638cab8b031a63bdb471d83f",
+    "artifactMvid": "268a094a-1bbb-4ba0-aa9e-46fd703d9157",
+    "result": "FAIL 1 of 15 Vital mechanic assertions; phase and fixture-restoration assertions also passed. Ordinary full control again delivered three 4d6 attacks with +21,+33,+33 and a full-round turn cost, but the flat +21 predicate failed. Both distinct Vital Strike actions were admitted on their exact owner turns and passed one Standard action, one greatsword hit, 8d6+21 and 12d6+21. Exact Power Attack attribution is pending the changed observer.",
+    "restoration": "PASS: fresh protected intake exact after run (Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases); child/task exit 1 and task removed; raw FAIL retained."
   },
   "publicSurface": {
     "registeredCreatures": 117,
