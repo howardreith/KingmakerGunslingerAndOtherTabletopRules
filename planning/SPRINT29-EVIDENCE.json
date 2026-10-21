@@ -289,6 +289,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; cold-load hydration, Awesome Blow collision, negative AI cases, affected controls, public routes and release remain pending"
   },
+  "awesomeBlowDevelopment": {
+    "source": "ad90de97400cefdf599571ade034375d44a018ca",
+    "runId": "20261021T0926134015242Z-23c02f6433f24ba0be57071046c7d425",
+    "artifactZipSha256": "c6d2b50eeff5cbd8f77fd57b70166254320575fd7c636ed77d43b56929d300d5",
+    "artifactDllSha256": "964a586209ebfa7823d50880698499fbaa16b461a45695dc2727865119692381",
+    "artifactMvid": "906f8310-2abb-4a9b-9916-feb60ec91355",
+    "result": "FAIL: the native Cloud Awesome Blow action paid one standard action, succeeded on the native maneuver and dealt its 2d6+12 slam damage, but the late observer sample measured 34.53 m of target displacement for a 10-foot push and found no active prone state. Open lane and direct-command preconditions passed. Blocked, failure and immune cases did not execute after the first failure.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The exact-owner action now passes a unit direction to native Push. The observer records displacement and prone during the force-move chunk, separating its completed position from later target motion. Focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,

@@ -71,9 +71,15 @@ namespace KingmakerGunslinger.Summoning
             {
                 Vector3 start = victim.Position;
                 float distance = new Feet(10).Meters;
+                // The native force-move chunk consumes a direction, not the
+                // caster-to-target separation as a distance-scaled vector.
+                Vector3 direction = start - caster.Position;
+                direction.y = 0f;
+                if (direction.sqrMagnitude < .0001f) return;
+                direction.Normalize();
                 UnitPartForceMove.Chunk push = victim
-                    .Ensure<UnitPartForceMove>().Push(start -
-                        caster.Position, distance, false);
+                    .Ensure<UnitPartForceMove>().Push(direction,
+                        distance, false);
                 Sprint29AwesomeBlowCollision.Register(caster, victim,
                     push, start, distance);
                 if (Knockdown != null) Knockdown.Run();
@@ -113,7 +119,7 @@ namespace KingmakerGunslinger.Summoning
         {
             if (caster == null || victim == null || chunk == null ||
                 distance <= 0f) return;
-            Vector3 direction = chunk.Dir;
+            Vector3 direction = chunk.Dir.normalized;
             if (direction == Vector3.zero) return;
             PendingByVictim.GetOrCreateValue(victim).Entries.Add(
                 new Pending { Caster = caster, Chunk = chunk,
