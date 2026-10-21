@@ -153,6 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var costs = new JArray();
                         var movement = new JArray();
                         bool sawForce = false, forceFinished = false;
+                        bool chunkBounded = true;
                         bool proneSeen = false, priorForce = false;
                         float forceMoveMeters = float.NaN;
                         int sampledFrames = 0, priorDamage = 0;
@@ -165,6 +166,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             bool force = part != null &&
                                 part.Chunks.Any();
                             if (force) sawForce = true;
+                            if (force)
+                                chunkBounded &= part.Chunks.Count() == 1 &&
+                                    active.MaxDistance.HasValue &&
+                                    Mathf.Abs(active.MaxDistance.Value -
+                                        new Feet(10).Meters) < .01f;
                             float displacement = Vector3.Dot(
                                 target.Position - start, lane.Direction);
                             bool proneNow = target.Descriptor.State.Prone
@@ -184,6 +190,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["frame"] = sampledFrames,
                                     ["displacement"] = displacement,
                                     ["force"] = force,
+                                    ["chunkCount"] = part == null ? 0 :
+                                        part.Chunks.Count(),
                                     ["chunkPassed"] = active == null ?
                                         (float?)null : active.PassedDistance,
                                     ["chunkMaximum"] = active == null ?
@@ -256,7 +264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     sawForce && forceFinished :
                                     !sawForce;
                                 bool exact = cost && expected &&
-                                    forceExpected &&
+                                    forceExpected && chunkBounded &&
                                     events.Damage.All(value =>
                                         ReferenceEquals(value.Initiator,
                                             owner) &&
@@ -275,6 +283,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["finalMovedMeters"] = finalMoved,
                                         ["sawForce"] = sawForce,
                                         ["forceFinished"] = forceFinished,
+                                        ["chunkBounded"] = chunkBounded,
                                         ["proneSeen"] = proneSeen,
                                         ["movement"] = movement,
                                         ["maneuvers"] = new JArray(
