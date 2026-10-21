@@ -6,6 +6,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.UI.SettingsUI;
+using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using KingmakerGunslinger.Blueprints;
@@ -146,6 +147,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "KMG_Summoning_Giant_Sprint29_EttinOffJavelin1d8" &&
                         !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon,
                             owner.Body.SecondaryHand.MaybeWeapon);
+                    bool? ettinSeeded = spec.Key == "ettin" ?
+                        owner.Get<UnitPartSummonEttinInitialArms>()?.Seeded : null;
                     int perception = stats.SkillPerception.ModifiedValue;
                     bool profile = scores.SequenceEqual(spec.Scores) &&
                         owner.Descriptor.State.Size == spec.Size &&
@@ -179,6 +182,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["mainTypeTwoHanded"] = mainTwoHanded,
                             ["mainHeldInTwoHands"] = mainHeldInTwoHands,
                             ["ettinHands"] = ettinHands,
+                            ["ettinSeeded"] = ettinSeeded,
                             ["handSets"] = handSets },
                         "Native adult profile and resolved equipment match the printed anchor.");
                     bool visible = owner.View != null &&

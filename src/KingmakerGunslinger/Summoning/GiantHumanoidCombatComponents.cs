@@ -13,6 +13,8 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.Enums;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Parts;
+using Newtonsoft.Json;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -209,38 +211,63 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    /// <summary>Kingmaker creates the Ettin's primary flail before attempting
-    /// its blueprint secondary item, so the versatile one-handed flail takes
-    /// a two-hand grip and the second slot remains empty. Seed the two exact
-    /// offhand sets once on initial entity creation. Native item slots then
-    /// own switching, disarm and save hydration; this callback does not run
-    /// on deserialization and never replenishes a lost item.</summary>
+    /// <summary>A save-owned marker for the one initial pair of Ettin
+    /// offhands. Later disarm and cold-load must not replenish it.</summary>
+    [Serializable]
+    public sealed class UnitPartSummonEttinInitialArms : UnitPart
+    {
+        [JsonProperty] private bool _seeded;
+        public bool Seeded { get { return _seeded; } }
+        public void MarkSeeded() { _seeded = true; }
+    }
+
+    /// <summary>Kingmaker initializes a versatile primary flail with a
+    /// two-hand grip and omits the configured offhand. Wait for its equipped
+    /// primary slot, then seed each exact private offhand once. Equipment
+    /// updates provide the late initialization boundary; the serialized
+    /// marker prevents rearming after disarm or cold load.</summary>
     [Serializable]
     public sealed class SummonEttinInitialOffhands :
-        OwnedGameLogicComponent<UnitDescriptor>,
-        IHandleEntityComponent<UnitEntityData>
+        OwnedGameLogicComponent<UnitDescriptor>, IUnitEquipmentHandler,
+        IUnitSubscriber
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintItemWeapon MainFlail;
         public BlueprintItemWeapon OffhandFlail;
         public BlueprintItemWeapon OffhandJavelin;
+        [NonSerialized] private bool _seeding;
 
-        public void OnEntityCreated(UnitEntityData unit)
+        public override void OnTurnOn() { TrySeed(); }
+
+        public void HandleEquipmentSlotUpdated(ItemSlot slot,
+            ItemEntity previousItem)
         {
-            if (unit == null || !ReferenceEquals(unit.Blueprint,
-                    OwningBlueprint) || unit.Body == null ||
+            TrySeed();
+        }
+
+        private void TrySeed()
+        {
+            UnitEntityData unit = Owner == null ? null : Owner.Unit;
+            if (_seeding || unit == null || unit.Body == null ||
+                !ReferenceEquals(unit.Blueprint, OwningBlueprint) ||
                 unit.Body.HandsEquipmentSets.Count < 2 ||
                 !ReferenceEquals(unit.Body.HandsEquipmentSets[0].PrimaryHand
                     .MaybeWeapon?.Blueprint, MainFlail))
-                throw new InvalidOperationException(
-                    "Ettin offhands require the exact initial owner and primary flail.");
-            Seed(unit.Body.HandsEquipmentSets[0].SecondaryHand,
-                OffhandFlail);
-            Seed(unit.Body.HandsEquipmentSets[1].SecondaryHand,
-                OffhandJavelin);
+                return;
+            UnitPartSummonEttinInitialArms marker =
+                unit.Ensure<UnitPartSummonEttinInitialArms>();
+            if (marker.Seeded) return;
+            _seeding = true;
+            try
+            {
+                Seed(unit.Body.HandsEquipmentSets[0].SecondaryHand,
+                    OffhandFlail);
+                Seed(unit.Body.HandsEquipmentSets[1].SecondaryHand,
+                    OffhandJavelin);
+                marker.MarkSeeded();
+            }
+            finally { _seeding = false; }
         }
-
-        public void OnEntityRemoved(UnitEntityData unit) { }
 
         private static void Seed(WeaponSlot slot,
             BlueprintItemWeapon blueprint)
