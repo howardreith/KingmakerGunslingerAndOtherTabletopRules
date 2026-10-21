@@ -176,6 +176,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint26-native-review',
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
+    'disposable-expanded-summoning-sprint29-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
@@ -869,6 +870,14 @@ foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
 $sprint28ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint28-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+$sprint29ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint29-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'})) 'sprint29-profiles-admitted'
+$sprint29ProfileRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight')
+Assert-True ($sprint29ProfileRequest.parameters.reviewPhase -ceq 'profiles') 'sprint29-profiles-serialized'
+foreach ($invalid in @(@{}, @{reviewPhase='Profiles'}, @{reviewPhase='magic'}, @{reviewPhase='profiles';saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint29-rejects-extra-missing-or-unimplemented-phase'
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='profiles'} } 'sprint29-requires-exit'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'})) 'sprint28-profiles-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='modes'})) 'sprint28-modes-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint28ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'})) 'sprint28-commands-admitted'
