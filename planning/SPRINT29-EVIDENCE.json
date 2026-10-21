@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; MODE_NATIVE_REACH_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_PASS; EXACT_OWNER_MELEE_REACH_REPAIR_IN_PROGRESS; RESOLVED_GAMEPLAY_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -84,6 +84,15 @@
     "artifactDllSha256": "672a0012dab5e1b1c8eeb16ada50f689f586632d85871be4ba00348d63ba5206",
     "artifactMvid": "b3d02648-e887-4517-9757-178959a33c3e",
     "result": "FAIL 4/18: Cloud and Storm private melee modes had native 22-foot weapon reach and 8.3056-m command radius; 15-foot printed reach plus measured collision radii required 6.172 m. Exact private type range repair pending native check.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
+  },
+  "modeReachFollowup": {
+    "source": "f1233fe280276be5114bb5fb68418272f885aff0",
+    "runId": "20261021T0451305530485Z-89dbcecbf08b452a8d76a4c50870a0ea",
+    "artifactZipSha256": "17afe311c611ffc043d266c2662a90832023bb6f1cdb557d391e033090f4c2d3",
+    "artifactDllSha256": "b1f1cc0bec862fd6192229cd60473a04188238049f9261b159aed9eaf1e1521d",
+    "artifactMvid": "98a02370-0a37-4ad6-b52e-30c8a6585e21",
+    "result": "FAIL 4/18: setting the private raw melee type range to 8 feet produced 11-foot wielded range and 4.9528-m command radius. Native IL inspection then showed a threshold at raw 10 feet and a separate owner ReachRange addition; an exact-owner item getter correction is needed for 15 feet.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease"
   },
   "publicSurface": {
