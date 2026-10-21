@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.RuntimeTesting;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -65,6 +66,38 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<InvalidOperationException>(
                 () => ExpandedSummoningIdentityCatalog.Validate(identities),
                 "A missing private dependency must fail identity validation.");
+        }
+
+        internal static void HiddenPersistenceScopeRejectsUnrelatedKeys()
+        {
+            string scope = ExpandedSummoningRosterPersistencePolicy
+                .GiantHumanoidsTwoScope;
+            foreach (string key in new[] { "ettin", "cloud-giant",
+                "storm-giant" })
+            {
+                var route = ExpandedSummoningRosterPersistencePolicy
+                    .SelectCreatureVariant(scope, key);
+                Assertions.True(route.Family == SummonFamily.NaturesAlly &&
+                    route.Multiplicity == SummonMultiplicity.One &&
+                    !SummonVisibilityCatalog.IsPublished(route),
+                    "The named persistence fixture may instantiate only its registered hidden one-creature route.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy
+                .ExactSelectedKeys(scope, new[] { "storm-giant", "ettin",
+                    "cloud-giant" }),
+                "Load order may change while exact membership stays fixed.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                .ExactSelectedKeys(scope, new[] { "ettin", "ettin",
+                    "cloud-giant" }),
+                "A duplicate cannot replace Storm.");
+            Assertions.Throws<InvalidOperationException>(() =>
+                ExpandedSummoningRosterPersistencePolicy
+                    .SelectCreatureVariant(scope, "hill-giant"),
+                "The new scope must refuse a released neighboring giant.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy
+                .ObserveLoad("working-save-expanded-summoning-prepare",
+                    "Giant-humanoids-ii"),
+                "Scope matching stays case-sensitive.");
         }
     }
 }

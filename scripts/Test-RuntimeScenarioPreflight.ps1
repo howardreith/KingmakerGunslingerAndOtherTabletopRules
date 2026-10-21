@@ -1898,6 +1898,28 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s28RequestArgs } ('s28-save-reject-no-exit-' + $phase)
 }
 
+foreach ($phase in @('working-save-expanded-summoning-prepare',
+    'working-save-expanded-summoning-verify-cleanup',
+    'working-save-expanded-summoning-verify-absent')) {
+    $s29RequestArgs = @{ Scenario = $phase; ExpectedVersion = $activeVersion;
+        TimeoutSeconds = 600; StartupTimeoutSeconds = 180;
+        CatalogTimeoutSeconds = 180; SelectionTimeoutSeconds = 300;
+        CompletionTimeoutSeconds = 600; MainMenuTimeoutSeconds = 180;
+        ActionResolutionTimeoutSeconds = 180;
+        ActionInvocationTimeoutSeconds = 30;
+        DescriptorResolutionTimeoutSeconds = 30;
+        LoadEntryTimeoutSeconds = 30;
+        FingerprintTimeoutSeconds = 180; ExitAfterCompletion = $true;
+        Parameters = @{ saveName = 'KMG_AUTOMATION_WORKING';
+            persistenceScope = 'giant-humanoids-ii' } }
+    Assert-True ((Assert-KmgRuntimeScenarioPreflight @s29RequestArgs) -ne $null) ('s29-save-accepted-' + $phase)
+    $s29RequestArgs.Parameters.persistenceScope = 'Giant-humanoids-ii'
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s29RequestArgs } ('s29-save-reject-case-' + $phase)
+    $s29RequestArgs.Parameters.persistenceScope = 'giant-humanoids-ii'
+    $s29RequestArgs.ExitAfterCompletion = $false
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s29RequestArgs } ('s29-save-reject-no-exit-' + $phase)
+}
+
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"
 }

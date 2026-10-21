@@ -155,6 +155,7 @@ if ($activeVersion -eq '0.0.162') {
 }
 & (Join-Path $PSScriptRoot 'Test-GriffonDevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint28DevelopmentPersistence.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint29DevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
 # The push wrapper lives outside this repository and had no behaviour test
 # until the Sprint 25 audit. It reports SKIP when the wrapper is absent, so a

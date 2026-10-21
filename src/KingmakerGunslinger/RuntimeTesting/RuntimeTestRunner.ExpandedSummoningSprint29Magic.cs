@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
@@ -146,6 +147,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["siblingResource"] = sibling.Descriptor.Resources
                             .GetResourceAmount(resource) },
                     "The distinct CL16 remote fog lasts 160 minutes, spends only its owner's one use and cannot recast.");
+                var summonMarker = owner.Buffs.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint, BlueprintRoot.Instance
+                        .SystemMechanics.SummonedUnitBuff));
+                JObject expiry = ExpireSprint16OwnedBuff(owner,
+                    summonMarker);
+                DateTime expiryDeadline = DateTime.UtcNow.AddSeconds(18);
+                for (int frame = 0; frame < 2500 &&
+                    DateTime.UtcNow < expiryDeadline &&
+                    (!owner.Destroyed || owner.View != null ||
+                        owner.HoldingState != null); frame++)
+                    yield return 0;
+                bool areaLifetime = owner.Destroyed &&
+                    owner.View == null && owner.HoldingState == null &&
+                    both.Length == 2 && both.All(value =>
+                        Game.Instance.State.AreaEffects.All.Contains(value) &&
+                        Sprint29AreaDuration(value) > 0) &&
+                    !sibling.Destroyed && sibling.Descriptor.Resources
+                        .GetResourceAmount(resource) == 1;
+                Sprint25Check("cloud-fog-owner-expiry",
+                    areaLifetime, new JObject {
+                        ["owner"] = owner.UniqueId,
+                        ["ownerDestroyed"] = owner.Destroyed,
+                        ["expiry"] = expiry,
+                        ["areasRemaining"] = new JArray(both.Select(value =>
+                            new JObject {
+                                ["blueprint"] = value.Blueprint.AssetGuid,
+                                ["present"] = Game.Instance.State
+                                    .AreaEffects.All.Contains(value),
+                                ["durationSeconds"] =
+                                    Sprint29AreaDuration(value) })),
+                        ["sibling"] = sibling.UniqueId,
+                        ["siblingResource"] = sibling.Descriptor.Resources
+                            .GetResourceAmount(resource) },
+                    "Native summon expiry ends this caster while its already-created fog keeps its own finite duration and a sibling's resource remains untouched.");
             }
             finally
             {
@@ -349,6 +384,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EventBus.Unsubscribe(attack);
                     EventBus.Unsubscribe(saves);
                 }
+                var summonMarker = owner.Buffs.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint, BlueprintRoot.Instance
+                        .SystemMechanics.SummonedUnitBuff));
+                JObject expiry = ExpireSprint16OwnedBuff(owner,
+                    summonMarker);
+                DateTime expiryDeadline = DateTime.UtcNow.AddSeconds(18);
+                for (int frame = 0; frame < 2500 &&
+                    DateTime.UtcNow < expiryDeadline &&
+                    (!owner.Destroyed || owner.View != null ||
+                        owner.HoldingState != null); frame++)
+                    yield return 0;
+                bool stateEnded = owner.Destroyed && owner.View == null &&
+                    owner.HoldingState == null &&
+                    owner.Descriptor.Buffs.GetBuff(state) == null &&
+                    !owner.Commands.Raw.Any(value => value != null &&
+                        !value.IsFinished) && !sibling.Destroyed &&
+                    sibling.Descriptor.Buffs.GetBuff(freedom) != null &&
+                    sibling.Descriptor.Resources.GetResourceAmount(
+                        callResource) == 1 &&
+                    sibling.Descriptor.Resources.GetResourceAmount(
+                        chainResource) == 1;
+                Sprint25Check("storm-lightning-owner-expiry",
+                    stateEnded, new JObject {
+                        ["owner"] = owner.UniqueId,
+                        ["ownerDestroyed"] = owner.Destroyed,
+                        ["statePresent"] = owner.Descriptor.Buffs
+                            .GetBuff(state) != null,
+                        ["activeCommands"] = owner.Commands.Raw.Count(
+                            value => value != null && !value.IsFinished),
+                        ["expiry"] = expiry,
+                        ["sibling"] = sibling.UniqueId,
+                        ["siblingFreedom"] = sibling.Descriptor.Buffs
+                            .GetBuff(freedom) != null,
+                        ["siblingCallUses"] = sibling.Descriptor.Resources
+                            .GetResourceAmount(callResource),
+                        ["siblingChainUses"] = sibling.Descriptor.Resources
+                            .GetResourceAmount(chainResource) },
+                    "Native summon expiry removes its own finite Call Lightning state and child commands without touching sibling protection or resources.");
             }
             finally
             {

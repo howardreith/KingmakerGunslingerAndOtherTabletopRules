@@ -590,3 +590,16 @@ function Test-KmgSprint28DevelopmentPersistence {
     }
     return $true
 }
+
+# The hidden Sprint 29 development package may enter only its exact selected
+# Working-save trio. This leaves candidate identity, save and release checks
+# in the installed-stack wrapper unchanged.
+function Test-KmgSprint29DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'giant-humanoids-ii' -or
+        $Purpose -cne 'sprint29-hidden-bootstrap') {
+        throw 'Development installed-stack persistence permits only exact giant-humanoids-ii scope and sprint29-hidden-bootstrap purpose.'
+    }
+    return $true
+}

@@ -109,6 +109,8 @@ The mission selects no general skill system: named Climb, Craft, Perform, Storm'
 
 Summon-safe arrows and javelins follow bounded native ammunition-free availability without collectible supply, transferable equipment or extra actions. Every unit owns its magic uses and equipment across siblings, dismissal, death, disarm, expiry and cold load. No child action outlives its owner deadline; cleanup preserves unrelated casters' and victims' effects.
 
+Effect-lifetime contract for native qualification: Cloud's stationary Obscuring Mist and Fog Cloud areas retain their independently configured 16-minute and 160-minute durations after their caster's summon ends; ending that owner blocks new commands and does not erase another caster's area. Storm's Call Lightning activation state and granted bolt belong to the living Storm and end with it, while prior instantaneous lightning damage and a sibling's resources remain independent. This is a native spell/summon boundary to observe, not an instruction to delete victim-owned effects.
+
 ## Qualification map
 
 | Requirement | Reused check or small new observation |

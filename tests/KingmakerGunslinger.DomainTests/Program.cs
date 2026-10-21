@@ -1220,6 +1220,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint28.stone-terrain", ExpandedSummoningSprint28Tests.StoneRockyStealthRequiresSelectedArea),
             Case("expanded-summoning.sprint29.hidden-routes", ExpandedSummoningSprint29Tests.HiddenRoutesAreExactAndPublishedSurfaceIsPreserved),
             Case("expanded-summoning.sprint29.refusals", ExpandedSummoningSprint29Tests.MissingSuppressionOrIdentityIsRejected),
+            Case("expanded-summoning.sprint29.persistence-scope", ExpandedSummoningSprint29Tests.HiddenPersistenceScopeRejectsUnrelatedKeys),
             Case("expanded-summoning.sprint26.reach", ExpandedSummoningSprint26Tests.ReachCorrectionPreservesOtherOwnersAndBonuses),
             Case("expanded-summoning.sprint26.temporary-life", ExpandedSummoningSprint26Tests.TemporaryStoneDoesNotAcquireNativeDeathDamage),
             Case("expanded-summoning.sprint26.native-status-mirror", ExpandedSummoningSprint26Tests.OwnCarrierDoesNotMirrorIntoPermanentNativeStone),
