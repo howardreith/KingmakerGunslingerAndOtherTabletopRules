@@ -38,6 +38,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
+                foreach (int frame in ReviewSprint29AiNegative(fixture))
+                    yield return frame;
                 foreach (string key in new[] { "ettin", "cloud-giant",
                     "storm-giant" })
                 {
@@ -403,6 +405,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => (int)value["dc"] == 15) &&
                 after != null &&
                 after.TimeLeft.TotalSeconds < stateBefore - 50 &&
+                after.TimeLeft.TotalSeconds > stateBefore - 90 &&
                 owner.Descriptor.Resources.GetResourceAmount(callResource) == 0;
             Sprint25Check("s29-storm-ai-granted-bolt", bolt,
                 new JObject { ["owner"] = owner.UniqueId,
@@ -424,6 +427,77 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["commands"] = new JArray(later.Select(
                         Sprint27AiCommand)) },
                 "Native Storm AI spends a granted Call Lightning bolt action and finite state without spending a new daily activation.");
+            if (!bolt) yield break;
+
+            // A later native AI decision must issue a separate bolt command,
+            // with one further state debit and no new daily activation.
+            owner.Commands.RemoveFinishedAndUpdateQueue();
+            later.Clear();
+            saves.Rows.Clear();
+            double secondBefore = after.TimeLeft.TotalSeconds;
+            int secondDamageBefore = observer.Damage.Count;
+            ticks = 0;
+            deadline = DateTime.UtcNow.AddSeconds(45);
+            for (int frame = 0; frame < 3600 && DateTime.UtcNow < deadline;
+                frame++)
+            {
+                if (frame == 0 || frame % 60 == 0 &&
+                    !owner.Commands.Raw.Any(value =>
+                        value != null && !value.IsFinished))
+                {
+                    Sprint24TickExactAi(owner);
+                    ticks++;
+                }
+                foreach (UnitCommand command in owner.Commands.Raw.Where(
+                    value => value != null)) later.Add(command);
+                if (later.OfType<UnitUseAbility>().Any(value =>
+                    value.AiAction != null && value.AiAction.name.EndsWith(
+                        "StormBoltAi", StringComparison.Ordinal) &&
+                    value.IsFinished)) break;
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            effectDeadline = DateTime.UtcNow.AddSeconds(20);
+            for (int frame = 0; frame < 1200 &&
+                DateTime.UtcNow < effectDeadline &&
+                (saves.Rows.Count == 0 ||
+                    owner.Descriptor.Buffs.GetBuff(state)?.TimeLeft
+                        .TotalSeconds > secondBefore - 50); frame++)
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+            }
+            Buff secondAfter = owner.Descriptor.Buffs.GetBuff(state);
+            int boltCommands = later.OfType<UnitUseAbility>().Count(value =>
+                value.AiAction != null && value.AiAction.name.EndsWith(
+                    "StormBoltAi", StringComparison.Ordinal) &&
+                value.IsFinished &&
+                value.Result == UnitCommand.ResultType.Success);
+            bool secondBolt = boltCommands == 1 &&
+                saves.Rows.Count > 0 && saves.Rows.OfType<JObject>().All(
+                    value => (int)value["dc"] == 15) &&
+                observer.Damage.Count > secondDamageBefore &&
+                secondAfter != null &&
+                secondAfter.TimeLeft.TotalSeconds < secondBefore - 50 &&
+                secondAfter.TimeLeft.TotalSeconds > secondBefore - 90 &&
+                owner.Descriptor.Resources.GetResourceAmount(callResource) == 0 &&
+                owner.Descriptor.Resources.GetResourceAmount(chainResource) == 0;
+            Sprint25Check("s29-storm-ai-second-bolt", secondBolt,
+                new JObject { ["owner"] = owner.UniqueId,
+                    ["ticks"] = ticks,
+                    ["boltCommands"] = boltCommands,
+                    ["saves"] = saves.Rows.DeepClone(),
+                    ["damageBefore"] = secondDamageBefore,
+                    ["damageAfter"] = observer.Damage.Count,
+                    ["stateBefore"] = secondBefore,
+                    ["stateAfter"] = secondAfter?.TimeLeft.TotalSeconds,
+                    ["callUses"] = owner.Descriptor.Resources
+                        .GetResourceAmount(callResource),
+                    ["chainUses"] = owner.Descriptor.Resources
+                        .GetResourceAmount(chainResource),
+                    ["commands"] = new JArray(later.Select(
+                        Sprint27AiCommand)) },
+                "A later autonomous native Storm bolt spends its own standard action and one further finite state interval, without reactivating the daily spell.");
         }
     }
 }
