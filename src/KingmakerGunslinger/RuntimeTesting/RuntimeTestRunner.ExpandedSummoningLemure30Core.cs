@@ -160,7 +160,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!profile) throw new InvalidOperationException("Lemure core profile failed.");
             Sprint25Check("lemure-core-weapon-reach", owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value == 5,
                 new JObject { ["owner"] = owner.UniqueId,
-                    ["rangeFeet"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value },
+                    ["rangeFeet"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value,
+                    ["typeRangeFeet"] = owner.Body.PrimaryHand.MaybeWeapon.Blueprint.Type.AttackRange.Value,
+                    ["rawTypeRangeFeet"] = ((Feet)ReadExpandedSummoningOptionalMember(
+                        owner.Body.PrimaryHand.MaybeWeapon.Blueprint.Type, "m_AttackRange")).Value,
+                    ["weaponGuid"] = owner.Body.PrimaryHand.MaybeWeapon.Blueprint.AssetGuid },
                 "The actual native claw retains the adult five-foot reach.");
             var buffs = owner.Descriptor.Buffs.RawFacts.Select(value => new JObject {
                 ["name"] = value.Blueprint.name, ["guid"] = value.Blueprint.AssetGuid }).ToArray();

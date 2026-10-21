@@ -102,6 +102,10 @@ namespace KingmakerGunslinger.Blueprints
             unit.Type = type;
             var claw = Sprint29Weapon(library, bySymbol, Lemure30Prefix + "Claw1d4",
                 Lemure30Prefix + "ClawType", NativeClaw1d4Guid, Size.Medium, 1, DiceType.D4, 5);
+            // The installed type getter subtracts four feet for raw ranges
+            // at or below ten. Nine raw feet therefore produces the printed
+            // five-foot native reach; only this private type is changed.
+            SetField(claw.Type, "m_AttackRange", new Feet(9));
             // Native UnitAttack skips the primary attack when hands are
             // disabled. Reuse the established natural-body path: one primary
             // claw plus one additional claw, with no synthetic empty-hand grant.
