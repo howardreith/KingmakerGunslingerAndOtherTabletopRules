@@ -40,7 +40,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitEntityData owner = CastExpandedSummoningOwnTier(
                     fixture, key);
                 Sprint28SetBrainActivePreservingActions(owner, false);
-                Vector3 casterBefore = fixture.Caster.Position;
+                UnitEntityData ally = null;
                 bool addedElectricity = false;
                 try
                 {
@@ -56,6 +56,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PlaceExpandedSummoningUnit(target, far);
                     if (key == "cloud-giant")
                     {
+                        ally = CastExpandedSummoningOwnTier(fixture,
+                            "ettin");
+                        Sprint28SetBrainActivePreservingActions(ally,
+                            false);
                         Vector3 side = Vector3.Cross(Vector3.up,
                             (far - origin).normalized);
                         bool placed = false;
@@ -67,23 +71,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 !point.node.Walkable ||
                                 Vector3.Distance(point.clampedPosition,
                                     requested) > .35f) continue;
-                            PlaceExpandedSummoningUnit(fixture.Caster,
+                            PlaceExpandedSummoningUnit(ally,
                                 point.clampedPosition);
                             placed = true;
                             break;
                         }
                         bool near = placed &&
-                            owner.IsAlly(fixture.Caster) &&
-                            Vector3.Distance(fixture.Caster.Position,
+                            owner.IsAlly(ally) &&
+                            Vector3.Distance(ally.Position,
                                 target.Position) < new Feet(20).Meters;
                         Sprint25Check("s29-cloud-ai-unsafe-lane", near,
                             new JObject { ["owner"] = owner.UniqueId,
                                 ["target"] = target.UniqueId,
-                                ["ally"] = fixture.Caster.UniqueId,
+                                ["ally"] = ally.UniqueId,
                                 ["lane"] = lane, ["placed"] = placed,
+                                ["ownerAllySummoner"] = owner.IsAlly(
+                                    fixture.Caster),
+                                ["ownerAllySibling"] = owner.IsAlly(ally),
                                 ["allyDistance"] = Vector3.Distance(
-                                    fixture.Caster.Position,
-                                    target.Position) },
+                                    ally.Position, target.Position) },
                             "A real allied unit occupies the hostile-centered native fog radius before Cloud's autonomous choice.");
                         if (!near) throw new InvalidOperationException(
                             "No ally-near native Cloud AI lane.");
@@ -117,7 +123,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.IsEnemy(target) && owner.HasLOS(target) &&
                         owner.Memory.ContainsVisible(target) &&
                         (key == "cloud-giant" ?
-                            owner.IsAlly(fixture.Caster) :
+                            owner.IsAlly(ally) :
                             target.Descriptor.HasFact(electricity));
                     Sprint25Check("s29-" + key + "-ai-safety-ready",
                         ready, new JObject { ["owner"] = owner.UniqueId,
@@ -221,13 +227,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target.Commands.InterruptAll(true);
                     if (addedElectricity)
                         target.Descriptor.RemoveFact(electricity);
-                    PlaceExpandedSummoningUnit(fixture.Caster,
-                        casterBefore);
                     if (owner.IsInCombat) owner.LeaveCombat();
+                    if (ally != null && ally.IsInCombat)
+                        ally.LeaveCombat();
                     if (target.IsInCombat) target.LeaveCombat();
                     Game.Instance.Player.UpdateIsInCombat();
                     DisposeExpandedSummoningUnits(fixture.Created,
-                        new[] { owner });
+                        ally == null ? new[] { owner } :
+                            new[] { owner, ally });
                     ResetExpandedSummoningHostile(fixture);
                 }
             }

@@ -349,6 +349,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package. Cancellation is an explicit native StopMove API test, not a player-issued interrupt. Printed obstacle-object damage remains an unresolved owner scope decision because the installed scene has no identified damageable wall consumer. Turn-based Awesome Blow and final public-artifact qualification remain."
   },
+  "aiSafetyFixtureDevelopment": {
+    "source": "61c6c778c8a71baf4d53e812baec9c0cd19178a7",
+    "runId": "20261021T1048414809873Z-c9b6e506415a45108b606cae928e5419",
+    "artifactZipSha256": "773d41d6a8f27650efeb21dd13374b1654c2a51aa9ba73fdaf1c270943b68090",
+    "artifactDllSha256": "0fc05580a7e22906fc240d0704f3d00f07506391683b3d216553f609f69390e5",
+    "artifactMvid": "d005708f-123a-478b-bb6b-c9464254ad60",
+    "result": "FAIL before any AI decision: the disposable fixture caster stood 1.998 m from the hostile, but Cloud.IsAlly(caster) was false, so it was not a valid ally-obscuring precondition. The observer stopped before Storm's immune-target and later-bolt cases. No native AI safety verdict is claimed.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The negative Cloud case now uses a second request-owned Ettin summon as the nearby ally and checks Cloud.IsAlly(sibling) before a native AI tick. It no longer relocates the fixture caster. Focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
