@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_AND_RTWP_COMMANDS_PASS; MAGIC_AI_ITEMS_PERSISTENCE_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_AND_TURN_COMMANDS_PASS; MAGIC_AI_ITEMS_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -116,6 +116,16 @@
     "result": "PASS 25/25 native RTWP predicates: nine fresh hidden-owner attack commands each had a legal visible lane, expected main/offhand rule events and one native action cost. Ettin standard flail 1, full flails 4 (2 per arm), javelins 2 (1 per arm); Cloud morningstar 3, slams 2, rock 1; Storm greatsword 3, slams 2, bow 3. Hits and misses were natural; damage packets matched actual hits. No fixture attack command or forced roll.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; turn-based commands, AI, magic, Awesome Blow collision, items/disarm, persistence and public routes remain pending"
+  },
+  "hiddenTurnCommandsQualification": {
+    "source": "01c09822a7b1669a5f9d14c75a9d6631ec3fe499",
+    "runId": "20261021T0529230954465Z-62b0798f776d4c47b9c30a2e45b35522",
+    "artifactZipSha256": "7a3edaeed073088175f361811aec03d135c5951a6a8955dc11e7fe508d38f879",
+    "artifactDllSha256": "4e2a3f2b3be71f264a97a9aca40e7240a4a5fe03e69f2753ed1d25edef717f2d",
+    "artifactMvid": "a5fc7bc7-92f2-4c78-a55b-72eadb96f7e6",
+    "result": "PASS 16/16 native turn-based predicates: Ettin full flails 4 (2 per arm), paired javelins 2 (1 per arm), Cloud morningstar 3 and Storm bow 3 after exact owner turn admission. Every issued native command had expected weapon/roll/damage events and one turn-based action cost; all hits were natural.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; autonomous AI, spell-like effects/resources, Awesome Blow collision, items/disarm, persistence and public routes remain pending"
   },
   "publicSurface": {
     "registeredCreatures": 117,
