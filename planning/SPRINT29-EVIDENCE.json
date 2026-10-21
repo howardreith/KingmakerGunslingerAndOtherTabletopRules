@@ -159,6 +159,16 @@
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package; autonomous AI, repeated bolt cadence, expiration/teardown, cold-load persistence, resistance, multiple Chain Lightning targets and public routes remain pending"
   },
+  "hiddenAiDevelopment": {
+    "source": "a19cccdf5a7270a46bd3d0c728097e0dccd1daaf",
+    "runId": "20261021T0624096546908Z-3fca3e9ded4a4b0ea2c4b3168ce5e6aa",
+    "artifactZipSha256": "cada3087b0dc2daf19b955ed2aca940b3a1f7ebf3d4dcddcdb6a38e473a3b564",
+    "artifactDllSha256": "5658a2f356fbb4cc891e4a30ba00c27e10cffefadfad45f5e698a80747ecf385",
+    "artifactMvid": "834d4b3a-1d6d-4f0e-a1fd-cefc97115e3d",
+    "result": "FAIL: Ettin autonomously issued a successful native four-flail command and Storm autonomously issued successful Chain Lightning with one damage packet, but their observer predicate incorrectly demanded no ambient candidates even though only the exact owner was ticked. Cloud had no commands after 20 exact-owner ticks because its two unsafe fog actions had no ordinary attack fallback.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "Cloud and Storm private brains now retain the installed immutable ordinary attack action after their spell priorities; the observer no longer treats enumerated but unticked ambient candidates as touched actors. Focused production compilation and two sprint29 domain tests pass. Native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,

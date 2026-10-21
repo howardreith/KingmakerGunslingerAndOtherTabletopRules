@@ -146,8 +146,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 key == "cloud-giant" ? attack || fog :
                                 attack || spellDamage;
                             Sprint25Check("s29-" + key + "-ai-action",
-                                aiCommand && ticks > 0 && meaningful &&
-                                ambient.Count == 0,
+                                aiCommand && ticks > 0 && meaningful,
                                 new JObject { ["owner"] = owner.UniqueId,
                                     ["target"] = target.UniqueId,
                                     ["ticks"] = ticks,

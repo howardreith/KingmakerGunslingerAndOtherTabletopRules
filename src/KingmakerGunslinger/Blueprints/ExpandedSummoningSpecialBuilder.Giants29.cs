@@ -322,13 +322,20 @@ namespace KingmakerGunslinger.Blueprints
             safety.KnownElectricityImmunity = BlueprintLibraryLookup.RequireExact<
                 BlueprintFeature>(library, ElectricityImmunityGuid,
                     "installed electricity immunity for AI screening");
+            BlueprintAiAction ordinaryAttack =
+                BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
+                    DumbBrainGuid, "native giant ordinary attack brain")
+                .Actions.Single(value => value != null &&
+                    value.GetType().FullName ==
+                    "Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAttack");
             brain.Actions = new BlueprintAiAction[] {
                 ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(
                     bySymbol, chainAiSymbol), chainAiSymbol, chain, 0),
                 ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(
                     bySymbol, callAiSymbol), callAiSymbol, call, 0),
                 ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(
-                    bySymbol, boltAiSymbol), boltAiSymbol, bolt, 0)
+                    bySymbol, boltAiSymbol), boltAiSymbol, bolt, 0),
+                ordinaryAttack
             };
             foreach (BlueprintAiCastSpell action in brain.Actions.OfType<
                 BlueprintAiCastSpell>())
@@ -604,7 +611,14 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
                 brainSymbol);
             brain.name = InternalName(brainSymbol);
-            brain.Actions = new BlueprintAiAction[] { fogAi, mistAi };
+            BlueprintAiAction ordinaryAttack =
+                BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
+                    DumbBrainGuid, "native giant ordinary attack brain")
+                .Actions.Single(value => value != null &&
+                    value.GetType().FullName ==
+                    "Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAttack");
+            brain.Actions = new BlueprintAiAction[] { fogAi, mistAi,
+                ordinaryAttack };
             unit.Brain = brain;
         }
 
