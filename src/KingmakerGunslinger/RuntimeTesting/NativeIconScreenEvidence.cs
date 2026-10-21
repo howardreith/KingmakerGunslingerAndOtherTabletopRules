@@ -104,6 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+             request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp);
 

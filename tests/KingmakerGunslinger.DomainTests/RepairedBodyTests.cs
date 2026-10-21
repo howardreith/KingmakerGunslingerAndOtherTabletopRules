@@ -12,8 +12,9 @@ namespace KingmakerGunslinger.DomainTests
     /// the owner's review list that shipped inside out from the legacy shared
     /// writer, repaired in place by continuous-bodies/repair_outward_winding.py
     /// on the owner's word (2026-10-17). Geometry, UVs and weights are
-    /// unchanged; only triangle order, the normals of inward mirrored parts
-    /// and the primate/crab winding marker moved.
+    /// unchanged for Eagle, Stirge and Fire Beetle. Cleanup iteration 2
+    /// deliberately reauthors Stag Beetle, Girallon, Crab and Stegosaurus;
+    /// current export identities below replace only those four current assets.
     /// </summary>
     internal static class RepairedBodyTests
     {
@@ -33,13 +34,13 @@ namespace KingmakerGunslinger.DomainTests
             new Body { Path = "assets/sprint14-insects/fire-beetle-mesh.json", ClosedParts = true,
                 Sha256 = "71acda0c408a0f925f50591744f9355ecc2f8cc8c126771e33ca4cd74eb8a661" },
             new Body { Path = "assets/sprint14-insects/giant-stag-beetle-mesh.json", ClosedParts = true,
-                Sha256 = "a7276d63c5e14fb6f45adb055c437bf61980f43344ee329b4c6cd5d048cc3cd6" },
+                Sha256 = "2ecf222413eb857051b70df8b5fd61592a939108c7661ccdfb96f20fbcea794d" },
             new Body { Path = "assets/sprint19-fourarmed/girallon-mesh.json", ClosedParts = true,
-                Sha256 = "003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb" },
+                Sha256 = "e5c4e59878ff6aae7b704f8fb49925e849f348817fc160e97a1f76907ee683cb" },
             new Body { Path = "assets/sprint21-arthropods/giant-crab-mesh.json", ClosedParts = true,
-                Sha256 = "dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb" },
+                Sha256 = "34833285f367258ed5d00127c72d86bb96897df94459740d3c9fd800e720893e" },
             new Body { Path = "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json", ClosedParts = true,
-                Sha256 = "6c5dcb055eafe011e76616c7a137a18d1c8ff1a63e603ddb4dbb8328b87c4117" },
+                Sha256 = "4ea887c98387d90d546e5512cf862cd47cb5694b0bbb1f99431c83c1a12c95ef" },
         };
 
         internal static void FirstExportsShipRepairedOutward()

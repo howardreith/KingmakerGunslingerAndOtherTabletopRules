@@ -1,5 +1,42 @@
 # Sprint 25 giant-body original textures and bodies
 
+## Cleanup iteration 2 (2026-10-21)
+
+`refine_giant_bodies.py` is the current authoring entry point. The older
+prototype/export notes below describe the retained Sprint 25 baseline. On the
+actual baseline exports, all 13 Elephant components and all 9 Brachiosaurus
+components were closed but inward; their normals overwhelmingly opposed their
+triangle winding. This explains an offline reproduction of dark/missing exterior
+surfaces with normal backface culling. Native effect/material observations are
+still required and are not inferred from this diagnosis.
+
+The two `cleanup2-*-input.json` files retain the exact **original project mesh**
+exports used as authoring inputs. They contain no native mesh/bind/animation data.
+This makes regeneration independent of the unavailable later native census.
+Closest-triangle barycentric weight transfer preserves the published donor bone
+set, followed by smoothing and a spine-owned barrel rule. One voxel union forms
+the torso, neck/trunk, limb roots and tail; closed features remain separate where
+anatomically appropriate. Export refuses open, inconsistent or inward surfaces.
+
+Elephant has broad columnar limbs, rounded foot pads/toenails, thin closed ear
+fans, original tusks and a thin hanging tail. Brachiosaurus has columnar supports,
+a connected long neck/small head and a balancing tapered tail. Both receive new
+spatially painted 1024px skin albedos and UVs. The existing Brachiosaurus
+`Head`-driven stiff-neck adaptation is retained; native movement is unverified.
+The native Mastodon, other donor consumers and gameplay rules are not edited.
+
+Regenerate with Blender 4.5.10 LTS, `PYTHONHASHSEED=0`, from the repository root:
+
+```text
+blender -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint25-giant-bodies/refine_giant_bodies.py -- --kind elephant --output-dir <absolute assets/sprint25-giant-bodies> --work-dir <absolute private output>
+blender -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint25-giant-bodies/refine_giant_bodies.py -- --kind brachiosaurus --output-dir <absolute assets/sprint25-giant-bodies> --work-dir <absolute private output>
+```
+
+Two clean final runs produced identical mesh/albedo bytes. See
+`planning/CLEANUP2-LARGE-CREATURES-NOTES.md` for exact identities and focused
+offline evidence. Source `.blend` files, captures, previews and raw reports stay
+local. Native visual/behavior evidence and owner acceptance remain unverified.
+
 The Brachiosaurus and Elephant UVs and paintings are deterministic
 project-owned procedural work, the same category as the released Sprint 23
 armored-dinosaur and Sprint 24 theropod authoring. No native vertex, index,

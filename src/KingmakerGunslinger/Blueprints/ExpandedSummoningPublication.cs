@@ -17,14 +17,24 @@ namespace KingmakerGunslinger.Blueprints
 
         internal void Rollback()
         {
-            for (int index = _records.Count - 1; index >= 0; index--)
+            // Check every owned surface before restoring any parent. A later
+            // mod may mutate the component's child array without replacing
+            // ComponentsArray; that mutation must not be erased by rollback.
+            foreach (Record record in _records)
             {
-                Record record = _records[index];
                 if (!ReferenceEquals(record.Parent.ComponentsArray,
-                    record.PublishedComponents))
+                    record.PublishedComponents) ||
+                    !ReferenceEquals(record.PublishedVariants.Variants,
+                        record.PublishedVariantArray) ||
+                    !SummonVariantMergePolicy.SameReferences(
+                        record.PublishedVariantArray, record.PublishedChoices))
                     throw new InvalidOperationException(
                         "Expanded Summoning rollback refused after unrelated mutation: " +
                         record.Parent.AssetGuid);
+            }
+            for (int index = _records.Count - 1; index >= 0; index--)
+            {
+                Record record = _records[index];
                 record.Parent.ComponentsArray = record.OriginalComponents;
             }
         }
@@ -34,6 +44,9 @@ namespace KingmakerGunslinger.Blueprints
             internal BlueprintAbility Parent;
             internal BlueprintComponent[] OriginalComponents;
             internal BlueprintComponent[] PublishedComponents;
+            internal AbilityVariants PublishedVariants;
+            internal BlueprintAbility[] PublishedVariantArray;
+            internal BlueprintAbility[] PublishedChoices;
         }
     }
 
@@ -185,20 +198,17 @@ namespace KingmakerGunslinger.Blueprints
                 Array.Empty<BlueprintComponent>();
             AbilityVariants existing = before.OfType<AbilityVariants>()
                 .SingleOrDefault();
-            if ((existing == null) != (nativePreservation != null))
+            bool republishing = existing != null && string.Equals(existing.name,
+                PublishedVariantsComponentName, StringComparison.Ordinal);
+            if (!republishing && (existing == null) != (nativePreservation != null))
                 throw new InvalidOperationException(
                     "Direct summon publication requires exactly one frozen native-preservation child: " +
                     parent.AssetGuid);
             BlueprintAbility[] originals = existing == null ?
                 new[] { nativePreservation } : existing.Variants ??
                     Array.Empty<BlueprintAbility>();
-            if (originals.Any(value => value == null) ||
-                additions.Concat(nativeAdditions).Any(value => value == null) ||
-                originals.Concat(additions).Concat(nativeAdditions).GroupBy(value => value.AssetGuid,
-                    StringComparer.Ordinal).Any(group => group.Count() > 1))
-                throw new InvalidOperationException(
-                    "Expanded Summoning parent contains a null or duplicate GUID: " +
-                    parent.AssetGuid);
+            originals = SummonVariantMergePolicy.UnownedOriginals(originals,
+                additions.Concat(nativeAdditions), value => value.AssetGuid).ToArray();
             var additionSpecs = additions.Select((ability, index) => new {
                 Ability = ability, Spec = specs[index] }).ToDictionary(
                     value => value.Ability.AssetGuid, value => value.Spec,
@@ -211,14 +221,8 @@ namespace KingmakerGunslinger.Blueprints
             {
                 SummonNativeOptionSpec native = SummonNativeOptionCatalog.Find(
                     family, tier, original.AssetGuid);
-                if (SummonNativeExpansionCatalog.Replaces(family, tier,
-                        original.AssetGuid)) return false;
-                if (native == null || !native.IsSemanticDuplicate) return true;
-                int matches = specs.Count(value => value.Creature.Key ==
-                    native.EquivalentCreatureKey && value.Multiplicity ==
-                    native.Multiplicity);
-                return SummonVariantMergePolicy
-                    .PreserveNativeSemanticDuplicate(matches, native.Guid);
+                return native == null || !SummonNativeOptionCatalog
+                    .ReplacementCoverageIsComplete(native, specs, nativeSpecs);
             }).ToArray();
             IReadOnlyList<BlueprintAbility> merged = SummonDisplayOrderPolicy.Order(
                 preservedOriginals, additions.Concat(nativeAdditions),
@@ -230,6 +234,8 @@ namespace KingmakerGunslinger.Blueprints
                 }, value => additionSpecs.ContainsKey(value.AssetGuid) ?
                     additionSpecs[value.AssetGuid].Multiplicity :
                     nativeAdditionSpecs[value.AssetGuid].Multiplicity);
+            if (republishing && SummonVariantMergePolicy.SameReferences(
+                existing.Variants, merged.ToArray())) return;
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
             variants.name = PublishedVariantsComponentName;
             variants.Variants = merged.ToArray();
@@ -239,7 +245,9 @@ namespace KingmakerGunslinger.Blueprints
                     (BlueprintComponent)variants : value).ToArray();
             records.Add(new ExpandedSummoningPublication.Record {
                 Parent = parent, OriginalComponents = before,
-                PublishedComponents = after });
+                PublishedComponents = after, PublishedVariants = variants,
+                PublishedVariantArray = variants.Variants,
+                PublishedChoices = variants.Variants.ToArray() });
             parent.ComponentsArray = after;
             if (!ReferenceEquals(parent.ComponentsArray, after) ||
                 additions.Any(addition => variants.Variants.Count(value =>

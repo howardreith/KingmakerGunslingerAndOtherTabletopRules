@@ -170,6 +170,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = (string)request.Parameters["reviewPhase"];
             return ExpandedSummoningNativeProfilePolicy.Sprint29Phase(phase) ? phase : null;
         }
+        internal static string Cleanup2ReviewPhase(RuntimeTestRequest request)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                request.Parameters["reviewPhase"]?.Type != JTokenType.String) return null;
+            string phase = (string)request.Parameters["reviewPhase"];
+            return ExpandedSummoningNativeProfilePolicy.Cleanup2Phase(phase) ? phase : null;
+        }
         internal static string Sprint27ReviewPhase(RuntimeTestRequest request)
         {
             if(request==null || request.Scenario!=RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview || request.Parameters==null || request.Parameters.Count!=1 || request.Parameters["reviewPhase"]?.Type!=JTokenType.String)return null;
@@ -348,6 +356,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && (!request.ExitAfterCompletion || Sprint27ReviewPhase(request)==null))return "sprint27-native-review-phase-and-exit-required";
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview && (!request.ExitAfterCompletion || Sprint28ReviewPhase(request)==null))return "sprint28-native-review-phase-and-exit-required";
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview && (!request.ExitAfterCompletion || Sprint29ReviewPhase(request)==null))return "sprint29-native-review-phase-and-exit-required";
+            if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview && (!request.ExitAfterCompletion || Cleanup2ReviewPhase(request)==null))return "cleanup2-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint26NativeReview &&
                 (!request.ExitAfterCompletion || Sprint26ReviewPhase(request) == null))
@@ -756,12 +765,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             else if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview ||
                     request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview ||
-                    request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview)
+                    request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview ||
+                    request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)
             {
                 if(request.MainMenuTimeoutSeconds!=0 || request.ActionResolutionTimeoutSeconds!=0 || request.ActionInvocationTimeoutSeconds!=0 || request.DescriptorResolutionTimeoutSeconds!=0 || request.LoadEntryTimeoutSeconds!=0 || request.FingerprintTimeoutSeconds!=0)return "scenario-timeouts-not-allowed";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && Sprint27ReviewPhase(request)==null)return "sprint27-native-review-phase-invalid";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview && Sprint28ReviewPhase(request)==null)return "sprint28-native-review-phase-invalid";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview && Sprint29ReviewPhase(request)==null)return "sprint29-native-review-phase-invalid";
+                if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview && Cleanup2ReviewPhase(request)==null)return "cleanup2-native-review-phase-invalid";
             }
             else if (request.Scenario ==
                 RuntimeTestScenarioCatalog.ObserveOptionalModCompatibility)

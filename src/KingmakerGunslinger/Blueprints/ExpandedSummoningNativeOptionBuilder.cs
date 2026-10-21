@@ -73,8 +73,8 @@ namespace KingmakerGunslinger.Blueprints
                 target.ActionBarAutoFillIgnored = false;
                 BlueprintUnitFactAccess.Resolve().Configure(target,
                     LocalizationService.Create("KMG.ExpandedSummoning.Native." +
-                        spec.Symbol + ".Name", spec.DisplayName + Suffix(
-                            spec.Multiplicity)),
+                        spec.Symbol + ".Name", SummonChoicePresentationPolicy.For(
+                            spec.IconKey, spec.Multiplicity).Label),
                     LocalizationService.Create("KMG.ExpandedSummoning.Native." +
                         spec.Symbol + ".Description", "Summons " +
                         spec.DisplayName + " through Owlcat's native summon " +

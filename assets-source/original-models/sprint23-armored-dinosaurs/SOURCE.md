@@ -78,3 +78,38 @@ UVs, weights and bones are unchanged.
 To reproduce the shipped bytes, run the generator, then the repair on its
 output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
 the result and checks it is lit from the front.
+
+## Cleanup 2 Stegosaurus revision (2026-10-21)
+
+`build_stegosaurus.py` supersedes the old Stegosaurus generator. It replaces
+the circular radius-.86 torso plus overlapping large ellipsoids with one
+elongated elliptical barrel, supported by four connected weight-blended
+legs. The narrow low neck, small eyed head, high hips, muscular six-joint
+tail, nine staggered dorsal plates and four thagomizer spikes are distinct.
+Opaque outward surfaces receive an original mottled olive skin with dorsal
+bands and a lighter belly. This is a local anatomy revision, not a uniform
+view scale change. The Triceratops source/runtime helpers and exported bytes
+are unchanged.
+
+The private `sprint22-ankylosaurus-contracts.json` supplies only the measured
+Hodag bind skeleton/action metadata, SHA-256
+`33ce3ad77a73d752d53aeae7de9effdc3b3b20a94fc8b2949d511d697f72a1c1`.
+The actual native donor identity and existing six tail controls are retained.
+
+```text
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint23-armored-dinosaurs/build_stegosaurus.py -- --capture <private sprint22-ankylosaurus-contracts.json> --albedo <out>/stegosaurus-albedo.png --mesh-data <out>/stegosaurus-mesh.json --report <private report.json> --blend-out <private source.blend>
+```
+
+| Current file | SHA-256 |
+| --- | --- |
+| `stegosaurus-mesh.json` | `4ea887c98387d90d546e5512cf862cd47cb5694b0bbb1f99431c83c1a12c95ef` |
+| `stegosaurus-albedo.png` | `27ef9768948c6f28a2836a28cfa45e9be03220b8f590d15af656212e540511bf` |
+
+Two clean Blender 4.5.10 processes reproduce both files exactly. The scoped
+`../sprint21-arthropods/verify_cleanup2_bodies.py` checks closed outward
+components, normals, weights and one continuous body carrying all four limbs,
+neck/head and six tail controls. `stegosaurus-stress-poses.json` probes stride
+and tail extremes offline. Native side/rear views, walking/tail contact and
+owner aesthetic acceptance remain separate and unverified by those probes.
+
+Earlier sections are retained historical records.

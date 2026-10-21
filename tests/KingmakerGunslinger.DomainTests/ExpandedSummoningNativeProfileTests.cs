@@ -5,6 +5,22 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void Cleanup2RequiresExactFreshSaveFreePhase()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview;
+            foreach (string phase in new[] { "giant-lineup", "menus", "elementals", "bodies" })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact fresh Cleanup2 phase is admitted: " + phase);
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Cleanup2 must exit automatically.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 1, 0, 0, false, false, false, false, true), "Cleanup2 must preserve an existing world.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, true, false, true), "Cleanup2 must never import a save.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, false), "Cleanup2 needs owned idle menu admission.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 2, phase), "A save or other extra parameter is refused.");
+            }
+            foreach (string phase in new[] { null, "all", "Menus", "giant-lineup ", "routes" })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase), "Unqualified or foreign phases are refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 0, null), "Cleanup2 requires exactly one explicit phase.");
+        }
         internal static void BitesCannotSatisfyClawDismantle()
         {
             Assertions.True(ExpandedSummoningNativeProfilePolicy.BiteArmorControl(true,true,true,false,true), "Two bites leave exact armor unchanged.");

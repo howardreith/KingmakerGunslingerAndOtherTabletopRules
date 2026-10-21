@@ -177,6 +177,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
+    'disposable-expanded-summoning-cleanup2-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
     'observe-expanded-summoning-sprint21-census',
@@ -871,6 +872,32 @@ foreach ($invalid in @(@{}, @{reviewPhase='all'}, @{reviewPhase='unknown-phase'}
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint25ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='rtwp-foundation'} } 'sprint25-review-requires-exit'
 $sprint28ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint28-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
 $sprint29ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-sprint29-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+$cleanup2ReviewArgs = @{ Scenario = 'disposable-expanded-summoning-cleanup2-native-review'; ExpectedVersion = $activeVersion; TimeoutSeconds = 900; StartupTimeoutSeconds = 180 }
+$cleanup2Metadata = Get-KmgRuntimeScenarioMetadata $cleanup2ReviewArgs.Scenario
+Assert-True (-not $cleanup2Metadata.RequiresSaveName -and $null -eq $cleanup2Metadata.PermittedSaveName -and
+    -not $cleanup2Metadata.RequiresManualInteraction -and $cleanup2Metadata.ReadinessBehavior -ceq 'mod-load' -and
+    -not $cleanup2Metadata.UsesCatalogTimeout -and -not $cleanup2Metadata.UsesSelectionTimeouts -and
+    -not $cleanup2Metadata.UsesWorkingStageTimeouts) 'cleanup2-is-save-free-mod-load-review'
+foreach($phase in @('giant-lineup','menus','elementals','bodies')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) "cleanup2-admits-$phase"
+    $cleanup2Request=New-KmgRuntimeRequest @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot ('cleanup2-preflight-'+$phase))
+    $cleanup2RoundTrip=$cleanup2Request | ConvertTo-Json -Depth 10 | ConvertFrom-Json
+    Assert-True ($cleanup2RoundTrip.scenario -ceq $cleanup2ReviewArgs.Scenario -and
+        $cleanup2RoundTrip.exitAfterCompletion -and @($cleanup2RoundTrip.parameters.PSObject.Properties).Count -eq 1 -and
+        $cleanup2RoundTrip.parameters.reviewPhase -ceq $phase) "cleanup2-serializes-only-exact-phase-$phase"
+    Assert-Throws {Assert-KmgRuntimeScenarioPreflight @cleanup2ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase}} "cleanup2-requires-exit-$phase"
+    Assert-Throws {New-KmgRuntimeRequest @cleanup2ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'cleanup2-no-exit')} "cleanup2-request-requires-exit-$phase"
+}
+foreach($invalid in @(@{},@{reviewPhase='Giant-Lineup'},@{reviewPhase='Menus'},@{reviewPhase='Elementals'},@{ReviewPhase='menus'},
+    @{reviewPhase='profiles'},@{reviewPhase='all'},@{reviewPhase='unknown'},@{reviewPhase='menus '},
+    @{reviewPhase=$null},@{reviewPhase=$true},@{reviewPhase=@('menus')},@{reviewPhase='menus';extra='untrusted'},
+    @{reviewPhase='giant-lineup';saveName='KMG_AUTOMATION_WORKING'})) {
+    Assert-Throws {Assert-KmgRuntimeScenarioPreflight @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters $invalid} 'cleanup2-refuses-missing-case-type-phase-and-extra'
+    Assert-Throws {New-KmgRuntimeRequest @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters $invalid -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'cleanup2-invalid-request')} 'cleanup2-request-refuses-invalid-parameters'
+}
+. (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+Assert-True (Test-KmgExactSummoningRuntimeBoundary $cleanup2ReviewArgs.Scenario) 'cleanup2-keeps-exact-receipt-and-independent-restoration-boundary'
+Assert-True (-not (Test-KmgCleanup2ReviewPhaseScope 'disposable-expanded-summoning-native-profile' @{reviewPhase='menus'})) 'cleanup2-phase-scope-does-not-authorize-another-scenario'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'})) 'sprint29-profiles-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='modes'})) 'sprint29-modes-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'})) 'sprint29-commands-admitted'

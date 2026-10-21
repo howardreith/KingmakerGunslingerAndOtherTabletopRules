@@ -157,3 +157,42 @@ visual control, is unchanged.
 To reproduce the shipped bytes, run the generator, then the repair on its
 output with `--marker outward-visual-refinement`. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
 the result and checks it is lit from the front.
+
+## Cleanup 2 authored Crab revision (2026-10-21)
+
+`build_giant_crab.py` supersedes the legacy crab generator. It replaces the
+round separate palm and thin raised legs with a broad low shell, eight
+segmented connected leg surfaces, and two continuous asymmetric chelae whose
+open fingers grow from flattened palms. New original mottled warm-brown
+chitin includes a lighter shell rim and dark working tips. This is an anatomy
+and weight revision, beyond the previous outward-only repair above.
+
+The input is the private Sprint 14 `sprint14-giant-spider-bind-rig.json`, SHA-256
+`60074cc2edb939cd4ab3e49961eec470866f94096d40e97f490dedae60faa19b`.
+Sprint 21 independently measured this same 51-bone Giant Spider frame. The
+actual reused capture hash is recorded honestly in the payload. No native
+vertices, pixels or animation curves are read. The donor still walks forward;
+`CRAB_WALKS_A_SPIDER_RIG_FRONT_TO_BACK` remains explicit.
+
+```text
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint21-arthropods/build_giant_crab.py -- --capture <private sprint14-giant-spider-bind-rig.json> --albedo <out>/giant-crab-albedo.png --mesh-data <out>/giant-crab-mesh.json --report <private report.json> --blend-out <private source.blend>
+python assets-source/original-models/sprint21-arthropods/verify_cleanup2_bodies.py --root <repository> --out <private report.json>
+```
+
+The existing continuous-body library is unchanged. New offline helper
+`cleanup2_authored_parts.py` supplies union export, deterministic painting and
+local driver interpolation for this explicitly assigned cleanup group.
+
+| Current file | SHA-256 |
+| --- | --- |
+| `giant-crab-mesh.json` | `34833285f367258ed5d00127c72d86bb96897df94459740d3c9fd800e720893e` |
+| `giant-crab-albedo.png` | `1182b139b3a8dc049eaa68d7db8d9bcf865d02e321af2e8d13b46688866409ce` |
+
+Two clean Blender 4.5.10 processes produce identical mesh and PNG bytes.
+Closed outward topology, eight complete leg chains, two whole chela chains,
+normalized weights and seam continuity pass offline checks. Synthetic probes
+in `cleanup2-arthropod-stress-poses.json` are authoring evidence only. Native
+movement/turn/claw/contact evidence and owner visual acceptance remain with
+the integrator; no native or aesthetic PASS is granted here.
+
+Earlier sections are retained historical source and qualification records.

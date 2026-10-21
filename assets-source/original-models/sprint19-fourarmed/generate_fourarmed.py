@@ -282,6 +282,11 @@ def build_arm(bm, weights, uvs, rig, shape, side, lower):
     identical to the upper arm's. That is the whole of
     FOUR_ARMS_SHARE_TWO_DRIVER_CHAINS: two arms, one chain, no new bone.
     """
+    if shape["girallon"]:
+        import girallon_connected_hands
+        girallon_connected_hands.build(bm, weights, uvs, rig, shape, side,
+                                        lower, sys.modules[__name__])
+        return
     bulk = shape["bulk"] * (shape["lowerScale"] if lower else 1.0)
     offset = lower_offset(shape, side) if lower else None
     girallon = shape["girallon"]
@@ -504,10 +509,21 @@ def export(args, rig_data, rig, rig_hash):
     shared.write_mesh_data(args.mesh_data, obj, mesh, indexed, painted, report,
                            args.albedo)
     payload = json.loads(Path(args.mesh_data).read_text(encoding="utf-8"))
+    if args.kind == "girallon":
+        # The legacy exporter reverses all triangles. Every authored part
+        # is outward before export; retain that order and prove closure.
+        from cleanup2_authored_parts import cb
+        cb.restore_outward_winding(payload)
+        import girallon_connected_hands
+        girallon_connected_hands.smooth_atlas_seam_normals(payload)
     payload.update(space=SPACE, triangleWinding=WINDING, creature=args.kind,
                    donorBlueprint=capture.BLUEPRINT, donorPrefab=capture.PREFAB,
                    donorRenderer=capture.BODY_RENDERER)
     payload.update(anatomy(shape))
+    if args.kind == "girallon":
+        payload.update(triangleWinding="outward-visual-refinement",
+                       cleanupIteration=2, connectedArmHandSurfaces=4,
+                       lowerHandsUseForearmDriver=True)
     Path(args.mesh_data).write_text(json.dumps(payload, indent=1) + "\n",
                                     encoding="utf-8", newline="\n")
     bpy.ops.wm.save_as_mainfile(filepath=str(Path(args.blend_out).resolve()))

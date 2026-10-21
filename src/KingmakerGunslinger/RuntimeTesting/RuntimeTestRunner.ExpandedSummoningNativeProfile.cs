@@ -70,7 +70,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool idleMenu = _summoningProfileMenu != null && entered != null &&
                         !(bool)entered.GetValue(_summoningProfileMenu) &&
                         EventBus.IsGloballySubscribed(_summoningProfileMenu);
-                    string nativeReviewPhase = IsSprint29Review ? RuntimeTestRequestParser.Sprint29ReviewPhase(_request) : IsSprint28Review ? RuntimeTestRequestParser.Sprint28ReviewPhase(_request) : IsSprint27Review ? RuntimeTestRequestParser.Sprint27ReviewPhase(_request) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                    string nativeReviewPhase = IsSummonCleanup2Review ? RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) : IsSprint29Review ? RuntimeTestRequestParser.Sprint29ReviewPhase(_request) : IsSprint28Review ? RuntimeTestRequestParser.Sprint28ReviewPhase(_request) : IsSprint27Review ? RuntimeTestRequestParser.Sprint27ReviewPhase(_request) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
                         ? RuntimeTestRequestParser.Sprint26ReviewPhase(_request)
                         : _request.Scenario ==
                             RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint25NativeReview
@@ -108,7 +108,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset = UnityEngine.Object.Instantiate(_summoningProfileOriginal);
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
-                    if(IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request)=="outdoor-locomotion") {
+                    if ((IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
+                        (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "giant-lineup" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies"))) {
                         var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
                             "758559f44d15fc844bf30a10a83154d5","established native Oleg outdoor fixture").AreaEntrance;
                         if(entry?.Area==null || entry.Area.AssetGuid!="ead426a6c23d39548a670ee515d77df4")
@@ -204,7 +206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .DisposableExpandedSummoningSprint24NativeReview ||
                         _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint25NativeReview ||
-                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review))
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSummonCleanup2Review))
                     { _summoningProfileStage=4; return; }
                     _summoningProfileResult = _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableAlternateSummoningPlayerPaths
@@ -217,7 +219,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (_summoningProfileClock.Elapsed.TotalSeconds >= _request.TimeoutSeconds)
                         throw new TimeoutException("Expanded Summoning native review exceeded its declared scenario deadline.");
-                    bool complete = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review)
+                    bool complete = (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSummonCleanup2Review)
                         ? PollSprint25NativeReview()
                         : _request.Scenario == RuntimeTestScenarioCatalog
                             .DisposableExpandedSummoningSprint25NativeReview
@@ -252,7 +254,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         if (_request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint25NativeReview ||
-                            (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review))
+                            (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSummonCleanup2Review))
                             CleanupSprint25NativeReview();
                         else if (_request.Scenario == RuntimeTestScenarioCatalog
                                 .DisposableExpandedSummoningSprint24NativeReview)
