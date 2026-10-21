@@ -883,6 +883,8 @@ Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='disarm'})) 'sprint29-disarm-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='awesome'})) 'sprint29-awesome-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='awesome-turn'})) 'sprint29-awesome-turn-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='catch'})) 'sprint29-catch-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave'})) 'sprint29-cleave-admitted'
 $sprint29ProfileRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='profiles'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight')
 Assert-True ($sprint29ProfileRequest.parameters.reviewPhase -ceq 'profiles') 'sprint29-profiles-serialized'
 $sprint29CommandRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='commands'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-commands')
@@ -901,7 +903,9 @@ $sprint29AwesomeRequest = New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCo
 Assert-True ($sprint29AwesomeRequest.parameters.reviewPhase -ceq 'awesome') 'sprint29-awesome-serialized'
 Assert-True ((New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='ai-turns'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-ai-turns')).parameters.reviewPhase -ceq 'ai-turns') 'sprint29-ai-turns-serialized'
 Assert-True ((New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='awesome-turn'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-awesome-turn')).parameters.reviewPhase -ceq 'awesome-turn') 'sprint29-awesome-turn-serialized'
-foreach ($invalid in @(@{}, @{reviewPhase='Profiles'}, @{reviewPhase='Commands'}, @{reviewPhase='AI'}, @{reviewPhase='Items'}, @{reviewPhase='Disarm'}, @{reviewPhase='Awesome'}, @{reviewPhase='magic'}, @{reviewPhase='profiles';saveName='KMG_AUTOMATION_WORKING'})) {
+Assert-True ((New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='catch'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-catch')).parameters.reviewPhase -ceq 'catch') 'sprint29-catch-serialized'
+Assert-True ((New-KmgRuntimeRequest @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters @{reviewPhase='cleave'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's29-preflight-cleave')).parameters.reviewPhase -ceq 'cleave') 'sprint29-cleave-serialized'
+foreach ($invalid in @(@{}, @{reviewPhase='Profiles'}, @{reviewPhase='Commands'}, @{reviewPhase='AI'}, @{reviewPhase='Items'}, @{reviewPhase='Disarm'}, @{reviewPhase='Awesome'}, @{reviewPhase='Catch'}, @{reviewPhase='Cleave'}, @{reviewPhase='magic'}, @{reviewPhase='profiles';saveName='KMG_AUTOMATION_WORKING'})) {
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $true -Parameters $invalid } 'sprint29-rejects-extra-missing-or-unimplemented-phase'
 }
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @sprint29ReviewArgs -ExitAfterCompletion $false -Parameters @{reviewPhase='profiles'} } 'sprint29-requires-exit'

@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "sprint": 29,
-  "status": "BOOTSTRAP_QUALIFIED",
+  "status": "HIDDEN_GAMEPLAY_QUALIFICATION",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_DIRECT_MAGIC_AND_CLOUD_STORM_RTWP_AI_MAGIC_PASS; TARGET_BOUNDARIES_ITEMS_AWESOME_BLOW_PERSISTENCE_PENDING",
+  "awesomeBlowObstacleDecision": "Owner approved documenting the installed static-wall HP-consumer limitation for the printed obstacle object's own 1d6. Victim collision 1d6 remains required and qualified on its recorded native artifact.",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_AI_MAGIC_ITEMS_AWESOME_BLOW_LIFETIME_AND_TARGETED_ON_OFF_WORKING_PERSISTENCE_PASS; AFFECTED_CONTROLS_AND_PUBLIC_ROUTES_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -14,7 +15,8 @@
     "turnsPreflight": "PASS: 706 no-game assertions under Limited Interactive account; child and task exit zero. Native turn-based issued commands separately qualified below.",
     "magicPreflight": "PASS: focused production compilation and 709 no-game assertions under Limited Interactive account; child and task exit zero. Native Cloud and Storm development results recorded below.",
     "aiPreflight": "PASS: focused production compilation, two sprint29 domain tests and 712 no-game scenario request/refusal checks under Limited Interactive account; one-use task and child exited zero. Separate native AI receipts below.",
-    "itemsPreflight": "PASS: focused production compilation, two Sprint 29 domain tests and 715 no-game guarded scenario preflight checks including positive/negative items phase admission. Native item ownership, transfer, death and expiry remain pending."
+    "itemsPreflight": "PASS: focused production compilation, two Sprint 29 domain tests and 715 no-game guarded scenario preflight checks including positive/negative items phase admission. Native item ownership, transfer, death and expiry remain pending.",
+    "affectedControlsPreflight": "PASS: focused production compilation, 3/3 selected Sprint 29 domain tests, and 740 no-game scenario preflight checks under Limited Interactive account; child/task exit zero, task removed. These source checks do not qualify native catch/Cleave behavior."
   },
   "firstNativeProfiles": {
     "source": "bb580408cdaf31edb979955ff18ffd8cda5bc4f9",
@@ -454,6 +456,34 @@
     "result": "FAIL 16 PASS/2 FAIL: all three saved owners loaded with exact profiles, thirteen distinct nonlootable owned items, spent Cloud/Storm magic and catch ledger; owner units/views were destroyed, but eight Ettin second-head renderer material instances survived and were UNRESOLVED to the resource observer. The second failure is the intentionally withheld cleanup save. Absent was not run.",
     "restoration": "PASS: original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850, creation/write ticks and attributes exact; full before/restored intake JSON comparison exact for Mods 967, saves 118, references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases.",
     "repair": "Capture only project-created Ettin head root and its original plus renderer-instanced materials from the exact view ownership table; destroy those materials in native view teardown and register the same exact ownership for cleanup evidence. Focused compilation and 3/3 Sprint 29 source tests passed; native recheck pending."
+  },
+  "workingOnQualified": {
+    "source": "dd676afe48898477ae046e2979f544d5f2350f84",
+    "artifactZipSha256": "c48f85a835b653c3a13462693a483063b1bcfc722af5c48db0d533b7a703470c",
+    "artifactDllSha256": "80cb2cbb1cbdb152a35403f64ea47863d6c18c6e949ab2ac390ec5367e3fe611",
+    "artifactMvid": "bf7c32df-b1d5-4f64-bb95-d9f6463172ac",
+    "runIds": {
+      "prepare": "20261021T1246499439648Z-d67ae05286244285986663c39249e51b",
+      "cleanup": "20261021T1253196130388Z-9ca6d479c4d447fdae2c04b308a48e00",
+      "absent": "20261021T1300389031296Z-424fa7e9938f434c9d85c5a839f8a8f8"
+    },
+    "result": "PASS 19/19 prepare, 18/18 cleanup and 6/6 fresh absence native assertions in three Limited guarded processes. All three saved hidden owners retained exact profiles, thirteen unique nonlootable owned items, spent Cloud/Storm resources and catch ledgers. Cleanup destroyed the exact units and all thirteen recorded Ettin head resources: zero surviving, unresolved or shared; no unrelated party item changed. Fresh load found no receipt-owned units.",
+    "restoration": "PASS after every stage outside Working and full final intake: Mods 967, saves 118, private references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact; original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and timestamps/attributes restored exactly.",
+    "limits": "Exact hidden development package, not a public or release artifact."
+  },
+  "workingOffQualified": {
+    "source": "dd676afe48898477ae046e2979f544d5f2350f84",
+    "artifactZipSha256": "c48f85a835b653c3a13462693a483063b1bcfc722af5c48db0d533b7a703470c",
+    "artifactDllSha256": "80cb2cbb1cbdb152a35403f64ea47863d6c18c6e949ab2ac390ec5367e3fe611",
+    "artifactMvid": "bf7c32df-b1d5-4f64-bb95-d9f6463172ac",
+    "runIds": {
+      "prepare": "20261021T1307175726918Z-f768e1da46334cfeb5547e402cb12da8",
+      "cleanup": "20261021T1313397962092Z-5cc1de6c398c41f5a84494c21a3fb392",
+      "absent": "20261021T1319577289391Z-213243b671414ac186022319850fe936"
+    },
+    "result": "PASS 19/19 module-ON prepare, 19/19 module-OFF cleanup and 6/6 fresh module-ON absence native assertions in three Limited guarded processes. Exact saved identities deserialized with the module OFF, module publication/visual allocation stayed OFF, receipt-owned units and resources retired safely, and fresh ON load found no remnants.",
+    "restoration": "PASS after every stage outside Working and full final intake: Mods 967, saves 118, private references 18, settings 83, tasks 0, Steam-only process 1, sound bank and leases exact; original Working SHA-256 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 and timestamps/attributes restored exactly.",
+    "limits": "Exact hidden development package, not a public or release artifact."
   },
   "publicSurface": {
     "registeredCreatures": 117,
