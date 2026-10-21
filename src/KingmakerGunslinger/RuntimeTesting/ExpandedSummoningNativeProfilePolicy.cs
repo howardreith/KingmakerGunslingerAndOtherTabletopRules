@@ -25,7 +25,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             phase == "items" || phase == "disarm" ||
             phase == "awesome" || phase == "awesome-turn" ||
             phase == "catch" || phase == "cleave" ||
-            phase == "vital" || phase == "vital-turn"; }
+            phase == "vital" || phase == "vital-turn" ||
+            phase == "routes"; }
         internal static bool Sprint27Phase(string phase)
         {
             return phase == "rtwp-foundation" || phase == "pounce-rtwp" ||

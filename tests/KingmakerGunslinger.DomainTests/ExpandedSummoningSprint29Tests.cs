@@ -9,7 +9,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprint29Tests
     {
-        internal static void HiddenRoutesAreExactAndPublishedSurfaceIsPreserved()
+        internal static void PublicRoutesAreExactAndPriorSurfaceIsPreserved()
         {
             SummonVisibilityCatalog.Validate();
             var all = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
@@ -27,35 +27,35 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(routes.All(value =>
                     value.Family == SummonFamily.NaturesAlly &&
                     !value.Creature.MonsterTemplated &&
-                    !SummonVisibilityCatalog.IsPublished(value)),
-                    row.Key + " has no public or templated route.");
+                    SummonVisibilityCatalog.IsPublished(value)),
+                    row.Key + " has only public untemplated SNA routes.");
                 Assertions.True(SummonIconCatalog.All.Any(value =>
                     value.Key == row.Key), row.Key + " has a real icon record.");
             }
             Assertions.Equal(1127, all.Length, "Registered logical roots.");
-            Assertions.Equal(1119, all.Count(SummonVisibilityCatalog.IsPublished),
-                "Existing published roots stay visible.");
-            Assertions.Equal(8, all.Count(value =>
+            Assertions.Equal(1127, all.Count(SummonVisibilityCatalog.IsPublished),
+                "All eight new roots join the preserved published roots.");
+            Assertions.Equal(0, all.Count(value =>
                 !SummonVisibilityCatalog.IsPublished(value)),
-                "Only the eight new roots are suppressed.");
+                "No registered root remains suppressed.");
         }
 
-        internal static void MissingSuppressionOrIdentityIsRejected()
+        internal static void UnexpectedSuppressionOrMissingIdentityIsRejected()
         {
             var field = typeof(SummonVisibilityCatalog).GetField(
                 "SuppressedCreatureKeys", BindingFlags.Static | BindingFlags.NonPublic);
             var suppressed = (HashSet<string>)field.GetValue(null);
-            Assertions.True(suppressed.Remove("storm-giant"),
-                "The Storm suppression exists before the negative check.");
+            Assertions.True(suppressed.Add("storm-giant"),
+                "Storm is public before the negative check.");
             try
             {
                 Assertions.Throws<InvalidOperationException>(
                     () => SummonVisibilityCatalog.Validate(),
-                    "A missing required suppression must fail validation.");
+                    "A reintroduced suppression must fail validation.");
             }
             finally
             {
-                suppressed.Add("storm-giant");
+                suppressed.Remove("storm-giant");
             }
             SummonVisibilityCatalog.Validate();
 
@@ -68,7 +68,7 @@ namespace KingmakerGunslinger.DomainTests
                 "A missing private dependency must fail identity validation.");
         }
 
-        internal static void HiddenPersistenceScopeRejectsUnrelatedKeys()
+        internal static void PublicPersistenceScopeRejectsUnrelatedKeys()
         {
             string scope = ExpandedSummoningRosterPersistencePolicy
                 .GiantHumanoidsTwoScope;
@@ -79,8 +79,8 @@ namespace KingmakerGunslinger.DomainTests
                     .SelectCreatureVariant(scope, key);
                 Assertions.True(route.Family == SummonFamily.NaturesAlly &&
                     route.Multiplicity == SummonMultiplicity.One &&
-                    !SummonVisibilityCatalog.IsPublished(route),
-                    "The named persistence fixture may instantiate only its registered hidden one-creature route.");
+                    SummonVisibilityCatalog.IsPublished(route),
+                    "The named persistence fixture selects only its published one-creature route.");
             }
             Assertions.True(ExpandedSummoningRosterPersistencePolicy
                 .ExactSelectedKeys(scope, new[] { "storm-giant", "ettin",

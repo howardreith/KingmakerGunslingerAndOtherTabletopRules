@@ -106,11 +106,11 @@ namespace KingmakerGunslinger.Summoning
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(
-                new[] { "ettin", "cloud-giant", "storm-giant" },
+                new string[0],
                 StringComparer.Ordinal);
 
         internal const int RegisteredLogicalPlacementCount = 1127;
-        internal const int SuppressedLogicalPlacementCount = 8;
+        internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -134,7 +134,7 @@ namespace KingmakerGunslinger.Summoning
             bool sprint29Routes =
                 sprint29.Length == 8 &&
                 sprint29.All(value => value.Family == SummonFamily.NaturesAlly &&
-                    !value.Creature.MonsterTemplated && !IsPublished(value)) &&
+                    !value.Creature.MonsterTemplated && IsPublished(value)) &&
                 sprint29Keys.All(key => sprint29.Where(value =>
                     value.Creature.Key == key).Select(value => value.ParentTier)
                     .OrderBy(value => value).SequenceEqual(key == "ettin" ?
@@ -158,8 +158,7 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                !SuppressedCreatureKeys.OrderBy(value => value)
-                    .SequenceEqual(sprint29Keys.OrderBy(value => value)) ||
+                SuppressedCreatureKeys.Count != 0 ||
                 !sprint29Routes || !giantRoutes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()

@@ -81,7 +81,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.159.md',
     'docs\RELEASE-NOTES-0.0.160.md',
     'docs\RELEASE-NOTES-0.0.161.md',
-    'docs\RELEASE-NOTES-0.0.162.md')) {
+    'docs\RELEASE-NOTES-0.0.162.md',
+    'docs\RELEASE-NOTES-0.0.163.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -276,10 +277,10 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
 # the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
 # v0.0.160 notes: six files. Griffon adds its assets/notes; Sprint28 adds
-# three giant portraits and the v0.0.162 release notes. Sprint29 prepares
-# three original giant portraits. The optional bank/manifest remain a
+# three giant portraits and the v0.0.162 release notes. Sprint29 adds
+# three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

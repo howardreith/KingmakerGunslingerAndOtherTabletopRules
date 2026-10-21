@@ -25,6 +25,54 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool IsSprint29Review { get { return _request.Scenario ==
             RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview; } }
 
+        private void ReviewSprint29Routes(
+            ExpandedSummoningCorrectionFixture fixture)
+        {
+            string[] keys = { "ettin", "cloud-giant", "storm-giant" };
+            SummonVariantSpec[] routes = ExpandedSummoningCatalog
+                .GenerateVariants(SummonFamily.NaturesAlly)
+                .Where(value => keys.Contains(value.Creature.Key))
+                .OrderBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .ThenBy(value => value.ParentTier).ToArray();
+            bool exact = routes.Length == 8 &&
+                !ExpandedSummoningCatalog.GenerateVariants(
+                    SummonFamily.Monster).Any(value =>
+                        keys.Contains(value.Creature.Key)) &&
+                routes.Where(value => value.Creature.Key == "ettin")
+                    .Select(value => value.ParentTier)
+                    .SequenceEqual(new[] { 5, 6, 7, 8, 9 }) &&
+                routes.Where(value => value.Creature.Key == "cloud-giant")
+                    .Select(value => value.ParentTier)
+                    .SequenceEqual(new[] { 8, 9 }) &&
+                routes.Where(value => value.Creature.Key == "storm-giant")
+                    .Select(value => value.ParentTier)
+                    .SequenceEqual(new[] { 9 }) &&
+                routes.All(value => SummonVisibilityCatalog.IsPublished(value) &&
+                    !value.Creature.MonsterTemplated) &&
+                SummonVisibilityCatalog.PublishedLogicalPlacementCount ==
+                    SummonVisibilityCatalog.RegisteredLogicalPlacementCount &&
+                SummonVisibilityCatalog.SuppressedLogicalPlacementCount == 0;
+            Sprint25Check("s29-eight-public-route-census", exact,
+                new JObject {
+                    ["routes"] = new JArray(routes.Select(value =>
+                        value.StableKey)),
+                    ["published"] = routes.Count(
+                        SummonVisibilityCatalog.IsPublished),
+                    ["monster"] = ExpandedSummoningCatalog
+                        .GenerateVariants(SummonFamily.Monster)
+                        .Count(value => keys.Contains(value.Creature.Key)),
+                    ["registeredRoots"] = SummonVisibilityCatalog
+                        .RegisteredLogicalPlacementCount,
+                    ["publishedRoots"] = SummonVisibilityCatalog
+                        .PublishedLogicalPlacementCount,
+                    ["suppressedRoots"] = SummonVisibilityCatalog
+                        .SuppressedLogicalPlacementCount
+                }, "Exactly eight untemplated public SNA routes and no Monster route, with all prior roots retained.");
+            if (!exact) throw new InvalidOperationException(
+                "Sprint 29 public route census is not exact.");
+            Sprint24PlayerRoutes(fixture, routes, Sprint25Check, false);
+        }
+
         // First complete native path: one bounded fresh-world execution
         // covers the three exact hidden-candidate bodies, their adult chassis,
         // resolved armament and initial resources. Combat and public routes
@@ -40,7 +88,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "items" || phase == "disarm" ||
                 phase == "awesome" || phase == "awesome-turn" ||
                 phase == "catch" || phase == "cleave" ||
-                phase == "vital" || phase == "vital-turn",
+                phase == "vital" || phase == "vital-turn" ||
+                phase == "routes",
                 new JObject { ["phase"] = phase },
                 "Exactly one implemented Sprint 29 native review phase.");
             if (phase == "commands" || phase == "turns")
@@ -48,6 +97,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewSprint29Commands(fixture,
                     phase == "turns"))
                     yield return frame;
+                yield break;
+            }
+            if (phase == "routes")
+            {
+                ReviewSprint29Routes(fixture);
                 yield break;
             }
             if (phase == "cloud-magic" || phase == "storm-magic")
@@ -119,12 +173,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldPause = Game.Instance.IsPaused;
             try
             {
-                var hiddenRoutes = ExpandedSummoningCatalog
+                var sprint29Routes = ExpandedSummoningCatalog
                     .GenerateVariants(SummonFamily.NaturesAlly)
                     .Where(value => value.Creature.Key == "ettin" ||
                         value.Creature.Key == "cloud-giant" ||
                         value.Creature.Key == "storm-giant").ToArray();
-                var hiddenIds = new HashSet<string>(hiddenRoutes.Select(value =>
+                var sprint29Ids = new HashSet<string>(sprint29Routes.Select(value =>
                     fixture.Blueprints.OfType<BlueprintAbility>().Single(ability =>
                         ability.name == ExpandedSummoningInternalName(
                             ExpandedSummoningIdentityCatalog.AbilitySymbol(value)))
@@ -146,18 +200,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ExpandedSummoningInternalName(
                             ExpandedSummoningIdentityCatalog.AbilitySymbol(hill)))
                     .AssetGuid;
-                Sprint25Check("hidden-publication",
-                    hiddenRoutes.Length == 8 && hiddenIds.Count == 8 &&
-                    displayed.All(value => !hiddenIds.Contains(value.AssetGuid)) &&
+                Sprint25Check("public-publication",
+                    sprint29Routes.Length == 8 && sprint29Ids.Count == 8 &&
+                    displayed.Count(value => sprint29Ids.Contains(
+                        value.AssetGuid)) == 8 &&
                     parents[14].ComponentsArray.OfType<AbilityVariants>()
                         .Single().Variants.Any(value => value.AssetGuid == hillGuid),
-                    new JObject { ["hiddenRoots"] = hiddenRoutes.Length,
-                        ["hiddenInParents"] = displayed.Count(value =>
-                            hiddenIds.Contains(value.AssetGuid)),
+                    new JObject { ["sprint29Roots"] = sprint29Routes.Length,
+                        ["publicInParents"] = displayed.Count(value =>
+                            sprint29Ids.Contains(value.AssetGuid)),
                         ["releasedHillTier6Present"] = parents[14]
                             .ComponentsArray.OfType<AbilityVariants>().Single()
                             .Variants.Any(value => value.AssetGuid == hillGuid) },
-                    "All new roots are absent from live parents and a released giant remains present.");
+                    "All eight new roots appear in live parents and a released giant remains present.");
                 Game.Instance.IsPaused = true;
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();
