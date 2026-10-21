@@ -109,7 +109,16 @@ if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.15
     $reachedOutputValidator = $false
     try { & $actualPackage -PackagePath (Join-Path $boundary 'artifacts\custom.zip') } catch { $reachedOutputValidator = $_.Exception.Message -ceq 'Unexpected broad child: validate-build-output.ps1' }
     if (-not $reachedOutputValidator) { throw 'Valid package path did not retain output validation.' }
-    Write-Host 'Development gate: PASS=8 FAIL=0; observed production/test children, publisher reuse/filter isolation and package output guards. Offline orchestration only.'
+    # The isolated Build-Local fixture writes a ZIP but no validated receipt.
+    # A full gate must refuse it even when that child returned normally.
+    $missingManifestRefused = $false
+    try { & $gate -Level Sprint -MSBuildPath $compiler } catch {
+        $missingManifestRefused = $_.Exception.Message -like '*validated candidate ZIP and manifest*'
+    }
+    if (-not $missingManifestRefused -or $env:KMG_TEST_FILTER -cne 'prior') {
+        throw 'Full gate accepted an unreceipted package or leaked its filter.'
+    }
+    Write-Host 'Development gate: PASS=9 FAIL=0; observed production/test children, publisher reuse/filter isolation and package output guards. Offline orchestration only.'
 } finally {
     $env:KMG_GATE_FIXTURE_TRACE = $oldTrace
     $env:KMG_TEST_FILTER = $oldFilter

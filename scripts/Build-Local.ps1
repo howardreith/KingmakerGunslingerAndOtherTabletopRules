@@ -306,7 +306,14 @@ foreach ($part in @('griffon-mesh.json','griffon-albedo.png')) {
 $packagePath = if ($development) { $developmentLayout.PackagePath } else {
     Join-Path $localRoot "$($info.Id)-$($info.Version)-local-runtime.zip"
 }
-& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath | Out-Host
+& (Join-Path $PSScriptRoot 'package.ps1') -Configuration Release -PackagePath $packagePath
+if ($LASTEXITCODE -ne 0 -and $null -ne $LASTEXITCODE) {
+    throw "Package assembly failed with exit code $LASTEXITCODE."
+}
+if (-not (Test-Path -LiteralPath $packagePath -PathType Leaf) -or
+    -not (Test-Path -LiteralPath ($packagePath + '.sha256') -PathType Leaf)) {
+    throw 'Package assembly did not produce the ZIP and checksum.'
+}
 
 # The build above was produced for $git.Commit. If the tree moved underneath
 # this run - a concurrent commit, a checkout - the package would carry one
