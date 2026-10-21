@@ -309,6 +309,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "The exact-owner Harmony prefix now caps each native force-move tick at its remaining 10-foot path before the installed navmesh trace, then removes the completed chunk. The observer requires an upper displacement bound and records native chunk distance/speed. Focused compilation and native recheck pending."
   },
+  "awesomeBlowNativeDoublePush": {
+    "source": "ae770c321f0329ace308e656d0e2383c63f1f739",
+    "runId": "20261021T0954267635994Z-1c70166f74b5459b8aca4001fe9e2180",
+    "artifactZipSha256": "afc928ba6f0b68b5474eb92ffbefda19e88eece28f7c3273132eccb17a026999",
+    "artifactDllSha256": "cf2518260b07e1219a2f151df279a9f626dd46c668a06a4cb59a19ac364378c2",
+    "artifactMvid": "f33b1e06-c218-4b0b-8d92-242de0f5ebd8",
+    "result": "FAIL: bounded observer rejected the first Cloud open lane at 34.53 m. Its first live native force-move chunk had MaxDistance 42.0624 m and speed 10; this was the Bull Rush maneuver's margin-dependent push, queued before the separate private 3.048 m chunk. The prior exact-owner cap could not constrain that first chunk. Later cases did not execute.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "repair": "The private action now snapshots force-move chunks before its native maneuver, adopts and caps its single new native chunk at 10 feet, and avoids a second push. The observer requires exactly one bounded active chunk. Focused compilation and native recheck pending."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,

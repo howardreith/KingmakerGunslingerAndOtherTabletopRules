@@ -52,6 +52,15 @@ namespace KingmakerGunslinger.Summoning
                 victim.Descriptor.State.HasCondition(
                     UnitCondition.ImmuneToCombatManeuvers)) return;
 
+            Vector3 direction = victim.Position - caster.Position;
+            direction.y = 0f;
+            if (direction.sqrMagnitude < .0001f) return;
+            direction.Normalize();
+            UnitPartForceMove beforePart = victim.Get<UnitPartForceMove>();
+            UnitPartForceMove.Chunk[] before = beforePart == null ?
+                Array.Empty<UnitPartForceMove.Chunk>() :
+                beforePart.Chunks.ToArray();
+            Vector3 start = victim.Position;
             var maneuver = new RuleCombatManeuver(caster, victim,
                 CombatManeuver.BullRush) {
                 // This is an Awesome Blow check, not a Bull Rush use.
@@ -67,19 +76,35 @@ namespace KingmakerGunslinger.Summoning
                 PhysicalDamageForm.Bludgeoning);
             impact.AddBonus(caster.Stats.Strength.Bonus);
             Context.TriggerRule(new RuleDealDamage(caster, victim, impact));
+            UnitPartForceMove force = victim.Get<UnitPartForceMove>();
+            UnitPartForceMove.Chunk[] added = force == null ?
+                Array.Empty<UnitPartForceMove.Chunk>() :
+                force.Chunks.Where(value => !before.Contains(value))
+                    .ToArray();
+            if (victim.Descriptor.State.IsDead)
+            {
+                foreach (UnitPartForceMove.Chunk chunk in added)
+                    force.StopMove(chunk);
+                return;
+            }
             if (!victim.Descriptor.State.IsDead)
             {
-                Vector3 start = victim.Position;
                 float distance = new Feet(10).Meters;
-                // The native force-move chunk consumes a direction, not the
-                // caster-to-target separation as a distance-scaled vector.
-                Vector3 direction = start - caster.Position;
-                direction.y = 0f;
-                if (direction.sqrMagnitude < .0001f) return;
-                direction.Normalize();
-                UnitPartForceMove.Chunk push = victim
-                    .Ensure<UnitPartForceMove>().Push(direction,
-                        distance, false);
+                // Native Bull Rush already queues a push whose distance grows
+                // with the check margin. Awesome Blow has a fixed 10-foot
+                // distance. Reuse exactly one fresh native chunk and cap it;
+                // do not stack a second private push on top of it.
+                UnitPartForceMove.Chunk push;
+                if (added.Length == 1)
+                    push = added[0];
+                else
+                {
+                    foreach (UnitPartForceMove.Chunk chunk in added)
+                        force.StopMove(chunk);
+                    push = victim.Ensure<UnitPartForceMove>().Push(
+                        direction, distance, false);
+                }
+                push.MaxDistance = distance;
                 Sprint29AwesomeBlowCollision.Register(caster, victim,
                     push, start, distance);
                 if (Knockdown != null) Knockdown.Run();
