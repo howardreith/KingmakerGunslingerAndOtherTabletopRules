@@ -145,6 +145,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["type"] = value.Type == null ? null : value.Type.name
                     }).ToArray());
 
+                // One narrow follow-up to the initial census: exact native
+                // consumers needed to construct, rather than guess, the
+                // three project weapons, mist areas and separate feat actions.
+                // The first broad name lists above remain historical input;
+                // this section has a fixed, small identity cap.
+                string[] focusedNames = { "ChainshirtStandard",
+                    "BreastplateStandard", "LeatherStandard",
+                    "LeatherArmorStandard", "CompositeLongbow",
+                    "HumanbaneMorningstar2Item", "FlailAgilePlus1",
+                    "JavelinCorrosivePlus1", "ObscuringMistArea",
+                    "VitalStrikeFeature", "VitalStrikeFeatureImproved",
+                    "ImprovedCriticalGreatsword", "CallLightningBuff",
+                    "CallLightningAbility" };
+                var focused = new JArray();
+                foreach (string name in focusedNames)
+                {
+                    BlueprintScriptableObject[] matches = all.Where(value =>
+                        string.Equals(value.name, name,
+                            StringComparison.Ordinal)).ToArray();
+                    if (matches.Length > 2)
+                        throw new InvalidOperationException(
+                            "Focused native identity became ambiguous: " + name);
+                    focused.Add(new JObject {
+                        ["query"] = name,
+                        ["matches"] = new JArray(matches.Select(value =>
+                            new JObject {
+                                ["name"] = value.name,
+                                ["guid"] = value.AssetGuid,
+                                ["graph"] = DescribeGraph(value, 0,
+                                    new HashSet<object>(NativeDonorReferenceComparer.Instance), 6)
+                            }).ToArray())
+                    });
+                }
+                document["focusedConsumers"] = focused;
+
                 checks.Add(Assertion("sprint29-native-input-capture",
                     "bounded exact installed blueprint metadata captured",
                     "units=" + units.Count + ";spells=" + spells.Count +

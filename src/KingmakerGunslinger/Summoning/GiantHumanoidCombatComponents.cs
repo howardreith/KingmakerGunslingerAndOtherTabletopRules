@@ -129,6 +129,10 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintItemWeapon GreatWeapon;
         public BlueprintItemWeapon Slam;
         public BlueprintItemWeapon Rock;
+        // Additional project-owned alternate weapons. Each identity is
+        // compared by reference and only on this component's exact unit.
+        public BlueprintItemWeapon RangedWeapon;
+        public BlueprintItemWeapon OffhandWeapon;
         public BlueprintItemArmor Armor;
 
         public override void OnTurnOn() { Sweep(); }
@@ -168,6 +172,8 @@ namespace KingmakerGunslinger.Summoning
             if (!ReferenceEquals(item.Blueprint, GreatWeapon) &&
                 !ReferenceEquals(item.Blueprint, Slam) &&
                 !ReferenceEquals(item.Blueprint, Rock) &&
+                !ReferenceEquals(item.Blueprint, RangedWeapon) &&
+                !ReferenceEquals(item.Blueprint, OffhandWeapon) &&
                 !ReferenceEquals(item.Blueprint, Armor))
                 return;
             if (!ReferenceEquals(item.Owner, Owner)) return;
