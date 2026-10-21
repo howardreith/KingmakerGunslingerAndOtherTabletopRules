@@ -2250,7 +2250,7 @@ function Test-KmgSprints30And31ReviewPhaseScope {
     return $Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and
         @($Parameters.Keys) -ccontains 'reviewPhase' -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -ceq 'bootstrap'
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('bootstrap','lemure-core')
 }
 
 function Test-KmgSprint29ReviewPhaseScope {

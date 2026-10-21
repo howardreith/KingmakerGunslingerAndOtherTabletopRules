@@ -1934,7 +1934,9 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
 
 $s3031Args = @{Scenario='disposable-expanded-summoning-sprints30-31-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='bootstrap'})) 's30-31-hidden-bootstrap-admitted'
-foreach($bag in @(@{}, @{reviewPhase='Bootstrap'}, @{reviewPhase='profiles'}, @{reviewPhase='bootstrap';extra='x'}, @{ReviewPhase='bootstrap'})) {
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='lemure-core'})) 's30-31-lemure-core-admitted'
+Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='lemure-core'}} 's30-31-lemure-core-no-exit-refused'
+foreach($bag in @(@{}, @{reviewPhase='Bootstrap'}, @{reviewPhase='profiles'}, @{reviewPhase='bootstrap';extra='x'}, @{ReviewPhase='bootstrap'}, @{reviewPhase='Lemure-Core'}, @{reviewPhase='lemure-core';extra='x'})) {
     Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters $bag} 's30-31-hidden-bootstrap-invalid-scope-refused'
 }
 Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='bootstrap'}} 's30-31-hidden-bootstrap-no-exit-refused'

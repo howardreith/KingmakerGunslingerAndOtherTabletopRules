@@ -20,6 +20,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprints30And31(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprints30And31ReviewPhase(_request);
+            if (phase == "lemure-core")
+            {
+                foreach (int frame in ReviewLemure30Core(fixture)) yield return frame;
+                yield break;
+            }
             if (phase != "bootstrap") throw new InvalidOperationException("Unimplemented S30/S31 phase.");
             var inputs = RunExpandedSummoningSprints30And31Inputs();
             Sprint25Check("bootstrap-input-capture", inputs.Status == RuntimeTestStatuses.Pass,

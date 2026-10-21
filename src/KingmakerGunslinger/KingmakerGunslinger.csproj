@@ -1303,6 +1303,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLemure30Core.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Outsiders30And31.cs" />
     <Compile Include="Summoning\LemureRacialProfile.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
