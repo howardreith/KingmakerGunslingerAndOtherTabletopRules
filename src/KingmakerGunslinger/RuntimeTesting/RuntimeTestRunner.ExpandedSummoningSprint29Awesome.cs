@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
@@ -16,6 +18,8 @@ using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using Kingmaker.View;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json.Linq;
 using Pathfinding;
 using UnityEngine;
@@ -65,6 +69,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             Game.Instance.IsPaused = true;
             CreateExpandedSummoningCorrectionHostile(fixture);
             UnitEntityData target = fixture.Hostile;
+            BlueprintFeature incorporeal = BlueprintLibraryLookup
+                .RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    "c4a7f98d743bc784c9d4cf2105852c39",
+                    "native incorporeal Awesome Blow exclusion");
             int oldCmd = target.Stats.AdditionalCMD.BaseValue;
             int oldHp = target.Stats.HitPoints.BaseValue;
             try
@@ -77,7 +85,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new { Key="cloud-giant", Case="open" },
                     new { Key="storm-giant", Case="blocked" },
                     new { Key="cloud-giant", Case="failure" },
-                    new { Key="storm-giant", Case="immune" }
+                    new { Key="storm-giant", Case="immune" },
+                    new { Key="cloud-giant", Case="same-size" },
+                    new { Key="storm-giant", Case="incorporeal" },
+                    new { Key="cloud-giant", Case="cancel" }
                 })
                 {
                     ResetExpandedSummoningHostile(fixture);
@@ -94,6 +105,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitEntityData owner = CastExpandedSummoningOwnTier(
                         fixture, spec.Key);
                     SetExpandedSummoningBrainActive(owner, false);
+                    bool addedIncorporeal = false;
                     try
                     {
                         for (int frame = 0; frame < 8; frame++) yield return 0;
@@ -118,6 +130,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             spec.Case);
                         PlaceExpandedSummoningUnit(owner, lane.Caster);
                         PlaceExpandedSummoningUnit(target, lane.Target);
+                        if (spec.Case == "same-size")
+                            target.Descriptor.State.Size =
+                                owner.Descriptor.State.Size;
+                        if (spec.Case == "incorporeal")
+                        {
+                            if (target.Descriptor.AddFact(incorporeal) == null)
+                                throw new InvalidOperationException(
+                                    "Disposable target could not receive native incorporeal exclusion.");
+                            addedIncorporeal = true;
+                        }
                         owner.SightCache.ClearIfNeeded();
                         target.SightCache.ClearIfNeeded();
                         BlueprintAbility blueprint = Sprint29MagicAbility(
@@ -163,6 +185,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool chunkBounded = true;
                         bool proneSeen = false, priorForce = false;
                         bool proneActiveSeen = false;
+                        bool cancelled = false;
                         float forceMoveMeters = float.NaN;
                         int sampledFrames = 0, priorDamage = 0;
                         Action<UnitUseAbility> sample = value =>
@@ -218,6 +241,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             priorForce = force;
                             priorDamage = events.Damage.Count;
                             sampledFrames++;
+                            if (spec.Case == "cancel" && force &&
+                                !cancelled && active != null &&
+                                displacement < .5f)
+                            {
+                                part.StopMove(active);
+                                cancelled = true;
+                            }
                         };
                         UnitUseAbility command = null;
                         EventBus.Subscribe(events);
@@ -267,6 +297,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     success && events.Damage.Count == 2 &&
                                     moved >= 0f && moved < 2.85f &&
                                     proneSeen :
+                                    spec.Case == "cancel" ?
+                                    success && cancelled &&
+                                    events.Damage.Count == 1 &&
+                                    moved >= 0f && moved < .5f &&
+                                    proneSeen :
                                     spec.Case == "failure" ?
                                     events.Maneuvers.Count == 1 &&
                                     !success && events.Damage.Count == 0 &&
@@ -301,6 +336,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["proneSeen"] = proneSeen,
                                         ["proneActiveSeen"] =
                                             proneActiveSeen,
+                                        ["cancelledNativeChunk"] =
+                                            cancelled,
                                         ["movement"] = movement,
                                         ["maneuvers"] = new JArray(
                                             events.Maneuvers.Select(value =>
@@ -333,6 +370,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         target.Descriptor.State.RemoveCondition(
                             UnitCondition.ImmuneToCombatManeuvers);
+                        if (addedIncorporeal)
+                            target.Descriptor.RemoveFact(incorporeal);
                         target.Stats.AdditionalCMD.BaseValue = oldCmd;
                         if (!owner.Destroyed)
                             owner.Commands.InterruptAll(true);
