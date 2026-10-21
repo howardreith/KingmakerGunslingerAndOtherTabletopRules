@@ -339,6 +339,16 @@
     "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "limits": "Development package. Printed obstacle-object damage remains an explicit gameplay scope decision; no installed damageable wall consumer was identified. Separate interruption, size/incorporeal negative, turn-based, continued AI and final public-artifact qualification remain."
   },
+  "awesomeBlowExtendedQualification": {
+    "source": "f7a19f9fcd4947db3ad6046989393edcb921a9ac",
+    "runId": "20261021T1032281799337Z-70745cae5a004eb189c3ca5e45fb8212",
+    "artifactZipSha256": "21f4fd175a985f2291fe9c55341530aa4d5e275c59ca6402c07e508a4fddc345",
+    "artifactDllSha256": "4edb172c9cfa1b559dd65d576fe234f8235a906104cc96245473e67f2da5a6d6",
+    "artifactMvid": "a3e85bce-6142-4590-923a-cc1bbe33b1db",
+    "result": "PASS 24/24 native save-free RTWP predicates on seven actual Cloud/Storm actions: the bounded open 3.045 m push, obstructed 1.784 m push with separate victim 1d6 collision, high-CMD failed maneuver, maneuver-immune target, same-size target and native incorporeal target behaved as recorded; the three ineligible targets took no damage or displacement. Native StopMove cancelled the exact successful Cloud chunk before displacement; it dealt only its initial slam with no delayed collision packet. Each native command spent one standard action; no hit/save was fabricated.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package. Cancellation is an explicit native StopMove API test, not a player-issued interrupt. Printed obstacle-object damage remains an unresolved owner scope decision because the installed scene has no identified damageable wall consumer. Turn-based Awesome Blow and final public-artifact qualification remain."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
