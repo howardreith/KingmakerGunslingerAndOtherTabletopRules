@@ -138,6 +138,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["main"] = set.PrimaryHand?.MaybeWeapon?.Blueprint?.name,
                             ["off"] = set.SecondaryHand?.MaybeWeapon?.Blueprint?.name
                         }).ToArray());
+                    bool ettinHands = spec.Key != "ettin" ||
+                        mainHeldInTwoHands == false &&
+                        owner.Body.HandsEquipmentSets.Count >= 2 &&
+                        owner.Body.HandsEquipmentSets[1].SecondaryHand?
+                            .MaybeWeapon?.Blueprint?.name ==
+                            "KMG_Summoning_Giant_Sprint29_EttinOffJavelin1d8" &&
+                        !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon,
+                            owner.Body.SecondaryHand.MaybeWeapon);
                     int perception = stats.SkillPerception.ModifiedValue;
                     bool profile = scores.SequenceEqual(spec.Scores) &&
                         owner.Descriptor.State.Size == spec.Size &&
@@ -151,7 +159,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         stats.SaveWill.ModifiedValue == spec.Will &&
                         stats.Speed.ModifiedValue == spec.Speed &&
                         perception == spec.Perception &&
-                        main == spec.Main && off == spec.Off;
+                        main == spec.Main && off == spec.Off && ettinHands;
                     Sprint25Check(spec.Key + "-profile", profile,
                         new JObject { ["owner"] = owner.UniqueId,
                             ["scores"] = new JArray(scores),
@@ -170,6 +178,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["configuredOff"] = configuredOff,
                             ["mainTypeTwoHanded"] = mainTwoHanded,
                             ["mainHeldInTwoHands"] = mainHeldInTwoHands,
+                            ["ettinHands"] = ettinHands,
                             ["handSets"] = handSets },
                         "Native adult profile and resolved equipment match the printed anchor.");
                     bool visible = owner.View != null &&
