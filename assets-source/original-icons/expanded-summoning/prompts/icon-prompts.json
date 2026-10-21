@@ -696,6 +696,27 @@
         "subjectPrompt":  "Use case: stylized-concept. Asset type: original source painting for a 128 pixel tabletop fantasy summon choice icon. Create one square painted medallion of an ordinary adult Pathfinder fire giant warrior: broad muscular humanoid, powerful arms and shorter legs implied, copper-red skin, fiery orange hair and beard, wearing blackened steel half-plate armor, holding a massive two-handed greatsword. Chest-up three-quarter view with a very clear greatsword and armored silhouette at tiny scale. Warm volcanic mountain atmosphere, rich oil-painted material detail, strong orange rim lighting and a fine antique bronze circular portrait rim. One figure only. No text, numbers, runes, game logo, watermark, magical flaming weapon, loot objects, or modern objects. Show bodily fire association through hair and ambience; do not depict a spellcaster or place fire on the sword.",
         "generator":  "image_gen.imagegen (built-in)",
         "generationProvenance":  "assets-source/original-icons/expanded-summoning/sprint28-generation.json"
+    },
+    {
+        "key": "cloud-giant",
+        "displayName": "Cloud Giant",
+        "subjectPrompt": "Adult Pathfinder cloud giant: pale powder-blue skin, refined chiseled face, windblown white hair, chain shirt, Gargantuan spiked morningstar, misty mountains; original painted bronze-rimmed square creature medallion with a distinct readable silhouette and no text or UI overlay.",
+        "generator": "image_gen.imagegen (built-in)",
+        "generationProvenance": "assets-source/original-icons/expanded-summoning/sprint29-generation.json"
+    },
+    {
+        "key": "storm-giant",
+        "displayName": "Storm Giant",
+        "subjectPrompt": "Adult Pathfinder storm giant: heroic bronze-skinned male, windblown dark hair, green eyes, polished breastplate, massive upright greatsword, stormy coast; original painted bronze-rimmed square creature medallion with a distinct readable silhouette and no text or UI overlay.",
+        "generator": "image_gen.imagegen (built-in)",
+        "generationProvenance": "assets-source/original-icons/expanded-summoning/sprint29-generation.json"
+    },
+    {
+        "key": "ettin",
+        "displayName": "Ettin",
+        "subjectPrompt": "One adult Pathfinder ettin with exactly two distinct tusked heads on separate necks above one torso, grimy gray-pink skin, tattered leather, paired flails, cave backdrop; original painted bronze-rimmed square creature medallion with both heads readable and no text or UI overlay.",
+        "generator": "image_gen.imagegen (built-in)",
+        "generationProvenance": "assets-source/original-icons/expanded-summoning/sprint29-generation.json"
     }
   ]
 }

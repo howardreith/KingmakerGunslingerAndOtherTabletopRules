@@ -1118,6 +1118,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'observe-expanded-summoning-sprint29-native-inputs' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     # Sprint 26: bounded native input metadata and reference pixels only.
     'observe-expanded-summoning-sprint26-native-inputs' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
