@@ -4,7 +4,7 @@
   "status": "BOOTSTRAP_QUALIFIED",
   "productBranch": "codex/expanded-summoning-sprint29-cloud-storm-ettin",
   "productPr": 64,
-  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_DIRECT_MAGIC_AND_SAFE_CLOUD_FOG_RTWP_AI_PASS; MAGIC_AI_BOUNDARIES_ITEMS_PERSISTENCE_PENDING",
+  "nativeQualification": "HIDDEN_BOOTSTRAP_MODES_RTWP_TURN_COMMANDS_DIRECT_MAGIC_AND_CLOUD_STORM_RTWP_AI_MAGIC_PASS; TARGET_BOUNDARIES_ITEMS_AWESOME_BLOW_PERSISTENCE_PENDING",
   "sourceValidation": {
     "manifest": "PASS: 2303 foundation identities; 7137 active; 3 reserved",
     "domain": "PASS: 2699/2699 on hidden-registration source",
@@ -227,6 +227,16 @@
     "result": "FAIL 1/13 observer predicates: exact Storm Call Lightning state now refreshed its native brain, StormBoltAi appeared in Brain.AvailableActions, and the brain issued one successful UnitUseAbility for the granted bolt. The observer sampled immediately at command completion; only two seconds of state time had passed and no delayed native save/damage packet had arrived, so its synchronous effect assertion failed. This result proves AI command selection, not yet resolved bolt effect.",
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "nextObserver": "Wait after successful native command for its own target DC15 save and approximately one-minute state debit; count damage only as observed, without forcing a hit or save. Focused production compilation and two Sprint 29 domain tests passed; native effect recheck pending."
+  },
+  "stormAiBoltQualification": {
+    "source": "b6dd3752a0eb7de4b07c7c5178d0acb6849333c0",
+    "runId": "20261021T0747353881419Z-a11467c4d53349fcb38ce8063f8c5c7d",
+    "artifactZipSha256": "3484e1667446eb974fe47918bd2da86de801094ff34480bfca301a666e4f817f",
+    "artifactDllSha256": "47abd1e2f8fd4437d0cd6ee4d7874b50cf8af3e873e658502d552c44b14f0c52",
+    "artifactMvid": "cbdd30d7-42bf-4962-9528-148ce0cb1b7f",
+    "result": "PASS 13/13 native RTWP AI predicates: Ettin chose four real flail attacks; Cloud chose an ally-clear hostile Fog Cloud at CL16 and spent its one use; Storm chose Chain Lightning, then independently activated CL15 Call Lightning and selected the newly granted native bolt. The bolt reached its target, produced a DC15 save and real damage, reduced finite state by about one minute, and did not refill the spent activation. No fixture attack command or forced roll.",
+    "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "limits": "Development package; fog redundancy/unsafe-neighbor and immune/unreachable negative cases, later bolt cadence, turn-based AI, Awesome Blow obstacle rider, items/disarm and persistence remain pending"
   },
   "publicSurface": {
     "registeredCreatures": 117,
