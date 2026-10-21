@@ -240,7 +240,50 @@ being built once for the new observer/body/outdoor seam. Baseline e3a033986023
 artifacts and original failed results remain unchanged. Both are development
 artifacts, never release qualification.
 
-### Revised asset identities at this checkpoint
+### Observer/package review correction after the first checkpoint
+
+Draft PR67 is open at
+https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/67.
+Initial source827983eb7485 was pushed through the guarded policy wrapper.
+Its frozen candidate compiled and passed72/72 selected tests, but packaging
+refused the revised Girallon against a stale protected export pin. The ZIP is
+preserved without a successful development receipt and has no deployment
+authority. Current technical export pins now enumerate all seven revised pairs;
+12 unrelated protected files and the separate Salamander control remain exact.
+The pin policy passed116/116 positive/negative checks in2.021s, including missing,
+corrupted, crosswired and retained stale inputs. Re-evaluation of the unchanged
+827 ZIP passed full offline validation in9.184s, without manufacturing a receipt.
+See CLEANUP2-PACKAGE-BODY-PINS-NOTES.md. A new clean source candidate is required.
+
+Graphics-unchanged baseline489dde48816e built with19/19 selected tests passing.
+Package SHA234e02ffe7522e029c832f91f371e65943e12e0b3551d47304f007d80774da97;
+DLL857b574ad26d6b4273d5d9ad9decc83cb3f61cb28ca250074371a65f7d4da73a;
+MVIDd0bfd667-3b83-4283-a9ec-3c74b84e6347. Its outdoor lineup run
+20261021T2331326742708Z-5eeb6169cd144c85b3c913da33cb0255 FAILED in83.184s:
+all canonical casts and the SM Frost skin measurement passed, but the first
+bounded ground survey found no qualifying horizontal24m row. No Human/giant
+calibration or lineup image qualifies. Transaction
+compat-20261021T233022Z-9169ee39357c is Restored/restorationVerified=true;
+no game process or compatibility lock remained before the next independent phase.
+
+The corrected observer records all actors before placement and searches bounded
+courtyard offsets, orientations and native footprint spacing. A nondegenerate
+2D fitted terrain plane requires grade<=3%, residual<=5cm, finite walkable points
+on the same connected native graph, and bounded clamp/search radius. Height
+remains world-up, and sole contact uses each actor's own measured ground. This
+does not waive plane/contact proof or change any model scale. Native execution
+of the changed observer is still pending; the old failure remains immutable.
+
+Exact Frost hierarchy also exposes five enabled nontrigger bone capsule
+colliders, an unskinned WeaponSnap-driven weapon and a Cloth cape. Root or rig
+scaling cannot qualify as visual-only. A mirror palette requires explicit weapon
+and cloth handling before activation. Current giant calibration remains empty.
+The selected-child engine audit in CLEANUP2-ELEMENTAL-CONTRACT-AUDIT.md identifies
+inactive parent effect/rank graphs while retaining active child, source-book,
+identity-sensitive feature and special-source differences; no equivalence waiver
+has been applied.
+
+### Revised asset identities at the first checkpoint
 
 | Project file | SHA-256 |
 |---|---|
