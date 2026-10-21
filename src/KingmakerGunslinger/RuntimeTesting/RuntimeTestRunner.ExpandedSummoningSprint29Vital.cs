@@ -148,8 +148,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.Stats.AdditionalAttackBonus.BaseValue += 20;
                         target.Stats.HitPoints.BaseValue = 100000;
                         target.Descriptor.Damage = 0;
+                        var powerAttack = owner.Descriptor.ActivatableAbilities
+                            .Enumerable.Single(value => value.Blueprint.AssetGuid ==
+                                "a7b339e4f6ff93a4697df5d7a87ff619");
+                        var powerAtRoll = new List<bool>();
                         var observer = new Sprint24AttackObserver {
                             Owner = owner, Target = target };
+                        observer.BeforeRoll = value => powerAtRoll.Add(
+                            powerAttack.Blueprint.Buff != null &&
+                            owner.Descriptor.Buffs.GetBuff(
+                                powerAttack.Blueprint.Buff) != null);
                         var costs = new JArray();
                         var endings = new JArray();
                         var abilityData = spec.Ability == null ? null :
@@ -213,6 +221,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 var packets = observer.Damage.SelectMany(value =>
                                     value.DamageBundle.OfType<PhysicalDamage>())
                                     .ToArray();
+                                bool nativeBonuses = powerAtRoll.Count ==
+                                    spec.Attacks && Enumerable.Range(0,
+                                        spec.Attacks).All(index =>
+                                            observer.WeaponAttacks[index]
+                                                .AttackRoll != null &&
+                                            (!observer.WeaponAttacks[index]
+                                                .AttackRoll.IsHit ||
+                                             observer.WeaponAttacks[index]
+                                                .MeleeDamage?.DamageBundle
+                                                .OfType<PhysicalDamage>()
+                                                .SingleOrDefault()?.Bonus ==
+                                                21 + (powerAtRoll[index] ?
+                                                    12 : 0)));
                                 bool exact = command.IsFinished &&
                                     (command.Result == UnitCommand.ResultType
                                         .Success || trace.Exhausted(command)) &&
@@ -224,10 +245,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     hits > 0 &&
                                     observer.Damage.Count == hits &&
                                     packets.Length == hits &&
+                                    nativeBonuses &&
                                     packets.All(value => value.Dice.Rolls ==
                                         spec.Rolls && value.Dice.Dice ==
-                                        Kingmaker.RuleSystem.DiceType.D6 &&
-                                        value.Bonus == 21) &&
+                                        Kingmaker.RuleSystem.DiceType.D6) &&
                                     observer.WeaponAttacks.All(value =>
                                         value.Weapon?.Blueprint?.name ==
                                         "KMG_Summoning_Giant_Sprint29_StormGreatsword4d6") &&
@@ -256,7 +277,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             value => value.Dice.Rolls)),
                                         ["bonuses"] = new JArray(packets.Select(
                                             value => value.Bonus)),
+                                        ["powerAttackAtRoll"] =
+                                            new JArray(powerAtRoll),
+                                        ["powerAttackToggleOnAfter"] =
+                                            powerAttack.IsOn,
+                                        ["powerAttackRunningAfter"] =
+                                            powerAttack.IsRunning,
+                                        ["nativeBonusMatch"] = nativeBonuses,
+                                        ["weaponStatsBonuses"] = new JArray(
+                                            observer.WeaponAttacks.Select(value =>
+                                                value.WeaponStats == null ||
+                                                value.WeaponStats.DamageDescription
+                                                    .Count == 0 ? (int?)null :
+                                                value.WeaponStats
+                                                    .DamageDescription[0].Bonus)),
                                         ["expectedDice"] = spec.Rolls,
+                                        ["nativeExhausted"] =
+                                            trace.Exhausted(command),
                                         ["costs"] = costs,
                                         ["nativeEnds"] = endings,
                                         ["forcedRolls"] = 0,
