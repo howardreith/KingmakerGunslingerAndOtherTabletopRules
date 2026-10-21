@@ -12,6 +12,7 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 . (Join-Path $PSScriptRoot 'common.ps1')
+. (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $repositoryRoot = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $repositoryRoot
 
@@ -280,7 +281,13 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # three giant portraits and the v0.0.162 release notes. Sprint29 adds
 # three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1
+# The capped S30/S31 pilot adds only exported new-species icons here.
+# Count their declared, hash-validated manifest records; Lantern is in place.
+# The strict package validator still checks the exact complete path/hash set.
+$s3031IconKeys = @('lemure','dretch','hound-archon','astral-deva','trumpet-archon')
+$summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
+$s3031IconCount = @($summonManifest.icons | Where-Object { $_.key -cin $s3031IconKeys }).Count
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
