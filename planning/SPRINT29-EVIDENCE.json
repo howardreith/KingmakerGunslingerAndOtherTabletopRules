@@ -249,6 +249,16 @@
     "restoration": "PASS: actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
     "repair": "Installed body creation can leave the configured secondary flail unassigned in the owner's inventory before the grip resolves. Exact Ettin seeding now reuses the sole existing private inventory instance when present, refuses ambiguous copies, and creates only if absent. Focused production compilation and two Sprint 29 domain tests pass; native recheck pending."
   },
+  "hiddenItemsFollowup": {
+    "source": "0ec04e744586fdffa011cadf7c1389f29058f2dc",
+    "runId": "20261021T0813519628459Z-9ed9368c632c4849983c7a8a06d7f317",
+    "artifactZipSha256": "44d13dc155709d9ff8eed4bbb40a4e18676b9a32d45e94abcbdf961754864507",
+    "artifactDllSha256": "fc09854c9fff1b8c19d3bc43eb76d908f841d3eab2d30e9cbc93e6a6db5ad96a",
+    "artifactMvid": "724c4482-1ed9-476a-9348-3b630630e2ef",
+    "result": "FAIL: Ettin's actual 1d4+1 route produced five siblings. Each again owned six inventory instances for five configured private items, with two exact offhand flail instances. The earlier reuse check did not prevent the later native duplicate. All observed copies remained nonremovable and nonlootable; party inventory was exact. Observer stopped before transfer, death and expiry.",
+    "restoration": "PASS: fresh actual intake Mods 967, saves 118, references 18, settings 83; tasks 0, Steam-only process 1; no owned lease",
+    "next": "Inspect the native hand-set and HoldingSlot association at each lazy switch, then make a narrow owner-bound correction and rerun affected items behavior."
+  },
   "publicSurface": {
     "registeredCreatures": 117,
     "monsterCreatures": 96,
