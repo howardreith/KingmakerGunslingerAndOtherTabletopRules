@@ -26,6 +26,33 @@
       "prompt": "Use case: stylized-concept. Asset type: original square painted creature-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Dretch demon: short squat hunched hairless blue-grey humanoid with a huge sagging bloated belly, large pointed ears, broad flat ugly face, short tusklike teeth, TWO long arms with clawed hands and TWO short bent legs. Full torso and both claws visible, jaws snarling. Strong simple silhouette that remains readable at 48px; clearly a distinct stocky little demon with legs, not a melting Lemure or horned giant. Painterly fantasy realism, broad brush textures, smoky dark brown cavern backdrop and restrained warm edge light. Dog/Eagle project paintings supplied only as STYLE references; do not copy animal anatomy or ornamental framing. Full-bleed opaque square, NO frame/ring/border, no text/numbers/UI overlays/watermark, no weapon/wings/extra limbs/other creatures, no gore. Keep head and claws within central 80 percent.",
       "humanReview": "NOT_PERFORMED_NONBLOCKING",
       "status": "source candidate; not registered; export review pending"
+    },
+    {
+      "key": "hound-archon",
+      "source": "assets-source/original-icons/expanded-summoning/sources/hound-archon.png",
+      "sourceSha256": "99d63f3aeef8b6c80b9cd871d17eca5158a2d28b7fd07abcfdc3d6498df2c2bd",
+      "originalToolOutput": "C:\\Dev\\KingmakerBuffPlannerLab\\codex-home\\generated_images\\01a15fe6-3857-70c3-8feb-e57193228e09\\exec-eb8faec4-2010-4c08-ab8b-9f793ad1ffea.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Hound Archon: noble muscular upright HUMAN-shaped body with a convincing brown hound dog's head and neck, soft folded canine ears, long muzzle, intelligent calm eyes, dressed in plain modest white cloth and a simple bronze shoulder guard, holding a polished two-handed GREATSWORD diagonally beside the chest. Chest-up three-quarter composition with canine head, humanoid arm/hand and broad sword clearly readable at 48px. It is a celestial canine-headed warrior, not a quadruped dog, werewolf, wolf-monster or winged angel. Painterly fantasy realism, textured materials, soft warm golden heavenly cloud backdrop and clear rim light. Attached project Dog/Eagle paintings are STYLE references only; do not copy their anatomy, compositions or ornamental frames. Full-bleed opaque square, no frame/ring/border, text, numbers, UI overlays, watermark, extra characters, wings, horns, gore or extra limbs. Head and sword within central 80 percent.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "status": "source candidate; not registered; export review pending"
+    },
+    {
+      "key": "astral-deva",
+      "source": "assets-source/original-icons/expanded-summoning/sources/astral-deva.png",
+      "sourceSha256": "edd91d0f9a5a586a43bfe878d996f9e6d1c2340302c98c143450f42af2971fb2",
+      "originalToolOutput": "C:\\Dev\\KingmakerBuffPlannerLab\\codex-home\\generated_images\\01a15fe6-3857-70c3-8feb-e57193228e09\\exec-8a26ea66-e4e6-499e-89df-958fb7ba51bf.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Astral Deva angel: tall powerful humanlike figure with bronze-gold skin, calm strong face, dark flowing hair, TWO long white-feathered wings rising behind the shoulders, modest flowing ivory tunic and bronze belt, holding a clearly recognizable heavy WARHAMMER with a squared metal head, not a mace or sword. Waist-up three-quarter portrait with face, both wing silhouettes and hammer head clearly readable at 48px. Gentle inner radiance; restrained warm gold and ivory palette, dark blue-violet distant clouds for separation. Painterly fantasy realism and textured materials matching the attached project Dog/Eagle STYLE references only; no copied subjects/composition/frames. Full-bleed opaque square; no frame, ring, border, text, numbers, UI overlays, watermark, halo disc, other characters, extra wings or gore. Keep face and hammer head inside central 80 percent. Distinguish from a pale trumpet-bearing archon; this angel carries only its signature hammer.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "status": "source candidate; not registered; export review pending"
+    },
+    {
+      "key": "trumpet-archon",
+      "source": "assets-source/original-icons/expanded-summoning/sources/trumpet-archon.png",
+      "sourceSha256": "d4a3353129b8dc640317f69dac208e30f375df310445513f1babe53c8601476e",
+      "originalToolOutput": "C:\\Dev\\KingmakerBuffPlannerLab\\codex-home\\generated_images\\01a15fe6-3857-70c3-8feb-e57193228e09\\exec-01893e8a-12bf-472b-92af-1703b0f00b5c.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Trumpet Archon: serene lithe humanlike celestial with pale white marble-colored skin, white pupilless eyes, short silver hair, TWO powerful white-feathered wings rising behind shoulders, modest silver-and-blue ceremonial robe, holding ONE gleaming curved silver trumpet with a large flared bell prominently angled forward. Chest-up three-quarter portrait; face, clear wind-instrument mouthpiece/bell and wing silhouette readable at 48px. Restrained moonlit silver and cool blue palette with soft warm radiance behind, painterly fantasy realism and textured materials. Dog/Eagle project paintings are STYLE references only; create original subject/composition without their ornamental framing. Clearly distinguish from a bronze-skinned warhammer-carrying angel; no hammer or sword in this icon. Full-bleed opaque square, no frame/ring/border, text, numbers, UI overlays, watermark, halo disc, other characters, extra limbs/wings or gore. Keep face and trumpet bell inside central 80 percent.",
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "status": "source candidate; not registered; export review pending"
     }
   ]
 }

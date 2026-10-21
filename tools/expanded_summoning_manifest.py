@@ -220,6 +220,14 @@ def token(key):
     return "".join(part[:1].upper() + part[1:] for part in re.split(r"[^A-Za-z0-9]+", key) if part)
 
 
+def identity_count(name):
+    source = (ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs").read_text(encoding="utf-8")
+    match = re.search(r"internal const int " + re.escape(name) + r" = (\d+);", source)
+    if match is None:
+        raise SystemExit(f"Missing literal identity authority: {name}")
+    return int(match.group(1))
+
+
 def parsed_creatures():
     values = []
     for key, name, monster, templated, ally, visual in ENTRY.findall(
@@ -232,8 +240,9 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 117:
-        raise SystemExit(f"Expected 117 parsed creatures; observed {len(values)}")
+    expected = identity_count("UnitCount")
+    if len(values) != expected:
+        raise SystemExit(f"Expected {expected} parsed creatures; observed {len(values)}")
     return values
 
 
@@ -749,9 +758,14 @@ def planned():
         ("KMG.Summoning.Giant.Sprint29.CloudFogAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Giant.Sprint29.CloudMistSafety", "Sprint29FogAiSafety"),
         ("KMG.Summoning.Giant.Sprint29.CloudFogSafety", "Sprint29FogAiSafety"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"),
 
     ))
-    if len(rows) != 2303 or len({symbol for symbol, _ in rows}) != 2303:
+    expected = sum(identity_count(name) for name in (
+        "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",
+        "NativePreservationIdentityCount", "AlignmentModeIdentityCount", "NativeExpandedOptionIdentityCount")) + 2 * identity_count("TemplatedPlacementCount")
+    if len(rows) != expected or len({symbol for symbol, _ in rows}) != expected:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

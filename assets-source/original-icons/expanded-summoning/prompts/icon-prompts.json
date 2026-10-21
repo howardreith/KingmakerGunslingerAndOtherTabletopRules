@@ -717,6 +717,13 @@
         "subjectPrompt": "One adult Pathfinder ettin with exactly two distinct tusked heads on separate necks above one torso, grimy gray-pink skin, tattered leather, paired flails, cave backdrop; original painted bronze-rimmed square creature medallion with both heads readable and no text or UI overlay.",
         "generator": "image_gen.imagegen (built-in)",
         "generationProvenance": "assets-source/original-icons/expanded-summoning/sprint29-generation.json"
+    },
+    {
+      "key": "lemure",
+      "displayName": "Lemure",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted creature-choice icon for a Pathfinder fantasy RPG, intended for 128px export. Create ONE Lemure devil: a low, roiling mound of pale pink-grey melting flesh, with one miserable half-formed face and TWO thick short arms ending in dark claws, lower body a sluglike surge of flesh rather than legs. Simple forceful forward-facing three-quarter silhouette; both claws and face readable at 48px. No horns or wings, no weapons, no skeleton, no other creatures, no blood or gore. Dark smoky umber infernal background, controlled warm rim light, painterly material texture and broad shapes matching the two project creature reference paintings. The local dog and eagle paintings are STYLE REFERENCES ONLY: do not copy their subjects, rings or frames. Full-bleed artwork, NO frame, ring, border, letters, numbers, UI overlays, text or watermark. Keep face and both claws inside the central 80 percent with clear negative space. Output a single 1024x1024 opaque painted icon.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint30-31-generation.json"
     }
   ]
 }

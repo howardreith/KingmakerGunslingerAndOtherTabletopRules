@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 117;
-        internal const int LogicalAbilityCount = 1127;
+        internal const int UnitCount = 118;
+        internal const int LogicalAbilityCount = 1135;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 379;
+        internal const int SpecialIdentityCount = 381;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -688,6 +688,8 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudMistSafety", "Sprint29FogAiSafety"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Giant.Sprint29.CloudFogSafety", "Sprint29FogAiSafety"));
 
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"));
             Validate(result);
             return result.AsReadOnly();
         }

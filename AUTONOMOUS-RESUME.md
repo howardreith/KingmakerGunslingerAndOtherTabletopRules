@@ -1,6 +1,8 @@
 # Sprints 30-31 - ACTIVE combined release-batch pilot
 
-Owner mission 2026-10-21 supersedes the historical STOP before Sprint 30. Work only in `C:/Dev/KingmakerGunslingerLab/wt/s30-31` on the assigned batch branch. See [the single active batch map](planning/SPRINT30-31-STATUS.md) for scope, early-proof order, transaction boundaries, qualification and measurements. No new creature is registered or public at intake; no runtime or release proof is claimed. Preserve all dated Sprint 29 records below.
+Work only in `C:/Dev/KingmakerGunslingerLab/wt/s30-31` on `codex/expanded-summoning-sprints30-31-outsider-celestial-pilot`; single draft product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/66). See [the active batch map](planning/SPRINT30-31-STATUS.md). One guarded read-only native input audit completed and restored actual laptop intake exactly; its research result is not gameplay qualification. Its donor/consumer query gaps are repaired in source and need fresh execution.
+
+The first hidden Lemure slice is implemented in source with a real original exported icon, eight suppressed roots, two claws and exact-owner outsider traits. Five focused tests and production compilation passed. Zero Intelligence is an unresolved native consciousness/AI boundary; first hidden bootstrap is next after exact request refusals and a clean development package. Borrowed biped presentation is explicitly unqualified. Other new species remain inert; Lantern's released seven routes/identity are intact. Public choices remain 1,156. No final candidate, merge or release is qualified. Preserve all dated Sprint 29 records below. STOP before Sprint 32.
 
 # Sprint 29 — RELEASED / STOP
 

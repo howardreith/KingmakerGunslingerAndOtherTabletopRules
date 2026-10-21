@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  129,
+    "count":  130,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1158,6 +1158,15 @@
                       "key":  "ettin",
                       "file":  "ettin.png",
                       "sha256":  "230b7b479f28f94fae8f32e48f3d65ab358f8bda29d42b25a9bbccd40b92c900",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "lemure",
+                      "file":  "lemure.png",
+                      "sha256":  "c03bc1c797069cb6646d59519ca7ba8859a34ef9152d7f309cef98ffc05790b9",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

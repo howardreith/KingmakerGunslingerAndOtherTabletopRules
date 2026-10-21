@@ -30,15 +30,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "LanternArchon", "AstralDeva", "TrumpetArchon" };
                 // Existing native deva/wisp and small biped rigs are the bounded
                 // alternatives only when an exact species is absent.
-                string[] donors = { "MovanicDeva", "WillOWisp", "WilloWisp",
-                    "Will_o_Wisp", "Goblin", "Lizardfolk" };
+                string[] donorGuids = {
+                    "afe56099ff6046b40a359b7562c0424e", // retained Movanic Deva
+                    "24719a49b84c5cd43b894268d22d9c89", // released Lantern donor
+                    "a8cbd4cdb0feaf64eab1452257c3c971", // final theropod biped rig
+                    "e8276e28b2234a745900fed80670bfdb"  // final Salamander humanoid
+                };
+                Func<string, string> normalized = name => new string(
+                    (name ?? string.Empty).Where(char.IsLetterOrDigit).ToArray());
                 BlueprintUnit[] candidates = all.OfType<BlueprintUnit>()
                     .Where(value => value.name != null &&
                         !value.name.StartsWith("KMG_", StringComparison.Ordinal) &&
-                        (species.Any(name => value.name.IndexOf(name,
+                        (species.Any(name => normalized(value.name).IndexOf(name,
                             StringComparison.OrdinalIgnoreCase) >= 0) ||
-                         donors.Any(name => string.Equals(value.name, name,
-                            StringComparison.OrdinalIgnoreCase))))
+                         donorGuids.Contains(value.AssetGuid)))
                     .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
                 if (candidates.Length > 96)
                     throw new InvalidOperationException("Fixed outsider donor audit exceeded 96 candidates.");
@@ -47,8 +52,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (BlueprintUnit unit in candidates)
                 {
                     var row = new JObject { ["nativeUnit"] = DescribeNativeUnit(unit) };
-                    string exact = species.Concat(donors).FirstOrDefault(name =>
-                        string.Equals(name, unit.name, StringComparison.OrdinalIgnoreCase));
+                    string exact = donorGuids.Contains(unit.AssetGuid)
+                        ? unit.AssetGuid : species.FirstOrDefault(name => string.Equals(
+                            name, normalized(unit.name), StringComparison.OrdinalIgnoreCase));
                     if (exact != null && loaded.Add(exact) && unit.Prefab != null &&
                         !string.IsNullOrEmpty(unit.Prefab.AssetId))
                     {
@@ -63,7 +69,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 document["units"] = units;
                 document["speciesCounts"] = new JObject(species.Select(name =>
-                    new JProperty(name, candidates.Count(value => value.name.IndexOf(
+                    new JProperty(name, candidates.Count(value => normalized(value.name).IndexOf(
                         name, StringComparison.OrdinalIgnoreCase) >= 0))));
                 string[] consumers = { "StinkingCloud", "CauseFear", "Aid",
                     "AuraOfMenace", "Archon", "Angel", "ProtectionFromEvil",
@@ -80,7 +86,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintScriptableObject[] matches = all.Where(value =>
                         value.name != null && !value.name.StartsWith("KMG_", StringComparison.Ordinal) &&
                         value.name.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
-                        .OrderBy(value => value.name, StringComparer.Ordinal).Take(16).ToArray();
+                        .OrderBy(value => !string.Equals(value.name, name, StringComparison.OrdinalIgnoreCase))
+                        .ThenBy(value => value.name, StringComparer.Ordinal).Take(16).ToArray();
                     graphs.Add(new JObject {
                         ["query"] = name,
                         ["matches"] = new JArray(matches.Select(value => new JObject {
