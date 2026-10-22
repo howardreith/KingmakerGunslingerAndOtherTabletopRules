@@ -4,6 +4,136 @@ Development checkpoint, 2026-10-22. PR stays draft. The mission, production
 attack qualification, giant differentiation and owner art approval remain open.
 The reviewed input was aea5a8ae5553650602b23aa6d5284f957ac1a525.
 
+## Recovery pass, 2026-10-22 (current)
+
+Intake verified the clean integration worktree at
+`bca1735515293568647498cd54c9de5825c8ef18`, on
+`codex/expanded-summoning-cleanup-iteration2`. PR67 was open/draft; the main
+checkout and PR66 work were left untouched. The historical gallery below is
+review5-9 evidence, not evidence of these repairs. The four transparent uploads
+were not used to judge appearance.
+
+### Repairs and demonstrated causes
+
+- **Ettin:** the review12 native reproduction exposed only two changed cached
+  fields: render queue `2000 -> 2450`, and RenderType `Opaque -> TransparentCutout`.
+  All four head caches matched the exact current donor cache; other attach-time
+  fade defaults and texture identities matched. Installed Assembly-CSharp
+  `3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb`,
+  `DissolveAnimationController.Update` token `060011A3`, IL `00D0-00E6`,
+  performs this transition. The observer now permits only that paired native
+  transition when dissolve/cutout were enabled, retains the original strict
+  attach comparison in evidence, and requires the complete current donor/head
+  cache comparison. Production dissolve is not forced or reset.
+- **Ettin art:** planar cheeks/jaw, thinner angled brow, eyelid rims and facial
+  furrows replace the smooth mask face. The neck fan, two-driver rig and warmed
+  original paint remain. Deterministic export: 5,026 vertices, 9,992 outward
+  triangles; closed skin and normalized weights. Captured-frame offline renders
+  are supplemental and are not native animation.
+- **Girallon:** two terminal trunk rows close the visible neck/skull gap, with
+  a Neck-to-Head weight blend and the final row buried inside the skull. All
+  existing arm, palm and digit positions/normals/weights remain byte-equivalent.
+  Export: 8,325 vertices, 16,244 triangles, 44 closed outward components. This
+  does not claim to solve far-hand readability.
+- **Giants:** ordinary summon hooks now own exact body-atlas palettes for Stone
+  (gray), Fire (warm charcoal), Cloud (pale blue), and Storm (bronze). Hill and
+  Frost retain native colors. Separate equipment/cloth surfaces stay protected.
+  Height remains inactive: scaling the native root would also scale gameplay
+  colliders; the render-only proxy still needs its clothing/collision proof.
+  Exact feet and a new anatomy measurement system are not acceptance conditions.
+- **Attacks:** review12 passes the corrected immediate native-act scheduling
+  predicate but fails the independent aggregate rules/cost predicate. Existing
+  raw data cannot identify every conjunct; the observer now records each one
+  and bounded changed fields, without relaxing any requirement. Also corrected
+  two image-receipt comparisons (`png=<name>;bytes=...`, not a bare filename).
+  The diagnostic Claw-to-Bite alias remains excluded from production.
+
+### Frozen inputs and focused checks
+
+Review12 source `cd06cebc9f5e77d554f815bc13cb69cfff49fa85`, ZIP
+`5434e6a8e153566a426b09cdb59597715468cceb78302cf90c44e931e6b2025c`,
+DLL `c1d7e61f0b83a6a0ef473516c6c050448e681c352c5ee6fd6d1b3e30233afc1b`,
+MVID `2904ec38-7686-4e37-8ab6-2ec298b16d47`: exact compile/package and 27/27
+selected Cleanup2 cases passed. Native Ettin FAIL8/2 (73.774s), evidence directory
+`20261022T1720034941943Z-disposable-expanded-summoning-cleanup2-native-review`;
+attacks FAIL11/2 (78.379s), directory
+`20261022T1722592197869Z-disposable-expanded-summoning-cleanup2-native-review`.
+Both guards confirmed exit, exact current installation/settings restoration,
+and all **95 currently inventoried** original saves unchanged.
+
+Review13 `b033c10497` stopped at the stale Girallon hash in the repaired-body
+test (36/37); its failed log is retained. The corrected pin is frozen at
+review14 `70e575b8150cd3183c0281ba30ea9fd3cf0d51e3`. The added `recovery-bodies`
+selection reuses existing Girallon/Gorgon capture and preservation checks;
+phase preflight passed 832 checks. No existing runtime guard was weakened.
+
+Review14 immutable package completed 17:38:02 UTC with **37/37** selected cases
+(1.9s runner), exact installed-reference compilation and strict package PASS.
+Command: `Build-Local.ps1 -DevelopmentPurpose summon-cleanup-iteration2
+-DevelopmentTestFilter 'expanded-summoning.cleanup2;expanded-summoning.native-profile;expanded-summoning.repaired-first-exports'
+-ReferenceBundleDir <existing qualified cloth-probe-current bundle>`.
+Source-state `c24090fc7b70e1ced2a36f70334d11cffe7d4aca2451a114a05ae0102fb7d716`;
+ZIP `224dd5e1d9e5a6cda7da0b19ef5634fca2195bb0579f0beaa27af186c84a801f`;
+DLL `5e5ae3f27bff13617866454d043a50b7443f186ef2b2db99b3df4db5fecdb043`;
+MVID `f44123c5-16c6-4059-bc07-61e038194bdc`.
+Frozen worktree: `artifacts/worktrees/summon-cleanup2-review14`; log
+`artifacts/cleanup2-review14-build.log` in that checkout. It is development only.
+
+### Current native inspection and local comparison
+
+Open the local file (not uploaded):
+`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\worktrees\summon-cleanup-iteration2\artifacts\cleanup2-recovery-current\index.html`.
+It contains 25 current original PNGs and 8 historical originals, paired body/head
+views and sampled Girallon attack/Gorgon movement playback. All current images
+contain nontransparent varying pixels; image hashes, original paths, candidate,
+and run identities are in the two adjacent identity JSONs. Complete originals
+remain in runtime-evidence. This is a small hand-selected page, not a new exporter.
+
+| Review14 phase | Run | Result and inspection |
+| --- | --- | --- |
+| Ettin lifecycle | `20261022T1738458879562Z-766cf84fa6af4eb8aef040a5291658df` | FAIL75/4,108.848s;48 original images. Attachment/current cache, independent heads, expiry, recast and exact private-resource release passed. Two off-hand handles absent; two positive-changing-dissolve assertions failed. Body/head/side and main-hand frames inspected: warmer face and jaw/brow detail, but still a stylized mask beside the native face. **Art remains unfinished.** |
+| Girallon and Gorgon | `20261022T1742162026645Z-a85127499a304bf88f409f25e17d53b4` | FAIL18/3,116.095s;234 originals. Both117-image packets complete, native travel5.974234/5.971801m and attack handles present; both Hit handles absent, causing both packet failures and aggregate failure. Side/front and sampled attack/move frames inspected. Girallon neck connection improved; far hands remain dark/overlapping. Gorgon is darker but plates remain padded and matte. **Do not approve the metal appearance.** |
+
+The remaining Ettin fade result is now precise. Older actors recorded111 and110
+expiry samples with source/head dissolve range `[0,0]`, zero active samples,
+zero material-control failures and maximum head/source error zero. Controller
+release was `reinitialized`, ownership `released`, assigned materials zero.
+The recast actor had two active samples (maximum0.00552976131), which may be
+remaining summon-in fade; the packet does not identify direction/animation.
+Installed `SummonedUnitBuff.OnRemoved` token `06002A64` delegates expiry to
+`Blueprint.Visual.BloodPuddleFx`, `DismemberUnitFX` and `DismemberedUnitBuff`;
+it does not request StandardMaterialController dissolve. Therefore the failed
+requirement that every expiry produce changing `_Dissolve` is not established
+by that native contract. Both original FAIL verdicts remain. The exact native
+FX/downstream component path must be understood before changing the assertion
+or claiming positive fade-out proof. No production lifecycle defect is inferred
+from these zero synchronized values.
+
+Both review14 transactions are Restored with exact settings and installation
+verification, confirmed game exit, and all95 currently inventoried saves exact.
+Their compatibility records are `compat-20261022T173821Z-fa233903dec6` and
+`compat-20261022T174151Z-4263bdd4e288`. Last native exit/restoration was confirmed
+by17:44:34 UTC. No further build/native run was selected after that point;
+remaining work was evidence inspection, local gallery assembly and handoff.
+
+**Still unqualified:** review14 production attack named-predicate reproduction;
+Crab/Brachiosaurus render-ON contact/recovery; actual giant production palette
+capture and height integration; Ettin cold reconstruction; remaining art above.
+The unchanged source10 Mastodon/Triceratops preservation result is reused, not
+rerun. Palette implementation is production code but is not native-qualified.
+
+The validation window began 17:15:14 UTC, with the ordinary 30-minute ceiling
+at 17:45:14 UTC. Safe transaction completion/restoration remains mandatory.
+The cold path remains unavailable: the preserved local draft lacks qualified
+process-boundary acquisition/recovery coverage, and public legacy entrypoints
+refuse this current-stack mission. It was not promoted or invoked.
+
+Unchanged SNA menus, family-first labels, painted Horse and native
+Mastodon/Triceratops preservation retain their original evidence below.
+Standalone elemental consolidation is **deferred**, not completed; every
+rules-distinct invocation remains available. No further elemental design work
+belongs to this recovery pass.
+
 ## Confirmed tooling defects
 
 The original PowerShell wrapper now owns the live save handles and transaction
