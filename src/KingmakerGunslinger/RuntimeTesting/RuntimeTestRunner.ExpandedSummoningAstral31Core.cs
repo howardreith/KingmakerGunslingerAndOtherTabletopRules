@@ -447,6 +447,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 bool targetCombatBeforeCleanup = target.IsInCombat;
                 bool casterCombatBeforeCleanup = fixture.Caster.IsInCombat;
+                Game.Instance.TurnBasedCombatController
+                    .HandlePartyCombatStateChanged(false);
                 if (target.IsInCombat) target.LeaveCombat();
                 if (fixture.Caster.IsInCombat) fixture.Caster.LeaveCombat();
                 fixture.Caster.Descriptor.Alignment.Set(casterAlignment);
