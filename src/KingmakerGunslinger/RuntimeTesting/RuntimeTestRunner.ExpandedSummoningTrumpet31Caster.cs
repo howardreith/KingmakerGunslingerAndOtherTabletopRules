@@ -31,8 +31,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target, string id)
         {
             var parameters = data.CalculateParams(); var wrapped = new TargetWrapper(target);
-            if (!data.IsAvailable || !data.CanTarget(wrapped))
-                throw new InvalidOperationException("Native caster manual-command preconditions failed: " + id);
+            bool ready = data.IsAvailable && data.CanTarget(wrapped);
+            Sprint25Check(id + "-ready", ready, new JObject { ["actor"] = actor.UniqueId,
+                ["target"] = target.UniqueId, ["ability"] = data.Blueprint.AssetGuid,
+                ["available"] = data.IsAvailable, ["canTarget"] = data.CanTarget(wrapped),
+                ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel, ["dc"] = parameters.DC,
+                ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["commands"] = new JArray(actor.Commands.Raw
+                    .Where(queued => queued != null).Select(Sprint27AiCommand)) },
+                "Actual native ability availability, target, parameters and queue are observed before the manual command.");
+            if (!ready) throw new InvalidOperationException("Native caster manual-command preconditions failed: " + id);
             var command = new UnitUseAbility(data, wrapped); var costs = new JArray();
             using (var economy = new FirearmReviewCosts(actor, costs))
             {
@@ -58,8 +65,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Trumpet31ObserveAiSpell(UnitEntityData actor, string aiName,
             string id, Action<UnitUseAbility> observe)
         {
-            foreach (var command in actor.Commands.Raw.Where(value => value != null && !value.IsFinished))
-                throw new InvalidOperationException("Caster AI subcase starts with a live command: " + command.GetType().Name);
+            var priorCommands = actor.Commands.Raw.Where(command => command != null).ToArray();
+            bool cleanQueue = !priorCommands.Any(command => !command.IsFinished);
+            Sprint25Check(id + "-queue", cleanQueue, new JObject { ["actor"] = actor.UniqueId,
+                ["commands"] = new JArray(priorCommands.Select(Sprint27AiCommand)) },
+                "No leftover live command may contaminate the next owned native AI decision.");
+            if (!cleanQueue) throw new InvalidOperationException("Caster AI subcase starts with a live command.");
             actor.Commands.RemoveFinishedAndUpdateQueue();
             Sprint28SetBrainActivePreservingActions(actor, true); actor.Brain.RestoreAvailableActions();
             var commands = new HashSet<UnitCommand>(); var ambient = new HashSet<string>(); var costs = new JArray();
@@ -98,7 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null, victim = null, blocker = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
-            Dretch30CloudSaves saves = null;
+            Trumpet31CasterSaves saves = null;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -115,6 +126,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var book = owner.Descriptor.GetSpellbook(creation.Book); var otherBook = sibling.Descriptor.GetSpellbook(creation.Book);
                 var nativeExtra = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.BlueprintFeature>(BlueprintBootstrap.Library,
                     "136fa0343d5b4b348bdaa05d83408db3", "native extraplanar consumer");
+                var preparedInputs = new JArray(creation.Preparations.Select(row => new JObject {
+                    ["spell"] = row.Ability.AssetGuid, ["level"] = row.Level, ["copies"] = row.Copies,
+                    ["ownerPrepared"] = Trumpet31PreparedCopies(book, row.Ability, row.Level),
+                    ["siblingPrepared"] = Trumpet31PreparedCopies(otherBook, row.Ability, row.Level),
+                    ["nativeSpellLevel"] = new AbilityData(row.Ability, book).CalculateParams().SpellLevel }));
+                bool prepared = preparedInputs.All(row => (int)row["ownerPrepared"] == (int)row["copies"] &&
+                    (int)row["siblingPrepared"] == (int)row["copies"] && (int)row["nativeSpellLevel"] == (int)row["level"]);
+                Sprint25Check("trumpet-caster-preparations", prepared, new JObject { ["owner"] = owner.UniqueId,
+                    ["sibling"] = sibling.UniqueId, ["cl"] = book.CasterLevel, ["preparations"] = preparedInputs },
+                    "Every actual initial preparation, including native Magic Vestment, has its own legal native level and independent available copies.");
+                if (!prepared) throw new InvalidOperationException("Native caster initial preparations failed.");
                 var skillRows = new JArray();
                 foreach (int charisma in new[] { 17, 21 })
                 {
@@ -123,13 +145,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         var check = Rulebook.Trigger(new RuleSkillCheck(owner, stat, 20));
                         skillRows.Add(new JObject { ["charisma"] = charisma, ["stat"] = stat.ToString(),
-                            ["bonus"] = (int)check.Bonus, ["baseRoll"] = check.BaseRollResult, ["rollResult"] = check.RollResult,
+                            ["bonus"] = (int)check.Bonus, ["nativeStatValue"] = check.StatValue,
+                            ["d20"] = check.D20.Value, ["baseRoll"] = check.BaseRollResult, ["rollResult"] = check.RollResult,
+                            ["effectiveBonus"] = check.StatValue + (int)check.Bonus,
+                            ["nativeRolledBonus"] = check.BaseRollResult - check.D20.Value,
                             ["modifiers"] = new JArray(check.Bonus.Modifiers.Select(value => new JObject {
                                 ["value"] = value.ModValue, ["source"] = value.Source?.Blueprint?.AssetGuid })) });
                     }
                 }
                 owner.Stats.Charisma.BaseValue = 17;
-                bool named = skillRows.Select(row => (int)row["bonus"]).SequenceEqual(new[] { 24, 5, 3, 26, 7, 5 }) &&
+                // Final successful S28 native convention: StatValue excludes the
+                // event Bonus; the consumed BaseRollResult includes both and D20.
+                bool named = skillRows.Select(row => (int)row["effectiveBonus"]).SequenceEqual(new[] { 24, 5, 3, 26, 7, 5 }) &&
+                    skillRows.All(row => (int)row["nativeRolledBonus"] == (int)row["effectiveBonus"]) &&
                     owner.Stats.SkillPerception.ModifiedValue == 22 && units.All(unit => unit.Descriptor.HasFact(nativeExtra));
                 Sprint25Check("trumpet-caster-named-skills", named, new JObject { ["owner"] = owner.UniqueId,
                     ["checks"] = skillRows, ["perception"] = owner.Stats.SkillPerception.ModifiedValue,
@@ -146,6 +174,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int[] initialSlots = Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null)).ToArray();
                 bool orisonReady = orison.Spellbook == null && virtue.Type == AbilityType.Spell &&
                     parameters.CasterLevel == 14 && parameters.SpellLevel == 0 && parameters.DC == 15 && orison.IsAvailable;
+                Sprint25Check("trumpet-caster-orison-ready", orisonReady, new JObject { ["owner"] = owner.UniqueId,
+                    ["ability"] = virtue.AssetGuid, ["type"] = virtue.Type.ToString(), ["book"] = orison.Spellbook?.Blueprint.AssetGuid,
+                    ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel, ["dc"] = parameters.DC,
+                    ["available"] = orison.IsAvailable },
+                    "The granted native orison has actual direct access and its own book-derived parameters before any effect is attempted.");
                 if (!orisonReady) throw new InvalidOperationException("Trumpet native orison access/parameter preconditions failed.");
                 foreach (int frame in Trumpet31ManualCommand(owner, orison, owner, "trumpet-caster-virtue-first-command")) yield return frame;
                 foreach (int frame in Trumpet31ManualCommand(owner, new AbilityData(owner.Descriptor.Abilities.GetAbility(virtue)), owner,
@@ -226,7 +259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["targetHd"] = victim.Descriptor.Progression.CharacterLevel, ["fixtureWillBase"] = victim.Stats.SaveWill.BaseValue },
                     "Moving only the disposable ally establishes a clear legal native Banishment target within the CL14 budget; no slot or effect has been injected.");
                 if (!clear) throw new InvalidOperationException("Native Banishment clear-target preconditions failed.");
-                saves = new Dretch30CloudSaves(new[] { victim }); EventBus.Subscribe(saves);
+                saves = new Trumpet31CasterSaves(victim); EventBus.Subscribe(saves);
                 foreach (int frame in Trumpet31ObserveAiSpell(owner, "KMG_Summoning_OutsiderCelestial_TrumpetArchon_BanishmentAi",
                     "trumpet-caster-banishment-native-ai", value => { })) yield return frame;
                 var ownSaves = saves.Rows.Where(row => (string)row["sourceAbility"] == banishment.AssetGuid &&
@@ -251,6 +284,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling, victim, blocker }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture); SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private sealed class Trumpet31CasterSaves : IGlobalRulebookHandler<RuleSavingThrow>
+        {
+            private readonly UnitEntityData _target;
+            internal readonly JArray Rows = new JArray();
+            internal Trumpet31CasterSaves(UnitEntityData target) { _target = target; }
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
+            public void OnEventDidTrigger(RuleSavingThrow evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, _target)) return;
+                Rows.Add(new JObject { ["target"] = evt.Initiator.UniqueId,
+                    ["d20"] = evt.D20.Value, ["nativeStatValue"] = evt.StatValue,
+                    ["dc"] = evt.DifficultyClass, ["passed"] = evt.IsPassed,
+                    ["sourceAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid,
+                    ["caster"] = evt.Reason?.Context?.MaybeCaster?.UniqueId });
             }
         }
     }
