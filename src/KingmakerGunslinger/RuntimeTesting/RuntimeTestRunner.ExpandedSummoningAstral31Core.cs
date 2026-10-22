@@ -268,6 +268,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ItemEntityWeapon hammer = owner.Body.PrimaryHand.MaybeWeapon;
                 ownedItems.AddRange(owner.Descriptor.Inventory.Items);
                 ownedItems.AddRange(sibling.Descriptor.Inventory.Items);
+                var powerAttack = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                    value.Blueprint.AssetGuid == "a7b339e4f6ff93a4697df5d7a87ff619");
+                JObject initialPowerAttack = Sprint22PowerAttackState(owner, powerAttack);
+                foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                    yield return frame;
                 bool attacks = hammer != null && !hammer.IsLootable &&
                     hammer.Wielder != null && ReferenceEquals(hammer.Wielder.Unit, owner) &&
                     hammer.Enchantments.Count(value => value.Blueprint.AssetGuid ==
@@ -292,20 +297,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     ItemEntityWeapon weapon = owner.Body.PrimaryHand.MaybeWeapon;
                     if (weapon != null && !ownedItems.Contains(weapon)) ownedItems.Add(weapon);
+                    JObject offPowerAttack = Sprint22PowerAttackState(owner, powerAttack);
+                    JObject offRule = Sprint29WeaponRule(owner, weapon);
+                    foreach (int frame in Sprint22SetPowerAttack(owner, true))
+                        yield return frame;
+                    var onAttackRule = Rulebook.Trigger(
+                        new RuleCalculateAttackBonusWithoutTarget(owner, weapon, 0));
+                    JObject onRule = Sprint29WeaponRule(owner, weapon);
+                    JObject onPowerAttack = Sprint22PowerAttackState(owner, powerAttack);
+                    foreach (int frame in Sprint22SetPowerAttack(owner, false))
+                        yield return frame;
+                    JObject resetPowerAttack = Sprint22PowerAttackState(owner, powerAttack);
                     var attack = new UnitAttack(target);
                     attack.Init(owner);
                     var plan = attack.CreateFullAttack();
-                    JObject rule = Sprint29WeaponRule(owner, weapon);
                     int expectedAttack = mode == 0 ? 26 : 23;
                     int expectedDamage = mode == 0 ? 14 : 12;
+                    int expectedPowerDamage = mode == 0 ? 12 : 8;
                     int expectedCount = mode == 0 ? 3 : 1;
                     bool exact = weapon != null && !weapon.IsSecondary &&
                         weapon.AttackRange.Value == 5 && !weapon.IsLootable &&
                         weapon.Wielder != null && ReferenceEquals(weapon.Wielder.Unit, owner) &&
-                        (int)rule["attack"] == expectedAttack &&
-                        (int)rule["damageBonus"] == expectedDamage &&
-                        (int)rule["diceRolls"] == 1 && (string)rule["dice"] == "D8" &&
-                        (bool)rule["ownerExact"] && plan.Count == expectedCount &&
+                        (int)offRule["attack"] == expectedAttack &&
+                        (int)offRule["damageBonus"] == expectedDamage &&
+                        (int)offRule["diceRolls"] == 1 && (string)offRule["dice"] == "D8" &&
+                        (bool)offRule["ownerExact"] &&
+                        (int)onRule["attack"] == expectedAttack - 4 &&
+                        (int)onRule["damageBonus"] == expectedDamage + expectedPowerDamage &&
+                        onAttackRule.BonusSources.Any(value => value.Bonus == -4 &&
+                            ReferenceEquals(value.Source?.Blueprint, powerAttack.Blueprint.Buff)) &&
+                        powerAttack.Blueprint.Buff != null &&
+                        (bool)onPowerAttack["isOn"] && (bool)onPowerAttack["isRunning"] &&
+                        (int)onPowerAttack["activeBuffCount"] == 1 &&
+                        !(bool)offPowerAttack["isOn"] && !(bool)offPowerAttack["isRunning"] &&
+                        (int)offPowerAttack["activeBuffCount"] == 0 &&
+                        !(bool)resetPowerAttack["isOn"] && !(bool)resetPowerAttack["isRunning"] &&
+                        (int)resetPowerAttack["activeBuffCount"] == 0 &&
+                        plan.Count == expectedCount &&
                         plan.All(value => value.Hand != null &&
                             ReferenceEquals(value.Hand.MaybeWeapon, weapon));
                     attacks &= exact;
@@ -313,7 +341,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["mode"] = mode, ["weapon"] = weapon?.Blueprint?.AssetGuid,
                         ["secondary"] = weapon?.IsSecondary,
                         ["lootable"] = weapon == null || weapon.IsLootable,
-                        ["rule"] = rule, ["planCount"] = plan.Count,
+                        ["offRule"] = offRule, ["onRule"] = onRule,
+                        ["offPowerAttack"] = offPowerAttack,
+                        ["onPowerAttack"] = onPowerAttack,
+                        ["resetPowerAttack"] = resetPowerAttack,
+                        ["onAttackSources"] = new JArray(onAttackRule.BonusSources.Select(value =>
+                            new JObject { ["bonus"] = value.Bonus,
+                                ["source"] = value.Source?.Blueprint?.AssetGuid })),
+                        ["planCount"] = plan.Count,
                         ["plan"] = new JArray(plan.Select(value => new JObject {
                             ["weapon"] = value.Hand?.MaybeWeapon?.Blueprint?.AssetGuid,
                             ["penalty"] = value.AttackBonusPenalty,
@@ -325,8 +360,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["hammerEnchantments"] = new JArray(hammer == null ?
                             Enumerable.Empty<string>() : hammer.Enchantments.Select(value =>
                                 value.Blueprint.AssetGuid)),
+                        ["initialPowerAttack"] = initialPowerAttack,
+                        ["finalPowerAttack"] = Sprint22PowerAttackState(owner, powerAttack),
                         ["modes"] = attackRows, ["resolvedAttacks"] = 0 },
-                    "Native item/rule/plan consumers expose the owned +2 disrupting two-handed hammer and alternative primary slam with the printed adult signed bonuses; resolved hits and disruption remain separate proof.");
+                    "With native Power Attack explicitly controlled and source-attributed, item/rule/plan consumers expose the owned +2 disrupting two-handed hammer and alternative primary slam with the adult signed bonuses; resolved hits and disruption remain separate proof.");
                 if (!attacks) throw new InvalidOperationException(
                     "Astral native attack-mode plan failed.");
 
