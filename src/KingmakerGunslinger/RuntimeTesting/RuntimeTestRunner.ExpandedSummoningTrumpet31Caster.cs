@@ -219,24 +219,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["preparedSlotsAfter"] = new JArray(Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null))) },
                     "Printed at-will Virtue is a native Spell/Cantrip fact, pays actions twice, grants one temporary HP without stacking and never spends or refills leveled slots.");
                 if (!orisonEffect) throw new InvalidOperationException("Native Virtue effect or leveled-resource isolation failed.");
-                var vestment = creation.Preparations.Single(row => row.Ability.AssetGuid == "2d4263d80f5136b4296d6eb43a221d7d").Ability;
-                var vestmentArmor = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
-                    "956309af83352714aa7ee89fb4ecf201", "captured native Magic Vestment armor variant");
-                var vestmentSlot = otherBook.GetMemorizedSpellSlots(3).Single(slot => slot.Available && ReferenceEquals(slot.Spell?.Blueprint, vestment));
-                vestmentSlot.Spell.ParamSpellSlot = vestmentSlot;
-                var armorData = new AbilityData(vestmentSlot.Spell, vestmentArmor);
-                int acBefore = owner.Stats.AC.ModifiedValue;
-                foreach (int frame in Trumpet31ManualCommand(sibling, armorData, owner, "trumpet-caster-vestment-command")) yield return frame;
-                var vestmentBuff = owner.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "9e265139cf6c07c4fb8298cb8b646de9");
-                bool armor = vestmentBuff != null && ReferenceEquals(vestmentBuff.Context.MaybeCaster, sibling) &&
-                    vestmentBuff.Context.Params.CasterLevel == 14 && owner.Stats.AC.ModifiedValue == acBefore + 3 &&
-                    !vestmentSlot.Available && Trumpet31PreparedCopies(book, vestment, 3) == 1;
-                Sprint25Check("trumpet-caster-vestment-effect", armor, new JObject { ["caster"] = sibling.UniqueId,
-                    ["target"] = owner.UniqueId, ["acBefore"] = acBefore, ["acAfter"] = owner.Stats.AC.ModifiedValue,
-                    ["cl"] = vestmentBuff?.Context?.Params.CasterLevel, ["casterRootSlotAvailable"] = vestmentSlot.Available,
-                    ["otherRootSlots"] = Trumpet31PreparedCopies(book, vestment, 3) },
-                    "The native armor variant grants its actual CL14 enhancement to ordinary clothing and spends only the selected parent's prepared slot; the other book stays independent.");
-                if (!armor) throw new InvalidOperationException("Native vestment armor/variant/slot consumer failed.");
                 victim.Descriptor.SwitchFactions(fixture.Hostile.Faction, true);
                 Vector3 far; string lane, direction;
                 var origin = Sprint24AiCombatLane(fixture.Caster, owner, victim, 15f, out far, out lane, out direction,
@@ -302,6 +284,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["blockerAlive"] = !blocker.Destroyed && !blocker.Descriptor.State.IsDead, ["forcedRolls"] = 0 },
                     "A genuine native DC21 failed save removes the extraplanar enemy and spends exactly one own prepared Banishment; other owners/slots survive. A native successful save leaves this effect requirement unmet, never relabeled product PASS.");
                 if (!banished) throw new InvalidOperationException("Native Banishment effect/save/slot requirement unmet; inspect actual outcome.");
+                var vestment = creation.Preparations.Single(row => row.Ability.AssetGuid == "2d4263d80f5136b4296d6eb43a221d7d").Ability;
+                var vestmentArmor = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    "956309af83352714aa7ee89fb4ecf201", "captured native Magic Vestment armor variant");
+                var vestmentSlot = otherBook.GetMemorizedSpellSlots(3).Single(slot => slot.Available && ReferenceEquals(slot.Spell?.Blueprint, vestment));
+                vestmentSlot.Spell.ParamSpellSlot = vestmentSlot;
+                var armorData = new AbilityData(vestmentSlot.Spell, vestmentArmor);
+                // Independent spell-effect diagnosis is last: it must not mask
+                // support/offense evidence or contaminate their initial slots.
+                int acBefore = owner.Stats.AC.ModifiedValue;
+                var effectTrace = new Trumpet31CasterEffects(owner);
+                var nativeVestmentBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
+                    "9e265139cf6c07c4fb8298cb8b646de9", "captured native Magic Vestment buff");
+                RuntimeTestResultWriter.WriteAtomic(System.IO.Path.Combine(_request.EvidenceDirectory,
+                    "trumpet-caster-vestment-inputs.json"), new JObject {
+                    ["runId"] = _request.RunId, ["mvid"] = typeof(RuntimeTestRunner).Assembly.ManifestModule.ModuleVersionId.ToString(),
+                    ["spell"] = DescribeGraph(vestmentArmor, 0, new HashSet<object>(NativeDonorReferenceComparer.Instance), 8),
+                    ["buff"] = DescribeGraph(nativeVestmentBuff, 0, new HashSet<object>(NativeDonorReferenceComparer.Instance), 6),
+                    ["spellResistance"] = vestmentArmor.SpellResistance,
+                    ["effectOnAlly"] = vestmentArmor.EffectOnAlly.ToString(),
+                    ["effectOnEnemy"] = vestmentArmor.EffectOnEnemy.ToString(),
+                    ["targetArmor"] = owner.Body.Armor.MaybeArmor?.Blueprint?.AssetGuid,
+                    ["targetBuffsBefore"] = new JArray(owner.Buffs.Enumerable.Select(buff => new JObject {
+                        ["buff"] = buff.Blueprint.AssetGuid, ["caster"] = buff.Context?.MaybeCaster?.UniqueId,
+                        ["end"] = buff.EndTime.ToString() })) }.ToString());
+                EventBus.Subscribe(effectTrace);
+                try { foreach (int frame in Trumpet31ManualCommand(sibling, armorData, owner, "trumpet-caster-vestment-command")) yield return frame; }
+                finally { EventBus.Unsubscribe(effectTrace); }
+                var vestmentBuff = owner.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "9e265139cf6c07c4fb8298cb8b646de9");
+                bool armor = vestmentBuff != null && ReferenceEquals(vestmentBuff.Context.MaybeCaster, sibling) &&
+                    vestmentBuff.Context.Params.CasterLevel == 14 && owner.Stats.AC.ModifiedValue == acBefore + 3 &&
+                    !vestmentSlot.Available && Trumpet31PreparedCopies(book, vestment, 3) == 1;
+                Sprint25Check("trumpet-caster-vestment-effect", armor, new JObject { ["caster"] = sibling.UniqueId,
+                    ["target"] = owner.UniqueId, ["acBefore"] = acBefore, ["acAfter"] = owner.Stats.AC.ModifiedValue,
+                    ["cl"] = vestmentBuff?.Context?.Params.CasterLevel, ["casterRootSlotAvailable"] = vestmentSlot.Available,
+                    ["otherRootSlots"] = Trumpet31PreparedCopies(book, vestment, 3),
+                    ["nativeEffects"] = effectTrace.Rows,
+                    ["targetBuffsAfter"] = new JArray(owner.Buffs.Enumerable.Select(buff => new JObject {
+                        ["buff"] = buff.Blueprint.AssetGuid, ["caster"] = buff.Context?.MaybeCaster?.UniqueId,
+                        ["cl"] = buff.Context?.Params?.CasterLevel, ["end"] = buff.EndTime.ToString() })) },
+                    "The native armor variant grants its actual CL14 enhancement to ordinary clothing and spends only the selected parent's prepared slot; the other book stays independent.");
+                if (!armor) throw new InvalidOperationException("Native vestment armor/variant/slot consumer failed.");
             }
             finally
             {
@@ -311,6 +334,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling, victim, blocker }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture); SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private sealed class Trumpet31CasterEffects : IGlobalRulebookHandler<RuleSpellResistanceCheck>, IGlobalRulebookHandler<RuleApplyBuff>
+        {
+            private readonly UnitEntityData _target;
+            internal readonly JArray Rows = new JArray();
+            internal Trumpet31CasterEffects(UnitEntityData target) { _target = target; }
+            public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt) { }
+            public void OnEventDidTrigger(RuleSpellResistanceCheck evt)
+            {
+                if (!ReferenceEquals(evt.Target, _target)) return;
+                Rows.Add(new JObject { ["kind"] = "native-spell-resistance", ["target"] = _target.UniqueId,
+                    ["ability"] = evt.Ability?.AssetGuid, ["caster"] = evt.Context?.MaybeCaster?.UniqueId,
+                    ["cl"] = evt.Context?.Params?.CasterLevel, ["resistance"] = evt.SpellResistance,
+                    ["penetration"] = evt.SpellPenetration, ["ignore"] = evt.IgnoreSpellResistance,
+                    ["immune"] = evt.TargetIsImmune, ["resisted"] = evt.IsSpellResisted,
+                    ["hasRoll"] = evt.HasResistanceRoll, ["nativeD20"] = evt.HasResistanceRoll ? (int?)evt.Roll.Value : null });
+            }
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+            public void OnEventDidTrigger(RuleApplyBuff evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, _target)) return;
+                Rows.Add(new JObject { ["kind"] = "native-buff-application", ["target"] = _target.UniqueId,
+                    ["buff"] = evt.Blueprint?.AssetGuid, ["ability"] = evt.Context?.SourceAbility?.AssetGuid,
+                    ["caster"] = evt.Context?.MaybeCaster?.UniqueId, ["cl"] = evt.Context?.Params?.CasterLevel,
+                    ["durationSeconds"] = evt.Duration?.TotalSeconds, ["canApply"] = evt.CanApply,
+                    ["immune"] = evt.Immunity, ["storyImmune"] = evt.StoryModeImmunity,
+                    ["applied"] = evt.AppliedBuff != null, ["end"] = evt.AppliedBuff?.EndTime.ToString() });
             }
         }
 
