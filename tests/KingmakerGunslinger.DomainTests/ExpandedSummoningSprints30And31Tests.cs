@@ -63,6 +63,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummonMultiplicity.One, lemure[0].Multiplicity, "SM II is one.");
             Assertions.Equal(SummonMultiplicity.OneD3, lemure[1].Multiplicity, "SM III is 1d3.");
             Assertions.True(lemure.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM IV-IX are 1d4+1.");
+            string packager = System.IO.File.ReadAllText("tools/create_deterministic_package.py");
+            Assertions.True(packager.Contains("404, 406, 407, 408, 409"),
+                "The exact no-bank/bank package counts admit the five S30/S31 icons without weakening unrelated counts.");
         }
         internal static void AstralCoreRulesKeepDistinctLevelsAndAuraBoundary()
         {
