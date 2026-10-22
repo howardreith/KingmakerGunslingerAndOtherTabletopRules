@@ -37,8 +37,8 @@ Request`20261022T1336480926804Z-disposable-expanded-summoning-sprints30-31-nativ
 Actual native full sword/sword/secondary bite, Power Attack live buff/source
 attribution, random rolls/hits/damage, one full-round action charge, native sword
 model atR_Palm and final owner/private resources/items/area cleanup all PASS.
-The actual combat PNG shows the sword attached. Six captured per-view resources
-released. Disposable target remained in combat, supporting the retained fresh-
+The actual combat PNG shows the sword attached. Captured private view resources
+released; the next observer explicitly records their count. Disposable target remained in combat, supporting the retained fresh-
 process boundary; no following case shares this process. Hand grip/animation,
 coarse anatomy/seams/textures are backlog, no owner aesthetic approval.
 
