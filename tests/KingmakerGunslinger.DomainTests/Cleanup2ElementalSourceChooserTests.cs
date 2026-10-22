@@ -66,6 +66,23 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(one.SequenceEqual(new[]{mixed,header}),"A level-specific screen with one legacy source still has the common disclosure.");
         }
 
+        internal static void ConsoleProjectionPreservesNativeHiddenSourcesAndRefusesDrift()
+        {
+            var hidden=new NativeRow{Visible=false};var visible=new NativeRow();var mixed=new NativeRow();var header=new NativeRow();
+            var authority=new[]{mixed,hidden,visible};var capturedSources=new[]{visible};
+            var projection=ElementalSourceChooserPolicy.ProjectOriginalSources(authority,new[]{hidden,visible},header,false,
+                row=>row.Selected,row=>row.Visible);
+            Assertions.True(projection.SequenceEqual(new[]{mixed,hidden,header}),
+                "A native-hidden source stays the same original object for the native renderer to skip; it never becomes a disclosure member.");
+            Assertions.True(ElementalSourceChooserPolicy.SourcesRemainEligible(capturedSources,row=>row.Visible),
+                "The captured originally visible source admits the current native presentation generation.");
+            visible.Visible=false;
+            Assertions.False(ElementalSourceChooserPolicy.SourcesRemainEligible(capturedSources,row=>row.Visible),
+                "Foreign/native hiding of a captured source invalidates the generation; it cannot be overwritten to keep the fold alive.");
+            Assertions.True(authority.SequenceEqual(new[]{mixed,hidden,visible}) && !hidden.Visible && !visible.Visible,
+                "Eligibility refusal changes no native object, authoritative order, or native visibility flag.");
+        }
+
         internal static void NativeDisclosureFailureRollsBackOnlyOwnedRowGeneration()
         {
             var first=new NativeRow();var second=new NativeRow{FailOnce=true};var spec=ElementalSourceChooserPolicy.Rank(4);

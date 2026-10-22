@@ -86,14 +86,15 @@ namespace KingmakerGunslinger.Summoning
             internal bool Current {get{return !Released && View!=null && !Owner.IsDisposed &&
                 ReferenceEquals(Model(View),Group) && ReferenceEquals(Owner.SpellsSelector.Value,Group) &&
                 ReferenceEquals(Selection.GetValue(Owner),SelectionData) && ReferenceEquals(PreviewBook.GetValue(Owner),Book) &&
-                Group.VisibleCollection.SequenceEqual(Originals);}}
+                Group.VisibleCollection.SequenceEqual(Originals) &&
+                ElementalSourceChooserPolicy.SourcesRemainEligible(Sources,value=>!value.IsHidden);}}
             internal bool Selected(CharGenSpellSelectorItemVM source)
             {return source.IsChoosen.Value || ReferenceEquals(Group.LastSelectedEntity.Value,source) ||
                 (Owner.MechanicSelectedSpells!=null && Owner.MechanicSelectedSpells.Any(value=>ReferenceEquals(value,source.Spell)));}
             internal void Build()
             {
                 Header.CanChoose.Value=false;
-                Projection=ElementalSourceChooserPolicy.ProjectOriginalSources(Originals,Sources,Header,Expanded,Selected);
+                Projection=ElementalSourceChooserPolicy.ProjectOriginalSources(Originals,Sources,Header,Expanded,Selected,value=>!value.IsHidden);
             }
             internal void Toggle()
             {
@@ -208,7 +209,7 @@ namespace KingmakerGunslinger.Summoning
             if(selection?.SpellList==null || selection.Spellbook==null || selection.ExtraByStat || book==null ||
                 !ReferenceEquals(selection.SpellList,selection.Spellbook.SpellList) || !ReferenceEquals(book.Blueprint,selection.Spellbook) ||
                 !StandaloneElementalPresentationPolicy.IsObservedOrdinaryList(selection.SpellList.AssetGuid))return;
-            var sources=group.VisibleCollection.Where(value=>value.Spell!=null &&
+            var sources=group.VisibleCollection.Where(value=>!value.IsHidden && value.Spell!=null &&
                 ElementalSourceChooserPolicy.Parent(value.Spell.AssetGuid)!=null &&
                 selection.SpellList.GetSpells(value.Level).Any(spell=>ReferenceEquals(spell,value.Spell))).ToArray();
             if(sources.Length==0)return;
@@ -360,10 +361,14 @@ namespace KingmakerGunslinger.Summoning
             ElementalConsoleBookPresentation.Safe(()=>header.Context.Toggle());__result=false;return false;
         }
     }
-    [HarmonyPatch(typeof(SpellBookKnownSpellsVM),MethodType.Constructor)]
+    [HarmonyPatch]
     internal static class ElementalConsolePreparationIntakePatch
     {
-        private static bool Prepare(){return typeof(SpellBookKnownSpellsVM).Module.ModuleVersionId.ToString()==ElementalSourceChooserRuntime.GameMvid;}
+        private static MethodBase TargetMethod()
+        {return typeof(SpellBookKnownSpellsVM).GetConstructor(ElementalConsoleBookPresentation.Fields,null,
+            new[]{typeof(Spellbook),typeof(SpellBookLevelVM),typeof(IReactiveProperty<AbilityDataVM>)},null);}
+        private static bool Prepare()
+        {var target=TargetMethod();return ElementalConsoleBookPresentation.Exact(target,206) && target.MetadataToken==0x060050df;}
         private static void Postfix(SpellBookKnownSpellsVM __instance,Spellbook __0)
         {ElementalConsoleBookPresentation.Safe(()=>ElementalConsoleBookPresentation.RegisterBook(__instance,__0));}
     }

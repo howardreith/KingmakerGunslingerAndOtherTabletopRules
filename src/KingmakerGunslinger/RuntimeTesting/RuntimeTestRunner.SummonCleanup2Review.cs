@@ -147,9 +147,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else if (phase == "elementals-presentation")
                     foreach (int frame in ReviewSummonCleanup2ElementalPresentation(fixture, book)) yield return frame;
                 else if (phase == "elementals-console")
+                {
                     foreach (int frame in ReviewSummonCleanup2ElementalConsole(fixture, book)) yield return frame;
+                    foreach (int frame in ReviewSummonCleanup2ConsoleLearning(fixture, book)) yield return frame;
+                }
                 else if (phase == "elementals-sources")
                     foreach (int frame in ReviewSummonCleanup2ElementalSources(fixture, book)) yield return frame;
+                else if (phase == "elementals-off")
+                    foreach (int frame in ReviewSummonCleanup2ElementalOff(fixture, book)) yield return frame;
+                else if (phase == "elementals-learning")
+                    foreach (int frame in ReviewSummonCleanup2DesktopLearning(fixture, book)) yield return frame;
                 else if (phase == "menu-adapters")
                     foreach (int frame in ReviewSummonCleanup2MenuAdapters(fixture, book)) yield return frame;
                 else if (phase == "cloth-probe")

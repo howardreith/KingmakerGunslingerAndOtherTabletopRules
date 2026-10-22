@@ -1276,6 +1276,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-elemental-source-disclosure-rollback", Cleanup2ElementalSourceChooserTests.NativeDisclosureFailureRollsBackOnlyOwnedRowGeneration),
             Case("expanded-summoning.cleanup2-elemental-source-retained-context", Cleanup2ElementalSourceChooserTests.RetainedInvocationDriftRefusesWithoutSubstitutingFreshChild),
             Case("expanded-summoning.cleanup2-elemental-source-console-projection", Cleanup2ElementalSourceChooserTests.ConsoleProjectionRetainsOriginalAuthorityAndSelectedSource),
+            Case("expanded-summoning.cleanup2-elemental-source-console-hidden", Cleanup2ElementalSourceChooserTests.ConsoleProjectionPreservesNativeHiddenSourcesAndRefusesDrift),
             Case("expanded-summoning.cleanup2-elemental-learning-budget", Cleanup2ElementalPresentationTests.LearningBudgetCountsDistinctUnknownSelectableRowsAndExtraSlots),
             Case("expanded-summoning.cleanup2-elemental-learning-refusal", Cleanup2ElementalPresentationTests.UnverifiedLearningContextAlwaysReturnsIndependentOriginalCopy),
             Case("expanded-summoning.cleanup2-label-map", Cleanup2SummonPresentationTests.ExplicitLabelsCoverPublishedRoutesAndKeepNaturalNames),

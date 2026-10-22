@@ -51,9 +51,12 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ElementalSourceChooserPolicy
     {
-        internal static List<T> ProjectOriginalSources<T>(IEnumerable<T> original,IEnumerable<T> sources,T header,bool expanded,Func<T,bool> selected) where T:class
+        internal static bool SourcesRemainEligible<T>(IEnumerable<T> sources,Func<T,bool> eligible) where T:class
+        {return sources.All(eligible);}
+        internal static List<T> ProjectOriginalSources<T>(IEnumerable<T> original,IEnumerable<T> sources,T header,bool expanded,
+            Func<T,bool> selected,Func<T,bool> eligible=null) where T:class
         {
-            var exact=sources.ToArray();var rows=new List<T>();bool inserted=false;
+            var exact=sources.Where(value=>eligible==null || eligible(value)).ToArray();var rows=new List<T>();bool inserted=false;
             foreach(var row in original)
             {
                 bool source=exact.Any(value=>ReferenceEquals(value,row));

@@ -14,8 +14,11 @@ owner aesthetic approval is claimed. The completion intake was clean
 - MENU-02 now follows the authorized source-preserving Option B implementation:
   a transient desktop Elementals chooser, original source/child dispatch, native
   controller casting navigation, and ordinary PC learning/preparation disclosure.
-  Mixed SM/SNA rows and original definitions/resources remain intact. Console
-  learning/preparation and the complete source-case native proof remain open.
+  Mixed SM/SNA rows and original definitions/resources remain intact. Desktop
+  and console learning/preparation disclosure are implemented. Native observers
+  now cover allocation/cancel, preparation/undo, all24 originals, two books,
+  Extend, a favorite-slot exception, SNA/SM contexts, pins and a fresh module-OFF
+  process. Their actual native execution remains open.
 - Actual native Default progression is scoped through the native mode factory
   and the existing fixture clock gate. Manual pulses are refused while that
   exact native mode owns progression. The ordinary body/Ettin command checks
@@ -29,7 +32,31 @@ owner aesthetic approval is claimed. The completion intake was clean
   Copied native Cloth remains closed in production until the bounded native
   contact/solver probe establishes its contract. No gameplay root is scaled.
 
-### Review20 focused failures and exact corrections (current)
+### Review21 startup failure (preserved; no creature result)
+
+Frozen source `3def23cf2f1b534d95b9d1dbfd2f392f09afc78f`, package
+`4b8f49d2eca2fcdf19a2e5a888a66209cfbe9cd663b64bc8b9d6d6a49682bbe5`,
+DLL `7144581afe4c5b39bc148626395b6e52cc64db35a360fff46eb60935d1951ffb`,
+MVID `25a83b3b-b97b-43d7-ae48-3f37dd5e8530`. Exact packaging and16 selected
+cases passed, but recovery-bodies `20261022T2248408770827Z` never activated:
+Harmony12 could not resolve the new console preparation constructor because its
+attribute omitted the native arguments. Mod bootstrap failed before fixture/save
+interaction. This is an introduced integration defect, not an art result.
+
+The fix uses the exact installed three-argument constructor; the new console
+targets passed actual Harmony target resolution (17 positive targets and the
+original missing-constructor negative fixture,18/18). Corrected production
+compilation passed12.7s and9 focused cases passed2.5s. The exact PowerShell scope
+predicate passed52 positive/refusal cases across13 advertised phases.
+The original UMM log is retained in review21 artifacts. The exact owned process
+was closed normally (no force termination); its guard remained alive throughout.
+`compat-20261022T224818Z-c52079c11d9b` records confirmed exit, exact installation/
+settings restoration and all95 original saves preserved. No review21 PNG exists.
+
+The prior development validation window closed22:42:50UTC (28m16s). The next
+focused increment started22:48:15UTC; final completion qualification is not started.
+
+### Review20 (preserved)
 
 Frozen source `824874b96ec3d43c40e0ead5f51c235aa9f46386`, package
 `ce94e9e5ac53007cad45616464d67b5f48187c6a8e20e6c20e03f361cb66882b`,
