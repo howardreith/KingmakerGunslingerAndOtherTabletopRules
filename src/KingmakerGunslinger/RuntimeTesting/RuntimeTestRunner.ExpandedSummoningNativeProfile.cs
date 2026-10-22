@@ -111,6 +111,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if ((IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
                         (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "giant-lineup" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menus" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "tooltips" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "crab-attack" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "scale-prototype" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||

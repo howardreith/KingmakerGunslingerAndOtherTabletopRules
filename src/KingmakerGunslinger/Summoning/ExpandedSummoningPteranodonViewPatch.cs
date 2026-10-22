@@ -217,6 +217,8 @@ namespace KingmakerGunslinger.Summoning
             internal Material[] OriginalMaterials;
             internal Material Material;
             internal Mesh Mesh;
+            internal StandardMaterialController OriginalVisualControllerReceipt;
+            internal Material[] OriginalVisualDrivenReceipt;
             internal SkinnedMeshRenderer[] SuppressedRenderers;
             internal bool[] OriginalSuppressedRendererStates;
             internal TheropodAccessorySuppression TheropodSuppression;
@@ -249,6 +251,31 @@ namespace KingmakerGunslinger.Summoning
             if (view == null || !Applied.TryGetValue(view, out attachment))
                 return "not-attempted";
             return attachment.Outcome;
+        }
+
+        // Read-only exact-reference receipt, currently populated only for the
+        // Crab animation binding. A foreign controller/material refresh is not
+        // adopted merely because names or textures resemble our original.
+        internal static bool HasLiveOriginalVisual(UnitEntityView view, string key)
+        {
+            Attachment attachment;
+            if (view == null || key != Sprint14BonePolicy.CrabKey ||
+                !Applied.TryGetValue(view, out attachment) || attachment.VisualKey != key ||
+                attachment.Donor == null || attachment.Mesh == null || attachment.Material == null ||
+                !attachment.Donor.transform.IsChildOf(view.transform) ||
+                !ReferenceEquals(attachment.Donor.sharedMesh, attachment.Mesh) ||
+                attachment.OriginalVisualDrivenReceipt == null) return false;
+            Material[] installed = attachment.Donor.sharedMaterials;
+            if (installed == null || installed.Length != attachment.OriginalVisualDrivenReceipt.Length ||
+                installed.Where((value, index) => !ReferenceEquals(value, attachment.OriginalVisualDrivenReceipt[index])).Any()) return false;
+            var controller = view.GetComponentInChildren<StandardMaterialController>(true);
+            if (!ReferenceEquals(controller, attachment.OriginalVisualControllerReceipt)) return false;
+            if (controller == null)
+                return attachment.OriginalVisualDrivenReceipt.Length == 1 &&
+                    ReferenceEquals(attachment.OriginalVisualDrivenReceipt[0], attachment.Material);
+            IList<Material> driven = ControllerMaterials(controller);
+            return driven != null && attachment.OriginalVisualDrivenReceipt.Length > 0 &&
+                attachment.OriginalVisualDrivenReceipt.All(value => value != null && driven.Any(candidate => ReferenceEquals(candidate, value)));
         }
 
         /// <summary>
@@ -598,6 +625,11 @@ namespace KingmakerGunslinger.Summoning
                 // fully dissolved stays invisible. So the clone starts intact
                 // and the controller re-reads the renderer's materials.
                 string controller = AdoptByMaterialController(view, donor, material);
+                if (attachment.VisualKey == Sprint14BonePolicy.CrabKey)
+                {
+                    attachment.OriginalVisualControllerReceipt = view.GetComponentInChildren<StandardMaterialController>(true);
+                    attachment.OriginalVisualDrivenReceipt = donor.sharedMaterials.ToArray();
+                }
 
                 if (TheropodVisualPolicy.Handles(attachment.VisualKey))
                 {

@@ -4,7 +4,8 @@ This mission adds one exact save-free request scenario:
 `disposable-expanded-summoning-cleanup2-native-review`.
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
 The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
-`cloth-probe`, `ettin-lifecycle` and `scale-prototype`; no save, import, extra
+`cloth-probe`, `ettin-lifecycle`, `scale-prototype`, `tooltips` and
+`crab-attack`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
 ## Execution boundaries
@@ -73,6 +74,28 @@ Inspect it before changing a fixture; do not repeat an unchanged failing run.
 positive neck/head follow, exact owned summon-buff expiry and native destruction,
 then a third canonical cast. It observes instance isolation and teardown; it does
 not claim cold save hydration or directly destroy a head to simulate cleanup.
+Exact native head/neck/upper-body frame points and distinct close/body PNGs
+record the revised head fit during real selected weapon poses. Camera framing
+bounds are presentation inputs only, with camera/depth-of-field state restored.
+
+`tooltips` opens five exact existing native tooltip cards across four
+SM/SNA groups, including the shared Horse concept and three family-first
+labels. A narrowly guarded capture preserves only the exact owned hover data;
+normal captures continue suppressing hover. Native header text/icon, visibility,
+scroll, original slots/resources/hotbars and cleanup remain independent checks.
+The narrative admission reads actual lifecycle flags and inherited rendered
+alpha; GameObject activation alone cannot prove a visible dialogue panel.
+`summon-cleanup2-narrative-state.json` records first state and refusals. No
+story answer, hide or stop method is called to obtain a capture.
+
+`crab-attack` observes actual canonical SNA III, one ordinary native attack
+and one full native claw routine against the qualified disposable hostile.
+The new exact-owned null-only lookup borrows Spider Bite to animate the
+Crab's claw drivers. Original weapons/stats/actions are retained; the native
+animation path can change attack timing from the previous missing-animation
+fallback, so real events/costs/timing and poses are mandatory. No supplied hit
+or forced act is permitted. This does not authorize Brachiosaurus Tail to be
+called Slam/Gore or invent a missing Hit animation.
 
 `scale-prototype` first requires the complete common-plane seven-actor baseline.
 It experiments with owned render palettes and a mirrored render skeleton, with

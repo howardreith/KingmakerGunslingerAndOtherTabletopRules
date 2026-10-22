@@ -19,6 +19,52 @@ strict package validation and **76/76 selected cases** (4.0 s runner) PASS.
 The same artifact is reused for targeted native phases; older frozen evidence
 and failed artifacts retain their own inputs. Guarded push of this source passed.
 
+Review5 body run `20261022T0049060650220Z-3e4acabf04ea432b93bd60ab58dc259e`
+remains **FAIL**, 272.039 s, 60 PASS /10 FAIL. All nine real canonical casts and
+all nine117-file packets completed, with5.889-6.177m native travel. Seven bodies
+obtained the actual weapon-specific attack handle. Crab requests Claw from
+SpiderAnimset, which has only Bite; Brachiosaurus requests Tail from the
+Mastodon set, which has only Slam/Gore. All nine actual sets lack Hit. Missing
+actions are not relabelled as successful reactions, and image counts are not
+animation proof. Shared body observer cleanup passed. Actual PNG inspection
+confirms opacity/continuity and anatomy improvements, with explicit remaining
+far-finger/contact/material/occlusion limits. Ettin's pale oversized second
+head is rejected for further repair; its Standard material colors were present,
+so no unobserved controller-reset explanation is asserted.
+
+Review5 scale run `20261022T0056098570079Z-7ff8d9129a024d08b226b1081c369b73`
+remains **FAIL**, 73.512s,29 PASS /2 FAIL. Correct native walking query passed;
+1764 candidates in0.0311s yielded no qualifying seven-actor line:1642 clamp,
+55 grade,28 plane residual and39 footprint refusals. All39 complete footprint
+failures used factor1.0, motivating finer positive spacing samples; footprint,
+grade and contact bounds remain unchanged. No height calibration, experimental
+scale/palette attachment or giant production activation occurred.
+
+Body and scale transactions `compat-20261022T004757Z-e6b0fa400c87` and
+`compat-20261022T005504Z-31f7736d816e` each restored with verification true.
+The next batch repairs only the observed gaps: Ettin source/materials,
+exact-owned tooltip capture, fine ground sampling and a null-only Crab native
+animation binding plus ordinary-command observation. Brachio Tail is not
+aliased to Slam/Gore without a faithful pose demonstration.
+
+Review5 menu run `20261022T0103388756339Z-e2d3332b9e0a42c9b21de97296193fd9`
+remains **FAIL**,70.703s: the strict initial narrative guard refused before any
+popup. Native IL then proved its GameObject-activation assumption invalid for
+ordinary dialog hiding. Source6 reads actual lifecycle flags and native rendered
+alpha, atomically recording first state/every refusal; it calls no narrative
+method. The prior run lacks those fields and cannot be re-evaluated as PASS.
+
+Review5 targeted Gorgon breath run
+`20261022T0107456910177Z-bf18a9f6ec0f43a6ac395aca382a7de0` is **PASS**,
+41/41 native checks,166.246s, exact same source/DLL/package above. Source-bone
+and actual projectile/FX readbacks, native resource/recovery and selected
+mechanical boundaries passed. The two actual breath PNGs were inspected;
+green breath is emitted at the forward muzzle side, with no observed new
+body-origin displacement. This is the RTWP breath phase, not turn-based/full
+release or owner visual approval. Evidence directory:
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T0107456760201Z-disposable-expanded-summoning-sprint26-native-review`.
+Transaction `compat-20261022T010645Z-a8c6698a7e6f` restored/verified true.
+
 The separate [Elemental rules proposal](CLEANUP2-ELEMENTAL-RULES-PROPOSAL.md)
 fulfills the owner's follow-up direction. It lists six parents, 24 children,
 actual child differences, protected consumers and three bounded alternatives.
@@ -462,3 +508,30 @@ references. The valid review2 artifact remains distinct and immutable.
 | `assets/game/icons/expanded-summoning/horse.png` | `3bf6ac8d8c7b08869bf262c4018937d5aa6b72cf3e0b809efec916c6e0cf67c1` |
 | `src/KingmakerGunslinger/Summoning/EttinAuthoredHeadMesh.cs` | `a6a6beb2f631c256bf45c1660e367a4b1d4b00ac00c6286f0eaedf2c5c7cd372` |
 | `src/KingmakerGunslinger/Summoning/EttinSecondHeadVisual.cs` | `fffdd78b7fd75dc67974a011ab3c36646071d1b0ee791a346d46d411f2930c92` |
+
+### Review6 source checkpoint (2026-10-22)
+
+The review batch adds the exact-owned Crab null Claw binding, five native hover
+cards, lifecycle/render-alpha narrative admission, refined PF/StandardDynamic
+Ettin head materials/geometry and native pose images, and finer positive giant
+line spacing. The Crab test compares all 25 allowed source IDs to the actual
+published blueprint manifest. Original narrative state, foreign results and
+native spider data remain protected. Giant production scaling stays inactive.
+
+The first focused compile failed on a C# lambda/local name collision; that failed
+log is retained. After the local rename, production compilation passed in9.1s
+and all39 selected cases passed (2.5s domain build,0.4s runner). Command:
+`Invoke-KmgGate.ps1 -Filter 'expanded-summoning.cleanup2;expanded-summoning.native-profile;expanded-summoning.refinement;expanded-summoning.variant-module;expanded-summoning.sprint29'`.
+Logs: `artifacts/cleanup2-review6-focused.log` and
+`artifacts/cleanup2-review6-focused-fixed.log`. Guarded nine-phase request
+preflight passed816/816 (`artifacts/cleanup2-nine-phase-preflight.log`).
+`git diff --check` passed. Native review6 results are pending, and these focused
+checks do not establish native animation, appearance or save compatibility.
+
+Selected native review6 batch: menus, targeted hover cards, Ettin lifecycle,
+Crab ordinary/full attacks, giant render experiment and module-OFF observation.
+The planning target is15minutes with a30minute execution ceiling, plus required
+restoration. Each phase uses the same frozen artifact and fresh guarded process;
+a refusal is inspected before any changed reproduction. No unchanged broad
+campaign or save load is selected. Gorgon RTWP breath retains its exact review5
+artifact evidence because that Gorgon source is unchanged.

@@ -35,6 +35,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string[] ResourceNames, ResourceTypes;
             internal SummonCleanup2EttinLateObserver Observer;
             internal readonly JArray Samples = new JArray();
+            internal readonly JArray Images = new JArray();
             internal Vector3 FirstOffset;
             internal Quaternion FirstHeadRotation;
             internal bool FirstSample;
@@ -124,6 +125,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 throw new InvalidOperationException("Ettin attachment changed during pose observation: " + head.Observer.Error);
                             Game.Instance.IsPaused = false;
                             yield return 0;
+                            if ((pose == "idle" && frame == 12) ||
+                                (pose != "idle" && (frame == 8 || frame == 24 || frame == 48)))
+                                Cleanup2CaptureEttinPictures(head, pose, frame);
                         }
                     }
                     Cleanup2FinishEttinAnimation(ref animation);
@@ -140,6 +144,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["maximumNeckLocalOffsetDrift"] = head.MaximumOffsetDrift,
                             ["maximumRotationFollowErrorDegrees"] = head.MaximumRotationError,
                             ["samples"] = head.Samples,
+                            ["nativeImages"] = head.Images,
                             ["sampling"] = "Request-owned LateUpdate observer at execution order 32000, after the default-order EttinHeadPoseDriver. Scalar transform points only; source/proxy head transforms are never assigned.",
                             ["limits"] = "No-orbit proof requires positive original-head rotation relative to its neck; an unchanged pose remains unknown. Surface aesthetics, attack mechanics and saved hydration remain separate." },
                         "The original head actually rotates while the authored head maintains one neck-relative offset and follows its rotation without orbiting.");
@@ -295,10 +300,79 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["originalHeadPath"] = Cleanup2TransformPath(head.View.transform, head.Head),
                 ["neckPath"] = Cleanup2TransformPath(head.View.transform, head.Neck),
                 ["skullPath"] = Cleanup2TransformPath(head.View.transform, head.Skull),
+                ["originalHeadWorld"] = SurveyVector(head.Head.position),
+                ["originalHeadNeckLocal"] = SurveyVector(head.Neck.InverseTransformPoint(head.Head.position)),
+                ["skullWorld"] = SurveyVector(head.Skull.position),
+                ["skullNeckLocal"] = SurveyVector(head.Neck.InverseTransformPoint(head.Skull.position)),
+                ["neckWorld"] = SurveyVector(head.Neck.position),
+                ["authoredRendererRootWorld"] = SurveyVector(head.Root.position),
+                ["authoredRenderBoundsCenter"] = SurveyVector(head.Renderer.bounds.center),
+                ["authoredRenderBoundsSize"] = SurveyVector(head.Renderer.bounds.size),
+                ["upperBodyPoints"] = new JArray(head.View.GetComponentsInChildren<Transform>(true)
+                    .Where(value => value.name == "UpperTorso" || value.name.IndexOf("Shoulder", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("UpperArm", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        value.name.IndexOf("Clavicle", StringComparison.OrdinalIgnoreCase) >= 0).Take(16).Select(value =>
+                        new JObject { ["path"] = Cleanup2TransformPath(head.View.transform, value), ["world"] = SurveyVector(value.position),
+                            ["neckLocal"] = SurveyVector(head.Neck.InverseTransformPoint(value.position)) })),
                 ["mesh"] = head.Mesh?.name, ["meshInstance"] = head.Mesh == null ? 0 : head.Mesh.GetInstanceID(),
                 ["vertexCount"] = head.Mesh == null ? 0 : head.Mesh.vertexCount, ["subMeshCount"] = head.Mesh == null ? 0 : head.Mesh.subMeshCount,
                 ["materials"] = new JArray(head.Renderer.sharedMaterials.Select(Cleanup2Material)),
                 ["ownedResources"] = Cleanup2EttinResourceStates(head) };
+        }
+
+        private void Cleanup2CaptureEttinPictures(Cleanup2EttinHead head, string pose, int frame)
+        {
+            if (!Cleanup2EttinStable(head)) throw new InvalidOperationException("Exact live Ettin head required for native art capture.");
+            var rig = TeleportationCastingCamera();
+            Camera camera = rig == null ? Camera.main : rig.Camera;
+            if (camera == null) throw new InvalidOperationException("No native camera for Ettin art observation.");
+            Bounds prior = _refinementBounds;
+            try
+            {
+                // Culling bounds frame pictures only. No anatomy height or
+                // mechanical result is inferred from these screenshots.
+                Bounds close = head.Renderer.bounds;
+                close.Encapsulate(new Bounds(head.Head.position, Vector3.one * .75f));
+                var bounds = new List<Bounds> { close };
+                var labels = new List<string> { "heads" };
+                if (pose == "idle")
+                {
+                    Bounds body = close;
+                    foreach (var skin in head.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .Where(value => value.enabled && value.gameObject.activeInHierarchy)) body.Encapsulate(skin.bounds);
+                    bounds.Add(body); labels.Add("body");
+                }
+                for (int framing = 0; framing < bounds.Count; framing++)
+                {
+                    _refinementBounds = bounds[framing];
+                    float radius = Mathf.Max(.5f, _refinementBounds.extents.magnitude);
+                    float distance = radius / Mathf.Tan(camera.fieldOfView * .5f * Mathf.Deg2Rad) * 1.2f;
+                    foreach (float yaw in new[] { -40f, 75f, -105f })
+                    {
+                        Vector3 toward = Quaternion.Euler(0, yaw, 0) * RefinementTurn(head.Actor, 0f);
+                        Vector3 eye = _refinementBounds.center +
+                            (toward * Mathf.Cos(18f * Mathf.Deg2Rad) + Vector3.up * Mathf.Sin(18f * Mathf.Deg2Rad)) * distance;
+                        string file = "cleanup2-ettin-" + head.Actor.UniqueId + "-" + pose + "-" + frame +
+                            "-" + labels[framing] + "-" + yaw + ".png";
+                        if (System.IO.File.Exists(System.IO.Path.Combine(_request.EvidenceDirectory, file)))
+                            throw new InvalidOperationException("Native Ettin art evidence cannot be overwritten.");
+                        string result = WriteRefinementImage(eye,
+                            Quaternion.LookRotation(_refinementBounds.center - eye, Vector3.up), file);
+                        var row = new JObject { ["file"] = file, ["pose"] = pose, ["poseFrame"] = frame,
+                            ["framing"] = labels[framing], ["yaw"] = yaw, ["result"] = result,
+                            ["requestedCameraWorld"] = SurveyVector(eye), ["targetWorld"] = SurveyVector(_refinementBounds.center),
+                            ["faderVisible"] = EntityFadedIn(head.Actor), ["dissolve"] = DissolveAmount(head.Actor),
+                            ["mechanicalAttackProof"] = false, ["ownerVisualApproval"] = false };
+                        head.Images.Add(row);
+                        bool captured = result.StartsWith("png=" + file + ";", StringComparison.Ordinal) &&
+                            EntityFadedIn(head.Actor) && DissolveAmount(head.Actor) <= MotionReviewIntactDissolve;
+                        Cleanup2Check("ettin-native-art-" + head.Actor.UniqueId + "-" + pose + "-" + frame + "-" + labels[framing] + "-" + yaw,
+                            captured, row, "An exact live native camera frame records the authored heads/neck and body with settled normal visibility; pixels need review.");
+                        if (!captured) throw new InvalidOperationException("Native Ettin art capture is unqualified: " + result);
+                    }
+                }
+            }
+            finally { _refinementBounds = prior; }
         }
 
         private static void Cleanup2SampleEttinHead(Cleanup2EttinHead head)

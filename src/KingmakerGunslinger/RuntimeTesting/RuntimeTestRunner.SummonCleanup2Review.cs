@@ -42,6 +42,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             _request.Scenario == "disposable-expanded-summoning-cleanup2-native-review"; } }
 
         private readonly JArray _summonCleanup2Observations = new JArray();
+        private void AppendCleanup2EvidenceFiles(ICollection<string> files)
+        {
+            var names = new HashSet<string>(StringComparer.Ordinal) {
+                "summon-cleanup2-observations.json", "summon-cleanup2-narrative-state.json",
+                "native-ui-screens.json"
+            };
+            foreach (JProperty property in _summonCleanup2Observations.Descendants().OfType<JProperty>()
+                .Where(value => value.Name == "file" && value.Value.Type == JTokenType.String))
+            {
+                string name = (string)property.Value;
+                if (!string.IsNullOrEmpty(name) && Path.GetFileName(name) == name) names.Add(name);
+            }
+            // Only this fresh request directory is inspected. No game/save
+            // directory or unrelated evidence is enumerated.
+            string screenIndex = Path.Combine(_request.EvidenceDirectory, "native-ui-screens.json");
+            if (File.Exists(screenIndex))
+                foreach (string path in Directory.GetFiles(_request.EvidenceDirectory, "native-ui-*.png"))
+                    names.Add(Path.GetFileName(path));
+            if (names.Count > 2048) throw new InvalidOperationException("Bounded Cleanup 2 evidence collection exceeded.");
+            foreach (string name in names.OrderBy(value => value, StringComparer.Ordinal))
+            {
+                string path = Path.Combine(_request.EvidenceDirectory, name);
+                if (File.Exists(path) && !files.Contains(path)) files.Add(path);
+            }
+        }
         private const BindingFlags Cleanup2Fields = BindingFlags.Instance |
             BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -123,6 +148,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2ClothProbe(fixture, book)) yield return frame;
                 else if (phase == "ettin-lifecycle")
                     foreach (int frame in ReviewSummonCleanup2EttinLifecycle(fixture, book)) yield return frame;
+                else if (phase == "crab-attack")
+                    foreach (int frame in ReviewSummonCleanup2CrabAttack(fixture, book)) yield return frame;
+                else if (phase == "tooltips")
+                {
+                    _sprint25WaitingForUnityAppearance = true;
+                    foreach (int frame in ReviewSummonCleanup2Tooltips(fixture, book)) yield return frame;
+                }
                 else if (phase == "menus")
                 {
                     _sprint25WaitingForUnityAppearance = true;
@@ -495,7 +527,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var watch = System.Diagnostics.Stopwatch.StartNew();
             Cleanup2GroundSurvey selected = null;
             float[] offsets = { 0f, 6f, -6f, 12f, -12f, 18f, -18f };
-            foreach (float spacingFactor in new[] { 1.35f, 1.15f, 1f })
+            // The first constrained survey found 39 full seven-center inputs
+            // only at factor1.0, all failing the unchanged native footprint
+            // spacing after up to35cm navmesh clamp. Finer positive padding
+            // samples resolve that concrete boundary; no gap/plane guard moves.
+            foreach (float spacingFactor in new[] { 1.35f, 1.15f, 1.08f, 1.04f, 1.02f, 1f })
             {
                 var along = new float[actors.Count];
                 for (int i = 1; i < along.Length; i++) along[i] = along[i - 1] + minimumGaps[i - 1] * spacingFactor;
@@ -508,7 +544,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (float lateral in offsets)
                     {
                         if (selected != null) break;
-                        if (attempts.Count >= 1764 || watch.Elapsed.TotalSeconds > 15)
+                        if (attempts.Count >= 3528 || watch.Elapsed.TotalSeconds > 15)
                             goto SurveyFinished;
                         Vector3 center = anchor + axis * longitudinal + across * lateral;
                         var centers = new List<Vector3>();
@@ -552,14 +588,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["spacingFactor"] = spacingFactor, ["requestedSpanMeters"] = span,
                             ["centerCount"] = centers.Count, ["terrainSupportCount"] = support.Count,
                             ["maximumHorizontalClamp"] = maximumHorizontalClamp };
+                        row["minimumAdjacentCenterGaps"] = new JArray(minimumGaps);
+                        row["actualAdjacentCenterGaps"] = new JArray(Enumerable.Range(1, Math.Max(0, centers.Count - 1)).Select(i => {
+                            Vector3 delta = centers[i] - centers[i - 1]; delta.y = 0f; return delta.magnitude; }));
                         JObject plane = null;
-                        if (refusal == null)
+                        if (support.Count == actors.Count * 3)
                         {
                             plane = Cleanup2FitGroundPlane(support);
                             row["plane"] = plane;
-                            if (!(bool)plane["finiteNondegenerate"]) refusal = "degenerate-or-nonfinite-plane";
-                            else if ((float)plane["grade"] > .03f) refusal = "plane-grade-over-3-percent";
-                            else if ((float)plane["maximumVerticalResidualMeters"] > .05f) refusal = "plane-residual-over-5cm";
+                            if (refusal == null)
+                            {
+                                if (!(bool)plane["finiteNondegenerate"]) refusal = "degenerate-or-nonfinite-plane";
+                                else if ((float)plane["grade"] > .03f) refusal = "plane-grade-over-3-percent";
+                                else if ((float)plane["maximumVerticalResidualMeters"] > .05f) refusal = "plane-residual-over-5cm";
+                            }
                         }
                         row["refusal"] = refusal;
                         attempts.Add(row);
@@ -584,7 +626,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["nativeQuery"] = query, ["queryGraphMask"] = constraint.graphMask,
                 ["queryConnectedArea"] = constraint.area, ["queryTags"] = constraint.tags,
                 ["candidateCount"] = attempts.Count, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
-                ["candidateLimit"] = 1764, ["wallLimitSeconds"] = 15,
+                ["candidateLimit"] = 3528, ["wallLimitSeconds"] = 15,
                 ["selected"] = selected?.Document, ["attempts"] = attempts,
                 ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
                 ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
@@ -1074,17 +1116,216 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static bool Cleanup2NoNarrativeOverlay()
+        private string _summonCleanup2NarrativeStateRunId;
+
+        private bool Cleanup2NoNarrativeOverlay()
         {
-            var game = Game.Instance;
-            var manager = game?.UI?.Common?.DialogUIManager;
-            // Dialog mode alone is the established owned fixture clock host.
-            // It is not permission to dismiss a live BlueprintDialog. Native
-            // Continue/Stop may execute story actions and are never used here.
-            return game?.DialogController != null && game.DialogController.Dialog == null &&
-                manager != null && manager.Dialog != null && manager.BookEvent != null && manager.Interchapter != null &&
-                !manager.Dialog.gameObject.activeInHierarchy && !manager.BookEvent.gameObject.activeInHierarchy &&
-                !manager.Interchapter.gameObject.activeInHierarchy;
+            // Read-only admission proof. Native Dialog.Show(false) normally
+            // fades its CanvasGroup and moves the panel without deactivating
+            // the GameObject. Book controllers deactivate after their fade,
+            // and Show(false) is a no-op when m_IsActive is already false.
+            // Neither activeInHierarchy alone nor Dialog game mode proves a
+            // live narrative. Never call Show/Stop/Continue to obtain a pass.
+            var row = new JObject {
+                ["runId"] = _request?.RunId,
+                ["phase"] = _request?.Parameters == null ? null : (string)_request.Parameters["reviewPhase"],
+                ["utc"] = DateTime.UtcNow.ToString("o"),
+                ["frame"] = Time.frameCount,
+                ["observer"] = "Read-only installed 2.1.7b lifecycle fields and actual native UI alpha; no narrative/input mutation.",
+                ["contract"] = "No live BlueprintDialog; manager and all child lifecycle flags closed; each child either inactive in hierarchy or settled at exact zero root/inherited rendered alpha." };
+            bool absent = false;
+            try
+            {
+                var game = Game.Instance;
+                var controller = game?.DialogController;
+                var dialog = controller?.Dialog;
+                var manager = game?.UI?.Common?.DialogUIManager;
+                row["mode"] = game?.CurrentMode.ToString();
+                row["dialogControllerPresent"] = controller != null;
+                row["liveDialog"] = dialog == null ? null : new JObject {
+                    ["guid"] = dialog.AssetGuid,
+                    ["name"] = dialog.name,
+                    ["blueprintType"] = dialog.GetType().FullName,
+                    ["dialogType"] = dialog.Type.ToString(),
+                    ["dialogTypeValue"] = Convert.ToInt32(dialog.Type) };
+                var managerRow = new JObject();
+                row["manager"] = managerRow;
+                Cleanup2NarrativeObject(manager, managerRow);
+                bool? managerShown = Cleanup2NarrativeFlag(manager,
+                    typeof(Kingmaker.UI.Dialog.DialogBookEventUIManager), "m_IsShow", managerRow);
+                FieldInfo stateField = typeof(Kingmaker.UI.Dialog.DialogBookEventUIManager)
+                    .GetField("m_State", Cleanup2Fields | BindingFlags.DeclaredOnly);
+                bool stateContract = stateField != null && stateField.FieldType.FullName ==
+                    "Kingmaker.DialogSystem.Blueprints.DialogType";
+                managerRow["stateFieldContract"] = stateContract;
+                managerRow["state"] = manager != null && stateContract
+                    ? stateField.GetValue(manager).ToString() : null;
+                var dialogRow = new JObject();
+                var bookRow = new JObject();
+                var interchapterRow = new JObject();
+                row["dialogUi"] = dialogRow;
+                row["bookEventUi"] = bookRow;
+                row["interchapterUi"] = interchapterRow;
+                bool dialogHidden = Cleanup2NarrativeControllerRead(manager?.Dialog,
+                    typeof(Kingmaker.UI.Dialog.DialogController), true, dialogRow);
+                bool bookHidden = Cleanup2NarrativeControllerRead(manager?.BookEvent,
+                    typeof(Kingmaker.UI.BookEvent.BookEventBaseController), false, bookRow);
+                bool interchapterHidden = Cleanup2NarrativeControllerRead(manager?.Interchapter,
+                    typeof(Kingmaker.UI.BookEvent.BookEventBaseController), false, interchapterRow);
+                absent = controller != null && dialog == null && manager != null &&
+                    stateContract && managerShown == false && dialogHidden && bookHidden && interchapterHidden;
+            }
+            catch (Exception error)
+            {
+                row["readFailure"] = error.ToString();
+            }
+            row["narrativeOverlayAbsent"] = absent;
+            // Save the first observation and every refusal atomically before
+            // returning to the caller. A later successful read never overwrites
+            // a refusal. Ownership predicates call this during each UI capture;
+            // successful repeated reads do not create per-frame disk writes.
+            if (_summonCleanup2NarrativeStateRunId != _request?.RunId || !absent)
+            {
+                row["snapshotReason"] = absent ? "first-closed-observation" : "refusal";
+                if (!IsSummonCleanup2Review || string.IsNullOrEmpty(_request.EvidenceDirectory))
+                    throw new InvalidOperationException("Owned Cleanup 2 evidence directory required for narrative-state admission.");
+                RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                    "summon-cleanup2-narrative-state.json"), row.ToString(Formatting.Indented));
+                _summonCleanup2NarrativeStateRunId = _request.RunId;
+            }
+            return absent;
+        }
+
+        private static void Cleanup2NarrativeObject(MonoBehaviour value, JObject row)
+        {
+            row["exists"] = value != null;
+            if (value == null) return;
+            row["type"] = value.GetType().FullName;
+            row["instance"] = value.GetInstanceID();
+            row["name"] = value.gameObject.name;
+            row["activeSelf"] = value.gameObject.activeSelf;
+            row["activeInHierarchy"] = value.gameObject.activeInHierarchy;
+            row["enabled"] = value.enabled;
+            row["isActiveAndEnabled"] = value.isActiveAndEnabled;
+            CanvasGroup group = value.GetComponent<CanvasGroup>();
+            row["ownCanvasGroup"] = group == null ? null : new JObject {
+                ["instance"] = group.GetInstanceID(), ["enabled"] = group.enabled,
+                ["alpha"] = group.alpha, ["interactable"] = group.interactable,
+                ["blocksRaycasts"] = group.blocksRaycasts,
+                ["ignoreParentGroups"] = group.ignoreParentGroups };
+        }
+
+        private static bool? Cleanup2NarrativeFlag(object value, Type declaringType, string name, JObject row)
+        {
+            FieldInfo field = declaringType.GetField(name, Cleanup2Fields | BindingFlags.DeclaredOnly);
+            bool contract = field != null && field.FieldType == typeof(bool);
+            row[name + "FieldContract"] = contract;
+            bool? result = value != null && contract ? (bool?)field.GetValue(value) : null;
+            row[name] = result.HasValue ? new JValue(result.Value) : JValue.CreateNull();
+            return result;
+        }
+
+        private static bool Cleanup2NarrativeControllerRead(MonoBehaviour value, Type lifecycleType,
+            bool ordinaryDialog, JObject row)
+        {
+            try { return Cleanup2NarrativeController(value, lifecycleType, ordinaryDialog, row); }
+            catch (Exception error) { row["readFailure"] = error.ToString(); return false; }
+        }
+
+        private static bool Cleanup2NarrativeController(MonoBehaviour value, Type lifecycleType,
+            bool ordinaryDialog, JObject row)
+        {
+            Cleanup2NarrativeObject(value, row);
+            bool? active = Cleanup2NarrativeFlag(value, lifecycleType, "m_IsActive", row);
+            bool? animation = ordinaryDialog
+                ? Cleanup2NarrativeFlag(value, lifecycleType, "m_PlayAnim", row) : (bool?)false;
+            if (value == null) return false;
+            // Do not invoke the private CanvasGroup property: its native getter
+            // lazily writes m_CanvasGroup. Reading the component is sufficient.
+            CanvasGroup root = value.GetComponent<CanvasGroup>();
+            var groups = new JArray();
+            row["canvasGroups"] = groups;
+            foreach (CanvasGroup group in value.GetComponentsInChildren<CanvasGroup>(true))
+                groups.Add(new JObject {
+                    ["path"] = Cleanup2NarrativePath(value.transform, group.transform),
+                    ["instance"] = group.GetInstanceID(),
+                    ["isControllerRoot"] = group == root,
+                    ["activeSelf"] = group.gameObject.activeSelf,
+                    ["activeInHierarchy"] = group.gameObject.activeInHierarchy,
+                    ["enabled"] = group.enabled,
+                    ["alpha"] = group.alpha,
+                    ["interactable"] = group.interactable,
+                    ["blocksRaycasts"] = group.blocksRaycasts,
+                    ["ignoreParentGroups"] = group.ignoreParentGroups });
+            var renderers = new JArray();
+            row["canvasRenderers"] = renderers;
+            int nonzeroActiveRenderers = 0;
+            foreach (CanvasRenderer renderer in value.GetComponentsInChildren<CanvasRenderer>(true))
+            {
+                float alpha = renderer.GetAlpha();
+                float inherited = renderer.GetInheritedAlpha();
+                bool valid = !float.IsNaN(alpha) && !float.IsInfinity(alpha) && alpha >= 0f && alpha <= 1f &&
+                    !float.IsNaN(inherited) && !float.IsInfinity(inherited) && inherited >= 0f && inherited <= 1f;
+                bool activeInHierarchy = renderer.gameObject.activeInHierarchy;
+                // GetInheritedAlpha is the installed native final alpha,
+                // including applicable parent CanvasGroups. A descendant with
+                // ignoreParentGroups cannot silently bypass this proof. Cull
+                // is diagnostic only: transient clipping never earns a pass.
+                if (activeInHierarchy && (!valid || inherited != 0f)) nonzeroActiveRenderers++;
+                renderers.Add(new JObject {
+                    ["path"] = Cleanup2NarrativePath(value.transform, renderer.transform),
+                    ["instance"] = renderer.GetInstanceID(),
+                    ["activeSelf"] = renderer.gameObject.activeSelf,
+                    ["activeInHierarchy"] = activeInHierarchy,
+                    ["cull"] = renderer.cull,
+                    ["alpha"] = alpha,
+                    ["inheritedAlpha"] = inherited,
+                    ["alphaFiniteAndInRange"] = valid });
+            }
+            var otherRenderers = new JArray();
+            row["otherRenderers"] = otherRenderers;
+            int activeOtherRenderers = 0;
+            foreach (Renderer renderer in value.GetComponentsInChildren<Renderer>(true))
+            {
+                if (renderer.gameObject.activeInHierarchy && renderer.enabled) activeOtherRenderers++;
+                otherRenderers.Add(new JObject {
+                    ["path"] = Cleanup2NarrativePath(value.transform, renderer.transform),
+                    ["type"] = renderer.GetType().FullName,
+                    ["instance"] = renderer.GetInstanceID(),
+                    ["activeInHierarchy"] = renderer.gameObject.activeInHierarchy,
+                    ["enabled"] = renderer.enabled });
+            }
+            bool visuallyHidden = !value.gameObject.activeInHierarchy ||
+                (root != null && root.enabled && root.alpha == 0f && renderers.Count > 0 &&
+                    nonzeroActiveRenderers == 0 && activeOtherRenderers == 0);
+            bool hidden = active == false && animation == false && visuallyHidden;
+            row["nonzeroOrInvalidActiveCanvasRenderers"] = nonzeroActiveRenderers;
+            row["activeOtherRenderers"] = activeOtherRenderers;
+            row["rootCanvasGroupPresent"] = root != null;
+            row["rootCanvasGroupAlpha"] = root == null ? JValue.CreateNull() : new JValue(root.alpha);
+            row["visuallyHidden"] = visuallyHidden;
+            row["closedLifecycleAndHidden"] = hidden;
+            if (ordinaryDialog)
+            {
+                var dialog = (Kingmaker.UI.Dialog.DialogController)value;
+                var rect = value.transform as RectTransform;
+                row["hidePosY"] = dialog.HidePosY;
+                row["showPosY"] = dialog.ShowPosY;
+                row["anchoredPosition"] = rect == null ? null : new JArray(rect.anchoredPosition.x, rect.anchoredPosition.y);
+            }
+            return hidden;
+        }
+
+        private static string Cleanup2NarrativePath(Transform root, Transform value)
+        {
+            var parts = new List<string>();
+            for (Transform current = value; current != null; current = current.parent)
+            {
+                parts.Add(current.name + "[" + current.GetSiblingIndex() + "]");
+                if (current == root) break;
+            }
+            parts.Reverse();
+            return string.Join("/", parts.ToArray());
         }
 
         private IEnumerable<int> Cleanup2Menus(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
