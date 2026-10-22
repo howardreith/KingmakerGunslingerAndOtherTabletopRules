@@ -109,12 +109,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
                     if ((IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
-                        (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "giant-lineup" ||
-                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menus" ||
+                        (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menus" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "tooltips" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "crab-attack" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies" ||
-                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "scale-prototype" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "cloth-probe"))) {
                         var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
@@ -122,6 +120,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if(entry?.Area==null || entry.Area.AssetGuid!="ead426a6c23d39548a670ee515d77df4")
                             throw new InvalidOperationException("Exact non-DLC outdoor fixture identity unavailable.");
                         _summoningProfilePreset.Area=entry.Area;_summoningProfilePreset.EnterPoint=entry;
+                    }
+                    if (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "giant-lineup" ||
+                        RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "scale-prototype"))
+                    {
+                        // The outdoor survey has no eligible common plane;
+                        // reuse the exact save-free native mansion fixture
+                        // already observed by the Gorgon breath phase. Keep
+                        // every ground/contact bound rather than relaxing it.
+                        if (_summoningProfilePreset.Area.AssetGuid != "0a89ba823d7eab045949d98cf22dcd2c" ||
+                            _summoningProfilePreset.EnterPoint.AssetGuid != "7c5c6a354220164468167323821fd9cb")
+                            throw new InvalidOperationException("Exact qualified native mansion fixture identity unavailable.");
+                        _summoningProfileEvidence["fixtureReason"] = "The bounded outdoor seven-actor survey had no eligible common plane. Exact existing mansion fixture; unchanged native walking, footprint, grade and plane-residual bounds.";
                     }
                     // Request-owned fixture setup omits narrative start actions;
                     // production content and all summon commands remain intact.
@@ -134,8 +144,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             race => race.AssetGuid == "0a5d473ead98b0646b94495af250fdc4" && race.name == "HumanRace");
                     _summoningProfilePreset.PlayerCharacter = _summoningProfileActor;
                     EventBus.Unsubscribe(_summoningProfileMenu); _summoningProfileMenuDetached = true;
-                    _summoningProfileEvidence["areaGuid"] = _summoningProfileOriginal.Area.AssetGuid;
-                    _summoningProfileEvidence["entryGuid"] = _summoningProfileOriginal.EnterPoint.AssetGuid;
+                    _summoningProfileEvidence["areaGuid"] = _summoningProfilePreset.Area.AssetGuid;
+                    _summoningProfileEvidence["entryGuid"] = _summoningProfilePreset.EnterPoint.AssetGuid;
                     _summoningProfileEvidence["scope"] = "real native first-level scene/navigation; unchanged summon mechanics; no saved-world load/write";
                     _summoningProfileClock = Stopwatch.StartNew();
                     _summoningProfileStage = 3;

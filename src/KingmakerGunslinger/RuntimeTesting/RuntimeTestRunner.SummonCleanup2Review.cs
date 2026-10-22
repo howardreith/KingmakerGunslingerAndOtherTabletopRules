@@ -150,6 +150,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2EttinLifecycle(fixture, book)) yield return frame;
                 else if (phase == "crab-attack")
                     foreach (int frame in ReviewSummonCleanup2CrabAttack(fixture, book)) yield return frame;
+                else if (phase == "shared-controls")
+                    foreach (int frame in ReviewSummonCleanup2SharedControls(fixture, book)) yield return frame;
                 else if (phase == "tooltips")
                 {
                     _sprint25WaitingForUnityAppearance = true;
@@ -1493,26 +1495,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (rows.Length == 0 || rows.Length > 1024 || lineage.Count > 8)
                 throw new InvalidOperationException("Native popup row/depth bound exceeded: " + label);
             Canvas.ForceUpdateCanvases();
-            // Choose the nearest actual ancestor that owns these exact rows.
-            // ScrollRectExtended is not Unity ScrollRect; an unrelated outer
-            // action-bar scroll must never supply this popup's page geometry.
-            var choices = rows.First().GetComponentsInParent<Component>(true)
-                .Where(value => value is ScrollRect || value is Kingmaker.UI.Common.ScrollRectExtended)
-                .Select(value => new NativeIconScreenEvidence.NativeRowScroll(value)).ToArray();
-            var scroll = choices.FirstOrDefault(value => value.Active && value.Content != null &&
-                Cleanup2PopupViewport(value) != null && rows.All(row => row.transform.IsChildOf(value.Content)));
-            Cleanup2Check("popup-native-scroll-" + label, scroll != null, new JObject {
-                ["parent"] = parent.AssetGuid, ["rowCount"] = rows.Length,
-                ["surfaces"] = new JArray(choices.Select(value => new JObject {
-                    ["type"] = value.Component.GetType().FullName, ["instance"] = value.Component.GetInstanceID(),
-                    ["active"] = value.Active, ["content"] = value.Content?.name,
-                    ["viewport"] = Cleanup2PopupViewport(value)?.name, ["horizontal"] = value.Horizontal, ["vertical"] = value.Vertical,
-                    ["ownsAllRows"] = value.Content != null && rows.All(row => row.transform.IsChildOf(value.Content)) })) },
-                "The selectable rows identify their own supported native scrolling surface, including Kingmaker ScrollRectExtended.");
-            if (scroll == null) throw new InvalidOperationException("Exact native popup scroll/viewport not found: " + label);
+            var scroll = Cleanup2AcquirePopupSurface(source, popup, parent, rows, label);
             Component scrollComponent = scroll.Component;
             RectTransform content = scroll.Content, viewport = Cleanup2PopupViewport(scroll);
-            Vector2 before = scroll.Position, beforeVelocity = scroll.Velocity, beforeAnchored = content.anchoredPosition;
+            Vector2 before = scroll.IsStationary ? Vector2.zero : scroll.Position;
+            Vector2 beforeVelocity = scroll.IsStationary ? Vector2.zero : scroll.Velocity;
+            Vector2 beforeAnchored = content.anchoredPosition;
             bool beforeHorizontal = scroll.Horizontal, beforeVertical = scroll.Vertical;
             var covered = new HashSet<string>(StringComparer.Ordinal);
             var pages = new JArray();
@@ -1535,9 +1523,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var state = new JObject { ["parent"] = parent.AssetGuid, ["label"] = label,
                         ["page"] = page, ["target"] = ((AbilityData)target.MechanicSlot.GetContentData()).Blueprint.AssetGuid,
                         ["scrollType"] = scrollComponent.GetType().FullName, ["scrollInstance"] = scrollComponent.GetInstanceID(),
-                        ["scrollApi"] = "Exact native normalizedPosition setters, enabled axes only; no content/row layout substitution.",
+                        ["surfaceMode"] = scroll.IsStationary ? "stationary-native-popup" : "owned-overflow-scroll",
+                        ["scrollApi"] = scroll.Api, ["scrollMutationRequested"] = !scroll.IsStationary,
                         ["horizontalEnabled"] = beforeHorizontal, ["verticalEnabled"] = beforeVertical,
-                        ["normalizedScroll"] = new JArray(scroll.Position.x, scroll.Position.y),
+                        ["normalizedScroll"] = scroll.IsStationary ? null : new JArray(scroll.Position.x, scroll.Position.y),
                         ["anchoredPosition"] = new JArray(capturePosition.x, capturePosition.y),
                         ["viewportRect"] = new JArray(viewport.rect.xMin, viewport.rect.yMin, viewport.rect.xMax, viewport.rect.yMax),
                         ["contentBoundsInViewport"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(viewport, content)),
@@ -1596,23 +1585,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                bool identities = scroll.Component == scrollComponent && scrollComponent != null && scroll.Content == content &&
+                bool identities = scroll.Component == scrollComponent && scrollComponent != null && scroll.Active && scroll.Content == content &&
                     content != null && Cleanup2PopupViewport(scroll) == viewport;
                 bool restored = false;
                 try
                 {
                     if (identities && scroll.Horizontal == beforeHorizontal && scroll.Vertical == beforeVertical)
                     {
-                        scroll.Velocity = Vector2.zero;
-                        Cleanup2SetPopupPosition(scroll, before);
-                        // A fitting disabled axis has no meaningful normalized
-                        // ratio. Restore the exact owned content position too.
-                        content.anchoredPosition = beforeAnchored;
-                        scroll.Velocity = beforeVelocity;
-                        Bounds bounds = Cleanup2PopupBounds(viewport, content);
-                        restored = content.anchoredPosition.Equals(beforeAnchored) && scroll.Velocity.Equals(beforeVelocity) &&
-                            (!beforeHorizontal || bounds.size.x <= viewport.rect.width + .5f || Mathf.Abs(scroll.Position.x - before.x) <= .001f) &&
-                            (!beforeVertical || bounds.size.y <= viewport.rect.height + .5f || Mathf.Abs(scroll.Position.y - before.y) <= .001f);
+                        if (scroll.IsStationary)
+                            restored = scroll.Active && content.anchoredPosition.Equals(beforeAnchored);
+                        else
+                        {
+                            scroll.Velocity = Vector2.zero;
+                            Cleanup2SetPopupPosition(scroll, before);
+                            // A fitting disabled axis has no meaningful normalized
+                            // ratio. Restore the exact owned content position too.
+                            content.anchoredPosition = beforeAnchored;
+                            scroll.Velocity = beforeVelocity;
+                            Bounds bounds = Cleanup2PopupBounds(viewport, content);
+                            restored = content.anchoredPosition.Equals(beforeAnchored) && scroll.Velocity.Equals(beforeVelocity) &&
+                                (!beforeHorizontal || bounds.size.x <= viewport.rect.width + .5f || Mathf.Abs(scroll.Position.x - before.x) <= .001f) &&
+                                (!beforeVertical || bounds.size.y <= viewport.rect.height + .5f || Mathf.Abs(scroll.Position.y - before.y) <= .001f);
+                        }
                     }
                 }
                 finally
@@ -1620,12 +1614,236 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Cleanup2Check("popup-scroll-restored-" + label, restored,
                         new JObject { ["parent"] = parent.AssetGuid, ["identitiesExact"] = identities,
                             ["horizontalAtIntake"] = beforeHorizontal, ["verticalAtIntake"] = beforeVertical,
-                            ["anchoredPositionAndVelocityExact"] = restored,
+                            ["surfaceMode"] = scroll.IsStationary ? "stationary-native-popup" : "owned-overflow-scroll",
+                            ["scrollStateExisted"] = !scroll.IsStationary,
+                            ["stationaryPopupUnchangedWithoutWrites"] = scroll.IsStationary ? (JToken)restored : JValue.CreateNull(),
+                            ["anchoredPositionAndVelocityExact"] = scroll.IsStationary ? JValue.CreateNull() : (JToken)restored,
                             ["geometryOrAxesFabricated"] = false },
-                        "Only this exact native popup's scroll position/velocity were owned; original axes and content/viewport identities remain unchanged, and exact content position/velocity restore in finally.");
+                        "A fitting native popup is unchanged without writes; an overflowing popup restores only its exact owned scroll position/velocity and content position, retaining axes and viewport identities.");
                 }
                 if (!restored) throw new InvalidOperationException("Exact native popup scroll restoration failed: " + label);
             }
+        }
+
+        private NativeIconScreenEvidence.NativeRowScroll Cleanup2AcquirePopupSurface(ActionBarGroupSlot source,
+            ActionBarSpellsGroup popup, BlueprintAbility parent, ActionBarSlot[] rows, string label)
+        {
+            ExpandedSummoningVariantMenuSnapshot snapshot;
+            bool captured = ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(popup, out snapshot);
+            var root = popup == null ? null : popup.transform as RectTransform;
+            var canvas = popup == null ? null : popup.GetComponentInParent<Canvas>()?.rootCanvas;
+            var canvasRect = canvas == null ? null : canvas.transform as RectTransform;
+            var sourceData = source?.MechanicSlot?.GetContentData() as AbilityData;
+            var sourceField = typeof(ActionBarSpellsGroup).GetField("m_SourceSpell", Cleanup2Fields);
+            var slotsField = typeof(ActionBarSpellsGroup).GetField("m_Slots", Cleanup2Fields);
+            var groupField = typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields);
+            var nativeSlots = popup == null || slotsField == null ? null :
+                slotsField.GetValue(popup) as IList<ActionBarSpontaneousConvertedSlot>;
+            var capturedSlots = nativeSlots == null ? new ActionBarSpontaneousConvertedSlot[0] : nativeSlots.ToArray();
+            var capturedData = rows.Select(row => row.MechanicSlot?.GetContentData() as AbilityData).ToArray();
+            var rowBlueprints = capturedData.Select(data => data?.Blueprint).ToArray();
+            var rowSources = capturedData.Select(data => data?.ConvertedFrom).ToArray();
+            var rowBooks = capturedData.Select(data => data?.Spellbook).ToArray();
+            var rowSiblingIndices = rows.Select(row => row.transform.GetSiblingIndex()).ToArray();
+            var variants = parent.Variants == null ? new BlueprintAbility[0] : parent.Variants.ToArray();
+            string sourceIdentity = source == null ? null : source.GetType().FullName + "#" +
+                source.GetInstanceID().ToString(System.Globalization.CultureInfo.InvariantCulture);
+            var rootScrolls = popup == null ? new ScrollRect[0] : popup.GetComponents<ScrollRect>();
+            var markers = popup == null ? new ExpandedSummoningVariantMenuViewportMarker[0] :
+                popup.GetComponentsInChildren<ExpandedSummoningVariantMenuViewportMarker>(true);
+            ScrollRect ownedScroll = rootScrolls.Length == 1 ? rootScrolls[0] : null;
+            RectTransform ownedViewport = markers.Length == 1 ? markers[0].transform as RectTransform : null;
+            RectTransform ownedContent = ownedScroll == null ? null : ownedScroll.content;
+            bool slotSetExact = rows.Length > 0 && rows.Length <= 1024 && capturedSlots.Length == rows.Length &&
+                capturedSlots.All(value => value != null && rows.Count(row => ReferenceEquals(row, value)) == 1) &&
+                variants.Count(value => value != null) == rows.Length && variants.Where(value => value != null)
+                    .All(value => capturedData.Count(data => data?.Blueprint == value) == 1);
+            Vector3 rootPosition = root == null ? Vector3.zero : root.anchoredPosition3D;
+            Vector3 rootScale = root == null ? Vector3.zero : root.localScale;
+            Quaternion rootRotation = root == null ? Quaternion.identity : root.localRotation;
+            Vector2 rootSize = root == null ? Vector2.zero : root.sizeDelta;
+            Vector2 rootAnchorMin = root == null ? Vector2.zero : root.anchorMin;
+            Vector2 rootAnchorMax = root == null ? Vector2.zero : root.anchorMax;
+            Vector2 rootPivot = root == null ? Vector2.zero : root.pivot;
+            Func<bool> proof = () => {
+                try
+                {
+                    ExpandedSummoningVariantMenuSnapshot current;
+                    if (!captured || snapshot == null || root == null || canvasRect == null || source == null ||
+                        popup == null || !popup.gameObject.activeInHierarchy || !source.gameObject.activeInHierarchy ||
+                        sourceField == null || slotsField == null || groupField == null || sourceData == null ||
+                        sourceData.Blueprint != parent || !ReferenceEquals(source.MechanicSlot?.GetContentData(), sourceData) ||
+                        !ReferenceEquals(sourceField.GetValue(popup), sourceData) || !ReferenceEquals(groupField.GetValue(source), popup) ||
+                        !ReferenceEquals(slotsField.GetValue(popup), nativeSlots) || nativeSlots == null ||
+                        !nativeSlots.SequenceEqual(capturedSlots) || !slotSetExact ||
+                        !ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(popup, out current) || !ReferenceEquals(current, snapshot) ||
+                        snapshot.ParentGuid != parent.AssetGuid || snapshot.ParentVariantCount != variants.Length ||
+                        parent.Variants == null || !parent.Variants.SequenceEqual(variants) || snapshot.SlotCount != rows.Length ||
+                        !snapshot.ExactSourceSlotCaptured || snapshot.SourceSlotIdentity != sourceIdentity ||
+                        snapshot.SourceSlotHierarchyPath != Cleanup2PopupHierarchy(source.transform) ||
+                        snapshot.ScrollRectCount != rootScrolls.Length || snapshot.ViewportMarkerCount != markers.Length ||
+                        !popup.GetComponents<ScrollRect>().SequenceEqual(rootScrolls) ||
+                        !popup.GetComponentsInChildren<ExpandedSummoningVariantMenuViewportMarker>(true).SequenceEqual(markers) ||
+                        popup.GetComponentsInChildren<Kingmaker.UI.Common.ScrollRectExtended>(true).Length != 0 ||
+                        popup.GetComponentsInChildren<ScrollRect>(true).Length != rootScrolls.Length ||
+                        rows.Where((row, index) => row == null || !row.gameObject.activeInHierarchy || capturedData[index] == null ||
+                            !ReferenceEquals(row.MechanicSlot?.GetContentData(), capturedData[index]) ||
+                            capturedData[index].Blueprint != rowBlueprints[index] ||
+                            !ReferenceEquals(capturedData[index].ConvertedFrom, rowSources[index]) ||
+                            !ReferenceEquals(capturedData[index].Spellbook, rowBooks[index]) ||
+                            row.transform.GetSiblingIndex() != rowSiblingIndices[index] ||
+                            capturedData[index].ConvertedFrom?.Blueprint != parent).Any()) return false;
+                    SummonVariantMenuRect liveRoot = Cleanup2PopupCanvasRect(canvasRect, root);
+                    if (!Cleanup2PopupRectMatches(snapshot.RenderedPopupRect, liveRoot) ||
+                        !snapshot.SafeRect.Contains(liveRoot, .5f) ||
+                        !Cleanup2PopupRectMatches(snapshot.SourceSlotRect,
+                            Cleanup2PopupCanvasRect(canvasRect, source.transform as RectTransform))) return false;
+                    bool scaffold = ownedScroll != null && ownedViewport != null && ownedContent != null &&
+                        ownedViewport.parent == root && ownedContent.parent == ownedViewport &&
+                        ownedScroll.viewport == ownedViewport && ownedScroll.content == ownedContent;
+                    if (snapshot.ScrollingRequired)
+                        return snapshot.ScrollingInstalled && snapshot.HasViewportRect && scaffold &&
+                            ownedScroll.isActiveAndEnabled && ownedScroll.movementType == ScrollRect.MovementType.Clamped &&
+                            ownedScroll.horizontal == snapshot.HorizontalScrolling && ownedScroll.vertical == snapshot.VerticalScrolling &&
+                            (ownedScroll.horizontal || ownedScroll.vertical) &&
+                            ownedViewport.GetComponent<RectMask2D>()?.isActiveAndEnabled == true &&
+                            Cleanup2PopupRectMatches(snapshot.ViewportRect, Cleanup2PopupCanvasRect(canvasRect, ownedViewport)) &&
+                            rows.All(row => row.transform.parent == ownedContent);
+                    // A previously used owned scaffold may remain disabled on a
+                    // pooled popup. It is not scroll state for this opening.
+                    if (snapshot.ScrollingInstalled || snapshot.VerticalScrolling || snapshot.HorizontalScrolling ||
+                        rootScrolls.Length > 1 || markers.Length > 1 ||
+                        (rootScrolls.Length == 0 ? markers.Length != 0 :
+                            !scaffold || ownedScroll.enabled || ownedViewport.gameObject.activeInHierarchy) ||
+                        !root.anchoredPosition3D.Equals(rootPosition) || !root.localScale.Equals(rootScale) ||
+                        !root.localRotation.Equals(rootRotation) || !root.sizeDelta.Equals(rootSize) ||
+                        !root.anchorMin.Equals(rootAnchorMin) || !root.anchorMax.Equals(rootAnchorMax) || !root.pivot.Equals(rootPivot)) return false;
+                    // Installed FillSlots parents each exact m_Slots row directly
+                    // to this root. All rows must already fit its actual bounds
+                    // and the measured safe rectangle; no substitute ancestor.
+                    return snapshot.SlotContentRect.Width > 0f && snapshot.SlotContentRect.Height > 0f &&
+                        rows.All(row => row.transform.parent == root &&
+                            liveRoot.Contains(Cleanup2PopupCanvasRect(canvasRect, row.transform as RectTransform), .5f) &&
+                            snapshot.SafeRect.Contains(Cleanup2PopupCanvasRect(canvasRect, row.transform as RectTransform), .5f));
+                }
+                catch { return false; }
+            };
+            bool admitted = proof();
+            Cleanup2Check("popup-native-scroll-" + label, admitted,
+                Cleanup2PopupSurfaceDiagnostic(source, popup, parent, rows, snapshot, admitted ? "admitted" : "admission-refused"),
+                "The exact live source/snapshot/native slot identities admit either a fitting stationary popup or its proven owned overflow viewport; no ancestor or scroll object is invented.");
+            if (!admitted) throw new InvalidOperationException("Exact native popup surface proof failed: " + label);
+            bool failureRecorded = false;
+            Func<bool> guardedProof = () => {
+                bool intact = proof();
+                if (!intact && !failureRecorded)
+                {
+                    failureRecorded = true;
+                    Cleanup2Check("popup-surface-ownership-" + label, false,
+                        Cleanup2PopupSurfaceDiagnostic(source, popup, parent, rows, snapshot, "ownership-refused"),
+                        "The captured native popup/source/layout/row identities and geometry must remain exact during observation.");
+                }
+                return intact;
+            };
+            return snapshot.ScrollingRequired
+                ? new NativeIconScreenEvidence.NativeRowScroll(ownedScroll, guardedProof)
+                : NativeIconScreenEvidence.NativeRowScroll.StationaryPopup(root, guardedProof);
+        }
+
+        private static SummonVariantMenuRect Cleanup2PopupCanvasRect(RectTransform canvas, RectTransform value)
+        {
+            if (canvas == null || value == null) throw new InvalidOperationException("Exact native RectTransforms required.");
+            Bounds bounds = Cleanup2PopupBounds(canvas, value);
+            return new SummonVariantMenuRect(bounds.min.x, bounds.min.y, bounds.size.x, bounds.size.y);
+        }
+
+        private static bool Cleanup2PopupRectMatches(SummonVariantMenuRect first, SummonVariantMenuRect second)
+        { return Mathf.Abs(first.XMin - second.XMin) <= .5f && Mathf.Abs(first.XMax - second.XMax) <= .5f &&
+            Mathf.Abs(first.YMin - second.YMin) <= .5f && Mathf.Abs(first.YMax - second.YMax) <= .5f; }
+
+        private static string Cleanup2PopupHierarchy(Transform value)
+        {
+            var parts = new List<string>();
+            for (Transform current = value; current != null; current = current.parent)
+                parts.Add(current.name + "#" + current.GetInstanceID().ToString(System.Globalization.CultureInfo.InvariantCulture));
+            parts.Reverse(); return string.Join("/", parts.ToArray());
+        }
+
+        private static JObject Cleanup2PopupSurfaceDiagnostic(ActionBarGroupSlot source, ActionBarSpellsGroup popup,
+            BlueprintAbility parent, ActionBarSlot[] rows, ExpandedSummoningVariantMenuSnapshot snapshot, string disposition)
+        {
+            var result = new JObject { ["parent"] = parent?.AssetGuid, ["rowCount"] = rows.Length, ["disposition"] = disposition,
+                ["sourceInstance"] = source == null ? 0 : source.GetInstanceID(),
+                ["popupInstance"] = popup == null ? 0 : popup.GetInstanceID(),
+                ["snapshot"] = snapshot?.ToString(), ["scrollingRequired"] = snapshot == null ? JValue.CreateNull() : (JToken)snapshot.ScrollingRequired,
+                ["diagnosticRowLimit"] = 64, ["diagnosticHierarchyLimit"] = 12, ["geometryOrAxesFabricated"] = false };
+            try
+            {
+                var canvas = popup == null ? null : popup.GetComponentInParent<Canvas>()?.rootCanvas;
+                var canvasRect = canvas == null ? null : canvas.transform as RectTransform;
+                var root = popup == null ? null : popup.transform as RectTransform;
+                var sourceData = source?.MechanicSlot?.GetContentData() as AbilityData;
+                var sourceField = typeof(ActionBarSpellsGroup).GetField("m_SourceSpell", Cleanup2Fields);
+                var groupField = typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields);
+                var slotsField = typeof(ActionBarSpellsGroup).GetField("m_Slots", Cleanup2Fields);
+                var nativeSource = popup == null || sourceField == null ? null : sourceField.GetValue(popup) as AbilityData;
+                var nativeSlots = popup == null || slotsField == null ? null : slotsField.GetValue(popup) as IList<ActionBarSpontaneousConvertedSlot>;
+                ExpandedSummoningVariantMenuSnapshot current;
+                result["currentSnapshotIsCaptured"] = ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(popup, out current) && ReferenceEquals(current, snapshot);
+                result["sourceSlotIdentityNow"] = source == null ? null : source.GetType().FullName + "#" +
+                    source.GetInstanceID().ToString(System.Globalization.CultureInfo.InvariantCulture);
+                result["sourceHierarchyNow"] = source == null ? null : Cleanup2PopupHierarchy(source.transform);
+                result["sourceBlueprint"] = sourceData?.Blueprint.AssetGuid;
+                result["nativeSourceBlueprint"] = nativeSource?.Blueprint.AssetGuid;
+                result["nativeSourceIsExactSourceAbility"] = sourceData != null && ReferenceEquals(sourceData, nativeSource);
+                result["sourceOwnsExactPopup"] = source != null && groupField != null && ReferenceEquals(groupField.GetValue(source), popup);
+                result["nativeSlotCount"] = nativeSlots?.Count;
+                result["nativeSlotInstances"] = nativeSlots == null ? null : new JArray(nativeSlots.Take(64).Select(value => value == null ? 0 : value.GetInstanceID()));
+                result["rootScrollRectCount"] = popup == null ? 0 : popup.GetComponents<ScrollRect>().Length;
+                result["ownedViewportMarkerCount"] = popup == null ? 0 : popup.GetComponentsInChildren<ExpandedSummoningVariantMenuViewportMarker>(true).Length;
+                var hierarchy = new JArray(); result["hierarchy"] = hierarchy;
+                for (Transform node = root; node != null && hierarchy.Count < 12; node = node.parent)
+                    hierarchy.Add(new JObject { ["name"] = node.name, ["instance"] = node.GetInstanceID(),
+                        ["active"] = node.gameObject.activeInHierarchy,
+                        ["components"] = new JArray(node.GetComponents<Component>().Where(value => value != null).Take(24).Select(value => value.GetType().FullName)) });
+                if (canvasRect != null && root != null)
+                {
+                    result["livePopupInCanvas"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(canvasRect, root));
+                    result["sourceInCanvas"] = source == null ? null : Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(canvasRect, (RectTransform)source.transform));
+                    result["rows"] = new JArray(rows.Take(64).Select(row => new JObject {
+                        ["instance"] = row == null ? 0 : row.GetInstanceID(),
+                        ["guid"] = (row?.MechanicSlot?.GetContentData() as AbilityData)?.Blueprint.AssetGuid,
+                        ["active"] = row != null && row.gameObject.activeInHierarchy,
+                        ["directParent"] = row == null ? null : row.transform.parent?.name,
+                        ["directParentInstance"] = row?.transform.parent == null ? 0 : row.transform.parent.GetInstanceID(),
+                        ["boundsInPopup"] = row == null ? null : Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(root, (RectTransform)row.transform)),
+                        ["boundsInCanvas"] = row == null ? null : Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(canvasRect, (RectTransform)row.transform)),
+                        ["screenCorners"] = row == null ? null : Cleanup2PopupScreenCorners((RectTransform)row.transform, canvas),
+                        ["masks"] = row == null ? null : new JArray(row.GetComponentsInParent<RectMask2D>(true).Cast<Behaviour>()
+                            .Concat(row.GetComponentsInParent<Mask>(true)).Take(12).Select(mask => new JObject {
+                            ["name"] = mask.name, ["instance"] = mask.GetInstanceID(), ["type"] = mask.GetType().FullName,
+                            ["active"] = mask.isActiveAndEnabled,
+                            ["maskRectInCanvas"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(canvasRect, (RectTransform)mask.transform)),
+                            ["rowBoundsInMask"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds((RectTransform)mask.transform, (RectTransform)row.transform)) })) }));
+                }
+                result["surfaces"] = popup == null ? null : new JArray(popup.GetComponentsInChildren<ScrollRect>(true).Take(8).Select(value => new JObject {
+                    ["type"] = value.GetType().FullName, ["instance"] = value.GetInstanceID(), ["active"] = value.isActiveAndEnabled,
+                    ["content"] = value.content?.name, ["viewport"] = value.viewport?.name,
+                    ["horizontal"] = value.horizontal, ["vertical"] = value.vertical }));
+            }
+            catch (Exception error) { result["diagnosticReadFailure"] = error.ToString(); }
+            return result;
+        }
+
+        private static JArray Cleanup2PopupScreenCorners(RectTransform rect, Canvas canvas)
+        {
+            Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && camera == null) return null;
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            return new JArray(corners.Select(point => { Vector2 screen = RectTransformUtility.WorldToScreenPoint(camera, point);
+                return new JObject { ["x"] = screen.x, ["y"] = screen.y,
+                    ["cameraDepth"] = camera == null ? JValue.CreateNull() : (JToken)camera.WorldToScreenPoint(point).z,
+                    ["screenWidth"] = Screen.width, ["screenHeight"] = Screen.height }; }));
         }
 
         private static RectTransform Cleanup2PopupViewport(NativeIconScreenEvidence.NativeRowScroll scroll)
@@ -1649,6 +1867,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static void Cleanup2SetPopupPosition(NativeIconScreenEvidence.NativeRowScroll scroll, Vector2 position)
         {
+            if (scroll.IsStationary) throw new InvalidOperationException("A fitting native popup has no scroll state to write.");
             var standard = scroll.Component as ScrollRect;
             if (standard != null)
             {
@@ -1668,15 +1887,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             Canvas.ForceUpdateCanvases();
             RectTransform viewport = Cleanup2PopupViewport(scroll);
             Bounds content = Cleanup2PopupBounds(viewport, scroll.Content), target = Cleanup2PopupBounds(viewport, (RectTransform)row.transform);
-            Vector2 position = scroll.Position;
+            Vector2 position = scroll.IsStationary ? Vector2.zero : scroll.Position;
             float xRange = content.size.x - viewport.rect.width, yRange = content.size.y - viewport.rect.height;
-            if (!Cleanup2FullyVisible(scroll, row))
+            if (!scroll.IsStationary && !Cleanup2FullyVisible(scroll, row))
             {
                 if (scroll.Horizontal && xRange > .5f) position.x = Mathf.Clamp01(position.x + (target.center.x - viewport.rect.center.x) / xRange);
                 if (scroll.Vertical && yRange > .5f) position.y = Mathf.Clamp01(position.y + (target.center.y - viewport.rect.center.y) / yRange);
             }
-            scroll.Velocity = Vector2.zero;
-            Cleanup2SetPopupPosition(scroll, position);
+            if (!scroll.IsStationary)
+            {
+                scroll.Velocity = Vector2.zero;
+                Cleanup2SetPopupPosition(scroll, position);
+            }
             var watch = System.Diagnostics.Stopwatch.StartNew();
             Vector2 previous = scroll.Content.anchoredPosition;
             int stableFrames = 0;

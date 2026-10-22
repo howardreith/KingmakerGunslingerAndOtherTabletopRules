@@ -94,7 +94,7 @@ namespace KingmakerGunslinger.Summoning
                     skull.SetParent(owned.Root.transform, false);
                     Vector3 offset = head.localRotation *
                         Vector3.Scale(head.localScale,
-                            new Vector3(.52f, .02f, 0f));
+                            new Vector3(.44f, -.035f, -.02f));
                     var driver = owned.Root.AddComponent<EttinHeadPoseDriver>();
                     driver.Configure(head, skull, offset);
                     owned.Mesh = EttinAuthoredHeadMesh.Build(

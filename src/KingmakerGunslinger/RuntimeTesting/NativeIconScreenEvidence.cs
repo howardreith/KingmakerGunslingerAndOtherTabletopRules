@@ -268,37 +268,63 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private readonly ScrollRect _standard;
             private readonly ScrollRectExtended _extended;
+            private readonly RectTransform _stationaryRoot;
+            private readonly Func<bool> _ownsPopup;
             internal readonly Component Component;
-            internal NativeRowScroll(Component component)
-            { Component = component; _standard = component as ScrollRect; _extended = component as ScrollRectExtended; }
-            internal bool Active => Component != null && (_standard != null ? _standard.isActiveAndEnabled : _extended.isActiveAndEnabled);
-            internal bool Vertical => _standard != null ? _standard.vertical : _extended.vertical;
-            internal bool Horizontal => _standard != null ? _standard.horizontal : _extended.horizontal;
-            internal RectTransform Viewport => _standard != null ? _standard.viewport : _extended.viewport;
-            internal RectTransform Content => _standard != null ? _standard.content : _extended.content;
-            internal string Api => _standard != null ? "UnityEngine.UI.ScrollRect.normalizedPosition" :
+            internal NativeRowScroll(Component component, Func<bool> ownsPopup = null)
+            {
+                Component = component; _standard = component as ScrollRect; _extended = component as ScrollRectExtended;
+                _ownsPopup = ownsPopup;
+                if (_standard == null && _extended == null) throw new ArgumentException("An actual supported native scroll component is required.", nameof(component));
+            }
+            private NativeRowScroll(RectTransform root, Func<bool> ownsPopup)
+            { Component = root; _stationaryRoot = root; _ownsPopup = ownsPopup; IsStationary = true; }
+            // Only the exact popup admission helper supplies this proof after
+            // checking the live layout snapshot/source/native slot identities.
+            // The popup's own RectTransform is a real boundary, not a fabricated
+            // viewport or an arbitrary outer action-bar ancestor.
+            internal static NativeRowScroll StationaryPopup(RectTransform root, Func<bool> ownsPopup)
+            {
+                if (root == null || ownsPopup == null || !ownsPopup())
+                    throw new InvalidOperationException("Exact fitting native popup proof required.");
+                return new NativeRowScroll(root, ownsPopup);
+            }
+            internal bool IsStationary { get; }
+            internal bool Active => Component != null && (IsStationary ? _stationaryRoot.gameObject.activeInHierarchy :
+                (_standard != null ? _standard.isActiveAndEnabled : _extended.isActiveAndEnabled)) && (_ownsPopup == null || _ownsPopup());
+            internal bool Vertical => !IsStationary && (_standard != null ? _standard.vertical : _extended.vertical);
+            internal bool Horizontal => !IsStationary && (_standard != null ? _standard.horizontal : _extended.horizontal);
+            internal RectTransform Viewport => IsStationary ? _stationaryRoot : (_standard != null ? _standard.viewport : _extended.viewport);
+            internal RectTransform Content => IsStationary ? _stationaryRoot : (_standard != null ? _standard.content : _extended.content);
+            internal string Api => IsStationary ? "Stationary exact native popup observation; no scroll API or scroll mutation" :
+                _standard != null ? "UnityEngine.UI.ScrollRect.normalizedPosition" :
                 "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter";
-            internal Vector2 Position => _standard != null ? _standard.normalizedPosition : _extended.normalizedPosition;
+            internal Vector2 Position => !IsStationary ? (_standard != null ? _standard.normalizedPosition : _extended.normalizedPosition) :
+                throw new InvalidOperationException("A stationary popup has no normalized scroll position.");
             internal void RestorePosition(Vector2 value)
             {
+                if (IsStationary) throw new InvalidOperationException("A stationary popup has no scroll state to write.");
                 if (_standard != null)
                 {
-                    _standard.verticalNormalizedPosition = value.y;
+                    if (_standard.vertical) _standard.verticalNormalizedPosition = value.y;
                     if (_standard.horizontal) _standard.horizontalNormalizedPosition = value.x;
                 }
                 else
                 {
-                    _extended.verticalNormalizedPosition = value.y;
+                    if (_extended.vertical) _extended.verticalNormalizedPosition = value.y;
                     if (_extended.horizontal) _extended.horizontalNormalizedPosition = value.x;
                 }
             }
             internal Vector2 Velocity
             {
-                get => _standard != null ? _standard.velocity : _extended.velocity;
-                set { if (_standard != null) _standard.velocity = value; else _extended.velocity = value; }
+                get => !IsStationary ? (_standard != null ? _standard.velocity : _extended.velocity) :
+                    throw new InvalidOperationException("A stationary popup has no scroll velocity.");
+                set { if (IsStationary) throw new InvalidOperationException("A stationary popup has no scroll state to write.");
+                    if (_standard != null) _standard.velocity = value; else _extended.velocity = value; }
             }
             internal void Reveal(RectTransform target)
             {
+                if (IsStationary) throw new InvalidOperationException("A stationary popup is observed without a reveal mutation.");
                 if (_extended != null)
                 {
                     _extended.StopMovement();

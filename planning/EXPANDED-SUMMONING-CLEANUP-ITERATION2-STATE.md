@@ -5,7 +5,88 @@ or release record. The mission is **in progress**, with no owner visual approval
 
 ## Intake and ownership
 
-### Latest evidence summary (2026-10-22, review5)
+### Latest evidence summary (2026-10-22, review6)
+
+Frozen review6 source `cfe39dc1a1c7c16b3228ca5801a4ab356257349b`,
+source fingerprint `1d00d8df753bb578c3ab7ba815794deb9b8fff5c8539c9903854b4546f9343ee`,
+package `7909cd191776a62db99ef2df65a3d7e062dfc69fae22c2c111c7c28deb974e4b`,
+DLL `59c51bb540e3426fbd3290b53a8a89776d5dae59cddec1600cdfb4781d8962c3`,
+MVID `9a25bb0d-03ab-446f-83e0-c6d70674ca09`. The exact build and strict
+package checks PASS, with78/78 selected cases (4.1s runner), out of2722 registered.
+This immutable development artifact is in `artifacts/worktrees/summon-cleanup2-review6`.
+
+Review6 menus `20261022T0133007801027Z-6f141a62f48f40cb818923dea1825000`
+FAIL,69.973s,7 PASS/2 FAIL. Actual lifecycle/alpha narrative admission passed
+and SNA I's10 exact child identities matched. The observer incorrectly required
+a ScrollRect even for a short fitting popup; no menu screenshot qualified.
+Installed FillSlots IL parents rows directly to the popup, while the existing
+layout installs a scroll only for overflow. A shared stationary/overflow
+surface observer correction is being prepared; no game layout changes are
+needed. Tooltips are deferred until that same seam is corrected.
+
+Review6 Ettin `20261022T0136351421581Z-36c7a69a3b5f4956b34c975c82bf71bf`
+FAIL,97.038s,72 PASS/2 FAIL. Two actual instances, positive neck-relative follow,
+native expiry, sibling isolation, third cast and all exact owned-resource release
+checks passed. Both native off-hand pose-handle lookups were absent. All48
+actual PNGs were captured; inspected idle/body/main-hand pictures still show a
+puppet-like capsule head, stiff neck and apparent forward-axis/bind mismatch.
+The visual is rejected again; lifecycle success does not approve anatomy.
+No off-hand or cold-hydration success is claimed. The authoring correction uses
+these actual frames, not a presumed controller reset or uniform color tweak.
+
+Review6 Crab `20261022T0139588966975Z-42bd8aa414854a4cb813318b485f5184`
+FAIL,68.562s,9 PASS/2 FAIL. The exact live missing-Claw binding passed,
+including unchanged native Spider absence and nonnull foreign-result retention.
+No ordinary attack ran: the reused fixture chose2.4m, outside this actual
+Crab command's2.2096m ApproachRadius; native IsInRange=false and the observer
+refused. A bounded Crab-owned range-qualified placement correction is being
+prepared; no reach/stat/weapon change or forced attack is permitted.
+Transaction `compat-20261022T013858Z-9a1c9d068749` restored/verified true.
+Review6 scale `20261022T0142535431700Z-421b2f5ba4cf43e58cb9984e24f61613`
+FAIL,73.690s,29 PASS/2 FAIL. The unchanged ground limits rejected all3528
+candidates in0.0658s:3250 horizontal clamp,145 grade,53 residual,80 footprint.
+Zero complete21-point support sets met both3% grade and5cm residual, including
+footprint-refused sets whose plane is now recorded. No calibration, palette
+or scale helper was attached. Transaction
+`compat-20261022T014152Z-ac4dce516df3` restored/verified true.
+
+The next changed reproduction uses the exact existing save-free mansion fixture
+already qualified by the review5 Gorgon breath observation: area
+`0a89ba823d7eab045949d98cf22dcd2c`, entry
+`7c5c6a354220164468167323821fd9cb`. Source admission checks those exact IDs;
+only giant-lineup/scale-prototype move from Oleg, and the geometry/contact
+limits are unchanged. Actual selected fixture IDs are now reported from the
+request-owned preset, not its unmodified original. This is a changed fixture,
+so no old evidence is re-evaluated or promoted. Production scaling stays inert.
+Review6 fresh module-OFF boundary
+`20261022T0146087900014Z-0a10bcc8cdb345cda50ca661120fcce9` PASS,54.333s,
+142/142 native assertions. Source6 exact package/DLL above;31 actual definitions,
+raw native list exposure and fresh native learning-helper/source-reference
+checks were observed without constructing a world, book, actor or save. This
+is fresh module-OFF presentation/helper evidence, not a saved-character or
+console level-up rendering claim. Transaction
+`compat-20261022T014507Z-430265be32c4` restored/verified true and original
+feature-settings bytes SHA256
+`6e24b2788a0c8f063d6e561a27c93f9c5349f2fc21b5217689da8aefdbb385d0`
+were restored. The review6 native batch ended after approximately16minutes,
+inside its30minute ceiling; no broad campaign was selected.
+
+Next coherent source correction checkpoint: stationary/overflow popup admission,
+Crab range-qualified fixture, Ettin actual forward basis/sculpt and explicit
+head/neck quaternion evidence, exact mansion giant fixture and targeted native
+Mastodon/Triceratops visual controls. Original failed receipts remain unchanged.
+Both transactions restored/verified true:
+`compat-20261022T013200Z-de677b6ace76` and
+`compat-20261022T013526Z-bd5bd236d99d`. Independent Crab/scale/module-OFF
+checks continue on unchanged review6. No save has been loaded or written.
+
+Local review gallery: `artifacts/cleanup2-review-gallery/index.html`,90
+byte-identical native image copies with SHA256/source paths in
+`native-image-identities.json`. It compares baseline489dde to review5acdb5d,
+labels the failed animation/body verdicts and rejected old Ettin explicitly,
+and does not relabel these pictures as review6.
+
+### Preserved review5 evidence
 
 The current validated development candidate is frozen source
 `acdb5d90ada74dcf781c276367edb13eed328f0e` in
@@ -162,21 +243,20 @@ An offline render is synthetic evidence. No unobserved target is PASS.
 
 | ID | Reproduction / source work | Technical verification | Native evidence | Owner acceptance / remaining work |
 |---|---|---|---|---|
-| MENU-01 | Source predicts canonical generic leaves already replaced; fixed incomplete native replacement coverage, repeat publication and rollback ownership | Four new focused menu/label cases pass with neighbors | Pending all nine tiers, quantity pages, conversions and adapters | Pending native attribution and review |
-| ART-01 | Crab anatomy rebuilt and offline comparison inspected | Deterministic export, closed/outward geometry and pose/weight audit PASS | Pending actual SNA III cast and shared routes | Pending |
-| ICON-01 | Horse original painted revision; original source preserved; shared consumer graph retained | Export and catalog validator PASS; 32/48/64 thumbnail comparison inspected | Pending menus/tooltips and actual assignments | Pending owner pixels decision |
-| ART-02 | Griffon integration refined after first offline rejection; second preview inspected | Deterministic export, geometry/weight audit and compilation PASS | Pending motion/attack/implemented transitions | Pending |
-| ART-03 | Stag Beetle body and six legs rebuilt | Deterministic export, closed/outward geometry and pose/weight audit PASS | Pending contact/motion/attack | Pending |
-| ART-04 | Girallon four hand/arm unions and finger roots repaired | Deterministic export, connected visible digits and pose/weight audit PASS | Pending extreme wrists, all hands, motion/hit | Pending |
-| ART-05 | Ettin primitive head replaced by authored skin and neck-relative skull control | Production compile and existing visual ownership neighbor pass | Pending two instances, teardown/recreate/reload and motion | Pending anatomical calibration |
-| ART-06 | Every original Elephant closed component was inward; continuous outward body, ears and limbs revised | Deterministic export, outward/weight audit and compilation PASS | Baseline missing surfaces reproduced after dissolve0; candidate and Mastodon control pending | Pending |
-| ART-07 | Stegosaurus circular barrel replaced with elongated supported body | Deterministic export, closed/outward geometry and pose/weight audit PASS | Pending tail attack/motion and shared controls | Pending |
-| ART-08 | Giant provenance policy implemented; root scaling remains inert due verified collider risk | Four pure guard cases PASS; active visual-only target/material work incomplete | Seven canonical casts PASS; lineup observer failed Human skin guard and is corrected for fresh observation | Pending measured donor calibration |
-| ART-09 | Every original Brachiosaurus closed component was inward; connected outward body, neck and balancing tail authored | Deterministic export, outward/weight audit and compilation PASS | Baseline missing surfaces reproduced after dissolve0; candidate full-body motion/camera/contact pending | Pending |
-| ART-10 | Native .163 pillow plates/spherical hooves reproduced; continuous body, flatter plates and cloven hooves revised | Final deterministic synthetic closure/pose audit PASS; paired package pins PASS | Baseline inspected; repaired motion/contact/breath pending | Pending |
-| MENU-02 | Scoped PC/console learning copies and exact live equivalence/budget filter implemented | Production compile and focused policy/learning cases PASS | 60 contract comparisons differ, 52 learning probes preserve entries, real legacy/canonical casts spend slots; overall observer summary FAIL retained | Rules-review exception; zero legacy entries hidden |
-| LABEL-01 | Explicit mapping covers all current generated/native choices, independent family/subtype/size/template/quantity; prose and IDs preserved | Four new focused cases pass with neighbors | Pending UI clipping, adapters/casts and saved identities | Pending native review |
-
+| MENU-01 | Repaired incomplete native replacement coverage, repeat publication and rollback ownership; retained third-party children | Changed menu cases and related production tests PASS | Review4 SNA I-IV identity checks retained, but story overlay/scroll failures invalidate visible coverage; review5 guard refused | All nine visible tiers and alternate callers remain incomplete pending review6 |
+| ART-01 | Rebuilt Crab shell, articulated legs and claw unions; source6 adds exact-owned missing Claw animation lookup | Closed/outward geometry, deterministic export and actual25-source binding/refusal tests PASS | Review5 canonical SNA III, all117 files and real travel; improved crab anatomy inspected; Claw missing in that run | Source6 ordinary/full attacks pending; far-leg contact and pointed distal legs need owner review |
+| ICON-01 | Painted Horse revision matches shared creature concept, preserved provenance/consumer graph | Export/catalog checks and32/48/64 thumbnail inspection PASS | Actual Horse menu and hover pending review6 | Owner pixels decision pending |
+| ART-02 | Refined Griffon eagle/lion/wings and shoulder unions after offline rejection | Geometry/weights/export and production compile PASS | Review5 canonical cast, real travel, native attack handle and multiple views inspected; no native Hit action | Remaining intersections/extreme states and owner anatomy review |
+| ART-03 | Rebuilt Stag Beetle paired elytra, mandibles and all six legs beyond winding repair | Closed/outward geometry/weights/export PASS | Review5 canonical cast, travel and native attack pose inspected; shell/leg articulation improved; far-leg contact remains visually ambiguous | Owner proportions/contact decision pending |
+| ART-04 | Joined Girallon four hands/arms and finger roots | Connected digits/weights/export PASS | Review5 actual travel/attack inspected; no exploding wrists, but far fingers overlap and read dark; donor has no Hit action | Extreme far-hand readability remains incomplete; no owner approval |
+| ART-05 | Review5 pale puppet head rejected; source6 refines face/neck and uses exact native PF/StandardDynamic with two owned project textures | Deterministic2840-vertex skin, topology/weights/material ownership and compile PASS | Review5 actual images retained as rejected; source6 independent lifecycle/pose/teardown evidence pending | Native fit/materials and cold hydration unverified; owner review pending |
+| ART-06 | Replaced inward Elephant surfaces with continuous outward body, ears, trunk and connected limbs | Closed/outward geometry/weights/export PASS | Baseline culling reproduced; review5 fully opaque multi-view body and real travel/attack inspected after normal dissolve | Shared Mastodon control/multiple-background check pending; owner skin/shape review |
+| ART-07 | Replaced Stegosaurus barrel with elongated supported body, plated back and bending spiked tail | Closed/outward geometry/weights/export PASS | Review5 actual travel/turn/attack inspected; spikes visible, some tail frames occluded by caster | Thick feet/toy materials and shared dinosaur control need review |
+| ART-08 | Exact-provenance scale/palette policies; owned render-only/Cloth experiment remains request-only | Guard/refusal/ownership tests and compile PASS; production calibration intentionally empty | All six giants cast and surveyed; review4/5 common-plane search FAIL; no qualified lineup or experimental attachment | Incomplete: relative heights/palettes not activated; native cape/collision/FX/cleanup proof required |
+| ART-09 | Rebuilt inward Brachiosaurus as closed connected body/neck/tail | Closed/outward geometry/weights/export PASS | Baseline culling reproduced; review5 opaque both sides/low views and real travel inspected; Mastodon donor lacks requested Tail action | Tail attack remains incomplete; native Slam/Gore not relabelled; gait/bulges/selection need owner review |
+| ART-10 | Fresh native audit justified flatter closed Gorgon plates, bovine body and cloven hooves | Deterministic geometry/weights and126/126 body-package pins PASS | Review5 body/travel/attack inspected; separate exact-source RTWP breath41/41 PASS166.246s; actual muzzle/projectile pictures inspected | White quilt/toy material response awaits owner review; no turn-based/full-release claim |
+| MENU-02 | Exact legacy inventory/equivalence diagnostic and separate rules-change proposal; all legacy entries retained | Stable identity/access/refusal tests PASS; proposal113 consistency checks PASS |60 contract pairs differ,52 learning probes preserve entries; real old/canonical Small Air casts spend original slots; review4 summary FAIL retained | Owner directed proposal before hiding. Proposal delivered; rules decision pending, hiding not approved |
+| LABEL-01 | Explicit128 family-first metadata map spans generated/native choices; template/quantity/natural prose and stable IDs retained | Changed name/publication/idempotence/rollback cases PASS | Review4 child IDs matched through IV; visible menu/hover presentation incomplete pending review6 | Adapters, old-save presentation, clipping and owner review remain open |
 ## Commands and limits so far
 
 - Read current validation/runtime/save/icon procedures and predecessor rationale.
@@ -535,3 +615,47 @@ restoration. Each phase uses the same frozen artifact and fresh guarded process;
 a refusal is inspected before any changed reproduction. No unchanged broad
 campaign or save load is selected. Gorgon RTWP breath retains its exact review5
 artifact evidence because that Gorgon source is unchanged.
+
+### Review7 source checkpoint (2026-10-22)
+
+Batched corrections address exact review6 failures: fitting native menus now
+use their real stationary popup boundary and all row/source/snapshot references;
+overflow retains the existing owned ScrollRect. The Crab-only fixture reads the
+actual native ApproachRadius and refuses every out-of-range or unsafe placement.
+Ettin's proven native -Z facial basis replaces the backwards +Z sculpt, with a
+new expressive face and shorter shoulder fan. Geometry is5024 vertices/9992
+triangles, original paint and no native geometry/pixel export; two identical
+regenerations5.6568/5.6384s, exact packed audit0.6115s and labelled captured-
+donor/synthetic pose checks2.6192s passed. Generated C# SHA256
+`0ab82b733871627bc7b22f45265261a3f9fef7ebf2490a8f4bc10b4d9f130b3e`.
+Actual native6 Head rotation was not recoverable; next samples explicitly record
+Head/Neck quaternions. No old native result becomes new-byte visual approval.
+
+The giant comparison uses the exact existing mansion area/entry after zero
+eligible outdoor planes. The new exact `shared-controls` phase observes only
+native Mastodon and canonical released Triceratops with six native images and
+protected source/instance/scalar/reference checks; it claims no unexercised
+travel/trample/combat. All ten phase allowlists and native dispatch are unified.
+
+The first focused compile caught a protected Resources.Enumerable property.
+Actual installed reflection proved a public enumeration pattern, with no
+IEnumerable interface. The corrected observer gathers resources with the same
+public foreach pattern used by the existing tooltip observer. Failed log is
+retained. Rerun passed production compilation8.8s, domain build2.8s and39/39
+selected cases in0.5s. Command/filter is the same exact focused selection recorded
+above; logs `artifacts/cleanup2-review7-focused.log` and
+`artifacts/cleanup2-review7-focused-fixed.log`. `git diff --check` passed.
+
+[Cold hydration plan](CLEANUP2-ETTIN-COLD-PLAN.md):45 new planning/refusal
+predicates PASS0.535s,8 existing Sprint29 authority predicates PASS0.227s.
+No bytes were restored or runtime authorized by those scalar tests. The direct
+Cleanup2 cold request remains explicitly refused. Missing prerequisites are a
+retained owner/original-Working restoration transaction, actual-current intake
+support (current16 mods versus legacy11 guard), and an exact Ettin cold
+attachment/material assertion. Baseline and Working saves remain untouched.
+
+Selected review7 verification is one new immutable artifact, ten-phase guarded
+preflight and only six affected native phases: menus, tooltips, Ettin lifecycle,
+Crab attacks, mansion giant experiment, Mastodon/Triceratops controls. Planning
+target15minutes, ceiling30minutes plus necessary safe restoration; no broad
+historical campaign, unchanged source6 OFF replay or save-loading task selected.

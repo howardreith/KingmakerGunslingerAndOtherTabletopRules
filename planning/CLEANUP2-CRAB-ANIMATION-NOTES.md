@@ -116,3 +116,38 @@ Brachiosaurus Tail binding is blocked pending a proper tail pose or original
 authoring. Mastodon Slam/Gore lookup compatibility does not demonstrate motion
 of the authored Tail0_M..Tail4_M chain. This change contains no generic mapping
 and cannot alias Tail.
+
+## Review 6 fixture failure and narrow correction
+
+Immutable native run `20261022T0139588966975Z-42bd8aa414854a4cb813318b485f5184`
+in evidence directory
+`20261022T0139588796997Z-disposable-expanded-summoning-cleanup2-native-review`
+passed the exact native Bite/Claw binding, unchanged native spider, nonnull
+foreign-result and restoration gates. It failed before an attack command:
+the selected 2.39999962 m gap exceeded the real native `ApproachRadius` 2.2096.
+Enemy and LOS were true. The failed record is retained; it supplies no ordinary
+attack, motion, action-cost or timing acceptance.
+
+Only the main observer and this note change for the correction. The production
+binding, policy, shared lane helper and frozen source 6 are untouched.
+`Cleanup2CrabAttackLane` reads an actual ordinary native probe's approach radius
+and tests gaps radius minus 0.15/0.30/0.50 m, excluding any gap below the summed
+native corpulence plus 5 cm. It searches at most 121 origin offsets within
+15 m along each horizontal axis, the existing compass directions, 4096 target
+candidates and 5 s. It uses a request-owned native RTWP graph-mask 1 constraint,
+walkability and the anchor's connected area. The installed PathTo/ConstructTags
+contracts establishing that query were already read from exact 2.1.7b IL.
+
+The qualified lane requirements remain: finite native graph positions,
+<=60 cm clamping, same graph/area, native geometry sight, >=3.5 m protected-party
+clearance, nonoverlapping native footprints and actual mutual native LOS.
+After placement the **real native** `IsUnitEnoughClose`, enemy and live hostile
+state decide acceptance. A fresh final native probe repeats the pre-command
+admission. There is no fixed 2.4 m floor, guessed weapon reach, range override,
+stat/weapon/roll change, forced act or attack issued by the survey. The evidence
+records range, footprint, gaps, counters, refusals and bounded placed examples.
+
+This correction has been source reviewed only. The agent did not compile,
+launch the game or run Git operations. The integrator must compile and obtain
+new guarded native command/cost/motion evidence; earlier binding PASS does not
+prove that this placement correction or subsequent attacks work.

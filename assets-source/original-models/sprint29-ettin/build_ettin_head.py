@@ -2,8 +2,9 @@
 
 Blender 4.5.10 -b --factory-startup --python-exit-code 1 -P this.py --
  --output <src/.../EttinAuthoredHeadMesh.cs> --work-dir <local-only dir>
-No native geometry, transforms or animation data are inputs. Units follow the
-existing second-head art reference. Native placement still requires review.
+No native geometry, pixels or animation data are inputs. The authored frame is
+Head-local -Z forward/+Y up, established by the actual Hill Jaw/HeadCenterFX
+scalar references and rejected native6 images. Native fit still needs review.
 """
 import argparse
 import base64
@@ -25,60 +26,89 @@ AXES=(Vector((1,0,0)),Vector((0,1,0)),Vector((0,0,1)))
 
 
 def build():
-    volume=cb.Volume(.009)
+    volume=cb.Volume(.0075)
     def mass(c,r):volume.ellipsoid(Vector(c),AXES,r)
-    # Integrated broad collar, oblique neck column and cranium. The collar
-    # overlaps the donor nape; its vertices are owned by the neck, not skull.
-    # A long oblique trapezius/neck emerges from the shoulder. No separate
-    # toroidal collar or projecting oval cuff. Smaller forehead/jaw/ears and
-    # a shallow nose/cheek plane replace the previous balloon-like features.
-    mass((.20,-.78,-.085),(.30,.19,.20))
-    volume.sweep([(.23,-.79,-.08),(.36,-.53,-.065),(.49,-.28,-.035),
-                  (.52,-.15,-.025)],[.215,.18,.135,.13],segments=24)
-    mass((.52,.065,-.015),(.195,.245,.173))
-    mass((.52,-.105,.055),(.172,.105,.135))
-    mass((.52,-.145,.115),(.13,.055,.075))
-    mass((.52,.045,.172),(.034,.075,.035))
-    mass((.52,-.005,.19),(.052,.033,.04))
+    # A short broad trapezius fan joins the native shoulder/neck region.
+    # Negative Z is anatomical FRONT; the previous +Z face was backwards.
+    mass((.13,-.43,.045),(.325,.215,.175))
+    volume.sweep([(.18,-.43,.035),(.32,-.26,.005),(.43,-.08,-.035)],
+                 [.205,.185,.14],segments=24)
+    mass((.44,.135,-.085),(.202,.237,.18))
+    mass((.44,-.027,-.111),(.192,.137,.147))
+    mass((.44,-.105,-.145),(.15,.075,.106))
+    mass((.44,.106,-.247),(.038,.089,.048))
+    mass((.44,.045,-.275),(.06,.037,.042))
     for sign in (-1,1):
-        mass((.52+sign*.12,-.035,.112),(.054,.062,.044))
-        mass((.52+sign*.087,.132,.14),(.094,.031,.039))
-        mass((.52+sign*.192,.045,-.015),(.028,.071,.035))
+        mass((.44+sign*.125,.045,-.191),(.062,.057,.039))
+        mass((.44+sign*.081,.207,-.199),(.101,.032,.047))
+        mass((.44+sign*.202,.14,-.013),(.031,.064,.029))
+    volume.sweep([(.325,-.005,-.242),(.40,.008,-.26),(.48,.003,-.26),
+                  (.555,-.015,-.242)],[.015,.018,.018,.015],segments=16)
+    mass((.44,-.055,-.239),(.105,.018,.029))
     skin=volume.polygonise("EttinSculptedHeadAndCollar")
-    cb.finish_surface(skin,3200,smooth_iterations=10)
-    parts=[(skin,cb.rigid_rows(skin,[("Head",1)]),0)]
-    # Scalp and a few broad swept locks, rooted inside the scalp/head. These
-    # are authored mesh solids, with no runtime primitive construction.
-    hairvol=cb.Volume(.0075)
-    # Receding horseshoe hairline and tapered swept nape locks. The forehead
-    # stays exposed; the cap is no longer a smooth solid helmet silhouette.
-    hairvol.ellipsoid(Vector((.52,.242,-.085)),AXES,(.184,.081,.125))
-    for dx in (-.153,-.105,-.052,0,.052,.105,.153):
-        hairvol.sweep([(.52+dx,.262,-.105),(.52+dx,.14,-.183),
-                       (.52+dx*.86,-.06,-.158)],
-                      [.031,.029,.008],segments=10)
+    cb.finish_surface(skin,5200,smooth_iterations=5)
+    # Broad facial planes, then REAL recessed orbit and mouth cavities rather
+    # than spheres stuck onto a smooth mask. Every cutter is original code.
+    for vertex in skin.data.vertices:
+        p=vertex.co
+        if p.y>.23 and p.z<-.20:p.z=max(p.z,-.255+.10*abs(p.x-.44))
+        if -.13<p.y<-.06 and p.z<-.21:p.z=max(p.z,-.258+.06*abs(p.x-.44))
+        if .18<p.y<.245 and p.z<-.225:
+            p.y+=(min(.1,abs(p.x-.44))*.11-.009)
+        if .012<p.y<.10 and abs(p.x-.44)>.06 and p.z<-.22:
+            p.z=max(p.z,-.254+.23*abs(p.x-.44))
+    skin.data.update()
+    def carve(name,centre,radii):
+        cutter=cb.blob(name,Vector(centre),AXES,radii,segments=32,rings=20)
+        bpy.context.view_layer.objects.active=skin
+        modifier=skin.modifiers.new(name,'BOOLEAN');modifier.operation='DIFFERENCE'
+        modifier.solver='EXACT';modifier.object=cutter
+        bpy.ops.object.modifier_apply(modifier=modifier.name)
+        bpy.data.objects.remove(cutter,do_unlink=True)
     for sign in (-1,1):
-        hairvol.sweep([(.52+sign*.173,.19,-.065),(.52+sign*.184,.05,-.08),
-                       (.52+sign*.155,-.075,-.062)], [.031,.025,.006],segments=10)
+        carve('OriginalOrbitalRecess',(.44+sign*.085,.151,-.255),(.051,.031,.06))
+    carve('OriginalGrimaceRecess',(.44,-.027,-.263),(.123,.026,.063))
+    for sign in (-1,1):
+        carve('OriginalMouthCorner',(.44+sign*.105,-.044,-.245),(.025,.025,.04))
+    # Boolean intersections leave microscopic slivers; remesh our original
+    # surface before reduction rather than admitting degenerate export faces.
+    remesh=skin.modifiers.new('CleanOriginalCavities','REMESH')
+    remesh.mode='VOXEL';remesh.voxel_size=.0045
+    bpy.ops.object.modifier_apply(modifier=remesh.name)
+    cb.finish_surface(skin,5600,smooth_iterations=1)
+    parts=[(skin,cb.rigid_rows(skin,[("Head",1)]),0)]
+    hairvol=cb.Volume(.0075)
+    hairvol.ellipsoid(Vector((.44,.332,.023)),AXES,(.192,.087,.124))
+    for i,dx in enumerate((-.16,-.11,-.055,0,.055,.11,.16)):
+        hairvol.sweep([(.44+dx,.345,.035),(.44+dx,.225,.107),
+                       (.44+dx*.9,.04+.023*math.sin(i*2.4),.094)],
+                      [.028+.004*math.sin(i*1.7),.024,.004],segments=10)
+    for sign in (-1,1):
+        hairvol.sweep([(.44+sign*.185,.29,-.005),(.44+sign*.20,.17,.014),
+                       (.44+sign*.181,.075,.004)], [.029,.026,.005],segments=10)
     hair=hairvol.polygonise("EttinSweptHair")
-    cb.finish_surface(hair,1300,smooth_iterations=4)
+    cb.finish_surface(hair,1600,smooth_iterations=3)
     parts.append((hair,cb.rigid_rows(hair,[("Head",1)]),2))
     for sign in (-1,1):
-        centre=Vector((.52+sign*.08,.087,.155))
-        socket=cb.blob("EttinEyeSocket",centre,AXES,(.042,.023,.015),segments=12,rings=8)
+        centre=Vector((.44+sign*.085,.15,-.223))
+        socket=cb.blob("EttinEyeSocket",centre,AXES,(.037,.017,.012),segments=16,rings=10)
         parts.append((socket,cb.rigid_rows(socket,[("Head",1)]),1))
-        eye=cb.blob("EttinEye",centre+Vector((0,0,.011)),AXES,
-                    (.022,.008,.008),segments=12,rings=8)
+        eye=cb.blob("EttinEye",centre+Vector((0,0,-.014)),AXES,
+                    (.017,.0055,.005),segments=16,rings=10)
         parts.append((eye,cb.rigid_rows(eye,[("Head",1)]),3))
-        pupil=cb.blob("EttinPupil",centre+Vector((0,0,.019)),AXES,
-                      (.006,.006,.0035),segments=10,rings=6)
+        pupil=cb.blob("EttinPupil",centre+Vector((0,0,-.022)),AXES,
+                      (.005,.006,.0015),segments=12,rings=8)
         parts.append((pupil,cb.rigid_rows(pupil,[("Head",1)]),1))
-        nostril=cb.blob("EttinNostril",Vector((.52+sign*.027,-.017,.217)),AXES,
-                       (.011,.006,.004),segments=10,rings=6)
+        nostril=cb.blob("EttinNostril",Vector((.44+sign*.025,.026,-.294)),AXES,
+                       (.012,.008,.003),segments=12,rings=8)
         parts.append((nostril,cb.rigid_rows(nostril,[("Head",1)]),1))
-    mouth=cb.tube("EttinMouthCrease",[(.425,-.118,.163),(.48,-.105,.185),
-                    (.56,-.105,.185),(.615,-.118,.163)],[.005,.006,.006,.005],segments=8)
+    mouth=cb.blob('EttinRecessedMouth',Vector((.44,-.027,-.217)),AXES,
+                  (.12,.023,.014),segments=28,rings=16)
     parts.append((mouth,cb.rigid_rows(mouth,[("Head",1)]),1))
+    for dx in (-.077,-.029,.025,.076):
+        tooth=cb.tube('EttinGrimaceTooth',[(.44+dx,-.041,-.242),
+                     (.44+dx,-.022,-.245)],[.008,.006],segments=8)
+        parts.append((tooth,cb.rigid_rows(tooth,[("Head",1)]),3))
     obj,_=cb.assemble("EttinAuthoredHead",parts)
     cb.require_single_body(obj)
     for polygon in obj.data.polygons:polygon.use_smooth=True
@@ -93,25 +123,27 @@ def original_paint():
             slot=(x//256)+2*(y//256);u=(x%256)/255;v=(y%256)/255
             h=((x*374761393+y*668265263)^((x+11)*(y+37)*1274126177))&0xffffffff
             grain=((h^(h>>13))&255)/255-.5
-            broad=math.sin(u*23+math.sin(v*17))*math.sin(v*31)*.016
+            broad=math.sin(u*23+math.sin(v*17))*math.sin(v*31)*.025
             if slot==0:
-                shade=1+broad+grain*.075
+                shade=1+broad+grain*.12
                 face=math.exp(-((u-.5)/.15)**6)
-                for line in (.82,.858,.889):
-                    crease=math.exp(-((v-line-.007*math.cos((u-.5)*29))/.003)**2)*face
-                    shade-=crease*.13
-                # Hand-authored subtle beard/under-eye weathering, in OUR UVs.
-                shade-=face*math.exp(-((v-.65)/.055)**2)*(.08+grain*.09)
-                rgb=(.365*shade,.235*shade,.128*shade)
+                for line in (.81,.845,.88):
+                    crease=math.exp(-((v-line-.007*math.cos((u-.5)*29))/.0035)**2)*face
+                    shade-=crease*.24
+                for eye_u in (.45,.55):
+                    shade-=.22*math.exp(-((u-eye_u)/.035)**2-((v-.74)/.025)**2)
+                shade-=face*math.exp(-((v-.59)/.062)**2)*(.15+grain*.20)
+                root=.8+.2*min(1,max(0,(v-.22)/.39))
+                rgb=(.465*shade*root,.405*shade*root,.315*shade*root)
             elif slot==1:
-                rgb=(.070+grain*.008,.037+grain*.006,.019+grain*.004)
+                rgb=(.045+grain*.008,.035+grain*.006,.025+grain*.004)
             elif slot==2:
                 strand=.5+.5*math.sin(u*220+math.sin(v*11)*2)
                 shade=.78+strand*.35+grain*.13
-                rgb=(.092*shade,.057*shade,.029*shade)
+                rgb=(.115*shade,.105*shade,.089*shade)
             else:
                 shade=.94+grain*.055
-                rgb=(.49*shade,.35*shade,.17*shade)
+                rgb=(.60*shade,.57*shade,.47*shade)
             data.extend(max(0,min(255,round(c*255))) for c in rgb);data.append(255)
     def chunk(kind,payload):
         return struct.pack('>I',len(payload))+kind+payload+struct.pack('>I',binascii.crc32(kind+payload)&0xffffffff)
@@ -133,16 +165,16 @@ def write_source(obj,path,paint):
     uv=mesh.uv_layers.new(name="OriginalHeadPaint")
     for loop in mesh.loops:
         p=mesh.vertices[loop.vertex_index].co;slot=vertex_regions[loop.vertex_index]
-        u=.5+math.atan2(p.x-.52,p.z+.03)/(2*math.pi)
-        v=max(.01,min(.99,(p.y+.95)/1.32))
+        u=.5+math.atan2(p.x-.44,-p.z-.03)/(2*math.pi)
+        v=max(.01,min(.99,(p.y+.65)/1.08))
         uv.data[loop.index].uv=((u+slot%2)*.5,(v+slot//2)*.5)
     for v in mesh.vertices:
         p=v.co;n=v.normal
-        t=max(0,min(1,(p.y+.64)/.44))
+        t=max(0,min(1,(p.y+.43)/.29))
         head=t*t*(3-2*t)
         slot=vertex_regions[v.index]
-        u=.5+math.atan2(p.x-.52,p.z+.03)/(2*math.pi)
-        texv=max(.01,min(.99,(p.y+.95)/1.32))
+        u=.5+math.atan2(p.x-.44,-p.z-.03)/(2*math.pi)
+        texv=max(.01,min(.99,(p.y+.65)/1.08))
         blob+=struct.pack("<9f",*p,*n,head,(u+slot%2)*.5,(texv+slot//2)*.5)
     for group in groups:
         blob+=struct.pack("<i",len(group))+struct.pack("<%di"%len(group),*group)
@@ -260,12 +292,12 @@ def main():
     # Explicit authoring controls only. They are not represented as native
     # bind measurements and never ship. Preview poses exercise the same
     # smooth collar/skull weight field encoded in the generated C# mesh.
-    rig={"bones":[{"name":"Neck","parent":"","depth":0,"head":[.20,-.78,-.085]},
-                  {"name":"SecondHead","parent":"Neck","depth":1,"head":[.52,.02,0]}]}
+    rig={"bones":[{"name":"Neck","parent":"","depth":0,"head":[.13,-.43,.045]},
+                  {"name":"SecondHead","parent":"Neck","depth":1,"head":[.44,-.035,-.02]}]}
     arm=cb.review_armature(rig,"EttinAuthoringControls")
     neck=obj.vertex_groups.new(name="Neck");skull=obj.vertex_groups.new(name="SecondHead")
     for v in obj.data.vertices:
-        t=max(0,min(1,(v.co.y+.64)/.44));w=t*t*(3-2*t)
+        t=max(0,min(1,(v.co.y+.43)/.29));w=t*t*(3-2*t)
         if w<1:neck.add([v.index],1-w,"REPLACE")
         if w>0:skull.add([v.index],w,"REPLACE")
     mod=obj.modifiers.new("AuthoringPose","ARMATURE");mod.object=arm;obj.parent=arm
