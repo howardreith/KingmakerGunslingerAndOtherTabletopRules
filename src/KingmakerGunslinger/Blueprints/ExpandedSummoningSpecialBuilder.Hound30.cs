@@ -114,11 +114,15 @@ namespace KingmakerGunslinger.Blueprints
             if (summoning == null || circles == null) throw new InvalidOperationException("Archon shared Magic Circle dependency is absent.");
             var circle = circles.Single(value => value.Alignment == "Evil");
             var hound = Require<BlueprintUnit>(summoning.BySymbol, Hound30Unit);
-            if (hound.AddFacts.Contains(circle.Carrier)) throw new InvalidOperationException("Hound shared circle was bound twice.");
+            var traits = Require<BlueprintFeature>(summoning.BySymbol, Hound30Prefix + "Traits");
+            if (traits.GetComponent<ArchonConstantMagicCircle>() != null)
+                throw new InvalidOperationException("Hound shared circle was bound twice.");
             // Exact shared carrier/area/recipient, with their existing lifetime,
             // alignment, typed stacking and configured control behavior. Future
             // fixes to that implementation are consumed directly by Hound.
-            hound.AddFacts = hound.AddFacts.Concat(new BlueprintUnitFact[] { circle.Carrier }).ToArray();
+            var grant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
+            grant.OwningBlueprint = hound; grant.Carrier = circle.Carrier; grant.CasterLevel = 6;
+            traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] { grant }).ToArray();
         }
     }
 }
