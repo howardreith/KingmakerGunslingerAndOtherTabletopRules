@@ -27,7 +27,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void EveryOwnershipGateRejectsIndependently()
         {
             Action<CrabAnimationBindingScope>[] changes = {
-                value => value.ModuleActive = false, value => value.MissingResult = false, value => value.RequestedClaw = false,
+                value => value.RequestActive = false, value => value.ModuleActive = false, value => value.MissingResult = false, value => value.RequestedClaw = false,
                 value => value.RegisteredUnit = false, value => value.RegisteredSource = false, value => value.ExactManagerView = false,
                 value => value.LiveOriginalBody = false, value => value.LivePositiveSummon = false, value => value.ExactClawWeapons = false,
                 value => value.NativeReceiptUnchanged = false, value => value.UnitGuid = CrabSummonAnimationBindingPolicy.SpiderGuid,
@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.DomainTests
         }
         private static CrabAnimationBindingScope Valid()
         {
-            return new CrabAnimationBindingScope { ModuleActive = true, MissingResult = true, RequestedClaw = true, RegisteredUnit = true,
+            return new CrabAnimationBindingScope { RequestActive = true, ModuleActive = true, MissingResult = true, RequestedClaw = true, RegisteredUnit = true,
                 RegisteredSource = true, ExactManagerView = true, LiveOriginalBody = true, LivePositiveSummon = true, ExactClawWeapons = true,
                 NativeReceiptUnchanged = true, UnitGuid = CrabSummonAnimationBindingPolicy.UnitGuid, UnitName = CrabSummonAnimationBindingPolicy.UnitName,
                 PrefabGuid = CrabSummonAnimationBindingPolicy.PrefabGuid, SourceGuid = CrabSummonAnimationBindingPolicy.SourceGuids[0] };

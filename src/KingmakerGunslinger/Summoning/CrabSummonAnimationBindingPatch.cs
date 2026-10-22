@@ -16,15 +16,70 @@ using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.RuntimeTesting;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
-    // A missing Crab Claw lookup borrows the unchanged native spider action.
-    // No animation set, action, Entry, clip, weapon, rule or unit field is set.
-    [HarmonyPatch(typeof(UnitAnimationManager), "GetAction", new[] { typeof(UnitAnimationSpecialAttackType) })]
+    // Request-only experiment. Borrowing Bite changes native act timing from
+    // the missing-Claw ScheduleAct(1) fallback. Never install this with PatchAll
+    // or use it as a production visual repair.
     internal static class CrabSummonAnimationBindingPatch
     {
+        private sealed class ReviewLease : IDisposable
+        {
+            internal RuntimeTestRequest Request;
+            internal string RunId;
+            internal UnitEntityData Actor, Caster;
+            internal UnitAnimationManager Manager;
+            internal HarmonyInstance Hooks;
+            internal int Thread;
+
+            internal bool Permits(UnitAnimationManager manager)
+            {
+                return ReferenceEquals(Review, this) && Thread == System.Threading.Thread.CurrentThread.ManagedThreadId &&
+                    ExactRequest(Request) && Request.RunId == RunId && ReferenceEquals(Manager, manager) &&
+                    Actor != null && !Actor.Destroyed && Caster != null && !Caster.Destroyed &&
+                    Actor.View != null && ReferenceEquals(Actor.View.AnimationManager, manager);
+            }
+
+            public void Dispose()
+            {
+                // Close admission before attempting unpatch; cleanup failure
+                // cannot leave a timing-changing callback active.
+                if (ReferenceEquals(Review, this)) Review = null;
+                if (Hooks != null) { Hooks.UnpatchAll(Hooks.Id); Hooks = null; }
+            }
+        }
+
+        private static ReviewLease Review;
+
+        private static bool ExactRequest(RuntimeTestRequest request)
+        {
+            return request != null && request.Enabled && request.ExitAfterCompletion &&
+                request.Scenario == "disposable-expanded-summoning-cleanup2-native-review" &&
+                !string.IsNullOrWhiteSpace(request.RunId) && request.Parameters != null && request.Parameters.Count == 1 &&
+                (string)request.Parameters["reviewPhase"] == "crab-attack";
+        }
+
+        internal static IDisposable BeginReview(RuntimeTestRequest request, UnitEntityData actor, UnitEntityData caster)
+        {
+            if (!ExactRequest(request) || Review != null || actor == null || actor.Destroyed || actor.View == null ||
+                actor.View.AnimationManager == null || caster == null || caster.Destroyed || ReferenceEquals(actor, caster))
+                throw new InvalidOperationException("An exclusive exact Cleanup2 Crab attack request and live owned actor/caster are required.");
+            var lease = new ReviewLease { Request = request, RunId = request.RunId, Actor = actor, Caster = caster,
+                Manager = actor.View.AnimationManager, Thread = System.Threading.Thread.CurrentThread.ManagedThreadId,
+                Hooks = HarmonyInstance.Create("kmg.cleanup2.crab-binding-experiment." + request.RunId) };
+            Review = lease;
+            try
+            {
+                lease.Hooks.Patch(typeof(UnitAnimationManager).GetMethod("GetAction", new[] { typeof(UnitAnimationSpecialAttackType) }), null,
+                    new HarmonyMethod(typeof(CrabSummonAnimationBindingPatch).GetMethod("Postfix", BindingFlags.Static | BindingFlags.NonPublic)), null);
+                return lease;
+            }
+            catch { lease.Dispose(); throw; }
+        }
+
         private sealed class Receipt
         {
             internal UnitEntityData Actor;
@@ -58,12 +113,12 @@ namespace KingmakerGunslinger.Summoning
         internal static UnitAnimationAction Resolve(UnitAnimationManager manager, UnitAnimationSpecialAttackType requested, UnitAnimationAction current)
         {
             if (current != null || requested != UnitAnimationSpecialAttackType.Claw || manager == null ||
-                !ExpandedSummoningVisualVariantPatch.IsModuleActive) return current;
+                Review == null || !Review.Permits(manager) || !ExpandedSummoningVisualVariantPatch.IsModuleActive) return current;
             try
             {
                 UnitEntityView view = manager.GetComponentInParent<UnitEntityView>();
                 UnitEntityData actor = view == null ? null : view.EntityData;
-                if (actor == null || actor.Destroyed || !actor.IsInState || actor.Descriptor.State.IsDead || actor.Blueprint == null || actor.Blueprint.AssetGuid != CrabSummonAnimationBindingPolicy.UnitGuid ||
+                if (actor == null || !ReferenceEquals(actor, Review.Actor) || actor.Destroyed || !actor.IsInState || actor.Descriptor.State.IsDead || actor.Blueprint == null || actor.Blueprint.AssetGuid != CrabSummonAnimationBindingPolicy.UnitGuid ||
                     actor.Blueprint.name != CrabSummonAnimationBindingPolicy.UnitName || actor.Blueprint.Prefab == null ||
                     actor.Blueprint.Prefab.AssetId != CrabSummonAnimationBindingPolicy.PrefabGuid || !ReferenceEquals(view.AnimationManager, manager) ||
                     !ExpandedSummoningPteranodonViewPatch.HasLiveOriginalVisual(view, Sprint14BonePolicy.CrabKey)) return current;
@@ -71,7 +126,7 @@ namespace KingmakerGunslinger.Summoning
                 if (markers.Length != 1 || !(markers[0].TimeLeft.TotalSeconds > 0d)) return current;
                 var source = markers[0].MaybeContext?.SourceAbility;
                 var caster = markers[0].MaybeContext?.MaybeCaster;
-                if (source == null || caster == null || caster.Destroyed ||
+                if (source == null || caster == null || !ReferenceEquals(caster, Review.Caster) || caster.Destroyed ||
                     !CrabSummonAnimationBindingPolicy.SourceGuids.Contains(source.AssetGuid)) return current;
                 bool registered = ReferenceEquals(BlueprintLibraryLookup.RequireExact<BlueprintUnit>(BlueprintBootstrap.Library,
                     CrabSummonAnimationBindingPolicy.UnitGuid, "registered Crab animation owner"), actor.Blueprint);
@@ -91,7 +146,7 @@ namespace KingmakerGunslinger.Summoning
                     catch (Exception error) { receipt = new Receipt { Actor = actor, Manager = manager, Rejection = error.GetType().Name + ":" + error.Message }; }
                     Receipts.Add(manager, receipt);
                 }
-                var scope = new CrabAnimationBindingScope { ModuleActive = true, MissingResult = current == null, RequestedClaw = true,
+                var scope = new CrabAnimationBindingScope { RequestActive = Review.Permits(manager), ModuleActive = true, MissingResult = current == null, RequestedClaw = true,
                     RegisteredUnit = registered, RegisteredSource = registeredSource, ExactManagerView = ReferenceEquals(actor, receipt.Actor),
                     LiveOriginalBody = true, LivePositiveSummon = true, ExactClawWeapons = exactWeapons,
                     NativeReceiptUnchanged = Unchanged(receipt), UnitGuid = actor.Blueprint.AssetGuid, UnitName = actor.Blueprint.name,

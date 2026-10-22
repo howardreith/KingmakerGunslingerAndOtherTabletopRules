@@ -6,7 +6,7 @@ namespace KingmakerGunslinger.Summoning
 {
     internal sealed class CrabAnimationBindingScope
     {
-        internal bool ModuleActive, MissingResult, RequestedClaw, RegisteredUnit, RegisteredSource,
+        internal bool RequestActive, ModuleActive, MissingResult, RequestedClaw, RegisteredUnit, RegisteredSource,
             ExactManagerView, LiveOriginalBody, LivePositiveSummon, ExactClawWeapons, NativeReceiptUnchanged;
         internal string UnitGuid, UnitName, PrefabGuid, SourceGuid;
     }
@@ -32,7 +32,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static bool Permits(CrabAnimationBindingScope scope)
         {
-            return scope != null && scope.ModuleActive && scope.MissingResult && scope.RequestedClaw && scope.RegisteredUnit &&
+            return scope != null && scope.RequestActive && scope.ModuleActive && scope.MissingResult && scope.RequestedClaw && scope.RegisteredUnit &&
                 scope.RegisteredSource && scope.ExactManagerView && scope.LiveOriginalBody && scope.LivePositiveSummon &&
                 scope.ExactClawWeapons && scope.NativeReceiptUnchanged && scope.UnitGuid == UnitGuid && scope.UnitName == UnitName &&
                 scope.PrefabGuid == PrefabGuid && SourceGuids.Contains(scope.SourceGuid, StringComparer.Ordinal);
