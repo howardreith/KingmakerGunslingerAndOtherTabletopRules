@@ -277,6 +277,7 @@ namespace KingmakerGunslinger.Summoning
         internal const int LanternRayDiceCount = 1;
         internal const int LanternRayDieSides = 6;
         internal const int LanternDamageReduction = 10;
+        internal const int LanternSpellResistance = 16;
         internal const int LanternPoisonSaveBonus = 4;
         internal const int LanternEvilSaveAndAcBonus = 2;
 
