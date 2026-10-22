@@ -17,31 +17,56 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
-## Lemure original-body slice in progress
+## Latest exact development artifact and body slice
 
-Original 4107-vertex/5528-triangle mesh, 17 measured drivers, 1024px original
-albedo and authored generator/provenance added. Exact identity/donor/renderer
-checks reuse the established per-view attachment, material adoption, accessory
-suppression and teardown. New fixed native observations require two simultaneous
-instances, private mesh/material isolation, immutable shared cache and exact
-per-view resource release. No public route, identity or icon changes. Offline
-preview inspected; native camera-scale acceptance remains pending. Actual source
-capture is the available October14 census SHA727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4,
-not the absent October17 refinement capture. Original failed preview log retained
-(world missing), corrected render PASS. First compile caught two new wiring
-errors; corrected focused production18.8s/15 tests4.8s PASS. Next: one exact
-Lemure-body development package and guarded save-free native core/cleanup proof.
-37 games/33 completed packages remain the current totals; laptop restored. First body package attempt2a89e228 stopped10:24:34Z after4m10s: strict staged count expected402/observed404 because the two declared body files were omitted from count calculation. No ZIP/receipt or game; raw failure retained. Actual intake Compare PASS. Count now derives those two exact declared members and the deterministic packager admits404; complete path/hash guards unchanged.
+Game38/package34 source `d39bdf996bf9cf615b3e0391a02e39905adffd83`:27 PASS/2 FAIL
+(no-SR row and execution stop). Original Lemure attachment/isolation and sibling
+disposal passed: two real 4107-vertex/17-bone original meshes, private native
+materials, one1024px immutable original albedo, accessory suppression, then all
+four sibling-owned resources destroyed while the other summon/cache stayed live.
+Actual profile, attack plans/live signed Strength, DR/resistance/immunity and
+buff descriptor checks passed before the old no-SR probe reported positive SR.
+Its raw row lacks numerical SR/source facts, so product-versus-observer cause is
+UNRESOLVED. Main-owner release assertion, later ability-immunity/reset/single
+attack rows were UNRUN. No complete body/core or native camera-scale PASS claimed.
 
-## Latest exact development artifact
+ZIP `f45b1a664debf156c9891ccaf0f767368867226aaa28a2b987f656d2f6089ad0`;
+DLL `e83848a419a08b82cd0f29d572f659e1036ea7531c7a68b6fe9e9ba792bb915f`;
+MVID `f5d40458-68dd-4b85-8659-8d9001176b89`;
+source-state `181bbb9792591e8d3c62f54304534969eac2e1bcf3961b0ecb3a79dda8995ebf`.
+Build10:26:37.0643032Z-10:30:12.9747138Z PASS:792 admission checks explicitly
+reused from2a89e228 under exact three-file package/reporting dependency map;
+27 fresh dispatch/15 focused/exact compilation/strict404-file package PASS.
+Transaction `compat-20261022T103051Z-9dd9d4785eaa`, supervised
+10:30:50.0810961Z-10:34:54.3851868Z; request
+`20261022T1033066515313Z-disposable-expanded-summoning-sprints30-31-native-review`;
+RunId `20261022T1033066729341Z-f764918d89cc49888c960f5259ba6200`.
+Actual game launch10:33:07.9992409Z; native10:33:14.7733393Z-10:34:46.7359647Z,
+91961ms including fixture. Restoration `2026-10-22T10:34:54.1506803Z`,
+Restored/restorationVerified plus full independent intake Compare PASS. No save
+loaded/written or owned game/task/lease. Totals38 actual games/transactions,
+34 completed development packages; failed package attempts remain separately logged.
 
-Game37/package33, tested source `f2df6defbbfa4c2df8d8eb8b2c0da3d365ebb893`:25 PASS/2 FAIL including execution stop. All ten escape/ownership/reset rows passed: actual nonloot ownership, same-observer rejection of live items, seven native skill/CMB/rank/class/live-Dex/ordinary-skill/resource probes, then exact actor/command/memory/buff/area/injury/combat/party/scene reset. All six retained item references had empty collections and no live inventory/holder; cached slots/wielders referenced only their exact destroyed, absent original owners, and all items stayed nonlootable. No cleanup deletion or product flag was broadened. The subsequent real caster preparation/skills/Virtue/ally-refusal/native Aid command/action rows passed.
+Original asset source uses the actual available October14 geometry-free capture
+SHA727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4,
+not the absent October17 refinement capture. Authored generator/export/provenance
+committed; raw rig and editable scene remain private. Offline preview inspected,
+not owner aesthetic acceptance. Failed preview(world missing), two initial wiring
+compile errors and first package-count failure are retained in local logs. The
+2a89e228 package attempt stopped10:24:34Z after4m10s: expected402/observed404;
+no ZIP/receipt/game. Exact declared-body count correction passed acceptance404,
+mismatch402 and unsupported405 refusal checks3/3, complete path/hash guards retained.
 
-Native CL14 Aid produced14 temporaryHP with Banishment1/Heal2/sibling Heal2 unchanged, but the observer incorrectly required at least15. PF1 Aid's caster-level contribution caps at+10: actual CL14 bounds11-18. Original aggregate/Aid FAILs retained. Reader-only `artifacts/s30-31-aid-reader-f2df6def/aid-cap-re-evaluation.json` binds the immutable raw hash/full tuple and re-evaluates only that already fully captured Aid effect/resource row PASS. No absent die is invented; no new native execution claimed. Later clear Banishment/vestment rows were UNRUN onf2df6def. Compiled observer now records/uses the correct cap; production Aid/mechanics unchanged. Focused production18.5s/15 tests4.3s PASS. Full caster23/23 native PASS remains game35/sourcea7157a52; the combined final artifact still needs fresh qualification.
+Current nonweakening observer adds actual native part/rule SR, entries and fact
+sources before/with/after sibling, and separately owned AbilityExecutionContext
+parameters rather than bare shared-default contexts. Zero part/rule SR is still
+mandatory. One missing namespace compile error corrected; focused production and
+15 selected checks PASS. Next: one changed-observer package and affected native
+rerun; do not grow dependent mechanics behind this unresolved shared failure.
 
-Build09:40:45.7600216Z-09:44:11.2240942Z PASS: admission792 explicitly reused from17fbb4d3 under exact unchanged dependency map;27 fresh dispatch/15 selected/exact compile/strict package. ZIP `017311702ae95e315c30d3b4dacbcce0c8b9d5a14b2efb1615a729de3b1a7da8`; DLL `6a4e30cfdfb7e6b275242cccbffff4403f099c7018e4f35362406134ab75cfd9`; MVID `0c991334-2728-484a-8035-70907ba02a42`; source-state `793ffbeb928b4ba012e38ac6bca3fd4b0f57733b4de3ba63c8d19fcba2bbc413`. Transaction `compat-20261022T094644Z-0c7dc2d176a7`, supervised09:46:43.7288309Z-09:50:57.7292488Z; request `20261022T0948516993742Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261022T0948517840896Z-c7d3f3aa1a544261be356e55911c9684`; native09:48:59.7774528Z-09:50:49.4863851Z,109709ms including fixture. Restored/restorationVerified09:50:57.5133974Z; exact settings/full independent intake Compare PASS. No save access/owned game/task/lease.
-
-Game36's unchanged failure/complete tuple is retained in the [immutable map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/f2df6defbbfa4c2df8d8eb8b2c0da3d365ebb893/planning/SPRINT30-31-STATUS.md), which links game35 and earlier tuples. Raw evidence/artifacts intact; no development proof relabeled as fresh final proof.
+Prior game37 escape10/10 plus limited Aid-cap reader correction, game35 caster23/23
+and full immutable tuples remain in the [prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/d39bdf996bf9cf615b3e0391a02e39905adffd83/planning/SPRINT30-31-STATUS.md).
+Original FAILs/raw evidence are retained; none relabeled as final proof.
 
 ## Current dependencies and decisions
 

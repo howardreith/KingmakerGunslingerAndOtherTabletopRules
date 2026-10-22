@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
@@ -153,6 +154,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Mesh source; string[] sourceBones; Texture2D albedo; string status;
             bool loaded = PteranodonAssetRuntime.TryGetLemureVisual(out source, out sourceBones, out albedo, out status);
+            var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                FcbMagicMissileGuid, "Lemure body SR isolation observation");
+            var srContext = new AbilityExecutionContext(new AbilityData(missile, fixture.Hostile.Descriptor),
+                new AbilityParams { CasterLevel = 1, SpellLevel = 1 }, new TargetWrapper(owner), null);
+            var srBeforeSibling = Lemure30SrState(owner, srContext);
             var control = CastExpandedSummoningOwnTier(fixture, "lemure");
             Sprint28SetBrainActivePreservingActions(control, false);
             UnityEngine.Object[] controlResources = null;
@@ -190,7 +196,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["materialInstance"] = body.sharedMaterial.GetInstanceID(),
                         ["otherMaterialInstance"] = otherBody.sharedMaterial.GetInstanceID(),
                         ["albedoInstance"] = albedo == null ? 0 : albedo.GetInstanceID(),
-                        ["controlOwnedResources"] = controlResources.Length },
+                        ["controlOwnedResources"] = controlResources.Length,
+                        ["srBeforeSibling"] = srBeforeSibling,
+                        ["srWithSibling"] = Lemure30SrState(owner, srContext) },
                     "Two real summons bind original geometry to their own native rigs with private meshes/materials and one immutable original albedo cache.");
                 if (!valid) throw new InvalidOperationException("Lemure original body attachment/isolation failed.");
             }
@@ -204,9 +212,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new JObject { ["disposed"] = control.UniqueId, ["remainingOwner"] = owner.UniqueId,
                     ["captured"] = controlResources == null ? 0 : controlResources.Length,
                     ["remainingPrivateResources"] = controlResources == null ? -1 : controlResources.Count(value => value != null),
-                    ["sourceAlive"] = source != null, ["albedoAlive"] = albedo != null },
+                    ["sourceAlive"] = source != null, ["albedoAlive"] = albedo != null,
+                    ["srAfterSibling"] = Lemure30SrState(owner, srContext) },
                 "Disposing one exact summon releases its private resources while the sibling and immutable cache remain live.");
             if (!independent) throw new InvalidOperationException("Lemure sibling body disposal isolation failed.");
+        }
+
+        private static JObject Lemure30SrState(UnitEntityData owner, MechanicsContext context)
+        {
+            var part = owner.Get<UnitPartSpellResistance>();
+            var entries = ReadExpandedSummoningOptionalMember(part, "SRs") as System.Collections.IEnumerable;
+            var values = new JArray();
+            if (entries != null) foreach (object entry in entries)
+                values.Add(new JObject {
+                    ["id"] = Convert.ToInt32(ReadExpandedSummoningOptionalMember(entry, "Id")),
+                    ["value"] = Convert.ToInt32(ReadExpandedSummoningOptionalMember(entry, "Value")),
+                    ["alignment"] = Convert.ToString(ReadExpandedSummoningOptionalMember(entry, "Alignment")),
+                    ["descriptor"] = Convert.ToString(ReadExpandedSummoningOptionalMember(entry, "SpellDescriptor")) });
+            return new JObject {
+                ["partPresent"] = part != null,
+                ["nativeValue"] = part == null ? 0 : part.GetValue(context),
+                ["entries"] = values,
+                ["features"] = new JArray(owner.Descriptor.Progression.Features.Enumerable.Select(fact => new JObject {
+                    ["name"] = fact.Blueprint.name, ["guid"] = fact.Blueprint.AssetGuid,
+                    ["srComponents"] = new JArray(fact.Blueprint.ComponentsArray.Where(component =>
+                        component != null && component.GetType().Name.IndexOf("SpellResistance", StringComparison.Ordinal) >= 0)
+                        .Select(component => component.GetType().FullName)) })),
+                ["buffs"] = new JArray(owner.Buffs.Enumerable.Select(fact => new JObject {
+                    ["name"] = fact.Blueprint.name, ["guid"] = fact.Blueprint.AssetGuid,
+                    ["caster"] = fact.Context?.MaybeCaster?.UniqueId,
+                    ["srComponents"] = new JArray(fact.Blueprint.ComponentsArray.Where(component =>
+                        component != null && component.GetType().Name.IndexOf("SpellResistance", StringComparison.Ordinal) >= 0)
+                        .Select(component => component.GetType().FullName)) })) };
         }
 
         private void ReviewLemure30Rules(UnitEntityData owner, UnitEntityData source)
@@ -330,16 +367,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { foreach (var value in transient) if (value != null) UnityEngine.Object.DestroyImmediate(value); }
             var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                 FcbMagicMissileGuid, "Lemure no-SR native rule probe");
-            var context = new MechanicsContext(source, source.Descriptor, missile, null, new TargetWrapper(owner));
-            context.Params.CasterLevel = 1;
+            var context = new AbilityExecutionContext(new AbilityData(missile, source.Descriptor),
+                new AbilityParams { CasterLevel = 1, SpellLevel = 1 }, new TargetWrapper(owner), null);
             var resistance = context.TriggerRule(new RuleSpellResistanceCheck(context, owner));
-            bool noSr = missile.SpellResistance && !resistance.HasSpellResistance &&
-                !resistance.IsSpellResisted && !resistance.TargetIsImmune;
+            int nativeSr = owner.Get<UnitPartSpellResistance>()?.GetValue(context) ?? 0;
+            bool noSr = missile.SpellResistance && nativeSr == 0 && resistance.SpellResistance == 0 &&
+                !resistance.HasSpellResistance && !resistance.IsSpellResisted && !resistance.TargetIsImmune;
             Sprint25Check("lemure-core-no-sr", noSr, new JObject {
                 ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
                 ["spell"] = missile.AssetGuid, ["hasResistance"] = resistance.HasSpellResistance,
                 ["resisted"] = resistance.IsSpellResisted, ["immune"] = resistance.TargetIsImmune,
-                ["ruleOnlyNoCast"] = true }, "An actual SR-allowing native spell resistance check finds no invented Lemure SR.");
+                ["nativePartValue"] = nativeSr, ["nativeRuleValue"] = resistance.SpellResistance,
+                ["initiator"] = resistance.Initiator.UniqueId, ["target"] = resistance.Target.UniqueId,
+                ["contextCaster"] = context.MaybeCaster.UniqueId,
+                ["contextCl"] = context.Params.CasterLevel, ["contextSpellLevel"] = context.Params.SpellLevel,
+                ["srState"] = Lemure30SrState(owner, context),
+                ["ruleOnlyNoCast"] = true }, "An actual SR-allowing native spell resistance check and actual owner part both find zero Lemure SR, with exact source attribution.");
             if (!noSr) throw new InvalidOperationException("Lemure no-SR consumer failed.");
             foreach (var spec in new[] {
                 new { Name="mind-affecting-ability", Guid="bd81a3931aa285a4f9844585b5d97e51", Cl=2 },
@@ -347,11 +390,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                     spec.Guid, "Lemure native descriptor ability consumer");
-                var immunityContext = new MechanicsContext(source, source.Descriptor, ability, null, new TargetWrapper(owner));
-                immunityContext.Params.CasterLevel = spec.Cl;
+                var immunityContext = new AbilityExecutionContext(new AbilityData(ability, source.Descriptor),
+                    new AbilityParams { CasterLevel = spec.Cl }, new TargetWrapper(owner), null);
                 var check = immunityContext.TriggerRule(new RuleSpellResistanceCheck(immunityContext, owner));
-                var controlContext = new MechanicsContext(source, source.Descriptor, ability, null, new TargetWrapper(source));
-                controlContext.Params.CasterLevel = spec.Cl;
+                var controlContext = new AbilityExecutionContext(new AbilityData(ability, source.Descriptor),
+                    new AbilityParams { CasterLevel = spec.Cl }, new TargetWrapper(source), null);
                 var control = controlContext.TriggerRule(new RuleSpellResistanceCheck(controlContext, source));
                 Sprint25Check("lemure-core-" + spec.Name, check.TargetIsImmune && !control.TargetIsImmune,
                     new JObject { ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
