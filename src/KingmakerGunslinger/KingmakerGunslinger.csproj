@@ -1317,6 +1317,8 @@
     <Compile Include="Summoning\TrumpetPreparedBook.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Book.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Turn.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCelestial31Inputs.cs" />
     <Compile Include="Summoning\ContextActionRemoveInheritedSummonTemplates.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Review.cs" />
