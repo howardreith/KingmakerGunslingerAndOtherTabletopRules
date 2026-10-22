@@ -23,7 +23,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] wanted = { "aid", "banishment", "bladebarrier", "bless", "bullsstrength", "curelightwounds",
                 "curemoderatewounds", "cureseriouswounds", "daylight", "detectmagic", "dispelevil", "dispelmagic",
                 "dismissal", "divinefavor", "divinepower", "heal", "holyaura", "holysmite", "holyword",
-                "magicvestment", "neutralizepoison", "owlswisdom", "protectionfromenergy", "protectionenergy",
+                "magicvestment", "magicalvestment", "neutralizepoison", "owlswisdom", "protectionfromenergy", "protectionenergy",
                 "removecurse", "removedisease", "removefear", "restorationlesser", "lesserrestoration", "sanctuary",
                 "shieldoffaith", "stabilize", "virtue", "invisibilitypurge", "spellimmunity" };
             Func<string, string> normalize = name => new string((name ?? "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
@@ -38,7 +38,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["graph"] = DescribeGraph(spell, 0, new HashSet<object>(NativeDonorReferenceComparer.Instance), 5) });
             var all = BlueprintBootstrap.Library.GetAllBlueprints().Where(value => value != null).ToArray();
             var extras = new JArray(all.OfType<BlueprintAbility>().Where(value =>
-                new[] { "invisibility", "invisibilitycast", "seeinvisibility", "seeinvisibilitycast" }.Contains(normalize(value.name)))
+                new[] { "invisibility", "invisibilitycast", "seeinvisibility", "seeinvisibilitycast", "dispelevil", "daylight", "detectmagic", "stabilize", "magicalvestment", "magicalvestmentarmor", "magicalvestmentshield" }.Contains(normalize(value.name)))
                 .Select(spell => new JObject { ["name"] = spell.name, ["guid"] = spell.AssetGuid,
                     ["type"] = spell.Type.ToString(), ["range"] = spell.Range.ToString(),
                     ["graph"] = DescribeGraph(spell, 0, new HashSet<object>(NativeDonorReferenceComparer.Instance), 5) }));

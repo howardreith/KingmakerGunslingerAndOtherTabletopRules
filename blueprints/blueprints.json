@@ -58423,6 +58423,38 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.InvisibilityPurge",
+      "guid": "2f9cffb58440471a9c697c3b223e7a02",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 prepared Invisibility Purge and private source-owned moving suppression; native qualification pending; Trumpet root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeCarrier",
+      "guid": "9635d3b6342d428fb273252cb8c58010",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 prepared Invisibility Purge and private source-owned moving suppression; native qualification pending; Trumpet root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeArea",
+      "guid": "a99770645b9343de943dbe60b38624c2",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 prepared Invisibility Purge and private source-owned moving suppression; native qualification pending; Trumpet root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeRecipient",
+      "guid": "ddcd78d4fe114a2b86f81c5b6cb27545",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 prepared Invisibility Purge and private source-owned moving suppression; native qualification pending; Trumpet root remains suppressed."
     }
   ]
 }

@@ -29,9 +29,9 @@ namespace KingmakerGunslinger.Blueprints
         private const string Trumpet31Unit = "KMG.Summoning.Unit.TrumpetArchon";
         private const string NativeClericBook31 = "4673d19a0cf2fab4f885cc4d1353da33";
 
-        // First hidden caster slice: the real book and two printed Heal slots.
-        // Remaining legal preparation, signature trumpet and presentation are
-        // deliberately completed only after this native ownership path works.
+        // Hidden caster continuation after the native Heal ownership proof.
+        // Available printed preparations and the first private missing spell
+        // use the real book. The remaining named consumers stay explicit.
         private static void ConfigureTrumpet31(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintFeature extraplanar)
         {
@@ -69,10 +69,14 @@ namespace KingmakerGunslinger.Blueprints
             if (!sixth.Contains(heal) || heal.Type != AbilityType.Spell)
                 throw new InvalidOperationException("Native HealCast is not a cleric level6 spell: " +
                     heal.name + "/" + heal.Type + ";level6=" + string.Join("|", sixth.Select(value => value.name + ":" + value.AssetGuid).ToArray()));
+            var purge = ConfigureTrumpet31Purge(library, bySymbol);
+            var preparations = Trumpet31NativePreparations(library, nativeBook).Concat(new[] {
+                new TrumpetPreparedSpell { Level = 3, Ability = purge, Copies = 1 } }).ToArray();
             var list = Require<BlueprintSpellList>(bySymbol, Trumpet31Prefix + "SpellList");
             list.name = InternalName(Trumpet31Prefix + "SpellList");
             list.SpellsByLevel = Enumerable.Range(0, 10).Select(level => new SpellLevelList {
-                SpellLevel = level, Spells = level == 6 ? new List<BlueprintAbility> { heal } : new List<BlueprintAbility>() }).ToArray();
+                SpellLevel = level, Spells = preparations.Where(row => row.Level == level)
+                    .Select(row => row.Ability).Distinct().ToList() }).ToArray();
             var book = Require<BlueprintSpellbook>(bySymbol, Trumpet31Prefix + "Spellbook");
             CopyFields(nativeBook, book); book.name = InternalName(Trumpet31Prefix + "Spellbook");
             book.Name = LocalizationService.Create(Trumpet31Prefix + "Spellbook.Name", "Trumpet Archon Prepared Spells");
@@ -81,6 +85,7 @@ namespace KingmakerGunslinger.Blueprints
             book.CastingAttribute = StatType.Wisdom; book.CasterLevelModifier = 0;
             var preparation = ScriptableObject.CreateInstance<TrumpetPreparedBook>();
             preparation.OwningBlueprint = unit; preparation.Book = book; preparation.Heal = heal;
+            preparation.Preparations = preparations;
             unit.ComponentsArray = new BlueprintComponent[] { levels, racial, preparation };
             unit.Skills = new BlueprintUnit.UnitSkills(); unit.Race = null; unit.Type = type;
             var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
@@ -121,6 +126,42 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, NativeCleaveFeature, "ordinary native Cleave"),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), extraplanar, traits };
+        }
+        // Native portion of the printed preparation. Missing named combat
+        // consumers are completed separately; their slots remain unprepared
+        // until their real dependencies exist. Filtered travel/material spells
+        // never become replacement combat slots. This is not the final loadout.
+        private static TrumpetPreparedSpell[] Trumpet31NativePreparations(
+            LibraryScriptableObject library, BlueprintSpellbook nativeBook)
+        {
+            var rows = new[] {
+                new { Level = 0, Copies = 1, Guid = "d3a852385ba4cd740992d1970170301a" }, // Virtue
+                new { Level = 1, Copies = 1, Guid = "90e59f4a4ada87243b7b3535a06d0638" }, // Bless
+                new { Level = 1, Copies = 2, Guid = "5590652e1c2225c4ca30c4a699ab3649" }, // Cure Light Wounds
+                new { Level = 1, Copies = 1, Guid = "9d5d2d3ffdd73c648af3eb3e585b1113" }, // Divine Favor
+                new { Level = 1, Copies = 1, Guid = "183d5bb91dea3a1489a6db6c9cb64445" }, // Shield of Faith
+                new { Level = 2, Copies = 1, Guid = "4c3d08935262b6544ae97599b3a9556d" }, // Bull's Strength
+                new { Level = 2, Copies = 2, Guid = "6b90c773a6543dc49b2505858ce33db5" }, // Cure Moderate Wounds
+                new { Level = 2, Copies = 1, Guid = "f0455c9295b53904f9e02fc571dd2ce1" }, // Owl's Wisdom
+                new { Level = 2, Copies = 1, Guid = "e84fc922ccf952943b5240293669b171" }, // Lesser Restoration
+                new { Level = 3, Copies = 1, Guid = "3361c5df793b4c8448756146a88026ad" }, // Cure Serious Wounds
+                new { Level = 3, Copies = 1, Guid = "d2f116cfe05fcdd4a94e80143b67046f" }, // Protection from Energy
+                new { Level = 4, Copies = 1, Guid = "95f7cdcec94e293489a85afdf5af1fd7" }, // Dismissal
+                new { Level = 4, Copies = 1, Guid = "ef16771cb05d1344989519e87f25b3c5" }, // Divine Power
+                new { Level = 4, Copies = 1, Guid = "e7240516af4241b42b2cd819929ea9da" }, // Neutralize Poison
+                new { Level = 5, Copies = 1, Guid = "5d3d689392e4ff740a761ef346815074" }, // Mass Cure Light Wounds
+                new { Level = 6, Copies = 1, Guid = "d361391f645db984bbf58907711a146a" }, // Banishment
+                new { Level = 6, Copies = 2, Guid = "5da172c4c89f9eb4cbb614f3a67357d3" }, // Heal
+                new { Level = 7, Copies = 2, Guid = "0cea35de4d553cc439ae80b3a8724397" }, // Mass Cure Serious Wounds
+            };
+            return rows.Select(row => {
+                var spell = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, row.Guid,
+                    "captured Trumpet native cleric preparation");
+                if (spell.Type != AbilityType.Spell || !nativeBook.SpellList.SpellsByLevel
+                    .Single(level => level.SpellLevel == row.Level).Spells.Contains(spell))
+                    throw new InvalidOperationException("Trumpet preparation is not the captured native cleric spell: " + row.Guid);
+                return new TrumpetPreparedSpell { Level = row.Level, Ability = spell, Copies = row.Copies };
+            }).ToArray();
         }
     }
 }

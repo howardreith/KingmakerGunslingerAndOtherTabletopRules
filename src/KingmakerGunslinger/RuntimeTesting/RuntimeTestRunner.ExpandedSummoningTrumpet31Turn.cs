@@ -52,6 +52,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["admission"] = admission, ["turn"] = Sprint22TurnState(owner, target), ["waitedFrames"] = waited },
                     "The exact request-owned Trumpet receives its real native active turn with independent prepared slots intact.");
                 if (!acting) throw new InvalidOperationException("Trumpet native turn admission failed.");
+                int damageBeforeAi = owner.Damage;
                 Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
                 var commands = new HashSet<UnitCommand>(); var costs = new JArray(); int nativeTurnFrames = 0;
                 using (var economy = new FirearmReviewCosts(owner, costs))
@@ -69,14 +70,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.AiAction?.name == "KMG_Summoning_OutsiderCelestial_TrumpetArchon_HealAi" &&
                         value.IsFinished && value.Result == UnitCommand.ResultType.Success);
                     bool exact = cast != null && nativeTurnFrames > 0 && Sprint18OwnerIsActing(owner) &&
-                        !cast.Cutscene && !cast.IsIgnoreCooldown && economy.Count(cast) == 1 && economy.Exact(cast, false) &&
+                        !cast.Cutscene && !cast.IsIgnoreCooldown && economy.Count(cast) == 1 && economy.Exact(cast, true) &&
                         owner.Damage == 0 && Trumpet31HealSlots(book, creation.Heal) == 1 &&
                         Trumpet31HealSlots(siblingBook, creation.Heal) == 2 &&
                         commands.Count(value => value.AiAction != null && value.IsFinished) == 1;
                     Sprint25Check("trumpet-book-turn-native-ai", exact, new JObject { ["owner"] = owner.UniqueId,
                         ["nativeTurnFrames"] = nativeTurnFrames, ["sameTurn"] = Sprint18OwnerIsActing(owner),
                         ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
-                        ["damageAfter"] = owner.Damage, ["ownerHealSlots"] = Trumpet31HealSlots(book, creation.Heal),
+                        ["damageBeforeAi"] = damageBeforeAi, ["damageAfter"] = owner.Damage,
+                        ["cutscene"] = cast?.Cutscene, ["ignoreCooldown"] = cast?.IsIgnoreCooldown,
+                        ["nativeCostApplications"] = cast == null ? 0 : economy.Count(cast),
+                        ["turnBasedCostExact"] = cast != null && economy.Exact(cast, true), ["ownerHealSlots"] = Trumpet31HealSlots(book, creation.Heal),
                         ["siblingHealSlots"] = Trumpet31HealSlots(siblingBook, creation.Heal), ["turn"] = Sprint22TurnState(owner, target),
                         ["fixtureCasts"] = 0, ["fixtureAiTicks"] = 0, ["fixtureSlotDebits"] = 0, ["forcedRolls"] = 0 },
                         "The native turn controller selects and resolves one prepared Heal on the exact actor's turn with its own slot and standard-action cost.");
