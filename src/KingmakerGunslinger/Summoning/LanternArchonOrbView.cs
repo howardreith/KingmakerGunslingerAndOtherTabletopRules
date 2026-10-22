@@ -180,6 +180,14 @@ namespace KingmakerGunslinger.Summoning
                 .Select(group => group.First()).ToArray();
         }
 
+        internal bool OwnsRenderer(Renderer renderer)
+        {
+            return renderer != null && renderer.transform != null &&
+                _root != null && _root.transform != null &&
+                (renderer.transform == _root.transform ||
+                    renderer.transform.IsChildOf(_root.transform));
+        }
+
         private void NormalizeOwnedMaterials()
         {
             if (_renderer == null) return;
