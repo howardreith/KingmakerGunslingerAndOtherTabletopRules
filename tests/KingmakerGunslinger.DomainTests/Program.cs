@@ -1272,6 +1272,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-elemental-learning-budget", Cleanup2ElementalPresentationTests.LearningBudgetCountsDistinctUnknownSelectableRowsAndExtraSlots),
             Case("expanded-summoning.cleanup2-elemental-learning-refusal", Cleanup2ElementalPresentationTests.UnverifiedLearningContextAlwaysReturnsIndependentOriginalCopy),
             Case("expanded-summoning.cleanup2-label-map", Cleanup2SummonPresentationTests.ExplicitLabelsCoverPublishedRoutesAndKeepNaturalNames),
+            Case("expanded-summoning.cleanup2-currentstack-roster", Cleanup2CreatureReviewRosterTests.EveryAdvertisedWorkingKeyResolvesToItsPublishedNativeObserverVariant),
+            Case("expanded-summoning.cleanup2-currentstack-roster-refusal", Cleanup2CreatureReviewRosterTests.FrostUnknownDuplicatesAndUnsupportedQuantitiesFailBeforeAnyBatchIsReturned),
             Case("expanded-summoning.cleanup2-label-metadata", Cleanup2SummonPresentationTests.FamilySubtypeSizeTemplateAndQuantityComposeIndependently),
             Case("expanded-summoning.cleanup2-native-coverage", Cleanup2SummonPresentationTests.EveryLegacySourceRequiresCompleteBehaviorCoverage),
             Case("expanded-summoning.cleanup2-repeat-publication", Cleanup2SummonPresentationTests.RepeatPublicationKeepsForeignChoicesAndRejectsIdentityConflicts),
