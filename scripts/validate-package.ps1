@@ -148,6 +148,8 @@ try {
         'assets\sprint23-armored-dinosaurs\triceratops-albedo.png',
         'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json',
         'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png',
+        'assets\outsider-celestial\lemure-mesh.json',
+        'assets\outsider-celestial\lemure-albedo.png',
         'assets\sprint24-theropods\deinonychus-mesh.json',
         'assets\sprint24-theropods\deinonychus-albedo.png',
         'assets\sprint24-theropods\tyrannosaurus-mesh.json',

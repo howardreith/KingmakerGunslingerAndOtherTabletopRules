@@ -1282,6 +1282,8 @@
     <Compile Include="Assets\PteranodonAssetRuntime.ArmoredDinosaurs.cs" />
     <Compile Include="Summoning\TheropodVisualPolicy.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Theropods.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Lemure.cs" />
+    <Compile Include="Summoning\LemureVisualPolicy.cs" />
     <Compile Include="Summoning\BrachiosaurusOverrunKnockdown.cs" />
     <Compile Include="Summoning\BrachiosaurusTailCombat.cs" />
     <Compile Include="Summoning\ElephantNativeCombat.cs" />
@@ -1832,6 +1834,14 @@
     </Content>
     <Content Include="..\..\assets\sprint27-griffon\*">
       <Link>assets\sprint27-griffon\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\lemure-mesh.json">
+      <Link>assets\outsider-celestial\lemure-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\lemure-albedo.png">
+      <Link>assets\outsider-celestial\lemure-albedo.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\sprint24-theropods\*-mesh.json">

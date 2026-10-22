@@ -17,6 +17,22 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
+## Lemure original-body slice in progress
+
+Original 4107-vertex/5528-triangle mesh, 17 measured drivers, 1024px original
+albedo and authored generator/provenance added. Exact identity/donor/renderer
+checks reuse the established per-view attachment, material adoption, accessory
+suppression and teardown. New fixed native observations require two simultaneous
+instances, private mesh/material isolation, immutable shared cache and exact
+per-view resource release. No public route, identity or icon changes. Offline
+preview inspected; native camera-scale acceptance remains pending. Actual source
+capture is the available October14 census SHA727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4,
+not the absent October17 refinement capture. Original failed preview log retained
+(world missing), corrected render PASS. First compile caught two new wiring
+errors; corrected focused production18.8s/15 tests4.8s PASS. Next: one exact
+Lemure-body development package and guarded save-free native core/cleanup proof.
+37 games/33 completed packages remain the current totals; laptop restored.
+
 ## Latest exact development artifact
 
 Game37/package33, tested source `f2df6defbbfa4c2df8d8eb8b2c0da3d365ebb893`:25 PASS/2 FAIL including execution stop. All ten escape/ownership/reset rows passed: actual nonloot ownership, same-observer rejection of live items, seven native skill/CMB/rank/class/live-Dex/ordinary-skill/resource probes, then exact actor/command/memory/buff/area/injury/combat/party/scene reset. All six retained item references had empty collections and no live inventory/holder; cached slots/wielders referenced only their exact destroyed, absent original owners, and all items stayed nonlootable. No cleanup deletion or product flag was broadened. The subsequent real caster preparation/skills/Virtue/ally-refusal/native Aid command/action rows passed.

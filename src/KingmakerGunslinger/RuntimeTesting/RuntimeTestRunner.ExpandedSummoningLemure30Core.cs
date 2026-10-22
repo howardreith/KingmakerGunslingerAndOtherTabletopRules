@@ -23,6 +23,8 @@ using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Assets;
+using KingmakerGunslinger.Summoning;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -68,11 +70,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "An intentionally introduced owned-target injury is noticed before the next case can start.");
                 ResetExpandedSummoningHostile(fixture);
                 Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "before-rules");
+                UnityEngine.Object[] bodyResources = null;
                 var owner = CastExpandedSummoningOwnTier(fixture, "lemure");
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 try
                 {
                     for (int frame = 0; frame < 8; frame++) yield return 0;
+                    foreach (int frame in ReviewLemure30OriginalBody(fixture, owner)) yield return frame;
+                    bodyResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
                     ReviewLemure30Rules(owner, fixture.Hostile);
                     // Let the exact disposable actors' native damage effects settle.
                     for (int frame = 0; frame < 3; frame++) yield return 0;
@@ -89,6 +94,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ResetExpandedSummoningHostile(fixture);
                 }
                 for (int frame = 0; frame < 3; frame++) yield return 0;
+                bool releasedBody = bodyResources != null && bodyResources.Length >= 3 &&
+                    bodyResources.All(value => value == null);
+                Sprint25Check("lemure-original-body-resources-released", releasedBody,
+                    new JObject { ["captured"] = bodyResources == null ? 0 : bodyResources.Length,
+                        ["remaining"] = bodyResources == null ? -1 : bodyResources.Count(value => value != null) },
+                    "Actual disposal releases the exact per-view original mesh, materials and accessory component.");
+                if (!releasedBody) throw new InvalidOperationException("Lemure body resource cleanup failed.");
                 Lemure30RequireReset(fixture, completed, targetBuffs, areaBaseline, "before-single");
                 foreach (int frame in ReviewLemure30Combat(fixture, false, false, completed)) yield return frame;
                 // Native world/clock teardown closes this transaction. Do not
@@ -136,6 +148,67 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Exact disposable owners, commands, target memory, buffs, areas, injury and combat state meet the next case's preconditions.");
             if (!clean) throw new InvalidOperationException("Lemure shared fixture contamination: " + stage);
         }
+        private IEnumerable<int> ReviewLemure30OriginalBody(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner)
+        {
+            Mesh source; string[] sourceBones; Texture2D albedo; string status;
+            bool loaded = PteranodonAssetRuntime.TryGetLemureVisual(out source, out sourceBones, out albedo, out status);
+            var control = CastExpandedSummoningOwnTier(fixture, "lemure");
+            Sprint28SetBrainActivePreservingActions(control, false);
+            UnityEngine.Object[] controlResources = null;
+            try
+            {
+                var ownerRenderers = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                var controlRenderers = control.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+                var body = ownerRenderers.Single(value => value.name == TheropodVisualPolicy.BodyRendererName);
+                var otherBody = controlRenderers.Single(value => value.name == TheropodVisualPolicy.BodyRendererName);
+                string attachment = ExpandedSummoningPteranodonViewPatch.DescribeView(owner.View);
+                string otherAttachment = ExpandedSummoningPteranodonViewPatch.DescribeView(control.View);
+                bool valid = loaded && status == "visual:published" &&
+                    attachment.StartsWith("visual:attached;", StringComparison.Ordinal) &&
+                    otherAttachment.StartsWith("visual:attached;", StringComparison.Ordinal) &&
+                    LemureVisualPolicy.IsPermitted("lemure", body.bones.Select(value => value.name)) &&
+                    body.sharedMesh.name == "KMG_lemure_Original" &&
+                    body.sharedMesh != source && otherBody.sharedMesh != source &&
+                    body.sharedMesh != otherBody.sharedMesh &&
+                    body.sharedMaterial != otherBody.sharedMaterial &&
+                    body.sharedMaterial.mainTexture == albedo && otherBody.sharedMaterial.mainTexture == albedo &&
+                    body.sharedMesh.vertexCount == source.vertexCount &&
+                    body.rootBone != null && body.rootBone.name == "Torso_Lower" &&
+                    ownerRenderers.Single(value => value.name == TheropodVisualPolicy.AccessoryRendererName).enabled == false &&
+                    controlRenderers.Single(value => value.name == TheropodVisualPolicy.AccessoryRendererName).enabled == false;
+                controlResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(control.View);
+                Sprint25Check("lemure-original-body-attachment-isolation", valid,
+                    new JObject { ["owner"] = owner.UniqueId, ["control"] = control.UniqueId,
+                        ["cacheStatus"] = status, ["attachment"] = attachment,
+                        ["controlAttachment"] = otherAttachment,
+                        ["mesh"] = body.sharedMesh.name, ["vertices"] = body.sharedMesh.vertexCount,
+                        ["bones"] = new JArray(body.bones.Select(value => value.name)),
+                        ["meshInstance"] = body.sharedMesh.GetInstanceID(),
+                        ["otherMeshInstance"] = otherBody.sharedMesh.GetInstanceID(),
+                        ["sourceMeshInstance"] = source == null ? 0 : source.GetInstanceID(),
+                        ["materialInstance"] = body.sharedMaterial.GetInstanceID(),
+                        ["otherMaterialInstance"] = otherBody.sharedMaterial.GetInstanceID(),
+                        ["albedoInstance"] = albedo == null ? 0 : albedo.GetInstanceID(),
+                        ["controlOwnedResources"] = controlResources.Length },
+                    "Two real summons bind original geometry to their own native rigs with private meshes/materials and one immutable original albedo cache.");
+                if (!valid) throw new InvalidOperationException("Lemure original body attachment/isolation failed.");
+            }
+            finally { DisposeExpandedSummoningUnits(fixture.Created, new[] { control }); }
+            for (int frame = 0; frame < 3; frame++) yield return 0;
+            bool independent = controlResources != null && controlResources.Length >= 3 &&
+                controlResources.All(value => value == null) && owner.IsInGame &&
+                ExpandedSummoningPteranodonViewPatch.DescribeView(owner.View).StartsWith("visual:attached;", StringComparison.Ordinal) &&
+                source != null && albedo != null;
+            Sprint25Check("lemure-original-body-sibling-disposal", independent,
+                new JObject { ["disposed"] = control.UniqueId, ["remainingOwner"] = owner.UniqueId,
+                    ["captured"] = controlResources == null ? 0 : controlResources.Length,
+                    ["remainingPrivateResources"] = controlResources == null ? -1 : controlResources.Count(value => value != null),
+                    ["sourceAlive"] = source != null, ["albedoAlive"] = albedo != null },
+                "Disposing one exact summon releases its private resources while the sibling and immutable cache remain live.");
+            if (!independent) throw new InvalidOperationException("Lemure sibling body disposal isolation failed.");
+        }
+
         private void ReviewLemure30Rules(UnitEntityData owner, UnitEntityData source)
         {
             var stats = owner.Descriptor.Stats;

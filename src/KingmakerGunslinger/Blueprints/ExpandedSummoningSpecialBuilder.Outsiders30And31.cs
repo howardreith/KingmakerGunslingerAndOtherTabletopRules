@@ -130,6 +130,25 @@ namespace KingmakerGunslinger.Blueprints
             // it remains a functioning mindless summon before further expansion.
             ConfigureUnitCore(unit, "Lemure", "Lemure", Alignment.LawfulEvil,
                 Size.Medium, 11, 10, 12, 0, 11, 5, 20);
+            var expiryDonor = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(
+                library, TheropodVisualPolicy.ExpiryEffectDonorGuid, "reviewed original-body dissolve carrier");
+            if (unit.Visual == null || expiryDonor.Visual == null ||
+                expiryDonor.Visual.BloodPuddleFx == null ||
+                string.IsNullOrEmpty(expiryDonor.Visual.BloodPuddleFx.AssetId))
+                throw new InvalidOperationException("Lemure original-body expiry carrier is missing.");
+            // Unit shells share their donor's nested visual record. Copy before
+            // changing this single effect link; no native blueprint is mutated.
+            var visual = new UnitVisualParams();
+            foreach (FieldInfo field in typeof(UnitVisualParams).GetFields(
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (field.IsInitOnly) continue;
+                object value = field.GetValue(unit.Visual);
+                var array = value as Array;
+                field.SetValue(visual, array == null ? value : array.Clone());
+            }
+            visual.BloodPuddleFx = expiryDonor.Visual.BloodPuddleFx;
+            unit.Visual = visual;
             unit.AddFacts = new BlueprintUnitFact[] {
                 Feature(library, OutsiderTypeGuid, "outsider type"),
                 Feature(library, EvilSubtypeGuid, "evil subtype"),

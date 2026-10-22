@@ -237,6 +237,11 @@ foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-mesh.json") -Destination $armoredDinosaurDestination
     Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-albedo.png") -Destination $armoredDinosaurDestination
 }
+$outsiderDestination = Join-Path $modDirectory 'assets\outsider-celestial'
+New-Item -ItemType Directory -Path $outsiderDestination -Force | Out-Null
+foreach ($part in @('lemure-mesh.json','lemure-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\outsider-celestial\$part") -Destination $outsiderDestination
+}
 $theropodSource = Join-Path $outputDirectory 'assets\sprint24-theropods'
 $theropodDestination = Join-Path $modDirectory 'assets\sprint24-theropods'
 New-Item -ItemType Directory -Path $theropodDestination -Force | Out-Null
