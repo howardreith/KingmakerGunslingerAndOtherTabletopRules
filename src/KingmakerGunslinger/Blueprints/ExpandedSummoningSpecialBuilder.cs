@@ -5378,14 +5378,24 @@ namespace KingmakerGunslinger.Blueprints
             ray.name = InternalName(symbol);
             ray.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
-                    ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Concat(new BlueprintComponent[] {
+                    ScriptableObject.CreateInstance<LanternRayEnemyTargetChecker>()
+                }).ToArray();
             ray.ActionType = UnitCommand.CommandType.Standard;
             ray.SetIsFullRoundAction(fullRound);
             ray.Range = AbilityRange.Custom;
             ray.CustomRange = new Feet(
                 ExpandedSummoningSpecialProfiles.LanternRayRangeFeet);
             ray.CanTargetSelf = false;
-            ray.CanTargetFriends = false;
+            ray.CanTargetPoint = false;
+            ray.CanTargetEnemies = true;
+            // Native CanTarget gates a hostile-only unit ability through the
+            // caster's ordinary weapon attack. Lanterns deliberately have no
+            // such weapon. The attached checker retains enemy-only behavior.
+            ray.CanTargetFriends = true;
+            ray.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ray.EffectOnAlly = AbilityEffectOnUnit.None;
             ray.SpellResistance = false;
             // The Will-o'-Wisp visual rig has no cast or attack clip. Use the
             // native immediate ability path so the two ray projectiles can use
