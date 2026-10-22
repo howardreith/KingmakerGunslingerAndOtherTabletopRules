@@ -11,6 +11,8 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -39,11 +41,9 @@ namespace KingmakerGunslinger.Summoning
                 Owners == null || !Owners.Any(owner => ReferenceEquals(owner, source.Blueprint)) ||
                 !source.IsEnemy(victim) || Penalty == null || Immunity == null ||
                 HasSource(victim, Penalty, source) || HasSource(victim, Immunity, source)) return;
-            int hd = source.Descriptor.Progression.CharacterLevel;
             var context = new MechanicsContext(source, victim.Descriptor, Penalty,
                 Context, new TargetWrapper(victim));
-            context.Params.CasterLevel = hd;
-            context.Params.DC = 10 + hd / 2 + source.Descriptor.Stats.Charisma.Bonus + 2;
+            context.Recalculate();
             var save = new RuleSavingThrow(victim, SavingThrowType.Will, context.Params.DC) { Reason = context };
             context.TriggerRule(save);
             var buff = victim.Buffs.AddBuff(save.IsPassed ? Immunity : Penalty,
@@ -54,6 +54,21 @@ namespace KingmakerGunslinger.Summoning
         {
             return victim.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, blueprint) &&
                 ReferenceEquals(buff.Context?.MaybeCaster, source));
+        }
+    }
+
+    // Each exposure/buff gets an actual native parameter object. Never assign
+    // through a bare context's inherited AbilityParams.Empty singleton.
+    [Serializable]
+    public sealed class ArchonMenaceParameters : ContextAbilityParamsCalculator
+    {
+        public override AbilityParams Calculate(MechanicsContext context)
+        {
+            var source = context.MaybeCaster;
+            if (source == null) throw new InvalidOperationException("Menace source is absent.");
+            int hd = source.Descriptor.Progression.CharacterLevel;
+            return new AbilityParams { CasterLevel = hd,
+                DC = 10 + hd / 2 + source.Stats.Charisma.Bonus + 2 };
         }
     }
 

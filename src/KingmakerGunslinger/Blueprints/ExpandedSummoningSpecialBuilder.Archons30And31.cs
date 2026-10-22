@@ -44,7 +44,8 @@ namespace KingmakerGunslinger.Blueprints
             var hitBreak = ScriptableObject.CreateInstance<ArchonMenaceHitBreak>();
             hitBreak.Immunity = immunity;
             var onePenalty = ScriptableObject.CreateInstance<ArchonMenacePenalty>();
-            penalty.ComponentsArray = new BlueprintComponent[] { onePenalty, hitBreak };
+            penalty.ComponentsArray = new BlueprintComponent[] { onePenalty, hitBreak,
+                ScriptableObject.CreateInstance<ArchonMenaceParameters>() };
             immunity.ComponentsArray = Array.Empty<BlueprintComponent>();
             var access = BlueprintUnitFactAccess.Resolve();
             access.Configure(penalty, LocalizationService.Create(Archon3031 + "Penalty.Name", "Aura of Menace"),
