@@ -89,10 +89,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var siblingAura = Sprint29OwnedAreas(sibling, auraAreaBlueprint).Single();
                 var coveredActors = new List<UnitEntityData> {
                     owner, sibling, target, fixture.Caster };
-                CircleRefresh(ownerAura, coveredActors);
-                CircleRefresh(ownerAura, coveredActors);
-                CircleRefresh(siblingAura, coveredActors);
-                CircleRefresh(siblingAura, coveredActors);
+                Astral31RefreshAreas(new[] { ownerAura, siblingAura }, coveredActors);
 
                 var auraCarrier = owner.Buffs.Enumerable.Single(buff =>
                     ReferenceEquals(buff.Blueprint, auraCarrierBlueprint) &&
@@ -106,11 +103,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var circleCarriers = owner.Buffs.Enumerable.Where(buff =>
                     ReferenceEquals(buff.Blueprint, circle.Carrier) &&
                     ReferenceEquals(buff.Context?.MaybeCaster, owner)).ToArray();
-                foreach (var area in circleAreas)
-                {
-                    CircleRefresh(area, coveredActors);
-                    CircleRefresh(area, coveredActors);
-                }
+                Astral31RefreshAreas(circleAreas, coveredActors);
                 bool targetOutsideCircle = !target.Buffs.Enumerable.Any(buff =>
                     ReferenceEquals(buff.Blueprint, circle.Recipient) &&
                     ReferenceEquals(buff.Context?.MaybeCaster, owner));
@@ -687,6 +680,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Healthy target selection is refused and trait recalculation does not refresh the spent finite Heal resource.");
             if (!retained) throw new InvalidOperationException(
                 "Astral Heal healthy-target/resource retention failed.");
+        }
+
+        private static void Astral31RefreshAreas(IEnumerable<AreaEffectEntityData> areas,
+            IList<UnitEntityData> actors)
+        {
+            bool paused = Game.Instance.IsPaused;
+            Game.Instance.IsPaused = true;
+            try
+            {
+                foreach (AreaEffectEntityData area in areas)
+                {
+                    CircleRefresh(area, actors);
+                    CircleRefresh(area, actors);
+                }
+            }
+            finally { Game.Instance.IsPaused = paused; }
         }
 
         private static bool Astral31Finite(Vector3 value)
