@@ -191,7 +191,7 @@ namespace KingmakerGunslinger.Blueprints
             // behavior even when the project creature is untemplated. Repair
             // this scoped new route only; released unrelated graphs are untouched.
             if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon"))
+                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon"))
             {
                 foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
                 {
@@ -212,7 +212,7 @@ namespace KingmakerGunslinger.Blueprints
             if (variant.Creature.Key == "dretch")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Chaos | SpellDescriptor.Evil;
-            if (variant.Creature.Key == "hound-archon")
+            if (variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Law | SpellDescriptor.Good;
             if (alignmentMode.HasValue)

@@ -126,6 +126,12 @@ namespace KingmakerGunslinger.Blueprints
             var grant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
             grant.OwningBlueprint = hound; grant.Carrier = circle.Carrier; grant.Spell = circle.Spell; grant.CasterLevel = 6;
             traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] { grant }).ToArray();
+            var trumpet = Require<BlueprintUnit>(summoning.BySymbol, Trumpet31Unit);
+            var trumpetTraits = Require<BlueprintFeature>(summoning.BySymbol, Trumpet31Prefix + "Traits");
+            var trumpetGrant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
+            trumpetGrant.OwningBlueprint = trumpet; trumpetGrant.Carrier = circle.Carrier;
+            trumpetGrant.Spell = circle.Spell; trumpetGrant.CasterLevel = 14;
+            trumpetTraits.ComponentsArray = trumpetTraits.ComponentsArray.Concat(new BlueprintComponent[] { trumpetGrant }).ToArray();
         }
     }
 }

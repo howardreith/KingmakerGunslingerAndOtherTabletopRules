@@ -40,6 +40,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewArchon30Core(fixture, phase == "archon-hound")) yield return frame;
                 yield break;
             }
+            if (phase == "trumpet-book")
+            {
+                foreach (int frame in ReviewTrumpet31Book(fixture)) yield return frame;
+                yield break;
+            }
             if (phase != "bootstrap") throw new InvalidOperationException("Unimplemented S30/S31 phase.");
             var inputs = RunExpandedSummoningSprints30And31Inputs();
             Sprint25Check("bootstrap-input-capture", inputs.Status == RuntimeTestStatuses.Pass,

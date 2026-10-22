@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.Blueprints
             access.Configure(carrier, LocalizationService.Create(Archon3031 + "Carrier.Name", "Aura of Menace"),
                 LocalizationService.Create(Archon3031 + "Carrier.Description", "Hostile creatures within 20 feet save against this archon's menace."), null);
             var exposure = ScriptableObject.CreateInstance<ContextActionArchonMenace>();
-            exposure.Owners = new[] { lantern, hound }; exposure.Penalty = penalty; exposure.Immunity = immunity;
+            var trumpet = Require<BlueprintUnit>(bySymbol, Trumpet31Unit);
+            exposure.Owners = new[] { lantern, hound, trumpet }; exposure.Penalty = penalty; exposure.Immunity = immunity;
             var actions = ScriptableObject.CreateInstance<AbilityAreaEffectRunAction>();
             actions.UnitEnter = new ActionList { Actions = new GameAction[] { exposure } };
             actions.Round = new ActionList { Actions = new GameAction[] { exposure } };
@@ -78,6 +79,7 @@ namespace KingmakerGunslinger.Blueprints
             var houndAid = ConfigureArchonAid(library, bySymbol, hound,
                 Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Hound30Prefix + "Traits"),
                 Require<BlueprintBrain>(bySymbol, Hound30Prefix + "Brain"), Hound30Prefix, 6, false);
+            trumpet.AddFacts = trumpet.AddFacts.Concat(new BlueprintUnitFact[] { carrier }).ToArray();
             hound.AddFacts = hound.AddFacts.Concat(new BlueprintUnitFact[] { carrier, houndAid }).ToArray();
             lantern.AddFacts = lantern.AddFacts.Where(fact => fact.AssetGuid != AuraOfMenaceBuffGuid)
                 .Concat(new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] { carrier, aid }).ToArray();

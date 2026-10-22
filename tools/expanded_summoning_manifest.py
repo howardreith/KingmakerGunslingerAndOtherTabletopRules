@@ -78,6 +78,7 @@ def suppressed_keys():
     return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
 
 DONOR_NAMES = {
+    "afe56099ff6046b40a359b7562c0424e": "MovanicDevaSummoned",
     "da807351572c540478b703957d863e68": "CR5_ManticoreStandard",
     "61dd71e874b16f742a0f783314105553": "CR7_HillGiantStandart",
     "590cd3d5e76fdc649a5f97bc984cd3c4": "FrostGiantSummoned",
@@ -797,6 +798,15 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.HoundArchon.AidAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.OutsiderCelestial.HoundArchon.AidEligibility", "ArchonAidEligibility"),
         ("KMG.Summoning.OutsiderCelestial.HoundArchon.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.GreatswordType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Greatsword2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Spellbook", "BlueprintSpellbook"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.SpellList", "BlueprintSpellList"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealEligibility", "TrumpetPreparedHealingEligibility"),
 
     ))
     expected = sum(identity_count(name) for name in (

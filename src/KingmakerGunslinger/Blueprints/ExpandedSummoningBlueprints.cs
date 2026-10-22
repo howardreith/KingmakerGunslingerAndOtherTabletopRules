@@ -11,6 +11,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Blueprints.Items.Armors;
@@ -89,6 +90,21 @@ namespace KingmakerGunslinger.Blueprints
                 else if (identity.PlannedType == "BlueprintAiCastSpell")
                     blueprint = registry.Register<BlueprintAiCastSpell>(identity.Symbol,
                         () => CreateAiCastSpellShell(identity.Symbol));
+                else if (identity.PlannedType == "BlueprintSpellbook")
+                    blueprint = registry.Register<BlueprintSpellbook>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<BlueprintSpellbook>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "BlueprintSpellList")
+                    blueprint = registry.Register<BlueprintSpellList>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<BlueprintSpellList>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "TrumpetPreparedHealingEligibility")
+                    blueprint = registry.Register<TrumpetPreparedHealingEligibility>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<TrumpetPreparedHealingEligibility>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "BlueprintBrain")
                     blueprint = registry.Register<BlueprintBrain>(identity.Symbol,
                         () => CreateBrainShell(identity.Symbol));
