@@ -447,6 +447,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 bool targetCombatBeforeCleanup = target.IsInCombat;
                 bool casterCombatBeforeCleanup = fixture.Caster.IsInCombat;
+                bool playerCombatBeforeCleanup = Game.Instance.Player.IsInCombat;
+                bool casterRememberedTargetBeforeCleanup =
+                    fixture.Caster.Memory.Contains(target);
+                bool targetRememberedCasterBeforeCleanup =
+                    target.Memory.Contains(fixture.Caster);
+                if (casterRememberedTargetBeforeCleanup)
+                    fixture.Caster.Memory.Remove(target);
+                if (targetRememberedCasterBeforeCleanup)
+                    target.Memory.Remove(fixture.Caster);
                 Game.Instance.TurnBasedCombatController
                     .HandlePartyCombatStateChanged(false);
                 if (target.IsInCombat) target.LeaveCombat();
@@ -464,6 +473,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !target.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
                     !fixture.Caster.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
                     !target.IsInCombat && !fixture.Caster.IsInCombat &&
+                    !Game.Instance.Player.IsInCombat &&
+                    !fixture.Caster.Memory.Contains(target) &&
+                    !target.Memory.Contains(fixture.Caster) &&
                     ownedItems.Count >= 4 && ownedItems.All(item =>
                         !item.IsLootable && item.Collection == null);
                 Sprint25Check("astral-core-cleanup", clean, new JObject {
@@ -483,9 +495,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         command != null && !command.IsFinished),
                     ["targetCombatBeforeCleanup"] = targetCombatBeforeCleanup,
                     ["casterCombatBeforeCleanup"] = casterCombatBeforeCleanup,
+                    ["playerCombatBeforeCleanup"] = playerCombatBeforeCleanup,
+                    ["casterRememberedTargetBeforeCleanup"] =
+                        casterRememberedTargetBeforeCleanup,
+                    ["targetRememberedCasterBeforeCleanup"] =
+                        targetRememberedCasterBeforeCleanup,
                     ["targetCombatAfterCleanup"] = target.IsInCombat,
                     ["casterCombatAfterCleanup"] = fixture.Caster.IsInCombat,
-                    ["combatClear"] = !target.IsInCombat && !fixture.Caster.IsInCombat },
+                    ["playerCombatAfterCleanup"] = Game.Instance.Player.IsInCombat,
+                    ["casterRemembersTargetAfterCleanup"] =
+                        fixture.Caster.Memory.Contains(target),
+                    ["targetRemembersCasterAfterCleanup"] =
+                        target.Memory.Contains(fixture.Caster),
+                    ["combatClear"] = !target.IsInCombat &&
+                        !fixture.Caster.IsInCombat &&
+                        !Game.Instance.Player.IsInCombat },
                     "Both exact owners, their moving areas/victim grants, commands, memory and nonlootable weapon entities are absent before process restoration.");
                 if (!clean) throw new InvalidOperationException(
                     "Astral owned cleanup failed.");
