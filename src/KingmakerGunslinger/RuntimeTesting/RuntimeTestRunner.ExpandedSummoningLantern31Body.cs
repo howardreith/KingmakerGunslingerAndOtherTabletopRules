@@ -19,6 +19,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] unitsBefore = Game.Instance.State.Units.All.Cast<object>().ToArray();
             object[] areasBefore = Game.Instance.State.AreaEffects.All.Cast<object>().ToArray();
             var captured = new List<UnityEngine.Object>();
+            int expectedCaptured = 0;
             UnitEntityData owner = null, sibling = null;
             int beforeComponents, beforeRoots, beforeOrbs, beforeMaterials, beforeLights;
             string before = LanternArchonOrbView.CountOwnedObjects(out beforeComponents,
@@ -87,7 +88,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnityEngine.Object[] siblingResources = siblingOrb.CaptureOwnedResources();
                 captured.AddRange(ownerResources);
                 captured.AddRange(siblingResources);
-                bool separate = ownerResources.Length == 6 && siblingResources.Length == 6 &&
+                expectedCaptured = ownerResources.Length + siblingResources.Length;
+                Material[] ownerMaterials = ownerOrb.OwnedMaterials();
+                Material[] siblingMaterials = siblingOrb.OwnedMaterials();
+                bool separate = ownerResources.Length == 5 + ownerMaterials.Length &&
+                    siblingResources.Length == 5 + siblingMaterials.Length &&
+                    ownerMaterials.Length >= 1 && siblingMaterials.Length >= 1 &&
                     !ownerResources.Any(left => siblingResources.Any(right =>
                         ReferenceEquals(left, right)));
                 Renderer[] ownerNative = owner.View.GetComponentsInChildren<Renderer>(true)
@@ -100,9 +106,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     siblingNative.Length == siblingOrb.NativeRendererCount &&
                     ownerNative.Concat(siblingNative).All(value =>
                         !value.sharedMaterials.Any(donorMaterial =>
-                            ReferenceEquals(donorMaterial, ownerOrb.OrbMaterial) ||
-                            ReferenceEquals(donorMaterial, siblingOrb.OrbMaterial)));
-                Material material = ownerOrb.OrbMaterial;
+                            ownerMaterials.Concat(siblingMaterials).Any(ownedMaterial =>
+                                ReferenceEquals(donorMaterial, ownedMaterial))));
+                Material material = ownerOrb.OrbRenderer == null ? null :
+                    ownerOrb.OrbRenderer.sharedMaterial;
                 Color emission = material != null && material.HasProperty("_EmissionColor")
                     ? material.GetColor("_EmissionColor") : Color.black;
                 MeshRenderer renderer = ownerOrb.OrbRenderer;
@@ -123,13 +130,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ownerOrb.Orb.name == LanternArchonOrbView.OrbName &&
                     siblingOrb.Orb.name == LanternArchonOrbView.OrbName &&
                     renderer != null && renderer.enabled &&
-                    ReferenceEquals(renderer.sharedMaterial, material) &&
-                    material != null && material.name == LanternArchonOrbView.MaterialName &&
+                    material != null && ownerMaterials.Any(value =>
+                        ReferenceEquals(value, material)) &&
+                    material.name.StartsWith(LanternArchonOrbView.MaterialName,
+                        StringComparison.Ordinal) &&
                     emission.maxColorComponent > 1f && diameter >= .5f && diameter <= 1.3f &&
                     light != null && light.enabled && light.type == LightType.Point &&
                     light.shadows == LightShadows.None && light.range == 2.4f &&
                     Math.Abs(light.intensity - 1.55f) < .001f &&
-                    components == 2 && roots == 2 && orbs == 2 && materials == 2 && lights == 2 &&
+                    components == 2 && roots == 2 && orbs == 2 &&
+                    materials == ownerMaterials.Length + siblingMaterials.Length && lights == 2 &&
                     (bool)selection["selectionSurface"] &&
                     party.Contains("png=s31-lantern-owned-orb-party.png") &&
                     party.Contains("inFrame=true") && party.Contains("screenLit=true") &&
@@ -143,6 +153,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["siblingView"] = siblingOrb.Describe(),
                         ["ownerResourceCount"] = ownerResources.Length,
                         ["siblingResourceCount"] = siblingResources.Length,
+                        ["ownerMaterialCount"] = ownerMaterials.Length,
+                        ["siblingMaterialCount"] = siblingMaterials.Length,
                         ["privateResourcesSeparate"] = separate,
                         ["donorRenderersIsolated"] = donorIsolated,
                         ["ownerNativeRenderers"] = ownerNative.Length,
@@ -179,13 +191,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             int afterComponents, afterRoots, afterOrbs, afterMaterials, afterLights;
             string after = LanternArchonOrbView.CountOwnedObjects(out afterComponents,
                 out afterRoots, out afterOrbs, out afterMaterials, out afterLights);
-            bool clean = captured.Count == 12 && captured.All(value => value == null) &&
+            bool clean = expectedCaptured >= 12 && captured.Count == expectedCaptured &&
+                captured.All(value => value == null) &&
                 afterComponents == 0 && afterRoots == 0 && afterOrbs == 0 &&
                 afterMaterials == 0 && afterLights == 0 &&
                 !Game.Instance.State.Units.All.Cast<object>().Except(unitsBefore).Any() &&
                 !Game.Instance.State.AreaEffects.All.Cast<object>().Except(areasBefore).Any();
             Sprint25Check("lantern-body-cleanup", clean,
                 new JObject { ["capturedResources"] = captured.Count,
+                    ["expectedCapturedResources"] = expectedCaptured,
                     ["capturedResourcesGone"] = captured.All(value => value == null),
                     ["ownedObjects"] = after,
                     ["unitsExact"] = !Game.Instance.State.Units.All.Cast<object>()
