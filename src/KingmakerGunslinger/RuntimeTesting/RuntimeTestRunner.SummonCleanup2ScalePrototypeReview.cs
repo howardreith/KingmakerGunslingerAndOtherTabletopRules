@@ -178,7 +178,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Post-prototype heights follow the selected family ratios while the stable owned sole pivot preserves the observed native foot plane; Human and native gameplay roots remain unchanged.");
                 if (!ratiosValid || !humanUnmodified) throw new InvalidOperationException("UNKNOWN: post-prototype current-pose height/ground or unchanged Human proof failed.");
                 Cleanup2Check("scale-prototype-after-lineup", true,
-                    Cleanup2CaptureLineup(actors, keys, afterSamples.Last(), "cleanup2-scale-prototype-after.png", true),
+                    Cleanup2CaptureLineup(fixture, actors, keys, afterSamples.Last(), "cleanup2-scale-prototype-after.png", true),
                     "A distinct actual native-camera after image retains Human and all six experimental families; before evidence is preserved.");
 
                 _sprint25WaitingForUnityAppearance = false;
@@ -205,7 +205,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var pose = actors.Select((actor, index) => Cleanup2MeasureActor(actor,
                                 "prototype-weapon-pose-" + keys[index], groundPoints[0], Vector3.up)).ToArray();
                             Cleanup2Check("scale-prototype-native-pose-frame-" + keys[i], pose.All(value => value.Valid),
-                                Cleanup2CaptureLineup(actors, keys, pose, "cleanup2-scale-prototype-weapon-" + keys[i] + ".png", true),
+                                Cleanup2CaptureLineup(fixture, actors, keys, pose, "cleanup2-scale-prototype-weapon-" + keys[i] + ".png", true),
                                 "An actual native-camera weapon-pose frame supports visual inspection; native weapon motion is not a combat-resolution test.");
                         }
                         Game.Instance.IsPaused = false; yield return 0;

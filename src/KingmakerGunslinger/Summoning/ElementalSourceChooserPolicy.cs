@@ -51,6 +51,17 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ElementalSourceChooserPolicy
     {
+        internal static List<T> ProjectOriginalSources<T>(IEnumerable<T> original,IEnumerable<T> sources,T header,bool expanded,Func<T,bool> selected) where T:class
+        {
+            var exact=sources.ToArray();var rows=new List<T>();bool inserted=false;
+            foreach(var row in original)
+            {
+                bool source=exact.Any(value=>ReferenceEquals(value,row));
+                if(source && !inserted){rows.Add(header);inserted=true;}
+                if(!source || expanded || selected(row))rows.Add(row);
+            }
+            return rows;
+        }
         internal static int SourceRank(string guid)
         {
             var spec=StandaloneElementalPresentationPolicy.All.FirstOrDefault(value=>value.IsParent &&

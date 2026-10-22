@@ -168,6 +168,7 @@
     <Compile Include="Summoning\ElementalSourceChooserPatch.cs" />
     <Compile Include="Summoning\ElementalNativeRowsPresentationPatch.cs" />
     <Compile Include="Summoning\ElementalSourceChooserConsolePatch.cs" />
+    <Compile Include="Summoning\ElementalConsoleBookPresentationPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalDiscoveryPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalInvocationContract.cs" />
     <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />
@@ -1335,6 +1336,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Bodies.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalPresentation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleScene.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalConsole.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalSources.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2MenuAdapters.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ModuleOff.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ClothProbe.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2EttinLifecycle.cs" />

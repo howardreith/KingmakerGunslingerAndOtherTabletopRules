@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using KingmakerGunslinger.Summoning;
 
@@ -46,6 +47,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Mixed SM/SNA source rows must never be folded or written.");
             lease.Apply(true);Assertions.True(native.Visible,"Expansion restores the same original row.");
             lease.Release();Assertions.True(native.Visible && selected.Visible,"Release restores original native visibility.");
+        }
+
+        internal static void ConsoleProjectionRetainsOriginalAuthorityAndSelectedSource()
+        {
+            var mixed=new object();var legacy=new object();var chosen=new object();var foreign=new object();var header=new object();
+            var authoritative=new List<object>{mixed,legacy,chosen,foreign};var original=authoritative.ToArray();
+            var collapsed=ElementalSourceChooserPolicy.ProjectOriginalSources(authoritative,new[]{legacy,chosen},header,false,
+                source=>ReferenceEquals(source,chosen));
+            Assertions.True(collapsed.SequenceEqual(new[]{mixed,header,chosen,foreign}),
+                "A fresh console projection folds only source rows and retains the exact selected source.");
+            Assertions.True(authoritative.SequenceEqual(original),"Native allocation/known collection retains every original object and order.");
+            var expanded=ElementalSourceChooserPolicy.ProjectOriginalSources(authoritative,new[]{legacy,chosen},header,true,source=>false);
+            Assertions.True(expanded.SequenceEqual(new[]{mixed,header,legacy,chosen,foreign}),
+                "Disclosure expands the original native VM references; it cannot create replacement rule sources.");
+            Assertions.False(authoritative.Contains(header),"Transient header never enters native allocation/known authority.");
+            var one=ElementalSourceChooserPolicy.ProjectOriginalSources(new[]{mixed,legacy},new[]{legacy},header,false,source=>false);
+            Assertions.True(one.SequenceEqual(new[]{mixed,header}),"A level-specific screen with one legacy source still has the common disclosure.");
         }
 
         internal static void NativeDisclosureFailureRollsBackOnlyOwnedRowGeneration()
