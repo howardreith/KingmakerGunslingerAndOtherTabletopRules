@@ -102,6 +102,25 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void MissingWrongOrInvalidCalibrationNeverChangesScale()
         {
+            foreach (float factor in new[] { 1f, 1.4f, 1.5f, 2.1f })
+            {
+                Assertions.Equal(float.MaxValue, GiantSummonPresentationPolicy.ScaleClothConstraint(float.MaxValue, factor),
+                    "The exact native disabled Cloth sentinel must remain disabled rather than overflow, clamp or become a simulated distance.");
+                Assertions.Equal(0f, GiantSummonPresentationPolicy.ScaleClothConstraint(0f, factor),
+                    "A pinned native Cloth vertex must remain pinned.");
+                Assertions.Equal(.25f * factor, GiantSummonPresentationPolicy.ScaleClothConstraint(.25f, factor),
+                    "An enabled finite native Cloth distance must retain the explicit proposal ratio.");
+            }
+            foreach (float invalid in new[] { -1f, float.NaN, float.PositiveInfinity, float.NegativeInfinity })
+                Assertions.Throws<ArgumentException>(() => GiantSummonPresentationPolicy.ScaleClothConstraint(invalid, 1.5f),
+                    "Unknown native Cloth inputs must remain explicit refusals.");
+            foreach (float invalid in new[] { 0f, -1f, float.NaN, float.PositiveInfinity })
+                Assertions.Throws<ArgumentException>(() => GiantSummonPresentationPolicy.ScaleClothConstraint(float.MaxValue, invalid),
+                    "A sentinel cannot authorize an invalid ratio.");
+            Assertions.Throws<ArgumentException>(() => GiantSummonPresentationPolicy.ScaleClothConstraint(float.MaxValue / 2f, 3f),
+                "Genuine enabled-distance overflow must not be mistaken for the disabled sentinel.");
+            Assertions.Throws<ArgumentException>(() => GiantSummonPresentationPolicy.ScaleClothConstraint(float.MaxValue / 2f, 2f),
+                "Enabled distance arithmetic must not silently change a constraint into the disabled sentinel.");
             string[] order = { "hill-giant", "stone-giant", "fire-giant", "frost-giant", "cloud-giant", "storm-giant" };
             float[] relative = { 1f, 1.2f, 1.4f, 1.5f, 1.8f, 2.1f };
             for (int i = 0; i < order.Length; i++)

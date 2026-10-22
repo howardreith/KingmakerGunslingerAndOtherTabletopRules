@@ -32,6 +32,47 @@ owner aesthetic approval is claimed. The completion intake was clean
   Copied native Cloth remains closed in production until the bounded native
   contact/solver probe establishes its contract. No gameplay root is scaled.
 
+### Review22 current observations and bounded corrections
+
+Frozen source `0781beba6196f086ad43abdaf50685b87786fa57`, package
+`ea1d4bc56d99276f1eff59dfbde2647c562ce00dda550c8211e268edb5081e7f`, DLL
+`4bf3c0a7dcac6487cfd5c5fae5fcc2c3e1d6363aeb7c6863a6dd06660f2cb7d7`.
+Exact compilation/package and17 selected cases passed; all18 actual Harmony
+target-resolution cases passed, including the original constructor negative.
+
+- Bodies `20261022T2307092060103Z`: **38 PASS/5 FAIL**,159.001s.
+  All three actual native Default single attacks passed rules/events/costs.
+  Girallon completed its packet and6.014m travel. Root and art reviewer inspected
+  ordinary and refined front/side/attack views: attached, separated far fingers
+  improve readability; exact side occlusion does not establish a new tear.
+  Stegosaurus is elongated with improved ankle/foot contact; its smooth finish
+  remains for owner judgement. Gorgon's native specular highlight is visible,
+  but the broad rectangular armor was rejected and replaced with smaller forged
+  scales. That new Gorgon export is offline-inspected, not native-qualified.
+- Gorgon/Stegosaurus travel failed at .068/.066m. Their post-attack facing chose
+  unsurveyed six-meter routes; the old raw packet does not identify the actual
+  path/command refusal. The scoped correction surveys the complete native route
+  and records command/path/velocity state without lowering travel requirements.
+  Action captures now sample while the command runs, not mainly after it ends.
+- Scale `20261022T2311417992329Z`: **59 PASS/2 FAIL**,86.432s. The camera reaches
+  all seven actors, but chandelier/occlusion silhouettes prevent final palette
+  acceptance. Frost's pre-mutation Cloth coefficient multiplication overflows;
+  the old packet omitted the exact input. The corrected arithmetic preserves
+  only Unity's exact `float.MaxValue` disabled-constraint sentinel, refuses real
+  enabled overflow, and records coefficient extrema before admission. Production
+  Cloth remains closed pending the actual positive contact/solver probe.
+- Source review found native console preparation disposal clears its selection
+  property. Owned header retirement now avoids disposed selection authority;
+  the existing console observer checks actual disposal/unbinding/resource release.
+  Druid conversion is being projected through the existing native variant factory
+  so children retain the original conversion/preparation source chain.
+
+Both native hosts exited normally. `compat-20261022T230642Z-a960be0e4a65` and
+`compat-20261022T231115Z-655b3a7ccbe6` report exact installation/settings restore;
+both fresh save inventories are preserved exactly. Window3 closed23:14:17UTC,
+25m02s after22:48:15, inside30minutes. Final90minute qualification has not begun.
+All original FAIL records and PNGs remain unchanged.
+
 ### Review21 startup failure (preserved; no creature result)
 
 Frozen source `3def23cf2f1b534d95b9d1dbfd2f392f09afc78f`, package

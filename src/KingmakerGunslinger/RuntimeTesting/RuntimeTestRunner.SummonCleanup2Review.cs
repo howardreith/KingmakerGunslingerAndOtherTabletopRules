@@ -439,10 +439,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Crown = bounds.center + Vector3.up * bounds.extents.y,
                             Sole = bounds.center - Vector3.up * bounds.extents.y };
                     }).ToArray();
-                    JObject picture = Cleanup2CaptureLineup(fixture, actors, keys, framing, "cleanup2-production-colors.png");
+                    JObject picture = null;
+                    foreach(int frame in Cleanup2CaptureLineup(fixture, actors, keys, framing, value=>picture=value, "cleanup2-production-colors.png"))yield return frame;
                     picture["framingOnly"] = true; picture["measurementEvidence"] = false;
                     picture["rendering"] = "Ordinary production giant colors on the surveyed common ground; renderer bounds frame the picture only.";
-                    Cleanup2Check("production-colors-picture", true, picture,
+                    Cleanup2Check("production-colors-picture", (bool?)picture?["captureQualified"]==true, picture,
                         "All six families stand on the same surveyed ground before the fitted native color capture.");
                 }
                 // Retain Unity idle samples while suspending synthetic game-time
@@ -488,9 +489,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ratioLimitation"] = "Finite stable current-body samples support relative family comparison. Native sole/navmesh offsets are recorded, not assumed zero; no absolute Human/feet calibration is claimed." },
                     "Four finite stable native idle body samples on the surveyed plane admit a relative render-only experiment; navmesh-to-skin offset is not an anatomy calibration.");
                 bool scalePrototype = (string)_request.Parameters?["reviewPhase"] == "scale-prototype";
-                Cleanup2Check("same-camera-lineup", true,
-                    Cleanup2CaptureLineup(fixture, actors, keys, samples.Last(),
-                        scalePrototype ? "cleanup2-scale-prototype-before.png" : null),
+                JObject lineupPicture=null;
+                foreach(int frame in Cleanup2CaptureLineup(fixture, actors, keys, samples.Last(),value=>lineupPicture=value,
+                    scalePrototype ? "cleanup2-scale-prototype-before.png" : null))yield return frame;
+                Cleanup2Check("same-camera-lineup", (bool?)lineupPicture?["captureQualified"]==true, lineupPicture,
                     "One live same-camera capture contains the verified Human and all six canonically summoned giant families.");
                 if (scalePrototype)
                     foreach (int frame in ReviewSummonCleanup2ScalePrototype(fixture, actors, keys, groundPoints, samples, standing)) yield return frame;
@@ -1147,9 +1149,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private JObject Cleanup2CaptureLineup(ExpandedSummoningCorrectionFixture fixture,
+        private IEnumerable<int> Cleanup2CaptureLineup(ExpandedSummoningCorrectionFixture fixture,
             IList<UnitEntityData> actors, IList<string> keys, Cleanup2ActorMetric[] metrics,
-            string fileName = null, bool experimentalProxy = false)
+            Action<JObject> completed, string fileName = null, bool experimentalProxy = false)
         {
             string phase = (string)_request?.Parameters?["reviewPhase"];
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion ||
@@ -1158,8 +1160,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 actors.Any(actor => actor == null || actor.Destroyed || actor.View == null) ||
                 actors.Skip(1).Any(actor => !fixture.Created.Contains(actor)))
                 throw new InvalidOperationException("Only the exact live disposable lineup may receive a temporary camera-facing pose.");
-            Camera camera = TeleportationCastingCamera()?.Camera ?? Camera.main;
-            if (camera == null) throw new InvalidOperationException("No native lineup camera.");
+            var rig=TeleportationCastingCamera();var controller=Game.Instance.CameraController;
+            Camera camera = rig?.Camera;
+            if (camera == null || !camera.enabled || !camera.gameObject.activeInHierarchy || controller?.FixCamera==null ||
+                controller.FixCamera.GuardCount!=0 || rig.IsShaking() || completed==null)
+                throw new InvalidOperationException("Exact enabled native lineup camera, idle native fix guard and completion callback required.");
+            var nativeOcclusion=camera.GetComponent<Kingmaker.Visual.OccludedObjectHighlighting.OccludedObjectHighlight>();
+            if(nativeOcclusion==null || !nativeOcclusion.enabled || !nativeOcclusion.gameObject.activeInHierarchy)
+                throw new InvalidOperationException("Actual enabled native camera occlusion component required for normal-frame capture.");
+            var cameraGuard=controller.FixCamera;
+            var follower=controller.Follower;var zoom=rig.CameraZoom;
+            if(follower==null || zoom==null)throw new InvalidOperationException("Native camera follower/zoom authority is absent.");
+            var followerFields=new[]{"m_IsOn","m_Unit"}.Select(name=>follower.GetType().GetField(name,Cleanup2Fields)).ToArray();
+            var zoomFields=new[]{"m_PlayerScrollPosition","m_GameScrollPosition","m_ScrollPosition","m_SmoothScrollPosition"}
+                .Select(name=>zoom.GetType().GetField(name,Cleanup2Fields)).ToArray();
+            if(followerFields.Any(field=>field==null) || zoomFields.Any(field=>field==null))
+                throw new MissingFieldException("Native camera follower/zoom observation fields.");
+            object[] followerValues=followerFields.Select(field=>field.GetValue(follower)).ToArray(),
+                zoomValues=zoomFields.Select(field=>field.GetValue(zoom)).ToArray();
+            var controlFields=new[]{"AllowScroll","AllowZoom","Clamp"}.Select(name=>controller.GetType().GetField(name,Cleanup2Fields)).ToArray();
+            if(controlFields.Any(field=>field==null))throw new MissingFieldException("Native camera control observation fields.");
+            object[] controlValues=controlFields.Select(field=>field.GetValue(controller)).ToArray();
+            Vector3 beforeRigPosition=rig.transform.position,beforeRigTarget=rig.GetPosition();
+            Quaternion beforeRigRotation=rig.transform.rotation;
+            string[] rigFields={"m_LocalMapArea","m_SkipClampOneFrame","m_PrevSmoothedDt"};
+            var savedRigFields=rigFields.Select(name=>typeof(Kingmaker.View.CameraRig).GetField(name,Cleanup2Fields)).ToArray();
+            if(savedRigFields.Any(field=>field==null))throw new MissingFieldException("Native CameraRig restoration fields.");
+            object[] savedRigValues=savedRigFields.Select(field=>field.GetValue(rig)).ToArray();
             Vector3 beforePosition = camera.transform.position;
             Quaternion beforeRotation = camera.transform.rotation;
             float beforeSize = camera.orthographicSize, beforeAspect = camera.aspect;
@@ -1173,11 +1200,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var facingReceipt = new JObject { ["scope"] = "Temporary native Orientation/DesiredOrientation and exact fixture view-root yaw only; no rig, mesh, controller, collider or foreign actor is assigned." };
             var selectionColliders = Cleanup2NativeSelectionColliderReferences();
             Cleanup2ActorMetric[] framed = metrics;
+            bool cameraGuardOwned=false;Vector3 requestedCameraPosition=beforePosition;Quaternion requestedCameraRotation=beforeRotation;
             try
             {
+                // Native controller Tick060091BB checks this counted guard
+                // before follower, scrolling, zoom and shake. Its follower and
+                // zoom objects/state remain native and are never reassigned.
+                cameraGuard.Value=true;cameraGuardOwned=true;
+                if(cameraGuard.GuardCount!=1)throw new InvalidOperationException("Native camera guard acquisition changed.");
                 Vector3 min = metrics.Select(v => v.Min).Aggregate(Vector3.Min);
                 Vector3 max = metrics.Select(v => v.Max).Aggregate(Vector3.Max);
                 Vector3 centre = (min + max) * .5f;
+                rig.ScrollToImmediately(centre);
                 Vector3 rowAxis = (actors.Last().Position - actors.First().Position).normalized;
                 Vector3 forward = Vector3.Cross(rowAxis, Vector3.up).normalized;
                 if (rowAxis.sqrMagnitude < .5f) rowAxis = Vector3.right;
@@ -1192,13 +1226,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // The old ten-degree view photographed native blue occlusion
                 // silhouettes through a wall. Use a gameplay-like downward
                 // view, test both sides, and retain each obstruction result.
-                foreach (float pitch in new[] { 60f, 72f, 80f })
+                var renderMeshes=new Dictionary<Mesh,Tuple<Vector3[],int[]>>();
+                var renderSurveyWatch=System.Diagnostics.Stopwatch.StartNew();
+                foreach (float pitch in new[] { 35f,45f,50f,60f,72f,80f })
                 {
                     foreach (float side in new[] { 1f, -1f })
                     {
                         Vector3 direction = forward * side * Mathf.Cos(pitch * Mathf.Deg2Rad) -
                             Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
                         Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+                        rig.SetRotation(rotation.eulerAngles.y);
                         Vector3 facing = -direction; facing.y = 0f;
                         Quaternion actorRotation = Quaternion.LookRotation(facing, Vector3.up);
                         framed = new Cleanup2ActorMetric[metrics.Length];
@@ -1231,18 +1268,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                         camera.transform.SetPositionAndRotation(centre - direction * distance, rotation);
                         JArray ignoredSelection;
                         JArray blockers = Cleanup2LineupSightBlockers(camera, actors, framed, selectionColliders, out ignoredSelection);
+                        JObject rendered=Cleanup2LineupRenderedObstructions(camera,actors,framed,renderMeshes,renderSurveyWatch);
                         cameraAttempts.Add(new JObject { ["pitchDegrees"] = pitch, ["side"] = side,
                             ["cameraPosition"] = SurveyVector(camera.transform.position), ["blockers"] = blockers,
+                            ["actualStaticRenderedObstructions"]=rendered,
                             ["ignoredExactNativeSelectionColliders"] = ignoredSelection });
-                        if (blockers.Count == 0) { clearSight = true; break; }
+                        if (blockers.Count == 0 && (bool)rendered["qualified"]) { clearSight = true; break; }
                     }
                     if (clearSight) break;
                 }
                 if (!clearSight)
-                    throw new InvalidOperationException("No downward native lineup camera has clear environment sight: " + cameraAttempts.ToString());
+                {
+                    // A refused picture remains a failed acceptance item.
+                    // Restore this camera lease, then permit the independent
+                    // owned Cloth/contact experiment to expose its own result.
+                    completed(new JObject { ["captureQualified"]=false,["file"]=JValue.CreateNull(),
+                        ["reason"]="No candidate has qualified native environment sight",
+                        ["downwardCameraAttempts"]=cameraAttempts,["fixtureFacingPose"]=facingReceipt });
+                    yield break;
+                }
                 target = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = target;
-                camera.Render();
+                requestedCameraPosition=camera.transform.position;requestedCameraRotation=camera.transform.rotation;
+                int poseFrame=Time.frameCount;
+                // Camera.Render does not run the native Update-built occlusion
+                // command buffer. Hold the real camera pose/RT across complete
+                // Unity frames and read its ordinary completed render instead.
+                for(int frame=0;frame<3;frame++)
+                {
+                    yield return 0;
+                    if(!ReferenceEquals(Game.Instance.CameraController,controller) || !ReferenceEquals(controller.FixCamera,cameraGuard) ||
+                        !ReferenceEquals(TeleportationCastingCamera(),rig) || cameraGuard.GuardCount!=1 ||
+                        !ReferenceEquals(rig.Camera,camera) || !ReferenceEquals(camera.targetTexture,target) ||
+                        !nativeOcclusion.enabled || !nativeOcclusion.gameObject.activeInHierarchy ||
+                        Vector3.Distance(camera.transform.position,requestedCameraPosition)>.02f ||
+                        Quaternion.Angle(camera.transform.rotation,requestedCameraRotation)>.01f)
+                        throw new InvalidOperationException("Native frame-settled lineup camera ownership/pose changed.");
+                }
                 facingReceipt["capturedNativeYaw"] = new JArray(actors.Select(actor => actor.Orientation));
                 var viewport = new JArray(framed.Select((m, i) => new JObject {
                     ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
@@ -1266,19 +1328,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     File.Exists(Path.Combine(_request.EvidenceDirectory, file)))
                     throw new InvalidOperationException("Exact new lineup PNG name required; existing evidence is never overwritten.");
                 File.WriteAllBytes(Path.Combine(_request.EvidenceDirectory, file), bytes);
-                return new JObject { ["file"] = file, ["bytes"] = bytes.Length,
+                completed(new JObject { ["captureQualified"]=true,["file"] = file, ["bytes"] = bytes.Length,
                     ["cameraInstance"] = camera.GetInstanceID(),
                     ["cameraPosition"] = SurveyVector(camera.transform.position),
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
                     ["fieldOfView"] = camera.fieldOfView, ["orthographic"] = camera.orthographic,
                     ["screenFade"] = screenFade, ["meanLuma"] = luma,
                     ["fixtureFacingPose"] = facingReceipt,
+                    ["nativePoseFrame"]=poseFrame,["readbackFrame"]=Time.frameCount,["normalFrameProgression"]=Time.frameCount-poseFrame,
+                    ["manualCameraRenderCalled"]=false,["nativeCameraFixGuardOwned"]=true,
+                    ["nativeOcclusionComponent"]=nativeOcclusion.GetInstanceID(),["nativeOcclusionUpdateContract"]="Enabled native OccludedObjectHighlight.Update06001163 rebuilds its own command buffer during normal Unity Update; no observer visibility flag or manual highlighter update.",
+                    ["nativeFollowerUnchanged"]=ReferenceEquals(controller.Follower,follower) &&
+                        followerFields.Select((field,index)=>Equals(field.GetValue(follower),followerValues[index])).All(value=>value),
+                    ["nativeZoomUnchanged"]=ReferenceEquals(rig.CameraZoom,zoom) &&
+                        zoomFields.Select((field,index)=>Equals(field.GetValue(zoom),zoomValues[index])).All(value=>value),
                     ["downwardCameraAttempts"] = cameraAttempts, ["noEnvironmentPhysicsSightBlocker"] = clearSight,
-                    ["occlusionProofLimit"] = "Physics rays reject blocking scene colliders; actual framebuffer still requires visual review for collider-free rendered occluders. No scene renderer/culling/highlight state is changed.",
+                    ["occlusionProofLimit"] = "Physics rays plus bounded actual static-mesh triangle rays reject sampled opaque occluders. Unreadable/overbudget candidates refuse; normal native Updates/render execute at the held pose. Sampling does not prove every silhouette pixel; actual framebuffer review remains required. No renderer/culling/highlight/material state is changed.",
                     ["allCrownSoleInFrame"] = visible, ["viewport"] = viewport,
                     ["rendering"] = experimentalProxy
                         ? "Actual live actors with explicitly owned experimental render-only proxies/palettes in native scene lighting. No synthetic silhouette. Camera auto-framing may differ from before; both exact poses are recorded."
-                        : "Actual live actors, native materials and scene lighting; no proxy meshes, recoloring or synthetic silhouettes." };
+                        : "Actual live actors, native materials and scene lighting; no proxy meshes, recoloring or synthetic silhouettes." });
             }
             finally
             {
@@ -1296,15 +1365,122 @@ namespace KingmakerGunslinger.RuntimeTesting
                     catch (Exception error) { poseErrors.Add(actors[i].UniqueId + ":" + error.Message); }
                 facingReceipt["restored"] = poseErrors.Count == 0;
                 facingReceipt["restorationErrors"] = new JArray(poseErrors);
-                camera.targetTexture = beforeTarget;
-                camera.transform.position = beforePosition;
-                camera.transform.rotation = beforeRotation;
-                camera.orthographicSize = beforeSize; camera.aspect = beforeAspect;
-                RenderTexture.active = beforeActive;
-                if (target != null) { target.Release(); UnityEngine.Object.Destroy(target); }
-                if (image != null) UnityEngine.Object.Destroy(image);
+                try
+                {
+                    if(!ReferenceEquals(Game.Instance.CameraController,controller) || !ReferenceEquals(TeleportationCastingCamera(),rig) ||
+                        !ReferenceEquals(rig.Camera,camera))throw new InvalidOperationException("Foreign native camera context; restoration refused.");
+                    if(ReferenceEquals(camera.targetTexture,target) || target==null && ReferenceEquals(camera.targetTexture,beforeTarget))camera.targetTexture=beforeTarget;
+                    else throw new InvalidOperationException("Foreign native render target; restoration refused.");
+                    rig.ScrollToImmediately(beforeRigPosition);rig.ScrollTo(beforeRigTarget);
+                    rig.transform.position=beforeRigPosition;rig.transform.rotation=beforeRigRotation;
+                    for(int index=0;index<savedRigFields.Length;index++)savedRigFields[index].SetValue(rig,savedRigValues[index]);
+                    camera.transform.position = beforePosition;camera.transform.rotation = beforeRotation;
+                    camera.orthographicSize = beforeSize; camera.aspect = beforeAspect;
+                    if(Vector3.Distance(rig.transform.position,beforeRigPosition)>.001f || rig.GetPosition()!=beforeRigTarget ||
+                        Quaternion.Angle(rig.transform.rotation,beforeRigRotation)>.001f ||
+                        !savedRigFields.Select((field,index)=>Equals(field.GetValue(rig),savedRigValues[index])).All(value=>value) ||
+                        !ReferenceEquals(controller.Follower,follower) || !ReferenceEquals(rig.CameraZoom,zoom) ||
+                        !followerFields.Select((field,index)=>Equals(field.GetValue(follower),followerValues[index])).All(value=>value) ||
+                        !zoomFields.Select((field,index)=>Equals(field.GetValue(zoom),zoomValues[index])).All(value=>value) ||
+                        !controlFields.Select((field,index)=>Equals(field.GetValue(controller),controlValues[index])).All(value=>value))
+                        throw new InvalidOperationException("Native rig state did not restore exactly.");
+                }
+                finally
+                {
+                    if(cameraGuardOwned)
+                    {
+                        if(!ReferenceEquals(controller.FixCamera,cameraGuard) || cameraGuard.GuardCount<1)
+                            poseErrors.Add("native-camera-fix-guard-foreign-owner");
+                        else {int count=cameraGuard.GuardCount;cameraGuard.Value=false;
+                            if(cameraGuard.GuardCount!=count-1)poseErrors.Add("native-camera-fix-guard-release-unverified");}
+                    }
+                    RenderTexture.active = beforeActive;
+                    if (target != null && !ReferenceEquals(camera.targetTexture,target)) { target.Release(); UnityEngine.Object.Destroy(target); }
+                    if (image != null) UnityEngine.Object.Destroy(image);
+                }
                 if (poseErrors.Count > 0) throw new InvalidOperationException("Fixture camera pose restoration failed: " + string.Join("|", poseErrors.ToArray()));
             }
+        }
+
+        private static JObject Cleanup2LineupRenderedObstructions(Camera camera,IList<UnitEntityData> actors,
+            Cleanup2ActorMetric[] metrics,Dictionary<Mesh,Tuple<Vector3[],int[]>> cache,System.Diagnostics.Stopwatch watch)
+        {
+            var samples=metrics.SelectMany(metric=>Cleanup2BoundsCorners(new Bounds((metric.Min+metric.Max)*.5f,metric.Max-metric.Min))
+                .Concat(new[]{metric.Crown,metric.Sole,(metric.Min+metric.Max)*.5f})).ToArray();
+            var hits=new JArray();var unknown=new JArray();int candidates=0,triangles=0;
+            // Static opaque scene meshes only. An AABB narrows candidates; it
+            // never establishes occlusion. The actual readable triangles are
+            // intersected in mesh-local space and immediately discarded/cache-
+            // scoped to this one capture. No proprietary geometry is exported.
+            foreach(var renderer in Resources.FindObjectsOfTypeAll<MeshRenderer>())
+            {
+                if(watch.Elapsed.TotalSeconds>15 || triangles>2000000 || candidates>128)
+                {unknown.Add(new JObject{["reason"]="static-mesh-survey-budget"});break;}
+                if(renderer==null || !renderer.enabled || !renderer.gameObject.activeInHierarchy ||
+                    !renderer.gameObject.scene.IsValid() || !renderer.gameObject.scene.isLoaded ||
+                    (camera.cullingMask & (1<<renderer.gameObject.layer))==0 ||
+                    renderer.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly ||
+                    renderer.GetComponentInParent<Kingmaker.View.UnitEntityView>()!=null ||
+                    !renderer.sharedMaterials.Any(material=>material!=null && material.renderQueue<=2500))continue;
+                var rays=new List<Tuple<Vector3,float>>();
+                foreach(var sample in samples)
+                {
+                    Vector3 delta=sample-camera.transform.position;float length=delta.magnitude;
+                    if(length<.01f)continue;
+                    float distance;
+                    if(renderer.bounds.IntersectRay(new Ray(camera.transform.position,delta/length),out distance) && distance<length-.02f)
+                        rays.Add(Tuple.Create(delta/length,length-.02f));
+                }
+                if(rays.Count==0)continue;candidates++;
+                Mesh mesh=renderer.GetComponent<MeshFilter>()?.sharedMesh;
+                if(mesh==null || !mesh.isReadable)
+                {
+                    if(unknown.Count<24)unknown.Add(new JObject{["renderer"]=renderer.name,["instance"]=renderer.GetInstanceID(),
+                        ["mesh"]=mesh?.name,["reason"]="ray-candidate-actual-triangles-unreadable;AABB-not-occlusion-proof"});
+                    continue;
+                }
+                Tuple<Vector3[],int[]> data;
+                if(!cache.TryGetValue(mesh,out data))
+                {
+                    if(mesh.vertexCount>250000 || cache.Values.Sum(value=>value.Item1.Length)+mesh.vertexCount>1000000)
+                    {unknown.Add(new JObject{["renderer"]=renderer.name,["reason"]="mesh-over-vertex-budget"});continue;}
+                    data=Tuple.Create(mesh.vertices,mesh.triangles);cache.Add(mesh,data);
+                }
+                Matrix4x4 local=renderer.transform.worldToLocalMatrix;
+                Vector3 origin=local.MultiplyPoint3x4(camera.transform.position);
+                bool blocked=false;
+                foreach(var ray in rays)
+                {
+                    Vector3 direction=local.MultiplyVector(ray.Item1);
+                    for(int index=0;index+2<data.Item2.Length;index+=3)
+                    {
+                        triangles++;
+                        if(triangles>2000000 || watch.Elapsed.TotalSeconds>15)break;
+                        Vector3 a=data.Item1[data.Item2[index]],edge1=data.Item1[data.Item2[index+1]]-a,
+                            edge2=data.Item1[data.Item2[index+2]]-a;
+                        Vector3 p=Vector3.Cross(direction,edge2);float determinant=Vector3.Dot(edge1,p);
+                        if(Mathf.Abs(determinant)<.0000001f)continue;
+                        float inverse=1f/determinant;Vector3 t=origin-a;
+                        float u=Vector3.Dot(t,p)*inverse;if(u<0 || u>1)continue;
+                        Vector3 q=Vector3.Cross(t,edge1);float v=Vector3.Dot(direction,q)*inverse;
+                        if(v<0 || u+v>1)continue;
+                        float distance=Vector3.Dot(edge2,q)*inverse;
+                        if(distance>.02f && distance<ray.Item2)
+                        {
+                            hits.Add(new JObject{["renderer"]=renderer.name,["instance"]=renderer.GetInstanceID(),
+                                ["mesh"]=mesh.name,["worldRayDistance"]=distance,["proof"]="actual-static-mesh-triangle-intersection"});
+                            blocked=true;break;
+                        }
+                    }
+                    if(blocked || triangles>2000000 || watch.Elapsed.TotalSeconds>15)break;
+                }
+                if(hits.Count>=24)break;
+            }
+            if(watch.Elapsed.TotalSeconds>15 || triangles>2000000 || candidates>128)
+                unknown.Add(new JObject{["reason"]="static-mesh-survey-budget"});
+            return new JObject{["qualified"]=hits.Count==0 && unknown.Count==0,["actualTriangleHits"]=hits,["unknownCandidates"]=unknown,
+                ["candidateRenderers"]=candidates,["triangleTests"]=triangles,["cumulativeWallSeconds"]=watch.Elapsed.TotalSeconds,
+                ["sampleRays"]=samples.Length,["limits"]="Bounded corner/crown/sole/center rays through static opaque-rendered mesh triangles. Bounds alone never establish a blocker; unreadable or overbudget ray candidates remain unknown and refuse this camera. No mesh data is exported and no renderer/material/collider changes."};
         }
 
         private static Dictionary<Collider, JObject> Cleanup2NativeSelectionColliderReferences()

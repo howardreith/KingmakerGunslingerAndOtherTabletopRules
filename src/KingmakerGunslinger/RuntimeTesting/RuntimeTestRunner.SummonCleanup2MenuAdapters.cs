@@ -8,19 +8,23 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.Group;
 using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
@@ -154,7 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cleanup2Check("menu-adapters-surface-limits", true, new JObject {
                     ["desktopCases"] = rows.Count, ["console"] = "unqualified: this request owns desktop input only; no console surface/VM was constructed or activated",
                     ["oldSave"] = "unqualified: fixture-established known/prepared/pinned objects are not cold-save hydration",
-                    ["castCostsAndSummons"] = "unqualified: targeted native menu/targeting observation, not execution acceptance",
+                    ["castCostsAndSummons"] = "Only the actual Druid SNAII Horse ordinary command/cast/debit is exercised; the twelve prepared/known quantity rows remain presentation observations.",
                     ["maximumWallSeconds"] = 240, ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "The supported desktop slice and distinct console, persistence and execution limits remain explicit.");
             }
@@ -382,7 +386,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["sourceExact"] = ReferenceEquals(value.ConvertedFrom, prepared), ["bookExact"] = ReferenceEquals(value.Spellbook, book),
                     ["variants"] = value.Blueprint.Variants?.Length ?? 0, ["dataLinks"] = DescribeExpandedSummoningAbilityData(value) })),
                 ["fixtureAccess"] = "Real native Druid book and exact class-progression conversion feature granted to disposable caster. Not a naturally levelled Druid or saved character." };
-            var inputs = new Cleanup2TooltipInputs(fixture.Caster); AbilityData selected = null;
+            var inputs = new Cleanup2TooltipInputs(fixture.Caster); AbilityData selected = null; bool castObserved = false;
+            Cleanup2SourceDebit debit = null;
             try
             {
                 source.OnToggleGroupClick();
@@ -390,12 +395,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);
                 if (popup == null || !popup.gameObject.activeInHierarchy) throw new InvalidOperationException("Actual Druid conversion popup absent.");
                 var rows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(value => value.gameObject.activeInHierarchy &&
-                    (value.MechanicSlot?.GetContentData() as AbilityData)?.ConvertedFrom == prepared).ToArray();
+                    Cleanup2DruidSourceChain(value.MechanicSlot?.GetContentData() as AbilityData, prepared, parent)).ToArray();
                 var exact = rows.Where(value => ReferenceEquals((value.MechanicSlot.GetContentData() as AbilityData)?.Blueprint, parent)).ToArray();
                 bool factoryExact = conversions.Any(value => ReferenceEquals(value.Blueprint, parent) && ReferenceEquals(value.ConvertedFrom, prepared) && ReferenceEquals(value.Spellbook, book));
                 var variants = parent.Variants ?? new BlueprintAbility[0];
                 bool flatFactory = variants.Length != 0 && variants.All(variant => conversions.Count(value =>
-                    ReferenceEquals(value.Blueprint, variant) && ReferenceEquals(value.ConvertedFrom, prepared) && ReferenceEquals(value.Spellbook, book)) == 1);
+                    ReferenceEquals(value.Blueprint, variant) && Cleanup2DruidSourceChain(value, prepared, parent)) == 1);
                 bool flatRows = flatFactory && variants.All(variant => rows.Count(value =>
                     ReferenceEquals((value.MechanicSlot.GetContentData() as AbilityData)?.Blueprint, variant)) == 1);
                 var horseSpec = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Single(value =>
@@ -409,48 +414,172 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["canonicalParentRows"] = exact.Length;
                 evidence["allCanonicalVariantsInLiveFactory"] = flatFactory; evidence["allCanonicalVariantsInNativeRows"] = flatRows;
                 evidence["horseRows"] = horseRows.Length;
-                evidence["nestedVariantRoute"] = flatRows ? "actual installed factory/widget expansion; native Horse visibility and targeting checked separately" :
+                evidence["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome;
+                evidence["nestedVariantRoute"] = flatRows ? "actual installed factory/widget expansion; native Horse selection/cast/debit required below" :
                     exact.Length == 1 && exact[0] is ActionBarGroupSlot ? "native-group-present; not navigated in this slice" :
                     "unqualified: parent-only native conversion row is not a nested group; no variant links fabricated";
-                bool contract = (factoryExact && exact.Length == 1 || flatRows && horseRows.Length == 1) && inputs.Unchanged();
+                bool contract = flatRows && horseRows.Length == 1 && inputs.Unchanged();
                 Cleanup2Check("menu-adapter-druid-native-conversion-contract", contract, evidence,
-                    "The actual Druid prepared-slot factory exposes either canonical SNA II or its complete installed native variant expansion with original source/book links; unsupported routing remains explicit.");
+                    "The actual Druid prepared-slot factory must expose the complete canonical SNA II child set with original native source/book links; parent-only conversion does not qualify creature selection.");
                 if (!contract) throw new InvalidOperationException("Installed native Druid conversion contract differs; inspect recorded factory/patch/rows.");
                 Func<bool> owns = () => mode.Current && Cleanup2NoNarrativeOverlay() && inputs.Unchanged() &&
                     Game.Instance.SelectedAbilityHandler.Ability == null &&
                     ReferenceEquals(source.MechanicSlot?.GetContentData(), prepared) && popup.gameObject.activeInHierarchy;
-                foreach (int frame in screens.Capture("menu-adapter-druid-native-conversion", evidence, owns)) yield return frame;
-                // Stock native row OnClick passes this exact parent to the
-                // targeting handler. Owner-anchored immediate casts are not
-                // exercised here; no pending command is invented or advanced.
-                var clickedRow = flatRows && horseRows.Length == 1 ? horseRows[0] : exact[0];
+                var clickedRow = horseRows.Single();
                 selected = (AbilityData)clickedRow.MechanicSlot.GetContentData();
                 string anchor = selected.TargetAnchor.ToString();
-                // No scrolling helper is borrowed from a canonical-parent
-                // popup when this source is an unrelated prepared spell.
-                // An installed expansion outside the screen is recorded, not
-                // made reachable with an invented viewport.
-                bool visible = Kingmaker.UI.Common.UIUtility.IsTransformInScreen(clickedRow.transform);
-                bool mayTarget = visible && selected.TargetAnchor != AbilityTargetAnchor.Owner && !(clickedRow is ActionBarGroupSlot);
-                if (mayTarget) clickedRow.OnClick();
-                bool handed = mayTarget && ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability, selected) && fixture.Caster.Commands.Empty;
-                Cleanup2Check("menu-adapter-druid-parent-targeting", !mayTarget || handed,
-                    new JObject { ["targetAnchor"] = anchor, ["rowClicked"] = mayTarget, ["exactNativeParentSelected"] = handed,
-                        ["parent"] = parent.AssetGuid, ["selectedAbility"] = selected.Blueprint.AssetGuid,
-                        ["nativeRowOnScreen"] = visible, ["slotAvailable"] = prepared.ParamSpellSlot.Available,
-                        ["sourceStillExact"] = ReferenceEquals(selected.ConvertedFrom, prepared),
-                        ["variantChoice"] = flatRows ? "installed complete native variant expansion; only this pending Horse targeting handoff observed, not cast/debit" :
-                            "unqualified: parent handoff is not evidence that Horse/other nested variants can be selected",
-                        ["disposition"] = mayTarget ? "observed-real-row-targeting; no target submitted" : "unqualified: no safe pending-target-only route" },
-                    "A safe real conversion-row click hands its exact native parent to targeting without submitting a target or spending; incompatible immediate/nested routes remain unqualified.");
+                var scroll = Cleanup2DruidPopupSurface(source, popup, prepared, selected, owns);
+                Vector2 position = scroll.IsStationary ? Vector2.zero : scroll.Position;
+                Vector2 velocity = scroll.IsStationary ? Vector2.zero : scroll.Velocity;
+                Vector2 anchored = scroll.Content.anchoredPosition;
+                try
+                {
+                    foreach (int frame in Cleanup2RevealPopupRow(scroll, clickedRow, owns)) yield return frame;
+                    string title = SummonChoicePresentationPolicy.For("horse", SummonMultiplicity.One).Label;
+                    bool visible = Cleanup2FullyVisible(scroll, clickedRow);
+                    bool rowExact = visible && selected.Name == title && horse.Name == title && ReferenceEquals(clickedRow.Icon.sprite, horse.Icon) &&
+                        selected.TargetAnchor != AbilityTargetAnchor.Owner && !(clickedRow is ActionBarGroupSlot) && Cleanup2DruidSourceChain(selected, prepared, parent);
+                    evidence["horseVisible"] = visible; evidence["horseTitle"] = selected.Name; evidence["expectedTitle"] = title;
+                    evidence["horseIconExact"] = ReferenceEquals(clickedRow.Icon.sprite, horse.Icon); evidence["horseTargetAnchor"] = anchor;
+                    evidence["retainedNativeConversionParent"] = ReferenceEquals(selected.ConvertedFrom?.Blueprint, parent);
+                    Cleanup2Check("menu-adapter-druid-native-horse-row", rowExact, evidence,
+                        "The real Druid conversion popup exposes its exact Horse child with current label/icon, source chain and an actual visible native row.");
+                    if (!rowExact) throw new InvalidOperationException("Real Druid Horse row visibility/identity failed.");
+                    foreach (int frame in screens.Capture("menu-adapter-druid-native-conversion", evidence, () => owns() && Cleanup2FullyVisible(scroll, clickedRow))) yield return frame;
+                    debit = new Cleanup2SourceDebit(fixture.Caster);
+                    foreach (int frame in Cleanup2MenuAdapterDruidCast(fixture, selected, prepared, parent, clickedRow, debit, mode, watch,
+                        () => Cleanup2MenuAdapterHide(source, prepared))) yield return frame;
+                    castObserved = true;
+                }
+                finally
+                {
+                    // A successful row activation closes this exact native
+                    // popup through HideSubGroup; the existing layout owner
+                    // restores its native hierarchy on that lifecycle. Restore
+                    // scroll scalars here only if the popup remains ours/open.
+                    if (popup.gameObject.activeInHierarchy)
+                    {
+                        if (!scroll.Active) throw new InvalidOperationException("Druid popup scroll owner changed before exact restoration.");
+                        if (!scroll.IsStationary) { scroll.Velocity = Vector2.zero; Cleanup2SetPopupPosition(scroll, position); scroll.Content.anchoredPosition = anchored; scroll.Velocity = velocity; }
+                    }
+                }
             }
             finally
             {
                 if (selected != null && ReferenceEquals(Game.Instance.SelectedAbilityHandler?.Ability, selected))
                     Game.Instance.SelectedAbilityHandler.DropAbility();
                 Cleanup2MenuAdapterHide(source, prepared);
-                Cleanup2Check("menu-adapter-druid-no-spend", inputs.Unchanged(), inputs.Describe(),
-                    "Cancelling only this exact native targeting object preserves all native preparations, resource objects and amounts.");
+                bool preserved = castObserved && debit != null ? debit.ExactlyOne(prepared.ParamSpellSlot) : inputs.Unchanged();
+                Cleanup2Check("menu-adapter-druid-source-debit-restoration", preserved,
+                    castObserved && debit != null ? debit.Describe(prepared.ParamSpellSlot) : inputs.Describe(),
+                    "The observed ordinary Druid cast spends only its original preparation; a failure before casting must preserve every original input.");
+            }
+        }
+
+        private static bool Cleanup2DruidSourceChain(AbilityData child, AbilityData source, BlueprintAbility parent)
+        {
+            if (child == null || source == null || !ReferenceEquals(child.Spellbook, source.Spellbook)) return false;
+            if (ReferenceEquals(child.ConvertedFrom, source)) return true; // Preserve compatible installed native factory projections.
+            var conversion = child.ConvertedFrom;
+            return conversion != null && ReferenceEquals(conversion.Blueprint, parent) && ReferenceEquals(conversion.ConvertedFrom, source) &&
+                ReferenceEquals(conversion.Spellbook, source.Spellbook) && ReferenceEquals(child.Caster, source.Caster);
+        }
+
+        private NativeIconScreenEvidence.NativeRowScroll Cleanup2DruidPopupSurface(ActionBarGroupSlot source, ActionBarSpellsGroup popup,
+            AbilityData prepared, AbilityData child, Func<bool> owns)
+        {
+            var receipt = DruidSummonConversionVariantPatch.For(child);
+            ExpandedSummoningVariantMenuSnapshot snapshot;
+            if (receipt == null || !ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(popup, out snapshot) ||
+                snapshot.ParentGuid != prepared.Blueprint.AssetGuid || !snapshot.ExactSourceSlotCaptured)
+                throw new InvalidOperationException("Exact source-owned Druid conversion layout receipt required; unknown foreign layout is not adopted.");
+            var native = (List<ActionBarSpontaneousConvertedSlot>)typeof(ActionBarSpellsGroup).GetField("m_Slots", Cleanup2Fields).GetValue(popup);
+            var captured = native.ToArray(); var capturedData = captured.Select(value => value.MechanicSlot.GetContentData() as AbilityData).ToArray();
+            Func<bool> proof = () => owns() && receipt.Current && ReferenceEquals(receipt.Source, prepared) &&
+                ReferenceEquals(source.MechanicSlot, receipt.Mechanism) && ReferenceEquals(source.MechanicSlot?.GetContentData(), prepared) &&
+                ReferenceEquals(typeof(ActionBarSpellsGroup).GetField("m_SourceSpell", Cleanup2Fields).GetValue(popup), prepared) &&
+                ReferenceEquals(typeof(ActionBarSpellsGroup).GetField("m_Slots", Cleanup2Fields).GetValue(popup), native) && native.SequenceEqual(captured) &&
+                native.Select(value => value.MechanicSlot.GetContentData() as AbilityData).SequenceEqual(capturedData) &&
+                capturedData.SequenceEqual(receipt.ProjectedRows) && snapshot.SlotCount == captured.Length;
+            if (!proof()) throw new InvalidOperationException("Native Druid popup source/row ownership is unverified.");
+            var scrolls = popup.GetComponents<ScrollRect>().Where(value => value.enabled && value.gameObject.activeInHierarchy).ToArray();
+            if (snapshot.ScrollingRequired)
+            {
+                if (!snapshot.ScrollingInstalled || scrolls.Length != 1 || scrolls[0].content == null || scrolls[0].viewport == null ||
+                    !captured.All(value => value.transform.parent == scrolls[0].content)) throw new InvalidOperationException("Actual owned Druid popup viewport unavailable.");
+                return new NativeIconScreenEvidence.NativeRowScroll(scrolls[0], proof);
+            }
+            if (scrolls.Length != 0 || snapshot.ScrollingInstalled || !captured.All(value => value.transform.parent == popup.transform))
+                throw new InvalidOperationException("Native Druid stationary popup hierarchy changed.");
+            return NativeIconScreenEvidence.NativeRowScroll.StationaryPopup((RectTransform)popup.transform, proof);
+        }
+
+        private static AbilityData _cleanup2DruidCastExpected;
+        private static readonly List<RuleCastSpell> Cleanup2DruidCastRules = new List<RuleCastSpell>();
+        private static void Cleanup2DruidCastRulePostfix(RuleCastSpell __instance)
+        {
+            ExpandedSummoningPlayerPathRuleCastPostfix(__instance);
+            if (_cleanup2DruidCastExpected != null && __instance != null && Cleanup2DruidCastRules.Count < 8) Cleanup2DruidCastRules.Add(__instance);
+        }
+        private IEnumerable<int> Cleanup2MenuAdapterDruidCast(ExpandedSummoningCorrectionFixture fixture, AbilityData child, AbilityData source,
+            BlueprintAbility parent, ActionBarSlot row, Cleanup2SourceDebit debit, Cleanup2NativeDefaultScope mode, Stopwatch phase, Action closeOwnPopup)
+        {
+            if (_expandedSummoningPlayerPathCaptureActive || _cleanup2DruidCastExpected != null || !Cleanup2DruidSourceChain(child, source, parent) ||
+                !ReferenceEquals(row.MechanicSlot.GetContentData(), child) || child.TargetAnchor == AbilityTargetAnchor.Owner)
+                throw new InvalidOperationException("Exclusive exact native Druid Horse cast route required.");
+            var hooks = HarmonyInstance.Create("kmg.cleanup2.druid-conversion." + _request.RunId); UnitUseAbility command = null;
+            bool paused = Game.Instance.IsPaused;
+            try
+            {
+                const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
+                hooks.Patch(typeof(RuleCastSpell).GetMethod("OnTrigger"), null, new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("Cleanup2DruidCastRulePostfix", statics)), null);
+                hooks.Patch(typeof(ContextActionSpawnMonster).GetMethod("RunAction"), new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("ExpandedSummoningPlayerPathSpawnPrefix", statics)), null, null);
+                ExpandedSummoningRuleCapture.Clear(); ExpandedSummoningRuleDurationCapture.Clear(); ExpandedSummoningPlayerPathEvents.Clear(); Cleanup2DruidCastRules.Clear();
+                _expandedSummoningPlayerPathRuleCastCount = 0; _expandedSummoningPlayerPathSpawnActionCount = 0;
+                _cleanup2DruidCastExpected = child; _expandedSummoningPlayerPathCaptureActive = true;
+                row.OnClick();
+                bool selected = ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability, child) && debit.Unspent && fixture.Caster.Commands.Empty;
+                if (selected) closeOwnPopup();
+                bool targeted = selected && Game.Instance.SelectedAbilityHandler.OnClick(null, fixture.Caster.Position + new Vector3(2, 0, 2), 0);
+                command = fixture.Caster.Commands.GetCommand<UnitUseAbility>();
+                bool issued = targeted && command != null && ReferenceEquals(command.Spell, child);
+                var watch = Stopwatch.StartNew();
+                while (issued && watch.Elapsed.TotalSeconds < 25 && phase.Elapsed.TotalSeconds < 240 &&
+                    (_expandedSummoningPlayerPathRuleCastCount == 0 || !fixture.Caster.Commands.Empty))
+                {
+                    if (!mode.Current || !Cleanup2NoNarrativeOverlay() || Game.Instance.IsControllerGamepad ||
+                        (Game.Instance.SelectedAbilityHandler.Ability != null && !ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability, child)))
+                        throw new InvalidOperationException("Native Druid cast lost its exact mode/target owner.");
+                    Game.Instance.IsPaused = false; yield return 0;
+                }
+                var units = ExpandedSummoningRuleCapture.Where(value => value != null && ExpandedSummoningPlayerPathUnitExact(value, fixture.Caster)).Distinct().ToArray();
+                foreach (var unit in units) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
+                var expected = SummonSignatureReader.Read(child.Blueprint).Spawns().ToArray();
+                bool exact = issued && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty &&
+                    Cleanup2DruidCastRules.Count == 1 && Cleanup2DruidCastRules[0].Success && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child) &&
+                    _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
+                    expected.Length == 1 && units.Length == 1 && ExpandedSummoningRuleCapture.Distinct().Count() == 1 && units[0].Blueprint.AssetGuid == expected[0].Unit &&
+                    Cleanup2DruidSourceChain(child, source, parent) && debit.ExactlyOne(source.ParamSpellSlot);
+                Cleanup2Check("menu-adapter-druid-native-horse-cast-debit", exact, new JObject {
+                    ["source"] = source.Blueprint.AssetGuid, ["canonicalConversion"] = parent.AssetGuid, ["child"] = child.Blueprint.AssetGuid,
+                    ["book"] = child.Spellbook.Blueprint.AssetGuid, ["nativeCommandExact"] = issued, ["nativeRuleExactChildReference"] =
+                        Cleanup2DruidCastRules.Count == 1 && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child),
+                    ["retainedConversionParent"] = ReferenceEquals(child.ConvertedFrom?.Blueprint, parent),
+                    ["actualUnit"] = units.FirstOrDefault()?.Blueprint.AssetGuid, ["expectedUnit"] = expected.FirstOrDefault()?.Unit,
+                    ["nativePathEvents"] = new JArray(ExpandedSummoningPlayerPathEvents), ["debit"] = debit.Describe(source.ParamSpellSlot),
+                    ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["manualTicks"] = 0, ["forcedAct"] = false },
+                    "Choosing the visible real Druid Horse row reaches its exact native target/command/event, summons the catalog actor and spends only the actual original prepared source.");
+                if (!exact) throw new InvalidOperationException("Native Druid Horse cast/debit failed.");
+            }
+            finally
+            {
+                _cleanup2DruidCastExpected = null; _expandedSummoningPlayerPathCaptureActive = false; hooks.UnpatchAll(hooks.Id); Cleanup2DruidCastRules.Clear();
+                if (ReferenceEquals(Game.Instance.SelectedAbilityHandler?.Ability, child)) Game.Instance.SelectedAbilityHandler.DropAbility();
+                if (command != null && !command.IsFinished && ReferenceEquals(command.Spell, child) && ReferenceEquals(fixture.Caster.Commands.GetCommand<UnitUseAbility>(), command)) command.Interrupt(true);
+                var positive = ExpandedSummoningRuleCapture.Where(value => value != null && ExpandedSummoningPlayerPathUnitExact(value, fixture.Caster)).Distinct().ToArray();
+                foreach (var unit in positive) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
+                if (positive.Length != 0) DisposeExpandedSummoningUnits(fixture.Created, positive);
+                Game.Instance.IsPaused = paused;
             }
         }
     }

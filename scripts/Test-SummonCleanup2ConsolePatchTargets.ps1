@@ -54,7 +54,10 @@ try {
         @('ElementalConsolePreparationHeaderTooltipPatch','AbilityDataVM','TooltipObject',7),
         @('ElementalConsoleSpellCollectionPatch','ActionBarSelectorVm','CollectSpells',508),
         @('ElementalConsoleSourceResultPatch','ActionBarVM','Result',67),
-        @('ElementalConsoleSourceViewPatch','ActionBarSelectorView','Bind',-1)
+        @('ElementalConsoleSourceViewPatch','ActionBarSelectorView','Bind',-1),
+        @('DruidSummonConversionVariantPatch','MechanicActionBarSlotMemorizedSpell','GetConvertedAbilityData',287),
+        @('DruidSummonConversionSourceSlotPatch','ActionBarGroupSlot','OnToggleGroupClick',-1),
+        @('DruidSummonConversionMenuPatch','ActionBarSpellsGroup','Toggle',-1)
     )
     $failures=New-Object 'Collections.Generic.List[string]'
     $passed=0
@@ -96,6 +99,6 @@ try {
     $pp.GetField('containerAttributes',$flags).SetValue($unprepared,$old)
     if($null -ne $pp.GetMethod('GetOriginalMethod',$flags).Invoke($unprepared,@())){throw 'Negative fixture unexpectedly resolved the old untyped constructor.'}
     $passed++;Write-Output 'PASS old untyped constructor remains unresolved (actual Harmony12 negative fixture)'
-    Write-Output ('Targets: '+$passed+'/18 passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
+    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+1)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
     if($failures.Count -gt 0){throw ($failures -join [Environment]::NewLine)}
 } finally {[AppDomain]::CurrentDomain.remove_AssemblyResolve($resolver)}
