@@ -242,8 +242,20 @@ namespace KingmakerGunslinger.Summoning
             if (output.Count >= 65535 || outputSkin.Any(w => Unpack(w).Any(p => p.Key < 0 || p.Key >= boneCount)))
                 throw new InvalidOperationException("Ettin private mesh exceeds audited index/skin bounds.");
             return new Data { Vertices = output.Select(r => r.P).ToArray(), UV = output.Select(r => r.UV).ToArray(),
-                Normals = output.Select(r => normals[Key(r.P)].normalized).ToArray(),
+                Normals = output.Select(r => NormalizeSurfaceNormal(normals[Key(r.P)])).ToArray(),
                 Weights = outputSkin.ToArray(), Triangles = outputIndices.ToArray() };
+        }
+
+        private static Vector3 NormalizeSurfaceNormal(Vector3 value)
+        {
+            // Unity's Vector3.normalized zeros vectors below 1e-5. Area-weighted
+            // normals on the donor's small facial triangles can be smaller while
+            // still having a well-defined direction. Normalize without that
+            // positional epsilon; genuinely degenerate surfaces still refuse.
+            double length = Math.Sqrt((double)value.x * value.x + (double)value.y * value.y + (double)value.z * value.z);
+            if (double.IsNaN(length) || double.IsInfinity(length) || length <= 1e-20)
+                throw new InvalidOperationException("Ettin surface has an undefined normal.");
+            return new Vector3((float)(value.x / length), (float)(value.y / length), (float)(value.z / length));
         }
 
         private static Row Mix(Row a, Row b, float t)
