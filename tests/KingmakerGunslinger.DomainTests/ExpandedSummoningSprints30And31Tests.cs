@@ -7,25 +7,26 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Abilities are22 scoped roots plus seven private abilities (Dretch2,
-        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid).
-        internal const int RegisteredAbilityIdentityCount = 22 + 7;
-        internal const int RegisteredAreaIdentityCount = 2;
-        internal const int RegisteredResourceIdentityCount = 2;
-        internal const int RegisteredAiIdentityCount = 7;
-        internal const int RegisteredBrainIdentityCount = 3;
-        internal const int RegisteredBuffIdentityCount = 5;
-        internal const int RegisteredFeatureIdentityCount = 6;
-        internal const int RegisteredWeaponIdentityCount = 7;
+        // Abilities are23 scoped roots plus eight private abilities (Dretch2,
+        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal).
+        internal const int RegisteredAbilityIdentityCount = 23 + 8;
+        internal const int RegisteredAreaIdentityCount = 3;
+        internal const int RegisteredResourceIdentityCount = 3;
+        internal const int RegisteredAiIdentityCount = 8;
+        internal const int RegisteredBrainIdentityCount = 4;
+        internal const int RegisteredBuffIdentityCount = 7;
+        internal const int RegisteredFeatureIdentityCount = 7;
+        internal const int RegisteredWeaponIdentityCount = 9;
         internal const int RegisteredSpellbookIdentityCount = 1;
         internal const int RegisteredSpellListIdentityCount = 1;
-        internal const int RegisteredUnitTypeIdentityCount = 4;
-        internal const int RegisteredWeaponTypeIdentityCount = 7;
+        internal const int RegisteredUnitTypeIdentityCount = 5;
+        internal const int RegisteredWeaponTypeIdentityCount = 9;
         internal const int RegisteredAidEligibilityIdentityCount = 3;
         internal const int RegisteredDretchEligibilityIdentityCount = 2;
         internal const int RegisteredFogSafetyIdentityCount = 1;
         internal const int RegisteredBanishmentEligibilityIdentityCount = 1;
         internal const int RegisteredHealingEligibilityIdentityCount = 1;
+        internal const int RegisteredAstralHealingEligibilityIdentityCount = 1;
 
         internal static void FirstSliceKeepsExactHiddenRoutesAndReleasedSurface()
         {
@@ -39,16 +40,20 @@ namespace KingmakerGunslinger.DomainTests
             var trumpet = all.Where(value => value.Creature.Key == "trumpet-archon").ToArray();
             var hound = all.Where(value => value.Creature.Key == "hound-archon").ToArray();
             var lemure = all.Where(value => value.Creature.Key == "lemure").ToArray();
+            var astral = all.Where(value => value.Creature.Key == "astral-deva").ToArray();
             Assertions.True(lemure.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(2, 8)), "Exact SM II-IX Lemure routes.");
             Assertions.True(lemure.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "No SNA/template/public Lemure root.");
-            Assertions.True(all.Where(value => value.Creature.Key != "lemure" && value.Creature.Key != "dretch" && value.Creature.Key != "hound-archon" && value.Creature.Key != "trumpet-archon").All(SummonVisibilityCatalog.IsPublished), "Every released creature stays public.");
+            Assertions.True(all.Where(value => value.Creature.Key != "lemure" && value.Creature.Key != "dretch" && value.Creature.Key != "hound-archon" && value.Creature.Key != "trumpet-archon" && value.Creature.Key != "astral-deva").All(SummonVisibilityCatalog.IsPublished), "Every released creature stays public.");
             Assertions.True(dretch.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(3, 7)) && dretch.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "Dretch owns exactly seven hidden untemplated SM III-IX roots.");
             Assertions.Equal(SummonMultiplicity.One, dretch[0].Multiplicity, "SM III Dretch is one.");
             Assertions.Equal(SummonMultiplicity.OneD3, dretch[1].Multiplicity, "SM IV Dretch is 1d3.");
             Assertions.True(dretch.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM V-IX Dretch are 1d4+1.");
-            Assertions.Equal(lemure.Length + dretch.Length + hound.Length + trumpet.Length, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "Only the implemented first slice is suppressed.");
-            Assertions.Equal(all.Length - lemure.Length - dretch.Length - hound.Length - trumpet.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
+            Assertions.Equal(lemure.Length + dretch.Length + hound.Length + trumpet.Length + astral.Length, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "Only the implemented first slice is suppressed.");
+            Assertions.Equal(all.Length - lemure.Length - dretch.Length - hound.Length - trumpet.Length - astral.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
             Assertions.True(hound.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(4, 6)) && hound.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "Hound owns exactly six hidden untemplated SM IV-IX roots.");
+            Assertions.True(astral.Length == 1 && astral[0].ParentTier == 9 && astral[0].Family == SummonFamily.Monster &&
+                astral[0].Multiplicity == SummonMultiplicity.One && !astral[0].Creature.MonsterTemplated &&
+                !SummonVisibilityCatalog.IsPublished(astral[0]), "Astral owns exactly one hidden untemplated SM IX root.");
             Assertions.True(trumpet.Length == 1 && trumpet[0].ParentTier == 9 && trumpet[0].Family == SummonFamily.Monster &&
                 trumpet[0].Multiplicity == SummonMultiplicity.One && !trumpet[0].Creature.MonsterTemplated &&
                 !SummonVisibilityCatalog.IsPublished(trumpet[0]), "Trumpet owns exactly one hidden untemplated SM IX root.");
@@ -59,6 +64,27 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummonMultiplicity.OneD3, lemure[1].Multiplicity, "SM III is 1d3.");
             Assertions.True(lemure.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM IV-IX are 1d4+1.");
         }
+        internal static void AstralCoreRulesKeepDistinctLevelsAndAuraBoundary()
+        {
+            AstralDevaRulesPolicy.Validate();
+            Assertions.Equal(172, AstralDevaRulesPolicy.AdultHitPoints(), "Adult racial dice, Constitution and Toughness remain distinct.");
+            Assertions.Equal(25, AstralDevaRulesPolicy.StunDifficultyClass(), "Two-hit stun uses racial HD and live Strength.");
+            Assertions.Equal(26, AstralDevaRulesPolicy.WarhammerAttackBonus(), "Enhanced focused warhammer attack.");
+            Assertions.Equal(14, AstralDevaRulesPolicy.WarhammerDamageBonus(), "Two-handed hammer uses live one-and-a-half Strength plus enhancement.");
+            Assertions.Equal(23, AstralDevaRulesPolicy.SlamAttackBonus(), "Alternative slam has no hammer enhancement or focus.");
+            Assertions.Equal(12, AstralDevaRulesPolicy.SlamDamageBonus(), "Lone primary slam uses live one-and-a-half Strength.");
+            Assertions.True(AstralDevaRulesPolicy.BlocksLesserGlobe(3, true, false, 6.7f, 0.5f), "Outside level-three spell is blocked.");
+            Assertions.True(AstralDevaRulesPolicy.BlocksLesserGlobe(0, false, true, 7f, 0f), "Outside level-zero SLA is blocked.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(3, true, false, 6.596f, 0.5f), "Origin on the aura boundary remains inside.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(4, true, false, 20f, 0f), "Level-four spell passes the lesser globe.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(3, false, false, 20f, 0f), "Non-spell and non-SLA effects pass.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(-1, true, false, 20f, 0f), "Missing spell-level attribution cannot manufacture immunity.");
+            Assertions.Equal(13, AstralDevaRulesPolicy.SpellLikeCasterLevel, "Astral SLAs stay CL13.");
+            Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
+            Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
+            Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");
+        }
+
         internal static void BootstrapCannotAdmitSaveOrUnsupportedPhases()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview;

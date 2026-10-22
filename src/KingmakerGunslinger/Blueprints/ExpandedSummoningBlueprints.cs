@@ -110,6 +110,11 @@ namespace KingmakerGunslinger.Blueprints
                         var value = ScriptableObject.CreateInstance<TrumpetPreparedHealingEligibility>();
                         value.name = InternalName(identity.Symbol); return value;
                     });
+                else if (identity.PlannedType == "AstralHealingEligibility")
+                    blueprint = registry.Register<AstralHealingEligibility>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<AstralHealingEligibility>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "BlueprintBrain")
                     blueprint = registry.Register<BlueprintBrain>(identity.Symbol,
                         () => CreateBrainShell(identity.Symbol));

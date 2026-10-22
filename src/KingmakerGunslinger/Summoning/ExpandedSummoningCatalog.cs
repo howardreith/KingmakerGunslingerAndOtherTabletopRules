@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 100, 567);
+            ValidateFamily(SummonFamily.Monster, 101, 568);
             ValidateFamily(SummonFamily.NaturesAlly, 104, 582);
         }
 
@@ -149,7 +149,8 @@ namespace KingmakerGunslinger.Summoning
                 C("lemure","Lemure",2,false,null,"Lizardfolk rig; original body pending"),
                 C("dretch","Dretch",3,false,null,"Lizardfolk rig; original body pending"),
                 C("hound-archon","Hound Archon",4,false,null,"Lizardfolk rig; original canine-headed body pending"),
-                C("trumpet-archon","Trumpet Archon",9,false,null,"Native deva; body and trumpet presentation pending")
+                C("trumpet-archon","Trumpet Archon",9,false,null,"Native deva; body and trumpet presentation pending"),
+                C("astral-deva","Astral Deva",9,false,null,"Native deva")
             };
         }
 
