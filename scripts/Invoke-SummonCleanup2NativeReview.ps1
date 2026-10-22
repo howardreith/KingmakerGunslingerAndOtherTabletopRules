@@ -5,7 +5,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][ValidateSet('0.0.163')][string]$ExpectedVersion,
-    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies')][string]$Phase
+    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies')][string]$Phase
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
@@ -15,7 +15,7 @@ $root=Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 . (Join-Path $PSScriptRoot 'TeleportationPersistence.Common.ps1')
 . (Join-Path $PSScriptRoot 'SummonCleanup2CurrentStack.Common.ps1')
-if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies')){throw 'Exact case-sensitive Cleanup2 phase required.'}
+if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies')){throw 'Exact case-sensitive Cleanup2 phase required.'}
 Assert-KmgUnelevated
 Assert-KmgNotRunning
 $candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose 'summon-cleanup-iteration2'
@@ -36,6 +36,7 @@ try {
     & (Join-Path $PSScriptRoot 'compatibility/Invoke-KingmakerCompatibilityProfile.ps1') `
         -ProfileId 'gunslinger-only' -Scenario @('disposable-expanded-summoning-cleanup2-native-review') `
         -Parameters @{reviewPhase=$Phase} -RuntimeTimeoutSeconds 450 -ReuseInstalledArtifact `
+        -ExpandedSummoningDisabled:($Phase -ceq 'elementals-off') `
         -DevelopmentPurpose 'summon-cleanup-iteration2' -PackagePath $candidate.packagePath -Confirm:$false
 } catch {$failure=$_;$record.status='FAILED';$record.error=$_.Exception.Message}
 finally {

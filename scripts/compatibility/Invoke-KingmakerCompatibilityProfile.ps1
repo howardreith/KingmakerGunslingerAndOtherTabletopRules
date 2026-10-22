@@ -153,10 +153,13 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeAutomation.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'SummonCleanup2CurrentStack.Common.ps1')
-if ($ExpandedSummoningDisabled -and
+$cleanup2ModuleOff = $Scenario.Count -eq 1 -and
+    (Test-KmgCleanup2ReviewPhaseScope -Scenario $Scenario[0] -Parameters $Parameters) -and
+    $Parameters.reviewPhase -ceq 'elementals-off'
+if ($ExpandedSummoningDisabled -and -not $cleanup2ModuleOff -and
     ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
         $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
-    throw 'Sprint 22 module OFF requires the exact Ankylosaurus working-save verify/cleanup request.'
+    throw 'Module OFF requires exact Ankylosaurus verify/cleanup or the save-free Cleanup2 elementals-off request.'
 }
 if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
     throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'

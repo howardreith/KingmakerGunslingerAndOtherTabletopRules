@@ -24,12 +24,64 @@ using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using TMPro;
+using UniRx;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private sealed class Cleanup2ConsoleSelectionSnapshot
+        {
+            private readonly UnitSelectionManager _manager;
+            private readonly ReactiveProperty<UnitEntityData> _currentProperty;
+            private readonly UnitEntityData _current;
+            private readonly UnitEntityData[] _selected,_grouped;
+            private readonly List<UnitEntityData> _groupedList;
+            private static readonly FieldInfo Grouped=typeof(UnitSelectionManager).GetField("m_GroupedUnits",Cleanup2Fields);
+            internal bool Restored,GroupedReferenceExact,GroupedMembersExact;
+            internal string Outcome="not-restored";
+            internal Cleanup2ConsoleSelectionSnapshot(UnitSelectionManager manager)
+            {
+                if(Game.Instance.Player.IsInCombat)throw new InvalidOperationException("Idle native console selection required.");
+                _manager=manager;_currentProperty=manager.CurrentSelectUnit;_current=manager.CurrentSelectUnitValue;
+                _selected=manager.SelectedUnits.ToArray();_groupedList=(List<UnitEntityData>)Grouped.GetValue(manager);_grouped=_groupedList.ToArray();
+            }
+            internal bool Restore(ExpandedSummoningCorrectionFixture fixture)
+            {
+                Func<UnitEntityData,bool> original=value=>ReferenceEquals(value,_current) || _selected.Any(prior=>ReferenceEquals(prior,value)) ||
+                    _grouped.Any(prior=>ReferenceEquals(prior,value));
+                Func<UnitEntityData,bool> owned=value=>ReferenceEquals(value,fixture.Caster) || fixture.Created.Any(prior=>ReferenceEquals(prior,value));
+                var current=_manager.CurrentSelectUnitValue;
+                var grouped=(List<UnitEntityData>)Grouped.GetValue(_manager);
+                if(!ReferenceEquals(UnitSelectionManager.Instance,_manager) || !ReferenceEquals(_manager.CurrentSelectUnit,_currentProperty) ||
+                    Game.Instance.Player.IsInCombat || (current!=null && !original(current) && !owned(current)) ||
+                    _manager.SelectedUnits.Any(value=>!original(value) && !owned(value)) || grouped.Any(value=>!original(value) && !owned(value)))
+                {Outcome="foreign-console-selection-preserved-no-write";return false;}
+                typeof(UnitSelectionManager).GetMethod("Clear",Cleanup2Fields).Invoke(_manager,null);
+                // Native UpdateGroupedUnit rebuilds from actual live
+                // IsDirectlyControllable && IsLink. Unlink only new, positively
+                // fixture-owned units that were never in the captured group.
+                foreach(var unit in fixture.Created.Concat(new[]{fixture.Caster}).Distinct().Where(value=>value!=null && !value.Destroyed &&
+                    !_grouped.Any(prior=>ReferenceEquals(prior,value)) && value.IsLink))_manager.UnlinkUnit(unit);
+                typeof(UnitSelectionManager).GetMethod("UpdateGroupedUnit",Cleanup2Fields).Invoke(_manager,null);
+                foreach(var unit in _selected)if(unit?.View!=null)_manager.SelectUnit(unit.View,true,false,false);
+                if(_current!=null)_manager.ForceSelectUnit(_current,false,false);
+                else if(_manager.CurrentSelectUnitValue==null || owned(_manager.CurrentSelectUnitValue))
+                    _currentProperty.Value=null; // Exact captured native property; Clear never clears it.
+                grouped=(List<UnitEntityData>)Grouped.GetValue(_manager);
+                GroupedReferenceExact=ReferenceEquals(grouped,_groupedList);GroupedMembersExact=grouped.SequenceEqual(_grouped);
+                Restored=GroupedReferenceExact && GroupedMembersExact && _manager.SelectedUnits.SequenceEqual(_selected) &&
+                    ReferenceEquals(_manager.CurrentSelectUnitValue,_current);
+                Outcome=Restored?"native-console-selection-and-group-exact":"native-console-selection-restoration-unverified";
+                return Restored;
+            }
+            internal JObject Describe(){return new JObject { ["outcome"]=Outcome,["restored"]=Restored,
+                ["originalCurrentWasNull"]=_current==null,["currentExact"]=ReferenceEquals(_manager.CurrentSelectUnitValue,_current),
+                ["groupedListReferenceExact"]=GroupedReferenceExact,["groupedMembersExact"]=GroupedMembersExact,
+                ["selectedExact"]=_manager.SelectedUnits.SequenceEqual(_selected) };}
+        }
+
         private bool Cleanup2ConsoleNativeUiReady()
         {
             if(!IsSummonCleanup2Review || _request.Parameters==null ||
@@ -63,6 +115,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)!=null)
                 throw new InvalidOperationException("Idle actual console action bar and character service required.");
             var party=player.Party.ToArray();var selected=selection.SelectedUnits.ToArray();var current=selection.CurrentSelectUnitValue;
+            var selectionState=new Cleanup2ConsoleSelectionSnapshot(selection);
             var original=party.Select(value=>new Cleanup2TooltipInputs(value)).ToArray();
             var originalPins=party.Select(value=>new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
             var originalLayers=GamePad.Instance.Layers.ToArray();bool added=false;
@@ -182,19 +235,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         typeof(ActionBarVM).GetMethod("HideSelectorVm",Cleanup2Fields).Invoke(bar,null);
                     if(typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service) is SpellBookVM vm &&
                         ReferenceEquals(vm.UnitEntity.Value,fixture.Caster))vm.Back();
-                    if(selection.SelectedUnits.All(value=>ReferenceEquals(value,fixture.Caster) || selected.Any(prior=>ReferenceEquals(prior,value))))
-                    {
-                        typeof(UnitSelectionManager).GetMethod("Clear",Cleanup2Fields).Invoke(selection,null);
-                        foreach(var unit in selected)if(unit?.View!=null)selection.SelectUnit(unit.View,true,false,false);
-                        if(current!=null && !ReferenceEquals(selection.CurrentSelectUnitValue,current))selection.ForceSelectUnit(current,false,false);
-                    }
                     if(added){player.PartyCharacters.Remove(fixture.Caster);player.InvalidateCharacterLists();player.UpdateCharacterLists();}
+                    bool selectionRestored=selectionState.Restore(fixture);
                     bool restored=player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(selection.CurrentSelectUnitValue,current) && original.All(value=>value.Unchanged()) && originalPins.All(value=>value.IsRestored()) &&
-                        GamePad.Instance.Layers.SequenceEqual(originalLayers);
+                        GamePad.Instance.Layers.SequenceEqual(originalLayers) && selectionRestored;
                     Cleanup2Check("elemental-console-native-ui-restored",restored,new JObject { ["partyExact"]=player.Party.SequenceEqual(party),
                         ["selectionExact"]=selection.SelectedUnits.SequenceEqual(selected),["currentUnitExact"]=ReferenceEquals(selection.CurrentSelectUnitValue,current),
                         ["originalInputsExact"]=original.All(value=>value.Unchanged()),["pinsExact"]=originalPins.All(value=>value.IsRestored()),
+                        ["nativeSelectionRestoration"]=selectionState.Describe(),
                         ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(originalLayers) },
                         "All original native party/selection/source budgets/pins and controller input layers restore before exiting the owned Default scope.");
                     if(!restored)throw new InvalidOperationException("Original console UI restoration is unverified.");

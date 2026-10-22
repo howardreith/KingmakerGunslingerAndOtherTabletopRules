@@ -196,6 +196,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Cleanup2SourcesCast(fixture, druidFire.Child, druidFire.Preparation,
                     () => ElementalSourceChooserView.ReviewChoose(2, druidFire.CreatureKey, druidFire, true), mode, watch, "small-fire-second-book", null)) yield return frame;
 
+                foreach (int frame in Cleanup2SourcesNaturesAllyFire(fixture, otherBook, spellGroup, mode, watch)) yield return frame;
+
                 AbilityData authored = null;
                 foreach (int frame in Cleanup2SourcesExtend(fixture, book, smallParent, mode, watch, screens, removeFacts,
                     value => authored = value)) yield return frame;
@@ -281,6 +283,82 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (phase.Elapsed.TotalSeconds > 360 || !mode.Current || !Cleanup2NoNarrativeOverlay() || Game.Instance.IsControllerGamepad)
                 throw new InvalidOperationException("Native elemental source phase exceeded wall/input/ownership bound.");
+        }
+
+        private static AbilityData _cleanup2SnaFireExpected;
+        private static readonly List<RuleCastSpell> Cleanup2SnaFireRules = new List<RuleCastSpell>();
+        private static void Cleanup2SourcesSnaFireRulePostfix(RuleCastSpell __instance)
+        {
+            if (_cleanup2SnaFireExpected == null || __instance == null) return;
+            if (Cleanup2SnaFireRules.Count < 8) Cleanup2SnaFireRules.Add(__instance);
+        }
+
+        private IEnumerable<int> Cleanup2SourcesNaturesAllyFire(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
+            ActionBarGroupElement group, Cleanup2NativeDefaultScope mode, Stopwatch phase)
+        {
+            Cleanup2SourcesBoundary(mode, phase);
+            var rank = ElementalSourceChooserPolicy.Rank(2);
+            var parent = Cleanup2ElementalAbility(fixture, rank.NaturesAllyParentGuid);
+            var spec = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Single(value => value.ParentTier == 2 &&
+                value.Multiplicity == SummonMultiplicity.One && value.Creature.Key == "small-fire-elemental");
+            var expectedChild = ExpandedSummoningRoot(fixture.Blueprints, spec);
+            if (!book.Blueprint.SpellList.GetSpells(2).Any(value => ReferenceEquals(value, parent)) || !SummonVisibilityCatalog.IsPublished(spec) ||
+                parent.Variants == null || parent.Variants.Count(value => ReferenceEquals(value, expectedChild)) != 1)
+                throw new InvalidOperationException("Exact ordinary native Druid SNAII parent and published one-Small-Fire child required.");
+            // This is the actual Druid list/book, not SNA granted to a Wizard
+            // list or an inferred equivalent standalone/SM invocation.
+            PrepareExpandedSummoningPlayerPathSpell(book, parent, parent, 2); book.Rest(); group.Fill(fixture.Caster);
+            if (!group.ToggleState) group.OnClick();
+            for (int frame = 0; frame < 4; frame++) yield return 0;
+            var session = ElementalSourceChooserRuntime.Session(group);
+            if (session == null || !session.Current) throw new InvalidOperationException("Current native SNA source chooser session required.");
+            var source = session.Sources.Single(value => value.CreatureKey == "small-fire-elemental" && ReferenceEquals(value.Book, book) &&
+                ReferenceEquals(value.Source.Blueprint, parent) && ReferenceEquals(value.Child.Blueprint, expectedChild) && !value.Source.HasMetamagic(Metamagic.Extend));
+            if (!ReferenceEquals(source.PresentationParent, parent) || source.Preparation == null || source.Validate() != null || _cleanup2SnaFireExpected != null)
+                throw new InvalidOperationException("Exact independent native SNAII source/preparation context required.");
+            string parentRules = SummonSignatureReader.Read(parent).Render();
+            string childRules = SummonSignatureReader.Read(expectedChild).Render();
+            var action = source.Child.RuntimeActionType; bool fullRound = source.Child.RequireFullRoundAction;
+            var meta = source.Child.MetamagicData; var nativeSlot = source.Child.ParamSpellSlot;
+            var sourceData = source.Source; var childData = source.Child;
+            var hooks = HarmonyInstance.Create("kmg.cleanup2.sna-fire-source." + _request.RunId);
+            JObject cast = null;
+            try
+            {
+                Cleanup2SnaFireRules.Clear(); _cleanup2SnaFireExpected = childData;
+                hooks.Patch(typeof(RuleCastSpell).GetMethod("OnTrigger"), null, new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod(
+                    "Cleanup2SourcesSnaFireRulePostfix", BindingFlags.Static | BindingFlags.NonPublic)), null);
+                foreach (int frame in Cleanup2SourcesReady(group, source, mode, phase)) yield return frame;
+                foreach (int frame in Cleanup2SourcesCast(fixture, childData, source.Preparation,
+                    () => ElementalSourceChooserView.ReviewChoose(2, source.CreatureKey, source, true), mode, phase, "small-fire-native-snaII",
+                    value => cast = value)) yield return frame;
+                bool exact = cast != null && (bool)cast["sourceLinksExact"] && Cleanup2SnaFireRules.Count == 1 && Cleanup2SnaFireRules[0].Success &&
+                    ReferenceEquals(Cleanup2SnaFireRules[0].Spell, childData) && ReferenceEquals(childData.ConvertedFrom, sourceData) &&
+                    ReferenceEquals(childData.Spellbook, book) && ReferenceEquals(childData.Blueprint, expectedChild) &&
+                    ReferenceEquals(childData.MetamagicData, meta) && ReferenceEquals(childData.ParamSpellSlot, nativeSlot) &&
+                    childData.RuntimeActionType == action && childData.RequireFullRoundAction == fullRound &&
+                    SummonSignatureReader.Read(parent).Render() == parentRules && SummonSignatureReader.Read(expectedChild).Render() == childRules;
+                Cleanup2Check("elemental-sources-native-snaII-small-fire-identity", exact, new JObject {
+                    ["family"] = "NaturesAlly", ["parent"] = parent.AssetGuid, ["child"] = expectedChild.AssetGuid, ["stableKey"] = spec.StableKey,
+                    ["book"] = book.Blueprint.AssetGuid, ["nativeSourceMechanism"] = source.Mechanism.GetType().FullName,
+                    ["sourceDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(sourceData),
+                    ["childDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(childData),
+                    ["paramSlotIdentity"] = nativeSlot == null ? (JToken)JValue.CreateNull() : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(nativeSlot),
+                    ["sourceSpecificParentRules"] = parentRules, ["sourceSpecificChildRules"] = childRules,
+                    ["nativeAction"] = action.ToString(), ["fullRound"] = fullRound,
+                    ["ruleEvents"] = new JArray(Cleanup2SnaFireRules.Select(value => new JObject { ["exactChildDataReference"] = ReferenceEquals(value.Spell, childData),
+                        ["child"] = value.Spell?.Blueprint.AssetGuid, ["source"] = value.Spell?.ConvertedFrom?.Blueprint.AssetGuid, ["success"] = value.Success,
+                        ["contextIdentity"] = value.Context == null ? (JToken)JValue.CreateNull() : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value.Context) })),
+                    ["nativePathEvents"] = new JArray(ExpandedSummoningPlayerPathEvents), ["castAndExactAllBookDebit"] = cast,
+                    ["scope"] = "Actual Druid-book canonical SNAII chooser source/cast. Its own original rules, action, child and native event are observed; no equality to standalone or SM rules is assumed." },
+                    "The canonical SNAII source dispatches its exact native generated Small Fire child and RuleCastSpell object with its own unchanged rules/context and exact native preparation debit.");
+                if (!exact) throw new InvalidOperationException("Native SNAII Small Fire event/source/rule identity failed.");
+            }
+            finally
+            {
+                _cleanup2SnaFireExpected = null;
+                hooks.UnpatchAll(hooks.Id); Cleanup2SnaFireRules.Clear();
+            }
         }
 
         private static ElementalNativeSource Cleanup2SourcesFind(ActionBarGroupElement group, Spellbook book, string key, bool extend)

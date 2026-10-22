@@ -1338,6 +1338,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalPresentation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleScene.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalConsole.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleLearning.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2DesktopLearning.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalSources.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2MenuAdapters.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ModuleOff.cs" />
