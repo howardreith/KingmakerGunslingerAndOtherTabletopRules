@@ -85,13 +85,20 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 Vector3 farTarget;
                 string farLane, farDirection;
+                // The established lane survey requires reciprocal sight. A
+                // Lantern has no native attack-facing sight setup, while the
+                // ray requires only caster-to-target LOS. Reuse the successful
+                // archon fixture hostile to select geometry, then place the
+                // exact DR/SR Lantern target at that measured endpoint.
                 Vector3 farOrigin = Sprint24AiCombatLane(fixture.Caster, owner,
-                    target, 10.5f, out farTarget, out farLane, out farDirection);
+                    fixture.Hostile, 10.5f, out farTarget, out farLane, out farDirection);
 
                 Vector3 nearTarget;
                 string nearLane, nearDirection;
                 Vector3 nearOrigin = Sprint24AiCombatLane(fixture.Caster, owner,
-                    target, 6f, out nearTarget, out nearLane, out nearDirection);
+                    fixture.Hostile, 6f, out nearTarget, out nearLane, out nearDirection);
+                PlaceExpandedSummoningUnit(fixture.Hostile,
+                    fixture.Caster.Position + Vector3.forward * 30f);
                 PlaceExpandedSummoningUnit(owner, nearOrigin);
                 PlaceExpandedSummoningUnit(target, nearTarget);
                 owner.Commands.InterruptAll(true);
