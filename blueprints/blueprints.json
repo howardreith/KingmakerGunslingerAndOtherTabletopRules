@@ -58511,6 +58511,14 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.Special.LanternArchon.LightRayFull",
+      "guid": "fe85344c9eaa4d6596293ff1e3b6b552",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

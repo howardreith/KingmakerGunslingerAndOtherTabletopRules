@@ -6,6 +6,27 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningSprints30And31Tests
     {
+        // Exact post-v0.0.163 foundation delta for the current hidden slice.
+        // Abilities are22 scoped roots plus seven private abilities (Dretch2,
+        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid).
+        internal const int RegisteredAbilityIdentityCount = 22 + 7;
+        internal const int RegisteredAreaIdentityCount = 2;
+        internal const int RegisteredResourceIdentityCount = 2;
+        internal const int RegisteredAiIdentityCount = 7;
+        internal const int RegisteredBrainIdentityCount = 3;
+        internal const int RegisteredBuffIdentityCount = 5;
+        internal const int RegisteredFeatureIdentityCount = 6;
+        internal const int RegisteredWeaponIdentityCount = 7;
+        internal const int RegisteredSpellbookIdentityCount = 1;
+        internal const int RegisteredSpellListIdentityCount = 1;
+        internal const int RegisteredUnitTypeIdentityCount = 4;
+        internal const int RegisteredWeaponTypeIdentityCount = 7;
+        internal const int RegisteredAidEligibilityIdentityCount = 3;
+        internal const int RegisteredDretchEligibilityIdentityCount = 2;
+        internal const int RegisteredFogSafetyIdentityCount = 1;
+        internal const int RegisteredBanishmentEligibilityIdentityCount = 1;
+        internal const int RegisteredHealingEligibilityIdentityCount = 1;
+
         internal static void FirstSliceKeepsExactHiddenRoutesAndReleasedSurface()
         {
             ExpandedSummoningCatalog.Validate();

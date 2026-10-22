@@ -16067,9 +16067,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 value.name == "KMG_Summoning_Unit_LanternArchon");
             BlueprintAbility lanternRay = all.OfType<BlueprintAbility>().Single(value =>
                 value.name == "KMG_Summoning_Special_LanternArchon_LightRay");
+            BlueprintAbility lanternFullRay = all.OfType<BlueprintAbility>().Single(value =>
+                value.name == "KMG_Summoning_Special_LanternArchon_LightRayFull");
             AddClassLevels lanternLevels = lantern.ComponentsArray
                 .OfType<AddClassLevels>().Single();
             AbilityDeliverProjectile lanternDelivery = lanternRay.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            AbilityDeliverProjectile lanternFullDelivery = lanternFullRay.ComponentsArray
                 .OfType<AbilityDeliverProjectile>().Single();
             ContextActionDealDamage[] lanternDamage =
                 ExpandedSummoningObjects<ContextActionDealDamage>(
@@ -16083,7 +16087,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lantern.Constitution == 12 && lantern.Intelligence == 6 &&
                 lantern.Wisdom == 11 && lantern.Charisma == 10 &&
                 lantern.ComponentsArray.OfType<AddAbilityToCharacterComponent>()
-                    .Single().Abilities.SequenceEqual(new[] { lanternRay }) &&
+                    .Single().Abilities.SequenceEqual(new[] { lanternRay,
+                        lanternFullRay }) &&
                 lantern.Body.AdditionalLimbs.Length == 0 &&
                 lantern.Body.AdditionalSecondaryLimbs.Length == 0 &&
                 lantern.StartingInventory.Length == 0 &&
@@ -16093,8 +16098,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "1ce4878b5e714f659d0854a12f4b3cf2") ==
                         (lanternAuraAvailable ? 1 : 0) &&
                 lanternRay.Range == AbilityRange.Custom &&
+                lanternRay.ActionType == UnitCommand.CommandType.Standard &&
+                !lanternRay.IsFullRoundAction &&
                 lanternDelivery.NeedAttackRoll &&
-                lanternDelivery.Projectiles.Length == 2 &&
+                lanternDelivery.Projectiles.Length == 1 &&
+                lanternFullRay.Range == AbilityRange.Custom &&
+                lanternFullRay.ActionType == UnitCommand.CommandType.Standard &&
+                lanternFullRay.IsFullRoundAction &&
+                lanternFullDelivery.NeedAttackRoll &&
+                lanternFullDelivery.Projectiles.Length == 2 &&
                 lanternDamage.Length == 1 &&
                 lanternDamage[0].DamageType.Type == DamageType.Direct &&
                 lanternDamage[0].Value.DiceType == DiceType.D6 &&
@@ -22875,13 +22887,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             BlueprintAbility ray = blueprints.OfType<BlueprintAbility>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Special_LanternArchon_LightRay");
+            BlueprintAbility fullRay = blueprints.OfType<BlueprintAbility>()
+                .Single(value => value.name ==
+                    "KMG_Summoning_Special_LanternArchon_LightRayFull");
             AbilityDeliverProjectile delivery = ray.ComponentsArray
+                .OfType<AbilityDeliverProjectile>().Single();
+            AbilityDeliverProjectile fullDelivery = fullRay.ComponentsArray
                 .OfType<AbilityDeliverProjectile>().Single();
             return view != null && view.CenterTorso != null &&
                 delivery.Projectiles != null &&
-                delivery.Projectiles.Length == 2 &&
+                delivery.Projectiles.Length == 1 &&
                 delivery.Projectiles.All(value => value != null) &&
+                fullDelivery.Projectiles != null &&
+                fullDelivery.Projectiles.Length == 2 &&
+                fullDelivery.Projectiles.All(value => value != null) &&
                 ray.Animation == UnitAnimationActionCastSpell.CastAnimationStyle
+                    .Immediate &&
+                fullRay.Animation == UnitAnimationActionCastSpell.CastAnimationStyle
                     .Immediate;
         }
 
