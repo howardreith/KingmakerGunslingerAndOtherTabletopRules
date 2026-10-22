@@ -35,6 +35,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewDretch30Ai(fixture, phase == "dretch-ai-ally")) yield return frame;
                 yield break;
             }
+            if (phase == "archon-core")
+            {
+                foreach (int frame in ReviewArchon30Core(fixture)) yield return frame;
+                yield break;
+            }
             if (phase != "bootstrap") throw new InvalidOperationException("Unimplemented S30/S31 phase.");
             var inputs = RunExpandedSummoningSprints30And31Inputs();
             Sprint25Check("bootstrap-input-capture", inputs.Status == RuntimeTestStatuses.Pass,

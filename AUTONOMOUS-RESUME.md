@@ -6,6 +6,8 @@ Latest native source c5b430eb, twelfth development package: safe Dretch cloud AI
 
 Lemure and Dretch are hidden, real exported icons, borrowed bodies unqualified. Dretch Escape Artist+5, signed/resolved melee/defenses, body/lifecycle remain mandatory. Hound/Astral/Trumpet inert; their original paintings exist. Lantern retains all seven identities/routes. Continue small Hound/Lantern archon source isolation/support proof, then early genuine Trumpet CL14 prepared-slot/action/ownership before bulk caster configuration/final art. No shared native defect currently blocks this expansion.
 
+Current new source: seven private archon menace/Aid identities, previous7237 ledger entries exact, no roster/public-route additions. Fixed archon-core phase tests two Lantern emitters/source saves/cleanup/reset then real CL3 Aid AI. Focused compile14 selected tests PASS; development package/native observation next. Hound/Lantern cross-species, complete circle and actual hit-break remain mandatory, not claimed.
+
 Hound owner decision: general PF1 attack-role scaling, armed bite secondary/half Strength, unarmed bite and slam primary/full Strength; disclose printed discrepancies. Trumpet owner decision: general supernatural DC scaling,20 at14HD/Cha17/live Charisma; disclose printed19. Offensive dismissal/banishment including Dispel Evil/Holy Word riders versus summon travel filter remains pending; independent work continues. Preserve frozen artifacts and closed Sprint29 records below. One capped batch; no S32.
 
 # Sprint 29 — RELEASED / STOP

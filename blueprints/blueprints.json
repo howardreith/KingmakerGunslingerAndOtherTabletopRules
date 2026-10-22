@@ -57903,6 +57903,62 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.MenaceCarrier",
+      "guid": "19d87d1139314c508c4d9cb6287b886e",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.MenaceArea",
+      "guid": "f082e2d7e4504143b63f0f0cb4a66b4c",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.MenacePenalty",
+      "guid": "f2060ecf363a45299685b699ad0b2e08",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.MenaceImmunity",
+      "guid": "22c61fbed8524bf283df1de6dec445bd",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.LanternAid",
+      "guid": "a84134eb0e284b378dd4220335c7dcb5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.LanternAidAi",
+      "guid": "e6aabd165f7e489ebe9eb4083ecb4951",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Archon.LanternAidEligibility",
+      "guid": "ee539b997c4c4165a625c3e45536d0bf",
+      "plannedType": "ArchonAidEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
     }
   ]
 }

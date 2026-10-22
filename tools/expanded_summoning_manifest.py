@@ -778,6 +778,13 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.Dretch.CloudSafety", "Sprint29FogAiSafety"),
         ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearEligibility", "DretchSpellAiEligibility"),
         ("KMG.Summoning.OutsiderCelestial.Dretch.CloudEligibility", "DretchSpellAiEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenaceCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenaceArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenacePenalty", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenaceImmunity", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.LanternAid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.LanternAidAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.LanternAidEligibility", "ArchonAidEligibility"),
 
     ))
     expected = sum(identity_count(name) for name in (
