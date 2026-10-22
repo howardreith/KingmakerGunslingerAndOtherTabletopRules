@@ -192,14 +192,16 @@ namespace KingmakerGunslinger.Blueprints
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit; parameters.Abilities = new[] { fear, cloud };
             parameters.SpellLevels = new[] { 1, 3 }; parameters.CasterLevel = 2;
-            traits.ComponentsArray = new BlueprintComponent[] { dr, poison, poisonAbility,
+            var escapeArtist = ScriptableObject.CreateInstance<OutsiderEscapeArtist>();
+            escapeArtist.OwningBlueprint = unit; escapeArtist.Ranks = 2; escapeArtist.ClassSkill = true;
+            traits.ComponentsArray = new BlueprintComponent[] { dr, poison, poisonAbility, escapeArtist,
                 Energy(DamageEnergyType.Acid, 10), Energy(DamageEnergyType.Cold, 10),
                 Energy(DamageEnergyType.Fire, 10), armor, strength, equipment, parameters,
                 AddResource(fearResource), AddResource(cloudResource) };
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Dretch30Prefix + "Traits.Name", "Dretch Traits"),
                 LocalizationService.Create(Dretch30Prefix + "Traits.Description",
-                    "Demon: immune to electricity and poison; acid, cold and fire resistance 10. DR 5/good or cold iron. Cause Fear and the all-creature Stinking Cloud each once per summoning, CL 2. No nested summoning. Reference Escape Artist +5 requires its scoped combat consumer before qualification."), null);
+                    "Demon: immune to electricity and poison; acid, cold and fire resistance 10. DR 5/good or cold iron. Cause Fear and the all-creature Stinking Cloud each once per summoning, CL 2. No nested summoning. Escape Artist +5 uses the native break-free consumer only; ordinary Mobility is unchanged."), null);
             var levels = ScriptableObject.CreateInstance<AddClassLevels>();
             levels.CharacterClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(
                 library, OutsiderClassGuid, "Dretch outsider racial Hit Dice");

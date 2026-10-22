@@ -1316,12 +1316,14 @@
     <Compile Include="Summoning\ArchonConstantMagicCircle.cs" />
     <Compile Include="Summoning\TrumpetPreparedBook.cs" />
     <Compile Include="Summoning\Trumpet31Support.cs" />
+    <Compile Include="Summoning\OutsiderEscapeArtist.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Support.cs" />
     <Compile Include="Summoning\TrumpetInvisibilityPurgeArea.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Purge.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Book.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Caster.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningOutsiderEscape.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Purge.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Turn.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCelestial31Inputs.cs" />

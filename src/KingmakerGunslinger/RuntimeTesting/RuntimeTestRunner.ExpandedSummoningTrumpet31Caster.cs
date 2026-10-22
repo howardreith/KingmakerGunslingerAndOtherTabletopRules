@@ -117,6 +117,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
+                foreach (int frame in ReviewOutsiderEscape30And31(fixture)) yield return frame;
                 owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
                 sibling = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
                 victim = CastExpandedSummoningOwnTier(fixture, "lemure", fixture.Hostile);
