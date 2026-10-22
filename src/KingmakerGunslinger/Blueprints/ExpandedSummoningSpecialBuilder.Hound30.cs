@@ -16,6 +16,7 @@ using Kingmaker.Enums.Damage;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using KingmakerGunslinger.Summoning;
@@ -135,15 +136,28 @@ namespace KingmakerGunslinger.Blueprints
             trumpetTraits.ComponentsArray = trumpetTraits.ComponentsArray.Concat(new BlueprintComponent[] { trumpetGrant }).ToArray();
             var astral = Require<BlueprintUnit>(summoning.BySymbol, Astral31Unit);
             var astralTraits = Require<BlueprintFeature>(summoning.BySymbol, Astral31Prefix + "Traits");
-            if (astralTraits.GetComponent<ArchonConstantMagicCircle>() != null)
-                throw new InvalidOperationException("Astral shared circle was bound twice.");
+            var astralProtectiveCarrier = Require<BlueprintBuff>(summoning.BySymbol,
+                Astral31Prefix + "ProtectiveCarrier");
+            var existingAstralGrants = astralTraits.GetComponents<ArchonConstantMagicCircle>();
+            if (existingAstralGrants.Any(value => ReferenceEquals(value.Carrier, circle.Carrier)) ||
+                existingAstralGrants.Any(value => ReferenceEquals(value.Carrier, astralProtectiveCarrier)))
+                throw new InvalidOperationException("Astral constant aura was bound twice.");
             // The angel aura adds its own +4 protection and lesser globe, but
             // consumes the same canonical Magic Circle implementation as the
             // archons. Future fixes to that spell therefore carry here too.
             var astralGrant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
             astralGrant.OwningBlueprint = astral; astralGrant.Carrier = circle.Carrier;
             astralGrant.Spell = circle.Spell; astralGrant.CasterLevel = 15;
-            astralTraits.ComponentsArray = astralTraits.ComponentsArray.Concat(new BlueprintComponent[] { astralGrant }).ToArray();
+            // Raw AddFacts supplies no execution context and makes an area CL1.
+            // Give the distinct angel carrier the same exact-owner CL15 context
+            // without forking or weakening either aura's private mechanics.
+            var astralProtectiveGrant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
+            astralProtectiveGrant.OwningBlueprint = astral;
+            astralProtectiveGrant.Carrier = astralProtectiveCarrier;
+            astralProtectiveGrant.Spell = circle.Spell;
+            astralProtectiveGrant.CasterLevel = 15;
+            astralTraits.ComponentsArray = astralTraits.ComponentsArray.Concat(
+                new BlueprintComponent[] { astralGrant, astralProtectiveGrant }).ToArray();
         }
     }
 }

@@ -155,8 +155,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!profile) throw new InvalidOperationException(
                     "Astral native adult profile failed.");
 
-                var grant = owner.Blueprint.AddFacts.SelectMany(fact =>
-                    fact.ComponentsArray).OfType<ArchonConstantMagicCircle>().Single();
+                var grants = owner.Blueprint.AddFacts.SelectMany(fact =>
+                    fact.ComponentsArray).OfType<ArchonConstantMagicCircle>().ToArray();
+                var circleGrant = grants.Single(value => ReferenceEquals(value.Carrier, circle.Carrier));
+                var protectiveGrant = grants.Single(value =>
+                    ReferenceEquals(value.Carrier, auraCarrierBlueprint));
                 bool auras = auraCarrier.Context != null &&
                     ReferenceEquals(auraCarrier.Context.MaybeCaster, owner) &&
                     auraCarrier.Context.Params.CasterLevel == 15 &&
@@ -164,8 +167,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ownerAura.Context.Params.CasterLevel == 15 &&
                     ReferenceEquals(auraRecipient.Context?.MaybeCaster, owner) &&
                     circleAreas.Length == 1 && circleCarriers.Length == 1 &&
-                    grant.CasterLevel == 15 && ReferenceEquals(grant.Carrier, circle.Carrier) &&
-                    ReferenceEquals(grant.Spell, circle.Spell) && targetOutsideCircle;
+                    grants.Length == 2 &&
+                    circleGrant.CasterLevel == 15 &&
+                    ReferenceEquals(circleGrant.OwningBlueprint, owner.Blueprint) &&
+                    ReferenceEquals(circleGrant.Spell, circle.Spell) &&
+                    protectiveGrant.CasterLevel == 15 &&
+                    ReferenceEquals(protectiveGrant.OwningBlueprint, owner.Blueprint) &&
+                    ReferenceEquals(protectiveGrant.Spell, circle.Spell) &&
+                    targetOutsideCircle;
                 Sprint25Check("astral-core-owned-auras", auras, new JObject {
                     ["owner"] = owner.UniqueId,
                     ["protectiveCarrier"] = auraCarrierBlueprint.AssetGuid,
@@ -173,11 +182,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["protectiveRecipient"] = auraRecipient.Blueprint.AssetGuid,
                     ["protectiveCarrierCl"] = auraCarrier.Context?.Params?.CasterLevel,
                     ["protectiveAreaCl"] = ownerAura.Context?.Params?.CasterLevel,
+                    ["protectiveGrantCl"] = protectiveGrant.CasterLevel,
                     ["recipientSourceArea"] = auraRecipient.SourceAreaEffectId,
                     ["circleCarrier"] = circle.Carrier.AssetGuid,
                     ["circleArea"] = circle.Area.AssetGuid,
                     ["circleAreas"] = circleAreas.Length,
                     ["circleCl"] = circleAreas.FirstOrDefault()?.Context?.Params?.CasterLevel,
+                    ["circleGrantCl"] = circleGrant.CasterLevel,
                     ["targetDistanceMeters"] = Vector3.Distance(owner.Position, target.Position),
                     ["targetOutsideTenFootCircle"] = targetOutsideCircle },
                     "The exact owner emits its separate20-foot CL15 angel aura while consuming the published canonical CL15 Magic Circle; the5m target receives only the larger aura.");

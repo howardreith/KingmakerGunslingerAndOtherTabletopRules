@@ -155,7 +155,6 @@ namespace KingmakerGunslinger.Blueprints
                 AstralDevaRulesPolicy.Constitution, AstralDevaRulesPolicy.Intelligence,
                 AstralDevaRulesPolicy.Wisdom, AstralDevaRulesPolicy.Charisma, 50);
             ConfigureOutsiderOriginalExpiryVisual(library, unit);
-            var carrier = Require<BlueprintBuff>(bySymbol, Astral31Prefix + "ProtectiveCarrier");
             unit.AddFacts = new BlueprintUnitFact[] {
                 Feature(library, OutsiderTypeGuid, "outsider type"),
                 Feature(library, GoodSubtypeGuid, "good subtype"),
@@ -170,7 +169,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, IronWillGuid, "Iron Will"),
                 Feature(library, PowerAttackGuid, "Power Attack"),
                 Feature(library, "d09b20029e9abfe4480b356c92095623", "Toughness"),
-                extraplanar, traits, carrier, heal };
+                extraplanar, traits, heal };
         }
 
         private static void ConfigureAstralProtectiveAura(
