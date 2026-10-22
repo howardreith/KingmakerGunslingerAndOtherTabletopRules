@@ -811,6 +811,13 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeCarrier", "BlueprintBuff"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeArea", "BlueprintAbilityAreaEffect"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeRecipient", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BlindFight", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Persuasive", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Aid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidEligibility", "ArchonAidEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentEligibility", "TrumpetBanishmentEligibility"),
 
     ))
     expected = sum(identity_count(name) for name in (

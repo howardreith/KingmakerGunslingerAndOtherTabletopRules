@@ -72,6 +72,9 @@ namespace KingmakerGunslinger.Blueprints
             cleanup.Penalty = penalty; cleanup.Immunity = immunity;
             carrier.ComponentsArray = new BlueprintComponent[] { emanation, cleanup };
             if (carrier.StayOnDeath) throw new InvalidOperationException("Archon emitter must end on death.");
+            var nativeExtraplanar = Feature(library, ExtraplanarSubtypeGuid, "Lantern native extraplanar spell consumer");
+            if (!lantern.AddFacts.Contains(nativeExtraplanar))
+                lantern.AddFacts = lantern.AddFacts.Concat(new BlueprintUnitFact[] { nativeExtraplanar }).ToArray();
             var defenses = Require<BlueprintBuff>(bySymbol, LanternDefenseSymbol);
             defenses.ComponentsArray = defenses.ComponentsArray.Concat(ArchonPetrificationImmunities()).ToArray();
             var aid = ConfigureArchonAid(library, bySymbol, lantern, defenses,
@@ -79,7 +82,10 @@ namespace KingmakerGunslinger.Blueprints
             var houndAid = ConfigureArchonAid(library, bySymbol, hound,
                 Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Hound30Prefix + "Traits"),
                 Require<BlueprintBrain>(bySymbol, Hound30Prefix + "Brain"), Hound30Prefix, 6, false);
-            trumpet.AddFacts = trumpet.AddFacts.Concat(new BlueprintUnitFact[] { carrier }).ToArray();
+            var trumpetAid = ConfigureArchonAid(library, bySymbol, trumpet,
+                Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Trumpet31Prefix + "Traits"),
+                Require<BlueprintBrain>(bySymbol, Trumpet31Prefix + "Brain"), Trumpet31Prefix, 14, false);
+            trumpet.AddFacts = trumpet.AddFacts.Concat(new BlueprintUnitFact[] { carrier, trumpetAid }).ToArray();
             hound.AddFacts = hound.AddFacts.Concat(new BlueprintUnitFact[] { carrier, houndAid }).ToArray();
             lantern.AddFacts = lantern.AddFacts.Where(fact => fact.AssetGuid != AuraOfMenaceBuffGuid)
                 .Concat(new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] { carrier, aid }).ToArray();

@@ -137,7 +137,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, FireImmunityGuid, "fire immunity"),
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
                     NaturalArmor4Guid, "natural armor +4"),
-                extraplanar, traits
+                Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits
             };
         }
 
@@ -217,7 +217,7 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = new BlueprintUnitFact[] { Feature(library, OutsiderTypeGuid, "outsider type"),
                 Feature(library, ChaoticSubtypeGuid, "chaotic subtype"), Feature(library, EvilSubtypeGuid, "evil subtype"),
                 Feature(library, ElectricityImmunityGuid, "demon electricity immunity"),
-                Feature(library, "d09b20029e9abfe4480b356c92095623", "Dretch Toughness"), extraplanar, traits, fear, cloud };
+                Feature(library, "d09b20029e9abfe4480b356c92095623", "Dretch Toughness"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, fear, cloud };
             var fearAi = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol,
                 Dretch30Prefix + "CauseFearAi"), Dretch30Prefix + "CauseFearAi", fear, 0);
             var cloudAi = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol,

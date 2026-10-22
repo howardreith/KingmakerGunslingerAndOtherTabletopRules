@@ -58455,6 +58455,62 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Exact hidden S31 prepared Invisibility Purge and private source-owned moving suppression; native qualification pending; Trumpet root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.BlindFight",
+      "guid": "92a73b47bc2147db949010377b595add",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.Persuasive",
+      "guid": "0f45103c8d274584babf68a292cdb988",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.Aid",
+      "guid": "0a99da75146241db968f2df728f4173e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidAi",
+      "guid": "ee863118e1c4416fbff2a3df8b1909e5",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidEligibility",
+      "guid": "82798f8b32224f9ebdc108b75f818da7",
+      "plannedType": "ArchonAidEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentAi",
+      "guid": "fd94d72647d547b687bfca1944484b5b",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentEligibility",
+      "guid": "8152f302df714920996cf737c9d754af",
+      "plannedType": "TrumpetBanishmentEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Exact hidden S31 private faithful feats, shared native CL14 Aid, or native prepared Banishment target selection; real native icons/dependencies; native consumer qualification pending, root remains suppressed."
     }
   ]
 }
