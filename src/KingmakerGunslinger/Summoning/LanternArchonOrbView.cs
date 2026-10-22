@@ -139,6 +139,12 @@ namespace KingmakerGunslinger.Summoning
                 _root.SetActive(visible);
                 if (visible) _enables++; else _disables++;
             }
+            // The native fader discovers renderers after OnDataAttached and can
+            // disable this dynamically added renderer during appearance. It
+            // does not later own/re-enable that renderer. The native donor
+            // renderer remains the visibility authority; this component owns
+            // only the matching state of its private renderer and light.
+            if (_renderer != null) _renderer.enabled = visible;
             if (_light != null) _light.enabled = visible;
         }
 
@@ -161,9 +167,15 @@ namespace KingmakerGunslinger.Summoning
             return "status=" + (Status ?? "<none>") +
                 ";ready=" + Ready + ";nativeRenderers=" +
                 _nativeRenderers.Length + ";root=" + (_root != null) +
-                ";orb=" + (_orb != null) + ";material=" +
+                ";rootActive=" + (_root != null && _root.activeInHierarchy) +
+                ";orb=" + (_orb != null) + ";renderer=" +
+                (_renderer != null && _renderer.enabled) + ";material=" +
                 (_material == null ? "<none>" : _material.name) +
                 ";light=" + (_light != null && _light.enabled) +
+                ";viewVisible=" + (_view != null && _view.IsVisible) +
+                ";nativeVisible=" + _nativeRenderers.Any(value => value != null &&
+                    value.enabled && value.gameObject != null &&
+                    value.gameObject.activeInHierarchy) +
                 ";range=" + (_light == null ? 0f : _light.range) +
                 ";intensity=" + (_light == null ? 0f : _light.intensity) +
                 ";enables=" + _enables + ";disables=" + _disables;
