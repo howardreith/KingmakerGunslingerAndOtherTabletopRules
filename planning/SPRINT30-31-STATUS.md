@@ -42,7 +42,14 @@ for the existing party-camera helper; all previous callers keep their default.
 First compile caught a native base Fact/Ability type mismatch, corrected. Focused
 production18.3s/15 selected tests1.1s PASS after final reset checks. Fresh actual
 limited admission/dispatch/refusal tests are required because phase guards changed;
-old792 preflight is NOT authority for the new phase. Plan one exact body-pair
+old792 preflight is NOT authority for the new phase. First fresh4ce06911 preflight stopped
+11:53:50.2448878Z after59.893s on C#/PowerShell catalog sync, before compilation,
+package or game. The scenario-name scanner reads all quoted lowercase strings
+in the C#scenario catalog, so phase/model literals were incorrectly classified
+as scenario IDs. Move those literals to the existing strict phase policy and
+keep typed catalog metadata delegates; do not add fake scenarios or weaken the
+sync/refusal test. Original failure retained; full intake Compare PASS.
+ Plan one exact body-pair
 package/build and one guarded process/transaction, then inspect actual PNGs and
 restoration. No native case is running now; laptop remains restored41/36.
 
