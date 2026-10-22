@@ -314,8 +314,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var armorData = new AbilityData(vestmentSlot.Spell, vestmentArmor);
                 // Independent spell-effect diagnosis is last: it must not mask
                 // support/offense evidence or contaminate their initial slots.
-                int acBefore = owner.Stats.AC.ModifiedValue;
-                var effectTrace = new Trumpet31CasterEffects(owner);
+                var vestmentTarget = sibling; // native self-cast never contests the caster's own SR
+                int acBefore = vestmentTarget.Stats.AC.ModifiedValue;
+                var effectTrace = new Trumpet31CasterEffects(vestmentTarget);
                 var nativeVestmentBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                     "9e265139cf6c07c4fb8298cb8b646de9", "captured native Magic Vestment buff");
                 RuntimeTestResultWriter.WriteAtomic(System.IO.Path.Combine(_request.EvidenceDirectory,
@@ -326,26 +327,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["spellResistance"] = vestmentArmor.SpellResistance,
                     ["effectOnAlly"] = vestmentArmor.EffectOnAlly.ToString(),
                     ["effectOnEnemy"] = vestmentArmor.EffectOnEnemy.ToString(),
-                    ["targetArmor"] = owner.Body.Armor.MaybeArmor?.Blueprint?.AssetGuid,
-                    ["targetBuffsBefore"] = new JArray(owner.Buffs.Enumerable.Select(buff => new JObject {
+                    ["targetArmor"] = vestmentTarget.Body.Armor.MaybeArmor?.Blueprint?.AssetGuid,
+                    ["targetBuffsBefore"] = new JArray(vestmentTarget.Buffs.Enumerable.Select(buff => new JObject {
                         ["buff"] = buff.Blueprint.AssetGuid, ["caster"] = buff.Context?.MaybeCaster?.UniqueId,
                         ["end"] = buff.EndTime.ToString() })) }.ToString());
                 EventBus.Subscribe(effectTrace);
-                try { foreach (int frame in Trumpet31ManualCommand(sibling, armorData, owner, "trumpet-caster-vestment-command")) yield return frame; }
+                try { foreach (int frame in Trumpet31ManualCommand(sibling, armorData, vestmentTarget, "trumpet-caster-vestment-command")) yield return frame; }
                 finally { EventBus.Unsubscribe(effectTrace); }
-                var vestmentBuff = owner.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "9e265139cf6c07c4fb8298cb8b646de9");
+                var vestmentBuff = vestmentTarget.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "9e265139cf6c07c4fb8298cb8b646de9");
                 bool armor = vestmentBuff != null && ReferenceEquals(vestmentBuff.Context.MaybeCaster, sibling) &&
-                    vestmentBuff.Context.Params.CasterLevel == 14 && owner.Stats.AC.ModifiedValue == acBefore + 3 &&
-                    !vestmentSlot.Available && Trumpet31PreparedCopies(book, vestment, 3) == 1;
+                    vestmentBuff.Context.Params.CasterLevel == 14 && vestmentTarget.Stats.AC.ModifiedValue == acBefore + 3 &&
+                    !vestmentSlot.Available && Trumpet31PreparedCopies(book, vestment, 3) == 1 &&
+                    effectTrace.Rows.Any(row => (string)row["kind"] == "native-buff-application" &&
+                        (string)row["buff"] == nativeVestmentBuff.AssetGuid && (bool)row["applied"] &&
+                        (double?)row["durationSeconds"] == 14d * 3600d);
                 Sprint25Check("trumpet-caster-vestment-effect", armor, new JObject { ["caster"] = sibling.UniqueId,
-                    ["target"] = owner.UniqueId, ["acBefore"] = acBefore, ["acAfter"] = owner.Stats.AC.ModifiedValue,
+                    ["target"] = vestmentTarget.UniqueId, ["acBefore"] = acBefore, ["acAfter"] = vestmentTarget.Stats.AC.ModifiedValue,
                     ["cl"] = vestmentBuff?.Context?.Params.CasterLevel, ["casterRootSlotAvailable"] = vestmentSlot.Available,
                     ["otherRootSlots"] = Trumpet31PreparedCopies(book, vestment, 3),
                     ["nativeEffects"] = effectTrace.Rows,
-                    ["targetBuffsAfter"] = new JArray(owner.Buffs.Enumerable.Select(buff => new JObject {
+                    ["selfCast"] = ReferenceEquals(sibling, vestmentTarget),
+                    ["acModifiers"] = new JArray(vestmentTarget.Stats.AC.Modifiers.Select(modifier => new JObject {
+                        ["value"] = modifier.ModValue, ["descriptor"] = modifier.ModDescriptor.ToString(),
+                        ["source"] = modifier.Source?.Blueprint?.AssetGuid })),
+                    ["targetBuffsAfter"] = new JArray(vestmentTarget.Buffs.Enumerable.Select(buff => new JObject {
                         ["buff"] = buff.Blueprint.AssetGuid, ["caster"] = buff.Context?.MaybeCaster?.UniqueId,
                         ["cl"] = buff.Context?.Params?.CasterLevel, ["end"] = buff.EndTime.ToString() })) },
-                    "The native armor variant grants its actual CL14 enhancement to ordinary clothing and spends only the selected parent's prepared slot; the other book stays independent.");
+                    "The native armor variant self-cast grants the actual CL14 enhancement/14-hour buff to ordinary clothing and spends only its selected parent's prepared slot; the other book stays independent. External native SR remains intact and is not disabled to force success.");
                 if (!armor) throw new InvalidOperationException("Native vestment armor/variant/slot consumer failed.");
             }
             finally
