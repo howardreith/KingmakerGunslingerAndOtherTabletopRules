@@ -5,10 +5,28 @@ or release record. The mission is **in progress**, with no owner visual approval
 
 ## Intake and ownership
 
-### Latest evidence summary (2026-10-22, before review5 build)
+### Latest evidence summary (2026-10-22, review5)
+
+The current validated development candidate is frozen source
+`acdb5d90ada74dcf781c276367edb13eed328f0e` in
+`artifacts/worktrees/summon-cleanup2-review5`. Source fingerprint
+`66ba0a3c4d43f319366afcd41d138f72f88a7c269e9158badcb737790df5310a`;
+package `51faebd5461627b49dccb63b545620885026b7901ac678f17b6a768483b76d2d`;
+DLL `8b8b2e1911f84056d9183e2f84d0b8784b68fd4ed7e3b15f2340b5fae1f10c1b`;
+MVID `870edd15-8797-459f-b8e8-8798ab0e805f`. Purpose
+`summon-cleanup-iteration2`, version0.0.163, never a release. Exact compilation,
+strict package validation and **76/76 selected cases** (4.0 s runner) PASS.
+The same artifact is reused for targeted native phases; older frozen evidence
+and failed artifacts retain their own inputs. Guarded push of this source passed.
+
+The separate [Elemental rules proposal](CLEANUP2-ELEMENTAL-RULES-PROPOSAL.md)
+fulfills the owner's follow-up direction. It lists six parents, 24 children,
+actual child differences, protected consumers and three bounded alternatives.
+Its 113 evidence/link/whitespace consistency checks passed in0.2114s. This
+document is for review; no hiding, balance change or implementation is approved.
 
 Draft PR [67](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/67)
-is open. The latest valid frozen review4 source is
+is open. The prior valid frozen review4 source is
 `4c2ad09d6e1c174078c31dd5e99ff4f4d3553ab1`; package
 `b8808b3b76d44f9029319725586c30fa1a945062bcc43355b24887d9388e9e42`,
 DLL `74801e0d7931ce538fbad370ae5477408df6cc1c0a0ebd9e92c6a8d7ab62dca9`,
