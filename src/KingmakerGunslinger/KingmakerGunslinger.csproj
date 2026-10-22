@@ -1314,6 +1314,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Ai.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningArchon30Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Profile.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Combat.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Outsiders30And31.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Archons30And31.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Hound30.cs" />

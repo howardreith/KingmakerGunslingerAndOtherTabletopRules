@@ -60,7 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["sword"] = sword?.Blueprint.AssetGuid, ["swordOwner"] = sword?.Wielder?.Unit?.UniqueId,
                 ["swordLootable"] = sword == null || sword.IsLootable,
                 ["scope"] = "Native canine-headed humanoid body/owned sword presentation; no resolved attack or full lifecycle claim" },
-                "The exact Hound binds its original body to the measured native renderer, appears intact/selectable at native camera scale and holds its nonlootable owned sword.");
+                "The exact Hound binds its original body to the measured native renderer, appears intact/selectable at native camera scale and owns its nonlootable sword; idle presentation does not prove the weapon is drawn.");
             if (!exact) throw new InvalidOperationException("Native original Hound body presentation failed.");
         }
 

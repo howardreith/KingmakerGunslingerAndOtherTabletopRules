@@ -46,7 +46,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Core phase requires automatic exit.");
             Assertions.True(RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodySequence.SequenceEqual(new[] { "lemure", "dretch" }), "Only the two supported original body subcases share this fixed phase.");
-            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies" })
+            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "hound-armed", "hound-natural", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "A fixed isolated command phase is admitted in a fresh empty world.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases require automatic exit.");
@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, true, false, true), "Isolated phases refuse a save import.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases refuse extra parameters.");
             }
-            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "profiles", "routes", "", null })
+            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Hound-Armed", "hound-armed ", "Hound-Natural", "hound-natural ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "profiles", "routes", "", null })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Unimplemented or differently cased phase is refused.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Automatic exit is required.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, "bootstrap", 0, 0, 0, false, false, false, false, true), "Extra parameters are refused.");
