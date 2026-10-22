@@ -82,6 +82,8 @@ namespace KingmakerGunslinger.Blueprints
             racial.BaseReflex = AstralDevaRulesPolicy.BaseReflex;
             racial.BaseWill = AstralDevaRulesPolicy.BaseWill;
             racial.PerceptionRanks = 15; racial.StealthRanks = 15;
+            // The native outsider class supplies the trained +3 for both
+            // ranked class skills; adding another carrier produces +29/+25.
             unit.ComponentsArray = new BlueprintComponent[] { levels, racial };
             unit.Skills = new BlueprintUnit.UnitSkills(); unit.Race = null; unit.Type = type;
 
@@ -99,14 +101,6 @@ namespace KingmakerGunslinger.Blueprints
             var racialPerception = ScriptableObject.CreateInstance<AddStatBonus>();
             racialPerception.Stat = StatType.SkillPerception; racialPerception.Value = 2;
             racialPerception.Descriptor = ModifierDescriptor.Racial;
-            var perceptionClassSkill = ScriptableObject.CreateInstance<AddStatBonus>();
-            perceptionClassSkill.Stat = StatType.SkillPerception;
-            perceptionClassSkill.Value = 3;
-            perceptionClassSkill.Descriptor = ModifierDescriptor.UntypedStackable;
-            var stealthClassSkill = ScriptableObject.CreateInstance<AddStatBonus>();
-            stealthClassSkill.Stat = StatType.SkillStealth;
-            stealthClassSkill.Value = 3;
-            stealthClassSkill.Descriptor = ModifierDescriptor.UntypedStackable;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();
             equipment.OwningBlueprint = unit; equipment.GreatWeapon = hammer; equipment.Slam = slam;
             var proficiency = ScriptableObject.CreateInstance<AddProficiencies>();
@@ -129,7 +123,7 @@ namespace KingmakerGunslinger.Blueprints
             parameters.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
 
             traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor,
-                alertness, racialPerception, perceptionClassSkill, stealthClassSkill,
+                alertness, racialPerception,
                 equipment, proficiency, focus, parameters,
                 AddResource(healResource),
                 Energy(DamageEnergyType.Electricity, 10), Energy(DamageEnergyType.Fire, 10) }
