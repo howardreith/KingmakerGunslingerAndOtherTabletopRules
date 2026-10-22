@@ -1586,6 +1586,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Quaternion _refinementCameraRotation;
         private Vector3 _refinementOrigin;
         private float _refinementTravel;
+        private UnitMoveTo _cleanup2RefinementMove;
         private bool _refinementWasPaused;
         private bool _refinementChangedPause;
         private Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle _refinementAction;
@@ -1593,6 +1594,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void BeginVisualRefinementReview(UnitEntityData unit, string key)
         {
+            _cleanup2RefinementMove = null;
             _refinementUnit = unit;
             _refinementKey = key;
             _refinementPhase = 0;
@@ -1670,12 +1672,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         return false;
                     case 2:
                     case 3:
+                        if (_cleanup2RefinementMove != null &&
+                            (_refinementFrame == 0 || _refinementFrame == 12 || _refinementFrame == 36 ||
+                            _refinementFrame == RefinementLegFrames - 1))
+                            Cleanup2RecordRefinementMove(unit, "leg-" + _refinementPhase + "-frame-" + _refinementFrame);
                         _refinementTravel = Mathf.Max(_refinementTravel,
                             Vector3.Distance(_refinementOrigin, unit.Position));
                         if (_refinementFrame % RefinementStride == 0)
                             WriteRefinementFrame(unit, key, _refinementPhase == 2 ?
                                 "move-out" : "move-back", _refinementFrame);
                         if (++_refinementFrame < RefinementLegFrames) return false;
+                        if (_cleanup2RefinementMove != null) Cleanup2RecordRefinementMove(unit, "before-native-interrupt");
                         unit.Commands.InterruptMove();
                         if (_refinementPhase == 2)
                         {
@@ -1778,11 +1785,124 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void RunRefinementMove(UnitEntityData unit, Vector3 destination)
         {
+            bool cleanup2 = IsSummonCleanup2Review && _sprint25Fixture != null &&
+                _sprint25Fixture.Created.Contains(unit) && ReferenceEquals(_refinementUnit, unit);
+            if (cleanup2)
+                destination = Cleanup2RefinementDestination(unit, destination, _refinementPhase == 1);
             var move = new UnitMoveTo(destination, 0.5f);
             move.Init(unit);
             unit.Commands.Run(move);
             _refinementRecords.Add("move:to=" + destination.ToString("F2") +
                 ";accepted=" + unit.Commands.Contains(move));
+            if (cleanup2)
+            { _cleanup2RefinementMove = move; Cleanup2RecordRefinementMove(unit, "queued"); }
+        }
+
+        private Vector3 Cleanup2RefinementDestination(UnitEntityData unit, Vector3 originalDestination, bool outward)
+        {
+            if (AstarPath.active == null || unit.View?.AgentASP == null ||
+                TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException("Cleanup2 refinement requires its actual native RTWP walking graph/agent.");
+            var agent = unit.View.AgentASP;
+            var constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+            if (constructTags == null) throw new MissingMethodException("Native walking ConstructTags.");
+            int tags = (int)constructTags.Invoke(agent, null);
+            var constraint = new Pathfinding.PathNNConstraint { graphMask = 1,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = tags, constrainDistance = true,
+                distanceXZ = false, distanceXZkeepY = false };
+            Vector3 origin = unit.Position;
+            var anchor = AstarPath.active.GetNearest(origin, constraint);
+            if (anchor.node == null || !anchor.node.Walkable || !Cleanup2Finite(anchor.clampedPosition) ||
+                new Vector2(anchor.clampedPosition.x-origin.x, anchor.clampedPosition.z-origin.z).magnitude > .15f)
+                throw new InvalidOperationException("Native walking origin is not on the owned actor's supported graph.");
+            constraint.SetStart(anchor.node); constraint.constrainArea = true;
+            var graph = AstarPath.active.graphs[anchor.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+            if (graph == null) throw new InvalidOperationException("Native walking graph lacks its verified direct-path linecast.");
+            float footprint = unit.Corpulence + .1f;
+            if (!Cleanup2Finite(footprint) || footprint <= 0f) throw new InvalidOperationException("Nonfinite native refinement footprint.");
+            var obstacles = Game.Instance.State.Units.Where(value => value != null && !ReferenceEquals(value,unit) &&
+                !value.Destroyed && value.IsInGame && value.View != null).ToArray();
+            var attempts = new JArray();
+            Vector3? selected = null;
+            int candidates = outward ? 24 : 1;
+            for (int index=0; index<candidates && selected==null; index++)
+            {
+                // Fixed world axes, never the facing left by the preceding attack.
+                Vector3 requested = outward ? anchor.clampedPosition +
+                    Quaternion.Euler(0f,index*15f,0f)*Vector3.forward*6f : originalDestination;
+                var endpoint = AstarPath.active.GetNearest(requested,constraint);
+                Vector3 delta = endpoint.clampedPosition-anchor.clampedPosition; delta.y=0f;
+                string refusal = null;
+                if (endpoint.node==null || endpoint.node.Area!=anchor.node.Area || endpoint.node.GraphIndex!=anchor.node.GraphIndex ||
+                    !endpoint.node.Walkable || !Cleanup2Finite(endpoint.clampedPosition) ||
+                    new Vector2(endpoint.clampedPosition.x-requested.x,endpoint.clampedPosition.z-requested.z).magnitude>.15f)
+                    refusal="endpoint-native-graph-or-horizontal-clamp";
+                else if (outward && Mathf.Abs(delta.magnitude-6f)>.05f) refusal="full-six-metre-endpoint-unproved";
+                else if (delta.sqrMagnitude<.01f) refusal="route-too-short";
+                Vector3 across = Vector3.Cross(delta.normalized,Vector3.up);
+                int supports=0;
+                for (int side=-1; side<=1 && refusal==null; side++)
+                {
+                    Pathfinding.NNInfo first = default(Pathfinding.NNInfo), last = default(Pathfinding.NNInfo);
+                    for (int step=0; step<=12 && refusal==null; step++)
+                    {
+                        Vector3 support = Vector3.Lerp(anchor.clampedPosition,endpoint.clampedPosition,step/12f)+across*(side*footprint);
+                        var point=AstarPath.active.GetNearest(support,constraint);
+                        if (point.node==null || !point.node.Walkable || point.node.Area!=anchor.node.Area ||
+                            point.node.GraphIndex!=anchor.node.GraphIndex || !Cleanup2Finite(point.clampedPosition) ||
+                            new Vector2(point.clampedPosition.x-support.x,point.clampedPosition.z-support.z).magnitude>.15f ||
+                            Mathf.Abs(point.clampedPosition.y-support.y)>.35f)
+                        {refusal="native-footprint-support-unproved";break;}
+                        if(step==0)first=point;if(step==12)last=point;supports++;
+                    }
+                    if(refusal!=null)break;
+                    Pathfinding.GraphHitInfo hit;var trace=new List<Pathfinding.GraphNode>();
+                    if(graph.Linecast(first.clampedPosition,last.clampedPosition,first.node,out hit,trace))
+                        refusal="native-navmesh-path-obstructed";
+                    else if(Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                        first.clampedPosition+Vector3.up*1.2f,last.clampedPosition+Vector3.up*1.2f,0))
+                        refusal="native-geometry-path-obstructed";
+                }
+                string blockingUnit=null;
+                if(refusal==null)
+                foreach(var obstacle in obstacles)
+                {
+                    Vector3 relative=obstacle.Position-anchor.clampedPosition;relative.y=0f;
+                    float fraction=Mathf.Clamp01(Vector3.Dot(relative,delta)/delta.sqrMagnitude);
+                    float gap=(relative-delta*fraction).magnitude;
+                    if(!Cleanup2Finite(gap) || gap<footprint+obstacle.Corpulence)
+                    {refusal="native-actor-footprint-obstruction";blockingUnit=obstacle.UniqueId;break;}
+                }
+                attempts.Add(new JObject { ["index"]=index,["requested"]=SurveyVector(requested),
+                    ["nativeEndpoint"]=SurveyVector(endpoint.clampedPosition),["planarMetres"]=delta.magnitude,
+                    ["supportCount"]=supports,["refusal"]=refusal,["blockingUnit"]=blockingUnit });
+                if(refusal==null)selected=endpoint.clampedPosition;
+            }
+            var receipt=new JObject { ["outward"]=outward,["unit"]=unit.UniqueId,["origin"]=SurveyVector(origin),
+                ["nativeOrigin"]=SurveyVector(anchor.clampedPosition),["graphMask"]=constraint.graphMask,["nativeTags"]=tags,
+                ["graph"]=anchor.node.GraphIndex,["connectedArea"]=anchor.node.Area,["nativeFootprintWithPadding"]=footprint,
+                ["attempts"]=attempts,["selected"]=selected.HasValue?SurveyVector(selected.Value):(JToken)JValue.CreateNull(),
+                ["scope"]="Read-only native walking constraint, full straight center/shoulder path and other actor footprints; no relocation, graph/path mutation or travel-threshold change." };
+            _refinementRecords.Add("cleanup2-route:"+receipt.ToString(Newtonsoft.Json.Formatting.None));
+            if(!selected.HasValue)throw new InvalidOperationException("No full native footprint-clear refinement route from the actor's current position.");
+            return selected.Value;
+        }
+
+        private void Cleanup2RecordRefinementMove(UnitEntityData unit,string stage)
+        {
+            var move=_cleanup2RefinementMove;var agent=unit.View?.AgentASP;
+            if(move==null || agent==null)return;
+            var row=new JObject { ["stage"]=stage,["unit"]=unit.UniqueId,["position"]=SurveyVector(unit.Position),
+                ["requested"]=SurveyVector(move.Target),["contains"]=unit.Commands.Contains(move),
+                ["isCurrentMove"]=ReferenceEquals(unit.Commands.Move,move),["started"]=move.IsStarted,["acted"]=move.IsActed,
+                ["running"]=move.IsRunning,["finished"]=move.IsFinished,["result"]=move.Result.ToString(),
+                ["canStart"]=move.CanStart,["enoughClose"]=move.IsUnitEnoughClose,["movementDelay"]=move.MovementDelay,
+                ["canMove"]=unit.Descriptor.State.CanMove,["preventMovement"]=unit.Commands.PreventMovement(),
+                ["inCombat"]=unit.IsInCombat,["paused"]=Game.Instance.IsPaused,["velocity"]=SurveyVector(agent.Velocity),
+                ["nativePath"]=Cleanup2GroundPath(agent.GetType().GetField("m_Path",Cleanup2Fields)?.GetValue(agent) as Pathfinding.Path,unit.Position),
+                ["requestedPath"]=Cleanup2GroundPath(agent.GetType().GetField("m_RequestedPath",Cleanup2Fields)?.GetValue(agent) as Pathfinding.Path,unit.Position) };
+            _refinementRecords.Add("cleanup2-move:"+row.ToString(Newtonsoft.Json.Formatting.None));
         }
 
         private Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle
@@ -2058,6 +2178,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private bool FinishVisualRefinementReview()
         {
+            _cleanup2RefinementMove = null;
             if (_refinementChangedPause)
             {
                 Game.Instance.IsPaused = _refinementWasPaused;

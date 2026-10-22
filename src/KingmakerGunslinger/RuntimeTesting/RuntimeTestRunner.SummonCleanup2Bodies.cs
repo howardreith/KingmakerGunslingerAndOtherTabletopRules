@@ -248,6 +248,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2BodyOrdinaryAttack(ExpandedSummoningCorrectionFixture fixture,UnitEntityData actor,string key)
         {
             UnitEntityData target=fixture.Hostile;
+            Vector3 originalTargetPosition=target.Position;
+            float originalTargetOrientation=target.Orientation;
+            bool actorWasInCombat=actor.IsInCombat,targetWasInCombat=target.IsInCombat;
             ResetExpandedSummoningHostile(fixture);
             actor.Commands.InterruptAll(true);actor.Commands.RemoveFinishedAndUpdateQueue();
             actor.JoinCombat();target.JoinCombat();
@@ -267,15 +270,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     string readyFile="ordinary-"+key+"-ready.png";
                     images.Add(new JObject {["file"]=readyFile,["result"]=Cleanup2OrdinaryAttackImage(actor,target,readyFile),["weaponEvents"]=0});
+                    double queuedGameTime=Game.Instance.Player.GameTime.TotalSeconds;
                     actor.Commands.Run(command);var watch=Stopwatch.StartNew();int frames=0;
+                    float[] actionSamples={0f,.12f,.28f,.48f,.72f};int actionSample=0;
+                    bool capturedWeaponEvent=false;
                     while((!command.IsFinished || observer.WeaponAttacks.Count<1) && watch.Elapsed.TotalSeconds<30 && frames++<2000)
                     {
                         if(!nativeMode.Current || !Cleanup2NoNarrativeOverlay())
                             throw new InvalidOperationException("Ordinary body attack lost its owned native Default context.");
-                        if(frames==1 || frames==12 || observer.WeaponAttacks.Count==1 && images.Count<3)
+                        // Sample the actual action while it runs. The previous
+                        // frame1/frame12 pair plus post-finish recovery could
+                        // miss an ordinary donor's complete visible swing.
+                        double sinceQueued=Game.Instance.Player.GameTime.TotalSeconds-queuedGameTime;
+                        bool eventSample=observer.WeaponAttacks.Count>0 && !capturedWeaponEvent;
+                        bool timedSample=actionSample<actionSamples.Length && sinceQueued>=actionSamples[actionSample];
+                        if(timedSample || eventSample)
                         {
                             string file="ordinary-"+key+"-"+images.Count+".png";
-                            images.Add(new JObject{["file"]=file,["result"]=Cleanup2OrdinaryAttackImage(actor,target,file),["weaponEvents"]=observer.WeaponAttacks.Count});
+                            images.Add(new JObject{["file"]=file,["result"]=Cleanup2OrdinaryAttackImage(actor,target,file),
+                                ["weaponEvents"]=observer.WeaponAttacks.Count,["sinceQueuedGameSeconds"]=sinceQueued,
+                                ["commandStarted"]=command.IsStarted,["commandActed"]=command.IsActed,
+                                ["commandFinished"]=command.IsFinished,["firstWeaponEventSample"]=eventSample});
+                            if(timedSample)actionSample++;
+                            if(eventSample)capturedWeaponEvent=true;
                         }
                         yield return 0;
                     }
@@ -321,7 +338,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     EventBus.Unsubscribe(observer);actor.Commands.InterruptAll(true);actor.Commands.RemoveFinishedAndUpdateQueue();
-                    if(actor.IsInCombat)actor.LeaveCombat();ResetExpandedSummoningHostile(fixture);
+                    if(!actorWasInCombat && actor.IsInCombat)actor.LeaveCombat();
+                    if(!targetWasInCombat && target.IsInCombat)target.LeaveCombat();
+                    ResetExpandedSummoningHostile(fixture);
+                    // Keep the completed contact fixture out of later art
+                    // routes. Only this positively owned hostile is returned
+                    // to its exact pre-command native placement.
+                    PlaceExpandedSummoningUnit(target,originalTargetPosition);
+                    target.Orientation=originalTargetOrientation;
                 }
                 finally { if(nativeMode!=null)nativeMode.Dispose(); }
             }

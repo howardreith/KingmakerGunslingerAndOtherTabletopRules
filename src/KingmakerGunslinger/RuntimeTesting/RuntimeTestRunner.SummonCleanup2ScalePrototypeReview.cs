@@ -177,8 +177,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["toleranceMeaning"] = "Existing5cm native idle-pose variation scales with the selected visual ratio, plus1cm skinning allowance. The stable owned sole pivot must preserve the measured baseline sole plane rather than amplify its navmesh gap. Physical ground contact still requires actual native frame review." },
                     "Post-prototype heights follow the selected family ratios while the stable owned sole pivot preserves the observed native foot plane; Human and native gameplay roots remain unchanged.");
                 if (!ratiosValid || !humanUnmodified) throw new InvalidOperationException("UNKNOWN: post-prototype current-pose height/ground or unchanged Human proof failed.");
-                Cleanup2Check("scale-prototype-after-lineup", true,
-                    Cleanup2CaptureLineup(fixture, actors, keys, afterSamples.Last(), "cleanup2-scale-prototype-after.png", true),
+                JObject afterPicture=null;
+                foreach(int captureFrame in Cleanup2CaptureLineup(fixture, actors, keys, afterSamples.Last(), value=>afterPicture=value,
+                    "cleanup2-scale-prototype-after.png", true))yield return captureFrame;
+                Cleanup2Check("scale-prototype-after-lineup", (bool?)afterPicture?["captureQualified"]==true, afterPicture,
                     "A distinct actual native-camera after image retains Human and all six experimental families; before evidence is preserved.");
 
                 _sprint25WaitingForUnityAppearance = false;
@@ -204,8 +206,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             var pose = actors.Select((actor, index) => Cleanup2MeasureActor(actor,
                                 "prototype-weapon-pose-" + keys[index], groundPoints[0], Vector3.up)).ToArray();
-                            Cleanup2Check("scale-prototype-native-pose-frame-" + keys[i], pose.All(value => value.Valid),
-                                Cleanup2CaptureLineup(fixture, actors, keys, pose, "cleanup2-scale-prototype-weapon-" + keys[i] + ".png", true),
+                            JObject posePicture=null;
+                            foreach(int captureFrame in Cleanup2CaptureLineup(fixture, actors, keys, pose, value=>posePicture=value,
+                                "cleanup2-scale-prototype-weapon-" + keys[i] + ".png", true))yield return captureFrame;
+                            Cleanup2Check("scale-prototype-native-pose-frame-" + keys[i], pose.All(value => value.Valid) && (bool?)posePicture?["captureQualified"]==true, posePicture,
                                 "An actual native-camera weapon-pose frame supports visual inspection; native weapon motion is not a combat-resolution test.");
                         }
                         Game.Instance.IsPaused = false; yield return 0;
@@ -275,6 +279,33 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Cleanup2GiantRenderScalePrototype Cleanup2TakeScalePrototype(ExpandedSummoningCorrectionFixture fixture,
             IList<UnitEntityData> actors, UnitEntityData actor, string key, float factor, float nativeSoleWorldY)
         {
+            var inputs = new JArray();
+            foreach (Cloth cloth in actor.View.GetComponentsInChildren<Cloth>(true))
+            {
+                var coefficients = cloth.coefficients;
+                var fields = new JObject();
+                foreach (string field in new[] { "maxDistance", "collisionSphereDistance" })
+                {
+                    float[] values = coefficients.Select(value => field == "maxDistance" ? value.maxDistance : value.collisionSphereDistance).ToArray();
+                    float[] enabled = values.Where(value => Cleanup2Finite(value) && value >= 0f && value != float.MaxValue).ToArray();
+                    fields[field] = new JObject {
+                        ["disabledExactFloatMaxValueCount"] = values.Count(value => value == float.MaxValue),
+                        ["zeroCount"] = values.Count(value => value == 0f),
+                        ["negativeOrNonfiniteCount"] = values.Count(value => !Cleanup2Finite(value) || value < 0f),
+                        ["enabledFiniteCount"] = enabled.Length,
+                        ["enabledMinimumRoundTrip"] = enabled.Length == 0 ? null : enabled.Min().ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+                        ["enabledMaximumRoundTrip"] = enabled.Length == 0 ? null : enabled.Max().ToString("R", System.Globalization.CultureInfo.InvariantCulture) };
+                }
+                inputs.Add(new JObject { ["cloth"] = cloth.GetInstanceID(), ["name"] = cloth.name, ["enabled"] = cloth.enabled,
+                    ["coefficientCount"] = coefficients.Length, ["fingerprint"] = Cleanup2ClothCoefficientFingerprint(coefficients),
+                    ["fields"] = fields });
+            }
+            Cleanup2Check("scale-prototype-native-cloth-constraints-" + key, true, new JObject {
+                ["key"] = key, ["unit"] = actor.UniqueId, ["factor"] = factor, ["nativeCloths"] = inputs,
+                ["disabledSentinelRoundTrip"] = float.MaxValue.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+                ["disabledSentinelBits"] = "0x7f7fffff", ["ownedSolverCreated"] = false,
+                ["scope"] = "Read-only scalar/count/fingerprint intake before helper admission; no per-vertex geometry exported and no collision, scaling or art acceptance implied." },
+                "Native coefficient fields, exact disabled-sentinel counts and enabled finite extrema are retained before any proposed arithmetic or owned solver mutation.");
             try
             {
                 return Cleanup2GiantRenderScalePrototype.Take(_request, actor, fixture.Caster, actors.Skip(1).ToList(), factor,

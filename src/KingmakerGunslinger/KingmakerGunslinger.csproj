@@ -169,6 +169,7 @@
     <Compile Include="Summoning\ElementalNativeRowsPresentationPatch.cs" />
     <Compile Include="Summoning\ElementalSourceChooserConsolePatch.cs" />
     <Compile Include="Summoning\ElementalConsoleBookPresentationPatch.cs" />
+    <Compile Include="Summoning\DruidSummonConversionVariantPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalDiscoveryPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalInvocationContract.cs" />
     <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />

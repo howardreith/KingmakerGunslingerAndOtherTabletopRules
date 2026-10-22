@@ -108,7 +108,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new NotSupportedException("Sphere-pair proxy collision is outside this capsule-only experiment.");
                 foreach (var value in Coefficients)
                     if (!Finite(value.maxDistance) || !Finite(value.collisionSphereDistance) || value.maxDistance < 0f || value.collisionSphereDistance < 0f)
-                        throw new NotSupportedException("Negative, sentinel or non-finite Cloth coefficient requires separate review.");
+                        throw new NotSupportedException("Negative or non-finite Cloth coefficient requires separate review.");
                 source.GetVirtualParticleIndices(_virtualIndices);
                 source.GetVirtualParticleWeights(_virtualWeights);
                 source.GetSelfAndInterCollisionIndices(_selfIndices);
@@ -135,10 +135,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var coefficients = Coefficients.ToArray();
                 for (int i = 0; i < coefficients.Length; i++)
                 {
-                    coefficients[i].maxDistance *= distances.MaxDistanceMultiplier;
-                    coefficients[i].collisionSphereDistance *= distances.CollisionSphereDistanceMultiplier;
-                    if (!Finite(coefficients[i].maxDistance) || !Finite(coefficients[i].collisionSphereDistance))
-                        throw new InvalidOperationException("Experimental Cloth distance overflow.");
+                    coefficients[i].maxDistance = GiantSummonPresentationPolicy.ScaleClothConstraint(
+                        coefficients[i].maxDistance, distances.MaxDistanceMultiplier);
+                    coefficients[i].collisionSphereDistance = GiantSummonPresentationPolicy.ScaleClothConstraint(
+                        coefficients[i].collisionSphereDistance, distances.CollisionSphereDistanceMultiplier);
                 }
                 target.coefficients = coefficients;
                 target.capsuleColliders = capsules;
@@ -165,6 +165,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     values[pair.Key.Name] = pair.Value is Vector3 ? Vector((Vector3)pair.Value) : JToken.FromObject(pair.Value);
                 return new JObject { ["source"] = Source == null ? 0 : Source.GetInstanceID(), ["fields"] = values,
                     ["coefficientCount"] = Coefficients.Length, ["pinnedCount"] = Coefficients.Count(value => value.maxDistance == 0f),
+                    ["disabledMaxDistanceCount"] = Coefficients.Count(value => value.maxDistance == float.MaxValue),
+                    ["disabledCollisionSphereDistanceCount"] = Coefficients.Count(value => value.collisionSphereDistance == float.MaxValue),
                     ["virtualIndexCount"] = _virtualIndices.Count, ["virtualWeightCount"] = _virtualWeights.Count,
                     ["selfInterCollisionIndexCount"] = _selfIndices.Count, ["capsuleCount"] = Capsules.Length,
                     ["spherePairCount"] = _spheres.Length };
@@ -540,10 +542,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (capsule == null || !Transforms.Contains(capsule.transform))
                                     throw new NotSupportedException("Missing or foreign native Cloth capsule.");
                         // Check proposed distance arithmetic before any Unity mutation.
-                        if (state.Cloth != null && state.Cloth.Coefficients.Any(value =>
-                            !Finite(value.maxDistance * distances.MaxDistanceMultiplier) ||
-                            !Finite(value.collisionSphereDistance * distances.CollisionSphereDistanceMultiplier)))
-                            throw new ArgumentException("Experimental Cloth distance overflow.");
+                        if (state.Cloth != null)
+                            foreach (var value in state.Cloth.Coefficients)
+                            {
+                                GiantSummonPresentationPolicy.ScaleClothConstraint(value.maxDistance, distances.MaxDistanceMultiplier);
+                                GiantSummonPresentationPolicy.ScaleClothConstraint(value.collisionSphereDistance, distances.CollisionSphereDistanceMultiplier);
+                            }
                         Vector3 scaled = root.InverseTransformPoint(skin.transform.TransformPoint(state.Bounds.center)) * factor;
                         if (!Finite(scaled) || !Finite(state.Bounds.size * factor)) throw new ArgumentException("Visual bounds overflow.");
                         Skins.Add(state);

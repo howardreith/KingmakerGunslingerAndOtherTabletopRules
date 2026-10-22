@@ -102,11 +102,11 @@ def hoof(name, centre, half_width, half_depth, bottom, top):
 
 
 def add_plate(parts, tree, source, name, grid, region, layer=0):
-    """A rigid planar steel panel with a physical bevel, never a padded dome.
+    """A rigid, shallow-keeled steel scale with a physical bevel.
 
     Rays determine the authored bull surface envelope only. The visible face
-    is a plane outside that envelope, with clipped corners and a narrow rim.
-    Neighboring panels overlap at different heights like articulated lames.
+    is two broad planes outside that envelope. Tapered ends and staggered
+    overlaps follow the bull instead of the previous rectangular side boards.
     """
     placed = []
     normals = []
@@ -126,12 +126,14 @@ def add_plate(parts, tree, source, name, grid, region, layer=0):
     points = [point for column in placed for point in column]
     x0, x1 = min((p-centre).dot(along) for p in points), max((p-centre).dot(along) for p in points)
     y0, y1 = min((p-centre).dot(across) for p in points), max((p-centre).dot(across) for p in points)
-    clearance = .020 if name == "GorgonFlankLame" else .006
+    clearance = .008
     level = max((p-centre).dot(normal) for p in points) + clearance + .0015*layer
-    clip = min(x1-x0, y1-y0)*.13
-    outline = [(x0+clip,y0),(x1-clip,y0),(x1,y0+clip),(x1,y1-clip),
-               (x1-clip,y1),(x0+clip,y1),(x0,y1-clip),(x0,y0+clip)]
     midx, midy = (x0+x1)/2, (y0+y1)/2
+    # Eight sides retain a bevel without rounded cushion normals. The long
+    # ends taper like overlapping forged scales, not a clipped rectangle.
+    dx, dy = x1-x0, y1-y0
+    outline = [(x0+.23*dx,y0),(x1-.23*dx,y0),(x1,y0+.24*dy),(x1-.08*dx,midy),
+               (x1-.27*dx,y1),(x0+.27*dx,y1),(x0+.08*dx,midy),(x0,y0+.24*dy)]
     bm = bmesh.new(); rings = []
     for inset, height in ((.006,level-.018),(0,level-.010),(.010,level)):
         ring = []
@@ -144,7 +146,9 @@ def add_plate(parts, tree, source, name, grid, region, layer=0):
             j=(i+1)%8
             bm.faces.new((lower[i],lower[j],upper[j],upper[i]))
     bm.faces.new(tuple(reversed(rings[0])))
-    bm.faces.new(tuple(rings[-1]))
+    crown = bm.verts.new(centre+along*midx+across*(midy-.09*dy)+normal*(level+.018))
+    for i in range(8):
+        bm.faces.new((rings[-1][i],rings[-1][(i+1)%8],crown))
     # Split every real crease so each broad face remains flat under the
     # runtime's per-vertex normal export. No rounded cushion normals survive.
     plate = cb._rigid_object(name,bm)
@@ -192,19 +196,20 @@ def build(source):
     parts = [(body, rows, 0)]
     tree = BVHTree.FromPolygons([v.co.copy() for v in body.data.vertices],
                                [tuple(p.vertices) for p in body.data.polygons], all_triangles=True)
-    # Thin overlapping tapered lames: two staggered side rows and dorsal
-    # saddles, curved over the actual continuous body, not inflated pillows.
+    # Small staggered forged scales follow the continuous rib cage. Prior
+    # native review showed that two rows of broad boards obscured the bull's
+    # curvature even when their real specular response was visible.
     region = 10
     params = (0, .065, .23, .50, .77, .935, 1)
     for sign in (-1, 1):
-        for row, (low, high) in enumerate(((.50, 1.23), (1.14, 1.90))):
-            for column, zc in enumerate((-.69, -.25, .19, .57)):
-                centre = zc + (.07 if row else 0)
-                length = .60
-                if column == 3:
+        for row, (low, high) in enumerate(((.40, .94), (.85, 1.41), (1.32, 1.91))):
+            for column, zc in enumerate((-.78, -.49, -.20, .09, .38, .62)):
+                centre = zc + (.055 if row % 2 else 0)
+                length = .40
+                if column == 5:
                     # End the last flank lame before the shoulder hinge;
                     # projecting it across the neck/leg transition crumples it.
-                    centre, length = .48 + .02*row, .46
+                    centre, length = .57 + .015*row, .32
                 grid = []
                 for u in params:
                     col = []
@@ -216,16 +221,26 @@ def build(source):
                     grid.append(col)
                 add_plate(parts, tree, source, "GorgonFlankLame", grid, region,
                           layer=column+(1 if row==0 else 0)); region += 1
-    for column, zc in enumerate((-.67, -.23, .21, .55)):
+    for column, zc in enumerate((-.74, -.43, -.12, .19, .49)):
         # Two flat roof facets follow the back without a wide tangent slab
         # floating above the curved flanks. Their inner lips overlap at spine.
         for side in (-1,1):
-            grid = [[((0,1.53,zc+(u-.5)*.53),
-                      (math.sin(side*(-.015+.585*v)),math.cos(side*(-.015+.585*v)),0))
+            grid = [[((0,1.53,zc+(u-.5)*.41),
+                      (math.sin(side*(-.015+.49*v)),math.cos(side*(-.015+.49*v)),0))
                      for v in params] for u in params]
             add_plate(parts, tree, source, "GorgonDorsalLame", grid, region, layer=column+3); region += 1
-    grid = [[((-.215+.43*u,2.9,1.12+.33*v), (0,-1,0)) for v in params] for u in params]
+    grid = [[((-.155+.31*u,2.9,1.10+.20*v), (0,-1,0)) for v in params] for u in params]
     add_plate(parts, tree, source, "GorgonForeheadShield", grid, region)
+    region += 1
+    # Neck/cheek guards join the head's metal treatment to the body. Their
+    # rays land on the authored neck and skull; no donor geometry is copied.
+    for sign in (-1,1):
+        for zc, yc, width, height in ((.79,1.81,.28,.34),(.99,1.95,.27,.33),
+                                      (1.23,2.08,.28,.29),(1.49,1.94,.29,.23)):
+            grid = [[((0,yc+(v-.5)*height,zc+(u-.5)*width),(sign,0,0))
+                     for v in params] for u in params]
+            add_plate(parts,tree,source,"GorgonFaceGuard",grid,region)
+            region += 1
     for group, name, colour in ((4,"GorgonHornLeft",3),(11,"GorgonHornRight",3),
                                 (46,"GorgonEyeLeft",4),(51,"GorgonEyeRight",4)):
         obj, weights = source.component(group, name)
@@ -305,9 +320,10 @@ def parameters(points, normals, regions):
     deterministic bake and padding rasterizer is used for this map and albedo.
     """
     result = np.zeros((len(points),3))
-    result[:,0] = .82
+    result[:,0] = .65
+    result[regions==0,2] = .68
     plate = regions >= 10
-    result[plate,0] = .23
+    result[plate,0] = .31
     result[plate,2] = .94
     return result
 
@@ -390,11 +406,11 @@ def main():
     paint_report={"plateRegions":sorted(PLATE_EDGES),
         "parameters":cb.albedo_manifest(parameter_map),
         "parameterChannels":"R=roughness;G=emission;B=metallic",
-        "plateRoughness":.23,"plateMetallic":.94,"bodyMetallic":0,"emission":0}
+        "plateRoughness":.31,"plateMetallic":.94,"bodyMetallic":.68,"emission":0}
     cb.attach_albedo_preview(obj,albedo)
     extra={k:v for k,v in source.payload.items() if k not in {
         "data","vertexCount","triangleCount","bones","albedo","uvAtlas","winding"}}
-    extra.update({"authoringRevision":"cleanup2-hard-overlapping-beveled-steel-panels",
+    extra.update({"authoringRevision":"cleanup2-staggered-keeled-armor-and-cheek-guards",
                   "sourceGeometrySha256":INPUT_SHA,"maxInfluencesPerVertex":4,
                   "hardPlanarPlates":len(PLATE_EDGES),"flatClovenHoofHalves":8,
                   "parameters":cb.albedo_manifest(parameter_map),

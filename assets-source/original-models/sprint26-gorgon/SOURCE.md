@@ -6,7 +6,30 @@ project-authored `cleanup2-gorgon-input.json`. Its SHA-256 is
 This input contains original geometry, UVs, painting identity and named weights;
 it contains no native vertices, textures, bind transforms or animation curves.
 
-## Current hard-panel recovery
+## Current forged-scale revision
+
+Native review22 showed actual direct-light highlights on the owned metal map,
+but the large rectangular side panels still read as boards. The current export
+uses 55 smaller staggered, tapered, shallow-keeled plates, including neck and
+cheek guards. Physical bevels and split normals remain; the underlying bull,
+horns, eyes, cloven hooves, rig and rules are retained. The broad forehead plate
+was reduced after inspecting the first offline preview's floating edge.
+
+Plate map R=.31/B=.94, body R=.65/B=.68, and emission remains zero everywhere.
+The unchanged native scalar .4 gives effective metal .376 on armor and .272 on
+the underlying iron hide. All map and material resources remain instance-owned.
+This changes the body/armor finish together; it does not modify donor materials.
+
+Exact exports: mesh `2d524e002371fe10ca3f89ac2b59a32de823711cc3d05fc2e174104bb6f53370`,
+albedo `8974f854b188eb5f40589b214a6babca9df7fb002c2038f56109a46199075ffe`,
+parameters `241c44e0ef86feac0acde88abd835c29ee138791e2b31af4d3b92133ea7d1351`.
+The actual-byte geometry/weights audit and two synthetic historical-rig poses
+pass (12,179 vertices, 13,246 triangles, 72 outward closed components), 6.219s.
+Root inspected front, side, three-quarter and ordinary-distance offline renders.
+Those previews use Blender lighting and are not native shader qualification.
+The changed export awaits native inspection and owner review.
+
+## Previous hard-panel recovery
 
 The native review-14 front-left and left frames still showed convex quilt-like
 plates and matte shading on the preceding gunmetal repaint. The current export

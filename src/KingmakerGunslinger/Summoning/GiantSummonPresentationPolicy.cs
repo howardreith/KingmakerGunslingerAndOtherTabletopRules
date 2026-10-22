@@ -119,6 +119,20 @@ namespace KingmakerGunslinger.Summoning
             return offset;
         }
 
+        // Unity's 2018.4 ClothInspector uses this exact value for a disabled
+        // maxDistance or collisionSphereDistance constraint. It is a native
+        // sentinel, not a large enabled distance to scale or clamp.
+        internal static float ScaleClothConstraint(float nativeDistance, float factor)
+        {
+            if (float.IsNaN(nativeDistance) || float.IsInfinity(nativeDistance) || nativeDistance < 0f || !Positive(factor))
+                throw new ArgumentException("Finite nonnegative native Cloth constraint and positive ratio required.");
+            if (nativeDistance == float.MaxValue) return nativeDistance;
+            float result = nativeDistance * factor;
+            if (float.IsNaN(result) || float.IsInfinity(result) || result == float.MaxValue && nativeDistance != float.MaxValue)
+                throw new ArgumentException("Enabled Cloth constraint overflow or collision with the native disabled sentinel.");
+            return result;
+        }
+
         internal static string Calculate(GiantSummonPresentationProfile profile,
             GiantSummonHeightCalibration calibration, string actualPrefabId,
             GiantPresentationScale capturedBaseline, GiantPresentationScale current,

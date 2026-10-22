@@ -133,12 +133,17 @@ namespace KingmakerGunslinger.Summoning
             internal AbilityDataVM[] Originals,Sources;
             internal PreparationHeader Header;
             internal List<AbilityDataVM> Projection;
+            internal IReactiveProperty<AbilityDataVM> SelectionProperty;
             internal AbilityDataVM PreviousSelected;
             internal bool Expanded,Released,Retiring,Disposed;
-            internal bool Current {get{return !Released && View!=null && !Group.IsDisposed &&
+            internal bool Current {get{return !Released && OwnsLiveSelection &&
                 ReferenceEquals(Model(View),Group) && Group.KnownSpells.SequenceEqual(Originals) &&
-                ReferenceEquals(BookOwner.CurrentSpellbook.Value,Book) && ReferenceEquals(BookOwner.SpellBookKnownSpells,Group) &&
                 Originals.All(value=>ReferenceEquals(value.SpellData?.Spellbook,Book));}}
+            private bool OwnsLiveSelection {get{return View!=null && Group!=null && !Group.IsDisposed &&
+                BookOwner!=null && !BookOwner.IsDisposed && SelectionProperty!=null &&
+                ReferenceEquals(Group.CurrentSelectedSpell,SelectionProperty) &&
+                ReferenceEquals(Model(View),Group) && ReferenceEquals(BookOwner.CurrentSpellbook.Value,Book) &&
+                ReferenceEquals(BookOwner.SpellBookKnownSpells,Group);}}
             internal void Build()
             {Projection=ElementalSourceChooserPolicy.ProjectOriginalSources(Originals,Sources,Header,Expanded,
                 source=>ReferenceEquals(Group.CurrentSelectedSpell.Value,source));
@@ -167,10 +172,15 @@ namespace KingmakerGunslinger.Summoning
                 try
                 {
                     if(Header==null){Disposed=true;return;}
-                    if(ReferenceEquals(Group.CurrentSelectedSpell.Value,Header))
-                        Group.CurrentSelectedSpell.Value=ReferenceEquals(BookOwner.CurrentSpellbook.Value,Book) &&
-                            PreviousSelected!=null && Group.KnownSpells.Any(value=>ReferenceEquals(value,PreviousSelected))?PreviousSelected:null;
-                    if(first && refresh && View!=null && ReferenceEquals(Model(View),Group))Refresh();
+                    // Native DisposeImplementation clears CurrentSelectedSpell.
+                    // An old header may outlive that VM until its pooled rows
+                    // unbind; retire it without calling back into disposed or
+                    // replaced native selection/book authority.
+                    bool live=OwnsLiveSelection;
+                    if(live && ReferenceEquals(SelectionProperty.Value,Header))
+                        SelectionProperty.Value=PreviousSelected!=null &&
+                            Group.KnownSpells.Any(value=>ReferenceEquals(value,PreviousSelected))?PreviousSelected:null;
+                    if(first && refresh && live)Refresh();
                     var data=View==null?null:typeof(SpellbookKnownSpellsScrollView).GetField("m_VirtualViews",Fields).GetValue(View) as IList<IVirtualItemData>;
                     bool bound=View!=null && View.GetComponentsInChildren<SpellBookKnownSpellView>(true)
                         .Any(row=>ReferenceEquals(row.GetViewModel(),Header));
@@ -248,7 +258,7 @@ namespace KingmakerGunslinger.Summoning
                     .Any(spell=>ReferenceEquals(spell,value.SpellData.Blueprint))).ToArray();
             if(sources.Length==0)return;
             var context=new PreparationContext {View=view,Group=group,BookOwner=bookOwner,Book=book,Originals=group.KnownSpells.ToArray(),Sources=sources,
-                PreviousSelected=group.CurrentSelectedSpell.Value};
+                SelectionProperty=group.CurrentSelectedSpell,PreviousSelected=group.CurrentSelectedSpell.Value};
             try
             {
                 context.Header=new PreparationHeader(context,sources[0],book);context.Build();PreparationContexts.Add(view,context);

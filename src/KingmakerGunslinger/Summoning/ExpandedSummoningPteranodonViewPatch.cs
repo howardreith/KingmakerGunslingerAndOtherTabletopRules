@@ -922,7 +922,7 @@ namespace KingmakerGunslinger.Summoning
             // Exact installed shader label: R=Roughness G=Emission B=Metallic.
             var requirement = new PteranodonAssetRuntime.AlbedoRequirement {
                 File = "gorgon-parameters.png", Width = 1024, Height = 1024,
-                Sha256 = "16f8c28cfbe334097b8013bb1bedc108022b580b384f11a59101f747a4483f61" };
+                Sha256 = "241c44e0ef86feac0acde88abd835c29ee138791e2b31af4d3b92133ea7d1351" };
             string reason;
             Texture2D decoded = PteranodonAssetRuntime.LoadAlbedo(
                 System.IO.Path.Combine(context.ModEntry.Path,"assets","ungulates"), requirement, out reason);
@@ -961,7 +961,7 @@ namespace KingmakerGunslinger.Summoning
             material.SetFloat("_Emission",0f);
             material.EnableKeyword("SPECULAR_ON");
             material.EnableKeyword("METALLNESS_ON");
-            return "gorgonParameters=authored-linear;verifiedPFDirectLightMetalVariant;metalTreatment=weathered-steel-diffuse-retention;plateRoughness=0.23;plateMetalMask=0.94;metallicScalar=0.4;effectivePlateMetallic=0.376;plateDiffuseRetained=0.624;bodyMetallic=0;emission=0;nativeVisualReview=pending";
+            return "gorgonParameters=authored-linear;verifiedPFDirectLightMetalVariant;metalTreatment=weathered-steel-diffuse-retention;plateRoughness=0.31;plateMetalMask=0.94;metallicScalar=0.4;effectivePlateMetallic=0.376;plateDiffuseRetained=0.624;bodyMetalMask=0.68;effectiveBodyMetallic=0.272;emission=0;nativeVisualReview=pending";
         }
 
         private static string Describe(Color value)

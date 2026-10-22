@@ -91,6 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var availability=originalSlots.Select(value=>value.Available).ToArray();
             var pins=new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
             SpellSlot written=null;AbilityData originalSource=null;
+            ElementalConsoleBookPresentation.PreparationContext cleanupContext=null;
             try
             {
                 if(!originalSlots.Any(value=>value.Spell==null && value.Type==SpellSlotType.Common))
@@ -105,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var scroll=view.GetComponentsInChildren<SpellbookKnownSpellsScrollView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned.SpellBookKnownSpells));
                 var context=ElementalConsoleBookPresentation.PreparationFor(scroll);
                 if(context==null || !context.Current)throw new InvalidOperationException("Live native preparation disclosure required.");
+                cleanupContext=context;
                 var navigation=(ConsoleMultiNavigationCollection)typeof(SpellBookView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(view);
                 var header=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),context.Header));
                 navigation.SetCurrentEntityManual(header);InvokeTeleportGamepadInput(view,"WantConfirm");
@@ -158,6 +160,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 pins.Restore();
             }
             for(int frame=0;frame<8;frame++)yield return 0;
+            bool nativeUnbound=cleanupContext!=null && (cleanupContext.View==null ||
+                (!ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group) &&
+                !cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true)
+                    .Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header))));
+            bool released=owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
+                cleanupContext.Group.CurrentSelectedSpell==null && nativeUnbound && cleanupContext.Released && cleanupContext.Disposed &&
+                cleanupContext.Header.IsDisposed && cleanupContext.Projection==null &&
+                typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null;
+            Cleanup2Check("elemental-console-native-disposed-preparation-release",released,new JObject {
+                ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
+                ["nativeSelectionFieldCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
+                ["nativeRowsUnbound"]=nativeUnbound,["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,
+                ["ownedHeaderDisposed"]=cleanupContext!=null && cleanupContext.Header.IsDisposed,
+                ["ownedProjectionReleased"]=cleanupContext!=null && cleanupContext.Projection==null,
+                ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,
+                ["scope"]="Actual native SpellBookVM.Back disposal and scene-row unbind; no observer call to presentation Release or native VM Dispose." },
+                "After native book disposal clears its selection field and native rows unbind, the owned preparation header and projection retire without dereferencing or modifying the disposed VM.");
+            if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not release after actual screen unbind.");
         }
 
         private IEnumerable<int> Cleanup2ConsoleNativeLearnAndCancel(ExpandedSummoningCorrectionFixture fixture,Spellbook fixtureBook,
