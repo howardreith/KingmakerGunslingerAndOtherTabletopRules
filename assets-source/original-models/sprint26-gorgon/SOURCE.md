@@ -151,3 +151,21 @@ above, with no invented unit/prefab metadata.
 Earlier winding/lighting corrections and native visibility records remain
 historical evidence of the old exports. The old functional candidate was not
 owner-approved art. Bulette retains its unrelated installed adult Bulette body.
+
+## Completion material correction, October 22
+
+The installed `PF/StandardDynamic` shader (sharedassets1, path ID 3835,
+Unity 2018.4.10f1) was read locally and selected D3D11 programs disassembled
+with the installed D3D compiler. The extracted programs remain private ignored
+artifacts. Fragment 1221, SHA-256
+`301cb6818fdc544e2956341e21ef206e32f74e7dcb09e34ddda401a345365788`,
+uses `SPECULAR_ON` and `METALLNESS_ON`: parameter-map R is multiplied by
+`_Roughness` (PFCommonBuffer byte80); B by `_Metallic` ($Globals byte136).
+Fragment1152 omits both responses; 1213 enables nonmetal specular only.
+The previous `_Metallic=0` therefore erased the authored plate metal mask.
+
+The exact owned Gorgon material now uses multiplier1 and those two **local**
+keywords, retaining the linear packed map, R roughness, B plate mask and zero
+emission. No global keyword or donor material changes. Native pictures and
+material/source observations are still required; disassembly is a shader
+contract, not aesthetic acceptance.

@@ -358,22 +358,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                             untouchedLease == null && palette != null && (bool?)palette["passed"] == true,
                             palette, "The ordinary summon owns its exact palette; this observation never applies or releases it.");
                     }
-                    var framing = actors.Select(actor => {
-                        Renderer[] skins = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
-                            .Where(skin => skin.enabled && skin.gameObject.activeInHierarchy).Cast<Renderer>().ToArray();
-                        if (skins.Length == 0) throw new InvalidOperationException("No visible giant presentation surface.");
-                        Bounds bounds = skins[0].bounds;
-                        foreach (Renderer skin in skins.Skip(1)) bounds.Encapsulate(skin.bounds);
-                        return new Cleanup2ActorMetric { Min = bounds.min, Max = bounds.max,
-                            Crown = bounds.center + Vector3.up * bounds.extents.y,
-                            Sole = bounds.center - Vector3.up * bounds.extents.y };
-                    }).ToArray();
-                    JObject picture = Cleanup2CaptureLineup(actors, keys, framing, "cleanup2-production-colors.png");
-                    picture["framingOnly"] = true;
-                    picture["measurementEvidence"] = false;
-                    picture["rendering"] = "Ordinary production giant colors; native renderer bounds frame this picture only and are not height measurements.";
-                    Cleanup2Check("production-colors-picture", true, picture,
-                        "One common native scene/camera records all six current family palettes before any scale experiment.");
                 }
                 _sprint25WaitingForUnityAppearance = true;
                 for (int i = 0; i < actors.Count; i++)
@@ -418,6 +402,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "All seven actors use one geometrically proven gently graded terrain plane with <=5cm residual; vertical anatomy remains world-up and contact is checked at each actor's own ground point.");
                 for (int i = 0; i < actors.Count; i++)
                     foreach (int frame in Cleanup2WaitAppearance(actors[i], keys[i])) yield return frame;
+                if ((string)_request.Parameters?["reviewPhase"] == "scale-prototype")
+                {
+                    var framing = actors.Select(actor => {
+                        Renderer[] skins = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                            .Where(skin => skin.enabled && skin.gameObject.activeInHierarchy).Cast<Renderer>().ToArray();
+                        if (skins.Length == 0) throw new InvalidOperationException("No visible giant presentation surface.");
+                        Bounds bounds = skins[0].bounds;
+                        foreach (Renderer skin in skins.Skip(1)) bounds.Encapsulate(skin.bounds);
+                        return new Cleanup2ActorMetric { Min = bounds.min, Max = bounds.max,
+                            Crown = bounds.center + Vector3.up * bounds.extents.y,
+                            Sole = bounds.center - Vector3.up * bounds.extents.y };
+                    }).ToArray();
+                    JObject picture = Cleanup2CaptureLineup(actors, keys, framing, "cleanup2-production-colors.png");
+                    picture["framingOnly"] = true; picture["measurementEvidence"] = false;
+                    picture["rendering"] = "Ordinary production giant colors on the surveyed common ground; renderer bounds frame the picture only.";
+                    Cleanup2Check("production-colors-picture", true, picture,
+                        "All six families stand on the same surveyed ground before the fitted native color capture.");
+                }
                 // Retain Unity idle samples while suspending synthetic game-time
                 // pulses. Never force a renderer, fader, dissolve or animation.
                 _sprint25WaitingForUnityAppearance = true;
@@ -889,6 +891,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject { ["name"] = material.name, ["instance"] = material.GetInstanceID(),
                 ["activeColorSpace"] = QualitySettings.activeColorSpace.ToString(),
                 ["shader"] = material.shader?.name, ["renderQueue"] = material.renderQueue,
+                ["localKeywords"] = new JArray(material.shaderKeywords.OrderBy(k=>k,StringComparer.Ordinal)),
+                ["globalSpecularOn"] = Shader.IsKeywordEnabled("SPECULAR_ON"),
+                ["globalMetallnessOn"] = Shader.IsKeywordEnabled("METALLNESS_ON"),
                 ["properties"] = properties, ["colors"] = colors, ["textures"] = textures,
                 ["color"] = material.HasProperty("_Color") ? new JArray(material.color.r, material.color.g, material.color.b, material.color.a) : null,
                 ["texture"] = texture?.name, ["textureInstance"] = texture == null ? 0 : texture.GetInstanceID() };
@@ -1111,6 +1116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (camera == null) throw new InvalidOperationException("No native lineup camera.");
             Vector3 beforePosition = camera.transform.position;
             Quaternion beforeRotation = camera.transform.rotation;
+            float beforeSize = camera.orthographicSize, beforeAspect = camera.aspect;
             RenderTexture beforeTarget = camera.targetTexture, beforeActive = RenderTexture.active;
             RenderTexture target = null;
             Texture2D image = null;
@@ -1121,13 +1127,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 centre = (min + max) * .5f;
                 Vector3 rowAxis = (actors.Last().Position - actors.First().Position).normalized;
                 Vector3 forward = Vector3.Cross(rowAxis, Vector3.up).normalized;
-                var corners = metrics.SelectMany(m => new[] {
-                    new Vector3(m.Min.x, m.Min.y, m.Min.z), new Vector3(m.Max.x, m.Min.y, m.Min.z),
-                    new Vector3(m.Min.x, m.Min.y, m.Max.z), new Vector3(m.Max.x, m.Min.y, m.Max.z) }).ToArray();
-                float span = corners.Max(p => Vector3.Dot(p, rowAxis)) - corners.Min(p => Vector3.Dot(p, rowAxis));
-                float distance = Mathf.Max(12f, span / (2f * Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad * .5f) * (1920f / 1080f))) * 1.3f;
-                camera.transform.position = centre - forward * distance + Vector3.up * Mathf.Max(2f, (max.y - min.y) * .22f);
-                camera.transform.rotation = Quaternion.LookRotation(centre - camera.transform.position, Vector3.up);
+                if (rowAxis.sqrMagnitude < .5f) rowAxis = Vector3.right;
+                if (forward.sqrMagnitude < .5f) forward = Vector3.forward;
+                var corners = metrics.SelectMany(m => Cleanup2BoundsCorners(new Bounds((m.Min+m.Max)*.5f,m.Max-m.Min))).ToArray();
+                // Native camera may be orthographic: moving it backwards alone
+                // cannot widen that projection. Fit all eight corners in the
+                // actual camera basis, with the output aspect set first.
+                camera.aspect = 1920f / 1080f;
+                Quaternion rotation = Quaternion.LookRotation((forward-Vector3.up*.18f).normalized,Vector3.up);
+                Quaternion inverse = Quaternion.Inverse(rotation);
+                Vector3[] projected = corners.Select(p => inverse*(p-centre)).ToArray();
+                float halfWidth = projected.Max(p => Mathf.Abs(p.x));
+                float halfHeight = projected.Max(p => Mathf.Abs(p.y));
+                float halfDepth = projected.Max(p => Mathf.Abs(p.z));
+                float halfFrame = Mathf.Max(halfHeight,halfWidth/camera.aspect)*1.16f;
+                float distance = halfDepth + Mathf.Max(12f,halfFrame/Mathf.Tan(camera.fieldOfView*Mathf.Deg2Rad*.5f));
+                if(camera.orthographic) camera.orthographicSize=halfFrame;
+                camera.transform.SetPositionAndRotation(centre-rotation*Vector3.forward*distance,rotation);
                 target = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = target;
                 camera.Render();
@@ -1135,9 +1151,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
                     ["crown"] = SurveyVector(camera.WorldToViewportPoint(m.Crown)),
                     ["sole"] = SurveyVector(camera.WorldToViewportPoint(m.Sole)) }));
-                bool visible = metrics.All(m => new[] { m.Crown, m.Sole }.All(p => {
+                bool visible = corners.All(p => {
                     Vector3 v = camera.WorldToViewportPoint(p); return v.z > 0 && v.x > .01f && v.x < .99f && v.y > .01f && v.y < .99f;
-                }));
+                });
                 RenderTexture.active = target;
                 image = new Texture2D(1920, 1080, TextureFormat.RGBA32, false, false);
                 image.ReadPixels(new Rect(0, 0, 1920, 1080), 0, 0);
@@ -1169,10 +1185,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.targetTexture = beforeTarget;
                 camera.transform.position = beforePosition;
                 camera.transform.rotation = beforeRotation;
+                camera.orthographicSize = beforeSize; camera.aspect = beforeAspect;
                 RenderTexture.active = beforeActive;
                 if (target != null) { target.Release(); UnityEngine.Object.Destroy(target); }
                 if (image != null) UnityEngine.Object.Destroy(image);
             }
+        }
+
+        private static IEnumerable<Vector3> Cleanup2BoundsCorners(Bounds bounds)
+        {
+            for(int x=-1;x<=1;x+=2) for(int y=-1;y<=1;y+=2) for(int z=-1;z<=1;z+=2)
+                yield return bounds.center+Vector3.Scale(bounds.extents,new Vector3(x,y,z));
         }
 
         private string _summonCleanup2NarrativeStateRunId;
