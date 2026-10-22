@@ -628,6 +628,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureArmoredDinosaurVisuals(context);
             ConfigureTheropodVisuals(context);
             ConfigureLemureVisual(context);
+            ConfigureDretchVisual(context);
             ConfigureGiantBodyVisuals(context);
             ConfigureGriffonVisual(context);
         }

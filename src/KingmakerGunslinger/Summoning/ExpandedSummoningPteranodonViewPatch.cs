@@ -145,7 +145,8 @@ namespace KingmakerGunslinger.Summoning
                     TheropodRulesPolicy.DeinonychusKey },
                 { TheropodVisualPolicy.TyrannosaurusBlueprintName,
                     TheropodRulesPolicy.TyrannosaurusKey },
-                { LemureVisualPolicy.BlueprintName, LemureVisualPolicy.Key }
+                { LemureVisualPolicy.BlueprintName, LemureVisualPolicy.Key },
+                { DretchVisualPolicy.BlueprintName, DretchVisualPolicy.Key }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -303,6 +304,10 @@ namespace KingmakerGunslinger.Summoning
                 !LemureVisualPolicy.IsExactIdentity(__instance.EntityData.Blueprint.AssetGuid,
                     blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
                     __instance.EntityData.Blueprint.Prefab.AssetId)) return;
+            if (visualKey == DretchVisualPolicy.Key &&
+                !DretchVisualPolicy.IsExactIdentity(__instance.EntityData.Blueprint.AssetGuid,
+                    blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
+                    __instance.EntityData.Blueprint.Prefab.AssetId)) return;
             if (TheropodVisualPolicy.Handles(visualKey))
             {
                 ModContext context;
@@ -360,7 +365,13 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
-            if (attachment.VisualKey == LemureVisualPolicy.Key)
+            if (attachment.VisualKey == DretchVisualPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetDretchVisual(out source,
+                    out boneNames, out albedo, out status)) return Fallback(status);
+            }
+            else if (attachment.VisualKey == LemureVisualPolicy.Key)
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetLemureVisual(out source,
@@ -482,7 +493,8 @@ namespace KingmakerGunslinger.Summoning
                 .ToArray();
             SkinnedMeshRenderer donor;
             if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
-                attachment.VisualKey == LemureVisualPolicy.Key)
+                attachment.VisualKey == LemureVisualPolicy.Key ||
+                attachment.VisualKey == DretchVisualPolicy.Key)
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(
                         donors.Select(value => value.name)))
@@ -575,6 +587,7 @@ namespace KingmakerGunslinger.Summoning
                                     TheropodVisualPolicy.Handles(
                                         attachment.VisualKey) ||
                                     attachment.VisualKey == LemureVisualPolicy.Key ||
+                                    attachment.VisualKey == DretchVisualPolicy.Key ||
                                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -613,7 +626,8 @@ namespace KingmakerGunslinger.Summoning
                 string controller = AdoptByMaterialController(view, donor, material);
 
                 if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
-                    attachment.VisualKey == LemureVisualPolicy.Key)
+                    attachment.VisualKey == LemureVisualPolicy.Key ||
+                    attachment.VisualKey == DretchVisualPolicy.Key)
                 {
                     // The same measured two-renderer donor needs the same per-view suppression.
                     attachment.TheropodSuppression = view.gameObject
@@ -1033,7 +1047,7 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null).Distinct().ToArray();
         }
 
-        /// <summary>Exact per-view owned resources for the two theropod bodies.
+        /// <summary>Exact per-view resources for original bodies on the measured free-hands donor.
         /// The disabled accessory and both donor renderers remain native and
         /// therefore never appear in this receipt.</summary>
         internal static UnityEngine.Object[] CaptureTheropodOwnedResources(
@@ -1042,7 +1056,8 @@ namespace KingmakerGunslinger.Summoning
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
                 (!TheropodVisualPolicy.Handles(attachment.VisualKey) &&
-                 attachment.VisualKey != LemureVisualPolicy.Key))
+                 attachment.VisualKey != LemureVisualPolicy.Key &&
+                 attachment.VisualKey != DretchVisualPolicy.Key))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
                 ? new Material[0] : attachment.Donor.sharedMaterials;
@@ -1112,6 +1127,7 @@ namespace KingmakerGunslinger.Summoning
                  !TheropodVisualPolicy.Handles(
                     attachment.VisualKey) &&
                  attachment.VisualKey != LemureVisualPolicy.Key &&
+                 attachment.VisualKey != DretchVisualPolicy.Key &&
                  !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
