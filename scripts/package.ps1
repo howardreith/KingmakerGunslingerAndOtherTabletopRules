@@ -239,7 +239,7 @@ foreach ($kind in @('triceratops','stegosaurus')) {
 }
 $outsiderDestination = Join-Path $modDirectory 'assets\outsider-celestial'
 New-Item -ItemType Directory -Path $outsiderDestination -Force | Out-Null
-$s3031OriginalBodyParts = @('lemure-mesh.json','lemure-albedo.png','dretch-mesh.json','dretch-albedo.png')
+$s3031OriginalBodyParts = @('lemure-mesh.json','lemure-albedo.png','dretch-mesh.json','dretch-albedo.png','hound-archon-mesh.json','hound-archon-albedo.png')
 foreach ($part in $s3031OriginalBodyParts) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\outsider-celestial\$part") -Destination $outsiderDestination
 }

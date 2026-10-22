@@ -17,6 +17,18 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
+## Hound original-body checkpoint, native pending
+
+Original canine-headed humanoid body now uses the established exact Free Hands
+attachment/material/rollback path, its own original albedo and measured native
+hands for the existing owned greatsword. No new identities/routes/icon changes.
+Focused production compilation19.4s plus15/15 selected tests PASS (2.3s wrapper).
+Synthetic deterministic packager accepts408 declared members, refuses406 against
+408 files and unsupported409. Native observer adds real appearance/party-camera,
+owned sword and exact per-view release rows to the existing archon-hound case;
+the proven two-case Lemure/Dretch sequence is unchanged. Native body/attack/
+lifecycle qualification remains pending; no new game/build counted yet.
+
 ## Latest exact development artifact: fixed original-body pair
 
 Source `40b1ab11e65c20ee0e5cb19d18b63d35e0865f96`, completed development package38:

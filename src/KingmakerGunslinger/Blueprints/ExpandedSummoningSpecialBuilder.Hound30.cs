@@ -98,6 +98,7 @@ namespace KingmakerGunslinger.Blueprints
             brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>()).ToArray(); unit.Brain = brain;
             ConfigureUnitCore(unit, "HoundArchon", "Hound Archon", Alignment.LawfulGood, Size.Medium,
                 15, 10, 13, 10, 13, 12, 40);
+            ConfigureOutsiderOriginalExpiryVisual(library, unit);
             unit.AddFacts = new BlueprintUnitFact[] { Feature(library, OutsiderTypeGuid, "outsider type"),
                 Feature(library, GoodSubtypeGuid, "good subtype"), Feature(library, LawfulSubtypeGuid, "lawful subtype"),
                 Feature(library, ElectricityImmunityGuid, "archon electricity immunity"),

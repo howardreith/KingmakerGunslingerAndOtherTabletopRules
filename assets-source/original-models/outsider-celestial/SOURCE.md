@@ -42,3 +42,11 @@ body has its own exact unit/bone/anatomy loader contract. The existing common
 attachment/material controller, accessory suppression and teardown remain the
 production path; only the repeated nested expiry-visual copy is shared. Source
 records pin actual generated hashes and the geometry-free private capture.
+
+Hound Archon uses the same established original-asset pipeline and measured
+Free Hands rig: an original canine head with floppy ears, humanoid torso/limbs,
+cloth, and native palm/finger controls for its owned sword. Its mesh has6401
+vertices/8420 triangles,24 closed components and29 measured drivers. The source
+record pins its original painting reference, exporter and actual asset hashes.
+Simple anatomy, seams and cloth detail remain backlog. Native body/held-weapon
+presentation and resolved combat remain distinct observations.
