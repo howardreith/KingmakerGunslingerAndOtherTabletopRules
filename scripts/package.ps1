@@ -239,7 +239,8 @@ foreach ($kind in @('triceratops','stegosaurus')) {
 }
 $outsiderDestination = Join-Path $modDirectory 'assets\outsider-celestial'
 New-Item -ItemType Directory -Path $outsiderDestination -Force | Out-Null
-foreach ($part in @('lemure-mesh.json','lemure-albedo.png')) {
+$s3031OriginalBodyParts = @('lemure-mesh.json','lemure-albedo.png')
+foreach ($part in $s3031OriginalBodyParts) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\outsider-celestial\$part") -Destination $outsiderDestination
 }
 $theropodSource = Join-Path $outputDirectory 'assets\sprint24-theropods'
@@ -285,14 +286,14 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # three giant portraits and the v0.0.162 release notes. Sprint29 adds
 # three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
-# The capped S30/S31 pilot adds only exported new-species icons here.
+# The capped S30/S31 pilot adds declared exported icons and original-body members here.
 # Count their declared, hash-validated manifest records; Lantern is in place.
 # The strict package validator still checks the exact complete path/hash set.
 $s3031IconKeys = @('lemure','dretch','hound-archon','astral-deva','trumpet-archon')
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
 $s3031IconCount = @($summonManifest.icons | Where-Object { $_.key -cin $s3031IconKeys }).Count
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
