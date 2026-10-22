@@ -6,8 +6,8 @@ Product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTable
 
 | Charter | Creature | Routes | Current proof | Required next work |
 |---|---|---|---|---|
-| S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden adult/claws/defenses/single/full/AI; original body attachment/private cleanup/native SR source controls38/38 on4b122ab0 | Native camera-scale presentation; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
-| S30 | [Dretch](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dretch), new | SM III one; IV 1d3; V-IX 1d4+1: 7 new | Hidden adult/cloud10/10 on73e1c6f8; c5b430eb native safe cloud5/5 and owned player-ally Fear5/5; original128px icon inspected | Signed/resolved melee and defense consumers, Escape Artist+5, body/lifecycle; final-artifact AI/finite-resource controls |
+| S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden adult/claws/defenses/single/full/AI; original body/core38/38 on4b122ab0 plus native party-camera/private cleanup/SR0 body-pair proof on40b1ab11 | Full animation/attack/expiry bodies; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
+| S30 | [Dretch](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dretch), new | SM III one; IV 1d3; V-IX 1d4+1: 7 new | Hidden adult/cloud10/10 on73e1c6f8; c5b430eb native safe cloud5/5 and owned player-ally Fear5/5; original128px icon; original native body/camera/private cleanup/resources/SR0 pair proof40b1ab11 | Signed/resolved melee and defense consumers, held/action Escape Artist+5, lifecycle; final-artifact AI/finite-resource controls |
 | S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI; refreshed native SR15/circle/menace/plans/support15/15 on4b122ab0 | Full defenses/resolved attacks/Power Attack, hit-break/24h, disarm/fallback, original body/lifecycle and final artifact |
 | S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/rays retained; candidate menace/Aid with Hound freshly observed | Owned luminous orb, standard/full ray distinction/range/touch/DR; shared archon isolation/support; valid existing icon |
 | S31 | Astral Deva, new | SM IX one: 1 new | Original painting; native deva audited; inert | Distinct angel aura; enhanced disrupting hammer/slam/two-hit stun; CL13 SLAs incl limited Heal/Blade Barrier; owned equipment |
@@ -17,114 +17,77 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
-## Current Dretch body and fixed native pair
+## Latest exact development artifact: fixed original-body pair
 
-Dretch original generator/export/real-reference provenance added:7497 vertices,
-9636 triangles,29 measured drivers,1024px original albedo. One observed foot-claw
-connection was corrected; both previews retained. Exact identity/donor/renderer,
-per-view material/mesh/suppression/cleanup and strict two-member package extension
-are wired; no route/identity/icon changes. Synthetic406 acceptance,404 mismatch
-and407 unsupported refusal fixtures3/3 PASS. Native body proof pending.
+Source `40b1ab11e65c20ee0e5cb19d18b63d35e0865f96`, completed development package38:
+fixed Lemure-then-Dretch `outsider-bodies`12/12 PASS in ONE actual game/process/
+transaction. Each subcase had its own precondition, same-observer live-residue
+refusal, native appearance, presentation and cleanup rows. Actual native party-
+camera and supporting closeup PNGs for both bodies were inspected: visible,
+intact, distinguishable original bodies at game camera scale. Lemure is an
+amorphous clawed body; Dretch has belly, ears, tusks and claws. Coarse proportions,
+seams/specular spots, anatomy and texture refinement are backlog. This is static
+native body usability, not owner aesthetic approval or full combat/expiry proof.
 
-The smallest explicit `outsider-bodies` request phase has a fixed compiled
-Lemure-then-Dretch sequence; no caller-provided code/order or extra parameters.
-It is registered in runner/C#catalog/policy/PowerShell metadata/documented union.
-Each subcase owns two actual summons, native appearance wait/normal party-camera
-and supporting frame, individual bindings/resources/SR/item observations and its
-own result IDs. The same reset observer must reject still-live owned actors/items
-before cleanup and then verify actual private-resource, scene, inventory, command,
-memory, camera/settings and combat state before the next case. Any failure stops
-later rows. No attacks, save/cold-load or turn-controller cases are combined.
-Native reuse remains a hypothesis until this pair passes; one wrapper invocation
-is not being counted as saved game launches. Exact renderer selection is optional
-for the existing party-camera helper; all previous callers keep their default.
+Both actual part/rule SR0 and canonical native extraplanar identity passed.
+Dretch kept its two independent one-use resources and both owners' brains were
+observed inactive. Private sibling meshes/materials and original cached albedo
+were correctly bound. Cleanup released8 cumulative per-view resources after
+Lemure and16 after Dretch, with4 then10 natural-item references unreachable and
+nonlootable. Scene/party/caster memory/commands/buffs/areas/camera settings and
+render targets/global combat/RTWP preconditions were observed before case2 and
+at completion. Still-live owned actors/items were rejected by the SAME reset
+observer before cleanup. No source, asset, profile, mode or DLL changed inside
+this fixed sequence; no attacks, saves or controller-sensitive cases were shared.
+This demonstrates narrow body-case startup reuse, not general session safety.
 
-First compile caught a native base Fact/Ability type mismatch, corrected. Focused
-production18.3s/15 selected tests1.1s PASS after final reset checks. Fresh actual
-limited admission/dispatch/refusal tests are required because phase guards changed;
-old792 preflight is NOT authority for the new phase. Corrected155ae6bb build
-passed actual797 admission/refusal,27 dispatch/15 selected/exact compile/strict406
-package12:00:54.1430506Z-12:05:18.0708106Z, becoming completed package37.
-Its first native request was refused12:05:59.5609682Z-12:06:00.7095881Z by a second
-outer compatibility-wrapper phase allowlist before deployment/transaction/game.
-Full independent intake Compare PASS; game count stays41. The exact new phase is
-now added to that outer allowlist, with actual outer entrypoint candidate-boundary
-and invalid-parameter fixtures added to the existing compatibility tests. No guard
-or candidate binding is removed. Current development receipts require the exact
-current clean source/commit, so this real tooling-input correction needs a new
-same-root candidate; the unchecked155 package remains immutable, not relabeled.
- First fresh4ce06911 preflight stopped
-11:53:50.2448878Z after59.893s on C#/PowerShell catalog sync, before compilation,
-package or game. The scenario-name scanner reads all quoted lowercase strings
-in the C#scenario catalog, so phase/model literals were incorrectly classified
-as scenario IDs. Move those literals to the existing strict phase policy and
-keep typed catalog metadata delegates; do not add fake scenarios or weaken the
-sync/refusal test. Original failure retained; full intake Compare PASS.
- Plan one exact body-pair
-package/build and one guarded process/transaction, then inspect actual PNGs and
-restoration. No native case is running now; laptop remains restored41/37.
+ZIP `82fc6b530cff21c502671cffb383e2650a44152d974275c80f36d01a4494ecc1`;
+DLL `de474099db41aa52ae9473796d07a5155e87c90d49ae6ca8201c825c0f4c9f4b`;
+MVID `dd2b0856-90d7-450d-9a3e-0a68c993914d`;
+source-state `ec87f758985884a909f0620ab9fe17570ca19ced1e426673aeb943116ac2bf36`.
+Build12:11:39.7654551Z-12:16:02.1138160Z PASS:797 actual fresh limited admission/
+refusals,9 actual outer-entrypoint acceptance/refusal fixtures,27 dispatch,
+15 selected/exact compilation/strict406-file package. Receipt path207 characters.
+Transaction `compat-20261022T121626Z-255744af6973`, supervised
+12:16:25.9100172Z-12:20:36.6035734Z; request
+`20261022T1218374808471Z-disposable-expanded-summoning-sprints30-31-native-review`;
+RunId `20261022T1218375687067Z-7c3d0a1a8cb4404f9a3d4cf3e75ea204`.
+Actual game12:18:38.7753507Z; native12:18:45.5941392Z-12:20:28.2327261Z,
+102629ms including fixture. Native/settings restoration12:20:36.4341172Z plus
+separate full independent intake Compare PASS. No save loaded/written, owned
+game/task/lease/permanent development installation. Totals42 actual launches/
+transactions,38 completed development packages. Actual human v0.0.117 restored.
 
-## Latest exact development artifact and body slice
+The original Dretch asset is7497 vertices/9636 triangles/29 measured drivers/
+1024px original albedo, with actual project painting reference and committed
+provenance. One foot-claw connection correction followed the first private
+preview. No additional anatomy campaign. Four actual native PNG hashes/inspection
+are in local `artifacts/s30-31-bodies-40b1ab11/visual-review.json`; no private
+capture, native asset, assembly or raw rig is committed. Source/asset tests do
+not substitute for these native observations.
 
-Tested source `4b122ab0b83a6fa3ab778e493ef54c3f03b8177f`, one immutable
-development package36, two freshly restored transactions: game40 Lemure core/body
-38/38 PASS; game41 Hound/Lantern15/15 PASS. No release qualification claimed.
-The native extraplanar SR defect is fixed: Lemure actual part/rule SR0 while the
-canonical native dismissal/banishment marker stays present. A separate native
-actor still gets the original marker's SR5; exact added fact cleanup restores
-its references/SR. A different actual native SR17 buff on Lemure remains effective
-and removes cleanly to0 without losing the marker or descriptor immunities.
-Original two-instance body attachment, private material/mesh isolation, sibling
-and main-owner four-resource release, core rules/defenses/live Strength and one
-resolved native attack passed. Camera-scale presentation remains pending.
+Small retained failure history: initial body pair4ce06911 stopped before build
+on catalog sync because phase/model literals were misclassified as scenario IDs;
+move them to the strict phase policy with typed catalog delegates, keeping the
+sync guard. Candidate155ae6bb then built, but its first native request was refused
+by a second outer compatibility phase allowlist before deployment/game. Add only
+the fixed phase there and test the ACTUAL outer entrypoint; rebuild required by
+unchanged exact current-source candidate binding. The unused155 package remains
+immutable. Earlier native marker SR5 was a PRODUCT defect, corrected by exact
+source filtering with native donor5/foreign buff17/cleanup0 and Hound own15
+controls. Original FAILs are not reclassified as PASS or relabeled release proof.
 
-The same exact ZIP then passed Hound's adult/SR15/PowerAttack-off native profile,
-canonical shared Magic Circle carrier/area/recipient atCL6 with owned parameters,
-signed armed/natural plans, mixed Hound/Lantern menace/source hand-off and actual
-Aid/no-repeat15/15. Hound body is still an unqualified borrowed biped; these are
-plans/support/aura observations, not resolved Hound hits or complete defenses.
+Prior exact tuples (including native Lemure38/38 and Hound/Lantern15/15 on one
+4b122ab0 package, unused155 candidate/refusals, older caster23/23, escape10/10 and
+narrow Aid-cap reader correction) remain in the
+[immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/40b1ab11e65c20ee0e5cb19d18b63d35e0865f96/planning/SPRINT30-31-STATUS.md).
+Hound's shared canonical CL6 Magic Circle remains current source; no fork.
 
-ZIP `cc9e3b5d6f01d453eb7523811bfc0a2d5f90a5d9919c8e328a2fcb20a0ceb04b`;
-DLL `c6f113e9d84deac23164bc7464a75b18ffb08085ee924410a38496ef4c6ebaf7`;
-MVID `0e050cfa-a425-4eda-b562-24050b41339c`;
-source-state `622d2cc3e1efecd8d7d512a3dfc8fd982ec2f2cd8e163ee112b538f420523114`.
-Build11:02:19.5340835Z-11:05:45.0095058Z PASS; admission792 explicitly reused
-under unchanged request/dispatcher/permission guard dependency map; fresh27
-integration/15 selected/exact compilation/strict404-file packaging. One build,
-no source/DLL/asset changes between the two native transactions.
-
-| Native case | Exact attribution | Native interval including fixture | Supervised interval/restoration |
-|---|---|---|---|
-| Lemure core/body38 PASS | `compat-20261022T110630Z-c89b76a51925`; request `20261022T1108372171728Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261022T1108372511357Z-d7ff977945f44e5e8edcb347fe3086d1` | 11:08:45.8224670Z-11:10:24.6054431Z,98778ms; actual game11:08:38.3994588Z | 11:06:29.7835406Z-11:10:33.1034435Z; restored11:10:32.9186649Z |
-| Hound/Lantern15 PASS | `compat-20261022T111115Z-dd3b0833c83c`; request `20261022T1113223528708Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261022T1113223840777Z-179cbe4feef04238ae187e9a5e93d993` | 11:13:30.7878704Z-11:15:09.7317559Z,98943ms; actual game11:13:23.6750433Z | 11:11:14.6425519Z-11:15:17.9164450Z; restored11:15:17.7611550Z |
-
-Both transaction/settings receipts plus separate full independent intake Compare
-PASS. Actual human v0.0.117 intake restored; no saves loaded/written, owned game,
-task, active lease or permanent deployment. Totals41 actual games/transactions,
-36 completed development packages; failed package attempts remain separate.
-
-Setup was shared within Lemure's save-free native process for two-body/source
-controls, rules and a verified reset before the single attack; deliberate injury
-residue detection and exact native/foreign source cleanup passed. Hound stayed a
-fresh process/transaction because this fixture's later combat state has a known
-isolation boundary. Reused artifact bytes across processes are not claimed as
-amortized native startup. Final all-consumer/persistence/public proof remains.
-Dretch/Lantern/Trumpet marker/SR and target eligibility still need fresh affected
-coverage; Astral is inert and needs the exact marker selector when implemented.
-
-Small failure history (raw records remain immutable): preview world missing and
-two wiring compile errors corrected; initial2a89e228 package attempt refused402
-versus404 declared files, exact two-member count fixed with3 acceptance/refusal
-fixtures; game38 SR failure lacked attribution, game39 proved native marker SR5
-as a PRODUCT DEFECT, not an observer defect. Exact-source activation filter uses
-native per-source-ID cleanup; no native blueprint or other SR source is changed.
-Full failed tuples and earlier caster/escape/Aid reader evidence are retained in
-the [immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/4b122ab0b83a6fa3ab778e493ef54c3f03b8177f/planning/SPRINT30-31-STATUS.md).
-
-Next: Dretch original body using the proven measured attachment/export pipeline,
-then focused native presentation/ownership and remaining combat consumers. No new
-body anatomy research or broader framework; unchanged package is not rebuilt for
-this record-only checkpoint. All six and the combined release endpoint remain.
+Next: original Hound canine-headed usable humanoid body, then remaining scoped
+attacks/defenses/AI/turns/lifetime/items/caster work. All six,30 individual routes,
+targeted persistence, profiles, final combined public artifact and publisher/
+release/actual assets/records/restoration endpoint remain mandatory. No rebuild
+for this record-only checkpoint; STOP before Sprint32 only after the endpoint.
 
 ## Current dependencies and decisions
 
