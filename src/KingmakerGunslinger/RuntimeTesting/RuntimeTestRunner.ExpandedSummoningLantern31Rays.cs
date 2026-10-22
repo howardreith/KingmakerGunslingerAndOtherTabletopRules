@@ -73,7 +73,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 resistance = new Lantern31ResistanceObserver(owner, target);
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 Sprint28SetBrainActivePreservingActions(target, false);
+                // This exact Lantern is the disposable defense target. A
+                // summoned unit retains its master's group relationship even
+                // after a faction switch, so copy the already-proven hostile
+                // fixture envelope after detaching only this owned target.
+                target.Descriptor.SetMaster(null);
                 target.Descriptor.SwitchFactions(fixture.Hostile.Faction, true);
+                target.GroupId = fixture.Hostile.GroupId;
+                target.AttackFactions.Match(fixture.Hostile.AttackFactions.ToArray());
                 target.Descriptor.Stats.HitPoints.BaseValue = 100;
                 target.Descriptor.Stats.AC.BaseValue = 0;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
@@ -173,6 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new Feet(ExpandedSummoningSpecialProfiles.LanternRayRangeFeet).Meters) < .001f &&
                     owner.IsInGame && target.IsInGame &&
                     owner.Descriptor.State.CanAct && owner.IsEnemy(target) &&
+                    target.IsEnemy(owner) && target.Descriptor.Master.Value == null &&
                     owner.HasLOS(target) && owner.Memory.ContainsVisible(target) &&
                     data.IsAvailable && data.CanTarget(selected) &&
                     data.Blueprint.ActionType == UnitCommand.CommandType.Standard &&
@@ -197,6 +205,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["canTarget"] = data.CanTarget(selected), ["los"] = owner.HasLOS(target),
                     ["visible"] = owner.Memory.ContainsVisible(target),
                     ["ownerCanOrdinarilyAttack"] = owner.CanAttack(target),
+                    ["ownerEnemy"] = owner.IsEnemy(target),
+                    ["targetEnemy"] = target.IsEnemy(owner),
+                    ["targetMasterAbsent"] = target.Descriptor.Master.Value == null,
+                    ["ownerGroup"] = owner.GroupId, ["targetGroup"] = target.GroupId,
                     ["friendRefused"] = friendRefused, ["selfRefused"] = selfRefused,
                     ["canTargetEnemies"] = data.Blueprint.CanTargetEnemies,
                     ["nativeRelationBypass"] = data.Blueprint.CanTargetFriends,
