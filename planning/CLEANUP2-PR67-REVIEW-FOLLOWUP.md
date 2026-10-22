@@ -4,7 +4,41 @@ Development checkpoint, 2026-10-22. PR stays draft. The mission, production
 attack qualification, giant differentiation and owner art approval remain open.
 The reviewed input was aea5a8ae5553650602b23aa6d5284f957ac1a525.
 
-## Recovery pass, 2026-10-22 (current)
+## Ettin replacement continuation, 2026-10-22 (current)
+
+Intake verified clean integration HEAD `e3cd9471600f9a376c060faf5a480ab0cd086662`
+and the same open draft PR. This continuation supersedes the rejected appended
+head design; earlier native failures and the 25+8-original gallery remain intact.
+
+- **Ettin:** one private complete body replaces the visible donor body. Two
+  detailed reshaped faces, necks and shared shoulders use installed donor topology
+  and unmodified skin/hair maps. No game geometry/pixels are distributed. The
+  actual production array builder was used for offline front/side/rear/three-quarter,
+  gameplay-distance and synthetic neck/head/jaw previews. The initial ridged
+  shoulder join was rejected and rebuilt. Two private native-pose chains, one
+  owned material and exact renderer suppression replace obsolete extra-head
+  assumptions. Current cache comparison, source preservation and private release
+  checks remain. Expiry now observes the actual native dismember fact/FX path and
+  positive entity/view disposal; off-hand selection records its exact native
+  action lookup. Cold load remains unavailable through a qualified Cleanup2 path.
+- **Gorgon:** 25 hard beveled plates replace rounded pads; a separate linear
+  authored parameter map confines metal/roughness changes to plate UV regions.
+  Continuous bull body, bones, horns, eyes and hooves remain exact. Inspected
+  offline geometry and target PBR previews; native shader response is pending.
+- **Girallon:** lower hands are compact, broader and separated outboard/forward;
+  joined neck, body and articulated upper hands remain exact. Inspected ordinary
+  and synthetic pose previews; native far-hand readability remains to inspect.
+- **Stegosaurus:** slimmer leg shafts and more compact feet retain the useful
+  elongated trunk, tail, plates and measured donor joints. Synthetic stride and
+  tail poses inspected. Native crouch/material presentation remains to inspect.
+
+The next bounded native batch uses the replacement Ettin lifecycle, the existing
+individual-predicate Crab/Brachio attack reproduction, and only the three changed
+body packets. Candidate identity, actual results, gallery and restoration receipts
+will be recorded below after the selected focused gate. This is not owner approval
+or completion of giant height, Brachiosaurus finish, cold load or the mission.
+
+## Previous recovery pass, 2026-10-22
 
 Intake verified the clean integration worktree at
 `bca1735515293568647498cd54c9de5825c8ef18`, on

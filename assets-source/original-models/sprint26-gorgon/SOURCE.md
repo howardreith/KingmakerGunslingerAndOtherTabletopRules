@@ -6,7 +6,64 @@ project-authored `cleanup2-gorgon-input.json`. Its SHA-256 is
 This input contains original geometry, UVs, painting identity and named weights;
 it contains no native vertices, textures, bind transforms or animation curves.
 
-## Reopened ART-10 repair
+## Current hard-panel recovery
+
+The native review-14 front-left and left frames still showed convex quilt-like
+plates and matte shading on the preceding gunmetal repaint. The current export
+replaces that armor geometry with **25 rigid planar steel panels**: clipped
+corners, narrow physical bevels, split crease normals and overlapping lips.
+Paired roof facets follow the curved back instead of a wide floating tangent
+slab. Each panel follows its dominant original Chest/UpperTorso/LowerTorso
+driver; the forehead shield follows Head. No soft skin blend bends the panels.
+
+The underlying 9,500 body triangles retain exactly the preceding exported
+positions, normals and named weights, independent of new UV seam copies. The
+28-name palette/rig identity, original horn and eye point sets, eight hoof
+halves and their contact minima are retained. Blueprint, unit/view scale,
+colliders, native donor, animator, summon rules and breath origin are unchanged.
+
+`gorgon-parameters.png` is a third original export, baked through the **same UV
+and region rasterizer** as the albedo. Geometry regions 10..34 are armor:
+R=.23 roughness, G=0 emission, B=.94 metallic. All other authored regions use
+R=.82, G=0, B=0. No color threshold, inferred UV rectangle or native texture mask
+identifies armor. Albedo changes are original steel paint; UV packing changes
+because the geometry changed, so this revision makes no old-texel equality claim.
+
+Only the exact Gorgon runtime material specialization binds this map. The
+existing PNG/hash/dimension loader checks its bytes; CPU channels are copied
+verbatim into a private `Texture2D(..., linear:true)` so packed inputs are not
+gamma-decoded. The map is included in that attachment's resource receipt,
+rollback and teardown. The native PF shader's declared channel label establishes
+R=Roughness/G=Emission/B=Metallic. Scalar defaults are explicitly nonemissive and
+do not force full-body metal (`_Metallic=0`, `_Roughness=1`, `_Emission=0`).
+Actual PF map/scalar response still requires native visual observation.
+
+Current generated hashes:
+
+| Export | SHA-256 |
+| --- | --- |
+| `gorgon-mesh.json` | `3deacf1f00f43c305cf0748ff52c109e947d4b7aa78e7146e94fd3e98e798063` |
+| `gorgon-albedo.png` | `f1421542521f466f75de4cc30ac680b3bedf8ebe710dec188b87af58e873fe34` |
+| `gorgon-parameters.png` | `16f8c28cfbe334097b8013bb1bedc108022b580b384f11a59101f747a4483f61` |
+
+Two independent Blender processes reproduce all three files byte for byte.
+The actual-byte auditor passes 9,311 vertices, 11,816 triangles, 42 closed
+outward components, normalized weights and identical coincident seam weights.
+Bind normal agreement is 100%; two historical-frame synthetic poses pass the
+same topology/weight contracts. These are not native motion observations.
+
+The first broad planar-slab preview was rejected for floating dorsal plates;
+the second was corrected for skin protrusion. Current front/side/party views
+of exact exported arrays were inspected, including a 360px party view and a
+Blender PBR art probe using the exact original packed map. Bevels and separate
+flat plates remain readable at that distance. PBR preview response is an art
+target, not proof of the installed PF shader. Local reports/renders and retained
+rejected iterations remain ignored under `artifacts/cleanup2-gorgon/`.
+Generation took 7.063s with the optional pose audit; a fresh no-rig repeat took
+5.328s; exact old/new body and repeat checks took .874s. No game, build, package,
+or native visual check was run in this lane. Owner visual approval is pending.
+
+## Previous continuous-body repair
 
 The current native baseline showed pillow-like ellipsoid plates, disconnected
 looking thin limbs, round toe ends and a coarse muzzle. Cleanup 2 now authors
@@ -53,7 +110,7 @@ Current exported identities and commands/durations are recorded in
 not grant owner visual approval. Native locomotion, plate/hoof contact and
 mouth-effect presentation on these changed bytes remain unverified.
 
-## Plate-only gunmetal paint follow-up
+## Historical plate-only gunmetal paint follow-up
 
 The native body-5 screenshots retained a pale quilt-like plate/rim appearance.
 The generator now darkens only known authored plate regions 10 through 30:
