@@ -42,7 +42,18 @@ for the existing party-camera helper; all previous callers keep their default.
 First compile caught a native base Fact/Ability type mismatch, corrected. Focused
 production18.3s/15 selected tests1.1s PASS after final reset checks. Fresh actual
 limited admission/dispatch/refusal tests are required because phase guards changed;
-old792 preflight is NOT authority for the new phase. First fresh4ce06911 preflight stopped
+old792 preflight is NOT authority for the new phase. Corrected155ae6bb build
+passed actual797 admission/refusal,27 dispatch/15 selected/exact compile/strict406
+package12:00:54.1430506Z-12:05:18.0708106Z, becoming completed package37.
+Its first native request was refused12:05:59.5609682Z-12:06:00.7095881Z by a second
+outer compatibility-wrapper phase allowlist before deployment/transaction/game.
+Full independent intake Compare PASS; game count stays41. The exact new phase is
+now added to that outer allowlist, with actual outer entrypoint candidate-boundary
+and invalid-parameter fixtures added to the existing compatibility tests. No guard
+or candidate binding is removed. Current development receipts require the exact
+current clean source/commit, so this real tooling-input correction needs a new
+same-root candidate; the unchecked155 package remains immutable, not relabeled.
+ First fresh4ce06911 preflight stopped
 11:53:50.2448878Z after59.893s on C#/PowerShell catalog sync, before compilation,
 package or game. The scenario-name scanner reads all quoted lowercase strings
 in the C#scenario catalog, so phase/model literals were incorrectly classified
@@ -51,7 +62,7 @@ keep typed catalog metadata delegates; do not add fake scenarios or weaken the
 sync/refusal test. Original failure retained; full intake Compare PASS.
  Plan one exact body-pair
 package/build and one guarded process/transaction, then inspect actual PNGs and
-restoration. No native case is running now; laptop remains restored41/36.
+restoration. No native case is running now; laptop remains restored41/37.
 
 ## Latest exact development artifact and body slice
 

@@ -202,3 +202,28 @@ foreach ($parameters in @(@{}, @{reviewPhase='COMMANDS'}, @{reviewPhase='all'},
     $sprint28DispatchChecks++
 }
 Write-Host "PASS actual Sprint28 profile dispatch: $sprint28DispatchChecks candidate-boundary/refusal checks; no profile entered."
+
+# Actual outer entrypoint coverage for the capped fixed-body pair. The existing
+# deliberately incompatible fixture stops accepted requests before any profile.
+$dispatchScenario = 'disposable-expanded-summoning-sprints30-31-native-review'
+$bodyDispatchChecks = 0
+foreach ($phase in @('bootstrap','lemure-core','outsider-bodies')) {
+    $caught = $null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught = $_.Exception.Message }
+    if ($caught -cne 'Compatibility package version does not match the current repository; no profile was entered.') {
+        throw "Actual fixed-body dispatch failed before candidate boundary for ${phase}: $caught"
+    }
+    $bodyDispatchChecks++
+}
+foreach ($parameters in @(@{}, @{reviewPhase='Outsider-Bodies'}, @{reviewPhase='outsider-bodies '},
+    @{reviewPhase=@('outsider-bodies')}, @{reviewPhase='outsider-bodies';extra='x'}, @{ReviewPhase='outsider-bodies'})) {
+    $caught = $null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters $parameters -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught = $_.Exception.Message }
+    if ($caught -cne 'Sprint 22/23/24/25 native review requires one fresh scenario and exactly one allowlisted reviewPhase parameter.') {
+        throw "Actual fixed-body dispatch did not reject invalid parameters: $caught"
+    }
+    $bodyDispatchChecks++
+}
+Write-Host "PASS actual S30/S31 fixed-body profile dispatch: $bodyDispatchChecks candidate-boundary/refusal checks; no profile entered."
