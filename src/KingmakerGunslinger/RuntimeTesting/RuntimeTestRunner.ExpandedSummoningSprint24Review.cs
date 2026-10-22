@@ -3667,7 +3667,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
             UnitEntityData owner, UnitEntityData targetUnit, float distance,
             out Vector3 target, out string survey, out string direction,
-            float targetAllyExclusionRadius = 0f)
+            float targetAllyExclusionRadius = 0f,
+            bool requireReciprocalSight = true)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3696,6 +3697,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int selectedDirection = -1;
             int originCandidates = 0;
             int laneCandidates = 0;
+            int ownerLosCandidates = 0;
             int nativeLosCandidates = 0;
             int allyClearCandidates = 0;
             for (int dx = -15; dx <= 15; dx += 3)
@@ -3743,7 +3745,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             targetPoint.clampedPosition);
                         owner.SightCache.ClearIfNeeded();
                         targetUnit.SightCache.ClearIfNeeded();
-                        if (!owner.HasLOS(targetUnit) ||
+                        if (!owner.HasLOS(targetUnit)) continue;
+                        ownerLosCandidates++;
+                        if (requireReciprocalSight &&
                             !targetUnit.HasLOS(owner)) continue;
                         nativeLosCandidates++;
                         if (targetAllyExclusionRadius > 0f &&
@@ -3776,6 +3780,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "m(graph-and-sight)";
             survey = "originCandidates=" + originCandidates +
                 ";laneCandidates=" + laneCandidates +
+                ";ownerLosCandidates=" + ownerLosCandidates +
                 ";nativeLosCandidates=" + nativeLosCandidates +
                 ";allyClearCandidates=" + allyClearCandidates +
                 ";partyGap=" +
