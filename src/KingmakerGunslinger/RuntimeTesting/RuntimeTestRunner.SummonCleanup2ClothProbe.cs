@@ -46,11 +46,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion ||
                 (string)_request.Parameters?["reviewPhase"] != "cloth-probe" ||
-                fixture == null || book == null || _sprint25Clock == null || _expandedSummoningPlayerPathCaptureActive)
+                fixture == null || book == null || _sprint25Clock == null || _expandedSummoningPlayerPathCaptureActive ||
+                _refinementUnit != null || _refinementAction != null)
                 throw new InvalidOperationException("Exact idle Cleanup 2 cloth-probe fixture/book/clock required.");
             bool pause = Game.Instance.IsPaused, waiting = _sprint25WaitingForUnityAppearance;
             UnitEntityData[] oldCapture = ExpandedSummoningRuleCapture.ToArray();
             string[] oldEvents = ExpandedSummoningPlayerPathEvents.ToArray();
+            string[] oldAnimationRecords = _refinementRecords.ToArray();
             int oldCasts = _expandedSummoningPlayerPathRuleCastCount, oldSpawns = _expandedSummoningPlayerPathSpawnActionCount;
             var hooks = HarmonyInstance.Create("kmg.cleanup2.cloth-probe." + _request.RunId);
             UnitEntityData actor = null;
@@ -230,6 +232,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningRuleCapture.Clear(); ExpandedSummoningRuleCapture.AddRange(oldCapture);
                     ExpandedSummoningPlayerPathEvents.Clear(); ExpandedSummoningPlayerPathEvents.AddRange(oldEvents);
                     _expandedSummoningPlayerPathRuleCastCount = oldCasts; _expandedSummoningPlayerPathSpawnActionCount = oldSpawns;
+                    _refinementRecords.Clear(); _refinementRecords.AddRange(oldAnimationRecords);
                 });
                 _sprint25WaitingForUnityAppearance = waiting;
                 restore("pause", () => Game.Instance.IsPaused = pause);

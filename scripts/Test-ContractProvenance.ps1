@@ -74,7 +74,19 @@ try {
     }
     $matched = @(Assert-KmgReferenceBundleMatchesInstall `
         -ReferenceBundleDir $bundle -KingmakerInstallDir $install)
-    Assert-True ($matched.Count -eq 14) 'all-explicit-references-match'
+    Assert-True ($matched.Count -eq 15) 'all-explicit-references-match'
+    $clothBundle = Join-Path $bundle 'Managed\UnityEngine.ClothModule.dll'
+    $clothBytes = [IO.File]::ReadAllBytes($clothBundle)
+    [IO.File]::AppendAllText($clothBundle, 'mismatch')
+    Assert-Throws {
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+    } 'mismatched-cloth-reference-fails'
+    [IO.File]::WriteAllBytes($clothBundle, $clothBytes)
+    Remove-Item -LiteralPath $clothBundle
+    Assert-Throws {
+        Assert-KmgReferenceBundleMatchesInstall -ReferenceBundleDir $bundle -KingmakerInstallDir $install
+    } 'missing-cloth-reference-fails'
+    [IO.File]::WriteAllBytes($clothBundle, $clothBytes)
     $physicsBundle = Join-Path $bundle 'Managed\UnityEngine.PhysicsModule.dll'
     $physicsBytes = [IO.File]::ReadAllBytes($physicsBundle)
     [IO.File]::AppendAllText($physicsBundle, 'mismatch')
