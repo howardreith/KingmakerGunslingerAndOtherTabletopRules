@@ -283,6 +283,7 @@ def planned():
         rows.append((f"KMG.Summoning.Smite.{alignment}.Available", "BlueprintBuff"))
     rows.extend((
         ("KMG.Summoning.Special.LanternArchon.LightRay", "BlueprintAbility"),
+        ("KMG.Summoning.Special.LanternArchon.LightRayFull", "BlueprintAbility"),
         ("KMG.Summoning.Special.LanternArchon.LightRayAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"),

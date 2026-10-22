@@ -48,6 +48,8 @@ namespace KingmakerGunslinger.Blueprints
             "KMG.Summoning.Unit.LanternArchon";
         private const string LanternRaySymbol =
             "KMG.Summoning.Special.LanternArchon.LightRay";
+        private const string LanternFullRaySymbol =
+            "KMG.Summoning.Special.LanternArchon.LightRayFull";
         private const string LanternAiSymbol =
             "KMG.Summoning.Special.LanternArchon.LightRayAi";
         private const string LanternBrainSymbol =
@@ -490,19 +492,21 @@ namespace KingmakerGunslinger.Blueprints
             ExpandedSummoningSpecialProfiles.Validate();
             BlueprintAbility ray = Require<BlueprintAbility>(bySymbol,
                 LanternRaySymbol);
+            BlueprintAbility fullRay = Require<BlueprintAbility>(bySymbol,
+                LanternFullRaySymbol);
             BlueprintAiCastSpell ai = Require<BlueprintAiCastSpell>(bySymbol,
                 LanternAiSymbol);
             BlueprintBrain brain = Require<BlueprintBrain>(bySymbol,
                 LanternBrainSymbol);
             BlueprintBuff defenses = Require<BlueprintBuff>(bySymbol,
                 LanternDefenseSymbol);
-            ConfigureRay(library, ray);
-            ConfigureAi(library, ai, ray);
+            ConfigureRay(library, ray, fullRay);
+            ConfigureAi(library, ai, fullRay);
             brain.name = InternalName(LanternBrainSymbol);
             brain.Actions = new BlueprintAiAction[] { ai };
             ConfigureDefenses(defenses);
             ConfigureUnit(library, Require<BlueprintUnit>(bySymbol,
-                LanternUnitSymbol), ray, brain, defenses, extraplanar);
+                LanternUnitSymbol), ray, fullRay, brain, defenses, extraplanar);
             ConfigureInvisibleStalker(library, Require<BlueprintUnit>(bySymbol,
                 InvisibleStalkerUnitSymbol), extraplanar);
             ConfigureErinyes(library, Require<BlueprintUnit>(bySymbol,
@@ -5352,15 +5356,31 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureRay(LibraryScriptableObject library,
-            BlueprintAbility ray)
+            BlueprintAbility ray, BlueprintAbility fullRay)
         {
             BlueprintAbility native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
                 library, NativeRayGuid, "native Ghaele two-projectile light ray");
+            ConfigureRayVariant(native, ray, LanternRaySymbol,
+                ExpandedSummoningSpecialProfiles.LanternStandardRayProjectiles,
+                false, "Light Ray",
+                "Fires one ranged-touch ray to 30 feet for 1d6 direct light damage.");
+            ConfigureRayVariant(native, fullRay, LanternFullRaySymbol,
+                ExpandedSummoningSpecialProfiles.LanternFullRayProjectiles,
+                true, "Twin Light Rays",
+                "Fires two ranged-touch rays to 30 feet as a full-round action. Each ray deals 1d6 direct light damage.");
+        }
+
+        private static void ConfigureRayVariant(BlueprintAbility native,
+            BlueprintAbility ray, string symbol, int projectileCount,
+            bool fullRound, string displayName, string description)
+        {
             ExpandedSummoningAbilityBuilder.CopyFields(native, ray);
-            ray.name = InternalName(LanternRaySymbol);
+            ray.name = InternalName(symbol);
             ray.ComponentsArray = (native.ComponentsArray ??
                 Array.Empty<BlueprintComponent>()).Select(
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            ray.ActionType = UnitCommand.CommandType.Standard;
+            ray.SetIsFullRoundAction(fullRound);
             ray.Range = AbilityRange.Custom;
             ray.CustomRange = new Feet(
                 ExpandedSummoningSpecialProfiles.LanternRayRangeFeet);
@@ -5377,10 +5397,14 @@ namespace KingmakerGunslinger.Blueprints
                 .OfType<AbilityDeliverProjectile>().Single();
             delivery.Length = new Feet(
                 ExpandedSummoningSpecialProfiles.LanternRayRangeFeet);
-            if ((delivery.Projectiles ?? Array.Empty<BlueprintProjectile>()).Length !=
-                ExpandedSummoningSpecialProfiles.LanternRayProjectiles)
+            BlueprintProjectile[] donorProjectiles = delivery.Projectiles ??
+                Array.Empty<BlueprintProjectile>();
+            if (donorProjectiles.Length !=
+                ExpandedSummoningSpecialProfiles.LanternFullRayProjectiles ||
+                projectileCount < 1 || projectileCount > donorProjectiles.Length)
                 throw new InvalidOperationException(
                     "Native Lantern ray donor no longer has two projectiles.");
+            delivery.Projectiles = donorProjectiles.Take(projectileCount).ToArray();
             ContextActionDealDamage damage = FindDamage(ray.ComponentsArray);
             damage.Value = new ContextDiceValue {
                 DiceType = DiceType.D6,
@@ -5390,10 +5414,10 @@ namespace KingmakerGunslinger.Blueprints
             };
             damage.DamageType.Type = DamageType.Direct;
             BlueprintUnitFactAccess.Resolve().Configure(ray,
-                LocalizationService.Create("KMG.ExpandedSummoning.LanternArchon.LightRay.Name",
-                    "Light Ray"),
-                LocalizationService.Create("KMG.ExpandedSummoning.LanternArchon.LightRay.Description",
-                    "Fires two ranged-touch rays to 30 feet. Each ray deals 1d6 direct light damage."),
+                LocalizationService.Create("KMG.ExpandedSummoning.LanternArchon." +
+                    (fullRound ? "TwinLightRay.Name" : "LightRay.Name"), displayName),
+                LocalizationService.Create("KMG.ExpandedSummoning.LanternArchon." +
+                    (fullRound ? "TwinLightRay.Description" : "LightRay.Description"), description),
                 native.Icon);
         }
 
@@ -5449,7 +5473,8 @@ namespace KingmakerGunslinger.Blueprints
         }
 
         private static void ConfigureUnit(LibraryScriptableObject library,
-            BlueprintUnit unit, BlueprintAbility ray, BlueprintBrain brain,
+            BlueprintUnit unit, BlueprintAbility ray, BlueprintAbility fullRay,
+            BlueprintBrain brain,
             BlueprintBuff defenses, BlueprintFeature extraplanar)
         {
             var levels = ScriptableObject.CreateInstance<AddClassLevels>();
@@ -5467,7 +5492,7 @@ namespace KingmakerGunslinger.Blueprints
             levels.Selections = Array.Empty<SelectionEntry>();
             var grant = ScriptableObject.CreateInstance<
                 AddAbilityToCharacterComponent>();
-            grant.Abilities = new[] { ray };
+            grant.Abilities = new[] { ray, fullRay };
             unit.ComponentsArray = new BlueprintComponent[] { levels, grant };
             unit.Body = new BlueprintUnit.UnitBody {
                 DisableHands = true,
