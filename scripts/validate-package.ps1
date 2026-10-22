@@ -170,9 +170,9 @@ try {
     # exact export integrity; owner visual approval remains pending separately.
     # All unrelated protected pairs retain their existing exact identities.
     $protectedBodyExports = @{
-        'assets\ungulates\gorgon-mesh.json' = '3deacf1f00f43c305cf0748ff52c109e947d4b7aa78e7146e94fd3e98e798063'
-        'assets\ungulates\gorgon-albedo.png' = 'f1421542521f466f75de4cc30ac680b3bedf8ebe710dec188b87af58e873fe34'
-        'assets\ungulates\gorgon-parameters.png' = '16f8c28cfbe334097b8013bb1bedc108022b580b384f11a59101f747a4483f61'
+        'assets\ungulates\gorgon-mesh.json' = '2d524e002371fe10ca3f89ac2b59a32de823711cc3d05fc2e174104bb6f53370'
+        'assets\ungulates\gorgon-albedo.png' = '8974f854b188eb5f40589b214a6babca9df7fb002c2038f56109a46199075ffe'
+        'assets\ungulates\gorgon-parameters.png' = '241c44e0ef86feac0acde88abd835c29ee138791e2b31af4d3b92133ea7d1351'
         'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
         'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 

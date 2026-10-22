@@ -6,6 +6,12 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+Review23 (`eea1d1a8`) compiled and passed its 17 focused cases, then strict
+packaging refused three stale Gorgon export pins. No installation or native
+process was started. The current correction pins the inspected forged-scale
+exports exactly; the existing positive/stale/missing/cross-wired export check
+passes 129 assertions in 2.432s. The failed build remains in review23 artifacts.
+
 - Girallon distal fingers and hand paint, Stegosaurus stance/ankles/material,
   and Brachiosaurus neck/chest/limb treatment are implemented and reproduced
   exactly. Root inspected full offline front/side/gameplay previews and rejected
@@ -70,7 +76,7 @@ target-resolution cases passed, including the original constructor negative.
 Both native hosts exited normally. `compat-20261022T230642Z-a960be0e4a65` and
 `compat-20261022T231115Z-655b3a7ccbe6` report exact installation/settings restore;
 both fresh save inventories are preserved exactly. Window3 closed23:14:17UTC,
-25m02s after22:48:15, inside30minutes. Final90minute qualification has not begun.
+26m02s after22:48:15, inside30minutes. Final90minute qualification has not begun.
 All original FAIL records and PNGs remain unchanged.
 
 ### Review21 startup failure (preserved; no creature result)
