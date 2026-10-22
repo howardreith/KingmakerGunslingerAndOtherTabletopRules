@@ -4,6 +4,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string OutsiderBodyPhase = "outsider-bodies";
+        // Fixed supported subcases; requests cannot supply code or ordering.
+        internal static string[] OutsiderBodySequence
+        { get { return new[] { "lemure", "dretch" }; } }
+
         internal static bool Sprint25Phase(string phase)
         {
             return phase == "rtwp-foundation" || phase == "turn-based-commands" ||

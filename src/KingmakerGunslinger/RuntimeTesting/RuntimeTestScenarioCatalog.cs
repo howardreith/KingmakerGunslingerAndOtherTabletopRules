@@ -256,10 +256,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint25-native-review";
         internal const string DisposableExpandedSummoningSprint28NativeReview =
             "disposable-expanded-summoning-sprint28-native-review";
-        internal const string Sprints30And31OutsiderBodyPhase = "outsider-bodies";
-        // Fixed supported subcases, never supplied as request code or ordering.
+        // Phase metadata comes from the strict phase policy; the scenario
+        // catalog continues to contain only actual scenario identifiers.
+        internal static string Sprints30And31OutsiderBodyPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodyPhase; } }
         internal static string[] Sprints30And31OutsiderBodySequence
-        { get { return new[] { "lemure", "dretch" }; } }
+        { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodySequence; } }
         internal const string DisposableExpandedSummoningSprints30And31NativeReview =
             "disposable-expanded-summoning-sprints30-31-native-review";
         internal const string DisposableExpandedSummoningSprint29NativeReview =
