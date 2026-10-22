@@ -427,6 +427,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!globe) throw new InvalidOperationException(
                     "Astral lesser-globe native rule boundary failed.");
 
+                // The globe probes deliberately move the fixture caster to
+                // distant rule origins. Restore the original walkable party
+                // anchor before the established AI lane surveys the graph.
+                PlaceExpandedSummoningUnit(fixture.Caster, origin);
                 foreach (int frame in ReviewAstral31Heal(fixture, owner, sibling,
                     target, heal)) yield return frame;
 
