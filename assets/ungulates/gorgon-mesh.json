@@ -42,7 +42,7 @@
  },
  "albedo": {
   "file": "gorgon-albedo.png",
-  "sha256": "f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2",
+  "sha256": "cf66f22224e040cbd65fcec717ab41f9786ec0cefd02dd4534d322eec82721a4",
   "width": 1024,
   "height": 1024,
   "bitDepth": 8,
@@ -61,5 +61,6 @@
  "sourceGeometrySha256": "0f3c8ce10c4c0d50650ecb5a042985d1b242977716c5b7a0286754d370fdc508",
  "maxInfluencesPerVertex": 4,
  "thinConformalPlates": 21,
- "flatClovenHoofHalves": 8
+ "flatClovenHoofHalves": 8,
+ "paintRevision": "cleanup2-gunmetal-plates-only"
 }

@@ -81,10 +81,22 @@ function Open-KmgSummonCleanup2Settings {
     if($null -eq $key) { throw 'Current native game-settings key is missing.' }
     return $key
 }
+function Get-KmgSummonCleanup2NativeProcessIds {
+    # Unlike Get-Process -ErrorAction SilentlyContinue, this API returns an
+    # empty array for ordinary absence and throws on enumeration failure.
+    # Unknown process state must never authorize guard disposal.
+    $processes=[Diagnostics.Process]::GetProcessesByName('Kingmaker')
+    try {return @($processes | ForEach-Object Id)}
+    finally {foreach($process in $processes){$process.Dispose()}}
+}
+function Assert-KmgSummonCleanup2NativeExit {
+    $ids=@(Get-KmgSummonCleanup2NativeProcessIds)
+    if($ids.Count -gt 0){throw ('Kingmaker remains running: '+($ids -join ', '))}
+}
 function Wait-KmgSummonCleanup2Exit {
     $deadline=[DateTime]::UtcNow.AddSeconds(180)
     while(@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 500 }
-    Assert-KmgNotRunning
+    Assert-KmgSummonCleanup2NativeExit
 }
 
 function Wait-KmgSummonCleanup2ProtectedExit {
@@ -96,14 +108,14 @@ function Wait-KmgSummonCleanup2ProtectedExit {
     # the original failure. No settings/install restoration occurs in this loop.
     $guard=[ordered]@{ownerProcessId=$PID;status='WAITING_FOR_NATIVE_EXIT';
         startedUtc=[DateTime]::UtcNow.ToString('o');confirmedExitUtc=$null;
-        lastEvidenceError=$null;reason=$ExitFailure.Exception.Message}
+        lastEvidenceError=$null;lastProcessError=$null;reason=$ExitFailure.Exception.Message}
     $Record.protectedExitGuard=$guard
     $Record.status='FAILED'
     $Record.restoration=[ordered]@{verified=$false;status='WAITING_FOR_NATIVE_EXIT';error=$ExitFailure.Exception.Message}
     $nextEvidence=[DateTime]::MinValue
     while($true) {
         $absent=$false
-        try {Assert-KmgNotRunning;$absent=$true} catch { $absent=$false }
+        try {Assert-KmgSummonCleanup2NativeExit;$absent=$true} catch { $absent=$false;$guard.lastProcessError=$_.Exception.Message }
         if($absent) {
             $guard.status='EXIT_CONFIRMED'
             $guard.confirmedExitUtc=[DateTime]::UtcNow.ToString('o')

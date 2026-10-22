@@ -3,7 +3,7 @@
    a failed native child while its separate stand-in process remains alive. #>
 [CmdletBinding()]
 param([ValidateSet('Parent','GuardChild','StandIn')][string]$Mode='Parent',
-    [string]$ControlDirectory,[int]$StandInProcessId=0,[switch]$FailWaitingEvidence)
+    [string]$ControlDirectory,[int]$StandInProcessId=0,[switch]$FailWaitingEvidence,[switch]$FailProcessQuery)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 
@@ -19,12 +19,23 @@ if($Mode -ceq 'GuardChild') {
     $script:guardStandInId=$StandInProcessId
     $script:guardControl=$ControlDirectory
     $script:failWaitingEvidence=[bool]$FailWaitingEvidence
+    $script:failProcessQuery=[bool]$FailProcessQuery
     $script:currentCase=New-Case 'guard-process-boundary'
     [IO.File]::WriteAllText((Join-Path $script:currentCase.environment.saveDirectory 'unrelated.zks'),'protected unrelated fixture')
     function Assert-KmgNotRunning {
         if($script:currentCase.running -and (Get-Process -Id $script:guardStandInId -ErrorAction SilentlyContinue)) {
             throw 'Separate stand-in game is still running.'
         }
+    }
+    function Get-KmgSummonCleanup2NativeProcessIds {
+        if(-not $script:currentCase.running){return @()}
+        if($script:failProcessQuery -and -not [IO.File]::Exists((Join-Path $script:guardControl 'query-restored'))) {
+            [IO.File]::WriteAllText((Join-Path $script:guardControl 'query-failed'),'synthetic process query unavailable')
+            throw 'Fixture process enumeration failed; absence unknown.'
+        }
+        $standin=Get-Process -Id $script:guardStandInId -ErrorAction SilentlyContinue
+        if($standin){return @($standin.Id)}
+        return @()
     }
     function Invoke-KmgSummonCleanup2Launch {
         param($Plan,$Lease,[string]$Deployment,[string]$ScriptsDirectory)
@@ -53,11 +64,12 @@ if($Mode -ceq 'GuardChild') {
     throw 'Fixture expected its original native failure to survive restoration.'
 }
 
-function Start-GuardFixtureProcess([string]$RunMode,[string]$Control,[int]$StandInId,[bool]$EvidenceFault,[string]$Name) {
+function Start-GuardFixtureProcess([string]$RunMode,[string]$Control,[int]$StandInId,[bool]$EvidenceFault,[string]$Name,[bool]$QueryFault=$false) {
     $exe=(Get-Process -Id $PID).Path
     $qScript=$PSCommandPath.Replace("'","''");$qControl=$Control.Replace("'","''")
     $code="& '$qScript' -Mode '$RunMode' -ControlDirectory '$qControl' -StandInProcessId $StandInId"
     if($EvidenceFault){$code+=' -FailWaitingEvidence'}
+    if($QueryFault){$code+=' -FailProcessQuery'}
     $encoded=[Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($code))
     Start-Process -FilePath $exe -ArgumentList @('-NoProfile','-ExecutionPolicy','Bypass','-EncodedCommand',$encoded) `
         -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $Control ($Name+'.stdout.log')) `
@@ -76,18 +88,20 @@ function Test-GuardDenied([scriptblock]$Operation) {
     try {& $Operation;return $false} catch [IO.IOException] {return $true} catch [UnauthorizedAccessException] {return $true}
 }
 
-foreach($fault in @($false,$true)) {
+foreach($scenario in @(@{evidence=$false;query=$false},@{evidence=$true;query=$false},@{evidence=$false;query=$true})) {
+    $fault=$scenario.evidence
     $control=Join-Path $testRoot ('process-guard-'+[Guid]::NewGuid().ToString('N'))
     [void][IO.Directory]::CreateDirectory($control)
     $standin=$null;$wrapper=$null
     try {
         $standin=Start-GuardFixtureProcess 'StandIn' $control 0 $false 'standin'
         Wait-GuardFixtureFile (Join-Path $control 'standin-ready') $standin
-        $wrapper=Start-GuardFixtureProcess 'GuardChild' $control $standin.Id $fault 'wrapper'
+        $wrapper=Start-GuardFixtureProcess 'GuardChild' $control $standin.Id $fault 'wrapper' $scenario.query
         $handshake=Join-Path $control 'handles-owned.json'
         Wait-GuardFixtureFile $handshake $wrapper
         $owned=Read-KmgCompatibilityJson $handshake
         Check ($owned.wrapperProcessId -eq $wrapper.Id -and $owned.standInProcessId -eq $standin.Id) 'distinct-owning-wrapper-and-standin-processes'
+        if($scenario.query){Wait-GuardFixtureFile (Join-Path $control 'query-failed') $wrapper}
         if($fault){Wait-GuardFixtureFile (Join-Path $control 'waiting-evidence-failed') $wrapper}
         else {
             $waiting=Join-Path $owned.evidenceRoot ($owned.runId+'/installed-stack.json')
@@ -116,6 +130,11 @@ foreach($fault in @($false,$true)) {
         # guard while a simulated game is alive.
         [IO.File]::WriteAllText((Join-Path $control 'exit-standin'),'normal fixture exit')
         Check ($standin.WaitForExit(10000)) 'standin-exits-normally'
+        if($scenario.query) {
+            $wrapper.Refresh()
+            Check (-not $wrapper.HasExited) 'unknown-process-query-does-not-count-as-confirmed-exit'
+            [IO.File]::WriteAllText((Join-Path $control 'query-restored'),'fixture process enumeration recovered')
+        }
         Check ($wrapper.WaitForExit(20000)) 'original-guard-process-actually-exits-after-native-exit'
         $wrapper.Refresh()
         Check ($wrapper.HasExited -and $wrapper.ExitCode -ne 0) 'original-native-failure-remains-unhandled-nonzero-exit'
@@ -131,6 +150,7 @@ foreach($fault in @($false,$true)) {
         if($fault){Check (-not [string]::IsNullOrWhiteSpace($record.protectedExitGuard.lastEvidenceError)) 'waiting-evidence-failure-retained-without-dropping-handles'}
     } finally {
         [IO.File]::WriteAllText((Join-Path $control 'exit-standin'),'fixture safe cleanup')
+        [IO.File]::WriteAllText((Join-Path $control 'query-restored'),'fixture query safe cleanup')
         if($standin -and -not $standin.HasExited){[void]$standin.WaitForExit(10000)}
         if($wrapper -and -not $wrapper.HasExited -and ($null -eq $standin -or $standin.HasExited)) {
             if(-not $wrapper.WaitForExit(20000)){throw 'Fixture guard did not finish after confirmed stand-in exit; retained for diagnosis.'}

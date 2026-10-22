@@ -53,6 +53,31 @@ Current exported identities and commands/durations are recorded in
 not grant owner visual approval. Native locomotion, plate/hoof contact and
 mouth-effect presentation on these changed bytes remain unverified.
 
+## Plate-only gunmetal paint follow-up
+
+The native body-5 screenshots retained a pale quilt-like plate/rim appearance.
+The generator now darkens only known authored plate regions 10 through 30:
+gunmetal centers, a narrower/reduced painted rim, restrained directional
+brushing and overlap-edge shading. No shader branch, parameter texture,
+material helper, geometry or skinning change is part of this follow-up.
+
+`original_colour` retains the preceding color field exactly. Generation bakes
+that old paint, the new proposal and a plate-ownership mask through the same
+UV rasterizer/padding. It composites only exact plate-owned pixels; every
+nonplate texel and unowned background texel stays byte-identical. The old
+albedo must reproduce SHA-256
+`f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2`.
+The full decoded mesh blob must retain SHA-256
+`eb5d3c7a59695312ecc954c076edd6c5947374eaf782b6ba71cb6382d03a4dcf`,
+covering positions, normals, UVs, indices and every weight. JSON outputs are
+explicit UTF-8/LF. The albedo metadata and `paintRevision` identify the update;
+all other mesh metadata stays unchanged.
+
+Final pair hashes, independent fresh-process equality, pixel checks and local
+front/side render inspection are recorded in
+`planning/CLEANUP2-GORGON-PAINT-NOTES.md`. These renders are synthetic art probes;
+changed native presentation and owner visual approval remain pending.
+
 ## Original Sprint 26 provenance
 
 The retained project input was documented as an original modest armored-bull

@@ -23,8 +23,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSummonCleanup2Bodies(
             ExpandedSummoningCorrectionFixture fixture, Spellbook book)
         {
+            string phase = (string)_request.Parameters?["reviewPhase"];
+            bool gorgonOnly = phase == "gorgon-presentation";
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion ||
-                (string)_request.Parameters?["reviewPhase"] != "bodies" ||
+                (phase != "bodies" && !gorgonOnly) ||
                 fixture == null || book == null || _sprint25Clock == null)
                 throw new InvalidOperationException("Exact Cleanup 2 bodies fixture/book/clock required.");
             if (_expandedSummoningPlayerPathCaptureActive || _refinementUnit != null ||
@@ -33,6 +35,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             string[] keys = { "giant-crab", "griffon", "giant-stag-beetle", "girallon",
                 "ettin", "elephant", "stegosaurus", "brachiosaurus", "gorgon" };
+            if (gorgonOnly) keys = new[] { "gorgon" };
             if (keys.Any(key => !VisualRefinementReviewPolicy.Handles(key)))
                 throw new InvalidOperationException("A requested body lacks the existing complete refinement packet policy.");
             bool paused = Game.Instance.IsPaused, waiting = _sprint25WaitingForUnityAppearance;
@@ -79,7 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["maximumRefinementUpdatesPerTarget"] = 512, ["maximumTargetWallSeconds"] = 150,
                     ["maximumPhaseWallSeconds"] = 900,
                     ["limits"] = "Real canonical parent/slot casts and native UnitMoveTo travel; existing refinement attack/hit animation handles and explicit one-point hit stimulus are art evidence, not actual attack-command resolution, combat timing, Gorgon breath, reload or persistence acceptance." },
-                    "Exactly nine requested bodies use the complete qualified outdoor art packet with bounded execution.");
+                    "The exact requested body selection uses the complete qualified outdoor art packet with bounded execution; a one-Gorgon review does not qualify the other eight bodies.");
 
                 foreach (string key in keys)
                 {
@@ -178,11 +181,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     current = null;
                     yield return 0;
                 }
-                Cleanup2Check("nine-body-packets", completed.SequenceEqual(keys), new JObject {
+                Cleanup2Check(gorgonOnly ? "gorgon-body-packet" : "nine-body-packets", completed.SequenceEqual(keys), new JObject {
                     ["expected"] = new JArray(keys), ["complete"] = new JArray(completed),
                     ["wallSeconds"] = phaseWatch.Elapsed.TotalSeconds,
                     ["visualApproval"] = "Pending actual frame inspection and owner review; packet completeness is technical evidence only." },
-                    "All nine requested canonical bodies produce their entire mandatory art packet.");
+                    "Every selected canonical body produces its entire mandatory art packet; missing native Hit remains failure/unknown.");
             }
             finally
             {

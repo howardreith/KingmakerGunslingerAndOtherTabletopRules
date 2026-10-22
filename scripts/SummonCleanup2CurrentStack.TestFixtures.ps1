@@ -37,6 +37,7 @@ function Read-KmgBuildLocalManifest {
     Read-KmgDevelopmentCandidate -PackagePath $PackagePath -RepositoryRoot $RepositoryRoot -Purpose $DevelopmentPurpose
 }
 function Assert-KmgNotRunning {if($script:currentCase -and $script:currentCase.running){throw 'Fixture native process is still running.'}}
+function Get-KmgSummonCleanup2NativeProcessIds {if($script:currentCase -and $script:currentCase.running){return @(4242)};return @()}
 function Assert-KmgCompatibilityNoKingmakerProcess {param([int[]]$KnownProcessIds) Assert-KmgNotRunning}
 function Wait-KmgSummonCleanup2Exit {
     $script:currentCase.events.Add('wait-exit')
@@ -157,4 +158,3 @@ function Assert-Restored($Case,[string]$Name) {
     Check (Test-KmgCompatibilityManifestEqual $Case.originalManifest @(Get-KmgCompatibilityDirectoryManifest (Join-Path $Case.environment.install 'Mods'))) ($Name+'-exact-current-mods')
     Check (-not(Test-Path -LiteralPath (Join-Path $Case.environment.stateRoot 'compatibility.lock'))) ($Name+'-owned-lock-released')
 }
-

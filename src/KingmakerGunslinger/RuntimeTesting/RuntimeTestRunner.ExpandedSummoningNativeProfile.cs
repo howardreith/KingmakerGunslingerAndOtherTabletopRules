@@ -113,6 +113,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "tooltips" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "crab-attack" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "gorgon-presentation" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "cloth-probe"))) {
                         var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
@@ -122,7 +123,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _summoningProfilePreset.Area=entry.Area;_summoningProfilePreset.EnterPoint=entry;
                     }
                     if (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "giant-lineup" ||
-                        RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "scale-prototype"))
+                        RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "scale-prototype" ||
+                        RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "production-attacks"))
                     {
                         // The outdoor survey has no eligible common plane;
                         // reuse the exact save-free native mansion fixture
@@ -131,7 +133,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (_summoningProfilePreset.Area.AssetGuid != "0a89ba823d7eab045949d98cf22dcd2c" ||
                             _summoningProfilePreset.EnterPoint.AssetGuid != "7c5c6a354220164468167323821fd9cb")
                             throw new InvalidOperationException("Exact qualified native mansion fixture identity unavailable.");
-                        _summoningProfileEvidence["fixtureReason"] = "The bounded outdoor seven-actor survey had no eligible common plane. Exact existing mansion fixture; unchanged native walking, footprint, grade and plane-residual bounds.";
+                        _summoningProfileEvidence["fixtureReason"] = nativeReviewPhase == "production-attacks" ?
+                            "Exact existing mansion RTWP attack fixture; native graph/range/LOS and command rules remain mandatory." :
+                            "The bounded outdoor seven-actor survey had no eligible common plane. Exact existing mansion fixture; unchanged native walking, footprint, grade and plane-residual bounds.";
                     }
                     // Request-owned fixture setup omits narrative start actions;
                     // production content and all summon commands remain intact.

@@ -151,6 +151,7 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'SummonCleanup2CurrentStack.Common.ps1')
 if ($ExpandedSummoningDisabled -and
     ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
         $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
@@ -306,7 +307,7 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai','ai-turns','items','disarm','awesome','awesome-turn','catch','cleave','vital','vital-turn','routes')) -or
-        ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and $Parameters.reviewPhase -cnotin @('giant-lineup','menus','elementals','bodies','cloth-probe','ettin-lifecycle','scale-prototype','tooltips','crab-attack','shared-controls')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and $Parameters.reviewPhase -cnotin @('giant-lineup','menus','elementals','bodies','cloth-probe','ettin-lifecycle','scale-prototype','tooltips','crab-attack','production-attacks','gorgon-presentation','shared-controls')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
@@ -618,6 +619,23 @@ catch {
     $primaryError = $_
 }
 finally {
+    # Cleanup 2 save-free reviews also run under an outer protected-save
+    # catalog in this same process. Keep its OS handles AND this lease alive
+    # if native result writing suppresses automatic exit. A throw here would
+    # otherwise unwind the original standalone host and release those guards.
+    if ($entered -and $Scenario.Count -eq 1 -and
+        $Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review') {
+        try { Wait-KmgSummonCleanup2Exit }
+        catch {
+            $exitFailure = $_
+            if ($null -eq $primaryError) { $primaryError = $exitFailure }
+            $exitRecord = [ordered]@{ schemaVersion=1; transactionRunId=$runId;
+                scenario=$Scenario[0]; status='FAILED'; restoration=$null }
+            Wait-KmgSummonCleanup2ProtectedExit -Record $exitRecord `
+                -RecordPath (Join-Path $StateRoot "$runId/cleanup2-protected-exit.json") `
+                -ExitFailure $exitFailure
+        }
+    }
     if ($null -ne $compatRuntimeLease) { $compatRuntimeLease.Stream.Dispose() }
     if ($entered) {
         $deadline = [DateTime]::UtcNow.AddSeconds(60)

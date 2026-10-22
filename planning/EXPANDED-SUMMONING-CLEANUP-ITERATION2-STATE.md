@@ -9,6 +9,45 @@ Quick review: [14-item acceptance status](#acceptance-status),
 
 ## Intake and ownership
 
+### PR #67 review corrections (2026-10-22)
+
+PR remains **draft**; the cleanup mission and owner art approval remain open.
+The reviewed head was `aea5a8ae5553650602b23aa6d5284f957ac1a525`.
+
+Safety/resolver fix commit `7fb9ac54a251621e3e7ae8d4ba88754d7ee8d45e`:
+the original guard-owning PowerShell now waits for confirmed native exit before
+restoring or unwinding, including when waiting-status evidence cannot be written.
+The original failure remains FAILED/nonzero after exact restoration. Standalone
+process-boundary fixtures use disposable files and a separate stand-in process;
+46/46 PASS under Windows PowerShell 5.1 (9.025s) and PowerShell 7 (13.727s).
+No game or real save was used by these fixtures.
+
+Frost is rejected before package/install/save entry with the existing retained
+native giant-lineup destination. All 14 advertised generated keys and the entire
+batch execute their actual shared resolver in focused tests. CurrentStack tests
+124/124 PASS under PS7 (11.900s) and PS5.1 (15.227s). Isolated frozen safety
+checkout production compilation PASS (16.1s), named resolver cases 2/2 PASS
+(domain build/run2.6s). Logs remain under ignored artifacts; failed AST-reader
+and test-splat attempts are preserved. This is tooling proof, not new native
+Working-save compatibility.
+
+The owner selected local gallery review. The verified packet is
+`artifacts/cleanup2-portable-review-gallery-v2.zip`: 188 original PNGs in seven
+identity/result groups, 182,743,270 bytes, SHA256
+`eb112333d06becfc9662a8766f2071dbefe29b3d5735f4817a4ebb3d577a17c4`.
+Extract and open `index.html`. No upload was requested or performed. See
+[portable gallery](../docs/SUMMON-CLEANUP2-PORTABLE-GALLERY.md) and
+[tooling results](CLEANUP2-REVIEW-TOOLING-NOTES.md).
+
+[Option B screen design](CLEANUP2-OPTION-B-SCREEN-DESIGN.md) specifies a desktop
+Spells-tab chooser with explicit original casting-source/resource choices.
+It implements no hiding or rules change; legacy entries remain visible.
+
+New production gesture, Ettin material and current-source measurement work is
+under integration. Its source/geometry checks are not native qualification.
+The retained review9 artifact and results below remain bound to their original
+bytes; they are not relabelled as execution on these corrections.
+
 ### Latest artifact (2026-10-22, review9)
 
 Frozen source `6e6f063486f54194e1ec864dfaff2e6e3d9e484b`, source fingerprint

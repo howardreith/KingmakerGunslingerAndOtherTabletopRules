@@ -5,7 +5,7 @@ This mission adds one exact save-free request scenario:
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
 The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
 `cloth-probe`, `ettin-lifecycle`, `scale-prototype`, `tooltips`,
-`crab-attack` and `shared-controls`; no save, import, extra
+`crab-attack`, `production-attacks`, `gorgon-presentation` and `shared-controls`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
 ## Execution boundaries
@@ -48,6 +48,12 @@ actual native travel out/back, and native attack/hit animation sequences. It
 retains that selected harness's completeness and travel requirements. Animation
 footage supports art review and does not prove combat-rule resolution. The
 bounded Gorgon breath and Ettin instance/persistence checks remain distinct.
+`gorgon-presentation` narrows this same complete packet to Gorgon's actual
+non-templated SM VIII route. It retains the original movement, frame and native
+attack/Hit requirements; an absent donor Hit action remains failure/unknown.
+Scalar roughness/metallic/emission and all shader keywords are observed before
+and after refinement. These observations do not change native shader branches
+or qualify a metal parameter-map treatment.
 `menus` uses the actual native action-bar spell groups, level tabs, canonical
 SNA variant popups, scrolling and reachable nested groups for all nine tiers.
 Framebuffer captures and exact visible ability IDs are paired. Third-party
@@ -114,6 +120,15 @@ weapons/stats/actions are retained; real events/costs/timing and poses remain
 mandatory. No supplied hit
 or forced act is permitted. This does not authorize Brachiosaurus Tail to be
 called Slam/Gore or invent a missing Hit animation.
+
+`production-attacks` compares ordinary native single/full Crab and Brachiosaurus
+commands with their private render gestures suppressed and enabled. Native
+missing-handle scheduling, weapon rules and costs remain unchanged. It requires
+exact current-pose zero-offset skin equality and source/collider invariance,
+then records real windup/act/recovery images and positive motion. A 240-second
+phase bound and existing qualified fixture clock apply. This is distinct from
+the timing-changing `crab-attack` diagnostic; neither Hit animation nor owner
+art approval is inferred.
 
 `scale-prototype` first requires the complete common-plane seven-actor baseline.
 It experiments with owned render palettes and a mirrored render skeleton, with
