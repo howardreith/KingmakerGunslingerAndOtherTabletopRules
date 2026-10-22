@@ -9,7 +9,7 @@ Product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTable
 | S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden adult/claws/defenses/single/full/AI; original body/core38/38 on4b122ab0 plus native party-camera/private cleanup/SR0 body-pair proof on40b1ab11 | Full animation/attack/expiry bodies; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
 | S30 | [Dretch](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dretch), new | SM III one; IV 1d3; V-IX 1d4+1: 7 new | Hidden adult/cloud10/10 on73e1c6f8; c5b430eb native safe cloud5/5 and owned player-ally Fear5/5; original128px icon; original native body/camera/private cleanup/resources/SR0 pair proof40b1ab11 | Signed/resolved melee and defense consumers, held/action Escape Artist+5, lifecycle; final-artifact AI/finite-resource controls |
 | S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI; original body/shared circle/menace/Aid18/18 on e093336c; fresh natural8/8 and armed8/8 full native commands, actual mode-specific body/sword presentation and exact private cleanup on f6107de0 | Full defenses, single/AI/TB, hit-break/24h, disarm/fallback, death/expiry/item lifecycle and final artifact |
-| S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/routes retained; candidate menace/Aid with Hound freshly observed; released ray GUID is one standard ray and one private full-round ability owns two rays; game56 freshly passed6/6 exact standard/full targeting, action, random ranged-touch, direct damage, live DR/SR no-roll and separate-pair cleanup rows after the preserved staged failures | Owned luminous orb/body presentation; remaining shared archon isolation/support and final-artifact AI/TB/lifecycle/routes/persistence; valid existing icon |
+| S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/routes retained; candidate menace/Aid with Hound freshly observed; released ray GUID is one standard ray and one private full-round ability owns two rays; game56 freshly passed6/6 exact standard/full targeting, action, random ranged-touch, direct damage, live DR/SR no-roll and separate-pair cleanup rows after the preserved staged failures; exact-identity owned emissive orb/material/light and fixed body observer compile with focused3/3 | Fresh native owned-body presentation/donor-isolation/resource-cleanup proof; remaining shared archon isolation/support and final-artifact AI/TB/lifecycle/routes/persistence; valid existing icon |
 | S31 | Astral Deva, new | SM IX one: 1 new | Original painting; native deva audited; inert | Distinct angel aura; enhanced disrupting hammer/slam/two-hit stun; CL13 SLAs incl limited Heal/Blade Barrier; owned equipment |
 | S31 | Trumpet Archon, new | SM IX one: 1 new | Hidden genuine CL14 native book/Heal AI and separate turn-controller proof; Purge12/12 plus turn4/4 one packagee98af7e7; repeated Virtue/action/slot isolation on aeb25601/37a600d2 | Full legal preparation and cold slot hydration; remaining feats/skill consumers/Aid; trumpet/sword, archon-only blast exemption and safe AI |
 
@@ -42,6 +42,17 @@ The narrow observer repair now requires exactly one native SR event per projecti
 Exact source`7dbb740c99f9c4ed6274307204fd13feb5f8ad27`/package50 (ZIP`94beeb22f72a1adba51e2318ac9ffba3c0f3fb62286ca7d58c93b793d795de1e`, DLL`83efd9453cc81f6a78fa256a82201efd595a04abbbe9f735cc9010594ce78660`, MVID`4c685704-4fa1-414e-aaee-a116e5d614c8`, source-state`f54014345f47c33025cc78a45db6a48a1eebb6a8734e77d76cfba69a17802d4a`,408 members) passed preflight808, focused15/2702 and strict validation. Build18:41:50.391-18:46:21.968Z had task/child exit0 and full intake comparison PASS.
 
 Game56 used that package under RunId`20261022T1849266484844Z-214d299f1e414163a2a9a88a776a0336`, transaction`compat-20261022T184721Z-d52fca18ff46`; supervised18:47:20.853-18:51:26.556Z, native18:49:35.364-18:51:18.120Z (102746ms). All six named rows PASS. Both subcases proved enemy-only exact-checker acceptance, friend/self refusal, far12.484559m selection for native10.144m approach, exact9.144m delivery, near8m command lane, LOS/visibility, SR16, DR10 and distinct touch/ordinary AC. Standard resolved one random natural9+1 Ranged Touch hit against touchAC2 and2 direct1d6 damage; its one exact SR event skipped the roll/resistance and native cost was standard/non-full. After exact actor/area/unit/command cleanup, full resolved random14+3 and8+3 Ranged Touch hits against touchAC0 and separate6/4 direct1d6 damage; both exact SR events skipped rolls/resistance and native cost was full-round. Its second cleanup was exact. No rolls or effects were forced. Profile restoration and the independent full comparison PASS: human v0.0.117 Mods967,saves118,refs18,settings83,tasks0,processes1 Steam; Working/baseline untouched, no game/task/lease/permanent development installation.
+
+The current unqualified body slice attaches one private procedural golden orb,
+emissive material and bounded point light only to the exact released Lantern
+unit identity. It retains the native Will-o'-Wisp view for movement/fading and
+does not mutate a donor renderer, mesh, material or prefab. The fixed
+`lantern-body` observer creates two Lanterns, proves resource separation, donor
+isolation, usable camera-scale presentation, empty inventories and exact
+owned-object/world cleanup. Production compilation and the focused S30-31
+admission/refusal plus special-profile checks pass3/3. Fresh guarded native
+proof and screenshot inspection remain required; this checkpoint makes no
+illumination mechanic or aesthetic-approval claim.
 
 ## Latest exact development artifact and Hound attack controls
 
@@ -87,7 +98,7 @@ lease/permanent development installation.
 
 The prior natural5PASS/2FAIL is preserved in the [immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/f6107de035919e5caa55fe9282bcb48ae91e4c91/planning/SPRINT30-31-STATUS.md). The fresh observation classifies its premature sword-active read as observer timing: actual mode/weapon became coherent after one Unity update, with no Refresh or visibility/hit forcing. Earlier sword-presentation and clock-coverage product/observer failures remain distinct. None are relabeled final-package evidence.
 
-Next: continue all six with the Lantern ray/orb distinction, Astral full
+Next: qualify the Lantern owned orb/body, then continue all six with the Lantern ray/orb distinction, Astral full
 implementation, Trumpet full legal loadout/signatures and the final combined
 rules/AI/TB/items/lifetime/routes/persistence/profile/publisher campaign. No
 public/final candidate, merge, stable release or records PR yet.
