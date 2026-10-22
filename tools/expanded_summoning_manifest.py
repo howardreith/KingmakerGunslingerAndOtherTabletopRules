@@ -785,6 +785,18 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.Archon.LanternAid", "BlueprintAbility"),
         ("KMG.Summoning.OutsiderCelestial.Archon.LanternAidAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.OutsiderCelestial.Archon.LanternAidEligibility", "ArchonAidEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.GreatswordType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Greatsword2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Bite1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.SlamType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Slam1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Aid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.AidAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.AidEligibility", "ArchonAidEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Brain", "BlueprintBrain"),
 
     ))
     expected = sum(identity_count(name) for name in (

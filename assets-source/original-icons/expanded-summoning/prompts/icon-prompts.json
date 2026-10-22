@@ -731,6 +731,13 @@
       "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted creature-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Dretch demon: short squat hunched hairless blue-grey humanoid with a huge sagging bloated belly, large pointed ears, broad flat ugly face, short tusklike teeth, TWO long arms with clawed hands and TWO short bent legs. Full torso and both claws visible, jaws snarling. Strong simple silhouette that remains readable at 48px; clearly a distinct stocky little demon with legs, not a melting Lemure or horned giant. Painterly fantasy realism, broad brush textures, smoky dark brown cavern backdrop and restrained warm edge light. Dog/Eagle project paintings supplied only as STYLE references; do not copy animal anatomy or ornamental framing. Full-bleed opaque square, NO frame/ring/border, no text/numbers/UI overlays/watermark, no weapon/wings/extra limbs/other creatures, no gore. Keep head and claws within central 80 percent.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint30-31-generation.json"
+    },
+    {
+      "key": "hound-archon",
+      "displayName": "Hound Archon",
+      "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Hound Archon: noble muscular upright HUMAN-shaped body with a convincing brown hound dog's head and neck, soft folded canine ears, long muzzle, intelligent calm eyes, dressed in plain modest white cloth and a simple bronze shoulder guard, holding a polished two-handed GREATSWORD diagonally beside the chest. Chest-up three-quarter composition with canine head, humanoid arm/hand and broad sword clearly readable at 48px. It is a celestial canine-headed warrior, not a quadruped dog, werewolf, wolf-monster or winged angel. Painterly fantasy realism, textured materials, soft warm golden heavenly cloud backdrop and clear rim light. Attached project Dog/Eagle paintings are STYLE references only; do not copy their anatomy, compositions or ornamental frames. Full-bleed opaque square, no frame/ring/border, text, numbers, UI overlays, watermark, extra characters, wings, horns, gore or extra limbs. Head and sword within central 80 percent.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint30-31-generation.json"
     }
   ]
 }

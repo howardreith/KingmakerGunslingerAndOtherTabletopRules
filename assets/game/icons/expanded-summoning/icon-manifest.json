@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  131,
+    "count":  132,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1176,6 +1176,15 @@
                       "key":  "dretch",
                       "file":  "dretch.png",
                       "sha256":  "bd591e82e9fa075d4b822dae5fcd2440c855953e1f66512adeae8a17ead9e6ee",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "hound-archon",
+                      "file":  "hound-archon.png",
+                      "sha256":  "bb98e26a8ed2d48e5d401eba5906b6af481388f25e6ad49accca851534a6aae3",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

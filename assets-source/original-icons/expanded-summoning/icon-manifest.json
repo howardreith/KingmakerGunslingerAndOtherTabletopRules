@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  131,
+    "count":  132,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3792,6 +3792,27 @@
                                                "KMG.Summoning.Ability.SM.Tier8.Dretch.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SM.Tier9.Dretch.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Dretch"
+                                           ]
+                  },
+                  {
+                      "key":  "hound-archon",
+                      "displayName":  "Hound Archon",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/hound-archon.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/hound-archon.png",
+                      "sourceSha256":  "99d63f3aeef8b6c80b9cd871d17eca5158a2d28b7fd07abcfdc3d6498df2c2bd",
+                      "outputSha256":  "bb98e26a8ed2d48e5d401eba5906b6af481388f25e6ad49accca851534a6aae3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier4.HoundArchon.One",
+                                               "KMG.Summoning.Ability.SM.Tier5.HoundArchon.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier6.HoundArchon.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier7.HoundArchon.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.HoundArchon.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.HoundArchon.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.HoundArchon"
                                            ]
                   }
               ]

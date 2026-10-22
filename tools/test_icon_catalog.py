@@ -47,10 +47,10 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Authorized S30/S31 Lemure and Dretch appends, with the three prior giant rows
+        # Authorized S30/S31 Lemure, Dretch and Hound appends, with the three prior giant rows
         # now enumerating their already-released unit/root consumers. Pixels
         # and production assignments are unchanged; stale metadata still fails.
-        self.assertEqual("71daf3c3cab3938f9bfeefd1d81f515eefb528364f5088d42a1155c5367f272f", actual)
+        self.assertEqual("6cd9b7f6443a14cc033db69bf57577fa6be4af92837a80d68821654d12a43de9", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
