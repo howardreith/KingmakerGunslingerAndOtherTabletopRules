@@ -220,9 +220,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Printed at-will Virtue is a native Spell/Cantrip fact, pays actions twice, grants one temporary HP without stacking and never spends or refills leveled slots.");
                 if (!orisonEffect) throw new InvalidOperationException("Native Virtue effect or leveled-resource isolation failed.");
                 victim.Descriptor.SwitchFactions(fixture.Hostile.Faction, true);
+                // Native sight caps player units at11.7m and an out-of-combat
+                // enemy at8.5m. Enroll this exact disposable pair before the
+                // survey;10.5m fits real combat sight and clears a30ft burst.
+                victim.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(victim)) Game.Instance.State.AwakeUnits.Add(victim);
+                owner.Memory.Add(victim); victim.Memory.Add(owner);
+                owner.JoinCombat(); victim.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                bool offenseCombat = owner.IsInCombat && victim.IsInCombat &&
+                    owner.VisionRangeMeters > 10.5f && victim.VisionRangeMeters > 10.5f;
+                Sprint25Check("trumpet-caster-offense-combat", offenseCombat, new JObject {
+                    ["owner"] = owner.UniqueId, ["victim"] = victim.UniqueId,
+                    ["ownerInCombat"] = owner.IsInCombat, ["victimInCombat"] = victim.IsInCombat,
+                    ["ownerVisionMeters"] = owner.VisionRangeMeters, ["victimVisionMeters"] = victim.VisionRangeMeters },
+                    "The actual enemy pair is in native combat and can see a10.5m lane before searching; no sight or immunity setting is changed.");
+                if (!offenseCombat) throw new InvalidOperationException("Native caster offense combat/sight preconditions failed.");
                 Vector3 far; string lane, direction;
-                var origin = Sprint24AiCombatLane(fixture.Caster, owner, victim, 15f, out far, out lane, out direction,
-                    new Feet(40).Meters + 0.5f);
+                var origin = Sprint24AiCombatLane(fixture.Caster, owner, victim, 10.5f, out far, out lane, out direction,
+                    new Feet(30).Meters + 0.1f);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(sibling, origin + Vector3.right);
                 PlaceExpandedSummoningUnit(victim, far); PlaceExpandedSummoningUnit(blocker, far + Vector3.right);
                 PlaceExpandedSummoningUnit(fixture.Hostile, origin + Vector3.forward * 40f);
