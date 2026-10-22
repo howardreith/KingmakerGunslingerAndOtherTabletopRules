@@ -5441,6 +5441,9 @@ namespace KingmakerGunslinger.Blueprints
             dr.Value = Simple(ExpandedSummoningSpecialProfiles.LanternDamageReduction);
             dr.BypassedByAlignment = true;
             dr.Alignment = DamageAlignment.Evil;
+            var sr = ScriptableObject.CreateInstance<AddSpellResistance>();
+            sr.Value = Simple(ExpandedSummoningSpecialProfiles.LanternSpellResistance);
+            sr.AddCR = false;
             var poison = ScriptableObject.CreateInstance<
                 SavingThrowBonusAgainstDescriptor>();
             poison.SpellDescriptor = SpellDescriptor.Poison;
@@ -5462,13 +5465,13 @@ namespace KingmakerGunslinger.Blueprints
             defenses.Stacking = StackingType.Replace;
             defenses.IsClassFeature = true;
             defenses.ComponentsArray = new BlueprintComponent[] {
-                dr, poison, evilSave, evilAc
+                dr, sr, poison, evilSave, evilAc
             };
             BlueprintUnitFactAccess.Resolve().Configure(defenses,
                 LocalizationService.Create("KMG.ExpandedSummoning.LanternArchon.Defenses.Name",
                     "Archon Defenses"),
                 LocalizationService.Create("KMG.ExpandedSummoning.LanternArchon.Defenses.Description",
-                    "Damage reduction 10/evil, archon poison resistance, and defenses against evil creatures."),
+                    "Damage reduction 10/evil, spell resistance 16, archon poison resistance, and defenses against evil creatures."),
                 null);
         }
 

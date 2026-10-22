@@ -111,6 +111,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.SightCache.ClearIfNeeded();
                 target.SightCache.ClearIfNeeded();
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                if (owner.HasLOS(target)) owner.Memory.Add(target).Visible = true;
                 owner.JoinCombat();
                 target.JoinCombat();
                 Game.Instance.Player.UpdateIsInCombat();
