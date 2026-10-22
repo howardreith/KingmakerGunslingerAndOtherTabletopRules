@@ -92,8 +92,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Position + Vector3.forward * 30f);
                 Vector3 laneVector = (nearTarget - nearOrigin).normalized;
                 Vector3 farOrigin = nearOrigin;
-                Vector3 farTarget = nearOrigin + laneVector * 10.5f;
-                string farLane = nearLane + ";extended-to-10.5m-for-refusal";
+                Vector3 farTarget = nearOrigin + laneVector * 12.5f;
+                string farLane = nearLane + ";extended-to-12.5m-for-native-approach";
                 PlaceExpandedSummoningUnit(owner, nearOrigin);
                 PlaceExpandedSummoningUnit(target, nearTarget);
                 owner.Commands.InterruptAll(true);
@@ -126,13 +126,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
                 float refusedDistance = owner.DistanceTo(target);
                 bool farLos = owner.HasLOS(target);
-                bool farRefused = !data.CanTarget(selected);
+                float nativeApproachDistance = data.GetApproachDistance(target);
+                bool farAccepted = data.CanTarget(selected);
                 PlaceExpandedSummoningUnit(owner, nearOrigin);
                 PlaceExpandedSummoningUnit(target, nearTarget);
                 owner.SightCache.ClearIfNeeded();
                 target.SightCache.ClearIfNeeded();
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                if (owner.HasLOS(target)) owner.Memory.Add(target).Visible = true;
                 bool nearRestored = data.CanTarget(selected);
+                bool friendRefused = !data.CanTarget(new TargetWrapper(fixture.Caster));
+                bool selfRefused = !data.CanTarget(new TargetWrapper(owner));
+                var targetCheckers = (data.Blueprint.ComponentsArray ??
+                    Array.Empty<Kingmaker.Blueprints.BlueprintComponent>())
+                    .OfType<Kingmaker.UnitLogic.Abilities.Components.Base.IAbilityTargetChecker>()
+                    .ToArray();
+                var targetCheckerRows = new JArray(targetCheckers.Select(value =>
+                    new JObject { ["component"] = value.GetType().FullName,
+                        ["enemyAccepted"] = value.CanTarget(owner, selected) }));
+                var delivery = data.Blueprint.ComponentsArray.OfType<
+                    Kingmaker.UnitLogic.Abilities.Components.AbilityDeliverProjectile>()
+                    .Single();
 
                 int touch = Rulebook.Trigger(new RuleCalculateAC(owner, target,
                     AttackType.RangedTouch)).TargetAC;
@@ -146,7 +160,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var drSources = dr == null ? new JArray() : new JArray(dr.AllSources.Select(value =>
                     new JObject { ["component"] = value.GetType().FullName,
                         ["value"] = value.GetCurrentValue() }));
-                bool ready = nearAccepted && farRefused && nearRestored &&
+                float nearDistance = owner.DistanceTo(target);
+                bool ready = nearAccepted && farAccepted && nearRestored &&
+                    refusedDistance > nativeApproachDistance + .01f &&
+                    nearDistance < nativeApproachDistance &&
+                    friendRefused && selfRefused &&
+                    data.Blueprint.CanTargetEnemies && data.Blueprint.CanTargetFriends &&
+                    !data.Blueprint.CanTargetSelf && !data.Blueprint.CanTargetPoint &&
+                    targetCheckers.OfType<LanternRayEnemyTargetChecker>().Count() == 1 &&
+                    targetCheckers.All(value => value.CanTarget(owner, selected)) &&
+                    Math.Abs(delivery.Length.Meters -
+                        new Feet(ExpandedSummoningSpecialProfiles.LanternRayRangeFeet).Meters) < .001f &&
                     owner.IsInGame && target.IsInGame &&
                     owner.Descriptor.State.CanAct && owner.IsEnemy(target) &&
                     owner.HasLOS(target) && owner.Memory.ContainsVisible(target) &&
@@ -163,17 +187,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["actionType"] = data.Blueprint.ActionType.ToString(),
                     ["projectilesExpected"] = expectedProjectiles,
                     ["rangeFeet"] = ExpandedSummoningSpecialProfiles.LanternRayRangeFeet,
-                    ["refusedDistanceMeters"] = refusedDistance,
-                    ["farRefused"] = farRefused, ["farLos"] = farLos,
+                    ["farDistanceMeters"] = refusedDistance,
+                    ["nativeApproachDistanceMeters"] = nativeApproachDistance,
+                    ["farAcceptedForApproach"] = farAccepted, ["farLos"] = farLos,
                     ["farLane"] = farLane,
-                    ["nearDistanceMeters"] = owner.DistanceTo(target),
+                    ["nearDistanceMeters"] = nearDistance,
                     ["nearLane"] = nearLane, ["nearAccepted"] = nearAccepted,
                     ["nearRestored"] = nearRestored, ["available"] = data.IsAvailable,
                     ["canTarget"] = data.CanTarget(selected), ["los"] = owner.HasLOS(target),
                     ["visible"] = owner.Memory.ContainsVisible(target),
+                    ["ownerCanOrdinarilyAttack"] = owner.CanAttack(target),
+                    ["friendRefused"] = friendRefused, ["selfRefused"] = selfRefused,
+                    ["canTargetEnemies"] = data.Blueprint.CanTargetEnemies,
+                    ["nativeRelationBypass"] = data.Blueprint.CanTargetFriends,
+                    ["deliveryRangeMeters"] = delivery.Length.Meters,
+                    ["targetCheckers"] = targetCheckerRows,
                     ["touchAc"] = touch, ["ordinaryAc"] = ordinary,
                     ["nativeSpellResistance"] = nativeSr, ["damageReduction"] = drSources },
-                    "The exact owned ray has its intended action mode and structural 30-foot range, native CanTarget refuses the measured 10.5-m endpoint, and the proven 8-m lane acquires a visible enemy facing distinct live touch AC, SR and DR consumers.");
+                    "The exact owned ray has its intended action mode and 30-foot delivery/native approach distance; native targeting accepts a distant enemy for approach but refuses friends and self, and the proven 8-m lane acquires the enemy facing distinct live touch AC, SR and DR consumers.");
                 if (!ready) throw new InvalidOperationException("Lantern ray native preconditions failed: " + id);
 
                 var costs = new JArray();
