@@ -9,8 +9,9 @@ rule, roll, weapon, action cost, range, source skeleton, unit root or collider
 is written by these helpers. Owner art approval and actual native qualification
 remain pending. This supersedes no retained failure or earlier timing evidence.
 
-The earlier Crab diagnostic alias acted at native command t=.6670539 rather
-than the missing-handle ScheduleAct(1) fallback. It remains a separate request
+The earlier Crab diagnostic alias acted at native command t=.6670539 using a
+native animation handle. Review10's unaliased native no-handle act was .0336125;
+the stored ScheduleAct(1) is not a minimum delay. The alias remains a separate request
 experiment and is not used here. The Brachio v1/v2/v3/v4 synthetic probes remain
 preserved under artifacts/cleanup2-tail-prototype; they are not native evidence.
 
@@ -19,9 +20,9 @@ preserved under artifacts/cleanup2-tail-prototype; they are not native evidence.
 - `SummonAttackGesturePolicy.cs`: exact registered unit/prefab/source/weapon
   identities, independent positive ownership gates and original bounded curves.
   Crab covers its 25 published sources; Brachio covers its 11 canonical/adapter
-  summon abilities, excluding Trample/Overrun. Curves wind up over the observed
-  native one-second schedule, reach the authored strike only at the real native
-  OnAction boundary, then recover over .5 seconds of native GameTime. Crab uses
+  summon abilities, excluding Trample/Overrun. No pre-act windup is synthesized:
+  the authored strike starts at the actual native OnAction boundary, then
+  recovers over .5 seconds of native GameTime. Crab uses
   primary claw/left named pedipalp palette and additional primary claw/right
   palette; it does not claim independent finger closure or a mechanical hand.
 - `SummonAttackGestureVisual.cs`: Transform-only mirror paths under one owned
@@ -101,7 +102,7 @@ Use only the final LF hash for the current protected package pin.
 New partial `RuntimeTestRunner.SummonCleanup2ProductionAttacks.cs` exposes
 `ReviewSummonCleanup2ProductionAttacks(fixture, Spellbook book)`.
 Exact future phase `production-attacks`, save-free mansion RTWP fixture,
-automatic exit, existing qualified .05 native clock, 240-second phase ceiling,
+automatic exit, existing qualified frame-synchronous native clock, 240-second phase ceiling,
 35-second/3000-frame bound per command. No Working/human-save access.
 
 The observer casts actual canonical SNA III Crab and SNA VII Brachiosaurus
@@ -119,13 +120,19 @@ corpulence/agent-clearance/summon-end-time invariance and protected native prefa
 assets. Native OnAction invokes Rulebook before incrementing its attack index,
 so the after-rule callback must still match the exact planned slot. Duplicate
 or mismatched chains fail. Baseline/ON stored delays must both be exactly 1s;
-actual act latency comparison tolerates one .05s fixture quantum, never early
-act. This is not natural Default-mode or turn-based timing qualification.
+HasAnimation=false branch acts on its first eligible native Tick, even before
+the stored deadline. Native Tick sets its own handled flag before OnAction.
+Schedule/act flags, actual Tick prefix/postfix context, exact frame/serial,
+one eligible tick, unchanged stored deadline and actual act delta are required.
+Paired actual latency is normalized by each act's actual native tick delta,
+within .005 tick; no enlarged absolute tolerance is used. This is not natural
+Default-mode or turn-based timing qualification.
 
 Current-pose zero-offset proof, finite positive actual skin displacement,
 unaffected weight-row displacement <=.0002 and same-frame source/root/collider
-invariance are sampled during the actual command. ON captures three real native
-camera poses per actual attack (windup/act/recovery) with unique names. No Hit
+invariance are sampled during the actual command. ON captures one real native
+camera ready pose before the command plus act/recovery poses per actual attack,
+with unique names. Absent pre-act windup is explicit. No Hit
 action is invented. Enemy contact, whole-tail reach and owner art approval stay
 separate. Source resources and all exact private transforms/palettes are checked
 through live release; shared positive fixture teardown owns actor disposal.
@@ -171,3 +178,49 @@ script, package pin or existing Crab diagnostic was edited by this agent.
   by this agent. Root owns focused compile/tests and guarded native qualification.
 - Candidate remains reviewable development work. All live outcome and art
   acceptance claims require the new observer's actual evidence and pixel review.
+
+## Review10 native failure and branch correction
+
+Retained FAIL: directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T1231202866735Z-disposable-expanded-summoning-cleanup2-native-review`,
+run `20261022T1231203057818Z-6abe5596ec7c4720a1acdeaf9a1b7bb2`.
+One actual ordinary Crab single render-OFF rule/cost occurred at command time
+.0336125, despite recorded ScheduleAct start0/deadline1/delay1. The driver
+incorrectly required act>=deadline and refused. Zero skin error was ~1.9e-6,
+same-frame source/collider proof held, and native actor cleanup/restoration
+passed. The old record remains FAIL and is not relabeled.
+
+Installed native IL explains the result. HasAnimation field token04001A7E is
+nonpublic and defaults false; UnitCommand ctor06002799 and UnitAttack
+ctor06002678 do not set it. StartAnimation060027A0/A1 sets it true; the native
+null-attack path instead calls ClearAnimation060027A2, which resets Animation
+and m_IsAnimationActHandled but leaves HasAnimation false, then stores delay1.
+In Tick060027A7, the deadline check IL0111..0135 is followed by IL0136..013F:
+when HasAnimation is false the act-local becomes true regardless of deadline.
+Tick sets m_IsAnimationActHandled at IL0145 and calls native OnAction at IL0175.
+Standard-command IsOneFrameCommand06002788 is false. Source8's earlier claim
+that ScheduleAct(1) necessarily supplies a one-second minimum was incomplete.
+
+Current driver preserves all those native fields; it only reads the exact
+false/false HasAnimation states and false-to-true handled transition. A
+read-only Tick prefix/postfix associates the same command/frame/tick serial
+and delta with exactly its first eligible tick, including a later full-attack
+slot scheduled inside current OnTick. Direct or mismatched act, multiple
+eligible ticks, changed deadline/handle or foreign receipt refuses. Render
+strike starts at the actual act, followed by original private recovery;
+no artificial windup, delayed command or HasAnimation assignment is added.
+The observer records neutral ready-before-command, actual act/recovery images,
+actual tick deltas/raw and normalized latencies, exact slot/weapon events and
+one native cost in both render-OFF/ON runs. Terminal rejected chains now stop
+promptly instead of waiting 35 seconds for an impossible recovery timestamp.
+
+Clock audit: Cleanup2 constructs Sprint22NativeClock with frameSynchronous=true;
+Pulse uses Time.deltaTime, not the nominal .05 constructor step, and calls the
+native TickOnUnit. It never supplies OnAction or an act. The observer's earlier
+fixed-.05 description is corrected; actual deltas/frame associations are
+exported. Existing named pure curve tests now also cover exact native immediate
+branch gates, first/same tick, invalid second tick/animation/handled states,
+rejection of an invented one-second minimum and neutral-before/strike-at-act
+curve mapping. No build/test/native retry occurred in this lane; root owns
+the new coherent candidate and guarded reproduction. Production remains
+unqualified until that evidence succeeds; review10FAIL is retained.

@@ -38,6 +38,15 @@ namespace KingmakerGunslinger.DomainTests
         }
         internal static void OriginalCurvesAreFiniteBoundedAndReturnToZero()
         {
+            Assertions.True(SummonAttackGesturePolicy.ImmediateNativeAct(false,false,false,false,true,0f,.0336125f,.0336125f,1), "Native no-animation first tick is legitimate before its stored deadline.");
+            Assertions.True(SummonAttackGesturePolicy.ImmediateNativeAct(false,false,false,false,true,3f,3f,.04f,1), "Schedule created inside current OnTick may act within that same tick.");
+            Assertions.False(SummonAttackGesturePolicy.ImmediateNativeAct(true,false,false,false,true,0f,.03f,.03f,1), "Native animation branch cannot masquerade as immediate fallback.");
+            Assertions.False(SummonAttackGesturePolicy.ImmediateNativeAct(false,false,false,false,false,0f,.03f,.03f,1), "A direct/unsupplied native handled transition cannot qualify.");
+            Assertions.False(SummonAttackGesturePolicy.ImmediateNativeAct(false,false,false,false,true,0f,.03f,.03f,2), "Second eligible tick cannot masquerade as first.");
+            Assertions.False(SummonAttackGesturePolicy.ImmediateNativeAct(false,false,false,false,true,0f,1f,.03f,1), "Invented one-second minimum cannot replace the native branch.");
+            Assertions.Equal(0f,SummonAttackGesturePolicy.ActualActCurveTime(false,.7f),"No pre-act windup is synthesized.");
+            Assertions.Equal(1f,SummonAttackGesturePolicy.ActualActCurveTime(true,0f),"Original strike starts at actual native act.");
+            Assertions.Equal(1.5f,SummonAttackGesturePolicy.ActualActCurveTime(true,.5f),"Recovery uses actual post-act GameTime only.");
             for (int i = 0; i < 4; i++)
             {
                 Assertions.Equal(0f, SummonAttackGesturePolicy.TailYaw(i, 0f), "Tail starts neutral.");

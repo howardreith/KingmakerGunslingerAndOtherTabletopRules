@@ -29,6 +29,16 @@ function Invoke-One($method, $argument) {
     $argsOne[0] = $argument
     return $method.Invoke($null, $argsOne)
 }
+function Test-ExpectedNotSupported([Exception]$Failure) {
+    # Windows PowerShell may unwrap TargetInvocationException into a
+    # MethodInvocationException whose direct inner is the target exception.
+    # Match the real target type through either managed wrapper shape.
+    while ($null -ne $Failure) {
+        if ($Failure -is [NotSupportedException]) { return $true }
+        $Failure = $Failure.InnerException
+    }
+    return $false
+}
 try {
     $mod = [Reflection.Assembly]::LoadFrom($modPath)
     $game = [Reflection.Assembly]::LoadFrom((Join-Path $managed 'Assembly-CSharp.dll'))
@@ -95,7 +105,7 @@ try {
     foreach ($case in @(@{Count=0; Literal=$true}, @{Count=2; Literal=$true}, @{Count=1; Literal=$false})) {
         $rejected = $false
         try { $null = Invoke-One $rewrite (New-Instructions $case.Count $case.Literal) }
-        catch [Reflection.TargetInvocationException] { $rejected = $_.Exception.InnerException -is [NotSupportedException] }
+        catch { if (Test-ExpectedNotSupported $_.Exception) { $rejected = $true } else { throw } }
         Assert-Behavior $rejected "ambiguous/missing/changed upload refused: $($case.Count)/$($case.Literal)"
     }
 
@@ -116,7 +126,11 @@ try {
     $firstBinds = [Array]::CreateInstance($matrixType, 1); $secondBinds = [Array]::CreateInstance($matrixType, 1)
     $equalBinds = $helper.GetMethod('EqualBinds', $flags)
     Assert-Behavior ([bool]$equalBinds.Invoke($null, [object[]]@($firstBinds, $secondBinds))) 'identical bind records accepted'
-    $matrix = [Activator]::CreateInstance($matrixType); $matrix.m03 = [single].000001; $secondBinds.SetValue($matrix, 0)
+    $matrix = [Activator]::CreateInstance($matrixType)
+    # Read the actual managed field directly; PowerShell's member adapter may
+    # inspect unrelated Unity native-attribute types absent from a build bundle.
+    $matrixType.GetField('m03').SetValue($matrix, [single]0.000001)
+    $secondBinds.SetValue($matrix, 0)
     Assert-Behavior (!$equalBinds.Invoke($null, [object[]]@($firstBinds, $secondBinds))) 'small bind mutation refused without tolerance'
 
     $native = $game.GetType('Kingmaker.Visual.CharacterSystem.Character', $true)
@@ -136,11 +150,11 @@ try {
     $cachedField = $mod.GetType('KingmakerGunslinger.Summoning.EttinSecondHeadVisual', $true).GetMethod('CachedField', $flags)
     $cachedDissolve = $cachedField.MakeGenericMethod([single])
     $settingsObject = [Runtime.Serialization.FormatterServices]::GetUninitializedObject($settings)
-    $settings.GetField('Dissolve').SetValue($settingsObject, [single].375)
-    Assert-Behavior ($cachedDissolve.Invoke($null, [object[]]@($settingsObject,'Dissolve')) -eq [single].375) 'actual native cached baseline read rather than forced zero'
+    $settings.GetField('Dissolve').SetValue($settingsObject, [single]0.375)
+    Assert-Behavior ($cachedDissolve.Invoke($null, [object[]]@($settingsObject,'Dissolve')) -eq [single]0.375) 'actual native cached baseline read rather than forced zero'
     $rejected = $false
     try { $null = $cachedField.MakeGenericMethod([int]).Invoke($null, [object[]]@($settingsObject,'Dissolve')) }
-    catch [Reflection.TargetInvocationException] { $rejected = $_.Exception.InnerException -is [NotSupportedException] }
+    catch { if (Test-ExpectedNotSupported $_.Exception) { $rejected = $true } else { throw } }
     Assert-Behavior $rejected 'changed cached fade field type refused'
     $clock.Stop()
     [pscustomobject]@{Result='PASS';Checks=$script:checks;Seconds=$clock.Elapsed.TotalSeconds;
