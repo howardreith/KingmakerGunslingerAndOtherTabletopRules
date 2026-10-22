@@ -9,7 +9,7 @@ Product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTable
 | S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden adult/claws/defenses/single/full/AI; original body/core38/38 on4b122ab0 plus native party-camera/private cleanup/SR0 body-pair proof on40b1ab11 | Full animation/attack/expiry bodies; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
 | S30 | [Dretch](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dretch), new | SM III one; IV 1d3; V-IX 1d4+1: 7 new | Hidden adult/cloud10/10 on73e1c6f8; c5b430eb native safe cloud5/5 and owned player-ally Fear5/5; original128px icon; original native body/camera/private cleanup/resources/SR0 pair proof40b1ab11 | Signed/resolved melee and defense consumers, held/action Escape Artist+5, lifecycle; final-artifact AI/finite-resource controls |
 | S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI; original body/shared circle/menace/Aid18/18 on e093336c; fresh natural8/8 and armed8/8 full native commands, actual mode-specific body/sword presentation and exact private cleanup on f6107de0 | Full defenses, single/AI/TB, hit-break/24h, disarm/fallback, death/expiry/item lifecycle and final artifact |
-| S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/routes retained; candidate menace/Aid with Hound freshly observed; released ray GUID is one standard ray and one private full-round ability owns two rays; game56 freshly passed6/6 exact standard/full targeting, action, random ranged-touch, direct damage, live DR/SR no-roll and separate-pair cleanup rows after the preserved staged failures; game57 proved both owned body attachments but exposed the private renderer not recovering from native appearance fade | Fresh changed-product owned-body presentation/donor-isolation/resource-cleanup proof; remaining shared archon isolation/support and final-artifact AI/TB/lifecycle/routes/persistence; valid existing icon |
+| S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/routes retained; candidate menace/Aid with Hound freshly observed; released ray GUID is one standard ray and one private full-round ability owns two rays; game56 freshly passed6/6 exact standard/full targeting, action, random ranged-touch, direct damage, live DR/SR no-roll and separate-pair cleanup rows after the preserved staged failures; games57-58 proved both owned attachments and renderer recovery, then exposed native fader material instancing | Fresh changed-product owned-material isolation/resource-cleanup and complete body-presentation proof; remaining shared archon isolation/support and final-artifact AI/TB/lifecycle/routes/persistence; valid existing icon |
 | S31 | Astral Deva, new | SM IX one: 1 new | Original painting; native deva audited; inert | Distinct angel aura; enhanced disrupting hammer/slam/two-hit stun; CL13 SLAs incl limited Heal/Blade Barrier; owned equipment |
 | S31 | Trumpet Archon, new | SM IX one: 1 new | Hidden genuine CL14 native book/Heal AI and separate turn-controller proof; Purge12/12 plus turn4/4 one packagee98af7e7; repeated Virtue/action/slot isolation on aeb25601/37a600d2 | Full legal preparation and cold slot hydration; remaining feats/skill consumers/Aid; trumpet/sword, archon-only blast exemption and safe AI |
 
@@ -77,6 +77,29 @@ drives only its private renderer from the existing native-renderer visibility
 authority and records explicit root/renderer/view/native visibility; fresh
 native proof is required.
 
+Exact source`463f28e61e054f0a46752c0b9f6d08c58f971459`/package52
+(ZIP`47efddf6db128ff24b92f709c8da4ce6488554281b7b2fac6613c72f8ae8f012`,
+DLL`a175999e7bae85094c86af2fcebbbe5db25df52607fd8f260b45a956c0b4610e`,
+MVID`e20b5b9b-9fe8-495e-995d-d147ec9b12c6`, source-state
+`cf3e1654403bdb21f9a452ff13726a5b34a5a41d0751756e84efeb4a5694531b`,
+408 unique members) passed actual preflight813, focused15/2702 and strict
+validation. Build19:20:54.697-19:25:23.287Z had task/child exit0 and full
+intake comparison PASS. Game58 RunId
+`20261022T1928393472032Z-5c20a6cf85c54cd59eb8c693719a1401`, transaction
+`compat-20261022T192627Z-7d9ec8f1e0a8`, ran19:26:26.573-19:30:41.454Z;
+native19:28:48.075-19:30:33.652Z (105576ms). Clean preconditions PASS.
+The changed product proved both exact views/root/orb/private renderers/lights,
+native donor visibility and appearance-fade recovery were active. `Ready`
+remained false only because native fading replaced each private renderer's
+assigned original material with a renderer-specific instance. Presentation and
+cleanup rows again did not run; outer fixture/profile restoration and full
+intake comparison PASS. Aggregate FAIL is immutable. The current changed
+product follows the proved procedural-renderer ownership rule: every material
+assigned under the exact project-created renderer is captured as private,
+named for orphan census, checked against all donor materials and destroyed
+with the root. The observer now derives exact resource/material counts from
+those captured sets. Fresh native proof is required.
+
 ## Latest exact development artifact and Hound attack controls
 
 Source`f6107de035919e5caa55fe9282bcb48ae91e4c91`, package42,
@@ -115,7 +138,7 @@ Both disposable targets remained in combat, so these remain separate fresh-
 process cases. Both transaction/settings restorations and independent full
 Compare PASS: actual human v0.0.117 Mods967,saves/metadata118,refs18,settings83,
 tasks0,processes1 Steam; bank/ref/settings bytes/metadata exact. Working/baseline
-untouched. Current totals57 actual launches/transactions,51 completed development
+untouched. Current totals58 actual launches/transactions,52 completed development
 packages; failed admission/request/build attempts separate. No active task/game/
 lease/permanent development installation.
 

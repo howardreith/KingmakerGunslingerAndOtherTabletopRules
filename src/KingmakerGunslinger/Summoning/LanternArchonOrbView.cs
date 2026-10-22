@@ -106,6 +106,7 @@ namespace KingmakerGunslinger.Summoning
                 _material.EnableKeyword("_EMISSION");
             }
             _renderer.sharedMaterial = _material;
+            NormalizeOwnedMaterials();
 
             _light = _root.AddComponent<Light>();
             _light.type = LightType.Point;
@@ -134,6 +135,7 @@ namespace KingmakerGunslinger.Summoning
 
         private void Apply(bool visible)
         {
+            NormalizeOwnedMaterials();
             if (_root != null && _root.activeSelf != visible)
             {
                 _root.SetActive(visible);
@@ -155,10 +157,38 @@ namespace KingmakerGunslinger.Summoning
         {
             get
             {
+                Material[] ownedMaterials = OwnedMaterials();
                 return !_released && _root != null && _root.activeInHierarchy &&
                     _orb != null && _renderer != null && _renderer.enabled &&
-                    _material != null && _renderer.sharedMaterial == _material &&
+                    _material != null && _renderer.sharedMaterial != null &&
+                    ownedMaterials.Any(value =>
+                        ReferenceEquals(value, _renderer.sharedMaterial)) &&
                     _light != null && _light.enabled;
+            }
+        }
+
+        // Native view fading can replace the material assigned to a renderer
+        // that lives under this exact project-created root. Every assignment
+        // on this one private renderer is therefore owned just as the original
+        // material is, and must be observed and destroyed with the root.
+        internal Material[] OwnedMaterials()
+        {
+            var assigned = _renderer == null ? Enumerable.Empty<Material>() :
+                _renderer.sharedMaterials.Where(value => value != null);
+            return new[] { _material }.Where(value => value != null)
+                .Concat(assigned).GroupBy(value => value.GetInstanceID())
+                .Select(group => group.First()).ToArray();
+        }
+
+        private void NormalizeOwnedMaterials()
+        {
+            if (_renderer == null) return;
+            foreach (Material material in _renderer.sharedMaterials)
+            {
+                if (material != null && (material.name == null ||
+                    !material.name.StartsWith(MaterialName,
+                        StringComparison.Ordinal)))
+                    material.name = MaterialName + "_NativeFaderInstance";
             }
         }
 
@@ -171,6 +201,10 @@ namespace KingmakerGunslinger.Summoning
                 ";orb=" + (_orb != null) + ";renderer=" +
                 (_renderer != null && _renderer.enabled) + ";material=" +
                 (_material == null ? "<none>" : _material.name) +
+                ";assignedMaterial=" + (_renderer == null ||
+                    _renderer.sharedMaterial == null ? "<none>" :
+                    _renderer.sharedMaterial.name) +
+                ";ownedMaterials=" + OwnedMaterials().Length +
                 ";light=" + (_light != null && _light.enabled) +
                 ";viewVisible=" + (_view != null && _view.IsVisible) +
                 ";nativeVisible=" + _nativeRenderers.Any(value => value != null &&
@@ -184,7 +218,10 @@ namespace KingmakerGunslinger.Summoning
         internal UnityEngine.Object[] CaptureOwnedResources()
         {
             return new UnityEngine.Object[] { this, _root, _orb, _renderer,
-                _material, _light }.Where(value => value != null).Distinct().ToArray();
+                _light }.Where(value => value != null)
+                .Concat(OwnedMaterials().Cast<UnityEngine.Object>())
+                .GroupBy(value => value.GetInstanceID())
+                .Select(group => group.First()).ToArray();
         }
 
         internal void Fail(Exception error)
@@ -199,11 +236,12 @@ namespace KingmakerGunslinger.Summoning
             _released = true;
             if (_light != null) _light.enabled = false;
             GameObject root = _root;
-            Material material = _material;
+            Material[] materials = OwnedMaterials();
             _root = null; _orb = null; _renderer = null; _light = null;
             _material = null; _view = null; _nativeRenderers = new Renderer[0];
             if (root != null) UnityEngine.Object.DestroyImmediate(root);
-            if (material != null) UnityEngine.Object.DestroyImmediate(material);
+            foreach (Material material in materials)
+                if (material != null) UnityEngine.Object.DestroyImmediate(material);
             Status = "released";
         }
 
@@ -216,7 +254,8 @@ namespace KingmakerGunslinger.Summoning
             roots = objects.Count(value => value != null && value.name == RootName);
             orbs = objects.Count(value => value != null && value.name == OrbName);
             materials = Resources.FindObjectsOfTypeAll<Material>().Count(value =>
-                value != null && value.name == MaterialName);
+                value != null && value.name != null &&
+                value.name.StartsWith(MaterialName, StringComparison.Ordinal));
             lights = Resources.FindObjectsOfTypeAll<Light>().Count(value =>
                 value != null && value.gameObject != null &&
                 value.gameObject.name == RootName);
