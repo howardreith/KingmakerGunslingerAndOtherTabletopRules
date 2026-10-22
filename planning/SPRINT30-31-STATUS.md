@@ -19,54 +19,61 @@ Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrapper
 
 ## Latest exact development artifact and body slice
 
-Game38/package34 source `d39bdf996bf9cf615b3e0391a02e39905adffd83`:27 PASS/2 FAIL
-(no-SR row and execution stop). Original Lemure attachment/isolation and sibling
-disposal passed: two real 4107-vertex/17-bone original meshes, private native
-materials, one1024px immutable original albedo, accessory suppression, then all
-four sibling-owned resources destroyed while the other summon/cache stayed live.
-Actual profile, attack plans/live signed Strength, DR/resistance/immunity and
-buff descriptor checks passed before the old no-SR probe reported positive SR.
-Its raw row lacks numerical SR/source facts, so product-versus-observer cause is
-UNRESOLVED. Main-owner release assertion, later ability-immunity/reset/single
-attack rows were UNRUN. No complete body/core or native camera-scale PASS claimed.
+Game39/package35 source `cfd6554cfa6fc1a80d3fc33da200920923792dee`:27 PASS/2 FAIL.
+Native value/source attribution confirms a PRODUCT DEFECT: canonical native
+`SubtypeExtraplanar`136fa0343d5b4b348bdaa05d83408db3 contributes unconditional SR5
+to Lemure. Actual part/rule both5; caster/target/context exactly attributed.
+This grant is present before, with and after the sibling, so the original-body
+attachment/disposal is not its cause. The native marker was added during the
+Banishment integration to satisfy actual native target eligibility. Preserve
+that identity without importing its extra native SR. The old boolean-only
+failure is retained, not relabeled as an observer failure. Later owner-resource,
+ability-immunity/reset/single rows remain UNRUN on this failed artifact.
 
-ZIP `f45b1a664debf156c9891ccaf0f767368867226aaa28a2b987f656d2f6089ad0`;
-DLL `e83848a419a08b82cd0f29d572f659e1036ea7531c7a68b6fe9e9ba792bb915f`;
-MVID `f5d40458-68dd-4b85-8659-8d9001176b89`;
-source-state `181bbb9792591e8d3c62f54304534969eac2e1bcf3961b0ecb3a79dda8995ebf`.
-Build10:26:37.0643032Z-10:30:12.9747138Z PASS:792 admission checks explicitly
-reused from2a89e228 under exact three-file package/reporting dependency map;
-27 fresh dispatch/15 focused/exact compilation/strict404-file package PASS.
-Transaction `compat-20261022T103051Z-9dd9d4785eaa`, supervised
-10:30:50.0810961Z-10:34:54.3851868Z; request
-`20261022T1033066515313Z-disposable-expanded-summoning-sprints30-31-native-review`;
-RunId `20261022T1033066729341Z-f764918d89cc49888c960f5259ba6200`.
-Actual game launch10:33:07.9992409Z; native10:33:14.7733393Z-10:34:46.7359647Z,
-91961ms including fixture. Restoration `2026-10-22T10:34:54.1506803Z`,
-Restored/restorationVerified plus full independent intake Compare PASS. No save
-loaded/written or owned game/task/lease. Totals38 actual games/transactions,
-34 completed development packages; failed package attempts remain separately logged.
+ZIP `13001ec680f8f7e9211c6335f502b170bdf49abf1161c64ed7fc3715f9c8e9c5`;
+DLL `633641d74e7a440b3a4e490a6c4b1cd21a484dc80e6c4fba11d9b67a10310962`;
+MVID `07831576-e1c5-4202-8379-3d2b036a9ddb`;
+source-state `0baba3b87027df658124dec99056155134ea5b89cb1004d910547046e11d9eac`.
+Build10:46:06.7441637Z-10:49:32.4735948Z PASS, explicit admission792 reuse under
+unchanged guard dependency map; fresh27 dispatch/15 selected/exact compile/strict
+404-file package. Transaction `compat-20261022T104957Z-5558828e06ba`, supervised
+10:49:56.6510469Z-10:53:55.4632704Z; request
+`20261022T1052076045657Z-disposable-expanded-summoning-sprints30-31-native-review`;
+RunId `20261022T1052076398205Z-0f772c62876245cf8b3d3e1dfcb4ea3a`.
+Actual game launch10:52:08.7488491Z; native10:52:15.9415881Z-10:53:47.1974534Z,
+91255ms including fixture. Restoration10:53:55.2478758Z, Restored/verified plus
+full independent intake Compare PASS. No saves touched/owned game/task/lease.
+Totals39 actual games/transactions and35 completed development packages; failed
+package attempts logged separately.
 
-Original asset source uses the actual available October14 geometry-free capture
-SHA727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4,
-not the absent October17 refinement capture. Authored generator/export/provenance
-committed; raw rig and editable scene remain private. Offline preview inspected,
-not owner aesthetic acceptance. Failed preview(world missing), two initial wiring
-compile errors and first package-count failure are retained in local logs. The
-2a89e228 package attempt stopped10:24:34Z after4m10s: expected402/observed404;
-no ZIP/receipt/game. Exact declared-body count correction passed acceptance404,
-mismatch402 and unsupported405 refusal checks3/3, complete path/hash guards retained.
+Current fix uses a small exact-unit data component and exact-native-source
+AddSpellResistance activation filter. It retains the native extraplanar fact;
+only its unselected SR grant is skipped, with native source-ID cleanup for an
+existing applied ID. Other source facts/native actors execute unchanged. Five
+configured batch creatures carry the selector; Astral remains inert and must
+receive it when coherently implemented. No private GUID/assets/routes added.
+Native controls require the canonical fact's positive SR on an unselected owned
+actor, exact control cleanup, and a different native SR17 buff on Lemure retained
+then removed to zero without losing the marker/immunities. Focused production
+and15 selected checks PASS. Native fix proof remains pending; do not multiply
+dependents before it. Marker/SR/target-eligibility/persistence proofs for every
+affected consumer need fresh qualification; unrelated old book/action evidence
+retains its original tuple/dependency limits.
 
-Current nonweakening observer adds actual native part/rule SR, entries and fact
-sources before/with/after sibling, and separately owned AbilityExecutionContext
-parameters rather than bare shared-default contexts. Zero part/rule SR is still
-mandatory. One missing namespace compile error corrected; focused production and
-15 selected checks PASS. Next: one changed-observer package and affected native
-rerun; do not grow dependent mechanics behind this unresolved shared failure.
+Original body:4107 vertices/5528 triangles/17 measured drivers, own1024px albedo;
+exact two-instance/private mesh/material and four-resource sibling-disposal rows
+passed on both failed artifacts. Native renderer/camera-scale usability and full
+lifecycle remain pending, with no owner aesthetic approval. Actual available
+October14 private geometry-free capture is pinned in committed provenance;
+raw captures/editable scenes remain private. Failed preview/compile/package logs
+and original aggregate failures are retained. The first body package failure
+expected402/observed404 was corrected using the exact declared two-member delta;
+accept404/mismatch402/unsupported405 fixtures3/3 PASS, strict path/hash guards kept.
 
-Prior game37 escape10/10 plus limited Aid-cap reader correction, game35 caster23/23
-and full immutable tuples remain in the [prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/d39bdf996bf9cf615b3e0391a02e39905adffd83/planning/SPRINT30-31-STATUS.md).
-Original FAILs/raw evidence are retained; none relabeled as final proof.
+Game38 and all prior full tuples/body failures, game37 escape10/10 plus limited
+Aid-cap reader correction, and game35 caster23/23 remain in the
+[immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/cfd6554cfa6fc1a80d3fc33da200920923792dee/planning/SPRINT30-31-STATUS.md).
+No development proof is relabeled as final qualification.
 
 ## Current dependencies and decisions
 

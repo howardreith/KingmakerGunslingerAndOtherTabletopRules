@@ -22,6 +22,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Assets;
@@ -218,6 +219,83 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!independent) throw new InvalidOperationException("Lemure sibling body disposal isolation failed.");
         }
 
+        private void ReviewLemure30ExtraplanarSrSources(UnitEntityData owner,
+            UnitEntityData source, BlueprintAbility missile)
+        {
+            var marker = owner.Blueprint.ComponentsArray.OfType<OutsiderExtraplanarIdentity>().Single();
+            var nativeMarker = marker.NativeMarker;
+            var ownerContext = new AbilityExecutionContext(new AbilityData(missile, source.Descriptor),
+                new AbilityParams { CasterLevel = 1, SpellLevel = 1 }, new TargetWrapper(owner), null);
+            var sourceContext = new AbilityExecutionContext(new AbilityData(missile, owner.Descriptor),
+                new AbilityParams { CasterLevel = 1, SpellLevel = 1 }, new TargetWrapper(source), null);
+            bool sourceHadMarker = source.Descriptor.HasFact(nativeMarker);
+            int sourceBefore = source.Get<UnitPartSpellResistance>()?.GetValue(sourceContext) ?? 0;
+            var sourceFacts = source.Descriptor.Progression.Features.Enumerable.ToArray();
+            if (sourceHadMarker) throw new InvalidOperationException("Native SR control already has extraplanar fact.");
+            var added = source.Descriptor.AddFact(nativeMarker);
+            try
+            {
+                int native = source.Get<UnitPartSpellResistance>()?.GetValue(sourceContext) ?? 0;
+                var rule = sourceContext.TriggerRule(new RuleSpellResistanceCheck(sourceContext, source));
+                bool retained = native > sourceBefore && rule.SpellResistance == native &&
+                    source.Descriptor.HasFact(nativeMarker) && owner.Descriptor.HasFact(nativeMarker);
+                Sprint25Check("lemure-extraplanar-native-control", retained,
+                    new JObject { ["owner"] = owner.UniqueId, ["control"] = source.UniqueId,
+                        ["marker"] = nativeMarker.AssetGuid, ["before"] = sourceBefore,
+                        ["nativePart"] = native, ["nativeRule"] = rule.SpellResistance,
+                        ["ownerKeepsNativeMarker"] = owner.Descriptor.HasFact(nativeMarker),
+                        ["nativeGrantComponents"] = nativeMarker.ComponentsArray.OfType<AddSpellResistance>().Count() },
+                    "An unselected exact disposable actor still receives the original native marker's real SR; native blueprint/components remain unchanged.");
+                if (!retained) throw new InvalidOperationException("Native extraplanar SR positive control failed.");
+            }
+            finally { source.Descriptor.RemoveFact(added); }
+            int sourceAfter = source.Get<UnitPartSpellResistance>()?.GetValue(sourceContext) ?? 0;
+            bool sourceReset = sourceAfter == sourceBefore && !source.Descriptor.HasFact(nativeMarker) &&
+                sourceFacts.SequenceEqual(source.Descriptor.Progression.Features.Enumerable);
+            Sprint25Check("lemure-extraplanar-native-control-cleanup", sourceReset,
+                new JObject { ["control"] = source.UniqueId, ["before"] = sourceBefore,
+                    ["after"] = sourceAfter, ["factsExact"] = sourceFacts.SequenceEqual(source.Descriptor.Progression.Features.Enumerable) },
+                "Remove only the exact added native fact and verify the control's original SR and feature references.");
+            if (!sourceReset) throw new InvalidOperationException("Native extraplanar SR control cleanup failed.");
+            var transient = new List<UnityEngine.Object>();
+            var buff = TraitCondition("Lemure30-foreign-SR", SpellDescriptor.None, transient);
+            var grant = ScriptableObject.CreateInstance<AddSpellResistance>();
+            grant.Value = new ContextValue { ValueType = ContextValueType.Simple, Value = 17 };
+            grant.AddCR = false;
+            transient.Add(grant);
+            buff.ComponentsArray = buff.ComponentsArray.Concat(new BlueprintComponent[] { grant }).ToArray();
+            try
+            {
+                var applied = ApplySprint12Buff(owner, buff, source, TimeSpan.FromSeconds(6), 1);
+                var rule = ownerContext.TriggerRule(new RuleSpellResistanceCheck(ownerContext, owner));
+                int native = owner.Get<UnitPartSpellResistance>()?.GetValue(ownerContext) ?? 0;
+                bool retained = applied.AppliedBuff != null && !applied.Immunity &&
+                    native == 17 && rule.SpellResistance == 17 && owner.Descriptor.HasFact(nativeMarker);
+                Sprint25Check("lemure-extraplanar-foreign-sr-retained", retained,
+                    new JObject { ["owner"] = owner.UniqueId, ["caster"] = source.UniqueId,
+                        ["applied"] = applied.AppliedBuff != null, ["nativePart"] = native,
+                        ["nativeRule"] = rule.SpellResistance,
+                        ["nativeMarkerStillPresent"] = owner.Descriptor.HasFact(nativeMarker) },
+                    "A different actual native SR component on the selected creature is retained; suppression is exact source-specific, not a zero-SR override.");
+                if (!retained) throw new InvalidOperationException("Foreign SR source preservation failed.");
+            }
+            finally
+            {
+                RemoveSprint12Buff(owner, buff);
+                foreach (var value in transient) if (value != null) UnityEngine.Object.DestroyImmediate(value);
+            }
+            var afterRule = ownerContext.TriggerRule(new RuleSpellResistanceCheck(ownerContext, owner));
+            int ownerAfter = owner.Get<UnitPartSpellResistance>()?.GetValue(ownerContext) ?? 0;
+            bool reset = ownerAfter == 0 && afterRule.SpellResistance == 0 &&
+                !afterRule.HasSpellResistance && owner.Descriptor.HasFact(nativeMarker);
+            Sprint25Check("lemure-extraplanar-foreign-sr-cleanup", reset,
+                new JObject { ["owner"] = owner.UniqueId, ["nativePart"] = ownerAfter,
+                    ["nativeRule"] = afterRule.SpellResistance,
+                    ["nativeMarkerStillPresent"] = owner.Descriptor.HasFact(nativeMarker) },
+                "Only the controlled foreign buff grant ends, leaving zero adult SR and the native dismissal/banishment identity intact.");
+            if (!reset) throw new InvalidOperationException("Foreign SR source cleanup failed.");
+        }
+
         private static JObject Lemure30SrState(UnitEntityData owner, MechanicsContext context)
         {
             var part = owner.Get<UnitPartSpellResistance>();
@@ -384,6 +462,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["srState"] = Lemure30SrState(owner, context),
                 ["ruleOnlyNoCast"] = true }, "An actual SR-allowing native spell resistance check and actual owner part both find zero Lemure SR, with exact source attribution.");
             if (!noSr) throw new InvalidOperationException("Lemure no-SR consumer failed.");
+            ReviewLemure30ExtraplanarSrSources(owner, source, missile);
             foreach (var spec in new[] {
                 new { Name="mind-affecting-ability", Guid="bd81a3931aa285a4f9844585b5d97e51", Cl=2 },
                 new { Name="poison-ability", Guid="68a9e6d7256f1354289a39003a46d826", Cl=2 } })
