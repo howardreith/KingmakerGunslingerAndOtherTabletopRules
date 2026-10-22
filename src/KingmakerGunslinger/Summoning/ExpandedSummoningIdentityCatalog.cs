@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 121;
-        internal const int LogicalAbilityCount = 1149;
+        internal const int UnitCount = 122;
+        internal const int LogicalAbilityCount = 1150;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 439;
+        internal const int SpecialIdentityCount = 453;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -748,6 +748,20 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidEligibility", "ArchonAidEligibility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentEligibility", "TrumpetBanishmentEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.WarhammerType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Warhammer1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.SlamType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Slam1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveRecipient", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Heal", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.HealResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.HealAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.HealEligibility", "AstralHealingEligibility"));
             Validate(result);
             return result.AsReadOnly();
         }

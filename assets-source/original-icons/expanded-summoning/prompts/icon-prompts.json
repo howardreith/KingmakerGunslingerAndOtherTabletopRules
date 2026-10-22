@@ -740,6 +740,13 @@
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint30-31-generation.json"
     },
 {
+    "key": "astral-deva",
+    "displayName": "Astral Deva",
+    "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Astral Deva angel: tall powerful humanlike figure with bronze-gold skin, calm strong face, dark flowing hair, TWO long white-feathered wings rising behind the shoulders, modest flowing ivory tunic and bronze belt, holding a clearly recognizable heavy WARHAMMER with a squared metal head, not a mace or sword. Waist-up three-quarter portrait with face, both wing silhouettes and hammer head clearly readable at 48px. Gentle inner radiance; restrained warm gold and ivory palette, dark blue-violet distant clouds for separation. Painterly fantasy realism and textured materials matching the attached project Dog/Eagle STYLE references only; no copied subjects/composition/frames. Full-bleed opaque square; no frame, ring, border, text, numbers, UI overlays, watermark, halo disc, other characters, extra wings or gore. Keep face and hammer head inside central 80 percent. Distinguish from a pale trumpet-bearing archon; this angel carries only its signature hammer.",
+    "generator": "built-in-imagegen",
+    "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint30-31-generation.json"
+},
+{
     "key": "trumpet-archon",
     "displayName": "Trumpet Archon",
     "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Trumpet Archon: serene lithe humanlike celestial with pale white marble-colored skin, white pupilless eyes, short silver hair, TWO powerful white-feathered wings rising behind shoulders, modest silver-and-blue ceremonial robe, holding ONE gleaming curved silver trumpet with a large flared bell prominently angled forward. Chest-up three-quarter portrait; face, clear wind-instrument mouthpiece/bell and wing silhouette readable at 48px. Restrained moonlit silver and cool blue palette with soft warm radiance behind, painterly fantasy realism and textured materials. Dog/Eagle project paintings are STYLE references only; create original subject/composition without their ornamental framing. Clearly distinguish from a bronze-skinned warhammer-carrying angel; no hammer or sword in this icon. Full-bleed opaque square, no frame/ring/border, text, numbers, UI overlays, watermark, halo disc, other characters, extra limbs/wings or gore. Keep face and trumpet bell inside central 80 percent.",

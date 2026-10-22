@@ -17,15 +17,17 @@ namespace KingmakerGunslinger.DomainTests
         } }
         internal const int Sprint29PrivateIdentityCount = 52;
         internal const int Sprint29FoundationIdentityCount = 3 + 8 + Sprint29PrivateIdentityCount;
-        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount + Sprint29FoundationIdentityCount;
-        internal const int RegisteredCreatureCount = 117;
-        internal const int RegisteredMonsterCreatureCount = 96;
+        internal const int Sprints30And31PrivateIdentityCount = 61;
+        internal const int Sprints30And31FoundationIdentityCount = 5 + 23 + Sprints30And31PrivateIdentityCount;
+        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount + Sprint29FoundationIdentityCount + Sprints30And31FoundationIdentityCount;
+        internal const int RegisteredCreatureCount = 122;
+        internal const int RegisteredMonsterCreatureCount = 101;
         internal const int RegisteredNatureAllyCreatureCount = 104;
-        internal const int RegisteredMonsterPlacements = 545;
+        internal const int RegisteredMonsterPlacements = 568;
         internal const int RegisteredNatureAllyPlacements = 582;
         internal const int RegisteredLogicalPlacements = RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
         internal const int RegisteredTemplatedPlacements = 319;
-        internal const int PublicSuppressedLogicalPlacements = 0;
+        internal const int PublicSuppressedLogicalPlacements = 23;
         internal const int FinalPublishedLogicalPlacements = RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements;
         internal const int PublicVisibleChoices = FinalPublishedLogicalPlacements + 29;
         internal static int PublishedMonsterPlacements { get { return RegisteredMonsterPlacements - (IsWithheld("gorgon") ? 2 : 0); } }

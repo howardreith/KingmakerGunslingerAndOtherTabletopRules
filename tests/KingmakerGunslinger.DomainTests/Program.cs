@@ -1219,6 +1219,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint28.rock-policy", ExpandedSummoningSprint28Tests.RockArithmeticAndCatchAreBounded),
             Case("expanded-summoning.sprint28.stone-terrain", ExpandedSummoningSprint28Tests.StoneRockyStealthRequiresSelectedArea),
             Case("expanded-summoning.sprints30-31.hidden-first-slice", ExpandedSummoningSprints30And31Tests.FirstSliceKeepsExactHiddenRoutesAndReleasedSurface),
+            Case("expanded-summoning.sprints30-31.astral-core-rules", ExpandedSummoningSprints30And31Tests.AstralCoreRulesKeepDistinctLevelsAndAuraBoundary),
             Case("expanded-summoning.sprints30-31.bootstrap-refusals", ExpandedSummoningSprints30And31Tests.BootstrapCannotAdmitSaveOrUnsupportedPhases),
             Case("expanded-summoning.sprint29.public-routes", ExpandedSummoningSprint29Tests.PublicRoutesAreExactAndPriorSurfaceIsPreserved),
             Case("expanded-summoning.sprint29.refusals", ExpandedSummoningSprint29Tests.UnexpectedSuppressionOrMissingIdentityIsRejected),

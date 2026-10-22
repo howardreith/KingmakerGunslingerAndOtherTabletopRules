@@ -50,7 +50,7 @@ namespace KingmakerGunslinger.Blueprints
             var nativeMarker = Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell identity");
             if (nativeMarker.ComponentsArray.OfType<AddSpellResistance>().Count() != 1)
                 throw new InvalidOperationException("Native extraplanar SR carrier contract changed.");
-            foreach (string name in new[] { "Lemure", "Dretch", "HoundArchon", "LanternArchon", "TrumpetArchon" })
+            foreach (string name in new[] { "Lemure", "Dretch", "HoundArchon", "LanternArchon", "TrumpetArchon", "AstralDeva" })
             {
                 var unit = Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit." + name);
                 var marker = ScriptableObject.CreateInstance<OutsiderExtraplanarIdentity>();

@@ -819,6 +819,20 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidEligibility", "ArchonAidEligibility"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentEligibility", "TrumpetBanishmentEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.WarhammerType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Warhammer1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.SlamType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Slam1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveRecipient", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Heal", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealEligibility", "AstralHealingEligibility"),
 
     ))
     expected = sum(identity_count(name) for name in (

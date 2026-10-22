@@ -191,7 +191,7 @@ namespace KingmakerGunslinger.Blueprints
             // behavior even when the project creature is untemplated. Repair
             // this scoped new route only; released unrelated graphs are untouched.
             if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon"))
+                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva"))
             {
                 foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
                 {
@@ -215,6 +215,15 @@ namespace KingmakerGunslinger.Blueprints
             if (variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Law | SpellDescriptor.Good;
+            if (variant.Creature.Key == "astral-deva")
+            {
+                SpellDescriptor astralDescriptor = AstralDevaRulesPolicy.HasGoodSummoningDescriptor ?
+                    SpellDescriptor.Good : SpellDescriptor.None;
+                if (AstralDevaRulesPolicy.HasLawSummoningDescriptor)
+                    astralDescriptor |= SpellDescriptor.Law;
+                target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
+                    .Descriptor |= astralDescriptor;
+            }
             if (alignmentMode.HasValue)
                 AppendAlignmentAction(target.ComponentsArray,
                     alignmentMode.Value);

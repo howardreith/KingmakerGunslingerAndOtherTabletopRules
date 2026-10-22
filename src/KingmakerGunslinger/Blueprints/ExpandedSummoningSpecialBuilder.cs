@@ -679,6 +679,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDretch30(library, bySymbol, extraplanar);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
             ConfigureTrumpet31(library, bySymbol, extraplanar);
+            ConfigureAstralDeva31(library, bySymbol, extraplanar);
             ConfigureArchon30And31(library, bySymbol);
             ConfigureOutsiderExtraplanarIdentities(library, bySymbol);
             // After the grapplers, because ConfigureGrabber replaces

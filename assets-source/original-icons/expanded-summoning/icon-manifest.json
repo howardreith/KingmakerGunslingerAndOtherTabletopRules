@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  133,
+    "count":  134,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3813,6 +3813,22 @@
                                                "KMG.Summoning.Ability.SM.Tier8.HoundArchon.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SM.Tier9.HoundArchon.OneD4PlusOne",
                                                "KMG.Summoning.Unit.HoundArchon"
+                                           ]
+                  },
+                  {
+                      "key":  "astral-deva",
+                      "displayName":  "Astral Deva",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/astral-deva.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/astral-deva.png",
+                      "sourceSha256":  "edd91d0f9a5a586a43bfe878d996f9e6d1c2340302c98c143450f42af2971fb2",
+                      "outputSha256":  "ef392c647741ec0257947bb723c2bca14c8161b103681c41d8b34f62999b93d2",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier9.AstralDeva.One",
+                                               "KMG.Summoning.Unit.AstralDeva"
                                            ]
                   },
                   {

@@ -133,6 +133,17 @@ namespace KingmakerGunslinger.Blueprints
             trumpetGrant.OwningBlueprint = trumpet; trumpetGrant.Carrier = circle.Carrier;
             trumpetGrant.Spell = circle.Spell; trumpetGrant.CasterLevel = 14;
             trumpetTraits.ComponentsArray = trumpetTraits.ComponentsArray.Concat(new BlueprintComponent[] { trumpetGrant }).ToArray();
+            var astral = Require<BlueprintUnit>(summoning.BySymbol, Astral31Unit);
+            var astralTraits = Require<BlueprintFeature>(summoning.BySymbol, Astral31Prefix + "Traits");
+            if (astralTraits.GetComponent<ArchonConstantMagicCircle>() != null)
+                throw new InvalidOperationException("Astral shared circle was bound twice.");
+            // The angel aura adds its own +4 protection and lesser globe, but
+            // consumes the same canonical Magic Circle implementation as the
+            // archons. Future fixes to that spell therefore carry here too.
+            var astralGrant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
+            astralGrant.OwningBlueprint = astral; astralGrant.Carrier = circle.Carrier;
+            astralGrant.Spell = circle.Spell; astralGrant.CasterLevel = 15;
+            astralTraits.ComponentsArray = astralTraits.ComponentsArray.Concat(new BlueprintComponent[] { astralGrant }).ToArray();
         }
     }
 }

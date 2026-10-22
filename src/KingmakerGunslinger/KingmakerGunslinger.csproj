@@ -1334,6 +1334,9 @@
     <Compile Include="Summoning\TrumpetInvisibilityPurgeArea.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Purge.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Astral31.cs" />
+    <Compile Include="Summoning\AstralDevaComponents.cs" />
+    <Compile Include="Summoning\AstralDevaRulesPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Book.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Caster.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningOutsiderEscape.cs" />

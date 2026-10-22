@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  133,
+    "count":  134,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1185,6 +1185,15 @@
                       "key":  "hound-archon",
                       "file":  "hound-archon.png",
                       "sha256":  "bb98e26a8ed2d48e5d401eba5906b6af481388f25e6ad49accca851534a6aae3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "astral-deva",
+                      "file":  "astral-deva.png",
+                      "sha256":  "ef392c647741ec0257947bb723c2bca14c8161b103681c41d8b34f62999b93d2",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

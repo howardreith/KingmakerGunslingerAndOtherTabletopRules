@@ -58519,6 +58519,166 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.AstralDeva",
+      "guid": "2814e9aa55e34dda8f3322d84a5fe5e2",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.AstralDeva.One",
+      "guid": "b338704e3f0f4ec3ad1928664c25fb84",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.UnitType",
+      "guid": "89dd37e4cb4b4e4793fb0ad6bbbe1ae5",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Traits",
+      "guid": "76c045abf51a4dc593082c174de96a6b",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.WarhammerType",
+      "guid": "248408477486430e9b633067c67b8f7c",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Warhammer1d8",
+      "guid": "d9d766472a9d4c168555e48a59f39e9b",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.SlamType",
+      "guid": "f28265c2e8094f9286d3c0752c5cb615",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Slam1d8",
+      "guid": "1e3e03e0a8094a838077e3e3839d6dff",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Brain",
+      "guid": "bb20d6d4f83a4bf181517a8c3da25c88",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveCarrier",
+      "guid": "ca64bfc032c64335816c5395ad802701",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveArea",
+      "guid": "57acd0a2cf9b40b3be5a9c9e53ee6133",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveRecipient",
+      "guid": "91b5f6a406b94cfeac6e8947b7fe3487",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Heal",
+      "guid": "183f5aaa4ead4d0d880ffc2fddc5e68f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HealResource",
+      "guid": "9a5870eb52964dde95839a4ccd0c7652",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HealAi",
+      "guid": "f7da0f7d51dd4567867053c54a50f536",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HealEligibility",
+      "guid": "92619e6c413549dbb533b0a5ac136849",
+      "plannedType": "AstralHealingEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.AstralDeva.One",
+      "guid": "035c131b529e59ed84173ed360a657af",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.AstralDeva.One",
+      "guid": "0822c1bd85675b0583729c7bb8787be4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.AstralDeva.One",
+      "guid": "ea6132dce44f5086af3b0be7ab2c0c5a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.AstralDeva.One",
+      "guid": "974dea9b808f5215b6d9bcd0a4f3f83a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

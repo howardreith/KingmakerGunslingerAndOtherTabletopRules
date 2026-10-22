@@ -101,6 +101,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredHealingEligibilityIdentityCount,
                 released.Count(value => value.PlannedType == "TrumpetPreparedHealingEligibility"),
                 "S31 Trumpet healing eligibility identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredAstralHealingEligibilityIdentityCount,
+                released.Count(value => value.PlannedType == "AstralHealingEligibility"),
+                "S31 Astral healing eligibility identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
