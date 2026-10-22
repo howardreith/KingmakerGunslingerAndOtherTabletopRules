@@ -127,6 +127,9 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), extraplanar, traits };
         }
+        // Native leveled portion of the printed preparation. Native
+        // UpdateAllSlotsSize initializes only levels1-7; do not send the
+        // separate level-zero orison access path through Memorize.
         // Native portion of the printed preparation. Missing named combat
         // consumers are completed separately; their slots remain unprepared
         // until their real dependencies exist. Filtered travel/material spells
@@ -135,7 +138,6 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library, BlueprintSpellbook nativeBook)
         {
             var rows = new[] {
-                new { Level = 0, Copies = 1, Guid = "d3a852385ba4cd740992d1970170301a" }, // Virtue
                 new { Level = 1, Copies = 1, Guid = "90e59f4a4ada87243b7b3535a06d0638" }, // Bless
                 new { Level = 1, Copies = 2, Guid = "5590652e1c2225c4ca30c4a699ab3649" }, // Cure Light Wounds
                 new { Level = 1, Copies = 1, Guid = "9d5d2d3ffdd73c648af3eb3e585b1113" }, // Divine Favor
