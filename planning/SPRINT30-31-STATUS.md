@@ -31,7 +31,7 @@ not the absent October17 refinement capture. Original failed preview log retaine
 (world missing), corrected render PASS. First compile caught two new wiring
 errors; corrected focused production18.8s/15 tests4.8s PASS. Next: one exact
 Lemure-body development package and guarded save-free native core/cleanup proof.
-37 games/33 completed packages remain the current totals; laptop restored.
+37 games/33 completed packages remain the current totals; laptop restored. First body package attempt2a89e228 stopped10:24:34Z after4m10s: strict staged count expected402/observed404 because the two declared body files were omitted from count calculation. No ZIP/receipt or game; raw failure retained. Actual intake Compare PASS. Count now derives those two exact declared members and the deterministic packager admits404; complete path/hash guards unchanged.
 
 ## Latest exact development artifact
 
