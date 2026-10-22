@@ -1,7 +1,7 @@
 # PR 67 review follow-up
 
 Development checkpoint, 2026-10-22. PR stays draft. The mission, production
-attack qualification, giant differentiation and owner art approval remain open.
+attack visual acceptance, giant differentiation and owner art approval remain open.
 The reviewed input was aea5a8ae5553650602b23aa6d5284f957ac1a525.
 
 ## Ettin replacement continuation, 2026-10-22 (current)
@@ -24,19 +24,131 @@ head design; earlier native failures and the 25+8-original gallery remain intact
 - **Gorgon:** 25 hard beveled plates replace rounded pads; a separate linear
   authored parameter map confines metal/roughness changes to plate UV regions.
   Continuous bull body, bones, horns, eyes and hooves remain exact. Inspected
-  offline geometry and target PBR previews; native shader response is pending.
+  offline geometry/PBR previews and native panels; the native metal finish remains matte.
 - **Girallon:** lower hands are compact, broader and separated outboard/forward;
   joined neck, body and articulated upper hands remain exact. Inspected ordinary
-  and synthetic pose previews; native far-hand readability remains to inspect.
+  and synthetic pose previews; native far-hand fingers remain dark/partly occluded.
 - **Stegosaurus:** slimmer leg shafts and more compact feet retain the useful
   elongated trunk, tail, plates and measured donor joints. Synthetic stride and
-  tail poses inspected. Native crouch/material presentation remains to inspect.
+  tail poses inspected. Native crouch/material presentation still needs finish.
 
-The next bounded native batch uses the replacement Ettin lifecycle, the existing
-individual-predicate Crab/Brachio attack reproduction, and only the three changed
-body packets. Candidate identity, actual results, gallery and restoration receipts
-will be recorded below after the selected focused gate. This is not owner approval
-or completion of giant height, Brachiosaurus finish, cold load or the mission.
+### Current native inspection and demonstrated corrections
+
+The replacement Ettin is now inspected in-game: matching detailed adult faces,
+continuous neck/shoulder anatomy, normal opaque skin and exactly two visible
+heads per actor. Whole-body, close front/side and available native main-hand pose
+samples were inspected. Owner acceptance remains pending. The latest local page is:
+
+`C:\Dev\KingmakerGunslingerLab\repo\KingmakerGunslinger\artifacts\worktrees\summon-cleanup-iteration2\artifacts\cleanup2-replacement-current\index.html`
+
+The page selects48 unique originals:29 current native,7 historical and12 offline.
+Original paths, candidate/run identities and SHA-256s accompany it; every selected
+PNG was checked for visible varying pixels. Offline previews are explicitly
+labeled. The previous 25+8 and 188-original galleries
+are preserved; none is relabeled as a new candidate result. No gallery upload.
+
+- Review16 Ettin failed before captures: native visibility re-enabled the donor
+  body, and 31 small-face normals were zeroed by Unity's `Vector3.normalized`
+  epsilon. The exact body now uses the existing per-renderer suppression owner;
+  double-length normalization preserves those valid tiny surface directions.
+  Private production-array reproduction now has zero invalid-length normals.
+  Protected outfit/weapon visibility also changes natively during appearance;
+  that mutable enabled flag remains recorded, while exact renderer/mesh/material
+  identities, source-body suppression and full material-cache checks stay required.
+- Review17 confirms attachment, valid skinning, actual head/surface following,
+  current cached material agreement, independent expiry, recast and private
+  resource release. Positive expiry evidence is the native dismember/FX fact
+  followed by entity/view/holding disappearance, with borrowed resources intact.
+  No positive SMC dissolve ramp is claimed or forced. The two remaining failures
+  identify the actual off-hand flail selecting `OffHandAttack` with
+  `SlashingOneHanded`, absent from the native action set. No combat command was
+  issued by this pose observer; this absence does not establish broken combat.
+- Review16 attack reproduction isolated `mechanicsExact`: all other 19 named
+  rule/event/cost/state predicates passed. Installed native getter `060018D5`
+  returns movement-agent corpulence `.5` outside CombatMode and the view's `1.1`
+  in combat. The old baseline preceded that ordinary transition. Review18 takes
+  one stable native combat baseline before either matched command, retains it
+  across all four modes, and uses deep-cloned JSON to avoid float roundtrip
+  differences. **Crab and Brachiosaurus both pass** single/full render-OFF/ON
+  scheduling, rules, costs, private gesture motion and original rig/collider
+  preservation. Close ready/act/recovery captures were inspected; framing limits
+  contact appraisal, especially the Brachiosaurus tail. This is not final attack
+  art acceptance or natural Default-mode/turn-based timing qualification.
+- Review16's three body packets contain 351 originals, all packets complete:
+  Girallon lower hands are more separated, but far fingers remain dark/occluded;
+  Gorgon panels have hard boundaries, but native response remains matte;
+  Stegosaurus feet are slimmer, while its crouch and soft finish remain unfinished.
+  Front/side/rear and sampled attack/movement frames were inspected. All three
+  native Hit actions are absent, preserving the packet FAILs. Gorgon's owned
+  parameter map is positively bound; scalar/map composition and global
+  `SPECULAR_ON` state are not established, so no speculative shader fix is claimed.
+
+### Frozen candidates and focused results
+
+`Build-Local.ps1 -DevelopmentPurpose summon-cleanup-iteration2` used the existing
+qualified `cloth-probe-current` reference bundle. Reviews16/17 selected ten cases:
+`cleanup2-native-admission`, `cleanup2-production-gesture`, `repaired-first-exports`,
+`sprint23-original-art`, `cleanup2-giant-palette` (all under `expanded-summoning`).
+Review18 selected the four attack/admission cases after its observer-only change.
+All selected cases, installed-reference compilation and strict packages passed.
+Captured build-log spans were186.9s,200.7s and191.8s respectively; selected
+runner execution was about1.9s. These are focused development gates, not a full suite.
+Review15's stale 398-file packaging limit failed and remains recorded; the added
+Gorgon parameter map makes the exact count399. No release qualification.
+
+| Candidate | Source commit | Package SHA-256 | DLL MVID |
+| --- | --- | --- | --- |
+| Review16 | `809c39c2ab69f1da369772ce2add37918dc7fb09` | `05c1f8a3c5507ad63f6591e0852f8d8e74050dafe5e8b25c4a7eebc702d4b78b` | `32f5373d-d1b4-4e6b-83a7-19e85d476493` |
+| Review17 | `6bba8d99edbe33c232e54c72be007fa0251a9abd` | `2ecdceb756fcb62b5b8b365a9babe24cc53c85b8c0949f2c44f25022666e4f6a` | `8eb48796-06c4-4b01-84dc-09d3eb90d678` |
+| Review18 | `2955e0add984c73f925063afd66dfe3f86c38573` | `e533f0aa75cc02e195dea2f54710a4ffb319ad9800d4389f4739113eb82be99e` | `8f4153af-6244-46b9-ac72-8eb95c716778` |
+
+Each frozen checkout is `artifacts/worktrees/summon-cleanup2-review<N>` under the
+main checkout, with `artifacts/cleanup2-review<N>-build.log` and its immutable
+development receipt containing DLL/source-state/reference hashes. Runtime paths
+below are under `C:/Dev/KingmakerGunslingerLab/runtime-evidence/` and have the suffix
+`-disposable-expanded-summoning-cleanup2-native-review`.
+
+| Candidate / phase | Evidence directory prefix | Result |
+| --- | --- | --- |
+| 16 / Ettin initial | `20261022T1914314629192Z` | FAIL8/2,73.779s; demonstrated visibility/normals defects, no PNGs |
+| 16 / attacks reproduction | `20261022T1917207146701Z` | FAIL11/2,74.529s; exact native combat-radius baseline cause |
+| 16 / three changed bodies | `20261022T1920283881216Z` | FAIL24/4,146.483s; complete351-image packets, unsupported Hit actions |
+| 17 / Ettin replacement | `20261022T1924206397557Z` | FAIL77/2,112.302s;48 PNGs; lifecycle/material/skinning success, two absent off-hand actions |
+| 18 / Crab and Brachio attacks | `20261022T1927229897433Z` | PASS55/0,123.228s; both creatures and all matched command modes reached |
+| 18 / giant palettes/scale observation | `20261022T1931020259616Z` | FAIL28/1,73.989s; all six ordinary palette ownership checks pass; lineup camera clips/empties its frame and refuses before PNG/scale prototype |
+
+Giant scale remains unimplemented; this camera failure does not establish an
+engine scaling prohibition. The next bounded step is to fix the existing lineup
+framing, inspect production colors and qualify relative render-only height with
+native clothing/equipment/collision/selection/effects. Exact feet are unnecessary.
+
+### Restoration and remaining boundary
+
+The focused validation window began19:04UTC; the final native transaction restored
+by19:32:30UTC, within the ordinary30-minute ceiling. No further compile/native
+check was selected. All six original guard hosts retained their save handles
+through confirmed game exit. Every fresh intake contained95 original saves;
+all six preservation receipts report exact originals and confirmed exit. All six
+compatibility transactions report `Restored`, `restorationVerified=true` and exact
+game settings/current-installation restoration. Native run failures remain FAIL.
+
+Transaction IDs under `C:/Dev/KingmakerGunslingerLab/compatibility-state/`:
+`compat-20261022T191355Z-a2c634fd0012`, `compat-20261022T191656Z-e8d57b46a2ae`,
+`compat-20261022T192002Z-39c95dcc6816`, `compat-20261022T192356Z-fa7f2df49515`,
+`compat-20261022T192659Z-0e5961c143ae`, `compat-20261022T193041Z-c1d9884b4c34`.
+Each frozen worktree's `artifacts/cleanup2-protected-native/` retains its fresh
+catalog, protection/preservation receipts and original failure status.
+
+Cold reconstruction remains unqualified: the installed-stack wrapper rejects
+Cleanup2 development purpose before mutation, and the local cold-load draft has
+not qualified acquisition/recovery/process boundaries for the current16-mod
+stack. It was not invoked. No real save, permanent installation, release, PR66
+work or standalone elemental invocation was changed.
+
+Unchanged menus, names, Horse, Mastodon/Triceratops and other successful evidence
+retain their original provenance. This is a substantive visual development
+checkpoint, not completion of giant height, Brachiosaurus finish, cold load,
+owner acceptance or the mission. Elemental consolidation stays deferred.
 
 ## Previous recovery pass, 2026-10-22
 
