@@ -47,10 +47,10 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Authorized S30/S31 Lemure, Dretch, Hound and Trumpet appends, with the three prior giant rows
-        # now enumerating their already-released unit/root consumers. Pixels
-        # and production assignments are unchanged; stale metadata still fails.
-        self.assertEqual("1305a8a0805ed4d0599ca2e7f6b9a781cb17d526da1510934c9f2f5f452578ac", actual)
+        # Authorized S30/S31 Lemure, Dretch, Hound, Trumpet and Astral appends, with
+        # the three prior giant rows enumerating their already-released unit/root consumers.
+        # Pixels and production assignments remain pinned; stale metadata still fails.
+        self.assertEqual("1e9f6b5f00da00a6c3cdb240e91e16de6694b355a7c57106b3eba131e5368560", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
