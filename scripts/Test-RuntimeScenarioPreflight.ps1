@@ -1936,7 +1936,7 @@ $s3031Args = @{Scenario='disposable-expanded-summoning-sprints30-31-native-revie
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='bootstrap'})) 's30-31-hidden-bootstrap-admitted'
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='lemure-core'})) 's30-31-lemure-core-admitted'
 Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='lemure-core'}} 's30-31-lemure-core-no-exit-refused'
-foreach($phase in @('lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies')) {
+foreach($phase in @('lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s30-31-isolated-'+$phase+'-admitted')
     Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase}} ('s30-31-isolated-'+$phase+'-no-exit-refused')
     Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase;extra='x'}} ('s30-31-isolated-'+$phase+'-extra-refused')
