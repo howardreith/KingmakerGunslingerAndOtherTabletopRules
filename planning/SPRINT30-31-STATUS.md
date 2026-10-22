@@ -8,7 +8,7 @@ Product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTable
 |---|---|---|---|---|
 | S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden adult/claws/defenses/single/full/AI; original body/core38/38 on4b122ab0 plus native party-camera/private cleanup/SR0 body-pair proof on40b1ab11 | Full animation/attack/expiry bodies; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
 | S30 | [Dretch](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dretch), new | SM III one; IV 1d3; V-IX 1d4+1: 7 new | Hidden adult/cloud10/10 on73e1c6f8; c5b430eb native safe cloud5/5 and owned player-ally Fear5/5; original128px icon; original native body/camera/private cleanup/resources/SR0 pair proof40b1ab11 | Signed/resolved melee and defense consumers, held/action Escape Artist+5, lifecycle; final-artifact AI/finite-resource controls |
-| S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI; refreshed native original body/SR15/circle/menace/plans/support18/18 one093336c | Full defenses/resolved attacks/Power Attack, hit-break/24h, disarm/fallback, combat body/lifecycle and final artifact |
+| S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI; original body/shared circle/menace/Aid18/18 one093336c; actual armed Power Attack/full routine/sword view/cleanup8/8 on15368394; natural rules pass, visual-update precondition FAIL before attack | Full defenses/resolved attacks/Power Attack, hit-break/24h, disarm/fallback, combat body/lifecycle and final artifact |
 | S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/rays retained; candidate menace/Aid with Hound freshly observed | Owned luminous orb, standard/full ray distinction/range/touch/DR; shared archon isolation/support; valid existing icon |
 | S31 | Astral Deva, new | SM IX one: 1 new | Original painting; native deva audited; inert | Distinct angel aura; enhanced disrupting hammer/slam/two-hit stun; CL13 SLAs incl limited Heal/Blade Barrier; owned equipment |
 | S31 | Trumpet Archon, new | SM IX one: 1 new | Hidden genuine CL14 native book/Heal AI and separate turn-controller proof; Purge12/12 plus turn4/4 one packagee98af7e7; repeated Virtue/action/slot isolation on aeb25601/37a600d2 | Full legal preparation and cold slot hydration; remaining feats/skill consumers/Aid; trumpet/sword, archon-only blast exemption and safe AI |
@@ -17,94 +17,67 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
-## Current correction: armed attack observed, aggregate FAIL retained
+## Latest exact development artifact and current observation repair
 
-Source2995a15e8ea24a93260dc8913ba9ff6471aa335c/package40, purpose`sprints30-31-hound`:
-ZIP`5fd660cd65513486925027ecf6d4c061106f9ab7f927fd9b56cc22e3b0ad7855`,
-DLL`5cc11a0f7e0bba2e1b991420cd3993d12bfd07b4f3abc8eda6b36c474bfc3084`,
-MVID`67d0afa4-9924-45d7-a10f-f9170b36bc10`, source-state`d25c8c63614de163d857aa4880871b6b4e3301cd65afe0863dc10cf65ba30827`.
-Build13:07:59.5723231?13:12:32.1973390Z passed803 actual limited preflight,
-14 actual outer dispatch/refusals,27 dispatch/15 selected/exact/strict408 package.
-Game44 transaction`compat-20261022T131317Z-3f0baf24f706`, request
-`20261022T1315258748949Z-disposable-expanded-summoning-sprints30-31-native-review`,
-RunId`20261022T1315259165903Z-a9696193eb20424993166ba011b42d80`.
-Six PASS/one FAIL: actual native Power Attack source buff5898bcf7 supplied both
--2 attack modifiers, sword9?7/damage3?9 and secondary bite3?1/damage1?3. One
-native full command resolved sword7/2 and bite1, all three random hits/damage,
-one full-round action charge. Those are observed mechanics, not aggregate PASS.
-Observer then restored the prior turn-based setting before its final cleanup
-wait, correctly hitting the unchanged uncovered-actor guard; cleanup row UNRUN.
-Premature restoration moved after the last assertion in an outer finally.
+Source`1536839419490ce28c4b166837a4cd72a545eceb`, package41,
+purpose`sprints30-31-hound`, unchanged across TWO fresh native processes:
 
-Actual combat PNG and renderer list show no sword model: product presentation
-omission, not aesthetics. Exact native hand-equipment Active requires a Character
-avatar, absent on this donor. Small exact-Hound-only native sword model instance
-now follows measured R_Palm/actual equipped nonlootable item, hides in natural/
-disarmed mode and joins body rollback/teardown/resource evidence. No native
-prefab/material mutation, no new asset redistribution/item/attack/loot. Native
-proof required. Natural case on2995 was NOT launched after infrastructure failure.
-Transaction13:13:16.7128150?13:17:29.4161704Z, restored13:17:29.1662993Z;
-independent full Compare PASS, human intake/Working untouched. Totals44 actual
-game launches/transactions,40 completed development packages. Current focused
-correction compilation19.2s/14 tests1.4s PASS; final default-blueprint model lookup
-also supports a future cold natural/disarmed load; final focused compile17.7s and14/14 selected tests1.1s PASS.
+- ZIP`74f04db6fe5f7cbd3eacb41ccda5edf36e2dade071d8d63bb391370417f71319`
+- DLL`1b2394f699f8c202d7fd94773273d460886a14f33fcda6b40a09d1897b648866`
+- MVID`ec16409d-9071-49e6-af35-195925900e8a`
+- Source-state`fb0376a3779b4ba817c99cb63ee56b6a71e08e042ef202c579cc94efd4f40521`
+- Build13:29:27.9473401?13:33:53.3240829Z PASS;803 actual limited admission,
+  14 actual outer dispatch/refusals,27 production dispatch/15 selected/exact/
+  strict408-member package. Local`artifacts/s30-31-hound-sword-build-15368394`.
 
-## Latest exact development artifact: Hound original body
+### Game45: Hound armed ? 8PASS/0FAIL
 
-Tested source `e093336c42e8a80f753aa3cbf913f539b270c4ea`, completed development
-package39, purpose`sprints30-31-hound-body`; archon-hound18/18 PASS in one actual
-game/process/transaction (game43). Native original canine-headed/floppy-eared
-humanoid body is finite, visible/selectable and usable at actual party camera
-scale. Both actual PNGs were inspected. Idle images do not establish a drawn
-sword; item ownership/nonlootability passed, resolved commands and combat images
-remain required. Coarse anatomy/cloth/seams/textures are backlog; no owner visual
-approval. Four captured private view resources released; shared canonical CL6
-Magic Circle, SR15, signed armed/natural plans, mixed source-specific menace,
-reset and useful Aid/no-repeat all passed on this artifact.
+Request`20261022T1336480926804Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId`20261022T1336481822167Z-d6b9d27ac2474542a9c2fe03f5e7467d`; transaction`compat-20261022T133440Z-a80461afe245`. Supervised2026-10-22T13:34:38.9451767Z?2026-10-22T13:38:51.4732824Z; native2026-10-22T13:36:56.8051041Z?2026-10-22T13:38:42.0243888Z (105213ms); restored2026-10-22T13:38:51.3052098Z.
 
-- ZIP SHA256 `1920c7d0a6c8ba6a76a975b6f9c7a801bfa5656653f07ba96eb8d65ebd731660`
-- DLL SHA256 `bc251db9e98036b4bda0deaacbea1b422c65d983ca2a869278209ed48bdd93e1`
-- MVID `18231bd0-6ca7-4998-9497-3f04673543a0`
-- Source-state SHA256 `8a700d6852b6104d6d60474885939250d304d277c2ad7d6b35569db4df3684c1`
-- Build12:49:06.6601452?12:53:57.5235265Z PASS: fresh actual limited admission,
-  actual outer dispatch/refusals,27 production dispatch,15 selected/exact/strict
-  408-member package. Synthetic count408 acceptance/406 mismatch/409 unsupported
-  checks passed. Initial admission12:47:25.7216652?12:48:28.2916294Z refused
-  scratch-file deltas in its no-artifact-change test: infrastructure interference
-  from preparing runtime scripts, no compile/package/deployment/game. Original
-  failure retained; fresh retry held all files frozen and passed.
-- Transaction`compat-20261022T125434Z-5fb4f47f52ae`; request
-  `20261022T1257026548158Z-disposable-expanded-summoning-sprints30-31-native-review`;
-  RunId`20261022T1257027441818Z-5455f4c8dc1b4d5ba814c5c32b5ff7b8`.
-  Supervised12:54:33.3384294?12:59:18.4480926Z; native12:57:17.8078787?
-  12:59:10.0120515Z,112200ms. Restored12:59:18.2518011Z; profile/settings
-  restoration and independent full Compare PASS (Mods967,saves118,refs18,
-  settings83,tasks0,processes1 Steam, bank/ref/settings bytes/metadata exact).
-  No saves touched or owned live game/task/lease/permanent development install.
-- Local build`artifacts/s30-31-hound-build-e093336c-r2`; native
-  `artifacts/s30-31-hound-e093336c`, including exact image hashes/inspection.
+Actual native full sword/sword/secondary bite, Power Attack live buff/source
+attribution, random rolls/hits/damage, one full-round action charge, native sword
+model atR_Palm and final owner/private resources/items/area cleanup all PASS.
+The actual combat PNG shows the sword attached. Six captured per-view resources
+released. Disposable target remained in combat, supporting the retained fresh-
+process boundary; no following case shares this process. Hand grip/animation,
+coarse anatomy/seams/textures are backlog, no owner aesthetic approval.
 
-Prior fixed Lemure/Dretch original-body pair12/12 in one process/package38 on
-40b1ab11 remains at its [immutable map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/90c600f47d6c0bd6f0b12c2533c564ed73cbe120/planning/SPRINT30-31-STATUS.md).
-Its order/cleanup/residue evidence is not relabeled as this Hound run. Both
-native SR0/canonical extraplanar identity and distinct original bodies passed;
-Dretch independent resources unchanged. Earlier actual Lemure38/38 and
-Hound/Lantern15/15 on4b122ab0 remain linked there. Changed final dependencies
-still require fresh combined-artifact qualification.
+### Game46: Hound natural ? 5PASS/2FAIL
 
-At that body checkpoint:43 actual launches/transactions,39 completed development packages;
-failed admission/request/build attempts separate. Current source adds exactly
-`hound-armed` and`hound-natural` fresh-process full-command observers: native
-Power Attack toggle/source modifiers, real random rolls/damage, exact routine,
-action charge, combat image and owned cleanup. Focused compile18.1s and14/14
-selected tests PASS (4.5s wrapper); these new command rows are not native proof
-yet. One actual command per fresh process retains the observed combat-state
-boundary; no forced sharing or protected-party reset.
+Request`20261022T1341423742494Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId`20261022T1341424072702Z-7e4a0c49eba94fbeb7939e0e979d8d90`; transaction`compat-20261022T133933Z-d53a5fca27fc`. Supervised2026-10-22T13:39:32.1514686Z?2026-10-22T13:43:34.2795288Z; native2026-10-22T13:41:50.4770663Z?2026-10-22T13:43:25.9817877Z (95490ms); restored2026-10-22T13:43:34.0146958Z.
 
-Next: qualify those two commands using one changed package, then continue the
-remaining six-creature mechanics. Lantern one-standard/two-full rays/orb,
-Astral full mechanics and Trumpet signatures/loadout remain pending. No public
-candidate/final qualification/merge/release/records PR has occurred.
+Actual primary slam/bite+8/+8, damage+2/+2, Power Attack off and native switch
+mode1 PASS. Weapon-model row failed(active=true,expectedArmed=false) before any
+attack. Native full command/damage/combat image/explicit owned-cleanup row UNRUN;
+aggregate FAIL retained. Prior observer lacked component-update/mode/frame facts,
+so this is an unmet presentation precondition, not yet a proven product timing
+classification. Current repair records actual LateUpdate count, last observed
+mode/weapon and Unity frame, then waits boundedly for that exact state using the
+already proven native Unity-frame wait path. It never invokes Refresh, forces
+visibility or changes a native hit. Native combat-entry metadata was checked for
+possible mode transitions; rerun observation must decide. No weakening of guards.
+
+Both transaction/settings restorations and independent full Compare PASS:
+actual human v0.0.117 Mods967,saves/metadata118,refs18,settings83,tasks0,processes1
+Steam; bank/ref/settings bytes/metadata exact. Working/baseline untouched. Totals
+46 actual launches/transactions,41 completed development packages; failed
+admission/request/build attempts separate. No active task/game/lease/permanent
+development installation. Current focused observer compile19.5s/14 tests1.2s PASS.
+
+Prior e093 body/shared circle/SR15/menace/plans/Aid18/18 and 2995 armed mechanics
+with aggregate clock-coverage FAIL retain tuples in the [immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/1536839419490ce28c4b166837a4cd72a545eceb/planning/SPRINT30-31-STATUS.md).
+That map links the original Lemure/Dretch pair12/12 in one actual process on
+40b1ab11. None are relabeled final-package evidence. The Hound model omission
+was a product presentation defect; early mode restoration and missing visual
+update observations are distinct observer issues. Latest natural verdict stays
+FAIL until the new facts exist.
+
+Next: commit/push current exact-state observer repair; one changed package, run
+natural first to resolve its failing precondition, then armed if coherent. Both
+stay fresh processes. Continue all six, especially Lantern ray/orb distinction,
+Astral full implementation, Trumpet full legal loadout/signatures and the final
+combined rules/AI/TB/items/lifetime/routes/persistence/profile/publisher campaign.
+No public/final candidate, merge, stable release or records PR yet.
 
 ## Current dependencies and decisions
 

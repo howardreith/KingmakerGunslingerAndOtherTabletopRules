@@ -20,6 +20,11 @@ namespace KingmakerGunslinger.Summoning
         private GameObject _model;
         internal GameObject Model { get { return _model; } }
         internal string Status { get; private set; }
+        internal int LateUpdates { get; private set; }
+        internal int ObservedEquipmentSet { get; private set; }
+        internal string ObservedWeaponGuid { get; private set; }
+        internal int LastRefreshUnityFrame { get; private set; }
+
 
         internal void Configure(UnitEntityView view, SkinnedMeshRenderer body)
         {
@@ -47,7 +52,7 @@ namespace KingmakerGunslinger.Summoning
             Status = "native-model:owned-palm";
             Refresh();
         }
-        private void LateUpdate() { Refresh(); }
+        private void LateUpdate() { Refresh(); LateUpdates++; }
         private void Refresh()
         {
             if (_model == null) return;
@@ -56,6 +61,9 @@ namespace KingmakerGunslinger.Summoning
                 weapon != null && weapon.Blueprint.AssetGuid == SwordGuid && weapon.Wielder != null &&
                 ReferenceEquals(weapon.Wielder.Unit, _owner) && weapon.HoldingSlot != null &&
                 ReferenceEquals(weapon.HoldingSlot.MaybeItem, weapon) && !weapon.IsLootable;
+            ObservedEquipmentSet = _owner == null || _owner.Destroyed ? -1 : _owner.Body.CurrentHandEquipmentSetIndex;
+            ObservedWeaponGuid = weapon?.Blueprint?.AssetGuid;
+            LastRefreshUnityFrame = Time.frameCount;
             if (_model.activeSelf != visible) _model.SetActive(visible);
         }
         internal void Release()
