@@ -79,7 +79,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "ClericClass", "Mindless", "OutsiderType", "DemonType",
                     "DevilType", "PoisonImmunity", "ElectricityImmunity",
                     "PetrificationImmunity", "HolyWord", "HolyAura",
-                    "BladeBarrier", "SpellImmunity", "InvisibilityPurge" };
+                    "BladeBarrier", "LesserGlobe", "GlobeOfInvulnerability",
+                    "Heal", "SpellImmunity", "InvisibilityPurge" };
                 var graphs = new JArray();
                 foreach (string name in consumers)
                 {
