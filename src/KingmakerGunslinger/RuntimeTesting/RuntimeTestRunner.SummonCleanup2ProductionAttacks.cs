@@ -191,7 +191,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     if (enabled)
                                     {
                                         string file = "production-" + label + "-ready.png";
-                                        bool saved = Cleanup2ProductionAttackImage(actor, file, crab).StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
+                                        bool saved = Cleanup2ProductionAttackImage(actor, target, file, crab).StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
                                         Cleanup2Check("production-ready-" + label, saved, new JObject { ["file"] = file,
                                             ["beforeCommandRun"] = true, ["preActWindup"] = "ABSENT: native HasAnimation=false may act on its first tick; this is a neutral ready frame, not an invented windup." },
                                             "Actual neutral own body is captured before issuing the ordinary native command.");
@@ -223,7 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                                 string imageKey = record.Index + "-" + moment;
                                                 if (moment == null || images.Contains(imageKey)) continue;
                                                 string file = "production-" + label + "-attack" + record.Index + "-" + moment + ".png";
-                                                string saved = Cleanup2ProductionAttackImage(actor, file, crab);
+                                                string saved = Cleanup2ProductionAttackImage(actor, target, file, crab);
                                                 bool present = saved.StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
                                                 JObject imageShape = visual.MeasureGestureDisplacement(); posesFinite &= (bool)imageShape["finite"];
                                                 maximumSkinMotion = Mathf.Max(maximumSkinMotion, (float)imageShape["maximumGestureRendererLocalDisplacement"]);
@@ -359,20 +359,34 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void Cleanup2ProductionAttackDeadline(Stopwatch watch)
         { if (watch.Elapsed.TotalSeconds >= 240) throw new TimeoutException("Production attack 240-second phase bound."); }
 
-        private string Cleanup2ProductionAttackImage(UnitEntityData actor, string file, bool crab)
+        private string Cleanup2ProductionAttackImage(UnitEntityData actor, UnitEntityData target, string file, bool crab)
         {
             if (File.Exists(Path.Combine(_request.EvidenceDirectory, file))) throw new InvalidOperationException("Production attack image already exists.");
             Bounds previous = _refinementBounds;
+            Camera camera = TeleportationCastingCamera()?.Camera ?? Camera.main;
+            if(camera==null) throw new InvalidOperationException("Native contact camera absent.");
+            float beforeSize=camera.orthographicSize,beforeAspect=camera.aspect;
             try
             {
                 var visual = SummonAttackGestureVisual.For(actor);
-                _refinementBounds = visual.CurrentFramingBounds(); Vector3 center = _refinementBounds.center;
-                float distance = Mathf.Max(3.5f, _refinementBounds.extents.magnitude * 2.4f);
+                _refinementBounds = visual.CurrentFramingBounds();
+                foreach(Renderer body in target.View.GetComponentsInChildren<Renderer>(true)
+                    .Where(r=>r.enabled && r.gameObject.activeInHierarchy && (r is SkinnedMeshRenderer || r is MeshRenderer)))
+                    _refinementBounds.Encapsulate(body.bounds);
+                _refinementBounds.Encapsulate(target.Position);
+                _refinementBounds.Expand(_refinementBounds.size.magnitude*.16f);
+                Vector3 center = _refinementBounds.center;
                 Vector3 direction = (actor.View.transform.right * (crab ? .8f : 1.4f) - actor.View.transform.forward * (crab ? 1.2f : -.6f) + Vector3.up * .7f).normalized;
+                Quaternion rotation=Quaternion.LookRotation(-direction,Vector3.up);
+                Vector3[] points=Cleanup2BoundsCorners(_refinementBounds).Select(p=>Quaternion.Inverse(rotation)*(p-center)).ToArray();
+                camera.aspect=(float)RefinementFrameWidth/RefinementFrameHeight;
+                float halfFrame=Mathf.Max(points.Max(p=>Mathf.Abs(p.y)),points.Max(p=>Mathf.Abs(p.x))/camera.aspect)*1.12f;
+                float distance=points.Max(p=>Mathf.Abs(p.z))+Mathf.Max(3.5f,halfFrame/Mathf.Tan(camera.fieldOfView*Mathf.Deg2Rad*.5f));
+                if(camera.orthographic) camera.orthographicSize=halfFrame;
                 Vector3 eye = center + direction * distance;
-                return WriteRefinementImage(eye, Quaternion.LookRotation(center - eye, Vector3.up), file);
+                return WriteRefinementImage(eye, rotation, file);
             }
-            finally { _refinementBounds = previous; }
+            finally { _refinementBounds = previous; camera.orthographicSize=beforeSize; camera.aspect=beforeAspect; }
         }
     }
 }

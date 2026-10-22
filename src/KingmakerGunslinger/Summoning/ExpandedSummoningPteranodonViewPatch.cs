@@ -944,10 +944,17 @@ namespace KingmakerGunslinger.Summoning
             material.SetTexture("_Parameters",attachment.GorgonParameters);
             material.SetTextureScale("_Parameters",Vector2.one);
             material.SetTextureOffset("_Parameters",Vector2.zero);
+            // Installed PF/StandardDynamic D3D11 fragment 1221 (2.1.7b):
+            // _Parameters.r * _Roughness and _Parameters.b * _Metallic.
+            // The blue-channel term exists only in SPECULAR_ON+METALLNESS_ON;
+            // 1152 omits both, 1213 adds nonmetal specular only. These are
+            // LOCAL switches on our already-owned material, never globals.
             material.SetFloat("_Roughness",1f);
-            material.SetFloat("_Metallic",0f);
+            material.SetFloat("_Metallic",1f);
             material.SetFloat("_Emission",0f);
-            return "gorgonParameters=authored-linear;plateRoughness=0.23;plateMetallic=0.94;bodyMetallic=0;emission=0";
+            material.EnableKeyword("SPECULAR_ON");
+            material.EnableKeyword("METALLNESS_ON");
+            return "gorgonParameters=authored-linear;verifiedPFMetalVariant;plateRoughness=0.23;plateMetallic=0.94;bodyMetallic=0;emission=0";
         }
 
         private static string Describe(Color value)
