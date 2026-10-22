@@ -50,6 +50,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewHound30Combat(fixture, phase == "hound-natural")) yield return frame;
                 yield break;
             }
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31LanternRayPhase)
+            {
+                foreach (int frame in ReviewLantern31Rays(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == "trumpet-caster")
             {
                 foreach (int frame in ReviewTrumpet31Caster(fixture)) yield return frame;
