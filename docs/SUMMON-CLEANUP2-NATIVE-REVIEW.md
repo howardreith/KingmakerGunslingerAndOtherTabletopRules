@@ -88,8 +88,12 @@ bounds are presentation inputs only, with camera/depth-of-field state restored.
 `tooltips` opens five exact existing native tooltip cards across four
 SM/SNA groups, including the shared Horse concept and three family-first
 labels. A narrowly guarded capture preserves only the exact owned hover data;
-normal captures continue suppressing hover. Native header text/icon, visibility,
-scroll, original slots/resources/hotbars and cleanup remain independent checks.
+normal captures continue suppressing hover. The exact native HeaderItem hover
+is intentionally text-only; its complete title and the exact visible source-row
+icon are checked separately. Native delayed context/shown/needed/fade settlement
+must finish after each card, including a failed card, before the original failure
+is rethrown. Foreign context is never hidden. Scroll, original slots/resources/
+hotbars and cleanup remain independent checks.
 The narrative admission reads actual lifecycle flags and inherited rendered
 alpha; GameObject activation alone cannot prove a visible dialogue panel.
 `summon-cleanup2-narrative-state.json` records first state and refusals. No
