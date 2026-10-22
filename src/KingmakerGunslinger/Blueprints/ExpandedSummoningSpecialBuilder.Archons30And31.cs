@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.Designers.Mechanics.Facts;
@@ -28,6 +29,7 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             var lantern = Require<BlueprintUnit>(bySymbol, LanternUnitSymbol);
+            var hound = Require<BlueprintUnit>(bySymbol, Hound30Unit);
             var carrier = Require<BlueprintBuff>(bySymbol, Archon3031 + "MenaceCarrier");
             var area = Require<BlueprintAbilityAreaEffect>(bySymbol, Archon3031 + "MenaceArea");
             var penalty = Require<BlueprintBuff>(bySymbol, Archon3031 + "MenacePenalty");
@@ -53,7 +55,7 @@ namespace KingmakerGunslinger.Blueprints
             access.Configure(carrier, LocalizationService.Create(Archon3031 + "Carrier.Name", "Aura of Menace"),
                 LocalizationService.Create(Archon3031 + "Carrier.Description", "Hostile creatures within 20 feet save against this archon's menace."), null);
             var exposure = ScriptableObject.CreateInstance<ContextActionArchonMenace>();
-            exposure.Owners = new[] { lantern }; exposure.Penalty = penalty; exposure.Immunity = immunity;
+            exposure.Owners = new[] { lantern, hound }; exposure.Penalty = penalty; exposure.Immunity = immunity;
             var actions = ScriptableObject.CreateInstance<AbilityAreaEffectRunAction>();
             actions.UnitEnter = new ActionList { Actions = new GameAction[] { exposure } };
             actions.Round = new ActionList { Actions = new GameAction[] { exposure } };
@@ -68,29 +70,40 @@ namespace KingmakerGunslinger.Blueprints
             cleanup.Penalty = penalty; cleanup.Immunity = immunity;
             carrier.ComponentsArray = new BlueprintComponent[] { emanation, cleanup };
             if (carrier.StayOnDeath) throw new InvalidOperationException("Archon emitter must end on death.");
-            var aid = Require<BlueprintAbility>(bySymbol, Archon3031 + "LanternAid");
-            CloneMephitSpell(library, aid, "03a9630394d10164a9410882d31572f0", "native Aid");
-            aid.name = InternalName(Archon3031 + "LanternAid"); aid.Type = AbilityType.SpellLike;
-            // The retained wisp rig has no cast clip. Its immediate native
-            // ability animation still pays the ordinary command action cost.
-            aid.Animation = Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle.Immediate;
-            var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
-            parameters.OwningBlueprint = lantern; parameters.Abilities = new[] { aid };
-            parameters.SpellLevels = new[] { 2 }; parameters.CasterLevel = 3;
             var defenses = Require<BlueprintBuff>(bySymbol, LanternDefenseSymbol);
+            defenses.ComponentsArray = defenses.ComponentsArray.Concat(ArchonPetrificationImmunities()).ToArray();
+            var aid = ConfigureArchonAid(library, bySymbol, lantern, defenses,
+                Require<BlueprintBrain>(bySymbol, LanternBrainSymbol), Archon3031 + "Lantern", 3, true);
+            var houndAid = ConfigureArchonAid(library, bySymbol, hound,
+                Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Hound30Prefix + "Traits"),
+                Require<BlueprintBrain>(bySymbol, Hound30Prefix + "Brain"), Hound30Prefix, 6, false);
+            hound.AddFacts = hound.AddFacts.Concat(new BlueprintUnitFact[] { carrier, houndAid }).ToArray();
+            lantern.AddFacts = lantern.AddFacts.Where(fact => fact.AssetGuid != AuraOfMenaceBuffGuid)
+                .Concat(new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] { carrier, aid }).ToArray();
+        }
+        private static BlueprintAbility ConfigureArchonAid(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintUnit unit,
+            BlueprintUnitFact defenses, BlueprintBrain brain, string prefix, int casterLevel, bool immediate)
+        {
+            var aid = Require<BlueprintAbility>(bySymbol, prefix + "Aid");
+            CloneMephitSpell(library, aid, "03a9630394d10164a9410882d31572f0", "native archon Aid");
+            aid.name = InternalName(prefix + "Aid"); aid.Type = AbilityType.SpellLike;
+            if (immediate)
+                aid.Animation = Kingmaker.Visual.Animation.Kingmaker.Actions.UnitAnimationActionCastSpell.CastAnimationStyle.Immediate;
+            var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
+            parameters.OwningBlueprint = unit; parameters.Abilities = new[] { aid };
+            parameters.SpellLevels = new[] { 2 }; parameters.CasterLevel = casterLevel;
             defenses.ComponentsArray = defenses.ComponentsArray.Concat(new BlueprintComponent[] { parameters }).ToArray();
             var ai = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol,
-                Archon3031 + "LanternAidAi"), Archon3031 + "LanternAidAi", aid, 0);
-            var eligibility = Require<ArchonAidEligibility>(bySymbol, Archon3031 + "LanternAidEligibility");
-            eligibility.name = InternalName(Archon3031 + "LanternAidEligibility");
-            eligibility.OwningBlueprint = lantern; eligibility.Ability = aid;
+                prefix + "AidAi"), prefix + "AidAi", aid, 0);
+            var eligibility = Require<ArchonAidEligibility>(bySymbol, prefix + "AidEligibility");
+            eligibility.name = InternalName(prefix + "AidEligibility");
+            eligibility.OwningBlueprint = unit; eligibility.Ability = aid;
             eligibility.AidBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
                 "319b4679f25779e4e9d04360381254e1", "native Aid buff");
             ai.TargetConsiderations = new Consideration[] { eligibility }; ai.BaseScore = 4;
-            var brain = Require<BlueprintBrain>(bySymbol, LanternBrainSymbol);
             brain.Actions = brain.Actions.Concat(new BlueprintAiAction[] { ai }).ToArray();
-            lantern.AddFacts = lantern.AddFacts.Where(fact => fact.AssetGuid != AuraOfMenaceBuffGuid)
-                .Concat(new Kingmaker.Blueprints.Facts.BlueprintUnitFact[] { carrier, aid }).ToArray();
+            return aid;
         }
     }
 }

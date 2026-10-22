@@ -57959,6 +57959,350 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "S30/S31 isolated archon candidate: private menace and native Aid dependencies; no new public roots. Native qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.HoundArchon",
+      "guid": "4685038956fc47c7b18d5acf1d7d8d7b",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.HoundArchon.One",
+      "guid": "94c09665aac24a899547ac87b0ad6728",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.HoundArchon.OneD3",
+      "guid": "219d01cfaf634d898610bda658fe98c4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.HoundArchon.OneD4PlusOne",
+      "guid": "6ed3f6e56a8d4c6ab4c6b4b4816115f5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.HoundArchon.OneD4PlusOne",
+      "guid": "efa4a499fb984fae833d79d6debad3ba",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.HoundArchon.OneD4PlusOne",
+      "guid": "e8a8d4c21bae4b62a77873deabd6e595",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.HoundArchon.OneD4PlusOne",
+      "guid": "79291c040f1747e095de67f315427c73",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.UnitType",
+      "guid": "05036d9b89284accb759eb0034184f7d",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.Traits",
+      "guid": "c6c139e1bedb4052924407f1ca08388b",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.GreatswordType",
+      "guid": "d099d40bb7ae46d68d1ffde41d8e56e6",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.Greatsword2d6",
+      "guid": "99fa49115f9c48228e13ca9f2879e6e0",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.BiteType",
+      "guid": "270965b8a99d42f58ce68fe83ec59f24",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.Bite1d8",
+      "guid": "b7c358cbe55a45fda087f4fefd968122",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.SlamType",
+      "guid": "55d2b80ecbd64ae5a9d203c34aadbbc4",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.Slam1d4",
+      "guid": "ca5f1f56746b4473b3fefdf1e3edbb5e",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.Aid",
+      "guid": "0bd9889bdbdf408394696f55bcca4a9e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.AidAi",
+      "guid": "2ebab2966d514b1eb9abd09f10f94fea",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.AidEligibility",
+      "guid": "53aaa4005d6e4e89bfd8fb41bde7dcc8",
+      "plannedType": "ArchonAidEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.HoundArchon.Brain",
+      "guid": "30bce0a7417744a9a269d951c630e103",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "S30/S31 authorized hidden Hound slice with real icon and private dependencies; six routes suppressed; qualification pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier4.HoundArchon.One",
+      "guid": "077b95bfe1685a00ba0911f87e920349",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier5.HoundArchon.OneD3",
+      "guid": "80800a8decdc5190b2e590676571f560",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier6.HoundArchon.OneD4PlusOne",
+      "guid": "32b2a109543c5d37a78b6c1764ac3bc4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier7.HoundArchon.OneD4PlusOne",
+      "guid": "e9d2562a9a345132b9407f4a8de161d6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.HoundArchon.OneD4PlusOne",
+      "guid": "7bac2082244d545eafe60ca4438422bf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.HoundArchon.OneD4PlusOne",
+      "guid": "a7eb30a55c8e5d9fa9dcd4f3603a502c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier4.HoundArchon.One",
+      "guid": "ad53d2af0bd850c69b052fd000cc023c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier5.HoundArchon.OneD3",
+      "guid": "f2f679469bec5f47a87cbb4229aded2d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier6.HoundArchon.OneD4PlusOne",
+      "guid": "cd7c8d940eca58e4a3c09c060f95a457",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier7.HoundArchon.OneD4PlusOne",
+      "guid": "d7cbac7aad3957dd9da5ac1bce6c11ca",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.HoundArchon.OneD4PlusOne",
+      "guid": "83122326f6fd57859f8346d414af0913",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.HoundArchon.OneD4PlusOne",
+      "guid": "db5e7f4c419c5b6ca41bae8d061be48b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier4.HoundArchon.One",
+      "guid": "cfd358e354bd50b5ba9302f1a935f4bd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier5.HoundArchon.OneD3",
+      "guid": "f1170e80b08659e9b3d6a180d8482937",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier6.HoundArchon.OneD4PlusOne",
+      "guid": "2df4b097ee3651bbae80a567c234249f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier7.HoundArchon.OneD4PlusOne",
+      "guid": "07b9f2a5fe0d5085bb69d68a2242ba23",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.HoundArchon.OneD4PlusOne",
+      "guid": "b39edbbe52c651d7bd22443fb9f582d6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.HoundArchon.OneD4PlusOne",
+      "guid": "f0b6299f97e650b8af8c39ac5005db63",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier4.HoundArchon.One",
+      "guid": "391d8400d7795dd2a2f0cd2a269f2ee7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier5.HoundArchon.OneD3",
+      "guid": "f66fff86fff55c28bf2aee236422542e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier6.HoundArchon.OneD4PlusOne",
+      "guid": "e34f9c1f744e5ff9b775bd4d91d3ee2b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier7.HoundArchon.OneD4PlusOne",
+      "guid": "6128bcb52f785273ab2009702dfd66ff",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.HoundArchon.OneD4PlusOne",
+      "guid": "ef05d9b18c335fbda517adbd1f01fd88",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.HoundArchon.OneD4PlusOne",
+      "guid": "baa0bab3c2155b4f86ac66d8d4b07c3f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

@@ -106,11 +106,11 @@ namespace KingmakerGunslinger.Summoning
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         private static readonly HashSet<string> SuppressedCreatureKeys =
             new HashSet<string>(
-                new[] { "lemure", "dretch" },
+                new[] { "lemure", "dretch", "hound-archon" },
                 StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1142;
-        internal const int SuppressedLogicalPlacementCount = 15;
+        internal const int RegisteredLogicalPlacementCount = 1148;
+        internal const int SuppressedLogicalPlacementCount = 21;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                !SuppressedCreatureKeys.SetEquals(new[] { "lemure", "dretch" }) ||
+                !SuppressedCreatureKeys.SetEquals(new[] { "lemure", "dretch", "hound-archon" }) ||
                 !sprint29Routes || !giantRoutes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()

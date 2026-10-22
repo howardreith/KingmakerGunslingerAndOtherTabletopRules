@@ -23,8 +23,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        private IEnumerable<int> ReviewArchon30Core(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewArchon30Core(ExpandedSummoningCorrectionFixture fixture, bool mixedHound = false)
         {
+            string caseId = mixedHound ? "archon-hound" : "archon-core";
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null;
@@ -48,7 +49,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var areaBlueprint = fixture.Blueprints.OfType<BlueprintAbilityAreaEffect>()
                     .Single(value => value.name == "KMG_Summoning_OutsiderCelestial_Archon_MenaceArea");
                 PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 30f);
-                owner = CastExpandedSummoningOwnTier(fixture, "lantern-archon");
+                owner = CastExpandedSummoningOwnTier(fixture, mixedHound ? "hound-archon" : "lantern-archon");
                 sibling = CastExpandedSummoningOwnTier(fixture, "lantern-archon");
                 foreach (var unit in new[] { owner, sibling })
                 {
@@ -70,7 +71,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 buffBaseline = target.Buffs.Enumerable.ToArray();
                 // Only this disposable emitter changes Charisma. Different live
                 // source DCs expose accidental sharing or use of summon CL20.
-                owner.Stats.Charisma.BaseValue = 14;
+                if (mixedHound)
+                    foreach (int frame in ReviewHound30Profile(fixture, owner)) yield return frame;
+                else owner.Stats.Charisma.BaseValue = 14;
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var before = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
                     target.Stats.SaveFortitude.ModifiedValue, target.Stats.SaveReflex.ModifiedValue,
@@ -79,7 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ContextActionArchonMenace.HasSource(target, immunity, owner) &&
                     saves.Rows.Count == 0 && Sprint29OwnedAreas(owner, areaBlueprint).Length == 1 &&
                     Sprint29OwnedAreas(sibling, areaBlueprint).Length == 1;
-                Sprint25Check("archon-core-outside", outside, new JObject {
+                Sprint25Check(caseId + "-outside", outside, new JObject {
                     ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["target"] = target.UniqueId,
                     ["lane"] = lane, ["saves"] = saves.Rows.DeepClone(), ["ownerAreas"] = Sprint29OwnedAreas(owner, areaBlueprint).Length,
                     ["siblingAreas"] = Sprint29OwnedAreas(sibling, areaBlueprint).Length },
@@ -91,7 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var emitters = new[] { owner, sibling };
                 bool attribution = emitters.All(source => {
                     var rows = saves.Rows.Where(row => (string)row["caster"] == source.UniqueId).ToArray();
-                    int dc = ReferenceEquals(source, owner) ? 15 : 13;
+                    int dc = ReferenceEquals(source, owner) ? (mixedHound ? 16 : 15) : 13;
                     return rows.Length == 1 && (int)rows[0]["dc"] == dc &&
                         ContextActionArchonMenace.HasSource(target, (bool)rows[0]["passed"] ? immunity : penalty, source) &&
                         !ContextActionArchonMenace.HasSource(target, (bool)rows[0]["passed"] ? penalty : immunity, source);
@@ -104,7 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // ownership remains separate. Unrelated Shaken remains active.
                 bool modifiers = target.Buffs.Enumerable.Contains(foreignPenalty) && after.Select((value, index) => value - before[index]).All(value =>
                     value == (active.Length == 0 ? 0 : -2));
-                Sprint25Check("archon-core-mixed-sources", attribution && modifiers, new JObject {
+                Sprint25Check(caseId + "-mixed-sources", attribution && modifiers, new JObject {
                     ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["target"] = target.UniqueId,
                     ["ownerCha"] = owner.Stats.Charisma.ModifiedValue, ["ownerHd"] = owner.Descriptor.Progression.CharacterLevel,
                     ["siblingCha"] = sibling.Stats.Charisma.ModifiedValue, ["siblingHd"] = sibling.Descriptor.Progression.CharacterLevel,
@@ -122,7 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool noRepeat = saves.Rows.Count == priorSaves && emitters.All(source =>
                     ContextActionArchonMenace.HasSource(target, penalty, source) ||
                     ContextActionArchonMenace.HasSource(target, immunity, source));
-                Sprint25Check("archon-core-reentry", noRepeat, new JObject {
+                Sprint25Check(caseId + "-reentry", noRepeat, new JObject {
                     ["savesBefore"] = priorSaves, ["savesAfter"] = saves.Rows.Count,
                     ["sourceBuffs"] = new JArray(target.Buffs.Enumerable.Where(buff => emitters.Contains(buff.Context?.MaybeCaster))
                         .Select(buff => new JObject { ["blueprint"] = buff.Blueprint.AssetGuid,
@@ -131,12 +134,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!noRepeat) throw new InvalidOperationException("Archon re-entry source memory failed.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 for (int frame = 0; frame < 8; frame++) yield return 0;
-                bool sourceCleanup = !ContextActionArchonMenace.HasSource(target, penalty, owner) &&
+                var remainingStats = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
+                    target.Stats.SaveFortitude.ModifiedValue, target.Stats.SaveReflex.ModifiedValue, target.Stats.SaveWill.ModifiedValue };
+                int remainingPenalty = ContextActionArchonMenace.HasSource(target, penalty, sibling) ? -2 : 0;
+                bool handoff = remainingStats.Select((value, index) => value - before[index]).All(value => value == remainingPenalty) &&
+                    target.Buffs.Enumerable.Contains(foreignPenalty);
+                bool sourceCleanup = handoff && !ContextActionArchonMenace.HasSource(target, penalty, owner) &&
                     !ContextActionArchonMenace.HasSource(target, immunity, owner) &&
                     (ContextActionArchonMenace.HasSource(target, penalty, sibling) ||
                      ContextActionArchonMenace.HasSource(target, immunity, sibling));
-                Sprint25Check("archon-core-source-cleanup", sourceCleanup, new JObject {
+                Sprint25Check(caseId + "-source-cleanup", sourceCleanup, new JObject {
                     ["removedOwner"] = owner.UniqueId, ["removedOwnerDestroyed"] = owner.Destroyed,
+                    ["remainingStats"] = new JArray(remainingStats), ["baselineStats"] = new JArray(before),
+                    ["remainingPenalty"] = remainingPenalty, ["handoff"] = handoff,
                     ["sibling"] = sibling.UniqueId, ["siblingPenalty"] = ContextActionArchonMenace.HasSource(target, penalty, sibling),
                     ["siblingImmunity"] = ContextActionArchonMenace.HasSource(target, immunity, sibling) },
                     "Removing one emitter ends only its menace grants; a simultaneous sibling's contribution remains.");
@@ -145,7 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // second emitter. Only disposable owners are reset.
                 bool dirtyDetected = Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any() &&
                     target.Buffs.Enumerable.Except(buffBaseline).Any();
-                Sprint25Check("archon-core-residue-detected", dirtyDetected,
+                Sprint25Check(caseId + "-residue-detected", dirtyDetected,
                     new JObject { ["ownedAuraResidueDetected"] = dirtyDetected },
                     "A still-live owned emitter and its victim contribution prevent the next subcase from starting.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { sibling });
@@ -155,12 +165,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !target.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
                     target.Stats.AdditionalAttackBonus.ModifiedValue == before[0] && target.Stats.AC.ModifiedValue == before[1] &&
                     !owner.IsInState && !sibling.IsInState;
-                Sprint25Check("archon-core-reset", reset, new JObject {
+                Sprint25Check(caseId + "-reset", reset, new JObject {
                     ["areasExact"] = !Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any(),
                     ["targetBuffsExact"] = !target.Buffs.Enumerable.Except(buffBaseline).Any(), ["ownedActorsAbsent"] = !owner.IsInState && !sibling.IsInState },
                     "No leftover owned areas, victim buffs, queued target commands or source actors remain before support AI.");
                 if (!reset) throw new InvalidOperationException("Archon subcase reset failed; do not run later support case.");
-                foreach (int frame in ReviewArchon30Aid(fixture)) yield return frame;
+                foreach (int frame in ReviewArchon30Aid(fixture, mixedHound)) yield return frame;
             }
             finally
             {
@@ -174,9 +184,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private IEnumerable<int> ReviewArchon30Aid(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewArchon30Aid(ExpandedSummoningCorrectionFixture fixture, bool mixedHound)
         {
-            var owner = CastExpandedSummoningOwnTier(fixture, "lantern-archon");
+            string caseId = mixedHound ? "archon-hound" : "archon-core";
+            string aiName = mixedHound ? "KMG_Summoning_OutsiderCelestial_HoundArchon_AidAi" : "KMG_Summoning_OutsiderCelestial_Archon_LanternAidAi";
+            int casterLevel = mixedHound ? 6 : 3;
+            var owner = CastExpandedSummoningOwnTier(fixture, mixedHound ? "hound-archon" : "lantern-archon");
             var target = fixture.Hostile;
             Sprint28SetBrainActivePreservingActions(owner, false);
             owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
@@ -213,24 +226,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Game.Instance.IsPaused = false; yield return 0;
                     }
                     var cast = commands.OfType<UnitUseAbility>().FirstOrDefault(value =>
-                        value.AiAction?.name == "KMG_Summoning_OutsiderCelestial_Archon_LanternAidAi" &&
+                        value.AiAction?.name == aiName &&
                         value.IsFinished && value.Result == UnitCommand.ResultType.Success);
                     var aid = owner.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "319b4679f25779e4e9d04360381254e1" &&
                         ReferenceEquals(buff.Context?.MaybeCaster, owner));
                     bool exact = cast != null && !cast.Cutscene && !cast.IsIgnoreCooldown && economy.Count(cast) == 1 &&
-                        economy.Exact(cast, false) && aid != null && aid.Context.Params.CasterLevel == 3;
-                    Sprint25Check("archon-core-aid-ai", exact, new JObject {
+                        economy.Exact(cast, false) && aid != null && aid.Context.Params.CasterLevel == casterLevel;
+                    Sprint25Check(caseId + "-aid-ai", exact, new JObject {
                         ["owner"] = owner.UniqueId, ["hostile"] = target.UniqueId, ["lane"] = lane,
                         ["aiTicks"] = ticks, ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                         ["aidOnOwner"] = aid != null, ["cl"] = aid?.Context?.Params.CasterLevel,
                         ["tempHp"] = owner.Stats.TemporaryHitPoints.ModifiedValue,
                         ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["fixtureCastCommands"] = 0, ["forcedRolls"] = 0 },
-                        "Actual Lantern AI chooses native CL3 Aid on a useful unbuffed target with an ordinary standard action; no fixture cast.");
+                        "Actual " + (mixedHound ? "Hound CL6" : "Lantern CL3") + " AI chooses native Aid on a useful unbuffed target with an ordinary standard action; no fixture cast.");
                     if (!exact) throw new InvalidOperationException("Archon native Aid AI failed.");
                     var eligibility = fixture.Blueprints.OfType<ArchonAidEligibility>().Single(value => ReferenceEquals(value.OwningBlueprint, owner.Blueprint));
                     float score = eligibility.Score(new Kingmaker.Controllers.Brain.DecisionContext {
                         Unit = owner, Target = new Kingmaker.Controllers.Brain.TargetInfo { Unit = owner } });
-                    Sprint25Check("archon-core-aid-no-repeat", score == 0f,
+                    Sprint25Check(caseId + "-aid-no-repeat", score == 0f,
                         new JObject { ["scoreOnAlreadyAidedTarget"] = score }, "Native Aid target selection refuses an already aided target without spending another action.");
                     if (score != 0f) throw new InvalidOperationException("Archon repeated support refusal failed.");
                 }

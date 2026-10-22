@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 119;
-        internal const int LogicalAbilityCount = 1142;
+        internal const int UnitCount = 120;
+        internal const int LogicalAbilityCount = 1148;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 406;
+        internal const int SpecialIdentityCount = 418;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -715,6 +715,18 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Archon.LanternAid", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Archon.LanternAidAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Archon.LanternAidEligibility", "ArchonAidEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.GreatswordType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.Greatsword2d6", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.Bite1d8", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.SlamType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.Slam1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.Aid", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.AidAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.AidEligibility", "ArchonAidEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.HoundArchon.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

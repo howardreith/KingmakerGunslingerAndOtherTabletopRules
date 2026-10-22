@@ -1307,8 +1307,10 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Cloud.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Ai.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningArchon30Core.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Profile.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Outsiders30And31.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Archons30And31.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Hound30.cs" />
     <Compile Include="Summoning\LemureRacialProfile.cs" />
     <Compile Include="Summoning\ArchonAuraOfMenace.cs" />
     <Compile Include="Summoning\ContextActionRemoveInheritedSummonTemplates.cs" />
