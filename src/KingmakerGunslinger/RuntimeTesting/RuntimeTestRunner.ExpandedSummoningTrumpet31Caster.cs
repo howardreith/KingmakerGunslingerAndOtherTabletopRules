@@ -113,7 +113,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var unit in units) { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue(); }
                 var creation = owner.Blueprint.GetComponent<TrumpetPreparedBook>();
                 var book = owner.Descriptor.GetSpellbook(creation.Book); var otherBook = sibling.Descriptor.GetSpellbook(creation.Book);
-                var nativeExtra = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Facts.BlueprintUnitFact>(BlueprintBootstrap.Library,
+                var nativeExtra = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.BlueprintFeature>(BlueprintBootstrap.Library,
                     "136fa0343d5b4b348bdaa05d83408db3", "native extraplanar consumer");
                 var skillRows = new JArray();
                 foreach (int charisma in new[] { 17, 21 })
