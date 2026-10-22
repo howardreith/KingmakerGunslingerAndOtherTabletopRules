@@ -60,8 +60,15 @@ namespace KingmakerGunslinger.Blueprints
             racial.BaseFortitude = 9; racial.BaseReflex = 4; racial.BaseWill = 9;
             racial.PerceptionRanks = 14; racial.PersuasionRanks = 14; racial.StealthRanks = 14;
             var nativeBook = BlueprintLibraryLookup.RequireExact<BlueprintSpellbook>(library, NativeClericBook31, "native prepared cleric book");
-            var heal = nativeBook.SpellList.SpellsByLevel.Single(row => row.SpellLevel == 6).Spells
-                .Single(ability => ability.name == "Heal" && ability.Type == AbilityType.Spell);
+            // Native Heal is named HealCast. Its exact identity was retained in
+            // the bounded MovanicDeva input capture; require actual cleric L6
+            // membership and Spell type rather than accepting a donor SLA.
+            var sixth = nativeBook.SpellList.SpellsByLevel.Single(row => row.SpellLevel == 6).Spells;
+            var heal = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                "5da172c4c89f9eb4cbb614f3a67357d3", "captured native HealCast");
+            if (!sixth.Contains(heal) || heal.Type != AbilityType.Spell)
+                throw new InvalidOperationException("Native HealCast is not a cleric level6 spell: " +
+                    heal.name + "/" + heal.Type + ";level6=" + string.Join("|", sixth.Select(value => value.name + ":" + value.AssetGuid).ToArray()));
             var list = Require<BlueprintSpellList>(bySymbol, Trumpet31Prefix + "SpellList");
             list.name = InternalName(Trumpet31Prefix + "SpellList");
             list.SpellsByLevel = Enumerable.Range(0, 10).Select(level => new SpellLevelList {
