@@ -17,6 +17,38 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
+## Current correction: armed attack observed, aggregate FAIL retained
+
+Source2995a15e8ea24a93260dc8913ba9ff6471aa335c/package40, purpose`sprints30-31-hound`:
+ZIP`5fd660cd65513486925027ecf6d4c061106f9ab7f927fd9b56cc22e3b0ad7855`,
+DLL`5cc11a0f7e0bba2e1b991420cd3993d12bfd07b4f3abc8eda6b36c474bfc3084`,
+MVID`67d0afa4-9924-45d7-a10f-f9170b36bc10`, source-state`d25c8c63614de163d857aa4880871b6b4e3301cd65afe0863dc10cf65ba30827`.
+Build13:07:59.5723231?13:12:32.1973390Z passed803 actual limited preflight,
+14 actual outer dispatch/refusals,27 dispatch/15 selected/exact/strict408 package.
+Game44 transaction`compat-20261022T131317Z-3f0baf24f706`, request
+`20261022T1315258748949Z-disposable-expanded-summoning-sprints30-31-native-review`,
+RunId`20261022T1315259165903Z-a9696193eb20424993166ba011b42d80`.
+Six PASS/one FAIL: actual native Power Attack source buff5898bcf7 supplied both
+-2 attack modifiers, sword9?7/damage3?9 and secondary bite3?1/damage1?3. One
+native full command resolved sword7/2 and bite1, all three random hits/damage,
+one full-round action charge. Those are observed mechanics, not aggregate PASS.
+Observer then restored the prior turn-based setting before its final cleanup
+wait, correctly hitting the unchanged uncovered-actor guard; cleanup row UNRUN.
+Premature restoration moved after the last assertion in an outer finally.
+
+Actual combat PNG and renderer list show no sword model: product presentation
+omission, not aesthetics. Exact native hand-equipment Active requires a Character
+avatar, absent on this donor. Small exact-Hound-only native sword model instance
+now follows measured R_Palm/actual equipped nonlootable item, hides in natural/
+disarmed mode and joins body rollback/teardown/resource evidence. No native
+prefab/material mutation, no new asset redistribution/item/attack/loot. Native
+proof required. Natural case on2995 was NOT launched after infrastructure failure.
+Transaction13:13:16.7128150?13:17:29.4161704Z, restored13:17:29.1662993Z;
+independent full Compare PASS, human intake/Working untouched. Totals44 actual
+game launches/transactions,40 completed development packages. Current focused
+correction compilation19.2s/14 tests1.4s PASS; final default-blueprint model lookup
+also supports a future cold natural/disarmed load; final focused compile17.7s and14/14 selected tests1.1s PASS.
+
 ## Latest exact development artifact: Hound original body
 
 Tested source `e093336c42e8a80f753aa3cbf913f539b270c4ea`, completed development
@@ -60,7 +92,7 @@ Dretch independent resources unchanged. Earlier actual Lemure38/38 and
 Hound/Lantern15/15 on4b122ab0 remain linked there. Changed final dependencies
 still require fresh combined-artifact qualification.
 
-Totals43 actual launches/transactions,39 completed development packages;
+At that body checkpoint:43 actual launches/transactions,39 completed development packages;
 failed admission/request/build attempts separate. Current source adds exactly
 `hound-armed` and`hound-natural` fresh-process full-command observers: native
 Power Attack toggle/source modifiers, real random rolls/damage, exact routine,

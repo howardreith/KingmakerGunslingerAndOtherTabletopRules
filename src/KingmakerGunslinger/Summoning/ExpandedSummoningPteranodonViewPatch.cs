@@ -223,6 +223,7 @@ namespace KingmakerGunslinger.Summoning
             internal SkinnedMeshRenderer[] SuppressedRenderers;
             internal bool[] OriginalSuppressedRendererStates;
             internal TheropodAccessorySuppression TheropodSuppression;
+            internal HoundArchonSwordView HoundSword;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
@@ -650,6 +651,12 @@ namespace KingmakerGunslinger.Summoning
                         attachment.SuppressedRenderers.Single());
                 }
 
+                if (attachment.VisualKey == HoundArchonVisualPolicy.Key)
+                {
+                    attachment.HoundSword = view.gameObject.AddComponent<HoundArchonSwordView>();
+                    attachment.HoundSword.Configure(view, donor);
+                }
+
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
                 if (attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
@@ -927,6 +934,12 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.HoundSword != null)
+            {
+                attachment.HoundSword.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.HoundSword);
+                attachment.HoundSword = null;
+            }
             if (attachment.TheropodSuppression != null)
             {
                 attachment.TheropodSuppression.Release();
@@ -1094,7 +1107,7 @@ namespace KingmakerGunslinger.Summoning
                 .Distinct();
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh,
-                    attachment.TheropodSuppression })
+                    attachment.TheropodSuppression, attachment.HoundSword, attachment.HoundSword?.Model })
                 .Where(value => value != null).Distinct().ToArray();
         }
 
@@ -1167,6 +1180,12 @@ namespace KingmakerGunslinger.Summoning
                 attachment.BeetleGlow.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
                 attachment.BeetleGlow = null;
+            }
+            if (attachment.HoundSword != null)
+            {
+                attachment.HoundSword.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.HoundSword);
+                attachment.HoundSword = null;
             }
             var materials = new HashSet<Material>();
             if (attachment.Material != null)
