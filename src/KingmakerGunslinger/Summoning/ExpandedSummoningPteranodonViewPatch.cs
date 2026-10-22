@@ -144,7 +144,8 @@ namespace KingmakerGunslinger.Summoning
                 { TheropodVisualPolicy.DeinonychusBlueprintName,
                     TheropodRulesPolicy.DeinonychusKey },
                 { TheropodVisualPolicy.TyrannosaurusBlueprintName,
-                    TheropodRulesPolicy.TyrannosaurusKey }
+                    TheropodRulesPolicy.TyrannosaurusKey },
+                { LemureVisualPolicy.BlueprintName, LemureVisualPolicy.Key }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -298,6 +299,10 @@ namespace KingmakerGunslinger.Summoning
             string blueprintName = __instance.EntityData.Blueprint.name;
             string visualKey;
             if (!VisualKeys.TryGetValue(blueprintName, out visualKey)) return;
+            if (visualKey == LemureVisualPolicy.Key &&
+                !LemureVisualPolicy.IsExactIdentity(__instance.EntityData.Blueprint.AssetGuid,
+                    blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
+                    __instance.EntityData.Blueprint.Prefab.AssetId)) return;
             if (TheropodVisualPolicy.Handles(visualKey))
             {
                 ModContext context;
@@ -355,7 +360,13 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
-            if (attachment.VisualKey == GriffonVisualPolicy.Key)
+            if (attachment.VisualKey == LemureVisualPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetLemureVisual(out source,
+                    out boneNames, out albedo, out status)) return Fallback(status);
+            }
+            else if (attachment.VisualKey == GriffonVisualPolicy.Key)
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetGriffonVisual(out source,out boneNames,out albedo,out status)) return Fallback(status);
@@ -470,7 +481,8 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
             SkinnedMeshRenderer donor;
-            if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+            if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
+                attachment.VisualKey == LemureVisualPolicy.Key)
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(
                         donors.Select(value => value.name)))
@@ -562,6 +574,7 @@ namespace KingmakerGunslinger.Summoning
                                         attachment.VisualKey) ||
                                     TheropodVisualPolicy.Handles(
                                         attachment.VisualKey) ||
+                                    attachment.VisualKey == LemureVisualPolicy.Key ||
                                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -599,8 +612,10 @@ namespace KingmakerGunslinger.Summoning
                 // and the controller re-reads the renderer's materials.
                 string controller = AdoptByMaterialController(view, donor, material);
 
-                if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+                if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
+                    attachment.VisualKey == LemureVisualPolicy.Key)
                 {
+                    // The same measured two-renderer donor needs the same per-view suppression.
                     attachment.TheropodSuppression = view.gameObject
                         .AddComponent<TheropodAccessorySuppression>();
                     attachment.TheropodSuppression.Configure(
@@ -1026,7 +1041,8 @@ namespace KingmakerGunslinger.Summoning
         {
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
-                !TheropodVisualPolicy.Handles(attachment.VisualKey))
+                (!TheropodVisualPolicy.Handles(attachment.VisualKey) &&
+                 attachment.VisualKey != LemureVisualPolicy.Key))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
                 ? new Material[0] : attachment.Donor.sharedMaterials;
@@ -1095,6 +1111,7 @@ namespace KingmakerGunslinger.Summoning
                     attachment.VisualKey) &&
                  !TheropodVisualPolicy.Handles(
                     attachment.VisualKey) &&
+                 attachment.VisualKey != LemureVisualPolicy.Key &&
                  !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
