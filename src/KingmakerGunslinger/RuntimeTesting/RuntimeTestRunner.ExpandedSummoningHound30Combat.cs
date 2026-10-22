@@ -216,7 +216,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool clean = owner.Destroyed && !owner.IsInState && privateResources.Length >= 3 && privateResources.All(value => value == null) &&
                     !Game.Instance.State.AreaEffects.All.Except(areas).Any() && items.All(value => !value.IsLootable && value.Collection == null);
                 Sprint25Check(id + "-cleanup", clean, new JObject {
-                    ["ownerAbsent"] = !owner.IsInState, ["privateRemaining"] = privateResources.Count(value => value != null),
+                    ["ownerAbsent"] = !owner.IsInState, ["privateCaptured"] = privateResources.Length,
+                    ["privateRemaining"] = privateResources.Count(value => value != null),
                     ["areasExact"] = !Game.Instance.State.AreaEffects.All.Except(areas).Any(),
                     ["itemCollectionsAbsent"] = items.All(value => value.Collection == null),
                     ["itemsNonlootable"] = items.All(value => !value.IsLootable), ["targetStillInCombat"] = target.IsInCombat,
