@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.Summoning
             float radius = new Feet(20).Meters;
             if (Game.Instance.State.Units.All.Any(unit =>
                 unit != null && !unit.Destroyed &&
-                !ReferenceEquals(unit, actor) && actor.IsAlly(unit) &&
+                !ReferenceEquals(unit, actor) && !actor.IsEnemy(unit) &&
                 (unit.Position - center).magnitude <= radius + unit.Corpulence))
                 return 0f;
             // Area ownership, not a global fog switch: a sibling or a

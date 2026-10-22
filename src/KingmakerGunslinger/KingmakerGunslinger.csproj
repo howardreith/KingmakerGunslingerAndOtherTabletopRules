@@ -1305,6 +1305,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLemure30Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Cloud.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Ai.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Outsiders30And31.cs" />
     <Compile Include="Summoning\LemureRacialProfile.cs" />
     <Compile Include="Summoning\ContextActionRemoveInheritedSummonTemplates.cs" />
