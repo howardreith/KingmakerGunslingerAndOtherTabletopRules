@@ -1317,6 +1317,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Profile.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Combat.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLantern31Rays.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLantern31Body.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Outsiders30And31.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Archons30And31.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Hound30.cs" />
@@ -1324,6 +1325,7 @@
     <Compile Include="Summoning\ArchonAuraOfMenace.cs" />
     <Compile Include="Summoning\ArchonConstantMagicCircle.cs" />
     <Compile Include="Summoning\LanternArchonRayTargeting.cs" />
+    <Compile Include="Summoning\LanternArchonOrbView.cs" />
     <Compile Include="Summoning\TrumpetPreparedBook.cs" />
     <Compile Include="Summoning\Trumpet31Support.cs" />
     <Compile Include="Summoning\OutsiderEscapeArtist.cs" />
