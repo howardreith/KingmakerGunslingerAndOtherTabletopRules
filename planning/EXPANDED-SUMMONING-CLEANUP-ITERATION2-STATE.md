@@ -9,7 +9,48 @@ Quick review: [14-item acceptance status](#acceptance-status),
 
 ## Intake and ownership
 
-### Latest artifact (2026-10-22, review8)
+### Latest artifact (2026-10-22, review9)
+
+Frozen source `6e6f063486f54194e1ec864dfaff2e6e3d9e484b`, source fingerprint
+`90e9d600c11d8385bbfb672a9221f3d1b01dd32d68d668e39f25e03c39509caa`,
+ZIP `5fc34a0fc966c16e98fba8192ee44927ad4d1738409bf6db588be44796864812`,
+DLL `62de58b91350adc0b2cceac34e9d8559dd1c6d7a84ce0e2420545bc71dcd7cdf`,
+MVID `10d89597-2ce4-47d3-8b5f-884d7dced299`.
+Exact compiler/strict package checks and78/78 selected cases PASS (3.8s runner).
+Frozen worktree `artifacts/worktrees/summon-cleanup2-review9`; package under
+`artifacts/development-candidates/summon-cleanup-iteration2/6e6f063486f5/`.
+Build log `artifacts/cleanup2-review9-build.log`; purpose/version remain
+`summon-cleanup-iteration2`/0.0.163. Guarded push PASS. This changes only the
+native tooltip observer and notes from source8; no production art/rules change.
+Targeted native9 tooltip reproduction PASS21/21,85.677s, run
+`20261022T0320534848920Z-3896f79ea50b44149b0afb07914907de`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T0320534648852Z-disposable-expanded-summoning-cleanup2-native-review`.
+Actual SM II Horse, SNA II Horse/Small Fire Elemental, SNA IV Air Mephit and
+SNA IX Storm Giant headers, exact source-row icons and complete native close
+settlement all passed. The native hover template is intentionally text-only;
+`tooltipArtDisplayed=false` is recorded, not disguised as header art. Root
+inspected all five actual hover PNGs (001/003/005/007/009); titles are complete
+and natural prose retains its original word order. There are ten original full
+frames, including popup setup. Transaction
+`compat-20261022T031946Z-eaa641c5c007` Restored/verified true with original
+feature-settings bytes exactly restored. No save was loaded/written.
+The source8 correction/verification window, including this one tooltip repair,
+finished at03:22:37UTC after starting about02:53UTC, inside the30minute ceiling.
+No further native launch is selected. Current development checkpoint is ready
+for review; the mission's incomplete art/runtime items remain explicit below.
+
+Current local gallery `artifacts/cleanup2-review-gallery/index.html` contains
+188 byte-identical native PNG copies:90 baseline/review5 body comparisons,
+28 review7 menu pages,48 review7 Ettin frames,3 review7 Crab frames,9 review8
+Crab frames and10 review9 tooltip frames. Per-group identity JSON retains
+source paths and SHA256s. Three labelled menu crop sheets and the authored
+Horse thumbnail comparison are separate inspection aids. These files remain
+ignored local artifacts. No image or old verdict is relabelled as new-DLL proof.
+Final documentation diff/three-file relative-link checks passed; all14 acceptance
+IDs remain present. Original master checkout is clean at80fe5df66c49d337ff4081c59f9c0613b6504624.
+No Kingmaker process remains after the final restored transaction.
+
+### Preserved review8 artifact and evidence
 
 Frozen development source `071142449b6ba52d00878b11323981f5050a0f3d`,
 source fingerprint `63bdda56892594af5f3443473555f4dc8a1304c7ae6a38e4ee93eb643b18dec7`,
@@ -431,19 +472,19 @@ An offline render is synthetic evidence. No unobserved target is PASS.
 | ID | Reproduction / source work | Technical verification | Native evidence | Owner acceptance / remaining work |
 |---|---|---|---|---|
 | MENU-01 | Repaired native replacement coverage, repeat publication and rollback ownership; retained third-party children | Changed cases PASS; source6 fresh-OFF142/142 | Review7 all nine actual SNA tiers,28 pages,43/43 PASS and inspected native pixels | Druid conversion/alternate callers/old-save rendering remain unverified; owner review pending |
-| ART-01 | Rebuilt Crab shell/limbs/claws; source8 restricts timing-changing Bite binding to request-only experiment | Geometry/export and25-source ownership/refusal tests PASS; source8 compile/native pending | Review5 canonical cast/travel; review7 real single claw event/cost, positive active-driver motion and3 actual PNGs; run FAIL14/2 due obsolete unstarted handle | Corrected association/full routine pending; production retains missing-Claw fallback; contact/distal legs need owner review |
-| ICON-01 | Painted Horse revision preserves provenance/consumer graph and protected Pony | Export/catalog checks and32/48/64 inspection PASS | Review7 painted Horse visible in SNA II-V quantity routes with exact sprite/ability IDs | SM Horse and actual hover cards pending; owner approval pending |
+| ART-01 | Rebuilt Crab shell/limbs/claws; source8 restricts timing-changing Bite binding to request-only experiment | Geometry/export/25-source ownership/refusal cases and exact source8 compile PASS | Review5 cast/travel; source8 request-only single/full reproduction26/26 PASS, exact1/2 rules, one cost each, positive chela motion, production null lookup before/after | Production retains missing-Claw fallback; full-routine pixels partly occluded; anatomy/contact/distal legs remain owner-review items |
+| ICON-01 | Painted Horse revision preserves provenance/consumer graph and protected Pony | Export/catalog checks and32/48/64 inspection PASS | Review7 painted Horse in SNA II-V quantity routes; review9 actual SM/SNA Horse native hover/title and matching row icons PASS, full frames inspected | Native hover is text-only; adapters/old-save rendering remain separate, owner art approval pending |
 | ART-02 | Refined Griffon eagle/lion/wings and shoulder unions after offline rejection | Geometry/weights/export and production compile PASS | Review5 canonical cast, real travel, native attack handle and multiple views inspected; no native Hit action | Remaining intersections/extreme states and owner anatomy review |
 | ART-03 | Rebuilt Stag Beetle paired elytra, mandibles and all six legs beyond winding repair | Closed/outward geometry/weights/export PASS | Review5 canonical cast, travel and native attack pose inspected; shell/leg articulation improved; far-leg contact remains visually ambiguous | Owner proportions/contact decision pending |
 | ART-04 | Joined Girallon four hands/arms and finger roots | Connected digits/weights/export PASS | Review5 actual travel/attack inspected; no exploding wrists, but far fingers overlap and read dark; donor has no Hit action | Extreme far-hand readability remains incomplete; no owner approval |
 | ART-05 | Source7 expressive -Z-facing sculpt, shorter shoulder fan and exact PF/StandardDynamic materials with two owned project textures | Deterministic5024-vertex/9992-triangle topology/weights, material ownership and compile PASS | Review7 facing/neck improved;48 PNGs; independent expiry/recast and exact resource release PASS, overall72/2 FAIL for absent native off-hand handles | Pale mask-like face remains unaccepted; cold hydration blocked by named transaction/current-intake prerequisites; owner review pending |
-| ART-06 | Replaced inward Elephant surfaces with continuous outward body, ears, trunk and connected limbs | Closed/outward geometry/weights/export PASS | Baseline culling reproduced; review5 fully opaque multi-view body and real travel/attack inspected after normal dissolve | Shared Mastodon control/multiple-background check pending; owner skin/shape review |
-| ART-07 | Replaced Stegosaurus barrel with elongated supported body, plated back and bending spiked tail | Closed/outward geometry/weights/export PASS | Review5 actual travel/turn/attack inspected; spikes visible, some tail frames occluded by caster | Thick feet/toy materials and shared dinosaur control need review |
-| ART-08 | Exact-provenance scale/palette policies; owned render-only/Cloth experiment remains request-only | Guard/refusal/ownership tests and compile PASS; production calibration intentionally empty | All six giants cast/surveyed; source6 outdoor3528-plane search FAIL; changed exact mansion fixture not yet observed | Incomplete: relative heights/palettes inactive; common-plane/cape/collision/FX/cleanup proof required |
+| ART-06 | Replaced inward Elephant surfaces with continuous outward body, ears, trunk and connected limbs | Closed/outward geometry/weights/export PASS | Baseline culling reproduced; review5 opaque multi-view body/travel/attack inspected after normal dissolve; source8 control admission FAIL before any actor | Mastodon control unverified until exact prefab-manager/cache census; multiple backgrounds and owner skin/shape review pending |
+| ART-07 | Replaced Stegosaurus barrel with elongated supported body, plated back and bending spiked tail | Closed/outward geometry/weights/export PASS | Review5 actual travel/turn/attack inspected; spikes visible, some frames occluded; source8 Triceratops control not spawned after native prefab admission failure | Thick feet/toy materials and exact shared-dinosaur preservation remain unverified; owner review pending |
+| ART-08 | Exact-provenance scale/palette policies; owned render-only/Cloth experiment remains request-only | Guard/refusal/ownership cases and compile PASS; production calibration empty/inactive | Six giants canonically cast; source8 mansion21-point plane PASS; overall38/2 FAIL at unavailable CPU vertices for native Human anchor | Incomplete: exact pre-upload/current reconstructed CPU reference required, then height/cape/collision/FX/cleanup proof; no qualified lineup or activated palette/scale |
 | ART-09 | Rebuilt inward Brachiosaurus as closed connected body/neck/tail; original tail-only retarget study identifies pivot mismatch | Geometry/weights/export PASS; v4 synthetic46-frame envelope finite with0 bad edges; no native-driver activation | Review5 opaque body, both sides/low views/real travel inspected; native donor lacks Tail action | Stronger synthetic tail-whip candidate still needs exact current-native TRS/ownership/timing integration; gait/bulges/selection and owner review remain open |
 | ART-10 | Fresh native audit justified flatter closed Gorgon plates, bovine body and cloven hooves | Deterministic geometry/weights and126/126 body-package pins PASS | Review5 body/travel/attack inspected; separate exact-source RTWP breath41/41 PASS166.246s; actual muzzle/projectile pictures inspected | White quilt/toy material response awaits owner review; no turn-based/full-release claim |
 | MENU-02 | Exact legacy inventory/equivalence diagnostic and separate rules-change proposal; all legacy entries retained | Stable identity/access/refusal tests PASS; proposal113 consistency checks PASS |60 contract pairs differ,52 learning probes preserve entries; real old/canonical Small Air casts spend original slots; review4 summary FAIL retained | Owner directed proposal before hiding. Proposal delivered; rules decision pending, hiding not approved |
-| LABEL-01 | Explicit128 family-first metadata map spans generated/native choices; template/quantity/natural prose and stable IDs retained | Changed name/publication/idempotence/rollback cases PASS | Review7 all nine actual SNA menus inspected with full row coverage; selected hover cards not yet observed | Hover clipping, adapters, old-save presentation and owner review remain open |
+| LABEL-01 | Explicit128 family-first metadata map spans generated/native choices; template/quantity/natural prose and stable IDs retained | Changed name/publication/idempotence/rollback cases PASS | Review7 all nine SNA menus; review9 actual Horse/Elemental/Mephit/Giant hover titles complete without clipping, matching rows and native cleanup PASS | Adapters, old-save presentation, other long labels and owner review remain open |
 ## Commands and limits so far
 
 - Read current validation/runtime/save/icon procedures and predecessor rationale.
