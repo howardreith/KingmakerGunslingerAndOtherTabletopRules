@@ -100,6 +100,11 @@ namespace KingmakerGunslinger.Blueprints
                         var value = ScriptableObject.CreateInstance<BlueprintSpellList>();
                         value.name = InternalName(identity.Symbol); return value;
                     });
+                else if (identity.PlannedType == "TrumpetBanishmentEligibility")
+                    blueprint = registry.Register<TrumpetBanishmentEligibility>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<TrumpetBanishmentEligibility>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "TrumpetPreparedHealingEligibility")
                     blueprint = registry.Register<TrumpetPreparedHealingEligibility>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<TrumpetPreparedHealingEligibility>();

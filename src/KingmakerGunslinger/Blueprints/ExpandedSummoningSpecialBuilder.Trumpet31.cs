@@ -98,9 +98,16 @@ namespace KingmakerGunslinger.Blueprints
             armor.Value = 14; armor.Descriptor = ModifierDescriptor.NaturalArmor;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();
             equipment.OwningBlueprint = unit; equipment.GreatWeapon = sword;
+            var virtue = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                "d3a852385ba4cd740992d1970170301a", "captured printed Virtue orison");
+            if (virtue.Type != AbilityType.Spell || virtue.GetComponent<CantripComponent>() == null)
+                throw new InvalidOperationException("Trumpet Virtue must remain a native Spell/Cantrip fact.");
+            var orison = ScriptableObject.CreateInstance<TrumpetOrisonParameters>();
+            orison.OwningBlueprint = unit; orison.Book = book; orison.Orison = virtue;
+            var namedSkills = ScriptableObject.CreateInstance<TrumpetNamedPersuasion>(); namedSkills.OwningBlueprint = unit;
             var proficiency = ScriptableObject.CreateInstance<AddProficiencies>();
             proficiency.WeaponProficiencies = new[] { sword.Category }; proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
-            traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor, equipment, proficiency }
+            traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor, equipment, proficiency, orison, namedSkills }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Trumpet31Prefix + "Traits.Name", "Trumpet Archon Traits"),
@@ -116,7 +123,14 @@ namespace KingmakerGunslinger.Blueprints
             var eligibility = Require<TrumpetPreparedHealingEligibility>(bySymbol, Trumpet31Prefix + "HealEligibility");
             eligibility.OwningBlueprint = unit; eligibility.Book = book; eligibility.Heal = heal;
             ai.TargetConsiderations = new Consideration[] { eligibility }; ai.BaseScore = 6;
-            brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>()).Concat(new BlueprintAiAction[] { ai }).ToArray();
+            var banishment = preparations.Single(row => row.Ability.AssetGuid == "d361391f645db984bbf58907711a146a").Ability;
+            var banishAi = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol, Trumpet31Prefix + "BanishmentAi"),
+                Trumpet31Prefix + "BanishmentAi", banishment, 0);
+            var banishSafety = Require<TrumpetBanishmentEligibility>(bySymbol, Trumpet31Prefix + "BanishmentEligibility");
+            banishSafety.OwningBlueprint = unit; banishSafety.Book = book; banishSafety.Ability = banishment;
+            banishSafety.Extraplanar = Feature(library, ExtraplanarSubtypeGuid, "native Banishment target consumer"); banishAi.TargetConsiderations = new Consideration[] { banishSafety };
+            banishAi.BaseScore = 5;
+            brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>()).Concat(new BlueprintAiAction[] { ai, banishAi }).ToArray();
             unit.Brain = brain;
             ConfigureUnitCore(unit, "TrumpetArchon", "Trumpet Archon", Alignment.LawfulGood, Size.Medium,
                 20, 17, 25, 16, 20, 17, 40);
@@ -125,7 +139,8 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, ElectricityImmunityGuid, "archon electricity immunity"),
                 Feature(library, NativeCleaveFeature, "ordinary native Cleave"),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
-                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), extraplanar, traits };
+                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue }
+                .Concat(ConfigureTrumpet31Feats(library, bySymbol, unit)).ToArray();
         }
         // Native leveled portion of the printed preparation. Native
         // UpdateAllSlotsSize initializes only levels1-7; do not send the
@@ -146,6 +161,7 @@ namespace KingmakerGunslinger.Blueprints
                 new { Level = 2, Copies = 2, Guid = "6b90c773a6543dc49b2505858ce33db5" }, // Cure Moderate Wounds
                 new { Level = 2, Copies = 1, Guid = "f0455c9295b53904f9e02fc571dd2ce1" }, // Owl's Wisdom
                 new { Level = 2, Copies = 1, Guid = "e84fc922ccf952943b5240293669b171" }, // Lesser Restoration
+                new { Level = 3, Copies = 1, Guid = "2d4263d80f5136b4296d6eb43a221d7d" }, // Magic Vestment, captured native alias
                 new { Level = 3, Copies = 1, Guid = "3361c5df793b4c8448756146a88026ad" }, // Cure Serious Wounds
                 new { Level = 3, Copies = 1, Guid = "d2f116cfe05fcdd4a94e80143b67046f" }, // Protection from Energy
                 new { Level = 4, Copies = 1, Guid = "95f7cdcec94e293489a85afdf5af1fd7" }, // Dismissal

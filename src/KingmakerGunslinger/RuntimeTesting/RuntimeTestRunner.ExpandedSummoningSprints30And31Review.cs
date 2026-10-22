@@ -40,6 +40,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewArchon30Core(fixture, phase == "archon-hound")) yield return frame;
                 yield break;
             }
+            if (phase == "trumpet-caster")
+            {
+                foreach (int frame in ReviewTrumpet31Caster(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == "trumpet-book-turn")
             {
                 foreach (int frame in ReviewTrumpet31BookTurn(fixture)) yield return frame;

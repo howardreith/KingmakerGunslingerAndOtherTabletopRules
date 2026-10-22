@@ -103,7 +103,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, ElectricityImmunityGuid, "archon electricity immunity"),
                 Feature(library, ImprovedInitiativeGuid, "Hound Improved Initiative"),
                 Feature(library, IronWillGuid, "Hound Iron Will"), Feature(library, PowerAttackGuid, "Hound Power Attack"),
-                extraplanar, traits };
+                Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits };
         }
         private static BlueprintComponent[] ArchonPetrificationImmunities()
         {
