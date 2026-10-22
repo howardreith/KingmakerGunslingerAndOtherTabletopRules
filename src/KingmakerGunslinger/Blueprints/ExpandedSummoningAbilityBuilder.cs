@@ -190,7 +190,8 @@ namespace KingmakerGunslinger.Blueprints
             // Native SM carriers retain native celestial/fiendish after-spawn
             // behavior even when the project creature is untemplated. Repair
             // this scoped new route only; released unrelated graphs are untouched.
-            if (variant.Family == SummonFamily.Monster && variant.Creature.Key == "lemure")
+            if (variant.Family == SummonFamily.Monster &&
+                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch"))
             {
                 foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
                 {
@@ -208,6 +209,9 @@ namespace KingmakerGunslinger.Blueprints
             if (variant.Creature.Key == "lemure")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Law | SpellDescriptor.Evil;
+            if (variant.Creature.Key == "dretch")
+                target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
+                    .Descriptor |= SpellDescriptor.Chaos | SpellDescriptor.Evil;
             if (alignmentMode.HasValue)
                 AppendAlignmentAction(target.ComponentsArray,
                     alignmentMode.Value);

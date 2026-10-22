@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  130,
+    "count":  131,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1167,6 +1167,15 @@
                       "key":  "lemure",
                       "file":  "lemure.png",
                       "sha256":  "c03bc1c797069cb6646d59519ca7ba8859a34ef9152d7f309cef98ffc05790b9",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dretch",
+                      "file":  "dretch.png",
+                      "sha256":  "bd591e82e9fa075d4b822dae5fcd2440c855953e1f66512adeae8a17ead9e6ee",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

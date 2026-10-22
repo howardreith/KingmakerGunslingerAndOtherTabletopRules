@@ -14,12 +14,17 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningIdentityCatalog.Build();
             var monster = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
             var all = monster.Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)).ToArray();
+            var dretch = all.Where(value => value.Creature.Key == "dretch").ToArray();
             var lemure = all.Where(value => value.Creature.Key == "lemure").ToArray();
             Assertions.True(lemure.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(2, 8)), "Exact SM II-IX Lemure routes.");
             Assertions.True(lemure.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "No SNA/template/public Lemure root.");
-            Assertions.True(all.Where(value => value.Creature.Key != "lemure").All(SummonVisibilityCatalog.IsPublished), "Every released creature stays public.");
-            Assertions.Equal(lemure.Length, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "Only the implemented first slice is suppressed.");
-            Assertions.Equal(all.Length - lemure.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
+            Assertions.True(all.Where(value => value.Creature.Key != "lemure" && value.Creature.Key != "dretch").All(SummonVisibilityCatalog.IsPublished), "Every released creature stays public.");
+            Assertions.True(dretch.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(3, 7)) && dretch.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "Dretch owns exactly seven hidden untemplated SM III-IX roots.");
+            Assertions.Equal(SummonMultiplicity.One, dretch[0].Multiplicity, "SM III Dretch is one.");
+            Assertions.Equal(SummonMultiplicity.OneD3, dretch[1].Multiplicity, "SM IV Dretch is 1d3.");
+            Assertions.True(dretch.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM V-IX Dretch are 1d4+1.");
+            Assertions.Equal(lemure.Length + dretch.Length, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "Only the implemented first slice is suppressed.");
+            Assertions.Equal(all.Length - lemure.Length - dretch.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
             Assertions.Equal(SummonMultiplicity.One, lemure[0].Multiplicity, "SM II is one.");
             Assertions.Equal(SummonMultiplicity.OneD3, lemure[1].Multiplicity, "SM III is 1d3.");
             Assertions.True(lemure.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM IV-IX are 1d4+1.");
@@ -31,7 +36,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Implemented core consumer phase is admitted only in the same empty guarded fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Core phase requires automatic exit.");
-            foreach (string isolated in new[] { "lemure-full", "lemure-ai" })
+            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "A fixed isolated command phase is admitted in a fresh empty world.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases require automatic exit.");
@@ -40,7 +45,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, true, false, true), "Isolated phases refuse a save import.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases refuse extra parameters.");
             }
-            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "profiles", "routes", "", null })
+            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "profiles", "routes", "", null })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Unimplemented or differently cased phase is refused.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Automatic exit is required.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, "bootstrap", 0, 0, 0, false, false, false, false, true), "Extra parameters are refused.");

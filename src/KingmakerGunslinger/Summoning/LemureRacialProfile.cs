@@ -27,4 +27,21 @@ namespace KingmakerGunslinger.Summoning
         }
         public void OnEntityRemoved(UnitEntityData unit) { }
     }
+
+    [Serializable]
+    public sealed class SummonDretchRacialProfile :
+        OwnedGameLogicComponent<UnitDescriptor>, IHandleEntityComponent<UnitEntityData>
+    {
+        public BlueprintUnit OwningBlueprint;
+        public void OnEntityCreated(UnitEntityData unit)
+        {
+            if (unit == null || OwningBlueprint == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint))
+                throw new InvalidOperationException("Dretch racial bases require their exact owner.");
+            var stats = unit.Descriptor.Stats;
+            stats.HitPoints.BaseValue = 11; // 2d10; native Constitution and Toughness remain live.
+            stats.SaveFortitude.BaseValue = 3; stats.SaveReflex.BaseValue = 0; stats.SaveWill.BaseValue = 3;
+            stats.SkillPerception.BaseValue = 2; stats.SkillStealth.BaseValue = 2;
+        }
+        public void OnEntityRemoved(UnitEntityData unit) { }
+    }
 }

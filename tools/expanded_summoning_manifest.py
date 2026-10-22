@@ -762,6 +762,22 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"),
         ("KMG.Summoning.OutsiderCelestial.Lemure.ClawType", "BlueprintWeaponType"),
         ("KMG.Summoning.OutsiderCelestial.Lemure.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.ClawType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Bite1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFear", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloud", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CloudSafety", "Sprint29FogAiSafety"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearEligibility", "DretchSpellAiEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CloudEligibility", "DretchSpellAiEligibility"),
 
     ))
     expected = sum(identity_count(name) for name in (

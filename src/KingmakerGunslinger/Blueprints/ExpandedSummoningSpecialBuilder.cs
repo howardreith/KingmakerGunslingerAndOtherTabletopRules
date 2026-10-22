@@ -672,6 +672,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureGiantHumanoids(library, bySymbol, extraplanar);
             ConfigureSprint29Giants(library, bySymbol, extraplanar);
             ConfigureLemure30(library, bySymbol, extraplanar);
+            ConfigureDretch30(library, bySymbol, extraplanar);
             // After the grapplers, because ConfigureGrabber replaces
             // the traits buff's component array and these append to it.
             ConfigureXillDefences(library, bySymbol);
