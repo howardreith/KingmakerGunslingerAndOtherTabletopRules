@@ -93,6 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 _sprint25Assertions, null);
             _summoningProfileResult.EvidenceFiles.Add(report);
+            if (IsSummonCleanup2Review) AppendCleanup2EvidenceFiles(_summoningProfileResult.EvidenceFiles);
             return true;
         }
 

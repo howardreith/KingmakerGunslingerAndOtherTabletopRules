@@ -187,6 +187,7 @@
     <Compile Include="Cleanup2SummonPresentationTests.cs" />
     <Compile Include="Cleanup2GiantPresentationTests.cs" />
     <Compile Include="Cleanup2GiantPaletteTests.cs" />
+    <Compile Include="CrabSummonAnimationBindingPolicyTests.cs" />
     <Compile Include="Cleanup2ElementalPresentationTests.cs" />
     <Compile Include="ExpandedSummoningBaselineInventoryTests.cs" />
     <Compile Include="ExpandedSummoningIdealRosterTests.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonChoicePresentationPolicy.cs"><Link>Summoning\SummonChoicePresentationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantSummonPresentationPolicy.cs"><Link>Summoning\GiantSummonPresentationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantSummonPalettePolicy.cs"><Link>Summoning\GiantSummonPalettePolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\CrabSummonAnimationBindingPolicy.cs"><Link>Summoning\CrabSummonAnimationBindingPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\StandaloneElementalPresentationPolicy.cs"><Link>Summoning\StandaloneElementalPresentationPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ExpandedSummoningCatalog.cs"><Link>Summoning\ExpandedSummoningCatalog.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SummonVariantMergePolicy.cs"><Link>Summoning\SummonVariantMergePolicy.cs</Link></Compile>

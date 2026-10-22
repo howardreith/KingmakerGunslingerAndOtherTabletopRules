@@ -1283,6 +1283,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-giant-palette-proof", Cleanup2GiantPaletteTests.ProofRequiresExactIdentityAndWholeBodyTreatment),
             Case("expanded-summoning.cleanup2-giant-palette-channels", Cleanup2GiantPaletteTests.WholeBodyTransformsLiftCloudAndRetainAlphaAndShading),
             Case("expanded-summoning.cleanup2-giant-palette-refusal", Cleanup2GiantPaletteTests.TransformRejectsUnboundedPixelsAndUnreviewedFamilies),
+            Case("expanded-summoning.cleanup2-crab-animation-sources", CrabSummonAnimationBindingPolicyTests.AllPublishedSourcesRequireExactScope),
+            Case("expanded-summoning.cleanup2-crab-animation-refusal", CrabSummonAnimationBindingPolicyTests.EveryOwnershipGateRejectsIndependently),
             Case("expanded-summoning.cleanup2-elemental-identities", Cleanup2ElementalPresentationTests.ObservedRanksHaveCompleteCanonicalSpeciesMetadata),
             Case("expanded-summoning.cleanup2-elemental-preserve-references", Cleanup2ElementalPresentationTests.CurrentIncompleteInventoryAndSavedInvocationsAlwaysPreserve),
             Case("expanded-summoning.cleanup2-elemental-protected-consumers", Cleanup2ElementalPresentationTests.DomainItemNpcAndUniqueConsumersCannotBecomeRedundantByName),

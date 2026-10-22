@@ -324,16 +324,55 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         internal IEnumerable<int> Capture(string stage, JToken state, Func<bool> ownsStableUi)
+        { return CaptureCore(stage, state, ownsStableUi, null); }
+
+        // Only the bounded Cleanup 2 tooltip phase may preserve a real hover.
+        // The normal capture API continues clearing incidental hover cards.
+        internal IEnumerable<int> CaptureOwnedHover(string stage, JToken state, Func<bool> ownsStableUi,
+            Kingmaker.UI.Tooltip.TooltipTrigger trigger, Kingmaker.UI.Tooltip.TooltipData data)
+        {
+            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
+                _request.Parameters == null || _request.Parameters.Count != 1 ||
+                (string)_request.Parameters["reviewPhase"] != "tooltips")
+                throw new InvalidOperationException("Owned hover capture requires the exact Cleanup 2 tooltips phase.");
+            return CaptureCore(stage, state, ownsStableUi, () => OwnsHover(trigger, data));
+        }
+
+        private static readonly FieldInfo NativeTooltipShown = typeof(Kingmaker.UI.Tooltip.TooltipsController)
+            .GetField("m_IsShowed", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo NativeTooltipNeeded = typeof(Kingmaker.UI.Tooltip.TooltipBase)
+            .GetField("m_NeedTooltip", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo NativeTooltipData = typeof(Kingmaker.UI.Tooltip.TooltipBase)
+            .GetField("Data", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        internal static bool OwnsHover(Kingmaker.UI.Tooltip.TooltipTrigger trigger, Kingmaker.UI.Tooltip.TooltipData data)
+        {
+            var controller = Kingmaker.Game.Instance?.UI?.TooltipsController;
+            var constructor = controller == null ? null : controller.TooltipConstructor;
+            return trigger != null && trigger.isActiveAndEnabled && trigger.gameObject.activeInHierarchy && data != null &&
+                ReferenceEquals(trigger.Data, data) && controller != null && constructor != null &&
+                constructor.gameObject.activeInHierarchy && ReferenceEquals(controller.ContextTooltipData, data) &&
+                ReferenceEquals(controller.LastTooltipData, data) && NativeTooltipShown != null && NativeTooltipNeeded != null &&
+                NativeTooltipData != null && (bool)NativeTooltipShown.GetValue(controller) &&
+                (bool)NativeTooltipNeeded.GetValue(constructor) && ReferenceEquals(NativeTooltipData.GetValue(constructor), data) &&
+                ReferenceEquals(Kingmaker.UI.Tooltip.TooltipBase.Owner, data.WielderTransform);
+        }
+
+        private IEnumerable<int> CaptureCore(string stage, JToken state, Func<bool> ownsStableUi, Func<bool> ownsHover)
         {
             if (!Supports(_request) || ownsStableUi == null || !ownsStableUi())
                 throw new InvalidOperationException("Native capture lost its exact request-owned UI state.");
+            Action holdHover = () => {
+                if (ownsHover == null) SuppressNativeHover();
+                else if (!ownsHover()) throw new InvalidOperationException("Exact source-owned hover changed during native capture.");
+            };
             HoldUnobscuredScreen();
             // UMM destroys its blocking Canvas at frame end. Let real rendering
             // settle before requesting a framebuffer capture.
             var settling = Stopwatch.StartNew();
             for (int settle = 0; settle < 4 || settling.Elapsed.TotalSeconds < 0.4; settle++)
             {
-                SuppressNativeHover();
+                holdHover();
                 yield return 0;
                 AssertOverlayClosed();
                 if (!ownsStableUi()) throw new InvalidOperationException("Native UI ownership changed before capture.");
@@ -347,19 +386,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetMethod("CaptureScreenshot", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
             if (method == null) throw new InvalidOperationException("Installed native screenshot API is unavailable.");
             var record = new JObject { ["stage"] = stage, ["file"] = basename, ["requestedFrame"] = Time.frameCount,
-                ["width"] = width, ["height"] = height, ["status"] = "pending", ["nativeState"] = state.DeepClone() };
+                ["width"] = width, ["height"] = height, ["status"] = "pending", ["nativeState"] = state.DeepClone(),
+                ["hoverPolicy"] = ownsHover == null ? "suppress-incidental-hover" : "preserve-exact-owned-native-hover" };
             _records.Add(record);
             Write();
             var elapsed = Stopwatch.StartNew();
             bool complete = false;
             try
             {
-                SuppressNativeHover();
+                holdHover();
                 method.Invoke(null, new object[] { path });
                 for (int frame = 0; frame < 1000 && elapsed.Elapsed.TotalSeconds < 10; frame++)
                 {
                     yield return 0;
-                    SuppressNativeHover();
+                    holdHover();
                     AssertOverlayClosed();
                     if (!ownsStableUi() || Screen.width != width || Screen.height != height)
                         throw new InvalidOperationException("Native UI ownership or rendering size changed during capture.");
@@ -447,7 +487,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new JObject { ["schemaVersion"] = 1, ["runId"] = _request.RunId, ["scenario"] = _request.Scenario,
                 ["evidenceClass"] = "real native game screenshots; visual inspection and owner approval are separate from mechanical assertions",
                 ["captureApi"] = "UnityEngine.ScreenCapture.CaptureScreenshot(string)",
-                ["hoverSuppressionApi"] = "TooltipsController.SetTemporaryCooldown() during capture; native delay resumes normally",
+                ["hoverSuppressionApi"] = "Default: TooltipsController.SetTemporaryCooldown(); only an exact owned Cleanup 2 hover capture preserves native hover, as recorded per image.",
                 ["dllMvid"] = typeof(NativeIconScreenEvidence).Assembly.ManifestModule.ModuleVersionId.ToString(),
                 ["modManagerOverlay"] = _overlay,
                 ["records"] = _records }.ToString(Formatting.Indented));

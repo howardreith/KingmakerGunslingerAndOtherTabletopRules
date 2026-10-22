@@ -156,6 +156,8 @@
     <Compile Include="Summoning\GiantSummonPresentationPatch.cs" />
     <Compile Include="Summoning\GiantSummonPalettePolicy.cs" />
     <Compile Include="Summoning\GiantSummonPaletteRuntime.cs" />
+    <Compile Include="Summoning\CrabSummonAnimationBindingPolicy.cs" />
+    <Compile Include="Summoning\CrabSummonAnimationBindingPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalPresentationPolicy.cs" />
     <Compile Include="Summoning\StandaloneElementalDiscoveryPatch.cs" />
     <Compile Include="Summoning\StandaloneElementalInvocationContract.cs" />
@@ -1324,6 +1326,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2EttinLifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ScalePrototypeReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2PaletteReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2TooltipReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2CrabAttack.cs" />
     <Compile Include="RuntimeTesting\Cleanup2GiantRenderScalePrototype.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Commands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Magic.cs" />
