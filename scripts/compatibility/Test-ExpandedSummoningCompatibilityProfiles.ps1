@@ -207,7 +207,7 @@ Write-Host "PASS actual Sprint28 profile dispatch: $sprint28DispatchChecks candi
 # deliberately incompatible fixture stops accepted requests before any profile.
 $dispatchScenario = 'disposable-expanded-summoning-sprints30-31-native-review'
 $bodyDispatchChecks = 0
-foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','hound-natural')) {
+foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','hound-natural','lantern-rays')) {
     $caught = $null
     try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
     catch { $caught = $_.Exception.Message }
@@ -217,7 +217,7 @@ foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','
     $bodyDispatchChecks++
 }
 foreach ($parameters in @(@{}, @{reviewPhase='Outsider-Bodies'}, @{reviewPhase='outsider-bodies '},
-    @{reviewPhase=@('outsider-bodies')}, @{reviewPhase='outsider-bodies';extra='x'}, @{ReviewPhase='outsider-bodies'}, @{reviewPhase='Hound-Armed'}, @{reviewPhase='hound-natural '}, @{reviewPhase='hound-armed';extra='x'})) {
+    @{reviewPhase=@('outsider-bodies')}, @{reviewPhase='outsider-bodies';extra='x'}, @{ReviewPhase='outsider-bodies'}, @{reviewPhase='Hound-Armed'}, @{reviewPhase='hound-natural '}, @{reviewPhase='Lantern-Rays'}, @{reviewPhase='lantern-rays '}, @{reviewPhase='hound-armed';extra='x'})) {
     $caught = $null
     try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters $parameters -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
     catch { $caught = $_.Exception.Message }

@@ -260,6 +260,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         // catalog continues to contain only actual scenario identifiers.
         internal static string Sprints30And31OutsiderBodyPhase
         { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodyPhase; } }
+        internal static string Sprints30And31LanternRayPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.LanternRayPhase; } }
         internal static string[] Sprints30And31OutsiderBodySequence
         { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodySequence; } }
         internal const string DisposableExpandedSummoningSprints30And31NativeReview =
