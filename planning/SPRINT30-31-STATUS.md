@@ -6,9 +6,9 @@ Product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTable
 
 | Charter | Creature | Routes | Current proof | Required next work |
 |---|---|---|---|---|
-| S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden bootstrap; adult/signed-claw/defense consumers, five-foot private claw, single/full and native AI on14d8c574 | Original usable body; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
+| S30 | Lemure, new | SM II one; III 1d3; IV-IX 1d4+1: 8 new | Hidden adult/claws/defenses/single/full/AI; original body attachment/private cleanup/native SR source controls38/38 on4b122ab0 | Native camera-scale presentation; turn-based and item lifecycle; all routes, expiry/persistence/final artifact |
 | S30 | [Dretch](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Dretch), new | SM III one; IV 1d3; V-IX 1d4+1: 7 new | Hidden adult/cloud10/10 on73e1c6f8; c5b430eb native safe cloud5/5 and owned player-ally Fear5/5; original128px icon inspected | Signed/resolved melee and defense consumers, Escape Artist+5, body/lifecycle; final-artifact AI/finite-resource controls |
-| S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI15/15 onaefe7f57 | Full defenses/resolved attacks/Power Attack, hit-break/24h, disarm/fallback, original body/lifecycle and final artifact |
+| S30 | Hound Archon, new | SM IV one; V 1d3; VI-IX 1d4+1: 6 new | Hidden native adult, signed armed/natural plans, canonical CL6 circle, mixed menace/source hand-off and actual CL6 Aid AI; refreshed native SR15/circle/menace/plans/support15/15 on4b122ab0 | Full defenses/resolved attacks/Power Attack, hit-break/24h, disarm/fallback, original body/lifecycle and final artifact |
 | S31 | Lantern Archon, existing | Preserve 7 SM III-IX identities/order | Released identities/rays retained; candidate menace/Aid with Hound freshly observed | Owned luminous orb, standard/full ray distinction/range/touch/DR; shared archon isolation/support; valid existing icon |
 | S31 | Astral Deva, new | SM IX one: 1 new | Original painting; native deva audited; inert | Distinct angel aura; enhanced disrupting hammer/slam/two-hit stun; CL13 SLAs incl limited Heal/Blade Barrier; owned equipment |
 | S31 | Trumpet Archon, new | SM IX one: 1 new | Hidden genuine CL14 native book/Heal AI and separate turn-controller proof; Purge12/12 plus turn4/4 one packagee98af7e7; repeated Virtue/action/slot isolation on aeb25601/37a600d2 | Full legal preparation and cold slot hydration; remaining feats/skill consumers/Aid; trumpet/sword, archon-only blast exemption and safe AI |
@@ -19,61 +19,65 @@ Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrapper
 
 ## Latest exact development artifact and body slice
 
-Game39/package35 source `cfd6554cfa6fc1a80d3fc33da200920923792dee`:27 PASS/2 FAIL.
-Native value/source attribution confirms a PRODUCT DEFECT: canonical native
-`SubtypeExtraplanar`136fa0343d5b4b348bdaa05d83408db3 contributes unconditional SR5
-to Lemure. Actual part/rule both5; caster/target/context exactly attributed.
-This grant is present before, with and after the sibling, so the original-body
-attachment/disposal is not its cause. The native marker was added during the
-Banishment integration to satisfy actual native target eligibility. Preserve
-that identity without importing its extra native SR. The old boolean-only
-failure is retained, not relabeled as an observer failure. Later owner-resource,
-ability-immunity/reset/single rows remain UNRUN on this failed artifact.
+Tested source `4b122ab0b83a6fa3ab778e493ef54c3f03b8177f`, one immutable
+development package36, two freshly restored transactions: game40 Lemure core/body
+38/38 PASS; game41 Hound/Lantern15/15 PASS. No release qualification claimed.
+The native extraplanar SR defect is fixed: Lemure actual part/rule SR0 while the
+canonical native dismissal/banishment marker stays present. A separate native
+actor still gets the original marker's SR5; exact added fact cleanup restores
+its references/SR. A different actual native SR17 buff on Lemure remains effective
+and removes cleanly to0 without losing the marker or descriptor immunities.
+Original two-instance body attachment, private material/mesh isolation, sibling
+and main-owner four-resource release, core rules/defenses/live Strength and one
+resolved native attack passed. Camera-scale presentation remains pending.
 
-ZIP `13001ec680f8f7e9211c6335f502b170bdf49abf1161c64ed7fc3715f9c8e9c5`;
-DLL `633641d74e7a440b3a4e490a6c4b1cd21a484dc80e6c4fba11d9b67a10310962`;
-MVID `07831576-e1c5-4202-8379-3d2b036a9ddb`;
-source-state `0baba3b87027df658124dec99056155134ea5b89cb1004d910547046e11d9eac`.
-Build10:46:06.7441637Z-10:49:32.4735948Z PASS, explicit admission792 reuse under
-unchanged guard dependency map; fresh27 dispatch/15 selected/exact compile/strict
-404-file package. Transaction `compat-20261022T104957Z-5558828e06ba`, supervised
-10:49:56.6510469Z-10:53:55.4632704Z; request
-`20261022T1052076045657Z-disposable-expanded-summoning-sprints30-31-native-review`;
-RunId `20261022T1052076398205Z-0f772c62876245cf8b3d3e1dfcb4ea3a`.
-Actual game launch10:52:08.7488491Z; native10:52:15.9415881Z-10:53:47.1974534Z,
-91255ms including fixture. Restoration10:53:55.2478758Z, Restored/verified plus
-full independent intake Compare PASS. No saves touched/owned game/task/lease.
-Totals39 actual games/transactions and35 completed development packages; failed
-package attempts logged separately.
+The same exact ZIP then passed Hound's adult/SR15/PowerAttack-off native profile,
+canonical shared Magic Circle carrier/area/recipient atCL6 with owned parameters,
+signed armed/natural plans, mixed Hound/Lantern menace/source hand-off and actual
+Aid/no-repeat15/15. Hound body is still an unqualified borrowed biped; these are
+plans/support/aura observations, not resolved Hound hits or complete defenses.
 
-Current fix uses a small exact-unit data component and exact-native-source
-AddSpellResistance activation filter. It retains the native extraplanar fact;
-only its unselected SR grant is skipped, with native source-ID cleanup for an
-existing applied ID. Other source facts/native actors execute unchanged. Five
-configured batch creatures carry the selector; Astral remains inert and must
-receive it when coherently implemented. No private GUID/assets/routes added.
-Native controls require the canonical fact's positive SR on an unselected owned
-actor, exact control cleanup, and a different native SR17 buff on Lemure retained
-then removed to zero without losing the marker/immunities. Focused production
-and15 selected checks PASS. Native fix proof remains pending; do not multiply
-dependents before it. Marker/SR/target-eligibility/persistence proofs for every
-affected consumer need fresh qualification; unrelated old book/action evidence
-retains its original tuple/dependency limits.
+ZIP `cc9e3b5d6f01d453eb7523811bfc0a2d5f90a5d9919c8e328a2fcb20a0ceb04b`;
+DLL `c6f113e9d84deac23164bc7464a75b18ffb08085ee924410a38496ef4c6ebaf7`;
+MVID `0e050cfa-a425-4eda-b562-24050b41339c`;
+source-state `622d2cc3e1efecd8d7d512a3dfc8fd982ec2f2cd8e163ee112b538f420523114`.
+Build11:02:19.5340835Z-11:05:45.0095058Z PASS; admission792 explicitly reused
+under unchanged request/dispatcher/permission guard dependency map; fresh27
+integration/15 selected/exact compilation/strict404-file packaging. One build,
+no source/DLL/asset changes between the two native transactions.
 
-Original body:4107 vertices/5528 triangles/17 measured drivers, own1024px albedo;
-exact two-instance/private mesh/material and four-resource sibling-disposal rows
-passed on both failed artifacts. Native renderer/camera-scale usability and full
-lifecycle remain pending, with no owner aesthetic approval. Actual available
-October14 private geometry-free capture is pinned in committed provenance;
-raw captures/editable scenes remain private. Failed preview/compile/package logs
-and original aggregate failures are retained. The first body package failure
-expected402/observed404 was corrected using the exact declared two-member delta;
-accept404/mismatch402/unsupported405 fixtures3/3 PASS, strict path/hash guards kept.
+| Native case | Exact attribution | Native interval including fixture | Supervised interval/restoration |
+|---|---|---|---|
+| Lemure core/body38 PASS | `compat-20261022T110630Z-c89b76a51925`; request `20261022T1108372171728Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261022T1108372511357Z-d7ff977945f44e5e8edcb347fe3086d1` | 11:08:45.8224670Z-11:10:24.6054431Z,98778ms; actual game11:08:38.3994588Z | 11:06:29.7835406Z-11:10:33.1034435Z; restored11:10:32.9186649Z |
+| Hound/Lantern15 PASS | `compat-20261022T111115Z-dd3b0833c83c`; request `20261022T1113223528708Z-disposable-expanded-summoning-sprints30-31-native-review`; RunId `20261022T1113223840777Z-179cbe4feef04238ae187e9a5e93d993` | 11:13:30.7878704Z-11:15:09.7317559Z,98943ms; actual game11:13:23.6750433Z | 11:11:14.6425519Z-11:15:17.9164450Z; restored11:15:17.7611550Z |
 
-Game38 and all prior full tuples/body failures, game37 escape10/10 plus limited
-Aid-cap reader correction, and game35 caster23/23 remain in the
-[immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/cfd6554cfa6fc1a80d3fc33da200920923792dee/planning/SPRINT30-31-STATUS.md).
-No development proof is relabeled as final qualification.
+Both transaction/settings receipts plus separate full independent intake Compare
+PASS. Actual human v0.0.117 intake restored; no saves loaded/written, owned game,
+task, active lease or permanent deployment. Totals41 actual games/transactions,
+36 completed development packages; failed package attempts remain separate.
+
+Setup was shared within Lemure's save-free native process for two-body/source
+controls, rules and a verified reset before the single attack; deliberate injury
+residue detection and exact native/foreign source cleanup passed. Hound stayed a
+fresh process/transaction because this fixture's later combat state has a known
+isolation boundary. Reused artifact bytes across processes are not claimed as
+amortized native startup. Final all-consumer/persistence/public proof remains.
+Dretch/Lantern/Trumpet marker/SR and target eligibility still need fresh affected
+coverage; Astral is inert and needs the exact marker selector when implemented.
+
+Small failure history (raw records remain immutable): preview world missing and
+two wiring compile errors corrected; initial2a89e228 package attempt refused402
+versus404 declared files, exact two-member count fixed with3 acceptance/refusal
+fixtures; game38 SR failure lacked attribution, game39 proved native marker SR5
+as a PRODUCT DEFECT, not an observer defect. Exact-source activation filter uses
+native per-source-ID cleanup; no native blueprint or other SR source is changed.
+Full failed tuples and earlier caster/escape/Aid reader evidence are retained in
+the [immutable prior map](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/blob/4b122ab0b83a6fa3ab778e493ef54c3f03b8177f/planning/SPRINT30-31-STATUS.md).
+
+Next: Dretch original body using the proven measured attachment/export pipeline,
+then focused native presentation/ownership and remaining combat consumers. No new
+body anatomy research or broader framework; unchanged package is not rebuilt for
+this record-only checkpoint. All six and the combined release endpoint remain.
 
 ## Current dependencies and decisions
 
@@ -93,6 +97,7 @@ Trumpet preparation is creation-only native bookCL14, zero cleric class levels/d
 |---|---|---|---|---|
 | Lemure claws | Private Medium 1d4/five-foot item/type via existing weapon clone; NaturalBody primary + additional; native DumbBrain | Racial HD2; ordinary native attacks | Exact owner/item Strength correction; unchanged qualified equipment sweep marks both instances nonlootable | Native signed calculations and private-item single/full/AI passed |
 | Lemure defenses | Own DR5 good OR silver; native fire immunity; acid/cold10; native buff + ability descriptor-immunity components | No casting resource/SR | Private trait carrier, no donor mutation | Physical OR/fire/resistance/unrelated energy/buff and ability controls passed |
+| Five configured native extraplanar identities | Canonical native fact retained for actual Dismissal/Banishment; exact owning-blueprint/source component filter skips its unselected SR5+CR | Passive; printed adult SR remains separate | Native source-ID cleanup; other native actors and other source grants untouched | Actual Lemure0/native control5/foreign buff17/cleanup0 and Hound own15 PASS4b122ab0; Dretch/Lantern/Trumpet/cold/final affected proof remains; Astral inert |
 | Lemure mindlessness | Int0 absent-score surrogate, no ranks/selections/feats or generic undead traits | No intellect granted | Creation-only racial HP/save bases | Actual conscious/CanAct/single/full/native AI proved at Int0 |
 | Lemure senses | Printed darkvision60/see-in-darkness references | Passive | Established ordinary-map/passive-sense convention | No new senses/illumination framework |
 | Dretch natural routine/defenses | Own Small claws/bite1d4, three primaries; DR5 good OR cold iron, electricity/poison immune, acid/cold/fire10; Toughness | Racial HD2, ordinary attack; native live attributes/feats | Exact owner/item correction and equipment guard; no donor mutation | Compile; native profile/cloud first, full signed attacks/defense consumers pending |
