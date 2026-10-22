@@ -685,17 +685,55 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void Astral31RefreshAreas(IEnumerable<AreaEffectEntityData> areas,
             IList<UnitEntityData> actors)
         {
+            var update = typeof(AreaEffectEntityData).GetMethod("UpdateUnits",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic);
+            if (update == null) throw new MissingMethodException(
+                "Astral native area-membership update surface");
+            // PlaceExpandedSummoningUnit already translocated each actor and
+            // updated the native spatial grid. Keep this AI-bearing phase
+            // unpaused and refresh only the real area membership surface.
             bool paused = Game.Instance.IsPaused;
-            Game.Instance.IsPaused = true;
-            try
+            Game.Instance.EntityCreator.Tick();
+            foreach (AreaEffectEntityData area in areas)
             {
-                foreach (AreaEffectEntityData area in areas)
+                if (area == null || area.Destroyed || !area.IsInState)
+                    throw new InvalidOperationException(
+                        "Astral aura area is not active in the native scene.");
+                for (int pass = 0; pass < 2; pass++)
                 {
-                    CircleRefresh(area, actors);
-                    CircleRefresh(area, actors);
+                    Astral31RequireAreaActors(actors);
+                    update.Invoke(area, null);
+                    area.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
                 }
             }
-            finally { Game.Instance.IsPaused = paused; }
+            Astral31RequireAreaActors(actors);
+            if (Game.Instance.IsPaused != paused)
+                throw new InvalidOperationException(
+                    "Astral area refresh changed the native pause state.");
+        }
+
+        private static void Astral31RequireAreaActors(
+            IList<UnitEntityData> actors)
+        {
+            if (actors == null || actors.Any(unit => unit == null))
+                throw new InvalidOperationException(
+                    "Astral area fixture actor list is incomplete.");
+            UnitEntityData invalid = actors.FirstOrDefault(unit =>
+                !unit.IsInGame || unit.View?.MovementAgent == null ||
+                unit.View.MovementAgent.IsReallyMoving ||
+                Vector3.Distance(unit.Position, unit.View.transform.position) > .08f ||
+                !DescribeExpandedSummoningGridEntry(unit).StartsWith(
+                    "grid=row", StringComparison.Ordinal));
+            if (invalid != null) throw new InvalidOperationException(
+                "Astral area fixture requires active standing grid-synchronized " +
+                "native actors: unit=" + (invalid.UniqueId ?? "<none>") +
+                ";inGame=" + invalid.IsInGame + ";agent=" +
+                (invalid.View?.MovementAgent != null) + ";moving=" +
+                invalid.View?.MovementAgent?.IsReallyMoving + ";position=" +
+                invalid.Position + ";view=" + invalid.View?.transform.position +
+                ";" + DescribeExpandedSummoningGridEntry(invalid));
         }
 
         private static bool Astral31Finite(Vector3 value)
