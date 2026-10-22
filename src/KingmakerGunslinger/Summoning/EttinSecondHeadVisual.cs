@@ -43,6 +43,7 @@ namespace KingmakerGunslinger.Summoning
             internal readonly List<GameObject> Branches = new List<GameObject>();
             internal Mesh Mesh;
             internal SkinnedMeshRenderer SourceRenderer;
+            internal TheropodAccessorySuppression BodySuppression;
             internal bool SourceRendererEnabled;
             internal Mesh SourceMesh;
             internal readonly List<RendererReceipt> ProtectedRenderers = new List<RendererReceipt>();
@@ -210,7 +211,11 @@ namespace KingmakerGunslinger.Summoning
                         return new JObject { ["material"] = material.GetInstanceID(),
                             ["name"] = material.name, ["cached"] = DescribeFadeDefaults(cached) };
                     }));
-                    sourceRenderer.enabled = false;
+                    // Native visibility updates re-enable every renderer after
+                    // attachment. Reuse the existing exact-renderer suppression
+                    // owner; the shared mesh and all other renderers stay native.
+                    owned.BodySuppression = owned.Root.AddComponent<TheropodAccessorySuppression>();
+                    owned.BodySuppression.Configure(sourceRenderer);
                     owned.Outcome = "attached;heads=2;original=0;project=2;body-replacement=1;" +
                         "authored=1;continuous-shoulders=1;orbit=0;" +
                         "shader=PF/StandardDynamic;borrowed-native-atlas=1;owned-textures=0;controller-adopted=1;fade-default=source-cache";
@@ -403,6 +408,7 @@ namespace KingmakerGunslinger.Summoning
             // Native setup can instantiate the private body material. Collect
             // only its exact name + unchanged borrowed atlas provenance.
             var materials = OwnedMaterials(owned);
+            if (owned.BodySuppression != null) owned.BodySuppression.Release();
             if (owned.Root != null)
                 UnityEngine.Object.DestroyImmediate(owned.Root);
             owned.Root = null;

@@ -457,10 +457,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             bool arrays = normals.Length == vertices.Length && weights.Length == vertices.Length && uv.Length == vertices.Length && binds.Length == bones.Length;
-            bool finite = vertices.All(Cleanup2Finite) && normals.All(value => Cleanup2Finite(value) && Mathf.Abs(value.sqrMagnitude - 1f) <= .02f) &&
-                uv.All(value => Cleanup2Finite(value.x) && Cleanup2Finite(value.y)) && bones.All(value => value != null);
+            bool finitePositions = vertices.All(Cleanup2Finite);
+            bool finiteNormals = normals.All(Cleanup2Finite);
+            int nonUnitNormals = normals.Count(value => !Cleanup2Finite(value) || Mathf.Abs(value.sqrMagnitude - 1f) > .02f);
+            bool finiteUvs = uv.All(value => Cleanup2Finite(value.x) && Cleanup2Finite(value.y));
+            bool finiteBinds = true;
             foreach (Matrix4x4 bind in binds) for (int row = 0; row < 4; row++) for (int col = 0; col < 4; col++)
-                finite &= Cleanup2Finite(bind[row, col]);
+                finiteBinds &= Cleanup2Finite(bind[row, col]);
+            bool bonesPresent = bones.All(value => value != null);
+            bool finite = finitePositions && finiteNormals && nonUnitNormals == 0 && finiteUvs && finiteBinds && bonesPresent;
             int invalidIndices = 0, unnormalizedWeights = 0, nativeHeadInfluences = 0;
             var nativeHeadBones = new HashSet<int>(nativeHead.GetComponentsInChildren<Transform>(true).Select(value => Array.IndexOf(bones, value)));
             foreach (BoneWeight weight in weights)
@@ -488,6 +493,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             receipt["vertexCount"] = vertices.Length; receipt["triangleCount"] = triangleCount;
             receipt["boneCount"] = bones.Length; receipt["bindPoseCount"] = binds.Length;
             receipt["arraysMatch"] = arrays; receipt["finitePositionsNormalsUvsBinds"] = finite;
+            receipt["finitePositions"] = finitePositions; receipt["finiteNormals"] = finiteNormals;
+            receipt["nonUnitNormalCount"] = nonUnitNormals; receipt["zeroNormalCount"] = normals.Count(value => value.sqrMagnitude == 0f);
+            receipt["finiteUvs"] = finiteUvs; receipt["finiteBindPoses"] = finiteBinds; receipt["allBoneReferencesPresent"] = bonesPresent;
             receipt["invalidPositiveWeightIndices"] = invalidIndices; receipt["unnormalizedWeights"] = unnormalizedWeights;
             receipt["nativeOriginalHeadPositiveInfluences"] = nativeHeadInfluences;
             receipt["validTriangleIndices"] = triangles; receipt["bothFullPrivateChainsInPalette"] = branches;
@@ -623,7 +631,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 protectedRenderers != null && protectedRenderers.Count > 0 &&
                 protectedRenderers.OfType<JObject>().Count() == protectedRenderers.Count &&
                 protectedRenderers.OfType<JObject>().All(row => (int?)row["renderer"] != null && (int?)row["renderer"] != 0 &&
-                    (bool?)row["alive"] == true && (bool?)row["enabledMatchesAttach"] == true &&
+                    (bool?)row["alive"] == true &&
                     (bool?)row["meshReferencePreserved"] == true && (bool?)row["materialReferencesPreserved"] == true) &&
                 protectedRenderers.OfType<JObject>().Select(row => (int)row["renderer"]).Distinct().Count() == protectedRenderers.Count;
             bool exact = (bool?)result["attachmentPresent"] == true && (int?)result["assignedCount"] == 1 &&
@@ -644,6 +652,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             result["sourceRendererCount"] = bodies.Length; result["sourceMaterialCount"] = sourceMaterials.Length;
             result["sourceLiveDissolve"] = Cleanup2Finite(sourceFade) ? (JToken)new JValue(sourceFade) : JValue.CreateNull();
             result["nativeRendererScopePreserved"] = scope;
+            // EntityFader/native FX visibility revisits renderer.enabled after
+            // attachment (also established by TheropodAccessorySuppression).
+            // Native outfit/weapon visibility remains native-owned; scope is
+            // exact renderer liveness, mesh/material identity, and suppression
+            // of ONLY the explicitly replaced source body.
+            result["protectedNativeVisibilityMutable"] = true;
+            result["protectedRendererVisibilityChanges"] = protectedRenderers == null ? 0 :
+                protectedRenderers.OfType<JObject>().Count(row => (bool?)row["enabledMatchesAttach"] == false);
+            result["protectedRendererVisibilityForcedByObserver"] = false;
             result["maximumHeadVsSourceDissolveError"] = maxError; result["nativeDissolveAnimationCount"] = active;
             result["exactDrivenBaselineAndSameNativeFade"] = exact;
             return result;
