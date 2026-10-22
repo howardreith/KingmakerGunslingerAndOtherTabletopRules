@@ -57,14 +57,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["spellbooks"] = owner.Descriptor.Spellbooks.Count(), ["visual"] = "borrowed biped; original canine-headed body pending" },
                 "Actual adult Hound racial bases and native skill/SR/condition consumers; Power Attack is explicitly off for these rule comparisons, no cleric progression.");
             if (!profile) throw new InvalidOperationException("Hound adult native profile failed.");
-            bool shared = areas.Length == 1 && carriers.Length == 1 &&
-                owner.Blueprint.AddFacts.Any(fact => ReferenceEquals(fact, circle.Carrier)) &&
+            var grant = owner.Blueprint.AddFacts.SelectMany(fact => fact.ComponentsArray)
+                .OfType<ArchonConstantMagicCircle>().Single();
+            bool canonical = ReferenceEquals(grant.OwningBlueprint, owner.Blueprint) &&
+                ReferenceEquals(grant.Carrier, circle.Carrier) && grant.CasterLevel == 6;
+            bool shared = areas.Length == 1 && carriers.Length == 1 && canonical &&
                 ReferenceEquals(areas[0].Blueprint, circle.Area) && areas[0].Context.Params.CasterLevel == 6;
             Sprint25Check("archon-hound-shared-circle", shared, new JObject {
                 ["owner"] = owner.UniqueId, ["carrier"] = circle.Carrier.AssetGuid, ["area"] = circle.Area.AssetGuid,
                 ["recipient"] = circle.Recipient.AssetGuid, ["ownerAreas"] = areas.Length, ["ownerCarriers"] = carriers.Length,
                 ["cl"] = areas.FirstOrDefault()?.Context?.Params.CasterLevel,
-                ["sameCanonicalCarrier"] = owner.Blueprint.AddFacts.Any(fact => ReferenceEquals(fact, circle.Carrier)) },
+                ["sameCanonicalCarrier"] = canonical },
                 "Hound uses the existing project's exact carrier/area/recipient, source owner and CL6, without a fork.");
             if (!shared) throw new InvalidOperationException("Hound shared Magic Circle source/CL failed.");
             int publicReferences;
