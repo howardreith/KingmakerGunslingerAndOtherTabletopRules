@@ -262,6 +262,9 @@ namespace KingmakerGunslinger.Summoning
 
         internal static LearningHeader FocusedLearning(CharGenSpellsPhaseDetailedView owner)
         {
+            var embeddedBook=(ReactiveProperty<bool>)typeof(CharGenSpellsPhaseDetailedView)
+                .GetField("m_IsSpellbookActive",Fields).GetValue(owner);
+            if(embeddedBook.Value)return null;
             var view=typeof(CharGenSpellsPhaseDetailedView).GetField("m_SpellsSelector",Fields).GetValue(owner) as CharGenSpellsSelectorView;
             var row=view?.CurrentSelected as CharGenSpellSelectorItemView;
             return row?.GetViewModelClass() as LearningHeader;
