@@ -256,10 +256,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             observer.Rolls.All(value => value.IsHit &&
                                 value.AttackType == AttackType.RangedTouch &&
                                 value.TargetAC == touch);
+                        bool spellResistanceSkipped =
+                            resistance.Rows.Count == expectedProjectiles &&
+                            resistance.Rows.OfType<JObject>().All(value =>
+                                (string)value["ability"] == data.Blueprint.AssetGuid &&
+                                (int)value["resistance"] == nativeSr &&
+                                !(bool)value["hasRoll"] && !(bool)value["resisted"]);
                         bool exact = command.IsFinished &&
                             command.Result == UnitCommand.ResultType.Success &&
                             command.ExecutionProcess != null && command.ExecutionProcess.IsEnded &&
-                            touchExact && direct && resistance.Rows.Count == 0 &&
+                            touchExact && direct && spellResistanceSkipped &&
                             economy.Count(command) == 1 && economy.Exact(command, false) &&
                             cost != null && (bool)cost["fullRound"] == fullRound &&
                             !command.Cutscene && !command.IsIgnoreCooldown &&
@@ -279,11 +285,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["hits"] = hits,
                             ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)),
                             ["spellResistanceChecks"] = resistance.Rows.DeepClone(),
+                            ["spellResistanceSkipped"] = spellResistanceSkipped,
                             ["nativeSpellResistance"] = nativeSr,
                             ["damageReduction"] = drSources.DeepClone(),
                             ["costs"] = costs, ["forcedRolls"] = 0,
                             ["fixtureEffectExecutions"] = 0 },
-                            "One real native command launches the exact ray count, resolves every random ranged-touch hit to terminal direct light damage through live DR without an SR check, and pays its standard or full-round RTWP action mode.");
+                            "One real native command launches the exact ray count, resolves every random ranged-touch hit to terminal direct light damage through live DR, records one native SR event per ray with no roll or resistance, and pays its standard or full-round RTWP action mode.");
                         if (!exact) throw new InvalidOperationException("Lantern ray native resolution failed: " + id);
                     }
                 }
