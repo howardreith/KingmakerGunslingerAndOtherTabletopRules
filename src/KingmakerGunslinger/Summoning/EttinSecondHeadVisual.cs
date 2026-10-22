@@ -1,10 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Bootstrap;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -22,10 +26,29 @@ namespace KingmakerGunslinger.Summoning
             "635d6dee1c7831b41aa987bdbeff14bc";
         // Append-only project unit identity; the donor prefab remains unchanged.
         internal const string EttinUnitGuid = "2481bc73abd64ef0ae581b48438b5404";
+        private static readonly FieldInfo CachedMaterialSettings = typeof(StandardMaterialController).GetField(
+            "m_MaterialSettings", BindingFlags.Instance | BindingFlags.NonPublic);
+        private sealed class FadeDefaults
+        {
+            internal bool IsDissolveEnabled, DissolveCutoutEnabled, DissolveEmissionEnabled;
+            internal Texture2D DissolveTexture;
+            internal Vector2 DissolveTextureScale, DissolveTextureOffset;
+            internal float Dissolve, DissolveWidth, DissolveColorScale;
+            internal Color DissolveColor;
+            internal int RenderQueue;
+            internal string RenderTypeTagValue;
+        }
         private sealed class Attachment
         {
             internal GameObject Root;
             internal Mesh Mesh;
+            internal UnitEntityView View;
+            internal StandardMaterialController Controller;
+            internal Material SourceMaterial;
+            internal bool ControllerAdoptionStarted;
+            internal FadeDefaults Baseline;
+            internal float SourceDefaultDissolve;
+            internal string ControllerCleanup;
             internal readonly List<Material> Materials = new List<Material>();
             internal readonly List<Texture2D> Textures = new List<Texture2D>();
             internal string Outcome;
@@ -66,7 +89,7 @@ namespace KingmakerGunslinger.Summoning
                     if (ignored.Outcome != "released") return;
                     Applied.Remove(__instance);
                 }
-                var owned = new Attachment { Outcome = "attach-started" };
+                var owned = new Attachment { View = __instance, Outcome = "attach-started" };
                 Applied.Add(__instance, owned);
                 try
                 {
@@ -84,11 +107,25 @@ namespace KingmakerGunslinger.Summoning
                         throw new InvalidOperationException(
                             "The audited Hill Giant head has no neck parent.");
                     Material template = RequireHillBodyMaterial(__instance);
+                    StandardMaterialController[] controllers = __instance
+                        .GetComponentsInChildren<StandardMaterialController>(true);
+                    FadeDefaults defaults;
+                    if (controllers.Length != 1 || ControllerMaterials(controllers[0]) == null ||
+                        !ControllerMaterials(controllers[0]).Contains(template) ||
+                        !TryGetFadeDefaults(controllers[0], template, out defaults))
+                        throw new InvalidOperationException("Exact Hill source controller/cached fade defaults unavailable.");
+                    if (float.IsNaN(defaults.Dissolve) || float.IsInfinity(defaults.Dissolve))
+                        throw new InvalidOperationException("Non-finite native cached dissolve default.");
+                    owned.Controller = controllers[0]; owned.SourceMaterial = template;
+                    owned.SourceDefaultDissolve = defaults.Dissolve;
+                    owned.Baseline = defaults;
                     owned.Root = new GameObject(ObjectPrefix + "_Root");
                     owned.Root.transform.SetParent(neck, false);
                     owned.Root.transform.localPosition = Vector3.zero;
                     owned.Root.transform.localRotation = Quaternion.identity;
                     owned.Root.transform.localScale = Vector3.one;
+                    if (!owned.Root.transform.IsChildOf(owned.Controller.transform))
+                        throw new InvalidOperationException("Owned head is outside exact source material-controller hierarchy.");
                     Transform skull = new GameObject(ObjectPrefix +
                         "_SkullControl").transform;
                     skull.SetParent(owned.Root.transform, false);
@@ -119,10 +156,10 @@ namespace KingmakerGunslinger.Summoning
                         new Color32(230, 0, 0, 255), new Color32(230, 0, 0, 255),
                         new Color32(230, 0, 0, 255) });
                     parameters.Apply(false, false);
-                    Material skin = MakeMaterial(owned, "Skin", template, albedo, parameters);
-                    Material shadow = MakeMaterial(owned, "Shadow", template, albedo, parameters);
-                    Material hair = MakeMaterial(owned, "Hair", template, albedo, parameters);
-                    Material eye = MakeMaterial(owned, "Eye", template, albedo, parameters);
+                    Material skin = MakeMaterial(owned, "Skin", template, albedo, parameters, defaults);
+                    Material shadow = MakeMaterial(owned, "Shadow", template, albedo, parameters, defaults);
+                    Material hair = MakeMaterial(owned, "Hair", template, albedo, parameters, defaults);
+                    Material eye = MakeMaterial(owned, "Eye", template, albedo, parameters, defaults);
                     var renderer = owned.Root.AddComponent<SkinnedMeshRenderer>();
                     renderer.sharedMesh = owned.Mesh;
                     renderer.bones = new[] { neck, skull };
@@ -132,9 +169,19 @@ namespace KingmakerGunslinger.Summoning
                     bounds.Expand(.55f);
                     renderer.localBounds = bounds;
                     renderer.updateWhenOffscreen = true;
+                    // Reinit restores existing cached native defaults and then
+                    // discovers the new renderer. The four new materials must
+                    // cache the SOURCE BASELINE, never its transient live fade.
+                    owned.ControllerAdoptionStarted = true;
+                    string reinit = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(__instance);
+                    Material[] assigned = renderer.sharedMaterials;
+                    IList<Material> driven = ControllerMaterials(owned.Controller);
+                    if (reinit != "reinitialized" || assigned.Length != 4 ||
+                        driven == null || assigned.Any(material => !AdoptedWithBaseline(owned, material, driven)))
+                        throw new InvalidOperationException("Owned head was not adopted with exact native baseline fade defaults.");
                     owned.Outcome = "attached;heads=2;original=1;project=1;" +
                         "authored=1;continuous-neck=1;orbit=0;" +
-                        "shader=PF/StandardDynamic;original-paint=1;owned-textures=2";
+                        "shader=PF/StandardDynamic;original-paint=1;owned-textures=2;controller-adopted=1;fade-default=source-cache";
                 }
                 catch (Exception error)
                 {
@@ -166,7 +213,8 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private static Material MakeMaterial(Attachment owned, string name,
-            Material template, Texture2D albedo, Texture2D parameters)
+            Material template, Texture2D albedo, Texture2D parameters,
+            FadeDefaults defaults)
         {
             // Clone shader state/keywords only; every sampled authored surface
             // map is replaced or cleared. Never sample donor body UV maps.
@@ -187,13 +235,91 @@ namespace KingmakerGunslinger.Summoning
             material.DisableKeyword("NORMAL_MAP_ON");
             material.SetFloat("_UseNormalMapAtlas", 0f);
             material.SetTexture("_BumpMap2", null);
-            foreach (string slot in new[] { "_DissolveTex", "_PetrificationTex" })
-                if (material.HasProperty(slot)) material.SetTexture(slot, null);
+            if (material.HasProperty("_PetrificationTex")) material.SetTexture("_PetrificationTex", null);
             material.SetColor("_TintColor", Color.white);
             material.SetFloat("_Roughness", 1f);
             material.SetFloat("_Metallic", 0f);
             material.SetFloat("_Emission", 0f);
+            // Exact native DissolveAnimationController.RevertToDefaults
+            // contract. Borrow native FX references only; never own/destroy
+            // them or guess neutral fade values from the current frame.
+            if (defaults.IsDissolveEnabled) material.EnableKeyword("DISSOLVE_ON");
+            else material.DisableKeyword("DISSOLVE_ON");
+            material.SetTexture("_DissolveTex", defaults.DissolveTexture);
+            material.SetTextureScale("_DissolveTex", defaults.DissolveTextureScale);
+            material.SetTextureOffset("_DissolveTex", defaults.DissolveTextureOffset);
+            material.SetFloat("_Dissolve", defaults.Dissolve);
+            material.SetFloat("_DissolveWidth", defaults.DissolveWidth);
+            material.SetColor("_DissolveColor", defaults.DissolveColor);
+            material.SetFloat("_DissolveColorScale", defaults.DissolveColorScale);
+            material.SetFloat("_DissolveCutout", defaults.DissolveCutoutEnabled ? 1f : 0f);
+            material.SetFloat("_DissolveEmission", defaults.DissolveEmissionEnabled ? 1f : 0f);
+            material.SetOverrideTag("RenderType", defaults.RenderTypeTagValue);
+            material.renderQueue = defaults.RenderQueue;
             return material;
+        }
+
+        private static IList<Material> ControllerMaterials(StandardMaterialController controller)
+        { return ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller); }
+
+        private static T CachedField<T>(object settings, string name)
+        {
+            FieldInfo field = settings.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public);
+            if (field == null || field.FieldType != typeof(T))
+                throw new NotSupportedException("Native cached fade field contract changed: " + name);
+            return (T)field.GetValue(settings);
+        }
+
+        private static bool TryGetFadeDefaults(StandardMaterialController controller,
+            Material material, out FadeDefaults defaults)
+        {
+            defaults = null;
+            var dictionary = controller == null || CachedMaterialSettings == null ? null :
+                CachedMaterialSettings.GetValue(controller) as IDictionary;
+            if (material == null || dictionary == null || !dictionary.Contains(material)) return false;
+            object settings = dictionary[material];
+            if (settings == null || settings.GetType().FullName !=
+                "Kingmaker.Visual.MaterialEffects.StandardMaterialController+MaterialSettings")
+                throw new NotSupportedException("Exact native cached material settings unavailable.");
+            defaults = new FadeDefaults {
+                IsDissolveEnabled = CachedField<bool>(settings, "IsDissolveEnabled"),
+                DissolveTexture = CachedField<Texture2D>(settings, "DissolveTexture"),
+                DissolveTextureScale = CachedField<Vector2>(settings, "DissolveTextureScale"),
+                DissolveTextureOffset = CachedField<Vector2>(settings, "DissolveTextureOffset"),
+                Dissolve = CachedField<float>(settings, "Dissolve"),
+                DissolveWidth = CachedField<float>(settings, "DissolveWidth"),
+                DissolveColor = CachedField<Color>(settings, "DissolveColor"),
+                DissolveColorScale = CachedField<float>(settings, "DissolveColorScale"),
+                DissolveCutoutEnabled = CachedField<bool>(settings, "DissolveCutoutEnabled"),
+                DissolveEmissionEnabled = CachedField<bool>(settings, "DissolveEmissionEnabled"),
+                RenderQueue = CachedField<int>(settings, "RenderQueue"),
+                RenderTypeTagValue = CachedField<string>(settings, "RenderTypeTagValue") };
+            return true;
+        }
+
+        private static bool AdoptedWithBaseline(Attachment owned, Material material, IList<Material> driven)
+        {
+            FadeDefaults defaults;
+            return material != null && driven.Contains(material) &&
+                TryGetFadeDefaults(owned.Controller, material, out defaults) &&
+                SameFadeBaseline(defaults, owned.Baseline);
+        }
+
+        private static bool SameFadeBaseline(FadeDefaults first, FadeDefaults second)
+        {
+            return first != null && second != null && first.IsDissolveEnabled == second.IsDissolveEnabled &&
+                ReferenceEquals(first.DissolveTexture, second.DissolveTexture) &&
+                first.DissolveTextureScale.x == second.DissolveTextureScale.x &&
+                first.DissolveTextureScale.y == second.DissolveTextureScale.y &&
+                first.DissolveTextureOffset.x == second.DissolveTextureOffset.x &&
+                first.DissolveTextureOffset.y == second.DissolveTextureOffset.y &&
+                first.Dissolve == second.Dissolve && first.DissolveWidth == second.DissolveWidth &&
+                first.DissolveColor.r == second.DissolveColor.r && first.DissolveColor.g == second.DissolveColor.g &&
+                first.DissolveColor.b == second.DissolveColor.b && first.DissolveColor.a == second.DissolveColor.a &&
+                first.DissolveColorScale == second.DissolveColorScale &&
+                first.DissolveCutoutEnabled == second.DissolveCutoutEnabled &&
+                first.DissolveEmissionEnabled == second.DissolveEmissionEnabled &&
+                first.RenderQueue == second.RenderQueue && first.RenderTypeTagValue == second.RenderTypeTagValue;
         }
 
         private static bool ExactInstanceName(string actual, string expected)
@@ -214,6 +340,13 @@ namespace KingmakerGunslinger.Summoning
             if (owned.Root != null)
                 UnityEngine.Object.DestroyImmediate(owned.Root);
             owned.Root = null;
+            if (owned.ControllerAdoptionStarted && owned.View != null && owned.Controller != null)
+            {
+                try { owned.ControllerCleanup = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(owned.View); }
+                catch (Exception error) { owned.ControllerCleanup = "failed:" + error.GetType().Name + ":" + error.Message; }
+                // Always release our private resources even if native controller
+                // refresh fails. The explicit receipt retains that failure.
+            }
             if (owned.Mesh != null)
                 UnityEngine.Object.DestroyImmediate(owned.Mesh);
             owned.Mesh = null;
@@ -258,6 +391,37 @@ namespace KingmakerGunslinger.Summoning
                 .Concat(owned.Mesh == null ? Enumerable.Empty<UnityEngine.Object>() :
                     new UnityEngine.Object[] { owned.Mesh })
                 .ToArray();
+        }
+
+        internal static JObject ObserveMaterialControl(UnitEntityView view)
+        {
+            Attachment owned;
+            // A retained managed view key can still expose its final cleanup
+            // receipt after Unity has destroyed the native view object.
+            if (ReferenceEquals(view, null) || !Applied.TryGetValue(view, out owned))
+                return new JObject { ["attachmentPresent"] = false };
+            Material[] assigned = owned.Root == null ? new Material[0] : owned.Root
+                .GetComponentsInChildren<Renderer>(true).SelectMany(renderer => renderer.sharedMaterials).ToArray();
+            return new JObject { ["attachmentPresent"] = true, ["outcome"] = owned.Outcome,
+                ["controller"] = owned.Controller == null ? 0 : owned.Controller.GetInstanceID(),
+                ["sourceMaterial"] = owned.SourceMaterial == null ? 0 : owned.SourceMaterial.GetInstanceID(),
+                ["sourceCachedDissolveBaseline"] = owned.SourceDefaultDissolve,
+                ["controllerCleanup"] = owned.ControllerCleanup,
+                ["headMaterials"] = new JArray(assigned.Take(4).Select(material => {
+                    FadeDefaults cached = null;
+                    IList<Material> driven = ControllerMaterials(owned.Controller);
+                    bool member = material != null && driven != null && driven.Contains(material);
+                    bool hasCache = material != null && owned.Controller != null &&
+                        TryGetFadeDefaults(owned.Controller, material, out cached);
+                    return new JObject { ["material"] = material == null ? 0 : material.GetInstanceID(),
+                        ["name"] = material?.name, ["controllerMember"] = member,
+                        ["nativeDefaultCached"] = hasCache,
+                        ["fullCachedFadeBaselineMatchesSource"] = hasCache && SameFadeBaseline(cached, owned.Baseline),
+                        ["liveDissolve"] = material != null && material.HasProperty("_Dissolve") ?
+                            (JToken)new JValue(material.GetFloat("_Dissolve")) : JValue.CreateNull(),
+                        ["cachedDissolve"] = hasCache ? (JToken)new JValue(cached.Dissolve) : JValue.CreateNull() };
+                })), ["assignedCount"] = assigned.Length,
+                ["observationOnly"] = true, ["fadeAmountForced"] = false };
         }
 
         internal static void ReleaseView(UnitEntityView view)

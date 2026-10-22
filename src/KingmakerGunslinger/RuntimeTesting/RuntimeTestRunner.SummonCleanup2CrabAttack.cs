@@ -498,7 +498,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private JObject Cleanup2CrabAttackLane(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData actor, UnitEntityData target, string stage)
         {
-            if (!IsSummonCleanup2Review || (string)_request.Parameters?["reviewPhase"] != "crab-attack" ||
+            string phase = (string)_request.Parameters?["reviewPhase"];
+            if (!IsSummonCleanup2Review || (phase != "crab-attack" && phase != "production-attacks") ||
                 fixture == null || fixture.Caster == null || actor == null || target == null || actor.Destroyed || target.Destroyed ||
                 !ReferenceEquals(fixture.Hostile, target) || !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
                 fixture.UnitsBefore.Any(value => ReferenceEquals(value, actor) || ReferenceEquals(value, target)) ||

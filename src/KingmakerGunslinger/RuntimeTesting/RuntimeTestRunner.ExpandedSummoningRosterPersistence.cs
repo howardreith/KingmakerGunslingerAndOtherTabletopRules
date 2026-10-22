@@ -768,6 +768,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
+                if (Sprint29PersistenceScope && receipt.Key == "ettin")
+                {
+                    JObject headReceipt;
+                    bool headExact;
+                    if (moduleOn) headExact = Cleanup2EttinAttachmentMaterialExact(unit.View, out headReceipt);
+                    else
+                    {
+                        int roots = unit.View == null ? 0 : unit.View.GetComponentsInChildren<Transform>(true)
+                            .Count(value => value.name == EttinSecondHeadVisual.ObjectPrefix + "_Root");
+                        int owned = EttinSecondHeadVisual.CaptureOwnedResources(unit.View).Length;
+                        headExact = roots == 0 && owned == 0;
+                        headReceipt = new JObject { ["rootCount"] = roots, ["ownedResourceCount"] = owned,
+                            ["attachment"] = EttinSecondHeadVisual.Describe(unit.View) };
+                    }
+                    visual &= headExact;
+                    headReceipt["unit"] = unit.UniqueId; headReceipt["moduleEnabled"] = moduleOn;
+                    headReceipt["phase"] = prepare ? "prepare" : "cold-verify";
+                    headReceipt["viewInstance"] = unit.View == null ? 0 : unit.View.GetInstanceID();
+                    headReceipt["observerCalledAttachOrRebuild"] = false;
+                    RosterPersistenceCheck("ettin-authored-head-" + (prepare ? "prepare" : "cold-verify"), headExact, headReceipt,
+                        moduleOn ? "The actual saved/current exact Ettin has one owned two-driver/four-material head with both original textures and exact native controller/cached-baseline fade initialization; this observer never attaches it."
+                            : "The exact module-OFF saved Ettin reconstructs without any project head root or private head allocations.");
+                }
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
                         ["expectedProfileForModule"] = moduleExpectedProfile, ["profileSerializedEqual"] = profileSame, ["visualExact"] = visual,

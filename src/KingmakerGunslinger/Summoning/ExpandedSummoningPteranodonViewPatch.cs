@@ -228,6 +228,7 @@ namespace KingmakerGunslinger.Summoning
             internal AnkylosaurusTailImpactVisual AnkylosaurusImpact;
             internal StirgeVisualTouch StirgeTouch;
             internal FireBeetleVisualGlow BeetleGlow;
+            internal SummonAttackGestureVisual OriginalAttackGesture;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -253,13 +254,13 @@ namespace KingmakerGunslinger.Summoning
             return attachment.Outcome;
         }
 
-        // Read-only exact-reference receipt, currently populated only for the
-        // Crab animation binding. A foreign controller/material refresh is not
+        // Read-only exact-reference receipt for the original Crab/Brachio
+        // bodies. A foreign controller/material refresh is not
         // adopted merely because names or textures resemble our original.
         internal static bool HasLiveOriginalVisual(UnitEntityView view, string key)
         {
             Attachment attachment;
-            if (view == null || key != Sprint14BonePolicy.CrabKey ||
+            if (view == null || !SummonAttackGesturePolicy.Handles(key) ||
                 !Applied.TryGetValue(view, out attachment) || attachment.VisualKey != key ||
                 attachment.Donor == null || attachment.Mesh == null || attachment.Material == null ||
                 !attachment.Donor.transform.IsChildOf(view.transform) ||
@@ -625,10 +626,17 @@ namespace KingmakerGunslinger.Summoning
                 // fully dissolved stays invisible. So the clone starts intact
                 // and the controller re-reads the renderer's materials.
                 string controller = AdoptByMaterialController(view, donor, material);
-                if (attachment.VisualKey == Sprint14BonePolicy.CrabKey)
+                if (SummonAttackGesturePolicy.Handles(attachment.VisualKey))
                 {
                     attachment.OriginalVisualControllerReceipt = view.GetComponentInChildren<StandardMaterialController>(true);
                     attachment.OriginalVisualDrivenReceipt = donor.sharedMaterials.ToArray();
+                }
+
+                if (SummonAttackGesturePolicy.Handles(attachment.VisualKey))
+                {
+                    attachment.OriginalAttackGesture = view.gameObject.AddComponent<SummonAttackGestureVisual>();
+                    attachment.OriginalAttackGesture.Configure(attachment.VisualKey, view, donor,
+                        () => HasLiveOriginalVisual(view, attachment.VisualKey));
                 }
 
                 if (TheropodVisualPolicy.Handles(attachment.VisualKey))
@@ -687,7 +695,9 @@ namespace KingmakerGunslinger.Summoning
                     ";accessorySuppressed=" +
                     (attachment.SuppressedRenderers == null ? 0 :
                         attachment.SuppressedRenderers.Length) + ";" + dressing +
-                    ";" + controller + (spatial.Length == 0 ? string.Empty :
+                    ";" + controller + (attachment.OriginalAttackGesture == null ? string.Empty :
+                        ";originalAttackPalette=" + (attachment.OriginalAttackGesture.Ready ? "ready" : "refused")) +
+                    (spatial.Length == 0 ? string.Empty :
                         ";" + spatial);
             }
             catch (Exception error)
@@ -916,6 +926,12 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.OriginalAttackGesture != null)
+            {
+                attachment.OriginalAttackGesture.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.OriginalAttackGesture);
+                attachment.OriginalAttackGesture = null;
+            }
             if (attachment.TheropodSuppression != null)
             {
                 attachment.TheropodSuppression.Release();

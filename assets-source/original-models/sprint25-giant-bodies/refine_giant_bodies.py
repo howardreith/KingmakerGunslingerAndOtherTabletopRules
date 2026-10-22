@@ -239,6 +239,9 @@ def main():
                   "sourceGeometrySha256":hashlib.sha256(source.path.read_bytes()).hexdigest()})
     report=cb.write_mesh_data(out/(args.kind+"-mesh.json"),obj,weights,
         source.payload["rigSha256"],albedo,source.payload["space"],extra)
+    if args.kind == "brachiosaurus":
+        from repair_brachiosaurus_tail_weights import repair
+        report["tailGestureWeights"] = repair(out/(args.kind+"-mesh.json"))
     bpy.ops.wm.save_as_mainfile(filepath=str(work/(args.kind+"-source.blend")))
     (work/(args.kind+"-report.json")).write_text(json.dumps(report,indent=2)+"\n")
     print(json.dumps(report))

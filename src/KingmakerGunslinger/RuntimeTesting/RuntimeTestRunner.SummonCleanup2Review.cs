@@ -140,7 +140,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "A real native CL20 spellbook supplies exact parent/child/slot links; fixture-granted access is explicit.");
                 Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
-                if (phase == "bodies")
+                if (phase == "bodies" || phase == "gorgon-presentation")
                     foreach (int frame in ReviewSummonCleanup2Bodies(fixture, book)) yield return frame;
                 else if (phase == "elementals")
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
@@ -150,6 +150,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2EttinLifecycle(fixture, book)) yield return frame;
                 else if (phase == "crab-attack")
                     foreach (int frame in ReviewSummonCleanup2CrabAttack(fixture, book)) yield return frame;
+                else if (phase == "production-attacks")
+                    foreach (int frame in ReviewSummonCleanup2ProductionAttacks(fixture, book)) yield return frame;
                 else if (phase == "shared-controls")
                     foreach (int frame in ReviewSummonCleanup2SharedControls(fixture, book)) yield return frame;
                 else if (phase == "tooltips")
@@ -827,7 +829,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (material == null) return JValue.CreateNull();
             var properties = new JObject();
-            foreach (string name in new[] { "_Dissolve", "_DissolveAmount", "_ZWrite", "_CullMode", "_SrcBlend", "_DstBlend", "_Mode", "_Surface" })
+            foreach (string name in new[] { "_Dissolve", "_DissolveAmount", "_ZWrite", "_CullMode", "_SrcBlend", "_DstBlend", "_Mode", "_Surface", "_Roughness", "_Metallic", "_Emission" })
                 if (material.HasProperty(name)) properties[name] = material.GetFloat(name);
             var colors = new JObject();
             foreach (string name in new[] { "_Color", "_TintColor", "_BaseColor", "_MainColor" })
@@ -929,11 +931,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Mesh baked = null;
                 try
                 {
-                    Vector3[] source = skin.sharedMesh.vertices ?? new Vector3[0];
+                    bool sourceReadable = skin.sharedMesh.isReadable;
+                    // The installed inaccessible getter logs an engine error
+                    // and returns an empty array. Preserve the empty-source
+                    // guard without deliberately issuing that invalid read.
+                    Vector3[] source = sourceReadable ? skin.sharedMesh.vertices ?? new Vector3[0] : new Vector3[0];
+                    int rawSourceCount = source.Length;
+                    bool exactCapturedSource = false;
+                    JObject cpuReference = null;
+                    if (source.Length == 0)
+                    {
+                        Vector3[] captured;
+                        if (Cleanup2CharacterCpuReference.RequestAllowed(_request))
+                        {
+                            exactCapturedSource = Cleanup2CharacterCpuReference.TryGetExactSource(
+                                unit.View, skin, out captured, out cpuReference);
+                            if (exactCapturedSource) source = captured;
+                        }
+                        else cpuReference = new JObject { ["available"] = false, ["reason"] = "not-exact-disposable-giant-request" };
+                    }
                     BoneWeight[] weights = skin.sharedMesh.boneWeights ?? new BoneWeight[0];
                     Matrix4x4[] binds = skin.sharedMesh.bindposes ?? new Matrix4x4[0];
                     Transform[] bones = skin.bones ?? new Transform[0];
                     var skinData = new JObject { ["sourceVertexCount"] = source.Length,
+                        ["rawSharedMeshSourceVertexCount"] = rawSourceCount,
+                        ["sharedMeshCpuReadable"] = sourceReadable,
+                        ["sourceMode"] = exactCapturedSource ? "exact-current-Character-pre-upload-reference" : "native-sharedMesh.vertices",
+                        ["cpuReference"] = cpuReference,
                         ["bakedVertexCount"] = JValue.CreateNull(), ["weightRecordCount"] = weights.Length,
                         ["bonePaletteCount"] = bones.Length, ["bindPoseCount"] = binds.Length,
                         ["nullPaletteEntryCount"] = bones.Count(b => b == null),

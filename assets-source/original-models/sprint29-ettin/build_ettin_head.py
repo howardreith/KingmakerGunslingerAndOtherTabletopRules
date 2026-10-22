@@ -129,12 +129,22 @@ def original_paint():
                 face=math.exp(-((u-.5)/.15)**6)
                 for line in (.81,.845,.88):
                     crease=math.exp(-((v-line-.007*math.cos((u-.5)*29))/.0035)**2)*face
-                    shade-=crease*.24
+                    shade-=crease*.30
                 for eye_u in (.45,.55):
-                    shade-=.22*math.exp(-((u-eye_u)/.035)**2-((v-.74)/.025)**2)
-                shade-=face*math.exp(-((v-.59)/.062)**2)*(.15+grain*.20)
+                    shade-=.28*math.exp(-((u-eye_u)/.035)**2-((v-.74)/.025)**2)
+                # Original nasolabial creases and cheek weathering use only
+                # this authored head's UV frame; no donor image sampling.
+                mouth_band=math.exp(-((v-.615)/.065)**6)
+                fold=.032+.045*max(0,min(1,(.675-v)/.13))
+                for sign in (-1,1):
+                    shade-=.16*mouth_band*math.exp(-((u-(.5+sign*fold))/.008)**2)
+                    shade-=.07*math.exp(-((u-(.5+sign*.105))/.03)**2-((v-.66)/.07)**2)
+                shade-=face*math.exp(-((v-.535)/.063)**2)*(.20+grain*.24)
                 root=.8+.2*min(1,max(0,(v-.22)/.39))
-                rgb=(.465*shade*root,.405*shade*root,.315*shade*root)
+                # Native7's intact PF/Gamma material rendered the preceding
+                # gray-tan paint cream/yellow. Warm/darken SKIN only; the native
+                # shader, hair/eye regions, geometry and rig are unchanged.
+                rgb=(.36*shade*root,.26*shade*root,.18*shade*root)
             elif slot==1:
                 rgb=(.045+grain*.008,.035+grain*.006,.025+grain*.004)
             elif slot==2:

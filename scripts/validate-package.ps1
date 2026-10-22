@@ -169,8 +169,8 @@ try {
     # exact export integrity; owner visual approval remains pending separately.
     # All unrelated protected pairs retain their existing exact identities.
     $protectedBodyExports = @{
-        'assets\ungulates\gorgon-mesh.json' = 'ab559e49083e95085056bbc1588d9d2f3515758599a79f6ced4e983f2c5479a3'
-        'assets\ungulates\gorgon-albedo.png' = 'f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2'
+        'assets\ungulates\gorgon-mesh.json' = '2a920dc65854367b282b38d7b19f4b536b27a2a56ae314a7787f4e6934061068'
+        'assets\ungulates\gorgon-albedo.png' = 'cf66f22224e040cbd65fcec717ab41f9786ec0cefd02dd4534d322eec82721a4'
         'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
         'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 
@@ -197,7 +197,7 @@ try {
         'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = '27ef9768948c6f28a2836a28cfa45e9be03220b8f590d15af656212e540511bf'
         'assets\sprint25-giant-bodies\elephant-mesh.json' = '5afe5464331a083c0de63d7b4bee4a1266d71376fb8360f7d96b0bf7a4f13028'
         'assets\sprint25-giant-bodies\elephant-albedo.png' = '5a973962a26dbf38208b66feeb5ffd154d469ac69b25137ae487b9d6767f2919'
-        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = '9bd237aad9b1a99f25162e4a109814b5f72fb9da6167d2f000e88f333e24a974'
+        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = 'cf919c077be4a9cc11a128e0e67f78fc7e1566514349671846660e5c0ca40db5'
         'assets\sprint25-giant-bodies\brachiosaurus-albedo.png' = '198b61966762624adc3ffdfb5975fe08bfc7ad4589fc6e0f318e7bbb06d30776'
     }
     foreach ($entry in $protectedBodyExports.GetEnumerator()) {

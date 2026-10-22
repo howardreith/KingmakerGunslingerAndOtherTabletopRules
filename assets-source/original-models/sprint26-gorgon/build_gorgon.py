@@ -14,6 +14,7 @@ from pathlib import Path
 import struct
 import sys
 import time
+import zlib
 
 import bpy
 import bmesh
@@ -31,6 +32,8 @@ from verify_cleanup2_bodies import inspect
 DONOR = "5bb9579fdb2b26b48bb10d61c81cfdfb"
 PREFAB = "6032f7a5751c1104aa59647b176634c8"
 INPUT_SHA = "0f3c8ce10c4c0d50650ecb5a042985d1b242977716c5b7a0286754d370fdc508"
+PAINT_BASELINE_SHA = "f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2"
+PAINT_GEOMETRY_SHA = "eb5d3c7a59695312ecc954c076edd6c5947374eaf782b6ba71cb6382d03a4dcf"
 PLATE_EDGES = {}
 BODY_GROUPS = [0, 1, 2, 3, 5, 8, 12, 15, 18]
 POSES = {
@@ -216,7 +219,7 @@ def build(source):
     return obj, weights
 
 
-def colour(points, normals, regions):
+def original_colour(points, normals, regions):
     noise = cb.fbm(points, 9, 26011, octaves=3)
     grain = cb.value_noise(points, 95, 26012)
     rgb = np.array((.235,.280,.295))[None,:] * (.86+.18*noise[:,None]+.035*grain[:,None])
@@ -239,6 +242,72 @@ def colour(points, normals, regions):
     rgb[regions==4]=(.83,.49,.055)
     rgb[regions==5]=(.027,.033,.035)
     return np.clip(rgb,0,1)
+
+
+def colour(points, normals, regions):
+    """Gunmetal proposal on the known authored plate regions only."""
+    rgb = original_colour(points, normals, regions)
+    noise = cb.fbm(points, 9, 26011, octaves=3)
+    for region, edges in PLATE_EDGES.items():
+        mask = regions == region
+        p = points[mask]
+        if not len(p): continue
+        distance = np.full(len(p), 10.)
+        for a, b in edges:
+            span = b-a
+            t = np.clip(((p-a)@span)/max(float(span@span), 1e-12), 0, 1)
+            distance = np.minimum(distance, np.linalg.norm(p-a-t[:,None]*span, axis=1))
+        # The old .025 rim/.18 highlight painted broad white piping. Keep
+        # a narrow worn edge, dark overlap falloff and restrained direction
+        # strokes. These are albedo marks, not shader/metalness claims.
+        rim = np.exp(-(distance/.008)**2)
+        overlap = .07*np.exp(-(distance/.035)**2)
+        brushed = .018*np.sin(p[:,1]*160+p[:,2]*31) + .005*np.sin(p[:,1]*393-p[:,2]*17)
+        rgb[mask] = np.array((.285,.330,.345))*(.86+.15*noise[mask,None]+brushed[:,None]-overlap[:,None])
+        rgb[mask] += rim[:,None]*np.array((.055,.060,.062))
+    return np.clip(rgb, 0, 1)
+
+
+def read_original_rgb_png(path):
+    """Read only our deterministic RGB8/no-filter encoder's own output."""
+    data = Path(path).read_bytes()
+    assert data[:8] == b"\x89PNG\r\n\x1a\n" and data[24:29] == bytes((8,2,0,0,0))
+    width, height = struct.unpack_from(">II", data, 16)
+    at, compressed = 8, bytearray()
+    while at < len(data):
+        length = struct.unpack_from(">I", data, at)[0]
+        kind, payload = data[at+4:at+8], data[at+8:at+8+length]
+        if kind == b"IDAT": compressed.extend(payload)
+        at += length + 12
+    rows = np.frombuffer(zlib.decompress(compressed), dtype=np.uint8).reshape(height, width*3+1)
+    assert not rows[:,0].any(), "Unknown PNG filtering"
+    return rows[:,1:].reshape(height, width, 3).copy()
+
+
+def bake_plate_only_paint(obj, albedo, work):
+    baseline, candidate, ownership = (work/filename for filename in
+        ("gorgon-before-paint.png", "gorgon-plate-proposal.png", "gorgon-plate-pixel-mask.png"))
+    cb.bake_albedo(obj, 1024, original_colour, baseline)
+    cb.bake_albedo(obj, 1024, colour, candidate)
+    def mask_colour(points, normals, regions):
+        return np.repeat(((regions >= 10) & (regions <= 30))[:,None], 3, axis=1).astype(float)
+    cb.bake_albedo(obj, 1024, mask_colour, ownership)
+    old, new, mask = (read_original_rgb_png(path) for path in (baseline, candidate, ownership))
+    baseline_sha = hashlib.sha256(baseline.read_bytes()).hexdigest()
+    if baseline_sha != PAINT_BASELINE_SHA:
+        raise SystemExit("previous retained paint did not reproduce exactly")
+    # Mask follows the exact shared UV rasterizer and padding ownership.
+    # Unowned background mean changes from a full rebake are excluded too.
+    plate = (mask == 255).all(axis=2)
+    result = old.copy(); result[plate] = new[plate]
+    assert np.array_equal(result[~plate], old[~plate])
+    assert set(PLATE_EDGES) == set(range(10,31))
+    albedo.write_bytes(cb.encode_png(result))
+    return {"plateOwnedPixelsIncludingPadding": int(plate.sum()),
+        "changedPlatePixels": int(np.any(result != old, axis=2).sum()),
+        "nonPlatePixelsChanged": int(np.any(result[~plate] != old[~plate], axis=1).sum()),
+        "baselineAlbedoSha256": baseline_sha,
+        "plateRegions": list(range(10,31)), "shaderOrParameterChanges": False}
 
 
 def audit_poses(path, armature, out):
@@ -269,7 +338,7 @@ def audit_poses(path, armature, out):
         posed=dict(payload,data=base64.b64encode(data).decode("ascii"),
                     syntheticPose=name,nativeMotionEvidence=False)
         target=out/("gorgon-"+name+"-mesh.json")
-        target.write_text(json.dumps(posed,indent=1)+"\n",encoding="utf-8")
+        target.write_text(json.dumps(posed,indent=1)+"\n",encoding="utf-8",newline="\n")
         _, components, report=inspect(target)
         reports[name]=dict(status="PASS",**report)
     for bone in armature.pose.bones: bone.rotation_euler=(0,0,0)
@@ -295,16 +364,20 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     obj,weights=build(source)
     albedo=out/"gorgon-albedo.png"
-    cb.bake_albedo(obj,1024,colour,albedo)
+    paint_report = bake_plate_only_paint(obj, albedo, work)
     cb.attach_albedo_preview(obj,albedo)
     extra={k:v for k,v in source.payload.items() if k not in {
         "data","vertexCount","triangleCount","bones","albedo","uvAtlas","winding"}}
     extra.update({"authoringRevision":"cleanup2-continuous-bovine-thin-lames",
                   "sourceGeometrySha256":INPUT_SHA,"maxInfluencesPerVertex":4,
-                  "thinConformalPlates":21,"flatClovenHoofHalves":8})
+                  "thinConformalPlates":21,"flatClovenHoofHalves":8,
+                  "paintRevision":"cleanup2-gunmetal-plates-only"})
     path=out/"gorgon-mesh.json"
     cb.write_mesh_data(path,obj,weights,source.payload["rigSha256"],albedo,source.payload["space"],extra)
     payload,components,report=inspect(path)
+    if hashlib.sha256(base64.b64decode(payload["data"])).hexdigest() != PAINT_GEOMETRY_SHA:
+        raise SystemExit("paint-only checkpoint changed decoded geometry/normals/UV/indices/weights")
+    paint_report["decodedMeshBlobSha256Unchanged"] = PAINT_GEOMETRY_SHA
     if payload["bones"]!=source.payload["bones"]: raise SystemExit("published named driver palette/order changed")
     if not any(set(c["drivers"])==set(payload["bones"]) for c in components):
         raise SystemExit("continuous bovine body does not carry all published drivers")
@@ -318,6 +391,7 @@ def main():
             raise SystemExit("original horn/eye authored geometry changed")
     report["anatomyContracts"]={"continuousBodyCarriesAllDrivers":True,"exactBonePaletteAndOrder":28,
         "rigidClovenHoofHalves":8,"originalHornAndEyePointSetsPreserved":4,"thinConformalPlates":21}
+    report["paintOnly"] = paint_report
     if rig:
         armature=cb.review_armature(rig,"HistoricalAurochsOfflinePreview")
         for name in payload["bones"]: obj.vertex_groups.new(name=name)
@@ -332,7 +406,7 @@ def main():
     report.update({"status":"PASS","scope":"actual exported authored geometry/weights; synthetic poses only",
         "sourceGeometrySha256":INPUT_SHA,"historicalPreview":preview,"nativeVisualVerified":False,
         "ownerVisualApproval":"pending","elapsedSeconds":time.monotonic()-start})
-    (work/"gorgon-report.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8")
+    (work/"gorgon-report.json").write_text(json.dumps(report,indent=2)+"\n",encoding="utf-8",newline="\n")
     print(json.dumps(report,indent=2))
 
 

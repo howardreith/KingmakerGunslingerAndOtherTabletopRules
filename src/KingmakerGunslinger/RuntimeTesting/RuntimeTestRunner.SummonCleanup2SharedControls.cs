@@ -12,6 +12,8 @@ using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.View;
+using Kingmaker.Visual.Animation;
+using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -31,6 +33,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal Transform[][] Bones;
             internal Transform[] RootBones;
             internal bool[] Enabled;
+            internal UnitAnimationManager Manager;
+            internal bool PrefabAsset;
             internal UnityEngine.Object AnimationSet;
             internal object ActionList;
             internal UnityEngine.Object[] Actions;
@@ -70,16 +74,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             string sourceFailure = null;
             try { sourceView = native.Prefab.Load(false); }
             catch (Exception error) { sourceFailure = error.GetType().Name + ":" + error.Message; }
-            bool loaded = sourceView != null && sourceView.AnimationManager != null &&
-                sourceView.AnimationManager.AnimationSet != null;
+            UnitAnimationManager sourceManager;
+            AnimationSet sourceSet;
+            JObject sourceAnimation;
+            bool loaded = Cleanup2SharedAnimation(sourceView, true, out sourceManager, out sourceSet, out sourceAnimation);
             Cleanup2Check("shared-controls-native-prefab", loaded, new JObject {
                 ["prefab"] = native.Prefab.AssetId, ["loadedView"] = sourceView == null ? 0 : sourceView.GetInstanceID(),
-                ["failure"] = sourceFailure, ["instantiated"] = false, ["modified"] = false },
+                ["failure"] = sourceFailure, ["animationCensus"] = sourceAnimation,
+                ["instantiated"] = false, ["modified"] = false },
                 "The exact native prefab loads read-only before spawning either control.");
             if (!loaded) yield break;
 
             object sourcePrefabLink = native.Prefab;
-            Cleanup2SharedViewReceipt source = Cleanup2SharedTakeView(sourceView);
+            Cleanup2SharedViewReceipt source = Cleanup2SharedTakeView(sourceView, true);
             bool supported = source.Skins.Length == 1 && source.Skins[0].name == GiantBodyVisualPolicy.BodyRendererName &&
                 source.Meshes[0] != null && source.Meshes.All(mesh => !mesh.name.StartsWith("KMG_", StringComparison.Ordinal));
             Cleanup2Check("shared-controls-source-assets-before", supported, (JObject)source.Scalars.DeepClone(),
@@ -218,7 +225,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(route.Unit.Prefab, projectPrefabLink) && Cleanup2SharedSameView(source) && Cleanup2SharedSameView(projectBefore) &&
                     JToken.DeepEquals(projectStats, Cleanup2SharedStats(triceratops));
                 Cleanup2Check("shared-controls-protected-references-after", final, new JObject {
-                    ["sourceAssetsAfter"] = Cleanup2SharedViewScalars(sourceView),
+                    ["sourceAssetsAfter"] = Cleanup2SharedViewScalars(sourceView, true),
                     ["projectActorAfter"] = Cleanup2SharedViewScalars(triceratops.View),
                     ["projectStatsAndResourcesAfter"] = Cleanup2SharedStats(triceratops),
                     ["sourceBlueprintPrefabAndLoadedViewExact"] = Cleanup2SharedSourceExact(native, sourceView, sourcePrefabLink),
@@ -287,30 +294,74 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(native.Prefab.Load(false), loaded);
         }
 
-        private static Cleanup2SharedViewReceipt Cleanup2SharedTakeView(UnitEntityView view)
+        // Native UnitEntityView caches its manager during live initialization.
+        // A loaded prefab has serialized child components but no such cache.
+        // AnimationManager.AnimationSet also falls back to the Human set: read
+        // the exact serialized field instead, never initialize a prefab.
+        private static readonly FieldInfo Cleanup2SerializedAnimationSet = typeof(AnimationManager).GetField(
+            "m_AnimationSet", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo Cleanup2CachedAnimationManager = typeof(UnitEntityView).GetField(
+            "m_AnimatorManager", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        private static bool Cleanup2SharedAnimation(UnitEntityView view, bool prefab,
+            out UnitAnimationManager manager, out AnimationSet set, out JObject census)
         {
-            if (view == null || view.AnimationManager == null || view.AnimationManager.AnimationSet == null)
-                throw new NotSupportedException("Shared control has no native view/action set.");
+            manager = null; set = null;
+            var candidates = view == null ? new UnitAnimationManager[0] :
+                view.GetComponentsInChildren<UnitAnimationManager>(true);
+            var cached = view == null || Cleanup2CachedAnimationManager == null ? null :
+                Cleanup2CachedAnimationManager.GetValue(view) as UnitAnimationManager;
+            bool contract = Cleanup2SerializedAnimationSet != null &&
+                Cleanup2SerializedAnimationSet.FieldType == typeof(AnimationSet) &&
+                Cleanup2CachedAnimationManager != null &&
+                Cleanup2CachedAnimationManager.FieldType == typeof(UnitAnimationManager);
+            census = new JObject { ["prefabAsset"] = prefab, ["candidateCount"] = candidates.Length,
+                ["cachedViewManager"] = Cleanup2SharedObject(cached), ["fieldContract"] = contract,
+                ["candidates"] = new JArray(candidates.Take(8).Select(candidate => new JObject {
+                    ["manager"] = Cleanup2SharedObject(candidate),
+                    ["path"] = Cleanup2TransformPath(view.transform, candidate.transform),
+                    ["serializedSet"] = contract ? Cleanup2SharedObject(
+                        Cleanup2SerializedAnimationSet.GetValue(candidate) as AnimationSet) : JValue.CreateNull() })),
+                ["initializationInvoked"] = false, ["humanSetFallbackUsed"] = false };
+            if (!contract || candidates.Length != 1 || candidates[0] == null) return false;
+            manager = candidates[0]; set = Cleanup2SerializedAnimationSet.GetValue(manager) as AnimationSet;
+            // The live getter is allowed only on the already initialized owned
+            // actor. It must agree with the exact serialized child component.
+            bool liveCache = prefab || ReferenceEquals(view.AnimationManager, manager);
+            census["liveCacheAgrees"] = prefab ? JValue.CreateNull() : new JValue(liveCache);
+            census["serializedSetPresent"] = set != null;
+            census["actionCount"] = set == null || set.Actions == null ? -1 : set.Actions.Count;
+            return liveCache && set != null && set.Actions != null && set.Actions.Count > 0 && set.Actions.Count <= 128;
+        }
+
+        private static Cleanup2SharedViewReceipt Cleanup2SharedTakeView(UnitEntityView view, bool prefab = false)
+        {
+            UnitAnimationManager manager; AnimationSet set; JObject census;
+            if (!Cleanup2SharedAnimation(view, prefab, out manager, out set, out census))
+                throw new NotSupportedException("Shared control has no exact serialized child manager/action set: " + census.ToString(Newtonsoft.Json.Formatting.None));
             var skins = view.GetComponentsInChildren<SkinnedMeshRenderer>(true);
-            if (skins.Length == 0 || skins.Length > 16 || view.AnimationManager.AnimationSet.Actions.Count > 128 ||
-                view.AnimationManager.ActionSet.Any(action => action != null && action.Clips != null && action.Clips.Take(65).Count() > 64))
+            if (skins.Length == 0 || skins.Length > 16 ||
+                set.Actions.OfType<UnitAnimationAction>().Any(action => action != null && action.Clips != null && action.Clips.Take(65).Count() > 64))
                 throw new NotSupportedException("Shared control skin/action census outside bounded native contract.");
             return new Cleanup2SharedViewReceipt { View = view, Skins = skins,
                 Meshes = skins.Select(value => value.sharedMesh).ToArray(),
                 Materials = skins.Select(value => value.sharedMaterials).ToArray(),
                 Bones = skins.Select(value => value.bones).ToArray(), RootBones = skins.Select(value => value.rootBone).ToArray(),
                 Enabled = skins.Select(value => value.enabled).ToArray(), Scale = view.transform.localScale,
-                AnimationSet = view.AnimationManager.AnimationSet, ActionList = view.AnimationManager.AnimationSet.Actions,
-                Actions = view.AnimationManager.AnimationSet.Actions.Cast<UnityEngine.Object>().ToArray(),
-                Scalars = Cleanup2SharedViewScalars(view) };
+                Manager = manager, PrefabAsset = prefab,
+                AnimationSet = set, ActionList = set.Actions,
+                Actions = set.Actions.Cast<UnityEngine.Object>().ToArray(),
+                Scalars = Cleanup2SharedViewScalars(view, prefab) };
         }
 
         private static bool Cleanup2SharedSameView(Cleanup2SharedViewReceipt before)
         {
-            if (before == null || before.View == null || before.View.AnimationManager == null ||
-                !ReferenceEquals(before.View.AnimationManager.AnimationSet, before.AnimationSet) ||
-                !ReferenceEquals(before.View.AnimationManager.AnimationSet.Actions, before.ActionList) ||
-                !before.View.AnimationManager.AnimationSet.Actions.Cast<UnityEngine.Object>().SequenceEqual(before.Actions) ||
+            UnitAnimationManager manager; AnimationSet set; JObject census;
+            if (before == null || before.View == null ||
+                !Cleanup2SharedAnimation(before.View, before.PrefabAsset, out manager, out set, out census) ||
+                !ReferenceEquals(manager, before.Manager) || !ReferenceEquals(set, before.AnimationSet) ||
+                !ReferenceEquals(set.Actions, before.ActionList) ||
+                !set.Actions.Cast<UnityEngine.Object>().SequenceEqual(before.Actions) ||
                 before.View.transform.localScale != before.Scale ||
                 !before.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SequenceEqual(before.Skins)) return false;
             for (int index = 0; index < before.Skins.Length; index++)
@@ -320,15 +371,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !skin.sharedMaterials.SequenceEqual(before.Materials[index]) || !skin.bones.SequenceEqual(before.Bones[index]) ||
                     !ReferenceEquals(skin.rootBone, before.RootBones[index]) || skin.enabled != before.Enabled[index]) return false;
             }
-            return JToken.DeepEquals(before.Scalars, Cleanup2SharedViewScalars(before.View));
+            return JToken.DeepEquals(before.Scalars, Cleanup2SharedViewScalars(before.View, before.PrefabAsset));
         }
 
-        private static JObject Cleanup2SharedViewScalars(UnitEntityView view)
+        private static JObject Cleanup2SharedViewScalars(UnitEntityView view, bool prefab = false)
         {
-            var manager = view.AnimationManager;
+            UnitAnimationManager manager; AnimationSet set; JObject census;
+            if (!Cleanup2SharedAnimation(view, prefab, out manager, out set, out census))
+                throw new NotSupportedException("Shared control animation census refused: " + census.ToString(Newtonsoft.Json.Formatting.None));
             return new JObject { ["view"] = view.GetInstanceID(), ["rootLocalScale"] = SurveyVector(view.transform.localScale),
-                ["animationSet"] = Cleanup2SharedObject(manager.AnimationSet),
-                ["actions"] = new JArray(manager.ActionSet.Take(128).Select(action => new JObject {
+                ["animationCensus"] = census, ["animationSet"] = Cleanup2SharedObject(set),
+                ["actions"] = new JArray(set.Actions.OfType<UnitAnimationAction>().Take(128).Select(action => new JObject {
                     ["action"] = Cleanup2SharedObject(action), ["type"] = action.Type.ToString(),
                     ["clips"] = new JArray((action.Clips ?? Enumerable.Empty<AnimationClip>()).Take(64).Select(clip =>
                         clip == null ? (JToken)JValue.CreateNull() : new JObject { ["clip"] = Cleanup2SharedObject(clip), ["length"] = clip.length })) })),

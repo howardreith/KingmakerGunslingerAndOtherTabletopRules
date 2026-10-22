@@ -14,6 +14,7 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -36,6 +37,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal SummonCleanup2EttinLateObserver Observer;
             internal readonly JArray Samples = new JArray();
             internal readonly JArray Images = new JArray();
+            internal readonly JArray MaterialSamples = new JArray(), FadeSamples = new JArray();
+            internal bool MaterialControlValid = true;
+            internal int MaterialSampleCount, FadeSampleCount, ActiveFadeSampleCount;
+            internal float MaximumFadeError, MinimumFade = float.MaxValue, MaximumFade = float.MinValue;
             internal Vector3 FirstOffset;
             internal Quaternion FirstHeadRotation;
             internal bool FirstSample;
@@ -148,9 +153,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["sampling"] = "Request-owned LateUpdate observer at execution order 32000, after the default-order EttinHeadPoseDriver. Scalar transform points only; source/proxy head transforms are never assigned.",
                             ["limits"] = "No-orbit proof requires positive original-head rotation relative to its neck; an unchanged pose remains unknown. Surface aesthetics, attack mechanics and saved hydration remain separate." },
                         "The original head actually rotates while the authored head maintains one neck-relative offset and follows its rotation without orbiting.");
+                    Cleanup2Check("ettin-native-material-control-" + head.Actor.UniqueId,
+                        head.MaterialSampleCount >= 12 && head.MaterialControlValid,
+                        new JObject { ["unit"] = head.Actor.UniqueId, ["samples"] = head.MaterialSamples.DeepClone(),
+                            ["sampleCount"] = head.MaterialSampleCount, ["maximumHeadVsSourceDissolveError"] = head.MaximumFadeError,
+                            ["forcedFadeOrVisibility"] = false },
+                        "Every exact head material stays driven by the source controller with its full cached native baseline and same-frame native dissolve value.");
                 }
 
                 var first = heads[0]; var sibling = heads[1];
+                Cleanup2EnableEttinFadeObservation(first);
                 JObject expiry = Cleanup2ExpireEttin(fixture, first);
                 int expiryFrames = 0;
                 var expiryWatch = Stopwatch.StartNew();
@@ -171,7 +183,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The exact first native summon marker expires its own logical entity/view while the second Ettin retains the same head/resources.");
                 foreach (int frame in Cleanup2DrainEttinResources(new[] { first }, watch)) yield return frame;
                 bool firstReleased = first.Resources.All(value => value == null);
-                Cleanup2Check("ettin-first-exact-resource-release", naturallyGone && firstReleased && Cleanup2EttinStable(sibling),
+                Cleanup2AssertEttinFadeRelease(first);
+                Cleanup2Check("ettin-first-exact-resource-release", naturallyGone && firstReleased && Cleanup2EttinStable(sibling) && Cleanup2EttinControllerReleased(first),
                     new JObject { ["firstResources"] = Cleanup2EttinResourceStates(first),
                         ["siblingResources"] = Cleanup2EttinResourceStates(sibling),
                         ["boundedDrain"] = "Native entity destroyer and up to180 Unity frames/6 seconds; surviving exact references are unresolved release, not a claim of an unbounded leak." },
@@ -191,12 +204,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["recastIsSaveHydration"] = false },
                     "A third actual canonical cast adds exactly one fresh authored head while the expired head remains released and the sibling remains independent.");
 
-                foreach (var head in new[] { sibling, recreated }) Cleanup2ExpireEttin(fixture, head);
+                foreach (var head in new[] { sibling, recreated })
+                { Cleanup2EnableEttinFadeObservation(head); Cleanup2ExpireEttin(fixture, head); }
                 var finalWatch = Stopwatch.StartNew();
                 for (int frame = 0; frame < 1800 && finalWatch.Elapsed.TotalSeconds < 18 && watch.Elapsed.TotalSeconds <= 120 &&
                     heads.Any(head => !head.Actor.Destroyed || head.Actor.View != null || head.Actor.HoldingState != null); frame++) yield return 0;
                 foreach (int frame in Cleanup2DrainEttinResources(heads, watch)) yield return frame;
-                bool allReleased = heads.All(head => head.Actor.Destroyed && head.Actor.View == null && head.Actor.HoldingState == null && head.Resources.All(value => value == null));
+                foreach (var head in new[] { sibling, recreated }) Cleanup2AssertEttinFadeRelease(head);
+                bool allReleased = heads.All(head => head.Actor.Destroyed && head.Actor.View == null && head.Actor.HoldingState == null &&
+                    head.Resources.All(value => value == null) && Cleanup2EttinControllerReleased(head));
                 Cleanup2Check("ettin-all-exact-private-resources-released", allReleased,
                     new JObject { ["actors"] = new JArray(heads.Select(Cleanup2EttinResourceStates)),
                         ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["globalSceneScanUsed"] = false,
@@ -262,7 +278,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result.Renderer.rootBone == result.Neck && result.AssignedMaterials.Length == 4 &&
                 resources.OfType<Mesh>().Count() == 1 && resources.OfType<Material>().Count() >= 4 &&
                 resources.OfType<Material>().All(value => value.name.StartsWith(EttinSecondHeadVisual.ObjectPrefix, StringComparison.Ordinal));
-            Cleanup2Check("ettin-head-attachment-" + stage, exact, Cleanup2EttinDescription(result),
+            JObject attachmentMaterial;
+            exact &= Cleanup2EttinAttachmentMaterialExact(actor.View, out attachmentMaterial);
+            JObject description = Cleanup2EttinDescription(result);
+            description["attachmentMaterialContract"] = attachmentMaterial;
+            Cleanup2Check("ettin-head-attachment-" + stage, exact, description,
                 "One exact authored two-driver head and four live assigned materials are owned by this canonical Ettin; actual original and controller-instantiated resources are retained.");
             if (!exact) throw new InvalidOperationException("Authored Ettin head attachment contract failed: " + stage);
             return result;
@@ -287,7 +307,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static JObject Cleanup2EttinResourceStates(Cleanup2EttinHead head)
         {
-            return new JObject { ["unit"] = head.Actor.UniqueId, ["resources"] = new JArray(head.Resources.Select((value, i) =>
+            return new JObject { ["unit"] = head.Actor.UniqueId,
+                ["materialControl"] = EttinSecondHeadVisual.ObserveMaterialControl(head.View),
+                ["resources"] = new JArray(head.Resources.Select((value, i) =>
                 new JObject { ["capturedInstance"] = head.ResourceIds[i], ["capturedName"] = head.ResourceNames[i],
                     ["capturedType"] = head.ResourceTypes[i], ["nativeObjectAlive"] = value != null })) };
         }
@@ -325,6 +347,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["mesh"] = head.Mesh?.name, ["meshInstance"] = head.Mesh == null ? 0 : head.Mesh.GetInstanceID(),
                 ["vertexCount"] = head.Mesh == null ? 0 : head.Mesh.vertexCount, ["subMeshCount"] = head.Mesh == null ? 0 : head.Mesh.subMeshCount,
                 ["materials"] = new JArray(head.Renderer.sharedMaterials.Select(Cleanup2Material)),
+                ["materialControl"] = Cleanup2EttinMaterialControl(head.View),
                 ["ownedResources"] = Cleanup2EttinResourceStates(head) };
         }
 
@@ -389,6 +412,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static void Cleanup2SampleEttinHead(Cleanup2EttinHead head)
         {
             if (!Cleanup2EttinStable(head)) throw new InvalidOperationException("Attachment identity changed before late pose sample.");
+            Cleanup2SampleEttinMaterial(head, false);
             Vector3 original = head.Neck.InverseTransformPoint(head.Head.position);
             Vector3 authored = head.Neck.InverseTransformPoint(head.Skull.position);
             Vector3 offset = authored - original;
@@ -412,6 +436,122 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeNeckLocalRotation"] = Cleanup2EttinRotation(head.Neck.localRotation),
                     ["authoredHeadNeckLocal"] = SurveyVector(authored), ["neckLocalOffset"] = SurveyVector(offset),
                     ["rotationFollowErrorDegrees"] = Quaternion.Angle(originalRotation, authoredRotation) });
+        }
+
+        private static JObject Cleanup2EttinMaterialControl(UnitEntityView view)
+        {
+            JObject result = EttinSecondHeadVisual.ObserveMaterialControl(view);
+            var bodies = view == null ? new SkinnedMeshRenderer[0] : view.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(skin => skin.name == "hill_giant_1" && skin.sharedMesh != null && skin.sharedMesh.name == "hill_giant_1").ToArray();
+            Material[] sourceMaterials = bodies.Length == 1 ? bodies[0].sharedMaterials : new Material[0];
+            Material source = sourceMaterials.Length == 1 ? sourceMaterials[0] : null;
+            StandardMaterialController controller = bodies.Length == 1 ? bodies[0].GetComponentInParent<StandardMaterialController>() : null;
+            float sourceFade = source != null && source.HasProperty("_Dissolve") ? source.GetFloat("_Dissolve") : float.NaN;
+            var materials = result["headMaterials"] as JArray;
+            bool exact = (bool?)result["attachmentPresent"] == true && (int?)result["assignedCount"] == 4 &&
+                materials != null && materials.Count == 4 && materials.OfType<JObject>().Count() == 4 && controller != null &&
+                (int?)result["controller"] == controller.GetInstanceID() && Cleanup2Finite(sourceFade);
+            float maxError = 0f;
+            if (materials != null) foreach (JObject row in materials.OfType<JObject>())
+            {
+                float fade = row["liveDissolve"] == null || row["liveDissolve"].Type == JTokenType.Null ? float.NaN : (float)row["liveDissolve"];
+                exact &= (bool?)row["controllerMember"] == true && (bool?)row["nativeDefaultCached"] == true &&
+                    (bool?)row["fullCachedFadeBaselineMatchesSource"] == true && Cleanup2Finite(fade);
+                if (Cleanup2Finite(fade) && Cleanup2Finite(sourceFade)) maxError = Mathf.Max(maxError, Mathf.Abs(fade - sourceFade));
+            }
+            MethodInfo count = typeof(StandardMaterialController).GetMethod("GetDissolveAnimationsCount",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+            int active = controller == null || count == null || count.ReturnType != typeof(int) ? -1 : (int)count.Invoke(controller, null);
+            exact &= maxError <= .0001f && active >= 0;
+            result["sourceRendererCount"] = bodies.Length; result["sourceMaterialCount"] = sourceMaterials.Length;
+            result["sourceLiveDissolve"] = Cleanup2Finite(sourceFade) ? (JToken)new JValue(sourceFade) : JValue.CreateNull();
+            result["maximumHeadVsSourceDissolveError"] = maxError; result["nativeDissolveAnimationCount"] = active;
+            result["exactDrivenBaselineAndSameNativeFade"] = exact;
+            return result;
+        }
+
+        // Shared with the existing exact giant-humanoids-ii persistence scope.
+        // Reads the actual hydrated view; no visual attach/initialization call.
+        private static bool Cleanup2EttinAttachmentMaterialExact(UnitEntityView view, out JObject receipt)
+        {
+            receipt = Cleanup2EttinMaterialControl(view);
+            Transform[] transforms = view == null ? new Transform[0] : view.GetComponentsInChildren<Transform>(true);
+            Transform[] roots = transforms.Where(value => value.name == EttinSecondHeadVisual.ObjectPrefix + "_Root").ToArray();
+            Transform[] heads = transforms.Where(value => value.name == "Head").ToArray();
+            Transform[] skulls = transforms.Where(value => value.name == EttinSecondHeadVisual.ObjectPrefix + "_SkullControl").ToArray();
+            var skins = roots.Length == 1 ? roots[0].GetComponentsInChildren<SkinnedMeshRenderer>(true) : new SkinnedMeshRenderer[0];
+            UnityEngine.Object[] resources = EttinSecondHeadVisual.CaptureOwnedResources(view);
+            bool ownedSlots = skins.Length == 1 && skins[0].sharedMaterials.Length == 4 && skins[0].sharedMaterials.All(material =>
+                material != null && material.shader != null && material.shader.name == "PF/StandardDynamic" &&
+                resources.Any(value => ReferenceEquals(value, material)) && material.HasProperty("_MainTex") &&
+                material.HasProperty("_Parameters") && material.HasProperty("_BumpMap") && material.GetTexture("_BumpMap") == null &&
+                resources.OfType<Texture2D>().Any(texture => ReferenceEquals(texture, material.GetTexture("_MainTex")) &&
+                    texture.name == EttinSecondHeadVisual.ObjectPrefix + "_OriginalAlbedo" && texture.width == 512 && texture.height == 512) &&
+                resources.OfType<Texture2D>().Any(texture => ReferenceEquals(texture, material.GetTexture("_Parameters")) &&
+                    texture.name == EttinSecondHeadVisual.ObjectPrefix + "_OriginalParameters" && texture.width == 2 && texture.height == 2));
+            bool shape = view != null && view.EntityData != null && view.EntityData.Blueprint.AssetGuid == EttinSecondHeadVisual.EttinUnitGuid &&
+                roots.Length == 1 && heads.Length == 1 && skulls.Length == 1 && skins.Length == 1 &&
+                roots[0].parent == heads[0].parent && skulls[0].parent == roots[0] &&
+                skins[0].sharedMesh != null && skins[0].sharedMesh.name == "KMG_Ettin_AuthoredHead" &&
+                skins[0].sharedMesh.subMeshCount == 4 && skins[0].sharedMaterials.Length == 4 &&
+                skins[0].bones.Length == 2 && skins[0].bones[0] == heads[0].parent && skins[0].bones[1] == skulls[0] &&
+                skins[0].rootBone == heads[0].parent && resources.OfType<Mesh>().Count() == 1 &&
+                resources.OfType<Texture2D>().Count() == 2 && resources.OfType<Material>().Count() >= 4 &&
+                resources.Any(value => ReferenceEquals(value, skins[0].sharedMesh)) && ownedSlots;
+            receipt["rootCount"] = roots.Length; receipt["nativeHeadCount"] = heads.Length; receipt["skullCount"] = skulls.Length;
+            receipt["authoredRendererCount"] = skins.Length; receipt["exactTwoDriverFourMaterialAttachment"] = shape;
+            receipt["ownedMaterialAndOriginalTextureSlots"] = ownedSlots;
+            receipt["geometrySha256"] = EttinAuthoredHeadMesh.GeometrySha256; receipt["paintSha256"] = EttinAuthoredHeadMesh.PaintSha256;
+            receipt["attachmentInitializationInvoked"] = false;
+            return shape && (bool?)receipt["exactDrivenBaselineAndSameNativeFade"] == true;
+        }
+
+        private static void Cleanup2SampleEttinMaterial(Cleanup2EttinHead head, bool expiry)
+        {
+            if (head.View == null || head.Renderer == null) return;
+            JObject row = Cleanup2EttinMaterialControl(head.View);
+            head.MaterialControlValid &= (bool?)row["exactDrivenBaselineAndSameNativeFade"] == true;
+            head.MaximumFadeError = Mathf.Max(head.MaximumFadeError, (float)row["maximumHeadVsSourceDissolveError"]);
+            row["frame"] = Time.frameCount; row["stage"] = expiry ? "native-summon-expiry" : head.Pose;
+            if (expiry)
+            {
+                head.FadeSampleCount++;
+                if ((int)row["nativeDissolveAnimationCount"] > 0) head.ActiveFadeSampleCount++;
+                if (row["sourceLiveDissolve"].Type != JTokenType.Null)
+                { float value = (float)row["sourceLiveDissolve"]; head.MinimumFade = Mathf.Min(head.MinimumFade, value); head.MaximumFade = Mathf.Max(head.MaximumFade, value); }
+                if (head.FadeSamples.Count < 180) head.FadeSamples.Add(row);
+            }
+            else { head.MaterialSampleCount++; if (head.MaterialSamples.Count < 192 && Time.frameCount % 3 == 0) head.MaterialSamples.Add(row); }
+        }
+
+        private static void Cleanup2EnableEttinFadeObservation(Cleanup2EttinHead head)
+        {
+            if (head.Observer == null) head.Observer = head.Root.gameObject.AddComponent<SummonCleanup2EttinLateObserver>();
+            head.Observer.Error = null;
+            head.Observer.Observe = () => Cleanup2SampleEttinMaterial(head, true);
+            head.Observer.enabled = true;
+        }
+
+        private static bool Cleanup2EttinControllerReleased(Cleanup2EttinHead head)
+        {
+            JObject receipt = EttinSecondHeadVisual.ObserveMaterialControl(head.View);
+            return (bool?)receipt["attachmentPresent"] == true && (string)receipt["outcome"] == "released" &&
+                (int?)receipt["assignedCount"] == 0 && (string)receipt["controllerCleanup"] == "reinitialized";
+        }
+
+        private void Cleanup2AssertEttinFadeRelease(Cleanup2EttinHead head)
+        {
+            bool sampled = head.FadeSampleCount >= 2 && head.ActiveFadeSampleCount > 0 &&
+                head.MaximumFade - head.MinimumFade > .0001f;
+            Cleanup2Check("ettin-native-fade-and-controller-release-" + head.Actor.UniqueId,
+                sampled && head.MaterialControlValid && Cleanup2EttinControllerReleased(head) &&
+                    (ReferenceEquals(head.Observer, null) || head.Observer.Error == null),
+                new JObject { ["unit"] = head.Actor.UniqueId, ["sampleCount"] = head.FadeSampleCount,
+                    ["activeNativeFadeSamples"] = head.ActiveFadeSampleCount, ["sourceDissolveRange"] = new JArray(head.MinimumFade, head.MaximumFade),
+                    ["maximumHeadVsSourceDissolveError"] = head.MaximumFadeError, ["samples"] = head.FadeSamples.DeepClone(),
+                    ["releaseControl"] = EttinSecondHeadVisual.ObserveMaterialControl(head.View),
+                    ["forcedFadeOrVisibility"] = false, ["coldHydrationClaim"] = false },
+                "A positive changing native expiry fade drives all four head materials with the source baseline retained, then exact owned controller registration is removed before private resource release. Missing fade samples remain failure/unknown.");
         }
 
         private static JObject Cleanup2ExpireEttin(ExpandedSummoningCorrectionFixture fixture, Cleanup2EttinHead head)
