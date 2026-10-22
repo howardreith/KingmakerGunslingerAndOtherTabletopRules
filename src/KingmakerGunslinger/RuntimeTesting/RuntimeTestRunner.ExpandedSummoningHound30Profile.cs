@@ -128,8 +128,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     stats.Strength.BaseValue = originalStrength;
                     Sprint25Check("archon-hound-mode-" + mode, roles, new JObject { ["owner"] = owner.UniqueId,
                         ["mode"] = mode, ["rules"] = rows, ["planOnlyNoHitClaim"] = true,
+                        ["secondaryWeapon"] = owner.Body.SecondaryHand.MaybeWeapon?.Blueprint?.AssetGuid,
                         ["nativePlan"] = new JArray(plan.Select(row => new JObject { ["weapon"] = row.Hand?.MaybeWeapon?.Blueprint?.AssetGuid,
-                            ["penalty"] = row.AttackBonusPenalty, ["number"] = row.AttackNumber })) },
+                            ["penalty"] = row.AttackBonusPenalty, ["number"] = row.AttackNumber,
+                            ["mainHand"] = ReferenceEquals(row.Hand, owner.Body.PrimaryHand),
+                            ["secondaryHand"] = ReferenceEquals(row.Hand, owner.Body.SecondaryHand) })) },
                         "Actual native item/rule/plan consumers follow general PF1 signed Strength and primary/secondary roles; printed species damage discrepancies are disclosed.");
                     if (!roles) throw new InvalidOperationException("Hound native attack roles failed.");
                 }
