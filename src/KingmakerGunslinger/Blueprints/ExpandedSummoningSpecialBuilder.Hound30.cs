@@ -61,7 +61,10 @@ namespace KingmakerGunslinger.Blueprints
             // beside a manufactured weapon. It returns primary when the active
             // hand is natural. Do not force this limb secondary permanently.
             unit.Body = new BlueprintUnit.UnitBody {
-                PrimaryHand = sword, PrimaryHandAlternative1 = slam, EmptyHandWeapon = slam,
+                // A natural EmptyHandWeapon also equips the secondary hand.
+                // The alternative already owns its one slam in the main hand;
+                // leave the native empty hand empty, as in NaturalBody.
+                PrimaryHand = sword, PrimaryHandAlternative1 = slam, EmptyHandWeapon = null,
                 AdditionalLimbs = new[] { bite }, AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
                 QuickSlots = Array.Empty<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>() };
             var dr = ScriptableObject.CreateInstance<AddDamageResistancePhysical>();
