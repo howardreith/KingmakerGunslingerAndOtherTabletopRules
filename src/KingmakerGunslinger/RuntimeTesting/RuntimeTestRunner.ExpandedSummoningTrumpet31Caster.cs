@@ -271,12 +271,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var aidTarget = aidCast?.Target?.Unit;
                 var aidBuff = aidTarget?.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "319b4679f25779e4e9d04360381254e1" &&
                     ReferenceEquals(buff.Context.MaybeCaster, owner));
-                bool aided = aidBuff != null && aidBuff.Context.Params.CasterLevel == 14 && aidTarget.Descriptor.TemporaryHP >= 15 &&
+                int aidHitPointBonus = Math.Min(10, aidBuff?.Context?.Params?.CasterLevel ?? 0);
+                bool aided = aidBuff != null && aidBuff.Context.Params.CasterLevel == 14 &&
+                    aidTarget.Descriptor.TemporaryHP >= 1 + aidHitPointBonus && aidTarget.Descriptor.TemporaryHP <= 8 + aidHitPointBonus &&
                     Trumpet31PreparedCopies(book, banishment, 6) == 1 && Trumpet31HealSlots(book, creation.Heal) == 2 &&
                     Trumpet31HealSlots(otherBook, creation.Heal) == 2 && !victim.Destroyed;
                 Sprint25Check("trumpet-caster-aid-effect", aided, new JObject { ["caster"] = owner.UniqueId,
                     ["target"] = aidTarget?.UniqueId, ["cl"] = aidBuff?.Context?.Params.CasterLevel,
-                    ["temporaryHp"] = aidTarget?.Descriptor?.TemporaryHP, ["banishmentSlot"] = Trumpet31PreparedCopies(book, banishment, 6),
+                    ["temporaryHp"] = aidTarget?.Descriptor?.TemporaryHP, ["temporaryHpCasterBonus"] = aidHitPointBonus,
+                    ["temporaryHpBounds"] = new JArray(1 + aidHitPointBonus, 8 + aidHitPointBonus), ["banishmentSlot"] = Trumpet31PreparedCopies(book, banishment, 6),
                     ["healSlots"] = Trumpet31HealSlots(book, creation.Heal), ["siblingHealSlots"] = Trumpet31HealSlots(otherBook, creation.Heal) },
                     "With unsafe Banishment refused, the native brain chooses useful at-will CL14 Aid and applies real support without spending any prepared spell slot.");
                 if (!aided) throw new InvalidOperationException("Trumpet native Aid effect/slot isolation failed.");
