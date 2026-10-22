@@ -101,7 +101,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ItemEntityWeapon[] limbs = Sprint19Limbs(actor);
                     if (limbs.Length != (crab ? 2 : 1) || limbs.Any(value => value == null || value.Blueprint.AssetGuid != (crab ? CrabSummonAnimationBindingPolicy.ClawGuid : SummonAttackGesturePolicy.TailWeapon)))
                         throw new InvalidOperationException("Exact released native weapon routine changed.");
-                    string stats = Cleanup2CrabBaseStats(actor).ToString(), mechanics = Cleanup2ScaleMechanics(actor).ToString();
+                    JObject stats = null, mechanics = null;
+                    JObject spatialIntake = (JObject)Cleanup2ScaleMechanics(actor).DeepClone();
                     Cleanup2SharedViewReceipt live = Cleanup2SharedTakeView(actor.View);
                     foreach (bool full in new[] { false, true })
                     {
@@ -115,6 +116,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint20ReleaseOwnHold(fixture, actor); actor.JoinCombat(); target.JoinCombat();
                             JObject lane = Cleanup2CrabAttackLane(fixture, actor, target, "production-" + label);
                             actor.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                            if (mechanics == null)
+                            {
+                                // Installed 2.1.7b UnitMovementAgentBase.Corpulence
+                                // returns .5 outside CombatMode, otherwise the
+                                // unit view's Corpulence (native-contract-il.txt
+                                // token 0x060018D5). The qualified clock runs
+                                // native join/prepare/action/movement controllers.
+                                // Snapshot after that ordinary spatial transition,
+                                // before either matched command is issued.
+                                int pulse = _sprint25Clock.Pulses, start = pulse, stable = 0;
+                                JObject previous = null;
+                                for (int settle = 0; settle < 180 && stable < 2; settle++)
+                                {
+                                    Cleanup2ProductionAttackDeadline(watch); yield return 0;
+                                    if (_sprint25Clock.Pulses == pulse) continue;
+                                    pulse = _sprint25Clock.Pulses;
+                                    JObject sample = Cleanup2ScaleMechanics(actor);
+                                    bool spatialReady = actor.IsInCombat && actor.View?.MovementAgent != null &&
+                                        actor.View.MovementAgent.Corpulence == actor.View.Corpulence;
+                                    stable = spatialReady && previous != null && JToken.DeepEquals(previous, sample) ? stable + 1 : 0;
+                                    previous = (JObject)sample.DeepClone();
+                                }
+                                bool settled = stable >= 2 && _sprint25Clock.Pulses > start;
+                                Cleanup2Check("production-attack-spatial-baseline-" + key, settled,
+                                    new JObject { ["beforeNativeJoinAndLane"] = spatialIntake.DeepClone(),
+                                        ["afterNativeSettlement"] = previous?.DeepClone(), ["nativeClockPulses"] = _sprint25Clock.Pulses-start,
+                                        ["consecutiveExactStableTransitions"] = stable,
+                                        ["contract"] = "Native agent getter uses .5 outside CombatMode and view Corpulence in combat; no corpulence/agent/collider setter is used.",
+                                        ["baselineScope"] = "One settled baseline retained across all render-off/on single/full commands for this actor." },
+                                    "Native combat/spatial state must settle before exact mechanics comparisons, without issuing an attack or overriding initialization.");
+                                if (!settled) throw new InvalidOperationException("Native production attack spatial baseline did not settle.");
+                                mechanics = (JObject)previous.DeepClone();
+                                stats = (JObject)Cleanup2CrabBaseStats(actor).DeepClone();
+                            }
                             var probe = new UnitAttack(target); probe.Init(actor);
                             bool legal = probe.IsUnitEnoughClose && actor.HasLOS(target) && actor.IsEnemy(target) && !target.IsBrainActive && !target.Descriptor.State.IsDead;
                             Cleanup2Check("production-attack-lane-" + label, legal, new JObject { ["lane"] = lane,
@@ -228,7 +263,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["oneNativeCost"] = economy.Count(command) == 1, ["exactNativeCost"] = economy.Exact(command, false), ["noForcedCostFinish"] = economy.ForcedCount(command) == 0,
                                         ["notCutscene"] = !command.Cutscene, ["notIgnoreCooldown"] = !command.IsIgnoreCooldown, ["noOverrideAction"] = command.OverrideAction == null,
                                         ["nullAnimation"] = command.Animation == null, ["targetAlive"] = !target.Descriptor.State.IsDead,
-                                        ["baseStatsExact"] = currentStats.ToString() == stats, ["mechanicsExact"] = currentMechanics.ToString() == mechanics,
+                                        ["baseStatsExact"] = JToken.DeepEquals(currentStats, stats), ["mechanicsExact"] = JToken.DeepEquals(currentMechanics, mechanics),
                                         ["weaponEntitiesExact"] = Sprint19Limbs(actor).SequenceEqual(limbs), ["protectedSourceViewExact"] = Cleanup2SharedSameView(source),
                                         ["liveActorViewExact"] = Cleanup2SharedSameView(live) };
                                     bool nativeProof = nativePredicates.Properties().All(value => (bool)value.Value);
@@ -251,10 +286,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["nativePredicates"] = nativePredicates,
                                         ["actualTargetWeaponEvents"] = observer.WeaponAttacks.Count, ["actualOwnerWeaponEvents"] = observer.OwnerWeaponAttacks.Count,
                                         ["actualRollEvents"] = observer.Rolls.Count, ["actualCostApplications"] = economy.Count(command), ["actualForcedCostFinishes"] = economy.ForcedCount(command),
-                                        ["changedBaseStatsFields"] = changedFields(JObject.Parse(stats), currentStats),
-                                        ["changedMechanicsFields"] = changedFields(JObject.Parse(mechanics), currentMechanics),
+                                        ["changedBaseStatsFields"] = changedFields(stats, currentStats),
+                                        ["changedMechanicsFields"] = changedFields(mechanics, currentMechanics),
                                         ["changedSourceViewFields"] = changedFields(source.Scalars, currentSource), ["changedLiveViewFields"] = changedFields(live.Scalars, currentLive),
-                                        ["mechanicsChanges"] = new JArray(JObject.Parse(mechanics).Properties().Where(value => !JToken.DeepEquals(value.Value,currentMechanics[value.Name])).Take(32)
+                                        ["mechanicsChanges"] = new JArray(mechanics.Properties().Where(value => !JToken.DeepEquals(value.Value,currentMechanics[value.Name])).Take(32)
                                             .Select(value => new JObject { ["field"] = value.Name, ["before"] = value.Value.DeepClone(), ["after"] = currentMechanics[value.Name]?.DeepClone() })),
                                         ["matchedBaselineOnScheduleAndCost"] = matched, ["failures"] = new JArray(failures.Distinct()),
                                         ["nativeActTickDeltas"] = new JArray(result.TickDeltas),
