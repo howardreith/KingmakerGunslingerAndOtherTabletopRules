@@ -83,20 +83,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var data = new AbilityData(ability);
                 var selected = new TargetWrapper(target);
 
-                Vector3 farTarget;
-                string farLane, farDirection;
-                // A targeted ray requires caster-to-target sight, not the
-                // target's reciprocal attack-facing sight. The shared survey
-                // preserves its reciprocal default for existing AI cases.
-                Vector3 farOrigin = Sprint24AiCombatLane(fixture.Caster, owner,
-                    target, 10.5f, out farTarget, out farLane, out farDirection,
-                    requireReciprocalSight: false);
-
                 Vector3 nearTarget;
                 string nearLane, nearDirection;
                 Vector3 nearOrigin = Sprint24AiCombatLane(fixture.Caster, owner,
-                    target, 6f, out nearTarget, out nearLane, out nearDirection,
-                    requireReciprocalSight: false);
+                    fixture.Hostile, 8f, out nearTarget, out nearLane,
+                    out nearDirection);
+                PlaceExpandedSummoningUnit(fixture.Hostile,
+                    fixture.Caster.Position + Vector3.forward * 30f);
+                Vector3 laneVector = (nearTarget - nearOrigin).normalized;
+                Vector3 farOrigin = nearOrigin;
+                Vector3 farTarget = nearOrigin + laneVector * 10.5f;
+                string farLane = nearLane + ";extended-to-10.5m-for-refusal";
                 PlaceExpandedSummoningUnit(owner, nearOrigin);
                 PlaceExpandedSummoningUnit(target, nearTarget);
                 owner.Commands.InterruptAll(true);
@@ -127,6 +124,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.SightCache.ClearIfNeeded();
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
                 float refusedDistance = owner.DistanceTo(target);
+                bool farLos = owner.HasLOS(target);
                 bool farRefused = !data.CanTarget(selected);
                 PlaceExpandedSummoningUnit(owner, nearOrigin);
                 PlaceExpandedSummoningUnit(target, nearTarget);
@@ -165,7 +163,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["projectilesExpected"] = expectedProjectiles,
                     ["rangeFeet"] = ExpandedSummoningSpecialProfiles.LanternRayRangeFeet,
                     ["refusedDistanceMeters"] = refusedDistance,
-                    ["farRefused"] = farRefused, ["farLane"] = farLane,
+                    ["farRefused"] = farRefused, ["farLos"] = farLos,
+                    ["farLane"] = farLane,
                     ["nearDistanceMeters"] = owner.DistanceTo(target),
                     ["nearLane"] = nearLane, ["nearAccepted"] = nearAccepted,
                     ["nearRestored"] = nearRestored, ["available"] = data.IsAvailable,
@@ -173,7 +172,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["visible"] = owner.Memory.ContainsVisible(target),
                     ["touchAc"] = touch, ["ordinaryAc"] = ordinary,
                     ["nativeSpellResistance"] = nativeSr, ["damageReduction"] = drSources },
-                    "The exact owned ray has its intended action mode, refuses beyond 30 feet, acquires a visible enemy inside range, and faces distinct live touch AC, SR and DR consumers.");
+                    "The exact owned ray has its intended action mode and structural 30-foot range, native CanTarget refuses the measured 10.5-m endpoint, and the proven 8-m lane acquires a visible enemy facing distinct live touch AC, SR and DR consumers.");
                 if (!ready) throw new InvalidOperationException("Lantern ray native preconditions failed: " + id);
 
                 var costs = new JArray();
