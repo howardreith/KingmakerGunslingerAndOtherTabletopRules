@@ -10,8 +10,11 @@ function New-KmgSummonCleanup2Plan {
     }
     if($SaveName -cne 'KMG_AUTOMATION_WORKING') { throw 'Exact KMG_AUTOMATION_WORKING is required.' }
     $allowed=@('giant-crab','griffon','giant-stag-beetle','girallon','ettin','elephant',
-        'stegosaurus','hill-giant','stone-giant','frost-giant','fire-giant','cloud-giant',
+        'stegosaurus','hill-giant','stone-giant','fire-giant','cloud-giant',
         'storm-giant','brachiosaurus','gorgon')
+    if(@($CreatureKeys | Where-Object {$_ -is [string] -and $_ -ceq 'frost-giant'}).Count -gt 0) {
+        throw "frost-giant is a retained native option, not a generated creature-review key. Use disposable-expanded-summoning-cleanup2-native-review with reviewPhase=giant-lineup for the existing Nature's Ally VII and Summon Monster VIII Frost routes."
+    }
     if($null -eq $CreatureKeys -or $CreatureKeys.Count -lt 1 -or $CreatureKeys.Count -gt $allowed.Count) {
         throw 'An explicit nonempty bounded creature selection is required.'
     }
@@ -82,6 +85,37 @@ function Wait-KmgSummonCleanup2Exit {
     $deadline=[DateTime]::UtcNow.AddSeconds(180)
     while(@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count -gt 0 -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 500 }
     Assert-KmgNotRunning
+}
+
+function Wait-KmgSummonCleanup2ProtectedExit {
+    param([Parameter(Mandatory=$true)]$Record,[Parameter(Mandatory=$true)][string]$RecordPath,
+        [Parameter(Mandatory=$true)]$ExitFailure)
+    # This process owns the live OS handles. A status file or a script variable
+    # cannot outlive powershell.exe -File. Do not unwind to an unhandled error
+    # until actual process absence has been confirmed, even when evidence IO is
+    # the original failure. No settings/install restoration occurs in this loop.
+    $guard=[ordered]@{ownerProcessId=$PID;status='WAITING_FOR_NATIVE_EXIT';
+        startedUtc=[DateTime]::UtcNow.ToString('o');confirmedExitUtc=$null;
+        lastEvidenceError=$null;reason=$ExitFailure.Exception.Message}
+    $Record.protectedExitGuard=$guard
+    $Record.status='FAILED'
+    $Record.restoration=[ordered]@{verified=$false;status='WAITING_FOR_NATIVE_EXIT';error=$ExitFailure.Exception.Message}
+    $nextEvidence=[DateTime]::MinValue
+    while($true) {
+        $absent=$false
+        try {Assert-KmgNotRunning;$absent=$true} catch { $absent=$false }
+        if($absent) {
+            $guard.status='EXIT_CONFIRMED'
+            $guard.confirmedExitUtc=[DateTime]::UtcNow.ToString('o')
+            return
+        }
+        if([DateTime]::UtcNow -ge $nextEvidence) {
+            try {Write-KmgCompatibilityJsonAtomic $RecordPath $Record}
+            catch {$guard.lastEvidenceError=$_.Exception.Message}
+            $nextEvidence=[DateTime]::UtcNow.AddSeconds(5)
+        }
+        [Threading.Thread]::Sleep(250)
+    }
 }
 function Invoke-KmgSummonCleanup2Deploy {
     param($Plan,$Lease,[string]$ScriptsDirectory)
@@ -173,7 +207,17 @@ function Invoke-KmgSummonCleanup2Transaction {
         $record.status='OBSERVED'
     } catch { $failure=$_;$record.error=$_.Exception.Message;$record.status='FAILED' }
     finally {
-        if($entered) {try {Wait-KmgSummonCleanup2Exit} catch {$exitFailure=$_}}
+        if($entered) {
+            try {Wait-KmgSummonCleanup2Exit}
+            catch {
+                $exitFailure=$_
+                if(-not $failure){$failure=$exitFailure}
+                Wait-KmgSummonCleanup2ProtectedExit -Record $record -RecordPath (Join-Path $evidence 'installed-stack.json') -ExitFailure $exitFailure
+                # Only the confirmed native exit above permits restoration and
+                # eventual disposal. Preserve the original failure verdict.
+                $exitFailure=$null
+            }
+        }
         if($null -eq $exitFailure) {
             # Settings and save preservation share one independent boundary;
             # their own checks are also independent so one failure cannot skip
@@ -211,12 +255,6 @@ function Invoke-KmgSummonCleanup2Transaction {
             if($boundary.installationError) {$failure=$boundary.installationError}
             elseif($boundary.settingsError) {$failure=$boundary.settingsError}
             elseif(-not $verified) {$failure=[Management.Automation.ErrorRecord]::new([Exception]::new('Exact installation restoration was not verified.'),'cleanup2-restore','InvalidResult',$null)}
-        } else {
-            $failure=$exitFailure
-            $record.restoration=[ordered]@{verified=$false;status='WAITING_FOR_NATIVE_EXIT';error=$exitFailure.Exception.Message}
-            # Retain handles until this owning process exits; no settings or
-            # installation writes are allowed while Kingmaker remains alive.
-            $script:KmgCleanup2PendingHandles=[pscustomobject]@{lease=$lease;catalog=$catalog}
         }
         $record.completedUtc=[DateTime]::UtcNow.ToString('o')
         if($failure){$record.status='FAILED'}else{$record.status='RESTORED'}

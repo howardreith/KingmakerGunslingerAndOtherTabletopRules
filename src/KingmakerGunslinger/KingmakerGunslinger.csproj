@@ -150,6 +150,7 @@
     <Compile Include="Summoning\SummonMultiplicity.cs" />
     <Compile Include="Summoning\SummonTemplatePolicy.cs" />
     <Compile Include="Summoning\SummonCreatureSpec.cs" />
+    <Compile Include="Summoning\Cleanup2CreatureReviewRoster.cs" />
     <Compile Include="Summoning\SummonVariantSpec.cs" />
     <Compile Include="Summoning\SummonChoicePresentationPolicy.cs" />
     <Compile Include="Summoning\GiantSummonPresentationPolicy.cs" />

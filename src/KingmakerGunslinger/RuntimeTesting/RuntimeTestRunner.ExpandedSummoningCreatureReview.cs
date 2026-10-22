@@ -111,24 +111,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var result = new List<SummonVariantSpec>();
             foreach (string key in keys)
             {
-                SummonCreatureSpec creature = ExpandedSummoningCatalog.All
-                    .SingleOrDefault(value => value.Key == key);
-                if (creature == null) throw new InvalidOperationException(
-                    "Unknown creature key for review: " + key + ".");
                 if (quantity != SummonMultiplicity.One &&
                     !IsGroundCrowdReviewKey(key))
                     throw new InvalidOperationException(
                         "This creature is not on the crowd review roster: " +
                         key + ".");
-                SummonFamily family = creature.NaturesAllyTier.HasValue ?
-                    SummonFamily.NaturesAlly : SummonFamily.Monster;
-                int tier = family == SummonFamily.NaturesAlly ?
-                    creature.NaturesAllyTier.Value : creature.MonsterTier.Value;
-                if (quantity == SummonMultiplicity.OneD4PlusOne) tier += 2;
-                SummonVariantSpec variant = ExpandedSummoningCatalog
-                    .GenerateVariants(family).Single(value =>
-                        value.Creature.Key == key && value.ParentTier == tier &&
-                        value.Multiplicity == quantity);
+                SummonVariantSpec variant = Cleanup2CreatureReviewRoster.ResolveGeneratedVariant(key, quantity);
                 // A withheld creature's art has to be inspected under the
                 // party camera before its suppression is lifted, which cannot
                 // be done through a published parent it does not have. Sprints
