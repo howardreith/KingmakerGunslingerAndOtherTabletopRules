@@ -55,7 +55,8 @@ completed results, not a new execution by this documentation lane.
 
 After the bounded ordinary native-exit wait fails, the **same original wrapper
 process** enters `Wait-KmgSummonCleanup2ProtectedExit`. It waits without an
-automatic deadline until `Assert-KmgNotRunning` confirms absence. It retains the
+automatic deadline until `Assert-KmgSummonCleanup2NativeExit` confirms absence
+through the precise native process query. Unknown/error is not absence. It retains the
 live protected-save handles and exclusive transaction lease during that wait;
 settings/installation restoration does not run while the game remains present.
 The guard records its owner PID and waiting state. A waiting-status evidence IO
@@ -75,11 +76,12 @@ Root reported these completed no-game checks on the integrated bytes:
 | --- | --- | --- | --- |
 | `Test-SummonCleanup2CurrentStack.ps1` | PowerShell 7 | 124/124 PASS | 11.900 seconds |
 | `Test-SummonCleanup2CurrentStack.ps1` | Windows PowerShell 5.1 | 124/124 PASS | 15.227 seconds |
-| `Test-SummonCleanup2ProcessGuard.ps1` | Windows PowerShell 5.1 | 46/46 PASS | 9.025 seconds |
-| `Test-SummonCleanup2ProcessGuard.ps1` | PowerShell 7 | 46/46 PASS | 13.727 seconds |
+| `Test-SummonCleanup2ProcessGuard.ps1` | Windows PowerShell 5.1 | 70/70 PASS | 13.065 seconds |
+| `Test-SummonCleanup2ProcessGuard.ps1` | PowerShell 7 | 70/70 PASS | 12.330 seconds |
 
 The separate-process guard fixtures exercise both ordinary waiting evidence
-and deliberate waiting-evidence IO failure. While a separate stand-in process
+and deliberate waiting-evidence IO failure, plus a process-query failure that
+continues after stand-in exit until the query recovers. While a separate stand-in process
 is alive, another process cannot write, delete or rename protected fixture
 saves or acquire the exclusive transaction boundary; the original owner stays
 alive and the staged installation is retained. After the stand-in exits
