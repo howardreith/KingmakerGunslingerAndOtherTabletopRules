@@ -76,6 +76,7 @@ def main() -> int:
     private_refs = [
         managed / "Assembly-CSharp.dll",
         managed / "Assembly-CSharp-firstpass.dll",
+        managed / "UniRx.dll",
         managed / "Newtonsoft.Json.dll",
         managed / "UnityEngine.dll",
         managed / "UnityEngine.AnimationModule.dll",

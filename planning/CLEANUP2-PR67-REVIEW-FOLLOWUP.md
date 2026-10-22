@@ -1,10 +1,67 @@
 # PR 67 review follow-up
 
-Development checkpoint, 2026-10-22. PR stays draft. The mission, production
-attack visual acceptance, giant differentiation and owner art approval remain open.
-The reviewed input was aea5a8ae5553650602b23aa6d5284f957ac1a525.
+Completion milestone in progress, 2026-10-22. PR stays draft; no merge/release or
+owner aesthetic approval is claimed. The completion intake was clean
+`48a6781392c3d5990c49d9a0e27363e4e3372740` on the existing integration branch.
 
-## Ettin replacement continuation, 2026-10-22 (current)
+## Completion implementation (current)
+
+- Girallon distal fingers and hand paint, Stegosaurus stance/ankles/material,
+  and Brachiosaurus neck/chest/limb treatment are implemented and reproduced
+  exactly. Root inspected full offline front/side/gameplay previews and rejected
+  an earlier Brachiosaurus neck fold. The final continuous neck arc preserves
+  the exact tail/gesture weights. Native inspection of these changed bytes is pending.
+- MENU-02 now follows the authorized source-preserving Option B implementation:
+  a transient desktop Elementals chooser, original source/child dispatch, native
+  controller casting navigation, and ordinary PC learning/preparation disclosure.
+  Mixed SM/SNA rows and original definitions/resources remain intact. Console
+  learning/preparation and the complete source-case native proof remain open.
+- Actual native Default progression is scoped through the native mode factory
+  and the existing fixture clock gate. Manual pulses are refused while that
+  exact native mode owns progression. The ordinary body/Ettin command checks
+  retain weapon, rule, action-cost and source-state evidence; optional Hit and
+  OffHandAttack handles are not manufactured.
+- The exact three-phase cold transaction is implemented. Disposable Working/
+  backup/metadata/current-intake tests pass458/458; separate guard-host/process
+  lifetime tests pass316/316. Current inventory has no fixed mod-count gate.
+  See the current section of `CLEANUP2-ETTIN-COLD-PLAN.md`; native cold remains pending.
+- Relative render-only giant ownership and a stable visual sole pivot are wired.
+  Copied native Cloth remains closed in production until the bounded native
+  contact/solver probe establishes its contract. No gameplay root is scaled.
+
+### Review19 evidence and resulting corrections
+
+Frozen source `276fd667ccd6cbb060ee3e7b6c672625f8673356`, package
+`be44e6129b03275f3e28c12ac064f13338742506c33255c9bcbf5f7c3dba9308`,
+DLL `e6548c89cf91fc62e74b4a0ae88f7be4120951a964da54e7e0455974664a33fa`,
+MVID `19507ffc-c653-46d8-956e-ea6c817cda3c`.
+
+- Scale probe `20261022T2138470733174Z-disposable-expanded-summoning-cleanup2-native-review`:
+  **51 PASS / 3 FAIL**, 93.508s. Four finite body measurements per actor were
+  stable, but all actors had the same native visual/navmesh offset; the old
+  exact-ground admission refused before Cloth. The first wider PNG was inspected
+  and rejected because a castle wall obscured the actors. New camera obstruction
+  checks/downward angles and relative fixed-sole comparison are unexecuted corrections.
+- Gorgon `20261022T2145486092881Z-disposable-expanded-summoning-cleanup2-native-review`:
+  **12 PASS / 2 FAIL**, 94.080s; only the old optional-Hit packet expectation
+  failed. Root inspected front/side/action originals: hard plates were excessively
+  black. Installed D3D11 shader inspection proves a direct-light metallic path
+  without environment reflection: effective metal.94 removes94% of diffuse.
+  The new owned scalar.4 retains62.4% diffuse plus actual native tinted specular.
+  Geometry/paint are unchanged; this correction awaits native inspection.
+- Both transactions confirmed game exit, exact preservation of all **95 saves
+  in their fresh intake**, and exact installation/settings restoration. Receipts:
+  `compat-20261022T213810Z-08b741dcf755` and
+  `compat-20261022T214526Z-5217b5993e10` under the lab compatibility-state directory.
+  Original FAIL records remain unchanged.
+
+Development validation window21:33:26–22:02:54UTC stayed within30minutes.
+Affected production compilation passed;14 selected source/visibility rollback/
+geometry/giant-policy cases passed in1.4s. Compile failures exposed and corrected
+missing native abstract/reference/type contracts before native use. The final
+90-minute completion qualification has **not** begun.
+
+## Ettin replacement continuation, 2026-10-22 (previous checkpoint)
 
 Intake verified clean integration HEAD `e3cd9471600f9a376c060faf5a480ab0cd086662`
 and the same open draft PR. This continuation supersedes the rejected appended

@@ -64,7 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Cleanup2Check("scale-prototype-admission", admitted, new JObject { ["standingProof"] = standingProof,
                 ["actorCount"] = actors.Count, ["baselineSampleCount"] = beforeSamples.Count,
                 ["baselineImage"] = "cleanup2-scale-prototype-before.png", ["productionActivation"] = false },
-                "Only the complete verified-Human plus six-family canonical common-plane lineup with four valid standing samples admits this experiment.");
+                "Only the exact canonical common-plane lineup with four finite stable current-body samples admits this relative render-only experiment; the Human remains an unchanged control.");
             if (!admitted) throw new InvalidOperationException("UNKNOWN: scale prototype refused without a complete standing/current-pose baseline.");
             Cleanup2ActorMetric[] before = beforeSamples.Last();
             var original = actors.Select(Cleanup2CaptureScaleSource).ToArray();
@@ -76,13 +76,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var watch = Stopwatch.StartNew();
             bool waiting = _sprint25WaitingForUnityAppearance, paused = Game.Instance.IsPaused;
             UnitAnimationActionHandle animation = null;
+            Cleanup2GiantRenderScalePrototype.DisabledCapsuleContactProbe contact = null;
             try
             {
                 for (int i = 1; i < actors.Count; i++)
                 {
                     var profile = GiantSummonPresentationPolicy.All.Single(value => value.Key == keys[i] && value.UnitGuid == actors[i].Blueprint.AssetGuid);
                     targets[i] = profile.ReferenceHeightFeet;
-                    factors[i] = targets[i] / 6f * before[0].Height / before[i].Height;
+                    factors[i] = profile.RelativeVisualFactor;
                     if (!Cleanup2Finite(factors[i]) || factors[i] <= 0f)
                         throw new InvalidOperationException("Non-finite/nonpositive measured prototype factor: " + keys[i]);
                 }
@@ -98,17 +99,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["limit"] = "Stone/Fire/Cloud/Storm require exact ordinary production palette ownership before helper intake. Hill/Frost retain their native palette. The observer never releases a production owner; art acceptance remains separate." },
                         "Palette ownership/proof is settled before the scale helper captures material identities.");
                     if (!paletteReady) throw new NotSupportedException("UNKNOWN: exact prototype palette proof absent for " + keys[i]);
-                    Cleanup2GiantRenderScalePrototype owner = Cleanup2TakeScalePrototype(fixture, actors, actors[i], keys[i], factors[i]);
+                    Cleanup2GiantRenderScalePrototype owner = Cleanup2TakeScalePrototype(fixture, actors, actors[i], keys[i], factors[i], beforeSamples.Average(values => values[i].Sole.y));
                     prototypes.Add(owner);
                     foreach (Cloth cloth in owner.OwnedCloths) clothMotion.Add(new Cleanup2ScaleClothMotion { Cloth = cloth });
                     Cleanup2Check("scale-prototype-take-" + keys[i], true, new JObject {
                         ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
-                        ["beforeBodyHeightWorldUnits"] = before[i].Height, ["verifiedHumanBodyHeightWorldUnits"] = before[0].Height,
-                        ["humanArtAnchorFeet"] = 6, ["proposedTargetFeet"] = targets[i], ["absoluteUniformFactor"] = factors[i],
+                        ["beforeBodyHeightWorldUnits"] = before[i].Height, ["unchangedHumanBodyHeightWorldUnits"] = before[0].Height,
+                        ["relativeFamilyBaseline"] = "hill-giant", ["proposedRelativeHeight"] = factors[i], ["absoluteUniformFactor"] = factors[i],
                         ["fireProposal"] = keys[i] == "fire-giant" ? "14 ft is a provisional art choice within the owner's 12-16 ft range, not a uniquely specified PF height." : null,
                         ["helper"] = owner.Describe() },
-                        "A request-owned absolute visual factor derives from actual comparable bodies; native root/skeleton/collider dimensions remain governed by invariance checks.");
+                        "The selected relative family ratio applies once to an owned visual skeleton; native root/skeleton/collider dimensions remain governed by invariance checks.");
                 }
+                contact = Cleanup2GiantRenderScalePrototype.DisabledCapsuleContactProbe.Take(prototypes[keys.IndexOf("frost-giant") - 1]);
                 _sprint25WaitingForUnityAppearance = true;
                 Game.Instance.IsPaused = false;
                 // Let newly owned native Cloth solvers receive bounded Unity
@@ -117,6 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (watch.Elapsed.TotalSeconds > 120) throw new TimeoutException("Scale prototype wall bound.");
                     yield return 0;
+                    contact.Observe();
                 }
                 var afterSamples = new List<Cleanup2ActorMetric[]>();
                 for (int sample = 0; sample < 4; sample++)
@@ -124,7 +127,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 12; frame++)
                     {
                         if (watch.Elapsed.TotalSeconds > 120) throw new TimeoutException("Scale prototype wall bound.");
-                        Cleanup2ScaleObserveCloths(clothMotion); yield return 0;
+                        Cleanup2ScaleObserveCloths(clothMotion); contact.Observe(); yield return 0;
                     }
                     foreach (var owner in prototypes) Cleanup2RequireScalePrototype(owner);
                     var measured = actors.Select((actor, i) => Cleanup2MeasureActor(actor,
@@ -135,29 +138,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["basisOrigin"] = SurveyVector(groundPoints[0]), ["actors"] = new JArray(measured.Select(value => value.Document)) },
                         "Actual current-pose transient baked surfaces, with verified skin-to-world convention, provide post-prototype crown/sole/height; no culling bounds substitute.");
                 }
+                JObject contactResult = contact.Describe();
+                Cleanup2Check("scale-prototype-disabled-capsule-contact", (bool?)contactResult["passed"] == true,
+                    contactResult, "Two original no-seam authored cloth grids prove a stable particle frame, positive motion and a disabled-capsule response against an otherwise identical no-collider control; no enabled physics collider is permitted.");
+                contact.Dispose();
+                yield return 0;
+                JObject contactRelease = contact.Describe();
+                Cleanup2Check("scale-prototype-contact-control-released",
+                    (bool?)contactRelease["allOwnedResourcesReleased"] == true && (bool?)contactRelease["borrowedNativeMaterialAlive"] == true,
+                    contactRelease, "The bounded authored control releases its own grids/components only and preserves the borrowed native material.");
                 var ratios = new JArray(); bool ratiosValid = true;
                 for (int i = 0; i < actors.Count; i++)
                 {
                     float height = afterSamples.Average(values => values[i].Height);
                     float range = afterSamples.Max(values => values[i].Height) - afterSamples.Min(values => values[i].Height);
                     float groundGap = afterSamples.Max(values => Mathf.Abs(values[i].Sole.y - groundPoints[i].y));
+                    float baselineSoleOffset = beforeSamples.Average(values => values[i].Sole.y - groundPoints[i].y);
+                    float ownFactor = i == 0 ? 1f : factors[i];
+                    float expectedSoleOffset = baselineSoleOffset;
+                    float soleOffsetError = afterSamples.Max(values => Mathf.Abs(values[i].Sole.y - groundPoints[i].y - expectedSoleOffset));
                     float expected = i == 0 ? before[i].Height : before[i].Height * factors[i];
                     float tolerance = .05f * (i == 0 ? 1f : factors[i]) + .01f;
                     bool exact = afterSamples.All(values => values[i].Valid) && Mathf.Abs(height - expected) <= tolerance &&
-                        range <= .05f * (i == 0 ? 1f : factors[i]) && groundGap <= .15f;
+                        range <= .05f * ownFactor && soleOffsetError <= tolerance;
                     ratiosValid &= exact;
                     ratios.Add(new JObject { ["key"] = keys[i], ["height"] = height, ["poseHeightRange"] = range,
                         ["expectedUsingMeasuredFactor"] = expected, ["heightError"] = height - expected,
                         ["poseComparisonTolerance"] = tolerance, ["maximumOwnGroundContactGap"] = groundGap,
+                        ["nativeBaselineSoleOffset"] = baselineSoleOffset, ["expectedScaledSoleOffset"] = expectedSoleOffset,
+                        ["maximumSoleOffsetError"] = soleOffsetError,
                         ["heightOverCurrentHuman"] = height / afterSamples.Average(values => values[0].Height),
-                        ["feetUsingCurrentHuman6ftArtAnchor"] = height / afterSamples.Average(values => values[0].Height) * 6f,
-                        ["proposedTargetFeet"] = i == 0 ? 6f : targets[i], ["currentPoseCompatible"] = exact });
+                        ["heightOverCurrentHill"] = height / afterSamples.Average(values => values[1].Height),
+                        ["proposedRelativeHeight"] = ownFactor, ["currentPoseCompatible"] = exact });
                 }
                 bool humanUnmodified = Cleanup2ScaleSourceRestored(original[0]);
                 Cleanup2Check("scale-prototype-measured-height-ratios", ratiosValid && humanUnmodified,
                     new JObject { ["actors"] = ratios, ["humanUnmodified"] = humanUnmodified,
-                        ["toleranceMeaning"] = "Existing 5cm standing-pose variation allowance scales with the explicit visual factor, plus1cm skinning comparison allowance. These are current-pose experimental observations, not accepted final calibrations." },
-                    "Post-prototype body heights agree with measured proposed factors within recorded standing-pose variation, with unchanged Human and each actor's own ground contact.");
+                        ["toleranceMeaning"] = "Existing5cm native idle-pose variation scales with the selected visual ratio, plus1cm skinning allowance. The stable owned sole pivot must preserve the measured baseline sole plane rather than amplify its navmesh gap. Physical ground contact still requires actual native frame review." },
+                    "Post-prototype heights follow the selected family ratios while the stable owned sole pivot preserves the observed native foot plane; Human and native gameplay roots remain unchanged.");
                 if (!ratiosValid || !humanUnmodified) throw new InvalidOperationException("UNKNOWN: post-prototype current-pose height/ground or unchanged Human proof failed.");
                 Cleanup2Check("scale-prototype-after-lineup", true,
                     Cleanup2CaptureLineup(actors, keys, afterSamples.Last(), "cleanup2-scale-prototype-after.png", true),
@@ -228,6 +246,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     restore("animation", () => Cleanup2ScaleFinishAnimation(ref animation));
+                    restore("contact-control", () => { if (contact != null) contact.Dispose(); });
                     foreach (var actor in actors.Skip(1)) restore("owned-commands-" + actor.UniqueId, () => actor.Commands.InterruptAll(true));
                     for (int i = prototypes.Count - 1; i >= 0; i--) { var owner = prototypes[i]; restore("prototype-" + i, owner.Dispose); }
                     for (int i = palettes.Count - 1; i >= 0; i--) { var palette = palettes[i]; restore("palette-" + i, palette.Dispose); }
@@ -254,12 +273,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private Cleanup2GiantRenderScalePrototype Cleanup2TakeScalePrototype(ExpandedSummoningCorrectionFixture fixture,
-            IList<UnitEntityData> actors, UnitEntityData actor, string key, float factor)
+            IList<UnitEntityData> actors, UnitEntityData actor, string key, float factor, float nativeSoleWorldY)
         {
             try
             {
                 return Cleanup2GiantRenderScalePrototype.Take(_request, actor, fixture.Caster, actors.Skip(1).ToList(), factor,
-                    new Cleanup2GiantRenderScalePrototype.ProposedClothDistances(factor, factor, "cleanup2-linear-cloth-distance-proposal-v1"));
+                    new Cleanup2GiantRenderScalePrototype.ProposedClothDistances(factor, factor, "cleanup2-linear-cloth-distance-proposal-v1"), nativeSoleWorldY);
             }
             catch (Exception error)
             {

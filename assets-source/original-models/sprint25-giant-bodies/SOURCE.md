@@ -150,3 +150,45 @@ native animation and contact qualification. Human aesthetic approval remains
 `originalBodyAssetsAuthored` stays **false** until both geometries, UVs,
 albedos, provenance and the required inspection outputs all exist and verify.
 Textures alone do not flip it.
+
+## Completion continuation: Brachiosaurus neck/chest finish (2026-10-22)
+
+`refine_giant_bodies.py` now applies a Brachiosaurus-only local sculpture
+after the stable union and UV operation. Original project neck ring scalars
+showed a long near-vertical segment followed by a sharp bend. The centreline
+now follows a continuous rising arc and the existing surface is relaxed
+locally. A monotone anterior compression blends the hanging lower neck into
+a sloping shoulder/chest. Anterior withers rise modestly and ankle shafts
+taper without moving soles. The too-strong folded intermediate was rejected;
+final full front/side/party/rear pixels were opened and inspected.
+
+This preserves the exact preceding UV, triangle and complete skin-weight bytes,
+all 605 tail position/normal rows and `attackGestureTailRig` metadata. The
+40 Tail0-pinned junction vertices and 70 crossing triangles remain exact.
+The original `repair_brachiosaurus_tail_weights.py` is unchanged. No private
+gesture, source skeleton, native action, root/collider, mechanic or opacity
+code is modified. The Head-driven stiff-neck adaptation remains explicit.
+Elephant's generator branch and shipped assets are untouched.
+
+Original scale-edge/fold diffuse paint replaces the flatter coat. No native
+texture is sampled and no shader response is assumed. Current pair:
+
+| File | SHA-256 |
+| --- | --- |
+| `brachiosaurus-mesh.json` | `baa97de9024fcbc9b07d8a1dc857813235aff8dcb276c4c2aa9be617a729fef7` |
+| `brachiosaurus-albedo.png` | `160e4b71ae1335d6df37a0d8eac491e863b82dc272cfe24e42173a6d40107ea4` |
+
+Regenerate using the existing `--kind brachiosaurus` command. The local tail
+repair module path is now explicitly added by the entry point. Two clean
+Blender 4.5.10 runs reproduce the complete pair exactly with LF JSON. Focused
+checks pass: stable 29-driver palette, 8,302 vertices/12,836 triangles, closed
+outward surfaces, normalized weights and exact protected tail/UV/skin data.
+
+Local `artifacts/cleanup2-completion-art/brachiosaurus/candidate` contains full
+rest views and `gesture-synthetic` ready/act/recovery views. The latter use
+only the project's own rest-palette pivots and original qualified gesture
+angles; all non-tail/junction displacement is zero and the act edge-length
+ratio is 0.752679–1.327635. No artificial pre-act windup is claimed. They prove
+an authored deformation envelope, not current native TRS, ordinary approach,
+enemy contact, timing or owner acceptance. Historical review18 native results
+retain their old asset identity; the changed neck/body needs native inspection.

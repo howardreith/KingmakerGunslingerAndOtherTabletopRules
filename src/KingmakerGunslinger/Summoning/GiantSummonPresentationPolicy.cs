@@ -12,6 +12,12 @@ namespace KingmakerGunslinger.Summoning
         internal string Key { get; private set; }
         internal string UnitGuid { get; private set; }
         internal float ReferenceHeightFeet { get; private set; }
+        // Relative family art hierarchy. Actual review19 current-body samples
+        // were ~3.50 units for both native donor families; no Human/feet
+        // conversion or assumed navmesh-to-sole contact authorizes this ratio.
+        internal float RelativeVisualFactor { get { return ReferenceHeightFeet / 10f; } }
+        internal string NativePrefabId { get { return Key == "frost-giant" || Key == "fire-giant" || Key == "storm-giant"
+            ? "df0f3fbceb3605d489c0dec8fa5c7d1e" : "635d6dee1c7831b41aa987bdbeff14bc"; } }
     }
 
     internal struct GiantPresentationScale
@@ -102,6 +108,15 @@ namespace KingmakerGunslinger.Summoning
             return profile.UnitGuid != NativeFrostGuid || FrostSources.Any(value =>
                 string.Equals(value.Value, summonedBuffSourceAbilityGuid, StringComparison.Ordinal))
                 ? profile : null;
+        }
+
+        internal static float SolePivotOffset(float nativeLocalSole, float factor)
+        {
+            if (float.IsNaN(nativeLocalSole) || float.IsInfinity(nativeLocalSole) || !Positive(factor))
+                throw new ArgumentException("Finite native sole and positive visual ratio required.");
+            float offset = nativeLocalSole * (1f - factor);
+            if (float.IsNaN(offset) || float.IsInfinity(offset)) throw new ArgumentException("Visual sole compensation overflow.");
+            return offset;
         }
 
         internal static string Calculate(GiantSummonPresentationProfile profile,

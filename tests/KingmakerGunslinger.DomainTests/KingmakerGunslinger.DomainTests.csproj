@@ -191,6 +191,8 @@
     <Compile Include="CrabSummonAnimationBindingPolicyTests.cs" />
     <Compile Include="SummonAttackGesturePolicyTests.cs" />
     <Compile Include="Cleanup2ElementalPresentationTests.cs" />
+    <Compile Include="Cleanup2ElementalSourceChooserTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ElementalSourceChooserPolicy.cs"><Link>Summoning\ElementalSourceChooserPolicy.cs</Link></Compile>
     <Compile Include="ExpandedSummoningBaselineInventoryTests.cs" />
     <Compile Include="ExpandedSummoningIdealRosterTests.cs" />
     <Compile Include="ExpandedSummoningMenuScalabilityTests.cs" />

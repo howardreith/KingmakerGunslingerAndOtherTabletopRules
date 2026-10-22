@@ -1,4 +1,37 @@
-# Cleanup 2 Ettin cold hydration: prepared, live execution deferred
+# Cleanup 2 Ettin cold reconstruction
+
+## Completion implementation, October 22, 2026 (current)
+
+The completion handoff authorizes the exact Working-save trio below. The new
+`Invoke-SummonCleanup2ColdCurrentStack.ps1` owns one transaction across all three
+fresh native phases. It captures the actual identified installation (no fixed
+mod count), exact original Working bytes and metadata, all other save leases,
+installation/settings intake and immutable recovery ownership. Restoration runs
+only after confirmed native exit. Unverified restoration retains recovery debt
+and the private backup; `Restore-SummonCleanup2ColdCurrentStack.ps1` requires the
+original ownership hash.
+
+Disposable qualification on PowerShell 5.1:
+
+- Current-intake/backup/metadata/recovery fixtures: **458/458 PASS**, 41.783 s,
+  `artifacts/cleanup2-currentstack-tests/2ec89090c4c347fbb713aec5e176f456`.
+  Valid 17/18-mod inventories restore exactly; changed or ambiguous identities
+  refuse. No historical save or mod count is an authority.
+- Separate guard-host/stand-in-process qualification: **316/316 PASS**, 29.690 s,
+  `artifacts/cleanup2-cold-process-tests/6142cc3560024bf68c9c321d70a40336`.
+  This proves real operating-system write/delete/rename denial while each child
+  remains alive, including launcher/phase/process-query failures. The subsequent
+  count correction did not change that process/lease/restoration control flow.
+
+The current C# cold observer already requires the complete replacement Ettin,
+both private chains, binds/material-controller state, source preservation and
+owned resource checks. The old coverage limitation below is superseded; no
+duplicate attachment observer is required. **Actual native cold reconstruction
+is still unexecuted** until the new scripts and candidate are frozen together.
+These fixture results do not claim native reconstruction or live restoration.
+
+The remainder preserves the earlier plan and its original failed/refusing
+boundary for provenance.
 
 ## Exact intended scope
 
@@ -22,7 +55,7 @@ roster, another save or a release qualification claim. The protected baseline
 and every other save must match a fresh intake catalog. No fixed historical
 save count substitutes for that catalog.
 
-## Concrete missing transaction boundary
+## Historical missing transaction boundary (superseded above)
 
 `Invoke-Sprint22InstalledStack.ps1` currently owns one phase. It validates the
 candidate/package/source binding, requires exactly eleven identifiable installed
@@ -78,7 +111,7 @@ Before any live use, implement and qualify one exact transaction spanning:
 This is a missing implementation/qualification prerequisite, not an owner
 permission request. The authorized Working-only task does not waive it.
 
-## Existing observer coverage limit
+## Historical observer coverage limit (superseded)
 
 The selected roster policy already names exactly Ettin, Cloud and Storm.
 `ObserveSprint29PersistentGiant` checks distinct owned nonremovable/nonlootable

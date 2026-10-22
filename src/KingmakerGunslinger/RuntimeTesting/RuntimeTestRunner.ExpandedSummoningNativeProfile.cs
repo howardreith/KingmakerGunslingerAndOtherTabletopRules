@@ -115,6 +115,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "gorgon-presentation" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "recovery-bodies" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-commands" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-presentation" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "cloth-probe"))) {
                         var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,

@@ -3,6 +3,7 @@ Set-StrictMode -Version Latest
 $script:KmgPrivateReferencePaths = @(
     'Assembly-CSharp.dll',
     'Assembly-CSharp-firstpass.dll',
+    'UniRx.dll',
     'Newtonsoft.Json.dll',
     'UnityEngine.dll',
     'UnityEngine.AnimationModule.dll',

@@ -6,14 +6,15 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.View;
+using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.RuntimeTesting
 {
-    // Explicit experimental fixture entry only. No production attach hook,
-    // Harmony registration, automatic calibration or accepted height is here.
+    // One owner implementation is shared by the bounded experiment and the
+    // strictly scoped production entry. Copied Cloth remains experimental.
     // Native WeaponSnap has default execution order; this matches the existing
     // qualified visual attachment order after its LateUpdate.
     [DefaultExecutionOrder(10010)]
@@ -186,16 +187,174 @@ namespace KingmakerGunslinger.RuntimeTesting
         private float _factor;
         private string _runId, _status;
         private bool _committed, _disposed;
+        private bool _production;
+        private bool _retirementPending;
+        private int _retainedSkinReferences, _retainedClothReferences, _retainedAnchorReferences;
+        private string _productionSourceGuid;
+        private Vector3 _visualPivot, _ownedOffset;
         private int _syncCount, _lastSyncFrame;
         private bool _sourceTransformsUnchanged = true, _colliderGeometryUnchanged = true, _colliderMatricesUnchanged = true;
         private JObject _lastReport;
         private readonly List<string> _restoreIssues = new List<string>();
 
         internal IEnumerable<Cloth> OwnedCloths { get { return _ownedCloths.ToArray(); } }
+        internal bool IsDisposed { get { return _disposed; } }
+        internal string Status { get { return _status; } }
+
+        // A small authored cloth control, never a replacement giant asset.
+        // The paired inputs differ only by an explicit DISABLED capsule array.
+        // Pinned vertices establish the returned-particle coordinate frame
+        // before contact is evaluated; no native cape particle index map is
+        // assumed and no enabled physics collider is ever created.
+        internal sealed class DisabledCapsuleContactProbe : IDisposable
+        {
+            private const int Side = 9;
+            private readonly GameObject _root;
+            private readonly Cloth[] _cloths = new Cloth[2];
+            private readonly Mesh[] _meshes = new Mesh[2];
+            private readonly Transform[] _frames = new Transform[2];
+            private readonly CapsuleCollider[] _capsules = new CapsuleCollider[2];
+            private readonly Vector3[][] _first = new Vector3[2][];
+            private readonly string[] _spaces = new string[2];
+            private readonly Vector3[] _vertices;
+            private readonly Material _borrowed;
+            private int _samples, _valid, _warmup, _lastFrame = -1;
+            private bool _disposed, _disabled = true;
+            private float _difference, _controlPenetration, _contactPenetration, _motion;
+            private string _reason;
+
+            internal static DisabledCapsuleContactProbe Take(Cleanup2GiantRenderScalePrototype owner)
+            {
+                if (owner == null || owner._production || owner._disposed || !owner._committed ||
+                    owner._actor.Blueprint.AssetGuid != GiantSummonPresentationPolicy.NativeFrostGuid ||
+                    owner._ownedCloths.Count != 1)
+                    throw new InvalidOperationException("Exact request-owned Frost copied-solver owner required for the contact control.");
+                return new DisabledCapsuleContactProbe(owner);
+            }
+
+            private DisabledCapsuleContactProbe(Cleanup2GiantRenderScalePrototype owner)
+            {
+                _borrowed = owner._ownedCloths[0].GetComponent<SkinnedMeshRenderer>().sharedMaterials.FirstOrDefault(value => value != null);
+                if (_borrowed == null) throw new InvalidOperationException("Contact control requires one borrowed live native material.");
+                _root = new GameObject("KMG_C2_DisabledCapsuleContactControl");
+                _root.SetActive(false);
+                _root.transform.SetParent(owner.transform, false);
+                _root.transform.SetPositionAndRotation(owner._actor.Position + Vector3.up * 12f, Quaternion.identity);
+                Vector3 scale = owner.transform.lossyScale;
+                if (!Finite(scale) || scale.x <= 0f || scale.y <= 0f || scale.z <= 0f)
+                { UnityEngine.Object.Destroy(_root); throw new InvalidOperationException("Finite positive contact-parent scale required."); }
+                _root.transform.localScale = new Vector3(1f / scale.x, 1f / scale.y, 1f / scale.z);
+                _vertices = Enumerable.Range(0, Side * Side).Select(index =>
+                    new Vector3((index % Side - 4) * .125f, 2f - index / Side * .25f, 0f)).ToArray();
+                try
+                {
+                    var triangles = new List<int>();
+                    for (int y = 0; y < Side - 1; y++) for (int x = 0; x < Side - 1; x++)
+                    {
+                        int a = y * Side + x;
+                        triangles.AddRange(new[] { a, a + Side, a + 1, a + 1, a + Side, a + Side + 1 });
+                    }
+                    for (int i = 0; i < 2; i++)
+                    {
+                        var node = new GameObject(i == 0 ? "NoCollisionControl" : "DisabledCapsuleContact");
+                        node.transform.SetParent(_root.transform, false); node.transform.localPosition = Vector3.right * i * 3f;
+                        _frames[i] = node.transform;
+                        _meshes[i] = new Mesh { name = "KMG_C2_OriginalContactGrid_" + i };
+                        _meshes[i].vertices = _vertices; _meshes[i].triangles = triangles.ToArray();
+                        _meshes[i].normals = Enumerable.Repeat(Vector3.forward, _vertices.Length).ToArray();
+                        _meshes[i].boneWeights = Enumerable.Range(0, _vertices.Length).Select(index =>
+                            new BoneWeight { boneIndex0 = 0, weight0 = 1f }).ToArray();
+                        _meshes[i].bindposes = new[] { Matrix4x4.identity }; _meshes[i].RecalculateBounds();
+                        var skin = node.AddComponent<SkinnedMeshRenderer>();
+                        skin.sharedMesh = _meshes[i]; skin.sharedMaterial = _borrowed;
+                        skin.bones = new[] { node.transform }; skin.rootBone = node.transform;
+                        skin.localBounds = _meshes[i].bounds;
+                        skin.updateWhenOffscreen = true; skin.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+                        var capsuleNode = new GameObject("DisabledCapsule");
+                        capsuleNode.transform.SetParent(node.transform, false);
+                        _capsules[i] = capsuleNode.AddComponent<CapsuleCollider>();
+                        _capsules[i].enabled = false;
+                        _capsules[i].direction = 0; _capsules[i].center = new Vector3(0f, .9f, -.35f);
+                        _capsules[i].radius = .35f; _capsules[i].height = 1.4f;
+                        _cloths[i] = node.AddComponent<Cloth>();
+                        _cloths[i].useGravity = true; _cloths[i].damping = .15f;
+                        _cloths[i].bendingStiffness = .2f; _cloths[i].stretchingStiffness = .8f;
+                        _cloths[i].externalAcceleration = new Vector3(0f, 0f, -12f);
+                        _cloths[i].worldVelocityScale = 0f; _cloths[i].worldAccelerationScale = 0f;
+                        _cloths[i].coefficients = Enumerable.Range(0, _vertices.Length).Select(index =>
+                            new ClothSkinningCoefficient { maxDistance = index < Side ? 0f : 3f, collisionSphereDistance = 0f }).ToArray();
+                        _cloths[i].capsuleColliders = i == 0 ? new CapsuleCollider[0] : new[] { _capsules[i] };
+                        _cloths[i].sphereColliders = new ClothSphereColliderPair[0];
+                    }
+                    _root.SetActive(true);
+                }
+                catch { Dispose(); throw; }
+            }
+
+            internal void Observe()
+            {
+                if (_disposed || _lastFrame == Time.frameCount) return;
+                _lastFrame = Time.frameCount;
+                _samples++;
+                var local = new Vector3[2][];
+                for (int i = 0; i < 2; i++)
+                {
+                    _disabled &= _capsules[i] != null && !_capsules[i].enabled;
+                    Vector3[] particles = _cloths[i].vertices;
+                    if (particles.Length != _vertices.Length || particles.Any(value => !Finite(value)))
+                    { _reason = "Missing/non-finite particles or authored no-seam grid count mismatch"; if (_valid == 0) { _samples--; _warmup++; } return; }
+                    float localError = Enumerable.Range(0, Side).Max(index => Vector3.Distance(particles[index], _vertices[index]));
+                    float worldError = Enumerable.Range(0, Side).Max(index => Vector3.Distance(particles[index], _frames[i].TransformPoint(_vertices[index])));
+                    string space = localError < .03f && worldError >= .03f ? "renderer-local" :
+                        worldError < .03f && localError >= .03f ? "world" : null;
+                    if (space == null || (_spaces[i] != null && _spaces[i] != space))
+                    { _reason = "Pinned authored vertices do not prove one stable particle frame"; if (_valid == 0) { _samples--; _warmup++; } return; }
+                    _spaces[i] = space;
+                    local[i] = space == "renderer-local" ? particles : particles.Select(_frames[i].InverseTransformPoint).ToArray();
+                    if (_first[i] == null) _first[i] = local[i];
+                    for (int index = Side; index < local[i].Length; index++)
+                    {
+                        _motion = Mathf.Max(_motion, Vector3.Distance(local[i][index], _first[i][index]));
+                        Vector3 p = local[i][index] - new Vector3(0f, .9f, -.35f);
+                        p.x -= Mathf.Clamp(p.x, -.35f, .35f);
+                        float penetration = Mathf.Max(0f, .35f - p.magnitude);
+                        if (i == 0) _controlPenetration = Mathf.Max(_controlPenetration, penetration);
+                        else _contactPenetration = Mathf.Max(_contactPenetration, penetration);
+                    }
+                }
+                _valid++; _reason = null;
+                for (int index = Side; index < _vertices.Length; index++)
+                    _difference = Mathf.Max(_difference, Vector3.Distance(local[0][index], local[1][index]));
+            }
+
+            internal JObject Describe()
+            {
+                bool positive = _samples >= 36 && _valid == _samples && _disabled && _motion > .03f &&
+                    _difference > .03f && _controlPenetration > .08f && _contactPenetration <= .08f;
+                return new JObject { ["passed"] = positive, ["samples"] = _samples, ["validSamples"] = _valid,
+                    ["initializationFramesWithoutAProvenParticleFrame"] = _warmup,
+                    ["particlesPerAuthoredGrid"] = _vertices.Length, ["pinnedParticlesPerGrid"] = Side,
+                    ["controlParticleFrame"] = _spaces[0], ["contactParticleFrame"] = _spaces[1],
+                    ["allOwnedCapsulesAlwaysDisabled"] = _disabled, ["positiveParticleMotion"] = _motion,
+                    ["maximumPairedParticleDifference"] = _difference, ["noCollisionControlMaximumCapsulePenetration"] = _controlPenetration,
+                    ["disabledCapsuleMaximumPenetration"] = _contactPenetration, ["reason"] = _reason,
+                    ["limit"] = "Paired project-authored 9x9 no-seam grids test only disabled-capsule consumption under stated gravity/external acceleration. This does not accept native cape distance/inertia calibration or art.",
+                    ["disposed"] = _disposed, ["allOwnedResourcesReleased"] = _disposed && _root == null && _meshes.All(value => value == null),
+                    ["borrowedNativeMaterialAlive"] = _borrowed != null };
+            }
+
+            public void Dispose()
+            {
+                if (_disposed) return; _disposed = true;
+                foreach (Cloth cloth in _cloths) if (cloth != null) cloth.enabled = false;
+                if (_root != null) { _root.SetActive(false); UnityEngine.Object.Destroy(_root); }
+                foreach (Mesh mesh in _meshes) if (mesh != null) UnityEngine.Object.Destroy(mesh);
+            }
+        }
 
         internal static Cleanup2GiantRenderScalePrototype Take(RuntimeTestRequest request, UnitEntityData actor,
             UnitEntityData requestCaster, IList<UnitEntityData> exactPositiveOwnedActors, float uniformFactor,
-            ProposedClothDistances proposedDistances)
+            ProposedClothDistances proposedDistances, float verifiedNativeSoleWorldY)
         {
             if (request == null || !request.Enabled || !request.ExitAfterCompletion ||
                 request.Scenario != "disposable-expanded-summoning-cleanup2-native-review" ||
@@ -217,6 +376,89 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (actor.View.GetComponentInChildren<Cleanup2GiantRenderScalePrototype>(true) != null)
                 throw new InvalidOperationException("A scale prototype already owns this actor view.");
 
+            return TakeOwned(actor, uniformFactor, proposedDistances, request.RunId, false, verifiedNativeSoleWorldY);
+        }
+
+        internal static Cleanup2GiantRenderScalePrototype TakeProduction(UnitEntityData actor,
+            GiantSummonPresentationProfile profile)
+        {
+            if (!ExpandedSummoningVisualVariantPatch.IsModuleActive || actor == null || actor.Destroyed ||
+                actor.View == null || actor.Blueprint == null || profile == null ||
+                actor.Blueprint.Prefab == null || actor.Blueprint.Prefab.AssetId != profile.NativePrefabId)
+                throw new InvalidOperationException("Exact active giant unit/view/native-prefab scope required.");
+            Buff[] markers = actor.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                value.Blueprint == BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff).ToArray();
+            string source = markers.Length == 1 ? markers[0].MaybeContext?.SourceAbility?.AssetGuid : null;
+            if (source == null || markers[0].MaybeContext.MaybeCaster == null ||
+                !ReferenceEquals(GiantSummonPresentationPolicy.Resolve(true, actor.Blueprint.AssetGuid, source), profile))
+                throw new InvalidOperationException("Exact live giant summon provenance required.");
+            // There is no source-only assertion that a copied solver consumes
+            // disabled capsules or preserves cape contact at another scale.
+            if (actor.View.GetComponentsInChildren<Cloth>(true).Length != 0)
+                throw new NotSupportedException("Production copied-Cloth activation awaits positive native solver/contact qualification.");
+            if (actor.View.GetComponentInChildren<Cleanup2GiantRenderScalePrototype>(true) != null)
+                throw new InvalidOperationException("An existing visual scale owner cannot be replaced.");
+            return TakeOwned(actor, profile.RelativeVisualFactor,
+                new ProposedClothDistances(1f, 1f, "not-used-production-has-no-cloth"), "production:" + actor.UniqueId, true,
+                NativeBodySole(actor, profile), source);
+        }
+
+        private static float NativeBodySole(UnitEntityData actor, GiantSummonPresentationProfile profile)
+        {
+            string bodyName = profile.NativePrefabId == "635d6dee1c7831b41aa987bdbeff14bc" ? "hill_giant_1" : "Frozen_body";
+            SkinnedMeshRenderer[] matches = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value.name == bodyName && value.enabled && value.gameObject.activeInHierarchy).ToArray();
+            if (matches.Length != 1 || matches[0].sharedMesh == null || !matches[0].sharedMesh.isReadable)
+                throw new NotSupportedException("One exact CPU-readable native body is required for a stable visual sole pivot.");
+            var skin = matches[0];
+            Vector3[] vertices = skin.sharedMesh.vertices;
+            BoneWeight[] weights = skin.sharedMesh.boneWeights;
+            Matrix4x4[] binds = skin.sharedMesh.bindposes;
+            Transform[] bones = skin.bones;
+            if (vertices.Length == 0 || vertices.Length > 100000 || weights.Length != vertices.Length)
+                throw new NotSupportedException("Incomplete/bounded native sole input required.");
+            var matrices = new Dictionary<int, Matrix4x4>();
+            float sole = float.MaxValue;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                BoneWeight w = weights[i];
+                int[] indices = { w.boneIndex0, w.boneIndex1, w.boneIndex2, w.boneIndex3 };
+                float[] influences = { w.weight0, w.weight1, w.weight2, w.weight3 };
+                Vector3 world = Vector3.zero; float sum = 0f;
+                if (!Finite(vertices[i])) throw new NotSupportedException("Non-finite native body point.");
+                for (int influence = 0; influence < 4; influence++)
+                {
+                    float weight = influences[influence]; sum += weight;
+                    if (!Finite(weight) || weight < 0f) throw new NotSupportedException("Invalid native sole weight.");
+                    if (weight == 0f) continue;
+                    int index = indices[influence];
+                    if (index < 0 || index >= bones.Length || index >= binds.Length || bones[index] == null ||
+                        !bones[index].IsChildOf(actor.View.transform)) throw new NotSupportedException("Foreign/incomplete native sole palette.");
+                    Matrix4x4 matrix;
+                    if (!matrices.TryGetValue(index, out matrix))
+                    {
+                        matrix = bones[index].localToWorldMatrix * binds[index];
+                        if (!Finite(matrix)) throw new NotSupportedException("Non-finite native sole matrix.");
+                        matrices.Add(index, matrix);
+                    }
+                    world += matrix.MultiplyPoint3x4(vertices[i]) * weight;
+                }
+                if (!Finite(world) || !Finite(sum) || Mathf.Abs(sum - 1f) > .005f)
+                    throw new NotSupportedException("Native sole normalization/position invalid.");
+                sole = Mathf.Min(sole, world.y);
+            }
+            return sole;
+        }
+
+        private static Cleanup2GiantRenderScalePrototype TakeOwned(UnitEntityData actor, float uniformFactor,
+            ProposedClothDistances proposedDistances, string identity, bool production, float nativeSoleWorldY, string productionSource = null)
+        {
+            Transform nativeRoot = actor.View.transform;
+            if (!Finite(nativeSoleWorldY) || Vector3.Dot(nativeRoot.up, Vector3.up) < .9999f)
+                throw new NotSupportedException("Finite native body sole and upright source root required.");
+            float localSole = nativeRoot.InverseTransformPoint(new Vector3(nativeRoot.position.x, nativeSoleWorldY, nativeRoot.position.z)).y;
+            Vector3 pivot = new Vector3(0f, localSole, 0f);
+            Vector3 offset = new Vector3(0f, GiantSummonPresentationPolicy.SolePivotOffset(localSole, uniformFactor), 0f);
             // Capture the entire native view before creating or changing anything.
             // The temporary managed plan owns no Unity object or native state.
             var plan = new Plan(actor, uniformFactor, proposedDistances);
@@ -228,9 +470,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 root.SetActive(false);
                 root.transform.SetParent(actor.View.transform, false);
                 root.transform.localScale = Vector3.one * uniformFactor;
+                root.transform.localPosition = offset;
                 owner = root.AddComponent<Cleanup2GiantRenderScalePrototype>();
                 owner._actor = actor; owner._view = actor.View; owner._sourceRoot = actor.View.transform;
-                owner._runId = request.RunId; owner._factor = uniformFactor; owner._distances = proposedDistances;
+                owner._runId = identity; owner._factor = uniformFactor; owner._distances = proposedDistances; owner._production = production;
+                owner._productionSourceGuid = productionSource;
+                owner._visualPivot = pivot; owner._ownedOffset = offset;
                 owner._sourceTransforms = plan.Transforms; owner._sourceParents = plan.Parents;
                 owner._sourceRenderers = plan.Renderers;
                 owner._skins.AddRange(plan.Skins); owner._statics.AddRange(plan.Statics);
@@ -242,7 +487,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.RequireSourceIdentity(false);
                 owner.Commit();
                 root.SetActive(true);
-                owner._status = "EXPERIMENT_ACTIVE_COLLISION_AND_DISTANCE_CALIBRATION_UNKNOWN";
+                owner._status = production ? "PRODUCTION_ACTIVE_NO_CLOTH" : "EXPERIMENT_ACTIVE_COLLISION_AND_DISTANCE_CALIBRATION_UNKNOWN";
                 owner.Synchronize();
                 return owner;
             }
@@ -330,7 +575,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_mirrors.TryGetValue(source, out found)) return found;
             if (source == null || source.parent == null || !_sourceTransforms.Contains(source))
                 throw new InvalidOperationException("Mirror source escaped the exact preflight hierarchy.");
-            var node = new GameObject("KMG_C2_Mirror_" + Array.IndexOf(_sourceTransforms, source));
+            var node = new GameObject("KMG_C2_Mirror_" + Array.IndexOf(_sourceTransforms, source) + "_" + source.name);
             node.SetActive(false);
             node.transform.SetParent(Mirror(source.parent), false);
             _mirrors.Add(source, node.transform);
@@ -437,7 +682,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else
                 {
                     skin.Source.bones = skin.AppliedBones; skin.Source.rootBone = skin.AppliedRoot;
-                    Vector3 anchor = skin.Source.transform.InverseTransformPoint(_sourceRoot.position);
+                    Vector3 anchor = skin.Source.transform.InverseTransformPoint(_sourceRoot.TransformPoint(_visualPivot));
                     skin.AppliedBounds = new Bounds(anchor + (skin.Bounds.center - anchor) * _factor, skin.Bounds.size * _factor);
                     skin.Source.localBounds = skin.AppliedBounds;
                 }
@@ -451,7 +696,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (_actor == null || _actor.Destroyed || _view == null || !ReferenceEquals(_actor.View, _view) || _sourceRoot == null)
                 throw new InvalidOperationException("Actor/view reconstruction refuses continued prototype mutation.");
-            if (transform.parent != _sourceRoot || !transform.localPosition.Equals(Vector3.zero) ||
+            if (transform.parent != _sourceRoot || !transform.localPosition.Equals(_ownedOffset) ||
                 !transform.localRotation.Equals(Quaternion.identity) || !transform.localScale.Equals(Vector3.one * _factor))
                 throw new InvalidOperationException("Owned proxy root pose/scale changed; no foreign correction is overwritten.");
             Transform[] transforms = _sourceRoot.GetComponentsInChildren<Transform>(true).Where(value => !Owned(value)).ToArray();
@@ -507,6 +752,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal void Synchronize()
         {
             if (_disposed || !_committed) return;
+            if (_production && !ExpandedSummoningVisualVariantPatch.IsModuleActive)
+                throw new InvalidOperationException("Module-off releases the owned giant presentation.");
+            if (_production)
+            {
+                int markers = 0;
+                foreach (Buff buff in _actor.Descriptor.Buffs)
+                    if (buff.Blueprint == BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)
+                    {
+                        markers++;
+                        if (buff.MaybeContext?.SourceAbility?.AssetGuid != _productionSourceGuid || buff.MaybeContext.MaybeCaster == null)
+                            throw new InvalidOperationException("Owned production summon provenance changed.");
+                    }
+                if (markers != 1) throw new InvalidOperationException("Owned production summon marker ended or became ambiguous.");
+            }
             RequireSourceIdentity(true);
             Matrix4x4[] before = _sourceTransforms.Select(value => value.localToWorldMatrix).ToArray();
             Matrix4x4[] colliders = _nativeColliders.Select(value => value.Source.transform.localToWorldMatrix).ToArray();
@@ -533,7 +792,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void LateUpdate()
         {
-            if (_disposed || !_committed) return;
+            if (_disposed)
+            {
+                if (_retirementPending) TryRetireOwnedRoot();
+                return;
+            }
+            if (!_committed) return;
             try { Synchronize(); }
             catch (Exception error)
             {
@@ -544,14 +808,51 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         internal JObject Describe()
         {
-            if (_disposed) return _lastReport == null ? new JObject { ["status"] = _status } : (JObject)_lastReport.DeepClone();
+            if (_disposed)
+            {
+                JObject result = _lastReport == null ? new JObject { ["status"] = _status } : (JObject)_lastReport.DeepClone();
+                result["ownedRootRetirementPending"] = _retirementPending;
+                result["retainedForeignSkinReferences"] = _retainedSkinReferences;
+                result["retainedForeignClothReferences"] = _retainedClothReferences;
+                result["retainedForeignProbeAnchorReferences"] = _retainedAnchorReferences;
+                result["ownedRootReleased"] = this == null || gameObject == null;
+                return result;
+            }
             return Report();
+        }
+
+        private void TryRetireOwnedRoot()
+        {
+            // Refusal must not turn a foreign/mixed palette into dangling
+            // bones. Include inactive loaded receivers: a hidden cached view
+            // can still reference these exact allocated transforms. This is a
+            // reference-only census; no donor mesh/pixel/component is changed.
+            _retainedSkinReferences = Resources.FindObjectsOfTypeAll<SkinnedMeshRenderer>().Count(skin =>
+                skin != null && !Owned(skin.transform) &&
+                ((skin.rootBone != null && Owned(skin.rootBone)) || skin.bones.Any(bone => bone != null && Owned(bone))));
+            _retainedClothReferences = Resources.FindObjectsOfTypeAll<Cloth>().Count(cloth =>
+                cloth != null && !Owned(cloth.transform) && cloth.capsuleColliders.Any(capsule => capsule != null && Owned(capsule.transform)));
+            _retainedAnchorReferences = Resources.FindObjectsOfTypeAll<Renderer>().Count(renderer =>
+                renderer != null && !Owned(renderer.transform) && renderer.probeAnchor != null && Owned(renderer.probeAnchor));
+            _retirementPending = _retainedSkinReferences + _retainedClothReferences + _retainedAnchorReferences > 0;
+            if (_retirementPending)
+            {
+                // Only our root moves. Keep its world pose and exact resources
+                // alive even if the former native view is subsequently freed.
+                if (transform.parent != null) transform.SetParent(null, true);
+                if (!_restoreIssues.Contains("owned-mirrors-retained-for-foreign-references"))
+                    _restoreIssues.Add("owned-mirrors-retained-for-foreign-references");
+                return;
+            }
+            if (gameObject != null) { gameObject.SetActive(false); UnityEngine.Object.Destroy(gameObject); }
         }
 
         private JObject Report()
         {
             return new JObject { ["runId"] = _runId, ["actor"] = _actor == null ? null : _actor.UniqueId,
                 ["status"] = _status, ["uniformVisualFactor"] = _factor, ["syncCount"] = _syncCount,
+                ["productionOwner"] = _production, ["productionCopiedClothEnabled"] = false,
+                ["stableNativeSolePivotInView"] = Vector(_visualPivot), ["ownedVisualRootOffset"] = Vector(_ownedOffset),
                 ["lastSyncFrame"] = _lastSyncFrame, ["executionOrder"] = 10010,
                 ["nativeSourceTransformsSameFrameExact"] = _sourceTransformsUnchanged,
                 ["nativeColliderMatricesSameFrameExact"] = _colliderMatricesUnchanged,
@@ -595,8 +896,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     if (skin.Source == null) continue;
-                    if (skin.Source.sharedMesh != skin.Mesh || !Same(skin.Source.sharedMaterials, skin.Materials))
-                    { _restoreIssues.Add("foreign-skin-mesh-material:" + skin.Source.GetInstanceID()); continue; }
+                    if (skin.Source.sharedMesh != skin.Mesh)
+                    { _restoreIssues.Add("foreign-skin-mesh:" + skin.Source.GetInstanceID()); continue; }
+                    // A separately owned palette can release its material
+                    // first. That does not transfer ownership of our exact
+                    // bone/root/bounds fields on the unchanged native mesh.
                     if (skin.Cloth != null)
                     {
                         if (!skin.Source.enabled && Same(skin.Source.bones, skin.Bones) && skin.Source.rootBone == skin.RootBone)
@@ -631,7 +935,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error) { _lastReport = new JObject { ["status"] = _status, ["disposed"] = true, ["reportError"] = error.Message, ["restoreIssues"] = new JArray(_restoreIssues) }; }
             // Disable only owned solver/renderers before deferred destruction.
             foreach (Cloth cloth in _ownedCloths) if (cloth != null) cloth.enabled = false;
-            if (gameObject != null) { gameObject.SetActive(false); UnityEngine.Object.Destroy(gameObject); }
+            foreach (Skin skin in _skins) if (skin.Proxy != null) skin.Proxy.enabled = false;
+            foreach (StaticMesh mesh in _statics) if (mesh.Proxy != null) mesh.Proxy.enabled = false;
+            TryRetireOwnedRoot();
+            if (_lastReport != null) _lastReport["restoreIssues"] = new JArray(_restoreIssues);
         }
 
         private void OnDestroy() { if (!_disposed) Dispose(); }

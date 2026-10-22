@@ -102,6 +102,22 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void MissingWrongOrInvalidCalibrationNeverChangesScale()
         {
+            string[] order = { "hill-giant", "stone-giant", "fire-giant", "frost-giant", "cloud-giant", "storm-giant" };
+            float[] relative = { 1f, 1.2f, 1.4f, 1.5f, 1.8f, 2.1f };
+            for (int i = 0; i < order.Length; i++)
+            {
+                var family = GiantSummonPresentationPolicy.All.Single(value => value.Key == order[i]);
+                Assertions.Equal(relative[i], family.RelativeVisualFactor,
+                    "Relative family hierarchy must preserve the selected Hill baseline without a Human-foot conversion.");
+                foreach (float nativeSole in new[] { -.2f, 0f, .27f })
+                    Assertions.True(Math.Abs(nativeSole * family.RelativeVisualFactor +
+                        GiantSummonPresentationPolicy.SolePivotOffset(nativeSole, family.RelativeVisualFactor) - nativeSole) < .000001f,
+                        "Owned mirror-root compensation must preserve the native sole plane instead of amplifying a navmesh gap.");
+                Assertions.Equal(i == 2 || i == 3 || i == 5 ? "df0f3fbceb3605d489c0dec8fa5c7d1e" : "635d6dee1c7831b41aa987bdbeff14bc",
+                    family.NativePrefabId, "Only the exact inspected Hill/Frost donor prefab may enter the render-only factory.");
+                if (i > 0) Assertions.True(family.RelativeVisualFactor > relative[i - 1],
+                    "Distinct giant families retain increasing visible size without changing their mechanical Size.");
+            }
             var profile = GiantSummonPresentationPolicy.All.Single(value => value.Key == "hill-giant");
             var baseline = new GiantPresentationScale(1f, 1f, 1f);
             GiantPresentationScale target;

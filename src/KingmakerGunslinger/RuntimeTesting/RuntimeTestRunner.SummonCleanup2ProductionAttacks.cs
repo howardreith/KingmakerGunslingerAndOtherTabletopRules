@@ -316,6 +316,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             }
                         }
                     }
+                    // One additional render-enabled command uses actual native
+                    // Default progression, after the matched fixture-clock proof.
+                    _cleanup2BodyOrdinaryAttackProved=false;
+                    foreach(int frame in Cleanup2BodyOrdinaryAttack(fixture,actor,key))yield return frame;
+                    if(!_cleanup2BodyOrdinaryAttackProved)
+                        throw new InvalidOperationException("Ordinary Default production gesture command failed: "+key);
                     visual.Release(); JObject released = visual.Describe();
                     bool clean = (bool)released["released"] && (int)released["ownedTransformCount"] == 0 &&
                         (bool)released["releasedNativePaletteRestored"] && (bool)released["releasedPrivateBindRestored"] &&
@@ -347,7 +353,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningPlayerPathEvents.Clear(); ExpandedSummoningPlayerPathEvents.AddRange(oldEvents);
                     _expandedSummoningPlayerPathRuleCastCount = oldCasts; _expandedSummoningPlayerPathSpawnActionCount = oldSpawns;
                 }
-                finally { _sprint25WaitingForUnityAppearance = waiting; restore("pause", () => Game.Instance.IsPaused = pause); }
+                finally { _sprint25WaitingForUnityAppearance = Cleanup2NativeDefaultPending || waiting; restore("pause", () => Game.Instance.IsPaused = pause); }
                 bool sourcesExact = sources.All(Cleanup2SharedSameView);
                 Cleanup2Check("production-attacks-observer-restored", failures.Count == 0 && sourcesExact, new JObject { ["failures"] = new JArray(failures),
                     ["protectedNativeSourcesExact"] = sourcesExact, ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["maximumWallSeconds"] = 240,
@@ -369,7 +375,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 var visual = SummonAttackGestureVisual.For(actor);
-                _refinementBounds = visual.CurrentFramingBounds();
+                _refinementBounds = visual == null ? new Bounds(actor.Position,Vector3.one*.1f) : visual.CurrentFramingBounds();
+                if(visual==null)
+                    foreach(Renderer body in actor.View.GetComponentsInChildren<Renderer>(true)
+                        .Where(r=>r.enabled && r.gameObject.activeInHierarchy && (r is SkinnedMeshRenderer || r is MeshRenderer)))
+                        _refinementBounds.Encapsulate(body.bounds);
                 foreach(Renderer body in target.View.GetComponentsInChildren<Renderer>(true)
                     .Where(r=>r.enabled && r.gameObject.activeInHierarchy && (r is SkinnedMeshRenderer || r is MeshRenderer)))
                     _refinementBounds.Encapsulate(body.bounds);
@@ -388,5 +398,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally { _refinementBounds = previous; camera.orthographicSize=beforeSize; camera.aspect=beforeAspect; }
         }
+        private string Cleanup2OrdinaryAttackImage(UnitEntityData actor,UnitEntityData target,string file)
+        { return Cleanup2ProductionAttackImage(actor,target,file,SummonAttackGestureVisual.For(actor)?.Key==SummonAttackGesturePolicy.Crab); }
     }
 }
