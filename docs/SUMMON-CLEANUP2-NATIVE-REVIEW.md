@@ -5,7 +5,7 @@ This mission adds one exact save-free request scenario:
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
 The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
 `cloth-probe`, `ettin-lifecycle`, `scale-prototype`, `tooltips` and
-`crab-attack`; no save, import, extra
+`crab-attack` and `shared-controls`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
 ## Execution boundaries
@@ -14,7 +14,9 @@ Use a clean, source-bound development candidate with the existing guarded
 compatibility-profile runner, runtime lease, Steam App ID 640820 and exact
 installation/settings restoration. Keep every current save under read leases
 for these save-free observations. The fixture may enter only a fresh empty
-owned main menu and the existing first native area; it never imports a save.
+owned main menu and the existing native mansion or exact Oleg fixture; it never
+imports a save. Giant comparison phases require the exact existing mansion
+area/entry IDs after the outdoor survey failed the unchanged plane limits.
 The separate `Invoke-SummonCleanup2CurrentStack.ps1` uses the existing qualified
 working-save creature-review scenario and accepts only KMG_AUTOMATION_WORKING.
 It preserves the actual current mod inventory and holds all original saves
@@ -34,6 +36,11 @@ as calibration input. Culling bounds never stand in for anatomical height.
 Only derived measurements and instance metadata are written, not proprietary
 vertices, triangles, weights or textures. One common-camera frame supports
 visual review; structured cast/slot/provenance records prove the mechanical path.
+The current giant fixture is the exact mansion area
+`0a89ba823d7eab045949d98cf22dcd2c`, entry
+`7c5c6a354220164468167323821fd9cb`. The outdoor3528-candidate survey found
+no eligible common plane; changing the fixture preserves all plane and contact
+limits and requires new native evidence.
 
 `bodies` reviews the exact nine requested creatures through canonical prepared
 slots, then reuses the existing complete refinement packet outdoors: close views,
@@ -107,6 +114,14 @@ distance scaling and disabled capsule response remain unaccepted until actual
 native measurements and visual inspection. Reverse disposal restores skins,
 materials and render flags. No production giant scale calibration or hook is
 enabled by this phase.
+
+`shared-controls` observes one exact native Mastodon and one canonically cast
+released Triceratops through the existing save-free fixture ownership paths.
+Targeted front/side/rear pictures and before/after native prefab, mesh, material,
+action and scale references check preservation after the shared presentation
+changes. It mutates no trample/stat/weapon rules, loads no save and makes no
+unexercised travel or combat claim. Only newly created exact fixture actors
+are eligible for capture and teardown.
 
 Raw evidence and development packages remain machine-local/ignored. The active
 lane state records exact artifact identity, commands, verdicts and limitations.

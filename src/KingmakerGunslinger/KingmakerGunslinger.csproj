@@ -1328,6 +1328,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2PaletteReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2TooltipReview.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2CrabAttack.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2SharedControls.cs" />
     <Compile Include="RuntimeTesting\Cleanup2GiantRenderScalePrototype.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Commands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Magic.cs" />

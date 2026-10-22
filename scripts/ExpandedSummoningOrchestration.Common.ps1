@@ -604,3 +604,93 @@ function Test-KmgSprint29DevelopmentPersistence {
     }
     return $true
 }
+
+# Planning/comparison only. These functions neither authorize a runtime phase
+# nor open, copy, replace or restore a save. The installed-stack entry point
+# still refuses Cleanup 2 until its retained-owner restoration transaction exists.
+function Assert-KmgCleanup2EttinColdPlanScope {
+    param([string]$Scope,[string]$Purpose,[string]$SaveName,[string]$ExpectedVersion)
+    if($Scope -cne 'giant-humanoids-ii' -or $Purpose -cne 'summon-cleanup-iteration2' -or
+        $SaveName -cne 'KMG_AUTOMATION_WORKING' -or $ExpectedVersion -cne '0.0.163') {
+        throw 'Cleanup 2 cold planning permits only exact giant-humanoids-ii / summon-cleanup-iteration2 / KMG_AUTOMATION_WORKING / 0.0.163.'
+    }
+}
+
+function Copy-KmgCleanup2WorkingSaveRecord {
+    param([Parameter(Mandatory=$true)]$Record)
+    if($Record -isnot [Collections.IDictionary] -and $Record -isnot [pscustomobject]) {
+        throw 'Cleanup 2 original Working metadata must be an explicit scalar record.'
+    }
+    $value=$Record | ConvertTo-Json -Depth 4 | ConvertFrom-Json
+    $fields=@('path','length','sha256','creationUtcTicks','writeUtcTicks','accessUtcTicks','attributes')
+    foreach($field in $fields) {
+        if($null -eq $value.PSObject.Properties[$field]) {throw "Cleanup 2 Working metadata is missing: $field"}
+    }
+    if($value.path -isnot [string] -or -not [IO.Path]::IsPathRooted($value.path) -or
+        [IO.Path]::GetFileName($value.path) -cne 'Manual_299_KMG_AUTOMATION_WORKING.zks' -or
+        [IO.Path]::GetFullPath($value.path) -cne $value.path -or
+        $value.sha256 -isnot [string] -or $value.sha256 -cnotmatch '^[0-9a-f]{64}$') {
+        throw 'Cleanup 2 Working metadata requires the exact canonical Working path and whole-file SHA256.'
+    }
+    foreach($field in @('length','creationUtcTicks','writeUtcTicks','accessUtcTicks','attributes')) {
+        if($value.$field -isnot [int] -and $value.$field -isnot [long]) {
+            throw "Cleanup 2 Working metadata must be integral: $field"
+        }
+    }
+    if($value.length -le 0 -or $value.attributes -lt 0 -or $value.attributes -gt [int]::MaxValue -or
+        ($value.attributes -band ([int][IO.FileAttributes]::Directory -bor [int][IO.FileAttributes]::ReparsePoint)) -ne 0) {
+        throw 'Cleanup 2 Working metadata is not a regular positive-length file.'
+    }
+    foreach($field in @('creationUtcTicks','writeUtcTicks','accessUtcTicks')) {
+        if($value.$field -lt [DateTime]::MinValue.Ticks -or $value.$field -gt [DateTime]::MaxValue.Ticks) {
+            throw "Cleanup 2 Working timestamp is out of range: $field"
+        }
+    }
+    $copy=[ordered]@{}
+    foreach($field in $fields) {$copy[$field]=$value.$field}
+    return [pscustomobject]$copy
+}
+
+function New-KmgCleanup2EttinColdPlan {
+    param([string]$Scope,[string]$Purpose,[string]$SaveName,[string]$ExpectedVersion,
+        [Parameter(Mandatory=$true)]$Receipt,[Parameter(Mandatory=$true)]$Git,
+        [Parameter(Mandatory=$true)][string]$SourceStateSha256,
+        [Parameter(Mandatory=$true)]$OriginalWorking)
+    Assert-KmgCleanup2EttinColdPlanScope -Scope $Scope -Purpose $Purpose -SaveName $SaveName -ExpectedVersion $ExpectedVersion
+    if($Receipt.candidateKind -cne 'development' -or $Receipt.releaseQualification -isnot [bool] -or $Receipt.releaseQualification -ne $false -or
+        $Receipt.purpose -cne $Purpose -or $Receipt.version -cne '0.0.163' -or
+        $Receipt.commit -cnotmatch '^[0-9a-f]{40}$' -or $Receipt.sourceStateSha256 -cnotmatch '^[0-9a-f]{64}$' -or
+        $Receipt.packageSha256 -cnotmatch '^[0-9a-f]{64}$' -or $Receipt.dllSha256 -cnotmatch '^[0-9a-f]{64}$') {
+        throw 'Cleanup 2 cold plan requires the exact development-purpose/version/source/package/DLL identity.'
+    }
+    # Reuse the real source-binding decision. Full receipt/package/reference/
+    # selected-test validation remains the existing installed-stack reader's gate.
+    Assert-KmgDevelopmentSourceBinding -Receipt $Receipt -Git $Git -SourceStateSha256 $SourceStateSha256 -ExpectedVersion $ExpectedVersion
+    $original=Copy-KmgCleanup2WorkingSaveRecord -Record $OriginalWorking
+    return [pscustomobject][ordered]@{
+        schemaVersion=1;kind='Cleanup2EttinColdPlanningOnly';liveUsePermitted=$false
+        developmentPurpose=$Purpose;persistenceScope=$Scope;saveName=$SaveName;version=$ExpectedVersion
+        keys=@('ettin','cloud-giant','storm-giant');sourceBindingVerified=$true;fullPackageValidationPerformed=$false
+        candidate=[pscustomobject]@{commit=$Receipt.commit;sourceStateSha256=$Receipt.sourceStateSha256;
+            packageSha256=$Receipt.packageSha256;dllSha256=$Receipt.dllSha256}
+        originalWorking=$original
+        phases=@('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent')
+        freshProcessEveryPhase=$true;expandedSummoningEnabledEveryPhase=$true;runtimeLaunchPermitted=$false
+        blockers=@('One retained transaction owner across original-Working snapshot, all three fresh processes and all restoration is not wired.',
+            'Original-Working byte/path/length/timestamp/attribute restoration with no-running-process and durable recovery guards is not implemented/qualified.',
+            'Existing Ettin profile-view assertion does not require exact cold attachment/protected-material initialization.')
+    }
+}
+
+function Compare-KmgCleanup2WorkingSaveRestoration {
+    param([Parameter(Mandatory=$true)]$Original,[Parameter(Mandatory=$true)]$Restored)
+    $before=Copy-KmgCleanup2WorkingSaveRecord -Record $Original
+    $after=Copy-KmgCleanup2WorkingSaveRecord -Record $Restored
+    $matches=[ordered]@{}
+    foreach($field in @('path','length','sha256','creationUtcTicks','writeUtcTicks','accessUtcTicks','attributes')) {
+        $matches[$field]=$before.$field -ceq $after.$field
+    }
+    return [pscustomobject]@{kind='Cleanup2WorkingScalarComparisonOnly';fields=[pscustomobject]$matches;
+        verified=(@($matches.Values | Where-Object {-not $_}).Count -eq 0);
+        liveUsePermitted=$false;bytesReadOrWritten=$false;nativeHydrationProven=$false}
+}

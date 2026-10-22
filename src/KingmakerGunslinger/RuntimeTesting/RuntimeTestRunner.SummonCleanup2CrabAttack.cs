@@ -127,19 +127,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target.Commands.InterruptAll(true); target.Commands.RemoveFinishedAndUpdateQueue();
                     Sprint20ReleaseOwnHold(fixture, actor);
                     actor.JoinCombat(); target.JoinCombat();
-                    Vector3 far; string lane, direction;
-                    Vector3 origin = Sprint24AiCombatLane(fixture.Caster, actor, target, actor.Corpulence + target.Corpulence + .8f,
-                        out far, out lane, out direction);
-                    PlaceExpandedSummoningUnit(actor, origin); PlaceExpandedSummoningUnit(target, far);
+                    JObject lane = Cleanup2CrabAttackLane(fixture, actor, target, stage);
                     actor.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
                     var probe = new UnitAttack(target); probe.Init(actor);
                     bool legal = actor.IsEnemy(target) && actor.HasLOS(target) && probe.IsUnitEnoughClose &&
                         !target.Descriptor.State.IsDead && !target.IsBrainActive;
                     Cleanup2Check("crab-ordinary-" + stage + "-lane", legal,
-                        new JObject { ["lane"] = lane, ["direction"] = direction, ["owner"] = actor.UniqueId,
+                        new JObject { ["lane"] = lane, ["direction"] = lane["direction"], ["owner"] = actor.UniqueId,
                             ["target"] = target.UniqueId, ["distance"] = actor.DistanceTo(target), ["inRange"] = probe.IsUnitEnoughClose,
                             ["approachRadius"] = probe.ApproachRadius, ["enemy"] = actor.IsEnemy(target), ["los"] = actor.HasLOS(target) },
-                        "The established qualified hostile/lane setup supplies an actual legal visible attack target; no range or combat input is overridden.");
+                        "A bounded graph/sight/party-safe lane is measured from the actual command's native approach radius and passes a fresh post-placement native range check; no range or combat input is overridden.");
                     if (!legal) throw new InvalidOperationException("No native legal Crab attack lane.");
                     actor.Memory.Add(target); target.Memory.Add(actor);
                     var command = new UnitAttack(target) { ForceFullAttack = full, IsSingleAttack = !full };
@@ -284,6 +281,118 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["charismaBase"] = actor.Stats.Charisma.BaseValue, ["BABBase"] = actor.Stats.BaseAttackBonus.BaseValue,
                 ["HPBase"] = actor.Stats.HitPoints.BaseValue, ["speedBase"] = actor.Stats.Speed.BaseValue,
                 ["weapons"] = new JArray(limbs.Select(value => new JObject { ["sessionReferenceToken"] = RuntimeHelpers.GetHashCode(value), ["blueprint"] = value.Blueprint.AssetGuid })) };
+        }
+
+        private JObject Cleanup2CrabAttackLane(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData actor, UnitEntityData target, string stage)
+        {
+            if (!IsSummonCleanup2Review || (string)_request.Parameters?["reviewPhase"] != "crab-attack" ||
+                fixture == null || fixture.Caster == null || actor == null || target == null || actor.Destroyed || target.Destroyed ||
+                !ReferenceEquals(fixture.Hostile, target) || !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
+                fixture.UnitsBefore.Any(value => ReferenceEquals(value, actor) || ReferenceEquals(value, target)) ||
+                !ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster) ||
+                TurnBased.Controllers.CombatController.IsInTurnBasedCombat() || AstarPath.active == null ||
+                Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null)
+                throw new InvalidOperationException("Exact owned RTWP Crab/hostile graph-and-sight survey required.");
+            // Read the real command's native reach/corpulence calculation.
+            // Never supply a guessed reach or change ApproachRadius/weapon data.
+            var range = new UnitAttack(target); range.Init(actor);
+            float radius = range.ApproachRadius, footprint = actor.Corpulence + target.Corpulence;
+            if (!Cleanup2Finite(radius) || !Cleanup2Finite(footprint) || radius <= 0f || footprint <= 0f)
+                throw new InvalidOperationException("Non-finite native Crab command range/footprint.");
+            float[] gaps = new[] { .15f, .30f, .50f }.Select(margin => radius - margin)
+                .Where(value => value >= footprint + .05f).Distinct().ToArray();
+            // Installed 2.1.7b UnitMovementAgent.PathTo060018A3 selects mask1
+            // outside turn-based combat; ConstructTags060018C3 returns -1.
+            // This constraint is ours, and no native graph/path/seeker changes.
+            var constraint = new Pathfinding.PathNNConstraint { graphMask = 1,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = -1, constrainDistance = true,
+                distanceXZ = false, distanceXZkeepY = false };
+            Pathfinding.NNInfo anchor = AstarPath.active.GetNearest(fixture.Caster.Position, constraint);
+            if (anchor.node == null || !anchor.node.Walkable || !Cleanup2Finite(anchor.clampedPosition))
+                throw new InvalidOperationException("No finite native walking anchor for the Crab attack fixture.");
+            constraint.SetStart(anchor.node); constraint.constrainArea = true;
+            var party = Game.Instance.Player.Party.Where(value => value != null && value.IsInGame).ToArray();
+            if (party.Any(value => ReferenceEquals(value, actor) || ReferenceEquals(value, target)))
+                throw new InvalidOperationException("Crab survey refuses party actor/hostile ownership.");
+            var offsets = Enumerable.Range(-5, 11).SelectMany(x => Enumerable.Range(-5, 11)
+                .Select(z => new Vector3(x * 3f, 0f, z * 3f))).OrderBy(value => value.sqrMagnitude).ToArray();
+            var watch = Stopwatch.StartNew();
+            var refusals = new Dictionary<string, int>(StringComparer.Ordinal);
+            var examples = new JArray();
+            int attempts = 0, origins = 0, graphPairs = 0, sightPairs = 0, safePairs = 0, placedPairs = 0;
+            JObject selected = null;
+            Func<Pathfinding.NNInfo, Vector3, bool> connected = (point, requested) => point.node != null && point.node.Walkable &&
+                point.node.Area == anchor.node.Area && point.node.GraphIndex == anchor.node.GraphIndex &&
+                Cleanup2Finite(point.clampedPosition) && Vector3.Distance(point.clampedPosition, requested) <= .6f;
+            Action<string> refuse = reason => { int count; refusals.TryGetValue(reason, out count); refusals[reason] = count + 1; };
+            foreach (Vector3 offset in offsets)
+            {
+                if (selected != null || watch.Elapsed.TotalSeconds > 5 || attempts >= 4096) break;
+                Vector3 requestedOrigin = anchor.clampedPosition + offset;
+                var origin = AstarPath.active.GetNearest(requestedOrigin, constraint);
+                if (!connected(origin, requestedOrigin)) { refuse("origin-native-graph-or-60cm-clamp"); continue; }
+                origins++;
+                foreach (float gap in gaps)
+                for (int direction = 0; direction < CompassOffsets.Length; direction++)
+                {
+                    if (selected != null || watch.Elapsed.TotalSeconds > 5 || attempts >= 4096) break;
+                    attempts++;
+                    Vector3 requestedTarget = origin.clampedPosition + CompassOffsets[direction].normalized * gap;
+                    var destination = AstarPath.active.GetNearest(requestedTarget, constraint);
+                    if (!connected(destination, requestedTarget)) { refuse("target-native-graph-or-60cm-clamp"); continue; }
+                    graphPairs++;
+                    Vector3 graphDelta = origin.clampedPosition - destination.clampedPosition; graphDelta.y = 0f;
+                    float graphSeparation = graphDelta.magnitude;
+                    if (graphSeparation < footprint + .05f) { refuse("native-footprints-overlap"); continue; }
+                    if (Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                        origin.clampedPosition + Vector3.up * 1.2f, destination.clampedPosition + Vector3.up * 1.2f, 0))
+                    { refuse("native-geometry-line-of-sight"); continue; }
+                    sightPairs++;
+                    float partyGap = party.Length == 0 ? float.PositiveInfinity : party.Min(value => Mathf.Min(
+                        Vector3.Distance(value.Position, origin.clampedPosition), Vector3.Distance(value.Position, destination.clampedPosition)));
+                    if (partyGap < 3.5f) { refuse("protected-party-within-3point5m"); continue; }
+                    safePairs++;
+                    PlaceExpandedSummoningUnit(actor, origin.clampedPosition);
+                    PlaceExpandedSummoningUnit(target, destination.clampedPosition);
+                    placedPairs++;
+                    actor.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                    float actualGap = actor.DistanceTo(target);
+                    Vector3 actualDelta = actor.Position - target.Position; actualDelta.y = 0f;
+                    float planarGap = actualDelta.magnitude;
+                    bool inRange = range.IsUnitEnoughClose, mutualSight = actor.HasLOS(target) && target.HasLOS(actor);
+                    bool legal = inRange && mutualSight && actor.IsEnemy(target) && !target.Descriptor.State.IsDead &&
+                        !target.IsBrainActive && planarGap >= footprint + .05f;
+                    var row = new JObject { ["attempt"] = attempts, ["direction"] = direction,
+                        ["requestedGapFromNativeRange"] = gap, ["nativeApproachRadius"] = range.ApproachRadius,
+                        ["originGraphPoint"] = SurveyVector(origin.clampedPosition), ["targetGraphPoint"] = SurveyVector(destination.clampedPosition),
+                        ["ownerPostPlacement"] = SurveyVector(actor.Position), ["targetPostPlacement"] = SurveyVector(target.Position),
+                        ["postPlacementDistance"] = actualGap, ["postPlacementPlanarFootprintGap"] = planarGap,
+                        ["nativeInRange"] = inRange, ["mutualNativeLOS"] = mutualSight,
+                        ["enemy"] = actor.IsEnemy(target), ["nativeFootprintSum"] = footprint,
+                        ["protectedPartyGap"] = float.IsPositiveInfinity(partyGap) ? (JToken)JValue.CreateNull() : new JValue(partyGap),
+                        ["legal"] = legal };
+                    if (examples.Count < 128 || legal) examples.Add(row);
+                    if (legal) selected = row;
+                    else refuse(!inRange ? "post-placement-native-out-of-range" : !mutualSight ? "post-placement-native-LOS" : "post-placement-enemy-state-or-footprint");
+                }
+            }
+            var evidence = new JObject { ["stage"] = stage, ["owner"] = actor.UniqueId, ["target"] = target.UniqueId,
+                ["nativeApproachRadius"] = radius, ["nativeFootprintSum"] = footprint, ["requestedGaps"] = new JArray(gaps),
+                ["queryGraphMask"] = constraint.graphMask, ["queryConnectedArea"] = constraint.area, ["queryTags"] = constraint.tags,
+                ["anchor"] = SurveyVector(anchor.clampedPosition), ["nativeGraphIndex"] = anchor.node.GraphIndex,
+                ["attempts"] = attempts, ["originCandidates"] = origins, ["nativeGraphPairs"] = graphPairs,
+                ["nativeGeometrySightPairs"] = sightPairs, ["protectedPartySafePairs"] = safePairs, ["placedPairs"] = placedPairs,
+                ["attemptLimit"] = 4096, ["wallLimitSeconds"] = 5, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
+                ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
+                ["placedExamplesLimit"] = 128, ["placedExamples"] = examples, ["selected"] = selected,
+                ["direction"] = selected?["direction"],
+                ["proof"] = "Exact request-owned actors only; native RTWP walking graph/connected area, finite points and <=60cm graph clamp; native geometry sight, >=3.5m protected-party clearance and nonoverlapping native footprints. Acceptance requires the real command's post-placement IsUnitEnoughClose plus mutual LOS/enemy/state. No guessed reach, fixed gap floor, range waiver or command is issued by this survey." };
+            Cleanup2Check("crab-native-range-lane-survey-" + stage, selected != null, evidence,
+                "A finite Crab-specific graph/sight/party-safe survey places the exact hostile inside the unchanged real native command radius before any attack command.");
+            if (selected == null) throw new InvalidOperationException("No proven native in-range Crab attack placement within the recorded bounded survey.");
+            return evidence;
         }
 
         private static void Cleanup2CrabPose(UnitEntityData actor, Transform[] drivers, Cleanup2CrabHandle series, int frame)

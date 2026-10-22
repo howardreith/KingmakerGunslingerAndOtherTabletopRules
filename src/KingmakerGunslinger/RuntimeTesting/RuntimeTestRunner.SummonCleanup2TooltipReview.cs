@@ -215,17 +215,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             ActionBarGroupSlot source, ActionBarSpellsGroup popup, Cleanup2TooltipTarget target,
             Cleanup2TooltipInputs input, NativeIconScreenEvidence screens)
         {
-            var rows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(value => {
+            var allRows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(value => {
                 var rowAbility = value.MechanicSlot?.GetContentData() as AbilityData;
-                return value.gameObject.activeInHierarchy && rowAbility?.Blueprint == target.Child && rowAbility.ConvertedFrom?.Blueprint == target.Parent && ReferenceEquals(rowAbility.Spellbook, book);
+                return value.gameObject.activeInHierarchy && rowAbility?.ConvertedFrom?.Blueprint == target.Parent;
+            }).ToArray();
+            var rows = allRows.Where(value => {
+                var rowAbility = value.MechanicSlot.GetContentData() as AbilityData;
+                return rowAbility?.Blueprint == target.Child && ReferenceEquals(rowAbility.Spellbook, book);
             }).ToArray();
             if (rows.Length != 1) throw new InvalidOperationException("Exact target row unavailable: " + target.Label);
             ActionBarSlot row = rows[0]; var ability = (AbilityData)row.MechanicSlot.GetContentData();
-            var scroll = row.GetComponentsInParent<Component>(true).Where(value => value is ScrollRect || value is Kingmaker.UI.Common.ScrollRectExtended)
-                .Select(value => new NativeIconScreenEvidence.NativeRowScroll(value)).FirstOrDefault(value =>
-                    value.Active && value.Content != null && Cleanup2PopupViewport(value) != null && row.transform.IsChildOf(value.Content));
-            if (scroll == null) throw new InvalidOperationException("Exact native target scrolling surface missing.");
-            Vector2 position = scroll.Position, velocity = scroll.Velocity, anchored = scroll.Content.anchoredPosition;
+            var scroll = Cleanup2AcquirePopupSurface(source, popup, target.Parent, allRows, "tooltip-" + target.Label);
+            Vector2 position = scroll.IsStationary ? Vector2.zero : scroll.Position;
+            Vector2 velocity = scroll.IsStationary ? Vector2.zero : scroll.Velocity;
+            Vector2 anchored = scroll.Content.anchoredPosition;
             var content = scroll.Content; var viewport = Cleanup2PopupViewport(scroll);
             var trigger = row.GetComponentsInChildren<TooltipTrigger>(true).SingleOrDefault(value =>
                 value.gameObject.activeInHierarchy && ReferenceEquals(value.GetComponentInParent<ActionBarSlot>(), row));
@@ -239,9 +242,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 foreach (int frame in Cleanup2RevealPopupRow(scroll, row, owns)) yield return frame;
-                if (!Cleanup2FullyVisible(scroll, row)) throw new InvalidOperationException("Target row not fully visible.");
+                if (!Cleanup2FullyVisible(scroll, row))
+                {
+                    ExpandedSummoningVariantMenuSnapshot snapshot;
+                    ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(popup, out snapshot);
+                    Cleanup2Check("tooltip-row-visible-" + target.Label, false,
+                        Cleanup2PopupSurfaceDiagnostic(source, popup, target.Parent, new[] { row }, snapshot, "target-not-fully-visible"),
+                        "The exact target row fits its proven popup/viewport, all applicable native masks and the physical screen before native hover.");
+                    throw new InvalidOperationException("Target row not fully visible.");
+                }
                 var menu = new JObject { ["key"] = target.Key, ["family"] = target.Family.ToString(), ["tier"] = target.Tier,
                     ["parent"] = target.Parent.AssetGuid, ["child"] = target.Child.AssetGuid, ["name"] = target.Child.Name,
+                    ["surfaceMode"] = scroll.IsStationary ? "stationary-native-popup" : "owned-overflow-scroll",
+                    ["surfaceApi"] = scroll.Api, ["scrollMutationRequested"] = !scroll.IsStationary,
                     ["rowIconMatches"] = ReferenceEquals(row.Icon.sprite, target.Child.Icon), ["rowIcon"] = row.Icon.sprite?.name };
                 foreach (int frame in screens.Capture("tooltip-menu-" + target.Label, menu, owns)) yield return frame;
                 if (Game.Instance.UI.TooltipsController.ContextTooltipData != null) throw new InvalidOperationException("Foreign native hover appeared before taking the trigger.");
@@ -282,10 +295,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         throw new InvalidOperationException("Foreign tooltip replaced the owned hover; observer does not hide it or restore its scroll.");
                     trigger.ShowTooltipManual(false);
                 }
-                if (scroll.Component == null || scroll.Content != content || Cleanup2PopupViewport(scroll) != viewport)
+                if (scroll.Component == null || !scroll.Active || scroll.Content != content || Cleanup2PopupViewport(scroll) != viewport)
                     throw new InvalidOperationException("Foreign native scrolling surface; observer does not overwrite it.");
-                scroll.RestorePosition(position); scroll.Velocity = velocity;
-                if ((content.anchoredPosition - anchored).sqrMagnitude > .0001f)
+                if (!scroll.IsStationary) { scroll.RestorePosition(position); scroll.Velocity = velocity; }
+                if ((content.anchoredPosition - anchored).sqrMagnitude > .0001f || !scroll.Active)
                     throw new InvalidOperationException("Tooltip target scroll did not restore its native content position.");
             }
             // Let native hover removal/fade finish without writing cached data.

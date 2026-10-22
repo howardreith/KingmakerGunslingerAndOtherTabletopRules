@@ -305,6 +305,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["skullWorld"] = SurveyVector(head.Skull.position),
                 ["skullNeckLocal"] = SurveyVector(head.Neck.InverseTransformPoint(head.Skull.position)),
                 ["neckWorld"] = SurveyVector(head.Neck.position),
+                ["nativeHeadWorldRotation"] = Cleanup2EttinRotation(head.Head.rotation),
+                ["nativeHeadLocalRotation"] = Cleanup2EttinRotation(head.Head.localRotation),
+                ["nativeHeadLocalScale"] = SurveyVector(head.Head.localScale),
+                ["nativeHeadLossyScale"] = SurveyVector(head.Head.lossyScale),
+                ["nativeNeckWorldRotation"] = Cleanup2EttinRotation(head.Neck.rotation),
+                ["nativeNeckLocalRotation"] = Cleanup2EttinRotation(head.Neck.localRotation),
+                ["nativeNeckLocalScale"] = SurveyVector(head.Neck.localScale),
+                ["nativeNeckLossyScale"] = SurveyVector(head.Neck.lossyScale),
                 ["authoredRendererRootWorld"] = SurveyVector(head.Root.position),
                 ["authoredRenderBoundsCenter"] = SurveyVector(head.Renderer.bounds.center),
                 ["authoredRenderBoundsSize"] = SurveyVector(head.Renderer.bounds.size),
@@ -375,6 +383,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { _refinementBounds = prior; }
         }
 
+        private static JArray Cleanup2EttinRotation(Quaternion value)
+        { return new JArray(value.x, value.y, value.z, value.w); }
+
         private static void Cleanup2SampleEttinHead(Cleanup2EttinHead head)
         {
             if (!Cleanup2EttinStable(head)) throw new InvalidOperationException("Attachment identity changed before late pose sample.");
@@ -395,6 +406,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 head.Samples.Add(new JObject { ["frame"] = Time.frameCount, ["pose"] = head.Pose,
                     ["originalHeadWorld"] = SurveyVector(head.Head.position), ["authoredHeadWorld"] = SurveyVector(head.Skull.position),
                     ["neckWorld"] = SurveyVector(head.Neck.position), ["originalHeadNeckLocal"] = SurveyVector(original),
+                    ["nativeHeadWorldRotation"] = Cleanup2EttinRotation(head.Head.rotation),
+                    ["nativeHeadLocalRotation"] = Cleanup2EttinRotation(head.Head.localRotation),
+                    ["nativeNeckWorldRotation"] = Cleanup2EttinRotation(head.Neck.rotation),
+                    ["nativeNeckLocalRotation"] = Cleanup2EttinRotation(head.Neck.localRotation),
                     ["authoredHeadNeckLocal"] = SurveyVector(authored), ["neckLocalOffset"] = SurveyVector(offset),
                     ["rotationFollowErrorDegrees"] = Quaternion.Angle(originalRotation, authoredRotation) });
         }
