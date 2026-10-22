@@ -17,6 +17,35 @@ Five additions plus one upgrade: 23 new roots and 7 changed/preserved Lantern ro
 
 Baseline: 117 creatures; Monster 96/545; Nature 104/582; 1127 roots + 29 wrappers = 1156 choices. Current:121; Monster100/567; Nature unchanged; 1149 registered roots,22 hidden; public 1127 + 29 = 1156. Final cross-check: 122; Monster 101/568; Nature 104/582; 1150 + 29 = 1179. Actual catalogs/visibility/retained wrappers are authority. Lemure, Dretch, Hound and the early Trumpet prepared-book slice are registered hidden candidates; Lantern remains available; Astral remains inert.
 
+## Current Dretch body and fixed native pair
+
+Dretch original generator/export/real-reference provenance added:7497 vertices,
+9636 triangles,29 measured drivers,1024px original albedo. One observed foot-claw
+connection was corrected; both previews retained. Exact identity/donor/renderer,
+per-view material/mesh/suppression/cleanup and strict two-member package extension
+are wired; no route/identity/icon changes. Synthetic406 acceptance,404 mismatch
+and407 unsupported refusal fixtures3/3 PASS. Native body proof pending.
+
+The smallest explicit `outsider-bodies` request phase has a fixed compiled
+Lemure-then-Dretch sequence; no caller-provided code/order or extra parameters.
+It is registered in runner/C#catalog/policy/PowerShell metadata/documented union.
+Each subcase owns two actual summons, native appearance wait/normal party-camera
+and supporting frame, individual bindings/resources/SR/item observations and its
+own result IDs. The same reset observer must reject still-live owned actors/items
+before cleanup and then verify actual private-resource, scene, inventory, command,
+memory, camera/settings and combat state before the next case. Any failure stops
+later rows. No attacks, save/cold-load or turn-controller cases are combined.
+Native reuse remains a hypothesis until this pair passes; one wrapper invocation
+is not being counted as saved game launches. Exact renderer selection is optional
+for the existing party-camera helper; all previous callers keep their default.
+
+First compile caught a native base Fact/Ability type mismatch, corrected. Focused
+production18.3s/15 selected tests1.1s PASS after final reset checks. Fresh actual
+limited admission/dispatch/refusal tests are required because phase guards changed;
+old792 preflight is NOT authority for the new phase. Plan one exact body-pair
+package/build and one guarded process/transaction, then inspect actual PNGs and
+restoration. No native case is running now; laptop remains restored41/36.
+
 ## Latest exact development artifact and body slice
 
 Tested source `4b122ab0b83a6fa3ab778e493ef54c3f03b8177f`, one immutable

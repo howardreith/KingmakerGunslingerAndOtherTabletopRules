@@ -27,3 +27,18 @@ The offline preview shows the intended amorphous lower mass and two clawed arms.
 It is not native camera-scale or owner aesthetic acceptance. Native lifecycle,
 body presentation and final-package checks remain separately recorded in the
 batch map. Seams, coarse anatomy and texture refinement may remain visual backlog.
+
+Dretch uses the same measured donor interfaces and exporter, with an original
+stocky/potbellied body, two legs/arms, large ears, fangs, claws and a two-control
+jaw. The existing project-owned original Dretch painting is its visual reference;
+its pixels are not copied into the procedural albedo. The final export uses29
+drivers,7497 vertices/9636 triangles and a1024px original albedo. The initial
+private preview showed a foot-claw connection gap; one toe-pad correction closed
+it. Both private previews/generation records remain. Native presentation and
+attack/lifecycle checks are separate requirements, not granted by this preview.
+
+`build_dretch.py` uses the same six CLI parameters as the Lemure builder. Each
+body has its own exact unit/bone/anatomy loader contract. The existing common
+attachment/material controller, accessory suppression and teardown remain the
+production path; only the repeated nested expiry-visual copy is shared. Source
+records pin actual generated hashes and the geometry-free private capture.

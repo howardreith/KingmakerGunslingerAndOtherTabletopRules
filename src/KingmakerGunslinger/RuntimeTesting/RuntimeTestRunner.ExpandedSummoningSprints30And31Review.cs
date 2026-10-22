@@ -20,6 +20,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprints30And31(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprints30And31ReviewPhase(_request);
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodyPhase)
+            {
+                foreach (int frame in ReviewOutsider30Bodies(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == "lemure-core" || phase == "lemure-full" || phase == "lemure-ai")
             {
                 foreach (int frame in ReviewLemure30Core(fixture, phase)) yield return frame;
