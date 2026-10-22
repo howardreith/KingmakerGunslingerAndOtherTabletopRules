@@ -107,12 +107,14 @@ namespace KingmakerGunslinger.Blueprints
             var namedSkills = ScriptableObject.CreateInstance<TrumpetNamedPersuasion>(); namedSkills.OwningBlueprint = unit;
             var proficiency = ScriptableObject.CreateInstance<AddProficiencies>();
             proficiency.WeaponProficiencies = new[] { sword.Category }; proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
-            traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor, equipment, proficiency, orison, namedSkills }
+            var escapeArtist = ScriptableObject.CreateInstance<OutsiderEscapeArtist>();
+            escapeArtist.OwningBlueprint = unit; escapeArtist.Ranks = 14; escapeArtist.ClassSkill = false;
+            traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor, equipment, proficiency, orison, namedSkills, escapeArtist }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Trumpet31Prefix + "Traits.Name", "Trumpet Archon Traits"),
                 LocalizationService.Create(Trumpet31Prefix + "Traits.Description",
-                    "DR10/evil, electricity and petrification immunity, +4 racial saves vs poison, SR25. Prepared divine spells use the archon's own spell slots at caster level14."), null);
+                    "DR10/evil, electricity and petrification immunity, +4 racial saves vs poison, SR25. Prepared divine spells use the archon's own spell slots at caster level14. Escape Artist +17 uses the native break-free consumer only; ordinary Mobility is unchanged."), null);
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, DumbBrainGuid, "Trumpet ordinary attack fallback");
             var brain = Require<BlueprintBrain>(bySymbol, Trumpet31Prefix + "Brain");
             CopyFields(nativeBrain, brain); brain.name = InternalName(Trumpet31Prefix + "Brain");
