@@ -119,7 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
                 owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
                 sibling = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
-                victim = CastExpandedSummoningOwnTier(fixture, "lemure");
+                victim = CastExpandedSummoningOwnTier(fixture, "lemure", fixture.Hostile);
                 blocker = CastExpandedSummoningOwnTier(fixture, "lemure");
                 var units = new[] { owner, sibling, victim, blocker };
                 foreach (var unit in units) { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue(); }
@@ -219,7 +219,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["preparedSlotsAfter"] = new JArray(Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null))) },
                     "Printed at-will Virtue is a native Spell/Cantrip fact, pays actions twice, grants one temporary HP without stacking and never spends or refills leveled slots.");
                 if (!orisonEffect) throw new InvalidOperationException("Native Virtue effect or leveled-resource isolation failed.");
-                victim.Descriptor.SwitchFactions(fixture.Hostile.Faction, true);
                 // Native sight caps player units at11.7m and an out-of-combat
                 // enemy at8.5m. Enroll this exact disposable pair before the
                 // survey;10.5m fits real combat sight and clears a30ft burst.
@@ -228,12 +227,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.JoinCombat(); victim.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 for (int frame = 0; frame < 4; frame++) yield return 0;
-                bool offenseCombat = owner.IsInCombat && victim.IsInCombat &&
+                bool offenseCombat = owner.IsEnemy(victim) && !owner.IsEnemy(blocker) && owner.IsInCombat && victim.IsInCombat &&
                     owner.VisionRangeMeters > 10.5f && victim.VisionRangeMeters > 10.5f;
                 Sprint25Check("trumpet-caster-offense-combat", offenseCombat, new JObject {
                     ["owner"] = owner.UniqueId, ["victim"] = victim.UniqueId,
                     ["ownerInCombat"] = owner.IsInCombat, ["victimInCombat"] = victim.IsInCombat,
-                    ["ownerVisionMeters"] = owner.VisionRangeMeters, ["victimVisionMeters"] = victim.VisionRangeMeters },
+                    ["ownerVisionMeters"] = owner.VisionRangeMeters, ["victimVisionMeters"] = victim.VisionRangeMeters,
+                    ["ownerConsidersVictimEnemy"] = owner.IsEnemy(victim), ["ownerConsidersBlockerEnemy"] = owner.IsEnemy(blocker),
+                    ["victimSummoner"] = victim.Get<Kingmaker.UnitLogic.Parts.UnitPartSummonedMonster>()?.Summoner?.UniqueId,
+                    ["expectedHostileSummoner"] = fixture.Hostile.UniqueId, ["victimGroup"] = victim.GroupId, ["ownerGroup"] = owner.GroupId },
                     "The actual enemy pair is in native combat and can see a10.5m lane before searching; no sight or immunity setting is changed.");
                 if (!offenseCombat) throw new InvalidOperationException("Native caster offense combat/sight preconditions failed.");
                 Vector3 far; string lane, direction;
@@ -255,7 +257,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool unsafeTarget = owner.IsEnemy(victim) && !owner.IsEnemy(blocker) && safeScore() == 0f &&
                     Trumpet31PreparedCopies(book, banishment, 6) == 1 && Trumpet31PreparedCopies(otherBook, banishment, 6) == 1;
                 Sprint25Check("trumpet-caster-banishment-ally-refusal", unsafeTarget, new JObject { ["owner"] = owner.UniqueId,
-                    ["victim"] = victim.UniqueId, ["blocker"] = blocker.UniqueId, ["score"] = safeScore(),
+                    ["victim"] = victim.UniqueId, ["blocker"] = blocker.UniqueId,
+                    ["ownerConsidersVictimEnemy"] = owner.IsEnemy(victim), ["ownerConsidersBlockerEnemy"] = owner.IsEnemy(blocker),
+                    ["score"] = safeScore(),
                     ["distance"] = owner.DistanceTo(victim), ["lane"] = lane, ["ownSlots"] = Trumpet31PreparedCopies(book, banishment, 6),
                     ["siblingSlots"] = Trumpet31PreparedCopies(otherBook, banishment, 6) },
                     "An eligible owned ally in the unchanged native burst blocks Banishment selection; both real prepared slots remain available.");
@@ -281,7 +285,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool clear = safeScore() > 0f && owner.IsEnemy(victim) && new AbilityData(banishment, book).CanTarget(new TargetWrapper(victim));
                 Sprint25Check("trumpet-caster-banishment-clear", clear, new JObject { ["owner"] = owner.UniqueId,
                     ["victim"] = victim.UniqueId, ["score"] = safeScore(), ["nativeExtraplanar"] = victim.Descriptor.HasFact(nativeExtra),
-                    ["targetHd"] = victim.Descriptor.Progression.CharacterLevel, ["fixtureWillBase"] = victim.Stats.SaveWill.BaseValue },
+                    ["targetHd"] = victim.Descriptor.Progression.CharacterLevel, ["fixtureWillBase"] = victim.Stats.SaveWill.BaseValue,
+                    ["nativeCanTarget"] = new AbilityData(banishment, book).CanTarget(new TargetWrapper(victim)),
+                    ["ownerConsidersVictimEnemy"] = owner.IsEnemy(victim), ["ownerConsidersBlockerEnemy"] = owner.IsEnemy(blocker) },
                     "Moving only the disposable ally establishes a clear legal native Banishment target within the CL14 budget; no slot or effect has been injected.");
                 if (!clear) throw new InvalidOperationException("Native Banishment clear-target preconditions failed.");
                 saves = new Trumpet31CasterSaves(victim); EventBus.Subscribe(saves);
