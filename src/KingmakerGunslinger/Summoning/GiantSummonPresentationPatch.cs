@@ -8,13 +8,14 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.View;
+using KingmakerGunslinger.RuntimeTesting;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Schedules exact owned giant body palettes. Height remains observational:
-    /// changing the native view root would also resize its gameplay colliders.
+    /// Exact owned palettes and relative render-only family scale. No native
+    /// gameplay root, skeleton pose, collider or mechanical size is scaled.
     /// </summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class GiantSummonPresentationPatch
@@ -25,34 +26,35 @@ namespace KingmakerGunslinger.Summoning
             internal GiantPresentationScale Baseline;
             internal string Outcome;
             internal string Key;
+            internal Cleanup2GiantRenderScalePrototype RenderOwner;
+            internal bool Refused;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, State> States =
             new ConditionalWeakTable<UnitEntityView, State>();
-        // Intentionally empty until actual native rest-pose measurements and
-        // the human control are recorded. Missing calibration is observable.
-        private static readonly Dictionary<string, GiantSummonHeightCalibration> Calibrations =
-            new Dictionary<string, GiantSummonHeightCalibration>(StringComparer.Ordinal);
+        private static string _probeRunId;
 
-        internal static void RegisterCalibration(GiantSummonHeightCalibration calibration)
+        internal static IDisposable BeginRenderScaleProbe(RuntimeTestRequest request)
         {
-            if (calibration == null) throw new ArgumentNullException("calibration");
-            GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.All
-                .SingleOrDefault(value => value.Key == calibration.CreatureKey);
-            GiantPresentationScale ignored;
-            string verdict = GiantSummonPresentationPolicy.Calculate(profile, calibration,
-                calibration.PrefabId, calibration.BaselineScale, calibration.BaselineScale, out ignored);
-            if (verdict != "apply-measured-height" && verdict != "already-applied")
-                throw new InvalidOperationException("Giant calibration refused: " + verdict);
-            lock (Calibrations)
+            if (request == null || !request.Enabled || !request.ExitAfterCompletion ||
+                request.Scenario != "disposable-expanded-summoning-cleanup2-native-review" ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                (string)request.Parameters["reviewPhase"] != "scale-prototype" ||
+                string.IsNullOrWhiteSpace(request.RunId) || _probeRunId != null)
+                throw new InvalidOperationException("One exact disposable scale-prototype request may retain the native scale baseline.");
+            _probeRunId = request.RunId;
+            return new ProbeScope(request.RunId);
+        }
+
+        private sealed class ProbeScope : IDisposable
+        {
+            private string _run;
+            internal ProbeScope(string run) { _run = run; }
+            public void Dispose()
             {
-                GiantSummonHeightCalibration existing;
-                if (Calibrations.TryGetValue(profile.Key, out existing))
-                {
-                    if (ReferenceEquals(existing, calibration)) return;
-                    throw new InvalidOperationException("Giant calibration already fixed for this process: " + profile.Key);
-                }
-                Calibrations.Add(profile.Key, calibration);
+                if (_run == null) return;
+                if (_probeRunId != _run) throw new InvalidOperationException("Foreign scale probe scope.");
+                _probeRunId = null; _run = null;
             }
         }
 
@@ -73,7 +75,7 @@ namespace KingmakerGunslinger.Summoning
             try
             {
                 if (!ExpandedSummoningVisualVariantPatch.IsModuleActive)
-                    return "giant:module-off";
+                { Release(view); return "giant:module-off"; }
                 UnitEntityData unit = view == null ? null : view.EntityData;
                 if (unit == null || unit.Blueprint == null) return "giant:no-unit";
                 GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.Resolve(true,
@@ -92,26 +94,59 @@ namespace KingmakerGunslinger.Summoning
                         Baseline = Read(view.transform.localScale) };
                     States.Add(view, state);
                 }
-                GiantSummonHeightCalibration calibration;
-                lock (Calibrations) Calibrations.TryGetValue(profile.Key, out calibration);
-                GiantPresentationScale target;
-                string decision = GiantSummonPresentationPolicy.Calculate(profile, calibration,
-                    unit.Blueprint.Prefab == null ? null : unit.Blueprint.Prefab.AssetId,
-                    state.Baseline, Read(view.transform.localScale), out target);
-                // Even a valid numerical calibration does not authorize this
-                // root: native colliders share it. Only a separately qualified
-                // render-only proxy may consume the measured target.
-                if (decision == "apply-measured-height" || decision == "already-applied")
-                    decision = "await-render-only-scale-integration";
-                state.Outcome = "giant:" + profile.Key + ";height=" + decision +
-                    ";referenceFeet=" + profile.ReferenceHeightFeet.ToString("0.##", CultureInfo.InvariantCulture) +
-                    ";calibration=" + (calibration == null ? "<none>" : calibration.EvidenceIdentity);
-                return state.Outcome;
+                if (_probeRunId != null)
+                    return state.Outcome = "giant:" + profile.Key + ";height=request-owned-native-baseline;run=" + _probeRunId;
+                GiantSummonRenderScaleLifetime lifetime = view.GetComponent<GiantSummonRenderScaleLifetime>();
+                if (lifetime == null) lifetime = view.gameObject.AddComponent<GiantSummonRenderScaleLifetime>();
+                lifetime.View = view;
+                return ApplyRenderHeight(view);
             }
             catch (Exception exception)
             {
                 // Presentation never interrupts the native attach/buff lifecycle.
                 return "giant:exception:" + exception.GetType().Name;
+            }
+        }
+
+        internal static string ApplyRenderHeight(UnitEntityView view)
+        {
+            State state;
+            if (view == null || !States.TryGetValue(view, out state)) return "giant:not-owned";
+            if (!ExpandedSummoningVisualVariantPatch.IsModuleActive)
+            { Release(view); return "giant:module-off"; }
+            if (!ReferenceEquals(view.EntityData, state.Owner))
+            { Release(view); return "giant:foreign-view-owner"; }
+            if (state.Refused) return state.Outcome;
+            if (state.RenderOwner != null)
+            {
+                if (state.RenderOwner.IsDisposed)
+                { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=owned-renderer-refused:" + state.RenderOwner.Status; }
+                return state.Outcome;
+            }
+            string source = SummonedSourceGuid(state.Owner);
+            var profile = GiantSummonPresentationPolicy.Resolve(true, state.Owner.Blueprint.AssetGuid, source);
+            if (profile == null || source == null) return state.Outcome = "giant:" + state.Key + ";height=await-live-summon-context";
+            if (!GiantSummonPresentationPolicy.Same(state.Baseline, Read(view.transform.localScale)))
+            { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=foreign-native-root-scale-refused"; }
+            if (state.Owner.Blueprint.Prefab?.AssetId != profile.NativePrefabId)
+            { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=native-prefab-mismatch"; }
+            if (profile.RelativeVisualFactor == 1f)
+                return state.Outcome = "giant:" + state.Key + ";height=relative-baseline;factor=1";
+            if (view.GetComponentsInChildren<Cloth>(true).Length != 0)
+            { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=await-native-copied-cloth-contact-proof"; }
+            if (GiantSummonPalettePolicy.ProductionProof(profile.Key) != null &&
+                !GiantSummonPaletteRuntime.VerifyProductionOwnership(view).StartsWith("palette:verified-production-owner;", StringComparison.Ordinal))
+                return state.Outcome = "giant:" + state.Key + ";height=await-owned-production-palette";
+            try
+            {
+                state.RenderOwner = Cleanup2GiantRenderScalePrototype.TakeProduction(state.Owner, profile);
+                return state.Outcome = "giant:" + state.Key + ";height=owned-relative-render-scale;factor=" +
+                    profile.RelativeVisualFactor.ToString("0.###", CultureInfo.InvariantCulture);
+            }
+            catch (Exception error)
+            {
+                state.Refused = true;
+                return state.Outcome = "giant:" + state.Key + ";height=refused:" + error.GetType().Name + ":" + error.Message;
             }
         }
 
@@ -139,12 +174,25 @@ namespace KingmakerGunslinger.Summoning
             if (view == null) return;
             State state;
             if (!States.TryGetValue(view, out state)) return;
-            // This observational height record never owns a native transform.
+            if (state.RenderOwner != null) state.RenderOwner.Dispose();
             States.Remove(view);
         }
 
         private static GiantPresentationScale Read(Vector3 scale)
         { return new GiantPresentationScale(scale.x, scale.y, scale.z); }
+    }
+
+    // Release scale ownership before the default-order palette owner can
+    // discharge its independent materials on module-off. Normal mirror pose
+    // following stays at10010 after native WeaponSnap.
+    [DefaultExecutionOrder(-10)]
+    internal sealed class GiantSummonRenderScaleLifetime : MonoBehaviour
+    {
+        internal UnitEntityView View;
+        private void LateUpdate()
+        { if (View != null) GiantSummonPresentationPatch.ApplyRenderHeight(View); }
+        private void OnDestroy()
+        { if (View != null) GiantSummonPresentationPatch.Release(View); }
     }
 
     // A fresh native summon may attach its view before SummonedUnitBuff gains

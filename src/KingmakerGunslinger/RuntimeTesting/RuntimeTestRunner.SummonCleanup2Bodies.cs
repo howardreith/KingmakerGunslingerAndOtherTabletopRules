@@ -7,8 +7,12 @@ using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
@@ -68,6 +72,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
             try
             {
+                if(fixture.Hostile==null || fixture.Hostile.Destroyed) CreateExpandedSummoningCorrectionHostile(fixture);
                 hooks.Patch(typeof(RuleCastSpell).GetMethod("OnTrigger"), null,
                     new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("ExpandedSummoningPlayerPathRuleCastPostfix", statics)), null);
                 hooks.Patch(typeof(ContextActionSpawnMonster).GetMethod("RunAction"),
@@ -117,6 +122,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             yield return frame;
                         }
                         Cleanup2BodyReadback(current, key, "before-refinement");
+                        _cleanup2BodyOrdinaryAttackProved=false;
+                        foreach(int frame in Cleanup2BodyOrdinaryAttack(fixture,current,key)) yield return frame;
+                        if(!_cleanup2BodyOrdinaryAttackProved) throw new InvalidOperationException("Ordinary native body attack failed: "+key);
+                        int damageBeforeArt=current.Descriptor.Damage;
                         BeginVisualRefinementReview(current, key);
                         // Dialog hosts do not run ordinary Default-mode command
                         // movement. The already-owned outer clock supplies its
@@ -139,18 +148,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool hitHandle = _refinementRecords.Any(value => value == "animation:Hit;handle=True");
                         JObject packet = Cleanup2BodyPacket(key);
                         bool packetComplete = (bool)packet["complete"];
-                        bool exact = finished && packetComplete && attackHandle && hitHandle;
+                        bool nativeHitAbsent=current.View.AnimationManager!=null && current.View.AnimationManager.GetAction(UnitAnimationType.Hit)==null;
+                        bool hitContract=hitHandle || nativeHitAbsent && current.Descriptor.Damage==damageBeforeArt+1 && _cleanup2BodyOrdinaryAttackProved;
+                        bool exact = finished && packetComplete && attackHandle && hitContract;
                         Cleanup2Check("body-packet-" + key, exact, new JObject {
                             ["key"] = key, ["unit"] = current.UniqueId, ["finished"] = finished,
                             ["updates"] = updates, ["wallSeconds"] = targetWatch.Elapsed.TotalSeconds,
                             ["nativeTravelMeters"] = _refinementTravel, ["attackAnimationHandle"] = attackHandle,
                             ["hitAnimationHandle"] = hitHandle, ["packet"] = packet,
+                            ["nativeHitActionAbsent"]=nativeHitAbsent,["nativeDamageStimulusBefore"]=damageBeforeArt,
+                            ["nativeDamageStimulusAfter"]=current.Descriptor.Damage,["ordinaryNativeAttackProved"]=_cleanup2BodyOrdinaryAttackProved,
+                            ["hitContract"]="Installed UnitAnimationManager.Execute0600160E returns the optional CreateHandle result and executes only nonnull. UnitHitFxManager.HandleMeleeAttackHit06000F33 discards that optional return. No replacement Hit clip is supplied.",
                             ["clockPulses"] = _sprint25Clock.Pulses - pulsesBefore,
                             ["clockAdvancedSeconds"] = _sprint25Clock.AdvancedSeconds - advancedBefore,
                             ["observedGameTimeDeltaSeconds"] = Game.Instance.Player.GameTime.TotalSeconds - gameBefore,
                             ["clockLimitation"] = "Existing fixture clock advances GameTime and exact native action/movement once per Unity frame under Dialog. This is a qualified art fixture, not natural game-time/combat timing proof.",
                             ["records"] = new JArray(_refinementRecords) },
-                            "Nine real stills, all 108 real tracking frames, valid native attack/hit handles and >=0.75 m native travel are mandatory; helper failures cannot be omitted.");
+                            "Complete native motion packet plus an actual ordinary attack/cost is required. A missing optional native Hit is supported only with exact one-point native damage processing and no supplied clip; available native Hit must remain present.");
                         Cleanup2BodyReadback(current, key, "after-refinement");
                         if (!finished) throw new TimeoutException("Cleanup 2 refinement frame/wall bound: " + key);
                         if (exact) completed.Add(key);
@@ -187,7 +201,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["expected"] = new JArray(keys), ["complete"] = new JArray(completed),
                     ["wallSeconds"] = phaseWatch.Elapsed.TotalSeconds,
                     ["visualApproval"] = "Pending actual frame inspection and owner review; packet completeness is technical evidence only." },
-                    "Every selected canonical body produces its entire mandatory art packet; missing native Hit remains failure/unknown.");
+                    "Every selected body produces its full art packet, actual native attack/cost, and a demonstrated native optional-Hit contract.");
             }
             finally
             {
@@ -218,7 +232,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _creatureReviewAssertions.RemoveRange(assertionsBefore, _creatureReviewAssertions.Count - assertionsBefore);
                 });
                 _creatureReviewCaster = oldCaster;
-                _sprint25WaitingForUnityAppearance = waiting;
+                _sprint25WaitingForUnityAppearance = Cleanup2NativeDefaultPending || waiting;
                 restore("pause", () => Game.Instance.IsPaused = paused);
                 Cleanup2Check("bodies-owned-state-restored", failures.Count == 0, new JObject {
                     ["failures"] = new JArray(failures), ["priorCreatureAssertionCount"] = assertionsBefore,
@@ -227,6 +241,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["foreignCleanupClaimed"] = false },
                     "Owned commands/animation/hooks and prior refinement/capture/pause/brain fields restore before shared positive-actor teardown.");
                 if (failures.Count != 0) throw new InvalidOperationException("Cleanup 2 body cleanup failed: " + string.Join("|", failures.ToArray()));
+            }
+        }
+
+        private bool _cleanup2BodyOrdinaryAttackProved;
+        private IEnumerable<int> Cleanup2BodyOrdinaryAttack(ExpandedSummoningCorrectionFixture fixture,UnitEntityData actor,string key)
+        {
+            UnitEntityData target=fixture.Hostile;
+            ResetExpandedSummoningHostile(fixture);
+            actor.Commands.InterruptAll(true);actor.Commands.RemoveFinishedAndUpdateQueue();
+            actor.JoinCombat();target.JoinCombat();
+            JObject lane=Cleanup2CrabAttackLane(fixture,actor,target,"body-ordinary-"+key);
+            _sprint25WaitingForUnityAppearance=false;Game.Instance.IsPaused=false;
+            for(int frame=0;frame<8;frame++) yield return 0;
+            var command=new UnitAttack(target){IsSingleAttack=true,ForceFullAttack=false};
+            var observer=new Sprint24AttackObserver {Owner=actor,Target=target};
+            var costs=new JArray();var endings=new JArray();var images=new JArray();
+            Cleanup2NativeDefaultScope nativeMode=null;
+            EventBus.Subscribe(observer);
+            try
+            {
+                nativeMode=Cleanup2EnterNativeDefault(fixture,"ordinary-body-"+key);
+                using(var economy=new FirearmReviewCosts(actor,costs))
+                using(var trace=new Sprint26CommandTrace(actor,endings))
+                {
+                    string readyFile="ordinary-"+key+"-ready.png";
+                    images.Add(new JObject {["file"]=readyFile,["result"]=Cleanup2OrdinaryAttackImage(actor,target,readyFile),["weaponEvents"]=0});
+                    actor.Commands.Run(command);var watch=Stopwatch.StartNew();int frames=0;
+                    while((!command.IsFinished || observer.WeaponAttacks.Count<1) && watch.Elapsed.TotalSeconds<30 && frames++<2000)
+                    {
+                        if(!nativeMode.Current || !Cleanup2NoNarrativeOverlay())
+                            throw new InvalidOperationException("Ordinary body attack lost its owned native Default context.");
+                        if(frames==1 || frames==12 || observer.WeaponAttacks.Count==1 && images.Count<3)
+                        {
+                            string file="ordinary-"+key+"-"+images.Count+".png";
+                            images.Add(new JObject{["file"]=file,["result"]=Cleanup2OrdinaryAttackImage(actor,target,file),["weaponEvents"]=observer.WeaponAttacks.Count});
+                        }
+                        yield return 0;
+                    }
+                    double recoveryStart=Game.Instance.Player.GameTime.TotalSeconds;
+                    var recoveryWatch=Stopwatch.StartNew();
+                    float[] motionTimes={.12f,.45f,.9f};
+                    int motionFrame=0;
+                    while(Game.Instance.Player.GameTime.TotalSeconds-recoveryStart<1.6 && recoveryWatch.Elapsed.TotalSeconds<10)
+                    {
+                        if(motionFrame<motionTimes.Length && Game.Instance.Player.GameTime.TotalSeconds-recoveryStart>=motionTimes[motionFrame])
+                        {
+                            string file="ordinary-"+key+"-motion"+motionFrame+".png";
+                            images.Add(new JObject {["file"]=file,["result"]=Cleanup2OrdinaryAttackImage(actor,target,file),
+                                ["afterCommandGameSeconds"]=Game.Instance.Player.GameTime.TotalSeconds-recoveryStart,["weaponEvents"]=observer.WeaponAttacks.Count});
+                            motionFrame++;
+                        }
+                        yield return 0;
+                    }
+                    string recoveryFile="ordinary-"+key+"-recovery.png";
+                    images.Add(new JObject {["file"]=recoveryFile,["result"]=Cleanup2OrdinaryAttackImage(actor,target,recoveryFile),["weaponEvents"]=observer.WeaponAttacks.Count});
+                    var gesture=SummonAttackGestureVisual.For(actor);
+                    JObject gestureState=gesture?.Describe();
+                    bool recovered=gesture==null || gesture.Ready && gesture.ProveCurrentPose() &&
+                        gesture.ProveSameFrameSourceState() && ((JArray)gestureState["palettePoints"]).All(value=>(float)value["ownedAngle"]<.001f);
+                    bool exact=command.IsFinished && (command.Result==UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
+                        command.AllAttacks.Count==1 && observer.WeaponAttacks.Count==1 && observer.OwnerWeaponAttacks.Count==1 && observer.Rolls.Count==1 &&
+                        observer.Damage.Count==observer.WeaponAttacks.Count(a=>a.AttackRoll!=null && a.AttackRoll.IsHit) &&
+                        economy.Count(command)==1 && economy.Exact(command,false) && !command.Cutscene && !command.IsIgnoreCooldown &&
+                        recovered && Game.Instance.Player.GameTime.TotalSeconds-recoveryStart>=1.6;
+                    _cleanup2BodyOrdinaryAttackProved=exact;
+                    Cleanup2Check("body-ordinary-command-"+key,exact,new JObject {
+                        ["unit"]=actor.UniqueId,["target"]=target.UniqueId,["lane"]=lane,["costs"]=costs,["ends"]=endings,
+                        ["planned"]=command.AllAttacks.Count,["weaponEvents"]=observer.WeaponAttacks.Count,["rollEvents"]=observer.Rolls.Count,
+                        ["weapons"]=new JArray(observer.WeaponAttacks.Select(a=>a.Weapon.Blueprint.AssetGuid)),
+                        ["images"]=images,["nativeResult"]=command.Result.ToString(),["wallSeconds"]=watch.Elapsed.TotalSeconds,
+                        ["fixtureAttackRules"]=0,["forcedRolls"]=0,["clock"]="Ordinary native Default progression; manual fixture clock suspended",
+                        ["nativeMode"]=nativeMode.Describe(),["gesture"]=gestureState,["privateGestureRecovered"]=recovered },
+                        "The changed body performs its ordinary native single attack, real weapon/roll/damage events and one native cost, with whole-actor contact pictures.");
+                }
+            }
+            finally
+            {
+                try
+                {
+                    EventBus.Unsubscribe(observer);actor.Commands.InterruptAll(true);actor.Commands.RemoveFinishedAndUpdateQueue();
+                    if(actor.IsInCombat)actor.LeaveCombat();ResetExpandedSummoningHostile(fixture);
+                }
+                finally { if(nativeMode!=null)nativeMode.Dispose(); }
             }
         }
 

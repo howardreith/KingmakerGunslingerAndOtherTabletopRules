@@ -35,6 +35,7 @@ $executablePath = Join-Path $KingmakerInstallDir 'Kingmaker.exe'
 $relativeAssemblyPaths = @(
     'Assembly-CSharp.dll',
     'Assembly-CSharp-firstpass.dll',
+    'UniRx.dll',
     'Newtonsoft.Json.dll',
     'UnityEngine.dll',
     'UnityEngine.AnimationModule.dll',

@@ -232,3 +232,35 @@ Native near/far hand motion, hit reactions and owner aesthetic acceptance
 remain with the integrator.
 
 Earlier sections are retained historical records.
+
+## Completion continuation: far-hand readability (2026-10-22)
+
+Current `girallon_connected_hands.py` retains the joined neck, connected
+wrist/palm webs and compact outboard lower hands. Distal fingers now fan
+laterally from unchanged knuckle roots instead of converging into one blade.
+Upper hands keep the native digit chains; lower hands and their rooted claws
+retain their existing forearm-twist ownership. No source skeleton, native
+animation, actor scale or mechanical data changes.
+
+`paint_fourarmed_albedo.py` changes only Girallon's hand/sole leather atlas
+tile to readable charcoal with narrow creases. Exactly 98,304 pixels change;
+every pixel outside that tile remains equal. The stored hand-tile mean rises
+from 0.119671 to 0.319578. This is diffuse paint, not a shader/emission change.
+Xill's painting branch and assets are untouched. Joined neck, head, trunk and
+leg position/normal/weight rows remain exact against the preceding revision.
+
+| Current file | SHA-256 |
+| --- | --- |
+| `girallon-mesh.json` | `d6a160c6b336cc0dc812f62ce03c90c5faa5baf611fcb46c7e81130ad71ca119` |
+| `girallon-albedo.png` | `3070d2d51d578060fd74bcc7b85ef074491699b0701768707ebc655fa06cc841` |
+
+Regenerate the painter with Blender `--python paint_fourarmed_albedo.py --
+--kind girallon --out <albedo>`, then the existing generator command. Two
+clean Blender 4.5.10 processes reproduce both outputs exactly; mesh JSON is LF.
+Focused checks retain all 56 drivers, normalized/equal seam weights, connected
+four arm/hand surfaces and closed outward geometry (8,324 vertices/16,244
+triangles). Front/side/rear/party and synthetic wrist/digit/turn previews were
+opened and inspected under local `artifacts/cleanup2-completion-art/girallon`.
+The unchanged two-driver-chain adaptation and possible true far-side occlusion
+remain explicit. These previews do not establish native motion/contact or art
+approval. The synthetic pose named `hit-and-turn` is not a native Hit action.

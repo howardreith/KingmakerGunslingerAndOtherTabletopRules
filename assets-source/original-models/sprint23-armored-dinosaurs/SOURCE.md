@@ -113,3 +113,35 @@ and tail extremes offline. Native side/rear views, walking/tail contact and
 owner aesthetic acceptance remain separate and unverified by those probes.
 
 Earlier sections are retained historical records.
+
+## Completion continuation: stance and feet (2026-10-22)
+
+`build_stegosaurus.py` keeps the elongated barrel, small low head, nine
+staggered plates, six tail controls and four spikes. The barrel is slightly
+narrower and 0.10 donor-local units higher, with its plate/neck/root-tail
+geometry following the authored shape. The hind-thigh path now descends
+continuously instead of going down through the native upper pivot and back
+up through the knee. Foreknees sit less outboard; narrower ankles end in
+compact supporting pads with three shallow joined toe ends. No independent
+floating toe surfaces are added. The donor skeleton and all 24 drivers stay
+unchanged; speed, mechanical size/reach and source animation are untouched.
+
+Four strongly foot-driven sole extrema span only 0.003498 donor-local units.
+Each stays within 0.0012 of its prior authored minimum. These are actual own
+mesh vertices, not culling bounds; native current-pose ground contact still
+requires observation. Skin gains fine original scale-edge/fold markings and
+plates receive quieter brown grain. No native shader property is changed,
+and diffuse paint does not establish a native roughness response.
+
+| Current file | SHA-256 |
+| --- | --- |
+| `stegosaurus-mesh.json` | `3f9e1a219de1372bfec4db521a6de02e04771ea8e2bfc53d64a8435f440d466e` |
+| `stegosaurus-albedo.png` | `ab6d343e35377b0cb9d73a8b5a2ab19e70b4cfe1c6a0cb21f109673fa883d6d6` |
+
+The existing generation command reproduces the pair exactly in two clean
+Blender 4.5.10 runs (LF JSON). Focused topology/weight checks pass: 7,754
+vertices/11,436 triangles, one continuous body with all limbs/neck/tail chains,
+17 closed outward components, 100% front-normal agreement and equal UV seam
+weights. Front/side/rear/party plus synthetic stride/tail poses were inspected
+under local `artifacts/cleanup2-completion-art/stegosaurus`. These are geometry
+probes, not native gait, tail contact, material acceptance or owner approval.

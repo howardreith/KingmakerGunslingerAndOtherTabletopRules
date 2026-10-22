@@ -66,12 +66,21 @@ def build(bm, weights, uvs, rig, shape, side, lower, legacy):
     for digit in (*digits, "Thumb"):
         bones = [side + "_" + digit + "_%02d" % i for i in (1, 2, 3)]
         p1, p2, p3 = [hand_point(digit + "_%02d" % i) for i in (1, 2, 3)]
+        if digit != "Thumb":
+            # The donor's three tips converge laterally, making one dark
+            # blade at the party camera. Keep each root at its knuckle but
+            # fan the authored distal phalanges into distinct silhouettes.
+            fan = {"Fore_Finger": -.10, "Midle_Finger": .035,
+                   "Little_Finger": .17}[digit]
+            fan *= (1. if side == "L" else -1.) * (.76 if lower else 1.)
+            p2.x += fan * .55
+            p3.x += fan
         # A root well inside the palm, not a cap at the first knuckle.
         root = wrist.lerp(p1, .42) if digit == "Thumb" else wrist.lerp(knuckles, .50)
         tip = p3 + (p3 - p2).normalized() * (.08 if lower else .12) * bulk
         line = [root, p1, p2, p3, tip]
         digit_width = (.115 if digit == "Thumb" else .105) if lower else \
-                      (.105 if digit == "Thumb" else .09)
+                      (.105 if digit == "Thumb" else .095)
         width = digit_width * bulk
         volume.sweep(line, [width * 1.10, width, width * .88, width * .76,
                             width * .58], 18)

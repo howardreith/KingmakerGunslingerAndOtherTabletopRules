@@ -74,7 +74,9 @@ try {
     }
     $matched = @(Assert-KmgReferenceBundleMatchesInstall `
         -ReferenceBundleDir $bundle -KingmakerInstallDir $install)
-    Assert-True ($matched.Count -eq 15) 'all-explicit-references-match'
+    $expectedPaths=@($script:KmgPrivateReferencePaths | ForEach-Object {$_.Replace('\','/')} | Sort-Object)
+    $observedPaths=@($matched | ForEach-Object {$_.relativePath} | Sort-Object)
+    Assert-True (($expectedPaths -join '|') -ceq ($observedPaths -join '|')) 'all-explicit-references-match'
     $clothBundle = Join-Path $bundle 'Managed\UnityEngine.ClothModule.dll'
     $clothBytes = [IO.File]::ReadAllBytes($clothBundle)
     [IO.File]::AppendAllText($clothBundle, 'mismatch')

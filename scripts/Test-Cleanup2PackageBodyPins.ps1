@@ -59,8 +59,8 @@ $unaffected=@{
 }
 foreach($path in $unaffected.Keys) {Check ($policy.ContainsKey($path) -and $policy[$path] -ceq $unaffected[$path]) ('unaffected-pin-retained-'+$path)}
 
-# Every revised body must have both halves curated, including Girallon's
-# intentionally unchanged painting. Cross-wiring uses actual other exports.
+# Every revised body has both halves curated, including Girallon's revised
+# hand painting. Cross-wiring uses actual other exports.
 $revised=@(
     'assets\ungulates\gorgon',
     'assets\sprint19-fourarmed\girallon',

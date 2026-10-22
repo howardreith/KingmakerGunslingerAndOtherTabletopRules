@@ -79,6 +79,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
             try
             {
+                _cleanup2EttinOrdinaryFullAttackProved=false;
+                foreach(int frame in ReviewSprint29Commands(fixture,false)) yield return frame;
+                if(!_cleanup2EttinOrdinaryFullAttackProved)
+                    throw new InvalidOperationException("Ettin ordinary paired-flail command did not prove its actual off-hand rules/cost.");
+                // The separate command owns its own bounds. The existing
+                // lifecycle bound starts only after that positive contract.
+                watch.Restart();
                 Cleanup2Route route = Cleanup2GiantRoute(fixture, "ettin", SummonFamily.NaturesAlly);
                 var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == "ettin");
                 bool routeExact = creature.NaturesAllyTier.HasValue && route.Tier == creature.NaturesAllyTier.Value &&
@@ -128,14 +135,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             info.CreateAnimationHandleForAttack();
                             animation = info.AnimationHandle;
                             if (animation != null) head.Actor.View.AnimationManager.Execute(animation);
-                            Cleanup2Check("ettin-native-pose-" + head.Actor.UniqueId + "-" + pose, animation != null,
+                            bool optionalOffhand=pose=="off-hand" && animation==null &&
+                                head.Actor.View.AnimationManager.GetAction(UnitAnimationType.OffHandAttack)==null &&
+                                _cleanup2EttinOrdinaryFullAttackProved;
+                            Cleanup2Check("ettin-native-pose-" + head.Actor.UniqueId + "-" + pose, animation != null || optionalOffhand,
                                 new JObject { ["unit"] = head.Actor.UniqueId, ["pose"] = pose,
                                     ["weapon"] = info.Weapon.Blueprint.AssetGuid,
                                     ["animationAction"] = animation?.Action?.GetType().FullName,
                                     ["attackWeaponStyle"] = animation?.AttackWeaponStyle.ToString(),
                                     ["nativeSelection"] = selection,
+                                    ["actualPairedFlailFullAttackAlreadyProved"]=_cleanup2EttinOrdinaryFullAttackProved,
+                                    ["optionalOffhandActionAbsent"]=optionalOffhand,
                                     ["nativeAttackCommandIssued"] = false, ["attackRuleTriggered"] = false },
-                                "Native AttackHandInfo selects the actual hand's weapon-specific animation without a mechanical attack command or supplied hit.");
+                                "Native weapon action is used when present. An absent separate off-hand handle is accepted only after this run resolved the ordinary paired-flail full command, including exact off-hand events and native cost.");
                         }
                         int frameCount = pose == "idle" ? 18 : 66;
                         for (int frame = 0; frame < frameCount; frame++)
@@ -264,7 +276,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _expandedSummoningPlayerPathRuleCastCount = previousCastCount;
                     _expandedSummoningPlayerPathSpawnActionCount = previousSpawnCount;
                 });
-                _sprint25WaitingForUnityAppearance = waiting;
+                _sprint25WaitingForUnityAppearance = Cleanup2NativeDefaultPending || waiting;
                 restore("pause", () => Game.Instance.IsPaused = pause);
                 Cleanup2Check("ettin-lifecycle-owned-state-restored", failures.Count == 0,
                     new JObject { ["failures"] = new JArray(failures),

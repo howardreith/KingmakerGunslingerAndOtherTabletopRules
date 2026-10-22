@@ -499,7 +499,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData actor, UnitEntityData target, string stage)
         {
             string phase = (string)_request.Parameters?["reviewPhase"];
-            if (!IsSummonCleanup2Review || (phase != "crab-attack" && phase != "production-attacks") ||
+            if (!IsSummonCleanup2Review || (phase != "crab-attack" && phase != "production-attacks" &&
+                phase != "bodies" && phase != "gorgon-presentation" && phase != "recovery-bodies") ||
                 fixture == null || fixture.Caster == null || actor == null || target == null || actor.Destroyed || target.Destroyed ||
                 !ReferenceEquals(fixture.Hostile, target) || !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
                 fixture.UnitsBefore.Any(value => ReferenceEquals(value, actor) || ReferenceEquals(value, target)) ||

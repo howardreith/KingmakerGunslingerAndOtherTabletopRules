@@ -950,11 +950,18 @@ namespace KingmakerGunslinger.Summoning
             // 1152 omits both, 1213 adds nonmetal specular only. These are
             // LOCAL switches on our already-owned material, never globals.
             material.SetFloat("_Roughness",1f);
-            material.SetFloat("_Metallic",1f);
+            // Native review19 showed nearly black plates at 0.94 metal.
+            // This installed direct-light BRDF has no environment-reflection
+            // sampler: metal removes diffuse even away from a specular lobe.
+            // A weathered-steel mixture keeps the real native specular path
+            // while retaining 1-(0.94*0.4)=0.624 of the diffuse response.
+            // This is an owned material fallback, not a global quality fix
+            // or a claim that Unity's built-in BRDF lookup is uninitialized.
+            material.SetFloat("_Metallic",0.4f);
             material.SetFloat("_Emission",0f);
             material.EnableKeyword("SPECULAR_ON");
             material.EnableKeyword("METALLNESS_ON");
-            return "gorgonParameters=authored-linear;verifiedPFMetalVariant;plateRoughness=0.23;plateMetallic=0.94;bodyMetallic=0;emission=0";
+            return "gorgonParameters=authored-linear;verifiedPFDirectLightMetalVariant;metalTreatment=weathered-steel-diffuse-retention;plateRoughness=0.23;plateMetalMask=0.94;metallicScalar=0.4;effectivePlateMetallic=0.376;plateDiffuseRetained=0.624;bodyMetallic=0;emission=0;nativeVisualReview=pending";
         }
 
         private static string Describe(Color value)

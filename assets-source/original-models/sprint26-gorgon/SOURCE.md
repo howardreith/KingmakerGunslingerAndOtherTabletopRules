@@ -34,9 +34,10 @@ existing PNG/hash/dimension loader checks its bytes; CPU channels are copied
 verbatim into a private `Texture2D(..., linear:true)` so packed inputs are not
 gamma-decoded. The map is included in that attachment's resource receipt,
 rollback and teardown. The native PF shader's declared channel label establishes
-R=Roughness/G=Emission/B=Metallic. Scalar defaults are explicitly nonemissive and
-do not force full-body metal (`_Metallic=0`, `_Roughness=1`, `_Emission=0`).
-Actual PF map/scalar response still requires native visual observation.
+R=Roughness/G=Emission/B=Metallic. Current scalars are `_Metallic=0.4`,
+`_Roughness=1`, `_Emission=0`; the zero body B mask prevents full-body metal.
+The completion section below records the exact shader response and native
+black-plate correction. Changed appearance still requires native observation.
 
 Current generated hashes:
 
@@ -164,8 +165,32 @@ uses `SPECULAR_ON` and `METALLNESS_ON`: parameter-map R is multiplied by
 Fragment1152 omits both responses; 1213 enables nonmetal specular only.
 The previous `_Metallic=0` therefore erased the authored plate metal mask.
 
-The exact owned Gorgon material now uses multiplier1 and those two **local**
+The first completion candidate used multiplier1 and those two **local**
 keywords, retaining the linear packed map, R roughness, B plate mask and zero
-emission. No global keyword or donor material changes. Native pictures and
-material/source observations are still required; disassembly is a shader
-contract, not aesthetic acceptance.
+emission. Native review19 (`20261022T2145486312880Z-e40afda3d3194e9b97d3143844f4d31e`)
+then showed nearly black plates in front, left, top and attack024 views.
+The hard plate geometry remained useful and is preserved.
+
+The pass name-index table resolves fragment1221 texture t3/sampler0 exactly to
+`unity_NHxRoughness`. That lookup is used for direct-light specular. The
+inspected fragment binds albedo, decals, parameters, this BRDF lookup and the
+cluster-light index texture; it has no environment-reflection sampler. Its
+diffuse multiplier is `(1-metallic)*0.779084`. The authored B mask of 0.94 at
+scalar1 therefore retained only 6% of the nonmetal diffuse response outside
+specular highlights. This explains a black-plate failure without assuming that
+Unity failed to initialize the built-in lookup. The recorded false global
+SPECULAR/METALLNESS flags do not prove that either: these material keywords are
+local, and native `StandardMaterialController.Awake` caches their local state.
+Installed `RenderingManager.ApplySettings` has no specular/metallic quality
+toggle; `Init` enables only GLOBAL_REFLECTIONS_ON and GLOBAL_SHADOWS_ON.
+
+The owned Gorgon material now uses `_Metallic=0.4`: effective plate metal is
+`0.94*0.4=0.376`, retaining 62.4% of the nonmetal diffuse response while keeping
+the genuine native albedo-colored specular path. This is a weathered-steel
+mixture for the installed direct-light shader, not a pure-metal or environment
+reflection claim. Roughness remains 0.23 on plates, body B remains zero and
+emission stays zero. The receipt records the mask, scalar, effective metal and
+diffuse retention separately. No shader/global/donor mutation, repaint, geometry,
+weight or export change accompanies this correction. Lookup identity and the
+changed appearance require the next bounded native review; source/disassembly
+is not aesthetic acceptance.

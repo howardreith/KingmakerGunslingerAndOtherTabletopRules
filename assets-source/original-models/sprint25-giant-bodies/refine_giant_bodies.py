@@ -22,6 +22,7 @@ from mathutils.bvhtree import BVHTree
 
 sys.dont_write_bytecode = True
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
 sys.path.insert(0, str(HERE.parent / "continuous-bodies"))
 import continuous_body as cb
 import audit_mesh_orientation as audit
@@ -204,10 +205,16 @@ def colour_field(kind):
             base = np.array((.39,.37,.34))
             value = .82 + .23*noise + .045*grain - .10*folds
         else:
-            pebble, _ = cb.cells(points, 18, 713)
-            base = np.array((.36,.42,.30))
-            value = .83 + .23*noise + .045*grain + .07*pebble
+            first, second = cb.cells(points, 23, 713)
+            scale_edge = np.exp(-np.maximum(second-first, 0.) * 45.)
+            base = np.array((.335,.375,.285))
+            value = .83 + .24*noise + .045*grain - .115*scale_edge
         rgb = value[:,None] * base
+        if kind == "brachiosaurus":
+            patches = np.clip((cb.fbm(points, 1.05, 714)-.48)*3.,0.,1.)
+            rgb += patches[:,None] * np.array((.026,.013,-.008))
+            folds = np.exp(-np.abs(np.sin(points[:,1]*28. + noise*7.)) * 14.)
+            rgb *= 1. - .045*folds[:,None]
         belly = np.clip((3.2-points[:,1])/.9,0,1) * np.clip(1-abs(points[:,0])/1.4,0,1)
         rgb += belly[:,None] * np.array((.045,.042,.03))
         rgb[regions==1] = np.array((.78,.73,.59)) * (.92+.08*noise[regions==1,None])
@@ -216,6 +223,100 @@ def colour_field(kind):
         rgb[regions==4] = (.49,.47,.42)
         return np.clip(rgb,0,1)
     return colour
+
+
+def finish_brachiosaurus(obj, weights):
+    """Local original sculpture after the stable union/UV operation.
+
+    Preserve topology, UVs, all skin rows and the exact tail gesture input.
+    A smooth displacement rounds the abrupt neck elbow and tucks the
+    pendulous neck root into the shoulder; modest withers/ankle shaping
+    gives the existing supports a less cylindrical silhouette.
+    """
+    def smooth(a, b, value):
+        t = max(0., min(1., (value-a)/(b-a)))
+        return t*t*(3.-2.*t)
+    original_positions = [vertex.co.copy() for vertex in obj.data.vertices]
+    for vertex in obj.data.vertices:
+        p = vertex.co.copy()
+        if any(name.startswith("Tail") and weight > 0.
+               for name, weight in weights[vertex.index]):
+            continue
+        front = smooth(.90, 1.45, -p.z) * smooth(2.85, 3.45, p.y)
+        if front:
+            # These are the centreline ring scalars of ORIGINAL PROJECT
+            # input component 1. Its long almost-vertical second segment
+            # caused the upper elbow. Map it into one smooth rising arc.
+            old_axis = [(4.158851,-1.999124), (5.900754,-2.204252),
+                        (6.203977,-2.590124), (6.479170,-2.935455),
+                        (6.749887,-3.284324), (7.021446,-3.632624),
+                        (7.290756,-3.982603), (7.623201,-4.407271)]
+            if p.y >= old_axis[0][0]:
+                y = min(p.y, old_axis[-1][0])
+                segment = next((i for i in range(len(old_axis)-1)
+                                if y <= old_axis[i+1][0]), len(old_axis)-2)
+                a, b = old_axis[segment], old_axis[segment+1]
+                t = (y-a[0])/(b[0]-a[0])
+                before_z = a[1]*(1.-t)+b[1]*t
+                rise = y-old_axis[0][0]
+                target_z = -1.75-.45*rise-.09157*rise*rise
+                dz = target_z-before_z
+            else:
+                dz = .25*smooth(3.6, 4.158851, p.y)
+            dz *= 1.-smooth(7.1, 7.4, p.y)
+            vertex.co.z += front*dz
+            # Compress only the projecting anterior surface toward a
+            # sloping chest envelope. The monotone Z mapping also includes
+            # its shoulder socket, avoiding a pinched boundary at a weight
+            # threshold. It never moves a source skeleton or collider.
+            chest_limit = -1.50-.20*(p.y-3.20)
+            tuck = .75*math.exp(-((p.y-3.50)/.70)**2)*front
+            if vertex.co.z < chest_limit:
+                vertex.co.z += tuck*(chest_limit-vertex.co.z)
+            vertex.co.y += front*.07*math.exp(-((p.y-3.30)/.70)**2)
+        # High anterior withers taper smoothly into the retained barrel.
+        if p.z < 1.8 and p.y > 3.1:
+            fade = smooth(3.1, 4.0, p.y) * (1.-smooth(1.25, 1.8, p.z))
+            vertex.co.y += fade*(.20*math.exp(-((p.z+.65)/1.05)**2) -
+                                 .065*math.exp(-((p.z-1.2)/.65)**2))
+        # Keep all soles and measured contact centres. Only the ankle shaft
+        # narrows; neither native joints nor their weights are changed.
+        if .48 < p.y < 2.3:
+            limb = sum(w for name, w in weights[vertex.index]
+                       if any(key in name for key in ("Arm_", "Leg0_", "Palm", "Foot0")))
+            if limb > .7:
+                front_leg = p.z < 0.
+                cx = (.70 if front_leg else .69) * (1. if p.x > 0. else -1.)
+                cz = -1.45 if front_leg else 1.43
+                taper = 1.-.085*math.sin(math.pi*(p.y-.48)/1.82)**2
+                vertex.co.x = cx+(vertex.co.x-cx)*taper
+                vertex.co.z = cz+(vertex.co.z-cz)*taper
+    # Relax the existing neck surface around its old elbow. No vertex,
+    # triangle, UV or skin row is added/reordered; the head, tail and lower
+    # supporting limbs are fixed boundaries for this local sculpture.
+    neighbours = [[] for _ in obj.data.vertices]
+    for edge in obj.data.edges:
+        a, b = edge.vertices
+        neighbours[a].append(b)
+        neighbours[b].append(a)
+    amounts = {}
+    for vertex in obj.data.vertices:
+        p = vertex.co
+        if p.z < -1.05:
+            amount = .65*smooth(2.95, 3.75, p.y)*(1.-smooth(6.85, 7.35, p.y))
+            if amount > 0.:
+                amounts[vertex.index] = amount
+    for _ in range(65):
+        points = [v.co.copy() for v in obj.data.vertices]
+        for index, amount in amounts.items():
+            near = neighbours[index]
+            average = sum((points[i] for i in near), Vector())/len(near)
+            obj.data.vertices[index].co = points[index].lerp(average, amount)
+    obj.data.update()
+    changed = sum((v.co-original_positions[v.index]).length > 1e-8
+                  for v in obj.data.vertices)
+    return {"changedOriginalVertices": changed, "nativeSkeletonWritten": False,
+            "tailPositionsWeightsUvTopologyPreserved": True}
 
 
 def main():
@@ -229,6 +330,7 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     source=ProjectInput(HERE/("cleanup2-"+args.kind+"-input.json"))
     obj,weights=build(args.kind,source)
+    finish = finish_brachiosaurus(obj, weights) if args.kind == "brachiosaurus" else None
     albedo=out/(args.kind+"-albedo.png")
     cb.bake_albedo(obj,1024,colour_field(args.kind),albedo)
     cb.attach_albedo_preview(obj,albedo)
@@ -239,6 +341,8 @@ def main():
                   "sourceGeometrySha256":hashlib.sha256(source.path.read_bytes()).hexdigest()})
     report=cb.write_mesh_data(out/(args.kind+"-mesh.json"),obj,weights,
         source.payload["rigSha256"],albedo,source.payload["space"],extra)
+    if finish:
+        report["localSculpture"] = finish
     if args.kind == "brachiosaurus":
         from repair_brachiosaurus_tail_weights import repair
         report["tailGestureWeights"] = repair(out/(args.kind+"-mesh.json"))

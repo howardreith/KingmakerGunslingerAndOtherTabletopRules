@@ -8,6 +8,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private bool _cleanup2EttinOrdinaryFullAttackProved;
         // Native RTWP commands, rather than queried plans: one disposable
         // owner and an awake visible hostile per case. Rolls remain random;
         // the fixture neither issues an attack nor supplies a hit.
@@ -24,12 +26,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             Game.Instance.IsPaused = true;
-            CreateExpandedSummoningCorrectionHostile(fixture);
+            if(!IsSummonCleanup2Review || fixture.Hostile==null || fixture.Hostile.Destroyed)
+                CreateExpandedSummoningCorrectionHostile(fixture);
+            else ResetExpandedSummoningHostile(fixture);
+            Cleanup2NativeDefaultScope nativeMode = null;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = false;
+                if(IsSummonCleanup2Review && !turnBased)
+                    nativeMode=Cleanup2EnterNativeDefault(fixture,"ettin-ordinary-rtwp");
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 foreach (var spec in new[] {
                     new { Key="ettin", Name="flail-single", Set=0,
@@ -68,7 +75,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Full=true, Count=3, Off=0,
                         Main="KMG_Summoning_Giant_Sprint29_StormCompositeBow3d6",
                         Secondary="" }
-                }.Where(value => !turnBased ||
+                }.Where(value => !IsSummonCleanup2Review || value.Key == "ettin" && value.Name == "flail-full")
+                .Where(value => !turnBased ||
                     value.Key == "ettin" &&
                         (value.Name == "flail-full" ||
                          value.Name == "javelin-full") ||
@@ -168,6 +176,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Owner = owner, Target = target };
                         var costs = new JArray();
                         var endings = new JArray();
+                        var images = new JArray();
+                        int photographedEvents=0;
                         var command = new UnitAttack(target) {
                             ForceFullAttack = spec.Full,
                             IsSingleAttack = !spec.Full };
@@ -186,7 +196,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     DateTime.UtcNow < deadline &&
                                     (!command.IsFinished ||
                                      observer.WeaponAttacks.Count < spec.Count))
+                                {
+                                    if(IsSummonCleanup2Review && observer.WeaponAttacks.Count>photographedEvents)
+                                    {
+                                        photographedEvents=observer.WeaponAttacks.Count;
+                                        string file="ettin-ordinary-"+(turnBased?"turn":"rtwp")+"-event"+photographedEvents+".png";
+                                        images.Add(new JObject { ["file"]=file,["result"]=Cleanup2OrdinaryAttackImage(owner,target,file),
+                                            ["actualWeaponEventCount"]=photographedEvents,["plannedIndex"]=command.GetAttackIndex() });
+                                    }
                                     yield return 0;
+                                }
                                 int hits = observer.WeaponAttacks.Count(value =>
                                     value.AttackRoll != null &&
                                     value.AttackRoll.IsHit);
@@ -223,6 +242,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     !command.Cutscene &&
                                     !command.IsIgnoreCooldown &&
                                     !target.Descriptor.State.IsDead;
+                                if(IsSummonCleanup2Review)
+                                {
+                                    _cleanup2EttinOrdinaryFullAttackProved=exact;
+                                    var offInfo=new AttackHandInfo(owner.Body.SecondaryHand,0,0);
+                                    JObject selection=Cleanup2EttinAttackSelection(offInfo);
+                                    offInfo.CreateAnimationHandleForAttack();
+                                    Cleanup2Check("ettin-ordinary-offhand-contract-"+(turnBased?"turn":"rtwp"),exact,
+                                        new JObject { ["unit"]=owner.UniqueId,["nativeSelection"]=selection,
+                                            ["separateOffhandHandleAvailable"]=offInfo.AnimationHandle!=null,
+                                            ["ordinaryNativeCommandResolved"]=exact,["mainPackets"]=mainPackets,["offhandPackets"]=offPackets,
+                                            ["oneNativeCost"]=economy.Count(command)==1 && economy.Exact(command,turnBased),
+                                            ["nativeImages"]=images,["replacementBody"]=EttinSecondHeadVisual.Describe(owner.View),
+                                            ["nativeMode"]=nativeMode?.Describe(),
+                                            ["limits"]=turnBased ?
+                                                "Native turn-admitted command/action/rule proof under the established fixture clock. No substituted handle, clip or forced rule/hit." :
+                                                "Ordinary native Default RTWP progression with the manual fixture clock suspended. No substituted handle, clip or forced rule/hit." },
+                                        "An ordinary paired-flail full attack resolves two actual main-hand and two actual off-hand weapon events with one native action cost; optional action lookup is recorded separately.");
+                                }
                                 Sprint25Check(spec.Key + "-" + spec.Name +
                                     "-resolved", exact,
                                     new JObject { ["owner"] = owner.UniqueId,
@@ -280,9 +317,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
-                Game.Instance.TurnBasedCombatController.Activate();
-                Game.Instance.IsPaused = oldPause;
+                try { if(nativeMode!=null)nativeMode.Dispose(); }
+                finally
+                {
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                    Game.Instance.TurnBasedCombatController.Activate();
+                    Game.Instance.IsPaused = oldPause;
+                }
             }
         }
     }

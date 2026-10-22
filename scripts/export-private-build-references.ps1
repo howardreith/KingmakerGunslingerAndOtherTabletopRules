@@ -36,6 +36,7 @@ New-Item -ItemType Directory -Path $outputDirectory -Force | Out-Null
 $required = @(
     'Assembly-CSharp.dll',
     'Assembly-CSharp-firstpass.dll',
+    'UniRx.dll',
     'Newtonsoft.Json.dll',
     'UnityEngine.dll',
     'UnityEngine.AnimationModule.dll',

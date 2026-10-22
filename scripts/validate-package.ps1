@@ -176,8 +176,8 @@ try {
         'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
         'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 
-        'assets\sprint19-fourarmed\girallon-mesh.json' = 'aa81564f34a453f7a77902c45515eb5ac222fc731edd9a73aef797eb87a9f8f5'
-        'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
+        'assets\sprint19-fourarmed\girallon-mesh.json' = 'd6a160c6b336cc0dc812f62ce03c90c5faa5baf611fcb46c7e81130ad71ca119'
+        'assets\sprint19-fourarmed\girallon-albedo.png' = '3070d2d51d578060fd74bcc7b85ef074491699b0701768707ebc655fa06cc841'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
         'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'
         'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f'
@@ -195,12 +195,12 @@ try {
 
         'assets\sprint14-insects\giant-stag-beetle-mesh.json' = '2ecf222413eb857051b70df8b5fd61592a939108c7661ccdfb96f20fbcea794d'
         'assets\sprint14-insects\giant-stag-beetle-albedo.png' = '967d506b96019914fd40363cc80b21b0ce08f80662ef96ef259f5e0a8caecde4'
-        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = '27af896d68f8e6b0e201e0052a3ee5e5867c559669cd7de60ec01c3b3996e976'
-        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = '759340178b1beb51565af534cafb92da354dae027f1603c3d44a566a1ee7bb87'
+        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = '3f9e1a219de1372bfec4db521a6de02e04771ea8e2bfc53d64a8435f440d466e'
+        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = 'ab6d343e35377b0cb9d73a8b5a2ab19e70b4cfe1c6a0cb21f109673fa883d6d6'
         'assets\sprint25-giant-bodies\elephant-mesh.json' = '5afe5464331a083c0de63d7b4bee4a1266d71376fb8360f7d96b0bf7a4f13028'
         'assets\sprint25-giant-bodies\elephant-albedo.png' = '5a973962a26dbf38208b66feeb5ffd154d469ac69b25137ae487b9d6767f2919'
-        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = 'cf919c077be4a9cc11a128e0e67f78fc7e1566514349671846660e5c0ca40db5'
-        'assets\sprint25-giant-bodies\brachiosaurus-albedo.png' = '198b61966762624adc3ffdfb5975fe08bfc7ad4589fc6e0f318e7bbb06d30776'
+        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = 'baa97de9024fcbc9b07d8a1dc857813235aff8dcb276c4c2aa9be617a729fef7'
+        'assets\sprint25-giant-bodies\brachiosaurus-albedo.png' = '160e4b71ae1335d6df37a0d8eac491e863b82dc272cfe24e42173a6d40107ea4'
     }
     foreach ($entry in $protectedBodyExports.GetEnumerator()) {
         $path = Join-Path $ModDirectory $entry.Key

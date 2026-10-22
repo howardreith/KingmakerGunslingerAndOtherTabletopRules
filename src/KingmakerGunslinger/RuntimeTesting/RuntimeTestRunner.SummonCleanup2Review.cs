@@ -144,10 +144,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2Bodies(fixture, book)) yield return frame;
                 else if (phase == "elementals")
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
+                else if (phase == "elementals-presentation")
+                    foreach (int frame in ReviewSummonCleanup2ElementalPresentation(fixture, book)) yield return frame;
                 else if (phase == "cloth-probe")
                     foreach (int frame in ReviewSummonCleanup2ClothProbe(fixture, book)) yield return frame;
                 else if (phase == "ettin-lifecycle")
                     foreach (int frame in ReviewSummonCleanup2EttinLifecycle(fixture, book)) yield return frame;
+                else if (phase == "ettin-commands")
+                {
+                    foreach (int frame in ReviewSprint29Commands(fixture,false)) yield return frame;
+                    foreach (int frame in ReviewSprint29Commands(fixture,true)) yield return frame;
+                }
                 else if (phase == "crab-attack")
                     foreach (int frame in ReviewSummonCleanup2CrabAttack(fixture, book)) yield return frame;
                 else if (phase == "production-attacks")
@@ -172,7 +179,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try { if (levelController != null) levelController.GetType().GetMethod("Cancel").Invoke(levelController, null); }
                 finally
                 {
-                    _sprint25WaitingForUnityAppearance = appearanceWait;
+                    // A native Default scope owns progression until its exact
+                    // mode/controller restoration succeeds. Never resume the
+                    // manual fixture clock over a still-owned native mode.
+                    _sprint25WaitingForUnityAppearance = Cleanup2NativeDefaultPending || appearanceWait;
                     try
                     {
                         SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = turnBased;
@@ -303,6 +313,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2GiantLineup(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
         {
             var hooks = HarmonyInstance.Create("kmg.cleanup2.lineup." + _request.RunId);
+            IDisposable heightProbe = (string)_request.Parameters?["reviewPhase"] == "scale-prototype"
+                ? GiantSummonPresentationPatch.BeginRenderScaleProbe(_request) : null;
             var actors = new List<UnitEntityData> { fixture.Caster };
             var keys = new List<string> { "human-six-foot-art-anchor" };
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
@@ -445,19 +457,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     float soleGap = samples.Max(v => Mathf.Abs(v[i].Sole.y - groundPoints[i].y));
                     bool stableScale = samples.All(v => v[i].ViewId == samples[0][i].ViewId &&
                         Vector3.Distance(v[i].ViewScale, samples[0][i].ViewScale) <= .00001f);
-                    bool stable = samples.All(v => v[i].Valid) && range <= .05f && soleGap <= .15f && stableScale;
+                    // Review19 measured the same native 22-29cm visual sole
+                    // offset for Human and both giant families. Navmesh Y is a
+                    // placement surface, not an engine promise of skin contact.
+                    bool stable = samples.All(v => v[i].Valid) && range <= .05f && stableScale;
                     standing &= stable;
                     summary.Add(new JObject { ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
                         ["meanBodyHeightWorldUnits"] = heights.Average(), ["poseHeightRange"] = range,
                         ["maximumSoleGroundGap"] = soleGap, ["stableStandingSamples"] = stable,
                         ["sameViewScaleAcrossSamples"] = stableScale,
                         ["heightOverHuman"] = heights.Average() / samples.Average(v => v[0].Height),
-                        ["comparisonFeetUsingExplicitHumanArtAnchor"] = 6f * heights.Average() / samples.Average(v => v[0].Height) });
+                        ["heightOverHill"] = heights.Average() / samples.Average(v => v[1].Height),
+                        ["soleOffsetIsDiagnosticNotAdmission"] = true });
                 }
                 Cleanup2Check("standing-comparison-eligibility", standing, new JObject {
                     ["actors"] = summary, ["calibrationApplied"] = false,
-                    ["ratioLimitation"] = "Ratios/feet are descriptive only. An ineligible standing/ground sample cannot authorize scale calibration." },
-                    "Four native idle samples have comparable standing contact/height before any later art calibration.");
+                    ["ratioLimitation"] = "Finite stable current-body samples support relative family comparison. Native sole/navmesh offsets are recorded, not assumed zero; no absolute Human/feet calibration is claimed." },
+                    "Four finite stable native idle body samples on the surveyed plane admit a relative render-only experiment; navmesh-to-skin offset is not an anatomy calibration.");
                 bool scalePrototype = (string)_request.Parameters?["reviewPhase"] == "scale-prototype";
                 Cleanup2Check("same-camera-lineup", true,
                     Cleanup2CaptureLineup(actors, keys, samples.Last(),
@@ -468,12 +484,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                _expandedSummoningPlayerPathCaptureActive = false;
-                try { hooks.UnpatchAll(hooks.Id); }
+                try { if (heightProbe != null) heightProbe.Dispose(); }
                 finally
                 {
-                    ExpandedSummoningPlayerPathEvents.Clear();
-                    _sprint25WaitingForUnityAppearance = false;
+                    _expandedSummoningPlayerPathCaptureActive = false;
+                    try { hooks.UnpatchAll(hooks.Id); }
+                    finally
+                    {
+                        ExpandedSummoningPlayerPathEvents.Clear();
+                        _sprint25WaitingForUnityAppearance = false;
+                    }
                 }
             }
         }
@@ -888,12 +908,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["offset"] = new JArray(material.GetTextureOffset(name).x, material.GetTextureOffset(name).y) };
             }
             Texture texture = material.HasProperty("_MainTex") ? material.GetTexture("_MainTex") : null;
+            Texture roughnessLookup = Shader.GetGlobalTexture("unity_NHxRoughness");
             return new JObject { ["name"] = material.name, ["instance"] = material.GetInstanceID(),
                 ["activeColorSpace"] = QualitySettings.activeColorSpace.ToString(),
                 ["shader"] = material.shader?.name, ["renderQueue"] = material.renderQueue,
                 ["localKeywords"] = new JArray(material.shaderKeywords.OrderBy(k=>k,StringComparer.Ordinal)),
                 ["globalSpecularOn"] = Shader.IsKeywordEnabled("SPECULAR_ON"),
                 ["globalMetallnessOn"] = Shader.IsKeywordEnabled("METALLNESS_ON"),
+                ["nativeRoughnessLookup"] = roughnessLookup == null ? (JToken)JValue.CreateNull() : new JObject {
+                    ["name"] = roughnessLookup.name, ["instance"] = roughnessLookup.GetInstanceID(),
+                    ["width"] = roughnessLookup.width, ["height"] = roughnessLookup.height },
+                ["roughnessLookupScope"] = "Read-only global lookup identity; null is not evidence of a missing engine-internal binding.",
                 ["properties"] = properties, ["colors"] = colors, ["textures"] = textures,
                 ["color"] = material.HasProperty("_Color") ? new JArray(material.color.r, material.color.g, material.color.b, material.color.a) : null,
                 ["texture"] = texture?.name, ["textureInstance"] = texture == null ? 0 : texture.GetInstanceID() };
@@ -1134,16 +1159,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // cannot widen that projection. Fit all eight corners in the
                 // actual camera basis, with the output aspect set first.
                 camera.aspect = 1920f / 1080f;
-                Quaternion rotation = Quaternion.LookRotation((forward-Vector3.up*.18f).normalized,Vector3.up);
-                Quaternion inverse = Quaternion.Inverse(rotation);
-                Vector3[] projected = corners.Select(p => inverse*(p-centre)).ToArray();
-                float halfWidth = projected.Max(p => Mathf.Abs(p.x));
-                float halfHeight = projected.Max(p => Mathf.Abs(p.y));
-                float halfDepth = projected.Max(p => Mathf.Abs(p.z));
-                float halfFrame = Mathf.Max(halfHeight,halfWidth/camera.aspect)*1.16f;
-                float distance = halfDepth + Mathf.Max(12f,halfFrame/Mathf.Tan(camera.fieldOfView*Mathf.Deg2Rad*.5f));
-                if(camera.orthographic) camera.orthographicSize=halfFrame;
-                camera.transform.SetPositionAndRotation(centre-rotation*Vector3.forward*distance,rotation);
+                var cameraAttempts = new JArray();
+                bool clearSight = false;
+                // The old ten-degree view photographed native blue occlusion
+                // silhouettes through a wall. Use a gameplay-like downward
+                // view, test both sides, and retain each obstruction result.
+                foreach (float pitch in new[] { 60f, 72f, 80f })
+                {
+                    foreach (float side in new[] { 1f, -1f })
+                    {
+                        Vector3 direction = forward * side * Mathf.Cos(pitch * Mathf.Deg2Rad) -
+                            Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
+                        Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+                        Quaternion inverse = Quaternion.Inverse(rotation);
+                        Vector3[] projected = corners.Select(p => inverse * (p - centre)).ToArray();
+                        float halfWidth = projected.Max(p => Mathf.Abs(p.x));
+                        float halfHeight = projected.Max(p => Mathf.Abs(p.y));
+                        float halfDepth = projected.Max(p => Mathf.Abs(p.z));
+                        float halfFrame = Mathf.Max(halfHeight, halfWidth / camera.aspect) * 1.16f;
+                        float distance = halfDepth + Mathf.Max(12f, halfFrame / Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad * .5f));
+                        if (camera.orthographic) camera.orthographicSize = halfFrame;
+                        camera.transform.SetPositionAndRotation(centre - direction * distance, rotation);
+                        JArray blockers = Cleanup2LineupSightBlockers(camera, actors, metrics);
+                        cameraAttempts.Add(new JObject { ["pitchDegrees"] = pitch, ["side"] = side,
+                            ["cameraPosition"] = SurveyVector(camera.transform.position), ["blockers"] = blockers });
+                        if (blockers.Count == 0) { clearSight = true; break; }
+                    }
+                    if (clearSight) break;
+                }
+                if (!clearSight)
+                    throw new InvalidOperationException("No downward native lineup camera has clear environment sight: " + cameraAttempts.ToString());
                 target = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = target;
                 camera.Render();
@@ -1175,6 +1220,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
                     ["fieldOfView"] = camera.fieldOfView, ["orthographic"] = camera.orthographic,
                     ["screenFade"] = screenFade, ["meanLuma"] = luma,
+                    ["downwardCameraAttempts"] = cameraAttempts, ["noEnvironmentPhysicsSightBlocker"] = clearSight,
+                    ["occlusionProofLimit"] = "Physics rays reject blocking scene colliders; actual framebuffer still requires visual review for collider-free rendered occluders. No scene renderer/culling/highlight state is changed.",
                     ["allCrownSoleInFrame"] = visible, ["viewport"] = viewport,
                     ["rendering"] = experimentalProxy
                         ? "Actual live actors with explicitly owned experimental render-only proxies/palettes in native scene lighting. No synthetic silhouette. Camera auto-framing may differ from before; both exact poses are recorded."
@@ -1190,6 +1237,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (target != null) { target.Release(); UnityEngine.Object.Destroy(target); }
                 if (image != null) UnityEngine.Object.Destroy(image);
             }
+        }
+
+        private static JArray Cleanup2LineupSightBlockers(Camera camera, IList<UnitEntityData> actors, Cleanup2ActorMetric[] metrics)
+        {
+            var blockers = new JArray();
+            for (int i = 0; i < metrics.Length; i++)
+            foreach (Vector3 target in new[] { metrics[i].Crown, (metrics[i].Crown + metrics[i].Sole) * .5f,
+                Vector3.Lerp(metrics[i].Sole, metrics[i].Crown, .12f) })
+            {
+                // Probe crown, torso and lower leg. An unqualified physical
+                // sole/floor relationship is not a camera obstruction test.
+                // Orthographic rays originate at each target's image-plane
+                // projection, rather than converging at the camera position.
+                Vector3 viewport = camera.WorldToViewportPoint(target);
+                Ray ray = camera.ViewportPointToRay(new Vector3(viewport.x, viewport.y, 0f));
+                float distance = Vector3.Dot(target - ray.origin, ray.direction);
+                if (!Cleanup2Finite(distance) || distance <= 0f) throw new InvalidOperationException("Non-finite/behind-camera lineup sight input.");
+                RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Max(0f, distance - .03f), ~0, QueryTriggerInteraction.Ignore);
+                RaycastHit? obstruction = hits.Where(hit => hit.collider != null &&
+                    !actors.Any(actor => actor.View != null && (hit.collider.transform == actor.View.transform ||
+                        hit.collider.transform.IsChildOf(actor.View.transform))))
+                    .OrderBy(hit => hit.distance).Select(hit => (RaycastHit?)hit).FirstOrDefault();
+                if (obstruction.HasValue)
+                    blockers.Add(new JObject { ["actor"] = actors[i].UniqueId,
+                        ["collider"] = obstruction.Value.collider.name, ["instance"] = obstruction.Value.collider.GetInstanceID(),
+                        ["type"] = obstruction.Value.collider.GetType().FullName, ["distance"] = obstruction.Value.distance });
+            }
+            return blockers;
         }
 
         private static IEnumerable<Vector3> Cleanup2BoundsCorners(Bounds bounds)
