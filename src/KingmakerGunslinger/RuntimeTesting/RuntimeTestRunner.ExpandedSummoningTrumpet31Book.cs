@@ -26,6 +26,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewTrumpet31Book(ExpandedSummoningCorrectionFixture fixture)
         {
+            CaptureCelestial31CasterInputs();
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null;
@@ -47,8 +48,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var data = new AbilityData(creation.Heal, book);
                 var parameters = data.CalculateParams();
                 int[] capacities = Enumerable.Range(1, 7).Select(level => book.CalcSlotsLimit(level, SpellSlotType.Common)).ToArray();
+                var preparationRows = new JArray(creation.Preparations.Select(row => {
+                    var ownSlots = book.GetMemorizedSpellSlots(row.Level).Where(slot =>
+                        ReferenceEquals(slot.Spell?.Blueprint, row.Ability)).ToArray();
+                    var otherSlots = siblingBook.GetMemorizedSpellSlots(row.Level).Where(slot =>
+                        ReferenceEquals(slot.Spell?.Blueprint, row.Ability)).ToArray();
+                    var nativeParams = new AbilityData(row.Ability, book).CalculateParams();
+                    return new JObject { ["spell"] = row.Ability.AssetGuid, ["name"] = row.Ability.name,
+                        ["level"] = row.Level, ["preparedCopies"] = row.Copies,
+                        ["ownerCopies"] = ownSlots.Length, ["siblingCopies"] = otherSlots.Length,
+                        ["allAvailable"] = ownSlots.Concat(otherSlots).All(slot => slot.Available),
+                        ["nativeCl"] = nativeParams.CasterLevel, ["nativeSpellLevel"] = nativeParams.SpellLevel,
+                        ["nativeDc"] = nativeParams.DC };
+                }));
+                bool prepared = preparationRows.Count > 1 && preparationRows.All(row =>
+                    (int)row["ownerCopies"] == (int)row["preparedCopies"] &&
+                    (int)row["siblingCopies"] == (int)row["preparedCopies"] && (bool)row["allAvailable"] &&
+                    (int)row["nativeCl"] == 14 && (int)row["nativeSpellLevel"] == (int)row["level"]);
                 var stats = owner.Stats;
-                bool nativeBook = stats.HitPoints.ModifiedValue == 175 && stats.BaseAttackBonus.ModifiedValue == 14 &&
+                bool nativeBook = prepared && stats.HitPoints.ModifiedValue == 175 && stats.BaseAttackBonus.ModifiedValue == 14 &&
                     stats.AC.ModifiedValue == 27 && stats.SaveFortitude.ModifiedValue == 16 &&
                     stats.SaveReflex.ModifiedValue == 9 && stats.SaveWill.ModifiedValue == 14 &&
                     owner.Descriptor.Progression.CharacterLevel == 14 && owner.Descriptor.Progression.GetClassLevel(creation.Book.CharacterClass) == 0 &&
@@ -66,7 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["book"] = book.Blueprint.AssetGuid, ["independentBooks"] = !ReferenceEquals(book, siblingBook),
                     ["nativeCapacities"] = new JArray(capacities), ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel,
                     ["dc"] = parameters.DC, ["heal"] = creation.Heal.AssetGuid, ["ownerHealSlots"] = Trumpet31HealSlots(book, creation.Heal),
-                    ["siblingHealSlots"] = Trumpet31HealSlots(siblingBook, creation.Heal), ["earlySliceOnly"] = true },
+                    ["siblingHealSlots"] = Trumpet31HealSlots(siblingBook, creation.Heal), ["preparations"] = preparationRows, ["fullCasterQualification"] = false },
                     "Actual14 racial HD and genuine CL14 prepared book/capacities/Heal slots; no cleric class statistics, domains or SLA parameter override.");
                 if (!nativeBook) throw new InvalidOperationException("Trumpet native prepared-book profile failed.");
                 Vector3 far; string lane, direction;
@@ -127,6 +145,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("trumpet-book-hidden-route", hidden, new JObject { ["routes"] = routes.Length, ["tier"] = routes.Single().ParentTier },
                     "Exactly one hidden SM IX Trumpet route; released public roots remain exact.");
                 if (!hidden) throw new InvalidOperationException("Trumpet hidden route/public preservation failed.");
+                foreach (int frame in ReviewTrumpet31Purge(fixture, owner, sibling)) yield return frame;
             }
             finally
             {

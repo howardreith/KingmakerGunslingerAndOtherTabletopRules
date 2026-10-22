@@ -807,6 +807,10 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Brain", "BlueprintBrain"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealEligibility", "TrumpetPreparedHealingEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.InvisibilityPurge", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeRecipient", "BlueprintBuff"),
 
     ))
     expected = sum(identity_count(name) for name in (
