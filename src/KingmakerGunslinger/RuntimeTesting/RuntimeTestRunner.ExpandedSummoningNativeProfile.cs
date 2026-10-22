@@ -110,7 +110,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset.MakeAutosave = false;
                     if ((IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
                         (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "giant-lineup" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menus" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "scale-prototype" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "cloth-probe"))) {
                         var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
                             "758559f44d15fc844bf30a10a83154d5","established native Oleg outdoor fixture").AreaEntrance;

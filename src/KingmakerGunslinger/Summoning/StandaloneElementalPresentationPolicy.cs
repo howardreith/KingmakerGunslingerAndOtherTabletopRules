@@ -81,6 +81,8 @@ namespace KingmakerGunslinger.Summoning
 
         internal static IReadOnlyList<StandaloneElementalAbilitySpec> All
         { get { return Array.AsReadOnly(Values); } }
+        internal static IReadOnlyList<string> ObservedOrdinarySpellListGuids
+        { get { return Array.AsReadOnly(OrdinaryClassLists.OrderBy(value => value, StringComparer.Ordinal).ToArray()); } }
         internal static StandaloneElementalAbilitySpec Find(string guid)
         { return Values.SingleOrDefault(value => string.Equals(value.Guid, guid, StringComparison.Ordinal)); }
 

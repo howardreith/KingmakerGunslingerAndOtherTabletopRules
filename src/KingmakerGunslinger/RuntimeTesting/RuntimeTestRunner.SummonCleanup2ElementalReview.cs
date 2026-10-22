@@ -212,7 +212,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["actuallyRemovedRows"] = removed,
                         ["uiDispositions"] = new JArray(StandaloneElementalDiscovery.SnapshotDispositions()),
                         ["scope"] = "Counts distinguish a live installed hook, observed equivalence and actual filter removal. Zero removals is retained diagnostic evidence and does not complete MENU-02.",
-                        ["noVisibleLearningUiClaim"] = true, ["saveWriteObserved"] = _workingSaveSmoke.WriteObserved },
+                        ["noVisibleLearningUiClaim"] = true,
+                        ["saveWriteObserved"] = _workingSaveSmoke != null && _workingSaveSmoke.WriteObserved },
                     "All ten observed ordinary lists receive bounded native diagnostics and at least one actual helper probe without shared blueprint mutation.");
             }
             finally
@@ -225,7 +226,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     added.Dispose();
                 }
                 Cleanup2Check("elemental-book-cleanup", Cleanup2SameElementalRefs(booksBefore,
-                    fixture.Caster.Descriptor.Spellbooks) && surfaces.Unchanged() && !_workingSaveSmoke.WriteObserved,
+                    fixture.Caster.Descriptor.Spellbooks) && surfaces.Unchanged() &&
+                    (_workingSaveSmoke == null || !_workingSaveSmoke.WriteObserved),
                     new JObject { ["addedBooks"] = addedBooks.Count,
                         ["originalBookReferencesRestored"] = Cleanup2SameElementalRefs(booksBefore, fixture.Caster.Descriptor.Spellbooks),
                         ["sharedSurfacesUnchanged"] = surfaces.Unchanged(),

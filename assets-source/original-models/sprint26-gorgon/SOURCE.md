@@ -1,34 +1,71 @@
-# Sprint 26 original Gorgon body
+# Original Gorgon body: Cleanup 2 refinement
 
-Original modest armored-bull geometry, UVs and matte iron albedo on the native
-Horse animation frame. It reuses the project's own procedural cattle primitives
-and adds closed overlapping torso, skull and limb plates, two horns, four cloven
-feet and living amber eyes. No native vertices, triangles, UVs, textures,
-materials, animation curves or proprietary assemblies are redistributed.
+Current authoring is `build_gorgon.py`, using the retained exact original
+project-authored `cleanup2-gorgon-input.json`. Its SHA-256 is
+`0f3c8ce10c4c0d50650ecb5a042985d1b242977716c5b7a0286754d370fdc508`.
+This input contains original geometry, UVs, painting identity and named weights;
+it contains no native vertices, textures, bind transforms or animation curves.
 
-The only native inputs are the geometry-free Horse frame captured by the
-bounded Sprint 26 input observer, RunId
-20261018T0439106684862Z-9ddbdd0aa753493e8171dd4337e8ac49. Its exact unit/prefab
-are validated by the generator. Editable Blender/rig inputs remain ignored and
-machine-local. The shipped schema-2 file contains original vertices, normals,
-UVs, triangles and weights plus native bone names; runtime uses the actual
-renderer bind poses through the established attachment transaction.
+## Reopened ART-10 repair
 
-Generate with installed Blender 4.5 LTS:
+The current native baseline showed pillow-like ellipsoid plates, disconnected
+looking thin limbs, round toe ends and a coarse muzzle. Cleanup 2 now authors
+one closed heavy bovine skin with integrated neck/head/limbs/tail, eight flat
+beveled cloven hoof halves, and 21 thin overlapping tapered metal shells fitted
+to its surface. Creased rim normals and original burnished-edge paint distinguish
+metal lames from cushions. Horn and amber-eye point sets are retained exactly.
+All 28 published bone names/order and the original rig identity are retained;
+nearest-triangle transfer and smoothing preserve their named skinning contract.
+Sharp normal/UV seam copies receive identical weights so they cannot tear.
+
+No unit/view scale, collider, native mesh/material/texture, blueprint, mechanic,
+animation or breath-origin code is changed. The runtime still binds against the
+actual native renderer. All new geometry, normals, UVs and albedo are original
+project work. No proprietary pixels or geometry are committed.
+
+## Reproducible generation
+
+Installed Blender 4.5.10 LTS, from the repository root:
 
 ```text
-blender -b --factory-startup --python-exit-code 1 --python build_gorgon.py -- --capture <private-input.json> --output-dir <assets/ungulates> --work-dir <private-authoring-dir>
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint26-gorgon/build_gorgon.py -- --output-dir assets/ungulates --work-dir <ignored-private-authoring-dir>
 ```
 
-This is a functional candidate, not polished or owner-approved art. Faceting,
-overlap seams, proportions, secondary armor motion and contact choreography
-remain a short refinement backlog after actual visibility/command checks.
-HumanReview: NOT_PERFORMED_NONBLOCKING. Native visual/lifecycle qualification is
-required separately. Bulette reuses the actual installed adult Bulette body;
-it does not inherit this skin or the Horse view.
+The generator refuses any input differing from the retained original project
+hash. It uses the existing continuous-body library and actual export geometry/
+weight auditor, without changing those shared tools. No private native capture
+is needed to regenerate the two shipped files.
 
-Native prototype review found mixed closed-surface winding, then inward lighting
-normals after winding normalization. The Gorgon-only exporter now normalizes
-faces to its observed native-visible plate orientation and emits outward normals.
-The actual prior frames and verdicts remain machine-local. This is a functional
-legibility correction, pending fresh game inspection, without owner art approval.
+Optional `--preview-rig <private-historical-Aurochs-frame.json>` enables only
+offline synthetic pose checks and the local editable rig preview. The admitted
+historical frame is `request-local summoned horse donor view`, blueprint
+`KMG_Summoning_Unit_Aurochs`, mesh `KMG_aurochs_Original`, renderer `horse_01`,
+28 named bones. Its real SHA-256 is
+`83540b02dcdaeeedb0ec927ec33afa89a1760b1624e0c489c247cb6e3a331ef8`.
+All 28 names and 14 authored landmark relationships are checked before use.
+It is **not** the strict original 31-bone native Horse capture and supplies no
+current native bind calibration or native motion evidence. The runtime does
+not read this preview. Generation with/without it produces identical exports.
+Raw captures and `.blend` files remain machine-local and ignored.
+
+Current exported identities and commands/durations are recorded in
+`planning/CLEANUP2-GORGON-NOTES.md`. Technical checks and synthetic renders do
+not grant owner visual approval. Native locomotion, plate/hoof contact and
+mouth-effect presentation on these changed bytes remain unverified.
+
+## Original Sprint 26 provenance
+
+The retained project input was documented as an original modest armored-bull
+skin on the Horse frame, with original geometry/UVs/albedo and native bone names.
+Its original generator admitted exact Horse unit
+`5bb9579fdb2b26b48bb10d61c81cfdfb`, prefab
+`6032f7a5751c1104aa59647b176634c8`, renderer `horse_01`, 31 captured bones.
+The documented geometry-free input observer RunId was
+`20261018T0439106684862Z-9ddbdd0aa753493e8171dd4337e8ac49`.
+That private capture was not replayed or replaced during Cleanup 2. The supplied
+28-bone Aurochs file is used only under the separate historical-preview checks
+above, with no invented unit/prefab metadata.
+
+Earlier winding/lighting corrections and native visibility records remain
+historical evidence of the old exports. The old functional candidate was not
+owner-approved art. Bulette retains its unrelated installed adult Bulette body.
