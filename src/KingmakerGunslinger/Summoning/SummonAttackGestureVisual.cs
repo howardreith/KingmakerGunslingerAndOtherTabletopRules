@@ -24,7 +24,8 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
-    // Native UnitAttack still owns the null-handle ScheduleAct(1), rule, cost
+    // Native UnitAttack owns its HasAnimation=false immediate Tick branch,
+    // unchanged stored ScheduleAct(1), rule, cost
     // and lifetime. Only this exact project skin receives original pose art.
     [DefaultExecutionOrder(20000)]
     internal sealed class SummonAttackGestureVisual : MonoBehaviour
@@ -36,6 +37,9 @@ namespace KingmakerGunslinger.Summoning
             internal AttackHandInfo Info;
             internal ItemEntityWeapon Weapon;
             internal float Start, Deadline, Delay, ActTime = -1f, MaximumAngle;
+            internal float NativeActTickDelta;
+            internal int EligibleTicks, ScheduleFrame, ActFrame, ActTickSerial;
+            internal bool HasAnimationAtSchedule, HasAnimationAtAct, HandledAtSchedule, HandledAtAct, OneFrameAtAct;
             internal double ActGame = -1d;
             internal bool Suppressed, Cancelled;
         }
@@ -54,6 +58,8 @@ namespace KingmakerGunslinger.Summoning
             }
         }
         private static readonly FieldInfo PretendAct = typeof(UnitCommand).GetField("m_PretendActTime", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo HasAnimation = typeof(UnitCommand).GetField("HasAnimation", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo ActHandled = typeof(UnitCommand).GetField("m_IsAnimationActHandled", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo SerializedSet = typeof(AnimationManager).GetField("m_AnimationSet", BindingFlags.Instance | BindingFlags.NonPublic);
         private readonly List<Mirror> _mirrors = new List<Mirror>();
         private readonly List<Pivot> _pivots = new List<Pivot>();
@@ -79,6 +85,9 @@ namespace KingmakerGunslinger.Summoning
         private int _serial, _proofSamples;
         private int _sourceInvariantSamples, _sourceInvariantFailures;
         private float _maximumZeroError;
+        private UnitAttack _tickCommand;
+        private int _tickSerial, _tickFrame;
+        private float _tickBefore, _tickDelta;
         internal string Key { get { return _key; } }
         internal bool Ready { get { return _configured && !_released && ExactPalette() && _receipt != null && _receipt(); } }
         internal IList<Schedule> Schedules { get { return _schedules.AsReadOnly(); } }
@@ -89,7 +98,7 @@ namespace KingmakerGunslinger.Summoning
             try
             {
                 if (!SummonAttackGesturePolicy.Handles(key) || view == null || _actor == null || renderer == null ||
-                    receipt == null || !receipt() || renderer.GetComponent<Cloth>() != null || PretendAct == null ||
+                    receipt == null || !receipt() || renderer.GetComponent<Cloth>() != null || PretendAct == null || HasAnimation == null || ActHandled == null ||
                     renderer.sharedMesh == null || !renderer.transform.IsChildOf(view.transform))
                     throw new InvalidOperationException("Exact ordinary original skin receipt unavailable.");
                 _mesh = renderer.sharedMesh; _nativeBones = renderer.bones; _rootBone = renderer.rootBone;
@@ -363,7 +372,7 @@ namespace KingmakerGunslinger.Summoning
             try
             {
                 string source;
-                if (!PositiveOwner(out source) || !ReferenceEquals(command.Executor, _actor) || !command.IsStarted || command.IsFinished ||
+                if (!PositiveOwner(out source) || command.GetType() != typeof(UnitAttack) || !ReferenceEquals(command.Executor, _actor) || !command.IsStarted || command.IsFinished ||
                     command.OverrideAction != null || command.Cutscene || command.IsIgnoreCooldown || command.IsCharge ||
                     command.Animation != null || command.PlannedAttack == null || command.PlannedAttack.AnimationHandle != null ||
                     _view.AnimationManager == null || _view.AnimationManager.GetAction(Special(_key)) != null) return;
@@ -379,14 +388,17 @@ namespace KingmakerGunslinger.Summoning
                     PrefabGuid = _actor.Blueprint.Prefab?.AssetId, SourceGuid = source, WeaponGuid = info.Weapon.Blueprint.AssetGuid,
                     ModuleActive = true, RegisteredUnit = true, RegisteredSource = true, PositiveCaster = true, LiveSummon = true,
                     ExactViewReceipt = Ready, ExactNativePalette = exactWeapons && limb >= 0, MissingNativeHandle = true,
-                    NativeSchedule = Mathf.Abs(delay - 1f) <= .00001f && Mathf.Abs(deadline - command.TimeSinceStart - delay) <= .0001f,
+                    NativeSchedule = !(bool)HasAnimation.GetValue(command) && !(bool)ActHandled.GetValue(command) && !command.IsOneFrameCommand &&
+                        Mathf.Abs(delay - 1f) <= .00001f && Mathf.Abs(deadline - command.TimeSinceStart - delay) <= .0001f,
                     CurrentPoseEquality = ProveCurrentPose() };
                 if (!SummonAttackGesturePolicy.Permits(scope)) { _refusal = "native-schedule-or-exact-owner-policy-refused"; return; }
                 if (_schedules.Any(value => ReferenceEquals(value.Command, command) && value.Index == index))
                 { foreach (Schedule previous in _schedules.Where(value => ReferenceEquals(value.Command, command))) previous.Cancelled = true; _refusal = "duplicate-native-schedule"; return; }
                 if (_schedules.Count == 32) _schedules.RemoveAt(0);
                 _schedules.Add(new Schedule { Serial = ++_serial, Index = index, Limb = limb, Command = command, Info = info,
-                    Weapon = info.Weapon, Start = command.TimeSinceStart, Deadline = deadline, Delay = delay, Suppressed = _suppressed });
+                    Weapon = info.Weapon, Start = command.TimeSinceStart, Deadline = deadline, Delay = delay, Suppressed = _suppressed,
+                    HasAnimationAtSchedule = (bool)HasAnimation.GetValue(command), HandledAtSchedule = (bool)ActHandled.GetValue(command),
+                    ScheduleFrame = Time.frameCount, EligibleTicks = ReferenceEquals(_tickCommand, command) ? 1 : 0 });
             }
             catch (Exception error) { _refusal = "schedule-observer:" + error.GetType().Name + ":" + error.Message; }
         }
@@ -396,19 +408,38 @@ namespace KingmakerGunslinger.Summoning
             {
                 var record = _schedules.LastOrDefault(value => ReferenceEquals(value.Command, command) && value.Index == command.GetAttackIndex());
                 if (record == null) return;
+                record.HasAnimationAtAct = (bool)HasAnimation.GetValue(command); record.HandledAtAct = (bool)ActHandled.GetValue(command);
+                record.OneFrameAtAct = command.IsOneFrameCommand; record.NativeActTickDelta = Game.Instance.TimeController.DeltaTime;
+                record.ActFrame = Time.frameCount; record.ActTickSerial = _tickSerial;
                 if (record.ActTime >= 0 || !ReferenceEquals(record.Info, command.PlannedAttack) || command.Animation != null ||
-                    !ReferenceEquals(record.Info.Weapon, record.Weapon) || command.TimeSinceStart + .0001f < record.Deadline || !Ready)
+                    !ReferenceEquals(record.Info.Weapon, record.Weapon) || !Ready ||
+                    !ReferenceEquals(_tickCommand, command) || _tickFrame != Time.frameCount || _tickDelta != record.NativeActTickDelta ||
+                    Mathf.Abs(command.TimeSinceStart - _tickBefore - _tickDelta) > .0002f ||
+                    Mathf.Abs((float)PretendAct.GetValue(command) - record.Deadline) > .0001f ||
+                    !SummonAttackGesturePolicy.ImmediateNativeAct(record.HasAnimationAtSchedule, record.HasAnimationAtAct, record.OneFrameAtAct,
+                        record.HandledAtSchedule, record.HandledAtAct, record.Start, command.TimeSinceStart, record.NativeActTickDelta, record.EligibleTicks))
                 { record.Cancelled = true; _refusal = "native-act-chain-mismatch"; return; }
                 record.ActTime = command.TimeSinceStart; record.ActGame = Game.Instance.Player.GameTime.TotalSeconds;
                 ApplyCurrentPose(); // Original art at the real native boundary; never calls OnAction/Act itself.
             }
             catch (Exception error) { _refusal = "act-observer:" + error.GetType().Name + ":" + error.Message; }
         }
+        internal void ObserveTickBegin(UnitAttack command)
+        {
+            if (!Ready || !ReferenceEquals(command.Executor, _actor)) return;
+            if (_tickCommand != null) { _refusal = "nested-native-tick"; foreach (Schedule s in _schedules) s.Cancelled = true; return; }
+            _tickCommand = command; _tickSerial++; _tickFrame = Time.frameCount;
+            _tickBefore = command.TimeSinceStart; _tickDelta = Game.Instance.TimeController.DeltaTime;
+            foreach (Schedule s in _schedules.Where(value => ReferenceEquals(value.Command, command) && value.ActTime < 0 && !value.Cancelled &&
+                value.Index == command.GetAttackIndex() && ReferenceEquals(value.Info, command.PlannedAttack))) s.EligibleTicks++;
+        }
+        internal void ObserveTickEnd(UnitAttack command)
+        { if (ReferenceEquals(_tickCommand, command)) _tickCommand = null; }
         private float Elapsed(Schedule value)
         {
-            if (value.ActTime >= 0) return 1f + Mathf.Max(0f, (float)(Game.Instance.Player.GameTime.TotalSeconds - value.ActGame));
+            if (value.ActTime >= 0) return SummonAttackGesturePolicy.ActualActCurveTime(true, Mathf.Max(0f, (float)(Game.Instance.Player.GameTime.TotalSeconds - value.ActGame)));
             if (value.Command.IsFinished) { value.Cancelled = true; return -1f; }
-            return Mathf.Min(.9999f, Mathf.Max(0f, value.Command.TimeSinceStart - value.Start));
+            return 0f; // Native HasAnimation=false may act on its first tick. No invented one-second windup.
         }
         private void ApplyCurrentPose()
         {
@@ -469,6 +500,12 @@ namespace KingmakerGunslinger.Summoning
                     ["commandIdentity"] = RuntimeHelpers.GetHashCode(value.Command), ["infoIdentity"] = RuntimeHelpers.GetHashCode(value.Info),
                     ["weaponIdentity"] = RuntimeHelpers.GetHashCode(value.Weapon), ["weapon"] = value.Weapon.Blueprint.AssetGuid,
                     ["start"] = value.Start, ["deadline"] = value.Deadline, ["nativeDelay"] = value.Delay, ["actualActCommandTime"] = value.ActTime,
+                    ["hasAnimationAtSchedule"] = value.HasAnimationAtSchedule, ["hasAnimationAtAct"] = value.HasAnimationAtAct,
+                    ["nativeHandledAtSchedule"] = value.HandledAtSchedule, ["nativeHandledAtAct"] = value.HandledAtAct,
+                    ["nativeOneFrameAtAct"] = value.OneFrameAtAct, ["nativeActTickDelta"] = value.NativeActTickDelta,
+                    ["eligibleNativeTicks"] = value.EligibleTicks, ["scheduleUnityFrame"] = value.ScheduleFrame,
+                    ["actUnityFrame"] = value.ActFrame, ["actNativeTickSerial"] = value.ActTickSerial,
+                    ["nativeBranch"] = "HasAnimation=false immediate native Tick; stored ScheduleAct(1) is not a minimum delay; no pre-act windup claimed",
                     ["actualActGameTime"] = value.ActGame, ["suppressed"] = value.Suppressed, ["cancelled"] = value.Cancelled,
                     ["samples"] = value.Samples, ["maximumOwnedAngle"] = value.MaximumAngle })) };
         }
@@ -536,5 +573,13 @@ namespace KingmakerGunslinger.Summoning
             try { var visual = SummonAttackGestureVisual.For(__instance.Executor); if (visual != null) visual.ObserveNativeAct(__instance); }
             catch (Exception) { /* Native OnAction always runs unchanged. */ }
         }
+    }
+    [HarmonyPatch(typeof(UnitCommand), "Tick")]
+    internal static class SummonAttackGestureTickPatch
+    {
+        private static void Prefix(UnitCommand __instance)
+        { try { var attack = __instance as UnitAttack; if (attack != null) SummonAttackGestureVisual.For(attack.Executor)?.ObserveTickBegin(attack); } catch (Exception) { } }
+        private static void Postfix(UnitCommand __instance)
+        { try { var attack = __instance as UnitAttack; if (attack != null) SummonAttackGestureVisual.For(attack.Executor)?.ObserveTickEnd(attack); } catch (Exception) { } }
     }
 }

@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private sealed class Cleanup2ProductionAttackResult
         {
-            internal float[] Starts, Deadlines, Acts;
+            internal float[] Starts, Deadlines, Acts, TickDeltas;
             internal string Type;
             internal int Events, Costs;
         }
@@ -78,7 +78,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["parent"] = route.Parent.AssetGuid, ["selected"] = route.Selected.AssetGuid, ["unit"] = route.Unit.AssetGuid,
                         ["donor"] = native.AssetGuid, ["prefab"] = native.Prefab.AssetId,
                         ["accessLimitation"] = "Disposable Wizard is granted the real canonical SNA parent/prepared slot; natural class access is not being proved.",
-                        ["clockLimitation"] = "Existing qualified Dialog-host Sprint22NativeClock advances native GameTime/actions/agent by .05s per pulse; native command/rule/cost evidence under that fixture, not natural Default-mode or turn-based timing qualification.",
+                        ["clockLimitation"] = "Existing qualified Dialog-host Sprint22NativeClock is frameSynchronous=true and advances native GameTime/actions/agent by actual Unity Time.deltaTime, recorded at each act. The nominal .05 constructor value is not the active step; not natural Default-mode or turn-based timing qualification.",
                         ["targetHPFixture"] = target.Stats.HitPoints.ModifiedValue, ["maximumWallSeconds"] = 240 },
                         "Actual canonical SNA III Crab/SNA VII Brachiosaurus parent, child, prepared slot and unchanged native donor are exact.");
                     if (!exactRoute) throw new InvalidOperationException("Production gesture route changed.");
@@ -131,7 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 int index = command.GetAttackIndex(); var info = command.PlannedAttack;
                                 var matches = visual.Schedules.Where(value => ReferenceEquals(value.Command, command) && value.Index == index).ToArray();
                                 bool linked = matches.Length == 1 && ReferenceEquals(matches[0].Info, info) && ReferenceEquals(matches[0].Weapon, attack.Weapon) &&
-                                    ReferenceEquals(info?.Weapon, attack.Weapon) && matches[0].ActTime >= matches[0].Deadline &&
+                                    ReferenceEquals(info?.Weapon, attack.Weapon) && matches[0].ActTime >= matches[0].Start && matches[0].EligibleTicks == 1 &&
                                     info.AnimationHandle == null && command.Animation == null;
                                 if (!linked) failures.Add("actual-rule-event-native-schedule-info-weapon-association");
                                 if (events.Count >= 8) { failures.Add("event-bound"); return; }
@@ -153,6 +153,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 using (var economy = new FirearmReviewCosts(actor, costs))
                                 using (var trace = new Sprint26CommandTrace(actor, endings))
                                 {
+                                    if (enabled)
+                                    {
+                                        string file = "production-" + label + "-ready.png";
+                                        bool saved = Cleanup2ProductionAttackImage(actor, file, crab) == file && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
+                                        Cleanup2Check("production-ready-" + label, saved, new JObject { ["file"] = file,
+                                            ["beforeCommandRun"] = true, ["preActWindup"] = "ABSENT: native HasAnimation=false may act on its first tick; this is a neutral ready frame, not an invented windup." },
+                                            "Actual neutral own body is captured before issuing the ordinary native command.");
+                                        if (!saved) throw new InvalidOperationException("Neutral ready image unavailable."); images.Add("ready");
+                                    }
                                     actor.Commands.Run(command);
                                     while (frames++ < 3000 && commandWatch.Elapsed.TotalSeconds < 35 && watch.Elapsed.TotalSeconds < 240)
                                     {
@@ -173,22 +182,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         if (enabled)
                                             foreach (var record in records)
                                             {
-                                                float elapsed = record.ActTime < 0 ? command.TimeSinceStart - record.Start :
+                                                float elapsed = record.ActTime < 0 ? 0f :
                                                     1f + (float)(Game.Instance.Player.GameTime.TotalSeconds - record.ActGame);
-                                                string moment = record.ActTime < 0 && elapsed >= .42f && elapsed < 1f ? "windup" :
-                                                    record.ActTime >= 0 && elapsed < 1.18f ? "act" : record.ActTime >= 0 && elapsed >= 1.22f && elapsed < 1.48f ? "recover" : null;
+                                                string moment = record.ActTime >= 0 && elapsed < 1.18f ? "act" : record.ActTime >= 0 && elapsed >= 1.22f && elapsed < 1.48f ? "recover" : null;
                                                 string imageKey = record.Index + "-" + moment;
                                                 if (moment == null || images.Contains(imageKey)) continue;
                                                 string file = "production-" + label + "-attack" + record.Index + "-" + moment + ".png";
                                                 string saved = Cleanup2ProductionAttackImage(actor, file, crab);
                                                 bool present = saved == file && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
+                                                JObject imageShape = visual.MeasureGestureDisplacement(); posesFinite &= (bool)imageShape["finite"];
+                                                maximumSkinMotion = Mathf.Max(maximumSkinMotion, (float)imageShape["maximumGestureRendererLocalDisplacement"]);
+                                                maximumProtectedMotion = Mathf.Max(maximumProtectedMotion, (float)imageShape["maximumUnaffectedRendererLocalDisplacement"]);
                                                 Cleanup2Check("production-pose-" + label + "-" + imageKey, present, new JObject { ["file"] = file,
                                                     ["actualNativeScheduleSerial"] = record.Serial, ["plannedIndex"] = record.Index, ["nativeCommandTime"] = command.TimeSinceStart,
                                                     ["nativeScheduleStart"] = record.Start, ["nativeActTime"] = record.ActTime, ["renderCurveElapsed"] = elapsed,
-                                                    ["geometrySample"] = visual.MeasureGestureDisplacement(), ["gesture"] = visual.Describe(), ["forcedActOrHandle"] = false },
+                                                    ["geometrySample"] = imageShape, ["gesture"] = visual.Describe(), ["forcedActOrHandle"] = false },
                                                     "Actual native fallback clock/act drives this original private skin pose and normally visible native camera image.");
                                                 if (!present) failures.Add("missing-native-pose-image"); images.Add(imageKey);
                                             }
+                                        if (command.IsFinished && records.Any(value => value.Cancelled || value.ActGame < 0))
+                                        { failures.Add("terminal-native-act-branch-refused"); break; }
                                         bool recoveryComplete = records.Length > 0 && records.All(value => value.ActGame >= 0 &&
                                             Game.Instance.Player.GameTime.TotalSeconds - value.ActGame >= .55d);
                                         if (command.IsFinished && (records.Length == 0 || recoveryComplete)) break;
@@ -200,9 +213,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         Enumerable.Range(0, expected).All(index => final[index].Index == index && ReferenceEquals(final[index].Info, command.AllAttacks[index]) &&
                                             ReferenceEquals(final[index].Weapon, limbs[index]) && final[index].Suppressed == !enabled && !final[index].Cancelled &&
                                             final[index].Info.AnimationHandle == null && Mathf.Abs(final[index].Delay - 1f) <= .00001f &&
-                                            final[index].ActTime >= final[index].Deadline && final[index].ActTime - final[index].Deadline <= .055f);
+                                            SummonAttackGesturePolicy.ImmediateNativeAct(final[index].HasAnimationAtSchedule, final[index].HasAnimationAtAct,
+                                                final[index].OneFrameAtAct, final[index].HandledAtSchedule, final[index].HandledAtAct,
+                                                final[index].Start, final[index].ActTime, final[index].NativeActTickDelta, final[index].EligibleTicks));
                                     bool motion = posesFinite && zeroEqual && sourceInvariant && maximumProtectedMotion <= .0002f &&
-                                        (enabled ? maximumSkinMotion > .01f && final.All(value => value.Samples >= 4 && value.MaximumAngle > 1f) && images.Count == expected * 3 : maximumSkinMotion <= .0002f);
+                                        (enabled ? maximumSkinMotion > .01f && final.All(value => value.Samples >= 4 && value.MaximumAngle > 1f) && images.Count == expected * 2 + 1 : maximumSkinMotion <= .0002f);
                                     bool nativeProof = command.IsFinished && (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
                                         observer.WeaponAttacks.Count == expected && observer.OwnerWeaponAttacks.Count == expected && observer.Rolls.Count == expected &&
                                         observer.WeaponAttacks.Select(value => value.Weapon).SequenceEqual(limbs.Take(expected)) &&
@@ -212,10 +227,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         !target.Descriptor.State.IsDead && Cleanup2CrabBaseStats(actor).ToString() == stats && Cleanup2ScaleMechanics(actor).ToString() == mechanics &&
                                         Sprint19Limbs(actor).SequenceEqual(limbs) && Cleanup2SharedSameView(source) && Cleanup2SharedSameView(live);
                                     var result = new Cleanup2ProductionAttackResult { Starts = final.Select(value => value.Start).ToArray(), Deadlines = final.Select(value => value.Deadline).ToArray(),
-                                        Acts = final.Select(value => value.ActTime).ToArray(), Type = command.Type.ToString(), Events = observer.WeaponAttacks.Count, Costs = economy.Count(command) };
+                                        Acts = final.Select(value => value.ActTime).ToArray(), TickDeltas = final.Select(value => value.NativeActTickDelta).ToArray(),
+                                        Type = command.Type.ToString(), Events = observer.WeaponAttacks.Count, Costs = economy.Count(command) };
                                     bool matched = !enabled || baseline != null && baseline.Type == result.Type && baseline.Events == result.Events && baseline.Costs == result.Costs &&
                                         baseline.Acts.Length == result.Acts.Length && Enumerable.Range(0, result.Acts.Length).All(index =>
-                                            Mathf.Abs((baseline.Acts[index] - baseline.Starts[index]) - (result.Acts[index] - result.Starts[index])) <= .051f &&
+                                            baseline.TickDeltas[index] > 0 && result.TickDeltas[index] > 0 &&
+                                            Mathf.Abs((baseline.Acts[index] - baseline.Starts[index]) / baseline.TickDeltas[index] -
+                                                (result.Acts[index] - result.Starts[index]) / result.TickDeltas[index]) <= .005f &&
                                             Mathf.Abs((baseline.Deadlines[index] - baseline.Starts[index]) - (result.Deadlines[index] - result.Starts[index])) <= .0001f);
                                     bool passed = association && motion && nativeProof && matched;
                                     Cleanup2Check("production-attack-resolution-" + label, passed, new JObject { ["owner"] = actor.UniqueId, ["target"] = target.UniqueId,
@@ -223,13 +241,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["plannedAttacks"] = command.AllAttacks.Count, ["expectedAttacks"] = expected, ["events"] = events, ["costs"] = costs, ["endings"] = endings,
                                         ["scheduleAssociation"] = association, ["nativeRulesAndCostProof"] = nativeProof,
                                         ["matchedBaselineOnScheduleAndCost"] = matched, ["failures"] = new JArray(failures.Distinct()),
+                                        ["nativeActTickDeltas"] = new JArray(result.TickDeltas),
+                                        ["nativeActLatencies"] = new JArray(result.Acts.Select((value, index) => value - result.Starts[index])),
+                                        ["nativeTickNormalizedLatencies"] = new JArray(result.Acts.Select((value, index) => result.TickDeltas[index] <= 0 ? (JToken)JValue.CreateNull() : new JValue((value - result.Starts[index]) / result.TickDeltas[index]))),
+                                        ["preActWindup"] = "ABSENT; neutral ready-before-command plus actual native act/recovery frames only",
                                         ["positiveActualSkinMotionOrExactSuppression"] = motion, ["maximumSkinDisplacement"] = maximumSkinMotion,
                                         ["maximumProtectedSkinDisplacement"] = maximumProtectedMotion, ["sameFrameSourceAndColliderInvariant"] = sourceInvariant,
                                         ["actualCurrentPoseZeroOffsetEquality"] = zeroEqual, ["poses"] = poses, ["gesture"] = visual.Describe(),
                                         ["nativeCommandTime"] = command.TimeSinceStart, ["wallSeconds"] = commandWatch.Elapsed.TotalSeconds,
                                         ["frames"] = frames, ["clockPulses"] = _sprint25Clock.Pulses - startPulse, ["gameTimeDelta"] = Game.Instance.Player.GameTime.TotalSeconds - startGame,
                                         ["forcedRolls"] = 0, ["forcedActs"] = 0, ["fixtureAttackRulesTriggered"] = 0, ["nativeAnimationHandlesFabricated"] = 0,
-                                        ["limits"] = "Matched native RTWP commands under the qualified fixture clock only. Timing comparison tolerance is one .05s clock quantum, with both exact stored delays still 1s. No natural Default-mode/turn-based timing, exact enemy-contact/reach, Hit animation or owner visual approval claim." },
+                                        ["limits"] = "Matched native RTWP commands under the actual frame-synchronous fixture clock only. Exact HasAnimation=false immediate Tick/handled transition and first eligible tick are required, unchanged stored ScheduleAct(1) is not a minimum delay. Paired latency is normalized by each actual native act tick delta (tolerance .005 tick), not enlarged wall-clock tolerance. No pre-act windup, natural Default-mode/turn-based timing, exact enemy contact/reach, Hit or art approval claim." },
                                         "Ordinary missing-handle single/full commands retain exact schedules, weapon events and one native cost; only private original skin art differs in the matched render-on run.");
                                     if (!passed) throw new InvalidOperationException("Production render gesture native proof failed: " + label);
                                     if (!enabled) baseline = result;

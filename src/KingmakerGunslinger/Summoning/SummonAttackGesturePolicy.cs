@@ -17,7 +17,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string Crab = "giant-crab", Brachiosaurus = "brachiosaurus";
         internal const string BrachiosaurusUnit = "9093aef39ecc416092ef68655a7e56fb";
         internal const string TailWeapon = "13b51070d6f84a15bfed98a04c98fa30";
-        internal const float NativeFallbackDelay = 1f, RecoverySeconds = .5f;
+        internal const float NativeStoredDelay = 1f, RecoverySeconds = .5f;
         internal static readonly string[] BrachiosaurusSources = {
             "5ff406f72e834d868276c43786a05133", "7ab83d22b4284fbe8ab038776d443507", "10a645ecd39f41d88fc5ea0018e5210e",
             "8edc4ca5bab3563ba34e18326926842e", "78fc5dcf4d5650df9c08e71b4d32682c", "c87b82cb13b5538080ae8d1864266fe0",
@@ -37,6 +37,16 @@ namespace KingmakerGunslinger.Summoning
         }
 
         internal static float Smooth(float t) { t = Math.Max(0f, Math.Min(1f, t)); return t * t * (3f - 2f * t); }
+        internal static bool ImmediateNativeAct(bool animationAtSchedule, bool animationAtAct, bool oneFrameCommand,
+            bool handledAtSchedule, bool handledAtAct, float start, float act, float nativeTickDelta, int eligibleTicks)
+        {
+            return eligibleTicks == 1 && !animationAtSchedule && !animationAtAct && !oneFrameCommand && !handledAtSchedule && handledAtAct &&
+                !float.IsNaN(start) && !float.IsInfinity(start) && !float.IsNaN(act) && !float.IsInfinity(act) &&
+                !float.IsNaN(nativeTickDelta) && !float.IsInfinity(nativeTickDelta) && nativeTickDelta > 0f && nativeTickDelta <= 1f &&
+                act >= start && act - start <= nativeTickDelta + .0002f;
+        }
+        internal static float ActualActCurveTime(bool acted, float secondsAfterAct)
+        { return !acted || float.IsNaN(secondsAfterAct) || float.IsInfinity(secondsAfterAct) || secondsAfterAct < 0f ? 0f : 1f + secondsAfterAct; }
         private static float Mix(float a, float b, float t) { return a + (b - a) * Smooth(t); }
         internal static float Angle(float elapsed, float windup, float act, float recovery)
         {
