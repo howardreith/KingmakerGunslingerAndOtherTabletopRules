@@ -35,8 +35,130 @@ namespace KingmakerGunslinger.Summoning
             internal Vector2 TextureScale;
             internal Vector2 TextureOffset;
             internal readonly List<Material> Materials = new List<Material>();
+            internal ProtectedSurfaces Protected;
             internal bool Foreign;
             internal string Outcome;
+            internal string Failure;
+        }
+
+        private sealed class ProtectedSurfaces
+        {
+            private sealed class Surface
+            {
+                internal Renderer Renderer;
+                internal Material[] Materials;
+                internal Mesh Mesh;
+            }
+
+            private sealed class Map
+            {
+                internal string Slot;
+                internal bool Present;
+                internal Texture Texture;
+                internal Vector2 Scale, Offset;
+            }
+
+            private sealed class MaterialState
+            {
+                internal Material Material;
+                internal Shader Shader;
+                internal string[] Keywords;
+                internal int Queue;
+                internal Map[] Maps;
+                internal readonly Dictionary<string, Color> Colors = new Dictionary<string, Color>();
+                internal bool HasDissolve;
+                internal float Dissolve;
+
+                internal MaterialState(Material material)
+                {
+                    Material = material; Shader = material.shader;
+                    Keywords = material.shaderKeywords.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                    Queue = material.renderQueue;
+                    Maps = new[] { "_MainTex", "_BumpMap", "_Parameters" }.Select(slot => {
+                        bool present = material.HasProperty(slot);
+                        return new Map { Slot = slot, Present = present,
+                            Texture = present ? material.GetTexture(slot) : null,
+                            Scale = present ? material.GetTextureScale(slot) : Vector2.zero,
+                            Offset = present ? material.GetTextureOffset(slot) : Vector2.zero };
+                    }).ToArray();
+                    foreach (string slot in new[] { "_TintColor", "_Color", "_BaseColor", "_MainColor" })
+                        if (material.HasProperty(slot)) Colors.Add(slot, material.GetColor(slot));
+                    HasDissolve = material.HasProperty("_Dissolve");
+                    Dissolve = HasDissolve ? material.GetFloat("_Dissolve") : 0f;
+                    if (HasDissolve && (float.IsNaN(Dissolve) || float.IsInfinity(Dissolve) || Dissolve < 0f || Dissolve > .001f))
+                        throw new InvalidOperationException("A protected material has unsettled or non-finite dissolve: " + material.name);
+                }
+
+                internal bool Matches(Material current, Texture ownedAlbedo, out string reason)
+                {
+                    reason = null;
+                    if (current == null || !ReferenceEquals(current.shader, Shader)) reason = "shader";
+                    else if (current.renderQueue != Queue || !current.shaderKeywords.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(Keywords))
+                        reason = "keywords-or-renderQueue";
+                    else
+                    {
+                        foreach (Map map in Maps)
+                        {
+                            if (current.HasProperty(map.Slot) != map.Present) { reason = "map-presence:" + map.Slot; break; }
+                            if (!map.Present) continue;
+                            Texture expected = ownedAlbedo != null && map.Slot == "_MainTex" ? ownedAlbedo : map.Texture;
+                            if (!ReferenceEquals(current.GetTexture(map.Slot), expected) || !Same(current.GetTextureScale(map.Slot), map.Scale) ||
+                                !Same(current.GetTextureOffset(map.Slot), map.Offset)) { reason = "map-or-UV:" + map.Slot; break; }
+                        }
+                        if (reason == null)
+                            foreach (var color in Colors)
+                                if (!current.HasProperty(color.Key) || !current.GetColor(color.Key).Equals(color.Value))
+                                { reason = "color:" + color.Key; break; }
+                        if (reason == null && (current.HasProperty("_Dissolve") != HasDissolve ||
+                            (HasDissolve && !current.GetFloat("_Dissolve").Equals(Dissolve)))) reason = "dissolve";
+                    }
+                    return reason == null;
+                }
+            }
+
+            private readonly Surface[] _surfaces;
+            private readonly List<MaterialState> _materials = new List<MaterialState>();
+
+            internal ProtectedSurfaces(UnitEntityView view)
+            {
+                _surfaces = view.GetComponentsInChildren<Renderer>(true).Select(renderer => new Surface {
+                    Renderer = renderer, Materials = renderer.sharedMaterials,
+                    Mesh = renderer is SkinnedMeshRenderer ? ((SkinnedMeshRenderer)renderer).sharedMesh :
+                        (renderer.GetComponent<MeshFilter>() == null ? null : renderer.GetComponent<MeshFilter>().sharedMesh) }).ToArray();
+                foreach (Material material in _surfaces.SelectMany(surface => surface.Materials).Where(value => value != null))
+                    if (!_materials.Any(value => ReferenceEquals(value.Material, material))) _materials.Add(new MaterialState(material));
+            }
+
+            internal bool Verify(Ownership owner, bool allowOwnedSlot, out string reason)
+            {
+                // Detached originals remain protected too: native ReinitMaterials
+                // first resets its previous material collection before Awake.
+                foreach (MaterialState material in _materials)
+                    if (!material.Matches(material.Material, null, out reason))
+                    { reason = "original-material:" + (material.Material == null ? "<destroyed>" : material.Material.name) + ":" + reason; return false; }
+                foreach (Surface surface in _surfaces)
+                {
+                    if (surface.Renderer == null) { reason = "source-renderer-destroyed"; return false; }
+                    Mesh mesh = surface.Renderer is SkinnedMeshRenderer ? ((SkinnedMeshRenderer)surface.Renderer).sharedMesh :
+                        (surface.Renderer.GetComponent<MeshFilter>() == null ? null : surface.Renderer.GetComponent<MeshFilter>().sharedMesh);
+                    if (!ReferenceEquals(mesh, surface.Mesh)) { reason = "source-renderer-mesh"; return false; }
+                    Material[] current = surface.Renderer.sharedMaterials;
+                    if (current.Length != surface.Materials.Length) { reason = "source-material-array-length"; return false; }
+                    for (int i = 0; i < current.Length; i++)
+                    {
+                        bool ownSlot = allowOwnedSlot && ReferenceEquals(surface.Renderer, owner.Renderer) && i == owner.Slot;
+                        Material expected = ownSlot ? owner.Applied : surface.Materials[i];
+                        if (!ReferenceEquals(current[i], expected)) { reason = "source-material-reference:" + surface.Renderer.name + ":" + i; return false; }
+                        if (ownSlot)
+                        {
+                            MaterialState original = _materials.Single(value => ReferenceEquals(value.Material, owner.Original));
+                            if (!original.Matches(current[i], owner.Texture, out reason))
+                            { reason = "owned-body-material:" + reason; return false; }
+                        }
+                    }
+                }
+                reason = null; return true;
+            }
         }
 
         private static readonly Dictionary<string, GiantPaletteAlbedoProof> Proofs =
@@ -45,6 +167,60 @@ namespace KingmakerGunslinger.Summoning
             new ConditionalWeakTable<UnitEntityView, Ownership>();
         private static readonly List<Ownership> Live = new List<Ownership>();
         private const string OwnedPrefix = "KMG_GiantPalette_";
+        private static string _gammaCopyProof = "not-observed";
+
+        internal static string ProveGammaCopy()
+        {
+            if (_gammaCopyProof != "not-observed") return _gammaCopyProof;
+            if (QualitySettings.activeColorSpace != ColorSpace.Gamma)
+                return "unproven-non-gamma";
+            Texture2D sample = null;
+            try
+            {
+                // A project-owned non-symmetric RGBA pattern proves channel,
+                // alpha and row orientation on this actual graphics context.
+                var expected = new[] { new Color32(7, 53, 211, 17), new Color32(239, 31, 83, 53),
+                    new Color32(41, 193, 11, 123), new Color32(101, 61, 227, 255) };
+                sample = new Texture2D(2, 2, TextureFormat.RGBA32, false, false);
+                sample.SetPixels32(expected); sample.Apply(false, false);
+                Color32[] actual = ReadGammaPixels(sample);
+                bool same = actual.Length == expected.Length && actual.Select((pixel, index) =>
+                    Math.Abs(pixel.r - expected[index].r) <= 1 && Math.Abs(pixel.g - expected[index].g) <= 1 &&
+                    Math.Abs(pixel.b - expected[index].b) <= 1 && pixel.a == expected[index].a).All(value => value);
+                return _gammaCopyProof = same ? "gamma-rgba-copy-proved" : "gamma-rgba-copy-mismatch";
+            }
+            catch (Exception error) { return _gammaCopyProof = "gamma-rgba-copy-failed:" + error.GetType().Name; }
+            finally { Destroy(sample); }
+        }
+
+        private static Color32[] ReadGammaPixels(Texture2D source)
+        {
+            if (QualitySettings.activeColorSpace != ColorSpace.Gamma)
+                throw new InvalidOperationException("Gamma readback cannot infer a Linear texture encoding.");
+            RenderTexture previous = RenderTexture.active, target = null;
+            bool previousSrgbWrite = GL.sRGBWrite;
+            Texture2D readable = null;
+            try
+            {
+                target = RenderTexture.GetTemporary(source.width, source.height, 0,
+                    RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear);
+                if (target == null || target.sRGB) throw new InvalidOperationException("No non-sRGB copy target.");
+                GL.sRGBWrite = false;
+                Graphics.Blit(source, target);
+                RenderTexture.active = target;
+                readable = new Texture2D(source.width, source.height, TextureFormat.RGBA32, false, false);
+                readable.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0, false);
+                readable.Apply(false, false);
+                return readable.GetPixels32();
+            }
+            finally
+            {
+                RenderTexture.active = previous;
+                GL.sRGBWrite = previousSrgbWrite;
+                Destroy(readable);
+                if (target != null) RenderTexture.ReleaseTemporary(target);
+            }
+        }
 
         internal static void RegisterProof(GiantPaletteAlbedoProof proof)
         {
@@ -75,6 +251,7 @@ namespace KingmakerGunslinger.Summoning
             GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.Resolve(true,
                 unit.Blueprint.AssetGuid, SummonedSourceGuid(unit));
             if (profile == null) return "palette:not-owned";
+            if (SummonedSourceGuid(unit) == null) return "palette:no-live-summon-context";
             Ownership state;
             if (States.TryGetValue(view, out state))
             {
@@ -128,8 +305,17 @@ namespace KingmakerGunslinger.Summoning
                 source.height != proof.Height || source.format.ToString() != proof.TextureFormat)
                 return "palette:albedo-identity-mismatch";
             Color32[] pixels;
-            try { pixels = source.GetPixels32(); }
-            catch (Exception) { return "palette:source-albedo-not-readable"; }
+            string readMode;
+            try
+            {
+                if (source.isReadable) { pixels = source.GetPixels32(); readMode = "cpu-readable"; }
+                else
+                {
+                    if (ProveGammaCopy() != "gamma-rgba-copy-proved") return "palette:gamma-copy-unproved";
+                    pixels = ReadGammaPixels(source); readMode = "gpu-gamma-copy";
+                }
+            }
+            catch (Exception) { return "palette:source-albedo-copy-failed"; }
             if (pixels == null || pixels.Length != proof.Width * proof.Height)
                 return "palette:source-pixel-count-mismatch";
             for (int index = 0; index < pixels.Length; index++)
@@ -147,7 +333,8 @@ namespace KingmakerGunslinger.Summoning
                 Normal = original.HasProperty("_BumpMap") ? original.GetTexture("_BumpMap") : null,
                 Parameters = original.HasProperty("_Parameters") ? original.GetTexture("_Parameters") : null,
                 TextureScale = original.GetTextureScale(GiantSummonPalettePolicy.AlbedoSlot),
-                TextureOffset = original.GetTextureOffset(GiantSummonPalettePolicy.AlbedoSlot) };
+                TextureOffset = original.GetTextureOffset(GiantSummonPalettePolicy.AlbedoSlot),
+                Protected = new ProtectedSurfaces(view) };
             States.Add(view, state); Live.Add(state);
             try
             {
@@ -192,14 +379,19 @@ namespace KingmakerGunslinger.Summoning
                     Enumerable.Range(0, originals.Length).Any(index => index != state.Slot &&
                         !ReferenceEquals(originals[index], driven[index])))
                     throw new InvalidOperationException("Native controller did not retain exact slot ownership.");
+                string protectionFailure;
+                if (!state.Protected.Verify(state, true, out protectionFailure))
+                    throw new InvalidOperationException("Protected source state changed during palette apply: " + protectionFailure);
                 return state.Outcome = "palette:applied;key=" + profile.Key + ";renderer=" + proof.RendererPath +
+                    ";readMode=" + readMode + ";gammaCopy=" + _gammaCopyProof +
                     ";slot=" + proof.MaterialSlot + ";identityEvidence=" + proof.IdentityEvidence +
                     ";wholeBodyPaletteEvidence=" + proof.BodyPaletteEvidence;
             }
             catch (Exception exception)
             {
-                Release(view, "attach-failed", true);
-                return "palette:attach-failed:" + exception.GetType().Name;
+                state.Failure = "attach-failed:" + exception.GetType().Name + ":" + exception.Message;
+                string cleanup = Release(view, "attach-failed", true);
+                return state.Outcome = "palette:" + state.Failure + ";cleanup=" + cleanup;
             }
         }
 
@@ -208,13 +400,36 @@ namespace KingmakerGunslinger.Summoning
             Ownership state;
             if (ReferenceEquals(view, null) || !States.TryGetValue(view, out state)) return "palette:not-owned";
             bool owned = StillOwnsSlot(state);
+            bool restored = false;
+            string verificationFailure = null;
             if (restore && owned)
             {
-                Material[] current = state.Renderer.sharedMaterials;
-                current[state.Slot] = state.Original;
-                state.Renderer.sharedMaterials = current;
-                ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(view);
+                // A global native reinit must not reset foreign edits on any
+                // protected source material merely to restore our one slot.
+                if (!state.Protected.Verify(state, true, out verificationFailure))
+                    verificationFailure = "before-release:" + verificationFailure;
+                else
+                {
+                    try
+                    {
+                        Material[] current = state.Renderer.sharedMaterials;
+                        current[state.Slot] = state.Original;
+                        state.Renderer.sharedMaterials = current;
+                        string controller = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(view);
+                        if (controller != "reinitialized") verificationFailure = "controller:" + controller;
+                        else if (!state.Protected.Verify(state, false, out verificationFailure))
+                            verificationFailure = "after-release:" + verificationFailure;
+                        else restored = true;
+                    }
+                    catch (Exception exception) { verificationFailure = "release-exception:" + exception.GetType().Name + ":" + exception.Message; }
+                }
             }
+            else if (restore) verificationFailure = "foreign-or-missing-owned-slot";
+            if (restore && !restored && state.Failure == null) state.Failure = verificationFailure ?? "restoration-unverified";
+            // A failed native reinit may still have cached these materials even
+            // when the renderer swap succeeded. Retain all ownership until an
+            // explicit verified release or the owned view's teardown.
+            bool retainFailedRestore = restore && !restored;
             // Foreign changes are preserved. Do not destroy any owned object
             // still bound elsewhere; retain the record so teardown can retry.
             Renderer[] renderers = Resources.FindObjectsOfTypeAll<Renderer>();
@@ -222,7 +437,7 @@ namespace KingmakerGunslinger.Summoning
             foreach (Material material in state.Materials.ToArray())
             {
                 if (material == null) { state.Materials.Remove(material); continue; }
-                bool used = renderers.Any(value => value != null &&
+                bool used = retainFailedRestore || renderers.Any(value => value != null &&
                     !(!restore && ReferenceEquals(value, state.Renderer) && owned) &&
                     value.sharedMaterials.Any(candidate => ReferenceEquals(candidate, material)));
                 if (used) { retained++; continue; }
@@ -230,15 +445,16 @@ namespace KingmakerGunslinger.Summoning
             }
             if (state.Texture != null)
             {
-                bool used = Resources.FindObjectsOfTypeAll<Material>().Any(material => material != null &&
+                bool used = retainFailedRestore || Resources.FindObjectsOfTypeAll<Material>().Any(material => material != null &&
                     new[] { "_MainTex", "_BumpMap", "_Parameters" }.Any(slot => material.HasProperty(slot) &&
                         ReferenceEquals(material.GetTexture(slot), state.Texture)));
                 if (used) retained++;
                 else { Destroy(state.Texture); state.Texture = null; }
             }
-            state.Outcome = "palette:" + reason + ";restored=" + (restore && owned) +
-                ";foreignPreserved=" + (!owned) + ";retainedBoundObjects=" + retained;
-            if (retained == 0) { States.Remove(view); Live.Remove(state); }
+            state.Outcome = "palette:" + reason + ";restored=" + restored +
+                ";foreignPreserved=" + (!owned) + ";retainedBoundObjects=" + retained +
+                ";verificationFailure=" + (verificationFailure ?? "<none>") + ";firstFailure=" + (state.Failure ?? "<none>");
+            if (retained == 0 && !retainFailedRestore) { States.Remove(view); Live.Remove(state); }
             return state.Outcome;
         }
 

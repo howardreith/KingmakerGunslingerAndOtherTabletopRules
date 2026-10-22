@@ -165,10 +165,12 @@ try {
     param([Parameter(Mandatory=$true)][string]$ModDirectory)
     # Curated mesh/painting pairs admitted by technical export review. Cleanup 2
     # replaces the Girallon, Crab and Griffon pins and adds the other revised
-    # Stag Beetle, Stegosaurus, Elephant and Brachiosaurus pairs. This checks
+    # Stag Beetle, Stegosaurus, Elephant, Brachiosaurus and Gorgon pairs. This checks
     # exact export integrity; owner visual approval remains pending separately.
     # All unrelated protected pairs retain their existing exact identities.
     $protectedBodyExports = @{
+        'assets\ungulates\gorgon-mesh.json' = 'ab559e49083e95085056bbc1588d9d2f3515758599a79f6ced4e983f2c5479a3'
+        'assets\ungulates\gorgon-albedo.png' = 'f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2'
         'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
         'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 

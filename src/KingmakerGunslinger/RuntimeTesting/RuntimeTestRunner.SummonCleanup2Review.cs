@@ -121,6 +121,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
                 else if (phase == "cloth-probe")
                     foreach (int frame in ReviewSummonCleanup2ClothProbe(fixture, book)) yield return frame;
+                else if (phase == "ettin-lifecycle")
+                    foreach (int frame in ReviewSummonCleanup2EttinLifecycle(fixture, book)) yield return frame;
                 else if (phase == "menus")
                 {
                     _sprint25WaitingForUnityAppearance = true;
@@ -385,9 +387,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["actors"] = summary, ["calibrationApplied"] = false,
                     ["ratioLimitation"] = "Ratios/feet are descriptive only. An ineligible standing/ground sample cannot authorize scale calibration." },
                     "Four native idle samples have comparable standing contact/height before any later art calibration.");
+                bool scalePrototype = (string)_request.Parameters?["reviewPhase"] == "scale-prototype";
                 Cleanup2Check("same-camera-lineup", true,
-                    Cleanup2CaptureLineup(actors, keys, samples.Last()),
+                    Cleanup2CaptureLineup(actors, keys, samples.Last(),
+                        scalePrototype ? "cleanup2-scale-prototype-before.png" : null),
                     "One live same-camera capture contains the verified Human and all six canonically summoned giant families.");
+                if (scalePrototype)
+                    foreach (int frame in ReviewSummonCleanup2ScalePrototype(fixture, actors, keys, groundPoints, samples, standing)) yield return frame;
             }
             finally
             {
@@ -412,9 +418,70 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (AstarPath.active == null || !Cleanup2Finite(anchor))
                 throw new InvalidOperationException("No finite native lineup ground anchor/graph.");
-            var anchorNode = AstarPath.active.GetNearest(anchor);
-            if (anchorNode.node == null || !anchorNode.node.Walkable || !Cleanup2Finite(anchorNode.clampedPosition))
+            // Installed 2.1.7b UnitMovementAgent.PathTo (060018A3,
+            // IL0101-011A) selects mask1 for ordinary walking, mask2 in
+            // turn-based combat. Seeker.StartPath (060004ED, IL0034-003B)
+            // writes that mask into the path's own NNConstraint. The
+            // one-argument GetNearest uses NNConstraint.None instead and can
+            // select unwalkable nodes or the overlapping combat grid.
+            bool turnBased = TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+            int nativeMask = turnBased ? 2 : 1;
+            var queryActors = new JArray();
+            var nativeTags = new List<int>();
+            foreach (UnitEntityData actor in actors)
+            {
+                var agent = actor.View?.AgentASP;
+                if (agent == null || agent.Unit != actor.View)
+                    throw new InvalidOperationException("Owned actor has no exact native walking agent.");
+                FieldInfo seekerField = agent.GetType().GetField("m_Seeker", Cleanup2Fields);
+                MethodInfo constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+                var seeker = seekerField?.GetValue(agent) as Seeker;
+                if (seeker == null || constructTags == null || constructTags.ReturnType != typeof(int) || constructTags.GetParameters().Length != 0)
+                    throw new MissingMemberException("Installed native walking seeker/tag contract unavailable.");
+                // ConstructTags is the actual pure native query used by
+                // PathTo; no path, seeker, graph or shared constraint changes.
+                int tags = (int)constructTags.Invoke(agent, null);
+                nativeTags.Add(tags);
+                var currentField = agent.GetType().GetField("m_Path", Cleanup2Fields);
+                queryActors.Add(new JObject { ["unit"] = actor.UniqueId,
+                    ["agentInstance"] = agent.GetInstanceID(), ["seekerInstance"] = seeker.GetInstanceID(),
+                    ["agentPosition"] = SurveyVector(agent.transform.position),
+                    ["seekerTraversableTagsAtIntake"] = seeker.traversableTags,
+                    ["nativeConstructTags"] = tags,
+                    ["agentCurrentPath"] = Cleanup2GroundPath(currentField?.GetValue(agent) as Pathfinding.Path, actor.Position),
+                    ["agentRequestedPath"] = Cleanup2GroundPath(agent.GetType().GetField("m_RequestedPath", Cleanup2Fields)?.GetValue(agent) as Pathfinding.Path, actor.Position),
+                    ["seekerCurrentPath"] = Cleanup2GroundPath(seeker.GetCurrentPath(), actor.Position) });
+            }
+            // All actors must be allowed at every selected support point.
+            // Ordinary walking returns -1 for every actor; combat erosion tags
+            // are intersected rather than borrowing the Human's smaller size.
+            int commonTags = nativeTags.Aggregate(-1, (mask, tags) => mask & tags);
+            var constraint = new Pathfinding.PathNNConstraint { graphMask = nativeMask,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = commonTags, constrainDistance = true,
+                distanceXZ = false, distanceXZkeepY = false };
+            var anchorNode = AstarPath.active.GetNearest(anchor, constraint);
+            bool anchorValid = anchorNode.node != null && anchorNode.node.Walkable &&
+                constraint.Suitable(anchorNode.node) && Cleanup2Finite(anchorNode.clampedPosition) &&
+                constraint.SuitableGraph((int)anchorNode.node.GraphIndex, AstarPath.active.graphs[anchorNode.node.GraphIndex]);
+            var query = new JObject { ["turnBasedCombat"] = turnBased, ["nativePathToGraphMask"] = nativeMask,
+                ["commonNativeTraversalTags"] = commonTags, ["actors"] = queryActors,
+                ["graphs"] = new JArray(AstarPath.active.graphs.Select((graph, index) => new JObject {
+                    ["index"] = index, ["type"] = graph?.GetType().FullName, ["name"] = graph?.name,
+                    ["allowedByNativePathToMask"] = graph != null && constraint.SuitableGraph(index, graph) })),
+                ["anchor"] = SurveyVector(anchor), ["anchorClamped"] = SurveyVector(anchorNode.clampedPosition),
+                ["anchorGraph"] = anchorNode.node == null ? (JToken)JValue.CreateNull() : new JValue(anchorNode.node.GraphIndex),
+                ["anchorArea"] = anchorNode.node == null ? (JToken)JValue.CreateNull() : new JValue(anchorNode.node.Area),
+                ["anchorVerticalClamp"] = anchorNode.clampedPosition.y - anchor.y,
+                ["anchor3DClamp"] = Vector3.Distance(anchorNode.clampedPosition, anchor),
+                ["anchorVerifiedNativeWalkingGraph"] = anchorValid,
+                ["contract"] = "Installed Assembly-CSharp 3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb; PathTo060018A3 mask1 outside combat/mask2 inside; ConstructTags060018C3; Seeker.StartPath060004ED; AstarPath.GetNearest0600054F. Query-owned constraint, no graph/seeker/path writes. Native navmesh Y is recorded, never used as anatomy or independent physical contact proof." };
+            Cleanup2Check("lineup-native-ground-query", anchorValid, query,
+                "A positive owned actor's exact native walking contract selects the walkable graph before any bounded terrain survey; overlapping unrelated graphs cannot win an unconstrained query.");
+            if (!anchorValid)
                 throw new InvalidOperationException("Lineup anchor has no finite walkable native graph node.");
+            constraint.SetStart(anchorNode.node);
+            constraint.constrainArea = true;
             // Fit a genuinely two-dimensional surface, not an underdetermined
             // plane through seven collinear points. Each actor center plus
             // terrain one metre to both sides must lie on the same gentle
@@ -452,7 +519,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (float side in new[] { 0f, -1f, 1f })
                         {
                             Vector3 requested = center + axis * (along[actor] - span * .5f) + across * side;
-                            var nearest = AstarPath.active.GetNearest(requested);
+                            var nearest = AstarPath.active.GetNearest(requested, constraint);
                             Vector3 point = nearest.clampedPosition;
                             if (nearest.node == null || !nearest.node.Walkable)
                                 refusal = "missing-or-unwalkable-node";
@@ -514,6 +581,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var diagnostic = new JObject { ["anchor"] = SurveyVector(anchor),
                 ["nativeAnchorGround"] = SurveyVector(anchorNode.clampedPosition),
                 ["nativeGraphIndex"] = anchorNode.node.GraphIndex, ["nativeConnectedArea"] = anchorNode.node.Area,
+                ["nativeQuery"] = query, ["queryGraphMask"] = constraint.graphMask,
+                ["queryConnectedArea"] = constraint.area, ["queryTags"] = constraint.tags,
                 ["candidateCount"] = attempts.Count, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                 ["candidateLimit"] = 1764, ["wallLimitSeconds"] = 15,
                 ["selected"] = selected?.Document, ["attempts"] = attempts,
@@ -524,6 +593,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (selected == null)
                 throw new InvalidOperationException("No proven native seven-actor terrain plane within the recorded bounded courtyard survey; no scale calibration is authorized.");
             return selected;
+        }
+
+        private static JObject Cleanup2GroundPath(Pathfinding.Path path, Vector3 ownerPosition)
+        {
+            if (path == null) return new JObject { ["present"] = false };
+            // An in-flight worker owns its mutable result lists. Observe only
+            // its scalar state until completion; never race an unfinished path.
+            bool done = path.IsDone();
+            var nodes = !done || path.path == null ? new Pathfinding.GraphNode[0] : path.path.Where(value => value != null).ToArray();
+            var closest = nodes.OrderBy(value => Vector3.SqrMagnitude((Vector3)value.position - ownerPosition)).FirstOrDefault();
+            return new JObject { ["present"] = true, ["type"] = path.GetType().FullName,
+                ["pathId"] = path.pathID, ["isDone"] = done, ["error"] = path.error, ["completeState"] = path.CompleteState.ToString(),
+                ["nodeCount"] = nodes.Length, ["graphIndices"] = new JArray(nodes.Select(value => value.GraphIndex).Distinct()),
+                ["connectedAreas"] = new JArray(nodes.Select(value => value.Area).Distinct()),
+                ["closestRecordedNodeGraph"] = closest == null ? (JToken)JValue.CreateNull() : new JValue(closest.GraphIndex),
+                ["closestRecordedNodeArea"] = closest == null ? (JToken)JValue.CreateNull() : new JValue(closest.Area),
+                ["closestRecordedNodeDistance"] = closest == null ? (JToken)JValue.CreateNull() : new JValue(Vector3.Distance((Vector3)closest.position, ownerPosition)),
+                ["constraintGraphMask"] = path.nnConstraint?.graphMask,
+                ["constraintArea"] = path.nnConstraint?.area, ["constraintConstrainArea"] = path.nnConstraint?.constrainArea,
+                ["constraintTags"] = path.nnConstraint?.tags,
+                ["meaning"] = "Read-only current native path snapshot; historical nodes are evidence, not an invented current physical-contact location." };
         }
 
         private static JObject Cleanup2FitGroundPlane(IList<Vector3> points)
@@ -913,7 +1003,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private JObject Cleanup2CaptureLineup(IList<UnitEntityData> actors, IList<string> keys, Cleanup2ActorMetric[] metrics)
+        private JObject Cleanup2CaptureLineup(IList<UnitEntityData> actors, IList<string> keys, Cleanup2ActorMetric[] metrics,
+            string fileName = null, bool experimentalProxy = false)
         {
             Camera camera = TeleportationCastingCamera()?.Camera ?? Camera.main;
             if (camera == null) throw new InvalidOperationException("No native lineup camera.");
@@ -956,15 +1047,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float screenFade = ScreenFadeAlpha();
                 if (bytes == null || bytes.Length < 4096 || !visible || luma <= 4d || screenFade > .02f)
                     throw new InvalidOperationException("Native lineup frame is empty or clips an actor's crown/sole.");
-                string file = "cleanup2-six-giants-human-lineup.png";
+                string file = fileName ?? "cleanup2-six-giants-human-lineup.png";
+                if (Path.GetFileName(file) != file || Path.GetExtension(file) != ".png" ||
+                    File.Exists(Path.Combine(_request.EvidenceDirectory, file)))
+                    throw new InvalidOperationException("Exact new lineup PNG name required; existing evidence is never overwritten.");
                 File.WriteAllBytes(Path.Combine(_request.EvidenceDirectory, file), bytes);
                 return new JObject { ["file"] = file, ["bytes"] = bytes.Length,
+                    ["cameraInstance"] = camera.GetInstanceID(),
                     ["cameraPosition"] = SurveyVector(camera.transform.position),
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
                     ["fieldOfView"] = camera.fieldOfView, ["orthographic"] = camera.orthographic,
                     ["screenFade"] = screenFade, ["meanLuma"] = luma,
                     ["allCrownSoleInFrame"] = visible, ["viewport"] = viewport,
-                    ["rendering"] = "Actual live actors, native materials and scene lighting; no proxy meshes, recoloring or synthetic silhouettes." };
+                    ["rendering"] = experimentalProxy
+                        ? "Actual live actors with explicitly owned experimental render-only proxies/palettes in native scene lighting. No synthetic silhouette. Camera auto-framing may differ from before; both exact poses are recorded."
+                        : "Actual live actors, native materials and scene lighting; no proxy meshes, recoloring or synthetic silhouettes." };
             }
             finally
             {
@@ -977,11 +1074,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static bool Cleanup2NoNarrativeOverlay()
+        {
+            var game = Game.Instance;
+            var manager = game?.UI?.Common?.DialogUIManager;
+            // Dialog mode alone is the established owned fixture clock host.
+            // It is not permission to dismiss a live BlueprintDialog. Native
+            // Continue/Stop may execute story actions and are never used here.
+            return game?.DialogController != null && game.DialogController.Dialog == null &&
+                manager != null && manager.Dialog != null && manager.BookEvent != null && manager.Interchapter != null &&
+                !manager.Dialog.gameObject.activeInHierarchy && !manager.BookEvent.gameObject.activeInHierarchy &&
+                !manager.Interchapter.gameObject.activeInHierarchy;
+        }
+
         private IEnumerable<int> Cleanup2Menus(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
         {
             var game = Game.Instance;
             var player = game.Player;
             var ui = game.UI;
+            if (!Cleanup2NoNarrativeOverlay())
+                throw new InvalidOperationException("Native narrative overlay is active or unverified; menu observation refuses without choosing a story answer.");
             if (ActionBarManager.Instance?.Group == null || ui?.SelectionManagerPC == null || GroupController.Instance == null)
                 throw new InvalidOperationException("Native action-bar/party selection UI is unavailable.");
             // Native Dialog and other non-casting modes intentionally expose
@@ -1000,6 +1112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Cleanup 2 requires idle closed native groups, no selected ability and any exposed pointer in Default mode before claiming UI ownership.");
             Cleanup2Check("ui-input-intake", true, new JObject {
                 ["mode"] = game.CurrentMode.ToString(),
+                ["narrativeOverlayAbsent"] = Cleanup2NoNarrativeOverlay(),
                 ["selectedAbilityHandlerPresent"] = selectedAbilityHandler != null,
                 ["pointerControllerPresent"] = pointerController != null,
                 ["pointerMode"] = pointerController?.Mode.ToString(),
@@ -1034,6 +1147,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int tier = 1; tier <= 9; tier++)
                 {
                     AbilityData parent = parents[tier - 1];
+                    if (!Cleanup2NoNarrativeOverlay())
+                        throw new InvalidOperationException("Narrative overlay appeared before owned menu tier " + tier + "; no answer is selected.");
                     if (!spellGroup.ToggleState) spellGroup.OnClick();
                     for (int frame = 0; frame < 20; frame++) yield return 0;
                     var levels = (ActionBarSubGroupLevels)typeof(ActionBarGroupElement).GetField("m_Levels", Cleanup2Fields).GetValue(spellGroup);
@@ -1120,6 +1235,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2CapturePopup(ActionBarGroupSlot source, BlueprintAbility parent,
             string label, NativeIconScreenEvidence screens, HashSet<string> lineage)
         {
+            if (!Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native menu capture refuses an active or unknown narrative overlay.");
             if (!lineage.Add(parent.AssetGuid)) throw new InvalidOperationException("Cyclic native variant menu: " + parent.AssetGuid);
             var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);
             if (popup == null || !popup.gameObject.activeInHierarchy) throw new InvalidOperationException("Native variant popup missing: " + label);
@@ -1133,43 +1249,89 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["actual"] = new JArray(rows.Select(r => ((AbilityData)r.MechanicSlot.GetContentData()).Blueprint.AssetGuid)) },
                 "The real native popup contains every live parent's child exactly once, preserving unknown third-party entries.");
             if (!exact) throw new InvalidOperationException("Native popup child identities differ: " + label);
-            ScrollRect scroll = popup.GetComponentInChildren<ScrollRect>(true);
-            Vector2 before = scroll == null ? Vector2.zero : scroll.normalizedPosition;
+            if (rows.Length == 0 || rows.Length > 1024 || lineage.Count > 8)
+                throw new InvalidOperationException("Native popup row/depth bound exceeded: " + label);
+            Canvas.ForceUpdateCanvases();
+            // Choose the nearest actual ancestor that owns these exact rows.
+            // ScrollRectExtended is not Unity ScrollRect; an unrelated outer
+            // action-bar scroll must never supply this popup's page geometry.
+            var choices = rows.First().GetComponentsInParent<Component>(true)
+                .Where(value => value is ScrollRect || value is Kingmaker.UI.Common.ScrollRectExtended)
+                .Select(value => new NativeIconScreenEvidence.NativeRowScroll(value)).ToArray();
+            var scroll = choices.FirstOrDefault(value => value.Active && value.Content != null &&
+                Cleanup2PopupViewport(value) != null && rows.All(row => row.transform.IsChildOf(value.Content)));
+            Cleanup2Check("popup-native-scroll-" + label, scroll != null, new JObject {
+                ["parent"] = parent.AssetGuid, ["rowCount"] = rows.Length,
+                ["surfaces"] = new JArray(choices.Select(value => new JObject {
+                    ["type"] = value.Component.GetType().FullName, ["instance"] = value.Component.GetInstanceID(),
+                    ["active"] = value.Active, ["content"] = value.Content?.name,
+                    ["viewport"] = Cleanup2PopupViewport(value)?.name, ["horizontal"] = value.Horizontal, ["vertical"] = value.Vertical,
+                    ["ownsAllRows"] = value.Content != null && rows.All(row => row.transform.IsChildOf(value.Content)) })) },
+                "The selectable rows identify their own supported native scrolling surface, including Kingmaker ScrollRectExtended.");
+            if (scroll == null) throw new InvalidOperationException("Exact native popup scroll/viewport not found: " + label);
+            Component scrollComponent = scroll.Component;
+            RectTransform content = scroll.Content, viewport = Cleanup2PopupViewport(scroll);
+            Vector2 before = scroll.Position, beforeVelocity = scroll.Velocity, beforeAnchored = content.anchoredPosition;
+            bool beforeHorizontal = scroll.Horizontal, beforeVertical = scroll.Vertical;
             var covered = new HashSet<string>(StringComparer.Ordinal);
+            var pages = new JArray();
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Func<bool> owns = () => Cleanup2NoNarrativeOverlay() && popup != null && popup.gameObject.activeInHierarchy &&
+                scroll.Component == scrollComponent && scroll.Active && scroll.Content == content &&
+                Cleanup2PopupViewport(scroll) == viewport && scroll.Horizontal == beforeHorizontal && scroll.Vertical == beforeVertical &&
+                rows.All(row => row != null && row.gameObject.activeInHierarchy && row.transform.IsChildOf(content) &&
+                    (row.MechanicSlot?.GetContentData() as AbilityData)?.ConvertedFrom?.Blueprint == parent) &&
+                ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), _sprint25Fixture.Caster);
             try
             {
-                Canvas.ForceUpdateCanvases();
-                float viewport = scroll?.viewport == null ? 0f : scroll.viewport.rect.height;
-                float range = scroll?.content == null ? 0f : Mathf.Max(0f, scroll.content.rect.height - viewport);
-                int pages = viewport <= 0f || range <= .5f ? 1 : Mathf.CeilToInt(range / (viewport * .70f)) + 1;
-                if (pages > 64) throw new InvalidOperationException("Unexpected unbounded native popup page count: " + pages);
-                for (int page = 0; page < pages; page++)
+                for (int page = 0; page < 64 && covered.Count < expected.Length; page++)
                 {
-                    if (scroll != null) { scroll.StopMovement(); scroll.verticalNormalizedPosition = pages == 1 ? 1f : 1f - (float)page / (pages - 1); }
-                    for (int frame = 0; frame < 6; frame++) yield return 0;
+                    if (watch.Elapsed.TotalSeconds > 120) throw new TimeoutException("Native popup page wall bound: " + label);
+                    ActionBarSlot target = rows.First(row => !covered.Contains(((AbilityData)row.MechanicSlot.GetContentData()).Blueprint.AssetGuid));
+                    foreach (int frame in Cleanup2RevealPopupRow(scroll, target, owns)) yield return frame;
                     var visible = rows.Where(r => Cleanup2FullyVisible(scroll, r)).ToArray();
-                    foreach (var row in visible) covered.Add(((AbilityData)row.MechanicSlot.GetContentData()).Blueprint.AssetGuid);
+                    Vector2 capturePosition = content.anchoredPosition;
                     var state = new JObject { ["parent"] = parent.AssetGuid, ["label"] = label,
-                        ["page"] = page, ["pages"] = pages, ["normalizedScroll"] = scroll == null ? 1f : scroll.verticalNormalizedPosition,
+                        ["page"] = page, ["target"] = ((AbilityData)target.MechanicSlot.GetContentData()).Blueprint.AssetGuid,
+                        ["scrollType"] = scrollComponent.GetType().FullName, ["scrollInstance"] = scrollComponent.GetInstanceID(),
+                        ["scrollApi"] = "Exact native normalizedPosition setters, enabled axes only; no content/row layout substitution.",
+                        ["horizontalEnabled"] = beforeHorizontal, ["verticalEnabled"] = beforeVertical,
+                        ["normalizedScroll"] = new JArray(scroll.Position.x, scroll.Position.y),
+                        ["anchoredPosition"] = new JArray(capturePosition.x, capturePosition.y),
+                        ["viewportRect"] = new JArray(viewport.rect.xMin, viewport.rect.yMin, viewport.rect.xMax, viewport.rect.yMax),
+                        ["contentBoundsInViewport"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(viewport, content)),
+                        ["targetGeometry"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(viewport, (RectTransform)target.transform)),
                         ["visible"] = new JArray(visible.Select(r => {
                             var data = (AbilityData)r.MechanicSlot.GetContentData();
                             return new JObject { ["guid"] = data.Blueprint.AssetGuid, ["internalName"] = data.Blueprint.name,
                                 ["renderedText"] = new JArray(r.GetComponentsInChildren<TextMeshProUGUI>(true).Select(t => t.text)),
                                 ["iconMatches"] = ReferenceEquals(r.Icon.sprite, data.Icon),
                                 ["iconInstance"] = r.Icon.sprite == null ? 0 : r.Icon.sprite.GetInstanceID(),
+                                ["boundsInViewport"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(viewport, (RectTransform)r.transform)),
                                 ["convertedFrom"] = data.ConvertedFrom?.Blueprint.AssetGuid,
                                 ["spellbook"] = data.Spellbook?.Blueprint.AssetGuid,
                                 ["nestedVariants"] = data.Blueprint.Variants == null ? 0 : data.Blueprint.Variants.Length };
                         })) };
-                    foreach (int frame in screens.Capture(label + "-page" + page, state,
-                        () => popup != null && popup.gameObject.activeInHierarchy &&
-                            ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), _sprint25Fixture.Caster))) yield return frame;
+                    foreach (int frame in screens.Capture(label + "-page" + page, state, owns)) yield return frame;
+                    bool stable = owns() && Vector2.Distance(content.anchoredPosition, capturePosition) <= .01f &&
+                        visible.All(row => Cleanup2FullyVisible(scroll, row));
+                    int previouslyCovered = covered.Count;
+                    if (stable) foreach (var row in visible) covered.Add(((AbilityData)row.MechanicSlot.GetContentData()).Blueprint.AssetGuid);
+                    pages.Add(new JObject { ["page"] = page, ["stableAcrossNativeCapture"] = stable,
+                        ["targetFullyVisible"] = Cleanup2FullyVisible(scroll, target), ["newlyCovered"] = covered.Count - previouslyCovered,
+                        ["totalCovered"] = covered.Count, ["geometry"] = state });
+                    if (!stable || !Cleanup2FullyVisible(scroll, target) || covered.Count == previouslyCovered)
+                        break; // Preserve this real page, then fail explicit coverage below.
                 }
                 bool complete = expected.All(v => covered.Contains(v.AssetGuid));
                 Cleanup2Check("popup-full-page-coverage-" + label, complete,
-                    new JObject { ["parent"] = parent.AssetGuid, ["pages"] = pages,
+                    new JObject { ["parent"] = parent.AssetGuid, ["pages"] = pages.Count, ["pageObservations"] = pages,
+                        ["pageLimit"] = 64, ["wallLimitSeconds"] = 120, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                         ["fullyVisibleChildren"] = new JArray(covered),
-                        ["missing"] = new JArray(expected.Where(v => !covered.Contains(v.AssetGuid)).Select(v => v.AssetGuid)) },
+                        ["missing"] = new JArray(expected.Where(v => !covered.Contains(v.AssetGuid)).Select(v => v.AssetGuid)),
+                        ["missingGeometry"] = new JArray(rows.Where(row => !covered.Contains(((AbilityData)row.MechanicSlot.GetContentData()).Blueprint.AssetGuid))
+                            .Select(row => new JObject { ["guid"] = ((AbilityData)row.MechanicSlot.GetContentData()).Blueprint.AssetGuid,
+                                ["boundsInViewport"] = Cleanup2PopupBoundsDocument(Cleanup2PopupBounds(viewport, (RectTransform)row.transform)) })) },
                     "Each actual selectable child was fully visible on at least one captured native scroll page; no partial-only row counts as covered.");
                 if (!complete) throw new InvalidOperationException("Native scroll coverage incomplete: " + label);
                 foreach (var row in rows)
@@ -1180,6 +1342,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (childGroup == null) throw new InvalidOperationException("Reachable nested variant row lacks native group control: " + child.AssetGuid);
                     try
                     {
+                        foreach (int frame in Cleanup2RevealPopupRow(scroll, row, owns)) yield return frame;
+                        if (!Cleanup2FullyVisible(scroll, row)) throw new InvalidOperationException("Nested native group row cannot be fully revealed: " + child.AssetGuid);
+                        if (!Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Nested native group refuses an active or unknown narrative overlay.");
                         childGroup.OnToggleGroupClick();
                         for (int frame = 0; frame < 12; frame++) yield return 0;
                         foreach (int frame in Cleanup2CapturePopup(childGroup, child, label + "-" + child.AssetGuid,
@@ -1188,20 +1353,129 @@ namespace KingmakerGunslinger.RuntimeTesting
                     finally { childGroup.HideSubGroup(); }
                 }
             }
-            finally { if (scroll != null) { scroll.StopMovement(); scroll.normalizedPosition = before; } }
+            finally
+            {
+                bool identities = scroll.Component == scrollComponent && scrollComponent != null && scroll.Content == content &&
+                    content != null && Cleanup2PopupViewport(scroll) == viewport;
+                bool restored = false;
+                try
+                {
+                    if (identities && scroll.Horizontal == beforeHorizontal && scroll.Vertical == beforeVertical)
+                    {
+                        scroll.Velocity = Vector2.zero;
+                        Cleanup2SetPopupPosition(scroll, before);
+                        // A fitting disabled axis has no meaningful normalized
+                        // ratio. Restore the exact owned content position too.
+                        content.anchoredPosition = beforeAnchored;
+                        scroll.Velocity = beforeVelocity;
+                        Bounds bounds = Cleanup2PopupBounds(viewport, content);
+                        restored = content.anchoredPosition.Equals(beforeAnchored) && scroll.Velocity.Equals(beforeVelocity) &&
+                            (!beforeHorizontal || bounds.size.x <= viewport.rect.width + .5f || Mathf.Abs(scroll.Position.x - before.x) <= .001f) &&
+                            (!beforeVertical || bounds.size.y <= viewport.rect.height + .5f || Mathf.Abs(scroll.Position.y - before.y) <= .001f);
+                    }
+                }
+                finally
+                {
+                    Cleanup2Check("popup-scroll-restored-" + label, restored,
+                        new JObject { ["parent"] = parent.AssetGuid, ["identitiesExact"] = identities,
+                            ["horizontalAtIntake"] = beforeHorizontal, ["verticalAtIntake"] = beforeVertical,
+                            ["anchoredPositionAndVelocityExact"] = restored,
+                            ["geometryOrAxesFabricated"] = false },
+                        "Only this exact native popup's scroll position/velocity were owned; original axes and content/viewport identities remain unchanged, and exact content position/velocity restore in finally.");
+                }
+                if (!restored) throw new InvalidOperationException("Exact native popup scroll restoration failed: " + label);
+            }
         }
 
-        private static bool Cleanup2FullyVisible(ScrollRect scroll, ActionBarSlot row)
+        private static RectTransform Cleanup2PopupViewport(NativeIconScreenEvidence.NativeRowScroll scroll)
+        {
+            if (scroll.Viewport != null) return scroll.Viewport;
+            // Installed ScrollRectExtended.get_viewRect0600417C uses its own
+            // RectTransform when the serialized viewport is absent.
+            return scroll.Component is Kingmaker.UI.Common.ScrollRectExtended ? scroll.Component.transform as RectTransform : null;
+        }
+
+        private static Bounds Cleanup2PopupBounds(RectTransform viewport, RectTransform target)
+        {
+            var corners = new Vector3[4]; target.GetWorldCorners(corners);
+            var bounds = new Bounds(viewport.InverseTransformPoint(corners[0]), Vector3.zero);
+            foreach (Vector3 corner in corners.Skip(1)) bounds.Encapsulate(viewport.InverseTransformPoint(corner));
+            return bounds;
+        }
+
+        private static JObject Cleanup2PopupBoundsDocument(Bounds bounds)
+        { return new JObject { ["minX"] = bounds.min.x, ["maxX"] = bounds.max.x, ["minY"] = bounds.min.y, ["maxY"] = bounds.max.y }; }
+
+        private static void Cleanup2SetPopupPosition(NativeIconScreenEvidence.NativeRowScroll scroll, Vector2 position)
+        {
+            var standard = scroll.Component as ScrollRect;
+            if (standard != null)
+            {
+                if (scroll.Vertical) standard.verticalNormalizedPosition = position.y;
+                if (scroll.Horizontal) standard.horizontalNormalizedPosition = position.x;
+                return;
+            }
+            var extended = scroll.Component as Kingmaker.UI.Common.ScrollRectExtended;
+            if (extended == null) throw new NotSupportedException("Unknown native popup scroll API.");
+            if (scroll.Vertical) extended.verticalNormalizedPosition = position.y;
+            if (scroll.Horizontal) extended.horizontalNormalizedPosition = position.x;
+        }
+
+        private IEnumerable<int> Cleanup2RevealPopupRow(NativeIconScreenEvidence.NativeRowScroll scroll, ActionBarSlot row, Func<bool> owns)
+        {
+            if (!owns()) throw new InvalidOperationException("Native popup scroll ownership changed before reveal.");
+            Canvas.ForceUpdateCanvases();
+            RectTransform viewport = Cleanup2PopupViewport(scroll);
+            Bounds content = Cleanup2PopupBounds(viewport, scroll.Content), target = Cleanup2PopupBounds(viewport, (RectTransform)row.transform);
+            Vector2 position = scroll.Position;
+            float xRange = content.size.x - viewport.rect.width, yRange = content.size.y - viewport.rect.height;
+            if (!Cleanup2FullyVisible(scroll, row))
+            {
+                if (scroll.Horizontal && xRange > .5f) position.x = Mathf.Clamp01(position.x + (target.center.x - viewport.rect.center.x) / xRange);
+                if (scroll.Vertical && yRange > .5f) position.y = Mathf.Clamp01(position.y + (target.center.y - viewport.rect.center.y) / yRange);
+            }
+            scroll.Velocity = Vector2.zero;
+            Cleanup2SetPopupPosition(scroll, position);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Vector2 previous = scroll.Content.anchoredPosition;
+            int stableFrames = 0;
+            for (int frame = 0; frame < 240 && watch.Elapsed.TotalSeconds < 2; frame++)
+            {
+                yield return 0;
+                if (!owns()) throw new InvalidOperationException("Native popup scroll ownership changed during reveal.");
+                Vector2 current = scroll.Content.anchoredPosition;
+                stableFrames = Vector2.Distance(previous, current) <= .01f ? stableFrames + 1 : 0;
+                previous = current;
+                if (frame >= 5 && stableFrames >= 3 && watch.Elapsed.TotalSeconds >= .05) yield break;
+            }
+            throw new TimeoutException("Native popup scroll did not settle within 240 frames/2 seconds.");
+        }
+
+        private static bool Cleanup2FullyVisible(NativeIconScreenEvidence.NativeRowScroll scroll, ActionBarSlot row)
         {
             var rect = row.transform as RectTransform;
             if (rect == null || !row.gameObject.activeInHierarchy) return false;
-            if (scroll?.viewport == null) return true;
-            var corners = new Vector3[4];
-            rect.GetWorldCorners(corners);
-            Vector3[] local = corners.Select(p => scroll.viewport.InverseTransformPoint(p)).ToArray();
-            Rect viewport = scroll.viewport.rect;
-            return local.Min(p => p.y) >= viewport.yMin - .5f && local.Max(p => p.y) <= viewport.yMax + .5f &&
-                local.Min(p => p.x) >= viewport.xMin - .5f && local.Max(p => p.x) <= viewport.xMax + .5f;
+            RectTransform viewport = Cleanup2PopupViewport(scroll);
+            if (viewport == null) return false;
+            var clips = new List<RectTransform> { viewport };
+            clips.AddRange(row.GetComponentsInParent<RectMask2D>(true).Where(value => value.isActiveAndEnabled).Select(value => value.transform as RectTransform));
+            clips.AddRange(row.GetComponentsInParent<Mask>(true).Where(value => value.isActiveAndEnabled).Select(value => value.transform as RectTransform));
+            foreach (RectTransform clip in clips.Where(value => value != null).Distinct())
+            {
+                Bounds bounds = Cleanup2PopupBounds(clip, rect); Rect area = clip.rect;
+                if (bounds.min.y < area.yMin - .5f || bounds.max.y > area.yMax + .5f ||
+                    bounds.min.x < area.xMin - .5f || bounds.max.x > area.xMax + .5f) return false;
+            }
+            Canvas canvas = row.GetComponentInParent<Canvas>()?.rootCanvas;
+            if (canvas == null) return false;
+            Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            if (canvas.renderMode != RenderMode.ScreenSpaceOverlay && camera == null) return false;
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            return corners.All(point => {
+                Vector2 screen = RectTransformUtility.WorldToScreenPoint(camera, point);
+                return screen.x >= -.5f && screen.x <= Screen.width + .5f && screen.y >= -.5f && screen.y <= Screen.height + .5f &&
+                    (camera == null || camera.WorldToScreenPoint(point).z > 0f);
+            });
         }
     }
 }

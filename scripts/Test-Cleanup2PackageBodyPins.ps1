@@ -62,6 +62,7 @@ foreach($path in $unaffected.Keys) {Check ($policy.ContainsKey($path) -and $poli
 # Every revised body must have both halves curated, including Girallon's
 # intentionally unchanged painting. Cross-wiring uses actual other exports.
 $revised=@(
+    'assets\ungulates\gorgon',
     'assets\sprint19-fourarmed\girallon',
     'assets\sprint21-arthropods\giant-crab',
     'assets\sprint27-griffon\griffon',
@@ -90,6 +91,7 @@ foreach($path in $policy.Keys) {
 
 # Actual retained original project inputs, rather than invented stale hashes.
 $stale=@{
+    'assets\ungulates\gorgon-mesh.json'='assets-source\original-models\sprint26-gorgon\cleanup2-gorgon-input.json'
     'assets\sprint27-griffon\griffon-mesh.json'='assets-source\original-models\sprint27-griffon\cleanup2-griffon-input.json'
     'assets\sprint25-giant-bodies\elephant-mesh.json'='assets-source\original-models\sprint25-giant-bodies\cleanup2-elephant-input.json'
     'assets\sprint25-giant-bodies\brachiosaurus-mesh.json'='assets-source\original-models\sprint25-giant-bodies\cleanup2-brachiosaurus-input.json'

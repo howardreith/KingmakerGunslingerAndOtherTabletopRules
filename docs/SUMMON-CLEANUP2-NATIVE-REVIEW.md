@@ -3,7 +3,8 @@
 This mission adds one exact save-free request scenario:
 `disposable-expanded-summoning-cleanup2-native-review`.
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
-The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies` and `cloth-probe`; no save, import, extra
+The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
+`cloth-probe`, `ettin-lifecycle` and `scale-prototype`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
 ## Execution boundaries
@@ -67,6 +68,23 @@ root scale, save or mechanical state is adapted. Finite geometry, positive
 motion and coordinate agreement are required; static agreement cannot pass.
 Only aggregate measurements and identity metadata leave memory.
 Inspect it before changing a fixture; do not repeat an unchanged failing run.
+
+`ettin-lifecycle` uses two canonical SNA V Ettins, native weapon animations,
+positive neck/head follow, exact owned summon-buff expiry and native destruction,
+then a third canonical cast. It observes instance isolation and teardown; it does
+not claim cold save hydration or directly destroy a head to simulate cleanup.
+
+`scale-prototype` first requires the complete common-plane seven-actor baseline.
+It experiments with owned render palettes and a mirrored render skeleton, with
+owned cape Cloth/colliders. Original unit roots, bones and colliders remain
+unscaled. Cloud/Storm albedo slots are curated from fresh native observations;
+unreadable DXT1 readback additionally requires a live asymmetric RGBA self-test.
+Only these request-owned actors receive the experiment. Proposed linear Cloth
+distance scaling and disabled capsule response remain unaccepted until actual
+native measurements and visual inspection. Reverse disposal restores skins,
+materials and render flags. No production giant scale calibration or hook is
+enabled by this phase.
+
 Raw evidence and development packages remain machine-local/ignored. The active
 lane state records exact artifact identity, commands, verdicts and limitations.
 Owner aesthetic approval remains separate from technical completeness.

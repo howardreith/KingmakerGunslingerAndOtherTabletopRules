@@ -5,6 +5,69 @@ or release record. The mission is **in progress**, with no owner visual approval
 
 ## Intake and ownership
 
+### Latest evidence summary (2026-10-22, before review5 build)
+
+Draft PR [67](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/67)
+is open. The latest valid frozen review4 source is
+`4c2ad09d6e1c174078c31dd5e99ff4f4d3553ab1`; package
+`b8808b3b76d44f9029319725586c30fa1a945062bcc43355b24887d9388e9e42`,
+DLL `74801e0d7931ce538fbad370ae5477408df6cc1c0a0ebd9e92c6a8d7ab62dca9`,
+MVID `5217dedf-0762-4682-b07c-7548bd32e94a`. Its build selected
+76/76 passing cases. Review1 and review3 have no deployment receipt.
+
+Review4 native outcomes are preserved as FAIL, with narrower useful evidence:
+
+- Cloth probe `20261022T0009584213879Z-7132ad2085c046bfa7a765a14ebaa538`,
+  90.517 s: disabling the original cape renderer froze its Cloth; ShadowsOnly
+  moved, but no tested Cloth/BakeMesh coordinate mapping agreed. No cape or
+  scale qualification follows. The next experiment uses an owned solver.
+- Elemental `20261022T0015492013641Z-548aebf9d0524b818f2e1c3ca6260101`,
+  78.760 s: 60 real contract comparisons, zero equivalent pairs; 52 real learning
+  probes retained source entries. Both Small Air legacy/canonical prepared-slot
+  casts spent their original slots. Selected/known/source references survived.
+  A null save-monitor summary read then failed; the observer is corrected.
+  Real descriptor, spawn-buff and alignment/template differences require a
+  rules decision. MENU-02 remains incomplete; no legacy entry was hidden.
+- Giant lineup `20261022T0021352089530Z-fca727ae39c6443b99a759a9b19d8656`,
+  72.356 s: all seven actors/material metadata retained, common-plane survey
+  rejected. Actual installed movement IL identified the missing walking graph
+  constraint; the next observer uses the exact mask/tags/connected area.
+  No measured height calibration or giant production scale is active.
+- Menus `20261022T0032276273637Z-b84bb7ccbb1742d5b00627f6c4da5dee`,
+  79.987 s: SNA I-IV child identities match, but IV scroll coverage failed.
+  Actual PNG inspection also found the first-area story book covering the UI.
+  None of these images qualifies as visible menu evidence. Fixture and scroll
+  corrections are being prepared; original failed outputs remain intact.
+
+All four transactions report Restored with restorationVerified=true:
+`compat-20261022T000849Z-05d933011d10`,
+`compat-20261022T001440Z-d1b54023d80a`,
+`compat-20261022T002035Z-f5e1dfb7b2a4`,
+`compat-20261022T003126Z-391c629989e2`. No save was loaded or written.
+
+The user has requested a separate rules-change proposal before any MENU-02
+hiding. Existing entries remain visible while that proposal is reviewed.
+
+New source adds the targeted Ettin lifecycle and experimental render-scale
+phases, plus actual module-OFF list/helper observations through the existing
+fresh module boundary request. Production compilation **12.7 s**, focused domain
+**37/37 PASS** (2.8 s build, 0.4 s runner); exact guarded preflight **808/808 PASS**.
+Logs: `artifacts/cleanup2-review5-focused.log` and
+`artifacts/cleanup2-seven-phase-preflight.log`. Native observations are pending.
+The experimental palette proves a Gamma GPU copy with an owned asymmetric
+RGBA pattern before reading unreadable DXT1 in memory; no native pixels leave
+memory. Only fresh exact Cloud/Storm body slots qualify, with explicit
+whole-body palette proposals and separate clothing/cape protection.
+
+Gorgon now has a fresh evidence-backed geometry repair: continuous bovine
+body, flatter overlapping plates and cloven hooves. Final source/synthetic
+poses are inspected, deterministic and closed/outward. Mesh SHA-256
+`ab559e49083e95085056bbc1588d9d2f3515758599a79f6ced4e983f2c5479a3`,
+albedo `f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2`.
+Current paired package admission checks pass **126/126**, 2.884 s. The prior
+116-case result remains historical. Native repaired bodies, breath origin and
+owner aesthetic approval are still pending.
+
 - Work order: `C:/Dev/KingmakerGunslingerLab/Summon_Cleanup_Iteration_2_2026-10-21.zip`,
   SHA-256 `39de31b04bb38d22e30a20682a7b5ac315ff42b34331feda87e69d917f2f993c`.
   Entire archive extracted unchanged under local `artifacts/cleanup2-intake/`.
@@ -46,8 +109,8 @@ An offline render is synthetic evidence. No unobserved target is PASS.
 | ART-07 | Stegosaurus circular barrel replaced with elongated supported body | Deterministic export, closed/outward geometry and pose/weight audit PASS | Pending tail attack/motion and shared controls | Pending |
 | ART-08 | Giant provenance policy implemented; root scaling remains inert due verified collider risk | Four pure guard cases PASS; active visual-only target/material work incomplete | Seven canonical casts PASS; lineup observer failed Human skin guard and is corrected for fresh observation | Pending measured donor calibration |
 | ART-09 | Every original Brachiosaurus closed component was inward; connected outward body, neck and balancing tail authored | Deterministic export, outward/weight audit and compilation PASS | Baseline missing surfaces reproduced after dissolve0; candidate full-body motion/camera/contact pending | Pending |
-| ART-10 | Gorgon offline geometry is closed/outward and recognizable; retained pending native audit | No asset change | Pending plated body/contact/breath origin | No evidence-backed native disposition yet |
-| MENU-02 | Scoped PC/console learning copies and exact live equivalence/budget filter implemented | Production compile and seven focused policy/learning cases PASS | Initial exact inventory observed; sixty-pair live contract/helper/slot phase pending; no suppression claimed | Incomplete; special capability loss is unacceptable |
+| ART-10 | Native .163 pillow plates/spherical hooves reproduced; continuous body, flatter plates and cloven hooves revised | Final deterministic synthetic closure/pose audit PASS; paired package pins PASS | Baseline inspected; repaired motion/contact/breath pending | Pending |
+| MENU-02 | Scoped PC/console learning copies and exact live equivalence/budget filter implemented | Production compile and focused policy/learning cases PASS | 60 contract comparisons differ, 52 learning probes preserve entries, real legacy/canonical casts spend slots; overall observer summary FAIL retained | Rules-review exception; zero legacy entries hidden |
 | LABEL-01 | Explicit mapping covers all current generated/native choices, independent family/subtype/size/template/quantity; prose and IDs preserved | Four new focused cases pass with neighbors | Pending UI clipping, adapters/casts and saved identities | Pending native review |
 
 ## Commands and limits so far

@@ -13,6 +13,7 @@ Both mesh and albedo are pinned together. Girallon's painting is unchanged.
 
 | Creature / asset directory | Mesh SHA-256 | Albedo SHA-256 |
 | --- | --- | --- |
+| Gorgon / `ungulates` | `ab559e49083e95085056bbc1588d9d2f3515758599a79f6ced4e983f2c5479a3` | `f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2` |
 | Girallon / `sprint19-fourarmed` | `e5c4e59878ff6aae7b704f8fb49925e849f348817fc160e97a1f76907ee683cb` | `21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6` |
 | Giant Crab / `sprint21-arthropods` | `34833285f367258ed5d00127c72d86bb96897df94459740d3c9fd800e720893e` | `1182b139b3a8dc049eaa68d7db8d9bcf865d02e321af2e8d13b46688866409ce` |
 | Griffon / `sprint27-griffon` | `e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9` | `1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124` |
@@ -29,6 +30,14 @@ are unchanged. The production entry point directly invokes its curated internal
 was added.
 
 ## Focused evidence
+
+Follow-up after the Gorgon native audit and authored repair: the same
+production pin validator now checks the eighth revised pair, including the
+actual retained prechange Gorgon mesh refusal. **126/126 PASS, 2.8844252 s**,
+Windows PowerShell 5.1; evidence
+`artifacts/cleanup2-package-body-pins/6ccaf4a5ae404542abee2e9f5df7d156/test-summary.json`.
+This is technical asset admission, with native repaired appearance and owner
+approval still pending. The older seven-pair results below retain their scope.
 
 From the active `summon-cleanup-iteration2` worktree, Windows PowerShell
 5.1.19041.7802:
