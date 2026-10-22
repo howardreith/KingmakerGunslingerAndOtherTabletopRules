@@ -445,7 +445,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (fixture.Caster.Memory.Contains(unit)) fixture.Caster.Memory.Remove(unit);
                     if (unit.Memory.Contains(fixture.Caster)) unit.Memory.Remove(fixture.Caster);
                 }
+                bool targetCombatBeforeCleanup = target.IsInCombat;
+                bool casterCombatBeforeCleanup = fixture.Caster.IsInCombat;
                 if (target.IsInCombat) target.LeaveCombat();
+                if (fixture.Caster.IsInCombat) fixture.Caster.LeaveCombat();
                 fixture.Caster.Descriptor.Alignment.Set(casterAlignment);
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner, sibling });
@@ -476,6 +479,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         command != null && !command.IsFinished),
                     ["casterCommandsClear"] = !fixture.Caster.Commands.Raw.Any(command =>
                         command != null && !command.IsFinished),
+                    ["targetCombatBeforeCleanup"] = targetCombatBeforeCleanup,
+                    ["casterCombatBeforeCleanup"] = casterCombatBeforeCleanup,
+                    ["targetCombatAfterCleanup"] = target.IsInCombat,
+                    ["casterCombatAfterCleanup"] = fixture.Caster.IsInCombat,
                     ["combatClear"] = !target.IsInCombat && !fixture.Caster.IsInCombat },
                     "Both exact owners, their moving areas/victim grants, commands, memory and nonlootable weapon entities are absent before process restoration.");
                 if (!clean) throw new InvalidOperationException(
