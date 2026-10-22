@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.View;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using Pathfinding;
@@ -96,14 +97,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ownerMaterials.Length >= 1 && siblingMaterials.Length >= 1 &&
                     !ownerResources.Any(left => siblingResources.Any(right =>
                         ReferenceEquals(left, right)));
-                Renderer[] ownerNative = owner.View.GetComponentsInChildren<Renderer>(true)
-                    .Where(value => value != null &&
-                        !ReferenceEquals(value, ownerOrb.OrbRenderer)).ToArray();
-                Renderer[] siblingNative = sibling.View.GetComponentsInChildren<Renderer>(true)
-                    .Where(value => value != null &&
-                        !ReferenceEquals(value, siblingOrb.OrbRenderer)).ToArray();
-                bool donorIsolated = ownerNative.Length == ownerOrb.NativeRendererCount &&
-                    siblingNative.Length == siblingOrb.NativeRendererCount &&
+                Renderer[] ownerAll = owner.View.GetComponentsInChildren<Renderer>(true)
+                    .Where(value => value != null).ToArray();
+                Renderer[] siblingAll = sibling.View.GetComponentsInChildren<Renderer>(true)
+                    .Where(value => value != null).ToArray();
+                Renderer[] ownerPrivate = ownerAll.Where(ownerOrb.OwnsRenderer).ToArray();
+                Renderer[] siblingPrivate = siblingAll.Where(siblingOrb.OwnsRenderer).ToArray();
+                Renderer[] ownerNative = ownerAll.Where(value =>
+                    !ownerOrb.OwnsRenderer(value)).ToArray();
+                Renderer[] siblingNative = siblingAll.Where(value =>
+                    !siblingOrb.OwnsRenderer(value)).ToArray();
+                bool donorIsolated = ownerPrivate.Length == 1 &&
+                    siblingPrivate.Length == 1 &&
+                    ReferenceEquals(ownerPrivate[0], ownerOrb.OrbRenderer) &&
+                    ReferenceEquals(siblingPrivate[0], siblingOrb.OrbRenderer) &&
+                    ownerNative.Length >= ownerOrb.NativeRendererCount &&
+                    siblingNative.Length >= siblingOrb.NativeRendererCount &&
                     ownerNative.Concat(siblingNative).All(value =>
                         !value.sharedMaterials.Any(donorMaterial =>
                             ownerMaterials.Concat(siblingMaterials).Any(ownedMaterial =>
@@ -157,6 +166,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["siblingMaterialCount"] = siblingMaterials.Length,
                         ["privateResourcesSeparate"] = separate,
                         ["donorRenderersIsolated"] = donorIsolated,
+                        ["ownerPrivateRenderers"] = new JArray(ownerPrivate.Select(value =>
+                            LanternRendererDescription(owner.View, value,
+                                ownerOrb.OwnsRenderer(value)))),
+                        ["siblingPrivateRenderers"] = new JArray(siblingPrivate.Select(value =>
+                            LanternRendererDescription(sibling.View, value,
+                                siblingOrb.OwnsRenderer(value)))),
+                        ["ownerAllRenderers"] = new JArray(ownerAll.Select(value =>
+                            LanternRendererDescription(owner.View, value,
+                                ownerOrb.OwnsRenderer(value)))),
+                        ["siblingAllRenderers"] = new JArray(siblingAll.Select(value =>
+                            LanternRendererDescription(sibling.View, value,
+                                siblingOrb.OwnsRenderer(value)))),
+                        ["ownerInitialNativeRenderers"] = ownerOrb.NativeRendererCount,
+                        ["siblingInitialNativeRenderers"] = siblingOrb.NativeRendererCount,
                         ["ownerNativeRenderers"] = ownerNative.Length,
                         ["siblingNativeRenderers"] = siblingNative.Length,
                         ["emission"] = new JArray(emission.r, emission.g, emission.b),
@@ -209,6 +232,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Both disposable Lanterns and every project-owned orb, renderer, material and light are absent while the native fixture is exact.");
             if (!clean) throw new InvalidOperationException(
                 "Lantern owned body cleanup failed.");
+        }
+
+        private static string LanternRendererDescription(UnitEntityView view,
+            Renderer renderer, bool owned)
+        {
+            var path = new List<string>();
+            Transform current = renderer == null ? null : renderer.transform;
+            Transform root = view == null ? null : view.transform;
+            while (current != null)
+            {
+                path.Add(current.name);
+                if (current == root) break;
+                current = current.parent;
+            }
+            path.Reverse();
+            string materials = renderer == null ? "<none>" : string.Join(",",
+                renderer.sharedMaterials.Where(value => value != null)
+                    .Select(value => value.name).ToArray());
+            return "owned=" + owned + ";type=" +
+                (renderer == null ? "<none>" : renderer.GetType().Name) +
+                ";path=" + string.Join("/", path.ToArray()) +
+                ";materials=" + materials;
         }
     }
 }
