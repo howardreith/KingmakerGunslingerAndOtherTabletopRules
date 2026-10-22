@@ -31,9 +31,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target, string id)
         {
             var parameters = data.CalculateParams(); var wrapped = new TargetWrapper(target);
-            bool ready = data.IsAvailable && data.CanTarget(wrapped);
+            bool ready = actor.IsInCombat && data.IsAvailable && data.CanTarget(wrapped);
             Sprint25Check(id + "-ready", ready, new JObject { ["actor"] = actor.UniqueId,
                 ["target"] = target.UniqueId, ["ability"] = data.Blueprint.AssetGuid,
+                ["actorInCombat"] = actor.IsInCombat, ["targetInCombat"] = target.IsInCombat,
                 ["available"] = data.IsAvailable, ["canTarget"] = data.CanTarget(wrapped),
                 ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel, ["dc"] = parameters.DC,
                 ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["commands"] = new JArray(actor.Commands.Raw
@@ -55,7 +56,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ability"] = data.Blueprint.AssetGuid, ["cl"] = parameters.CasterLevel,
                     ["spellLevel"] = parameters.SpellLevel, ["dc"] = parameters.DC,
                     ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["command"] = Sprint27AiCommand(command),
-                    ["executionEnded"] = command.ExecutionProcess?.IsEnded, ["costs"] = costs,
+                    ["executionEnded"] = command.ExecutionProcess?.IsEnded, ["actorInCombatAfter"] = actor.IsInCombat, ["costs"] = costs,
                     ["manualNativeCommand"] = true, ["fixtureEffectExecutions"] = 0, ["fixtureSlotDebits"] = 0 },
                     "A real manual native command completes and pays one standard action; no AI claim or direct effect/resource execution.");
                 if (!exact) throw new InvalidOperationException("Native caster manual command failed: " + id);
@@ -122,6 +123,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 blocker = CastExpandedSummoningOwnTier(fixture, "lemure");
                 var units = new[] { owner, sibling, victim, blocker };
                 foreach (var unit in units) { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue(); }
+                // Final successful S28/S29 command fixtures enroll real combat
+                // before inspecting action cooldowns. Native RTWP deliberately
+                // returns from UpdateCooldowns when the executor is out of combat.
+                Vector3 initialFar; string initialLane, initialDirection;
+                var initialOrigin = Sprint24AiCombatLane(fixture.Caster, owner, fixture.Hostile, 8f,
+                    out initialFar, out initialLane, out initialDirection, new Feet(20).Meters + 1f);
+                PlaceExpandedSummoningUnit(owner, initialOrigin); PlaceExpandedSummoningUnit(sibling, initialOrigin + Vector3.right);
+                PlaceExpandedSummoningUnit(victim, initialOrigin - Vector3.right * 2f);
+                PlaceExpandedSummoningUnit(blocker, initialOrigin - Vector3.right * 3f);
+                PlaceExpandedSummoningUnit(fixture.Hostile, initialFar);
+                foreach (var unit in new[] { owner, sibling, fixture.Hostile })
+                { unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit); }
+                foreach (var actor in new[] { owner, sibling })
+                { actor.Memory.Add(fixture.Hostile); fixture.Hostile.Memory.Add(actor); actor.SightCache.ClearIfNeeded(); }
+                fixture.Hostile.SightCache.ClearIfNeeded(); new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                owner.JoinCombat(); sibling.JoinCombat(); fixture.Hostile.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                bool combatReady = owner.IsInCombat && sibling.IsInCombat && fixture.Hostile.IsInCombat;
+                Sprint25Check("trumpet-caster-combat-fixture", combatReady, new JObject { ["owner"] = owner.UniqueId,
+                    ["sibling"] = sibling.UniqueId, ["hostile"] = fixture.Hostile.UniqueId,
+                    ["ownerInCombat"] = owner.IsInCombat, ["siblingInCombat"] = sibling.IsInCombat,
+                    ["hostileInCombat"] = fixture.Hostile.IsInCombat, ["lane"] = initialLane,
+                    ["turnBased"] = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue },
+                    "Both manual-command actors and the disposable hostile have real native RTWP combat enrollment before any action-cost assertion; brains remain disabled.");
+                if (!combatReady) throw new InvalidOperationException("Native caster combat-enrollment preconditions failed.");
                 var creation = owner.Blueprint.GetComponent<TrumpetPreparedBook>();
                 var book = owner.Descriptor.GetSpellbook(creation.Book); var otherBook = sibling.Descriptor.GetSpellbook(creation.Book);
                 var nativeExtra = BlueprintLibraryLookup.RequireExact<Kingmaker.Blueprints.Classes.BlueprintFeature>(BlueprintBootstrap.Library,
