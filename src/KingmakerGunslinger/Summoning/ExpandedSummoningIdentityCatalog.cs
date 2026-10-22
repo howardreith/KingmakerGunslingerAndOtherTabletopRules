@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 118;
-        internal const int LogicalAbilityCount = 1135;
+        internal const int UnitCount = 119;
+        internal const int LogicalAbilityCount = 1142;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 383;
+        internal const int SpecialIdentityCount = 399;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -692,6 +692,22 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.ClawType", "BlueprintWeaponType"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Lemure.Claw1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.Claw1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.Bite1d4", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.CauseFear", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloud", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.CloudSafety", "Sprint29FogAiSafety"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearEligibility", "DretchSpellAiEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.Dretch.CloudEligibility", "DretchSpellAiEligibility"));
             Validate(result);
             return result.AsReadOnly();
         }

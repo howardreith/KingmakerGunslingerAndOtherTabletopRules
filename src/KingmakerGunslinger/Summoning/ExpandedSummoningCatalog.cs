@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 118) throw new InvalidOperationException("Expanded Summoning unique creature count must be 118.");
+            if (Creatures.Length != 119) throw new InvalidOperationException("Expanded Summoning unique creature count must be 119.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 97, 553);
+            ValidateFamily(SummonFamily.Monster, 98, 560);
             ValidateFamily(SummonFamily.NaturesAlly, 104, 582);
         }
 
@@ -146,7 +146,8 @@ namespace KingmakerGunslinger.Summoning
                 C("cloud-giant","Cloud Giant",null,false,8,"Hill Giant"),
                 C("storm-giant","Storm Giant",null,false,9,"Frost Giant"),
                 // S30 first hidden slice: exact species mechanics; borrowed biped visual pending original body.
-                C("lemure","Lemure",2,false,null,"Lizardfolk rig; original body pending")
+                C("lemure","Lemure",2,false,null,"Lizardfolk rig; original body pending"),
+                C("dretch","Dretch",3,false,null,"Lizardfolk rig; original body pending")
             };
         }
 

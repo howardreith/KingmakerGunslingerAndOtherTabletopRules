@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  130,
+    "count":  131,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3770,6 +3770,28 @@
                                                "KMG.Summoning.Ability.SM.Tier8.Lemure.OneD4PlusOne",
                                                "KMG.Summoning.Ability.SM.Tier9.Lemure.OneD4PlusOne",
                                                "KMG.Summoning.Unit.Lemure"
+                                           ]
+                  },
+                  {
+                      "key":  "dretch",
+                      "displayName":  "Dretch",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/dretch.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/dretch.png",
+                      "sourceSha256":  "1e5b158b197a6a5a9099adf85c0c148d1c5bfc59bd37e0202864b4e33fe87527",
+                      "outputSha256":  "bd591e82e9fa075d4b822dae5fcd2440c855953e1f66512adeae8a17ead9e6ee",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.Ability.SM.Tier3.Dretch.One",
+                                               "KMG.Summoning.Ability.SM.Tier4.Dretch.OneD3",
+                                               "KMG.Summoning.Ability.SM.Tier5.Dretch.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier6.Dretch.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier7.Dretch.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier8.Dretch.OneD4PlusOne",
+                                               "KMG.Summoning.Ability.SM.Tier9.Dretch.OneD4PlusOne",
+                                               "KMG.Summoning.Unit.Dretch"
                                            ]
                   }
               ]

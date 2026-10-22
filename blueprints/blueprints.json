@@ -57487,6 +57487,422 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.Dretch",
+      "guid": "717d3fdec4284e42b21efe83bc03eb25",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier3.Dretch.One",
+      "guid": "b5ed5bb54c3642a38d880b85ac49079b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier4.Dretch.OneD3",
+      "guid": "00a5fc2b4c43427b9f3aa2bb24ecfd8e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier5.Dretch.OneD4PlusOne",
+      "guid": "620ebcfa93b2457d91e6309eac31b331",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.Dretch.OneD4PlusOne",
+      "guid": "49f47444ca444ff3bb860fc14ffb1b7c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.Dretch.OneD4PlusOne",
+      "guid": "69f4428d6b1941309000ebe91ea25cc7",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.Dretch.OneD4PlusOne",
+      "guid": "8ca418dd0ede43e490bf6b462cab7223",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.Dretch.OneD4PlusOne",
+      "guid": "6d2fdff365a34a208ff459ee8a1fbddf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.UnitType",
+      "guid": "5640b57012834b6b907fb22f07f7d1bb",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.Traits",
+      "guid": "64733a6e96bf4e5e84337560e551a460",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.ClawType",
+      "guid": "758fe1a261934b60ba5445af1efc2008",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.Claw1d4",
+      "guid": "ae9975afa8884bd98da9f8788b365acc",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.BiteType",
+      "guid": "77a01737e1b34fbd9d5c46b007980cd5",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.Bite1d4",
+      "guid": "266db5aebcae435a86956cd545e7429d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.CauseFear",
+      "guid": "1e1cffe4a4db4f5f8b363f1f7ac05320",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.CauseFearResource",
+      "guid": "2b4974247a274b3cbddf9058aac54f05",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloud",
+      "guid": "3760af490c60412facc20255b417ab37",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudResource",
+      "guid": "37e6ba2b64d84ac6b43014b0b98eb589",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.Brain",
+      "guid": "b33077caa1274dde90605faf5c89c1f2",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.CauseFearAi",
+      "guid": "e2d770f703fe45eebaaae76ffae30469",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudAi",
+      "guid": "da345def6ef043158031b2564b2fe2c1",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.CloudSafety",
+      "guid": "bf9d3d3944394a25baba6f1b2fb613bd",
+      "plannedType": "Sprint29FogAiSafety",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.CauseFearEligibility",
+      "guid": "a7251416e43449ee8c7604056e348152",
+      "plannedType": "DretchSpellAiEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.Dretch.CloudEligibility",
+      "guid": "9c0b4fd9275044d5a2fd43681a3eb744",
+      "plannedType": "DretchSpellAiEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Authorized S30 hidden Dretch dependency; seven routes remain suppressed. Native qualification and scoped Escape Artist combat mapping remain pending."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier3.Dretch.One",
+      "guid": "333e328c043c5ee8a4bc78d8eeb0df49",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier4.Dretch.OneD3",
+      "guid": "593c3d41a2bf56b49448e481b2857aa5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier5.Dretch.OneD4PlusOne",
+      "guid": "20667b5edc795cb1bbb0cdc01132807c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier6.Dretch.OneD4PlusOne",
+      "guid": "3cfa3aef4fba5275b5b186efcdf23941",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier7.Dretch.OneD4PlusOne",
+      "guid": "f98afa7525cb5de79e4a2d66ab43e220",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.Dretch.OneD4PlusOne",
+      "guid": "a4e07d4aafc75f2db74e8ec6676f0ad0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.Dretch.OneD4PlusOne",
+      "guid": "0360745560be5dd9b12159f69045a47c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier3.Dretch.One",
+      "guid": "9c3f76e64b675f019188e300f7b47227",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier4.Dretch.OneD3",
+      "guid": "b2b0f7e5bfbe5d809c470ec58f757010",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier5.Dretch.OneD4PlusOne",
+      "guid": "2ac03fd39802555991d8c0d9d6f4d021",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier6.Dretch.OneD4PlusOne",
+      "guid": "dfa41619d36a550ab90e3cc6a3f18d6a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier7.Dretch.OneD4PlusOne",
+      "guid": "8055463c119e5a388c59291534c5b676",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.Dretch.OneD4PlusOne",
+      "guid": "93e7a35c3a3355f1915daa0a83fbf0c1",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.Dretch.OneD4PlusOne",
+      "guid": "49beedd114305301a0b65da42b40048f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier3.Dretch.One",
+      "guid": "1d9d23518222576586896168303f344e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier4.Dretch.OneD3",
+      "guid": "8ea2a5f961525ba7afadc393712cc768",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier5.Dretch.OneD4PlusOne",
+      "guid": "65ad13ece2845e23a5e46df0c5a53bc5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier6.Dretch.OneD4PlusOne",
+      "guid": "1389ecec18c7534f881f208d3e44a4d4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier7.Dretch.OneD4PlusOne",
+      "guid": "36b00a0b3f1e5c268b2fa620e76dbf7f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.Dretch.OneD4PlusOne",
+      "guid": "66a940535a1d594f9264b7964cdd85a8",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.Dretch.OneD4PlusOne",
+      "guid": "39e0b3b82f0953d180dbf1aa6f2c7cba",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier3.Dretch.One",
+      "guid": "b09c3b920d0d550ea7c3b5daaf62c727",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier4.Dretch.OneD3",
+      "guid": "ac52a1e676e35d6398460fa5de79e7fb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier5.Dretch.OneD4PlusOne",
+      "guid": "9fbfcf9130f85f3d88598173b5aef7d0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier6.Dretch.OneD4PlusOne",
+      "guid": "30c831173dc15543b5002dfd04eaedae",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier7.Dretch.OneD4PlusOne",
+      "guid": "2e1919ed395856bfa05cc6f5896d6e81",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.Dretch.OneD4PlusOne",
+      "guid": "f21b1ce628c75fd981291cc66daabe35",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.Dretch.OneD4PlusOne",
+      "guid": "53ed6e7776ee5177bf06267f2077f6bd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }
