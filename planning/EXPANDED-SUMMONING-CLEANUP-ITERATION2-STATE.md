@@ -340,6 +340,26 @@ its log remains. Isolated runtime preflight now800/800 PASS. New Cloth reference
 is exported from the actual2.1.7b installation into a separate private bundle;
 all older source-bound bundles/artifacts remain unchanged.
 
+### Native UI admission and exact compiler follow-up
+
+Review2 menus run20261021T2358598187293Z-154b1b409378423f87fdac07851cee9d
+FAILED in68.758s before any popup capture. Exact iterator IL01C3 reads
+SelectedAbilityHandler.Ability; the engine deliberately exposes no public
+selected-ability/pointer handler in Dialog mode. Action-bar groups already
+existed and their toggle enumeration completed. The narrow UI correction uses
+actual nullable input-controller references and restores only references it
+owned; it does not fabricate widgets or switch to an unowned game mode. Native
+all-nine-tier evidence remains pending. The original failed run remains intact.
+
+Source6ed4aad3f35e12aab1f051799ae64b3b0ac5c79b is pushed through the guarded
+wrapper. Its frozen review3 build passed76/76 selected tests of2720 (runner3.9s)
+then FAILED the separate exact-reference compiler: the Python compiler's
+explicit reference list also needed ClothModule, beyond the already-correct
+MSBuild/export/provenance lists. No review3 package/receipt/deployment exists.
+The current fix adds that exact module to the compiler and environment inventory.
+Contract-provenance checks now17/17 PASS, including missing and mismatched Cloth
+references. The valid review2 artifact remains distinct and immutable.
+
 ### Revised asset identities at the first checkpoint
 
 | Project file | SHA-256 |

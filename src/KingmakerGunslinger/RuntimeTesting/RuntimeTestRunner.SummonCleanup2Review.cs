@@ -979,17 +979,34 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Cleanup2Menus(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
         {
-            var player = Game.Instance.Player;
-            var ui = Game.Instance.UI;
-            if (ActionBarManager.Instance == null || ui?.SelectionManagerPC == null || GroupController.Instance == null)
+            var game = Game.Instance;
+            var player = game.Player;
+            var ui = game.UI;
+            if (ActionBarManager.Instance?.Group == null || ui?.SelectionManagerPC == null || GroupController.Instance == null)
                 throw new InvalidOperationException("Native action-bar/party selection UI is unavailable.");
+            // Native Dialog and other non-casting modes intentionally expose
+            // no selected-ability handler. Opening the real group/level/variant
+            // controls does not select a casting ability or require that
+            // handler; do not initialize another mode merely for observation.
+            var selectedAbilityHandler = game.SelectedAbilityHandler;
+            var pointerController = game.ClickEventsController;
             UnitEntityData[] party = player.Party.ToArray();
             UnitEntityData[] selected = ui.SelectionManagerPC.SelectedUnits.ToArray();
             UnitEntityData groupCharacter = GroupController.Instance.GetCurrentCharacter();
             var groups = ActionBarManager.Instance.Group.GroupElements.ToArray();
             bool[] toggles = groups.Select(g => g.ToggleState).ToArray();
-            if (toggles.Any(value => value) || Game.Instance.SelectedAbilityHandler.Ability != null)
-                throw new InvalidOperationException("Cleanup 2 requires idle closed native groups and no selected ability before claiming UI ownership.");
+            if (toggles.Any(value => value) || selectedAbilityHandler?.Ability != null ||
+                (pointerController != null && pointerController.Mode != Kingmaker.Controllers.Clicks.PointerMode.Default))
+                throw new InvalidOperationException("Cleanup 2 requires idle closed native groups, no selected ability and any exposed pointer in Default mode before claiming UI ownership.");
+            Cleanup2Check("ui-input-intake", true, new JObject {
+                ["mode"] = game.CurrentMode.ToString(),
+                ["selectedAbilityHandlerPresent"] = selectedAbilityHandler != null,
+                ["pointerControllerPresent"] = pointerController != null,
+                ["pointerMode"] = pointerController?.Mode.ToString(),
+                ["selectedAbility"] = selectedAbilityHandler?.Ability?.Blueprint.AssetGuid,
+                ["openGroups"] = toggles.Count(value => value),
+                ["ownership"] = "Native group/level/variant controls only; no casting input controller or game mode is initialized. Absent intake controllers are not claimed for cleanup." },
+                "Native action groups are closed, and any exposed selected-ability handler is idle; optional casting controllers are recorded exactly.");
             var slotsBefore = party.SelectMany(u => u.Descriptor.Spellbooks).SelectMany(b =>
                 Enumerable.Range(0, 10).Select(level => new Cleanup2SlotSnapshot(b, level))).ToArray();
             bool added = false;
@@ -1048,8 +1065,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var failures = new List<Exception>();
                 Action<Action> restore = action => { try { action(); } catch (Exception error) { failures.Add(error); } };
-                restore(() => Game.Instance.ClickEventsController.ClearPointerMode());
-                restore(() => Game.Instance.SelectedAbilityHandler.DropAbility());
+                bool inputControllersExact = ReferenceEquals(game.ClickEventsController, pointerController) &&
+                    ReferenceEquals(game.SelectedAbilityHandler, selectedAbilityHandler);
+                if (pointerController != null && ReferenceEquals(game.ClickEventsController, pointerController))
+                    restore(() => pointerController.ClearPointerMode());
+                if (selectedAbilityHandler != null && ReferenceEquals(game.SelectedAbilityHandler, selectedAbilityHandler))
+                    restore(() => selectedAbilityHandler.DropAbility());
                 restore(() => { if (added) player.PartyCharacters.Remove(fixture.Caster); });
                 restore(() => { player.InvalidateCharacterLists(); player.UpdateCharacterLists(); });
                 restore(() => GroupController.Instance.SelectUnit(groupCharacter));
@@ -1057,8 +1078,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int i = 0; i < groups.Length; i++) { int index = i; restore(() => groups[index].Toggle(toggles[index], true)); }
                 bool slotsExact = false;
                 restore(() => slotsExact = slotsBefore.All(snapshot => snapshot.Unchanged()));
-                Cleanup2Check("ui-party-restored", failures.Count == 0 && player.Party.SequenceEqual(party) && slotsExact,
+                Cleanup2Check("ui-party-restored", failures.Count == 0 && inputControllersExact && player.Party.SequenceEqual(party) && slotsExact,
                     new JObject { ["partyExact"] = player.Party.SequenceEqual(party),
+                        ["inputControllerReferencesExact"] = inputControllersExact,
+                        ["intakeSelectedAbilityHandlerPresent"] = selectedAbilityHandler != null,
+                        ["intakePointerControllerPresent"] = pointerController != null,
+                        ["currentSelectedAbilityHandlerPresent"] = game.SelectedAbilityHandler != null,
+                        ["currentPointerControllerPresent"] = game.ClickEventsController != null,
                         ["originalMemorizedSlotReferencesAndAvailabilityExact"] = slotsExact,
                         ["originalMemorizedSlotCount"] = slotsBefore.Sum(snapshot => snapshot.Slots.Length),
                         ["restorationErrors"] = new JArray(failures.Select(error => error.ToString())),
