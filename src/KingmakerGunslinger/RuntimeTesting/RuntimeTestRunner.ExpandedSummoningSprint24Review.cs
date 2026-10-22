@@ -3751,7 +3751,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value != null && !value.Destroyed &&
                                 !ReferenceEquals(value, owner) &&
                                 !ReferenceEquals(value, targetUnit) &&
-                                owner.IsAlly(value) &&
+                                !owner.IsEnemy(value) &&
                                 Vector3.Distance(value.Position,
                                     targetPoint.clampedPosition) <=
                                     targetAllyExclusionRadius + value.Corpulence))
