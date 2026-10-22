@@ -33,6 +33,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal string ExpectedTitle { get { return SummonChoicePresentationPolicy.For(Key).Label; } }
         }
 
+        private sealed class Cleanup2TooltipCloseState
+        {
+            internal TooltipsController Controller;
+            internal TooltipConstructor Constructor;
+            internal TooltipData Data;
+            internal bool CloseRequested;
+        }
+
         private sealed class Cleanup2TooltipInputs
         {
             private readonly UnitEntityData _unit;
@@ -159,7 +167,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);
                         if (popup == null || !popup.gameObject.activeInHierarchy) throw new InvalidOperationException("Exact native variant popup missing.");
                         foreach (var target in parent)
-                            foreach (int frame in Cleanup2CaptureTooltipTarget(fixture, book, source, popup, target, input, screens)) yield return frame;
+                            foreach (int frame in Cleanup2CaptureTooltipTargetSettled(fixture, book, source, popup, target, input, screens)) yield return frame;
                     }
                     finally
                     {
@@ -211,9 +219,83 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private IEnumerable<int> Cleanup2CaptureTooltipTarget(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
+        private IEnumerable<int> Cleanup2CaptureTooltipTargetSettled(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
             ActionBarGroupSlot source, ActionBarSpellsGroup popup, Cleanup2TooltipTarget target,
             Cleanup2TooltipInputs input, NativeIconScreenEvidence screens)
+        {
+            var close = new Cleanup2TooltipCloseState { Controller = Game.Instance.UI.TooltipsController,
+                Constructor = Game.Instance.UI.TooltipsController.TooltipConstructor };
+            Exception failure = null;
+            var iterator = Cleanup2CaptureTooltipTarget(fixture, book, source, popup, target, input, screens, close).GetEnumerator();
+            // Yield outside the catch so a target failure still permits native
+            // Update/MoveDelay/fade settlement before the original error escapes.
+            try
+            {
+                while (true)
+                {
+                    bool next = false;
+                    try { next = iterator.MoveNext(); }
+                    catch (Exception error) { failure = error; }
+                    if (!next) break;
+                    yield return iterator.Current;
+                }
+            }
+            finally
+            {
+                try { iterator.Dispose(); }
+                catch (Exception error) { failure = failure == null ? error : new AggregateException(failure, error); }
+            }
+            JObject state = null;
+            var watch = Stopwatch.StartNew();
+            for (int frame = 0; frame < 600 && watch.Elapsed.TotalSeconds < 8; frame++)
+            {
+                state = Cleanup2TooltipClosedState(close);
+                if ((bool)state["foreignOwner"] || (bool)state["closed"]) break;
+                yield return 0;
+            }
+            state = Cleanup2TooltipClosedState(close);
+            state["originalFailure"] = failure?.ToString();
+            state["closeRequestedThroughOwnedTrigger"] = close.CloseRequested;
+            state["wallSeconds"] = watch.Elapsed.TotalSeconds;
+            bool closed = (bool)state["closed"];
+            Cleanup2Check("tooltip-native-close-" + target.Label, closed, state,
+                "The exact native controller settles Context=null, m_IsShowed=false, m_NeedTooltip=false and invisible constructor renderers after its own MoveDelay/fade; retained inactive cached data is recorded, never rewritten.");
+            if (!closed)
+                throw new AggregateException("Native tooltip closure failed; no foreign tooltip or controller is hidden.",
+                    failure == null ? new[] { new InvalidOperationException(state.ToString()) } : new[] { failure, new InvalidOperationException(state.ToString()) });
+            if (failure != null) throw new InvalidOperationException("Tooltip target failed; original failure retained after native close settlement.", failure);
+        }
+
+        private static JObject Cleanup2TooltipClosedState(Cleanup2TooltipCloseState owner)
+        {
+            var tips = Game.Instance?.UI?.TooltipsController;
+            var constructor = tips?.TooltipConstructor;
+            var shown = typeof(TooltipsController).GetField("m_IsShowed", Cleanup2Fields);
+            var needed = typeof(TooltipBase).GetField("m_NeedTooltip", Cleanup2Fields);
+            var dataField = typeof(TooltipBase).GetField("Data", Cleanup2Fields);
+            bool identity = ReferenceEquals(tips, owner.Controller) && ReferenceEquals(constructor, owner.Constructor);
+            bool fields = shown != null && needed != null && dataField != null;
+            bool foreign = !identity || (tips?.ContextTooltipData != null && !ReferenceEquals(tips.ContextTooltipData, owner.Data));
+            bool isShown = tips != null && fields && (bool)shown.GetValue(tips);
+            bool isNeeded = constructor != null && fields && (bool)needed.GetValue(constructor);
+            var renderers = constructor == null ? new CanvasRenderer[0] : constructor.GetComponentsInChildren<CanvasRenderer>(true);
+            bool hidden = constructor != null && (!constructor.gameObject.activeInHierarchy || renderers.All(value =>
+                !value.gameObject.activeInHierarchy || value.GetInheritedAlpha() == 0f));
+            return new JObject { ["closed"] = identity && fields && !foreign && tips.ContextTooltipData == null && !isShown && !isNeeded && hidden,
+                ["foreignOwner"] = foreign, ["controllerAndConstructorExact"] = identity, ["fieldContractsPresent"] = fields,
+                ["contextNull"] = tips?.ContextTooltipData == null, ["m_IsShowed"] = isShown, ["m_NeedTooltip"] = isNeeded,
+                ["constructorActive"] = constructor != null && constructor.gameObject.activeInHierarchy,
+                ["constructorInvisible"] = hidden,
+                ["retainedConstructorDataIsOwned"] = constructor != null && fields && ReferenceEquals(dataField.GetValue(constructor), owner.Data),
+                ["retainedLastTooltipDataIsOwned"] = tips != null && ReferenceEquals(tips.LastTooltipData, owner.Data),
+                ["retainedOwnerIsOwned"] = owner.Data != null && ReferenceEquals(TooltipBase.Owner, owner.Data.WielderTransform),
+                ["renderers"] = new JArray(renderers.Take(64).Select(value => new JObject { ["object"] = value.name,
+                    ["active"] = value.gameObject.activeInHierarchy, ["inheritedAlpha"] = value.GetInheritedAlpha() })) };
+        }
+
+        private IEnumerable<int> Cleanup2CaptureTooltipTarget(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
+            ActionBarGroupSlot source, ActionBarSpellsGroup popup, Cleanup2TooltipTarget target,
+            Cleanup2TooltipInputs input, NativeIconScreenEvidence screens, Cleanup2TooltipCloseState close)
         {
             var allRows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(value => {
                 var rowAbility = value.MechanicSlot?.GetContentData() as AbilityData;
@@ -260,6 +342,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Game.Instance.UI.TooltipsController.ContextTooltipData != null) throw new InvalidOperationException("Foreign native hover appeared before taking the trigger.");
                 trigger.ShowTooltipManual(true);
                 data = trigger.Data;
+                close.Data = data;
                 if (data == null || !ReferenceEquals(data.AbilityData, ability)) throw new InvalidOperationException("Native trigger did not collect the exact row AbilityData.");
                 var watch = Stopwatch.StartNew();
                 for (int frame = 0; frame < 600 && watch.Elapsed.TotalSeconds < 8 && !NativeIconScreenEvidence.OwnsHover(trigger, data); frame++)
@@ -281,7 +364,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (card == null) throw new InvalidOperationException("Native tooltip produced no readable header observation.");
                 bool presentation = (bool)card["passed"];
                 Cleanup2Check("tooltip-rendered-" + target.Label, presentation, card,
-                    "The actual source-owned native tooltip header renders the exact family-first title and child icon, fully visible without overflow/truncation.");
+                    "The exact native text-only HeaderItem renders the family-first title without clipping, while the exact source row's painted icon remains fully visible; this hover template intentionally displays no art.");
                 if (!presentation) throw new InvalidOperationException("Native tooltip title/icon visibility failed: " + target.Label);
                 foreach (int frame in screens.CaptureOwnedHover("tooltip-hover-" + target.Label, card,
                     () => owns() && Cleanup2FullyVisible(scroll, row) && (bool)Cleanup2TooltipCard(target, row, trigger, data)["passed"], trigger, data)) yield return frame;
@@ -294,6 +377,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (tips.ContextTooltipData != null && !ReferenceEquals(tips.ContextTooltipData, data))
                         throw new InvalidOperationException("Foreign tooltip replaced the owned hover; observer does not hide it or restore its scroll.");
                     trigger.ShowTooltipManual(false);
+                    close.CloseRequested = true;
                 }
                 if (scroll.Component == null || !scroll.Active || scroll.Content != content || Cleanup2PopupViewport(scroll) != viewport)
                     throw new InvalidOperationException("Foreign native scrolling surface; observer does not overwrite it.");
@@ -301,32 +385,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if ((content.anchoredPosition - anchored).sqrMagnitude > .0001f || !scroll.Active)
                     throw new InvalidOperationException("Tooltip target scroll did not restore its native content position.");
             }
-            // Let native hover removal/fade finish without writing cached data.
-            for (int frame = 0; frame < 30; frame++) yield return 0;
-            if (Game.Instance.UI.TooltipsController.ContextTooltipData != null)
-                throw new InvalidOperationException("A native hover remains after exact owned-trigger cleanup.");
+            // The wrapper waits for native closure on both success and failure.
         }
 
         private static JObject Cleanup2TooltipCard(Cleanup2TooltipTarget target, ActionBarSlot row, TooltipTrigger trigger, TooltipData data)
         {
-            var constructor = Game.Instance.UI.TooltipsController.TooltipConstructor;
-            var headers = constructor.Bodies.Where(value => value != null && value.gameObject.activeInHierarchy && value.HeaderBox != null)
-                .Select(value => value.HeaderBox).ToArray();
-            var texts = headers.SelectMany(value => value.GetComponentsInChildren<TextMeshProUGUI>(true)).Where(value => value.isActiveAndEnabled).ToArray();
-            var images = headers.SelectMany(value => value.GetComponentsInChildren<Image>(true)).Where(value => value.isActiveAndEnabled).ToArray();
-            bool name = texts.Any(value => value.GetParsedText() == target.ExpectedTitle && !value.isTextTruncated && !value.isTextOverflowing && Cleanup2TooltipGraphicVisible(value));
-            bool icon = images.Any(value => ReferenceEquals(value.sprite, target.Child.Icon) && Cleanup2TooltipGraphicVisible(value));
+            var tips = Game.Instance.UI.TooltipsController;
+            var constructor = tips.TooltipConstructor;
+            var header = constructor.Body?.HeaderBox;
+            var template = tips.Bricks?.HeaderItem;
+            var shownField = typeof(DescriptionBricksBox).GetField("m_ShowList", Cleanup2Fields);
+            var shown = header == null || shownField == null ? null : shownField.GetValue(header) as IList<DescriptionBrick>;
+            // Installed AddToShowList identifies the actual HeaderItem by its
+            // prefab BlockID, and parents only that brick under HeaderBox.Content.
+            // Do not accept text or an art sprite from an unrelated descendant.
+            var items = shown == null || template == null ? new DescriptionBrick[0] : shown.Where(value =>
+                value != null && value.gameObject.activeInHierarchy && value.GetType() == template.GetType() &&
+                value.BlockID == template.BlockID && value.transform.parent == header.Content).ToArray();
+            bool exactHeader = template != null && !string.IsNullOrEmpty(template.BlockID) && items.Length == 1 &&
+                ReferenceEquals(constructor.CurrentTooltipData, data);
+            var item = items.Length == 1 ? items[0] : null;
+            var texts = item?.TextFields == null ? new TextMeshProUGUI[0] : item.TextFields.Where(value => value != null).ToArray();
+            var images = item?.Images == null ? new Image[0] : item.Images.Where(value => value != null).ToArray();
+            var title = item?.TextFields == null || item.TextFields.Count == 0 ? null : item.TextFields[0];
+            bool name = title != null && title.GetParsedText() == target.ExpectedTitle && !title.isTextTruncated &&
+                !title.isTextOverflowing && Cleanup2TooltipGraphicVisible(title);
+            // IconNameHeaderWithBorder(isTooltip:true) skips art index 0 and
+            // clears border index 1. Init disables the template's image objects.
+            // Native hover art is intentionally absent; the painted source row
+            // remains a separate mandatory visible consumer in the same frame.
+            bool textOnly = exactHeader && item.Images != null && template.Images != null &&
+                item.Images.Count == template.Images.Count && item.Images.All(value => value != null && !value.gameObject.activeInHierarchy);
+            bool rowIcon = ReferenceEquals(row.Icon.sprite, target.Child.Icon) && Cleanup2TooltipGraphicVisible(row.Icon);
+            bool tooltipArt = images.Any(value => value.gameObject.activeInHierarchy && Cleanup2TooltipGraphicVisible(value));
             return new JObject { ["key"] = target.Key, ["family"] = target.Family.ToString(), ["tier"] = target.Tier,
                 ["parent"] = target.Parent.AssetGuid, ["child"] = target.Child.AssetGuid, ["expectedTitle"] = target.ExpectedTitle,
-                ["passed"] = NativeIconScreenEvidence.OwnsHover(trigger, data) && name && icon && ReferenceEquals(row.Icon.sprite, target.Child.Icon),
+                ["passed"] = NativeIconScreenEvidence.OwnsHover(trigger, data) && exactHeader && name && textOnly && !tooltipArt && rowIcon,
                 ["nativeDataIsExactRowAbility"] = ReferenceEquals(data.AbilityData, row.MechanicSlot.GetContentData()),
-                ["nativeHoverOwned"] = NativeIconScreenEvidence.OwnsHover(trigger, data), ["titleVisible"] = name, ["headerIconMatchesAndVisible"] = icon,
+                ["nativeHoverOwned"] = NativeIconScreenEvidence.OwnsHover(trigger, data), ["titleVisible"] = name,
+                ["exactHeaderItem"] = exactHeader, ["headerTemplateBlockId"] = template?.BlockID,
+                ["headerTemplateInstance"] = template == null ? 0 : template.GetInstanceID(),
+                ["headerItemInstance"] = item == null ? 0 : item.GetInstanceID(),
+                ["nativeTextOnlyHeaderContract"] = textOnly, ["tooltipArtDisplayed"] = tooltipArt,
+                ["rowIconMatchesAndVisible"] = rowIcon,
                 ["rowIconMatches"] = ReferenceEquals(row.Icon.sprite, target.Child.Icon),
+                ["rowIconSprite"] = row.Icon.sprite?.name,
                 ["headerTexts"] = new JArray(texts.Select(value => new JObject { ["object"] = value.name, ["parsed"] = value.GetParsedText(),
                     ["truncated"] = value.isTextTruncated, ["overflow"] = value.isTextOverflowing, ["fullyVisible"] = Cleanup2TooltipGraphicVisible(value) })),
                 ["headerImages"] = new JArray(images.Select(value => new JObject { ["object"] = value.name, ["sprite"] = value.sprite?.name,
+                    ["active"] = value.gameObject.activeInHierarchy,
                     ["matchesChild"] = ReferenceEquals(value.sprite, target.Child.Icon), ["fullyVisible"] = Cleanup2TooltipGraphicVisible(value) })),
-                ["source"] = "Existing native row TooltipTrigger.ShowTooltipManual uses the same ShowTooltip path as pointer enter/exit; native builder reads child Blueprint.Name/Icon. No tooltip object/text/icon is fabricated.",
+                ["source"] = "Exact native AbilityDataHeader -> HeaderItem through IconNameHeaderWithBorder(isTooltip:true): title is rendered; art is intentionally omitted. The exact source row's child icon remains visible. No tooltip/text/icon is fabricated; expanded-description art is not covered.",
                 ["visualApproval"] = "Actual framebuffer inspection and owner art approval remain separate." };
         }
 

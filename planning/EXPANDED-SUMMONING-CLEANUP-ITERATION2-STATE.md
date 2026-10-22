@@ -3,9 +3,99 @@
 Active development lane, 2026-10-21. This record supersedes no historical PASS
 or release record. The mission is **in progress**, with no owner visual approval.
 
+Quick review: [14-item acceptance status](#acceptance-status),
+[Elemental rules proposal](CLEANUP2-ELEMENTAL-RULES-PROPOSAL.md),
+[native procedure](../docs/SUMMON-CLEANUP2-NATIVE-REVIEW.md).
+
 ## Intake and ownership
 
-### Latest evidence summary (2026-10-22, review7)
+### Latest artifact (2026-10-22, review8)
+
+Frozen development source `071142449b6ba52d00878b11323981f5050a0f3d`,
+source fingerprint `63bdda56892594af5f3443473555f4dc8a1304c7ae6a38e4ee93eb643b18dec7`,
+ZIP `27b902c48ad9954e8cffea9b569b31d612f53c6280aec2a53138de97a262a0ec`,
+DLL `eeaf6349df3c319eee51948a3c46d3eac1336edd6b28d45d82afcc05566347da`,
+MVID `9b4c0045-3602-4bc9-ad14-126e07fc44f9`.
+Exact compiler/package validation and78/78 selected cases PASS (3.9s runner).
+Frozen worktree `artifacts/worktrees/summon-cleanup2-review8`, package under
+`artifacts/development-candidates/summon-cleanup-iteration2/071142449b6b/`;
+build log `artifacts/cleanup2-review8-build.log`. Guarded push PASS.
+Native8 Crab reproduction PASS26/26,83.163s, run
+`20261022T0259193660098Z-b8a73028c6ee46bd97b62c4424a4c24a`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T0259193423287Z-disposable-expanded-summoning-cleanup2-native-review`.
+One single and two full-routine weapon rules each match the exact accepted
+native attack-info/weapon/handle chain; each command charged once. Positive
+chela motion and all nine native pose pictures passed. The same live manager's
+production Claw lookup was null before and after the temporary lease.
+Transaction `compat-20261022T025817Z-30f5ea49ef56` Restored/verified true;
+original feature-settings bytes restored exactly. Root inspected single/full
+pose pictures: full-routine views have fixture-human occlusion and do not
+approve claw anatomy/contact. Timing-changing Bite remains request-only.
+Native8 tooltips FAIL5/3,78.663s, run
+`20261022T0302309996047Z-ba15b9c5ed5440f98d49dae83ff03fce`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T0302309816023Z-disposable-expanded-summoning-cleanup2-native-review`.
+The actual SM II Horse row/icon and exact owned hover data matched; title
+`Horse` was fully visible with no overflow/truncation. The observer searched
+only header images and found native separators/background, no art sprite;
+its required header-art predicate failed. Hover closure also remained false.
+Only the initial popup PNG exists, not a qualified actual hover framebuffer.
+Other four cards were not observed. This remains FAIL pending exact native
+template/lifecycle inspection, not a declaration that a Horse asset failed.
+Transaction `compat-20261022T030129Z-8a33500de6af` Restored/verified true.
+Native8 mansion giant experiment FAIL38/2,75.621s, run
+`20261022T0306080437716Z-3c95a294375a480da66fefb55c26358f`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T0306080247725Z-disposable-expanded-summoning-cleanup2-native-review`.
+The changed exact fixture solved the prior ground blocker: candidate226 of226
+in0.0139s,21 supports, grade2.87e-12 and maximum residual3.58e-7meters.
+Strict Human-anchor skin measurement then refused native UMA renderer
+`Renderer_Character_Diffuse_Cutout`/mesh`Character`: source vertices0,
+baked vertices1759, weights1759,1819 bones/binds, zero null palette entries.
+CPU reference/convention proof therefore did not complete. No scale/palette
+experiment or production calibration was activated and no lineup PNG exists.
+Do not drop that body renderer, substitute culling bounds or infer a qualified
+six-foot ratio from this failure. Transaction
+`compat-20261022T030507Z-2f2d6c3ec8a2` Restored/verified true.
+Installed contract inspection confirms `Character.BuildMesh` token0x0600142A
+calls `Mesh.UploadMeshData(true)` after combining its exact current body parts.
+The installed Unity vertex getter returns an empty array when CPU access is
+unavailable. No retained exact readable combined reference is proven. A future
+observer must retain the exact pre-upload current reference or prove selection,
+ordering and palette remapping of the current body-part reconstruction; no
+old skeleton, arbitrary prefab or bounds substitute qualifies calibration.
+
+Native8 shared controls FAIL5/1,66.414s, run
+`20261022T0309365596875Z-16601c3a989a4b688aa39360c953ab45`, directory
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261022T0309365441830Z-disposable-expanded-summoning-cleanup2-native-review`.
+Exact source unit/prefab identity passed and read-only prefab load returned
+view1368610 without exception. Its cached AnimationManager/AnimationSet guard
+failed before either control was spawned. No native Mastodon/Triceratops
+preservation or image success is claimed. The observation does not distinguish
+the missing cached manager from a missing set; next narrowed diagnostic is
+the exact child-manager/serialized-set/cache lifecycle census, not arbitrary
+fallback or cached-field initialization. No prefab/actor was modified by that
+failed admission. Transaction `compat-20261022T030834Z-c64a80ca341a`
+Restored/verified true. All four source8 native runs ended with exact guarded
+restoration and no save load/write.
+
+One concrete tooltip correction follows the failed reproduction in the same
+bounded validation window (started02:53UTC, ceiling03:23UTC). Installed IL proves
+`IconNameHeaderWithBorder(isTooltip:true)` intentionally omits art and uses the
+exact `HeaderItem`; the visible source row must still match the painted icon.
+Native hide clears context immediately but settles shown/needed flags and fade
+in later updates. The corrected observer captures the real text-only hover
+with the exact visible row, then waits at most600frames/8s for native closure,
+including after a captured target failure. Foreign context is never hidden.
+Only the tooltip native reproduction is selected on new bytes; no replay of
+the source8 Crab/giants/controls or prior body/menu campaign is selected.
+Focused correction gate PASS: production16.4s, domain build1.0s,
+39/39 cases0.5s; `artifacts/cleanup2-review9-focused.log`.
+`git diff --check` passed. This does not yet prove the new native observer.
+Art assets are unchanged from
+their explicitly identified review5/review7 versions; their earlier native
+results are not relabelled as execution on this DLL. Purpose and version remain
+`summon-cleanup-iteration2`/0.0.163, never a release or owner visual approval.
+
+### Preserved review7 evidence
 
 Current frozen development source `a04e204bc01ae57bbdf121e5556943cb7b4b2cf7`,
 source fingerprint `da8e4d7904bbcb9d60820610a1252088e86a8a547de303e958d6d7f06f0c2ffb`,
@@ -50,7 +140,12 @@ Their transactions all report Restored/restorationVerified=true:
 Review7 Ettin pixels show corrected forward facing and a shorter neck joined
 to the shoulder fan. Its pale, simplified face still contrasts with the native
 head; it is not visually accepted.48 actual frames retain head/neck quaternions.
-Cold hydration remains blocked by the specific prerequisites in the cold plan.
+The exact material contract is intact (Gamma/PF shader, original512 albedo,
+two owned textures, white tint/unchanged UVs); no lost-texture or controller
+reset was observed. Sampled head rotation is only about4.2-4.4degrees despite
+positive follow. New-head travel, turning and extreme poses remain unverified;
+old-source5 travel footage cannot certify the new head. Cold hydration remains
+blocked by the specific prerequisites in the cold plan.
 Crab's actual active handle recorded42 samples,1.186/1.227 view-space driver
 motion and66.5/77.3 degree local motion with3 native pictures. A second,
 unstarted handle had zero samples. Installed UnitAttack.Init and OnStart both
