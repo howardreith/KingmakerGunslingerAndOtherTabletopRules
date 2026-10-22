@@ -42,11 +42,11 @@ namespace KingmakerGunslinger.Summoning
             book.UpdateAllSlotsSize(false);
             foreach (var preparation in Preparations)
             {
-                if (preparation == null || preparation.Ability == null || preparation.Level < 0 ||
+                if (preparation == null || preparation.Ability == null || preparation.Level < 1 ||
                     preparation.Level > 7 || preparation.Copies < 1 ||
                     !Book.SpellList.SpellsByLevel.Single(row => row.SpellLevel == preparation.Level)
                         .Spells.Contains(preparation.Ability))
-                    throw new InvalidOperationException("Trumpet preparation has an invalid native spell/level.");
+                    throw new InvalidOperationException("Trumpet leveled preparation has an invalid native spell/level.");
                 book.AddKnown(preparation.Level, preparation.Ability, true);
                 for (int copy = 0; copy < preparation.Copies; copy++)
                     if (!book.Memorize(new AbilityData(preparation.Ability, book), null))
