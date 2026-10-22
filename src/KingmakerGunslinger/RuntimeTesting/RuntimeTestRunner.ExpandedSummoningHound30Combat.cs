@@ -115,11 +115,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "A fresh awake visible disposable hostile and native action/range preconditions precede the command.");
                     if (!ready) throw new InvalidOperationException("Hound native attack fixture is not ready.");
                     var swordView = owner.View.GetComponent<HoundArchonSwordView>();
-                    bool nativeSword = swordView != null && swordView.Model != null &&
-                        swordView.Model.activeSelf == !natural &&
-                        swordView.Model.GetComponentsInChildren<Renderer>(true).Any();
+                    bool nativeSword = false;
+                    int visibilityWaits = 0;
+                    bool waitingBefore = _sprint25WaitingForUnityAppearance;
+                    DateTime visibilityDeadline = DateTime.UtcNow.AddSeconds(5);
+                    try
+                    {
+                        while (visibilityWaits < 600 && DateTime.UtcNow < visibilityDeadline)
+                        {
+                            nativeSword = swordView != null && swordView.isActiveAndEnabled && swordView.LateUpdates > 0 &&
+                                swordView.ObservedEquipmentSet == owner.Body.CurrentHandEquipmentSetIndex &&
+                                swordView.ObservedWeaponGuid == main.Blueprint.AssetGuid && swordView.Model != null &&
+                                swordView.Model.activeSelf == !natural && swordView.Model.GetComponentsInChildren<Renderer>(true).Any();
+                            if (nativeSword) break;
+                            // This observer's native clock can process the switch within
+                            // one Unity Update. Observe the actual per-view LateUpdate;
+                            // never call Refresh or force model visibility from the fixture.
+                            _sprint25WaitingForUnityAppearance = true;
+                            Game.Instance.IsPaused = false; visibilityWaits++; yield return 0;
+                        }
+                    }
+                    finally { _sprint25WaitingForUnityAppearance = waitingBefore; }
                     Sprint25Check(id + "-weapon-model", nativeSword, new JObject {
                         ["owner"] = owner.UniqueId, ["status"] = swordView?.Status,
+                        ["unityFrame"] = Time.frameCount, ["visibilityWaits"] = visibilityWaits,
+                        ["lateUpdates"] = swordView?.LateUpdates, ["observedMode"] = swordView?.ObservedEquipmentSet,
+                        ["observedWeapon"] = swordView?.ObservedWeaponGuid, ["expectedWeapon"] = main.Blueprint.AssetGuid,
+                        ["refreshUnityFrame"] = swordView?.LastRefreshUnityFrame,
+
                         ["active"] = swordView?.Model?.activeSelf, ["expectedArmed"] = !natural,
                         ["parent"] = swordView?.Model?.transform.parent?.name,
                         ["nativeCharacterAvatarPresent"] = owner.View.GetComponent<Kingmaker.Visual.CharacterSystem.Character>() != null },
