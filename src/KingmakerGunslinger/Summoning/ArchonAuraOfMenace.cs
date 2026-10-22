@@ -57,16 +57,51 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>One native penalty for this named magical effect, with
+    /// independent source buff instances. This follows the established Nereid
+    /// overlap/hand-off pattern, without suppressing unrelated penalties.</summary>
+    [Serializable]
+    public sealed class ArchonMenacePenalty : BuffLogic
+    {
+        [NonSerialized] private bool _present;
+        [NonSerialized] private ModifiableValue.Modifier[] _modifiers;
+        public override void OnTurnOn()
+        {
+            _present = true;
+            ApplyIfAbsent();
+        }
+        private void ApplyIfAbsent()
+        {
+            var stats = Owner.Stats;
+            var values = new ModifiableValue[] { stats.AdditionalAttackBonus, stats.AC,
+                stats.SaveFortitude, stats.SaveReflex, stats.SaveWill };
+            _modifiers = values.Where(stat => !stat.Modifiers.Any(modifier =>
+                modifier.Source != null && ReferenceEquals(modifier.Source.Blueprint, Buff.Blueprint)))
+                .Select(stat => stat.AddModifier(-2, this, Kingmaker.Enums.ModifierDescriptor.Penalty)).ToArray();
+        }
+        public override void OnTurnOff()
+        {
+            _present = false;
+            if (_modifiers == null || _modifiers.Length == 0) return;
+            foreach (var modifier in _modifiers) modifier.Remove();
+            _modifiers = null;
+            var next = Owner.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, Buff.Blueprint))
+                .SelectMany(buff => buff.SelectComponents<ArchonMenacePenalty>())
+                .FirstOrDefault(component => !ReferenceEquals(component, this) && component._present);
+            if (next != null) next.ApplyIfAbsent();
+        }
+    }
+
     [Serializable]
     public sealed class ArchonMenaceHitBreak : BuffLogic,
-        IInitiatorRulebookHandler<RuleAttackWithWeapon>
+        IInitiatorRulebookHandler<RuleAttackRoll>
     {
         public BlueprintBuff Immunity;
-        public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
-        public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+        public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
+        public void OnEventDidTrigger(RuleAttackRoll evt)
         {
             var source = Buff?.Context?.MaybeCaster;
-            if (source == null || evt?.AttackRoll == null || !evt.AttackRoll.IsHit ||
+            if (source == null || evt == null || !evt.IsHit ||
                 !ReferenceEquals(evt.Initiator, Owner?.Unit) || !ReferenceEquals(evt.Target, source) ||
                 Immunity == null) return;
             // Capture the original context before removing this one contribution.

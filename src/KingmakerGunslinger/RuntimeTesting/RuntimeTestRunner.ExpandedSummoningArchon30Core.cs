@@ -11,6 +11,9 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Mechanics;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
@@ -29,6 +32,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var target = fixture.Hostile;
             int will = target.Stats.SaveWill.BaseValue;
             var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
+            Buff foreignPenalty = null;
             var buffBaseline = target.Buffs.Enumerable.ToArray();
             var saves = new Dretch30CloudSaves(new[] { target });
             EventBus.Subscribe(saves);
@@ -58,6 +62,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(sibling, origin + Vector3.right);
                 target.Stats.SaveWill.BaseValue = -100;
+                var shaken = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(
+                    BlueprintBootstrap.Library, "25ec6cb6ab1845c48a95f9c20b034220", "unrelated native Shaken penalty control");
+                foreignPenalty = target.Buffs.AddBuff(shaken,
+                    new MechanicsContext(target, target.Descriptor, shaken, null, new TargetWrapper(target)), TimeSpan.FromMinutes(10));
+                if (foreignPenalty == null) throw new InvalidOperationException("Owned unrelated penalty control did not apply.");
+                buffBaseline = target.Buffs.Enumerable.ToArray();
                 // Only this disposable emitter changes Charisma. Different live
                 // source DCs expose accidental sharing or use of summon CL20.
                 owner.Stats.Charisma.BaseValue = 14;
@@ -90,16 +100,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var after = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
                     target.Stats.SaveFortitude.ModifiedValue, target.Stats.SaveReflex.ModifiedValue,
                     target.Stats.SaveWill.ModifiedValue };
-                // Same-named menace penalties use the native nonstacking Penalty
-                // descriptor; source ownership remains separate even in overlap.
-                bool modifiers = after.Select((value, index) => value - before[index]).All(value =>
+                // The scoped component retains one native penalty while source
+                // ownership remains separate. Unrelated Shaken remains active.
+                bool modifiers = target.Buffs.Enumerable.Contains(foreignPenalty) && after.Select((value, index) => value - before[index]).All(value =>
                     value == (active.Length == 0 ? 0 : -2));
                 Sprint25Check("archon-core-mixed-sources", attribution && modifiers, new JObject {
                     ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["target"] = target.UniqueId,
                     ["ownerCha"] = owner.Stats.Charisma.ModifiedValue, ["ownerHd"] = owner.Descriptor.Progression.CharacterLevel,
                     ["siblingCha"] = sibling.Stats.Charisma.ModifiedValue, ["siblingHd"] = sibling.Descriptor.Progression.CharacterLevel,
                     ["saves"] = saves.Rows.DeepClone(), ["before"] = new JArray(before), ["after"] = new JArray(after),
-                    ["penaltyInstances"] = active.Length, ["forcedRolls"] = 0 },
+                    ["penaltyInstances"] = active.Length, ["unrelatedShakenPreserved"] = target.Buffs.Enumerable.Contains(foreignPenalty),
+                    ["modifierSources"] = new JArray(target.Stats.AdditionalAttackBonus.Modifiers.Select(modifier => new JObject {
+                        ["value"] = modifier.ModValue, ["source"] = modifier.Source?.Blueprint?.AssetGuid })), ["forcedRolls"] = 0 },
                     "Real source-specific Will saves use each emitter's racial HD/live Charisma; their actual native penalty/immunity outcomes and stat consumers agree.");
                 if (!attribution || !modifiers) throw new InvalidOperationException("Archon source/save/penalty consumer failed.");
                 int priorSaves = saves.Rows.Count;
@@ -154,6 +166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 EventBus.Unsubscribe(saves);
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(unit => unit != null && !unit.Destroyed).ToArray());
+                if (foreignPenalty != null) foreignPenalty.Remove();
                 target.Stats.SaveWill.BaseValue = will;
                 ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;

@@ -41,12 +41,8 @@ namespace KingmakerGunslinger.Blueprints
             immunity.Stacking = StackingType.Stack;
             var hitBreak = ScriptableObject.CreateInstance<ArchonMenaceHitBreak>();
             hitBreak.Immunity = immunity;
-            penalty.ComponentsArray = new[] { StatType.AdditionalAttackBonus, StatType.AC,
-                StatType.SaveFortitude, StatType.SaveReflex, StatType.SaveWill }.Select(stat => {
-                    var bonus = ScriptableObject.CreateInstance<AddStatBonus>();
-                    bonus.Stat = stat; bonus.Value = -2; bonus.Descriptor = ModifierDescriptor.Penalty;
-                    return (BlueprintComponent)bonus;
-                }).Concat(new BlueprintComponent[] { hitBreak }).ToArray();
+            var onePenalty = ScriptableObject.CreateInstance<ArchonMenacePenalty>();
+            penalty.ComponentsArray = new BlueprintComponent[] { onePenalty, hitBreak };
             immunity.ComponentsArray = Array.Empty<BlueprintComponent>();
             var access = BlueprintUnitFactAccess.Resolve();
             access.Configure(penalty, LocalizationService.Create(Archon3031 + "Penalty.Name", "Aura of Menace"),
