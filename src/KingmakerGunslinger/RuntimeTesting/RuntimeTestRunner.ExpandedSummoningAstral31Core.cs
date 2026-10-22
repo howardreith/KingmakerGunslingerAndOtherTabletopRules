@@ -516,7 +516,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (bypass == "evil") damage.AddAlignment(DamageAlignment.Evil);
                     if (bypass == "good") damage.AddAlignment(DamageAlignment.Good);
                     int expected = bypass == "evil" ? 20 : 10;
-                    JObject row = Astral31Damage(owner, source, damage, expected,
+                    JObject row = Astral31Damage(owner, source, damage, expected, false,
                         "physical-" + bypass);
                     rows.Add(row); exact &= (bool)row["exact"];
                 }
@@ -527,11 +527,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var damage = new EnergyDamage(new DiceFormula(0, DiceType.Zero),
                         energy);
                     damage.AddBonus(20);
-                    int expected = energy == DamageEnergyType.Acid ||
-                        energy == DamageEnergyType.Cold ? 0 :
-                        energy == DamageEnergyType.Electricity ||
+                    bool immune = energy == DamageEnergyType.Acid ||
+                        energy == DamageEnergyType.Cold;
+                    int expected = energy == DamageEnergyType.Electricity ||
                         energy == DamageEnergyType.Fire ? 10 : 20;
-                    JObject row = Astral31Damage(owner, source, damage, expected,
+                    JObject row = Astral31Damage(owner, source, damage, expected, immune,
                         "energy-" + energy);
                     rows.Add(row); exact &= (bool)row["exact"];
                 }
@@ -564,16 +564,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static JObject Astral31Damage(UnitEntityData owner,
-            UnitEntityData source, BaseDamage packet, int expected, string id)
+            UnitEntityData source, BaseDamage packet, int expectedBeforeDifficulty,
+            bool expectedImmune, string id)
         {
             owner.Damage = 0;
             var rule = Rulebook.Trigger(new RuleDealDamage(source, owner,
                 new DamageBundle(packet)));
             var result = rule.ResultDamage?.SingleOrDefault(value =>
                 ReferenceEquals(value.Source, packet));
-            bool exact = result.HasValue && result.Value.FinalValue == expected &&
-                rule.Damage == owner.Damage && !owner.Descriptor.State.IsDead;
+            bool exact = result.HasValue &&
+                result.Value.FinalValue == expectedBeforeDifficulty &&
+                packet.Immune == expectedImmune && rule.Damage == owner.Damage &&
+                (expectedImmune ? rule.Damage == 0 : rule.Damage > 0) &&
+                !owner.Descriptor.State.IsDead;
             return new JObject { ["id"] = id, ["input"] = 20,
+                ["expectedBeforeDifficulty"] = expectedBeforeDifficulty,
+                ["expectedImmune"] = expectedImmune,
                 ["finalBeforeDifficulty"] = result?.FinalValue,
                 ["nativeDamage"] = rule.Damage, ["hpDelta"] = owner.Damage,
                 ["nativeImmune"] = packet.Immune,
