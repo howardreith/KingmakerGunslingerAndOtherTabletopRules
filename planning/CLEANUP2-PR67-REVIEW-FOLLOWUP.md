@@ -29,7 +29,40 @@ owner aesthetic approval is claimed. The completion intake was clean
   Copied native Cloth remains closed in production until the bounded native
   contact/solver probe establishes its contract. No gameplay root is scaled.
 
-### Review19 evidence and resulting corrections
+### Review20 focused failures and exact corrections (current)
+
+Frozen source `824874b96ec3d43c40e0ead5f51c235aa9f46386`, package
+`ce94e9e5ac53007cad45616464d67b5f48187c6a8e20e6c20e03f361cb66882b`,
+DLL `7a616cc07fc1d2a897ceb60e75b23e272fda4ca8e036d007b8b8f9caccd834c6`.
+The selected 15 cases and exact compilation/package checks passed. Native
+results remain FAIL and do not qualify the new art or chooser:
+
+- `elementals-presentation` refused before staging: the compatibility wrapper
+  retained a second obsolete phase list. It now uses the existing central exact
+  scope predicate; original refusal remains recorded.
+- Scale run `20261022T2221041829008Z` passed standing eligibility (51 PASS / 1 FAIL)
+  but stopped before Cloth on an invisible native selection capsule. Camera
+  admission now excludes only exact native view-owned selection collider fields
+  without any rendered geometry; walls and unknown obstacles remain checked.
+  The production-colors original has real visible actors but is a rear view;
+  it is not final palette/height acceptance. Fixture actors now face the selected
+  camera, with exact original orientation restoration.
+- Body run `20261022T2225018851552Z` stopped before capture because the observer
+  required Dialog although the recorded fixture was already native Default.
+  The corrected lease borrows that actual mode, retaining exact stack/counters,
+  factory pointer and public-controller identities, or uses the native factory
+  push from Dialog. Manual fixture ticks remain forbidden during the lease.
+- Both launched transactions restored the installation/settings exactly after
+  confirmed exit; all 95 current original saves match their fresh intake. Receipts
+  `compat-20261022T222036Z-f99a6f8437bc` and
+  `compat-20261022T222437Z-720770d909ba`. The preflight refusal also preserved all95.
+
+Console book/learning presentation and focused source/adaptor observers are now
+implemented; exact-reference compilation and 8 affected behavior cases passed.
+Real native execution remains required. No module-OFF, cold or final90-minute
+completion qualification is claimed by this increment.
+
+### Review19 (preserved)
 
 Frozen source `276fd667ccd6cbb060ee3e7b6c672625f8673356`, package
 `be44e6129b03275f3e28c12ac064f13338742506c33255c9bcbf5f7c3dba9308`,

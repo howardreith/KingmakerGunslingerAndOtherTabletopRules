@@ -38,6 +38,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly GameMode[] _before;
             private readonly int[] _counts;
             private readonly object[] _controllers;
+            private object[] _activeControllers;
+            private int[] _activeCounts;
             private readonly bool _waiting, _paused;
             private readonly string _purpose;
             private GameMode _owned;
@@ -62,9 +64,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Current { get { return !_closed && _game.CurrentMode==GameModeType.Default &&
                 (_owned==null ? Stack.SequenceEqual(_before) : Stack.Count==_before.Length+1 &&
                     ReferenceEquals(Stack.Peek(),_owned) && Stack.Skip(1).SequenceEqual(_before)) &&
-                _game.SelectedAbilityHandler!=null && _game.ClickEventsController!=null; } }
+                _activeCounts!=null && ((int[])Counts.GetValue(_game)).SequenceEqual(_activeCounts) &&
+                _activeControllers!=null && Controllers(_game).Select((value,index)=>
+                    ReferenceEquals(value,_activeControllers[index])).All(value=>value) &&
+                _game.SelectedAbilityHandler!=null && _game.ClickEventsController!=null &&
+                ReferenceEquals(_game.ClickEventsController,_game.DefaultPointerController) &&
+                Stack.Count!=0 && Stack.Peek().Type==GameModeType.Default &&
+                ReferenceEquals(Stack.Peek().GetController<Kingmaker.Controllers.Clicks.PointerController>(),_game.DefaultPointerController); } }
             internal JObject Describe()
             { return new JObject { ["purpose"]=_purpose,["nativeFactoryModeOwned"]=_owned!=null,
+                ["existingNativeDefaultBorrowed"]=_owned==null,
                 ["current"] = Current,["closed"]=_closed,["mode"]=_game.CurrentMode.ToString(),
                 ["stackCount"]=Stack.Count,["originalStackCount"]=_before.Length,
                 ["manualClockSuspended"]=_runner._sprint25WaitingForUnityAppearance,
@@ -75,13 +84,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal Cleanup2NativeDefaultScope(RuntimeTestRunner runner,ExpandedSummoningCorrectionFixture fixture,string purpose)
             {
                 _runner=runner;_game=Game.Instance;_purpose=purpose;
-                if(!runner.IsSummonCleanup2Review || !runner._request.ExitAfterCompletion || fixture==null ||
-                    fixture.Caster==null || fixture.Caster.Blueprint!=fixture.CasterBlueprint ||
-                    fixture.UnitsBefore.Any(value=>ReferenceEquals(value,fixture.Caster)) ||
-                    (runner._workingSaveSmoke!=null && runner._workingSaveSmoke.WriteObserved) ||
-                    !runner.Cleanup2NoNarrativeOverlay() || _game.IsControllerGamepad ||
-                    _game.CurrentMode!=GameModeType.Dialog ||
-                    _game.SelectedAbilityHandler?.Ability!=null || !ImmediateBoundary(_game))
+                var admission=new JObject {
+                    ["exactReview"]=runner.IsSummonCleanup2Review && runner._request.ExitAfterCompletion,
+                    ["ownedFixture"]=fixture?.Caster!=null && fixture.Caster.Blueprint==fixture.CasterBlueprint &&
+                        !fixture.UnitsBefore.Any(value=>ReferenceEquals(value,fixture.Caster)),
+                    ["saveFree"]=runner._workingSaveSmoke==null || !runner._workingSaveSmoke.WriteObserved,
+                    ["narrativeAbsent"]=runner.Cleanup2NoNarrativeOverlay(),
+                    ["inputModeAdmitted"]=!_game.IsControllerGamepad || runner.Cleanup2ConsoleNativeUiReady(),
+                    ["nativeModeAdmitted"]=_game.CurrentMode==GameModeType.Dialog || _game.CurrentMode==GameModeType.Default,
+                    ["noSelectedAbility"]=_game.SelectedAbilityHandler?.Ability==null,
+                    ["immediateBoundary"]=ImmediateBoundary(_game) };
+                bool admitted=admission.Properties().All(value=>(bool)value.Value);
+                admission["mode"]=_game.CurrentMode.ToString();
+                admission["controller"]=_game.ControllerMode.ToString();
+                runner.Cleanup2Check("native-default-admission-"+purpose,admitted,admission,
+                    "Only the exact save-free fixture may borrow existing native Default or push native factory Default from Dialog at an idle boundary.");
+                if(!admitted)
                     throw new InvalidOperationException("Exact idle save-free owned fixture and immediate native mode boundary required.");
                 _before=Stack.ToArray();_counts=((int[])Counts.GetValue(_game)).ToArray();_controllers=Controllers(_game);
                 _waiting=runner._sprint25WaitingForUnityAppearance;_paused=_game.IsPaused;
@@ -100,18 +118,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             count==_counts[index]+(index==(int)GameModeType.Default?1:0)).All(value=>value))
                             throw new InvalidOperationException("Native Default factory push did not preserve the exact prior stack/counts.");
                     }
+                    _activeCounts=((int[])Counts.GetValue(_game)).ToArray();
+                    _activeControllers=Controllers(_game);
                     if(!Current) throw new InvalidOperationException("Native Default pointer/selected-ability controllers are absent.");
                     _nativeTicks=runner._sprint25Clock.AllowOwnedNativeDefault(()=>Current);
                     _game.IsPaused=false;
                     runner.Cleanup2Check("native-default-enter-"+purpose,true,Describe(),
-                        "The exact native factory Default mode and real input controllers own progression; the manual fixture clock is suspended.");
+                        "The exact existing or factory-created native Default mode and real input controllers own progression; the manual fixture clock is suspended.");
                 }
                 catch { Dispose(); throw; }
             }
             public void Dispose()
             {
                 if(_closed)return;
-                ElementalSourceChooserView.CloseOwned("native-default-scope-closing");
                 if(!Current || _game.SelectedAbilityHandler.Ability!=null || !ImmediateBoundary(_game))
                     throw new InvalidOperationException("Owned native Default scope changed or still targets an ability; foreign mode/input is not overwritten and manual clock remains suspended.");
                 if(_owned!=null)_game.StopMode(GameModeType.Default);
@@ -123,7 +142,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _nativeTicks?.Dispose();_nativeTicks=null;
                 _game.IsPaused=_paused;_closed=true;_runner._cleanup2NativeDefaultOwner=null;_runner._sprint25WaitingForUnityAppearance=_waiting;
                 _runner.Cleanup2Check("native-default-restored-"+_purpose,true,Describe(),
-                    "StopMode removed only the exact owned mode and restored every prior mode/count/public controller before resuming the fixture clock.");
+                    "The existing native mode was retained, or StopMode removed only the exact owned push; every prior mode/count/public controller matches before resuming the fixture clock.");
             }
         }
 

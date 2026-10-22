@@ -146,6 +146,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
                 else if (phase == "elementals-presentation")
                     foreach (int frame in ReviewSummonCleanup2ElementalPresentation(fixture, book)) yield return frame;
+                else if (phase == "elementals-console")
+                    foreach (int frame in ReviewSummonCleanup2ElementalConsole(fixture, book)) yield return frame;
+                else if (phase == "elementals-sources")
+                    foreach (int frame in ReviewSummonCleanup2ElementalSources(fixture, book)) yield return frame;
+                else if (phase == "menu-adapters")
+                    foreach (int frame in ReviewSummonCleanup2MenuAdapters(fixture, book)) yield return frame;
                 else if (phase == "cloth-probe")
                     foreach (int frame in ReviewSummonCleanup2ClothProbe(fixture, book)) yield return frame;
                 else if (phase == "ettin-lifecycle")
@@ -426,7 +432,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Crown = bounds.center + Vector3.up * bounds.extents.y,
                             Sole = bounds.center - Vector3.up * bounds.extents.y };
                     }).ToArray();
-                    JObject picture = Cleanup2CaptureLineup(actors, keys, framing, "cleanup2-production-colors.png");
+                    JObject picture = Cleanup2CaptureLineup(fixture, actors, keys, framing, "cleanup2-production-colors.png");
                     picture["framingOnly"] = true; picture["measurementEvidence"] = false;
                     picture["rendering"] = "Ordinary production giant colors on the surveyed common ground; renderer bounds frame the picture only.";
                     Cleanup2Check("production-colors-picture", true, picture,
@@ -476,7 +482,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Four finite stable native idle body samples on the surveyed plane admit a relative render-only experiment; navmesh-to-skin offset is not an anatomy calibration.");
                 bool scalePrototype = (string)_request.Parameters?["reviewPhase"] == "scale-prototype";
                 Cleanup2Check("same-camera-lineup", true,
-                    Cleanup2CaptureLineup(actors, keys, samples.Last(),
+                    Cleanup2CaptureLineup(fixture, actors, keys, samples.Last(),
                         scalePrototype ? "cleanup2-scale-prototype-before.png" : null),
                     "One live same-camera capture contains the verified Human and all six canonically summoned giant families.");
                 if (scalePrototype)
@@ -1134,9 +1140,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             return result;
         }
 
-        private JObject Cleanup2CaptureLineup(IList<UnitEntityData> actors, IList<string> keys, Cleanup2ActorMetric[] metrics,
+        private JObject Cleanup2CaptureLineup(ExpandedSummoningCorrectionFixture fixture,
+            IList<UnitEntityData> actors, IList<string> keys, Cleanup2ActorMetric[] metrics,
             string fileName = null, bool experimentalProxy = false)
         {
+            string phase = (string)_request?.Parameters?["reviewPhase"];
+            if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion ||
+                (phase != "giant-lineup" && phase != "scale-prototype") || fixture == null ||
+                actors.Count != 7 || metrics.Length != actors.Count || !ReferenceEquals(actors[0], fixture.Caster) ||
+                actors.Any(actor => actor == null || actor.Destroyed || actor.View == null) ||
+                actors.Skip(1).Any(actor => !fixture.Created.Contains(actor)))
+                throw new InvalidOperationException("Only the exact live disposable lineup may receive a temporary camera-facing pose.");
             Camera camera = TeleportationCastingCamera()?.Camera ?? Camera.main;
             if (camera == null) throw new InvalidOperationException("No native lineup camera.");
             Vector3 beforePosition = camera.transform.position;
@@ -1145,6 +1159,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             RenderTexture beforeTarget = camera.targetTexture, beforeActive = RenderTexture.active;
             RenderTexture target = null;
             Texture2D image = null;
+            float[] originalOrientation = actors.Select(actor => actor.Orientation).ToArray();
+            float[] originalDesiredOrientation = actors.Select(actor => actor.DesiredOrientation).ToArray();
+            Quaternion[] originalRotation = actors.Select(actor => actor.View.transform.rotation).ToArray();
+            Matrix4x4[] originalWorldToView = actors.Select(actor => actor.View.transform.worldToLocalMatrix).ToArray();
+            var facingReceipt = new JObject { ["scope"] = "Temporary native Orientation/DesiredOrientation and exact fixture view-root yaw only; no rig, mesh, controller, collider or foreign actor is assigned." };
+            var selectionColliders = Cleanup2NativeSelectionColliderReferences();
+            Cleanup2ActorMetric[] framed = metrics;
             try
             {
                 Vector3 min = metrics.Select(v => v.Min).Aggregate(Vector3.Min);
@@ -1171,6 +1192,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3 direction = forward * side * Mathf.Cos(pitch * Mathf.Deg2Rad) -
                             Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
                         Quaternion rotation = Quaternion.LookRotation(direction, Vector3.up);
+                        Vector3 facing = -direction; facing.y = 0f;
+                        Quaternion actorRotation = Quaternion.LookRotation(facing, Vector3.up);
+                        framed = new Cleanup2ActorMetric[metrics.Length];
+                        for (int i = 0; i < actors.Count; i++)
+                        {
+                            // Installed UnitEntityData.set_Orientation06008311
+                            // writes orientation and its native desired yaw.
+                            // Set the request-owned view pose synchronously for
+                            // this Render, then restore both native values.
+                            actors[i].Orientation = actorRotation.eulerAngles.y;
+                            actors[i].View.transform.rotation = actorRotation;
+                            Matrix4x4 pose = actors[i].View.transform.localToWorldMatrix * originalWorldToView[i];
+                            Vector3[] points = Cleanup2BoundsCorners(new Bounds((metrics[i].Min + metrics[i].Max) * .5f,
+                                metrics[i].Max - metrics[i].Min)).Select(pose.MultiplyPoint3x4).ToArray();
+                            framed[i] = new Cleanup2ActorMetric { Min = points.Aggregate(Vector3.Min), Max = points.Aggregate(Vector3.Max),
+                                Crown = pose.MultiplyPoint3x4(metrics[i].Crown), Sole = pose.MultiplyPoint3x4(metrics[i].Sole) };
+                        }
+                        min = framed.Select(value => value.Min).Aggregate(Vector3.Min);
+                        max = framed.Select(value => value.Max).Aggregate(Vector3.Max);
+                        centre = (min + max) * .5f;
+                        corners = framed.SelectMany(m => Cleanup2BoundsCorners(new Bounds((m.Min + m.Max) * .5f, m.Max - m.Min))).ToArray();
                         Quaternion inverse = Quaternion.Inverse(rotation);
                         Vector3[] projected = corners.Select(p => inverse * (p - centre)).ToArray();
                         float halfWidth = projected.Max(p => Mathf.Abs(p.x));
@@ -1180,9 +1222,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         float distance = halfDepth + Mathf.Max(12f, halfFrame / Mathf.Tan(camera.fieldOfView * Mathf.Deg2Rad * .5f));
                         if (camera.orthographic) camera.orthographicSize = halfFrame;
                         camera.transform.SetPositionAndRotation(centre - direction * distance, rotation);
-                        JArray blockers = Cleanup2LineupSightBlockers(camera, actors, metrics);
+                        JArray ignoredSelection;
+                        JArray blockers = Cleanup2LineupSightBlockers(camera, actors, framed, selectionColliders, out ignoredSelection);
                         cameraAttempts.Add(new JObject { ["pitchDegrees"] = pitch, ["side"] = side,
-                            ["cameraPosition"] = SurveyVector(camera.transform.position), ["blockers"] = blockers });
+                            ["cameraPosition"] = SurveyVector(camera.transform.position), ["blockers"] = blockers,
+                            ["ignoredExactNativeSelectionColliders"] = ignoredSelection });
                         if (blockers.Count == 0) { clearSight = true; break; }
                     }
                     if (clearSight) break;
@@ -1192,7 +1236,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = target;
                 camera.Render();
-                var viewport = new JArray(metrics.Select((m, i) => new JObject {
+                facingReceipt["capturedNativeYaw"] = new JArray(actors.Select(actor => actor.Orientation));
+                var viewport = new JArray(framed.Select((m, i) => new JObject {
                     ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
                     ["crown"] = SurveyVector(camera.WorldToViewportPoint(m.Crown)),
                     ["sole"] = SurveyVector(camera.WorldToViewportPoint(m.Sole)) }));
@@ -1220,6 +1265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
                     ["fieldOfView"] = camera.fieldOfView, ["orthographic"] = camera.orthographic,
                     ["screenFade"] = screenFade, ["meanLuma"] = luma,
+                    ["fixtureFacingPose"] = facingReceipt,
                     ["downwardCameraAttempts"] = cameraAttempts, ["noEnvironmentPhysicsSightBlocker"] = clearSight,
                     ["occlusionProofLimit"] = "Physics rays reject blocking scene colliders; actual framebuffer still requires visual review for collider-free rendered occluders. No scene renderer/culling/highlight state is changed.",
                     ["allCrownSoleInFrame"] = visible, ["viewport"] = viewport,
@@ -1229,6 +1275,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                var poseErrors = new List<string>();
+                for (int i = 0; i < actors.Count; i++)
+                    try
+                    {
+                        actors[i].Orientation = originalOrientation[i];
+                        actors[i].DesiredOrientation = originalDesiredOrientation[i];
+                        actors[i].View.transform.rotation = originalRotation[i];
+                        if (actors[i].Orientation != originalOrientation[i] || actors[i].DesiredOrientation != originalDesiredOrientation[i] ||
+                            Quaternion.Angle(actors[i].View.transform.rotation, originalRotation[i]) > .001f)
+                            throw new InvalidOperationException("Native camera-facing pose did not restore.");
+                    }
+                    catch (Exception error) { poseErrors.Add(actors[i].UniqueId + ":" + error.Message); }
+                facingReceipt["restored"] = poseErrors.Count == 0;
+                facingReceipt["restorationErrors"] = new JArray(poseErrors);
                 camera.targetTexture = beforeTarget;
                 camera.transform.position = beforePosition;
                 camera.transform.rotation = beforeRotation;
@@ -1236,12 +1296,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                 RenderTexture.active = beforeActive;
                 if (target != null) { target.Release(); UnityEngine.Object.Destroy(target); }
                 if (image != null) UnityEngine.Object.Destroy(image);
+                if (poseErrors.Count > 0) throw new InvalidOperationException("Fixture camera pose restoration failed: " + string.Join("|", poseErrors.ToArray()));
             }
         }
 
-        private static JArray Cleanup2LineupSightBlockers(Camera camera, IList<UnitEntityData> actors, Cleanup2ActorMetric[] metrics)
+        private static Dictionary<Collider, JObject> Cleanup2NativeSelectionColliderReferences()
+        {
+            Type viewType = typeof(Kingmaker.View.UnitEntityView);
+            FieldInfo soft = viewType.GetField("m_SoftCollider", Cleanup2Fields);
+            FieldInfo core = viewType.GetField("m_CoreCollider", Cleanup2Fields);
+            if (soft == null || soft.FieldType != typeof(CapsuleCollider) || core == null || core.FieldType != typeof(MeshCollider))
+                throw new MissingFieldException("Installed native selection-collider identity contract unavailable.");
+            var result = new Dictionary<Collider, JObject>();
+            foreach (var view in Resources.FindObjectsOfTypeAll<Kingmaker.View.UnitEntityView>())
+            {
+                if (view == null || !view.gameObject.scene.IsValid() || !view.gameObject.scene.isLoaded) continue;
+                foreach (FieldInfo field in new[] { soft, core })
+                {
+                    var collider = field.GetValue(view) as Collider;
+                    // SetupSelectionColliders06001845 creates these exact
+                    // collider-only objects. No name/layer/shape or arbitrary
+                    // absence of a Renderer can exempt an environment wall.
+                    if (collider == null || !collider.transform.IsChildOf(view.transform) ||
+                        collider.GetComponentsInChildren<Renderer>(true).Length != 0 || collider.GetComponent<MeshFilter>() != null) continue;
+                    result[collider] = new JObject { ["collider"] = collider.GetInstanceID(), ["nativeField"] = field.Name,
+                        ["fieldToken"] = field.MetadataToken, ["nativeView"] = view.GetInstanceID(),
+                        ["unit"] = view.EntityData?.UniqueId, ["renderersOnColliderSubtree"] = 0,
+                        ["contractModule"] = field.Module.ModuleVersionId.ToString() };
+                }
+            }
+            return result;
+        }
+
+        private static JArray Cleanup2LineupSightBlockers(Camera camera, IList<UnitEntityData> actors, Cleanup2ActorMetric[] metrics,
+            IDictionary<Collider, JObject> selectionColliders, out JArray ignoredSelection)
         {
             var blockers = new JArray();
+            ignoredSelection = new JArray();
             for (int i = 0; i < metrics.Length; i++)
             foreach (Vector3 target in new[] { metrics[i].Crown, (metrics[i].Crown + metrics[i].Sole) * .5f,
                 Vector3.Lerp(metrics[i].Sole, metrics[i].Crown, .12f) })
@@ -1255,7 +1346,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float distance = Vector3.Dot(target - ray.origin, ray.direction);
                 if (!Cleanup2Finite(distance) || distance <= 0f) throw new InvalidOperationException("Non-finite/behind-camera lineup sight input.");
                 RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Max(0f, distance - .03f), ~0, QueryTriggerInteraction.Ignore);
+                foreach (RaycastHit hit in hits.Where(hit => hit.collider != null && selectionColliders.ContainsKey(hit.collider)))
+                    if (ignoredSelection.Count < 64)
+                    {
+                        var ignored = (JObject)selectionColliders[hit.collider].DeepClone();
+                        ignored["targetUnit"] = actors[i].UniqueId; ignored["distance"] = hit.distance;
+                        ignoredSelection.Add(ignored);
+                    }
                 RaycastHit? obstruction = hits.Where(hit => hit.collider != null &&
+                    !selectionColliders.ContainsKey(hit.collider) &&
                     !actors.Any(actor => actor.View != null && (hit.collider.transform == actor.View.transform ||
                         hit.collider.transform.IsChildOf(actor.View.transform))))
                     .OrderBy(hit => hit.distance).Select(hit => (RaycastHit?)hit).FirstOrDefault();

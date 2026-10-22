@@ -116,7 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "gorgon-presentation" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "recovery-bodies" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-commands" ||
-                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-presentation" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-presentation" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-console" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-sources" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menu-adapters" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "cloth-probe"))) {
                         var entry=BlueprintLibraryLookup.RequireExact<BlueprintLocation>(BlueprintBootstrap.Library,
@@ -155,26 +155,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfileEvidence["entryGuid"] = _summoningProfilePreset.EnterPoint.AssetGuid;
                     _summoningProfileEvidence["scope"] = "real native first-level scene/navigation; unchanged summon mechanics; no saved-world load/write";
                     _summoningProfileClock = Stopwatch.StartNew();
-                    _summoningProfileStage = 3;
-                    // Runner invokes this callback immediately before Game.Tick.
-                    // Keep native LoadingProcess ownership while waiting for the
-                    // additive scene; an idle callback lets Tick see no game mode
-                    // after EnterGame has disposed the menu and resets the world.
-                    _summoningProfileMenu.EnterGame(() => {
-                        _summoningProfileEntryCallback = true;
-                        _summoningProfileEvidence["baseEntryCallback"] = true;
-                        LoadingProcess.Instance.StartLoadingProcess(AwaitSummoningProfileBaseScene(), () => {
-                            _summoningProfileStage = 1;
-                            _summoningProfileClock.Restart();
-                            game.LoadNewGame(_summoningProfilePreset, null);
-                            WriteLifecycleStage("summoning-profile-native-area-load-start");
-                        }, LoadingProcessTag.None, 0f);
-                    });
-                    WriteLifecycleStage("summoning-profile-native-base-entry-start");
+                    if(IsCleanup2ConsoleReview)
+                    {
+                        _summoningProfileStage=6;
+                        WriteLifecycleStage("summoning-profile-native-console-loading-setup");
+                        return;
+                    }
+                    StartSummoningProfileMenuEntry();
+                    return;
+                }
+                if(_summoningProfileStage==6)
+                {
+                    if(_summoningProfileClock.Elapsed.TotalSeconds>=_request.TimeoutSeconds)
+                        throw new TimeoutException("Native console loading setup exceeded the scenario deadline.");
+                    if(Cleanup2PrepareConsoleLoading())StartSummoningProfileMenuEntry();
+                    return;
+                }
+                if(_summoningProfileStage==5)
+                {
+                    if(_summoningProfileClock.Elapsed.TotalSeconds>=_request.TimeoutSeconds)
+                        throw new TimeoutException("Native console loading restoration exceeded the scenario deadline.");
+                    if(Cleanup2RestoreConsoleLoading())ResetSummoningProfileNativeWorld();
                     return;
                 }
                 if (_summoningProfileStage == 3)
                 {
+                    // Runner invokes this callback immediately before Game.Tick.
+                    // Keep native LoadingProcess ownership while waiting for the
+                    // additive scene; an idle callback lets Tick see no game mode
+                    // after EnterGame has disposed the menu and resets the world.
                     var baseScene = UnityEngine.SceneManagement.SceneManager.GetSceneByName(SceneName.BaseMechanics);
                     bool registered = baseScene.IsValid() && baseScene.isLoaded;
                     _summoningProfileEvidence["baseEntryCallback"] = _summoningProfileEntryCallback;
@@ -271,7 +280,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception exception)
             {
                 _summoningProfileFailure = (_summoningProfileFailure ?? "") + "\n" + exception;
-                if (_summoningProfileStage == 1 || _summoningProfileStage == 3 || _summoningProfileStage == 4)
+                if (_summoningProfileStage == 1 || _summoningProfileStage == 3 || _summoningProfileStage == 4 || _summoningProfileStage==6)
                 {
                     try
                     {
@@ -295,6 +304,21 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private void StartSummoningProfileMenuEntry()
+        {
+            _summoningProfileStage=3;
+            _summoningProfileMenu.EnterGame(() => {
+                _summoningProfileEntryCallback=true;
+                _summoningProfileEvidence["baseEntryCallback"]=true;
+                LoadingProcess.Instance.StartLoadingProcess(AwaitSummoningProfileBaseScene(),()=>{
+                    _summoningProfileStage=1;_summoningProfileClock.Restart();
+                    Game.Instance.LoadNewGame(_summoningProfilePreset,null);
+                    WriteLifecycleStage("summoning-profile-native-area-load-start");
+                },LoadingProcessTag.None,0f);
+            });
+            WriteLifecycleStage("summoning-profile-native-base-entry-start");
+        }
+
         private IEnumerator<object> AwaitSummoningProfileBaseScene()
         {
             while (true)
@@ -315,6 +339,16 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void BeginSummoningProfileReset()
         {
+            if(_cleanup2OriginalController.HasValue && !_cleanup2ConsoleRestored)
+            {
+                _summoningProfileStage=5;_summoningProfileClock.Restart();
+                WriteLifecycleStage("summoning-profile-native-console-loading-restoration");
+                return;
+            }
+            ResetSummoningProfileNativeWorld();
+        }
+        private void ResetSummoningProfileNativeWorld()
+        {
             _summoningProfileStage = 2;
             _summoningProfileClock.Restart();
             // Native teardown owns the entire fresh, unsaved first-level world.
@@ -325,6 +359,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void FinishSummoningNativeProfile(bool emptyWorldRestored)
         {
+            emptyWorldRestored=emptyWorldRestored && Cleanup2ConsoleRestorationExact();
             if (_summoningProfileResult == null)
                 _summoningProfileResult = CreateResult(RuntimeTestStatuses.Fail, null, _summoningProfileFailure);
             try
