@@ -281,7 +281,8 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # three giant portraits and the v0.0.162 release notes. Sprint29 adds
 # three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1
+# Cleanup2 adds one authored Gorgon material-parameter map.
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + 1
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
