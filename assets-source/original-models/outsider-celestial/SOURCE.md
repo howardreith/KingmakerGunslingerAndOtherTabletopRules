@@ -50,3 +50,11 @@ vertices/8420 triangles,24 closed components and29 measured drivers. The source
 record pins its original painting reference, exporter and actual asset hashes.
 Simple anatomy, seams and cloth detail remain backlog. Native body/held-weapon
 presentation and resolved combat remain distinct observations.
+
+The Free Hands donor has no native Character avatar, so the native hand-equipment
+controller cannot render a carried item on it. Hound therefore instantiates its
+existing native greatsword model under the measured right palm on the exact
+private unit only. This runtime instance is presentation only, follows actual
+item ownership/equipped mode, hides when natural/disarmed, and is destroyed on
+rollback/view teardown. The native prefab/material is never modified and no
+weapon asset is redistributed. Combat captures and lifecycle checks are required.
