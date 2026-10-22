@@ -229,6 +229,7 @@ namespace KingmakerGunslinger.Summoning
             internal StirgeVisualTouch StirgeTouch;
             internal FireBeetleVisualGlow BeetleGlow;
             internal SummonAttackGestureVisual OriginalAttackGesture;
+            internal Texture2D GorgonParameters;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -602,6 +603,8 @@ namespace KingmakerGunslinger.Summoning
                 material = new Material(donorMaterial);
                 material.name = visualName;
                 string dressing = DressMaterial(material, albedo);
+                if (attachment.VisualKey == "gorgon")
+                    dressing += ";" + DressGorgonMaterial(attachment, material);
 
                 // The swap, on this one instance's renderer component: the
                 // Pteranodon's mesh, the 46 bones its weights index, and its
@@ -754,6 +757,11 @@ namespace KingmakerGunslinger.Summoning
                 if (swapped) Revert(attachment);
                 foreach (Material candidate in rollbackMaterials)
                     if (candidate != null) UnityEngine.Object.Destroy(candidate);
+                if (attachment.GorgonParameters != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.GorgonParameters);
+                    attachment.GorgonParameters = null;
+                }
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
                 attachment.Material = null;
                 attachment.Mesh = null;
@@ -901,6 +909,47 @@ namespace KingmakerGunslinger.Summoning
                 fogTreatment;
         }
 
+        private static string DressGorgonMaterial(Attachment attachment, Material material)
+        {
+            if (material.shader == null || material.shader.name != "PF/StandardDynamic" ||
+                !material.HasProperty("_Parameters") || !material.HasProperty("_Roughness") ||
+                !material.HasProperty("_Metallic") || !material.HasProperty("_Emission"))
+                throw new InvalidOperationException("Exact Gorgon PF parameter-map surface unavailable.");
+            ModContext context;
+            if (!ModContext.TryGet(out context) || context.ModEntry == null)
+                throw new InvalidOperationException("Gorgon original asset root unavailable.");
+            // Original authored UV regions, not a skin-color or donor mask.
+            // Exact installed shader label: R=Roughness G=Emission B=Metallic.
+            var requirement = new PteranodonAssetRuntime.AlbedoRequirement {
+                File = "gorgon-parameters.png", Width = 1024, Height = 1024,
+                Sha256 = "16f8c28cfbe334097b8013bb1bedc108022b580b384f11a59101f747a4483f61" };
+            string reason;
+            Texture2D decoded = PteranodonAssetRuntime.LoadAlbedo(
+                System.IO.Path.Combine(context.ModEntry.Path,"assets","ungulates"), requirement, out reason);
+            if (decoded == null) throw new InvalidOperationException("Gorgon parameter map refused: " + reason);
+            try
+            {
+                Color32[] pixels = decoded.GetPixels32();
+                if (pixels.Length != 1024*1024 || pixels.Any(value => value.g != 0))
+                    throw new InvalidOperationException("Gorgon parameters must be complete and nonemissive.");
+                // CPU channel bytes are copied verbatim into a LINEAR data
+                // texture, so the shader never gamma-decodes packed values.
+                attachment.GorgonParameters = new Texture2D(1024,1024,TextureFormat.RGBA32,true,true) {
+                    name = "KMG_gorgon_OriginalParameters", wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Trilinear, anisoLevel = 4 };
+                attachment.GorgonParameters.SetPixels32(pixels);
+                attachment.GorgonParameters.Apply(true,false);
+            }
+            finally { UnityEngine.Object.Destroy(decoded); }
+            material.SetTexture("_Parameters",attachment.GorgonParameters);
+            material.SetTextureScale("_Parameters",Vector2.one);
+            material.SetTextureOffset("_Parameters",Vector2.zero);
+            material.SetFloat("_Roughness",1f);
+            material.SetFloat("_Metallic",0f);
+            material.SetFloat("_Emission",0f);
+            return "gorgonParameters=authored-linear;plateRoughness=0.23;plateMetallic=0.94;bodyMetallic=0;emission=0";
+        }
+
         private static string Describe(Color value)
         {
             return string.Join("/", new[]
@@ -1027,7 +1076,7 @@ namespace KingmakerGunslinger.Summoning
             IList<Material> driven=attachment.Donor==null?null:ControllerMaterials(attachment.Donor.GetComponentInParent<StandardMaterialController>());
             return installed.Concat(driven??new Material[0]).Concat(new[]{attachment.Material})
                 .Where(v=>v!=null && v.name.StartsWith("KMG_gorgon_Original",StringComparison.Ordinal))
-                .Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[]{attachment.Mesh})
+                .Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[]{attachment.Mesh,attachment.GorgonParameters})
                 .Where(v=>v!=null).Distinct().ToArray();
         }
 
@@ -1188,6 +1237,11 @@ namespace KingmakerGunslinger.Summoning
             }
             foreach (Material material in materials)
                 if (material != null) UnityEngine.Object.DestroyImmediate(material);
+            if (attachment.GorgonParameters != null)
+            {
+                UnityEngine.Object.DestroyImmediate(attachment.GorgonParameters);
+                attachment.GorgonParameters = null;
+            }
             if (attachment.Mesh != null)
                 UnityEngine.Object.DestroyImmediate(attachment.Mesh);
             attachment.Material = null;

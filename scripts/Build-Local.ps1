@@ -205,6 +205,7 @@ foreach ($kind in @('aurochs','bison','rhinoceros','woolly-rhinoceros','gorgon')
     Copy-Item -LiteralPath (Join-Path $root "assets\ungulates\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
 }
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $root 'assets\ungulates\gorgon-parameters.png') -Destination (Join-Path $buildOutput 'assets\ungulates') -Force
 foreach ($kind in @('dire-rat','hyena','goblin-dog')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint12-quadrupeds\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint12-quadrupeds\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint12-quadrupeds') -Force

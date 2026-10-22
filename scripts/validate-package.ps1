@@ -87,6 +87,7 @@ try {
         'assets\flying-animals\stirge-albedo.png',
         'assets\ungulates\gorgon-mesh.json',
         'assets\ungulates\gorgon-albedo.png',
+        'assets\ungulates\gorgon-parameters.png',
         'assets\ungulates\aurochs-mesh.json',
         'assets\ungulates\aurochs-albedo.png',
         'assets\ungulates\bison-mesh.json',
@@ -169,12 +170,13 @@ try {
     # exact export integrity; owner visual approval remains pending separately.
     # All unrelated protected pairs retain their existing exact identities.
     $protectedBodyExports = @{
-        'assets\ungulates\gorgon-mesh.json' = '2a920dc65854367b282b38d7b19f4b536b27a2a56ae314a7787f4e6934061068'
-        'assets\ungulates\gorgon-albedo.png' = 'cf66f22224e040cbd65fcec717ab41f9786ec0cefd02dd4534d322eec82721a4'
+        'assets\ungulates\gorgon-mesh.json' = '3deacf1f00f43c305cf0748ff52c109e947d4b7aa78e7146e94fd3e98e798063'
+        'assets\ungulates\gorgon-albedo.png' = 'f1421542521f466f75de4cc30ac680b3bedf8ebe710dec188b87af58e873fe34'
+        'assets\ungulates\gorgon-parameters.png' = '16f8c28cfbe334097b8013bb1bedc108022b580b384f11a59101f747a4483f61'
         'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
         'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 
-        'assets\sprint19-fourarmed\girallon-mesh.json' = 'd512e66e0534f748500b181bac49fdcf586ddecc6bf4213d81c11bba04f8c75c'
+        'assets\sprint19-fourarmed\girallon-mesh.json' = 'aa81564f34a453f7a77902c45515eb5ac222fc731edd9a73aef797eb87a9f8f5'
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
         'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'
@@ -193,8 +195,8 @@ try {
 
         'assets\sprint14-insects\giant-stag-beetle-mesh.json' = '2ecf222413eb857051b70df8b5fd61592a939108c7661ccdfb96f20fbcea794d'
         'assets\sprint14-insects\giant-stag-beetle-albedo.png' = '967d506b96019914fd40363cc80b21b0ce08f80662ef96ef259f5e0a8caecde4'
-        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = '4ea887c98387d90d546e5512cf862cd47cb5694b0bbb1f99431c83c1a12c95ef'
-        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = '27ef9768948c6f28a2836a28cfa45e9be03220b8f590d15af656212e540511bf'
+        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = '27af896d68f8e6b0e201e0052a3ee5e5867c559669cd7de60ec01c3b3996e976'
+        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = '759340178b1beb51565af534cafb92da354dae027f1603c3d44a566a1ee7bb87'
         'assets\sprint25-giant-bodies\elephant-mesh.json' = '5afe5464331a083c0de63d7b4bee4a1266d71376fb8360f7d96b0bf7a4f13028'
         'assets\sprint25-giant-bodies\elephant-albedo.png' = '5a973962a26dbf38208b66feeb5ffd154d469ac69b25137ae487b9d6767f2919'
         'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = 'cf919c077be4a9cc11a128e0e67f78fc7e1566514349671846660e5c0ca40db5'

@@ -788,7 +788,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     headReceipt["viewInstance"] = unit.View == null ? 0 : unit.View.GetInstanceID();
                     headReceipt["observerCalledAttachOrRebuild"] = false;
                     RosterPersistenceCheck("ettin-authored-head-" + (prepare ? "prepare" : "cold-verify"), headExact, headReceipt,
-                        moduleOn ? "The actual saved/current exact Ettin has one owned two-driver/four-material head with both original textures and exact native controller/cached-baseline fade initialization; this observer never attaches it."
+                        moduleOn ? "The actual saved/current exact Ettin has one private two-headed body, two owned neck/head/jaw chains, unchanged borrowed donor textures and exact native controller/cached-baseline fade initialization; this observer never attaches it."
                             : "The exact module-OFF saved Ettin reconstructs without any project head root or private head allocations.");
                 }
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,

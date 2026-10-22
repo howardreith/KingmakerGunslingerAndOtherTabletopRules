@@ -32,8 +32,6 @@ from verify_cleanup2_bodies import inspect
 DONOR = "5bb9579fdb2b26b48bb10d61c81cfdfb"
 PREFAB = "6032f7a5751c1104aa59647b176634c8"
 INPUT_SHA = "0f3c8ce10c4c0d50650ecb5a042985d1b242977716c5b7a0286754d370fdc508"
-PAINT_BASELINE_SHA = "f6cf501d0f8817ed327e7275736cda78bb5684f3270adee1e7c6448c5a32c9f2"
-PAINT_GEOMETRY_SHA = "eb5d3c7a59695312ecc954c076edd6c5947374eaf782b6ba71cb6382d03a4dcf"
 PLATE_EDGES = {}
 BODY_GROUPS = [0, 1, 2, 3, 5, 8, 12, 15, 18]
 POSES = {
@@ -104,38 +102,66 @@ def hoof(name, centre, half_width, half_depth, bottom, top):
 
 
 def add_plate(parts, tree, source, name, grid, region, layer=0):
-    # Flank grids project outward from inside; the helmet projects down from
-    # above. Surface normals place thin armour outside the actual body.
+    """A rigid planar steel panel with a physical bevel, never a padded dome.
+
+    Rays determine the authored bull surface envelope only. The visible face
+    is a plane outside that envelope, with clipped corners and a narrow rim.
+    Neighboring panels overlap at different heights like articulated lames.
+    """
     placed = []
-    for i, column in enumerate(grid):
+    normals = []
+    for column in grid:
         made = []
-        for j, (origin, direction) in enumerate(column):
+        for origin, direction in column:
             hit, normal, _, _ = tree.ray_cast(Vector(origin), Vector(direction), 3)
             if hit is None:
                 raise SystemExit("plate ray missed authored body: " + name)
-            u, v = i/(len(grid)-1), j/(len(column)-1)
-            bevel = min(1, min(u, 1-u, v, 1-v) / .10)
-            made.append(hit + normal * (.024 + .012 * bevel + .0025*layer))
+            made.append(hit); normals.append(normal)
         placed.append(made)
-    plate, _ = cb.sheet(name, placed, .012)
-    # Hard rim normals distinguish sheet metal from a rounded cushion. Split
-    # only high-dihedral crease edges after the closed shell is validated;
-    # coincident copies receive identical transferred skin weights below.
-    bm = bmesh.new(); bm.from_mesh(plate.data)
+    centre = placed[len(placed)//2][len(placed[0])//2]
+    normal = sum(normals, Vector()).normalized()
+    along = placed[-1][len(placed[0])//2] - placed[0][len(placed[0])//2]
+    along = (along-normal*along.dot(normal)).normalized()
+    across = normal.cross(along).normalized()
+    points = [point for column in placed for point in column]
+    x0, x1 = min((p-centre).dot(along) for p in points), max((p-centre).dot(along) for p in points)
+    y0, y1 = min((p-centre).dot(across) for p in points), max((p-centre).dot(across) for p in points)
+    clearance = .020 if name == "GorgonFlankLame" else .006
+    level = max((p-centre).dot(normal) for p in points) + clearance + .0015*layer
+    clip = min(x1-x0, y1-y0)*.13
+    outline = [(x0+clip,y0),(x1-clip,y0),(x1,y0+clip),(x1,y1-clip),
+               (x1-clip,y1),(x0+clip,y1),(x0,y1-clip),(x0,y0+clip)]
+    midx, midy = (x0+x1)/2, (y0+y1)/2
+    bm = bmesh.new(); rings = []
+    for inset, height in ((.006,level-.018),(0,level-.010),(.010,level)):
+        ring = []
+        for x,y in outline:
+            x += math.copysign(inset,midx-x); y += math.copysign(inset,midy-y)
+            ring.append(bm.verts.new(centre+along*x+across*y+normal*height))
+        rings.append(ring)
+    for lower, upper in zip(rings,rings[1:]):
+        for i in range(8):
+            j=(i+1)%8
+            bm.faces.new((lower[i],lower[j],upper[j],upper[i]))
+    bm.faces.new(tuple(reversed(rings[0])))
+    bm.faces.new(tuple(rings[-1]))
+    # Split every real crease so each broad face remains flat under the
+    # runtime's per-vertex normal export. No rounded cushion normals survive.
+    plate = cb._rigid_object(name,bm)
+    bm = bmesh.new(); bm.from_mesh(plate.data); bm.normal_update()
     sharp = [edge for edge in bm.edges if len(edge.link_faces) == 2 and
-             edge.calc_face_angle() > math.radians(48)]
+             edge.calc_face_angle() > math.radians(8)]
     bmesh.ops.split_edges(bm, edges=sharp)
     bm.to_mesh(plate.data); bm.free(); plate.data.update()
-    edge = placed[0] + [c[-1] for c in placed[1:]] + \
-           list(reversed(placed[-1][:-1])) + [c[0] for c in reversed(placed[1:-1])]
+    edge = [centre+along*x+across*y+normal*level for x,y in outline]
     PLATE_EDGES[region] = [(np.array(edge[i]), np.array(edge[(i+1) % len(edge)]))
                            for i in range(len(edge))]
-    weights = source.transfer(plate, [0, 1, 2, 3])
-    weights = normalize_rows(weights)
-    seam_rows = {}
-    for vertex in plate.data.vertices:
-        key = tuple(round(value,5) for value in vertex.co)
-        weights[vertex.index] = seam_rows.setdefault(key, weights[vertex.index])
+    transferred = source.transfer(plate, [0, 1, 2, 3])
+    totals = {}
+    for row in transferred.values():
+        for bone, weight in row: totals[bone] = totals.get(bone,0)+weight
+    driver = sorted(totals,key=lambda key:(-totals[key],key))[0]
+    weights = cb.rigid_rows(plate,[(driver,1)])
     parts.append((plate, weights, region))
 
 
@@ -191,9 +217,13 @@ def build(source):
                 add_plate(parts, tree, source, "GorgonFlankLame", grid, region,
                           layer=column+(1 if row==0 else 0)); region += 1
     for column, zc in enumerate((-.67, -.23, .21, .55)):
-        grid = [[((0,1.53,zc+(u-.5)*.53), (math.sin(-.57+1.14*v),math.cos(-.57+1.14*v),0))
-                 for v in params] for u in params]
-        add_plate(parts, tree, source, "GorgonDorsalLame", grid, region, layer=column+3); region += 1
+        # Two flat roof facets follow the back without a wide tangent slab
+        # floating above the curved flanks. Their inner lips overlap at spine.
+        for side in (-1,1):
+            grid = [[((0,1.53,zc+(u-.5)*.53),
+                      (math.sin(side*(-.015+.585*v)),math.cos(side*(-.015+.585*v)),0))
+                     for v in params] for u in params]
+            add_plate(parts, tree, source, "GorgonDorsalLame", grid, region, layer=column+3); region += 1
     grid = [[((-.215+.43*u,2.9,1.12+.33*v), (0,-1,0)) for v in params] for u in params]
     add_plate(parts, tree, source, "GorgonForeheadShield", grid, region)
     for group, name, colour in ((4,"GorgonHornLeft",3),(11,"GorgonHornRight",3),
@@ -260,12 +290,26 @@ def colour(points, normals, regions):
         # The old .025 rim/.18 highlight painted broad white piping. Keep
         # a narrow worn edge, dark overlap falloff and restrained direction
         # strokes. These are albedo marks, not shader/metalness claims.
-        rim = np.exp(-(distance/.008)**2)
-        overlap = .07*np.exp(-(distance/.035)**2)
-        brushed = .018*np.sin(p[:,1]*160+p[:,2]*31) + .005*np.sin(p[:,1]*393-p[:,2]*17)
-        rgb[mask] = np.array((.285,.330,.345))*(.86+.15*noise[mask,None]+brushed[:,None]-overlap[:,None])
-        rgb[mask] += rim[:,None]*np.array((.055,.060,.062))
+        rim = np.exp(-(distance/.006)**2)
+        overlap = .10*np.exp(-(distance/.025)**2)
+        brushed = .012*np.sin(p[:,1]*160+p[:,2]*31) + .003*np.sin(p[:,1]*393-p[:,2]*17)
+        rgb[mask] = np.array((.33,.38,.40))*(.84+.13*noise[mask,None]+brushed[:,None]-overlap[:,None])
+        rgb[mask] += rim[:,None]*np.array((.08,.085,.09))
     return np.clip(rgb, 0, 1)
+
+
+def parameters(points, normals, regions):
+    """Exact PF RGB contract: roughness, emission, metallic, authored atlas.
+
+    Region identities come from geometry, never color/UV guesses. The same
+    deterministic bake and padding rasterizer is used for this map and albedo.
+    """
+    result = np.zeros((len(points),3))
+    result[:,0] = .82
+    plate = regions >= 10
+    result[plate,0] = .23
+    result[plate,2] = .94
+    return result
 
 
 def read_original_rgb_png(path):
@@ -282,32 +326,6 @@ def read_original_rgb_png(path):
     rows = np.frombuffer(zlib.decompress(compressed), dtype=np.uint8).reshape(height, width*3+1)
     assert not rows[:,0].any(), "Unknown PNG filtering"
     return rows[:,1:].reshape(height, width, 3).copy()
-
-
-def bake_plate_only_paint(obj, albedo, work):
-    baseline, candidate, ownership = (work/filename for filename in
-        ("gorgon-before-paint.png", "gorgon-plate-proposal.png", "gorgon-plate-pixel-mask.png"))
-    cb.bake_albedo(obj, 1024, original_colour, baseline)
-    cb.bake_albedo(obj, 1024, colour, candidate)
-    def mask_colour(points, normals, regions):
-        return np.repeat(((regions >= 10) & (regions <= 30))[:,None], 3, axis=1).astype(float)
-    cb.bake_albedo(obj, 1024, mask_colour, ownership)
-    old, new, mask = (read_original_rgb_png(path) for path in (baseline, candidate, ownership))
-    baseline_sha = hashlib.sha256(baseline.read_bytes()).hexdigest()
-    if baseline_sha != PAINT_BASELINE_SHA:
-        raise SystemExit("previous retained paint did not reproduce exactly")
-    # Mask follows the exact shared UV rasterizer and padding ownership.
-    # Unowned background mean changes from a full rebake are excluded too.
-    plate = (mask == 255).all(axis=2)
-    result = old.copy(); result[plate] = new[plate]
-    assert np.array_equal(result[~plate], old[~plate])
-    assert set(PLATE_EDGES) == set(range(10,31))
-    albedo.write_bytes(cb.encode_png(result))
-    return {"plateOwnedPixelsIncludingPadding": int(plate.sum()),
-        "changedPlatePixels": int(np.any(result != old, axis=2).sum()),
-        "nonPlatePixelsChanged": int(np.any(result[~plate] != old[~plate], axis=1).sum()),
-        "baselineAlbedoSha256": baseline_sha,
-        "plateRegions": list(range(10,31)), "shaderOrParameterChanges": False}
 
 
 def audit_poses(path, armature, out):
@@ -364,20 +382,26 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     obj,weights=build(source)
     albedo=out/"gorgon-albedo.png"
-    paint_report = bake_plate_only_paint(obj, albedo, work)
+    cb.bake_albedo(obj,1024,colour,albedo)
+    parameter_map=out/"gorgon-parameters.png"
+    cb.bake_albedo(obj,1024,parameters,parameter_map)
+    parameter_pixels=read_original_rgb_png(parameter_map)
+    if parameter_pixels[:,:,1].any(): raise SystemExit("authored Gorgon emission map must be zero")
+    paint_report={"plateRegions":sorted(PLATE_EDGES),
+        "parameters":cb.albedo_manifest(parameter_map),
+        "parameterChannels":"R=roughness;G=emission;B=metallic",
+        "plateRoughness":.23,"plateMetallic":.94,"bodyMetallic":0,"emission":0}
     cb.attach_albedo_preview(obj,albedo)
     extra={k:v for k,v in source.payload.items() if k not in {
         "data","vertexCount","triangleCount","bones","albedo","uvAtlas","winding"}}
-    extra.update({"authoringRevision":"cleanup2-continuous-bovine-thin-lames",
+    extra.update({"authoringRevision":"cleanup2-hard-overlapping-beveled-steel-panels",
                   "sourceGeometrySha256":INPUT_SHA,"maxInfluencesPerVertex":4,
-                  "thinConformalPlates":21,"flatClovenHoofHalves":8,
-                  "paintRevision":"cleanup2-gunmetal-plates-only"})
+                  "hardPlanarPlates":len(PLATE_EDGES),"flatClovenHoofHalves":8,
+                  "parameters":cb.albedo_manifest(parameter_map),
+                  "paintRevision":"cleanup2-steel-panel-roughness-metallic"})
     path=out/"gorgon-mesh.json"
     cb.write_mesh_data(path,obj,weights,source.payload["rigSha256"],albedo,source.payload["space"],extra)
     payload,components,report=inspect(path)
-    if hashlib.sha256(base64.b64decode(payload["data"])).hexdigest() != PAINT_GEOMETRY_SHA:
-        raise SystemExit("paint-only checkpoint changed decoded geometry/normals/UV/indices/weights")
-    paint_report["decodedMeshBlobSha256Unchanged"] = PAINT_GEOMETRY_SHA
     if payload["bones"]!=source.payload["bones"]: raise SystemExit("published named driver palette/order changed")
     if not any(set(c["drivers"])==set(payload["bones"]) for c in components):
         raise SystemExit("continuous bovine body does not carry all published drivers")
@@ -390,8 +414,8 @@ def main():
         if not all(tuple(source.positions[i]) in positions for i in ids):
             raise SystemExit("original horn/eye authored geometry changed")
     report["anatomyContracts"]={"continuousBodyCarriesAllDrivers":True,"exactBonePaletteAndOrder":28,
-        "rigidClovenHoofHalves":8,"originalHornAndEyePointSetsPreserved":4,"thinConformalPlates":21}
-    report["paintOnly"] = paint_report
+        "rigidClovenHoofHalves":8,"originalHornAndEyePointSetsPreserved":4,"hardPlanarPlates":len(PLATE_EDGES)}
+    report["authoredSurface"] = paint_report
     if rig:
         armature=cb.review_armature(rig,"HistoricalAurochsOfflinePreview")
         for name in payload["bones"]: obj.vertex_groups.new(name=name)

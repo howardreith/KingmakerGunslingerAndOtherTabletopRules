@@ -36,11 +36,11 @@ namespace KingmakerGunslinger.DomainTests
             new Body { Path = "assets/sprint14-insects/giant-stag-beetle-mesh.json", ClosedParts = true,
                 Sha256 = "2ecf222413eb857051b70df8b5fd61592a939108c7661ccdfb96f20fbcea794d" },
             new Body { Path = "assets/sprint19-fourarmed/girallon-mesh.json", ClosedParts = true,
-                Sha256 = "d512e66e0534f748500b181bac49fdcf586ddecc6bf4213d81c11bba04f8c75c" },
+                Sha256 = "aa81564f34a453f7a77902c45515eb5ac222fc731edd9a73aef797eb87a9f8f5" },
             new Body { Path = "assets/sprint21-arthropods/giant-crab-mesh.json", ClosedParts = true,
                 Sha256 = "34833285f367258ed5d00127c72d86bb96897df94459740d3c9fd800e720893e" },
             new Body { Path = "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json", ClosedParts = true,
-                Sha256 = "4ea887c98387d90d546e5512cf862cd47cb5694b0bbb1f99431c83c1a12c95ef" },
+                Sha256 = "27af896d68f8e6b0e201e0052a3ee5e5867c559669cd7de60ec01c3b3996e976" },
         };
 
         internal static void FirstExportsShipRepairedOutward()

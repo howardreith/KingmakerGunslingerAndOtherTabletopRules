@@ -139,6 +139,7 @@ if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-mesh.json") -Destination $ungulateDestination
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
     }
+    Copy-Item -LiteralPath (Join-Path $ungulateSource 'gorgon-parameters.png') -Destination $ungulateDestination
 }
 $sprint12QuadrupedSource = Join-Path $outputDirectory 'assets\sprint12-quadrupeds'
 if (Test-Path -LiteralPath $sprint12QuadrupedSource -PathType Container) {

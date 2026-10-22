@@ -12,6 +12,12 @@ Quick review: [14-item acceptance status](#acceptance-status),
 ### PR #67 review corrections (2026-10-22)
 
 Latest: [PR 67 follow-up results and remaining checks](CLEANUP2-PR67-REVIEW-FOLLOWUP.md).
+The continuation after `e3cd947160` replaces the owner-rejected appended Ettin
+head with a coherent private two-headed body, hardens Gorgon plates/materials,
+separates Girallon's lower hands and narrows Stegosaurus limbs. Actual production
+Ettin array output and other changed offline model previews have been inspected.
+The focused current candidate/native results are pending in the follow-up; no
+earlier native result is relabeled for these new bytes.
 Review10 shared controls PASS24/24 retain their original provenance. Recovery
 intake was clean at bca1735515293568647498cd54c9de5825c8ef18. Review12 identifies
 Ettin's cached queue/tag transition as native mutable state, and passes corrected

@@ -6,6 +6,10 @@ The lower arm's offset then rotated about the donor's original wrist. The
 new arm through fingertips is one surface, with a web grown into the palm
 and smooth Hand-to-digit weights across that web. This prevents a gap from
 opening even when the finger and wrist drivers disagree strongly.
+
+The lower pair is shorter and broader at the palm, with an outboard/forward
+wrist transition. This separates its silhouette from the upper long digits;
+it retains the existing single forearm driver for each lower hand.
 """
 from pathlib import Path
 import sys
@@ -23,6 +27,18 @@ def build(bm, weights, uvs, rig, shape, side, lower, legacy):
     point = lambda name: legacy.at(rig, side + "_" + name, offset)
     clavicle, upper = point("Clavicle_01"), point("Up_Arm_01")
     elbow, twist, wrist = point("Forearm_01"), point("Forearm_02"), point("Hand_01")
+    original_wrist = wrist.copy()
+    if lower:
+        # Two full-length, parallel palms merged into one dark fork in the
+        # native side views. Separate the lower wrist through its forearm,
+        # then give its rigid hand a shorter, broader ape-like proportion.
+        # These are authored positions, not changes to the donor pivots.
+        outward = 1. if side == "L" else -1.
+        twist += Vector((outward * .12, .04, -.075))
+        wrist += Vector((outward * .27, .08, -.16))
+    def hand_point(name):
+        p = point(name)
+        return wrist + (p - original_wrist) * .76 if lower else p
     root = clavicle.copy()
     root.x = .42 if side == "L" else -.42
     root.z += .36 if lower else .08
@@ -33,9 +49,10 @@ def build(bm, weights, uvs, rig, shape, side, lower, legacy):
     volume = cb.Volume(.012)
     volume.sweep(armline, [v * bulk for v in (.35, .38, .37, .33, .33, .28, .215)], 22)
     digits = ("Fore_Finger", "Midle_Finger", "Little_Finger")
-    knuckles = sum((point(d + "_01") for d in digits), Vector()) / 3.
+    knuckles = sum((hand_point(d + "_01") for d in digits), Vector()) / 3.
     palmline = [wrist, wrist.lerp(knuckles, .50), knuckles]
-    volume.sweep(palmline, [.22 * bulk, .235 * bulk, .21 * bulk], 22)
+    palm_width = 1.12 if lower else 1.
+    volume.sweep(palmline, [v * bulk * palm_width for v in (.22, .235, .21)], 22)
     # There is no second wrist or knuckle pivot on the two-armed donor.
     # Letting its upper wrist rotate the offset lower hand swept that hand
     # around the upper wrist and stretched the lower digit web in probes.
@@ -48,12 +65,14 @@ def build(bm, weights, uvs, rig, shape, side, lower, legacy):
     tips = []
     for digit in (*digits, "Thumb"):
         bones = [side + "_" + digit + "_%02d" % i for i in (1, 2, 3)]
-        p1, p2, p3 = [point(digit + "_%02d" % i) for i in (1, 2, 3)]
+        p1, p2, p3 = [hand_point(digit + "_%02d" % i) for i in (1, 2, 3)]
         # A root well inside the palm, not a cap at the first knuckle.
         root = wrist.lerp(p1, .42) if digit == "Thumb" else wrist.lerp(knuckles, .50)
-        tip = p3 + (p3 - p2).normalized() * .12 * bulk
+        tip = p3 + (p3 - p2).normalized() * (.08 if lower else .12) * bulk
         line = [root, p1, p2, p3, tip]
-        width = .105 * bulk if digit == "Thumb" else .09 * bulk
+        digit_width = (.115 if digit == "Thumb" else .105) if lower else \
+                      (.105 if digit == "Thumb" else .09)
+        width = digit_width * bulk
         volume.sweep(line, [width * 1.10, width, width * .88, width * .76,
                             width * .58], 18)
         lines.append((line, [hand_driver] * 4 if lower else [hand_driver, *bones]))

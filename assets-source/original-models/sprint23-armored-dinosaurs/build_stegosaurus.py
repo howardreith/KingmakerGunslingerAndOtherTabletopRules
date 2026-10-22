@@ -49,11 +49,16 @@ def build(rig):
             hip, knee, ankle = (at(n) for n in names)
             is_rear = "Leg0" in names[0]
             root = Vector((hip.x * .62, .68 if is_rear else .66, hip.z))
-            toe = ankle + FORWARD * .13 - UP * .085
+            # Retain the measured joints and continuous barrel attachment,
+            # but distinguish the limb shaft from a compact supporting foot.
+            # The narrower foot keeps the previous sole plane: .10 + .09
+            # equals the former downward offset plus radius (.085 + .105).
+            toe = ankle + FORWARD * .11 - UP * .10
             line = [root, hip, knee, ankle, toe]
-            body.sweep(line, [.23 if is_rear else .19, .20 if is_rear else .17,
-                              .15, .13, .12], 20)
-            body.ellipsoid(toe, AXES, (.15, .105, .21), 20, 12)
+            radii = [.21, .18, .13, .115, .11] if is_rear else \
+                    [.17, .145, .12, .105, .105]
+            body.sweep(line, radii, 20)
+            body.ellipsoid(toe, AXES, (.13, .09, .18), 20, 12)
             lines.append((line, [names[0], names[0], names[1], names[2]]))
     union_part(parts, "StegosaurusContinuousBody", body, lines, 0, 10000, 7)
     # Nine broad thin plates in two staggered files. Each root is buried

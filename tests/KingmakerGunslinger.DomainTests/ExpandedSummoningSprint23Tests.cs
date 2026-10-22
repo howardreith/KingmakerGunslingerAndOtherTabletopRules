@@ -369,7 +369,7 @@ namespace KingmakerGunslinger.DomainTests
             // Cleanup iteration 2 reauthors the Stegosaurus silhouette;
             // Triceratops and every shared donor consumer stay unchanged.
             Assertions.Equal(
-                "4ea887c98387d90d546e5512cf862cd47cb5694b0bbb1f99431c83c1a12c95ef",
+                "27af896d68f8e6b0e201e0052a3ee5e5867c559669cd7de60ec01c3b3996e976",
                 Sha256("assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json"),
                 "Deterministic Stegosaurus mesh bytes.");
 

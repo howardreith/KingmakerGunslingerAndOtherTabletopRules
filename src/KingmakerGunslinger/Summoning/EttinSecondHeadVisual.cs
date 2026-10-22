@@ -13,11 +13,10 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
-    /// <summary>One original second head on the retained humanoid giant rig.
-    /// Original sculpted geometry bridges the native neck and an owned skull
-    /// control. The skull copies head rotation at a fixed neck-relative offset;
-    /// turning the first head no longer orbits the second head around it.
-    /// Native animation and the donor's first head remain intact.</summary>
+    /// <summary>One cohesive, private two-headed body on the original giant rig.
+    /// Both detailed faces, necks and the shared shoulder surface are reshaped
+    /// together. Only this exact Ettin's body renderer is replaced; native clips,
+    /// equipment, collision and shared donor resources remain untouched.</summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class EttinSecondHeadVisual
     {
@@ -41,7 +40,12 @@ namespace KingmakerGunslinger.Summoning
         private sealed class Attachment
         {
             internal GameObject Root;
+            internal readonly List<GameObject> Branches = new List<GameObject>();
             internal Mesh Mesh;
+            internal SkinnedMeshRenderer SourceRenderer;
+            internal bool SourceRendererEnabled;
+            internal Mesh SourceMesh;
+            internal readonly List<RendererReceipt> ProtectedRenderers = new List<RendererReceipt>();
             internal UnitEntityView View;
             internal StandardMaterialController Controller;
             internal Material SourceMaterial;
@@ -54,6 +58,13 @@ namespace KingmakerGunslinger.Summoning
             internal readonly List<Material> Materials = new List<Material>();
             internal readonly List<Texture2D> Textures = new List<Texture2D>();
             internal string Outcome;
+        }
+        private sealed class RendererReceipt
+        {
+            internal Renderer Renderer;
+            internal Mesh Mesh;
+            internal Material[] Materials;
+            internal bool Enabled;
         }
         private static readonly ConditionalWeakTable<UnitEntityView,
             Attachment> Applied = new ConditionalWeakTable<UnitEntityView,
@@ -109,6 +120,20 @@ namespace KingmakerGunslinger.Summoning
                         throw new InvalidOperationException(
                             "The audited Hill Giant head has no neck parent.");
                     Material template = RequireHillBodyMaterial(__instance);
+                    var sourceRenderer = __instance.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .Single(value => value.name == "hill_giant_1" && value.sharedMesh != null &&
+                            value.sharedMesh.name == "hill_giant_1");
+                    owned.SourceRenderer = sourceRenderer; owned.SourceRendererEnabled = sourceRenderer.enabled;
+                    owned.SourceMesh = sourceRenderer.sharedMesh;
+                    foreach (Renderer other in __instance.GetComponentsInChildren<Renderer>(true).Where(r => r != sourceRenderer))
+                        owned.ProtectedRenderers.Add(new RendererReceipt { Renderer = other, Mesh = RendererMesh(other),
+                            Materials = other.sharedMaterials, Enabled = other.enabled });
+                    Transform[] nativeBones = sourceRenderer.bones;
+                    if (nativeBones.Length != sourceRenderer.sharedMesh.bindposes.Length ||
+                        nativeBones[2].name != "UpperTorso" || nativeBones[3] != neck || nativeBones[4] != head ||
+                        nativeBones[5].name != "Jaw" || nativeBones[6].name != "Jaw_end" ||
+                        neck.parent != nativeBones[2] || nativeBones[5].parent != head || nativeBones[6].parent != nativeBones[5])
+                        throw new NotSupportedException("Exact Hill neck/head/jaw bind palette changed.");
                     StandardMaterialController[] controllers = __instance
                         .GetComponentsInChildren<StandardMaterialController>(true);
                     FadeDefaults defaults;
@@ -123,63 +148,57 @@ namespace KingmakerGunslinger.Summoning
                     owned.Baseline = defaults;
                     owned.AttachedSourceFadeDefaults = DescribeFadeDefaults(defaults);
                     owned.Root = new GameObject(ObjectPrefix + "_Root");
-                    owned.Root.transform.SetParent(neck, false);
+                    owned.Root.transform.SetParent(sourceRenderer.transform.parent, false);
                     owned.Root.transform.localPosition = Vector3.zero;
                     owned.Root.transform.localRotation = Quaternion.identity;
                     owned.Root.transform.localScale = Vector3.one;
                     if (!owned.Root.transform.IsChildOf(owned.Controller.transform))
                         throw new InvalidOperationException("Owned head is outside exact source material-controller hierarchy.");
-                    Transform skull = new GameObject(ObjectPrefix +
-                        "_SkullControl").transform;
-                    skull.SetParent(owned.Root.transform, false);
-                    Vector3 offset = head.localRotation *
-                        Vector3.Scale(head.localScale,
-                            new Vector3(.44f, -.035f, -.02f));
-                    var driver = owned.Root.AddComponent<EttinHeadPoseDriver>();
-                    driver.Configure(head, skull, offset);
-                    owned.Mesh = EttinAuthoredHeadMesh.Build(
-                        owned.Root.transform.worldToLocalMatrix *
-                            head.localToWorldMatrix);
-                    owned.Mesh.bindposes = new[] {
-                        neck.worldToLocalMatrix *
-                            owned.Root.transform.localToWorldMatrix,
-                        skull.worldToLocalMatrix *
-                            owned.Root.transform.localToWorldMatrix
-                    };
-                    Texture2D albedo = EttinAuthoredHeadMesh.BuildAlbedo();
-                    owned.Textures.Add(albedo);
-                    // Exact installed PF property label: R=Roughness,
-                    // G=Emission, B=Metallic. Original matte, nonemissive,
-                    // nonmetal skin/hair/eyes; not a guessed Standard map.
-                    var parameters = new Texture2D(2, 2, TextureFormat.RGBA32,
-                        false, true) { name = ObjectPrefix + "_OriginalParameters",
-                        wrapMode = TextureWrapMode.Clamp };
-                    owned.Textures.Add(parameters);
-                    parameters.SetPixels32(new[] { new Color32(230, 0, 0, 255),
-                        new Color32(230, 0, 0, 255), new Color32(230, 0, 0, 255),
-                        new Color32(230, 0, 0, 255) });
-                    parameters.Apply(false, false);
-                    Material skin = MakeMaterial(owned, "Skin", template, albedo, parameters, defaults);
-                    Material shadow = MakeMaterial(owned, "Shadow", template, albedo, parameters, defaults);
-                    Material hair = MakeMaterial(owned, "Hair", template, albedo, parameters, defaults);
-                    Material eye = MakeMaterial(owned, "Eye", template, albedo, parameters, defaults);
-                    var renderer = owned.Root.AddComponent<SkinnedMeshRenderer>();
+                    owned.Mesh = EttinBodyMesh.Build(sourceRenderer.sharedMesh);
+                    var bones = nativeBones.ToList();
+                    foreach (int side in new[] { -1, 1 })
+                    {
+                        string label = side < 0 ? "Left" : "Right";
+                        Transform parent = neck.parent;
+                        var chain = new Transform[4];
+                        for (int i = 0; i < 4; i++)
+                        {
+                            chain[i] = new GameObject(ObjectPrefix + "_" + label +
+                                new[] { "Neck", "Head", "Jaw", "JawEnd" }[i]).transform;
+                            chain[i].SetParent(parent, false); parent = chain[i]; bones.Add(chain[i]);
+                            if (i == 0) owned.Branches.Add(chain[i].gameObject);
+                        }
+                        // Offset is expressed in the native parent's BIND frame,
+                        // never an animated head frame. Each skull turns in place.
+                        Vector3 offset = sourceRenderer.sharedMesh.bindposes[2].MultiplyVector(EttinBodyMesh.BranchOffset(side));
+                        var driver = owned.Root.AddComponent<EttinHeadPoseDriver>();
+                        driver.Configure(nativeBones.Skip(3).Take(4).ToArray(), chain, offset);
+                    }
+                    Material skin = MakeMaterial(owned, "Body", template, defaults);
+                    Transform body = new GameObject(ObjectPrefix + "_Body").transform;
+                    body.SetParent(owned.Root.transform, false);
+                    body.localPosition = sourceRenderer.transform.localPosition;
+                    body.localRotation = sourceRenderer.transform.localRotation;
+                    body.localScale = sourceRenderer.transform.localScale;
+                    var renderer = body.gameObject.AddComponent<SkinnedMeshRenderer>();
                     renderer.sharedMesh = owned.Mesh;
-                    renderer.bones = new[] { neck, skull };
-                    renderer.rootBone = neck;
-                    renderer.sharedMaterials = new[] { skin, shadow, hair, eye };
+                    renderer.bones = bones.ToArray();
+                    renderer.rootBone = sourceRenderer.rootBone;
+                    renderer.sharedMaterials = new[] { skin };
+                    renderer.shadowCastingMode = sourceRenderer.shadowCastingMode;
+                    renderer.receiveShadows = sourceRenderer.receiveShadows;
                     Bounds bounds = owned.Mesh.bounds;
                     bounds.Expand(.55f);
                     renderer.localBounds = bounds;
                     renderer.updateWhenOffscreen = true;
                     // Reinit restores existing cached native defaults and then
-                    // discovers the new renderer. The four new materials must
+                    // discovers the new renderer. The private material must
                     // cache the SOURCE BASELINE, never its transient live fade.
                     owned.ControllerAdoptionStarted = true;
                     string reinit = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(__instance);
                     Material[] assigned = renderer.sharedMaterials;
                     IList<Material> driven = ControllerMaterials(owned.Controller);
-                    if (reinit != "reinitialized" || assigned.Length != 4 ||
+                    if (reinit != "reinitialized" || assigned.Length != 1 ||
                         driven == null || assigned.Any(material => !AdoptedWithBaseline(owned, material, driven)))
                         throw new InvalidOperationException("Owned head was not adopted with exact native baseline fade defaults.");
                     // Scalar receipt only: preserve the cache accepted here so
@@ -191,9 +210,10 @@ namespace KingmakerGunslinger.Summoning
                         return new JObject { ["material"] = material.GetInstanceID(),
                             ["name"] = material.name, ["cached"] = DescribeFadeDefaults(cached) };
                     }));
-                    owned.Outcome = "attached;heads=2;original=1;project=1;" +
-                        "authored=1;continuous-neck=1;orbit=0;" +
-                        "shader=PF/StandardDynamic;original-paint=1;owned-textures=2;controller-adopted=1;fade-default=source-cache";
+                    sourceRenderer.enabled = false;
+                    owned.Outcome = "attached;heads=2;original=0;project=2;body-replacement=1;" +
+                        "authored=1;continuous-shoulders=1;orbit=0;" +
+                        "shader=PF/StandardDynamic;borrowed-native-atlas=1;owned-textures=0;controller-adopted=1;fade-default=source-cache";
                 }
                 catch (Exception error)
                 {
@@ -224,34 +244,21 @@ namespace KingmakerGunslinger.Summoning
             return source;
         }
 
-        private static Material MakeMaterial(Attachment owned, string name,
-            Material template, Texture2D albedo, Texture2D parameters,
-            FadeDefaults defaults)
+        private static Mesh RendererMesh(Renderer renderer)
         {
-            // Clone shader state/keywords only; every sampled authored surface
-            // map is replaced or cleared. Never sample donor body UV maps.
+            var skin = renderer as SkinnedMeshRenderer;
+            if (skin != null) return skin.sharedMesh;
+            var filter = renderer == null ? null : renderer.GetComponent<MeshFilter>();
+            return filter == null ? null : filter.sharedMesh;
+        }
+
+        private static Material MakeMaterial(Attachment owned, string name,
+            Material template, FadeDefaults defaults)
+        {
+            // UVs and detailed painted surfaces come from the same installed
+            // mesh. Borrow textures unchanged; only the material instance is ours.
             var material = new Material(template) { name = ObjectPrefix + "_" + name };
             owned.Materials.Add(material);
-            material.SetTexture("_MainTex", albedo);
-            material.SetTextureScale("_MainTex", Vector2.one);
-            material.SetTextureOffset("_MainTex", Vector2.zero);
-            material.SetTexture("_Parameters", parameters);
-            material.SetTextureScale("_Parameters", Vector2.one);
-            material.SetTextureOffset("_Parameters", Vector2.zero);
-            // The exact shader declares built-in 'bump' as its default, and
-            // the audited Hill body has no map. Use our vertex normals plus
-            // that flat default, without inventing a packed normal format.
-            material.SetTexture("_BumpMap", null);
-            // Exact native CharacterAtlas normal-channel contract uses this
-            // keyword/flag pair. This new surface has no normal atlas input.
-            material.DisableKeyword("NORMAL_MAP_ON");
-            material.SetFloat("_UseNormalMapAtlas", 0f);
-            material.SetTexture("_BumpMap2", null);
-            if (material.HasProperty("_PetrificationTex")) material.SetTexture("_PetrificationTex", null);
-            material.SetColor("_TintColor", Color.white);
-            material.SetFloat("_Roughness", 1f);
-            material.SetFloat("_Metallic", 0f);
-            material.SetFloat("_Emission", 0f);
             // Exact native DissolveAnimationController.RevertToDefaults
             // contract. Borrow native FX references only; never own/destroy
             // them or guess neutral fade values from the current frame.
@@ -393,15 +400,16 @@ namespace KingmakerGunslinger.Summoning
         private static void Release(Attachment owned)
         {
             if (owned == null) return;
-            // Native renderer setup can instantiate materials for this skin
-            // after our four shared originals have been assigned. Every
-            // renderer below this exact project-created root belongs to this
-            // head. Collect its named clones only while one original owned
-            // map still proves provenance; never destroy a foreign material.
+            // Native setup can instantiate the private body material. Collect
+            // only its exact name + unchanged borrowed atlas provenance.
             var materials = OwnedMaterials(owned);
             if (owned.Root != null)
                 UnityEngine.Object.DestroyImmediate(owned.Root);
             owned.Root = null;
+            foreach (GameObject branch in owned.Branches)
+                if (branch != null) UnityEngine.Object.DestroyImmediate(branch);
+            owned.Branches.Clear();
+            if (owned.SourceRenderer != null) owned.SourceRenderer.enabled = owned.SourceRendererEnabled;
             if (owned.ControllerAdoptionStarted && owned.View != null && owned.Controller != null)
             {
                 try { owned.ControllerCleanup = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(owned.View); }
@@ -428,12 +436,12 @@ namespace KingmakerGunslinger.Summoning
                 owned.Root.GetComponentsInChildren<Renderer>(true)
                     .SelectMany(renderer => renderer.sharedMaterials)
                     .Where(material => material != null &&
-                        new[] { "Skin", "Shadow", "Hair", "Eye" }.Any(name =>
-                            ExactInstanceName(material.name, ObjectPrefix + "_" + name)) &&
+                        ExactInstanceName(material.name, ObjectPrefix + "_Body") &&
                         material.shader != null && material.shader.name == "PF/StandardDynamic" &&
                         material.HasProperty("_MainTex") && material.HasProperty("_Parameters") &&
-                        owned.Textures.Any(texture => ReferenceEquals(material.GetTexture("_MainTex"), texture) ||
-                            ReferenceEquals(material.GetTexture("_Parameters"), texture)));
+                        owned.SourceMaterial != null &&
+                        ReferenceEquals(material.GetTexture("_MainTex"), owned.SourceMaterial.GetTexture("_MainTex")) &&
+                        ReferenceEquals(material.GetTexture("_Parameters"), owned.SourceMaterial.GetTexture("_Parameters")));
             return owned.Materials.Concat(assigned).Where(material =>
                     material != null)
                 .GroupBy(material => material.GetInstanceID())
@@ -449,6 +457,7 @@ namespace KingmakerGunslinger.Summoning
             return (owned.Root == null ? Enumerable.Empty<UnityEngine.Object>() :
                     new UnityEngine.Object[] { owned.Root })
                 .Concat(OwnedMaterials(owned).Cast<UnityEngine.Object>())
+                .Concat(owned.Branches.Where(value => value != null).Cast<UnityEngine.Object>())
                 .Concat(owned.Textures.Where(value => value != null).Cast<UnityEngine.Object>())
                 .Concat(owned.Mesh == null ? Enumerable.Empty<UnityEngine.Object>() :
                     new UnityEngine.Object[] { owned.Mesh })
@@ -481,7 +490,7 @@ namespace KingmakerGunslinger.Summoning
             // Installed DissolveAnimationController.Update (060011A3) uses
             // RenderType=TransparentCutout/renderQueue=2450 for native cutout
             // fade. Native12 observed this same paired transition in the
-            // SAME source material's cache and all four owned material caches.
+            // SAME source material's cache and owned material caches.
             // Initial adoption remains exact; later observation permits only
             // this pair, with every persistent fade default still unchanged.
             bool demonstratedNativeQueueTagTransition = sameSource && persistentSourceDefaultsUnchanged &&
@@ -506,7 +515,18 @@ namespace KingmakerGunslinger.Summoning
                 ["demonstratedNativeQueueTagTransition"] = demonstratedNativeQueueTagTransition,
                 ["currentSourceBaselineAllowed"] = currentSourceBaselineAllowed,
                 ["controllerCleanup"] = owned.ControllerCleanup,
-                ["headMaterials"] = new JArray(assigned.Take(4).Select(material => {
+                ["nativeBodySuppressed"] = owned.SourceRenderer != null && !owned.SourceRenderer.enabled,
+                ["sourceMeshReferencePreserved"] = owned.SourceRenderer != null &&
+                    ReferenceEquals(owned.SourceRenderer.sharedMesh, owned.SourceMesh),
+                ["protectedRenderers"] = new JArray(owned.ProtectedRenderers.Select(receipt => new JObject {
+                    ["renderer"] = ReferenceEquals(receipt.Renderer, null) ? 0 : receipt.Renderer.GetInstanceID(),
+                    ["name"] = receipt.Renderer == null ? null : receipt.Renderer.name,
+                    ["alive"] = receipt.Renderer != null,
+                    ["enabledMatchesAttach"] = receipt.Renderer != null && receipt.Renderer.enabled == receipt.Enabled,
+                    ["meshReferencePreserved"] = receipt.Renderer != null && ReferenceEquals(RendererMesh(receipt.Renderer), receipt.Mesh),
+                    ["materialReferencesPreserved"] = receipt.Renderer != null && receipt.Renderer.sharedMaterials.Length == receipt.Materials.Length &&
+                        receipt.Renderer.sharedMaterials.Where((material, i) => !ReferenceEquals(material, receipt.Materials[i])).Count() == 0 })),
+                ["headMaterials"] = new JArray(assigned.Select(material => {
                     FadeDefaults cached = null;
                     IList<Material> driven = ControllerMaterials(owned.Controller);
                     bool member = material != null && driven != null && driven.Contains(material);
@@ -541,19 +561,19 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
-    /// <summary>Two heads share expression motion, while the second skull has
-    /// its own neck-relative pivot. Owned by the attachment root.</summary>
+    /// <summary>Private neck/head/jaw chain follows the original local poses.
+    /// Fixed neck origin prevents either skull orbiting the original head.</summary>
     internal sealed class EttinHeadPoseDriver : MonoBehaviour
     {
-        private Transform _source;
-        private Transform _skull;
+        private Transform[] _source;
+        private Transform[] _chain;
         private Vector3 _offset;
 
-        internal void Configure(Transform source, Transform skull,
+        internal void Configure(Transform[] source, Transform[] chain,
             Vector3 offset)
         {
             _source = source;
-            _skull = skull;
+            _chain = chain;
             _offset = offset;
             Follow();
         }
@@ -562,10 +582,14 @@ namespace KingmakerGunslinger.Summoning
 
         private void Follow()
         {
-            if (_source == null || _skull == null) return;
-            _skull.localPosition = _source.localPosition + _offset;
-            _skull.localRotation = _source.localRotation;
-            _skull.localScale = _source.localScale;
+            if (_source == null || _chain == null) return;
+            for (int i = 0; i < 4; i++)
+            {
+                if (_source[i] == null || _chain[i] == null) return;
+                _chain[i].localPosition = _source[i].localPosition + (i == 0 ? _offset : Vector3.zero);
+                _chain[i].localRotation = _source[i].localRotation;
+                _chain[i].localScale = _source[i].localScale;
+            }
         }
     }
 
