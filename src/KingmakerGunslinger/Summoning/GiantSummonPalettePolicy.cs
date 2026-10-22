@@ -21,9 +21,8 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>
-    /// No default proof exists. The integrator must record the exact fresh
-    /// native body slot and texture, plus the deliberate whole-body palette
-    /// treatment, before registering a curated proof in code. Hair/skirt regions
+    /// Exact native body slot and texture, plus the deliberate whole-body
+    /// palette treatment. Hair/skirt regions
     /// on that albedo receive the same transform; separate outfit/cape/armor
     /// renderers remain protected. No guessed mask or external config is used.
     /// </summary>
@@ -58,6 +57,24 @@ namespace KingmakerGunslinger.Summoning
         private const string HillPrefab = "635d6dee1c7831b41aa987bdbeff14bc";
         private const string FrostPrefab = "df0f3fbceb3605d489c0dec8fa5c7d1e";
 
+        // Native identities observed in the detached donor census and again in
+        // the save-free Cloud/Storm survey. Every live instance must still pass
+        // the exact prefab/path/slot/shader/texture checks before allocation.
+        // This is body-atlas recoloring, not a claimed skin/hair UV mask.
+        internal static GiantPaletteAlbedoProof ProductionProof(string key)
+        {
+            GiantPaletteSelector selector = Selector(key);
+            if (selector == null) return null;
+            bool hill = selector.PrefabId == HillPrefab;
+            return new GiantPaletteAlbedoProof(key, selector.PrefabId,
+                hill ? "Hill01_body_RIG[2]/hill_giant_1[1]" : "Frozen_body_RIG[3]/Frozen_body[0]",
+                0, hill ? "hill_giant_01_d" : "frost_giant_d", 1024, 1024, "DXT1",
+                "20261022T0021352089530Z-fca727ae39c6443b99a759a9b19d8656:cleanup2-pre-survey-actor-" +
+                    (hill ? "cloud-giant" : "storm-giant"),
+                "cleanup2-production-body-palette-v1:" + key +
+                    ";all body atlas regions; separate outfit/cape/equipment unchanged");
+        }
+
         // Census-proven body identities. Hill outfit and Frost cape are not
         // selectors, including the cape that shares the Frost body material.
         internal static GiantPaletteSelector Selector(string key)
@@ -77,7 +94,7 @@ namespace KingmakerGunslinger.Summoning
         internal static string ValidateProof(GiantPaletteAlbedoProof proof)
         {
             if (proof == null) return "missing-albedo-proof";
-            if (proof.Key != "cloud-giant" && proof.Key != "storm-giant")
+            if (Selector(proof.Key) == null)
                 return "palette-treatment-not-reviewed";
             GiantPaletteSelector selector = Selector(proof.Key);
             if (selector == null || proof.PrefabId != selector.PrefabId)
@@ -105,8 +122,8 @@ namespace KingmakerGunslinger.Summoning
         { return actual == expected || actual == expected + " (Instance)"; }
 
         /// <summary>
-        /// Review-authorized appearance scalars, inactive until fresh exact body
-        /// albedo proof. Every region of that body albedo receives the same
+        /// Appearance scalars admitted only for an exact proven body albedo.
+        /// Every region of that body albedo receives the same
         /// transform. Luminance retains shading; alpha is unchanged. Input/output
         /// are normalized encoded albedo channels, not lighting or a skin mask.
         /// </summary>
@@ -117,6 +134,16 @@ namespace KingmakerGunslinger.Summoning
             float luminance = 0.2126f * source.Red + 0.7152f * source.Green + 0.0722f * source.Blue;
             switch (key)
             {
+                case "stone-giant":
+                    float stone = 0.18f + 0.82f * luminance;
+                    return new GiantPalettePixel(0.69f * stone, 0.70f * stone,
+                        0.72f * stone, source.Alpha);
+                case "fire-giant":
+                    // Warm charcoal/iron, deliberately distinct from both the
+                    // native ice-blue body and Storm's brighter bronze.
+                    float iron = 0.16f + 0.84f * luminance;
+                    return new GiantPalettePixel(0.56f * iron, 0.34f * iron,
+                        0.23f * iron, source.Alpha);
                 case "cloud-giant":
                     float pale = 0.55f + 0.45f * luminance;
                     return new GiantPalettePixel(0.84f * pale, 0.91f * pale,

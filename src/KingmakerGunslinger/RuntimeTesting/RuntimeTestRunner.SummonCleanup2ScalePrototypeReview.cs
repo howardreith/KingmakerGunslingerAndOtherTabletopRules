@@ -91,12 +91,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     IDisposable palette = null; JObject paletteEvidence = null;
                     try { Cleanup2ApplyPrototypePalette(actors[i], ref palette, ref paletteEvidence); }
                     finally { if (palette != null) palettes.Add(palette); }
-                    bool paletteReady = keys[i] != "cloud-giant" && keys[i] != "storm-giant" ||
-                        (palette != null && paletteEvidence != null && (bool?)paletteEvidence["passed"] == true);
+                    bool paletteReady = paletteEvidence != null && (bool?)paletteEvidence["passed"] == true;
                     Cleanup2Check("scale-prototype-palette-" + keys[i], paletteReady, new JObject {
                         ["key"] = keys[i], ["unit"] = actors[i].UniqueId, ["paletteLease"] = palette != null,
                         ["evidence"] = paletteEvidence,
-                        ["limit"] = "Cloud/Storm require exact curated palette proof before helper intake. Other four retain current palettes; this phase does not approve their aesthetic treatment." },
+                        ["limit"] = "Stone/Fire/Cloud/Storm require exact ordinary production palette ownership before helper intake. Hill/Frost retain their native palette. The observer never releases a production owner; art acceptance remains separate." },
                         "Palette ownership/proof is settled before the scale helper captures material identities.");
                     if (!paletteReady) throw new NotSupportedException("UNKNOWN: exact prototype palette proof absent for " + keys[i]);
                     Cleanup2GiantRenderScalePrototype owner = Cleanup2TakeScalePrototype(fixture, actors, actors[i], keys[i], factors[i]);

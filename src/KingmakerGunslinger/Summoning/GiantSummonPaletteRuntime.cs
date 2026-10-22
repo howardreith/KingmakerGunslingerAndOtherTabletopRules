@@ -11,10 +11,9 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Inactive until a curated proof is registered by product source. One
-    /// proven body albedo on one exact body/material slot is transformed in
+    /// One proven body albedo on one exact body/material slot is transformed in
     /// memory. No native texture, shared material, mesh or transform is written.
-    /// This helper installs no hook and registers no default proof.
+    /// The giant attach/buff hook schedules bounded settling before application.
     /// </summary>
     internal static class GiantSummonPaletteRuntime
     {
@@ -37,6 +36,8 @@ namespace KingmakerGunslinger.Summoning
             internal readonly List<Material> Materials = new List<Material>();
             internal ProtectedSurfaces Protected;
             internal bool Foreign;
+            internal bool Production;
+            internal string Key;
             internal string Outcome;
             internal string Failure;
         }
@@ -239,8 +240,49 @@ namespace KingmakerGunslinger.Summoning
         internal static string Describe(UnitEntityView view)
         {
             Ownership state;
-            return view != null && States.TryGetValue(view, out state)
-                ? state.Outcome : "palette:not-applied;proofs=" + Proofs.Count;
+            if (view != null && States.TryGetValue(view, out state)) return state.Outcome;
+            GiantSummonPaletteLifetime lifetime = view == null ? null : view.GetComponent<GiantSummonPaletteLifetime>();
+            return lifetime != null && lifetime.Outcome != null ? lifetime.Outcome :
+                "palette:not-applied;proofs=" + Proofs.Count;
+        }
+
+        internal static void Schedule(UnitEntityView view, GiantSummonPresentationProfile profile)
+        {
+            if (view == null || profile == null ||
+                GiantSummonPalettePolicy.ProductionProof(profile.Key) == null ||
+                !ExpandedSummoningVisualVariantPatch.IsModuleActive) return;
+            GiantSummonPaletteLifetime lifetime = view.GetComponent<GiantSummonPaletteLifetime>();
+            if (lifetime == null) lifetime = view.gameObject.AddComponent<GiantSummonPaletteLifetime>();
+            lifetime.Schedule(view);
+        }
+
+        // Observation only: no ownership acquisition, material writes,
+        // controller reinitialization or cleanup lease is created here.
+        internal static string VerifyProductionOwnership(UnitEntityView view)
+        {
+            try
+            {
+                if (!ExpandedSummoningVisualVariantPatch.IsModuleActive) return "palette:module-off";
+                Ownership state;
+                if (view == null || !States.TryGetValue(view, out state)) return "palette:no-production-owner";
+                if (!state.Production || state.Foreign || !ReferenceEquals(view.EntityData, state.Unit))
+                    return "palette:production-owner-identity-mismatch";
+                string source = SummonedSourceGuid(state.Unit);
+                GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.Resolve(true,
+                    state.Unit.Blueprint.AssetGuid, source);
+                if (source == null || profile == null || profile.Key != state.Key ||
+                    GiantSummonPalettePolicy.ProductionProof(profile.Key) == null)
+                    return "palette:production-summon-provenance-mismatch";
+                if (!StillOwnsSlot(state)) return "palette:production-live-slot-mismatch";
+                string reason;
+                if (!state.Protected.Verify(state, true, out reason))
+                    return "palette:production-protected-surface-mismatch:" + reason;
+                return "palette:verified-production-owner;key=" + state.Key +
+                    ";renderer=" + state.RendererPath + ";slot=" + state.Slot +
+                    ";material=" + state.Applied.name + ";texture=" + state.Texture.name +
+                    ";dimensions=" + state.Texture.width + "x" + state.Texture.height;
+            }
+            catch (Exception error) { return "palette:production-verification-exception:" + error.GetType().Name; }
         }
 
         internal static string Apply(UnitEntityView view)
@@ -269,7 +311,9 @@ namespace KingmakerGunslinger.Summoning
                 return state.Outcome = "palette:already-applied";
             }
             GiantPaletteAlbedoProof proof;
-            if (!Proofs.TryGetValue(profile.Key, out proof)) return "palette:missing-albedo-proof;key=" + profile.Key;
+            bool production = !Proofs.TryGetValue(profile.Key, out proof);
+            if (production) proof = GiantSummonPalettePolicy.ProductionProof(profile.Key);
+            if (proof == null) return "palette:missing-albedo-proof;key=" + profile.Key;
             GiantPaletteSelector selector = GiantSummonPalettePolicy.Selector(profile.Key);
             if (selector == null || unit.Blueprint.Prefab == null ||
                 unit.Blueprint.Prefab.AssetId != proof.PrefabId) return "palette:prefab-identity-mismatch";
@@ -282,6 +326,18 @@ namespace KingmakerGunslinger.Summoning
             // must remove a superseded giant registration before activation.
             if (ExpandedSummoningVisualVariantPatch.DescribeOwnership(view) != "<none>")
                 return "palette:existing-variant-owner-refused";
+            // Reinitializing the native material controller resets every
+            // renderer it drives. Wait for the complete source view to settle,
+            // rather than accidentally cancelling another renderer's spawn FX.
+            foreach (Renderer sourceRenderer in view.GetComponentsInChildren<Renderer>(true))
+                foreach (Material sourceMaterial in sourceRenderer.sharedMaterials)
+                    if (sourceMaterial != null && sourceMaterial.HasProperty("_Dissolve"))
+                    {
+                        float dissolve = sourceMaterial.GetFloat("_Dissolve");
+                        if (float.IsNaN(dissolve) || float.IsInfinity(dissolve) || dissolve < 0f)
+                            return "palette:invalid-source-dissolve";
+                        if (dissolve > .001f) return "palette:await-settled-dissolve";
+                    }
             SkinnedMeshRenderer[] matches = view.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.name == selector.Renderer &&
                     Path(view.transform, value.transform) == proof.RendererPath).ToArray();
@@ -327,6 +383,7 @@ namespace KingmakerGunslinger.Summoning
                 pixels[index] = new Color32(Byte(result.Red), Byte(result.Green), Byte(result.Blue), pixel.a);
             }
             state = new Ownership { View = new WeakReference(view), Unit = unit, Renderer = renderer,
+                Production = production, Key = profile.Key,
                 Mesh = renderer.sharedMesh, RendererPath = proof.RendererPath,
                 Slot = proof.MaterialSlot, Original = original,
                 Shader = original.shader,
@@ -523,6 +580,53 @@ namespace KingmakerGunslinger.Summoning
     internal sealed class GiantSummonPaletteLifetime : MonoBehaviour
     {
         internal UnitEntityView View;
+        internal string Outcome;
+        private UnitEntityData _owner;
+        private float _deadline, _next;
+        private bool _pending, _moduleOffReleased;
+
+        internal void Schedule(UnitEntityView view)
+        {
+            if (ReferenceEquals(View, view) && ReferenceEquals(_owner, view.EntityData)) return;
+            // A reused component cannot grant ownership of a new model/unit.
+            if (View != null) return;
+            View = view; _owner = view.EntityData;
+            _deadline = Time.realtimeSinceStartup + 15f;
+            _next = 0f; _pending = true;
+            Outcome = "palette:await-native-settlement";
+        }
+
+        private void LateUpdate()
+        {
+            if (View == null || !ReferenceEquals(View.EntityData, _owner)) { _pending = false; return; }
+            if (!ExpandedSummoningVisualVariantPatch.IsModuleActive)
+            {
+                _pending = false;
+                if (!_moduleOffReleased)
+                {
+                    _moduleOffReleased = true;
+                    Outcome = GiantSummonPaletteRuntime.Release(View, "module-off", true);
+                }
+                return;
+            }
+            if (_moduleOffReleased)
+            {
+                _moduleOffReleased = false; _pending = true;
+                _deadline = Time.realtimeSinceStartup + 15f;
+                Outcome = "palette:await-native-settlement";
+            }
+            if (!_pending || Time.realtimeSinceStartup < _next) return;
+            _next = Time.realtimeSinceStartup + .25f;
+            try { Outcome = GiantSummonPaletteRuntime.Apply(View); }
+            catch (Exception error) { Outcome = "palette:apply-exception:" + error.GetType().Name; }
+            // Only native spawn settlement is retried. Identity/foreign-state
+            // refusals stay observable and never become a forceful repair.
+            _pending = Outcome == "palette:await-settled-dissolve" ||
+                Outcome == "palette:no-live-summon-context";
+            if (_pending && Time.realtimeSinceStartup >= _deadline)
+            { _pending = false; Outcome += ";settlement-timeout"; }
+        }
+
         private void OnDestroy()
         {
             try { GiantSummonPaletteRuntime.Release(View, "view-destroyed", false); }

@@ -140,7 +140,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "A real native CL20 spellbook supplies exact parent/child/slot links; fixture-granted access is explicit.");
                 Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
-                if (phase == "bodies" || phase == "gorgon-presentation")
+                if (phase == "bodies" || phase == "gorgon-presentation" || phase == "recovery-bodies")
                     foreach (int frame in ReviewSummonCleanup2Bodies(fixture, book)) yield return frame;
                 else if (phase == "elementals")
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
@@ -342,6 +342,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // later terrain survey or a different actor's skin proof fails.
                 for (int i = 0; i < actors.Count; i++)
                     foreach (int frame in Cleanup2WaitAppearance(actors[i], keys[i])) yield return frame;
+                if ((string)_request.Parameters?["reviewPhase"] == "scale-prototype")
+                {
+                    // Production colors have independent ownership evidence.
+                    // Their pictures must survive a later height-measurement refusal.
+                    for (int i = 1; i < actors.Count; i++)
+                    {
+                        var paletteWait = System.Diagnostics.Stopwatch.StartNew();
+                        while (GiantSummonPalettePolicy.ProductionProof(keys[i]) != null &&
+                            GiantSummonPaletteRuntime.Describe(actors[i].View).StartsWith("palette:await", StringComparison.Ordinal) &&
+                            paletteWait.Elapsed.TotalSeconds < 16d) yield return 0;
+                        IDisposable untouchedLease = null; JObject palette = null;
+                        Cleanup2ApplyPrototypePalette(actors[i], ref untouchedLease, ref palette);
+                        Cleanup2Check("production-palette-" + keys[i],
+                            untouchedLease == null && palette != null && (bool?)palette["passed"] == true,
+                            palette, "The ordinary summon owns its exact palette; this observation never applies or releases it.");
+                    }
+                    var framing = actors.Select(actor => {
+                        Renderer[] skins = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                            .Where(skin => skin.enabled && skin.gameObject.activeInHierarchy).Cast<Renderer>().ToArray();
+                        if (skins.Length == 0) throw new InvalidOperationException("No visible giant presentation surface.");
+                        Bounds bounds = skins[0].bounds;
+                        foreach (Renderer skin in skins.Skip(1)) bounds.Encapsulate(skin.bounds);
+                        return new Cleanup2ActorMetric { Min = bounds.min, Max = bounds.max,
+                            Crown = bounds.center + Vector3.up * bounds.extents.y,
+                            Sole = bounds.center - Vector3.up * bounds.extents.y };
+                    }).ToArray();
+                    JObject picture = Cleanup2CaptureLineup(actors, keys, framing, "cleanup2-production-colors.png");
+                    picture["framingOnly"] = true;
+                    picture["measurementEvidence"] = false;
+                    picture["rendering"] = "Ordinary production giant colors; native renderer bounds frame this picture only and are not height measurements.";
+                    Cleanup2Check("production-colors-picture", true, picture,
+                        "One common native scene/camera records all six current family palettes before any scale experiment.");
+                }
                 _sprint25WaitingForUnityAppearance = true;
                 for (int i = 0; i < actors.Count; i++)
                 {
