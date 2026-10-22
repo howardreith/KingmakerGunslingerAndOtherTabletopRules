@@ -44,6 +44,22 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal static partial class ExpandedSummoningSpecialBuilder
     {
+        private static void ConfigureOutsiderExtraplanarIdentities(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            var nativeMarker = Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell identity");
+            if (nativeMarker.ComponentsArray.OfType<AddSpellResistance>().Count() != 1)
+                throw new InvalidOperationException("Native extraplanar SR carrier contract changed.");
+            foreach (string name in new[] { "Lemure", "Dretch", "HoundArchon", "LanternArchon", "TrumpetArchon" })
+            {
+                var unit = Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit." + name);
+                var marker = ScriptableObject.CreateInstance<OutsiderExtraplanarIdentity>();
+                marker.OwningBlueprint = unit;
+                marker.NativeMarker = nativeMarker;
+                unit.ComponentsArray = unit.ComponentsArray.Concat(new BlueprintComponent[] { marker }).ToArray();
+            }
+        }
+
         private const string Lemure30Prefix = "KMG.Summoning.OutsiderCelestial.Lemure.";
 
         private static void ConfigureLemure30(LibraryScriptableObject library,

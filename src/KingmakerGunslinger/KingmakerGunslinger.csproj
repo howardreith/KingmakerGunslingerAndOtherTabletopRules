@@ -1319,6 +1319,7 @@
     <Compile Include="Summoning\TrumpetPreparedBook.cs" />
     <Compile Include="Summoning\Trumpet31Support.cs" />
     <Compile Include="Summoning\OutsiderEscapeArtist.cs" />
+    <Compile Include="Summoning\OutsiderExtraplanarIdentity.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Support.cs" />
     <Compile Include="Summoning\TrumpetInvisibilityPurgeArea.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Purge.cs" />
