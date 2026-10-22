@@ -8,6 +8,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -99,6 +100,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ContextActionArchonMenace.HasSource(target, (bool)rows[0]["passed"] ? immunity : penalty, source) &&
                         !ContextActionArchonMenace.HasSource(target, (bool)rows[0]["passed"] ? penalty : immunity, source);
                 });
+                var sourceGrants = target.Buffs.Enumerable.Where(buff => emitters.Contains(buff.Context?.MaybeCaster) &&
+                    (ReferenceEquals(buff.Blueprint, penalty) || ReferenceEquals(buff.Blueprint, immunity))).ToArray();
+                bool privateParams = sourceGrants.Length == 2 && sourceGrants.All(buff =>
+                    !ReferenceEquals(buff.Context.Params, AbilityParams.Empty) &&
+                    buff.Context.Params.CasterLevel == buff.Context.MaybeCaster.Descriptor.Progression.CharacterLevel &&
+                    buff.Context.Params.DC == 10 + buff.Context.Params.CasterLevel / 2 + buff.Context.MaybeCaster.Stats.Charisma.Bonus + 2) &&
+                    !ReferenceEquals(sourceGrants[0].Context.Params, sourceGrants[1].Context.Params);
+                attribution &= privateParams;
                 var active = target.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, penalty)).ToArray();
                 var after = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
                     target.Stats.SaveFortitude.ModifiedValue, target.Stats.SaveReflex.ModifiedValue,
@@ -112,6 +121,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownerCha"] = owner.Stats.Charisma.ModifiedValue, ["ownerHd"] = owner.Descriptor.Progression.CharacterLevel,
                     ["siblingCha"] = sibling.Stats.Charisma.ModifiedValue, ["siblingHd"] = sibling.Descriptor.Progression.CharacterLevel,
                     ["saves"] = saves.Rows.DeepClone(), ["before"] = new JArray(before), ["after"] = new JArray(after),
+                    ["privateSourceParameters"] = privateParams,
+                    ["sourceParameters"] = new JArray(sourceGrants.Select(buff => new JObject {
+                        ["source"] = buff.Context.MaybeCaster.UniqueId, ["cl"] = buff.Context.Params.CasterLevel,
+                        ["dc"] = buff.Context.Params.DC })),
                     ["penaltyInstances"] = active.Length, ["unrelatedShakenPreserved"] = target.Buffs.Enumerable.Contains(foreignPenalty),
                     ["modifierSources"] = new JArray(target.Stats.AdditionalAttackBonus.Modifiers.Select(modifier => new JObject {
                         ["value"] = modifier.ModValue, ["source"] = modifier.Source?.Blueprint?.AssetGuid })), ["forcedRolls"] = 0 },

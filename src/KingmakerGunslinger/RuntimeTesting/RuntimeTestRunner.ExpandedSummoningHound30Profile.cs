@@ -7,6 +7,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Mechanics;
@@ -34,8 +35,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(buff.Context?.MaybeCaster, owner)).ToArray();
             var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                 FcbMagicMissileGuid, "Hound real SR consumer");
-            var context = new MechanicsContext(fixture.Hostile, fixture.Hostile.Descriptor, missile, null, new TargetWrapper(owner));
-            context.Params.CasterLevel = 1;
+            var context = new AbilityExecutionContext(new AbilityData(missile, fixture.Hostile.Descriptor),
+                new AbilityParams { CasterLevel = 1, SpellLevel = 1 }, new TargetWrapper(owner), null);
             var check = context.TriggerRule(new RuleSpellResistanceCheck(context, owner));
             int sr = owner.Get<UnitPartSpellResistance>()?.GetValue(context) ?? 0;
             bool profile = stats.HitPoints.ModifiedValue == 39 && stats.BaseAttackBonus.ModifiedValue == 6 &&
@@ -60,13 +61,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             var grant = owner.Blueprint.AddFacts.SelectMany(fact => fact.ComponentsArray)
                 .OfType<ArchonConstantMagicCircle>().Single();
             bool canonical = ReferenceEquals(grant.OwningBlueprint, owner.Blueprint) &&
-                ReferenceEquals(grant.Carrier, circle.Carrier) && grant.CasterLevel == 6;
+                ReferenceEquals(grant.Carrier, circle.Carrier) && ReferenceEquals(grant.Spell, circle.Spell) && grant.CasterLevel == 6;
             bool shared = areas.Length == 1 && carriers.Length == 1 && canonical &&
-                ReferenceEquals(areas[0].Blueprint, circle.Area) && areas[0].Context.Params.CasterLevel == 6;
+                ReferenceEquals(areas[0].Blueprint, circle.Area) && areas[0].Context.Params.CasterLevel == 6 &&
+                carriers[0].Context.Params.CasterLevel == 6 &&
+                ReferenceEquals(carriers[0].Context.SourceAbility, circle.Spell) &&
+                !ReferenceEquals(areas[0].Context.Params, AbilityParams.Empty);
             Sprint25Check("archon-hound-shared-circle", shared, new JObject {
                 ["owner"] = owner.UniqueId, ["carrier"] = circle.Carrier.AssetGuid, ["area"] = circle.Area.AssetGuid,
                 ["recipient"] = circle.Recipient.AssetGuid, ["ownerAreas"] = areas.Length, ["ownerCarriers"] = carriers.Length,
                 ["cl"] = areas.FirstOrDefault()?.Context?.Params.CasterLevel,
+                ["carrierCl"] = carriers.FirstOrDefault()?.Context?.Params.CasterLevel,
+                ["sourceAbility"] = carriers.FirstOrDefault()?.Context?.SourceAbility?.AssetGuid,
+                ["usesSharedEmptyParams"] = ReferenceEquals(areas.FirstOrDefault()?.Context?.Params, AbilityParams.Empty),
                 ["sameCanonicalCarrier"] = canonical },
                 "Hound uses the existing project's exact carrier/area/recipient, source owner and CL6, without a fork.");
             if (!shared) throw new InvalidOperationException("Hound shared Magic Circle source/CL failed.");

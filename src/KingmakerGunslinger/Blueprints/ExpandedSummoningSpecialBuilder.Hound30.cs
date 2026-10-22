@@ -121,7 +121,7 @@ namespace KingmakerGunslinger.Blueprints
             // alignment, typed stacking and configured control behavior. Future
             // fixes to that implementation are consumed directly by Hound.
             var grant = ScriptableObject.CreateInstance<ArchonConstantMagicCircle>();
-            grant.OwningBlueprint = hound; grant.Carrier = circle.Carrier; grant.CasterLevel = 6;
+            grant.OwningBlueprint = hound; grant.Carrier = circle.Carrier; grant.Spell = circle.Spell; grant.CasterLevel = 6;
             traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] { grant }).ToArray();
         }
     }
