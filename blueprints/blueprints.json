@@ -58303,6 +58303,126 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.TrumpetArchon",
+      "guid": "b6359294f13a4adab626d14c5ededd50",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.TrumpetArchon.One",
+      "guid": "b94fadda3c9449bdb39585a1f5567425",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.UnitType",
+      "guid": "a1d126bb1b88407397cc7c532de6a6e1",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.Traits",
+      "guid": "0a5e38a569b24e4cac99f81b3d9f578b",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.GreatswordType",
+      "guid": "d3e0c0058deb480eb1dad4b6d5352fdf",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.Greatsword2d6",
+      "guid": "1182d9ef39c443f5b4ffda85ae1e57b2",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.Spellbook",
+      "guid": "77559f96b2e54dcf8e729d499e1612df",
+      "plannedType": "BlueprintSpellbook",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.SpellList",
+      "guid": "a4331b0421ba421c8b0cc88c81409d6d",
+      "plannedType": "BlueprintSpellList",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.Brain",
+      "guid": "243a98c9fb684c1ca677516bbfb2432a",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealAi",
+      "guid": "10d2e0033c8d48da80e5a0b8ddaaf9cb",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealEligibility",
+      "guid": "ffb318ba37b141a3a026c88fd7474ec5",
+      "plannedType": "TrumpetPreparedHealingEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Explicit hidden S31 prepared-book vertical slice with real icon and native dependencies; one SM IX root remains suppressed; not release qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.TrumpetArchon.One",
+      "guid": "9deb4c4bd6cc57c0aa1996b92c5888ef",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.TrumpetArchon.One",
+      "guid": "990e5cde4a3f50e9b1264a48c60aa0fa",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.TrumpetArchon.One",
+      "guid": "000ec9e376de58a7ba7e007aee08861e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.TrumpetArchon.One",
+      "guid": "db17b115e3be54f19f58c2bfdce744f5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

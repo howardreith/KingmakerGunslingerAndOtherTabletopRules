@@ -674,6 +674,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureLemure30(library, bySymbol, extraplanar);
             ConfigureDretch30(library, bySymbol, extraplanar);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
+            ConfigureTrumpet31(library, bySymbol, extraplanar);
             ConfigureArchon30And31(library, bySymbol);
             // After the grapplers, because ConfigureGrabber replaces
             // the traits buff's component array and these append to it.
