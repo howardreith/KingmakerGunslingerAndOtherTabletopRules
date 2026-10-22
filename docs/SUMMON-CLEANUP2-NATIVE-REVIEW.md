@@ -4,7 +4,7 @@ This mission adds one exact save-free request scenario:
 `disposable-expanded-summoning-cleanup2-native-review`.
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
 The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
-`cloth-probe`, `ettin-lifecycle`, `scale-prototype`, `tooltips` and
+`cloth-probe`, `ettin-lifecycle`, `scale-prototype`, `tooltips`,
 `crab-attack` and `shared-controls`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
@@ -97,10 +97,17 @@ story answer, hide or stop method is called to obtain a capture.
 
 `crab-attack` observes actual canonical SNA III, one ordinary native attack
 and one full native claw routine against the qualified disposable hostile.
-The new exact-owned null-only lookup borrows Spider Bite to animate the
-Crab's claw drivers. Original weapons/stats/actions are retained; the native
-animation path can change attack timing from the previous missing-animation
-fallback, so real events/costs/timing and poses are mandatory. No supplied hit
+The request-only exact-owned null-only lookup borrows Spider Bite to animate
+the Crab's claw drivers. Ordinary production does not install that patch and
+retains its missing-Claw fallback. Review7 observed a real attack event at
+command time0.667s, so the borrowed path cannot be called timing-neutral.
+An exclusive disposable lease installs the hook only for this exact phase,
+actor, manager and caster, then closes admission before unpatch. Native Claw
+absence is checked before and after the lease. The observer associates only
+post-start live handles with exact planned attack info and weapon entities;
+Init/OnStart rebuilds are retained as bounded unaccepted diagnostics. Original
+weapons/stats/actions are retained; real events/costs/timing and poses remain
+mandatory. No supplied hit
 or forced act is permitted. This does not authorize Brachiosaurus Tail to be
 called Slam/Gore or invent a missing Hit animation.
 

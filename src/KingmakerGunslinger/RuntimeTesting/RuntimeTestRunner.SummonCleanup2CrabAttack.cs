@@ -30,12 +30,159 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class Cleanup2CrabHandle
         {
             internal UnitAnimationActionHandle Handle;
-            internal int Index, Samples;
+            internal AttackHandInfo Attack;
+            internal ItemEntityWeapon Weapon;
+            internal int Index, HandleId, Samples;
             internal bool[] Captured = new bool[3];
             internal Vector3[] FirstPosition;
             internal Quaternion[] FirstRotation;
             internal float LeftMotion, RightMotion, LeftAngle, RightAngle;
             internal readonly JArray Poses = new JArray();
+        }
+
+        // Init and OnStart both build native AttackHandInfo/handle lists. Only
+        // a live command-owned chain is motion evidence; preparatory handles
+        // remain bounded diagnostics and never inflate the accepted count.
+        private sealed class Cleanup2CrabAttackHandles
+        {
+            private sealed class Seen
+            {
+                internal UnitAnimationActionHandle Handle;
+                internal AttackHandInfo Attack;
+                internal ItemEntityWeapon Weapon;
+                internal int Id, Index;
+                internal bool Accepted, CommandStarted;
+                internal string State;
+            }
+            private sealed class WeaponEvent
+            {
+                internal AttackHandInfo Attack;
+                internal UnitAnimationActionHandle Handle;
+                internal ItemEntityWeapon Weapon;
+                internal int Index;
+            }
+            private readonly UnitAnimationAction bound;
+            private readonly ItemEntityWeapon[] expected;
+            private readonly Dictionary<UnitAnimationActionHandle, Seen> seen = new Dictionary<UnitAnimationActionHandle, Seen>();
+            private readonly Dictionary<int, Seen> latest = new Dictionary<int, Seen>();
+            private readonly List<WeaponEvent> events = new List<WeaponEvent>();
+            internal readonly List<Cleanup2CrabHandle> Series = new List<Cleanup2CrabHandle>();
+            internal readonly JArray Transitions = new JArray(), Replacements = new JArray();
+            internal readonly List<string> Failures = new List<string>();
+            internal bool DiagnosticsTruncated;
+            internal Cleanup2CrabAttackHandles(UnitAnimationAction action, ItemEntityWeapon[] weapons)
+            { bound = action; expected = weapons; }
+            private void Fail(string text)
+            { if (Failures.Count < 32 && !Failures.Contains(text)) Failures.Add(text); }
+            private void Row(JArray rows, JObject value)
+            {
+                if (Transitions.Count + Replacements.Count >= 128) { DiagnosticsTruncated = true; Fail("handle-diagnostic-bound-exceeded"); return; }
+                rows.Add(value);
+            }
+            private static int Id(object value) { return value == null ? 0 : RuntimeHelpers.GetHashCode(value); }
+            internal JObject RecordWeapon(UnitAttack command, ItemEntityWeapon weapon)
+            {
+                int index = command.GetAttackIndex();
+                AttackHandInfo info = command.PlannedAttack;
+                UnitAnimationActionHandle handle = command.Animation;
+                bool exact = index >= 0 && index < expected.Length && info != null &&
+                    ReferenceEquals(info.Weapon, weapon) && ReferenceEquals(expected[index], weapon) &&
+                    handle != null && ReferenceEquals(info.AnimationHandle, handle) && ReferenceEquals(handle.Action, bound);
+                if (!exact) Fail("native-weapon-event-has-no-exact-planned-handle-chain");
+                if (events.Count < 8) events.Add(new WeaponEvent { Index = index, Attack = info, Handle = handle, Weapon = weapon });
+                else Fail("native-weapon-event-bound-exceeded");
+                return new JObject { ["plannedIndexAtRule"] = index, ["attackInfoIdentity"] = Id(info),
+                    ["weaponEntityIdentity"] = Id(weapon), ["nativeHandleIdentity"] = Id(handle),
+                    ["samePlannedAndCommandHandle"] = info != null && ReferenceEquals(info.AnimationHandle, handle),
+                    ["exactAssociation"] = exact };
+            }
+            internal IEnumerable<Cleanup2CrabHandle> Observe(UnitAttack command)
+            {
+                var active = new List<Cleanup2CrabHandle>();
+                bool currentListed = false;
+                if (command.AllAttacks.Count > 8) { Fail("native-attack-list-bound-exceeded"); return active; }
+                if (command.IsStarted && command.AllAttacks.Count != expected.Length) Fail("started-native-routine-count-changed");
+                for (int index = 0; index < command.AllAttacks.Count; index++)
+                {
+                    AttackHandInfo info = command.AllAttacks[index];
+                    UnitAnimationActionHandle handle = info?.AnimationHandle;
+                    if (handle == null) continue;
+                    bool current = ReferenceEquals(command.Animation, handle);
+                    currentListed |= current;
+                    Seen receipt;
+                    if (!seen.TryGetValue(handle, out receipt))
+                    {
+                        if (seen.Count >= 32) { Fail("native-handle-census-bound-exceeded"); continue; }
+                        receipt = new Seen { Handle = handle, Attack = info, Weapon = info.Weapon, Index = index, Id = seen.Count };
+                        Seen prior;
+                        if (latest.TryGetValue(index, out prior) && !ReferenceEquals(prior.Handle, handle))
+                            Row(Replacements, new JObject { ["frame"] = Time.frameCount, ["index"] = index,
+                                ["previousHandleId"] = prior.Id, ["replacementHandleId"] = receipt.Id,
+                                ["previousInfoIdentity"] = Id(prior.Attack), ["replacementInfoIdentity"] = Id(info),
+                                ["previousAccepted"] = prior.Accepted, ["previousCommandStarted"] = prior.CommandStarted,
+                                ["commandStartedNow"] = command.IsStarted,
+                                ["meaning"] = "Observed identities only. Native Init and OnStart rebuild the list; an accepted chain may never be silently replaced." });
+                        seen.Add(handle, receipt); latest[index] = receipt;
+                    }
+                    if (receipt.Index != index || !ReferenceEquals(receipt.Attack, info) || !ReferenceEquals(receipt.Weapon, info.Weapon))
+                        Fail("one-handle-reused-across-different-attack-info-or-weapon");
+                    string state = command.IsStarted + ":" + handle.IsStarted + ":" + handle.IsFinished + ":" + (handle.ActiveAnimation != null) + ":" + current;
+                    if (state != receipt.State)
+                    {
+                        receipt.State = state;
+                        Row(Transitions, new JObject { ["frame"] = Time.frameCount, ["commandTimeSinceStart"] = command.TimeSinceStart,
+                            ["handleId"] = receipt.Id, ["nativeHandleIdentity"] = Id(handle), ["attackInfoIdentity"] = Id(info),
+                            ["index"] = index, ["nativePlannedIndex"] = command.GetAttackIndex(),
+                            ["weapon"] = info.Weapon?.Blueprint.AssetGuid, ["weaponEntityIdentity"] = Id(info.Weapon),
+                            ["commandStarted"] = command.IsStarted, ["handleStarted"] = handle.IsStarted,
+                            ["handleFinished"] = handle.IsFinished, ["activeAnimation"] = handle.ActiveAnimation != null,
+                            ["sameCommandHandle"] = current, ["acceptedPreviously"] = receipt.Accepted });
+                    }
+                    receipt.CommandStarted |= command.IsStarted;
+                    bool live = handle.IsStarted && !handle.IsFinished && handle.ActiveAnimation != null;
+                    if (!live) continue;
+                    if (!current)
+                    {
+                        // A known accepted prior attack may finish its native
+                        // blend after its exact weapon rule. Unknown live
+                        // handles are never discarded as harmless transients.
+                        if (!receipt.Accepted || index >= command.GetAttackIndex() ||
+                            events.Count(value => value.Index == index && ReferenceEquals(value.Attack, info) && ReferenceEquals(value.Handle, handle)) != 1)
+                            Fail("unassociated-live-handle-outside-current-command-animation");
+                        continue;
+                    }
+                    bool beforeAct = index == command.GetAttackIndex() && ReferenceEquals(command.PlannedAttack, info);
+                    bool afterAct = index + 1 == command.GetAttackIndex() && ReferenceEquals(command.LastExecutedAttack, info) &&
+                        events.Count(value => value.Index == index && ReferenceEquals(value.Attack, info) && ReferenceEquals(value.Handle, handle)) == 1;
+                    if (!command.IsStarted || command.IsFinished || index >= expected.Length ||
+                        !ReferenceEquals(expected[index], info.Weapon) || !ReferenceEquals(handle.Action, bound) || !(beforeAct || afterAct))
+                    { Fail("current-live-handle-has-mismatched-native-attack-chain"); continue; }
+                    Cleanup2CrabHandle series = Series.SingleOrDefault(value => value.Index == index);
+                    if (series == null)
+                    {
+                        series = new Cleanup2CrabHandle { Index = index, Attack = info, Weapon = info.Weapon, Handle = handle, HandleId = receipt.Id };
+                        Series.Add(series); receipt.Accepted = true;
+                    }
+                    if (!ReferenceEquals(series.Handle, handle) || !ReferenceEquals(series.Attack, info) || !ReferenceEquals(series.Weapon, info.Weapon))
+                    { Fail("duplicate-or-replaced-accepted-active-chain-for-one-attack"); continue; }
+                    active.Add(series);
+                }
+                if (command.Animation != null && command.Animation.IsStarted && !command.Animation.IsFinished &&
+                    command.Animation.ActiveAnimation != null && !currentListed) Fail("live-command-animation-absent-from-native-attack-list");
+                if (active.Count > 1) Fail("multiple-current-live-attack-chains");
+                return active;
+            }
+            internal bool Exact(UnitAttack command)
+            {
+                return !DiagnosticsTruncated && Failures.Count == 0 && Series.Count == expected.Length && events.Count == expected.Length &&
+                    command.AllAttacks.Count == expected.Length && Enumerable.Range(0, expected.Length).All(index => {
+                        var series = Series.SingleOrDefault(value => value.Index == index);
+                        var linked = events.Where(value => value.Index == index).ToArray();
+                        return series != null && linked.Length == 1 && ReferenceEquals(series.Attack, command.AllAttacks[index]) &&
+                            ReferenceEquals(series.Weapon, expected[index]) && ReferenceEquals(linked[0].Attack, series.Attack) &&
+                            ReferenceEquals(linked[0].Handle, series.Handle) && ReferenceEquals(linked[0].Weapon, series.Weapon);
+                    });
+            }
         }
 
         private IEnumerable<int> ReviewSummonCleanup2CrabAttack(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
@@ -51,6 +198,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             int oldCasts = _expandedSummoningPlayerPathRuleCastCount, oldSpawns = _expandedSummoningPlayerPathSpawnActionCount;
             var hooks = HarmonyInstance.Create("kmg.cleanup2.crab-attack." + _request.RunId);
             UnitEntityData actor = null;
+            IDisposable bindingReview = null;
+            UnitAnimationManager reviewManager = null;
+            bool bindingReviewAttempted = false;
+            bool bindingRestorationObserved = false;
             var watch = Stopwatch.StartNew();
             const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
             try
@@ -82,6 +233,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Cleanup2WaitAppearance(actor, "crab-attack")) yield return frame;
                 if (!ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster)) throw new InvalidOperationException("Positive Crab ownership lost.");
                 var manager = actor.View.AnimationManager;
+                reviewManager = manager;
+                bool productionClawAbsent = manager != null && manager.GetAction(UnitAnimationSpecialAttackType.Claw) == null;
+                Cleanup2Check("crab-production-claw-before-experiment", productionClawAbsent, new JObject {
+                    ["unit"] = actor.UniqueId, ["productionClawLookupNull"] = productionClawAbsent,
+                    ["scope"] = "The borrowed Bite binding is a request-only diagnostic experiment; ordinary production keeps its native missing-Claw fallback." },
+                    "The actual live owned Crab's production Claw lookup is null before the exact review lease begins.");
+                if (!productionClawAbsent) throw new InvalidOperationException("Production Crab Claw is already bound before the experiment.");
+                bindingReviewAttempted = true;
+                bindingReview = CrabSummonAnimationBindingPatch.BeginReview(_request, actor, fixture.Caster);
+                if (bindingReview == null) throw new InvalidOperationException("Crab request-only binding lease unavailable.");
                 var nativeBite = manager.GetAction(UnitAnimationSpecialAttackType.Bite);
                 var bound = manager.GetAction(UnitAnimationSpecialAttackType.Claw);
                 BlueprintUnit spider = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(BlueprintBootstrap.Library,
@@ -109,8 +270,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["unchangedNativeSpiderClawLookupStillAbsent"] = sourceUnaffected,
                     ["moduleOffAndForeignBodyTests"] = "Pure scope negatives; no global module setting or foreign/native material is changed for a test.",
                     ["hitAnimation"] = manager.GetAction(UnitAnimationType.Hit) == null ? "UNSUPPORTED_NATIVE_DONOR_HAS_NO_HIT_ACTION" : "native-action-present-not-exercised",
-                    ["adaptation"] = "Missing Crab Claw request borrows the identical native Spider Bite action/clip through ordinary handle creation. It is not a newly authored claw clip or finger-closure proof." },
-                    "Only the live provenance-owned registered Crab receives the missing Claw lookup; nonnull foreign results and the actual native spider remain unchanged.");
+                    ["adaptation"] = "REQUEST-ONLY DIAGNOSTIC: the missing Crab Claw borrows the identical Spider Bite action/clip through ordinary handle creation. This changes native act timing and is not a production art-only correction, authored claw clip or finger-closure proof." },
+                    "Only this exact request-leased live Crab receives the experimental lookup; nonnull foreign results and the native spider remain unchanged.");
                 if (!binding) throw new InvalidOperationException("Native Crab binding refused: " + CrabSummonAnimationBindingPatch.Describe(manager));
                 Transform[] drivers = new[] { "L", "R" }.SelectMany(side => Enumerable.Range(1, 7)
                     .Select(index => actor.View.GetComponentsInChildren<Transform>(true).Single(value => value.name == "pedipalp" + index + "_" + side))).ToArray();
@@ -141,6 +302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     actor.Memory.Add(target); target.Memory.Add(actor);
                     var command = new UnitAttack(target) { ForceFullAttack = full, IsSingleAttack = !full };
                     var events = new JArray();
+                    var handles = new Cleanup2CrabAttackHandles(bound, full ? limbs : new[] { limbs[0] });
                     var attackObserver = new Sprint24AttackObserver { Owner = actor, Target = target };
                     attackObserver.AfterWeapon = attack => events.Add(new JObject { ["frame"] = Time.frameCount,
                         ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds, ["commandTimeSinceStart"] = command.TimeSinceStart,
@@ -148,11 +310,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["target"] = attack.Target?.UniqueId, ["hit"] = attack.AttackRoll?.IsHit,
                         ["naturalRoll"] = attack.AttackRoll?.Roll.Value, ["autoMiss"] = attack.AttackRoll?.AutoMiss,
                         ["suspendLog"] = attack.AttackRoll?.SuspendCombatLog, ["damage"] = attack.MeleeDamage?.Damage,
-                        ["isCharge"] = attack.IsCharge, ["isAttackOfOpportunity"] = attack.IsAttackOfOpportunity });
+                        ["isCharge"] = attack.IsCharge, ["isAttackOfOpportunity"] = attack.IsAttackOfOpportunity,
+                        ["nativeAttackAssociation"] = handles.RecordWeapon(command, attack.Weapon) });
                     var costs = new JArray(); var endings = new JArray(); var states = new JArray();
-                    var handles = new Dictionary<UnitAnimationActionHandle, Cleanup2CrabHandle>();
                     var commandWatch = Stopwatch.StartNew();
                     int startPulse = _sprint25Clock.Pulses; double startGame = Game.Instance.Player.GameTime.TotalSeconds;
+                    bool commandQualified = false;
                     EventBus.Subscribe(attackObserver);
                     try
                     {
@@ -167,17 +330,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     !CrabSummonAnimationBindingPatch.NativeReceiptUnchanged(manager) ||
                                     !ExpandedSummoningPteranodonViewPatch.HasLiveOriginalVisual(actor.View, Sprint14BonePolicy.CrabKey))
                                     throw new InvalidOperationException("Crab ownership/native action receipt changed during command.");
-                                foreach (var info in command.AllAttacks)
+                                foreach (Cleanup2CrabHandle series in handles.Observe(command))
                                 {
-                                    UnitAnimationActionHandle handle = info.AnimationHandle;
-                                    if (handle == null || !ReferenceEquals(handle.Action, bound)) continue;
-                                    Cleanup2CrabHandle series;
-                                    if (!handles.TryGetValue(handle, out series))
-                                    {
-                                        series = new Cleanup2CrabHandle { Handle = handle, Index = handles.Count };
-                                        handles.Add(handle, series);
-                                    }
-                                    if (!handle.IsStarted || handle.IsFinished || handle.ActiveAnimation == null) continue;
+                                    UnitAnimationActionHandle handle = series.Handle;
                                     Cleanup2CrabPose(actor, drivers, series, frames);
                                     float nativeTime = handle.GetTime();
                                     float[] thresholds = { .10f, .45f, .85f };
@@ -190,6 +345,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                             Cleanup2Check("crab-native-pose-" + stage + "-" + series.Index + "-" + image, saved,
                                                 new JObject { ["file"] = file, ["result"] = result, ["nativeHandleTime"] = nativeTime,
                                                     ["commandTimeSinceStart"] = command.TimeSinceStart, ["action"] = handle.Action.name,
+                                                    ["plannedAttackIndex"] = series.Index, ["observedHandleId"] = series.HandleId,
+                                                    ["nativeHandleIdentity"] = RuntimeHelpers.GetHashCode(handle),
+                                                    ["attackInfoIdentity"] = RuntimeHelpers.GetHashCode(series.Attack),
+                                                    ["weaponEntityIdentity"] = RuntimeHelpers.GetHashCode(series.Weapon),
                                                     ["nativeActiveAnimation"] = handle.ActiveAnimation.GetType().FullName,
                                                     ["forcedPoseOrAct"] = false },
                                                 "A real currently active ordinary native command/borrowed clip supplies the actual camera pose; no handle is executed or acted by the observer.");
@@ -201,11 +360,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["acted"] = command.IsActed, ["finished"] = command.IsFinished, ["timeSinceStart"] = command.TimeSinceStart,
                                     ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds, ["animationTime"] = command.Animation?.GetTime(),
                                     ["animationActed"] = command.Animation?.IsActed, ["animationFinished"] = command.Animation?.IsFinished,
+                                    ["plannedAttackIndex"] = command.GetAttackIndex(),
+                                    ["plannedInfoIdentity"] = command.PlannedAttack == null ? 0 : RuntimeHelpers.GetHashCode(command.PlannedAttack),
+                                    ["commandHandleIdentity"] = command.Animation == null ? 0 : RuntimeHelpers.GetHashCode(command.Animation),
                                     ["nativeAttackEvents"] = attackObserver.WeaponAttacks.Count });
                                 Game.Instance.IsPaused = false; yield return 0;
                             }
                             int expected = full ? 2 : 1;
-                            bool motion = handles.Count == expected && handles.Values.All(value => value.Samples >= 4 &&
+                            // Observe the terminal state once as well; it may
+                            // hold a finished native handle but cannot add a
+                            // new accepted motion chain.
+                            handles.Observe(command).ToArray();
+                            bool association = handles.Exact(command);
+                            bool motion = association && handles.Series.All(value => value.Samples >= 4 &&
                                 (value.LeftMotion > .001f || value.LeftAngle > .1f) && (value.RightMotion > .001f || value.RightAngle > .1f) && value.Captured.All(saved => saved));
                             bool exact = command.IsFinished && (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
                                 command.AllAttacks.Count == expected && attackObserver.WeaponAttacks.Count == expected && attackObserver.OwnerWeaponAttacks.Count == expected &&
@@ -223,25 +390,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["gameTimeDelta"] = Game.Instance.Player.GameTime.TotalSeconds - startGame, ["clockPulses"] = _sprint25Clock.Pulses - startPulse,
                                 ["plannedAttacks"] = command.AllAttacks.Count, ["expectedAttacks"] = expected, ["nativeWeaponEvents"] = events,
                                 ["costs"] = costs, ["endings"] = endings, ["commandStates"] = states,
-                                ["handles"] = new JArray(handles.Values.Select(value => new JObject { ["limb"] = value.Index,
+                                ["exactNativeAttackHandleAssociation"] = association,
+                                ["handleAssociationFailures"] = new JArray(handles.Failures),
+                                ["handleStateTransitions"] = handles.Transitions, ["handleReplacements"] = handles.Replacements,
+                                ["handleDiagnosticsTruncated"] = handles.DiagnosticsTruncated,
+                                ["handleAssociationProof"] = "Exact in-memory AttackHandInfo/weapon/handle references link each planned index to one real native weapon event. Printed identity hashes are diagnostics only. Prestart handles never count as motion; unknown/duplicate active chains fail.",
+                                ["handles"] = new JArray(handles.Series.OrderBy(value => value.Index).Select(value => new JObject { ["limb"] = value.Index,
+                                    ["plannedAttackIndex"] = value.Index, ["observedHandleId"] = value.HandleId,
+                                    ["nativeHandleIdentity"] = RuntimeHelpers.GetHashCode(value.Handle),
+                                    ["attackInfoIdentity"] = RuntimeHelpers.GetHashCode(value.Attack),
+                                    ["weaponEntityIdentity"] = RuntimeHelpers.GetHashCode(value.Weapon),
                                     ["samples"] = value.Samples, ["leftViewSpaceMotion"] = value.LeftMotion, ["rightViewSpaceMotion"] = value.RightMotion,
                                     ["leftLocalAngleDegrees"] = value.LeftAngle, ["rightLocalAngleDegrees"] = value.RightAngle,
                                     ["threePoseImages"] = value.Captured.All(saved => saved), ["poses"] = value.Poses })),
                                 ["positiveChelaDriverMotion"] = motion, ["borrowedNativeSourceStillExact"] = CrabSummonAnimationBindingPatch.NativeReceiptUnchanged(manager),
                                 ["baseStatsAndWeaponEntitiesUnchanged"] = Cleanup2CrabBaseStats(actor).ToString() == baseStats,
                                 ["forcedRolls"] = 0, ["forcedAnimationActs"] = 0, ["fixtureAttackRulesTriggered"] = 0,
-                                ["timingLimit"] = "Native action/animation events are observed under the established request-local frame-synchronous Dialog clock. Missing-animation ScheduleAct(1) becomes native clip event timing (clip length about1.167s); timing-neutrality and natural Default-mode/turn-based timing are NOT claimed.",
+                                ["timingLimit"] = "REQUEST-ONLY TIMING-CHANGING EXPERIMENT. The retained source7 single attack acted at command t=0.6670539s, earlier than native missing-animation ScheduleAct(1). This borrowed Bite is not active in ordinary production. Current act/cost/animation observations use the qualified fixture clock; timing neutrality and natural Default-mode/turn-based timing are NOT claimed.",
                                 ["hitAnimation"] = "UNSUPPORTED: no native donor Hit action; not synthesized or exercised.",
                                 ["brachiosaurusTail"] = "BLOCKED: no approved native tail pose; no generic alias or Tail binding exists here." },
                                 "Ordinary single/full native Crab commands resolve one/two actual claws once with one real cost, finite positive live chela pose motion and unmodified source assets; no supplied hit or forced act.");
                             if (!exact) throw new InvalidOperationException("Native Crab " + stage + " attack/motion/cost proof failed; retained evidence is not timing acceptance.");
                         }
+                        commandQualified = true;
                     }
                     finally
                     {
                         EventBus.Unsubscribe(attackObserver);
-                        actor.Commands.InterruptAll(true); actor.Commands.RemoveFinishedAndUpdateQueue();
-                        Sprint20ReleaseOwnHold(fixture, actor);
+                        try
+                        {
+                            // A failed command cannot retain the experimental
+                            // lookup while its cleanup interrupts native work.
+                            if (!commandQualified) Cleanup2EndCrabBindingReview(ref bindingReview, actor,
+                                reviewManager, ref bindingRestorationObserved);
+                        }
+                        finally
+                        {
+                            actor.Commands.InterruptAll(true); actor.Commands.RemoveFinishedAndUpdateQueue();
+                            Sprint20ReleaseOwnHold(fixture, actor);
+                        }
                     }
                 }
             }
@@ -251,6 +438,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Action<string, Action> restore = (label, action) => { try { action(); } catch (Exception error) { failures.Add(label + ":" + error.GetType().Name + ":" + error.Message); } };
                 try
                 {
+                    if (bindingReviewAttempted) restore("request-binding", () => Cleanup2EndCrabBindingReview(
+                        ref bindingReview, actor, reviewManager, ref bindingRestorationObserved));
                     _expandedSummoningPlayerPathCaptureActive = false;
                     restore("hooks", () => hooks.UnpatchAll(hooks.Id));
                     if (actor != null && !actor.Destroyed)
@@ -266,10 +455,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 finally { _sprint25WaitingForUnityAppearance = waiting; restore("pause", () => Game.Instance.IsPaused = pause); }
                 Cleanup2Check("crab-attack-observer-restored", failures.Count == 0, new JObject { ["failures"] = new JArray(failures),
                     ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["sharedFixtureOwnsExactSummonAndHostileTeardown"] = true,
+                    ["requestOnlyBindingDisposedAndProductionClawNull"] = !bindingReviewAttempted || bindingRestorationObserved,
                     ["humanSaveWrites"] = 0, ["newAnimationAssetsOwnedOrDestroyed"] = 0 },
                     "Only the exact disposable command/hold/capture state is cleaned; borrowed animation assets are never destroyed or changed, and the shared positive actor fixture owns final teardown.");
                 if (failures.Count > 0) throw new InvalidOperationException("Crab attack observer cleanup failed: " + string.Join("|", failures.ToArray()));
             }
+        }
+
+        private void Cleanup2EndCrabBindingReview(ref IDisposable lease, UnitEntityData actor,
+            UnitAnimationManager manager, ref bool observed)
+        {
+            if (lease != null)
+            {
+                IDisposable owned = lease;
+                try { owned.Dispose(); }
+                finally { lease = null; }
+            }
+            if (observed) return;
+            bool liveExactManager = actor != null && !actor.Destroyed && actor.View != null &&
+                manager != null && ReferenceEquals(actor.View.AnimationManager, manager);
+            bool absent = liveExactManager && manager.GetAction(UnitAnimationSpecialAttackType.Claw) == null;
+            Cleanup2Check("crab-production-claw-after-experiment", absent, new JObject {
+                ["unit"] = actor?.UniqueId, ["sameLiveManager"] = liveExactManager,
+                ["productionClawLookupNull"] = absent, ["reviewLeaseDisposedBeforeFinalCommandCleanup"] = lease == null,
+                ["productionBehavior"] = "Native missing-Claw lookup/fallback restored; this request-only timing-changing experiment supplies no default production animation binding." },
+                "After disposing the exact experiment lease, the same still-live owned Crab manager again returns null for production Claw lookup.");
+            observed = absent;
+            if (!absent) throw new InvalidOperationException("Production Crab Claw null fallback restoration was not observed on the same live manager.");
         }
 
         private static JObject Cleanup2CrabBaseStats(UnitEntityData actor)
@@ -410,6 +622,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else { series.RightMotion = Mathf.Max(series.RightMotion, distance); series.RightAngle = Mathf.Max(series.RightAngle, angle); }
             }
             if (frame % 4 == 0) series.Poses.Add(new JObject { ["frame"] = Time.frameCount, ["nativeHandleTime"] = series.Handle.GetTime(),
+                ["plannedAttackIndex"] = series.Index, ["observedHandleId"] = series.HandleId,
+                ["attackInfoIdentity"] = RuntimeHelpers.GetHashCode(series.Attack),
+                ["weaponEntityIdentity"] = RuntimeHelpers.GetHashCode(series.Weapon),
                 ["viewSpaceChelaDriverPoints"] = new JArray(positions.Select(SurveyVector)),
                 ["basis"] = "Current unit view origin/axes; native root motion is removed. Fourteen real pedipalp driver transform points, not proprietary mesh vertices." });
         }
