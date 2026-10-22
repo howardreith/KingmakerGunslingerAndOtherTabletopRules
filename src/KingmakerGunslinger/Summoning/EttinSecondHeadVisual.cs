@@ -47,6 +47,8 @@ namespace KingmakerGunslinger.Summoning
             internal Material SourceMaterial;
             internal bool ControllerAdoptionStarted;
             internal FadeDefaults Baseline;
+            internal JObject AttachedSourceFadeDefaults;
+            internal JArray AttachedMaterialFadeDefaults;
             internal float SourceDefaultDissolve;
             internal string ControllerCleanup;
             internal readonly List<Material> Materials = new List<Material>();
@@ -119,6 +121,7 @@ namespace KingmakerGunslinger.Summoning
                     owned.Controller = controllers[0]; owned.SourceMaterial = template;
                     owned.SourceDefaultDissolve = defaults.Dissolve;
                     owned.Baseline = defaults;
+                    owned.AttachedSourceFadeDefaults = DescribeFadeDefaults(defaults);
                     owned.Root = new GameObject(ObjectPrefix + "_Root");
                     owned.Root.transform.SetParent(neck, false);
                     owned.Root.transform.localPosition = Vector3.zero;
@@ -179,6 +182,15 @@ namespace KingmakerGunslinger.Summoning
                     if (reinit != "reinitialized" || assigned.Length != 4 ||
                         driven == null || assigned.Any(material => !AdoptedWithBaseline(owned, material, driven)))
                         throw new InvalidOperationException("Owned head was not adopted with exact native baseline fade defaults.");
+                    // Scalar receipt only: preserve the cache accepted here so
+                    // later native recensus/instancing is distinguishable from
+                    // an initialization mismatch. No material state is changed.
+                    owned.AttachedMaterialFadeDefaults = new JArray(assigned.Select(material => {
+                        FadeDefaults cached;
+                        TryGetFadeDefaults(owned.Controller, material, out cached);
+                        return new JObject { ["material"] = material.GetInstanceID(),
+                            ["name"] = material.name, ["cached"] = DescribeFadeDefaults(cached) };
+                    }));
                     owned.Outcome = "attached;heads=2;original=1;project=1;" +
                         "authored=1;continuous-neck=1;orbit=0;" +
                         "shader=PF/StandardDynamic;original-paint=1;owned-textures=2;controller-adopted=1;fade-default=source-cache";
@@ -322,6 +334,56 @@ namespace KingmakerGunslinger.Summoning
                 first.RenderQueue == second.RenderQueue && first.RenderTypeTagValue == second.RenderTypeTagValue;
         }
 
+        private static JObject DescribeFadeDefaults(FadeDefaults value)
+        {
+            if (value == null) return null;
+            Texture2D texture = value.DissolveTexture;
+            return new JObject {
+                ["IsDissolveEnabled"] = value.IsDissolveEnabled,
+                ["DissolveTexture"] = new JObject {
+                    ["managedNull"] = ReferenceEquals(texture, null),
+                    ["nativeAlive"] = texture != null,
+                    ["nativeInstanceId"] = ReferenceEquals(texture, null) ? 0 : texture.GetInstanceID(),
+                    ["managedIdentity"] = ReferenceEquals(texture, null) ? 0 : RuntimeHelpers.GetHashCode(texture),
+                    ["name"] = texture == null ? null : texture.name },
+                ["DissolveTextureScale"] = new JArray(value.DissolveTextureScale.x, value.DissolveTextureScale.y),
+                ["DissolveTextureOffset"] = new JArray(value.DissolveTextureOffset.x, value.DissolveTextureOffset.y),
+                ["Dissolve"] = value.Dissolve, ["DissolveWidth"] = value.DissolveWidth,
+                ["DissolveColor"] = new JArray(value.DissolveColor.r, value.DissolveColor.g,
+                    value.DissolveColor.b, value.DissolveColor.a),
+                ["DissolveColorScale"] = value.DissolveColorScale,
+                ["DissolveCutoutEnabled"] = value.DissolveCutoutEnabled,
+                ["DissolveEmissionEnabled"] = value.DissolveEmissionEnabled,
+                ["RenderQueue"] = value.RenderQueue, ["RenderTypeTagValue"] = value.RenderTypeTagValue };
+        }
+
+        // These comparisons intentionally mirror SameFadeBaseline, including
+        // managed texture identity and exact scalar comparisons; diagnostics
+        // do not replace or relax the existing admission/assertion predicate.
+        private static JArray FadeBaselineMismatches(FadeDefaults current, FadeDefaults attached)
+        {
+            var result = new JArray();
+            if (current == null || attached == null) { result.Add("cacheUnavailable"); return result; }
+            if (current.IsDissolveEnabled != attached.IsDissolveEnabled) result.Add("IsDissolveEnabled");
+            if (!ReferenceEquals(current.DissolveTexture, attached.DissolveTexture)) result.Add("DissolveTexture.managedReference");
+            if (current.DissolveTextureScale.x != attached.DissolveTextureScale.x) result.Add("DissolveTextureScale.x");
+            if (current.DissolveTextureScale.y != attached.DissolveTextureScale.y) result.Add("DissolveTextureScale.y");
+            if (current.DissolveTextureOffset.x != attached.DissolveTextureOffset.x) result.Add("DissolveTextureOffset.x");
+            if (current.DissolveTextureOffset.y != attached.DissolveTextureOffset.y) result.Add("DissolveTextureOffset.y");
+            if (current.Dissolve != attached.Dissolve) result.Add("Dissolve");
+            if (current.DissolveWidth != attached.DissolveWidth) result.Add("DissolveWidth");
+            if (current.DissolveColor.r != attached.DissolveColor.r) result.Add("DissolveColor.r");
+            if (current.DissolveColor.g != attached.DissolveColor.g) result.Add("DissolveColor.g");
+            if (current.DissolveColor.b != attached.DissolveColor.b) result.Add("DissolveColor.b");
+            if (current.DissolveColor.a != attached.DissolveColor.a) result.Add("DissolveColor.a");
+            if (current.DissolveColorScale != attached.DissolveColorScale) result.Add("DissolveColorScale");
+            if (current.DissolveCutoutEnabled != attached.DissolveCutoutEnabled) result.Add("DissolveCutoutEnabled");
+            if (current.DissolveEmissionEnabled != attached.DissolveEmissionEnabled) result.Add("DissolveEmissionEnabled");
+            if (current.RenderQueue != attached.RenderQueue) result.Add("RenderQueue");
+            if (current.RenderTypeTagValue != attached.RenderTypeTagValue) result.Add("RenderTypeTagValue");
+            return result;
+        }
+
         private static bool ExactInstanceName(string actual, string expected)
         {
             return actual != null && actual.StartsWith(expected, StringComparison.Ordinal) &&
@@ -402,10 +464,28 @@ namespace KingmakerGunslinger.Summoning
                 return new JObject { ["attachmentPresent"] = false };
             Material[] assigned = owned.Root == null ? new Material[0] : owned.Root
                 .GetComponentsInChildren<Renderer>(true).SelectMany(renderer => renderer.sharedMaterials).ToArray();
+            FadeDefaults sourceCached = null;
+            Material currentSource = null;
+            string sourceObservationError = null;
+            if (view != null && owned.Root != null)
+            {
+                try { currentSource = RequireHillBodyMaterial(view); }
+                catch (Exception error) { sourceObservationError = error.GetType().Name + ":" + error.Message; }
+            }
+            bool sourceHasCache = currentSource != null && owned.Controller != null &&
+                TryGetFadeDefaults(owned.Controller, currentSource, out sourceCached);
             return new JObject { ["attachmentPresent"] = true, ["outcome"] = owned.Outcome,
                 ["controller"] = owned.Controller == null ? 0 : owned.Controller.GetInstanceID(),
                 ["sourceMaterial"] = owned.SourceMaterial == null ? 0 : owned.SourceMaterial.GetInstanceID(),
                 ["sourceCachedDissolveBaseline"] = owned.SourceDefaultDissolve,
+                ["attachSourceCachedFadeDefaults"] = owned.AttachedSourceFadeDefaults?.DeepClone(),
+                ["attachMaterialCachedFadeDefaults"] = owned.AttachedMaterialFadeDefaults?.DeepClone(),
+                ["currentSourceMaterial"] = currentSource == null ? 0 : currentSource.GetInstanceID(),
+                ["currentSourceMatchesAttachedMaterial"] = ReferenceEquals(currentSource, owned.SourceMaterial),
+                ["currentSourceObservationError"] = sourceObservationError,
+                ["currentSourceNativeDefaultCached"] = sourceHasCache,
+                ["currentSourceCachedFadeDefaults"] = DescribeFadeDefaults(sourceCached),
+                ["currentSourceMismatchesFromAttach"] = FadeBaselineMismatches(sourceCached, owned.Baseline),
                 ["controllerCleanup"] = owned.ControllerCleanup,
                 ["headMaterials"] = new JArray(assigned.Take(4).Select(material => {
                     FadeDefaults cached = null;
@@ -417,6 +497,13 @@ namespace KingmakerGunslinger.Summoning
                         ["name"] = material?.name, ["controllerMember"] = member,
                         ["nativeDefaultCached"] = hasCache,
                         ["fullCachedFadeBaselineMatchesSource"] = hasCache && SameFadeBaseline(cached, owned.Baseline),
+                        ["cachedFadeDefaults"] = DescribeFadeDefaults(cached),
+                        ["cachedFadeMismatchesFromAttach"] = FadeBaselineMismatches(cached, owned.Baseline),
+                        ["cachedFadeMismatchesFromCurrentSource"] = FadeBaselineMismatches(cached, sourceCached),
+                        ["fadeTextureReferenceMatchesAttach"] = hasCache && owned.Baseline != null &&
+                            ReferenceEquals(cached.DissolveTexture, owned.Baseline.DissolveTexture),
+                        ["fadeTextureNativeEqualsAttach"] = hasCache && owned.Baseline != null &&
+                            cached.DissolveTexture == owned.Baseline.DissolveTexture,
                         ["liveDissolve"] = material != null && material.HasProperty("_Dissolve") ?
                             (JToken)new JValue(material.GetFloat("_Dissolve")) : JValue.CreateNull(),
                         ["cachedDissolve"] = hasCache ? (JToken)new JValue(cached.Dissolve) : JValue.CreateNull() };
