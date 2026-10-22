@@ -34,6 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var target = fixture.Hostile;
             int will = target.Stats.SaveWill.BaseValue;
             var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
+            UnityEngine.Object[] bodyResources = new UnityEngine.Object[0];
             Buff foreignPenalty = null;
             var buffBaseline = target.Buffs.Enumerable.ToArray();
             var saves = new Dretch30CloudSaves(new[] { target });
@@ -73,7 +74,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Only this disposable emitter changes Charisma. Different live
                 // source DCs expose accidental sharing or use of summon CL20.
                 if (mixedHound)
+                {
                     foreach (int frame in ReviewHound30Profile(fixture, owner)) yield return frame;
+                    bodyResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
+                }
                 else owner.Stats.Charisma.BaseValue = 14;
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var before = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
@@ -147,6 +151,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!noRepeat) throw new InvalidOperationException("Archon re-entry source memory failed.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                if (mixedHound)
+                {
+                    bool released = bodyResources.Length >= 3 && bodyResources.All(value => value == null);
+                    Sprint25Check("archon-hound-original-body-release", released,
+                        new JObject { ["owner"] = owner.UniqueId, ["captured"] = bodyResources.Length,
+                            ["remaining"] = bodyResources.Count(value => value != null) },
+                        "Actual owner disposal releases only its private original mesh/material/accessory resources before the sibling case continues.");
+                    if (!released) throw new InvalidOperationException("Original Hound body resources remain live.");
+                }
                 var remainingStats = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
                     target.Stats.SaveFortitude.ModifiedValue, target.Stats.SaveReflex.ModifiedValue, target.Stats.SaveWill.ModifiedValue };
                 int remainingPenalty = ContextActionArchonMenace.HasSource(target, penalty, sibling) ? -2 : 0;

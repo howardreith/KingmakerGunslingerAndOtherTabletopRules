@@ -1284,6 +1284,8 @@
     <Compile Include="Assets\PteranodonAssetRuntime.Theropods.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Lemure.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Dretch.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.HoundArchon.cs" />
+    <Compile Include="Summoning\HoundArchonVisualPolicy.cs" />
     <Compile Include="Summoning\DretchVisualPolicy.cs" />
     <Compile Include="Summoning\LemureVisualPolicy.cs" />
     <Compile Include="Summoning\BrachiosaurusOverrunKnockdown.cs" />
@@ -1838,6 +1840,14 @@
     </Content>
     <Content Include="..\..\assets\sprint27-griffon\*">
       <Link>assets\sprint27-griffon\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\hound-archon-mesh.json">
+      <Link>assets\outsider-celestial\hound-archon-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\hound-archon-albedo.png">
+      <Link>assets\outsider-celestial\hound-archon-albedo.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\outsider-celestial\dretch-mesh.json">

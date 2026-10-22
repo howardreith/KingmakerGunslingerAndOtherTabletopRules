@@ -14,6 +14,8 @@ using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Assets;
+using UnityEngine;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
@@ -22,9 +24,51 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private void ReviewHound30OriginalBody(UnitEntityData owner)
+        {
+            Mesh cache; string[] bones; Texture2D albedo; string status;
+            bool loaded = PteranodonAssetRuntime.TryGetHoundArchonVisual(out cache, out bones, out albedo, out status);
+            var renderers = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            var body = renderers.Single(value => value.name == TheropodVisualPolicy.BodyRendererName);
+            var resources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
+            var pose = Sprint17OriginalWorldVertices(body);
+            bool finite = pose.Length > 0 && pose.All(point => !float.IsNaN(point.x) && !float.IsInfinity(point.x) &&
+                !float.IsNaN(point.y) && !float.IsInfinity(point.y) && !float.IsNaN(point.z) && !float.IsInfinity(point.z));
+            var selection = Sprint22SelectionSurface(owner);
+            string party = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
+                "s30-hound-body-party.png", TheropodVisualPolicy.BodyRendererName);
+            string supporting = CaptureSprint17OriginalBodyFrame(owner, body, "s30-hound-archon");
+            var sword = owner.Body.PrimaryHand.MaybeWeapon;
+            bool ownedSword = sword != null && sword.Wielder != null && ReferenceEquals(sword.Wielder.Unit, owner) &&
+                sword.HoldingSlot != null && ReferenceEquals(sword.HoldingSlot.MaybeItem, sword) && !sword.IsLootable;
+            bool exact = loaded && status == "visual:published" && body.enabled && EntityFadedIn(owner) && finite &&
+                body.sharedMesh.name == "KMG_hound-archon_Original" && body.sharedMesh != cache &&
+                body.sharedMesh.vertexCount == cache.vertexCount && HoundArchonVisualPolicy.IsPermitted("hound-archon", body.bones.Select(value => value.name)) &&
+                ReferenceEquals(body.sharedMaterial.mainTexture, albedo) && resources.Length >= 3 &&
+                renderers.Single(value => value.name == TheropodVisualPolicy.AccessoryRendererName).enabled == false &&
+                (bool)selection["selectionSurface"] && ownedSword &&
+                party.Contains("inFrame=true") && party.Contains("screenLit=true") && party.Contains("rendererEnabled=true") &&
+                party.Contains("faderVisible=true") && supporting.Contains("supporting-art-only");
+            Sprint25Check("archon-hound-original-body", exact, new JObject {
+                ["owner"] = owner.UniqueId, ["blueprint"] = owner.Blueprint.AssetGuid, ["assetStatus"] = status,
+                ["attachment"] = ExpandedSummoningPteranodonViewPatch.DescribeView(owner.View),
+                ["partyCamera"] = party, ["supportingFrame"] = supporting, ["selection"] = selection,
+                ["posedVertices"] = pose.Length, ["poseFinite"] = finite,
+                ["privateResources"] = new JArray(resources.Select(value => value.GetInstanceID())),
+                ["meshInstance"] = body.sharedMesh.GetInstanceID(), ["cacheInstance"] = cache == null ? 0 : cache.GetInstanceID(),
+                ["bones"] = new JArray(body.bones.Select(value => value.name)),
+                ["sword"] = sword?.Blueprint.AssetGuid, ["swordOwner"] = sword?.Wielder?.Unit?.UniqueId,
+                ["swordLootable"] = sword == null || sword.IsLootable,
+                ["scope"] = "Native canine-headed humanoid body/owned sword presentation; no resolved attack or full lifecycle claim" },
+                "The exact Hound binds its original body to the measured native renderer, appears intact/selectable at native camera scale and holds its nonlootable owned sword.");
+            if (!exact) throw new InvalidOperationException("Native original Hound body presentation failed.");
+        }
+
         private IEnumerable<int> ReviewHound30Profile(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner)
         {
             foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
+            foreach (int frame in Outsider30NativeAppearance(owner, "hound-archon")) yield return frame;
+            ReviewHound30OriginalBody(owner);
             var power = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
                 value.Blueprint.AssetGuid == "a7b339e4f6ff93a4697df5d7a87ff619");
             bool powerBuff = owner.Buffs.GetBuff(power.Blueprint.Buff) != null;
@@ -55,7 +99,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["mobilityAcrobatics"] = stats.SkillMobility.ModifiedValue, ["sr"] = sr, ["nativeSrConsumer"] = check.HasSpellResistance,
                 ["petrificationConditionImmune"] = owner.Descriptor.State.HasConditionImmunity(UnitCondition.Petrified),
                 ["powerAttackToggleOn"] = power.IsOn, ["powerAttackBuffPresent"] = powerBuff,
-                ["spellbooks"] = owner.Descriptor.Spellbooks.Count(), ["visual"] = "borrowed biped; original canine-headed body pending" },
+                ["spellbooks"] = owner.Descriptor.Spellbooks.Count(), ["visual"] = ExpandedSummoningPteranodonViewPatch.DescribeView(owner.View) },
                 "Actual adult Hound racial bases and native skill/SR/condition consumers; Power Attack is explicitly off for these rule comparisons, no cleric progression.");
             if (!profile) throw new InvalidOperationException("Hound adult native profile failed.");
             var grant = owner.Blueprint.AddFacts.SelectMany(fact => fact.ComponentsArray)
