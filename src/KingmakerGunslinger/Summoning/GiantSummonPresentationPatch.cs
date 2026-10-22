@@ -13,9 +13,8 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Visual transforms only, with measured calibration required. The existing
-    /// visual-variant API owns all material clones and controller reinitializing;
-    /// this patch creates no renderer, material, texture or blueprint object.
+    /// Schedules exact owned giant body palettes. Height remains observational:
+    /// changing the native view root would also resize its gameplay colliders.
     /// </summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class GiantSummonPresentationPatch
@@ -24,7 +23,6 @@ namespace KingmakerGunslinger.Summoning
         {
             internal UnitEntityData Owner;
             internal GiantPresentationScale Baseline;
-            internal GiantPresentationScale? Applied;
             internal string Outcome;
             internal string Key;
         }
@@ -81,6 +79,7 @@ namespace KingmakerGunslinger.Summoning
                 GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.Resolve(true,
                     unit.Blueprint.AssetGuid, SummonedSourceGuid(unit));
                 if (profile == null) return "giant:not-owned";
+                GiantSummonPaletteRuntime.Schedule(view, profile);
                 State state;
                 if (States.TryGetValue(view, out state) && !ReferenceEquals(state.Owner, unit))
                 {
@@ -99,11 +98,11 @@ namespace KingmakerGunslinger.Summoning
                 string decision = GiantSummonPresentationPolicy.Calculate(profile, calibration,
                     unit.Blueprint.Prefab == null ? null : unit.Blueprint.Prefab.AssetId,
                     state.Baseline, Read(view.transform.localScale), out target);
-                if (decision == "apply-measured-height")
-                {
-                    view.transform.localScale = new Vector3(target.X, target.Y, target.Z);
-                    state.Applied = target;
-                }
+                // Even a valid numerical calibration does not authorize this
+                // root: native colliders share it. Only a separately qualified
+                // render-only proxy may consume the measured target.
+                if (decision == "apply-measured-height" || decision == "already-applied")
+                    decision = "await-render-only-scale-integration";
                 state.Outcome = "giant:" + profile.Key + ";height=" + decision +
                     ";referenceFeet=" + profile.ReferenceHeightFeet.ToString("0.##", CultureInfo.InvariantCulture) +
                     ";calibration=" + (calibration == null ? "<none>" : calibration.EvidenceIdentity);
@@ -140,12 +139,7 @@ namespace KingmakerGunslinger.Summoning
             if (view == null) return;
             State state;
             if (!States.TryGetValue(view, out state)) return;
-            // Restore only the transform this record still owns. Foreign
-            // rescaling is preserved, including during view reuse/destruction.
-            if (state.Applied.HasValue && GiantSummonPresentationPolicy.Same(
-                Read(view.transform.localScale), state.Applied.Value))
-                view.transform.localScale = new Vector3(state.Baseline.X,
-                    state.Baseline.Y, state.Baseline.Z);
+            // This observational height record never owns a native transform.
             States.Remove(view);
         }
 

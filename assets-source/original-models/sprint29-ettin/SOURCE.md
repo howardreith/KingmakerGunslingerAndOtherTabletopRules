@@ -7,8 +7,9 @@ paints one original four-region atlas procedurally. No native geometry, pixel
 data, material files or animation curves are authoring inputs. The current
 refinement responds to rejected native body-6 facing and native7's pale mask-like
 skin. Head-local **-Z is forward, +Y is up** remains proven by the actual Hill
-facial anchors and native7 pixels. The current change warms/details only the
-original skin paint; native7 geometry, other paint regions and rig remain exact.
+facial anchors and native7 pixels. The current refinement adds planar cheeks and
+jaw, a thinner angled brow, eyelid rims and facial furrows to address the smooth
+mask-like face. The warmer original paint, joined neck fan and rig remain exact.
 
 ```text
 blender -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint29-ettin/build_ettin_head.py -- --output <absolute src/KingmakerGunslinger/Summoning/EttinAuthoredHeadMesh.cs> --work-dir <absolute private output>
@@ -17,8 +18,8 @@ blender -b --factory-startup --python-exit-code 1 -P assets-source/original-mode
 Two clean Blender 4.5.10 LTS runs produced identical generated C# bytes.
 The packed mesh is original project geometry with positions,
 normals, the neck-to-skull weight field, original UVs and four material index
-groups. It has 5,024 vertices and 9,992 triangles; packed geometry SHA-256 is
-`747aec079b36e424b13af5e4d4cf002a9810cda13da5a2e81b5d3e2175183eb8`.
+groups. It has 5,026 vertices and 9,992 triangles; packed geometry SHA-256 is
+`ec5c0d9425e969f159e93ef5cacc88aa4f3905b3f8ecb99622dda2c9f081bc84`.
 The packed 512x512 original RGBA PNG SHA-256 is
 `64de9ab9d66678e16cf8b296d75a1ef4b75d8f3b3bb585ce7136535b43f0ae5c`.
 Generated C# is a normal production source input, not a machine-local build

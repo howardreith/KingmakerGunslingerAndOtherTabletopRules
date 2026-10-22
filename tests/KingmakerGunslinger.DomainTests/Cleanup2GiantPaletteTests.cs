@@ -47,12 +47,23 @@ namespace KingmakerGunslinger.DomainTests
         {
             Assertions.Equal("missing-albedo-proof", GiantSummonPalettePolicy.ValidateProof(null),
                 "No default palette proof may be inferred.");
-            foreach (string key in new[] { "cloud-giant", "storm-giant" })
+            foreach (string key in new[] { "stone-giant", "fire-giant", "cloud-giant", "storm-giant" })
+            {
                 Assertions.Equal("proven-body-albedo", GiantSummonPalettePolicy.ValidateProof(Proof(key)),
                     "Complete synthetic proof must exercise the admission path.");
-            foreach (string key in new[] { "hill-giant", "stone-giant", "frost-giant", "fire-giant", "Cloud-Giant", "foreign" })
+                GiantPaletteAlbedoProof production = GiantSummonPalettePolicy.ProductionProof(key);
+                Assertions.Equal("proven-body-albedo", GiantSummonPalettePolicy.ValidateProof(production),
+                    "Production body identity must pass the same live proof contract.");
+                Assertions.Equal(GiantSummonPalettePolicy.Selector(key).PrefabId, production.PrefabId,
+                    "Production proof must bind the selected native donor, never a guessed family name.");
+            }
+            foreach (string key in new[] { "hill-giant", "frost-giant", "Cloud-Giant", "foreign" })
+            {
                 Assertions.Equal("palette-treatment-not-reviewed", GiantSummonPalettePolicy.ValidateProof(Proof(key)),
-                    "Only the two reviewed whole-body scalar treatments may register.");
+                    "Only the four intended body treatments may register.");
+                Assertions.True(GiantSummonPalettePolicy.ProductionProof(key) == null,
+                    "Native controls and unknown families must have no production treatment.");
+            }
             Assertions.Equal("prefab-identity-mismatch", GiantSummonPalettePolicy.ValidateProof(Proof("cloud-giant", prefab: "foreign")),
                 "A valid-looking slot cannot authorize the wrong prefab.");
             foreach (GiantPaletteAlbedoProof proof in new[] {
@@ -73,7 +84,7 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void WholeBodyTransformsLiftCloudAndRetainAlphaAndShading()
         {
-            foreach (string key in new[] { "cloud-giant", "storm-giant" })
+            foreach (string key in new[] { "stone-giant", "fire-giant", "cloud-giant", "storm-giant" })
             {
                 GiantPalettePixel dark = GiantSummonPalettePolicy.Transform(key, new GiantPalettePixel(0f, 0f, 0f, 0.37f));
                 GiantPalettePixel middle = GiantSummonPalettePolicy.Transform(key, new GiantPalettePixel(0.5f, 0.5f, 0.5f, 0.37f));
@@ -98,6 +109,16 @@ namespace KingmakerGunslinger.DomainTests
             Near(0.90f, stormWhite.Red, "Storm red target changed.");
             Near(0.65f, stormWhite.Green, "Storm green target changed.");
             Near(0.40f, stormWhite.Blue, "Storm bronze target changed.");
+            GiantPalettePixel stone = GiantSummonPalettePolicy.Transform("stone-giant", new GiantPalettePixel(.5f, .5f, .5f, 1f));
+            GiantPalettePixel fire = GiantSummonPalettePolicy.Transform("fire-giant", new GiantPalettePixel(.5f, .5f, .5f, 1f));
+            GiantPalettePixel cloud = GiantSummonPalettePolicy.Transform("cloud-giant", new GiantPalettePixel(.5f, .5f, .5f, 1f));
+            GiantPalettePixel storm = GiantSummonPalettePolicy.Transform("storm-giant", new GiantPalettePixel(.5f, .5f, .5f, 1f));
+            Assertions.True(Math.Abs(stone.Red - stone.Blue) < .03f,
+                "Stone must read as neutral grey rather than inherit the brown donor hue.");
+            Assertions.True(fire.Red > fire.Green && fire.Green > fire.Blue && fire.Red < storm.Red,
+                "Fire's warm charcoal must remain darker and distinct from Storm bronze.");
+            Assertions.True(cloud.Blue > stone.Blue && cloud.Red > storm.Red,
+                "Cloud must remain pale and distinct from both grey Stone and bronze Storm.");
         }
 
         internal static void TransformRejectsUnboundedPixelsAndUnreviewedFamilies()
@@ -110,7 +131,7 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.Throws<ArgumentOutOfRangeException>(() => GiantSummonPalettePolicy.Transform("cloud-giant",
                         new GiantPalettePixel(values[0], values[1], values[2], values[3])), "Malformed pixel must refuse.");
                 }
-            foreach (string key in new[] { "stone-giant", "fire-giant", "hill-giant", "frost-giant", "foreign", null })
+            foreach (string key in new[] { "hill-giant", "frost-giant", "foreign", null })
                 Assertions.Throws<InvalidOperationException>(() => GiantSummonPalettePolicy.Transform(key,
                     new GiantPalettePixel(0.5f, 0.5f, 0.5f, 1f)), "Unreviewed family cannot receive a palette proposal.");
         }

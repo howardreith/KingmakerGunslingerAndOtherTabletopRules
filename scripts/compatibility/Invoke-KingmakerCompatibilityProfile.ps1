@@ -307,7 +307,7 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai','ai-turns','items','disarm','awesome','awesome-turn','catch','cleave','vital','vital-turn','routes')) -or
-        ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and $Parameters.reviewPhase -cnotin @('giant-lineup','menus','elementals','bodies','cloth-probe','ettin-lifecycle','scale-prototype','tooltips','crab-attack','production-attacks','gorgon-presentation','shared-controls')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and $Parameters.reviewPhase -cnotin @('giant-lineup','menus','elementals','bodies','cloth-probe','ettin-lifecycle','scale-prototype','tooltips','crab-attack','production-attacks','gorgon-presentation','recovery-bodies','shared-controls')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',

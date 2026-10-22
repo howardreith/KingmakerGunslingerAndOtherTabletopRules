@@ -25,8 +25,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string phase = (string)_request.Parameters?["reviewPhase"];
             bool gorgonOnly = phase == "gorgon-presentation";
+            bool recoveryBodies = phase == "recovery-bodies";
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion ||
-                (phase != "bodies" && !gorgonOnly) ||
+                (phase != "bodies" && !gorgonOnly && !recoveryBodies) ||
                 fixture == null || book == null || _sprint25Clock == null)
                 throw new InvalidOperationException("Exact Cleanup 2 bodies fixture/book/clock required.");
             if (_expandedSummoningPlayerPathCaptureActive || _refinementUnit != null ||
@@ -36,6 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] keys = { "giant-crab", "griffon", "giant-stag-beetle", "girallon",
                 "ettin", "elephant", "stegosaurus", "brachiosaurus", "gorgon" };
             if (gorgonOnly) keys = new[] { "gorgon" };
+            if (recoveryBodies) keys = new[] { "girallon", "gorgon" };
             if (keys.Any(key => !VisualRefinementReviewPolicy.Handles(key)))
                 throw new InvalidOperationException("A requested body lacks the existing complete refinement packet policy.");
             bool paused = Game.Instance.IsPaused, waiting = _sprint25WaitingForUnityAppearance;

@@ -174,7 +174,7 @@ try {
         'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
         'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 
-        'assets\sprint19-fourarmed\girallon-mesh.json' = 'e5c4e59878ff6aae7b704f8fb49925e849f348817fc160e97a1f76907ee683cb'
+        'assets\sprint19-fourarmed\girallon-mesh.json' = 'd512e66e0534f748500b181bac49fdcf586ddecc6bf4213d81c11bba04f8c75c'
         'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
         'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'

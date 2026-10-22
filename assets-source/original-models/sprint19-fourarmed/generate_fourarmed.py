@@ -150,7 +150,32 @@ def build_trunk(bm, weights, uvs, rig, shape):
         (neck, 0.40 * bulk, 0.36 * bulk,
          [("Neck_01", 0.7), ("Spine_03", 0.3)]),
     ]
+    original_trunk_length = sum((rows[i][0] - rows[i-1][0]).length for i in range(1, len(rows)))
+    old_vertices = set(bm.verts)
+    if shape["girallon"]:
+        # The native left/strike views exposed a narrow junction between this
+        # trunk's terminal neck cap and the separately Head-driven skull.
+        # Continue the same neck surface obliquely into that existing skull;
+        # the terminal ring shares Head exactly, with the transition blended
+        # along the real neck/head interval. No head/root pivot is moved.
+        head = at(rig, "Head")
+        rows.extend([
+            (neck.lerp(head, .52), .43 * bulk, .39 * bulk,
+             [("Neck_01", .48), ("Head", .52)]),
+            (neck.lerp(head, .86), .39 * bulk, .35 * bulk,
+             [("Head", 1.)]),
+        ])
     sweep(bm, weights, uvs, rows, "torso", 16)
+    if shape["girallon"]:
+        # Keep the prior trunk's atlas sampling while adding neck length.
+        # The new buried neck rings use that same terminal fur strip.
+        extended_length = sum((rows[i][0] - rows[i-1][0]).length for i in range(1, len(rows)))
+        u0 = shared.region_uv("torso", 0., .5)[0]
+        u1 = shared.region_uv("torso", 1., .5)[0]
+        for vertex in set(bm.verts) - old_vertices:
+            u, v = uvs[vertex]
+            unit = (u-u0)/(u1-u0)
+            uvs[vertex] = (u0 + (u1-u0)*min(1., unit*extended_length/original_trunk_length), v)
     # The Xill's segmented abdomen, as rings of its own rather than a tint.
     for index in range(shape["segments"]):
         height = pelvis.lerp(spine[0], 0.18 + index * 0.24)

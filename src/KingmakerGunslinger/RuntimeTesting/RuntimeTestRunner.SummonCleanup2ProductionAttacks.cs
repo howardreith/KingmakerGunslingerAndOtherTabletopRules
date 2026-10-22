@@ -156,7 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     if (enabled)
                                     {
                                         string file = "production-" + label + "-ready.png";
-                                        bool saved = Cleanup2ProductionAttackImage(actor, file, crab) == file && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
+                                        bool saved = Cleanup2ProductionAttackImage(actor, file, crab).StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
                                         Cleanup2Check("production-ready-" + label, saved, new JObject { ["file"] = file,
                                             ["beforeCommandRun"] = true, ["preActWindup"] = "ABSENT: native HasAnimation=false may act on its first tick; this is a neutral ready frame, not an invented windup." },
                                             "Actual neutral own body is captured before issuing the ordinary native command.");
@@ -189,7 +189,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                                 if (moment == null || images.Contains(imageKey)) continue;
                                                 string file = "production-" + label + "-attack" + record.Index + "-" + moment + ".png";
                                                 string saved = Cleanup2ProductionAttackImage(actor, file, crab);
-                                                bool present = saved == file && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
+                                                bool present = saved.StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && File.Exists(Path.Combine(_request.EvidenceDirectory, file));
                                                 JObject imageShape = visual.MeasureGestureDisplacement(); posesFinite &= (bool)imageShape["finite"];
                                                 maximumSkinMotion = Mathf.Max(maximumSkinMotion, (float)imageShape["maximumGestureRendererLocalDisplacement"]);
                                                 maximumProtectedMotion = Mathf.Max(maximumProtectedMotion, (float)imageShape["maximumUnaffectedRendererLocalDisplacement"]);
@@ -218,14 +218,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                                                 final[index].Start, final[index].ActTime, final[index].NativeActTickDelta, final[index].EligibleTicks));
                                     bool motion = posesFinite && zeroEqual && sourceInvariant && maximumProtectedMotion <= .0002f &&
                                         (enabled ? maximumSkinMotion > .01f && final.All(value => value.Samples >= 4 && value.MaximumAngle > 1f) && images.Count == expected * 2 + 1 : maximumSkinMotion <= .0002f);
-                                    bool nativeProof = command.IsFinished && (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
-                                        observer.WeaponAttacks.Count == expected && observer.OwnerWeaponAttacks.Count == expected && observer.Rolls.Count == expected &&
-                                        observer.WeaponAttacks.Select(value => value.Weapon).SequenceEqual(limbs.Take(expected)) &&
-                                        observer.WeaponAttacks.All(value => value.AttackRoll != null && !value.AttackRoll.AutoMiss && !value.AttackRoll.SuspendCombatLog && !value.IsCharge && !value.IsAttackOfOpportunity) &&
-                                        economy.Count(command) == 1 && economy.Exact(command, false) && economy.ForcedCount(command) == 0 &&
-                                        !command.Cutscene && !command.IsIgnoreCooldown && command.OverrideAction == null && command.Animation == null &&
-                                        !target.Descriptor.State.IsDead && Cleanup2CrabBaseStats(actor).ToString() == stats && Cleanup2ScaleMechanics(actor).ToString() == mechanics &&
-                                        Sprint19Limbs(actor).SequenceEqual(limbs) && Cleanup2SharedSameView(source) && Cleanup2SharedSameView(live);
+                                    JObject currentStats = Cleanup2CrabBaseStats(actor), currentMechanics = Cleanup2ScaleMechanics(actor);
+                                    JObject currentSource = Cleanup2SharedViewScalars(source.View, source.PrefabAsset), currentLive = Cleanup2SharedViewScalars(live.View, live.PrefabAsset);
+                                    var nativePredicates = new JObject {
+                                        ["finished"] = command.IsFinished, ["successOrNativeExhausted"] = command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command),
+                                        ["targetWeaponEventCount"] = observer.WeaponAttacks.Count == expected, ["ownerWeaponEventCount"] = observer.OwnerWeaponAttacks.Count == expected,
+                                        ["rollEventCount"] = observer.Rolls.Count == expected, ["exactWeaponEventOrder"] = observer.WeaponAttacks.Select(value => value.Weapon).SequenceEqual(limbs.Take(expected)),
+                                        ["ordinaryNaturalRuleFlags"] = observer.WeaponAttacks.All(value => value.AttackRoll != null && !value.AttackRoll.AutoMiss && !value.AttackRoll.SuspendCombatLog && !value.IsCharge && !value.IsAttackOfOpportunity),
+                                        ["oneNativeCost"] = economy.Count(command) == 1, ["exactNativeCost"] = economy.Exact(command, false), ["noForcedCostFinish"] = economy.ForcedCount(command) == 0,
+                                        ["notCutscene"] = !command.Cutscene, ["notIgnoreCooldown"] = !command.IsIgnoreCooldown, ["noOverrideAction"] = command.OverrideAction == null,
+                                        ["nullAnimation"] = command.Animation == null, ["targetAlive"] = !target.Descriptor.State.IsDead,
+                                        ["baseStatsExact"] = currentStats.ToString() == stats, ["mechanicsExact"] = currentMechanics.ToString() == mechanics,
+                                        ["weaponEntitiesExact"] = Sprint19Limbs(actor).SequenceEqual(limbs), ["protectedSourceViewExact"] = Cleanup2SharedSameView(source),
+                                        ["liveActorViewExact"] = Cleanup2SharedSameView(live) };
+                                    bool nativeProof = nativePredicates.Properties().All(value => (bool)value.Value);
+                                    Func<JObject,JObject,JArray> changedFields = (before, after) => new JArray(before.Properties()
+                                        .Where(value => !JToken.DeepEquals(value.Value, after[value.Name])).Take(32).Select(value => value.Name));
                                     var result = new Cleanup2ProductionAttackResult { Starts = final.Select(value => value.Start).ToArray(), Deadlines = final.Select(value => value.Deadline).ToArray(),
                                         Acts = final.Select(value => value.ActTime).ToArray(), TickDeltas = final.Select(value => value.NativeActTickDelta).ToArray(),
                                         Type = command.Type.ToString(), Events = observer.WeaponAttacks.Count, Costs = economy.Count(command) };
@@ -240,6 +248,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         ["renderGestureEnabled"] = enabled, ["nativeResult"] = command.Result.ToString(), ["nativeListExhausted"] = trace.Exhausted(command),
                                         ["plannedAttacks"] = command.AllAttacks.Count, ["expectedAttacks"] = expected, ["events"] = events, ["costs"] = costs, ["endings"] = endings,
                                         ["scheduleAssociation"] = association, ["nativeRulesAndCostProof"] = nativeProof,
+                                        ["nativePredicates"] = nativePredicates,
+                                        ["actualTargetWeaponEvents"] = observer.WeaponAttacks.Count, ["actualOwnerWeaponEvents"] = observer.OwnerWeaponAttacks.Count,
+                                        ["actualRollEvents"] = observer.Rolls.Count, ["actualCostApplications"] = economy.Count(command), ["actualForcedCostFinishes"] = economy.ForcedCount(command),
+                                        ["changedBaseStatsFields"] = changedFields(JObject.Parse(stats), currentStats),
+                                        ["changedMechanicsFields"] = changedFields(JObject.Parse(mechanics), currentMechanics),
+                                        ["changedSourceViewFields"] = changedFields(source.Scalars, currentSource), ["changedLiveViewFields"] = changedFields(live.Scalars, currentLive),
+                                        ["mechanicsChanges"] = new JArray(JObject.Parse(mechanics).Properties().Where(value => !JToken.DeepEquals(value.Value,currentMechanics[value.Name])).Take(32)
+                                            .Select(value => new JObject { ["field"] = value.Name, ["before"] = value.Value.DeepClone(), ["after"] = currentMechanics[value.Name]?.DeepClone() })),
                                         ["matchedBaselineOnScheduleAndCost"] = matched, ["failures"] = new JArray(failures.Distinct()),
                                         ["nativeActTickDeltas"] = new JArray(result.TickDeltas),
                                         ["nativeActLatencies"] = new JArray(result.Acts.Select((value, index) => value - result.Starts[index])),

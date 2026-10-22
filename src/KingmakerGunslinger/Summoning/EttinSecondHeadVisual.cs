@@ -474,6 +474,22 @@ namespace KingmakerGunslinger.Summoning
             }
             bool sourceHasCache = currentSource != null && owned.Controller != null &&
                 TryGetFadeDefaults(owned.Controller, currentSource, out sourceCached);
+            JArray sourceChanges = FadeBaselineMismatches(sourceCached, owned.Baseline);
+            bool sameSource = ReferenceEquals(currentSource, owned.SourceMaterial);
+            bool persistentSourceDefaultsUnchanged = sourceHasCache && sourceChanges.All(value =>
+                (string)value == "RenderQueue" || (string)value == "RenderTypeTagValue");
+            // Installed DissolveAnimationController.Update (060011A3) uses
+            // RenderType=TransparentCutout/renderQueue=2450 for native cutout
+            // fade. Native12 observed this same paired transition in the
+            // SAME source material's cache and all four owned material caches.
+            // Initial adoption remains exact; later observation permits only
+            // this pair, with every persistent fade default still unchanged.
+            bool demonstratedNativeQueueTagTransition = sameSource && persistentSourceDefaultsUnchanged &&
+                owned.Baseline.IsDissolveEnabled && owned.Baseline.DissolveCutoutEnabled &&
+                owned.Baseline.RenderQueue == 2000 && owned.Baseline.RenderTypeTagValue == "Opaque" &&
+                sourceCached.RenderQueue == 2450 && sourceCached.RenderTypeTagValue == "TransparentCutout";
+            bool currentSourceBaselineAllowed = sameSource && sourceHasCache &&
+                (SameFadeBaseline(sourceCached, owned.Baseline) || demonstratedNativeQueueTagTransition);
             return new JObject { ["attachmentPresent"] = true, ["outcome"] = owned.Outcome,
                 ["controller"] = owned.Controller == null ? 0 : owned.Controller.GetInstanceID(),
                 ["sourceMaterial"] = owned.SourceMaterial == null ? 0 : owned.SourceMaterial.GetInstanceID(),
@@ -481,11 +497,14 @@ namespace KingmakerGunslinger.Summoning
                 ["attachSourceCachedFadeDefaults"] = owned.AttachedSourceFadeDefaults?.DeepClone(),
                 ["attachMaterialCachedFadeDefaults"] = owned.AttachedMaterialFadeDefaults?.DeepClone(),
                 ["currentSourceMaterial"] = currentSource == null ? 0 : currentSource.GetInstanceID(),
-                ["currentSourceMatchesAttachedMaterial"] = ReferenceEquals(currentSource, owned.SourceMaterial),
+                ["currentSourceMatchesAttachedMaterial"] = sameSource,
                 ["currentSourceObservationError"] = sourceObservationError,
                 ["currentSourceNativeDefaultCached"] = sourceHasCache,
                 ["currentSourceCachedFadeDefaults"] = DescribeFadeDefaults(sourceCached),
-                ["currentSourceMismatchesFromAttach"] = FadeBaselineMismatches(sourceCached, owned.Baseline),
+                ["currentSourceMismatchesFromAttach"] = sourceChanges,
+                ["persistentSourceDefaultsUnchangedFromAttach"] = persistentSourceDefaultsUnchanged,
+                ["demonstratedNativeQueueTagTransition"] = demonstratedNativeQueueTagTransition,
+                ["currentSourceBaselineAllowed"] = currentSourceBaselineAllowed,
                 ["controllerCleanup"] = owned.ControllerCleanup,
                 ["headMaterials"] = new JArray(assigned.Take(4).Select(material => {
                     FadeDefaults cached = null;
@@ -496,7 +515,9 @@ namespace KingmakerGunslinger.Summoning
                     return new JObject { ["material"] = material == null ? 0 : material.GetInstanceID(),
                         ["name"] = material?.name, ["controllerMember"] = member,
                         ["nativeDefaultCached"] = hasCache,
-                        ["fullCachedFadeBaselineMatchesSource"] = hasCache && SameFadeBaseline(cached, owned.Baseline),
+                        ["fullCachedFadeBaselineMatchesSource"] = hasCache && currentSourceBaselineAllowed &&
+                            SameFadeBaseline(cached, sourceCached),
+                        ["fullCachedFadeBaselineMatchesAttach"] = hasCache && SameFadeBaseline(cached, owned.Baseline),
                         ["cachedFadeDefaults"] = DescribeFadeDefaults(cached),
                         ["cachedFadeMismatchesFromAttach"] = FadeBaselineMismatches(cached, owned.Baseline),
                         ["cachedFadeMismatchesFromCurrentSource"] = FadeBaselineMismatches(cached, sourceCached),

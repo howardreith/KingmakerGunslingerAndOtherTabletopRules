@@ -33,30 +33,36 @@ def build():
     mass((.13,-.43,.045),(.325,.215,.175))
     volume.sweep([(.18,-.43,.035),(.32,-.26,.005),(.43,-.08,-.035)],
                  [.205,.185,.14],segments=24)
-    mass((.44,.135,-.085),(.202,.237,.18))
-    mass((.44,-.027,-.111),(.192,.137,.147))
-    mass((.44,-.105,-.145),(.15,.075,.106))
-    mass((.44,.106,-.247),(.038,.089,.048))
-    mass((.44,.045,-.275),(.06,.037,.042))
+    # Broad cranial, mandibular and zygomatic planes replace the rounded mask.
+    # Neck/root geometry and its two-driver weight field remain unchanged.
+    mass((.44,.127,-.077),(.195,.218,.164))
+    mass((.44,-.022,-.111),(.191,.121,.136))
+    mass((.44,-.108,-.147),(.166,.061,.101))
+    mass((.44,.104,-.243),(.042,.084,.049))
+    mass((.44,.034,-.277),(.065,.035,.040))
     for sign in (-1,1):
-        mass((.44+sign*.125,.045,-.191),(.062,.057,.039))
-        mass((.44+sign*.081,.207,-.199),(.101,.032,.047))
+        volume.sweep([(.44+sign*.164,.105,-.141),(.44+sign*.130,.068,-.198),
+                      (.44+sign*.101,-.018,-.196)],[.033,.035,.022],segments=16)
+        volume.sweep([(.44+sign*.027,.190,-.224),(.44+sign*.089,.211,-.230),
+                      (.44+sign*.151,.202,-.196)],[.024,.026,.021],segments=18)
+        mass((.44+sign*.085,.176,-.231),(.045,.010,.019))
+        mass((.44+sign*.085,.126,-.225),(.043,.008,.017))
         mass((.44+sign*.202,.14,-.013),(.031,.064,.029))
-    volume.sweep([(.325,-.005,-.242),(.40,.008,-.26),(.48,.003,-.26),
-                  (.555,-.015,-.242)],[.015,.018,.018,.015],segments=16)
-    mass((.44,-.055,-.239),(.105,.018,.029))
+    volume.sweep([(.318,-.019,-.234),(.393,-.005,-.255),(.478,-.009,-.257),
+                  (.562,-.032,-.231)],[.014,.017,.017,.013],segments=16)
+    mass((.44,-.070,-.231),(.112,.022,.028))
     skin=volume.polygonise("EttinSculptedHeadAndCollar")
-    cb.finish_surface(skin,5200,smooth_iterations=5)
+    cb.finish_surface(skin,5600,smooth_iterations=3)
     # Broad facial planes, then REAL recessed orbit and mouth cavities rather
     # than spheres stuck onto a smooth mask. Every cutter is original code.
     for vertex in skin.data.vertices:
         p=vertex.co
-        if p.y>.23 and p.z<-.20:p.z=max(p.z,-.255+.10*abs(p.x-.44))
-        if -.13<p.y<-.06 and p.z<-.21:p.z=max(p.z,-.258+.06*abs(p.x-.44))
+        if p.y>.23 and p.z<-.18:p.z=max(p.z,-.239+.20*(p.y-.23)+.10*abs(p.x-.44))
+        if -.14<p.y<-.067 and p.z<-.21:p.z=max(p.z,-.244+.06*abs(p.x-.44))
         if .18<p.y<.245 and p.z<-.225:
             p.y+=(min(.1,abs(p.x-.44))*.11-.009)
-        if .012<p.y<.10 and abs(p.x-.44)>.06 and p.z<-.22:
-            p.z=max(p.z,-.254+.23*abs(p.x-.44))
+        if -.04<p.y<.105 and abs(p.x-.44)>.072 and p.z<-.19:
+            p.z=max(p.z,-.252+.30*abs(p.x-.44))
     skin.data.update()
     def carve(name,centre,radii):
         cutter=cb.blob(name,Vector(centre),AXES,radii,segments=32,rings=20)
@@ -66,35 +72,52 @@ def build():
         bpy.ops.object.modifier_apply(modifier=modifier.name)
         bpy.data.objects.remove(cutter,do_unlink=True)
     for sign in (-1,1):
-        carve('OriginalOrbitalRecess',(.44+sign*.085,.151,-.255),(.051,.031,.06))
-    carve('OriginalGrimaceRecess',(.44,-.027,-.263),(.123,.026,.063))
-    for sign in (-1,1):
-        carve('OriginalMouthCorner',(.44+sign*.105,-.044,-.245),(.025,.025,.04))
+        carve('OriginalOrbitalRecess',(.44+sign*.085,.151,-.249),(.052,.022,.062))
+    carve('OriginalGrimaceRecess',(.44,-.037,-.255),(.126,.028,.070))
     # Boolean intersections leave microscopic slivers; remesh our original
     # surface before reduction rather than admitting degenerate export faces.
     remesh=skin.modifiers.new('CleanOriginalCavities','REMESH')
     remesh.mode='VOXEL';remesh.voxel_size=.0045
     bpy.ops.object.modifier_apply(modifier=remesh.name)
     cb.finish_surface(skin,5600,smooth_iterations=1)
+    # Cut mandibular side/front planes after cavity cleanup. This preserves
+    # one closed shell while avoiding a spherical cheek/hinge silhouette.
+    for vertex in skin.data.vertices:
+        p=vertex.co
+        if -.145<p.y<.018 and p.z<-.015 and .245<p.x<.635:
+            p.x=max(.266,min(.614,p.x))
+        if -.145<p.y<-.075 and p.z<-.22:
+            p.z=max(p.z,-.239+.045*abs(p.x-.44))
+        if .181<p.y<.241 and p.z<-.24:
+            p.z=max(p.z,-.249+.075*abs(p.x-.44))
+        # Expression furrows are geometry as well as original painted lines:
+        # a short glabella crease and the nose-to-mouth folds, not eye holes
+        # cut into an otherwise uninterrupted rounded facial surface.
+        if .175<p.y<.30 and p.z<-.205:
+            p.z+=.010*math.exp(-((p.x-.44)/.010)**2)*math.exp(-((p.y-.231)/.057)**4)
+        if -.068<p.y<.09 and p.z<-.185:
+            fold=.053+(.072-p.y)*.36
+            p.z+=.013*math.exp(-((abs(p.x-.44)-fold)/.010)**2)*math.exp(-((p.y-.005)/.069)**4)
+    skin.data.update()
     parts=[(skin,cb.rigid_rows(skin,[("Head",1)]),0)]
     hairvol=cb.Volume(.0075)
-    hairvol.ellipsoid(Vector((.44,.332,.023)),AXES,(.192,.087,.124))
+    hairvol.ellipsoid(Vector((.44,.296,.023)),AXES,(.182,.051,.120))
     for i,dx in enumerate((-.16,-.11,-.055,0,.055,.11,.16)):
-        hairvol.sweep([(.44+dx,.345,.035),(.44+dx,.225,.107),
+        hairvol.sweep([(.44+dx,.309,.035),(.44+dx,.214,.104),
                        (.44+dx*.9,.04+.023*math.sin(i*2.4),.094)],
                       [.028+.004*math.sin(i*1.7),.024,.004],segments=10)
     for sign in (-1,1):
-        hairvol.sweep([(.44+sign*.185,.29,-.005),(.44+sign*.20,.17,.014),
+        hairvol.sweep([(.44+sign*.174,.275,-.005),(.44+sign*.191,.17,.014),
                        (.44+sign*.181,.075,.004)], [.029,.026,.005],segments=10)
     hair=hairvol.polygonise("EttinSweptHair")
     cb.finish_surface(hair,1600,smooth_iterations=3)
     parts.append((hair,cb.rigid_rows(hair,[("Head",1)]),2))
     for sign in (-1,1):
         centre=Vector((.44+sign*.085,.15,-.223))
-        socket=cb.blob("EttinEyeSocket",centre,AXES,(.037,.017,.012),segments=16,rings=10)
+        socket=cb.blob("EttinEyeSocket",centre,AXES,(.037,.012,.012),segments=16,rings=10)
         parts.append((socket,cb.rigid_rows(socket,[("Head",1)]),1))
         eye=cb.blob("EttinEye",centre+Vector((0,0,-.014)),AXES,
-                    (.017,.0055,.005),segments=16,rings=10)
+                    (.019,.0045,.005),segments=16,rings=10)
         parts.append((eye,cb.rigid_rows(eye,[("Head",1)]),3))
         pupil=cb.blob("EttinPupil",centre+Vector((0,0,-.022)),AXES,
                       (.005,.006,.0015),segments=12,rings=8)
@@ -106,8 +129,8 @@ def build():
                   (.12,.023,.014),segments=28,rings=16)
     parts.append((mouth,cb.rigid_rows(mouth,[("Head",1)]),1))
     for dx in (-.077,-.029,.025,.076):
-        tooth=cb.tube('EttinGrimaceTooth',[(.44+dx,-.041,-.242),
-                     (.44+dx,-.022,-.245)],[.008,.006],segments=8)
+        tooth=cb.tube('EttinGrimaceTooth',[(.44+dx,-.056,-.239),
+                     (.44+dx,-.034+.003*math.sin(dx*80),-.248)],[.007,.005],segments=8)
         parts.append((tooth,cb.rigid_rows(tooth,[("Head",1)]),3))
     obj,_=cb.assemble("EttinAuthoredHead",parts)
     cb.require_single_body(obj)
