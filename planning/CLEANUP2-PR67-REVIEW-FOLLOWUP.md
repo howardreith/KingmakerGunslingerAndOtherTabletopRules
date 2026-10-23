@@ -6,7 +6,54 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review40 results and review41 corrections (current, October 23)
+### Review41 results and review42 corrections (current, October 23)
+
+Frozen review41 source `8a0d964517e367d997a3f863fc4b8882d84c88e8`, fingerprint
+`80b82d55e97690bbeedbfe849c86904b71dfbbc9d6281654105c471ffa0a246c`; package
+`c7217d9a1b05788d2248ce052601e64cb5a98a923a8e2c80479489ccc5578084`, DLL
+`f89c8b3b9fc638c76e1fad008f8270dd0b25473f4027b78aaf6224b9fdd89757`, MVID
+`20a6ff28-5ab8-44b4-8ca9-0f1699a66ca4`. One build (193.2s): 23 selected cases,
+gate 9/0, installed targets 37/37.
+
+Window22 ran 12:20:44 to 12:45:07 UTC (24m23s), all in the foreground; every
+transaction restored normally.
+
+- Menu adapters with alternate sources **FAIL 70/1, 243.3s**, raw
+  `20261023T1222120764129Z`. All canonical and Druid routes pass again. The new
+  diagnostic shows the native contract: an Inquisitor 20 Monster Tactician holds
+  only `grantedTiers=9`. **Each tier feature replaces the previous one**; one
+  caster can never hold tiers II-IV together.
+- Controller **FAIL 26/2, 285.6s**, raw `20261023T1229133829664Z`: the retirement
+  predicate never held within 8s; it also required the closed screen object to be
+  inactive, and the individual sub-conditions were not recorded.
+- **Fresh-OFF PC learning PASS 17/0, 186.9s**, raw `20261023T1234355039259Z`:
+  native rows and callbacks, no owned disclosure.
+- Fresh-OFF controller **FAIL 9/2, 195.0s**, raw `20261023T1238077368193Z`. Native
+  `ActionBarSelectorItemView` binds `m_Title.text` to the VM title unchanged and
+  renders it upper-case ("SUMMON SMALL ELEMENTAL"); the observer compared the
+  parsed text to `source.Name` with exact case.
+- Elementals OFF with alternate sources **FAIL 18/4, 218.7s**, raw
+  `20261023T1243101811532Z`. All nine native SNA definitions pass. The OFF popup
+  admission demanded the owned layout snapshot, which correctly does not exist
+  with the module OFF; a shared-surface read changed during the learning check,
+  but the tracker only returned false.
+
+Review42 corrections (observer/fixture only):
+
+- Monster Tactician: one natively levelled caster per Horse quantity tier
+  (II/III/IV), each stopped at the real level that grants it; the controller
+  route uses the tier-II caster; other families unchanged (20 routes).
+- Controller disposal: retirement is the released owned context with the native
+  book, group selection and service field gone; screen object activity, model
+  binding and active-row binding are recorded; disposal is proven at the native
+  reopen rebind.
+- Fresh-OFF controller title compares the rendered text to the source name
+  ignoring presentational case and records each sub-predicate.
+- Module-OFF popups use a native-only admission (no owned snapshot/scroll/
+  viewport; exact rows parented to the native root inside it and the canvas).
+- The OFF shared-surface tracker names every failing read.
+
+### Review40 results and review41 corrections (October 23)
 
 Frozen review40 source `f32850c67794acb7d0badba423ea827582e1024b`, fingerprint
 `3f8a63a224384b47f868c48fba4185c94bf54421a22bb696d83008f0e3365b72`; package

@@ -79,10 +79,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 screens = new NativeIconScreenEvidence(_request);
                 var manifest = BlueprintManifest.Load(_context.ModEntry.Path);
                 foreach (var family in AlternateSummoningSourceCatalog.All)
+                foreach (var segment in Cleanup2AlternateSegments(fixture, family, manifest, false, ref levelController, casters, ownedBlueprints))
                 {
                     Cleanup2AlternateBoundary(mode, watch, 180);
-                    var caster = Cleanup2AlternateCaster(fixture, family, ref levelController, casters, ownedBlueprints);
-                    var routes = Cleanup2AlternateRoutes(caster, family, manifest, false);
+                    var caster = segment.Item1; var routes = segment.Item2;
                     player.PartyCharacters.Add(caster); player.InvalidateCharacterLists(); player.UpdateCharacterLists();
                     ui.SelectionManagerPC.SelectUnit(caster.View, true, true, false); group.SelectUnit(caster); selectedOwned = caster;
                     for (int frame = 0; frame < 8; frame++) yield return 0;
@@ -125,7 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     bool exact = input.Unchanged() && ownPins.IsRestored() && routes.All(value => value.GraphExact) &&
                         caster.Descriptor.Spellbooks.SelectMany(value => Enumerable.Range(0, 10).SelectMany(value.GetKnownSpells)).SequenceEqual(known);
-                    Cleanup2Check("alternate-native-menu-budget-" + family.Key, exact, new JObject {
+                    Cleanup2Check("alternate-native-menu-budget-" + segment.Item3, exact, new JObject {
                         ["family"] = family.Key, ["nativeLevel"] = caster.Descriptor.Progression.CharacterLevel,
                         ["routes"] = routes.Length, ["sourceResourcesAndSlots"] = input.Describe(), ["pinsExact"] = ownPins.IsRestored(),
                         ["sourceGraphReferencesExact"] = routes.All(value => value.GraphExact), ["knownReferencesExact"] = exact,
@@ -204,8 +204,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Alternate menu wall/native mode/narrative/target ownership changed.");
         }
 
+        // Native41: each native Monster Tactician tier feature replaces the
+        // previous one (an Inquisitor 20 held only tier IX). One natively
+        // levelled Tactician per Horse quantity tier; other families keep one.
+        private List<Tuple<UnitEntityData, Cleanup2AlternateMenuRoute[], string>> Cleanup2AlternateSegments(ExpandedSummoningCorrectionFixture fixture,
+            AlternateSummoningFamilySpec family, BlueprintManifest manifest, bool moduleOff, ref object controller,
+            List<UnitEntityData> ownedActors, List<BlueprintUnit> ownedBlueprints)
+        {
+            var result = new List<Tuple<UnitEntityData, Cleanup2AlternateMenuRoute[], string>>();
+            foreach (int tier in family.Key == AlternateSummoningSourceCatalog.MonsterTacticianKey ? new[] { 2, 3, 4 } : new[] { 0 })
+            {
+                var caster = Cleanup2AlternateCaster(fixture, family, ref controller, ownedActors, ownedBlueprints, tier);
+                result.Add(Tuple.Create(caster, Cleanup2AlternateRoutes(caster, family, manifest, moduleOff, tier),
+                    tier == 0 ? family.Key : family.Key + "-tier" + tier));
+            }
+            return result;
+        }
+
         private UnitEntityData Cleanup2AlternateCaster(ExpandedSummoningCorrectionFixture fixture,
-            AlternateSummoningFamilySpec family, ref object controller, List<UnitEntityData> ownedActors, List<BlueprintUnit> ownedBlueprints)
+            AlternateSummoningFamilySpec family, ref object controller, List<UnitEntityData> ownedActors, List<BlueprintUnit> ownedBlueprints,
+            int tacticianTier = 0)
         {
             string classGuid, archetypeGuid = null; StatType stat;
             switch (family.Key)
@@ -229,27 +247,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             var characterClass = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, classGuid, family.Key + " native class");
             var archetype = family.Key == AlternateSummoningSourceCatalog.MonsterTacticianKey ? PlayerPathTacticianArchetype(new JObject()) :
                 archetypeGuid == null ? null : BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(BlueprintBootstrap.Library, archetypeGuid, family.Key + " native archetype");
-            AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype, 8, ref controller);
-            // Native40: a level-8 Tactician lacked the tier-II feature. The
-            // archetype's own progression decides when tiers II-IV arrive; take
-            // further real native levels (bounded at class 20) until it grants them.
-            var tiers = family.Key == AlternateSummoningSourceCatalog.MonsterTacticianKey
-                ? family.Roots.Where(value => value.Tier >= 2 && value.Tier <= 4).Select(value =>
-                    BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library, value.FeatureGuid, family.Key + " tier feature")).ToArray()
-                : new BlueprintFeature[0];
-            while (tiers.Any(value => !caster.Descriptor.HasFact(value)) && caster.Descriptor.Progression.GetClassLevel(characterClass) < 20)
-                AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype, 1, ref controller);
+            if (tacticianTier == 0) AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype, 8, ref controller);
+            else
+            {
+                // The archetype's own progression decides when this tier is
+                // granted; stop at that real native level, before it is replaced.
+                var tierFeature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    family.Roots.Single(value => value.Tier == tacticianTier).FeatureGuid, family.Key + " tier feature");
+                while (!caster.Descriptor.HasFact(tierFeature) && caster.Descriptor.Progression.GetClassLevel(characterClass) < 20)
+                    AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype, 1, ref controller);
+            }
             foreach (BlueprintScriptableObject resource in caster.Descriptor.Resources) caster.Descriptor.Resources.Restore(resource);
             return caster;
         }
 
         private Cleanup2AlternateMenuRoute[] Cleanup2AlternateRoutes(UnitEntityData caster, AlternateSummoningFamilySpec family,
-            BlueprintManifest manifest, bool moduleOff)
+            BlueprintManifest manifest, bool moduleOff, int onlyTier = 0)
         {
             var result = new List<Cleanup2AlternateMenuRoute>();
             foreach (var quantity in new[] { SummonMultiplicity.One, SummonMultiplicity.OneD3, SummonMultiplicity.OneD4PlusOne })
             {
                 int tier = quantity == SummonMultiplicity.One ? 2 : quantity == SummonMultiplicity.OneD3 ? 3 : 4;
+                if (onlyTier != 0 && tier != onlyTier) continue;
                 var rootSpec = family.Roots.SingleOrDefault(value => value.Tier == tier);
                 if (rootSpec == null)
                 {
@@ -443,9 +462,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var manifest = BlueprintManifest.Load(_context.ModEntry.Path);
                 foreach (var family in AlternateSummoningSourceCatalog.All)
+                foreach (var segment in Cleanup2AlternateSegments(fixture, family, manifest, true, ref controller, casters, blueprints))
                 {
-                    var caster = Cleanup2AlternateCaster(fixture, family, ref controller, casters, blueprints);
-                    var routes = Cleanup2AlternateRoutes(caster, family, manifest, true);
+                    var caster = segment.Item1; var routes = segment.Item2;
                     var inputs = new Cleanup2TooltipInputs(caster); var pins = new TeleportationUiSettingsFixture(caster.UISettings);
                     var templates = AlternateSummoningCoordinator.TemplateRenders(family.Key);
                     foreach (var route in routes)
@@ -515,8 +534,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var family in AlternateSummoningSourceCatalog.All)
                 {
                     Cleanup2AlternateBoundary(mode, watch, 240);
-                    var caster = Cleanup2AlternateCaster(fixture, family, ref controller, casters, blueprints);
-                    var routes = Cleanup2AlternateRoutes(caster, family, manifest, false);
+                    // Console visits One routes; a Tactician holds only its current tier.
+                    int tacticianTier = family.Key == AlternateSummoningSourceCatalog.MonsterTacticianKey ? 2 : 0;
+                    var caster = Cleanup2AlternateCaster(fixture, family, ref controller, casters, blueprints, tacticianTier);
+                    var routes = Cleanup2AlternateRoutes(caster, family, manifest, false, tacticianTier);
                     player.PartyCharacters.Add(caster); player.InvalidateCharacterLists(); player.UpdateCharacterLists();
                     selection.SelectUnit(caster.View, true, true, false);
                     for (int frame = 0; frame < 8; frame++) yield return 0;

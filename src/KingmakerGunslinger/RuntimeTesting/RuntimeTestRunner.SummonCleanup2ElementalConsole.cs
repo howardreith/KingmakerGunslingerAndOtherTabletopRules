@@ -559,16 +559,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var icon=(Image)typeof(ActionBarSelectorItemView).GetField("m_Icon",Cleanup2Fields).GetValue(row);
                 var title=(TextMeshProUGUI)typeof(ActionBarSelectorItemView).GetField("m_Title",Cleanup2Fields).GetValue(row);
                 var parents=StandaloneElementalPresentationPolicy.All.Where(value=>value.IsParent).ToArray();
-                bool nativeRows=parents.All(parentSpec=>selector.ItemVms.Any(value=>{
+                bool allParents=parents.All(parentSpec=>selector.ItemVms.Any(value=>{
                     var data=value.MechanicActionBarSlot.GetContentData() as AbilityData;
                     return data!=null && data.Blueprint.AssetGuid==parentSpec.Guid && ReferenceEquals(data.Spellbook,book);
-                })) && preparation!=null && preparation.Available && ReferenceEquals(preparation.Spell,source) &&
-                    ReferenceEquals(source.Caster,caster.Descriptor) && source.ConvertedFrom==null && debit.Unspent &&
-                    title!=null && title.GetParsedText()==source.Name && !title.isTextTruncated &&
-                    icon!=null && ReferenceEquals(icon.sprite,parent.Icon) && Cleanup2TooltipGraphicVisible(icon);
+                }));
+                bool preparationExact=preparation!=null && preparation.Available && ReferenceEquals(preparation.Spell,source) &&
+                    ReferenceEquals(source.Caster,caster.Descriptor) && source.ConvertedFrom==null;
+                // Native41: native Bind b__10_1 sets m_Title.text to the VM title
+                // unchanged and the controller label renders it upper-case; the
+                // visible text must name the source, ignoring presentational case.
+                bool titleExact=title!=null && string.Equals(title.GetParsedText(),source.Name,StringComparison.OrdinalIgnoreCase) && !title.isTextTruncated;
+                bool iconExact=icon!=null && ReferenceEquals(icon.sprite,parent.Icon) && Cleanup2TooltipGraphicVisible(icon);
+                bool nativeRows=allParents && preparationExact && debit.Unspent && titleExact && iconExact;
                 Cleanup2Check("elementals-off-console-original-source-rows",nativeRows,new JObject {
                     ["freshModuleOff"]=true,["originalParentsPresent"]=parents.Length,["ownedChooserAbsent"]=ElementalSourceChooserConsole.Context(selector)==null,
                     ["ownedNodesAbsent"]=!selector.ItemVms.Any(value=>value.MechanicActionBarSlot is ElementalConsoleNode),
+                    ["allNativeParentRows"]=allParents,["originalPreparationExact"]=preparationExact,["titleExact"]=titleExact,["iconExact"]=iconExact,
+                    ["nativeTitleText"]=title?.text,["titleTruncated"]=title!=null && title.isTextTruncated,["sourceName"]=source.Name,
                     ["nativeTitle"]=title?.GetParsedText(),["source"]=source.Blueprint.AssetGuid,["book"]=book.Blueprint.AssetGuid,
                     ["nativeSourceMechanism"]=item.MechanicActionBarSlot.GetType().FullName,["sourceBudgetsUnspent"]=debit.Unspent },
                     "Fresh OFF retains the real six native parent rows and original visible source title/icon, without an owned chooser or any source debit.");

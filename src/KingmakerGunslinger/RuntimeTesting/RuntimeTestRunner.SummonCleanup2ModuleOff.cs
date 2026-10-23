@@ -380,7 +380,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!exact) throw new InvalidOperationException("OFF learning helper did not preserve native rows: " + spec.Guid);
                 }
                 Cleanup2Check("elementals-off-learning-source-copy", learning.Count == 6 && surfaces.Unchanged(),
-                    new JObject { ["rows"] = learning, ["visibleLearningUi"] = false,
+                    new JObject { ["rows"] = learning, ["visibleLearningUi"] = false, ["failingSharedReads"] = surfaces.Failing(),
                         ["scope"] = "Real native Wizard list, book and uncommitted SpellSelectionData; no character-build UI was constructed or natural learning claimed." },
                     "The OFF helper preserves all six original Wizard source rows and exact reference order without spending the native selection allocation.");
                 foreach (var target in targets) PrepareExpandedSummoningPlayerPathSpell(book, target.Item1, target.Item1, target.Item2);
@@ -495,7 +495,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Cleanup2Check("elementals-off-owned-ui-restored", exact, new JObject {
                         ["partyExact"] = player.Party.SequenceEqual(party), ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selection),
                         ["originalInputsAndPinsExact"] = originalInputs.All(value => value.Unchanged()) && originalBars.All(value => value.IsRestored()),
-                        ["sharedNativeSourcesExact"] = surfaces.Unchanged() && presentationReads.All(read => read()), ["moduleStillOff"] = Cleanup2OffState(),
+                        ["sharedNativeSourcesExact"] = surfaces.Unchanged() && presentationReads.All(read => read()), ["failingSharedReads"] = surfaces.Failing(),
+                        ["failingPresentationReads"] = presentationReads.Count(read => !read()), ["moduleStillOff"] = Cleanup2OffState(),
                         ["errors"] = new JArray(errors) }, "Only owned fixture UI/pin state is restored; actual OFF configuration and all original party/shared source objects remain exact.");
                     if (!exact) errors.Add("Original UI/shared source restoration unverified.");
                 }
@@ -516,7 +517,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (rows.Length != expected.Length || expected.Any(child => rows.Count(value =>
                 ReferenceEquals((value.MechanicSlot.GetContentData() as AbilityData)?.Blueprint, child)) != 1))
                 throw new InvalidOperationException("OFF native popup child set changed: " + route);
-            var scroll = Cleanup2AcquirePopupSurface(source, popup, original.Blueprint, rows, "off-" + route);
+            var scroll = Cleanup2AcquireOffPopupSurface(source, popup, original.Blueprint, rows, "off-" + route);
             Vector2 position = scroll.IsStationary ? Vector2.zero : scroll.Position;
             Vector2 velocity = scroll.IsStationary ? Vector2.zero : scroll.Velocity;
             Vector2 anchored = scroll.Content.anchoredPosition; bool horizontal = scroll.Horizontal, vertical = scroll.Vertical;
@@ -722,21 +723,24 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private sealed class Cleanup2ModuleOffSurfaces
         {
-            private readonly List<Func<bool>> _reads = new List<Func<bool>>();
+            // Native41: each read carries its surface label so a changed
+            // shared object is named in evidence instead of a bare false.
+            private readonly List<KeyValuePair<string, Func<bool>>> _reads = new List<KeyValuePair<string, Func<bool>>>();
             private readonly HashSet<BlueprintSpellList> _lists = new HashSet<BlueprintSpellList>();
+            private void Read(string label, Func<bool> read) { _reads.Add(new KeyValuePair<string, Func<bool>>(label, read)); }
             internal void Ability(BlueprintAbility ability)
             {
                 BlueprintAbility parent = ability.Parent;
-                _reads.Add(() => ReferenceEquals(ability.Parent, parent));
+                Read("ability-parent:" + ability.AssetGuid, () => ReferenceEquals(ability.Parent, parent));
                 BlueprintComponent[] components = ability.ComponentsArray;
                 BlueprintComponent[] order = components == null ? null : components.ToArray();
-                _reads.Add(() => ReferenceEquals(ability.ComponentsArray, components) &&
+                Read("ability-components:" + ability.AssetGuid, () => ReferenceEquals(ability.ComponentsArray, components) &&
                     (order == null || Cleanup2SameElementalRefs(order, ability.ComponentsArray)));
                 foreach (AbilityVariants variants in (components ?? new BlueprintComponent[0]).OfType<AbilityVariants>())
                 {
                     BlueprintAbility[] raw = variants.Variants;
                     BlueprintAbility[] copy = raw == null ? null : raw.ToArray();
-                    _reads.Add(() => ReferenceEquals(variants.Variants, raw) &&
+                    Read("ability-variants:" + ability.AssetGuid, () => ReferenceEquals(variants.Variants, raw) &&
                         (copy == null || Cleanup2SameElementalRefs(copy, variants.Variants)));
                 }
             }
@@ -745,7 +749,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!_lists.Add(list)) return;
                 SpellLevelList[] levels = list.SpellsByLevel;
                 SpellLevelList[] order = levels == null ? null : levels.ToArray();
-                _reads.Add(() => ReferenceEquals(list.SpellsByLevel, levels) &&
+                Read("list-levels:" + list.AssetGuid, () => ReferenceEquals(list.SpellsByLevel, levels) &&
                     (order == null || Cleanup2SameElementalRefs(order, list.SpellsByLevel)));
                 foreach (SpellLevelList level in levels ?? new SpellLevelList[0])
                 {
@@ -753,20 +757,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     List<BlueprintAbility> raw = level.Spells;
                     BlueprintAbility[] copy = raw == null ? null : raw.ToArray();
                     int number = level.SpellLevel;
-                    _reads.Add(() => level.SpellLevel == number && ReferenceEquals(level.Spells, raw) &&
+                    Read("list-spells:" + list.AssetGuid + ":" + number, () => level.SpellLevel == number && ReferenceEquals(level.Spells, raw) &&
                         (copy == null || Cleanup2SameElementalRefs(copy, level.Spells)));
                 }
             }
             internal void Cache(BlueprintSpellList list, int level, List<BlueprintAbility> cache)
             {
                 BlueprintAbility[] order = cache.ToArray();
-                _reads.Add(() => ReferenceEquals(list.GetSpells(level), cache) &&
+                Read("list-cache:" + list.AssetGuid + ":" + level, () => ReferenceEquals(list.GetSpells(level), cache) &&
                     Cleanup2SameElementalRefs(order, cache));
             }
-            internal bool Unchanged()
+            internal bool Unchanged() { return Failing().Count == 0; }
+            internal JArray Failing()
             {
-                try { return _reads.All(read => read()); }
-                catch (Exception) { return false; }
+                var failing = new JArray();
+                foreach (var read in _reads)
+                {
+                    bool same;
+                    try { same = read.Value(); } catch (Exception) { same = false; }
+                    if (!same) failing.Add(read.Key);
+                }
+                return failing;
             }
         }
     }

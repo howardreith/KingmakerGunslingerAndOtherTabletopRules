@@ -210,14 +210,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             var bookField=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields);
             Func<bool> headerBoundNow=()=>cleanupContext!=null && cleanupContext.View!=null &&
                 cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header));
+            // Native41: retirement is the released owned context with no native
+            // book, group selection or service field left; the closed screen's
+            // own object activity is recorded, not required.
             Func<bool> retiredNow=()=>owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
-                cleanupContext.Group.CurrentSelectedSpell==null && cleanupContext.Released && bookField.GetValue(service)==null &&
-                (cleanupContext.Disposed || (cleanupContext.View!=null && !cleanupContext.View.gameObject.activeInHierarchy &&
-                    ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group) &&
-                    !cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(false).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header))));
+                cleanupContext.Group.CurrentSelectedSpell==null && cleanupContext.Released && bookField.GetValue(service)==null;
+            Func<JObject> retirementState=()=>new JObject {
+                ["ownedBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
+                ["nativeSelectionCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
+                ["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,["serviceBookFieldCleared"]=bookField.GetValue(service)==null,
+                ["viewActiveInHierarchy"]=cleanupContext!=null && cleanupContext.View!=null && cleanupContext.View.gameObject.activeInHierarchy,
+                ["viewModelStillDisposedGroup"]=cleanupContext!=null && cleanupContext.View!=null &&
+                    ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group),
+                ["activeRowsBindHeader"]=cleanupContext!=null && cleanupContext.View!=null &&
+                    cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(false).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header)) };
             var releaseWatch=Stopwatch.StartNew();int releaseFrames=0;
             for(;releaseFrames<8 || (!off && !retiredNow() && releaseFrames<600 && releaseWatch.Elapsed.TotalSeconds<8);releaseFrames++)yield return 0;
             bool retired=!off && retiredNow(),disposedAtClose=cleanupContext!=null && cleanupContext.Disposed,boundAtClose=headerBoundNow();
+            var stateAtClose=retirementState();
             bool reopened=false,disposedAtRebind=disposedAtClose,reopenedClosed=false;int rebindFrames=0;
             if(retired && !disposedAtClose)
             {
@@ -246,7 +256,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["waitedFrames"]=releaseFrames,["waitedSeconds"]=releaseWatch.Elapsed.TotalSeconds,
                 ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
                 ["nativeSelectionFieldCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
-                ["ownedContextRetiredAtClose"]=retired,["ownedHeaderDisposedAtClose"]=disposedAtClose,
+                ["ownedContextRetiredAtClose"]=retired,["ownedHeaderDisposedAtClose"]=disposedAtClose,["retirementStateAtClose"]=stateAtClose,
                 ["inactiveNativeViewStillBindsHeaderAtClose"]=boundAtClose,
                 ["nativeReopenRebind"]=reopened,["rebindFrames"]=rebindFrames,
                 ["ownedHeaderDisposedAtRebind"]=disposedAtRebind,["reopenedBookClosedExactly"]=reopenedClosed,

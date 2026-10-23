@@ -2618,6 +2618,61 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        // Native41: with the module OFF no owned layout runs, so no owned
+        // snapshot exists to compare. Admit only the unmodified native
+        // stationary popup: no owned snapshot/scroll/viewport, every exact row
+        // parented to the root and inside both it and the canvas, and the root
+        // geometry unchanged while observed.
+        private NativeIconScreenEvidence.NativeRowScroll Cleanup2AcquireOffPopupSurface(ActionBarGroupSlot source,
+            ActionBarSpellsGroup popup, BlueprintAbility parent, ActionBarSlot[] rows, string label)
+        {
+            var root = popup == null ? null : popup.transform as RectTransform;
+            var rootCanvas = popup == null ? null : popup.GetComponentInParent<Canvas>()?.rootCanvas;
+            var canvasRect = rootCanvas == null ? null : rootCanvas.transform as RectTransform;
+            var sourceData = source?.MechanicSlot?.GetContentData() as AbilityData;
+            var capturedData = rows.Select(row => row.MechanicSlot?.GetContentData() as AbilityData).ToArray();
+            Vector3 rootPosition = root == null ? Vector3.zero : root.anchoredPosition3D;
+            Vector2 rootSize = root == null ? Vector2.zero : root.sizeDelta;
+            Func<bool> proof = () => {
+                try
+                {
+                    ExpandedSummoningVariantMenuSnapshot snapshot;
+                    if (root == null || canvasRect == null || sourceData == null || !popup.gameObject.activeInHierarchy ||
+                        !source.gameObject.activeInHierarchy || ExpandedSummoningVariantMenuRuntime.TryGetSnapshot(popup, out snapshot) ||
+                        popup.GetComponentsInChildren<ScrollRect>(true).Length != 0 ||
+                        popup.GetComponentsInChildren<ExpandedSummoningVariantMenuViewportMarker>(true).Length != 0 ||
+                        sourceData.Blueprint != parent || !ReferenceEquals(source.MechanicSlot?.GetContentData(), sourceData) ||
+                        !root.anchoredPosition3D.Equals(rootPosition) || !root.sizeDelta.Equals(rootSize)) return false;
+                    SummonVariantMenuRect liveRoot = Cleanup2PopupCanvasRect(canvasRect, root), canvas = Cleanup2PopupCanvasRect(canvasRect, canvasRect);
+                    return rows.Length > 0 && rows.Select((row, index) => row != null && row.gameObject.activeInHierarchy && row.transform.parent == root &&
+                        ReferenceEquals(row.MechanicSlot?.GetContentData(), capturedData[index]) &&
+                        liveRoot.Contains(Cleanup2PopupCanvasRect(canvasRect, row.transform as RectTransform), .5f) &&
+                        canvas.Contains(Cleanup2PopupCanvasRect(canvasRect, row.transform as RectTransform), .5f)).All(value => value);
+                }
+                catch { return false; }
+            };
+            bool admitted = proof();
+            var admission = Cleanup2PopupSurfaceDiagnostic(source, popup, parent, rows, null, admitted ? "admitted-native-module-off" : "admission-refused");
+            admission["nativeHudSettleBeforeOpen"] = _cleanup2LastHudSettle; _cleanup2LastHudSettle = null;
+            admission["moduleOffNativeLayout"] = "No owned snapshot, scroll or viewport; rows parented to the unmodified native root, inside it and the canvas.";
+            Cleanup2Check("popup-native-scroll-" + label, admitted, admission,
+                "With the module OFF the unmodified native stationary popup holds every exact row inside its root and the canvas; nothing owned is present.");
+            if (!admitted) throw new InvalidOperationException("Exact native module-OFF popup surface proof failed: " + label);
+            bool failureRecorded = false;
+            Func<bool> guardedProof = () => {
+                bool intact = proof();
+                if (!intact && !failureRecorded)
+                {
+                    failureRecorded = true;
+                    Cleanup2Check("popup-surface-ownership-" + label, false,
+                        Cleanup2PopupSurfaceDiagnostic(source, popup, parent, rows, null, "ownership-refused"),
+                        "The native module-OFF popup/source/row identities and geometry must remain exact during observation.");
+                }
+                return intact;
+            };
+            return NativeIconScreenEvidence.NativeRowScroll.StationaryPopup(root, guardedProof);
+        }
+
         private static SummonVariantMenuRect Cleanup2PopupCanvasRect(RectTransform canvas, RectTransform value)
         {
             if (canvas == null || value == null) throw new InvalidOperationException("Exact native RectTransforms required.");
