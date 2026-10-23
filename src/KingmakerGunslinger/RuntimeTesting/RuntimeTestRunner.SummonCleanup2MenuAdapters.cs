@@ -718,13 +718,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(value.MechanicSlot?.GetContentData(), prepared));
             var conversions = source.MechanicSlot.GetConvertedAbilityData().ToArray();
             var patches = _context.Harmony.GetPatchInfo(typeof(MechanicActionBarSlotMemorizedSpell).GetMethod("GetConvertedAbilityData"));
+            var variantPatches = _context.Harmony.GetPatchInfo(typeof(MechanicActionBarSlotSpontaneusSpell).GetMethod("GetConvertedAbilityData"));
+            var membershipPatches = _context.Harmony.GetPatchInfo(typeof(AbilityData).GetMethod("HasVariant"));
+            string factoryOutcome = DruidSummonConversionVariantPatch.Outcome;
             var evidence = new JObject { ["class"] = druid.AssetGuid, ["book"] = book.Blueprint.AssetGuid, ["nativeFeature"] = feature.AssetGuid,
                 ["source"] = prepared.Blueprint.AssetGuid, ["sourceSlotIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(prepared.ParamSpellSlot),
+                ["bookByBlueprintExact"] = ReferenceEquals(fixture.Caster.Descriptor.GetSpellbook(druid.Spellbook), book),
+                ["bookByClassExact"] = ReferenceEquals(fixture.Caster.Descriptor.GetSpellbook(druid), book),
+                ["druidClassDataPresent"] = fixture.Caster.Descriptor.Progression.GetClassData(druid) != null,
+                ["nativeBookAuthority"] = "SpontaneousSpellConversion0600260B uses DemandSpellbook(class)06001F0C, whose no-ClassData branch uses the exact default book blueprint. GetSpellbook(class)06001F0B instead returns null. Production checks the already-owned exact default book, real native feature, native conversion list and actual preparation; it adds no class or book.",
                 ["factoryModuleMvid"] = typeof(MechanicActionBarSlotMemorizedSpell).Module.ModuleVersionId.ToString(),
                 ["factoryToken"] = typeof(MechanicActionBarSlotMemorizedSpell).GetMethod("GetConvertedAbilityData").MetadataToken,
                 ["patchOwners"] = new JArray(patches == null ? new string[0] : patches.Prefixes.Concat(patches.Postfixes).Concat(patches.Transpilers).Select(value => value.owner).Distinct().ToArray()),
+                ["variantFactoryPatchOwners"] = new JArray(variantPatches == null ? new string[0] : variantPatches.Prefixes.Concat(variantPatches.Postfixes).Concat(variantPatches.Transpilers).Select(value => value.owner).Distinct().ToArray()),
+                ["variantMembershipPatchOwners"] = new JArray(membershipPatches == null ? new string[0] : membershipPatches.Prefixes.Concat(membershipPatches.Postfixes).Concat(membershipPatches.Transpilers).Select(value => value.owner).Distinct().ToArray()),
+                ["conversionAdapterAfterFactory"] = factoryOutcome,
                 ["conversions"] = new JArray(conversions.Select(value => new JObject { ["blueprint"] = value.Blueprint.AssetGuid,
                     ["sourceExact"] = Cleanup2DruidSourceChain(value, prepared, parent), ["bookExact"] = ReferenceEquals(value.Spellbook, book),
+                    ["immediateSourceIsPreparation"] = ReferenceEquals(value.ConvertedFrom, prepared),
+                    ["quantitySourceIsPreparation"] = ReferenceEquals(value.ConvertedFrom?.ConvertedFrom, prepared),
+                    ["nativeQuantityRecognizesChild"] = value.ConvertedFrom != null && value.ConvertedFrom.HasVariant(value),
+                    ["metamagicMatchesImmediateSource"] = value.ConvertedFrom != null && ReferenceEquals(value.MetamagicData, value.ConvertedFrom.MetamagicData),
+                    ["factMatchesImmediateSource"] = value.ConvertedFrom != null && ReferenceEquals(value.Fact, value.ConvertedFrom.Fact),
                     ["nativeQuantityConversion"] = value.ConvertedFrom?.Blueprint.AssetGuid,
                     ["variants"] = value.Blueprint.Variants?.Length ?? 0, ["dataLinks"] = DescribeExpandedSummoningAbilityData(value) })),
                 ["fixtureAccess"] = "Real native Druid book and exact class-progression conversion feature granted to disposable caster. Not a naturally levelled Druid or saved character." };
@@ -830,7 +845,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var receipt = DruidSummonConversionVariantPatch.For(child);
             return child != null && source != null && receipt != null && ReferenceEquals(receipt.Source, source) && ReferenceEquals(receipt.Parent, parent) &&
                 ReferenceEquals(child.ConvertedFrom, receipt.Conversion) && ReferenceEquals(child.ConvertedFrom.Blueprint, receipt.NativeConversionBlueprint) &&
-                ReferenceEquals(child.ConvertedFrom.ConvertedFrom, source) && ReferenceEquals(child.Spellbook, source.Spellbook) && ReferenceEquals(child.Caster, source.Caster);
+                ReferenceEquals(child.ConvertedFrom.ConvertedFrom, source) && ReferenceEquals(child.Spellbook, source.Spellbook) && ReferenceEquals(child.Caster, source.Caster) &&
+                receipt.Conversion.HasVariant(child) && ReferenceEquals(child.MetamagicData, receipt.Conversion.MetamagicData) && ReferenceEquals(child.Fact, receipt.Conversion.Fact);
         }
 
         private NativeIconScreenEvidence.NativeRowScroll Cleanup2DruidPopupSurface(ActionBarGroupSlot source, ActionBarSpellsGroup popup,

@@ -24,7 +24,10 @@ function Get-KmgCleanup2ColdWorkingRecord([string]$Path,[switch]$AllowEmpty) {
     $file=Get-Item -LiteralPath $full -Force
     # This checkpoint supports ordinary files, not a lossy reconstruction of
     # compressed/encrypted/sparse/reparse/offline or named-stream storage.
-    if($file.PSIsContainer -or ([int]$file.Attributes -band (-bnot (32 -bor 128))) -ne 0 -or
+    # NotContentIndexed is an indexing metadata hint, preserved with the exact
+    # original attributes by the existing backup/restoration record.
+    $ordinaryAttributes=[int][IO.FileAttributes]::Archive -bor [int][IO.FileAttributes]::Normal -bor [int][IO.FileAttributes]::NotContentIndexed
+    if($file.PSIsContainer -or ([int]$file.Attributes -band (-bnot $ordinaryAttributes)) -ne 0 -or
         ($file.PSObject.Properties['LinkType'] -and $file.LinkType)) {throw 'Cold Working must be an ordinary nonlinked file.'}
     $streams=@(Get-Item -LiteralPath $full -Stream '*' -ErrorAction Stop)
     if($streams.Count -ne 1 -or $streams[0].Stream -cne ':$DATA') {throw 'Cold Working has unsupported named data streams.'}

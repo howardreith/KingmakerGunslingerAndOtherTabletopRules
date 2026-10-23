@@ -6,6 +6,52 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review36 recovery state (current, October 23)
+Owner requested a Claude handoff after session errors. See
+[CLEANUP2-CLAUDE-HANDOFF-2026-10-23.md](CLEANUP2-CLAUDE-HANDOFF-2026-10-23.md)
+for the frozen/dirty source boundary and exact next actions. Last review36
+native giants-off is **11/0 PASS,70.612s**, raw20261023T0940428372896Z.
+Cloud/Storm OFF views and release pass. Exact restoration completed
+09:42:09.5796206UTC; window16 is closed at12m59.580s. No game remains running.
+The final90-minute window has not started. Current next-batch C# changes remain
+uncompiled/uncommitted; this handoff is not mission completion.
+
+Frozen source `ebe1bce4160e06972a930d8f679aaae136cfefe7`; package
+`af9722f2304bd6ceba9b28694e375723bdbab1d2ff2ed4c717538fc3a90cceb1`, DLL
+`beec19a1863265ad405217bf8bc43e0a9974bf8f908ad154aef5dcaee557ab28`, MVID
+`c42a6cbe-7436-4b08-8320-f76cfc746923`. Compilation/package,23 selected cases
+(1.6s) and23 installed patch targets pass. PR remains draft.
+
+- Creature commands **32/0 PASS,121.685s**, raw `20261023T0544037260256Z`.
+  Both current bodies reach actual native approach/attack/recovery with unchanged
+  rules/costs and exact native tick deadlines. Root inspected Crab motion
+  positively. Brachiosaurus images are tree-occluded: mechanical PASS does not
+  qualify its appearance. Existing camera positions are being reprioritized.
+- Druid menus **61/2 FAIL,120.464s**, raw `20261023T0549228037890Z`.
+  Exact native quantity arrays now match. A class-data lookup rejects the owned
+  demanded book before projection; native variant validation also needs exact
+  per-invocation membership. The correction preserves native constructed source
+  objects and setter inheritance, without reparenting shared blueprints.
+- Cold preflight refuses before game/install/save-byte mutation: actual Working
+  attributes8224 include NotContentIndexed8192. Narrow support preserves exact
+  attributes; disposable three-phase/restoration fixtures now **590/0,49.900s**,
+  `artifacts/cleanup2-currentstack-tests/8fccf5b41631421eb2815e5fc27ffd5f`.
+- PC learning fails at an active class-tab assumption. Native singleton books
+  hide that strip. Cleanup must await the native0.4s close tween before testing
+  book-hidden. Raw `20261023T0930489547115Z`,75.104s; exact exception retained.
+- Controller **24/1 FAIL,106.863s**, raw `20261023T0934278557553Z`.
+  Native source preparation succeeds, then an unbound pooled view causes the
+  observer lookup to throw. Exact-slot lookup now skips null view models.
+
+All completed native transactions above confirm exit and restore fresh95-save
+inventories and exact installation/settings. Window15 ended05:51:42.7803730UTC
+(20m28.780s from conservative05:31:14UTC); request/session interruptions did not
+leave a game running. Resumed window16 starts09:29:10UTC, ceiling30minutes;
+final90 has not started. Current gallery has100 verified originals; new native
+results are not relabelled as earlier candidates. Current integration source
+corrections require coherent compilation/freeze before their affected runs.
+
+
 ### Review35 complete body packets and exact remaining observer failures
 
 Frozen source `fc2b00676129460a2635356ce0a3cd39fb6f1c4a`, package

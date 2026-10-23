@@ -171,7 +171,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownedProjectionAbsent"]=off && context==null,["nativeInput"]="SpellBookView.WantConfirm on exact original native source row" },
                     "Choosing the original source through real console preparation assigns its exact known AbilityData to one native common slot, preserving every other slot and resource.");
                 if(!exact)throw new InvalidOperationException("Native console original-source preparation failed.");
-                var prepared=view.GetComponentsInChildren<SpellBookMemorizeSlotView>(false).Single(value=>ReferenceEquals(value.GetViewModel().SpellSlot,written));
+                // Active pooled views may still be unbound; only the exact native written slot owns this row.
+                var prepared=view.GetComponentsInChildren<SpellBookMemorizeSlotView>(false).Single(value=>ReferenceEquals(value.GetViewModel()?.SpellSlot,written));
                 Cleanup2ConsolePreparationFocus(view,owned,prepared,true,"prepared-slot");
                 foreach(int frame in screens.Capture("elementals-console-native-prepared-slot",new JObject { ["source"]=originalSource.Blueprint.AssetGuid,
                     ["slotIndex"]=written.Index,["slotType"]=written.Type.ToString(),["slotReferenceExact"]=ReferenceEquals(prepared.GetViewModel().SpellSlot,written),
