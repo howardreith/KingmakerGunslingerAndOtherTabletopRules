@@ -58839,6 +58839,54 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S31 private one-round Holy Smite blindness state; exact source ownership, condition immunity, stacking and expiry qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvil",
+      "guid": "f7bc72c48eba45c2bf1c2392b52d0d2c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDismissal",
+      "guid": "399924f5576b461eaa99b4566316b16f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDismissalTouch",
+      "guid": "f4d8084c8aa14d759c59cb56c10847b5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispel",
+      "guid": "47834914e7a84dfdb19cf52534f6d77a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispelTouch",
+      "guid": "2af649f3a8884dc092fc34fd8ada1cbf",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilWard",
+      "guid": "bf76a2bff6e24cbba9d7bce475f3cee8",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

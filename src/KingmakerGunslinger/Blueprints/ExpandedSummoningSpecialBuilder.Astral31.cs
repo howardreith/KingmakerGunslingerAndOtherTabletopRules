@@ -21,6 +21,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.AreaEffects;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -198,11 +199,13 @@ namespace KingmakerGunslinger.Blueprints
                 "RemoveFear", "55a037e514c0ee14a8e3ed14b47061de", "Remove Fear");
             var holySmite = ConfigureAstralHolySmite(library, bySymbol, unit,
                 holyWord.Icon);
+            var dispelEvil = ConfigureAstralDispelEvil(library, bySymbol, unit);
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
             parameters.Abilities = new[] { heal, bladeBarrier, cureLight,
                 seeInvisibility, aid, dispelMagic, holyAura, holyWord,
-                invisibility, removeCurse, removeDisease, removeFear, holySmite };
+                invisibility, removeCurse, removeDisease, removeFear, holySmite }
+                .Concat(dispelEvil).ToArray();
             parameters.SpellLevels = new[] { 6,
                 AstralDevaRulesPolicy.BladeBarrierSpellLevel,
                 AstralDevaRulesPolicy.CureLightWoundsSpellLevel,
@@ -215,7 +218,9 @@ namespace KingmakerGunslinger.Blueprints
                 AstralDevaRulesPolicy.RemoveCurseSpellLevel,
                 AstralDevaRulesPolicy.RemoveDiseaseSpellLevel,
                 AstralDevaRulesPolicy.RemoveFearSpellLevel,
-                AstralDevaRulesPolicy.HolySmiteSpellLevel };
+                AstralDevaRulesPolicy.HolySmiteSpellLevel }
+                .Concat(Enumerable.Repeat(AstralDevaRulesPolicy.DispelEvilSpellLevel,
+                    dispelEvil.Length)).ToArray();
             parameters.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
 
             traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor,
@@ -228,7 +233,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Astral31Prefix + "Traits.Name", "Astral Deva Traits"),
                 LocalizationService.Create(Astral31Prefix + "Traits.Description",
-                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses. Aid, Dispel Magic, Holy Aura, Holy Word, Holy Smite, self-only Invisibility, Remove Curse, Remove Disease and Remove Fear are at will. All SLAs are CL13. Change shape, caster travel, expensive Continual Flame, social Discern Lies and passive Detect Evil sensing are unavailable."), null);
+                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses. Aid, Dispel Magic, Dispel Evil, Holy Aura, Holy Word, Holy Smite, self-only Invisibility, Remove Curse, Remove Disease and Remove Fear are at will. All SLAs are CL13. Change shape, caster travel, expensive Continual Flame, social Discern Lies and passive Detect Evil sensing are unavailable."), null);
 
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "Astral ordinary attack fallback");
@@ -282,7 +287,7 @@ namespace KingmakerGunslinger.Blueprints
                 extraplanar, traits, stunFeature, heal, bladeBarrier, cureLight,
                 seeInvisibility, aid, dispelMagic, holyAura, holyWord,
                 invisibility, removeCurse, removeDisease, removeFear,
-                holySmite };
+                holySmite, dispelEvil[0] };
         }
 
         private static BlueprintAbility ConfigureAstralAtWillNativeSpell(
@@ -374,6 +379,230 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Description",
                     "At will at caster level13, burst holy power in a20-foot radius at medium range. Good creatures are unaffected. Evil creatures take5d8 divine damage and are blinded for one round; evil outsiders instead take10d6. A Will save halves damage and prevents blindness. Neutral creatures take half damage, or one-quarter on a successful save, and are never blinded. Spell resistance applies."), icon);
             return ability;
+        }
+
+
+        private static BlueprintAbility[] ConfigureAstralDispelEvil(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintUnit unit)
+        {
+            const string nativeGuid = "95f7cdcec94e293489a85afdf5af1fd7";
+            var native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                library, nativeGuid, "native Dismissal held-touch spell");
+            var nativeSticky = native.GetComponents<AbilityEffectStickyTouch>()
+                .SingleOrDefault();
+            BlueprintAbility nativeDelivery = nativeSticky == null ? null :
+                nativeSticky.TouchDeliveryAbility;
+            if (nativeDelivery == null || nativeDelivery.GetComponents<
+                    AbilityDeliverTouch>().Count() != 1)
+                throw new InvalidOperationException(
+                    "Native Dismissal no longer has one held-touch delivery.");
+
+            string familySymbol = Astral31Prefix + "DispelEvil";
+            string dismissalSymbol = Astral31Prefix + "DispelEvilDismissal";
+            string dismissalTouchSymbol = dismissalSymbol + "Touch";
+            string dispelSymbol = Astral31Prefix + "DispelEvilDispel";
+            string dispelTouchSymbol = dispelSymbol + "Touch";
+            string wardSymbol = Astral31Prefix + "DispelEvilWard";
+            var family = Require<BlueprintAbility>(bySymbol, familySymbol);
+            var dismissal = Require<BlueprintAbility>(bySymbol, dismissalSymbol);
+            var dismissalTouch = Require<BlueprintAbility>(bySymbol,
+                dismissalTouchSymbol);
+            var dispel = Require<BlueprintAbility>(bySymbol, dispelSymbol);
+            var dispelTouch = Require<BlueprintAbility>(bySymbol,
+                dispelTouchSymbol);
+            var ward = Require<BlueprintBuff>(bySymbol, wardSymbol);
+
+            var ac = ScriptableObject.CreateInstance<
+                ArmorClassBonusAgainstAlignment>();
+            ac.alignment = AlignmentComponent.Evil;
+            ac.Value = AstralDevaRulesPolicy.DispelEvilArmorClassBonus;
+            ac.Descriptor = ModifierDescriptor.Deflection;
+            var lifetime = ScriptableObject.CreateInstance<
+                AstralDispelEvilWardLifetime>();
+            lifetime.Deliveries = new[] { dismissalTouch, dispelTouch };
+            var wardDescriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            wardDescriptor.Descriptor = SpellDescriptor.Good;
+            ward.name = InternalName(wardSymbol);
+            ward.Stacking = StackingType.Replace;
+            ward.IsClassFeature = false;
+            ward.ComponentsArray = new BlueprintComponent[] {
+                ac, lifetime, wardDescriptor };
+
+            CopyFields(nativeDelivery, dismissalTouch);
+            dismissalTouch.name = InternalName(dismissalTouchSymbol);
+            dismissalTouch.Parent = dismissal;
+            dismissalTouch.Type = AbilityType.SpellLike;
+            dismissalTouch.Hidden = true;
+            dismissalTouch.ActionBarAutoFillIgnored = true;
+            dismissalTouch.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            dismissalTouch.ResourceAssetIds = Array.Empty<string>();
+            var dismissalChecker = ScriptableObject.CreateInstance<
+                AstralDispelEvilDismissalTargetChecker>();
+            dismissalChecker.Extraplanar = Feature(library,
+                ExtraplanarSubtypeGuid, "native extraplanar subtype");
+            var dismissalMarker = ScriptableObject.CreateInstance<
+                AstralDispelEvilDeliveryMarker>();
+            dismissalMarker.Ward = ward;
+            dismissalTouch.ComponentsArray = (nativeDelivery.ComponentsArray ??
+                Array.Empty<BlueprintComponent>()).Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Concat(new BlueprintComponent[] { dismissalChecker,
+                    dismissalMarker }).ToArray();
+
+            CopyFields(nativeDelivery, dispelTouch);
+            dispelTouch.name = InternalName(dispelTouchSymbol);
+            dispelTouch.Parent = dispel;
+            dispelTouch.Type = AbilityType.SpellLike;
+            dispelTouch.Range = AbilityRange.Touch;
+            dispelTouch.CanTargetPoint = false;
+            dispelTouch.CanTargetSelf = true;
+            dispelTouch.CanTargetFriends = true;
+            dispelTouch.CanTargetEnemies = true;
+            dispelTouch.SpellResistance = false;
+            dispelTouch.NeedEquipWeapons = false;
+            dispelTouch.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            dispelTouch.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            dispelTouch.Hidden = true;
+            dispelTouch.ActionBarAutoFillIgnored = true;
+            dispelTouch.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            dispelTouch.ResourceAssetIds = Array.Empty<string>();
+            var touch = (AbilityDeliverTouch)
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                    nativeDelivery.GetComponents<AbilityDeliverTouch>().Single());
+            var target = ScriptableObject.CreateInstance<
+                AstralDispelEvilTargetChecker>();
+            var action = ScriptableObject.CreateInstance<
+                ContextActionAstralDispelEvil>();
+            action.SourceUnit = unit;
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList { Actions = new GameAction[] { action } };
+            var school = ScriptableObject.CreateInstance<SpellComponent>();
+            school.School = SpellSchool.Abjuration;
+            var good = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            good.Descriptor = SpellDescriptor.Good;
+            var dispelMarker = ScriptableObject.CreateInstance<
+                AstralDispelEvilDeliveryMarker>();
+            dispelMarker.Ward = ward;
+            dispelTouch.ComponentsArray = new BlueprintComponent[] {
+                touch, target, run, school, good, dispelMarker }
+                .Concat((nativeDelivery.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilitySpawnFx>()
+                    .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
+                .ToArray();
+
+            ConfigureAstralDispelEvilParent(native, dismissal,
+                dismissalSymbol, family, dismissalTouch, ward, unit,
+                "Dismiss Evil Extraplanar Creature",
+                "Arm Dispel Evil's ward and its Dismissal touch. A successful melee touch against an evil extraplanar creature invokes the installed Dismissal effect; Will negates and spell resistance applies.",
+                "Will negates");
+            ConfigureAstralDispelEvilParent(native, dispel, dispelSymbol,
+                family, dispelTouch, ward, unit, "Dispel Evil Spell",
+                "Arm Dispel Evil's ward and a touch that automatically removes one dispellable evil spell, or one enchantment cast by an evil creature, from a creature.",
+                "None");
+
+            CopyFields(native, family);
+            family.name = InternalName(familySymbol);
+            family.Parent = null;
+            family.Type = AbilityType.SpellLike;
+            family.Range = AbilityRange.Personal;
+            family.CanTargetPoint = false;
+            family.CanTargetSelf = true;
+            family.CanTargetFriends = false;
+            family.CanTargetEnemies = false;
+            family.SpellResistance = false;
+            family.NeedEquipWeapons = false;
+            family.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            family.EffectOnEnemy = AbilityEffectOnUnit.None;
+            family.ActionType = UnitCommand.CommandType.Standard;
+            family.Hidden = false;
+            family.ActionBarAutoFillIgnored = false;
+            family.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            family.ResourceAssetIds = Array.Empty<string>();
+            var variants = ScriptableObject.CreateInstance<AbilityVariants>();
+            variants.Variants = new[] { dismissal, dispel };
+            family.ComponentsArray = new BlueprintComponent[] { variants };
+            family.LocalizedDuration = LocalizationService.Create(
+                familySymbol + ".Duration", "1 round per caster level or until discharged");
+            family.LocalizedSavingThrow = LocalizationService.Create(
+                familySymbol + ".SavingThrow", "See selected discharge");
+
+            var access = BlueprintUnitFactAccess.Resolve();
+            var title = LocalizationService.Create(familySymbol + ".Name",
+                "Dispel Evil");
+            access.Configure(ward, title,
+                LocalizationService.Create(wardSymbol + ".Description",
+                    "+4 deflection AC against attacks by evil creatures while this Astral Deva holds one Dispel Evil touch."),
+                native.Icon);
+            access.Configure(dismissalTouch,
+                LocalizationService.Create(dismissalTouchSymbol + ".Name",
+                    "Dispel Evil — Dismissal Touch"),
+                LocalizationService.Create(dismissalTouchSymbol + ".Description",
+                    "Deliver the held Dispel Evil dismissal as a melee touch."),
+                native.Icon);
+            access.Configure(dispelTouch,
+                LocalizationService.Create(dispelTouchSymbol + ".Name",
+                    "Dispel Evil — Dispel Touch"),
+                LocalizationService.Create(dispelTouchSymbol + ".Description",
+                    "Deliver the held automatic Dispel Evil removal as a melee touch."),
+                native.Icon);
+            access.Configure(family, title,
+                LocalizationService.Create(familySymbol + ".Description",
+                    "At will at caster level13, gain +4 deflection AC against attacks by evil creatures for 13 rounds and hold one selected melee touch. The touch either invokes Dismissal against an evil extraplanar creature (Will negates; spell resistance applies) or automatically removes one dispellable evil spell or evil-caster enchantment from a creature. A delivered touch discharges the ward."),
+                native.Icon);
+            return new[] { family, dismissal, dismissalTouch, dispel,
+                dispelTouch };
+        }
+
+        private static void ConfigureAstralDispelEvilParent(
+            BlueprintAbility native, BlueprintAbility ability, string symbol,
+            BlueprintAbility family, BlueprintAbility delivery,
+            BlueprintBuff ward, BlueprintUnit unit, string title,
+            string description, string savingThrow)
+        {
+            CopyFields(native, ability);
+            ability.name = InternalName(symbol);
+            ability.Parent = family;
+            ability.Type = AbilityType.SpellLike;
+            ability.Range = AbilityRange.Personal;
+            ability.CanTargetPoint = false;
+            ability.CanTargetSelf = true;
+            ability.CanTargetFriends = false;
+            ability.CanTargetEnemies = false;
+            ability.SpellResistance = false;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Helpful;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.None;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = true;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            var school = ScriptableObject.CreateInstance<SpellComponent>();
+            school.School = SpellSchool.Abjuration;
+            var good = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            good.Descriptor = SpellDescriptor.Good;
+            var arm = ScriptableObject.CreateInstance<
+                AbilityEffectArmAstralDispelEvilTouch>();
+            arm.SourceUnit = unit;
+            arm.TouchDeliveryAbility = delivery;
+            arm.Ward = ward;
+            ability.ComponentsArray = new BlueprintComponent[] { school, good,
+                arm }.Concat((native.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilitySpawnFx>()
+                    .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
+                .ToArray();
+            ability.LocalizedDuration = LocalizationService.Create(
+                symbol + ".Duration", "1 round per caster level or until discharged");
+            ability.LocalizedSavingThrow = LocalizationService.Create(
+                symbol + ".SavingThrow", savingThrow);
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(symbol + ".Name", title),
+                LocalizationService.Create(symbol + ".Description", description),
+                native.Icon);
         }
 
         private static void ConfigureAstralHammerStun(LibraryScriptableObject library,
