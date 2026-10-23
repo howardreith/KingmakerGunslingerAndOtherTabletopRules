@@ -1312,6 +1312,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Hammer.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Blade.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLemure30Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Cloud.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Ai.cs" />
