@@ -44,6 +44,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData target = fixture.Hostile;
             var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
             var targetBuffBaseline = target.Buffs.Enumerable.ToArray();
+            var protectedPartyCombatBefore = fixture.PartyBefore
+                .OfType<UnitEntityData>().ToDictionary(unit => unit,
+                    unit => unit.IsInCombat);
+            bool playerCombatAtStart = Game.Instance.Player.IsInCombat;
+            var nativeTurnController = Game.Instance.TurnBasedCombatController;
+            var nativeLeaveController = Game.Instance
+                .GetController<UnitCombatLeaveController>(true);
+            var nativeJoinController = Game.Instance
+                .GetController<UnitCombatJoinController>(true);
+            bool turnBasedCombatAtStart = TurnBased.Controllers.CombatController
+                .IsInTurnBasedCombat();
+            bool turnHasEnemyAtStart = nativeTurnController.HasEnemyInCombat;
+            bool turnHadEnemyAtStart = nativeTurnController.HadEnemyAtSomePoint;
+            UnitEntityData[] turnUnitsAtStart = nativeTurnController.SortedUnits
+                .ToArray();
+            if (nativeLeaveController == null || nativeJoinController == null ||
+                playerCombatAtStart || turnBasedCombatAtStart ||
+                turnHasEnemyAtStart || protectedPartyCombatBefore.Any(pair =>
+                    pair.Value))
+                throw new InvalidOperationException(
+                    "Astral core requires a clean registered native combat boundary.");
             var ownedItems = new List<ItemEntity>();
             try
             {
@@ -456,16 +477,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Memory.Remove(target);
                 if (targetRememberedCasterBeforeCleanup)
                     target.Memory.Remove(fixture.Caster);
-                Game.Instance.TurnBasedCombatController
-                    .HandlePartyCombatStateChanged(false);
+                int protectedPartyCombatBeforeCleanup =
+                    protectedPartyCombatBefore.Keys.Count(unit => unit.IsInCombat);
+                bool turnBasedCombatBeforeCleanup =
+                    TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+                bool turnHasEnemyBeforeCleanup =
+                    nativeTurnController.HasEnemyInCombat;
+                bool turnHadEnemyBeforeCleanup =
+                    nativeTurnController.HadEnemyAtSomePoint;
+                int turnUnitsBeforeCleanup = nativeTurnController.SortedUnits.Count();
                 if (target.IsInCombat) target.LeaveCombat();
                 if (fixture.Caster.IsInCombat) fixture.Caster.LeaveCombat();
                 fixture.Caster.Descriptor.Alignment.Set(casterAlignment);
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner, sibling });
                 ResetExpandedSummoningHostile(fixture);
-                Game.Instance.Player.UpdateIsInCombat();
+                nativeTurnController.Tick();
+                bool turnHasEnemyAfterTurnTick =
+                    nativeTurnController.HasEnemyInCombat;
+                nativeLeaveController.Tick();
+                nativeJoinController.Tick();
                 for (int frame = 0; frame < 12; frame++) yield return 0;
+                bool protectedPartyCombatExact = protectedPartyCombatBefore
+                    .All(pair => pair.Key.IsInCombat == pair.Value);
+                bool nativeCombatBoundaryExact =
+                    Game.Instance.Player.IsInCombat == playerCombatAtStart &&
+                    TurnBased.Controllers.CombatController.IsInTurnBasedCombat() ==
+                        turnBasedCombatAtStart &&
+                    nativeTurnController.HasEnemyInCombat == turnHasEnemyAtStart &&
+                    nativeTurnController.HadEnemyAtSomePoint == turnHadEnemyAtStart &&
+                    turnUnitsAtStart.SequenceEqual(nativeTurnController.SortedUnits);
                 bool clean = owner.Destroyed && sibling.Destroyed &&
                     !owner.IsInState && !sibling.IsInState &&
                     !Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any() &&
@@ -474,6 +515,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !fixture.Caster.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
                     !target.IsInCombat && !fixture.Caster.IsInCombat &&
                     !Game.Instance.Player.IsInCombat &&
+                    protectedPartyCombatExact && nativeCombatBoundaryExact &&
                     !fixture.Caster.Memory.Contains(target) &&
                     !target.Memory.Contains(fixture.Caster) &&
                     ownedItems.Count >= 4 && ownedItems.All(item =>
@@ -503,6 +545,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["targetCombatAfterCleanup"] = target.IsInCombat,
                     ["casterCombatAfterCleanup"] = fixture.Caster.IsInCombat,
                     ["playerCombatAfterCleanup"] = Game.Instance.Player.IsInCombat,
+                    ["protectedPartyCombatBeforeCleanup"] =
+                        protectedPartyCombatBeforeCleanup,
+                    ["protectedPartyCombatAfterCleanup"] =
+                        protectedPartyCombatBefore.Keys.Count(unit =>
+                            unit.IsInCombat),
+                    ["protectedPartyCombatExact"] = protectedPartyCombatExact,
+                    ["turnBasedCombatBeforeCleanup"] =
+                        turnBasedCombatBeforeCleanup,
+                    ["turnBasedCombatAfterCleanup"] =
+                        TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
+                    ["turnHasEnemyBeforeCleanup"] = turnHasEnemyBeforeCleanup,
+                    ["turnHasEnemyAfterTurnTick"] = turnHasEnemyAfterTurnTick,
+                    ["turnHasEnemyAfterCleanup"] =
+                        nativeTurnController.HasEnemyInCombat,
+                    ["turnHadEnemyBeforeCleanup"] = turnHadEnemyBeforeCleanup,
+                    ["turnHadEnemyAfterCleanup"] =
+                        nativeTurnController.HadEnemyAtSomePoint,
+                    ["turnUnitsBeforeCleanup"] = turnUnitsBeforeCleanup,
+                    ["turnUnitsAfterCleanup"] =
+                        nativeTurnController.SortedUnits.Count(),
+                    ["nativeCombatBoundaryExact"] = nativeCombatBoundaryExact,
+                    ["nativeReconciliation"] =
+                        "TurnController.Tick->CombatLeave.Tick->CombatJoin.Tick",
                     ["casterRemembersTargetAfterCleanup"] =
                         fixture.Caster.Memory.Contains(target),
                     ["targetRemembersCasterAfterCleanup"] =
