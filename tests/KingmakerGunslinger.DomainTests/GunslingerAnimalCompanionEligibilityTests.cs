@@ -101,8 +101,13 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(catalogWriters.SequenceEqual(new[] { "GunslingerClassBlueprints.cs" }),
                 "Only Gunslinger publication/rollback may write the class catalog: " +
                 string.Join(", ", catalogWriters));
+            // The level-up selector layer also hosts spell selection. Only its two
+            // spell-selector view methods may be patched (the elemental learning
+            // fold); every class display/application seam stays forbidden.
+            const string spellSelectorPatch = @"HarmonyPatch\(typeof\(CharBSelectorLayer\),\s*" +
+                @"""(SetupSpellSelectorView|FillSpellLightUpdate)""\)";
             string[] selectorPatches = production.Where(path => Regex.IsMatch(
-                    File.ReadAllText(path),
+                    Regex.Replace(File.ReadAllText(path), spellSelectorPatch, ""),
                     @"HarmonyPatch\(typeof\((SelectClass|CharBSelectorLayer|CharBPhaseClass|" +
                     @"CharGenClassPhaseVM)\)|""MeetsPrerequisites""|" +
                     @"nameof\(BlueprintCharacterClass\.MeetsPrerequisites\)"))

@@ -1,3 +1,13 @@
+# Summon Cleanup Iteration 2 — v0.0.164 release in progress
+
+The owner approved the Cleanup 2 artwork and authorized the v0.0.164 release
+on 2026-10-23. Release preparation is on `codex/expanded-summoning-cleanup-iteration2`
+(PR #67). It changes art, giant presentation and summon menus, and no
+identity or route. The source-derived public equation is unchanged from
+v0.0.163: **1,127 generated placements + 29 retained wrappers = 1,156 visible
+choices**. See [the cleanup state](planning/EXPANDED-SUMMONING-CLEANUP-ITERATION2-STATE.md)
+and [the release notes](docs/RELEASE-NOTES-0.0.164.md).
+
 # Sprint 29 — RELEASED / STOP
 
 Ettin, Cloud Giant and Storm Giant shipped in stable [v0.0.163](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.163) from [product PR #64](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/64), normal merge `c8c7054b3472e433ecb4bc74ae70a961620655ee`, exact tested source `a4c409c7cad4fdab5c83a6205255e52c29212662`. The 2,700/2,700 Sprint gate, 16 fresh exact-package native reviews, six fresh Working processes, publisher preflight and dry run, and actual public-asset download checks passed. All eight SNA roots are live: 1,127 generated roots plus 29 wrappers = 1,156 visible choices. The downloaded ZIP SHA-256 is `82a4d09d6394d47d3adc6a36bb5d7ee55460fe12793382133779b52d47172df4`; DLL SHA-256 `a7e03aeea0e65dafffffc45bf29f4dbb5a3795d83da947e4effa749d6b946b51`; MVID `d30f4d47-6f91-4ff7-ad58-0f87c56388aa`.
