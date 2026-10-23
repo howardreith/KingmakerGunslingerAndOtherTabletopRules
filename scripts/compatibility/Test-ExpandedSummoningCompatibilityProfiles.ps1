@@ -207,7 +207,7 @@ Write-Host "PASS actual Sprint28 profile dispatch: $sprint28DispatchChecks candi
 # deliberately incompatible fixture stops accepted requests before any profile.
 $dispatchScenario = 'disposable-expanded-summoning-sprints30-31-native-review'
 $bodyDispatchChecks = 0
-foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill')) {
+foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite')) {
     $caught = $null
     try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
     catch { $caught = $_.Exception.Message }
@@ -217,7 +217,7 @@ foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','
     $bodyDispatchChecks++
 }
 foreach ($parameters in @(@{}, @{reviewPhase='Outsider-Bodies'}, @{reviewPhase='outsider-bodies '},
-    @{reviewPhase=@('outsider-bodies')}, @{reviewPhase='outsider-bodies';extra='x'}, @{ReviewPhase='outsider-bodies'}, @{reviewPhase='Hound-Armed'}, @{reviewPhase='hound-natural '}, @{reviewPhase='Lantern-Rays'}, @{reviewPhase='lantern-rays '}, @{reviewPhase='Lantern-Body'}, @{reviewPhase='lantern-body '}, @{reviewPhase='Astral-Core'}, @{reviewPhase='astral-core '}, @{reviewPhase='Astral-Hammer'}, @{reviewPhase='astral-hammer '}, @{reviewPhase='Astral-Blade'}, @{reviewPhase='astral-blade '}, @{reviewPhase='Astral-Support'}, @{reviewPhase='astral-support '}, @{reviewPhase='Astral-Atwill'}, @{reviewPhase='astral-atwill '}, @{reviewPhase='hound-armed';extra='x'})) {
+    @{reviewPhase=@('outsider-bodies')}, @{reviewPhase='outsider-bodies';extra='x'}, @{ReviewPhase='outsider-bodies'}, @{reviewPhase='Hound-Armed'}, @{reviewPhase='hound-natural '}, @{reviewPhase='Lantern-Rays'}, @{reviewPhase='lantern-rays '}, @{reviewPhase='Lantern-Body'}, @{reviewPhase='lantern-body '}, @{reviewPhase='Astral-Core'}, @{reviewPhase='astral-core '}, @{reviewPhase='Astral-Hammer'}, @{reviewPhase='astral-hammer '}, @{reviewPhase='Astral-Blade'}, @{reviewPhase='astral-blade '}, @{reviewPhase='Astral-Support'}, @{reviewPhase='astral-support '}, @{reviewPhase='Astral-Atwill'}, @{reviewPhase='astral-atwill '}, @{reviewPhase='Astral-Smite'}, @{reviewPhase='astral-smite '}, @{reviewPhase='hound-armed';extra='x'})) {
     $caught = $null
     try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters $parameters -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
     catch { $caught = $_.Exception.Message }
