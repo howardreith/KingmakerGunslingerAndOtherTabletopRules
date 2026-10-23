@@ -507,8 +507,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.View.AgentASP.Stop();
                 if (sibling.View != null && sibling.View.AgentASP != null)
                     sibling.View.AgentASP.Stop();
-                owner.Commands.InterruptMove(); sibling.Commands.InterruptMove();
-                owner.Commands.InterruptAll(true); sibling.Commands.InterruptAll(true);
+                owner.Commands.InterruptAll(value => value != null);
+                sibling.Commands.InterruptAll(value => value != null);
                 owner.Commands.RemoveFinishedAndUpdateQueue();
                 sibling.Commands.RemoveFinishedAndUpdateQueue();
                 DisposeExpandedSummoningUnits(fixture.Created,
