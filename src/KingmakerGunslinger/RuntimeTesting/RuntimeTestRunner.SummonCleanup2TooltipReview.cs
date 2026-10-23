@@ -162,6 +162,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ActionBarGroupSlot source = sources[0];
                     try
                     {
+                        foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "tooltip-" + parent.Key.AssetGuid)) yield return frame;
                         source.OnToggleGroupClick();
                         for (int frame = 0; frame < 20; frame++) yield return 0;
                         var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);

@@ -424,6 +424,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             () => mode.Current && Cleanup2OffState() && ReferenceEquals(source.MechanicSlot.GetContentData(), original))) yield return frame;
                         continue;
                     }
+                    foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "off-" + target.Item3)) yield return frame;
                     source.OnToggleGroupClick();
                     try
                     {

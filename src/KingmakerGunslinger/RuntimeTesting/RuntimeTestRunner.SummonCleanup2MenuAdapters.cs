@@ -148,6 +148,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!sourceKind) throw new InvalidOperationException("Unexpected real native source mechanism: " + mechanism.GetType().FullName);
                     try
                     {
+                        foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, stage)) yield return frame;
                         source.OnToggleGroupClick();
                         for (int frame = 0; frame < 8; frame++) yield return 0;
                         bool capture = !known;
@@ -639,6 +640,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ReferenceEquals(destination.MechanicSlot, mechanism)) throw new InvalidOperationException("Native source pin did not retain exact mechanism.");
                 spellGroup.Fill(fixture.Caster);
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                foreach (int frame in Cleanup2AwaitStationaryNativeHud(destination, "pinned-parent-" + target.Label)) yield return frame;
                 destination.OnToggleGroupClick();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 foreach (int frame in Cleanup2MenuAdapterPopup(destination, target, original, inputs, mode, watch, screens,
@@ -747,6 +749,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Cleanup2SourceDebit debit = null;
             try
             {
+                foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "druid-conversion")) yield return frame;
                 source.OnToggleGroupClick();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);

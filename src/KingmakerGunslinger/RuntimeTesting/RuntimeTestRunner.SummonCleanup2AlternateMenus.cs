@@ -114,6 +114,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new InvalidOperationException("Unexpected alternate native source mechanism: " + source.MechanicSlot.GetType().FullName);
                         try
                         {
+                            foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "alternate-" + route.Label)) yield return frame;
                             source.OnToggleGroupClick(); for (int frame = 0; frame < 6; frame++) yield return 0;
                             var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);
                             foreach (int frame in Cleanup2AlternatePopup(caster, route, source, original, popup, input,

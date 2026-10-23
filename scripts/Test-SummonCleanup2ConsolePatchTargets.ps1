@@ -60,7 +60,22 @@ try {
         @('DruidSummonConversionVariantMembershipPatch','AbilityData','HasVariant',18),
         @('DruidSummonConversionSourceSlotPatch','ActionBarGroupSlot','OnToggleGroupClick',-1),
         @('DruidSummonConversionMenuPatch','ActionBarSpellsGroup','Toggle',-1),
-        @('GiantSummonNativeVisibilityPatch','EntityFader','SetRendererVisibility',-1)
+        @('GiantSummonNativeVisibilityPatch','EntityFader','SetRendererVisibility',-1),
+        # Desktop/presentation patches: a Prepare pin that misses the installed
+        # method silently disables its surface (the PC preparation fold did).
+        @('ElementalLearningRowsPatch','CharBSelectorLayer','SetupSpellSelectorView',377),
+        @('ElementalLearningRefreshRowsPatch','CharBSelectorLayer','FillSpellLightUpdate',438),
+        @('ElementalPreparationRowsPatch','SpellBookView','RefreshSpellsView',731),
+        @('ElementalSourceChooserDesktopPatch','ActionBarGroupElement','FillSlots',-1),
+        @('EttinSecondHeadVisual','UnitEntityView','OnDataAttached',-1),
+        @('EttinSecondHeadTeardown','UnitEntityView','OnDestroy',-1),
+        @('ExpandedSummoningPteranodonViewPatch','UnitEntityView','OnDataAttached',-1),
+        @('ExpandedSummoningWaspVisualTeardownPatch','UnitEntityView','OnDestroy',-1),
+        @('GiantSummonPresentationPatch','UnitEntityView','OnDataAttached',-1),
+        @('GiantSummonPresentationDestroyPatch','UnitEntityView','OnDestroy',-1),
+        @('GiantSummonPresentationBuffPatch','Buff','SpawnParticleEffect',-1),
+        @('SummonAttackGestureActPatch','UnitAttack','OnAction',-1),
+        @('SummonAttackGestureTickPatch','UnitCommand','Tick',-1)
     )
     $failures=New-Object 'Collections.Generic.List[string]'
     $passed=0
