@@ -42,10 +42,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _request.Parameters.Count!=1 || (string)_request.Parameters["reviewPhase"]!="elementals-console" || !Cleanup2ConsoleNativeUiReady())
                 throw new InvalidOperationException("Exact native-console cleanup2 learning/preparation request required.");
             var game=Game.Instance;var player=game.Player;var selection=UnitSelectionManager.Instance;
+            var rootUi=game.RootUiContext;var inGame=rootUi.InGameUiContext;
             var staticPart=(InGameUiStaticPartContext)typeof(InGameUiContext).GetField("m_StaticPartContext",Cleanup2Fields).GetValue(game.RootUiContext.InGameUiContext);
             var service=staticPart.CharcaterServiceContext;
-            if(service.CharGenIsOpened || typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)!=null ||
-                game.UI.LevelUpController!=null)throw new InvalidOperationException("Foreign character-service state at learning intake.");
+            var charGenField=typeof(CharcaterServiceContext).GetField("m_CharGenVM",Cleanup2Fields);
+            var spellBookField=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields);
+            var backendField=typeof(CharcaterServiceContext).GetField("LevelUpController",Cleanup2Fields);
+            Func<bool> serviceExact=()=>ReferenceEquals(Game.Instance,game) && ReferenceEquals(game.RootUiContext,rootUi) &&
+                ReferenceEquals(rootUi.InGameUiContext,inGame) && ReferenceEquals(typeof(InGameUiContext).GetField("m_StaticPartContext",Cleanup2Fields).GetValue(inGame),staticPart) &&
+                ReferenceEquals(staticPart.CharcaterServiceContext,service) && service!=null && !service.IsDisposed;
+            Func<JObject> closedConsoleOwner=()=>{
+                var predicates=new JObject { ["exactLiveNativeServiceContext"]=serviceExact(),
+                    ["nativeConsoleInputReady"]=Cleanup2ConsoleNativeUiReady(),
+                    ["exactNativeServiceFieldContracts"]=charGenField!=null && spellBookField!=null && backendField!=null,
+                    ["nativeCreatorVmAbsent"]=service!=null && charGenField!=null && charGenField.GetValue(service)==null,
+                    ["nativeCreatorClosed"]=service!=null && !service.CharGenIsOpened,
+                    ["nativeServiceBackendAbsent"]=service!=null && backendField!=null && backendField.GetValue(service)==null,
+                    ["nativeBookVmAbsent"]=service!=null && spellBookField!=null && spellBookField.GetValue(service)==null };
+                return new JObject { ["passed"]=predicates.Properties().All(value=>(bool)value.Value),["predicates"]=predicates,
+                    ["originalGlobalControllerPresent"]=game.UI.LevelUpController!=null,
+                    ["nativeContextIdentity"]=service==null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(service),
+                    ["contract"]="Exact live console Root/InGame/static/service ownership and actual input binding; no creator/book/backend. An absent PC builder is admitted only through this positive console proof." };};
+            var consoleIntake=closedConsoleOwner();
+            Cleanup2Check("elemental-console-learning-service-intake",(bool)consoleIntake["passed"],consoleIntake,
+                "Every actual console service/input/creator/book/backend intake predicate is recorded before accepting a retained completed global controller.");
+            if(!(bool)consoleIntake["passed"])throw new InvalidOperationException("Foreign or active native console service at learning intake; inspect exact predicates.");
+            var levelUpIntake=new Cleanup2SourcesLevelUpIntake(game,closedConsoleOwner);
             var party=player.Party.ToArray();var selected=selection.SelectedUnits.ToArray();var current=selection.CurrentSelectUnitValue;
             var selectionState=new Cleanup2ConsoleSelectionSnapshot(selection);
             var protectedInputs=party.Select(value=>new Cleanup2TooltipInputs(value)).ToArray();
@@ -55,11 +77,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var screens=new NativeIconScreenEvidence(_request);
             try
             {
+                JObject levelUpReceipt;bool completedIntake=levelUpIntake.Current(out levelUpReceipt);
+                Cleanup2Check("elemental-console-native-levelup-intake",completedIntake,levelUpReceipt,
+                    "Only the exact completed global controller and idle native producer are retained under positively closed native console ownership.");
+                if(!completedIntake)throw new InvalidOperationException("Native console global controller is not demonstrably completed/idle; inspect exact predicates.");
                 if(!party.Contains(fixture.Caster))
                 {player.PartyCharacters.Add(fixture.Caster);added=true;player.InvalidateCharacterLists();player.UpdateCharacterLists();}
                 selection.SelectUnit(fixture.Caster.View,true,true,false);for(int frame=0;frame<8;frame++)yield return 0;
                 foreach(int frame in Cleanup2ConsoleNativePrepareAndUndo(fixture,book,service,screens))yield return frame;
-                foreach(int frame in Cleanup2ConsoleNativeLearnAndCancel(fixture,book,service,screens))yield return frame;
+                foreach(int frame in Cleanup2ConsoleNativeLearnAndCancel(fixture,book,service,screens,levelUpIntake,serviceExact))yield return frame;
             }
             finally
             {
@@ -67,14 +93,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if(added){player.PartyCharacters.Remove(fixture.Caster);player.InvalidateCharacterLists();player.UpdateCharacterLists();}
                     bool selectionRestored=selectionState.Restore(fixture);
+                    JObject levelUpReceipt;bool levelUpRestored=levelUpIntake.Current(out levelUpReceipt);
                     bool restored=player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(selection.CurrentSelectUnitValue,current) && protectedInputs.All(value=>value.Unchanged()) &&
-                        protectedPins.All(value=>value.IsRestored()) && GamePad.Instance.Layers.SequenceEqual(layers) && game.UI.LevelUpController==null && selectionRestored;
+                        protectedPins.All(value=>value.IsRestored()) && GamePad.Instance.Layers.SequenceEqual(layers) && levelUpRestored && selectionRestored;
                     Cleanup2Check("elemental-console-learning-native-restoration",restored,new JObject {
                         ["partyExact"]=player.Party.SequenceEqual(party),["selectionExact"]=selection.SelectedUnits.SequenceEqual(selected),
                         ["protectedInputsExact"]=protectedInputs.All(value=>value.Unchanged()),["protectedPinsExact"]=protectedPins.All(value=>value.IsRestored()),
                         ["nativeSelectionRestoration"]=selectionState.Describe(),
-                        ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers),["nativeLevelUpClosed"]=game.UI.LevelUpController==null },
+                        ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers),["nativeLevelUpClosed"]=levelUpRestored,
+                        ["originalCompletedNativeControllerExact"]=levelUpReceipt },
                         "The isolated native preparation/learning screens close without changing original party sources, pins, selection or input layers.");
                     if(!restored)throw new InvalidOperationException("Console learning/preparation restoration is unverified.");
                 }
@@ -182,13 +210,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Cleanup2ConsoleNativeLearnAndCancel(ExpandedSummoningCorrectionFixture fixture,Spellbook fixtureBook,
-            CharcaterServiceContext service,NativeIconScreenEvidence screens)
+            CharcaterServiceContext service,NativeIconScreenEvidence screens,Cleanup2SourcesLevelUpIntake levelUpIntake,Func<bool> serviceExact)
         {
             var game=Game.Instance;var player=game.Player;
+            var originalGlobal=game.UI.LevelUpController;
+            var backendField=typeof(CharcaterServiceContext).GetField("LevelUpController",Cleanup2Fields);
+            var charGenField=typeof(CharcaterServiceContext).GetField("m_CharGenVM",Cleanup2Fields);
+            var vmBackend=typeof(CharGenVM).GetField("m_LevelUpController",Cleanup2Fields);
             BlueprintUnit blueprint=null;UnitEntityData unit=null;LevelUpController backend=null,ownedGlobal=null;CharGenVM owned=null;
             bool added=false;int successes=0;var layers=GamePad.Instance.Layers.ToArray();
             try
             {
+                JObject intakeReceipt;
+                if(!levelUpIntake.Current(out intakeReceipt))throw new InvalidOperationException("Original console controller/service changed before creating its independent learning actor: "+intakeReceipt);
                 var wizard=fixture.Blueprints.OfType<BlueprintCharacterClass>().Single(value=>ReferenceEquals(value.Spellbook,fixtureBook.Blueprint));
                 var human=BlueprintRoot.Instance.Progression.CharacterRaces.Single(value=>value.AssetGuid=="0a5d473ead98b0646b94495af250fdc4");
                 blueprint=UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
@@ -217,14 +251,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!LevelUpController.CanLevelUp(unit.Descriptor))throw new InvalidOperationException("Native Wizard3 XP prerequisite not satisfied.");
                 player.PartyCharacters.Add(unit);added=true;player.InvalidateCharacterLists();player.UpdateCharacterLists();
                 var originalKnown=book.GetAllKnownSpells().ToArray();var originalBudget=Cleanup2ElementalResources(unit);
-                service.HandleLevelUpStart(unit.Descriptor,null,()=>successes++,LevelUpState.CharBuildMode.LevelUp);
+                try{service.HandleLevelUpStart(unit.Descriptor,null,()=>successes++,LevelUpState.CharBuildMode.LevelUp);}
+                finally
+                {
+                    // HandleLevelUpStart publishes the backend before native
+                    // ShowChargen/BindChargen. Retain that exact owned result
+                    // even if later binding throws; never adopt a replacement.
+                    var candidate=backendField.GetValue(service) as LevelUpController;
+                    var candidateVm=charGenField.GetValue(service) as CharGenVM;
+                    if(serviceExact() && candidate!=null && !ReferenceEquals(candidate,originalGlobal) &&
+                        ReferenceEquals(candidate.Unit,unit.Descriptor) && ReferenceEquals(game.UI.LevelUpController,candidate) &&
+                        (candidateVm==null || ReferenceEquals(vmBackend.GetValue(candidateVm),candidate)))
+                    {backend=candidate;ownedGlobal=candidate;owned=candidateVm;}
+                }
                 for(int frame=0;frame<10;frame++)yield return 0;
-                backend=typeof(CharcaterServiceContext).GetField("LevelUpController",Cleanup2Fields).GetValue(service) as LevelUpController;
-                ownedGlobal=backend;
-                owned=typeof(CharcaterServiceContext).GetField("m_CharGenVM",Cleanup2Fields).GetValue(service) as CharGenVM;
                 if(backend==null || owned==null || ReferenceEquals(backend.Preview,unit.Descriptor) || !ReferenceEquals(backend.Unit,unit.Descriptor) ||
-                    !ReferenceEquals(game.UI.LevelUpController,backend))
+                    !ReferenceEquals(game.UI.LevelUpController,backend) || !serviceExact() ||
+                    !ReferenceEquals(backendField.GetValue(service),backend) || !ReferenceEquals(charGenField.GetValue(service),owned))
                     throw new InvalidOperationException("Actual console context did not create an independent native learning preview.");
+                Func<bool> ownsLearning=()=>serviceExact() && owned!=null && !owned.IsDisposed && backend!=null &&
+                    ReferenceEquals(backendField.GetValue(service),backend) && ReferenceEquals(charGenField.GetValue(service),owned) &&
+                    ReferenceEquals(vmBackend.GetValue(owned),backend) && ReferenceEquals(game.UI.LevelUpController,ownedGlobal) &&
+                    ReferenceEquals(backend,ownedGlobal) && ReferenceEquals(backend.Unit,unit.Descriptor) && backend.Preview?.Unit!=null && !backend.Preview.Unit.Destroyed;
+                if(!ownsLearning())throw new InvalidOperationException("Exact native console learning owner changed before class selection.");
                 if(!backend.SelectClass(wizard))throw new InvalidOperationException("Native pending Wizard3 class selection failed.");
                 Cleanup2ConsoleLearningPrerequisites(backend);
                 for(int frame=0;frame<10;frame++)yield return 0;
@@ -234,7 +283,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned));
                 var roadmap=root.GetComponentsInChildren<MonoBehaviour>(true).OfType<ICharGenPhaseRoadmapView>().Single(value=>ReferenceEquals(value.GetViewModel(),phase));
                 var navigation=(ConsoleNavigationBehavior)typeof(CharGenView).GetField("m_RoadmapPhasesNavigationBehavior",Cleanup2Fields).GetValue(root);
-                if(!navigation.SelectEntityManually((IConsoleNavigationEntity)roadmap))throw new InvalidOperationException("Native learning roadmap refused its actual spell phase.");
+                if(!ownsLearning() || !navigation.SelectEntityManually((IConsoleNavigationEntity)roadmap))throw new InvalidOperationException("Native learning roadmap refused its exact owned spell phase.");
                 for(int frame=0;frame<8;frame++)yield return 0;
                 var detail=root.GetComponentsInChildren<CharGenSpellsPhaseDetailedView>(true).Single(value=>value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),phase));
                 var selector=detail.GetComponentsInChildren<CharGenSpellsSelectorView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),phase.SpellsSelector.Value));
@@ -245,6 +294,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var nativeHeader=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),context.Header));
                 var detailNavigation=(ConsoleMultiNavigationCollection)typeof(CharGenSpellsPhaseDetailedView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(detail);
                 detailNavigation.SetCurrentEntityManual(nativeHeader);
+                if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before disclosure.");
                 typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
                 for(int frame=0;frame<5;frame++)yield return 0;
                 bool expanded=context.Expanded && context.Current && context.Header.CanChoose.Value==false &&
@@ -259,6 +309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!expanded)throw new InvalidOperationException("Native console learning disclosure changed allocation authority.");
                 var source=authoritative.Single(value=>ReferenceEquals(value.Spell,legacy));
                 var sourceRow=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),source));
+                if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before source allocation.");
                 detailNavigation.SetCurrentEntityManual(sourceRow);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
                 for(int frame=0;frame<8;frame++)yield return 0;
                 bool learned=backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy) && !book.IsKnown(legacy) &&
@@ -274,8 +325,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeText"]=new JArray(selector.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value=>value.text)),
                     ["previewKnows"]=backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy),["originalKnows"]=book.IsKnown(legacy),
                     ["scope"]="Real console CharGenView/roadmap/detail from native Wizard2-to3 level-up; original source allocation resides only in native preview." },
-                    ()=>ReferenceEquals(ElementalConsoleBookPresentation.Model(root),owned) && backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy) && !book.IsKnown(legacy) && Cleanup2NoNarrativeOverlay()))yield return frame;
+                    ()=>ownsLearning() && ReferenceEquals(ElementalConsoleBookPresentation.Model(root),owned) && backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy) && !book.IsKnown(legacy) && Cleanup2NoNarrativeOverlay()))yield return frame;
                 // Undo through the same actual native row/confirm path.
+                if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before source undo.");
                 detailNavigation.SetCurrentEntityManual(sourceRow);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
                 for(int frame=0;frame<8;frame++)yield return 0;
                 bool undo=!backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy) &&
@@ -286,22 +338,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["previewNoLongerKnows"]=!backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy),["commits"]=successes },
                     "Confirming the chosen original native row again restores the original pending allocation and preserves original known objects/resources.");
                 if(!undo)throw new InvalidOperationException("Native console source learning undo failed.");
-                backend.Cancel();backend=null;owned.Close();owned=null;
-                if(ReferenceEquals(game.UI.LevelUpController,ownedGlobal))game.UI.LevelUpController=null;
+                if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before cancellation.");
+                backend.Cancel();
+                Cleanup2ConsoleCloseOwnedLearning(service,backend,owned,serviceExact);
+                if(!ReferenceEquals(game.UI.LevelUpController,ownedGlobal))throw new InvalidOperationException("Console global backend changed during native close; original field is not overwritten.");
+                game.UI.LevelUpController=originalGlobal;backend=null;owned=null;
                 for(int frame=0;frame<10;frame++)yield return 0;
+                JObject restoredLevelUpReceipt;bool restoredLevelUp=levelUpIntake.Current(out restoredLevelUpReceipt);
                 bool cancelled=successes==0 && unit.Descriptor.Progression.GetClassLevel(wizard)==2 && !book.IsKnown(legacy) &&
-                    book.GetAllKnownSpells().SequenceEqual(originalKnown) && GamePad.Instance.Layers.SequenceEqual(layers);
+                    book.GetAllKnownSpells().SequenceEqual(originalKnown) && GamePad.Instance.Layers.SequenceEqual(layers) &&
+                    ReferenceEquals(game.UI.LevelUpController,originalGlobal) && restoredLevelUp;
                 Cleanup2Check("elemental-console-native-levelup-cancel",cancelled,new JObject { ["commits"]=successes,
                     ["classLevel"]=unit.Descriptor.Progression.GetClassLevel(wizard),["originalKnownReferencesExact"]=book.GetAllKnownSpells().SequenceEqual(originalKnown),
-                    ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers) },
+                    ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers),["originalCompletedNativeControllerExact"]=restoredLevelUpReceipt },
                     "Cancelling the owned native learning preview commits nothing, retains Wizard2 and the exact original known objects, and removes its native input layers.");
                 if(!cancelled)throw new InvalidOperationException("Native console level-up cancellation did not restore state.");
             }
             finally
             {
-                if(backend!=null && unit!=null && ReferenceEquals(backend.Unit,unit.Descriptor))backend.Cancel();
-                if(owned!=null && ReferenceEquals(typeof(CharcaterServiceContext).GetField("m_CharGenVM",Cleanup2Fields).GetValue(service),owned))owned.Close();
-                if(ownedGlobal!=null && ReferenceEquals(game.UI.LevelUpController,ownedGlobal))game.UI.LevelUpController=null;
+                bool foreign=!serviceExact() ||
+                    (!ReferenceEquals(game.UI.LevelUpController,originalGlobal) && !(ownedGlobal!=null && ReferenceEquals(game.UI.LevelUpController,ownedGlobal))) ||
+                    (backendField.GetValue(service)!=null && !ReferenceEquals(backendField.GetValue(service),ownedGlobal)) ||
+                    (charGenField.GetValue(service)!=null && !ReferenceEquals(charGenField.GetValue(service),owned));
+                if(backend!=null && (unit==null || !ReferenceEquals(backend.Unit,unit.Descriptor) || ReferenceEquals(backend,originalGlobal) ||
+                    backend.AutoCommit || ReferenceEquals(backend.Preview,unit.Descriptor)))foreign=true;
+                if(foreign)throw new InvalidOperationException("Foreign console service/controller replacement; it is not cancelled, cleared or disposed.");
+                if(backend?.Preview?.Unit!=null && !backend.Preview.Unit.Destroyed)backend.Cancel();
+                if(ownedGlobal!=null && ReferenceEquals(backendField.GetValue(service),ownedGlobal))
+                    Cleanup2ConsoleCloseOwnedLearning(service,ownedGlobal,owned,serviceExact);
+                if(ownedGlobal!=null && ReferenceEquals(game.UI.LevelUpController,ownedGlobal))game.UI.LevelUpController=originalGlobal;
+                if(!ReferenceEquals(game.UI.LevelUpController,originalGlobal) || backendField.GetValue(service)!=null || charGenField.GetValue(service)!=null)
+                    throw new InvalidOperationException("Original console controller/service state not restored; referenced actor is not destroyed.");
                 if(unit!=null)
                 {
                     if(added){player.PartyCharacters.Remove(unit);player.InvalidateCharacterLists();player.UpdateCharacterLists();}
@@ -309,6 +376,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if(blueprint!=null)UnityEngine.Object.Destroy(blueprint);
             }
+        }
+
+        private static void Cleanup2ConsoleCloseOwnedLearning(CharcaterServiceContext service,LevelUpController backend,CharGenVM owned,Func<bool> serviceExact)
+        {
+            var backendField=typeof(CharcaterServiceContext).GetField("LevelUpController",Cleanup2Fields);
+            var vmField=typeof(CharcaterServiceContext).GetField("m_CharGenVM",Cleanup2Fields);
+            var close=typeof(CharcaterServiceContext).GetMethod("CloseCharGen",Cleanup2Fields,null,Type.EmptyTypes,null);
+            if(serviceExact==null || !serviceExact() || backend==null || !ReferenceEquals(backendField.GetValue(service),backend) ||
+                !ReferenceEquals(Game.Instance.UI.LevelUpController,backend) || !ReferenceEquals(vmField.GetValue(service),owned) ||
+                (owned!=null && (owned.IsDisposed || !ReferenceEquals(typeof(CharGenVM).GetField("m_LevelUpController",Cleanup2Fields).GetValue(owned),backend))) ||
+                close==null || close.MetadataToken!=0x0600624e || close.Module.ModuleVersionId.ToString()!=ElementalSourceChooserRuntime.GameMvid)
+                throw new InvalidOperationException("Exact owned live console creator/backend required for native close; disposed/foreign state is not repaired.");
+            // Native CloseCharGen clears its service backend, disposes the live
+            // VM and clears that field, but leaves UIAccess's retained global.
+            close.Invoke(service,null);
+            if(backendField.GetValue(service)!=null || vmField.GetValue(service)!=null || (owned!=null && !owned.IsDisposed))
+                throw new InvalidOperationException("Native owned console creator did not dispose/clear exactly.");
         }
 
         private static void Cleanup2ConsoleLearningPrerequisites(LevelUpController controller)

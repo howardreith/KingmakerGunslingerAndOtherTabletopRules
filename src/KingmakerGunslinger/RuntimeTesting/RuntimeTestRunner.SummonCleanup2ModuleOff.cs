@@ -389,7 +389,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
                 mode = Cleanup2EnterNativeDefault(fixture, "elementals-off"); screens = new NativeIconScreenEvidence(_request);
-                game.IsPaused = true;
+                // Preserve the exact Default lease. Observer Pause would add
+                // a separate native mode; unchanged source snapshots prove
+                // browsing/cancel remains free without altering that stack.
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 var spellGroup = groups.Single(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.Spell);

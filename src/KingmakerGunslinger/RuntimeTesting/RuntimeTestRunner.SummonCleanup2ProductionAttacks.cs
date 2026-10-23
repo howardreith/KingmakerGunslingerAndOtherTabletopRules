@@ -449,11 +449,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             private Quaternion _rotation;
             private float _size;
             private bool _guardOwned, _subscribed, _disposed, _candidateRefused;
+            private bool _diagnosticOnly;
             private string _renderError;
             internal int RenderCount, RenderedFrame = -1;
             internal double RenderedGameSeconds = double.NegativeInfinity;
             internal Vector3 RenderedActorPosition;
             internal readonly JObject Evidence = new JObject();
+            internal bool DiagnosticOnly { get { return _diagnosticOnly; } }
 
             internal Cleanup2CreatureCommandCamera(RuntimeTestRunner owner, ExpandedSummoningCorrectionFixture fixture,
                 UnitEntityData actor, UnitEntityData target, string key, Func<bool> modeCurrent, int candidateIndex,
@@ -566,6 +568,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 across = Vector3.Cross(lane, Vector3.up).normalized;
                     var colliderRefs = Cleanup2NativeSelectionColliderReferences(); var meshCache = new Dictionary<Mesh, Tuple<Vector3[], int[]>>();
                     var survey = Stopwatch.StartNew(); var attempts = new JArray(); bool found = false;
+                    Vector3 firstPosition = default(Vector3); Quaternion firstRotation = Quaternion.identity; float firstSize = _camera.orthographicSize;
                     bool olegStage = Game.Instance.CurrentlyLoadedArea?.AssetGuid == "ead426a6c23d39548a670ee515d77df4";
                     bool crab = key == SummonAttackGesturePolicy.Crab;
                     float lateral = crab ? .8f : 1.4f, forward = crab ? -1.2f : .6f;
@@ -589,6 +592,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (_camera.orthographic) _camera.orthographicSize = halfFrame;
                             _position = centre - direction * distance; _camera.transform.SetPositionAndRotation(_position, _rotation);
                             JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, units, sightMetrics, colliderRefs, out ignored);
+                            if (attempts.Count == 0)
+                            {
+                                firstPosition = _position; firstRotation = _rotation; firstSize = _camera.orthographicSize;
+                                if (blockers.Count != 0)
+                                    Evidence["firstRefusedCameraBlockedProjectRays"] = DescribeBlockedProjectSurfaceRays(
+                                        _camera, actor, target, sightMetrics, units, actorSurface.Length, pathSurfaceRoots, colliderRefs);
+                            }
                             // A demonstrated physics obstruction already
                             // rejects this candidate. Do not spend the joint
                             // budget testing millions of mesh triangles on a
@@ -607,7 +617,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     Evidence["cameraAttempts"] = attempts;
                     Evidence["jointCandidateAdmissionBudgetExceeded"] = jointSurvey.Elapsed.TotalSeconds > 5;
-                    if (!found) throw new Cleanup2CreatureCameraObstructed(jointSurvey.Elapsed.TotalSeconds > 5 || survey.Elapsed.TotalSeconds > 15);
+                    if (!found)
+                    {
+                        if (attempts.Count == 0) throw new Cleanup2CreatureCameraObstructed(true);
+                        // Keep exactly one rejected view alive only long enough
+                        // for a normal native diagnostic render. The caller
+                        // records FAIL and aborts before issuing any command.
+                        _diagnosticOnly = true; _candidateRefused = true;
+                        _position = firstPosition; _rotation = firstRotation; _camera.orthographicSize = firstSize;
+                        _rig.SetRotation(_rotation.eulerAngles.y); _camera.transform.SetPositionAndRotation(_position, _rotation);
+                        Evidence["environmentSightProven"] = false;
+                        Evidence["diagnosticOnly"] = true;
+                        Evidence["cameraAdmitted"] = false;
+                        Evidence["diagnosticReason"] = "Every bounded camera candidate refused; one FAILED native frame is for diagnosis only, with no command or visibility qualification.";
+                    }
                     _size = _camera.orthographicSize;
                     _target = new RenderTexture(1280, 800, 24, RenderTextureFormat.ARGB32); _camera.targetTexture = _target;
                     _renderBoundsMesh = new Mesh();
@@ -674,6 +697,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return chosen.OrderBy(value => value).Select(value => surface[value]).ToArray();
             }
 
+            private static JArray DescribeBlockedProjectSurfaceRays(Camera camera, UnitEntityData actor, UnitEntityData target,
+                Cleanup2ActorMetric[] metrics, IList<UnitEntityData> units, int surfacesPerRoot, Vector3[] roots,
+                IDictionary<Collider, JObject> selectionColliders)
+            {
+                var rows = new JArray(); var seen = new List<Vector3>();
+                for (int i = 0; i < metrics.Length && rows.Count < 12; i++)
+                {
+                    if (!ReferenceEquals(units[i], actor)) continue;
+                    Vector3 point = metrics[i].Crown;
+                    if (seen.Any(value => (value - point).sqrMagnitude < .00000001f)) continue;
+                    seen.Add(point);
+                    Vector3 viewport = camera.WorldToViewportPoint(point);
+                    Ray ray = camera.ViewportPointToRay(new Vector3(viewport.x, viewport.y, 0f));
+                    float distance = Vector3.Dot(point - ray.origin, ray.direction);
+                    if (!Cleanup2Finite(distance) || distance <= 0f) continue;
+                    RaycastHit? hit = Physics.RaycastAll(ray, Mathf.Max(0f, distance - .03f), ~0, QueryTriggerInteraction.Ignore)
+                        .Where(value => value.collider != null && !selectionColliders.ContainsKey(value.collider) &&
+                            !value.collider.transform.IsChildOf(actor.View.transform) && value.collider.transform != actor.View.transform &&
+                            !value.collider.transform.IsChildOf(target.View.transform) && value.collider.transform != target.View.transform)
+                        .OrderBy(value => value.distance).Select(value => (RaycastHit?)value).FirstOrDefault();
+                    if (!hit.HasValue) continue;
+                    int rootIndex = i / surfacesPerRoot;
+                    rows.Add(new JObject { ["unit"] = actor.UniqueId, ["sampleRootIndex"] = rootIndex,
+                        ["sampleRoot"] = SurveyVector(roots[rootIndex]), ["projectSurfacePoint"] = SurveyVector(point),
+                        ["heightAboveSampleRoot"] = point.y - roots[rootIndex].y,
+                        ["rayOrigin"] = SurveyVector(ray.origin), ["rayDirection"] = SurveyVector(ray.direction),
+                        ["surfaceRayDistance"] = distance, ["hitDistance"] = hit.Value.distance,
+                        ["hitPoint"] = SurveyVector(hit.Value.point), ["hitNormal"] = SurveyVector(hit.Value.normal),
+                        ["triangleIndex"] = hit.Value.triangleIndex, ["collider"] = hit.Value.collider.name,
+                        ["colliderInstance"] = hit.Value.collider.GetInstanceID(),
+                        ["colliderWorldBoundsMin"] = SurveyVector(hit.Value.collider.bounds.min),
+                        ["colliderWorldBoundsMax"] = SurveyVector(hit.Value.collider.bounds.max),
+                        ["sampleFrame"] = Time.frameCount,
+                        ["scope"] = "At most12 unique project-owned Crab/Brachiosaurus surface ray observations, not native mesh export or an obstruction exemption." });
+                }
+                return rows;
+            }
+
             internal void RequireCurrent()
             {
                 if (_disposed || !_guardOwned || !_modeCurrent() || !ReferenceEquals(Game.Instance.CameraController, _controller) ||
@@ -712,13 +773,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return bounds; // Framing only; no geometry is exported.
             }
 
-            internal string Capture(string file)
+            internal string Capture(string file, bool failedDiagnostic = false)
             {
                 RequireCurrent();
+                if (_diagnosticOnly != failedDiagnostic)
+                    throw new InvalidOperationException("A refused camera permits only its explicitly FAILED diagnostic image.");
                 if (RenderCount < 3 || RenderedFrame < 0 || Time.frameCount - RenderedFrame < 0 || Time.frameCount - RenderedFrame > 1 ||
                     !ReferenceEquals(_renderedTarget, _target))
                     throw new InvalidOperationException("A fresh completed render of the exact owned native target is required.");
-                if (!_renderedVisible || ScreenFadeAlpha() > .02f) throw new InvalidOperationException("Completed-render full native body clips the fixed view or screen is faded.");
+                if ((!_renderedVisible && !failedDiagnostic) || ScreenFadeAlpha() > .02f) throw new InvalidOperationException("Completed-render full native body clips the fixed view or screen is faded.");
+                Evidence["readbackFullBodyContained"] = _renderedVisible;
                 Evidence["readbackRenderedFrame"] = RenderedFrame;
                 Evidence["readbackRenderedGameSeconds"] = RenderedGameSeconds;
                 Evidence["readbackBoundsMin"] = SurveyVector(_renderedBounds.min); Evidence["readbackBoundsMax"] = SurveyVector(_renderedBounds.max);

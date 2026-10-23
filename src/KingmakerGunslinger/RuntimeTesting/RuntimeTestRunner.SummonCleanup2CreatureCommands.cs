@@ -162,6 +162,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool cameraReady = cameraScope.RenderCount >= 3;
                 cameraScope.Evidence["nativeSettleFrames"] = cameraFrames;
                 cameraScope.Evidence["nativeSettleWallSeconds"] = cameraWait.Elapsed.TotalSeconds;
+                if (cameraScope.DiagnosticOnly)
+                {
+                    string file = "FAILED-creature-command-" + key + "-camera.png";
+                    if (File.Exists(System.IO.Path.Combine(_request.EvidenceDirectory, file))) throw new InvalidOperationException("Failed camera diagnostic already exists.");
+                    string capture = cameraReady ? cameraScope.Capture(file, true) : "not-captured-native-render-did-not-settle";
+                    cameraScope.Evidence["failedDiagnosticFile"] = cameraReady ? file : null;
+                    cameraScope.Evidence["failedDiagnosticCapture"] = capture;
+                    cameraScope.Evidence["commandsIssued"] = 0;
+                    Cleanup2Check("creature-command-FAILED-camera-diagnostic-" + key, false, (JObject)cameraScope.Evidence.DeepClone(),
+                        "One ordinary native frame documents a refused camera only; no visibility, path traversal or attack success is inferred, and no command is issued.");
+                    throw new InvalidOperationException("Native camera refused; FAILED diagnostic retained before any command.");
+                }
                 Cleanup2Check("creature-command-fixed-native-camera-ready-" + key, cameraReady, (JObject)cameraScope.Evidence.DeepClone(),
                     "The fixed full-body/start-to-target view completes three real native camera renders before the original UnitAttack is issued. Actual pixels still require inspection.");
                 if (!cameraReady) throw new InvalidOperationException("Native creature camera did not render normally within the bounded intake.");
@@ -511,7 +523,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["contract"] = "Installed PathTo060018A3/ConstructTags060018C3 RTWP mask1; query-owned PathNNConstraint.SetStart + connected-area proof, <=60cm endpoint clamp,39 footprint samples with <=15cm horizontal/35cm vertical support error, full native graph/geometry center-and-shoulder linecasts and protected-unit segment clearance. Real UnitAttack.IsUnitEnoughClose must initially be false and must become true at its actual rule event. No native graph, range, collider or path is changed." };
             try
             {
-                Cleanup2Check("creature-native-approach-lane-" + key, selected != null, evidence,
+                bool admitted = selected != null && selectedCamera != null && !selectedCamera.DiagnosticOnly;
+                if (selectedCamera != null && selectedCamera.DiagnosticOnly)
+                    evidence["failedCameraDiagnosticOnly"] = true;
+                Cleanup2Check("creature-native-approach-lane-" + key, admitted, evidence,
                     "A bounded flat actual walking-graph lane also has an admitted fixed native camera before the original command runs; physical/path/range/LOS proofs remain exact.");
                 if (selected == null) throw new InvalidOperationException("No jointly qualified native approach lane/camera; no placement or command proof is inferred.");
                 var result = new Cleanup2CreatureApproach { Range = probe, Evidence = evidence, Camera = selectedCamera };
