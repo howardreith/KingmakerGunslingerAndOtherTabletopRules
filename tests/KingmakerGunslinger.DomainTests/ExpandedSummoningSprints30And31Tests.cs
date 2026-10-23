@@ -7,11 +7,11 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Abilities are23 scoped roots plus eight private abilities (Dretch2,
-        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal).
-        internal const int RegisteredAbilityIdentityCount = 23 + 8;
+        // Abilities are23 scoped roots plus nine private abilities (Dretch2,
+        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier).
+        internal const int RegisteredAbilityIdentityCount = 23 + 9;
         internal const int RegisteredAreaIdentityCount = 3;
-        internal const int RegisteredResourceIdentityCount = 3;
+        internal const int RegisteredResourceIdentityCount = 4;
         internal const int RegisteredAiIdentityCount = 8;
         internal const int RegisteredBrainIdentityCount = 4;
         internal const int RegisteredBuffIdentityCount = 8;
@@ -83,6 +83,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(3, false, false, 20f, 0f), "Non-spell and non-SLA effects pass.");
             Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(-1, true, false, 20f, 0f), "Missing spell-level attribution cannot manufacture immunity.");
             Assertions.Equal(13, AstralDevaRulesPolicy.SpellLikeCasterLevel, "Astral SLAs stay CL13.");
+            Assertions.Equal(6, AstralDevaRulesPolicy.BladeBarrierSpellLevel, "Blade Barrier retains its sixth-level SLA DC.");
+            Assertions.Equal(1, AstralDevaRulesPolicy.BladeBarrierUses, "Blade Barrier has one independent use per summoning.");
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");

@@ -121,21 +121,38 @@ namespace KingmakerGunslinger.Blueprints
                 "One Heal use for this Astral Deva summoning.", 1);
             Sprint29LimitedNativeSpell(library, heal, Astral31Prefix + "Heal",
                 "ff8f1534f66559c478448723e16b6624", AstralDevaRulesPolicy.SpellLikeCasterLevel, 6, healResource, "Heal");
+            var bladeBarrier = Require<BlueprintAbility>(bySymbol,
+                Astral31Prefix + "BladeBarrier");
+            var bladeBarrierResource = Require<BlueprintAbilityResource>(bySymbol,
+                Astral31Prefix + "BladeBarrierResource");
+            ConfigureNamedResource(bladeBarrierResource,
+                Astral31Prefix + "BladeBarrierResource",
+                Astral31Prefix + "BladeBarrierResource", "Astral Deva Blade Barrier",
+                "One Blade Barrier use for this Astral Deva summoning.",
+                AstralDevaRulesPolicy.BladeBarrierUses);
+            Sprint29LimitedNativeSpell(library, bladeBarrier,
+                Astral31Prefix + "BladeBarrier",
+                "36c8971e91f1745418cc3ffdfac17b74",
+                AstralDevaRulesPolicy.SpellLikeCasterLevel,
+                AstralDevaRulesPolicy.BladeBarrierSpellLevel,
+                bladeBarrierResource, "Blade Barrier");
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
-            parameters.OwningBlueprint = unit; parameters.Abilities = new[] { heal };
-            parameters.SpellLevels = new[] { 6 };
+            parameters.OwningBlueprint = unit;
+            parameters.Abilities = new[] { heal, bladeBarrier };
+            parameters.SpellLevels = new[] { 6,
+                AstralDevaRulesPolicy.BladeBarrierSpellLevel };
             parameters.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
 
             traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor,
                 alertness, racialPerception,
                 equipment, proficiency, focus, parameters,
-                AddResource(healResource),
+                AddResource(healResource), AddResource(bladeBarrierResource),
                 Energy(DamageEnergyType.Electricity, 10), Energy(DamageEnergyType.Fire, 10) }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Astral31Prefix + "Traits.Name", "Astral Deva Traits"),
                 LocalizationService.Create(Astral31Prefix + "Traits.Description",
-                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal is once per summoning at CL13. Change shape and caster travel are unavailable."), null);
+                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning at CL13. Change shape and caster travel are unavailable."), null);
 
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "Astral ordinary attack fallback");
@@ -173,7 +190,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, IronWillGuid, "Iron Will"),
                 Feature(library, PowerAttackGuid, "Power Attack"),
                 Feature(library, "d09b20029e9abfe4480b356c92095623", "Toughness"),
-                extraplanar, traits, stunFeature, heal };
+                extraplanar, traits, stunFeature, heal, bladeBarrier };
         }
 
         private static void ConfigureAstralHammerStun(LibraryScriptableObject library,

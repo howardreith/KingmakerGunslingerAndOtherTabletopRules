@@ -26,6 +26,8 @@ namespace KingmakerGunslinger.Summoning
         internal const int AuraRadiusFeet = 20;
         internal const float AuraRadiusMeters = 6.096f;
         internal const int LesserGlobeMaximumSpellLevel = 3;
+        internal const int BladeBarrierSpellLevel = 6;
+        internal const int BladeBarrierUses = 1;
         internal static bool HasGoodSummoningDescriptor { get { return true; } }
         internal static bool HasLawSummoningDescriptor { get { return false; } }
 
@@ -67,6 +69,7 @@ namespace KingmakerGunslinger.Summoning
             if (AdultHitPoints() != 172 || StunDifficultyClass() != 25 ||
                 WarhammerAttackBonus() != 26 || WarhammerDamageBonus() != 14 ||
                 SlamAttackBonus() != 23 || SlamDamageBonus() != 12 ||
+                BladeBarrierSpellLevel != 6 || BladeBarrierUses != 1 ||
                 SpellLikeCasterLevel == HitDice || !HasGoodSummoningDescriptor ||
                 HasLawSummoningDescriptor)
                 throw new InvalidOperationException("Astral adult rules policy changed.");
