@@ -55,6 +55,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool targetChanged = false;
             Astral31DispelEvents observed = null;
             Astral31DismissalKillTrace killTrace = null;
+            UnitPartSpellResistance fixtureResistance = null;
+            int fixtureResistanceId = -1;
+            AbilityExecutionContext fixtureResistanceContext = null;
+            JObject fixtureResistanceBefore = null;
+            int sharedCl = AbilityParams.Empty.CasterLevel;
+            int sharedSpellLevel = AbilityParams.Empty.SpellLevel;
+            int sharedDc = AbilityParams.Empty.DC;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -436,6 +443,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.SaveWill.BaseValue = 100;
                 target.Stats.HitPoints.BaseValue = 100000;
                 observed.Targets.Add(target);
+                fixtureResistanceContext = new AbilityExecutionContext(
+                    new AbilityData(dispelTouch, firstDispelOwner.Descriptor),
+                    new AbilityParams { CasterLevel = 13, SpellLevel = 5,
+                        DC = 21 }, new TargetWrapper(target), null);
+                fixtureResistanceBefore = Lemure30SrState(target,
+                    fixtureResistanceContext);
+                fixtureResistance = target.Ensure<UnitPartSpellResistance>();
+                fixtureResistanceId = fixtureResistance.AddResistance(1000,
+                    null, null);
                 Buff evilSpell = Astral31DispelFixtureEffect(target,
                     firstDispelOwner, "evil-spell", "d15e0000000000000000000000000001",
                     "d15e1000000000000000000000000001", 11,
@@ -465,7 +481,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "d15e1000000000000000000000000005", 15,
                     SpellSchool.Abjuration, SpellDescriptor.Evil, true,
                     transient, transientBuffs, observed);
-                bool eligibility = evilSpell != null && evilEnchantment != null &&
+                Buff[] fixtureEffects = { evilSpell, evilEnchantment,
+                    goodEnchantment, ordinarySpell, protectedEvil };
+                int[] fixtureLevels = { 11, 9, 8, 7, 15 };
+                bool parameterIsolation = fixtureEffects.Select((value, index) =>
+                        value.Context.Params.CasterLevel == fixtureLevels[index] &&
+                        value.Context.Params.SpellLevel == 4 &&
+                        !ReferenceEquals(value.Context.Params, AbilityParams.Empty) &&
+                        fixtureEffects.Take(index).All(previous => !ReferenceEquals(
+                            previous.Context.Params, value.Context.Params)))
+                    .All(value => value) && AbilityParams.Empty.CasterLevel ==
+                        sharedCl && AbilityParams.Empty.SpellLevel ==
+                        sharedSpellLevel && AbilityParams.Empty.DC == sharedDc;
+                bool eligibility = parameterIsolation &&
+                    fixtureResistance.GetValue(fixtureResistanceContext) == 1000 &&
+                    evilSpell != null && evilEnchantment != null &&
                     goodEnchantment != null && ordinarySpell != null &&
                     protectedEvil != null && evilSpell.IsFromSpell &&
                     evilEnchantment.IsFromSpell && goodEnchantment.IsFromSpell &&
@@ -488,7 +518,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nondispellableEvil"] =
                             Astral31DispelBuffRow(protectedEvil),
                         ["nativeFixtureApplications"] =
-                            observed.FixtureApplications },
+                            observed.FixtureApplications,
+                        ["parameterIsolation"] = parameterIsolation,
+                        ["fixtureCasterLevels"] = new JArray(fixtureEffects.Select(
+                            value => value.Context.Params.CasterLevel)),
+                        ["sharedEmptyUnchanged"] =
+                            AbilityParams.Empty.CasterLevel == sharedCl &&
+                            AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                            AbilityParams.Empty.DC == sharedDc,
+                        ["fixtureResistanceId"] = fixtureResistanceId,
+                        ["fixtureResistance"] = Lemure30SrState(target,
+                            fixtureResistanceContext) },
                     "Five request-local real spell buffs prove that only a dispellable evil spell or an enchantment from an evil caster is eligible; good-caster enchantment, unrelated spell and nondispellable evil spell are refused.");
                 if (!eligibility) throw new InvalidOperationException(
                     "Astral Dispel Evil eligibility fixture failed.");
@@ -556,10 +596,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!removed) throw new InvalidOperationException(
                         "Astral automatic Dispel Evil failed: " + row.Label);
                 }
+                RuleSpellResistanceCheck[] automaticResistance = observed
+                    .Resistances.Skip(resistanceBeforeDispel).ToArray();
                 bool automaticBoundary = observed.Dispels.Count ==
                         dispelsBefore + 2 && observed.Saves.Count ==
-                        savesBeforeDispel && observed.Resistances.Count ==
-                        resistanceBeforeDispel &&
+                        savesBeforeDispel && automaticResistance.Length == 2 &&
+                    automaticResistance.All(value => ReferenceEquals(value.Ability,
+                            dispelTouch) && !value.Ability.SpellResistance &&
+                        ReferenceEquals(value.Target, target) &&
+                        value.HasSpellResistance && value.SpellResistance == 1000 &&
+                        !value.HasResistanceRoll && !value.TargetIsImmune &&
+                        !value.IsSpellResisted) &&
                     !AstralDispelEvilEligibility.CanDispel(goodEnchantment) &&
                     !AstralDispelEvilEligibility.CanDispel(ordinarySpell) &&
                     !AstralDispelEvilEligibility.CanDispel(protectedEvil) &&
@@ -570,8 +617,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     automaticBoundary, new JObject {
                         ["rules"] = observed.Dispels.Count - dispelsBefore,
                         ["newSaves"] = observed.Saves.Count - savesBeforeDispel,
-                        ["newResistanceChecks"] = observed.Resistances.Count -
-                            resistanceBeforeDispel,
+                        ["nativeResistanceEvents"] = automaticResistance.Length,
+                        ["actualResistanceChecks"] = automaticResistance.Count(
+                            value => value.HasResistanceRoll),
+                        ["resistance"] = new JArray(automaticResistance.Select(
+                            value => new JObject {
+                                ["caster"] = value.Context?.MaybeCaster?.UniqueId,
+                                ["target"] = value.Target.UniqueId,
+                                ["ability"] = value.Ability.AssetGuid,
+                                ["abilityAllowsSr"] = value.Ability.SpellResistance,
+                                ["targetSr"] = value.SpellResistance,
+                                ["hasResistanceRoll"] = value.HasResistanceRoll,
+                                ["immune"] = value.TargetIsImmune,
+                                ["resisted"] = value.IsSpellResisted })),
                         ["goodEnchantmentPresent"] = target.Buffs.Enumerable
                             .Contains(goodEnchantment),
                         ["ordinarySpellPresent"] = target.Buffs.Enumerable
@@ -632,6 +690,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.AC.BaseValue = targetAc;
                 target.Stats.SaveWill.BaseValue = targetWill;
                 target.Stats.HitPoints.BaseValue = targetHitPoints;
+                fixtureResistance.Remove(fixtureResistanceId);
+                fixtureResistanceId = -1;
+                JObject resistanceAfter = Lemure30SrState(target,
+                    fixtureResistanceContext);
+                bool resistanceRestored = JToken.DeepEquals(
+                        fixtureResistanceBefore["entries"], resistanceAfter["entries"]) &&
+                    (int)fixtureResistanceBefore["nativeValue"] ==
+                        (int)resistanceAfter["nativeValue"];
                 string hostileReset = ResetExpandedSummoningHostile(fixture);
                 UnitEntityData[] survivors = { dismissalOwner, firstDispelOwner,
                     secondDispelOwner, expiryOwner };
@@ -658,7 +724,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 bool areasExact = Game.Instance.State.AreaEffects.All
                     .SequenceEqual(areasBefore);
-                bool cleanup = owned.All(value => value.Destroyed &&
+                bool cleanup = resistanceRestored &&
+                    AbilityParams.Empty.CasterLevel == sharedCl &&
+                    AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                    AbilityParams.Empty.DC == sharedDc &&
+                    owned.All(value => value.Destroyed &&
                         !value.IsInState && !value.Commands.Raw.Any(command =>
                             command != null && !command.IsFinished)) && areasExact &&
                     transientBuffs.All(value => value.IsDisposed ||
@@ -677,6 +747,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["activeCommands"] = owned.Sum(value => value.Commands.Raw
                             .Count(command => command != null && !command.IsFinished)),
                         ["areasExact"] = areasExact,
+                        ["fixtureResistanceRestored"] = resistanceRestored,
+                        ["fixtureResistanceAfter"] = resistanceAfter,
+                        ["sharedEmptyUnchanged"] =
+                            AbilityParams.Empty.CasterLevel == sharedCl &&
+                            AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                            AbilityParams.Empty.DC == sharedDc,
                         ["transientBuffsAbsent"] = transientBuffs.All(value =>
                             value.IsDisposed || !target.Buffs.Enumerable.Contains(value)),
                         ["hostileReset"] = hostileReset,
@@ -696,6 +772,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (killTrace != null) killTrace.Dispose();
+                if (fixtureResistance != null && fixtureResistanceId >= 0)
+                {
+                    fixtureResistance.Remove(fixtureResistanceId);
+                    fixtureResistanceId = -1;
+                }
                 if (observed != null) EventBus.Unsubscribe(observed);
                 if (target != null && !target.Destroyed)
                 {
@@ -838,11 +919,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             blueprint.ComponentsArray = new BlueprintComponent[] {
                 descriptorComponent };
             transient.Add(blueprint);
-            var context = new MechanicsContext(source, target.Descriptor,
-                ability, null, new TargetWrapper(target));
-            context.Params.CasterLevel = casterLevel;
-            context.Params.SpellLevel = 4;
-            context.Params.DC = 10;
+            var context = new AbilityExecutionContext(
+                new AbilityData(ability, source.Descriptor), new AbilityParams {
+                    CasterLevel = casterLevel, SpellLevel = 4, DC = 10 },
+                new TargetWrapper(target), null);
             Buff result = target.Descriptor.Buffs.AddBuff(blueprint, context,
                 TimeSpan.FromMinutes(10));
             bool apiReturnedBuff = result != null;
