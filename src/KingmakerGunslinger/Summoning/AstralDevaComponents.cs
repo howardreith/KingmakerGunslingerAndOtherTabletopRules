@@ -321,6 +321,7 @@ namespace KingmakerGunslinger.Summoning
             if (applied == null)
                 throw new InvalidOperationException(
                     "Astral Dispel Evil could not apply its exact ward.");
+            applied.IsFromSpell = true;
             try
             {
                 caster.Ensure<UnitPartTouch>().Init(TouchDeliveryAbility,
