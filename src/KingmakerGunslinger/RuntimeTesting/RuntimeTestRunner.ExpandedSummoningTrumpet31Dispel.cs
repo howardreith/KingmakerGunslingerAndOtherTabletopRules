@@ -102,6 +102,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 string prefix = ExpandedSummoningSpecialBuilder.Trumpet31Prefix;
                 var family = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvil"];
+                var heldMenu = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilHeld"];
+                var dismissalTouch = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilDismissalTouch"];
                 var dismissal = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilDismissal"];
                 var dispel = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilDispel"];
                 var touchBlueprint = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilDispelTouch"];
@@ -113,14 +115,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(value.Spell?.Blueprint, family));
                 slot.Spell.ParamSpellSlot = slot;
                 AbilityData root = slot.Spell;
-                var data = new AbilityData(root, dispel);
+                var data = root;
                 var parameters = data.CalculateParams();
-                var dismissalParameters = new AbilityData(root, dismissal).CalculateParams();
+                var dismissalParameters = data.CalculateParams();
                 JArray siblingBefore = Trumpet31DispelSlotRows(siblingBook);
                 JArray otherSlotsBefore = Trumpet31DispelSlotRows(book, family);
                 var preparation = creation.Preparations.Single(value => ReferenceEquals(value.Ability, family));
                 bool mapping = family.Type == AbilityType.Spell && family.Icon != null &&
-                    family.GetComponent<AbilityVariants>().Variants.SequenceEqual(new[] { dismissal, dispel }) &&
+                    family.GetComponent<AbilityVariants>() == null &&
+                    family.GetComponent<AbilityEffectArmAstralDispelEvilTouch>()?.TouchDeliveryAbility == heldMenu &&
+                    heldMenu.Variants.SequenceEqual(new[] { dismissalTouch, touchBlueprint }) &&
+                    ReferenceEquals(dismissalTouch.Parent, heldMenu) && ReferenceEquals(touchBlueprint.Parent, heldMenu) &&
                     family.GetComponent<SpellComponent>()?.School == SpellSchool.Abjuration &&
                     family.GetComponent<SpellDescriptorComponent>() != null &&
                     (family.GetComponent<SpellDescriptorComponent>().Descriptor & SpellDescriptor.Good) != 0 &&
@@ -142,7 +147,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("trumpet-dispel-native-mapping", mapping,
                     new JObject { ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId,
                         ["book"] = book.Blueprint.AssetGuid, ["family"] = family.AssetGuid,
-                        ["selectedVariant"] = data.Blueprint.AssetGuid, ["touch"] = touchBlueprint.AssetGuid,
+                        ["castRoot"] = data.Blueprint.AssetGuid,
+                        ["heldMenu"] = heldMenu.AssetGuid,
+                        ["dischargeChoices"] = new JArray(heldMenu.Variants.Select(value => value.AssetGuid)), ["touch"] = touchBlueprint.AssetGuid,
                         ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel,
                         ["dc"] = parameters.DC, ["castingStat"] = book.Blueprint.CastingAttribute.ToString(),
                         ["racialHd"] = owner.Descriptor.Progression.CharacterLevel,
@@ -150,7 +157,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["type"] = family.Type.ToString(), ["icon"] = family.Icon?.name,
                         ["preparationCopies"] = preparation.Copies,
                         ["ownerSlots"] = Trumpet31DispelSlotRows(book), ["siblingSlots"] = siblingBefore },
-                    "Dispel Evil is a real CL14/Wisdom level5 preparation with two native variants and independent owned books, without a resource/SLA or cleric-stat progression.");
+                    "Dispel Evil is a real CL14/Wisdom level5 preparation with both native discharge choices retained after casting and independent owned books, without a resource/SLA or cleric-stat progression.");
                 if (!mapping) throw new InvalidOperationException("Trumpet Dispel Evil book mapping failed.");
 
                 observed = new Astral31DispelEvents { Owner = owner };
@@ -184,7 +191,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(activeWard.Context?.MaybeCaster, owner) &&
                         activeWard.Context.Params.CasterLevel == 14 &&
                         activeWard.TimeLeft.TotalSeconds > 75d && activeWard.TimeLeft.TotalSeconds <= 84d &&
-                        ReferenceEquals(heldData?.Blueprint, touchBlueprint) &&
+                        ReferenceEquals(heldData?.Blueprint, heldMenu) &&
+                        heldMenu.Variants.SequenceEqual(new[] { dismissalTouch, touchBlueprint }) &&
+                        ReferenceEquals(heldData.StickyTouch, data) &&
                         ReferenceEquals(heldData.Spellbook, book) &&
                         heldParameters != null && heldParameters.CasterLevel == 14 &&
                         heldParameters.SpellLevel == 5 && heldParameters.DC == 20;
@@ -208,7 +217,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var deliveryCosts = new JArray();
                 using (var economy = new FirearmReviewCosts(owner, deliveryCosts))
                 {
-                    foreach (int frame in Astral31DispelHeld(owner, target,
+                    foreach (int frame in Astral31DispelHeld(owner, target, touchBlueprint,
                         value => delivery = value)) yield return frame;
                     var rule = observed.Dispels.LastOrDefault(value => ReferenceEquals(value.Buff, selected));
                     var sr = observed.Resistances.Where(value => ReferenceEquals(value.Ability, touchBlueprint)).ToArray();
@@ -258,6 +267,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                             AbilityParams.Empty.SpellLevel, AbilityParams.Empty.DC) },
                     "The spent family and variant cannot refresh themselves; every other preparation and the sibling book remain exact and global default parameters are unchanged.");
                 if (!independent) throw new InvalidOperationException("Prepared Dispel Evil slot isolation failed.");
+
+                // A distinct owned emitter observes native holding-charge
+                // cancellation. Preserve the later spell's actual effect.
+                var siblingSlot = siblingBook.GetMemorizedSpellSlots(5).Single(value =>
+                    value.Available && ReferenceEquals(value.Spell?.Blueprint, family));
+                siblingSlot.Spell.ParamSpellSlot = siblingSlot;
+                var siblingCosts = new JArray();
+                UnitUseAbility siblingParent = null;
+                bool siblingCast;
+                using (var economy = new FirearmReviewCosts(sibling, siblingCosts))
+                {
+                    foreach (int frame in Astral31DispelCast(sibling, siblingSlot.Spell,
+                        new TargetWrapper(sibling), value => siblingParent = value)) yield return frame;
+                    siblingCast = siblingParent != null && siblingParent.IsFinished &&
+                        siblingParent.Result == UnitCommand.ResultType.Success &&
+                        economy.Count(siblingParent) == 1 && economy.Exact(siblingParent, false);
+                }
+                Buff siblingWard = sibling.Buffs.Enumerable.SingleOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, ward));
+                bool siblingArmed = siblingCast && siblingWard != null &&
+                    ReferenceEquals(sibling.Get<UnitPartTouch>()?.Ability.Data.Blueprint, heldMenu) &&
+                    !siblingSlot.Available;
+                if (!siblingArmed) throw new InvalidOperationException(
+                    "Intervening-cast fixture did not arm its own prepared Dispel Evil.");
+                var virtue = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                    KingmakerGunslinger.Bootstrap.BlueprintBootstrap.Library,
+                    "d3a852385ba4cd740992d1970170301a", "native Virtue orison");
+                var virtueBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
+                    KingmakerGunslinger.Bootstrap.BlueprintBootstrap.Library,
+                    "a13ad2502d9e4904082868eb71efb0c5", "native Virtue temporary HP");
+                JArray beforeVirtue = Trumpet31DispelSlotRows(siblingBook);
+                foreach (int frame in Trumpet31ManualCommand(sibling,
+                    new AbilityData(sibling.Descriptor.Abilities.GetAbility(virtue)),
+                    sibling, "trumpet-dispel-intervening-command")) yield return frame;
+                Buff actualVirtue = sibling.Buffs.Enumerable.SingleOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, virtueBuff));
+                bool canceled = siblingWard.IsDisposed &&
+                    !sibling.Buffs.Enumerable.Contains(siblingWard) &&
+                    sibling.Get<UnitPartTouch>() == null && actualVirtue != null &&
+                    ReferenceEquals(actualVirtue.Context?.MaybeCaster, sibling) &&
+                    actualVirtue.Context.Params.CasterLevel == 14 &&
+                    sibling.Descriptor.TemporaryHP == 1 &&
+                    JToken.DeepEquals(beforeVirtue, Trumpet31DispelSlotRows(siblingBook));
+                Sprint25Check("trumpet-dispel-intervening-cast", canceled,
+                    new JObject { ["owner"] = sibling.UniqueId,
+                        ["priorWard"] = ward.AssetGuid, ["wardDisposed"] = siblingWard.IsDisposed,
+                        ["wardPresent"] = sibling.Buffs.Enumerable.Contains(siblingWard),
+                        ["heldAfter"] = sibling.Get<UnitPartTouch>()?.Ability.Data.Blueprint.AssetGuid,
+                        ["siblingParent"] = Sprint27AiCommand(siblingParent), ["siblingCosts"] = siblingCosts,
+                        ["nextSpell"] = virtue.AssetGuid, ["nextBuff"] = actualVirtue?.Blueprint.AssetGuid,
+                        ["nextCaster"] = actualVirtue?.Context?.MaybeCaster?.UniqueId,
+                        ["nextCl"] = actualVirtue?.Context?.Params.CasterLevel,
+                        ["temporaryHp"] = sibling.Descriptor.TemporaryHP,
+                        ["beforeSlots"] = beforeVirtue, ["afterSlots"] = Trumpet31DispelSlotRows(siblingBook) },
+                    "A later real native spell closes only the held Dispel Evil ward/charge and preserves its own Virtue effect and every leveled preparation.");
+                if (!canceled) throw new InvalidOperationException(
+                    "Native intervening spell did not close the prior Dispel Evil charge/ward.");
 
                 EventBus.Unsubscribe(observed); observed = null;
                 resistance.Remove(resistanceId); resistanceId = -1;

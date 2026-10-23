@@ -492,6 +492,44 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class AstralDispelEvilRuntime
     {
+        // Native cancellation compares AbilityData identities and does not
+        // recognize a selected child of a held menu. Retain only a child of
+        // this exact private fact/source/owner. Ordinary spells still cancel
+        // the charge and its own ward before their new effect is applied.
+        internal static bool BeforeNativeCast(
+            Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell evt)
+        {
+            UnitEntityData caster = evt == null ? null : evt.Initiator;
+            UnitPartTouch touch = caster?.Get<UnitPartTouch>();
+            AbilityData held = touch?.Ability?.Data;
+            AbilityData spell = evt == null ? null : evt.Spell;
+            var marker = held?.Blueprint?.GetComponent<
+                AstralDispelEvilDeliveryMarker>();
+            var arm = held?.StickyTouch?.Blueprint?.GetComponent<
+                AbilityEffectArmAstralDispelEvilTouch>();
+            if (caster == null || spell == null || marker?.Ward == null ||
+                arm == null || !ReferenceEquals(arm.SourceUnit, caster.Blueprint) ||
+                !ReferenceEquals(arm.TouchDeliveryAbility, held.Blueprint) ||
+                !ReferenceEquals(arm.Ward, marker.Ward)) return true;
+            Buff[] wards = caster.Buffs.Enumerable.Where(value =>
+                ReferenceEquals(value.Blueprint, marker.Ward) &&
+                ReferenceEquals(value.Context?.MaybeCaster, caster) &&
+                ReferenceEquals(value.Context?.SourceAbility,
+                    held.StickyTouch.Blueprint)).ToArray();
+            if (wards.Length != 1) return true;
+            bool ownChild = held.Blueprint.Variants != null &&
+                held.Blueprint.Variants.Any(value => ReferenceEquals(value,
+                    spell.Blueprint)) && ReferenceEquals(spell.Fact, held.Fact) &&
+                ReferenceEquals(spell.StickyTouch, held.StickyTouch) &&
+                ReferenceEquals(spell.Spellbook, held.Spellbook);
+            if (ownChild) return false;
+            if (spell != held && spell.SourceItem == null &&
+                (spell.Blueprint.Type == AbilityType.Spell ||
+                    spell.Blueprint.Type == AbilityType.SpellLike))
+                wards[0].Remove();
+            return true;
+        }
+
         internal static void DischargeWard(AbilityExecutionContext context)
         {
             BlueprintAbility delivery = context == null ||
@@ -506,6 +544,15 @@ namespace KingmakerGunslinger.Summoning
                     marker.Ward)).ToArray())
                 ward.Remove();
         }
+    }
+
+    [HarmonyPatch(typeof(TouchSpellsController), "OnEventAboutToTrigger",
+        new[] { typeof(Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell) })]
+    internal static class AstralDispelEvilHeldChoicePatch
+    {
+        private static bool Prefix(
+            Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell evt)
+        { return AstralDispelEvilRuntime.BeforeNativeCast(evt); }
     }
 
     [HarmonyPatch(typeof(TouchSpellsController), "OnAbilityEffectApplied")]

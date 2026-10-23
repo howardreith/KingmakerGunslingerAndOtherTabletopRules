@@ -2,6 +2,8 @@
 
 Product PR [#66](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/66), draft. Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s30-31`; branch `codex/expanded-summoning-sprints30-31-outsider-celestial-pilot`. Started at released master `a35a3277a9c5e2c111475523b868c2cf08422e05`. Stable v0.0.163 remains public. v0.0.164 was free at intake, not reserved; recheck before promotion. No merge/release/records PR. One unfinished batch; STOP before Sprint 32.
 
+Current slice: shared Dispel Evil now casts before choosing either discharge on a native held menu. Preserve7366 prior ledger entries; exactly two private menu dependencies appended (7368 total/7365 active/3 reserved), using the installed native icon. Installed touch-controller IL requires an exact private fact/source/book guard for menu children; a different Spell/SLA cancels only that source's old ward. Focused production19s and six named identity/icon/rules/admission checks PASS at `artifacts/s30-31-dispel-held-compile-20261023T222111Z`, with exact intake restore. Native preparation/menu/action/effect/cancellation, UI/default natural-contact behavior and affected Astral recheck remain unqualified; no release claim. Preserve the prior pre-menu Dispel tuple as historical, not current behavior proof.
+
 ## Scope and coverage map
 
 | Charter | Creature | Routes | Current proof | Required next work |

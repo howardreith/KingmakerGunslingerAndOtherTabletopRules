@@ -7,11 +7,11 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Twenty other private abilities plus one five-ability Dispel Evil
+        // Twenty other private abilities plus one six-ability Dispel Evil
         // family per actual caster. Its ward adds one private buff per caster.
         internal const int RegisteredDispelEvilCasterCount = 2;
         internal const int RegisteredAbilityIdentityCount = 23 + 20 +
-            RegisteredDispelEvilCasterCount * 5;
+            RegisteredDispelEvilCasterCount * 6;
         internal const int RegisteredAreaIdentityCount = 3;
         internal const int RegisteredResourceIdentityCount = 6;
         internal const int RegisteredAiIdentityCount = 9;
