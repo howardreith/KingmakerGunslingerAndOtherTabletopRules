@@ -498,8 +498,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningHostile(fixture);
                 if (!target.Destroyed) target.Destroy();
                 Game.Instance.EntityDestroyer.Tick();
+                int ownedAreasBeforeSettle = Game.Instance.State.AreaEffects.All
+                    .Except(areaBaseline).Count();
+                int cleanupFrames = 0;
+                DateTime cleanupDeadline = DateTime.UtcNow.AddSeconds(5);
+                while (DateTime.UtcNow < cleanupDeadline && cleanupFrames < 120 &&
+                    Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any())
+                {
+                    cleanupFrames++;
+                    yield return 0;
+                }
+                Game.Instance.EntityDestroyer.Tick();
                 Game.Instance.Player.UpdateIsInCombat();
                 bool targetRetired = target.Destroyed && !target.IsInState;
+                bool areasExact = !Game.Instance.State.AreaEffects.All
+                    .Except(areaBaseline).Any();
                 bool protectedPartyCombatExact = protectedPartyCombatBefore
                     .All(pair => pair.Key.IsInCombat == pair.Value);
                 bool nativeCombatBoundaryExact =
@@ -514,7 +527,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool freshProcessBoundaryRequired = !sharedNextCaseAllowed;
                 bool ownedCleanup = owner.Destroyed && sibling.Destroyed &&
                     !owner.IsInState && !sibling.IsInState &&
-                    !Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any() &&
+                    areasExact &&
                     targetBuffsExactBeforeRetirement &&
                     targetCommandsClearBeforeRetirement &&
                     targetMemoryExactBeforeRetirement && targetRetired &&
@@ -526,8 +539,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("astral-core-cleanup", ownedCleanup, new JObject {
                     ["ownerAbsent"] = !owner.IsInState,
                     ["siblingAbsent"] = !sibling.IsInState,
-                    ["areasExact"] = !Game.Instance.State.AreaEffects.All
-                        .Except(areaBaseline).Any(),
+                    ["areasExact"] = areasExact,
+                    ["ownedAreasBeforeSettle"] = ownedAreasBeforeSettle,
+                    ["ownedAreasAfterSettle"] = Game.Instance.State.AreaEffects.All
+                        .Except(areaBaseline).Count(),
+                    ["cleanupFrames"] = cleanupFrames,
                     ["targetBuffsExact"] = targetBuffsExactBeforeRetirement,
                     ["targetCommandsClearBeforeRetirement"] =
                         targetCommandsClearBeforeRetirement,
