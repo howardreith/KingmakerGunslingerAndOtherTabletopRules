@@ -3668,7 +3668,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner, UnitEntityData targetUnit, float distance,
             out Vector3 target, out string survey, out string direction,
             float targetAllyExclusionRadius = 0f,
-            IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null)
+            IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null,
+            int originSearchRadiusMeters = 15)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3702,8 +3703,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             int laneCandidates = 0;
             int nativeLosCandidates = 0;
             int allyClearCandidates = 0;
-            for (int dx = -15; dx <= 15; dx += 3)
-                for (int dz = -15; dz <= 15; dz += 3)
+            if (originSearchRadiusMeters < 15 || originSearchRadiusMeters > 30 ||
+                originSearchRadiusMeters % 3 != 0)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI lane search radius is outside its fixed bounds.");
+            for (int dx = -originSearchRadiusMeters;
+                dx <= originSearchRadiusMeters; dx += 3)
+                for (int dz = -originSearchRadiusMeters;
+                    dz <= originSearchRadiusMeters; dz += 3)
                 {
                     Vector3 requestedOrigin = anchor.clampedPosition +
                         new Vector3(dx, 0f, dz);
@@ -3780,7 +3787,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 selectedDirection + "@" + distance.ToString("0.#",
                     System.Globalization.CultureInfo.InvariantCulture) +
                 "m(graph-and-sight)";
-            survey = "originCandidates=" + originCandidates +
+            survey = "searchRadiusMeters=" + originSearchRadiusMeters +
+                ";originCandidates=" + originCandidates +
                 ";laneCandidates=" + laneCandidates +
                 ";nativeLosCandidates=" + nativeLosCandidates +
                 ";allyClearCandidates=" + allyClearCandidates +
