@@ -105,8 +105,12 @@ namespace KingmakerGunslinger.Summoning
 
             int dc = AstralDevaRulesPolicy.StunDifficultyClass(
                 owner.Stats.Strength.Bonus);
+            // The supernatural victim has no spell-level metadata.
+            // Native AbilityParams defaults both levels to one; set them
+            // explicitly while the live Strength/HD formula owns the DC.
             var context = AstralVictimEffectContext.Create(owner, victim,
-                Stunned, new AbilityParams { DC = dc });
+                Stunned, new AbilityParams {
+                    CasterLevel = 0, SpellLevel = 0, DC = dc });
             var saving = new RuleSavingThrow(victim, SavingThrowType.Fortitude, dc)
             { Reason = context };
             context.TriggerRule(saving);
