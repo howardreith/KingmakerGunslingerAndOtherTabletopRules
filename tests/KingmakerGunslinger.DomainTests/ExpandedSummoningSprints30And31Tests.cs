@@ -146,6 +146,14 @@ namespace KingmakerGunslinger.DomainTests
         internal static void BootstrapCannotAdmitSaveOrUnsupportedPhases()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview;
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 1, "trumpet-dispel"), "Only an exact fixed owned Dispel UI phase admits native framebuffer evidence.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(false, scenario, 1, "trumpet-dispel"), "UI evidence requires automatic exit.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 2, "trumpet-dispel"), "UI evidence refuses extra parameters.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview, 1, "trumpet-dispel"), "UI evidence cannot admit another scenario.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 1, "astral-dispel"), "The actual SLA user also receives its separate native UI proof.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(false, scenario, 1, "astral-dispel"), "The SLA UI case also requires automatic exit.");
+            foreach (string other in new[] { "Trumpet-Dispel", "trumpet-dispel ", "Astral-Dispel", "astral-dispel ", "bootstrap", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 1, other), "UI evidence cannot widen phase or case matching.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Empty guarded native world is admitted.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Implemented core consumer phase is admitted only in the same empty guarded fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
