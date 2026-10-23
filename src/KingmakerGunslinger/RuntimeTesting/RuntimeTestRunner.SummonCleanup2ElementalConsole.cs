@@ -172,7 +172,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var initialized=view.GetType().GetField("m_IsInit",Cleanup2Fields);
                 var hiddenY=view.GetType().GetField("m_HidePosY",Cleanup2Fields);
-                var rect=view.transform as RectTransform;
+                // Native getter060060E5 honors the configured private target;
+                // it need not be the component's own transform.
+                var rect=view.GetType().GetProperty("RectTransform",Cleanup2Fields)?.GetValue(view,null) as RectTransform;
                 nativeHiddenPosition=initialized!=null && initialized.FieldType==typeof(bool) && (bool)initialized.GetValue(view) &&
                     hiddenY!=null && hiddenY.FieldType==typeof(int) && rect!=null && rect.anchoredPosition.y==(int)hiddenY.GetValue(view);
                 row["nativeInitializedHiddenPosition"]=nativeHiddenPosition;

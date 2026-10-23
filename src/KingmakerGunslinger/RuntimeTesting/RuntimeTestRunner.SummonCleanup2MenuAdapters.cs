@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
@@ -259,6 +261,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 foreach (int frame in Cleanup2RevealPopupRow(scroll, row, owns)) yield return frame;
                 string expected = SummonChoicePresentationPolicy.For("horse", target.Spec.Multiplicity).Label;
+                Image capturedImage = row.Icon; Sprite capturedSprite = capturedImage.sprite, capturedEffective = capturedImage.overrideSprite;
+                Texture capturedTexture = capturedImage.mainTexture;
+                Func<bool> ownsImage = () => owns() && ReferenceEquals(row.Icon, capturedImage) &&
+                    ReferenceEquals(capturedImage.sprite, capturedSprite) && ReferenceEquals(capturedImage.overrideSprite, capturedEffective) &&
+                    ReferenceEquals(capturedImage.mainTexture, capturedTexture) && Cleanup2FullyVisible(scroll, row);
+                JObject renderedHorse = Cleanup2MenuHorseEffectiveImage(row, data, ownsImage);
                 var evidence = new JObject { ["surface"] = label, ["sourceMechanism"] = source.MechanicSlot.GetType().FullName,
                     ["source"] = original.Blueprint.AssetGuid, ["child"] = data.Blueprint.AssetGuid,
                     ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["sourceDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(original),
@@ -267,14 +275,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["expectedTitle"] = expected, ["renderedText"] = new JArray(row.GetComponentsInChildren<TextMeshProUGUI>(true).Select(value => value.text)),
                     ["iconExact"] = ReferenceEquals(row.Icon.sprite, target.Child.Icon), ["fullyVisible"] = Cleanup2FullyVisible(scroll, row),
                     ["nativeAvailability"] = data.GetAvailableForCastCount(), ["nativeAction"] = data.RuntimeActionType.ToString(),
-                    ["nativeFullRound"] = data.RequireFullRoundAction, ["dataLinks"] = DescribeExpandedSummoningAbilityData(data) };
+                    ["nativeFullRound"] = data.RequireFullRoundAction, ["dataLinks"] = DescribeExpandedSummoningAbilityData(data),
+                    ["effectiveHorseImage"] = renderedHorse };
                 bool pass = owns() && Cleanup2FullyVisible(scroll, row) && data.Name == expected && target.Child.Name == expected &&
-                    ReferenceEquals(row.Icon.sprite, target.Child.Icon);
+                    ReferenceEquals(row.Icon.sprite, target.Child.Icon) && (bool)renderedHorse["passed"];
                 Cleanup2Check("menu-adapter-row-" + label, pass, evidence,
-                    "The actual native prepared/known/pinned source produces one exact Horse quantity row with current title/icon and unchanged source/book/availability.");
+                    "The actual native prepared/known/pinned source produces one exact Horse quantity row with approved decoded pixels in its effective sprite/main texture and unchanged source/book/availability.");
+                // A mismatched but still positively owned row must remain in
+                // the original framebuffer evidence before this case refuses.
+                if (capture || !pass) foreach (int frame in screens.Capture("menu-adapter-" + label, evidence, ownsImage)) yield return frame;
                 if (!pass) throw new InvalidOperationException("Native adapter row failed: " + label);
                 if (cases != null) cases.Add(evidence);
-                if (capture) foreach (int frame in screens.Capture("menu-adapter-" + label, evidence, owns)) yield return frame;
             }
             finally
             {
@@ -285,6 +296,106 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!scroll.Content.anchoredPosition.Equals(anchored) || (!scroll.IsStationary && !scroll.Velocity.Equals(velocity)))
                     throw new InvalidOperationException("Exact adapter scroll restoration failed.");
             }
+        }
+
+        private JObject Cleanup2MenuHorseEffectiveImage(ActionBarSlot row, AbilityData data, Func<bool> owns)
+        {
+            const string approvedPngSha256 = "3bf6ac8d8c7b08869bf262c4018937d5aa6b72cf3e0b809efec916c6e0cf67c1";
+            var result = new JObject { ["passed"] = false, ["approvedPngSha256"] = approvedPngSha256,
+                ["pixelEncoding"] = "GetPixels32 bottom-left row order; explicit R,G,B,A bytes; SHA256; no image export",
+                ["nativeImageContract"] = "Installed UnityEngine.UI Image.overrideSprite getter0600027C returns activeSprite; activeSprite0600027E prefers m_OverrideSprite; mainTexture06000294 uses activeSprite.texture. sprite alone is insufficient.",
+                ["foreignTexturesRead"] = false, ["uiOrTextureModified"] = false };
+            Texture2D decoded = null;
+            try
+            {
+                if (owns == null || !owns() || row == null || data == null || row.Icon == null ||
+                    !ReferenceEquals(row.MechanicSlot?.GetContentData(), data))
+                    throw new InvalidOperationException("Exact current request-owned Horse row required before pixel observation.");
+                Image image = row.Icon;
+                Sprite cached = ExpandedSummoningProjectIcons.Require("horse");
+                Texture2D ownedTexture = cached.texture;
+                Sprite sprite = image.sprite, effective = image.overrideSprite;
+                Texture main = image.mainTexture;
+                Func<UnityEngine.Object, JToken> identity = value => value == null ? JValue.CreateNull() : (JToken)new JObject {
+                    ["instance"] = value.GetInstanceID(), ["name"] = value.name, ["type"] = value.GetType().FullName };
+                Func<Sprite, JToken> describeSprite = value => value == null ? JValue.CreateNull() : (JToken)new JObject {
+                    ["object"] = identity(value), ["texture"] = identity(value.texture),
+                    ["rect"] = new JArray(value.rect.x, value.rect.y, value.rect.width, value.rect.height),
+                    ["isCachedHorse"] = ReferenceEquals(value, cached), ["textureIsOwnedHorse"] = ReferenceEquals(value.texture, ownedTexture) };
+                result["rowInstance"] = row.GetInstanceID(); result["rowObject"] = row.name;
+                result["rowDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(data);
+                result["childGuid"] = data.Blueprint.AssetGuid; result["sourceGuid"] = data.ConvertedFrom?.Blueprint.AssetGuid;
+                result["image"] = identity(image); result["childIcon"] = describeSprite(data.Icon);
+                result["sprite"] = describeSprite(sprite); result["effectiveOverrideSprite"] = describeSprite(effective);
+                result["mainTexture"] = identity(main); result["cachedHorseSprite"] = describeSprite(cached);
+                result["imageColor"] = new JArray(image.color.r, image.color.g, image.color.b, image.color.a);
+                result["canvasAlpha"] = image.canvasRenderer.GetAlpha(); result["canvasCull"] = image.canvasRenderer.cull;
+                result["imageFullyVisible"] = Cleanup2TooltipGraphicVisible(image);
+                var canvas = image.canvas.rootCanvas;
+                Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+                var corners = new Vector3[4]; image.rectTransform.GetWorldCorners(corners);
+                result["imageScreenCorners"] = new JArray(corners.Select(value => {
+                    Vector2 point = RectTransformUtility.WorldToScreenPoint(camera, value);
+                    return new JObject { ["x"] = point.x, ["y"] = point.y }; }));
+                string path = Path.Combine(_context.ModEntry.Path, "assets", "icons", "expanded-summoning", "horse.png");
+                byte[] png = File.ReadAllBytes(path);
+                result["installedPngPath"] = path; result["installedPngBytes"] = png.Length;
+                string pngHash = Cleanup2HorseByteSha256(png); result["installedPngSha256"] = pngHash;
+                if (pngHash != approvedPngSha256) throw new InvalidOperationException("Installed Horse PNG differs from the approved painting.");
+                decoded = new Texture2D(2, 2, TextureFormat.ARGB32, false);
+                Type conversion = Type.GetType("UnityEngine.ImageConversion, UnityEngine.ImageConversionModule", false);
+                MethodInfo load = conversion?.GetMethod("LoadImage", BindingFlags.Public | BindingFlags.Static, null,
+                    new[] { typeof(Texture2D), typeof(byte[]), typeof(bool) }, null);
+                if (load == null || !(bool)load.Invoke(null, new object[] { decoded, png, false }) || decoded.width != 128 || decoded.height != 128)
+                    throw new InvalidOperationException("Exact installed PNG decoding contract unavailable.");
+                string approvedPixels = Cleanup2HorseRgbaSha256(decoded);
+                result["approvedDecodedRgbaSha256"] = approvedPixels;
+                var textures = new JArray();
+                foreach (Texture texture in new Texture[] { data.Icon?.texture, sprite?.texture, effective?.texture, main }.Where(value => value != null).Distinct())
+                {
+                    bool owned = ReferenceEquals(texture, ownedTexture);
+                    var receipt = new JObject { ["texture"] = identity(texture), ["positiveProjectHorseOwnership"] = owned,
+                        ["pixelReadDisposition"] = owned ? "read-only exact cached project Horse texture" : "refused: texture is outside exact project Horse ownership" };
+                    if (owned) receipt["rgbaSha256"] = Cleanup2HorseRgbaSha256(ownedTexture);
+                    textures.Add(receipt);
+                }
+                result["actualTexturePixels"] = textures;
+                string loadedPixels = Cleanup2HorseRgbaSha256(ownedTexture);
+                result["cachedHorseRgbaSha256"] = loadedPixels;
+                bool unchanged = owns() && ReferenceEquals(row.MechanicSlot?.GetContentData(), data) &&
+                    ReferenceEquals(image, row.Icon) && ReferenceEquals(image.sprite, sprite) &&
+                    ReferenceEquals(image.overrideSprite, effective) && ReferenceEquals(image.mainTexture, main) &&
+                    ReferenceEquals(cached, ExpandedSummoningProjectIcons.Require("horse"));
+                bool exact = unchanged && ReferenceEquals(data.Icon, cached) && ReferenceEquals(sprite, cached) &&
+                    ReferenceEquals(effective, cached) && ReferenceEquals(main, ownedTexture) && cached.rect == new Rect(0, 0, 128, 128) &&
+                    ownedTexture.width == 128 && ownedTexture.height == 128 && loadedPixels == approvedPixels && Cleanup2TooltipGraphicVisible(image);
+                result["identitiesUnchangedDuringRead"] = unchanged; result["decodedPixelsMatchApprovedPainting"] = loadedPixels == approvedPixels;
+                result["passed"] = exact;
+                result["limit"] = "Decoded project texture/effective native Image identity proof; actual framebuffer pixels still require inspection. No override is cleared, no native/foreign texture is read or exported.";
+            }
+            catch (Exception error) { result["error"] = error.GetType().FullName + ":" + error.Message; }
+            finally { if (decoded != null) UnityEngine.Object.Destroy(decoded); }
+            return result;
+        }
+
+        private static string Cleanup2HorseRgbaSha256(Texture2D texture)
+        {
+            if (texture == null || texture.width != 128 || texture.height != 128)
+                throw new InvalidOperationException("Exact 128px project-owned Horse texture required.");
+            Color32[] pixels = texture.GetPixels32();
+            if (pixels.Length != 128 * 128) throw new InvalidOperationException("Unexpected Horse pixel count.");
+            var bytes = new byte[pixels.Length * 4];
+            for (int i = 0; i < pixels.Length; i++) {
+                bytes[i * 4] = pixels[i].r; bytes[i * 4 + 1] = pixels[i].g;
+                bytes[i * 4 + 2] = pixels[i].b; bytes[i * 4 + 3] = pixels[i].a;
+            }
+            return Cleanup2HorseByteSha256(bytes);
+        }
+
+        private static string Cleanup2HorseByteSha256(byte[] bytes)
+        {
+            using (SHA256 sha = SHA256.Create())
+                return BitConverter.ToString(sha.ComputeHash(bytes)).Replace("-", "").ToLowerInvariant();
         }
 
         private IEnumerable<int> Cleanup2MenuAdapterPin(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
@@ -437,15 +548,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in Cleanup2RevealPopupRow(scroll, clickedRow, owns)) yield return frame;
                     string title = SummonChoicePresentationPolicy.For("horse", SummonMultiplicity.One).Label;
                     bool visible = Cleanup2FullyVisible(scroll, clickedRow);
+                    Image capturedImage = clickedRow.Icon; Sprite capturedSprite = capturedImage.sprite, capturedEffective = capturedImage.overrideSprite;
+                    Texture capturedTexture = capturedImage.mainTexture;
+                    Func<bool> ownsImage = () => owns() && ReferenceEquals(clickedRow.Icon, capturedImage) &&
+                        ReferenceEquals(capturedImage.sprite, capturedSprite) && ReferenceEquals(capturedImage.overrideSprite, capturedEffective) &&
+                        ReferenceEquals(capturedImage.mainTexture, capturedTexture) && Cleanup2FullyVisible(scroll, clickedRow);
+                    JObject renderedHorse = Cleanup2MenuHorseEffectiveImage(clickedRow, selected, ownsImage);
                     bool rowExact = visible && selected.Name == title && horse.Name == title && ReferenceEquals(clickedRow.Icon.sprite, horse.Icon) &&
-                        selected.TargetAnchor != AbilityTargetAnchor.Owner && !(clickedRow is ActionBarGroupSlot) && Cleanup2DruidSourceChain(selected, prepared, parent);
+                        (bool)renderedHorse["passed"] && selected.TargetAnchor != AbilityTargetAnchor.Owner && !(clickedRow is ActionBarGroupSlot) && Cleanup2DruidSourceChain(selected, prepared, parent);
                     evidence["horseVisible"] = visible; evidence["horseTitle"] = selected.Name; evidence["expectedTitle"] = title;
                     evidence["horseIconExact"] = ReferenceEquals(clickedRow.Icon.sprite, horse.Icon); evidence["horseTargetAnchor"] = anchor;
                     evidence["retainedNativeConversionParent"] = ReferenceEquals(selected.ConvertedFrom?.Blueprint, parent);
+                    evidence["effectiveHorseImage"] = renderedHorse;
                     Cleanup2Check("menu-adapter-druid-native-horse-row", rowExact, evidence,
                         "The real Druid conversion popup exposes its exact Horse child with current label/icon, source chain and an actual visible native row.");
+                    foreach (int frame in screens.Capture("menu-adapter-druid-native-conversion", evidence, ownsImage)) yield return frame;
                     if (!rowExact) throw new InvalidOperationException("Real Druid Horse row visibility/identity failed.");
-                    foreach (int frame in screens.Capture("menu-adapter-druid-native-conversion", evidence, () => owns() && Cleanup2FullyVisible(scroll, clickedRow))) yield return frame;
                     debit = new Cleanup2SourceDebit(fixture.Caster);
                     foreach (int frame in Cleanup2MenuAdapterDruidCast(fixture, selected, prepared, parent, clickedRow, debit, mode, watch,
                         () => Cleanup2MenuAdapterHide(source, prepared))) yield return frame;
