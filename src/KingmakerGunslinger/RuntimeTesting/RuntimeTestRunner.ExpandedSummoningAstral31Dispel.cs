@@ -652,6 +652,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!automaticBoundary) throw new InvalidOperationException(
                     "Astral automatic Dispel Evil boundary failed.");
 
+                // A real alternative-slam command exercises native automatic
+                // discharge. The observer issues no spell or effect after the
+                // hit; production chooses the legal removal delivery.
+                observed.Owner = firstDispelOwner;
+                Buff contactEffect = Astral31DispelFixtureEffect(target, fixture.Hostile,
+                    "NaturalContactEvilSpell", Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"),
+                    9, SpellSchool.Necromancy, SpellDescriptor.Evil, false,
+                    transient, transientBuffs, observed);
+                foreach (int frame in Astral31SwitchWeapon(firstDispelOwner, 1)) yield return frame;
+                target.Stats.HitPoints.BaseValue = 100000;
+                target.Stats.AC.BaseValue = -100;
+                var contactRoot = new AbilityData(firstDispelOwner.Descriptor.Abilities.GetAbility(family));
+                UnitUseAbility contactParent = null;
+                foreach (int frame in Astral31DispelCast(firstDispelOwner, contactRoot,
+                    new TargetWrapper(firstDispelOwner), value => contactParent = value)) yield return frame;
+                UnitPartTouch contactHeld = firstDispelOwner.Get<UnitPartTouch>();
+                var contactDismissal = new AbilityData(contactHeld.Ability.Data, dismissalTouch);
+                var contactDispel = new AbilityData(contactHeld.Ability.Data, dispelTouch);
+                bool contactReady = contactParent != null && contactParent.IsFinished &&
+                    contactParent.Result == UnitCommand.ResultType.Success &&
+                    !contactDismissal.CanTarget(new TargetWrapper(target)) &&
+                    contactDispel.IsAvailable && contactDispel.CanTarget(new TargetWrapper(target));
+                if (!contactReady) throw new InvalidOperationException("Natural-contact fixture is not independently eligible for removal only.");
+                int contactRollStart = observed.Attacks.Count;
+                UnitAttack contactCommand = null;
+                var contactCosts = new JArray();
+                bool contactAction;
+                using (var economy = new FirearmReviewCosts(firstDispelOwner, contactCosts))
+                {
+                    foreach (int frame in Astral31HammerCommand(firstDispelOwner, target, false,
+                        value => contactCommand = value)) yield return frame;
+                    contactAction = contactCommand != null && contactCommand.IsFinished &&
+                        contactCommand.Result == UnitCommand.ResultType.Success &&
+                        economy.Count(contactCommand) == 1 && economy.Exact(contactCommand, false);
+                }
+                DateTime contactDeadline = DateTime.UtcNow.AddSeconds(12);
+                while (!contactEffect.IsDisposed && DateTime.UtcNow < contactDeadline) yield return 0;
+                var contactRule = observed.Dispels.LastOrDefault(value => ReferenceEquals(value.Buff, contactEffect));
+                var contactRolls = observed.Attacks.Skip(contactRollStart).ToArray();
+                var slamRolls = contactRolls.Where(value => value.Weapon != null && value.Weapon.Blueprint.IsNatural).ToArray();
+                bool contactExact = contactAction && slamRolls.Length == 1 && slamRolls[0].IsHit &&
+                    !slamRolls[0].AutoHit && contactRule != null && contactRule.Success &&
+                    contactRule.Check == RuleDispelMagic.CheckType.None && contactEffect.IsDisposed &&
+                    firstDispelOwner.Get<UnitPartTouch>() == null &&
+                    !firstDispelOwner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, ward));
+                Sprint25Check("astral-dispel-natural-contact", contactExact,
+                    new JObject { ["owner"] = firstDispelOwner.UniqueId, ["target"] = target.UniqueId,
+                        ["command"] = contactCommand == null ? null : Sprint27AiCommand(contactCommand),
+                        ["costs"] = contactCosts, ["rolls"] = new JArray(contactRolls.Select(value => new JObject {
+                            ["weapon"] = value.Weapon?.Blueprint.AssetGuid, ["natural"] = value.Weapon?.Blueprint.IsNatural,
+                            ["hit"] = value.IsHit, ["autoHit"] = value.AutoHit, ["roll"] = value.Roll.Value })),
+                        ["powerAttackOff"] = Astral31PowerAttackOff(firstDispelOwner),
+                        ["nativeDispel"] = contactRule?.Success, ["effectRemoved"] = contactEffect.IsDisposed,
+                        ["heldAbsent"] = firstDispelOwner.Get<UnitPartTouch>() == null,
+                        ["fixtureDeliveryCasts"] = 0, ["seededNativeManualControl"] = true, ["aiCommands"] = 0 },
+                    "A real single native alternative-slam hit discharges the held spell through its legal removal consumer without another issued spell/action or a fabricated hit; the exact ward/charge close.");
+                if (!contactExact) throw new InvalidOperationException("Natural-contact Dispel Evil delivery failed.");
+                foreach (int frame in Astral31SwitchWeapon(firstDispelOwner, 0)) yield return frame;
+
                 observed.Owner = expiryOwner;
                 Ability expiryRoot = expiryOwner.Descriptor.Abilities
                     .GetAbility(family);
@@ -911,7 +970,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "Dispel Evil held native variant lost its exact fact, source, book or parameters.");
             var selected = new TargetWrapper(target);
-            if (data == null || !data.CanTarget(selected))
+            if (data == null || !data.IsAvailable || !data.CanTarget(selected))
                 throw new InvalidOperationException(
                     "Astral Dispel Evil held touch is unavailable.");
             var command = new UnitUseAbility(data, selected);
