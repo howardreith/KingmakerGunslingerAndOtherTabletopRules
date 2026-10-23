@@ -7,15 +7,15 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Abilities are23 scoped roots plus nineteen private abilities (Dretch2,
+        // Abilities are23 scoped roots plus twenty private abilities (Dretch2,
         // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier/Cure/See
-        // and eight at-will native mappings).
-        internal const int RegisteredAbilityIdentityCount = 23 + 19;
+        // plus eight native mappings and Holy Smite).
+        internal const int RegisteredAbilityIdentityCount = 23 + 20;
         internal const int RegisteredAreaIdentityCount = 3;
         internal const int RegisteredResourceIdentityCount = 6;
         internal const int RegisteredAiIdentityCount = 9;
         internal const int RegisteredBrainIdentityCount = 4;
-        internal const int RegisteredBuffIdentityCount = 8;
+        internal const int RegisteredBuffIdentityCount = 9;
         internal const int RegisteredFeatureIdentityCount = 8;
         internal const int RegisteredWeaponIdentityCount = 9;
         internal const int RegisteredSpellbookIdentityCount = 1;
@@ -98,6 +98,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(3, AstralDevaRulesPolicy.RemoveCurseSpellLevel, "Remove Curse keeps its third-level SLA parameters.");
             Assertions.Equal(3, AstralDevaRulesPolicy.RemoveDiseaseSpellLevel, "Remove Disease keeps its third-level SLA parameters.");
             Assertions.Equal(1, AstralDevaRulesPolicy.RemoveFearSpellLevel, "Remove Fear keeps its first-level SLA parameters.");
+            Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteWillDc(23), "Holy Smite uses its fourth-level SLA and live Charisma.");
+            Assertions.Equal(5, AstralDevaRulesPolicy.HolySmiteDiceCount(false), "Ordinary targets use the capped five-die line.");
+            Assertions.Equal(8, AstralDevaRulesPolicy.HolySmiteDieSides(false), "Ordinary targets use d8s.");
+            Assertions.Equal(10, AstralDevaRulesPolicy.HolySmiteDiceCount(true), "Evil outsiders use the capped ten-die line.");
+            Assertions.Equal(6, AstralDevaRulesPolicy.HolySmiteDieSides(true), "Evil outsiders use d6s.");
+            Assertions.Equal(40, AstralDevaRulesPolicy.HolySmiteDamage(40, true, false), "Failed evil save keeps full damage.");
+            Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteDamage(40, true, true), "Successful evil save halves damage.");
+            Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteDamage(40, false, false), "Neutral failed save takes half damage.");
+            Assertions.Equal(10, AstralDevaRulesPolicy.HolySmiteDamage(40, false, true), "Neutral successful save takes one-quarter damage.");
+            Assertions.True(AstralDevaRulesPolicy.HolySmiteBlinds(true, false) && !AstralDevaRulesPolicy.HolySmiteBlinds(true, true) && !AstralDevaRulesPolicy.HolySmiteBlinds(false, false), "Only evil creatures that fail are blinded.");
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");
