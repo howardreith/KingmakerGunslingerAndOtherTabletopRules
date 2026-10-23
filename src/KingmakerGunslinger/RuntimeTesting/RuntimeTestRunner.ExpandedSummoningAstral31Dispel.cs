@@ -9,6 +9,7 @@ using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.Enums;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
@@ -23,6 +24,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
@@ -52,6 +54,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Alignment targetAlignment = Alignment.TrueNeutral;
             bool targetChanged = false;
             Astral31DispelEvents observed = null;
+            Astral31DismissalKillTrace killTrace = null;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -219,6 +222,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value.GetType().FullName)),
                         ["nativeDismissalRunActions"] = nativeRuns.Length,
                         ["dismissalTouchRunActions"] = dismissalRuns.Length,
+                        ["nativeDismissalActions"] = new JArray(
+                            AlternateSummoningGraph.Objects<GameAction>(nativeRuns)
+                                .Select(value => value.GetType().FullName)),
+                        ["dismissalTouchActions"] = new JArray(
+                            AlternateSummoningGraph.Objects<GameAction>(dismissalRuns)
+                                .Select(value => value.GetType().FullName)),
                         ["nativeTouchWeapon"] = nativeTouch?.TouchWeapon?.AssetGuid,
                         ["dismissalCl"] = dismissalParameters?.CasterLevel,
                         ["dismissalSpellLevel"] = dismissalParameters?.SpellLevel,
@@ -258,6 +267,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     dismissalOwner);
                 UnitUseAbility dismissalParent = null;
                 var dismissalCosts = new JArray();
+                killTrace = new Astral31DismissalKillTrace(dismissalOwner,
+                    dismissalTarget);
                 using (var economy = new FirearmReviewCosts(dismissalOwner,
                     dismissalCosts))
                 {
@@ -322,6 +333,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 60 && dismissalTarget != null &&
                         !dismissalTarget.Destroyed &&
                         !dismissalTarget.ShouldBeDestroyed; frame++) yield return 0;
+                    killTrace.Dispose();
                     RuleAttackRoll dismissalRoll = observed.Attacks.SingleOrDefault(
                         value => ReferenceEquals(value.Target, dismissalTarget));
                     RuleSpellResistanceCheck dismissalResistance = observed
@@ -370,6 +382,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["targetInCombat"] = dismissalTarget.IsInCombat,
                             ["nativeKillGuardAllows"] =
                                 dismissalNativeKillAllowed,
+                            ["nativeKillCalls"] = killTrace.Calls,
+                            ["nativeKillTraceRestored"] = killTrace.Restored,
+                            ["targetMarkedForDeath"] = dismissalTarget.Descriptor
+                                .State.MarkedForDeath,
                             ["command"] = dismissalHeld == null ? null :
                                 Sprint27AiCommand(dismissalHeld),
                             ["touchRoll"] = dismissalRoll?.Roll.Value,
@@ -661,6 +677,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                if (killTrace != null) killTrace.Dispose();
                 if (observed != null) EventBus.Unsubscribe(observed);
                 if (target != null && !target.Destroyed)
                 {
@@ -845,6 +862,119 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["nondispellable"] = value?.IsNotDispelable,
                 ["eligible"] = value != null &&
                     AstralDispelEvilEligibility.CanDispel(value) };
+        }
+
+        private sealed class Astral31DismissalKillTrace : IDisposable
+        {
+            private static Astral31DismissalKillTrace active;
+            private readonly UnitEntityData owner;
+            private readonly UnitEntityData target;
+            private readonly Harmony12.HarmonyInstance harmony;
+            private readonly string id = "KMG.S31.AstralDismissalKillTrace." +
+                Guid.NewGuid().ToString("N");
+            private readonly MethodInfo method = typeof(ContextActionKillTarget)
+                .GetMethod("RunAction", BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic);
+            private readonly PropertyInfo contextProperty = typeof(ContextAction)
+                .GetProperty("Context", BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic);
+            private readonly PropertyInfo targetProperty = typeof(ContextAction)
+                .GetProperty("Target", BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic);
+            private bool disposed;
+            internal readonly JArray Calls = new JArray();
+            internal bool Restored { get; private set; }
+
+            internal Astral31DismissalKillTrace(UnitEntityData owner,
+                UnitEntityData target)
+            {
+                if (active != null || owner == null || target == null ||
+                    method == null || contextProperty == null ||
+                    targetProperty == null)
+                    throw new InvalidOperationException(
+                        "Astral native Dismissal kill trace is unavailable or nested.");
+                this.owner = owner;
+                this.target = target;
+                harmony = Harmony12.HarmonyInstance.Create(id);
+                var flags = BindingFlags.Static | BindingFlags.NonPublic;
+                try
+                {
+                    harmony.Patch(method, new Harmony12.HarmonyMethod(typeof(
+                        Astral31DismissalKillTrace).GetMethod("Before", flags)),
+                        new Harmony12.HarmonyMethod(typeof(
+                            Astral31DismissalKillTrace).GetMethod("After", flags)));
+                    active = this;
+                }
+                catch
+                {
+                    Dispose();
+                    throw;
+                }
+            }
+
+            private static void Before(ContextActionKillTarget __instance,
+                out JObject __state)
+            {
+                __state = null;
+                Astral31DismissalKillTrace trace = active;
+                MechanicsContext context = __instance == null ? null :
+                    trace?.contextProperty.GetValue(__instance, null) as
+                        MechanicsContext;
+                TargetWrapper wrapper = __instance == null ? null :
+                    trace?.targetProperty.GetValue(__instance, null) as
+                        TargetWrapper;
+                UnitEntityData actionTarget = wrapper?.Unit;
+                if (trace == null || !ReferenceEquals(context?.MaybeCaster,
+                        trace.owner) || !ReferenceEquals(actionTarget,
+                        trace.target)) return;
+                __state = new JObject {
+                    ["contextCaster"] = context.MaybeCaster.UniqueId,
+                    ["contextMainTarget"] = context.MainTarget.Unit?.UniqueId,
+                    ["actionTarget"] = actionTarget.UniqueId,
+                    ["sourceAbility"] = context.SourceAbility?.AssetGuid,
+                    ["nativeGuardBefore"] = !Kingmaker.Designers.GameHelper
+                        .IsAttackingGreenNPC(context.MaybeCaster, actionTarget),
+                    ["markedBefore"] = actionTarget.Descriptor.State
+                        .MarkedForDeath,
+                    ["shouldDestroyBefore"] = actionTarget.ShouldBeDestroyed,
+                    ["inStateBefore"] = actionTarget.IsInState,
+                    ["callers"] = new JArray((new System.Diagnostics.StackTrace(
+                        1, false).GetFrames() ?? Array.Empty<
+                            System.Diagnostics.StackFrame>()).Take(12).Select(
+                                value => (value.GetMethod().DeclaringType?.FullName ??
+                                    "<dynamic>") + "." + value.GetMethod().Name))
+                };
+            }
+
+            private static void After(JObject __state)
+            {
+                Astral31DismissalKillTrace trace = active;
+                if (trace == null || __state == null) return;
+                __state["markedAfter"] = trace.target.Descriptor.State
+                    .MarkedForDeath;
+                __state["shouldDestroyAfter"] = trace.target.ShouldBeDestroyed;
+                __state["inStateAfter"] = trace.target.IsInState;
+                trace.Calls.Add(__state);
+            }
+
+            public void Dispose()
+            {
+                if (disposed) return;
+                disposed = true;
+                if (ReferenceEquals(active, this)) active = null;
+                if (harmony == null || method == null)
+                {
+                    Restored = true;
+                    return;
+                }
+                harmony.Unpatch(method, Harmony12.HarmonyPatchType.All, id);
+                var info = harmony.GetPatchInfo(method);
+                Restored = info == null || (!info.Prefixes.Any(value =>
+                        value.owner == id) && !info.Postfixes.Any(value =>
+                        value.owner == id));
+                if (!Restored) throw new InvalidOperationException(
+                    "Astral native Dismissal kill trace remains installed.");
+            }
         }
 
         private sealed class Astral31DispelEvents :
