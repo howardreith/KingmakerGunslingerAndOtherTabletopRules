@@ -14,6 +14,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
@@ -39,6 +40,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
             var targetBuffBaseline = target.Buffs.Enumerable.ToArray();
             var items = new List<ItemEntity>();
+            int sharedCl = AbilityParams.Empty.CasterLevel;
+            int sharedSpellLevel = AbilityParams.Empty.SpellLevel;
+            int sharedDc = AbilityParams.Empty.DC;
             bool stunImmunity = false, undead = false;
             bool observerSubscribed = false, cleanupRecorded = false;
             var stunnedBlueprint = ExpandedSummoningBlueprints.Registered.BySymbol[
@@ -108,6 +112,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int rolledRounds = observer.DurationRolls.Count == 1 ?
                     observer.DurationRolls[0].Result.Value : -1;
                 bool targetCanActDuringStun = target.Descriptor.State.CanAct;
+                AbilityParams stunParameters = stun?.Context?.Params;
+                bool stunParametersOwned = stunParameters != null &&
+                    !ReferenceEquals(stunParameters, AbilityParams.Empty) &&
+                    stunParameters.CasterLevel == 0 && stunParameters.SpellLevel == 0 &&
+                    stunParameters.DC == 25 && stun.Context.ParentContext == null &&
+                    AbilityParams.Empty.CasterLevel == sharedCl &&
+                    AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                    AbilityParams.Empty.DC == sharedDc;
                 bool hammerExact = hammer != null &&
                     hammer.Blueprint.AssetGuid ==
                         ExpandedSummoningBlueprints.Registered.BySymbol[
@@ -139,8 +151,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.Applications[0].Duration.HasValue &&
                     Math.Abs(observer.Applications[0].Duration.Value.TotalSeconds -
                         rolledRounds * 6d) <= .001d &&
-                    stun != null && target.Descriptor.State.HasCondition(
-                        UnitCondition.Stunned) &&
+                    stun != null && stunParametersOwned &&
+                    target.Descriptor.State.HasCondition(UnitCondition.Stunned) &&
                     targetCanActBeforeStun && !targetCanActDuringStun &&
                     ReferenceEquals(stun.Context?.MaybeCaster, owner) &&
                     stun.TimeLeft.TotalSeconds > 0d &&
@@ -172,6 +184,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["victimCanActBeforeStun"] = targetCanActBeforeStun,
                         ["victimCanActDuringStun"] = targetCanActDuringStun,
                         ["stunSource"] = stun?.Context?.MaybeCaster?.UniqueId,
+                        ["stunParametersOwned"] = stunParametersOwned,
+                        ["stunCl"] = stunParameters?.CasterLevel,
+                        ["stunSpellLevel"] = stunParameters?.SpellLevel,
+                        ["stunDc"] = stunParameters?.DC,
+                        ["sharedEmptyBefore"] = new JArray(sharedCl, sharedSpellLevel, sharedDc),
+                        ["sharedEmptyAfter"] = new JArray(AbilityParams.Empty.CasterLevel,
+                            AbilityParams.Empty.SpellLevel, AbilityParams.Empty.DC),
                         ["stunSecondsLeft"] = stun?.TimeLeft.TotalSeconds,
                         ["powerAttack"] = Sprint22PowerAttackState(owner,
                             owner.Descriptor.ActivatableAbilities.Enumerable.Single(
@@ -294,6 +313,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.DurationRolls[0].Result.Value : -1;
                 Buff immunityBuff = target.Buffs.Enumerable.SingleOrDefault(
                     value => ReferenceEquals(value.Blueprint, stunnedBlueprint));
+                AbilityParams immunityParameters = immunityBuff?.Context?.Params;
                 bool immunityConditionPresent = target.Descriptor.State
                     .HasCondition(UnitCondition.Stunned);
                 bool targetCanActWithImmunity = target.Descriptor.State.CanAct;
@@ -314,7 +334,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !target.Buffs.Enumerable.Any(value => ReferenceEquals(
                         value.Blueprint, stunnedBlueprint)) &&
                     target.Descriptor.State.CanAct == targetCanActBeforeStun;
-                bool immunityExact = immunityCommand != null &&
+                bool immunityParametersOwned = immunityParameters != null &&
+                    !ReferenceEquals(immunityParameters, AbilityParams.Empty) &&
+                    !ReferenceEquals(immunityParameters, stunParameters) &&
+                    immunityParameters.DC == 26 && stunParameters.DC == 25 &&
+                    AbilityParams.Empty.CasterLevel == sharedCl &&
+                    AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                    AbilityParams.Empty.DC == sharedDc;
+                bool immunityExact = immunityParametersOwned && immunityCommand != null &&
                     immunityCommand.IsFinished &&
                     immunityCommand.Result == UnitCommand.ResultType.Success &&
                     observer.Attacks.Count == 3 &&
@@ -359,6 +386,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             targetCanActWithImmunity,
                         ["immunityApplicationExact"] =
                             immunityApplicationExact,
+                        ["immunityParametersIndependent"] = immunityParametersOwned,
+                        ["firstStunDcStill25"] = stunParameters.DC,
+                        ["immunityStunDc"] = immunityParameters?.DC,
+                        ["sharedEmptyUnchanged"] = AbilityParams.Empty.CasterLevel == sharedCl &&
+                            AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                            AbilityParams.Empty.DC == sharedDc,
                         ["ownedResetExact"] = immunityReset,
                         ["trackerHits"] = immunityTracker?.HitCount(
                             target.UniqueId),
