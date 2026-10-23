@@ -3667,7 +3667,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
             UnitEntityData owner, UnitEntityData targetUnit, float distance,
             out Vector3 target, out string survey, out string direction,
-            float targetAllyExclusionRadius = 0f)
+            float targetAllyExclusionRadius = 0f,
+            IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3689,6 +3690,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
+            UnitEntityData[] exclusionExceptions =
+                (targetAllyExclusionExceptions ?? Enumerable.Empty<UnitEntityData>())
+                    .Where(value => value != null).ToArray();
             Vector3 selectedOrigin = Vector3.zero;
             Vector3 selectedTarget = Vector3.zero;
             float selectedPartyGap = -1f;
@@ -3751,6 +3755,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value != null && !value.Destroyed &&
                                 !ReferenceEquals(value, owner) &&
                                 !ReferenceEquals(value, targetUnit) &&
+                                !exclusionExceptions.Any(exempt =>
+                                    ReferenceEquals(value, exempt)) &&
                                 !owner.IsEnemy(value) &&
                                 Vector3.Distance(value.Position,
                                     targetPoint.clampedPosition) <=
