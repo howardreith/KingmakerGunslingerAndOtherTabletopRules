@@ -36,7 +36,10 @@ namespace KingmakerGunslinger.Summoning
         { return BaseRacialHitPoints + HitDice * Modifier(Constitution) + HitDice; }
 
         internal static int StunDifficultyClass()
-        { return 10 + HitDice / 2 + Modifier(Strength); }
+        { return StunDifficultyClass(Modifier(Strength)); }
+
+        internal static int StunDifficultyClass(int liveStrengthModifier)
+        { return 10 + HitDice / 2 + liveStrengthModifier; }
 
         internal static int WarhammerAttackBonus()
         { return HitDice + Modifier(Strength) + 2 + 1; }
