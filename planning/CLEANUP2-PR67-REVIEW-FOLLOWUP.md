@@ -9,7 +9,75 @@ aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Final completion qualification results (review47, October 23)
+### Owner art approval and Pro review fix (October 23)
+
+The owner approved the artwork ("The artwork looks great") and authorized the
+release once the Pro review's checks are clear. Pro held the checkpoint for one
+P2 defect: when the game hid a scaled giant, the visibility postfix validated
+ownership before recording the fader's write. A refusal raised by an unrelated
+hierarchy or cache change then cleaned up with the previous ("visible") state,
+re-enabling the displaced cape and static weapon while the body stayed hidden.
+
+**Fix (`c3e59bdd5a`).** The postfix now records the native write first. The
+installed `EntityFader.SetRendererVisibility` (06001756) sets
+`enabled = visible` on every live entry of `view.Renderers`, so the recorded
+state is the fader's write for each captured original in that list.
+Validation runs afterwards, and the foreign-cache and identity checks are
+unchanged. Cleanup treats an original already at its recorded native state as
+restored (a refused show no longer logs a spurious foreign-state issue).
+
+**Tests:**
+- **Domain:** `expanded-summoning.cleanup2-giant-visibility-refusal` covers the
+  recorder.
+- **Native regression (`bc28fdd1c0`):** in giant-lineup, add one unrelated
+  non-rendering child under the extra Frost's native view, then invoke the
+  native hide before the next update. Every original cached renderer must stay
+  disabled, source state must restore without issues, and the child must be
+  untouched.
+
+| Candidate | Scenario | Result | Duration | Raw id |
+| --- | --- | --- | --- | --- |
+| review48 `bc28fdd1c0` (regression, no fix) | giant-lineup | **FAIL 76/1**: only `production-native-hide-refusal-sm-frost-giant`. `Frozen_body` stays disabled while `Frozen_cape1` and `frost_giant_weapon` are re-enabled; `sourceStateRestored false` | 261.7s | `20261023T1739131145239Z` |
+| review49 `c3e59bdd5a` (fix) | giant-lineup | **PASS 77/0**, including the regression | 256.2s | `20261023T1744082179378Z` |
+| review49 | giants-off | **PASS 11/0** | 167.7s | `20261023T1748357309763Z` |
+| review49 | cold Working-save trio | **PASS**: prepare 22/0, verify-cleanup 21/0, verify-absent 6/0; transaction `cleanup2-cold-20261023T191927Z-153c30f0a09c` Restored, verified 19:26:40.20 UTC | 449.0s | `20261023T1920475878778Z`, `T1923047435890Z`, `T1925153796997Z` |
+| review49 | menu-adapters with alternate sources | **FAIL 136/3**: Occultist now passes through exact own-popup adoption, and Naturalist passes. Feral Hunter's foreign hover is the native Demoralize slot (`7d2233c3…`), which is correctly refused | 259.9s | `20261023T1751326855769Z` |
+| review49 | menu-adapters, pointer parked by the owner | **FAIL 100/2**: at Master Summoner the native action bar rose 60 units mid-hover (source y −290 → −230), so the popup-surface proof correctly refused | 247.0s | `20261023T1903164425173Z` |
+
+Identities:
+- **review48:** package `d2a02e69d3f41f6bfa77b21d1388eb60c40ca00c0539efa8f87c0da3a00926ed`,
+  DLL `b91cee892916028ce2c8822de46b9187f9a39ee7f0b805e550fd1a844bb83e34`,
+  MVID `9577cd08-8ed6-495c-b20b-450355525ee1`.
+- **review49:** package `3392aa09c60ab6c72cb76d0aba4108665414f74ea0f3a9e34829c37ab402e786`,
+  DLL `0c1343742fa04355512c1a13390f967f1df9daa6b18efc6ccdb58086103788f2`,
+  MVID `c4492c5a-0a52-4ee1-bd83-b1b66aabb24e`.
+- **Builds:** 184.8 s and 175.6 s. Selected cases 23/0 and 24/0. Installed
+  targets 37/37 on both.
+
+Windows:
+- 27: 17:37:51–17:42:14
+- 28: 17:42:45–17:54:24
+- 29: 19:01:46–19:05:53
+- 30: 19:19:15–19:26:44 UTC
+
+Every transaction restored exactly, with 95 pre-existing saves. A first cold
+launch at 17:55 stopped in 0.34 s before any transaction because PowerShell 7
+had passed its module path to Windows PowerShell (`Get-FileHash` missing). No
+lock, install or save state was created.
+
+**menu-adapters disposition.** The stationary RDP pointer lands on a different
+element for each archetype's popup and ability-bar layout. The action bar's
+native position also depends on where the pointer rests:
+- pointer over the HUD: abilities at y −230, spells at −281.5;
+- pointer away: abilities at −290, spells at −341.5.
+
+In review43's full 154/0 pass the bar stayed lowered and steady. The owner
+chose not to rerun again. Occultist and Naturalist PC hovers now pass
+natively on the fixed bytes. Feral Hunter and Preservationist PC hovers keep
+their review43 pass. No production menu code changed after review43. Pro found
+no production-menu defect.
+
+
 
 Window **14:32:31-15:49:20 UTC (76m49s)**, inside the declared 90-minute ceiling.
 About 23 minutes of it were idle. My completion waiter searched a UTF-16 log for
