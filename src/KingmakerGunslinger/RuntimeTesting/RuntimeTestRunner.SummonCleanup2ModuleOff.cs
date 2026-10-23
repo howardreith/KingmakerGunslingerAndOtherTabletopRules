@@ -649,9 +649,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             var preparation = RawSlots(book, 2).Single(value => ReferenceEquals(value.Spell, parent) && value.Type == SpellSlotType.Common);
             var settings = fixture.Caster.UISettings; var slots = settings.Slots; var baseline = new TeleportationUiSettingsFixture(settings);
             var indexField = typeof(ActionBarIndexSlot).GetField("m_Index", Cleanup2Fields);
-            var destination = ActionBarManager.Instance.GetComponentsInChildren<ActionBarIndexSlot>(true).First(value => value.gameObject.activeInHierarchy &&
+            var visible = ActionBarManager.Instance.GetComponentsInChildren<ActionBarIndexSlot>(true).Where(value => value.gameObject.activeInHierarchy &&
                 ReferenceEquals(Cleanup2MenuAdapterSelected(value), fixture.Caster) && (int)indexField.GetValue(value) >= 0 &&
-                (int)indexField.GetValue(value) < slots.Length && slots[(int)indexField.GetValue(value)] is MechanicActionBarSlotEmpty);
+                (int)indexField.GetValue(value) < slots.Length).ToArray();
+            // Native46 OFF: the native first-selection auto-fill of this
+            // disposable caster's many preparations leaves no empty visible
+            // slot. Fall back to its own book's auto-filled preparation; the
+            // exact previous slot is restored below and the baseline compared.
+            var destination = visible.FirstOrDefault(value => slots[(int)indexField.GetValue(value)] is MechanicActionBarSlotEmpty);
+            bool replacedOwnedAutoFill = destination == null;
+            if (destination == null)
+                destination = visible.LastOrDefault(value => {
+                    var data = slots[(int)indexField.GetValue(value)]?.GetContentData() as AbilityData;
+                    return data != null && ReferenceEquals(data.Spellbook, book) && ReferenceEquals(data.Caster, fixture.Caster.Descriptor) &&
+                        !ReferenceEquals(slots[(int)indexField.GetValue(value)], mechanism);
+                });
+            if (destination == null) throw new InvalidOperationException("No native visible slot owned by the disposable OFF caster.");
             int index = (int)indexField.GetValue(destination); var previous = slots[index]; bool requested = false;
             try
             {
@@ -661,7 +674,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(destination.MechanicSlot, mechanism) && ReferenceEquals(mechanism.GetContentData(), child) &&
                     ReferenceEquals(child.ConvertedFrom, parent) && ElementalSourceChooserRuntime.Session(spellGroup) == null;
                 Cleanup2Check("elementals-off-original-small-fire-pin", exact, new JObject {
-                    ["index"] = index, ["originalChild"] = child.Blueprint.AssetGuid, ["originalParent"] = parent.Blueprint.AssetGuid,
+                    ["index"] = index, ["replacedOwnedAutoFilledSlot"] = replacedOwnedAutoFill,
+                    ["originalChild"] = child.Blueprint.AssetGuid, ["originalParent"] = parent.Blueprint.AssetGuid,
                     ["sameNativeMechanismAfterTabRebuild"] = exact, ["noSaveWrite"] = true, ["coldHydration"] = false },
                     "The original native Small Fire mechanism pins through the rendered native index slot and retains the same child/source after tab reconstruction.");
                 if (!exact) throw new InvalidOperationException("OFF original child pin identity changed.");
