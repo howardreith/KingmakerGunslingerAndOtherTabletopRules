@@ -456,7 +456,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!ReferenceEquals(game.UI.LevelUpController,ownedGlobal))throw new InvalidOperationException("Console global backend changed during native close; original field is not overwritten.");
                 game.UI.LevelUpController=originalGlobal;backend=null;owned=null;
                 for(int frame=0;frame<10;frame++)yield return 0;
-                JObject restoredLevelUpReceipt;bool restoredLevelUp=levelUpIntake.Current(out restoredLevelUpReceipt);
+                // The native preview producer may still finish the owned backend's
+                // last queued preview; poll its non-blocking reads, never stop it.
+                JObject restoredLevelUpReceipt;bool restoredLevelUp;
+                var producerWatch=System.Diagnostics.Stopwatch.StartNew();int producerFrames=0;
+                while(!(restoredLevelUp=levelUpIntake.Current(out restoredLevelUpReceipt)) && producerFrames<600 && producerWatch.Elapsed.TotalSeconds<8)
+                {producerFrames++;yield return 0;}
+                restoredLevelUpReceipt["producerSettleFrames"]=producerFrames;restoredLevelUpReceipt["producerSettleSeconds"]=producerWatch.Elapsed.TotalSeconds;
                 bool cancelled=successes==0 && unit.Descriptor.Progression.GetClassLevel(wizard)==2 && !book.IsKnown(legacy) &&
                     book.GetAllKnownSpells().SequenceEqual(originalKnown) && GamePad.Instance.Layers.SequenceEqual(layers) &&
                     ReferenceEquals(game.UI.LevelUpController,originalGlobal) && restoredLevelUp;
