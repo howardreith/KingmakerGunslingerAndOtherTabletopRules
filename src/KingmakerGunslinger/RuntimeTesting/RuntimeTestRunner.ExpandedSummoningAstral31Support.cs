@@ -504,6 +504,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 Sprint28SetBrainActivePreservingActions(sibling, false);
                 owner.Commands.InterruptAll(true); sibling.Commands.InterruptAll(true);
+                owner.Commands.RemoveFinishedAndUpdateQueue();
+                sibling.Commands.RemoveFinishedAndUpdateQueue();
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner, sibling });
                 string hostileReset = ResetExpandedSummoningHostile(fixture);
