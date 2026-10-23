@@ -1,6 +1,35 @@
 # Cleanup 2 Ettin cold reconstruction
 
-## Completion implementation, October 22, 2026 (current)
+## Native execution, October 23, 2026 (current)
+
+The authorized Working-save trio below has run natively, and it **passes on the
+final frozen candidate review47** (source
+`2820b2ba3fb005bdc34389ebf5fc43c2a5800094`):
+
+- Transaction `cleanup2-cold-20261023T143304Z-69a9fc47b055` is **Restored**, with
+  `restorationVerified` at 14:39:40.92 UTC. Total time was 410.5s.
+- Phase results: prepare **22/0** (raw `20261023T1434147627205Z`), verify-cleanup
+  **21/0** (`20261023T1436180288315Z`), verify-absent **6/0**
+  (`20261023T1438211832578Z`).
+- The Ettin authored two-head body and the Cloud/Storm production render owners
+  are rebuilt in fresh processes from the reloaded Working save. All captured
+  resources are private to the view and released.
+
+Earlier executions keep their identities:
+- **Review39** (`cleanup2-cold-20261023T110658Z-eceec86534a0`): FAILED_RESTORED.
+  It exposed a leaked giant palette albedo, a product defect since fixed by
+  `GiantSummonPaletteJanitor`.
+- **Review40** (`cleanup2-cold-20261023T113805Z-750af1237b2d`): PASS 22/0,
+  21/0, 6/0.
+
+Every transaction restored the Working save, settings and installation exactly,
+with no recovery debt. The private backup and ownership record remain in each
+transaction directory, as designed.
+
+The text below records the implementation as qualified before native execution.
+Its "unexecuted" statements are historical.
+
+## Completion implementation, October 22, 2026
 
 The completion handoff authorizes the exact Working-save trio below. The new
 `Invoke-SummonCleanup2ColdCurrentStack.ps1` owns one transaction across all three
