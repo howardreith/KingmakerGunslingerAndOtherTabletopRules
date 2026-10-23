@@ -385,7 +385,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The OFF helper preserves all six original Wizard source rows and exact reference order without spending the native selection allocation.");
                 foreach (var target in targets) PrepareExpandedSummoningPlayerPathSpell(book, target.Item1, target.Item1, target.Item2);
                 book.Rest();
-                var bookSnapshot = new Cleanup2ElementalBookSnapshot(book); var fixturePins = new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
+                var bookSnapshot = new Cleanup2ElementalBookSnapshot(book);
                 if (!party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
                 mode = Cleanup2EnterNativeDefault(fixture, "elementals-off"); screens = new NativeIconScreenEvidence(_request);
@@ -394,6 +394,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // browsing/cancel remains free without altering that stack.
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
+                // Native44: the first native selection of a newly added party
+                // member auto-fills its hotbar; snapshot pins after that settles
+                // (as the ON adapter does) so browsing/cancel alone is compared.
+                var fixturePins = new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
                 var spellGroup = groups.Single(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.Spell);
                 if (!spellGroup.ToggleState) spellGroup.OnClick();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
