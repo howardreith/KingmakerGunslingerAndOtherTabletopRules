@@ -88,6 +88,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     origin + Vector3.back * 12f);
                 target.Descriptor.Stats.HitPoints.BaseValue = 100000;
                 target.Descriptor.Stats.AC.BaseValue = -100;
+                bool targetCanActBeforeStun = target.Descriptor.State.CanAct;
+                if (!targetCanActBeforeStun)
+                    throw new InvalidOperationException(
+                        "Astral Stunned target was not actable before the attack.");
 
                 ItemEntityWeapon hammer = owner.Body.PrimaryHand.MaybeWeapon;
                 ItemEntityWeapon siblingHammer = sibling.Body.PrimaryHand.MaybeWeapon;
@@ -103,6 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(value.Blueprint, stunnedBlueprint));
                 int rolledRounds = observer.DurationRolls.Count == 1 ?
                     observer.DurationRolls[0].Result.Value : -1;
+                bool targetCanActDuringStun = target.Descriptor.State.CanAct;
                 bool hammerExact = hammer != null &&
                     hammer.Blueprint.AssetGuid ==
                         ExpandedSummoningBlueprints.Registered.BySymbol[
@@ -136,6 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         rolledRounds * 6d) <= .001d &&
                     stun != null && target.Descriptor.State.HasCondition(
                         UnitCondition.Stunned) &&
+                    targetCanActBeforeStun && !targetCanActDuringStun &&
                     ReferenceEquals(stun.Context?.MaybeCaster, owner) &&
                     stun.TimeLeft.TotalSeconds > 0d &&
                     stun.TimeLeft.TotalSeconds <= rolledRounds * 6d + .001d &&
@@ -163,6 +169,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             target.UniqueId),
                         ["stunCondition"] = target.Descriptor.State.HasCondition(
                             UnitCondition.Stunned),
+                        ["victimCanActBeforeStun"] = targetCanActBeforeStun,
+                        ["victimCanActDuringStun"] = targetCanActDuringStun,
                         ["stunSource"] = stun?.Context?.MaybeCaster?.UniqueId,
                         ["stunSecondsLeft"] = stun?.TimeLeft.TotalSeconds,
                         ["powerAttack"] = Sprint22PowerAttackState(owner,
@@ -191,13 +199,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DateTime expiryDeadline = DateTime.UtcNow.AddSeconds(45);
                 while (DateTime.UtcNow < expiryDeadline && expiryFrames++ < 3600 &&
                     (target.Buffs.Enumerable.Contains(stun) ||
-                        target.Descriptor.State.HasCondition(UnitCondition.Stunned)))
+                        target.Descriptor.State.HasCondition(UnitCondition.Stunned) ||
+                        target.Descriptor.State.CanAct != targetCanActBeforeStun))
                     yield return 0;
                 double expiryElapsed = Game.Instance.TimeController.GameTime.TotalSeconds -
                     expiryStart;
+                bool targetCanActAfterExpiry = target.Descriptor.State.CanAct;
+                bool actionStateRestored = targetCanActAfterExpiry ==
+                    targetCanActBeforeStun;
                 bool expired = !target.Buffs.Enumerable.Contains(stun) &&
                     !target.Descriptor.State.HasCondition(UnitCondition.Stunned) &&
-                    target.Descriptor.State.CanAct;
+                    actionStateRestored;
                 Sprint25Check("astral-hammer-source-loss-and-expiry",
                     survivedSource && expired, new JObject {
                         ["sourceAbsent"] = !owner.IsInState,
@@ -209,7 +221,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["effectGone"] = !target.Buffs.Enumerable.Contains(stun),
                         ["conditionGone"] = !target.Descriptor.State.HasCondition(
                             UnitCondition.Stunned),
-                        ["victimCanAct"] = target.Descriptor.State.CanAct },
+                        ["victimCanActBeforeStun"] = targetCanActBeforeStun,
+                        ["victimCanActDuringStun"] = targetCanActDuringStun,
+                        ["victimCanActAfterExpiry"] = targetCanActAfterExpiry,
+                        ["actionStateRestored"] = actionStateRestored },
                     "The finite victim effect survives its summoner's removal, expires on its own native clock, and returns the victim's action state.");
                 if (!survivedSource || !expired)
                     throw new InvalidOperationException(
