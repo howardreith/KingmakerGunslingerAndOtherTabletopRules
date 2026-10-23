@@ -721,6 +721,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally { Cleanup2ScaleFinishAnimation(ref animation); }
             }
+            foreach (int frame in Cleanup2ProductionHideRefusal(extraFrost, "sm-frost-giant")) yield return frame;
             DisposeExpandedSummoningUnits(fixture.Created, new[] { extraFrost });
             // Finish only the handles this observer created, then allow native
             // idle/recovery and deferred extra-view teardown before the final
@@ -738,6 +739,77 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["extraCanonicalFrostDisposed"] = extraFrost.Destroyed, ["poseScreenshotClaimed"] = false },
                 "Every observer-created native pose handle finishes and leaves the current action, and the extra fixture Frost is disposed before the six-family standing image.");
             if (!recoveryExact) throw new InvalidOperationException("Native production pose recovery is unverified; no standing image is recorded.");
+        }
+
+        // Pro review of 425efc03b6: an ownership refusal raised inside the
+        // native hide callback must not reverse that hide. One unrelated,
+        // non-rendering child under the extra Frost's native view makes the
+        // owner's hierarchy validation refuse at the very next native write.
+        // The extra Frost is disposed next, before the standing lineup image.
+        private IEnumerable<int> Cleanup2ProductionHideRefusal(UnitEntityData actor, string key)
+        {
+            UnitEntityView view = actor == null ? null : actor.View;
+            var owner = GiantSummonPresentationPatch.ProductionOwner(view);
+            JObject before = GiantSummonPresentationPatch.ObserveProductionOwnership(view);
+            var fader = view == null ? null : view.GetComponent<EntityFader>();
+            MethodInfo nativeVisibility = typeof(EntityFader).GetMethod("SetRendererVisibility",
+                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
+            if (owner == null || owner.IsDisposed || (bool?)before["currentOwnershipExact"] != true || fader == null ||
+                nativeVisibility == null || nativeVisibility.ReturnType != typeof(void) || view.Renderers == null)
+                throw new InvalidOperationException("Exact live production owner and native visibility writer are required for the hide-refusal regression.");
+            var ownedIds = new HashSet<int>(((JArray)before["registeredOwnedRenderers"] ?? new JArray()).Values<int>());
+            Renderer[] originals = view.Renderers.Where(renderer => renderer != null && !ownedIds.Contains(renderer.GetInstanceID())).ToArray();
+            Renderer[] owned = view.Renderers.Where(renderer => renderer != null && ownedIds.Contains(renderer.GetInstanceID())).ToArray();
+            // While the giant is visible, the originals the owner displaced
+            // (cape Cloth and static weapon sources) are the disabled ones.
+            int[] displaced = originals.Where(renderer => !renderer.enabled).Select(renderer => renderer.GetInstanceID()).ToArray();
+            GameObject child = null; bool hidden = false;
+            JObject refused = null, childState = null;
+            bool[] originalsEnabled = null, ownedEnabled = null;
+            try
+            {
+                child = new GameObject("KMG_C2_UnrelatedNonRenderingChild");
+                child.transform.SetParent(view.transform, false);
+                Vector3 position = child.transform.localPosition, scale = child.transform.localScale;
+                Quaternion rotation = child.transform.localRotation;
+                // No yield: the native hide runs before the owner's next update.
+                nativeVisibility.Invoke(fader, new object[] { false }); hidden = true;
+                originalsEnabled = originals.Select(renderer => renderer != null && renderer.enabled).ToArray();
+                ownedEnabled = owned.Select(renderer => renderer != null && renderer.enabled && renderer.gameObject.activeInHierarchy).ToArray();
+                refused = owner.Describe();
+                childState = new JObject { ["present"] = child != null,
+                    ["parentIsNativeView"] = child != null && child.transform.parent == view.transform,
+                    ["activeSelf"] = child != null && child.activeSelf,
+                    ["localPoseUnchanged"] = child != null && child.transform.localPosition == position &&
+                        child.transform.localRotation == rotation && child.transform.localScale == scale,
+                    ["componentCount"] = child == null ? 0 : child.GetComponents<Component>().Length };
+            }
+            finally
+            {
+                if (hidden) nativeVisibility.Invoke(fader, new object[] { true });
+                if (child != null) UnityEngine.Object.Destroy(child);
+            }
+            for (int frame = 0; frame < 3; frame++) yield return 0;
+            JObject released = owner.Describe();
+            bool refusedInsideHide = owner.IsDisposed && (owner.Status ?? "").StartsWith("REFUSED:native-visibility:", StringComparison.Ordinal);
+            bool originalsHidden = originalsEnabled.Length > 0 && originalsEnabled.All(value => !value);
+            bool ownedHidden = ownedEnabled.All(value => !value);
+            bool restored = (bool?)refused["sourceStateRestored"] == true && ((JArray)refused["restoreIssues"])?.Count == 0;
+            bool childExact = (bool)childState["present"] && (bool)childState["parentIsNativeView"] && (bool)childState["activeSelf"] &&
+                (bool)childState["localPoseUnchanged"] && (int)childState["componentCount"] == 1;
+            bool nativeShowRestored = originals.All(renderer => renderer != null && renderer.enabled);
+            bool pass = refusedInsideHide && displaced.Length > 0 && originalsHidden && ownedHidden && restored && childExact && nativeShowRestored;
+            Cleanup2Check("production-native-hide-refusal-" + key, pass, new JObject { ["key"] = key, ["unit"] = actor.UniqueId,
+                ["ownerStatus"] = owner.Status, ["refusedInsideNativeHide"] = refusedInsideHide,
+                ["originalCachedRenderers"] = originals.Length, ["displacedOriginalsBeforeHide"] = new JArray(displaced),
+                ["originalsEnabledAfterRefusedHide"] = new JArray(originals.Select((renderer, index) => new JObject {
+                    ["renderer"] = renderer == null ? 0 : renderer.GetInstanceID(), ["object"] = renderer == null ? null : renderer.name,
+                    ["displaced"] = renderer != null && displaced.Contains(renderer.GetInstanceID()), ["enabled"] = originalsEnabled[index] })),
+                ["ownedRenderersHidden"] = ownedHidden, ["refusalReceipt"] = refused, ["unrelatedChild"] = childState,
+                ["originalsVisibleAfterNativeShow"] = nativeShowRestored, ["releaseAfterNativeShow"] = released,
+                ["productionOutcome"] = GiantSummonPresentationPatch.Describe(view),
+                ["scope"] = "Exact native EntityFader.SetRendererVisibility(false) before the next update, with an unrelated observer-owned non-rendering child; the child is destroyed afterwards and the extra Frost is disposed." },
+                "A refusal inside the native hide leaves every original cached renderer disabled, restores exact source state without issues and leaves the unrelated child untouched.");
         }
 
         private IEnumerable<int> Cleanup2ReleaseProductionScale(UnitEntityData[] actors, string[] keys)

@@ -403,10 +403,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             finally { try { iterator.Dispose(); } catch (Exception error) { failure = failure == null ? error : new AggregateException(failure, error); } }
-            var watch = Stopwatch.StartNew(); JObject state;
+            var watch = Stopwatch.StartNew(); JObject state; var incidental = new JArray();
             for (int frame = 0; frame < 600 && watch.Elapsed.TotalSeconds < 8; frame++)
-            { state = Cleanup2TooltipClosedState(close); if ((bool)state["closed"] || (bool)state["foreignOwner"]) break; yield return 0; }
+            {
+                state = Cleanup2TooltipClosedState(close);
+                if ((bool)state["closed"]) break;
+                if ((bool)state["foreignOwner"])
+                {
+                    // Closing the owned tooltip can hand a stationary pointer
+                    // back to a row of this same popup. Only that exact own
+                    // row may be released; anything else stays foreign.
+                    if (failure != null || !close.CloseRequested || incidental.Count >= 3) break;
+                    JObject receipt = Cleanup2ReleaseOwnPopupIncidentalHover(row, route.Label, "after-owned-close", false);
+                    incidental.Add(receipt);
+                    if (!(bool)receipt["released"]) break;
+                }
+                yield return 0;
+            }
             state = Cleanup2TooltipClosedState(close); state["originalFailure"] = failure?.ToString();
+            state["incidentalOwnPopupHoversReleasedAfterClose"] = incidental;
             Cleanup2Check("alternate-native-hover-close-" + route.Family.Key, (bool)state["closed"], state,
                 "The exact owned native tooltip settles its real delay/fade state without hiding or rewriting a foreign context.");
             if (!(bool)state["closed"]) throw new InvalidOperationException("Alternate native hover closure failed: " + state, failure);
@@ -419,6 +434,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var ability = row.MechanicSlot.GetContentData() as AbilityData;
             var trigger = row.GetComponentsInChildren<TooltipTrigger>(true).SingleOrDefault(value =>
                 value.gameObject.activeInHierarchy && ReferenceEquals(value.GetComponentInParent<ActionBarSlot>(), row));
+            if (Game.Instance.UI.TooltipsController.ContextTooltipData != null)
+                Cleanup2ReleaseOwnPopupIncidentalHover(row, label, "before-owned-hover", true);
             if (trigger == null || trigger.Disable || !trigger.isActiveAndEnabled || Game.Instance.UI.TooltipsController.ContextTooltipData != null)
                 throw new InvalidOperationException("Exact native alternate hover trigger is unavailable or foreign.");
             TooltipData data = null;
@@ -449,6 +466,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                     trigger.ShowTooltipManual(false); close.CloseRequested = true;
                 }
             }
+        }
+
+        // Native47 PC: a stationary pointer over another row of this same
+        // alternate popup raises OnPointerEnter06003246 -> ShowTooltip0600324B
+        // (true) around the owned hover. Adopt it only when exactly one live
+        // standard trigger of this popup owns the context through its own Data
+        // and its row is a converted child of this route's exact source object
+        // for the same caster/book. Release it through that trigger's own
+        // ShowTooltipManual(false) -> StandartHide0600324C, which leaves it
+        // inactive, so a later native pointer exit is a no-op. Any other
+        // context stays foreign; nothing else is hidden.
+        private JObject Cleanup2ReleaseOwnPopupIncidentalHover(ActionBarSlot target, string label, string stage, bool required)
+        {
+            var tips = Game.Instance?.UI?.TooltipsController;
+            var context = tips?.ContextTooltipData;
+            var original = (target?.MechanicSlot?.GetContentData() as AbilityData)?.ConvertedFrom;
+            var popup = target == null ? null : target.GetComponentInParent<ActionBarSpellsGroup>();
+            var activeField = typeof(TooltipTrigger).GetField("IsActive", Cleanup2Fields);
+            var showField = typeof(TooltipTrigger).GetField("m_ShowTooltipAction", Cleanup2Fields);
+            var hideField = typeof(TooltipTrigger).GetField("m_HideTooltipAction", Cleanup2Fields);
+            var matches = context == null || original == null || popup == null || activeField == null || showField == null || hideField == null
+                ? new TooltipTrigger[0] : popup.GetComponentsInChildren<TooltipTrigger>(true).Where(trigger => {
+                    var row = trigger.GetComponentInParent<ActionBarSlot>();
+                    var ability = row?.MechanicSlot?.GetContentData() as AbilityData;
+                    return row != null && row.transform.IsChildOf(popup.transform) && trigger.gameObject.activeInHierarchy &&
+                        trigger.isActiveAndEnabled && (bool)activeField.GetValue(trigger) && ReferenceEquals(trigger.Data, context) &&
+                        ReferenceEquals(context.AbilityData, ability) && ReferenceEquals(ability?.ConvertedFrom, original) &&
+                        ReferenceEquals(ability?.Caster, original.Caster) && ReferenceEquals(ability?.Spellbook, original.Spellbook) &&
+                        showField.GetValue(trigger) == null && hideField.GetValue(trigger) == null;
+                }).ToArray();
+            var matchedRow = matches.Length == 1 ? matches[0].GetComponentInParent<ActionBarSlot>() : null;
+            var receipt = new JObject { ["stage"] = stage, ["contextPresent"] = context != null,
+                ["contextAbility"] = context?.AbilityData?.Blueprint.AssetGuid,
+                ["contextSource"] = context?.AbilityData?.ConvertedFrom?.Blueprint.AssetGuid,
+                ["routeSource"] = original?.Blueprint.AssetGuid, ["popupInstance"] = popup == null ? 0 : popup.GetInstanceID(),
+                ["exactOwnPopupTriggerMatches"] = matches.Length,
+                ["matchedRowInstance"] = matchedRow == null ? 0 : matchedRow.GetInstanceID(),
+                ["matchedRowIsTarget"] = matchedRow != null && ReferenceEquals(matchedRow, target) };
+            bool released = false;
+            if (matches.Length == 1 && ReferenceEquals(tips, Game.Instance.UI.TooltipsController))
+            {
+                matches[0].ShowTooltipManual(false);
+                released = tips.ContextTooltipData == null && !(bool)activeField.GetValue(matches[0]);
+            }
+            receipt["released"] = released;
+            Cleanup2Check("alternate-native-incidental-hover-" + label + "-" + stage, released, receipt,
+                "An incidental native hover is released only when one exact live trigger of this route's own popup and source object owns it; any other context stays foreign.");
+            if (required && !released) throw new InvalidOperationException("Foreign or unproved incidental hover; owned alternate hover refused: " + receipt);
+            return receipt;
         }
 
         // Called only in the fresh module-OFF process, with the fixed CotW
