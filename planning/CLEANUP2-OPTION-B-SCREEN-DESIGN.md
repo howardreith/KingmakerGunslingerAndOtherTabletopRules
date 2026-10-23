@@ -1,9 +1,56 @@
-# MENU-02 Option B: one PC casting screen
+# MENU-02 Option B: source-preserving presentation
 
-Design for owner review, 2026-10-22. **No implementation or rules change is
-approved by this document.** The current strict discovery filter preserves
-standalone entries. This proposal deliberately leaves learning, preparation,
-console UI, saved buttons and every spell definition unchanged.
+## CURRENT — implementation in progress, 2026-10-23
+
+Later owner direction selected Option B and authorized implementation across
+ordinary casting, discovery/learning, preparation, supported input modes and
+affected adapters. The original one-PC-screen proposal below is historical;
+its former proposal-only and one-screen limits are superseded. Original spell
+rules, stable identities, source-specific access and invocation objects remain
+preservation requirements. No canonical rules unification, global list removal,
+serialized source rewrite or old-save migration is authorized by this work.
+
+Production now includes the transient desktop source chooser, native controller
+selector grouping, and PC/controller learning/preparation disclosures. Mixed
+SM/SNA creature parents remain independently available. Learning and preparation
+group original rows/VMs while preserving the original native allocation and
+preparation callbacks; they do not substitute a canonical spell or erase a
+distinct source. Source-specific predicates retain special, item and unknown
+routes. Implementation and native qualification are separate statuses.
+
+### Current surface disposition
+
+| Surface | Implemented behavior | Native evidence / remaining work |
+| --- | --- | --- |
+| Desktop casting | Elementals rank/species chooser with an explicit original source and Cast; original child/book/preparation/metamagic retained. Stale context refuses. | Review 27 passed **21/0** with readable UI inspected by the integrator: 24 original source bindings, cancellation, standalone Small Fire cast/debit, separate exhausted standalone plus available SM source, and SM with/without the standalone preparation. This is fixture-prepared Wizard access, not natural learning. |
+| All ranks/elements and additional source contexts | `elementals-sources` implements 24 original casts, two books/exhaustion, actual Druid SNAII, native Extend editor, Favorite slot and original child pin. | Unrun. Source/debit/benefit coverage is not established by the 24-binding row. Native refill settlement and actual book-disclosure traversal were corrected before this phase's first run. |
+| PC learning and preparation | Native Elementals disclosure retains original candidates, learning budget, known objects and native preparation callbacks. | `elementals-learning` is implemented and unrun; pending allocation/cancel and preparation/undo require actual native screen proof. |
+| Controller casting, learning and preparation | Real scene-bound native selector/VM/view routes group sources and use native navigation, Use, Decline and book/creator callbacks. | `elementals-console` is implemented and unrun. Actual cast/debit, disclosure allocations/cancel, preparation/undo, native input layers and computed selection-cohort restoration remain unqualified. Exact installed constructor/patch contracts and source review do not prove runtime behavior. |
+| Conversion and alternate adapters | Original mixed-parent/quantity routes remain; native Druid conversion projection and focused seven-family PC/controller observers are implemented. | New `menu-adapters`/`alternate-console` coverage is unrun. Requires the fixed CotW profile for actual supported alternate grants; a gunslinger-only process cannot qualify absent CotW sources. Historical mechanical evidence retains its original source/DLL identity. |
+| Module OFF | Fresh OFF state retains native definitions, source menus and original pins; owned presentation guards bypass grouping. | New `elementals-off` native UI/cast/preparation phase is unrun. Existing world-free observations remain their own evidence; no live toggle or full OFF UI PASS is inferred. |
+| Known/prepared/pinned and special consumers | Original definitions, source objects and native access remain. Domain/Favorite/item/NPC/foreign routes are explicit compatibility exceptions, not fungible ordinary sources. | The PC27 pin-boundary check is not saved-pin hydration. New Favorite/pinned runtime cases are unrun; saved reload, domain/item/weapon/NPC and unknown consumer behavior are not newly qualified. |
+
+### Qualified desktop slice identity
+
+- Native run: `20261023T0049017020806Z-d8337630e63049bc965a1ebb59cfe542`.
+- Source commit: `a3706701502c05f8f52da42059ecd45cb5bb00b8` (frozen review 27).
+- Raw directory: `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261023T0049016760290Z-disposable-expanded-summoning-cleanup2-native-review`.
+- Result: **PASS, 21 PASS / 0 FAIL, 90.098 seconds**; result JSON SHA-256
+  `b1abff993355eb222ca48a0972912a89831821a9146217d57092d5bf9b0cf090`.
+
+The raw result includes exact native source/debit and fixture/UI/clock cleanup
+observations. Readable pixels support presentation only; they do not establish
+all source rules, natural learning, controller operation or save compatibility.
+Review 25's failed post-preparation session observation remains a separate FAIL;
+review 27 uses a changed observer that waits for the actual native queued refill
+and retains its fresh session before selecting the launcher level. Do not
+relabel earlier failures or transfer this slice to later changed bytes.
+
+## Historical one-PC-screen proposal, 2026-10-22
+
+The sections below retain the original interaction and engine-contract design.
+Their references to a first screen or later approval describe that proposal's
+scope at the time, not a current instruction to leave ordinary surfaces unfinished.
 
 ## Screen and player interaction
 
@@ -155,7 +202,7 @@ objects. A foreign replacement of the tab/rows invalidates the chooser; teardown
 does not repair or overwrite somebody else's UI. No stored adapter survives a
 save or requires a migration.
 
-## Small acceptance slice for a later approved implementation
+## Historical initial acceptance slice
 
 Use one disposable PC actor with real native preparations/known lists, followed
 by a separately authorized existing-save check. Test Small Fire with standalone

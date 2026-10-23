@@ -6,6 +6,52 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review27 completed vertical slice and remaining reproductions
+
+Frozen `a3706701502c05f8f52da42059ecd45cb5bb00b8`, package
+`a2f9f83a9f1e5dd799266f5cca9595b02880ced6f06b5c59fa5dbdf54531bb52`, DLL
+`81c3b851cba680b0a5a0df3210a9a3700b695480a8e37511c216bbda025aa8a1`, MVID
+`587b3de7-4154-4eaf-ab63-b5bdd9de58d1`. Compilation,17 focused cases and21
+installed Harmony targets pass. Guarded push and PR draft status verified.
+
+- Desktop `20261023T0049016760290Z`: **21 PASS/0**,90.098s. Root inspected the
+  readable two-source chooser. Actual standalone and SM Small Fire casting,
+  spawn, separate preparation debit, exhausted-source refusal, cancel and native
+  refill settlement pass.24 bindings are checked; this is not24 executed casts.
+  Other source contexts/controller/learning/adapter qualification remains open.
+- Scale `20261023T0044130254786Z`: **92 PASS/1 FAIL**,126.738s. Native palette
+  settlement, initialized private cape configuration and all six poses pass.
+  The separate authored contact-control grids were initialized while inactive;
+  their pinned particles cease proving a stable frame. The correction requires
+  exact active-solver coefficient readback before motion. Production copied
+  Cloth stays gated. The lineup remains blurred/partly obstructed; the next
+  owned capture widens the lens, lowers the angle and restores native depth of
+  field exactly after disabling it for the relocated camera.
+- Creature commands `20261023T0052157974263Z`: **14 PASS/2 FAIL**,74.191s.
+  Crab really approaches and executes one native attack/cost. Its legitimate
+  Constrict rider produces a second damage event, violating the observer's
+  one-damage assumption. Future checks distinguish exact primary damage and
+  positively attributed native Grapple/Constrict; old evidence stays FAIL.
+  Root inspected full-body contact: visible claw reach needs further diagnosis.
+  Brachiosaurus was not reached.
+- Ettin `20261023T0056029449549Z`: **6 PASS/1 FAIL**,67.476s. Native Default
+  disposal refuses before combat assertions and masks the original setup
+  boundary; raw evidence does not identify which ownership predicate changed.
+  The correction limits the native lease to commands after synchronous fixture
+  casting/placement, retains original setup exceptions and records each exact
+  refusal predicate. No guard is relaxed or ordinary RT/TB PASS claimed.
+
+All four games exited, compatibility transactions restored and verified exact
+installation/settings, and each fresh95-original-save inventory remained exact.
+Receipts: `compat-20261023T004345Z-7c38d88a8e6c`,
+`compat-20261023T004834Z-b7f6a991f576`,
+`compat-20261023T005151Z-91b79ac9f82c`,
+`compat-20261023T005540Z-a846928edf42`. Final save receipt
+**00:57:25.4194686UTC** closes window6 at20m43.419s from00:36:42UTC.
+Final90-minute qualification has not started. The local comparison contains71
+originals with identities/visible pixels verified, including the successful PC
+view and selected retained Griffon/Beetle/Elephant views. No owner approval.
+
 ### Review26 exact cause and restoration
 
 Frozen `4f07fd6f5fc741358be137aad960dbd4fe81d692`, package
