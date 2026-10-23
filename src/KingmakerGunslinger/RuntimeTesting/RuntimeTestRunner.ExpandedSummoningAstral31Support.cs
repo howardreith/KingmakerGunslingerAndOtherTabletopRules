@@ -257,7 +257,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         heldCommand.Result == UnitCommand.ResultType.Success &&
                         heldCommand.ExecutionProcess != null &&
                         heldCommand.ExecutionProcess.IsEnded &&
-                        economy.Count(heldCommand) == 0 &&
+                        economy.Count(heldCommand) == 1 &&
+                        economy.Unchanged(heldCommand) &&
                         owner.Get<UnitPartTouch>() == null &&
                         healed >= 6 && healed <= 13 &&
                         cureOwnerBefore == 7 && cureSiblingBefore == 7 &&
@@ -281,6 +282,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["heldReady"] = heldReady,
                             ["heldCostApplications"] = heldCommand == null ? 0 :
                                 economy.Count(heldCommand),
+                            ["heldCostUnchanged"] = heldCommand != null &&
+                                economy.Unchanged(heldCommand),
                             ["touchAfterDelivery"] = owner.Get<UnitPartTouch>() != null,
                             ["heldEvidence"] = new JArray(heldEvidence),
                             ["costs"] = cureCosts,
