@@ -14,8 +14,8 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RegisteredResourceIdentityCount = 3;
         internal const int RegisteredAiIdentityCount = 8;
         internal const int RegisteredBrainIdentityCount = 4;
-        internal const int RegisteredBuffIdentityCount = 7;
-        internal const int RegisteredFeatureIdentityCount = 7;
+        internal const int RegisteredBuffIdentityCount = 8;
+        internal const int RegisteredFeatureIdentityCount = 8;
         internal const int RegisteredWeaponIdentityCount = 9;
         internal const int RegisteredSpellbookIdentityCount = 1;
         internal const int RegisteredSpellListIdentityCount = 1;
@@ -86,6 +86,25 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");
+        }
+
+        internal static void AstralHammerStunTracksEachOpponentOncePerRound()
+        {
+            var tracker = new AstralDevaStunTracker();
+            Assertions.False(tracker.RecordHit(null), "A missing target cannot arm stun.");
+            Assertions.False(tracker.RecordHit("target-a"), "One hammer hit does not arm stun.");
+            Assertions.False(tracker.RecordHit("target-b"), "A hit on another opponent does not combine with the first.");
+            Assertions.True(tracker.RecordHit("target-a"), "The second same-opponent hit arms one save.");
+            Assertions.False(tracker.RecordHit("target-a"), "Later hits cannot repeat the save in that round.");
+            Assertions.True(tracker.RecordHit("target-b"), "A second opponent owns an independent two-hit gate.");
+            Assertions.Equal(2, tracker.HitCount("target-a"), "The attempted opponent remains capped at its decisive two hits.");
+            Assertions.True(tracker.WasAttempted("target-a") && tracker.WasAttempted("target-b"), "Both target-local attempts are recorded.");
+            tracker.Reset();
+            Assertions.Equal(0, tracker.HitCount("target-a"), "A native round boundary clears old hits.");
+            Assertions.False(tracker.RecordHit("target-a"), "The next round starts with a new first hit.");
+            Assertions.Equal(25, AstralDevaRulesPolicy.StunDifficultyClass(8), "Adult live Strength gives DC25.");
+            Assertions.Equal(26, AstralDevaRulesPolicy.StunDifficultyClass(9), "An odd live Strength increase raises the DC.");
+            Assertions.Equal(15, AstralDevaRulesPolicy.StunDifficultyClass(-2), "A live Strength penalty lowers the DC without a hidden floor.");
         }
 
         internal static void BootstrapCannotAdmitSaveOrUnsupportedPhases()

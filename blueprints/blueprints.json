@@ -58649,6 +58649,22 @@
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     },
     {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.StunFeature",
+      "guid": "08b0ac7f2395496eaf49c444f383400f",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 Astral warhammer two-hit stun carrier; exact private weapon, native Fortitude save and finite victim-owned Stunned condition require native qualification before the root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Stunned",
+      "guid": "f27d2ea4a6f7470b874d45b208c9cd83",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private clone of the native Stunned condition for one independently expiring Astral warhammer victim effect; native immunity and lifetime qualification pending."
+    },
+    {
       "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.AstralDeva.One",
       "guid": "035c131b529e59ed84173ed360a657af",
       "plannedType": "BlueprintAbility",

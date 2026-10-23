@@ -44,7 +44,7 @@ namespace KingmakerGunslinger.Blueprints
             var type = Require<BlueprintUnitType>(bySymbol, Astral31Prefix + "UnitType");
             type.name = InternalName(Astral31Prefix + "UnitType");
             type.Name = LocalizationService.Create(Astral31Prefix + "UnitType.Name", "Astral Deva");
-            type.Image = null; type.SignatureAbilities = Array.Empty<BlueprintUnitFact>();
+            type.Image = null;
             var traits = Require<BlueprintFeature>(bySymbol, Astral31Prefix + "Traits");
             traits.name = InternalName(Astral31Prefix + "Traits");
             traits.HideInUI = true; traits.IsClassFeature = false;
@@ -108,6 +108,10 @@ namespace KingmakerGunslinger.Blueprints
             proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
             var focus = ScriptableObject.CreateInstance<WeaponFocus>();
             focus.WeaponType = hammer.Type; focus.AttackBonus = 1;
+            var stunned = Require<BlueprintBuff>(bySymbol, Astral31Prefix + "Stunned");
+            var stunFeature = Require<BlueprintFeature>(bySymbol, Astral31Prefix + "StunFeature");
+            ConfigureAstralHammerStun(library, unit, hammer, stunned, stunFeature);
+            type.SignatureAbilities = new BlueprintUnitFact[] { stunFeature };
 
             ConfigureAstralProtectiveAura(bySymbol, unit);
             var heal = Require<BlueprintAbility>(bySymbol, Astral31Prefix + "Heal");
@@ -169,7 +173,45 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, IronWillGuid, "Iron Will"),
                 Feature(library, PowerAttackGuid, "Power Attack"),
                 Feature(library, "d09b20029e9abfe4480b356c92095623", "Toughness"),
-                extraplanar, traits, heal };
+                extraplanar, traits, stunFeature, heal };
+        }
+
+        private static void ConfigureAstralHammerStun(LibraryScriptableObject library,
+            BlueprintUnit unit, BlueprintItemWeapon hammer, BlueprintBuff stunned,
+            BlueprintFeature feature)
+        {
+            var native = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                "09d39b38bb7c6014394b6daced9bacd3", "native Stunned condition");
+            var condition = native.GetComponents<AddCondition>()
+                .Single(value => value.Condition == UnitCondition.Stunned);
+            CopyFields(native, stunned);
+            stunned.name = InternalName(Astral31Prefix + "Stunned");
+            stunned.IsClassFeature = false;
+            // Each failed save owns one finite victim effect. Another source's
+            // stun is neither replaced nor extended by this one.
+            stunned.Stacking = StackingType.Stack;
+            var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Stun;
+            stunned.ComponentsArray = new BlueprintComponent[] {
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(condition), descriptor };
+
+            var handler = ScriptableObject.CreateInstance<AstralDevaHammerStun>();
+            handler.OwningBlueprint = unit; handler.Warhammer = hammer;
+            handler.Stunned = stunned;
+            feature.name = InternalName(Astral31Prefix + "StunFeature");
+            feature.HideInUI = false; feature.IsClassFeature = false;
+            feature.ComponentsArray = new BlueprintComponent[] { handler };
+            var access = BlueprintUnitFactAccess.Resolve();
+            var title = LocalizationService.Create(Astral31Prefix + "StunFeature.Name",
+                "Stun");
+            access.Configure(stunned, title,
+                LocalizationService.Create(Astral31Prefix + "Stunned.Description",
+                    "Stunned by two warhammer hits from one Astral Deva in the same round."),
+                native.Icon);
+            access.Configure(feature, title,
+                LocalizationService.Create(Astral31Prefix + "StunFeature.Description",
+                    "When this Astral Deva hits one opponent twice with its warhammer in one round, that opponent must succeed at a Fortitude save (DC 10 + half the deva's racial Hit Dice + its live Strength modifier) or be stunned for 1d6 rounds. Each opponent can trigger this save only once per round."),
+                native.Icon);
         }
 
         private static void ConfigureAstralProtectiveAura(
