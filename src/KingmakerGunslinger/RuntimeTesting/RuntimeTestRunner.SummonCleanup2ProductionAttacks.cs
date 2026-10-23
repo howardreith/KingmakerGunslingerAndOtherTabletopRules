@@ -453,6 +453,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private string _renderError;
             internal int RenderCount, RenderedFrame = -1;
             internal double RenderedGameSeconds = double.NegativeInfinity;
+            internal long RenderedGameTicks = long.MinValue;
             internal Vector3 RenderedActorPosition;
             internal readonly JObject Evidence = new JObject();
             internal bool DiagnosticOnly { get { return _diagnosticOnly; } }
@@ -517,7 +518,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             return v.z > _camera.nearClipPlane && v.x > .01f && v.x < .99f && v.y > .01f && v.y < .99f;
                         });
                         _renderedTarget = _target; RenderCount++; RenderedFrame = Time.frameCount;
-                        RenderedGameSeconds = Game.Instance.Player.GameTime.TotalSeconds; RenderedActorPosition = _actor.Position;
+                        var renderedGameTime = Game.Instance.Player.GameTime;
+                        RenderedGameSeconds = renderedGameTime.TotalSeconds; RenderedGameTicks = renderedGameTime.Ticks;
+                        RenderedActorPosition = _actor.Position;
                     }
                     catch (Exception error) { _renderError = error.GetType().Name + ":" + error.Message; }
                 };

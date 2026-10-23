@@ -486,7 +486,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originals = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var originalPins = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
             var casters = new List<UnitEntityData>(); var blueprints = new List<BlueprintUnit>();
-            var watch = Stopwatch.StartNew(); object controller = null; var rows = new JArray();
+            var watch = Stopwatch.StartNew(); object controller = null; var rows = new JArray(); var labelSamples = new JArray();
             Cleanup2NativeDefaultScope mode = null; NativeIconScreenEvidence screens = null;
             ActionBarSelectorVm ownedSelector = null; ActionBarSlotVM pinnedVm = null; ActionBarConvertedVm ownedConverted = null;
             UnitEntityData pinOwner = null; MechanicActionBarSlot[] pinArray = null, pinContents = null; MechanicActionBarSlot beforePin = null, ownedPin = null;
@@ -502,94 +502,154 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Cleanup2AlternateBoundary(mode, watch, 240);
                     var caster = Cleanup2AlternateCaster(fixture, family, ref controller, casters, blueprints);
                     var routes = Cleanup2AlternateRoutes(caster, family, manifest, false);
-                    var route = routes.Single(value => value.Placement.Multiplicity == SummonMultiplicity.One);
                     player.PartyCharacters.Add(caster); player.InvalidateCharacterLists(); player.UpdateCharacterLists();
                     selection.SelectUnit(caster.View, true, true, false);
                     for (int frame = 0; frame < 8; frame++) yield return 0;
                     if (!ReferenceEquals(selection.CurrentSelectUnitValue, caster) || !ReferenceEquals(bar.Unit.Value, caster))
                         throw new InvalidOperationException("Real native console action bar did not bind actual alternate caster.");
-                    var input = new Cleanup2TooltipInputs(caster);
-                    pinSnapshot = new TeleportationUiSettingsFixture(caster.UISettings);
-                    var destination = bar.CurrentPage.FirstOrDefault(value => value.IsEmpty && value.Index >= 0 &&
-                        value.Index < caster.UISettings.Slots.Length && caster.UISettings.Slots[value.Index] is MechanicActionBarSlotEmpty);
-                    if (destination == null) throw new InvalidOperationException("Native console fixture has no visible empty slot.");
-                    pinOwner = caster; pinArray = caster.UISettings.Slots; pinContents = pinArray.ToArray(); pinIndex = destination.Index; beforePin = pinArray[pinIndex];
-                    typeof(ActionBarVM).GetMethod("SetSlotSelected", Cleanup2Fields).Invoke(bar, new object[] { destination });
-                    typeof(ActionBarVM).GetMethod(route.Book == null ? "ShowAbilityMenu" : "ShowSpellMenu", Cleanup2Fields).Invoke(bar, null);
-                    ownedSelector = bar.SelectorVm.Value;
-                    for (int frame = 0; frame < 8; frame++) yield return 0;
-                    if (ownedSelector == null || !ReferenceEquals(bar.SelectorVm.Value, ownedSelector)) throw new InvalidOperationException("Native alternate source selector absent.");
-                    var selectorView = Resources.FindObjectsOfTypeAll<ActionBarSelectorView>().Single(value => value.gameObject.scene.IsValid() &&
-                        value.gameObject.scene.isLoaded && value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value), ownedSelector));
-                    var item = ownedSelector.ItemVms.Single(value => {
-                        var data = value.MechanicActionBarSlot.GetContentData() as AbilityData;
-                        return ReferenceEquals(data?.Blueprint, route.Root) && ReferenceEquals(data?.Spellbook, route.Book) &&
-                            (route.Granted == null || ReferenceEquals(data, route.Granted.Data));
-                    });
-                    var source = (AbilityData)item.MechanicActionBarSlot.GetContentData(); ownedPin = item.MechanicActionBarSlot;
-                    var itemView = selectorView.GetComponentsInChildren<ActionBarSelectorItemView>(false)
-                        .Single(value => ReferenceEquals(ElementalConsoleBookPresentation.Model(value), item));
-                    var navigation = (ConsoleNavigationBehavior)typeof(ActionBarSelectorView).GetField("m_NavigationBehavior", Cleanup2Fields).GetValue(selectorView);
-                    if (!navigation.SelectEntityManually(itemView) || !ReferenceEquals(navigation.GetCurrentSelectedEntity(), itemView))
-                        throw new InvalidOperationException("Actual native alternate selector focus failed.");
-                    // Installed native confirm pins this exact collected
-                    // mechanism; it is not the Use/casting input.
-                    InvokeTeleportGamepadInput(selectorView, "<GetInputLayer>b__11_0");
-                    for (int frame = 0; frame < 8; frame++) yield return 0;
-                    if (bar.SelectorVm.Value != null || !ReferenceEquals(caster.UISettings.Slots, pinArray) || !ReferenceEquals(pinArray[pinIndex], ownedPin))
-                        throw new InvalidOperationException("Native console confirm did not retain exact original source mechanism.");
-                    ownedSelector = null;
-                    pinnedVm = bar.CurrentPage.Single(value => value.Index == pinIndex && ReferenceEquals(value.MechanicActionBarSlot, ownedPin));
-                    var sourceView = Resources.FindObjectsOfTypeAll<ActionBarSlotView>().Single(value => value.gameObject.scene.IsValid() &&
-                        value.gameObject.scene.isLoaded && value.gameObject.activeInHierarchy && ReferenceEquals(value.GetViewModel(), pinnedVm));
-                    pinnedVm.OnShowConvertRequest(); ownedConverted = pinnedVm.ConvertedVm.Value;
-                    for (int frame = 0; frame < 8; frame++) yield return 0;
-                    var convertedView = (ActionBarConvertedView)typeof(ActionBarSlotView).GetField("m_ConvertedView", Cleanup2Fields).GetValue(sourceView);
-                    if (ownedConverted == null || convertedView == null || !convertedView.gameObject.activeInHierarchy ||
-                        !ReferenceEquals(ElementalConsoleBookPresentation.Model(convertedView), ownedConverted))
-                        throw new InvalidOperationException("Actual native console converted panel did not bind the source's native conversion list.");
-                    var childVm = ownedConverted.Slots.Single(value => ReferenceEquals((value.MechanicActionBarSlot.GetContentData() as AbilityData)?.Blueprint, route.Child));
-                    var child = (AbilityData)childVm.MechanicActionBarSlot.GetContentData();
-                    var childView = convertedView.GetComponentsInChildren<ActionBarSlotView>(false).Single(value => ReferenceEquals(value.GetViewModel(), childVm));
-                    var nativeNavigation = (ConsoleMultiNavigationCollection)typeof(ActionBarConvertedView).GetField("m_NavigationCollection", Cleanup2Fields).GetValue(convertedView);
-                    nativeNavigation.SetCurrentEntityManual(childView);
-                    for (int frame = 0; frame < 4; frame++) yield return 0;
-                    var icon = (Image)typeof(ActionBarSlotView).GetField("m_Icon", Cleanup2Fields).GetValue(childView);
-                    var actual = ownedConverted.Slots.Select(value => value.MechanicActionBarSlot.GetContentData() as AbilityData).ToArray();
-                    bool exact = mode.Current && input.Unchanged() && routes.All(value => value.GraphExact) &&
-                        ReferenceEquals(child.ConvertedFrom, source) && ReferenceEquals(child.Spellbook, route.Book) &&
-                        ReferenceEquals(nativeNavigation.CurrentEntity, childView) && child.Name == SummonChoicePresentationPolicy.For("horse").Label &&
-                        ReferenceEquals(icon.sprite, route.Child.Icon) && Cleanup2TooltipGraphicVisible(icon) &&
-                        actual.All(value => value != null && !ReferenceEquals(value.Blueprint, route.Root) && !route.RemovedGeneric.Contains(value.Blueprint.AssetGuid)) &&
-                        route.Foreign.All(guid => actual.Count(value => value.Blueprint.AssetGuid == guid) == 1);
-                    var record = new JObject { ["family"] = family.Key, ["source"] = route.Root.AssetGuid, ["child"] = child.Blueprint.AssetGuid,
-                        ["sourceMechanism"] = ownedPin.GetType().FullName, ["sourceLinkExact"] = ReferenceEquals(child.ConvertedFrom, source),
-                        ["book"] = route.Book?.Blueprint.AssetGuid, ["nativeSelectorView"] = selectorView.GetInstanceID(),
-                        ["nativeConvertedView"] = convertedView.GetInstanceID(), ["actualRows"] = new JArray(actual.Select(value => value?.Blueprint.AssetGuid)),
-                        ["paintedRowIconVisibleAndExact"] = ReferenceEquals(icon.sprite, route.Child.Icon) && Cleanup2TooltipGraphicVisible(icon),
-                        ["sourceResourcesAndSlots"] = input.Describe(), ["pinIndex"] = pinIndex,
-                        ["scope"] = "Actual native source selector confirm temporarily pins the original source; its native OnShowConvertRequest creates the real scene-bound converted panel. Native navigation focuses the stable Horse child without Use or cast." };
-                    Cleanup2Check("alternate-console-native-row-" + family.Key, exact, record,
-                        "The real controller source and converted panel retain native source/book chains, stable child/icon/name, and source budgets without a redundant generic selectable leaf.");
-                    if (!exact) throw new InvalidOperationException("Native console alternate row failed: " + family.Key);
-                    rows.Add(record);
-                    foreach (int frame in Cleanup2AlternateConsoleHover(route, childView, child, () => mode.Current && input.Unchanged() && route.GraphExact &&
-                        ReferenceEquals(pinnedVm.ConvertedVm.Value, ownedConverted) && ReferenceEquals(childView.GetViewModel(), childVm) &&
-                        ReferenceEquals(selection.CurrentSelectUnitValue, caster) && ReferenceEquals(pinArray[pinIndex], ownedPin), screens)) yield return frame;
-                    InvokeTeleportGamepadInput(convertedView, "<GetInputLayer>b__8_1");
-                    for (int frame = 0; frame < 8; frame++) yield return 0;
-                    bool cancelled = pinnedVm.ConvertedVm.Value == null && GamePad.Instance.Layers.SequenceEqual(layers) && input.Unchanged();
-                    Cleanup2Check("alternate-console-native-cancel-" + family.Key, cancelled, new JObject { ["conversionClosed"] = pinnedVm.ConvertedVm.Value == null,
-                        ["inputLayersExact"] = GamePad.Instance.Layers.SequenceEqual(layers), ["resourcesAndSlotsExact"] = input.Unchanged(),
-                        ["targetingAbsent"] = game.SelectedAbilityHandler.Ability == null },
-                        "The actual native controller Decline handler closes only the owned converted panel, returns its input layer, and spends nothing.");
-                    if (!cancelled) throw new InvalidOperationException("Native console alternate cancel did not restore its exact input layer/budget.");
-                    ownedConverted = null;
-                    Cleanup2AlternateRestorePin(bar, pinOwner, pinArray, pinContents, pinIndex, beforePin, ownedPin, pinSnapshot);
-                    pinnedVm = null; ownedPin = null; pinOwner = null; pinSnapshot = null; pinArray = null; pinContents = null; pinIndex = -1;
+                    // The existing level8 Summoner already owns its tier4
+                    // granting feature/root. Visit that one additional native
+                    // source for quantity and family-first labels; do not
+                    // grant higher-tier access or create another caster.
+                    var observedRoutes = routes.Where(value => value.Placement.Multiplicity == SummonMultiplicity.One ||
+                        (family.Key == AlternateSummoningSourceCatalog.SummonerKey && value.Placement.Multiplicity == SummonMultiplicity.OneD4PlusOne)).ToArray();
+                    foreach (var route in observedRoutes)
+                    {
+                        string routeLabel = family.Key + (route.Placement.Multiplicity == SummonMultiplicity.One ? "" : "-" + route.Placement.Multiplicity);
+                        var input = new Cleanup2TooltipInputs(caster);
+                        pinSnapshot = new TeleportationUiSettingsFixture(caster.UISettings);
+                        var destination = bar.CurrentPage.FirstOrDefault(value => value.IsEmpty && value.Index >= 0 &&
+                            value.Index < caster.UISettings.Slots.Length && caster.UISettings.Slots[value.Index] is MechanicActionBarSlotEmpty);
+                        if (destination == null) throw new InvalidOperationException("Native console fixture has no visible empty slot.");
+                        pinOwner = caster; pinArray = caster.UISettings.Slots; pinContents = pinArray.ToArray(); pinIndex = destination.Index; beforePin = pinArray[pinIndex];
+                        typeof(ActionBarVM).GetMethod("SetSlotSelected", Cleanup2Fields).Invoke(bar, new object[] { destination });
+                        typeof(ActionBarVM).GetMethod(route.Book == null ? "ShowAbilityMenu" : "ShowSpellMenu", Cleanup2Fields).Invoke(bar, null);
+                        ownedSelector = bar.SelectorVm.Value;
+                        for (int frame = 0; frame < 8; frame++) yield return 0;
+                        if (ownedSelector == null || !ReferenceEquals(bar.SelectorVm.Value, ownedSelector)) throw new InvalidOperationException("Native alternate source selector absent.");
+                        var selectorView = Resources.FindObjectsOfTypeAll<ActionBarSelectorView>().Single(value => value.gameObject.scene.IsValid() &&
+                            value.gameObject.scene.isLoaded && value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value), ownedSelector));
+                        var item = ownedSelector.ItemVms.Single(value => {
+                            var data = value.MechanicActionBarSlot.GetContentData() as AbilityData;
+                            return ReferenceEquals(data?.Blueprint, route.Root) && ReferenceEquals(data?.Spellbook, route.Book) &&
+                                (route.Granted == null || ReferenceEquals(data, route.Granted.Data));
+                        });
+                        var source = (AbilityData)item.MechanicActionBarSlot.GetContentData(); ownedPin = item.MechanicActionBarSlot;
+                        var itemView = selectorView.GetComponentsInChildren<ActionBarSelectorItemView>(false)
+                            .Single(value => ReferenceEquals(ElementalConsoleBookPresentation.Model(value), item));
+                        var navigation = (ConsoleNavigationBehavior)typeof(ActionBarSelectorView).GetField("m_NavigationBehavior", Cleanup2Fields).GetValue(selectorView);
+                        if (!navigation.SelectEntityManually(itemView) || !ReferenceEquals(navigation.GetCurrentSelectedEntity(), itemView))
+                            throw new InvalidOperationException("Actual native alternate selector focus failed.");
+                        // Installed native confirm pins this exact collected
+                        // mechanism; it is not the Use/casting input.
+                        InvokeTeleportGamepadInput(selectorView, "<GetInputLayer>b__11_0");
+                        for (int frame = 0; frame < 8; frame++) yield return 0;
+                        if (bar.SelectorVm.Value != null || !ReferenceEquals(caster.UISettings.Slots, pinArray) || !ReferenceEquals(pinArray[pinIndex], ownedPin))
+                            throw new InvalidOperationException("Native console confirm did not retain exact original source mechanism.");
+                        ownedSelector = null;
+                        pinnedVm = bar.CurrentPage.Single(value => value.Index == pinIndex && ReferenceEquals(value.MechanicActionBarSlot, ownedPin));
+                        var sourceView = Resources.FindObjectsOfTypeAll<ActionBarSlotView>().Single(value => value.gameObject.scene.IsValid() &&
+                            value.gameObject.scene.isLoaded && value.gameObject.activeInHierarchy && ReferenceEquals(value.GetViewModel(), pinnedVm));
+                        pinnedVm.OnShowConvertRequest(); ownedConverted = pinnedVm.ConvertedVm.Value;
+                        for (int frame = 0; frame < 8; frame++) yield return 0;
+                        var convertedView = (ActionBarConvertedView)typeof(ActionBarSlotView).GetField("m_ConvertedView", Cleanup2Fields).GetValue(sourceView);
+                        if (ownedConverted == null || convertedView == null || !convertedView.gameObject.activeInHierarchy ||
+                            !ReferenceEquals(ElementalConsoleBookPresentation.Model(convertedView), ownedConverted))
+                            throw new InvalidOperationException("Actual native console converted panel did not bind the source's native conversion list.");
+                        var childVm = ownedConverted.Slots.Single(value => ReferenceEquals((value.MechanicActionBarSlot.GetContentData() as AbilityData)?.Blueprint, route.Child));
+                        var child = (AbilityData)childVm.MechanicActionBarSlot.GetContentData();
+                        var childView = convertedView.GetComponentsInChildren<ActionBarSlotView>(false).Single(value => ReferenceEquals(value.GetViewModel(), childVm));
+                        var nativeNavigation = (ConsoleMultiNavigationCollection)typeof(ActionBarConvertedView).GetField("m_NavigationCollection", Cleanup2Fields).GetValue(convertedView);
+                        nativeNavigation.SetCurrentEntityManual(childView);
+                        for (int frame = 0; frame < 4; frame++) yield return 0;
+                        var icon = (Image)typeof(ActionBarSlotView).GetField("m_Icon", Cleanup2Fields).GetValue(childView);
+                        var actual = ownedConverted.Slots.Select(value => value.MechanicActionBarSlot.GetContentData() as AbilityData).ToArray();
+                        bool exact = mode.Current && input.Unchanged() && routes.All(value => value.GraphExact) &&
+                            ReferenceEquals(child.ConvertedFrom, source) && ReferenceEquals(child.Spellbook, route.Book) &&
+                            ReferenceEquals(nativeNavigation.CurrentEntity, childView) && child.Name == SummonChoicePresentationPolicy.For("horse", route.Placement.Multiplicity).Label &&
+                            ReferenceEquals(icon.sprite, route.Child.Icon) && Cleanup2TooltipGraphicVisible(icon) &&
+                            actual.All(value => value != null && !ReferenceEquals(value.Blueprint, route.Root) && !route.RemovedGeneric.Contains(value.Blueprint.AssetGuid)) &&
+                            route.Foreign.All(guid => actual.Count(value => value.Blueprint.AssetGuid == guid) == 1);
+                        var record = new JObject { ["family"] = family.Key, ["quantity"] = route.Placement.Multiplicity.ToString(),
+                            ["source"] = route.Root.AssetGuid, ["child"] = child.Blueprint.AssetGuid,
+                            ["sourceMechanism"] = ownedPin.GetType().FullName, ["sourceLinkExact"] = ReferenceEquals(child.ConvertedFrom, source),
+                            ["book"] = route.Book?.Blueprint.AssetGuid, ["nativeSelectorView"] = selectorView.GetInstanceID(),
+                            ["nativeConvertedView"] = convertedView.GetInstanceID(), ["actualRows"] = new JArray(actual.Select(value => value?.Blueprint.AssetGuid)),
+                            ["paintedRowIconVisibleAndExact"] = ReferenceEquals(icon.sprite, route.Child.Icon) && Cleanup2TooltipGraphicVisible(icon),
+                            ["sourceResourcesAndSlots"] = input.Describe(), ["pinIndex"] = pinIndex,
+                            ["scope"] = "Actual native source selector confirm temporarily pins the original source; its native OnShowConvertRequest creates the real scene-bound converted panel. Native navigation focuses the stable Horse child without Use or cast." };
+                        Cleanup2Check("alternate-console-native-row-" + routeLabel, exact, record,
+                            "The real controller source and converted panel retain native source/book chains, stable child/icon/name, and source budgets without a redundant generic selectable leaf.");
+                        if (!exact) throw new InvalidOperationException("Native console alternate row failed: " + family.Key);
+                        if (route.Placement.Multiplicity == SummonMultiplicity.One) rows.Add(record);
+                        foreach (int frame in Cleanup2AlternateConsoleHover(route, childView, child, () => mode.Current && input.Unchanged() && route.GraphExact &&
+                            ReferenceEquals(pinnedVm.ConvertedVm.Value, ownedConverted) && ReferenceEquals(childView.GetViewModel(), childVm) &&
+                            ReferenceEquals(selection.CurrentSelectUnitValue, caster) && ReferenceEquals(pinArray[pinIndex], ownedPin), screens)) yield return frame;
+                        if (route.Placement.Multiplicity == SummonMultiplicity.OneD4PlusOne)
+                        {
+                            labelSamples.Add(new JObject { ["key"] = "horse", ["quantity"] = route.Placement.Multiplicity.ToString(),
+                                ["source"] = route.Root.AssetGuid, ["child"] = child.Blueprint.AssetGuid, ["nativeTitle"] = child.Name });
+                            foreach (string key in new[] { "small-fire-elemental", "air-mephit" })
+                            {
+                                Cleanup2AlternateBoundary(mode, watch, 240);
+                                var quantity = key == "small-fire-elemental" ? SummonMultiplicity.OneD4PlusOne : SummonMultiplicity.One;
+                                var placement = ExpandedSummoningCatalog.GenerateVariants(family.Family).Single(value => value.ParentTier == 4 &&
+                                    value.Creature.Key == key && value.Multiplicity == quantity);
+                                string symbol = AlternateSummoningProjection.CreatureSymbol(family.Key, placement);
+                                var expectedChild = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                                    manifest.ResolveActive(symbol, typeof(BlueprintAbility)).Id.Value, symbol);
+                                if (!SummonVisibilityCatalog.IsPublished(placement) || !ReferenceEquals(expectedChild.Parent, route.Root) ||
+                                    route.Variants.Count(value => ReferenceEquals(value, expectedChild)) != 1 || !AlternateSummoningExposure.IsExposed(expectedChild.AssetGuid))
+                                    throw new InvalidOperationException("Exact already-granted tier4 native label route is not published: " + symbol);
+                                var sampleVm = ownedConverted.Slots.Single(value => ReferenceEquals((value.MechanicActionBarSlot.GetContentData() as AbilityData)?.Blueprint, expectedChild));
+                                var sample = (AbilityData)sampleVm.MechanicActionBarSlot.GetContentData();
+                                var sampleView = convertedView.GetComponentsInChildren<ActionBarSlotView>(false).Single(value => ReferenceEquals(value.GetViewModel(), sampleVm));
+                                nativeNavigation.SetCurrentEntityManual(sampleView);
+                                for (int frame = 0; frame < 4; frame++) yield return 0;
+                                var sampleIcon = (Image)typeof(ActionBarSlotView).GetField("m_Icon", Cleanup2Fields).GetValue(sampleView);
+                                Func<bool> sampleOwned = () => mode.Current && watch.Elapsed.TotalSeconds < 240 && input.Unchanged() && route.GraphExact &&
+                                    ReferenceEquals(selection.CurrentSelectUnitValue, caster) && ReferenceEquals(bar.Unit.Value, caster) &&
+                                    ReferenceEquals(caster.UISettings.Slots, pinArray) && ReferenceEquals(pinArray[pinIndex], ownedPin) &&
+                                    ReferenceEquals(pinnedVm.ConvertedVm.Value, ownedConverted) && ReferenceEquals(ElementalConsoleBookPresentation.Model(convertedView), ownedConverted) &&
+                                    ReferenceEquals(sampleView.GetViewModel(), sampleVm) && ReferenceEquals(sampleVm.MechanicActionBarSlot.GetContentData(), sample) &&
+                                    ReferenceEquals(sample.ConvertedFrom, source) && ReferenceEquals(sample.Spellbook, route.Book) &&
+                                    ReferenceEquals(nativeNavigation.CurrentEntity, sampleView) && game.SelectedAbilityHandler?.Ability == null && Cleanup2NoNarrativeOverlay();
+                                string expectedTitle = SummonChoicePresentationPolicy.For(key, quantity).Label;
+                                bool sampleExact = sampleOwned() && ReferenceEquals(sample.Blueprint, expectedChild) && sample.Name == expectedTitle &&
+                                    ReferenceEquals(sampleIcon?.sprite, expectedChild.Icon) && Cleanup2TooltipGraphicVisible(sampleIcon);
+                                var sampleRecord = new JObject { ["family"] = family.Key, ["key"] = key, ["quantity"] = quantity.ToString(),
+                                    ["source"] = source.Blueprint.AssetGuid, ["grant"] = route.RootSpec.FeatureGuid, ["child"] = expectedChild.AssetGuid,
+                                    ["nativeTitle"] = sample.Name, ["expectedTitle"] = expectedTitle, ["sourceChainExact"] = ReferenceEquals(sample.ConvertedFrom, source),
+                                    ["nativeSourceBudgetsExact"] = input.Unchanged(), ["nativeIconVisibleAndExact"] = ReferenceEquals(sampleIcon?.sprite, expectedChild.Icon) && Cleanup2TooltipGraphicVisible(sampleIcon),
+                                    ["scope"] = "Existing level8 Summoner's actual tier4 feature-granted native source; native converted row and navigation. No new access, source context, allocation or cast." };
+                                Cleanup2Check("alternate-console-native-family-label-" + key, sampleExact, sampleRecord,
+                                    "The actual controller converted row retains its existing native grant/source, stable adapter identity and family-first quantity title before source-owned native hover.");
+                                if (!sampleExact) throw new InvalidOperationException("Native existing-grant controller label row failed: " + key);
+                                foreach (int frame in Cleanup2AlternateConsoleHover(route, sampleView, sample, sampleOwned, screens, key, quantity)) yield return frame;
+                                labelSamples.Add(sampleRecord);
+                            }
+                        }
+                        InvokeTeleportGamepadInput(convertedView, "<GetInputLayer>b__8_1");
+                        for (int frame = 0; frame < 8; frame++) yield return 0;
+                        bool cancelled = pinnedVm.ConvertedVm.Value == null && GamePad.Instance.Layers.SequenceEqual(layers) && input.Unchanged();
+                        Cleanup2Check("alternate-console-native-cancel-" + routeLabel, cancelled, new JObject { ["conversionClosed"] = pinnedVm.ConvertedVm.Value == null,
+                            ["inputLayersExact"] = GamePad.Instance.Layers.SequenceEqual(layers), ["resourcesAndSlotsExact"] = input.Unchanged(),
+                            ["targetingAbsent"] = game.SelectedAbilityHandler.Ability == null },
+                            "The actual native controller Decline handler closes only the owned converted panel, returns its input layer, and spends nothing.");
+                        if (!cancelled) throw new InvalidOperationException("Native console alternate cancel did not restore its exact input layer/budget.");
+                        ownedConverted = null;
+                        Cleanup2AlternateRestorePin(bar, pinOwner, pinArray, pinContents, pinIndex, beforePin, ownedPin, pinSnapshot);
+                        pinnedVm = null; ownedPin = null; pinOwner = null; pinSnapshot = null; pinArray = null; pinContents = null; pinIndex = -1;
+                    }
                 }
+                Cleanup2Check("alternate-console-family-label-sample-scope", labelSamples.Count == 3, new JObject {
+                    ["nativeSamples"] = labelSamples, ["giantControllerObserved"] = false,
+                    ["giantLimit"] = "Existing fixture classlevel8 exposes validated tiers2–4. Published Hill/Stone Giants begin tier6; no higher class levels or grants are added. Retained PC Giant tooltip evidence is separate.",
+                    ["newNativeAccessGranted"] = false, ["nativeCastingInvoked"] = false },
+                    "One already-owned tier4 source supplies native Elemental/Mephit and quantity-title observations without expanding fixture access; Giant controller coverage is explicitly unexecuted.");
+                if (labelSamples.Count != 3) throw new InvalidOperationException("Bounded native controller family/quantity label samples incomplete.");
                 Cleanup2Check("alternate-console-seven-family-menus", rows.Count == 7, new JObject { ["rows"] = rows,
-                    ["actualInputMode"] = "console", ["castingQualification"] = false, ["quantityScope"] = "One exact single-Horse native menu per family; desktop observer separately checks all supported Horse quantities." },
+                    ["actualInputMode"] = "console", ["castingQualification"] = false, ["quantityScope"] = "One exact single-Horse native menu per family, plus the existing Summoner tier4 source for Horse (1d4+1), Elemental, Fire, Small (1d4+1), and Mephit, Air native labels. Desktop separately checks all supported Horse quantities." },
                     "Seven actual bound native controller source/variant menus, hover cards, cancellation and restored temporary pins are distinct from desktop or cast qualification.");
                 if (rows.Count != 7) throw new InvalidOperationException("Not all supported alternate console families were observed.");
             }
@@ -637,12 +697,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Cleanup2AlternateConsoleHover(Cleanup2AlternateMenuRoute route, ActionBarSlotView row,
-            AbilityData ability, Func<bool> owns, NativeIconScreenEvidence screens)
+            AbilityData ability, Func<bool> owns, NativeIconScreenEvidence screens,
+            string key = "horse", SummonMultiplicity? quantity = null)
         {
+            var actualQuantity = quantity ?? route.Placement.Multiplicity;
+            string label = route.Family.Key + (key == "horse" && actualQuantity == SummonMultiplicity.One ? "" : "-" + key + "-" + actualQuantity);
             var close = new Cleanup2TooltipCloseState { Controller = Game.Instance.UI.TooltipsController,
                 Constructor = Game.Instance.UI.TooltipsController.TooltipConstructor };
             Exception failure = null;
-            var iterator = Cleanup2AlternateConsoleHoverBody(route, row, ability, owns, screens, close).GetEnumerator();
+            var iterator = Cleanup2AlternateConsoleHoverBody(route, row, ability, owns, screens, close, key, actualQuantity, label).GetEnumerator();
             try
             {
                 while (true)
@@ -656,14 +719,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             for (int frame = 0; frame < 600 && watch.Elapsed.TotalSeconds < 8; frame++)
             { state = Cleanup2TooltipClosedState(close); if ((bool)state["closed"] || (bool)state["foreignOwner"]) break; yield return 0; }
             state = Cleanup2TooltipClosedState(close); state["originalFailure"] = failure?.ToString();
-            Cleanup2Check("alternate-console-native-hover-close-" + route.Family.Key, (bool)state["closed"], state,
+            Cleanup2Check("alternate-console-native-hover-close-" + label, (bool)state["closed"], state,
                 "The exact native console-row hover closes through its own trigger and settles the native tooltip delay/fade before conversion cancellation.");
             if (!(bool)state["closed"]) throw new InvalidOperationException("Native console hover did not close; no foreign context is hidden.", failure);
             if (failure != null) throw new InvalidOperationException("Native console hover failed; original failure retained after closure.", failure);
         }
 
         private IEnumerable<int> Cleanup2AlternateConsoleHoverBody(Cleanup2AlternateMenuRoute route, ActionBarSlotView row,
-            AbilityData ability, Func<bool> owns, NativeIconScreenEvidence screens, Cleanup2TooltipCloseState close)
+            AbilityData ability, Func<bool> owns, NativeIconScreenEvidence screens, Cleanup2TooltipCloseState close,
+            string key, SummonMultiplicity quantity, string label)
         {
             var trigger = (TooltipTrigger)typeof(ActionBarSlotView).GetField("m_TooltipTrigger", Cleanup2Fields).GetValue(row);
             var icon = (Image)typeof(ActionBarSlotView).GetField("m_Icon", Cleanup2Fields).GetValue(row);
@@ -679,15 +743,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (!owns() || !ReferenceEquals(Game.Instance.UI.TooltipsController.ContextTooltipData, data))
                         throw new InvalidOperationException("Native console hover/source ownership changed.");
-                    card = Cleanup2AlternateConsoleCard(route, ability, trigger, data, icon);
+                    card = Cleanup2AlternateConsoleCard(route, ability, trigger, data, icon, key, quantity);
                     if ((bool)card["passed"]) break; yield return 0;
                 }
                 bool passed = card != null && (bool)card["passed"];
-                Cleanup2Check("alternate-console-native-hover-" + route.Family.Key, passed, card ?? new JObject(),
-                    "The exact native console converted-row tooltip renders its native HeaderItem title, without clipping; the painted Horse row icon remains visible. Native tooltip art is intentionally absent.");
-                if (!passed) throw new InvalidOperationException("Native console Horse tooltip title/icon did not become visible.");
-                foreach (int frame in screens.CaptureOwnedHover("alternate-console-hover-" + route.Family.Key, card,
-                    () => owns() && (bool)Cleanup2AlternateConsoleCard(route, ability, trigger, data, icon)["passed"], trigger, data)) yield return frame;
+                Cleanup2Check("alternate-console-native-hover-" + label, passed, card ?? new JObject(),
+                    "The exact native console converted-row tooltip renders its expected family/quantity HeaderItem title without clipping; the original child row icon remains visible. Native tooltip art is intentionally absent.");
+                if (!passed) throw new InvalidOperationException("Native console tooltip title/icon did not become visible: " + label);
+                foreach (int frame in screens.CaptureOwnedHover("alternate-console-hover-" + label, card,
+                    () => owns() && (bool)Cleanup2AlternateConsoleCard(route, ability, trigger, data, icon, key, quantity)["passed"], trigger, data)) yield return frame;
             }
             finally
             {
@@ -701,7 +765,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static JObject Cleanup2AlternateConsoleCard(Cleanup2AlternateMenuRoute route, AbilityData ability,
-            TooltipTrigger trigger, TooltipData data, Image icon)
+            TooltipTrigger trigger, TooltipData data, Image icon, string key, SummonMultiplicity quantity)
         {
             var tips = Game.Instance.UI.TooltipsController; var constructor = tips.TooltipConstructor;
             var header = constructor.Body?.HeaderBox; var template = tips.Bricks?.HeaderItem;
@@ -713,17 +777,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             var item = items.Length == 1 ? items[0] : null;
             var title = item?.TextFields == null || item.TextFields.Count == 0 ? null : item.TextFields[0];
             bool exact = items.Length == 1 && !string.IsNullOrEmpty(template?.BlockID) && ReferenceEquals(constructor.CurrentTooltipData, data);
-            bool name = title != null && title.GetParsedText() == SummonChoicePresentationPolicy.For("horse").Label &&
+            string expectedTitle = SummonChoicePresentationPolicy.For(key, quantity).Label;
+            bool name = title != null && title.GetParsedText() == expectedTitle &&
                 !title.isTextTruncated && !title.isTextOverflowing && Cleanup2TooltipGraphicVisible(title);
             bool textOnly = exact && item.Images != null && template.Images != null && item.Images.Count == template.Images.Count &&
                 item.Images.All(value => value != null && !value.gameObject.activeInHierarchy);
-            bool painted = ReferenceEquals(icon?.sprite, route.Child.Icon) && Cleanup2TooltipGraphicVisible(icon);
-            return new JObject { ["passed"] = NativeIconScreenEvidence.OwnsHover(trigger, data) && exact && name && textOnly && painted &&
-                    ReferenceEquals(data.AbilityData, ability), ["family"] = route.Family.Key,
+            bool originalIcon = ability.Blueprint.Icon != null && ReferenceEquals(icon?.sprite, ability.Blueprint.Icon) && Cleanup2TooltipGraphicVisible(icon);
+            return new JObject { ["passed"] = NativeIconScreenEvidence.OwnsHover(trigger, data) && exact && name && textOnly && originalIcon &&
+                    ReferenceEquals(data.AbilityData, ability), ["family"] = route.Family.Key, ["key"] = key, ["quantity"] = quantity.ToString(),
                 ["source"] = route.Root.AssetGuid, ["child"] = ability.Blueprint.AssetGuid, ["exactNativeHeaderItem"] = exact,
-                ["headerBlockId"] = template?.BlockID, ["nativeTitle"] = title?.GetParsedText(), ["titleVisibleWithoutClipping"] = name,
+                ["headerBlockId"] = template?.BlockID, ["nativeTitle"] = title?.GetParsedText(), ["expectedTitle"] = expectedTitle, ["titleVisibleWithoutClipping"] = name,
                 ["nativeTextOnlyHeader"] = textOnly, ["tooltipArtDisplayed"] = !textOnly,
-                ["paintedOriginalRowIconVisibleAndExact"] = painted, ["nativeDataIsExactConvertedChild"] = ReferenceEquals(data.AbilityData, ability),
+                ["originalRowIconVisibleAndExact"] = originalIcon, ["nativeDataIsExactConvertedChild"] = ReferenceEquals(data.AbilityData, ability),
                 ["scope"] = "Actual native console converted slot, bound TooltipTrigger and native HeaderItem; no manufactured tooltip data, art, text or source chain." };
         }
 

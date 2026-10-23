@@ -23,15 +23,23 @@ namespace KingmakerGunslinger.Summoning
         internal AbilityData Source, Child;
         internal BlueprintAbility PresentationParent;
         internal Spellbook Book;
+        // Preparation is the native aggregate row's retained mechanism slot;
+        // native SpendInternal may debit another equal preparation in this book.
         internal SpellSlot Preparation;
+        internal SpellSlot DebitPreparation {get;private set;}
+        internal int DebitPreparationOrdinal {get{return DebitPreparation==null?0:
+            Book.GetMemorizedSpells(DebitPreparation.SpellLevel).ToList().FindIndex(value=>ReferenceEquals(value,DebitPreparation))+1;}}
         internal MetamagicData Metamagic;
         internal string CreatureKey;
         internal int Rank;
         private AbilityData _retainedChild,_retainedSource;
+        private SpellSlot _retainedPreparation;
+        private AbilityData _retainedDebitSpell;
         private ElementalInvocationContextSnapshot _childContext,_sourceContext;
         internal string Label { get { return Source.Name + (ReferenceEquals(Source.Blueprint,PresentationParent)?"":" via "+PresentationParent.Name) + " · " + Book.Blueprint.DisplayName +
             " · level " + Source.SpellLevel + (Child.MetamagicData==null?"":" · "+Child.MetamagicData.MetamagicMask) +
-            (Preparation == null ? " spontaneous" : " matching preparation"); } }
+            (Preparation == null ? " spontaneous" : " matching preparation" +
+                (DebitPreparationOrdinal==0?" unavailable":" (uses preparation "+DebitPreparationOrdinal+")")); } }
         internal string Cost { get { return "Available: " + Child.GetAvailableForCastCount() + " · " +
             Child.RuntimeActionType + (Child.RequireFullRoundAction ? " · full round" : "") +
             "\n" + Source.Description; } }
@@ -39,15 +47,22 @@ namespace KingmakerGunslinger.Summoning
         internal string Validate()
         {
             UnitEntityData owner = Mechanism.Unit;
-            if(!ReferenceEquals(Child,_retainedChild) || !ReferenceEquals(Source,_retainedSource) || _childContext==null || _sourceContext==null ||
+            if(!ReferenceEquals(Child,_retainedChild) || !ReferenceEquals(Source,_retainedSource) ||
+                !ReferenceEquals(Preparation,_retainedPreparation) || _childContext==null || _sourceContext==null ||
                 !_childContext.Current || !_sourceContext.Current || !ReferenceEquals(Child.ConvertedFrom,Source) ||
                 !ReferenceEquals(Child.Caster,owner?.Descriptor) || !ReferenceEquals(Child.Spellbook,Book))
                 return "Retained native invocation context changed; choose again.";
             if (owner == null || owner.Destroyed || !owner.Descriptor.Spellbooks.Any(value => ReferenceEquals(value,Book)) ||
                 !ReferenceEquals(Mechanism.GetContentData(),Source) || !ReferenceEquals(Source.Spellbook,Book) ||
                 !ReferenceEquals(Source.MetamagicData,Metamagic)) return "Source changed; choose again.";
-            if (Preparation != null && (!Book.GetMemorizedSpells(Preparation.SpellLevel).Any(value => ReferenceEquals(value,Preparation)) ||
+            if (Preparation != null && (!ElementalSourceChooserPolicy.RetainedPreparationAvailable(Preparation,
+                    (Mechanism as MechanicActionBarSlotMemorizedSpell)?.SpellSlot,true) ||
+                !Book.GetMemorizedSpells(Preparation.SpellLevel).Any(value => ReferenceEquals(value,Preparation)) ||
                 !ReferenceEquals(Preparation.Spell,Source) || Preparation.Type != SpellSlotType.Common)) return "Preparation changed; choose again.";
+            if (Preparation != null && (!ElementalSourceChooserPolicy.RetainedPreparationAvailable(DebitPreparation,
+                CurrentNativeDebitPreparation(),DebitPreparation!=null && DebitPreparation.Available) ||
+                !ReferenceEquals(DebitPreparation.Spell,_retainedDebitSpell)))
+                return "Native preparation debit changed or exhausted; open Elementals again.";
             if (Preparation == null && !ElementalSourceChooserRuntime.OrdinaryKnownSource(Book,Source))
                 return "Known source changed; choose again.";
             var fresh = Mechanism.GetConvertedAbilityData();
@@ -63,9 +78,21 @@ namespace KingmakerGunslinger.Summoning
         }
         internal void CaptureContext()
         {
-            _retainedChild=Child;_retainedSource=Source;
+            _retainedChild=Child;_retainedSource=Source;_retainedPreparation=Preparation;
             _childContext=new ElementalInvocationContextSnapshot(()=>ContextReferences(Child),()=>ContextValues(Child));
             _sourceContext=new ElementalInvocationContextSnapshot(()=>ContextReferences(Source),()=>ContextValues(Source));
+            CaptureDebitPreparation();
+        }
+        internal void CaptureDebitPreparation()
+        {DebitPreparation=Preparation==null?null:CurrentNativeDebitPreparation();_retainedDebitSpell=DebitPreparation?.Spell;}
+        private SpellSlot CurrentNativeDebitPreparation()
+        {
+            int level=Book.GetSpellLevel(Source);
+            // Installed GetMemorizedSpells06001E78 retains raw order, filtering
+            // only empty slots. SpendInternal06001E6E visits that order backwards
+            // and uses AbilityData.Equals, not the mechanism's slot reference.
+            return level<0 || level>9?null:ElementalSourceChooserPolicy.NativeDebitPreparation(
+                Book.GetMemorizedSpells(level),value=>value.Available,value=>Source.Equals(value.Spell));
         }
         private static object[] ContextReferences(AbilityData data)
         {return new object[]{data.Blueprint,data.Caster,data.Spellbook,data.Fact,data.ConvertedFrom,data.MetamagicData,
@@ -288,6 +315,8 @@ namespace KingmakerGunslinger.Summoning
             if(!native.IsPossibleActive) throw new InvalidOperationException("Native selected source became unavailable.");
             if(!ElementalSourceChooserView.CloseOwned("cast-native-source"))
                 throw new InvalidOperationException("Native keyboard ownership did not restore; casting refused.");
+            string changed=Validate(session,source);
+            if(changed!=null)throw new InvalidOperationException(changed);
             LastDispatched=source.Child; native.OnClick(); Outcome="native-source-handed-off";
         }
     }

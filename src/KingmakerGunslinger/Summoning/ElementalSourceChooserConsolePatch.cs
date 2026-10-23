@@ -112,9 +112,8 @@ namespace KingmakerGunslinger.Summoning
             string preparation="spontaneous";
             if(source.Preparation!=null)
             {
-                int index=source.Book.GetMemorizedSpells(source.Preparation.SpellLevel).ToList()
-                    .FindIndex(value=>ReferenceEquals(value,source.Preparation));
-                preparation=index<0?"preparation changed":"prepared "+(index+1);
+                int ordinal=source.DebitPreparationOrdinal;
+                preparation=ordinal==0?"preparation unavailable":"uses preparation "+ordinal;
             }
             return source.Book.Blueprint.DisplayName+" · level "+source.Source.SpellLevel+" · "+preparation;
         }

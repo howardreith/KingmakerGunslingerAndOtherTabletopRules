@@ -7,7 +7,8 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class Cleanup2ElementalSourceChooserTests
     {
-        private sealed class Source { internal string Book; internal bool Available = true; }
+        private sealed class Source { internal string Book; internal bool Available = true; internal long Metamagic; }
+        private sealed class Preparation {internal Source Spell;internal bool Available=true;}
         private sealed class NativeRow
         {internal bool Current=true,Selected,Visible=true,FailOnce;internal int Writes;}
         private static ElementalRowVisibilityLease<NativeRow>.Row Row(NativeRow native,string parent)
@@ -128,6 +129,51 @@ namespace KingmakerGunslinger.DomainTests
             current = true; session.Cancel();
             Assertions.False(session.Cast(), "Cancel must invalidate the selection.");
             Assertions.Equal(0, dispatches, "Stale, foreign and cancelled selections must never dispatch.");
+
+            NativeAggregateRowRetainsItsExactExpectedDebit();
+        }
+
+        private static void NativeAggregateRowRetainsItsExactExpectedDebit()
+        {
+            var sourceA=new Source {Book="prepared book A"};
+            var preparationA=new Preparation {Spell=sourceA};
+            var preparationB=new Preparation {Spell=new Source {Book=sourceA.Book}};
+            var otherBook=new Preparation {Spell=new Source {Book="prepared book B"}};
+            var metamagic=new Preparation {Spell=new Source {Book=sourceA.Book,Metamagic=1}};
+            var nativeOrder=new[]{preparationA,preparationB,otherBook,metamagic};
+            // The comparison is supplied by the native AbilityData.Equals
+            // boundary in production. The policy must keep both book and
+            // metamagic matches separate while following native reverse order.
+            Func<Preparation> currentDebit=()=>ElementalSourceChooserPolicy.NativeDebitPreparation(nativeOrder,
+                value=>value.Available,value=>value.Spell.Book==sourceA.Book && value.Spell.Metamagic==sourceA.Metamagic);
+            Preparation mechanismSlot=preparationA;
+            int debitA=0,debitB=0,dispatches=0;
+            Func<ElementalSourceSelection<Source>> open=()=>{
+                Preparation expected=currentDebit();Source expectedSpell=expected?.Spell;
+                return new ElementalSourceSelection<Source>(new[]{sourceA},()=>true,
+                    value=>ElementalSourceChooserPolicy.RetainedPreparationAvailable(preparationA,mechanismSlot,true) &&
+                        ElementalSourceChooserPolicy.RetainedPreparationAvailable(expected,currentDebit(),expected!=null && expected.Available) &&
+                        ReferenceEquals(expected.Spell,expectedSpell)?null:"native-preparation-debit-changed",
+                    value=>{Assertions.True(ReferenceEquals(value,sourceA),"Dispatch retains native aggregate source A.");
+                        dispatches++;expected.Available=false;if(ReferenceEquals(expected,preparationA))debitA++;else debitB++;});
+            };
+            Assertions.True(ReferenceEquals(currentDebit(),preparationB),"Two available equal preparations use native last-available B, not the displayed row A.");
+            var positive=open();positive.Select(sourceA);
+            Assertions.True(positive.Cast() && preparationA.Available && !preparationB.Available && debitB==1 && debitA==0,
+                "An explicit source A handoff retains its captured native B debit and leaves A untouched.");
+            preparationB.Available=true;var stale=open();stale.Select(sourceA);preparationB.Available=false;
+            Assertions.True(ReferenceEquals(currentDebit(),preparationA),"A remains available after captured B is exhausted.");
+            Assertions.False(stale.Cast(),"An old B-bound choice cannot fall back to available A.");
+            Assertions.True(ReferenceEquals(stale.Selected,sourceA) && dispatches==1 && debitA==0 && debitB==1,
+                "Stale expected B neither substitutes source A nor dispatches/debits another preparation.");
+            preparationB.Available=true;mechanismSlot=preparationB;
+            Assertions.False(stale.Cast(),"Rebinding the native aggregate mechanism away from retained slot A refuses even with B available.");
+            mechanismSlot=preparationA;preparationB.Available=false;stale.Cancel();
+            var reopened=open();reopened.Select(sourceA);
+            Assertions.True(reopened.Cast() && debitA==1 && debitB==1 && dispatches==2,
+                "Only a genuinely reopened choice can capture the newly current native debit A.");
+            Assertions.True(otherBook.Available && metamagic.Available,
+                "Another book and different metamagic remain outside this source's native debit match and untouched.");
         }
 
         internal static void AllSixRanksAndFourElementsHaveExactNativeIdentity()

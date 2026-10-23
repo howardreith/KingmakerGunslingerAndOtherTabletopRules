@@ -298,7 +298,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { cameraScope.RequireCurrent(); yield return 0; }
                     if (!actImage && observer.WeaponAttacks.Count != 0 && firstAct != null && cameraScope.RenderedGameSeconds >= firstAct.ActGame)
                     { capture("contact"); actImage = true; }
-                    double recoveryStart = Game.Instance.Player.GameTime.TotalSeconds; var recovery = Stopwatch.StartNew();
+                    var recoveryStartTime = Game.Instance.Player.GameTime;
+                    double recoveryStart = recoveryStartTime.TotalSeconds;
+                    long recoveryRequiredTicks = TimeSpan.FromMilliseconds(1600).Ticks;
+                    long recoveryDeadlineTicks = (recoveryStartTime + TimeSpan.FromTicks(recoveryRequiredTicks)).Ticks;
+                    var recovery = Stopwatch.StartNew();
                     double recoveryCaptureStart = captureWallSeconds; int recoveryFrames = 0;
                     float[] postActTimes = { .12f, .28f }; int postActSamples = 0;
                     // PNG serialization blocks this coroutine and native
@@ -306,8 +310,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // completed-render requirement; its own readbacks do not
                     // spend the 8s frame-wait allowance. Total wall/frame bounds
                     // still refuse instead of supplying native time or poses.
-                    while ((Game.Instance.Player.GameTime.TotalSeconds - recoveryStart < 1.6 ||
-                        cameraScope.RenderedGameSeconds - recoveryStart < 1.6) && recovery.Elapsed.TotalSeconds < 20 &&
+                    // Native TimeController.Tick060090CF accumulates a
+                    // System.TimeSpan. Compare its absolute tick deadline and
+                    // the SAME post-render sample, not subtraction of large
+                    // TotalSeconds doubles at the exact1.6s boundary.
+                    while ((Game.Instance.Player.GameTime.Ticks < recoveryDeadlineTicks ||
+                        cameraScope.RenderedGameTicks < recoveryDeadlineTicks) && recovery.Elapsed.TotalSeconds < 20 &&
                         recovery.Elapsed.TotalSeconds - (captureWallSeconds - recoveryCaptureStart) < 8 && recoveryFrames++ < 2400)
                     {
                         if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native creature recovery mode changed.");
@@ -321,6 +329,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     double recoveryGameSeconds = Game.Instance.Player.GameTime.TotalSeconds - recoveryStart;
                     double recoveryRenderedSeconds = cameraScope.RenderedGameSeconds - recoveryStart;
+                    long recoveryCurrentTicks = Game.Instance.Player.GameTime.Ticks;
+                    long recoveryRenderedTicks = cameraScope.RenderedGameTicks;
                     capture("recovery");
                     double recoveryWallSeconds = recovery.Elapsed.TotalSeconds;
                     double recoveryReadbackSeconds = captureWallSeconds - recoveryCaptureStart;
@@ -351,8 +361,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["actualActFrameCaptured"] = actImage, ["postActFramesCaptured"] = postActSamples == postActTimes.Length,
                         ["allSixFramesSaved"] = images.Count == 4 + postActSamples && images.All(value => (bool)value["saved"]),
                         ["privatePoseRecoveredWithSourceInvariants"] = recovered,
-                        ["actualRecoveryTimeComplete"] = recoveryGameSeconds >= 1.6,
-                        ["completedRenderedRecoveryTimeComplete"] = recoveryRenderedSeconds >= 1.6,
+                        ["actualRecoveryTimeComplete"] = recoveryCurrentTicks >= recoveryDeadlineTicks,
+                        ["completedRenderedRecoveryTimeComplete"] = recoveryRenderedTicks >= recoveryDeadlineTicks,
                         ["recoveryWallAndFrameBounds"] = recoveryWallSeconds <= 20 && recoveryFrames <= 2400 };
                     bool gestureMotion = gesturePredicates.Properties().All(value => (bool)value.Value);
                     bool invariants = _sprint25Clock.Pulses == pulseBefore && JToken.DeepEquals(stats, Cleanup2CrabBaseStats(actor)) &&
@@ -368,6 +378,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["gesturePredicates"] = gesturePredicates, ["recoveryWait"] = new JObject {
                             ["requiredActualAndRenderedGameSeconds"] = 1.6, ["actualGameSeconds"] = recoveryGameSeconds,
                             ["completedRenderedGameSeconds"] = recoveryRenderedSeconds, ["wallSeconds"] = recoveryWallSeconds,
+                            ["nativeStartTicks"] = recoveryStartTime.Ticks, ["nativeAbsoluteDeadlineTicks"] = recoveryDeadlineTicks,
+                            ["requiredNativeElapsedTicks"] = recoveryRequiredTicks, ["nativeCurrentTicks"] = recoveryCurrentTicks,
+                            ["nativeCompletedRenderedTicks"] = recoveryRenderedTicks,
+                            ["actualNativeElapsedTicks"] = recoveryCurrentTicks - recoveryStartTime.Ticks,
+                            ["completedRenderedNativeElapsedTicks"] = recoveryRenderedTicks - recoveryStartTime.Ticks,
+                            ["actualNativeTicksShortOfDeadline"] = Math.Max(0L,recoveryDeadlineTicks-recoveryCurrentTicks),
+                            ["renderedNativeTicksShortOfDeadline"] = Math.Max(0L,recoveryDeadlineTicks-recoveryRenderedTicks),
+                            ["timeContract"] = "Exact System.TimeSpan ticks from native current time and the same native post-render sample; one tick before deadline fails, equality passes. Historical double-second subtraction is diagnostic only.",
                             ["synchronousReadbackAndPngWallSeconds"] = recoveryReadbackSeconds,
                             ["frameWaitWallSeconds"] = recoveryWallSeconds - recoveryReadbackSeconds,
                             ["maximumFrameWaitWallSeconds"] = 8, ["maximumTotalWallSeconds"] = 20, ["frames"] = recoveryFrames,

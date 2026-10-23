@@ -192,6 +192,8 @@
     <Compile Include="SummonAttackGesturePolicyTests.cs" />
     <Compile Include="Cleanup2ElementalPresentationTests.cs" />
     <Compile Include="Cleanup2ElementalSourceChooserTests.cs" />
+    <Compile Include="Cleanup2DruidConversionTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\DruidSummonConversionPolicy.cs"><Link>Summoning\DruidSummonConversionPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ElementalSourceChooserPolicy.cs"><Link>Summoning\ElementalSourceChooserPolicy.cs</Link></Compile>
     <Compile Include="ExpandedSummoningBaselineInventoryTests.cs" />
     <Compile Include="ExpandedSummoningIdealRosterTests.cs" />
