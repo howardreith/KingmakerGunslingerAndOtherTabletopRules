@@ -58695,6 +58695,22 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.BladeBarrier",
+      "guid": "6dbee5c35b7248c3959f863eb0d4cae6",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private native spell-like dependency; exact CL13/resource/effect/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.BladeBarrierResource",
+      "guid": "296fc4857b8444e380d9723a742e7a49",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private native spell-like dependency; exact CL13/resource/effect/lifetime qualification required before the suppressed Astral root is published."
     }
   ]
 }
