@@ -565,19 +565,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 units = created.ToArray();
             }
             else foreach (var unit in units) RegisterRosterReadiness(unit, caster, null);
+            bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
+                _context.FeatureModules.Active.ExpandedSummoning;
+            // The general save-readiness contract deliberately allows native
+            // appearance still in flight. This exact trio additionally checks
+            // ordinary production scale below, which attaches after its native
+            // palette lifecycle. Let that lifecycle finish BEFORE pausing it.
+            Func<bool> presentationReady = () => !cleanup2Trio || new[] { "cloud-giant", "storm-giant" }.All(key => {
+                var matching = units.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>()?.Key == key).ToArray();
+                if (matching.Length != 1 || matching[0].View == null) return false;
+                var owner = GiantSummonPresentationPatch.ProductionOwner(matching[0].View);
+                return owner != null && !owner.IsDisposed;
+            });
+            DateTime presentationDeadline = DateTime.UtcNow.AddSeconds(60);
             Game.Instance.IsPaused = false;
             for (int frame = 0; frame < 600; frame++)
             {
                 yield return 0;
                 foreach (var entry in _rosterReadiness) ObserveRosterReadiness(entry);
-                if (frame >= 30 && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave)) break;
+                if (frame >= 30 && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) && presentationReady()) break;
+                if (cleanup2Trio && DateTime.UtcNow >= presentationDeadline) break;
             }
             Game.Instance.IsPaused = true;
-            bool ready = _rosterReadiness.Count == units.Length && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) &&
+            bool productionReady = presentationReady();
+            bool ready = productionReady && _rosterReadiness.Count == units.Length && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) &&
                 units.All(unit => !unit.Destroyed && !unit.Descriptor.State.IsDead && unit.Descriptor.State.IsConscious);
             FlushAndClearRosterReadiness();
             RosterPersistenceCheck("native-appearance", ready,
-                new JObject { ["units"] = units.Length, ["ready"] = ready },
+                new JObject { ["units"] = units.Length, ["ready"] = ready,
+                    ["cleanup2TrioProductionReadyBeforePause"] = cleanup2Trio ? (JToken)new JValue(productionReady) : JValue.CreateNull(),
+                    ["productionOwnership"] = cleanup2Trio ? new JArray(units.Where(unit =>
+                        unit.Get<UnitPartRelease143RosterReceipt>()?.Key == "cloud-giant" ||
+                        unit.Get<UnitPartRelease143RosterReceipt>()?.Key == "storm-giant").Select(unit =>
+                        GiantSummonPresentationPatch.ObserveProductionOwnership(unit.View))) : null,
+                    ["observerCalledApplyOrRebuild"] = false },
                 "every owned live view naturally clears native appearance lock and has valid view/control/finite dissolve; current camera/fog/invisibility is not a save prerequisite");
             var keys = units.Select(u => u.Get<UnitPartRelease143RosterReceipt>()?.Key).OrderBy(k => k, StringComparer.Ordinal).ToArray();
             // What this asserts depends on the module, exactly as the

@@ -6,6 +6,38 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review31 exact failures and review32 corrections
+
+Frozen `69643385199d89c2d4225bd16a26e6040f345140`, package
+`b1354053998e40bd01f2c8d218668e5bcd03a28df780b4736e3f5923da313029`, DLL
+`fd2ab3a5b1ea658c027487772a4ba913783edf7d1b35124346534a74be6592ea`, MVID
+`ad6e1f1f-47ec-4a15-a345-7f4907c25c73`. Exact compilation,20 focused cases
+and22 installed Harmony targets pass. Original FAIL records remain unchanged.
+
+| Phase / raw evidence prefix | Actual result | Demonstrated cause and next bounded correction |
+| --- | --- | --- |
+| Giant lineup `20261023T0251584889370Z` | 13 PASS/2 FAIL;82.641s | Native three-second appearance advances1.289 Unity seconds in12.364 wall seconds; current controller owns its progressing materials. Preserve opacity predicate with60s wall allowance. Installed `MarkRenderersAndCollidersAreUpdated` also schedules full collider/material census, unlike the previous visual-only assumption; use its exact highlighter invalidation without that flag. Retain destroyed-owner references and first refusal instead of retrying through Unity fake-null. Production height remains unqualified. |
+| Sources `20261023T0255349549599Z` | 81 PASS/3 FAIL;266.443s | All24 actual casts/spawns/debits, two books/exhaustion, SNAII, Extend and Favorite special slot pass. Hydration stops on a retained global level-up controller. Native Commit/Cancel do not clear that field: require exact unchanged intake plus positively disposed detached preview and idle producer, without clearing/canceling it. New `elementals-pin` reproduces only Favorite/pin/hydration/original-pin-cast; it does not relabel earlier24 casts. |
+| Creature commands `20261023T0302167858388Z` | 10 PASS/2 FAIL;70.179s | Mansion has real `c0_before` interchapter92fb2c819ba16a24eaa73351e9708523, active canvas and14 visible renderers. Preserve refusal; use the actual review28 Oleg westward approach and creature-specific recorded perspective, with current full-body/path/ground/obstruction checks. No creature attack was reached. |
+| Controller `20261023T0305550571638Z` | 11 PASS/3 FAIL;81.292s | Actual24 binding/cancel, original-source Use/cast/debit and preparation disclosure run. Native `SpellBookVM.Back` disposes but leaves the service field populated, causing local UI restoration refusal. Use exact owned `CharcaterServiceContext.HideSpellbook` and require field cleared. Inspected two real PNGs expose clipped source/disclosure labels; production rows now lead with book/preparation and shorten disclosure controls. Learning remains unreached. |
+| Menu adapters `20261023T0309422535995Z` | 6 PASS/3 FAIL;95.140s | Observer itself requested Pause after strict Default acquisition. Remove that request; preserve foreign-mode refusal. Extra-book cleanup wrongly compared intentionally exercised fixture Wizard contents with intake; verify exact retained book references, released extras/stats and separately unchanged original party resources/pins. Horse effective-pixel observation remains unreached. |
+
+All five games exit; each actual fresh95-original-save inventory, installation
+and settings restores exactly. Compatibility receipts, in table order:
+`compat-20261023T025134Z-fdc90bbcdffe`,
+`compat-20261023T025512Z-9bc11501bab4`,
+`compat-20261023T030153Z-de79f97ae92a`,
+`compat-20261023T030532Z-ec92e9d6ee60`,
+`compat-20261023T030910Z-508c30853617`. Last verification
+**03:11:37.3148940UTC** closes window10 at24m37.315s from02:47:00UTC.
+Final90-minute completion qualification has not started.
+
+The exact cold trio observer now waits for its ordinary Cloud/Storm production
+owners before pausing; general save-readiness alone does not promise that native
+appearance/palette lifecycle has finished. This is a bounded read-only readiness
+check, not a rebuild or opacity write. Cold scripts retain their qualified
+process/backup/restoration identity; actual native cold execution remains open.
+
 ### Review30 production height and attack-view refusals
 
 Frozen `6f4c204ff3c7a52ca26bcf40904a2bb9a210cbb5`, package

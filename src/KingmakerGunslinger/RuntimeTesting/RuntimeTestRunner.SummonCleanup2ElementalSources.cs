@@ -88,10 +88,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewSummonCleanup2ElementalSources(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
         {
+            string reviewPhase = _request.Parameters == null ? null : (string)_request.Parameters["reviewPhase"];
+            bool pinOnly = reviewPhase == "elementals-pin";
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion || _request.Parameters == null ||
-                _request.Parameters.Count != 1 || (string)_request.Parameters["reviewPhase"] != "elementals-sources" ||
+                _request.Parameters.Count != 1 || (reviewPhase != "elementals-sources" && !pinOnly) ||
                 !ElementalSourceChooserRuntime.Active || _expandedSummoningPlayerPathCaptureActive)
-                throw new InvalidOperationException("Exact active, exclusive automatic-exit elementals-sources phase required.");
+                throw new InvalidOperationException("Exact active, exclusive automatic-exit elementals-sources or focused elementals-pin phase required.");
             var game = Game.Instance; var player = game.Player; var ui = game.UI; var group = GroupController.Instance; var bar = ActionBarManager.Instance;
             if (!Cleanup2NoNarrativeOverlay() || game.IsControllerGamepad || group == null || bar?.Group == null ||
                 ui?.SelectionManagerPC == null || ui.ServiceWindow == null || ui.ServiceWindow.WindowTabs.IsShow ||
@@ -104,6 +106,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalInputs = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var originalBars = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
             var fixtureCasterAtIntake = fixture.Caster;
+            var levelUpIntake = new Cleanup2SourcesLevelUpIntake(game);
             var fixtureBooksBefore = fixture.Caster.Descriptor.Spellbooks.ToArray();
             var fixtureStatsBefore = new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue };
             bool fixtureDetachedBefore = fixture.Caster.IsDetached;
@@ -122,15 +125,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ui.TooltipsController.ContextTooltipData == null && game.SelectedAbilityHandler?.Ability == null;
             try
             {
-                foreach (var parent in StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent))
+                foreach (var parent in StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent && (!pinOnly || value.CanonicalTier == 2)))
                     PrepareExpandedSummoningPlayerPathSpell(book, Cleanup2ElementalAbility(fixture, parent.Guid),
                         Cleanup2ElementalAbility(fixture, parent.Guid), parent.CanonicalTier);
                 var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                     "610d836f3a3a9ed42a4349b62f002e96", "second actual native prepared spellbook");
-                var otherBook = extraBooks.AddBook(druid.Spellbook);
+                var otherBook = pinOnly ? null : extraBooks.AddBook(druid.Spellbook);
                 var small = ElementalSourceChooserPolicy.Rank(2);
                 var smallParent = Cleanup2ElementalAbility(fixture, small.Guid);
-                PrepareExpandedSummoningPlayerPathSpell(otherBook, smallParent, smallParent, 2); otherBook.Rest();
+                if (!pinOnly) { PrepareExpandedSummoningPlayerPathSpell(otherBook, smallParent, smallParent, 2); otherBook.Rest(); }
                 const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
                 hooks.Patch(typeof(RuleCastSpell).GetMethod("OnTrigger"), null,
                     new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("ExpandedSummoningPlayerPathRuleCastPostfix", statics)), null);
@@ -139,13 +142,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPlayerPathCaptureActive = true;
                 if (!party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
-                mode = Cleanup2EnterNativeDefault(fixture, "elementals-sources"); screens = new NativeIconScreenEvidence(_request);
+                mode = Cleanup2EnterNativeDefault(fixture, reviewPhase); screens = new NativeIconScreenEvidence(_request);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
                 ownedParty = player.Party.ToArray();
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 var spellGroup = groups.Single(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.Spell);
                 if (!spellGroup.ToggleState) spellGroup.OnClick();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                if (!pinOnly)
+                {
                 double smallFireBaseSeconds = double.NaN;
                 foreach (int rank in ElementalSourceChooserPolicy.Ranks)
                 foreach (string key in ElementalSourceChooserPolicy.Rank(rank).CreatureKeys)
@@ -243,7 +248,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalActionExtendable"] = signature.DurationExtendable, ["nativeExpectedMultiplier"] = multiplier },
                     "Actual RuleSummonUnit duration follows the original native action's Extend eligibility; no duration/rank field is edited.");
                 if (!duration) throw new InvalidOperationException("Native Extend duration differs from original action contract.");
-                using (var specialSteps = Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts, uiOwned, ownedSessions).GetEnumerator())
+                }
+                using (var specialSteps = Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts, uiOwned, ownedSessions, levelUpIntake).GetEnumerator())
                 {
                     while (true)
                     {
@@ -263,6 +269,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 Cleanup2Check("elemental-sources-scope", true, new JObject {
                     ["all24OriginalCasts"] = casts.Count, ["maximumPhaseWallSeconds"] = 360, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
+                    ["reviewPhase"] = reviewPhase, ["focusedPinOnly"] = pinOnly,
+                    ["all24TwoBookSnaExtendDisposition"] = pinOnly ? "NOT_EXECUTED: focused existing Favorite/pin/hydration/original-pin-cast reproduction only" : "Executed above; individual native assertions retained",
                     ["console"] = "separate native controller transaction; not exercised here", ["coldSave"] = "separate explicitly authorized fresh-load transaction; not proved by runtime pins",
                     ["moduleOff"] = "fresh process with module OFF before startup; Active is restart-only, never toggled by reflection here" },
                     "The original-source cast/source-budget slice and separate controller, cold-save and fresh-OFF obligations are explicit.");
@@ -701,7 +709,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Cleanup2SourcesSpecialAndPin(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
             BlueprintAbility parent, ActionBarGroupElement spellGroup, Cleanup2NativeDefaultScope mode, Stopwatch phase,
-            NativeIconScreenEvidence screens, List<Action> removes, Func<bool> uiOwned, ICollection<ElementalChooserSession> ownedSessions)
+            NativeIconScreenEvidence screens, List<Action> removes, Func<bool> uiOwned, ICollection<ElementalChooserSession> ownedSessions,
+            Cleanup2SourcesLevelUpIntake levelUpIntake)
         {
             Cleanup2SourcesBoundary(mode, phase);
             if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; native special-slot preparation refused.");
@@ -808,7 +817,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["saveWrite"] = false, ["coldHydration"] = "separate transaction" },
                     "A real native converted child pin keeps its exact original mechanism/child/source across native tab reconstruction, without transient-node serialization.");
                 if (!pin) throw new InvalidOperationException("Native legacy child pin changed identity.");
-                Cleanup2SourcesHydrateLegacyPin(fixture, book, favorite, mechanism, index, uiOwned);
+                Cleanup2SourcesHydrateLegacyPin(fixture, book, favorite, mechanism, index, uiOwned, levelUpIntake);
                 foreach (int frame in Cleanup2SourcesCast(fixture, child, favorite, destination.OnClick, mode, phase, "small-fire-original-pinned-child", null)) yield return frame;
             }
             finally
@@ -828,6 +837,92 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        // UIAccess.LevelUpController is a retained plain field. Native
+        // Start06002835 assigns it; Commit0600285D/Cancel0600285E dispose
+        // their detached Preview and Stop the producer without clearing it.
+        // AdvanceDisposableSpellcaster uses StartWithoutAssigningStaticInstance
+        // 06002836. Never cancel/clear an intake controller to make it null.
+        private sealed class Cleanup2SourcesLevelUpIntake
+        {
+            private readonly Game _game;
+            private readonly Kingmaker.UI.UIAccess _ui;
+            private readonly Kingmaker.UI.LevelUp.CharacterBuildController _build;
+            private readonly Kingmaker.UnitLogic.Class.LevelUp.LevelUpController _controller;
+            private readonly UnitDescriptor _unit, _preview;
+            private readonly object _state, _actions, _callback;
+            private readonly object[] _actionItems;
+            private readonly FieldInfo _onSuccess;
+            private readonly FieldInfo _producerLock, _producerSource, _producerPending, _producerQueue, _producerThread;
+            private readonly object _intakeThread;
+
+            internal Cleanup2SourcesLevelUpIntake(Game game)
+            {
+                _game = game; _ui = game.UI; _build = _ui.CharacterBuildController; _controller = _ui.LevelUpController;
+                _unit = _controller?.Unit; _preview = _controller?.Preview;
+                _state = _controller?.State; _actions = _controller?.LevelUpActions;
+                _actionItems = _controller?.LevelUpActions.Cast<object>().ToArray();
+                _onSuccess = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpController).GetField("m_OnSuccess", Cleanup2Fields);
+                _callback = _controller == null || _onSuccess == null ? null : _onSuccess.GetValue(_controller);
+                Type producer = typeof(Kingmaker.UnitLogic.Class.LevelUp.LevelUpPreviewThread);
+                const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
+                _producerLock = producer.GetField("s_Lock", statics); _producerSource = producer.GetField("s_Source", statics);
+                _producerPending = producer.GetField("s_RequestPending", statics); _producerQueue = producer.GetField("s_Queue", statics);
+                _producerThread = producer.GetField("s_Thread", statics); _intakeThread = _producerThread?.GetValue(null);
+            }
+
+            internal bool Current(out JObject evidence)
+            {
+                bool fields = _onSuccess != null && _producerLock != null && _producerSource != null &&
+                    _producerPending?.FieldType == typeof(bool) && _producerQueue != null && _producerThread != null;
+                bool locked = false, producerIdle = false; int queued = -1; bool? pending = null; object source = null;
+                object sync = fields ? _producerLock.GetValue(null) : null;
+                try
+                {
+                    // Read only under the producer's own lock, without waiting
+                    // for or stopping a producer that belongs to another UI.
+                    if (sync != null && System.Threading.Monitor.TryEnter(sync))
+                    {
+                        locked = true; source = _producerSource.GetValue(null); pending = (bool)_producerPending.GetValue(null);
+                        var queue = _producerQueue.GetValue(null) as System.Collections.ICollection;
+                        queued = queue == null ? -1 : queue.Count;
+                        producerIdle = source == null && pending == false && queued == 0 && ReferenceEquals(_producerThread.GetValue(null), _intakeThread);
+                    }
+                }
+                finally { if (locked) System.Threading.Monitor.Exit(sync); }
+                bool controllerExact = ReferenceEquals(_ui.LevelUpController, _controller);
+                bool completed = _controller == null || (!_controller.AutoCommit && _preview != null && _preview.Unit != null &&
+                    !ReferenceEquals(_preview, _unit) && _preview.Unit.Destroyed && _preview.Unit.View == null &&
+                    !_game.Player.Party.Any(value => ReferenceEquals(value, _preview.Unit)) && !_game.State.Units.Any(value => ReferenceEquals(value, _preview.Unit)));
+                bool contextExact = _controller == null || (ReferenceEquals(_controller.Unit, _unit) && ReferenceEquals(_controller.Preview, _preview) &&
+                    ReferenceEquals(_controller.State, _state) && ReferenceEquals(_controller.LevelUpActions, _actions) &&
+                    _actionItems != null && _controller.LevelUpActions.Cast<object>().SequenceEqual(_actionItems) && ReferenceEquals(_onSuccess?.GetValue(_controller), _callback));
+                var predicates = new JObject {
+                    ["exactIntakeGameUi"] = ReferenceEquals(Game.Instance, _game) && ReferenceEquals(_game.UI, _ui),
+                    ["exactIntakeCharacterBuild"] = _build != null && ReferenceEquals(_ui.CharacterBuildController, _build),
+                    ["characterBuildHidden"] = _build != null && !_build.IsShow,
+                    ["noCharacterBuildController"] = _build != null && _build.LevelUpController == null,
+                    ["nativeDefaultModeCurrent"] = _game.CurrentMode == GameModeType.Default,
+                    ["exactIntakeGlobalController"] = controllerExact,
+                    ["noControllerOrDisposedDetachedPreview"] = completed,
+                    ["intakeControllerContextUnchanged"] = contextExact,
+                    ["nativeProducerFieldContracts"] = fields,
+                    ["nativeProducerReadLockAcquired"] = locked,
+                    ["nativeProducerIdleAndThreadUnchanged"] = producerIdle };
+                bool current = predicates.Properties().All(value => (bool)value.Value);
+                evidence = new JObject { ["predicates"] = predicates,
+                    ["rejectedPredicates"] = new JArray(predicates.Properties().Where(value => !(bool)value.Value).Select(value => value.Name)),
+                    ["controllerPresentAtIntake"] = _controller != null,
+                    ["intakeControllerIdentity"] = _controller == null ? (JToken)JValue.CreateNull() : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(_controller),
+                    ["currentControllerIdentity"] = _ui.LevelUpController == null ? (JToken)JValue.CreateNull() : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(_ui.LevelUpController),
+                    ["controllerUnit"] = _unit?.Unit?.UniqueId, ["controllerPreviewUnit"] = _preview?.Unit?.UniqueId,
+                    ["previewDestroyed"] = _preview?.Unit?.Destroyed, ["controllerAutoCommit"] = _controller?.AutoCommit,
+                    ["previewProducerSourcePresent"] = source != null, ["previewRequestPending"] = pending, ["queuedPreviews"] = queued,
+                    ["globalFieldOrControllerWritten"] = false, ["producerStoppedOrWritten"] = false,
+                    ["contract"] = "Only the exact intake field is preserved; a nonnull controller requires native Commit/Cancel's disposed detached Preview, no active builder and no producer work. Active sessions/replacements refuse. A stopped producer thread may remain alive natively; its identity is preserved." };
+                return current;
+            }
+        }
+
         // Installed 2.1.7b: UnitSerialization.Serialize 0600828E and the
         // LevelUpPreviewThread.Run 0600286B ToObject<UnitDescriptor> call,
         // followed by LevelUpController.RequestPreview 0600283C's exact three
@@ -835,7 +930,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // detached copy BEFORE those hooks so any failed hook can be disposed.
         // No preview thread, UI controller, save file or detached cast is used.
         private void Cleanup2SourcesHydrateLegacyPin(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
-            SpellSlot preparation, MechanicActionBarSlot mechanism, int index, Func<bool> uiOwned)
+            SpellSlot preparation, MechanicActionBarSlot mechanism, int index, Func<bool> uiOwned, Cleanup2SourcesLevelUpIntake levelUpIntake)
         {
             var game = Game.Instance; var original = fixture.Caster.Descriptor; var ui = game.UI;
             var backpack = typeof(UnitUISettings).GetField("OnChangedBackpackVisibility", Cleanup2Fields);
@@ -845,10 +940,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             Func<bool> serializationIdle = () => fieldsExact && (int)serializationCount.GetValue(null) == 0;
             JObject casterOwnership; bool ownCaster = Cleanup2SourcesOwnsCaster(fixture, original.Unit, out casterOwnership);
             var registeredCasterBlueprint = ResourcesLibrary.TryGetBlueprint<BlueprintUnit>(original.Blueprint.AssetGuid);
+            JObject levelUpReceipt; bool levelUpIdle = levelUpIntake.Current(out levelUpReceipt);
             bool pinIndex = original.UISettings.Slots != null && index >= 0 && index < original.UISettings.Slots.Length;
             var admission = new JObject {
                 ["nativeCallbackAndSerializationFieldsExact"] = fieldsExact, ["nativeSerializationIdle"] = serializationIdle(),
-                ["exactFixtureUiOwned"] = uiOwned(), ["noNativeLevelUpController"] = ui.LevelUpController == null,
+                ["exactFixtureUiOwned"] = uiOwned(), ["exactCompletedNativeLevelUpIntakeAndIdleProducer"] = levelUpIdle,
                 ["originalCasterTurnedOn"] = original.IsTurnedOn, ["exactFixtureCasterOwned"] = ownCaster,
                 ["noForeignMaster"] = original.Master.Value == null, ["noPet"] = original.Pet == null,
                 ["nativePinIndexValid"] = pinIndex, ["exactNativePinnedMechanism"] = pinIndex && ReferenceEquals(original.UISettings.Slots[index], mechanism),
@@ -858,6 +954,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] rejected = admission.Properties().Where(value => !(bool)value.Value).Select(value => value.Name).ToArray();
             Cleanup2Check("elemental-sources-native-hydration-admission", rejected.Length == 0, new JObject {
                 ["predicates"] = admission, ["rejectedPredicates"] = new JArray(rejected), ["casterOwnership"] = casterOwnership,
+                ["nativeLevelUpIntake"] = levelUpReceipt,
                 ["unit"] = fixture.Caster.UniqueId, ["pinIndex"] = index, ["book"] = book.Blueprint.AssetGuid,
                 ["master"] = original.Master.Value?.UniqueId, ["pet"] = original.Pet?.UniqueId,
                 ["saveWrite"] = false, ["coldLoad"] = false },
@@ -893,7 +990,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 preview.Buffs.SetupPreview(preview);
                 preview.Unit.PostLoad();
                 preview.Unit.TurnOn();
-                bool ownership = ui.LevelUpController == null && uiOwned() && preview != null && !ReferenceEquals(preview, original) &&
+                bool ownership = levelUpIntake.Current(out levelUpReceipt) && uiOwned() && preview != null && !ReferenceEquals(preview, original) &&
                     !ReferenceEquals(preview.Unit, fixture.Caster) && preview.Unit.View == null &&
                     game.Player.Party.SequenceEqual(party) && game.State.Units.SequenceEqual(world) &&
                     !party.Any(value => ReferenceEquals(value, preview.Unit)) && !world.Any(value => ReferenceEquals(value, preview.Unit));
@@ -935,7 +1032,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["hydratedCasterBlueprintIsExactRegisteredReference"] = ReferenceEquals(preview.Blueprint, registeredCasterBlueprint),
                     ["casterBlueprintSerialization"] = "Native GUID reference conversion; request-only unregistered clone identity is not persisted or registered. Released child/source/book references remain exact.",
                     ["originalReferencesResourcesAndPinsExact"] = unchanged, ["previewDetachedFromPartyAndWorld"] = ownership,
-                    ["originalUiCallbacksExact"] = callbacksExact(), ["uiControllerUnchanged"] = ui.LevelUpController == null,
+                    ["originalUiCallbacksExact"] = callbacksExact(), ["uiControllerUnchanged"] = levelUpIntake.Current(out levelUpReceipt),
+                    ["nativeLevelUpIntake"] = levelUpReceipt,
                     ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                     ["saveWrite"] = false, ["coldLoad"] = false, ["oldSaveFixture"] = false, ["hydratedPreviewCast"] = false,
                     ["limits"] = "Native in-memory hydration and native title/icon getters; no old-format save, fresh-process load, rendered cloned action bar, or cast from the detached duplicate-ID preview. The original live native pin is cast separately." },
@@ -976,7 +1074,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 catch (Exception error) { cleanupError = cleanupError == null ? error : new AggregateException(cleanupError, error); }
                 bool previewDisposed = preview == null || preview.Unit != null && preview.Unit.Destroyed;
                 bool restored = cleanupError == null && serializationIdle() && previewDisposed && debit.Unspent && pins.IsRestored() && callbacksExact() &&
-                    original.IsTurnedOn && ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && ui.LevelUpController == null &&
+                    original.IsTurnedOn && ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && levelUpIntake.Current(out levelUpReceipt) &&
                     uiOwned() && game.Player.Party.SequenceEqual(party) && game.State.Units.SequenceEqual(world) &&
                     ReferenceEquals(child.ConvertedFrom, source) && ReferenceEquals(child.MetamagicData, meta) && ReferenceEquals(source.MetamagicData, sourceMeta);
                 Cleanup2Check("elemental-sources-native-hydration-restored", restored, new JObject {
@@ -985,6 +1083,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalResourcesAndSourceReferencesExact"] = debit.Unspent, ["originalPinsExact"] = pins.IsRestored(),
                     ["originalTurnedOn"] = original.IsTurnedOn, ["originalUiCallbacksExact"] = callbacksExact(), ["noSavedPartyRecordLoaded"] = true,
                     ["cleanupError"] = cleanupError?.ToString(),
+                    ["nativeLevelUpIntake"] = levelUpReceipt,
                     ["saveWrite"] = false, ["coldLoad"] = false },
                     "Only the retained detached native copy is disposed, including after a failed initialization hook; original live source/pin/book/party/input context remains exact for its independent actual cast.");
                 if (!restored)

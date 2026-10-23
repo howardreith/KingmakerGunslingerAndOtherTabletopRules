@@ -566,16 +566,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 across = Vector3.Cross(lane, Vector3.up).normalized;
                     var colliderRefs = Cleanup2NativeSelectionColliderReferences(); var meshCache = new Dictionary<Mesh, Tuple<Vector3[], int[]>>();
                     var survey = Stopwatch.StartNew(); var attempts = new JArray(); bool found = false;
-                    bool mansionStage = Game.Instance.CurrentlyLoadedArea?.AssetGuid == "0a89ba823d7eab045949d98cf22dcd2c";
-                    Evidence["stageCameraCandidateSource"] = mansionStage
-                        ? "Review28 native mansion giant stage:20-degree downward view, side-1, no lane-yaw bias; fit current whole swept bodies rather than copy its camera position."
-                        : "Existing bounded native Oleg camera candidates.";
-                    foreach (float pitch in mansionStage ? new[] { 20f, 25f, 35f, 45f, 50f, 60f } : new[] { 35f, 25f, 45f, 50f, 60f })
+                    bool olegStage = Game.Instance.CurrentlyLoadedArea?.AssetGuid == "ead426a6c23d39548a670ee515d77df4";
+                    bool crab = key == SummonAttackGesturePolicy.Crab;
+                    float lateral = crab ? .8f : 1.4f, forward = crab ? -1.2f : .6f;
+                    float recordedPitch = Mathf.Atan2(.7f, Mathf.Sqrt(lateral * lateral + forward * forward)) * Mathf.Rad2Deg;
+                    Evidence["stageCameraCandidateSource"] = olegStage
+                        ? "Review28 actual Oleg whole-creature PNG perspective: creature-specific lateral/forward/up recipe relative to incoming path heading; current swept body/target fit and obstruction checks remain required."
+                        : "Existing bounded native camera candidates.";
+                    foreach (float pitch in olegStage ? new[] { recordedPitch, 35f, 45f, 50f, 60f } : new[] { 35f, 25f, 45f, 50f, 60f })
                     {
-                        foreach (float side in mansionStage ? new[] { -1f, 1f } : new[] { 1f, -1f })
+                        foreach (float side in new[] { 1f, -1f })
                         {
                             if (jointSurvey.Elapsed.TotalSeconds > 5) break;
-                            Vector3 horizontal = (across * side + lane * (mansionStage ? 0f : .25f)).normalized;
+                            Vector3 horizontal = olegStage
+                                ? -(Vector3.Cross(Vector3.up, lane) * (lateral * side) + lane * forward).normalized
+                                : (across * side + lane * .25f).normalized;
                             Vector3 direction = horizontal * Mathf.Cos(pitch * Mathf.Deg2Rad) - Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
                             _rotation = Quaternion.LookRotation(direction, Vector3.up); _rig.SetRotation(_rotation.eulerAngles.y);
                             Vector3[] projected = corners.Select(point => Quaternion.Inverse(_rotation) * (point - centre)).ToArray();

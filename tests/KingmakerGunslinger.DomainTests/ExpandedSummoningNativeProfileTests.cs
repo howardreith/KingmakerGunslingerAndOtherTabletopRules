@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void Cleanup2RequiresExactFreshSaveFreePhase()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview;
-            foreach (string phase in new[] { "giant-lineup", "giants-off", "menus", "elementals", "bodies", "cloth-probe", "ettin-lifecycle", "ettin-commands", "elementals-presentation", "elementals-console", "elementals-sources", "elementals-learning", "elementals-off", "menu-adapters", "scale-prototype", "tooltips", "crab-attack", "production-attacks", "gorgon-presentation", "recovery-bodies", "creature-commands", "alternate-console", "shared-controls" })
+            foreach (string phase in new[] { "giant-lineup", "giants-off", "menus", "elementals", "bodies", "cloth-probe", "ettin-lifecycle", "ettin-commands", "elementals-presentation", "elementals-console", "elementals-sources", "elementals-pin", "elementals-learning", "elementals-off", "menu-adapters", "scale-prototype", "tooltips", "crab-attack", "production-attacks", "gorgon-presentation", "recovery-bodies", "creature-commands", "alternate-console", "shared-controls" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact fresh Cleanup2 phase is admitted: " + phase);
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Cleanup2 must exit automatically.");

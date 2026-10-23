@@ -42,7 +42,8 @@ namespace KingmakerGunslinger.Summoning
         public override Color GetDecorationColor(){return Color.white;}
         public override string GetTitle(){return Title;}
         public override string GetDescription(){return Source==null?
-            "Choose a rank, element and original spell source. Confirm selects a source to pin; Use casts the explicitly selected source. Original rules and budgets remain separate.":Source.Cost;}
+            "Choose a rank, element and original spell source. Confirm selects a source to pin; Use casts the explicitly selected source. Original rules and budgets remain separate.":
+            ElementalSourceChooserConsole.SourceDescription(Source);}
         // Console Result owns navigation/leaf delegation. A transient node must
         // never become a serialized action-bar mechanism or dispatch itself.
         public override void OnClick(){}
@@ -104,6 +105,32 @@ namespace KingmakerGunslinger.Summoning
         private static ElementalConsoleNode Node(ElementalConsoleContext context,string title,int rank,string creature,ElementalNativeSource source)
         {var node=new ElementalConsoleNode {Context=context,Unit=context.Unit,Title=title,Rank=rank,Creature=creature,Source=source};
             node.UpdateResourceCount();return node;}
+        private static string SourceTitle(ElementalNativeSource source)
+        {
+            // The native row is narrow and the header already names the
+            // chosen elemental. Put the distinguishing book/preparation first.
+            string preparation="spontaneous";
+            if(source.Preparation!=null)
+            {
+                int index=source.Book.GetMemorizedSpells(source.Preparation.SpellLevel).ToList()
+                    .FindIndex(value=>ReferenceEquals(value,source.Preparation));
+                preparation=index<0?"preparation changed":"prepared "+(index+1);
+            }
+            return source.Book.Blueprint.DisplayName+" · level "+source.Source.SpellLevel+" · "+preparation;
+        }
+        internal static string SourceDescription(ElementalNativeSource source)
+        {
+            var details=new List<string>();
+            if(source.Source.Resource!=null)
+                details.Add(source.Source.Resource.LocalizedName+" × "+source.Source.ResourceCost);
+            if(source.Child.MetamagicData!=null && Convert.ToInt64(source.Child.MetamagicData.MetamagicMask)!=0)
+                details.Add(source.Child.MetamagicData.MetamagicMask.ToString());
+            details.Add(source.Source.Name+(ReferenceEquals(source.Source.Blueprint,source.PresentationParent)?
+                "":" via "+source.PresentationParent.Name));
+            // Preserve the full native cost/prose string. The native detail
+            // tooltip still receives the untouched original Child AbilityData.
+            return string.Join(" · ",details.ToArray())+"\n"+source.Cost;
+        }
         internal static bool Result(ActionBarVM owner,ref MechanicActionBarSlot mechanism,bool execute)
         {
             var node=mechanism as ElementalConsoleNode;
@@ -144,7 +171,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 caption=ElementalSourceChooserPolicy.Title(node.Creature)+" — choose Cast using / source to pin";
                 children=context.Sources.Where(value=>value.Rank==node.Rank && value.CreatureKey==node.Creature).Select(source=>
-                    Node(context,"Cast using: "+source.Label,node.Rank,node.Creature,source));
+                    Node(context,SourceTitle(source),node.Rank,node.Creature,source));
             }
             Replace(context,children.ToArray(),caption);return false;
         }

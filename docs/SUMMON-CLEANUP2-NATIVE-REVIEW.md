@@ -7,7 +7,7 @@ The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
 `cloth-probe`, `ettin-lifecycle`, `ettin-commands`, `scale-prototype`, `tooltips`,
 `crab-attack`, `production-attacks`, `gorgon-presentation`, `recovery-bodies`,
 `creature-commands`, `elementals-presentation`, `elementals-console`,
-`elementals-sources`, `elementals-learning`, `elementals-off`, `menu-adapters`,
+`elementals-sources`, `elementals-pin`, `elementals-learning`, `elementals-off`, `menu-adapters`,
 `alternate-console` and `shared-controls`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
@@ -26,6 +26,11 @@ It preserves the actual current mod inventory and holds all original saves
 read-only; it never substitutes a historical mod-count/version intake.
 
 ## Evidence scope
+
+`elementals-pin` is the focused reproduction of review31's saved-pin hydration
+admission refusal. It reuses the source observer's owned native UI/setup/cleanup
+and Favorite-slot/pin sequence; it does not replay or claim the24-rank cast,
+two-book or metamagic cases. The full `elementals-sources` phase retains those.
 
 The public protected wrapper admits its explicit completion subset. Its
 `-WithAlternateSources` switch selects the fixed Call of the Wild profile only
