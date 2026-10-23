@@ -6,6 +6,45 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review30 production height and attack-view refusals
+
+Frozen `6f4c204ff3c7a52ca26bcf40904a2bb9a210cbb5`, package
+`2efad753871c5aaf1cf93796bfb283b92a2bdbad5ce5d0f2d7b5e1e049785808`, DLL
+`9311b16be7cce1e99bb955ed77be2412a02714d0546ce04aff7e2c46c4a4b5f3`, MVID
+`4fa59045-f89c-464e-b968-7cf21e1cf613`. Exact compilation,20 focused cases and22
+installed Harmony targets pass. This candidate includes the Brachiosaurus
+lower-neck/support repair, production giant height, current source/controller
+observer corrections and qualified cold transaction; those additions are not
+native passes merely because the package builds.
+
+- Giant lineup `20261023T0230218284944Z`: **13 PASS/2 FAIL**,83.174s.
+  All seven actual canonical casts pass. SM Frost appearance stops at12s/35frames
+  with sampled dissolve0.9534376. The observer samples the first skin, including
+  disabled originals, and records no Unity dissolve clock or controller/material
+  identities. Cause is unknown; entry/exit native clock, visible-material,
+  controller and production-owner snapshots are added without opacity writes or
+  relaxing the predicate. No production-height picture or qualification results.
+- Creature commands `20261023T0233284025458Z`: **15 PASS/2 FAIL**,76.394s.
+  Two legal lane/camera candidates reach actual scenery obstruction or the5s
+  survey bound; neither creature attacks. The next review uses the already
+  observed clear mansion stage instead of Oleg, retaining all native graph,
+  ground, path, protected-actor, range and actual-surface visibility requirements.
+  New Crab/Brachiosaurus geometry remains awaiting native contact/recovery.
+
+Both games exit and fresh95-original-save inventories, installation and settings
+restore exactly: `compat-20261023T022954Z-15ff46f5d5cc` at02:32:01.7486003UTC,
+`compat-20261023T023301Z-1aea79425470` at02:34:59.8359902UTC. Window9 closes at
+28m14.836s from02:06:45UTC. Final90-minute qualification has not started.
+
+Historical Horse row-name checks do not prove the painted image rendered:
+review7/9 pixels show a beige bust, while their actual packages already contain
+approved painted Horse PNG SHA256
+`3bf6ac8d8c7b08869bf262c4018937d5aa6b72cf3e0b809efec916c6e0cf67c1`.
+Installed Unity Image may render overrideSprite while the old observer checks
+only sprite. This is a demonstrated observation gap, not a proven override cause.
+The existing adapter review now observes the effective sprite/texture pixels;
+approved art and foreign UI state remain unchanged.
+
 ### Review29 cloth contact and Ettin ordinary commands
 
 Frozen `ed83d7dc47c02b2a662f27312d7e3e54326bdbb9`, package

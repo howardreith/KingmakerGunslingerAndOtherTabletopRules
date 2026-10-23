@@ -566,12 +566,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3 across = Vector3.Cross(lane, Vector3.up).normalized;
                     var colliderRefs = Cleanup2NativeSelectionColliderReferences(); var meshCache = new Dictionary<Mesh, Tuple<Vector3[], int[]>>();
                     var survey = Stopwatch.StartNew(); var attempts = new JArray(); bool found = false;
-                    foreach (float pitch in new[] { 35f, 25f, 45f, 50f, 60f })
+                    bool mansionStage = Game.Instance.CurrentlyLoadedArea?.AssetGuid == "0a89ba823d7eab045949d98cf22dcd2c";
+                    Evidence["stageCameraCandidateSource"] = mansionStage
+                        ? "Review28 native mansion giant stage:20-degree downward view, side-1, no lane-yaw bias; fit current whole swept bodies rather than copy its camera position."
+                        : "Existing bounded native Oleg camera candidates.";
+                    foreach (float pitch in mansionStage ? new[] { 20f, 25f, 35f, 45f, 50f, 60f } : new[] { 35f, 25f, 45f, 50f, 60f })
                     {
-                        foreach (float side in new[] { 1f, -1f })
+                        foreach (float side in mansionStage ? new[] { -1f, 1f } : new[] { 1f, -1f })
                         {
                             if (jointSurvey.Elapsed.TotalSeconds > 5) break;
-                            Vector3 horizontal = (across * side + lane * .25f).normalized;
+                            Vector3 horizontal = (across * side + lane * (mansionStage ? 0f : .25f)).normalized;
                             Vector3 direction = horizontal * Mathf.Cos(pitch * Mathf.Deg2Rad) - Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
                             _rotation = Quaternion.LookRotation(direction, Vector3.up); _rig.SetRotation(_rotation.eulerAngles.y);
                             Vector3[] projected = corners.Select(point => Quaternion.Inverse(_rotation) * (point - centre)).ToArray();
@@ -580,7 +584,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (_camera.orthographic) _camera.orthographicSize = halfFrame;
                             _position = centre - direction * distance; _camera.transform.SetPositionAndRotation(_position, _rotation);
                             JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, units, sightMetrics, colliderRefs, out ignored);
-                            var rendered = Cleanup2LineupRenderedObstructions(_camera, units, sightMetrics, meshCache, survey);
+                            // A demonstrated physics obstruction already
+                            // rejects this candidate. Do not spend the joint
+                            // budget testing millions of mesh triangles on a
+                            // camera that cannot be admitted in any event.
+                            var rendered = blockers.Count == 0
+                                ? Cleanup2LineupRenderedObstructions(_camera, units, sightMetrics, meshCache, survey)
+                                : new JObject { ["qualified"] = false, ["actualTriangleHits"] = new JArray(),
+                                    ["unknownCandidates"] = new JArray(new JObject { ["reason"] = "not-surveyed-demonstrated-physics-obstruction" }),
+                                    ["triangleTests"] = 0, ["limits"] = "Physical blockers already reject this exact candidate; no rendered-clear claim." };
                             attempts.Add(new JObject { ["pitch"] = pitch, ["side"] = side, ["position"] = SurveyVector(_position),
                                 ["physicalBlockers"] = blockers, ["ignoredExactSelectionColliders"] = ignored, ["renderedSurvey"] = rendered });
                             if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)

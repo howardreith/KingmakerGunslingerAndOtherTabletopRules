@@ -12,7 +12,14 @@ Quick review: [14-item acceptance status](#acceptance-status),
 ### PR #67 review corrections (2026-10-22)
 
 Latest: [PR 67 follow-up results and remaining checks](CLEANUP2-PR67-REVIEW-FOLLOWUP.md).
-Latest native input is review29, source `ed83d7dc47c02b2a662f27312d7e3e54326bdbb9`.
+Latest native input is review30, source `6f4c204ff3c7a52ca26bcf40904a2bb9a210cbb5`.
+Giant13/2 stops at Frost appearance with insufficient material/Unity-clock
+observations to identify the cause. Creature15/2 stops before attacks at actual
+scenery/bounded-camera-survey refusal. New geometry and production height remain
+unqualified; the next camera uses the already observed clear mansion stage.
+Both runs restore fresh95-save inventories, installation and settings exactly;
+window9 ends02:34:59.8359902UTC,28m14.836s. Review29 evidence below retains its
+own source `ed83d7dc47c02b2a662f27312d7e3e54326bdbb9`.
 Scale93/0 positively establishes exact copied cape behavior and disabled-capsule
 contact; the production gate is now opened for its exact native signature,
 awaiting production qualification. Ettin19/0 establishes real Default full-attack

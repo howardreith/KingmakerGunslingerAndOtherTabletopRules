@@ -24,6 +24,7 @@ using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -925,6 +926,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2WaitAppearance(UnitEntityData unit, string key)
         {
             DateTime deadline = DateTime.UtcNow.AddSeconds(12);
+            bool inspectGiant = (string)_request.Parameters?["reviewPhase"] == "giant-lineup";
+            JObject materialStart = inspectGiant ? Cleanup2GiantAppearanceState(unit) : null;
             bool before = _sprint25WaitingForUnityAppearance, ready = false;
             float dissolve = 1f;
             int frames = 0;
@@ -947,9 +950,61 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { _sprint25WaitingForUnityAppearance = before; }
             Cleanup2Check("settled-" + key, ready, new JObject { ["key"] = key,
                 ["unit"] = unit.UniqueId, ["frames"] = frames, ["dissolve"] = dissolve,
-                ["fadedIn"] = EntityFadedIn(unit), ["modelStateForced"] = false },
+                ["fadedIn"] = EntityFadedIn(unit), ["modelStateForced"] = false,
+                ["giantMaterialStart"] = materialStart,
+                ["giantMaterialEnd"] = inspectGiant ? Cleanup2GiantAppearanceState(unit) : null },
                 "Native spawn buff/fade/dissolve settles on a real enabled body without shader/opacity overrides.");
             if (!ready) throw new InvalidOperationException("Cleanup 2 native appearance not settled: " + key);
+        }
+
+        // Review30's scalar sampled the first skin even when suppression had
+        // disabled it. Retain that predicate/failure and record the actual
+        // visible materials and native animation clock before changing it.
+        // Entry/exit only: the ownership receipt performs expensive skin reads.
+        private static JObject Cleanup2GiantAppearanceState(UnitEntityData unit)
+        {
+            var view = unit?.View;
+            var skins = view == null ? new SkinnedMeshRenderer[0] : view.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+            var controllers = view == null ? new StandardMaterialController[0] : view.GetComponentsInChildren<StandardMaterialController>(true);
+            var rows = new JArray();
+            const BindingFlags fields = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (var controller in controllers.Take(16))
+            {
+                var driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
+                var cached = typeof(StandardMaterialController).GetField("m_MaterialSettings", fields)?.GetValue(controller) as System.Collections.IDictionary;
+                // Read the backing field, not the lazy initializing getter.
+                object driver = typeof(StandardMaterialController).GetField("m_DissolveController", fields)?.GetValue(controller);
+                var animations = driver?.GetType().GetField("Animations", fields)?.GetValue(driver) as System.Collections.IList;
+                var animationRows = new JArray();
+                if (animations != null) foreach (object animation in animations.Cast<object>().Take(8))
+                {
+                    var row = new JObject();
+                    if (animation != null) foreach (string name in new[] { "IsStarted", "IsFinished", "StartTime", "Delay", "Lifetime", "NormalizedTime", "LoopAnimation", "CurrentDissolve", "FadeOut", "Layer", "DissolveCutout", "UseUnscaledTime", "PlayBackwards", "IsDelayed" })
+                    {
+                        var field = animation.GetType().GetField(name, fields);
+                        var property = animation.GetType().GetProperty(name, fields);
+                        object value = field != null ? field.GetValue(animation) : property?.GetValue(animation, null);
+                        row[name] = value == null ? JValue.CreateNull() : JToken.FromObject(value);
+                    }
+                    animationRows.Add(row);
+                }
+                rows.Add(new JObject { ["id"] = controller.GetInstanceID(), ["enabled"] = controller.enabled,
+                    ["active"] = controller.gameObject.activeInHierarchy, ["driverPresent"] = driver != null,
+                    ["animationsCount"] = animations?.Count, ["animations"] = animationRows,
+                    ["drivenMaterials"] = new JArray((driven ?? new List<Material>()).Select(material => material == null ? 0 : material.GetInstanceID())),
+                    ["cachedMaterials"] = cached == null ? null : new JArray(cached.Keys.Cast<object>().OfType<Material>().Select(material => material.GetInstanceID())) });
+            }
+            return new JObject { ["unityTime"] = Time.time, ["unityUnscaledTime"] = Time.unscaledTime,
+                ["unityDeltaTime"] = Time.deltaTime, ["unityUnscaledDeltaTime"] = Time.unscaledDeltaTime,
+                ["timeScale"] = Time.timeScale, ["frame"] = Time.frameCount,
+                ["sampledRenderer"] = skins.FirstOrDefault(skin => skin != null && skin.sharedMesh != null)?.GetInstanceID(),
+                ["skinsComplete"] = skins.Length <= 64, ["controllersComplete"] = controllers.Length <= 16,
+                ["skins"] = new JArray(skins.Take(64).Select(skin => new JObject {
+                    ["id"] = skin.GetInstanceID(), ["path"] = Cleanup2TransformPath(view.transform, skin.transform),
+                    ["enabled"] = skin.enabled, ["active"] = skin.gameObject.activeInHierarchy,
+                    ["body"] = Cleanup2BodyRenderer(skin), ["mesh"] = skin.sharedMesh?.name,
+                    ["materials"] = new JArray(skin.sharedMaterials.Select(Cleanup2Material)) })),
+                ["controllers"] = rows, ["production"] = GiantSummonPresentationPatch.ObserveProductionOwnership(view) };
         }
 
         private sealed class Cleanup2ActorMetric

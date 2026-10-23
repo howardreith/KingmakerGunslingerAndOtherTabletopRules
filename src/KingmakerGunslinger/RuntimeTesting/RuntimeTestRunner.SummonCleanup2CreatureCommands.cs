@@ -403,7 +403,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!Cleanup2Finite(radius) || !Cleanup2Finite(footprint) || radius <= 0 || footprint <= 0) throw new InvalidOperationException("Native range/footprint is invalid.");
             var protectedUnits = Game.Instance.State.Units.All.Where(value => value != null && value.IsInGame && !value.Destroyed &&
                 !ReferenceEquals(value, actor) && !ReferenceEquals(value, target)).ToArray();
-            var offsets = Enumerable.Range(-5, 11).SelectMany(x => Enumerable.Range(-5, 11).Select(z => new Vector3(x * 3, 0, z * 3))).OrderBy(value => value.sqrMagnitude).ToArray();
+            // Review28's clear giant stage belongs to this exact native
+            // mansion, not Oleg. Its recorded XZ line is only a candidate:
+            // every endpoint, footprint, native ground/root and sight test
+            // below still has to succeed on this process's actual geometry.
+            bool mansionStage = Game.Instance.CurrentlyLoadedArea?.AssetGuid == "0a89ba823d7eab045949d98cf22dcd2c";
+            Vector3 stageCentre = new Vector3(19.1920929f, anchor.clampedPosition.y, 11.01118f);
+            Vector3 stageAxis = new Vector3(.5f, 0f, -.8660254f).normalized;
+            float stageHalfRun = (Mathf.Max(radius, footprint) + 3.5f) * .5f;
+            var offsets = mansionStage
+                ? new[] { stageCentre - stageAxis * stageHalfRun - anchor.clampedPosition,
+                    stageCentre + stageAxis * stageHalfRun - anchor.clampedPosition }
+                : Enumerable.Range(-5, 11).SelectMany(x => Enumerable.Range(-5, 11).Select(z => new Vector3(x * 3, 0, z * 3))).OrderBy(value => value.sqrMagnitude).ToArray();
             Func<NNInfo, Vector3, bool> connected = (point, requested) => point.node != null && point.node.Walkable && point.node.Area == anchor.node.Area &&
                 point.node.GraphIndex == anchor.node.GraphIndex && Cleanup2Finite(point.clampedPosition) && Vector3.Distance(point.clampedPosition, requested) <= .6f;
             var refusals = new Dictionary<string, int>(); int attempts = 0, cameraAttempts = 0;
@@ -415,7 +426,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int originCameraAttempts = 0;
                 var start = AstarPath.active.GetNearest(anchor.clampedPosition + offset, constraint);
                 if (!connected(start, anchor.clampedPosition + offset)) { refuse("origin-connected-walking-graph-clamp"); continue; }
-                foreach (Vector3 heading in CompassOffsets)
+                var headings = mansionStage
+                    ? new[] { Vector3.Dot(start.clampedPosition - stageCentre, stageAxis) < 0f ? stageAxis : -stageAxis }
+                    : CompassOffsets;
+                foreach (Vector3 heading in headings)
                 foreach (float extra in new[] { 3.5f, 3f, 2.5f })
                 {
                     if (selected != null || attempts >= 4096 || cameraAttempts >= 8 || originCameraAttempts >= 2 || watch.Elapsed.TotalSeconds > 5) break;
@@ -489,6 +503,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             var evidence = new JObject { ["key"] = key, ["selected"] = selected, ["attempts"] = attempts,
+                ["actualArea"] = Game.Instance.CurrentlyLoadedArea?.AssetGuid,
+                ["stageCandidateSource"] = mansionStage ? "Review28 native mansion giant stage; original Oleg camera failure retained separately." : "Existing bounded native Oleg lane survey.",
+                ["stageCandidateCentreXZ"] = mansionStage ? SurveyVector(stageCentre) : null,
+                ["stageCandidateAxis"] = mansionStage ? SurveyVector(stageAxis) : null,
                 ["cameraLaneCandidates"] = cameraAttempts, ["maximumCameraLaneCandidates"] = 8, ["maximumCameraCandidatesPerOrigin"] = 2,
                 ["jointSurveyCandidateAdmissionSeconds"] = 5, ["maximumStageRiseMeters"] = .25f, ["maximumStageSlope"] = .08f,
                 ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
