@@ -242,9 +242,10 @@ namespace KingmakerGunslinger.Summoning
             int amount = AstralDevaRulesPolicy.HolySmiteDamage(rolled, evil,
                 saving.IsPassed);
             var damage = new DirectDamage(new DiceFormula(0, DiceType.Zero), amount);
+            // HolySmiteDamage already applies the save/alignment fraction; a
+            // native HalfBecauseSavingThrow flag would reduce successful saves twice.
             var dealt = new RuleDealDamage(caster, target,
                 new DamageBundle(new BaseDamage[] { damage })) {
-                HalfBecauseSavingThrow = saving.IsPassed,
                 Reason = resolution,
                 SourceAbility = Context.SourceAbility };
             resolution.TriggerRule(dealt);
