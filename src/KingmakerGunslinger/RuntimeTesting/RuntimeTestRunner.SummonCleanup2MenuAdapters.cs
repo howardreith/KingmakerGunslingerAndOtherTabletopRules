@@ -673,10 +673,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "610d836f3a3a9ed42a4349b62f002e96", "native Druid conversion class");
             var book = books.AddBook(druid.Spellbook);
             var progressionFeatures = druid.Progression.LevelEntries.SelectMany(value => value.Features).Where(value => value != null).Distinct().ToArray();
-            var features = progressionFeatures.Where(value =>
-                value.ComponentsArray.OfType<SpontaneousSpellConversion>().Any(component => ReferenceEquals(component.CharacterClass, druid) &&
-                    component.SpellsByLevel != null && component.SpellsByLevel.Length >= 10 && Enumerable.Range(1, 9).All(level =>
-                        component.SpellsByLevel[level]?.AssetGuid == ExpandedSummoningInventoryObserver.CanonicalParentGuids[9 + level - 1]))).Distinct().ToArray();
+            var features = progressionFeatures.OfType<BlueprintFeature>().Where(value => DruidSummonConversionVariantPatch.ExactNativeFeature(value, druid)).ToArray();
             bool featureGrantAdmitted = features.Length == 1 && !fixture.Caster.Descriptor.HasFact(features[0]);
             var featureIntake = new JObject { ["class"] = druid.AssetGuid, ["progression"] = druid.Progression.AssetGuid,
                 ["book"] = book.Blueprint.AssetGuid, ["directProgressionFeatureCount"] = progressionFeatures.Length,
@@ -696,7 +693,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["index"] = index, ["guid"] = spell?.AssetGuid, ["name"] = spell?.name,
                             ["expectedCanonicalAtNativeLevel"] = index >= 1 && index <= 9 ? ExpandedSummoningInventoryObserver.CanonicalParentGuids[9 + index - 1] : null })) })) })),
                 ["scope"] = "Only the exact current Druid progression's direct features/components are observed. No global feature census, nested grant inference, replacement feature, or component is authored.",
-                ["nativeContract"] = "SpontaneousSpellConversion.OnTurnOn0600260B demands CharacterClass's book and adds its exact SpellsByLevel array; OnTurnOff0600260C removes that exact array. Unknown current grants cannot be invented from display names." };
+                ["nativeContract"] = "SpontaneousSpellConversion.OnTurnOn0600260B demands CharacterClass's book and adds its exact SpellsByLevel array; OnTurnOff0600260C removes that exact array. Exact feature b296531ffe013c8499ad712f8ae97f6b has three catalog quantity arrays: canonical SNA I, then released native Single/d3/d4plus1 source identities. These arrays and all blueprint references remain unchanged." };
             Cleanup2Check("menu-adapter-druid-conversion-feature-intake", featureGrantAdmitted, featureIntake,
                 "Before any feature grant, retain the current native Druid feature/component/class/level-array identities and whether the exact candidate already belongs to the disposable caster.");
             if (!featureGrantAdmitted)
@@ -727,7 +724,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["factoryToken"] = typeof(MechanicActionBarSlotMemorizedSpell).GetMethod("GetConvertedAbilityData").MetadataToken,
                 ["patchOwners"] = new JArray(patches == null ? new string[0] : patches.Prefixes.Concat(patches.Postfixes).Concat(patches.Transpilers).Select(value => value.owner).Distinct().ToArray()),
                 ["conversions"] = new JArray(conversions.Select(value => new JObject { ["blueprint"] = value.Blueprint.AssetGuid,
-                    ["sourceExact"] = ReferenceEquals(value.ConvertedFrom, prepared), ["bookExact"] = ReferenceEquals(value.Spellbook, book),
+                    ["sourceExact"] = Cleanup2DruidSourceChain(value, prepared, parent), ["bookExact"] = ReferenceEquals(value.Spellbook, book),
+                    ["nativeQuantityConversion"] = value.ConvertedFrom?.Blueprint.AssetGuid,
                     ["variants"] = value.Blueprint.Variants?.Length ?? 0, ["dataLinks"] = DescribeExpandedSummoningAbilityData(value) })),
                 ["fixtureAccess"] = "Real native Druid book and exact class-progression conversion feature granted to disposable caster. Not a naturally levelled Druid or saved character." };
             var inputs = new Cleanup2TooltipInputs(fixture.Caster); AbilityData selected = null; bool castObserved = false;
@@ -741,7 +739,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var rows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(value => value.gameObject.activeInHierarchy &&
                     Cleanup2DruidSourceChain(value.MechanicSlot?.GetContentData() as AbilityData, prepared, parent)).ToArray();
                 var exact = rows.Where(value => ReferenceEquals((value.MechanicSlot.GetContentData() as AbilityData)?.Blueprint, parent)).ToArray();
-                bool factoryExact = conversions.Any(value => ReferenceEquals(value.Blueprint, parent) && ReferenceEquals(value.ConvertedFrom, prepared) && ReferenceEquals(value.Spellbook, book));
                 var variants = parent.Variants ?? new BlueprintAbility[0];
                 bool flatFactory = variants.Length != 0 && variants.All(variant => conversions.Count(value =>
                     ReferenceEquals(value.Blueprint, variant) && Cleanup2DruidSourceChain(value, prepared, parent)) == 1);
@@ -791,7 +788,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (bool)renderedHorse["passed"] && selected.TargetAnchor != AbilityTargetAnchor.Owner && !(clickedRow is ActionBarGroupSlot) && Cleanup2DruidSourceChain(selected, prepared, parent);
                     evidence["horseVisible"] = visible; evidence["horseTitle"] = selected.Name; evidence["expectedTitle"] = title;
                     evidence["horseIconExact"] = ReferenceEquals(clickedRow.Icon.sprite, horse.Icon); evidence["horseTargetAnchor"] = anchor;
-                    evidence["retainedNativeConversionParent"] = ReferenceEquals(selected.ConvertedFrom?.Blueprint, parent);
+                    evidence["retainedNativeQuantityConversion"] = selected.ConvertedFrom?.Blueprint.AssetGuid;
+                    evidence["nativeQuantityConversionRetainedInChain"] = Cleanup2DruidSourceChain(selected, prepared, parent);
                     evidence["effectiveHorseImage"] = renderedHorse;
                     Cleanup2Check("menu-adapter-druid-native-horse-row", rowExact, evidence,
                         "The real Druid conversion popup exposes its exact Horse child with current label/icon, source chain and an actual visible native row.");
@@ -829,11 +827,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private static bool Cleanup2DruidSourceChain(AbilityData child, AbilityData source, BlueprintAbility parent)
         {
-            if (child == null || source == null || !ReferenceEquals(child.Spellbook, source.Spellbook)) return false;
-            if (ReferenceEquals(child.ConvertedFrom, source)) return true; // Preserve compatible installed native factory projections.
-            var conversion = child.ConvertedFrom;
-            return conversion != null && ReferenceEquals(conversion.Blueprint, parent) && ReferenceEquals(conversion.ConvertedFrom, source) &&
-                ReferenceEquals(conversion.Spellbook, source.Spellbook) && ReferenceEquals(child.Caster, source.Caster);
+            var receipt = DruidSummonConversionVariantPatch.For(child);
+            return child != null && source != null && receipt != null && ReferenceEquals(receipt.Source, source) && ReferenceEquals(receipt.Parent, parent) &&
+                ReferenceEquals(child.ConvertedFrom, receipt.Conversion) && ReferenceEquals(child.ConvertedFrom.Blueprint, receipt.NativeConversionBlueprint) &&
+                ReferenceEquals(child.ConvertedFrom.ConvertedFrom, source) && ReferenceEquals(child.Spellbook, source.Spellbook) && ReferenceEquals(child.Caster, source.Caster);
         }
 
         private NativeIconScreenEvidence.NativeRowScroll Cleanup2DruidPopupSurface(ActionBarGroupSlot source, ActionBarSpellsGroup popup,
@@ -915,7 +912,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["source"] = source.Blueprint.AssetGuid, ["canonicalConversion"] = parent.AssetGuid, ["child"] = child.Blueprint.AssetGuid,
                     ["book"] = child.Spellbook.Blueprint.AssetGuid, ["nativeCommandExact"] = issued, ["nativeRuleExactChildReference"] =
                         Cleanup2DruidCastRules.Count == 1 && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child),
-                    ["retainedConversionParent"] = ReferenceEquals(child.ConvertedFrom?.Blueprint, parent),
+                    ["retainedNativeQuantityConversion"] = child.ConvertedFrom?.Blueprint.AssetGuid,
+                    ["nativeQuantityConversionRetainedInChain"] = Cleanup2DruidSourceChain(child, source, parent),
                     ["actualUnit"] = units.FirstOrDefault()?.Blueprint.AssetGuid, ["expectedUnit"] = expected.FirstOrDefault()?.Unit,
                     ["nativePathEvents"] = new JArray(ExpandedSummoningPlayerPathEvents), ["debit"] = debit.Describe(source.ParamSpellSlot),
                     ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["manualTicks"] = 0, ["forcedAct"] = false },

@@ -356,6 +356,34 @@ function ConvertTo-KmgDisabledExpandedSummoningSettingsBytes {
     return ,$encoding.GetBytes($disabled)
 }
 
+function Get-KmgExpandedSummoningOffSettingsBytes {
+    param(
+        [Parameter(Mandatory = $true)][string]$SettingsPath,
+        [switch]$AllowMissingDefaults
+    )
+    # This reads the already transaction-owned staged path. The enclosing
+    # transaction restores its original bytes OR original absence after exit.
+    # Existing files retain the strict explicit-ON token contract above.
+    $item = Get-Item -LiteralPath $SettingsPath -Force -ErrorAction SilentlyContinue -ErrorVariable lookupErrors
+    if (@($lookupErrors | Where-Object { $_.CategoryInfo.Category -ne 'ObjectNotFound' }).Count -ne 0) {
+        throw 'Cannot establish the staged feature-module file identity.'
+    }
+    if ($null -ne $item) {
+        if ($item.PSIsContainer -or ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+            throw 'Staged feature-module settings must be an ordinary file or a verified absent optional file.'
+        }
+        return ,(ConvertTo-KmgDisabledExpandedSummoningSettingsBytes -OriginalBytes ([IO.File]::ReadAllBytes($item.FullName)))
+    }
+    if (-not $AllowMissingDefaults -or
+        -not (Test-Path -LiteralPath (Split-Path -Parent $SettingsPath) -PathType Container)) {
+        throw 'Missing feature-module settings require the exact Cleanup2 OFF scope and an existing staged mod directory.'
+    }
+    # FeatureModuleSettingsStore.Load: missing file means Defaults (all ON);
+    # schema12 ReadDefaultOn preserves every omitted module. No historical
+    # human configuration or guessed module inventory is substituted.
+    return ,([Text.Encoding]::UTF8.GetBytes('{"schemaVersion":12,"expanded-summoning":false}'))
+}
+
 <#
 .SYNOPSIS
 Fingerprints a directory tree: one order-stable digest over every relative path

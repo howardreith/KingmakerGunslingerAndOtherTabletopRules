@@ -292,6 +292,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalActionExtendable"] = signature.DurationExtendable, ["nativeExpectedMultiplier"] = multiplier },
                     "Actual RuleSummonUnit duration follows the original native action's Extend eligibility; no duration/rank field is edited.");
                 if (!duration) throw new InvalidOperationException("Native Extend duration differs from original action contract.");
+                foreach (int frame in Cleanup2SourcesDuplicatePreparation(fixture, book, smallParent, spellGroup,
+                    mode, watch, uiOwned, ownedSessions)) yield return frame;
                 }
                 using (var specialSteps = Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts, uiOwned, ownedSessions, levelUpIntake).GetEnumerator())
                 {
@@ -543,6 +545,108 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mode, phase, "small-fire-native-known-spontaneous", null, book)) yield return frame;
         }
 
+        private IEnumerable<int> Cleanup2SourcesDuplicatePreparation(ExpandedSummoningCorrectionFixture fixture,
+            Spellbook book, BlueprintAbility parent, ActionBarGroupElement group, Cleanup2NativeDefaultScope mode,
+            Stopwatch phase, Func<bool> uiOwned, ICollection<ElementalChooserSession> ownedSessions)
+        {
+            Cleanup2SourcesBoundary(mode, phase);
+            if (!uiOwned() || ElementalSourceChooserView.IsOpen || !ReferenceEquals(book.Owner, fixture.Caster.Descriptor))
+                throw new InvalidOperationException("Exact owned native prepared book and closed chooser required for duplicate fixture.");
+            var before = book.GetMemorizedSpells(2).ToArray();
+            var originals = before.Where(slot => slot.Type == SpellSlotType.Common &&
+                ReferenceEquals(slot.Spell.Blueprint, parent) && !slot.Spell.HasMetamagic(Metamagic.Extend)).ToArray();
+            if (originals.Length != 1) throw new InvalidOperationException("Exactly one original Small Elemental preparation required before native duplicate setup.");
+            SpellSlot a = originals[0], b = null; AbilityData bSpell = null;
+            ElementalChooserSession ownedSession = null;
+            try
+            {
+                if (!book.Memorize(new AbilityData(parent, book), null))
+                    throw new InvalidOperationException("Native book refused the second ordinary original preparation.");
+                var added = book.GetMemorizedSpells(2).Where(slot => !before.Any(value => ReferenceEquals(value, slot))).ToArray();
+                if (added.Length != 1) throw new InvalidOperationException("Native duplicate preparation delta is ambiguous.");
+                b = added[0]; bSpell = b.Spell;
+                book.Rest(); group.Fill(fixture.Caster);
+                foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, group, mode, uiOwned, ownedSessions,
+                    ElementalSourceChooserRuntime.Session(group), "sources-native-duplicate", value => { })) yield return frame;
+                ownedSession = ElementalSourceChooserRuntime.Session(group);
+                var source = Cleanup2SourcesFind(group, book, "small-fire-elemental", false);
+                foreach (int frame in Cleanup2SourcesReady(group, source, mode, phase)) yield return frame;
+                bool bound = a.Available && b.Available && !ReferenceEquals(a, b) && !ReferenceEquals(a.Spell, b.Spell) &&
+                    b.Type == SpellSlotType.Common && a.Spell.Equals(b.Spell) && ReferenceEquals(source.Preparation, a) &&
+                    ReferenceEquals(source.DebitPreparation, b) && ReferenceEquals(source.Source, a.Spell) &&
+                    ReferenceEquals(source.Child.ConvertedFrom, a.Spell) && source.Validate() == null;
+                Cleanup2Check("elemental-sources-native-duplicate-binding", bound, new JObject {
+                    ["mechanismPreparation"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(a),
+                    ["expectedNativeDebitPreparation"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(b),
+                    ["mechanismSourceIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(source.Source),
+                    ["debitSpellIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(b.Spell),
+                    ["expectedDebitOrdinal"] = source.DebitPreparationOrdinal, ["bothAvailable"] = a.Available && b.Available,
+                    ["nativeEquality"] = a.Spell.Equals(b.Spell), ["constructedConvertedFromChain"] = false },
+                    "The actual native grouped row retains source A and native child factory; two distinct equal preparations bind the engine's actual last-available debit B.");
+                if (!bound) throw new InvalidOperationException("Actual native duplicate source/debit binding differs.");
+                foreach (int frame in Cleanup2SourcesCast(fixture, source.Child, source.DebitPreparation,
+                    () => ElementalSourceChooserView.ReviewChoose(2, source.CreatureKey, source, true), mode, phase,
+                    "small-fire-native-duplicate-b-debit", null)) yield return frame;
+                Cleanup2Check("elemental-sources-native-duplicate-a-preserved", a.Available && !b.Available &&
+                    ReferenceEquals(source.Source, a.Spell) && ReferenceEquals(source.Child.ConvertedFrom, a.Spell),
+                    new JObject { ["aAvailable"] = a.Available, ["bAvailable"] = b.Available,
+                        ["mechanismSourceStillA"] = ReferenceEquals(source.Source, a.Spell),
+                        ["childConvertedFromStillA"] = ReferenceEquals(source.Child.ConvertedFrom, a.Spell) },
+                    "The real native cast spends B only; the displayed mechanism/source A and all other books remain unchanged by the chooser.");
+                if (!a.Available || b.Available) throw new InvalidOperationException("Native duplicate cast did not retain A while spending B.");
+
+                book.Rest(); group.Fill(fixture.Caster);
+                foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, group, mode, uiOwned, ownedSessions,
+                    ElementalSourceChooserRuntime.Session(group), "sources-native-duplicate-stale", value => { })) yield return frame;
+                ownedSession = ElementalSourceChooserRuntime.Session(group);
+                source = Cleanup2SourcesFind(group, book, "small-fire-elemental", false);
+                foreach (int frame in Cleanup2SourcesReady(group, source, mode, phase)) yield return frame;
+                ElementalSourceChooserView.ReviewChoose(2, source.CreatureKey, source, false);
+                if (!a.Available || !b.Available || !ReferenceEquals(source.DebitPreparation, b))
+                    throw new InvalidOperationException("Exact available A/B and captured B required before stale stimulus.");
+                AbilityData last = ElementalSourceChooserRuntime.LastDispatched;
+                b.Spend(); // Explicit owned fixture stimulus, never a chooser/native-cast debit.
+                var noSpend = new Cleanup2SourceDebit(fixture.Caster); // AFTER the one native stimulus.
+                bool clickDelivered = ElementalSourceChooserView.ReviewTryCast();
+                string refusal = source.Validate();
+                bool refused = clickDelivered && refusal != null && ElementalSourceChooserView.Selection != null &&
+                    ElementalSourceChooserView.Selection.Outcome == refusal && noSpend.Unspent && a.Available && !b.Available &&
+                    ReferenceEquals(source.DebitPreparation, b) && ReferenceEquals(ElementalSourceChooserRuntime.LastDispatched, last) &&
+                    Game.Instance.SelectedAbilityHandler.Ability == null && fixture.Caster.Commands.Empty;
+                Cleanup2Check("elemental-sources-native-stale-b-no-a-fallback", refused, new JObject {
+                    ["nativeFixtureStimulus"] = "Exactly one owned B.Spend before the no-spend snapshot; not a chooser debit.",
+                    ["clickDelivered"] = clickDelivered, ["nativeDispatchClaimedByClickReturn"] = false,
+                    ["refusal"] = refusal, ["choiceOutcome"] = ElementalSourceChooserView.Selection?.Outcome,
+                    ["aStillAvailable"] = a.Available, ["bExhausted"] = !b.Available,
+                    ["allBudgetsUnchangedAfterStimulus"] = noSpend.Unspent,
+                    ["lastDispatchedUnchanged"] = ReferenceEquals(ElementalSourceChooserRuntime.LastDispatched, last) },
+                    "The actual visible B-bound choice refuses after B is exhausted, despite matching A remaining available; no targeting/command/debit A or book switch occurs.");
+                if (!refused) throw new InvalidOperationException("Stale native B choice fell back or did not prove exact no-spend refusal.");
+                if (!ElementalSourceChooserView.CloseOwned("duplicate-stale-refused-no-spend"))
+                    throw new InvalidOperationException("Owned duplicate chooser keyboard release unverified.");
+                foreach (int frame in Cleanup2SourcesReady(group, source, mode, phase)) yield return frame;
+                bool reopened = ReferenceEquals(source.DebitPreparation, a) && ReferenceEquals(source.Source, a.Spell) &&
+                    ReferenceEquals(source.Child.ConvertedFrom, a.Spell) && source.Validate() == null && noSpend.Unspent;
+                Cleanup2Check("elemental-sources-native-duplicate-reopened-a", reopened,
+                    new JObject { ["sameNativeSourceA"] = ReferenceEquals(source.Source, a.Spell),
+                        ["newOpenExpectedDebitA"] = ReferenceEquals(source.DebitPreparation, a),
+                        ["expectedDebitOrdinal"] = source.DebitPreparationOrdinal, ["allBudgetsUnchanged"] = noSpend.Unspent },
+                    "Only a genuinely new chooser open may capture the newly current native A debit; opening/selecting/cancelling still spends nothing.");
+                if (!reopened) throw new InvalidOperationException("Fresh chooser did not capture exact remaining native A without spending.");
+            }
+            finally
+            {
+                if (ownedSession != null && ReferenceEquals(ElementalSourceChooserView.CurrentSession, ownedSession))
+                    if (!ElementalSourceChooserView.CloseOwned("duplicate-fixture-finished-no-spend"))
+                        throw new InvalidOperationException("Exact duplicate chooser keyboard release unverified.");
+                if (b != null && book.GetMemorizedSpells(2).Any(value => ReferenceEquals(value, b)))
+                {
+                    if (!ReferenceEquals(b.Spell, bSpell)) throw new InvalidOperationException("Foreign duplicate preparation content; native removal refused.");
+                    book.ForgetMemorized(b);
+                }
+            }
+        }
+
         private static ElementalNativeSource Cleanup2SourcesFind(ActionBarGroupElement group, Spellbook book, string key, bool extend)
         {
             var session = ElementalSourceChooserRuntime.Session(group);
@@ -570,13 +674,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Cleanup2SourcesBoundary(mode, phase);
             var snapshot = new Cleanup2SourceDebit(fixture.Caster); var original = data.ConvertedFrom; var book = data.Spellbook;
+            var debitSpell = preparation?.Spell;
             var blueprint = data.Blueprint; var meta = data.MetamagicData; bool extend = data.HasMetamagic(Metamagic.Extend);
             bool spontaneous = preparation == null && knownSourceBook != null && ReferenceEquals(knownSourceBook, book) &&
                 book.Blueprint.Spontaneous && original != null && book.GetKnownSpells(original.SpellLevel).Any(value => ReferenceEquals(value, original)) &&
                 original.ConvertedFrom == null && original.SourceItem == null && original.ParamSpellSlot == null && data.ParamSpellSlot == null &&
                 book.GetSpontaneousSlots(original.SpellLevel) > 0;
             var expected = SummonSignatureReader.Read(blueprint).Spawns().ToArray();
-            bool prepared = knownSourceBook == null && preparation != null && ReferenceEquals(preparation.Spell, original) && preparation.Available;
+            bool prepared = knownSourceBook == null && preparation != null && original != null && original.Equals(debitSpell) && preparation.Available;
             if (expected.Length != 1 || original == null || (!prepared && !spontaneous) || !ReferenceEquals(data.Caster, fixture.Caster.Descriptor))
                 throw new InvalidOperationException("Exact one-spawn original prepared or explicitly observed native known-spontaneous source required: " + label);
             ExpandedSummoningRuleCapture.Clear(); ExpandedSummoningRuleDurationCapture.Clear(); ExpandedSummoningPlayerPathEvents.Clear();
@@ -601,7 +706,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var lifecycle = units.SelectMany(unit => unit.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff))).ToArray();
                 bool links = ReferenceEquals(data.Blueprint, blueprint) && ReferenceEquals(data.ConvertedFrom, original) &&
                     ReferenceEquals(data.Spellbook, book) && ReferenceEquals(data.MetamagicData, meta) &&
-                    (spontaneous ? book.GetKnownSpells(original.SpellLevel).Any(value => ReferenceEquals(value, original)) : ReferenceEquals(preparation.Spell, original));
+                    (spontaneous ? book.GetKnownSpells(original.SpellLevel).Any(value => ReferenceEquals(value, original)) :
+                        ReferenceEquals(preparation.Spell, debitSpell) && original.Equals(debitSpell));
                 bool pass = issued && noSpendBeforeTarget && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty &&
                     _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
                     units.Length == 1 && ExpandedSummoningRuleCapture.Distinct().Count() == 1 && units[0].Blueprint.AssetGuid == expected[0].Unit &&
@@ -617,6 +723,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["baseDurationSeconds"] = durations.Length == 1 ? (JToken)durations[0].BaseDuration.TotalSeconds : JValue.CreateNull(),
                     ["bonusDurationSeconds"] = durations.Length == 1 ? (JToken)durations[0].BonusDuration.TotalSeconds : JValue.CreateNull(),
                     ["nativeBudgetKind"] = spontaneous ? "known-spontaneous-book-level-use" : "original-prepared-slot",
+                    ["nativeDebitSpellIdentity"] = debitSpell == null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(debitSpell),
+                    ["debitSpellIsInvocationSource"] = ReferenceEquals(debitSpell, original),
                     ["debit"] = spontaneous ? snapshot.DescribeSpontaneous(book, original.SpellLevel) : snapshot.Describe(preparation),
                     ["dataLinks"] = DescribeExpandedSummoningAbilityData(data),
                     ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["manualTicks"] = 0, ["forcedAct"] = false };

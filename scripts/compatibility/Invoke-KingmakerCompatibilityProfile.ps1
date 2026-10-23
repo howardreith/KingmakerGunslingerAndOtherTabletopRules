@@ -445,8 +445,8 @@ try {
     }
     if ($ExpandedSummoningDisabled) {
         $settingsPath = Join-Path $KingmakerInstallDir 'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settingsBefore = [IO.File]::ReadAllBytes($settingsPath)
-        $settingsOff = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes -OriginalBytes $settingsBefore
+        $settingsOff = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath `
+            -AllowMissingDefaults:$cleanup2ModuleOff
         [IO.File]::WriteAllBytes($settingsPath, $settingsOff)
     }
     if ($moduleScenario) {

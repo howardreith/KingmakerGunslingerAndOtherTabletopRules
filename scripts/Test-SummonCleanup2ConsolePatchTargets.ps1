@@ -56,6 +56,7 @@ try {
         @('ElementalConsoleSourceResultPatch','ActionBarVM','Result',67),
         @('ElementalConsoleSourceViewPatch','ActionBarSelectorView','Bind',-1),
         @('DruidSummonConversionVariantPatch','MechanicActionBarSlotMemorizedSpell','GetConvertedAbilityData',287),
+        @('DruidSummonConversionNativeFactoryPatch','MechanicActionBarSlotSpontaneusSpell','GetConvertedAbilityData',305),
         @('DruidSummonConversionSourceSlotPatch','ActionBarGroupSlot','OnToggleGroupClick',-1),
         @('DruidSummonConversionMenuPatch','ActionBarSpellsGroup','Toggle',-1),
         @('GiantSummonNativeVisibilityPatch','EntityFader','SetRendererVisibility',-1)

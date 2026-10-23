@@ -3,6 +3,7 @@ param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
+. (Join-Path (Split-Path -Parent $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
 $repo = Get-KmgCompatibilityRepositoryRoot
 $testRoot = Join-Path $repo 'artifacts\compatibility\tests\transaction'
 if (Test-Path -LiteralPath $testRoot) {
@@ -121,6 +122,58 @@ $absent = Restore-KmgCompatibilityTransaction -RunId 'original-absent' -StateRoo
 Assert-True $absent.restorationVerified 'absent original restoration verified'
 Assert-True (-not (Test-Path -LiteralPath (Join-Path $fixture.Install 'Mods'))) 'original Mods absence restored'
 Assert-True (-not (Test-Path -LiteralPath $fixture.Bank)) 'absent bank restored as absent'
+
+# Exercise the actual shipped transaction functions in FixtureMode. The OFF
+# reader only returns bytes; this write is the same transaction-owned staged
+# write made by the profile runner. No profile launcher or game process runs.
+foreach ($originalSettingsPresent in @($false, $true)) {
+    $case = if ($originalSettingsPresent) { 'off-settings-existing' } else { 'off-settings-absent' }
+    $fixture = New-Fixture $case
+    $originalMod = Join-Path $fixture.Install 'Mods\KingmakerGunslinger'
+    New-Item -ItemType Directory -Path $originalMod | Out-Null
+    [IO.File]::WriteAllText((Join-Path $originalMod 'Info.json'), '{"Id":"KingmakerGunslinger","Version":"fixture-original"}')
+    $settingsPath = Join-Path $originalMod 'FeatureModules.json'
+    $originalBytes = [Text.Encoding]::UTF8.GetBytes("{`r`n `"schemaVersion`":12,`r`n `"expanded-summoning`":true,`r`n `"gunslinger`":false,`r`n `"foreign`":{`"scope`":`"original bytes`"}`r`n}`r`n")
+    if ($originalSettingsPresent) {
+        [IO.File]::WriteAllBytes($settingsPath, $originalBytes)
+        $packageSettings = Join-Path $fixture.Root 'package-source\KingmakerGunslinger\FeatureModules.json'
+        $stagedText = "{`r`n `"schemaVersion`":12,`r`n `"expanded-summoning`" : true,`r`n `"gunslinger`":false,`r`n `"foreign`":{`"scope`":`"package bytes`",`"retain`":17}`r`n}`r`n"
+        [IO.File]::WriteAllBytes($packageSettings, [Text.Encoding]::UTF8.GetBytes($stagedText))
+        Compress-Archive -LiteralPath (Split-Path -Parent $packageSettings) -DestinationPath $fixture.Resolution.gunslinger.packagePath -Force
+    }
+    $beforeSettingsTransaction = @(Get-KmgCompatibilityDirectoryManifest (Join-Path $fixture.Install 'Mods'))
+    $entered = $false; $caseError = $null; $settingsRestored = $null
+    try {
+        Enter-KmgCompatibilityTransaction -Resolution $fixture.Resolution -KingmakerInstallDir $fixture.Install -StateRoot $fixture.State -RunId $case -FixtureMode -KnownKingmakerProcessIds @() | Out-Null
+        $entered = $true
+        Assert-True ((Test-Path -LiteralPath $settingsPath -PathType Leaf) -eq $originalSettingsPresent) 'fixture package provides the expected staged settings presence'
+        $offBytes = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath -AllowMissingDefaults
+        if ($originalSettingsPresent) {
+            $expectedOff = $stagedText.Replace('"expanded-summoning" : true', '"expanded-summoning" : false')
+            Assert-True ([Convert]::ToBase64String($offBytes) -ceq [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($expectedOff))) 'existing staged settings retain every foreign byte except the one explicit module token'
+            Assert-True ([Convert]::ToBase64String([IO.File]::ReadAllBytes($settingsPath)) -ceq [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($stagedText))) 'reader did not modify existing staged settings'
+        } else {
+            Assert-True (-not (Test-Path -LiteralPath $settingsPath)) 'optional-default reader does not create the absent staged settings file'
+            Assert-True ([Text.Encoding]::UTF8.GetString($offBytes) -ceq '{"schemaVersion":12,"expanded-summoning":false}') 'absent staged settings use only current-schema explicit OFF and native omitted-module defaults'
+        }
+        [IO.File]::WriteAllBytes($settingsPath, $offBytes)
+        $actualOff = [IO.File]::ReadAllText($settingsPath) | ConvertFrom-Json
+        Assert-True ($actualOff.'expanded-summoning' -is [bool] -and -not $actualOff.'expanded-summoning') 'transaction-owned staged file actually requests module OFF'
+        if (-not $originalSettingsPresent) { throw 'simulated refusal after optional OFF staging before launch' }
+    } catch { $caseError = $_ }
+    finally {
+        if ($entered) { $settingsRestored = Restore-KmgCompatibilityTransaction -RunId $case -StateRoot $fixture.State -FixtureMode -KnownKingmakerProcessIds @() }
+    }
+    if ($originalSettingsPresent) {
+        if ($null -ne $caseError) { throw $caseError }
+        Assert-True ([Convert]::ToBase64String([IO.File]::ReadAllBytes($settingsPath)) -ceq [Convert]::ToBase64String($originalBytes)) 'actual transaction restores the distinct original settings bytes and foreign values'
+    } else {
+        Assert-True ($null -ne $caseError -and $caseError.Exception.Message -ceq 'simulated refusal after optional OFF staging before launch') 'the original prelaunch refusal survives transactional restoration'
+        Assert-True (-not (Test-Path -LiteralPath $settingsPath)) 'actual transaction restores original FeatureModules.json absence, not default bytes'
+    }
+    Assert-True ($settingsRestored.restorationVerified -and $settingsRestored.stagedMutationObserved) 'actual restoration verifies original state and records the intentional staged OFF mutation'
+    Assert-True (Test-KmgCompatibilityManifestEqual $beforeSettingsTransaction @(Get-KmgCompatibilityDirectoryManifest (Join-Path $fixture.Install 'Mods'))) 'complete original Mods manifest remains exact after OFF staging and restoration'
+}
 
 $fixture = New-Fixture 'running-refusal'
 Assert-Throws { Enter-KmgCompatibilityTransaction -Resolution $fixture.Resolution -KingmakerInstallDir $fixture.Install -StateRoot $fixture.State -RunId 'running-refusal' -FixtureMode -KnownKingmakerProcessIds @(4242) } 'Kingmaker is running' 'Kingmaker-running refusal'

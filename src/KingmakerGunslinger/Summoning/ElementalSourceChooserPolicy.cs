@@ -51,6 +51,12 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ElementalSourceChooserPolicy
     {
+        internal static bool RetainedPreparationAvailable<T>(T retained,T current,bool available) where T:class
+        {return retained!=null && ReferenceEquals(retained,current) && available;}
+
+        internal static T NativeDebitPreparation<T>(IEnumerable<T> nativeOrder,Func<T,bool> available,Func<T,bool> matches) where T:class
+        {return nativeOrder.LastOrDefault(value=>value!=null && available(value) && matches(value));}
+
         internal static bool SourcesRemainEligible<T>(IEnumerable<T> sources,Func<T,bool> eligible) where T:class
         {return sources.All(eligible);}
         internal static List<T> ProjectOriginalSources<T>(IEnumerable<T> original,IEnumerable<T> sources,T header,bool expanded,

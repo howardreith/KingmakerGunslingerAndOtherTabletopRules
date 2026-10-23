@@ -54,6 +54,7 @@ namespace KingmakerGunslinger.Summoning
             GameObject root=null;
             try
             {
+                foreach(var source in session.Sources)source.CaptureDebitPreparation();
                 root=new GameObject("KMG_ElementalSourceChooser",typeof(RectTransform),typeof(Image));
                 var rect=(RectTransform)root.transform;
                 rect.SetParent(session.Canvas.rootCanvas.transform,false);

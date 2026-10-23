@@ -52,24 +52,38 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool added = false, selectedFixture = false;
             var mode = Cleanup2EnterNativeDefault(fixture, "elementals-learning");
             var screens = new NativeIconScreenEvidence(_request); var watch = Stopwatch.StartNew();
+            Exception primaryFailure = null; string primaryPhase = null;
+            Action<string, Exception> observeFailure = (phase, error) => {
+                if (primaryFailure == null) { primaryFailure = error; primaryPhase = phase; }
+                Cleanup2Check("elemental-desktop-ui-execution-" + phase, false, new JObject {
+                    ["phase"] = phase, ["exception"] = error.ToString(), ["freshModuleOff"] = off,
+                    ["scope"] = "Original owned desktop UI step exception recorded before outer restoration; no state repaired or assertion waived." },
+                    "Owned native desktop preparation and learning steps complete without an exception.");
+            };
             try
             {
-                JObject levelUpReceipt;
-                bool completedIntake = levelUpIntake.Current(out levelUpReceipt);
-                Cleanup2Check("elemental-desktop-native-levelup-intake", completedIntake, levelUpReceipt,
-                    "The exact original native controller field may retain only a completed disposed preview; active builders, producer work or replacements refuse before learning.");
-                if (!completedIntake) throw new InvalidOperationException("Native desktop learning intake is not demonstrably completed/idle; inspect exact lifecycle predicates.");
-                // Native Pause is a separate mode and would invalidate the
-                // exact Default lease. Native service/creator screens own
-                // their normal child modes; no observer Pause is requested.
-                if (!party.Contains(fixture.Caster))
-                { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
-                ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
+                try
+                {
+                    JObject levelUpReceipt;
+                    bool completedIntake = levelUpIntake.Current(out levelUpReceipt);
+                    Cleanup2Check("elemental-desktop-native-levelup-intake", completedIntake, levelUpReceipt,
+                        "The exact original native controller field may retain only a completed disposed preview; active builders, producer work or replacements refuse before learning.");
+                    if (!completedIntake) throw new InvalidOperationException("Native desktop learning intake is not demonstrably completed/idle; inspect exact lifecycle predicates.");
+                    // Native Pause is a separate mode and would invalidate the
+                    // exact Default lease. Native service/creator screens own
+                    // their normal child modes; no observer Pause is requested.
+                    if (!party.Contains(fixture.Caster))
+                    { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
+                    ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
+                }
+                catch (Exception error) { observeFailure("intake-selection", error); throw; }
                 for (int frame = 0; frame < 8; frame++) yield return 0;
-                foreach (int frame in Cleanup2DesktopPrepareAndUndo(fixture, book, screens)) yield return frame;
-                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 120) throw new InvalidOperationException("Desktop learning phase boundary expired or changed.");
-                foreach (int frame in Cleanup2DesktopLearnAndCancel(fixture, book, screens, levelUpIntake)) yield return frame;
-                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 180) throw new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope.");
+                foreach (int frame in Cleanup2DesktopObservedSteps(Cleanup2DesktopPrepareAndUndo(fixture, book, screens), "preparation", observeFailure)) yield return frame;
+                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 120)
+                { var error = new InvalidOperationException("Desktop learning phase boundary expired or changed."); observeFailure("preparation-boundary", error); throw error; }
+                foreach (int frame in Cleanup2DesktopObservedSteps(Cleanup2DesktopLearnAndCancel(fixture, book, screens, levelUpIntake), "learning", observeFailure)) yield return frame;
+                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 180)
+                { var error = new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope."); observeFailure("learning-boundary", error); throw error; }
             }
             finally
             {
@@ -93,21 +107,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     JObject levelUpReceipt;
                     bool levelUpRestored = levelUpIntake.Current(out levelUpReceipt);
-                    bool exact = errors.Count == 0 && player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) &&
-                        ReferenceEquals(group.GetCurrentCharacter(), originalGroup) && inputs.All(value => value.Unchanged()) && bars.All(value => value.IsRestored()) &&
-                        !build.IsShow && build.LevelUpController == null && levelUpRestored && ReferenceEquals(build.Unit, buildUnit) &&
-                        !ui.ServiceWindow.WindowTabs.IsShow && !ui.SpellBookController.IsShow && !DialogMessageBox.Instance.IsShown && Cleanup2LearningModuleState(off);
+                    var predicates = new JObject {
+                        ["noRestorationErrors"] = errors.Count == 0, ["partyExact"] = player.Party.SequenceEqual(party),
+                        ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
+                        ["groupCurrentExact"] = ReferenceEquals(group.GetCurrentCharacter(), originalGroup),
+                        ["originalSourcesExact"] = inputs.All(value => value.Unchanged()), ["originalPinsExact"] = bars.All(value => value.IsRestored()),
+                        ["creatorHidden"] = !build.IsShow, ["creatorBackendAbsent"] = build.LevelUpController == null,
+                        ["originalCompletedControllerExact"] = levelUpRestored, ["creatorUnitExact"] = ReferenceEquals(build.Unit, buildUnit),
+                        ["nativeServiceTabsHidden"] = !ui.ServiceWindow.WindowTabs.IsShow, ["nativeBookHidden"] = !ui.SpellBookController.IsShow,
+                        ["confirmationModalHidden"] = !DialogMessageBox.Instance.IsShown, ["moduleStateStable"] = Cleanup2LearningModuleState(off) };
+                    var rejected = predicates.Properties().Where(value => !(bool)value.Value).Select(value => value.Name).ToArray();
+                    bool exact = rejected.Length == 0;
                     Cleanup2Check("elemental-desktop-learning-restored", exact, new JObject {
                         ["partyExact"] = player.Party.SequenceEqual(party), ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
                         ["originalSourcesAndPinsExact"] = inputs.All(value => value.Unchanged()) && bars.All(value => value.IsRestored()),
                         ["creatorClosed"] = !build.IsShow && build.LevelUpController == null && levelUpRestored,
                         ["originalCompletedNativeControllerExact"] = levelUpReceipt,
                         ["creatorUnitExact"] = ReferenceEquals(build.Unit, buildUnit), ["errors"] = new JArray(errors), ["freshModuleOff"] = off,
+                        ["predicates"] = predicates, ["rejectedPredicates"] = new JArray(rejected),
+                        ["originalExecutionPhase"] = primaryPhase, ["originalExecutionException"] = primaryFailure?.ToString(),
                         ["scope"] = "Save-free native PC discovery, one pending original-source allocation/cancel and one original-source preparation/unprepare. No committed character, save hydration, console or casting claim." },
                         "Owned native screens close and original party, selection, creator owner, source objects and pins remain exact.");
-                    if (!exact) throw new InvalidOperationException("Desktop learning restoration is unverified.");
+                    if (!exact) throw new InvalidOperationException("Desktop learning restoration is unverified: " + string.Join("|", rejected), primaryFailure);
                 }
                 finally { try { screens.Dispose(); } finally { mode.Dispose(); } }
+            }
+        }
+
+        private static IEnumerable<int> Cleanup2DesktopObservedSteps(IEnumerable<int> steps,string phase,Action<string,Exception> observe)
+        {
+            using(var iterator=steps.GetEnumerator())
+            {
+                while(true)
+                {
+                    bool more;
+                    try{more=iterator.MoveNext();}
+                    catch(Exception error){observe(phase,error);throw;}
+                    if(!more)yield break;
+                    yield return iterator.Current;
+                }
             }
         }
 
