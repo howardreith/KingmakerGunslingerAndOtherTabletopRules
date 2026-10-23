@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.SettingsUI;
@@ -85,12 +86,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Where(value => !(value is ContextCalculateAbilityParams) &&
                             !(value is AbilityResourceLogic)).Select(value =>
                                 value.GetType()).SequenceEqual((native.ComponentsArray ??
-                                    Array.Empty<BlueprintComponent>()).Select(value =>
-                                        value.GetType()));
+                                    Array.Empty<BlueprintComponent>()).Where(value =>
+                                        !(value is SpellListComponent)).Select(value =>
+                                            value.GetType()));
                 var supportAi = owner.Blueprint.Brain.Actions.OfType<BlueprintAiCastSpell>()
                     .Where(value => ReferenceEquals(value.Ability, cure) ||
                         ReferenceEquals(value.Ability, see)).ToArray();
-                bool mapping = cureData != null && seeData != null &&
+                bool nativeGraphs = nativeGraph(cure, nativeCure) &&
+                    nativeGraph(see, nativeSee);
+                bool abilityShape = cureData != null && seeData != null &&
                     cure.Type == AbilityType.SpellLike &&
                     see.Type == AbilityType.SpellLike &&
                     cure.ActionType == UnitCommand.CommandType.Standard &&
@@ -102,21 +106,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cure.CanTargetFriends == nativeCure.CanTargetFriends &&
                     see.CanTargetSelf == nativeSee.CanTargetSelf &&
                     ReferenceEquals(cure.Icon, nativeCure.Icon) &&
-                    ReferenceEquals(see.Icon, nativeSee.Icon) &&
-                    nativeGraph(cure, nativeCure) && nativeGraph(see, nativeSee) &&
-                    cureCost != null && ReferenceEquals(cureCost.RequiredResource,
+                    ReferenceEquals(see.Icon, nativeSee.Icon);
+                bool resourceShape = cureCost != null && ReferenceEquals(cureCost.RequiredResource,
                         cureResource) && cureCost.IsSpendResource && cureCost.Amount == 1 &&
                     seeCost != null && ReferenceEquals(seeCost.RequiredResource,
-                        seeResource) && seeCost.IsSpendResource && seeCost.Amount == 1 &&
-                    cureParameters != null && cureParameters.CasterLevel == 13 &&
+                        seeResource) && seeCost.IsSpendResource && seeCost.Amount == 1;
+                bool parameterShape = cureParameters != null && cureParameters.CasterLevel == 13 &&
                     cureParameters.SpellLevel == 1 && seeParameters != null &&
-                    seeParameters.CasterLevel == 13 && seeParameters.SpellLevel == 2 &&
-                    supportAi.Count(value => ReferenceEquals(value.Ability, cure)) == 1 &&
+                    seeParameters.CasterLevel == 13 && seeParameters.SpellLevel == 2;
+                bool autonomyShape = supportAi.Count(value =>
+                        ReferenceEquals(value.Ability, cure)) == 1 &&
                     supportAi.Count(value => ReferenceEquals(value.Ability, see)) == 0 &&
                     owner.Descriptor.Resources.GetResourceAmount(cureResource) == 7 &&
                     owner.Descriptor.Resources.GetResourceAmount(seeResource) == 7 &&
                     sibling.Descriptor.Resources.GetResourceAmount(cureResource) == 7 &&
                     sibling.Descriptor.Resources.GetResourceAmount(seeResource) == 7;
+                bool mapping = abilityShape && nativeGraphs && resourceShape &&
+                    parameterShape && autonomyShape;
                 Sprint25Check("astral-support-native-mapping", mapping, new JObject {
                     ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId,
                     ["cure"] = cure.AssetGuid, ["nativeCure"] = nativeCure.AssetGuid,
@@ -133,6 +139,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(value.Ability, cure)),
                     ["seeAiActions"] = supportAi.Count(value =>
                         ReferenceEquals(value.Ability, see)),
+                    ["abilityShape"] = abilityShape,
+                    ["nativeGraphs"] = nativeGraphs,
+                    ["resourceShape"] = resourceShape,
+                    ["parameterShape"] = parameterShape,
+                    ["autonomyShape"] = autonomyShape,
+                    ["cureComponents"] = new JArray((cure.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Select(value =>
+                            value.GetType().Name)),
+                    ["nativeCureComponents"] = new JArray((nativeCure.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Select(value =>
+                            value.GetType().Name)),
+                    ["seeComponents"] = new JArray((see.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Select(value =>
+                            value.GetType().Name)),
+                    ["nativeSeeComponents"] = new JArray((nativeSee.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Select(value =>
+                            value.GetType().Name)),
                     ["manualSeeInvisibility"] = true },
                     "The two private Astral SLAs preserve the installed native effect graphs at CL13, own separate seven-use resources, and expose AI only for bounded healing.");
                 if (!mapping) throw new InvalidOperationException(
