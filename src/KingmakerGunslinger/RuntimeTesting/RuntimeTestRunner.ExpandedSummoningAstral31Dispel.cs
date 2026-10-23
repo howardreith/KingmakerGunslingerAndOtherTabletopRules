@@ -660,7 +660,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         expiryOwner.Get<UnitPartTouch>() != null)) yield return 0;
                 double elapsed = Game.Instance.TimeController.GameTime.TotalSeconds -
                     expiryStart;
-                bool expiry = expiryCommand != null && expiryCommand.IsFinished &&
+                Buff summonLifetime = expiryOwner.Buffs.Enumerable.FirstOrDefault(
+                    value => ReferenceEquals(value.Blueprint,
+                        Kingmaker.Blueprints.Root.BlueprintRoot.Instance
+                            .SystemMechanics.SummonedUnitBuff));
+                bool expiryOwnerAlive = !expiryOwner.Destroyed &&
+                    expiryOwner.IsInState && !expiryOwner.Descriptor.State.IsDead &&
+                    summonLifetime != null && !summonLifetime.IsDisposed &&
+                    summonLifetime.TimeLeft.TotalSeconds > 0d;
+                bool expiry = expiryOwnerAlive &&
+                    expiryCommand != null && expiryCommand.IsFinished &&
                     expiringWard != null && expiringTouch != null &&
                     expiringWard.IsDisposed &&
                     !expiryOwner.Buffs.Enumerable.Contains(expiringWard) &&
@@ -671,6 +680,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["command"] = expiryCommand == null ? null :
                             Sprint27AiCommand(expiryCommand),
                         ["initialWardSeconds"] = 78,
+                        ["ownerAlive"] = expiryOwnerAlive,
+                        ["nativeSummonSecondsRemaining"] =
+                            summonLifetime?.TimeLeft.TotalSeconds,
                         ["elapsedGameSeconds"] = elapsed,
                         ["frames"] = expiryFrames,
                         ["wardDisposed"] = expiringWard?.IsDisposed,
@@ -678,7 +690,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             expiringWard),
                         ["touchPresent"] = expiryOwner.Get<UnitPartTouch>() != null,
                         ["manualRemoval"] = false },
-                    "Without delivering the held action, the native game clock expires the 13-round ward and its exact owner-bound future touch together.");
+                    "Without delivering the held action, the native game clock expires the 13-round ward and its exact owner-bound future touch together while the same living summon retains its active native duration marker.");
                 if (!expiry) throw new InvalidOperationException(
                     "Astral Dispel Evil native expiry failed.");
 
