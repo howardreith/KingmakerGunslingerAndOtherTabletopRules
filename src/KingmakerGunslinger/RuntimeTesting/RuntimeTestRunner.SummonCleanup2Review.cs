@@ -151,14 +151,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2ElementalConsole(fixture, book)) yield return frame;
                     foreach (int frame in ReviewSummonCleanup2ConsoleLearning(fixture, book)) yield return frame;
                 }
+                else if (phase == "alternate-console")
+                    foreach (int frame in ReviewSummonCleanup2AlternateConsoleMenus(fixture)) yield return frame;
                 else if (phase == "elementals-sources")
                     foreach (int frame in ReviewSummonCleanup2ElementalSources(fixture, book)) yield return frame;
                 else if (phase == "elementals-off")
+                {
                     foreach (int frame in ReviewSummonCleanup2ElementalOff(fixture, book)) yield return frame;
+                    if (AlternateSummoningStatusRegistry.Find(AlternateSummoningSourceCatalog.SummonerKey)?.Disposition !=
+                        AlternateSummoningDisposition.AbsentInProfile) ReviewSummonCleanup2AlternateOff(fixture);
+                }
                 else if (phase == "elementals-learning")
                     foreach (int frame in ReviewSummonCleanup2DesktopLearning(fixture, book)) yield return frame;
                 else if (phase == "menu-adapters")
+                {
                     foreach (int frame in ReviewSummonCleanup2MenuAdapters(fixture, book)) yield return frame;
+                    if (AlternateSummoningStatusRegistry.Find(AlternateSummoningSourceCatalog.SummonerKey)?.Disposition !=
+                        AlternateSummoningDisposition.AbsentInProfile)
+                        foreach (int frame in ReviewSummonCleanup2AlternateMenus(fixture)) yield return frame;
+                }
                 else if (phase == "cloth-probe")
                     foreach (int frame in ReviewSummonCleanup2ClothProbe(fixture, book)) yield return frame;
                 else if (phase == "ettin-lifecycle")
@@ -172,6 +183,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewSummonCleanup2CrabAttack(fixture, book)) yield return frame;
                 else if (phase == "production-attacks")
                     foreach (int frame in ReviewSummonCleanup2ProductionAttacks(fixture, book)) yield return frame;
+                else if (phase == "creature-commands")
+                    foreach (int frame in ReviewSummonCleanup2CreatureCommands(fixture, book)) yield return frame;
                 else if (phase == "shared-controls")
                     foreach (int frame in ReviewSummonCleanup2SharedControls(fixture, book)) yield return frame;
                 else if (phase == "tooltips")
@@ -443,8 +456,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach(int frame in Cleanup2CaptureLineup(fixture, actors, keys, framing, value=>picture=value, "cleanup2-production-colors.png"))yield return frame;
                     picture["framingOnly"] = true; picture["measurementEvidence"] = false;
                     picture["rendering"] = "Ordinary production giant colors on the surveyed common ground; renderer bounds frame the picture only.";
-                    Cleanup2Check("production-colors-picture", (bool?)picture?["captureQualified"]==true, picture,
-                        "All six families stand on the same surveyed ground before the fitted native color capture.");
+                    Cleanup2Check("production-colors-picture", (bool?)picture?["captureRecorded"]==true, picture,
+                        "A nonempty native color frame records all six projected bodies on the surveyed ground; actual visibility and colors require inspection of that frame.");
                 }
                 // Retain Unity idle samples while suspending synthetic game-time
                 // pulses. Never force a renderer, fader, dissolve or animation.
@@ -492,8 +505,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject lineupPicture=null;
                 foreach(int frame in Cleanup2CaptureLineup(fixture, actors, keys, samples.Last(),value=>lineupPicture=value,
                     scalePrototype ? "cleanup2-scale-prototype-before.png" : null))yield return frame;
-                Cleanup2Check("same-camera-lineup", (bool?)lineupPicture?["captureQualified"]==true, lineupPicture,
-                    "One live same-camera capture contains the verified Human and all six canonically summoned giant families.");
+                Cleanup2Check("same-camera-lineup", (bool?)lineupPicture?["captureRecorded"]==true, lineupPicture,
+                    "One nonempty native frame records the verified Human and all six projected giant bodies; obstruction and art acceptance are separately inspected.");
                 if (scalePrototype)
                     foreach (int frame in ReviewSummonCleanup2ScalePrototype(fixture, actors, keys, groundPoints, samples, standing)) yield return frame;
             }
@@ -1222,7 +1235,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // actual camera basis, with the output aspect set first.
                 camera.aspect = 1920f / 1080f;
                 var cameraAttempts = new JArray();
-                bool clearSight = false;
+                bool clearSight = false, renderedSightProven = false;
                 // The old ten-degree view photographed native blue occlusion
                 // silhouettes through a wall. Use a gameplay-like downward
                 // view, test both sides, and retain each obstruction result.
@@ -1273,7 +1286,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["cameraPosition"] = SurveyVector(camera.transform.position), ["blockers"] = blockers,
                             ["actualStaticRenderedObstructions"]=rendered,
                             ["ignoredExactNativeSelectionColliders"] = ignoredSelection });
-                        if (blockers.Count == 0 && (bool)rendered["qualified"]) { clearSight = true; break; }
+                        if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)
+                        {
+                            // Review24 demonstrates that the installed scene's
+                            // Floor/room/chandelier meshes are CPU-unreadable.
+                            // Their encompassing AABBs cannot establish an
+                            // obstruction. Record the actual native framebuffer
+                            // for inspection, retaining UNKNOWN sight coverage.
+                            // This is image acquisition, not a visibility PASS.
+                            clearSight = true; renderedSightProven = (bool)rendered["qualified"]; break;
+                        }
                     }
                     if (clearSight) break;
                 }
@@ -1282,8 +1304,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // A refused picture remains a failed acceptance item.
                     // Restore this camera lease, then permit the independent
                     // owned Cloth/contact experiment to expose its own result.
-                    completed(new JObject { ["captureQualified"]=false,["file"]=JValue.CreateNull(),
-                        ["reason"]="No candidate has qualified native environment sight",
+                    completed(new JObject { ["captureRecorded"]=false,["file"]=JValue.CreateNull(),
+                        ["reason"]="Every candidate has a demonstrated physical or rendered obstruction",
                         ["downwardCameraAttempts"]=cameraAttempts,["fixtureFacingPose"]=facingReceipt });
                     yield break;
                 }
@@ -1328,7 +1350,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     File.Exists(Path.Combine(_request.EvidenceDirectory, file)))
                     throw new InvalidOperationException("Exact new lineup PNG name required; existing evidence is never overwritten.");
                 File.WriteAllBytes(Path.Combine(_request.EvidenceDirectory, file), bytes);
-                completed(new JObject { ["captureQualified"]=true,["file"] = file, ["bytes"] = bytes.Length,
+                completed(new JObject { ["captureRecorded"]=true,["file"] = file, ["bytes"] = bytes.Length,
+                    ["environmentSightProven"]=renderedSightProven,
+                    ["visualAcceptance"]="PENDING_ACTUAL_NATIVE_IMAGE_INSPECTION",
                     ["cameraInstance"] = camera.GetInstanceID(),
                     ["cameraPosition"] = SurveyVector(camera.transform.position),
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
@@ -1343,7 +1367,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeZoomUnchanged"]=ReferenceEquals(rig.CameraZoom,zoom) &&
                         zoomFields.Select((field,index)=>Equals(field.GetValue(zoom),zoomValues[index])).All(value=>value),
                     ["downwardCameraAttempts"] = cameraAttempts, ["noEnvironmentPhysicsSightBlocker"] = clearSight,
-                    ["occlusionProofLimit"] = "Physics rays plus bounded actual static-mesh triangle rays reject sampled opaque occluders. Unreadable/overbudget candidates refuse; normal native Updates/render execute at the held pose. Sampling does not prove every silhouette pixel; actual framebuffer review remains required. No renderer/culling/highlight/material state is changed.",
+                    ["occlusionProofLimit"] = "Physics/available triangle rays reject demonstrated sampled blockers. CPU-unreadable/overbudget mesh coverage remains UNKNOWN in the recorded attempts and is never a visibility PASS. The image acquisition check proves normal native frames, nonempty pixels and projected crown/sole containment only. Inspect actual pixels for occlusion and appearance. No renderer/culling/highlight/material state is changed.",
                     ["allCrownSoleInFrame"] = visible, ["viewport"] = viewport,
                     ["rendering"] = experimentalProxy
                         ? "Actual live actors with explicitly owned experimental render-only proxies/palettes in native scene lighting. No synthetic silhouette. Camera auto-framing may differ from before; both exact poses are recorded."
@@ -1480,7 +1504,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unknown.Add(new JObject{["reason"]="static-mesh-survey-budget"});
             return new JObject{["qualified"]=hits.Count==0 && unknown.Count==0,["actualTriangleHits"]=hits,["unknownCandidates"]=unknown,
                 ["candidateRenderers"]=candidates,["triangleTests"]=triangles,["cumulativeWallSeconds"]=watch.Elapsed.TotalSeconds,
-                ["sampleRays"]=samples.Length,["limits"]="Bounded corner/crown/sole/center rays through static opaque-rendered mesh triangles. Bounds alone never establish a blocker; unreadable or overbudget ray candidates remain unknown and refuse this camera. No mesh data is exported and no renderer/material/collider changes."};
+                ["sampleRays"]=samples.Length,["limits"]="Bounded corner/crown/sole/center rays through static opaque-rendered mesh triangles. Bounds alone never establish a blocker; unreadable or overbudget ray candidates remain unknown and require actual image inspection. No mesh data is exported and no renderer/material/collider changes."};
         }
 
         private static Dictionary<Collider, JObject> Cleanup2NativeSelectionColliderReferences()

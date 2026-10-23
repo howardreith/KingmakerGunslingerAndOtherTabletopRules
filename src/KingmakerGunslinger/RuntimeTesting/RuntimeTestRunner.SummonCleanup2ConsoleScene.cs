@@ -9,7 +9,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private bool IsCleanup2ConsoleReview { get { return IsSummonCleanup2Review &&
-            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request)=="elementals-console"; } }
+            (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request)=="elementals-console" ||
+             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request)=="alternate-console"); } }
         private Game.ControllerModeType? _cleanup2OriginalController;
         private string _cleanup2OriginalLoadingScene,_cleanup2ConsoleLoadingScene;
         private BundledSceneLoader.AsyncOperation _cleanup2ConsoleLoadingOperation;

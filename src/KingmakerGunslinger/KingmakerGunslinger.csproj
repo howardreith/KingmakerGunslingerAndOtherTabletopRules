@@ -1343,6 +1343,8 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2DesktopLearning.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalSources.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2MenuAdapters.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2AlternateMenus.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2CreatureCommands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ModuleOff.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ClothProbe.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2EttinLifecycle.cs" />

@@ -1825,12 +1825,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !value.Destroyed && value.IsInGame && value.View != null).ToArray();
             var attempts = new JArray();
             Vector3? selected = null;
-            int candidates = outward ? 24 : 1;
+            // Review24 found no safe six-metre straight lane for Girallon and
+            // Stegosaurus: the real caster/other actor blocked the available
+            // directions. Shorter real walking lanes still exceed the existing
+            // .75m observation requirement; retain every footprint/path check.
+            float[] routeLengths={6f,4f,3f};
+            int candidates = outward ? 24*routeLengths.Length : 1;
             for (int index=0; index<candidates && selected==null; index++)
             {
                 // Fixed world axes, never the facing left by the preceding attack.
+                float requestedLength=outward?routeLengths[index/24]:0f;
                 Vector3 requested = outward ? anchor.clampedPosition +
-                    Quaternion.Euler(0f,index*15f,0f)*Vector3.forward*6f : originalDestination;
+                    Quaternion.Euler(0f,(index%24)*15f,0f)*Vector3.forward*requestedLength : originalDestination;
                 var endpoint = AstarPath.active.GetNearest(requested,constraint);
                 Vector3 delta = endpoint.clampedPosition-anchor.clampedPosition; delta.y=0f;
                 string refusal = null;
@@ -1838,7 +1844,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !endpoint.node.Walkable || !Cleanup2Finite(endpoint.clampedPosition) ||
                     new Vector2(endpoint.clampedPosition.x-requested.x,endpoint.clampedPosition.z-requested.z).magnitude>.15f)
                     refusal="endpoint-native-graph-or-horizontal-clamp";
-                else if (outward && Mathf.Abs(delta.magnitude-6f)>.05f) refusal="full-six-metre-endpoint-unproved";
+                else if (outward && Mathf.Abs(delta.magnitude-requestedLength)>.15f) refusal="requested-native-route-length-unproved";
                 else if (delta.sqrMagnitude<.01f) refusal="route-too-short";
                 Vector3 across = Vector3.Cross(delta.normalized,Vector3.up);
                 int supports=0;
@@ -1875,6 +1881,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {refusal="native-actor-footprint-obstruction";blockingUnit=obstacle.UniqueId;break;}
                 }
                 attempts.Add(new JObject { ["index"]=index,["requested"]=SurveyVector(requested),
+                    ["requestedPlanarMetres"]=requestedLength,
                     ["nativeEndpoint"]=SurveyVector(endpoint.clampedPosition),["planarMetres"]=delta.magnitude,
                     ["supportCount"]=supports,["refusal"]=refusal,["blockingUnit"]=blockingUnit });
                 if(refusal==null)selected=endpoint.clampedPosition;

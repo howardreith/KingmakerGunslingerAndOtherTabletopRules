@@ -150,12 +150,93 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!SameCoefficients(target.coefficients, coefficients) || !Same(target.capsuleColliders, capsules) ||
                     target.sphereColliders.Length != 0 || _scalars.Any(pair => pair.Key.Name != "enabled" &&
                     !Equals(pair.Value, pair.Key.GetValue(target, null))))
-                    throw new NotSupportedException("Owned Cloth configuration did not round-trip exactly.");
+                    throw new NotSupportedException("Owned Cloth configuration did not round-trip exactly; " +
+                        RoundTripDifferences(target, coefficients, capsules).ToString(Formatting.None));
                 var indices = new List<uint>(); var weights = new List<Vector3>(); var self = new List<uint>();
                 target.GetVirtualParticleIndices(indices); target.GetVirtualParticleWeights(weights);
                 target.GetSelfAndInterCollisionIndices(self);
                 if (!indices.SequenceEqual(_virtualIndices) || !weights.SequenceEqual(_virtualWeights) || !self.SequenceEqual(_selfIndices))
-                    throw new NotSupportedException("Owned Cloth particle configuration did not round-trip exactly.");
+                    throw new NotSupportedException("Owned Cloth particle configuration did not round-trip exactly; " +
+                        RoundTripDifferences(target, coefficients, capsules).ToString(Formatting.None));
+            }
+
+            // Failure-only bounded scalars/references. Never export donor
+            // vertices/texture pixels or change a failed comparison to PASS.
+            private JObject RoundTripDifferences(Cloth target, ClothSkinningCoefficient[] expected, CapsuleCollider[] capsules)
+            {
+                var scalars = new JArray();
+                foreach (var pair in _scalars.Where(value => value.Key.Name != "enabled"))
+                {
+                    try
+                    {
+                        object actual = pair.Key.GetValue(target, null);
+                        if (!Equals(pair.Value, actual)) scalars.Add(new JObject { ["field"] = pair.Key.Name,
+                            ["expected"] = ScalarEvidence(pair.Value), ["readback"] = ScalarEvidence(actual) });
+                    }
+                    catch (Exception error) { scalars.Add(new JObject { ["field"] = pair.Key.Name,
+                        ["expected"] = ScalarEvidence(pair.Value), ["readbackError"] = error.GetType().Name + ":" + error.Message }); }
+                }
+                ClothSkinningCoefficient[] coefficients = target.coefficients;
+                var differences = new JArray(); int mismatchCount = 0;
+                for (int index = 0; index < Math.Min(expected.Length, coefficients.Length); index++)
+                {
+                    var left = expected[index]; var right = coefficients[index];
+                    bool max = !left.maxDistance.Equals(right.maxDistance), sphere = !left.collisionSphereDistance.Equals(right.collisionSphereDistance);
+                    if (!max && !sphere) continue;
+                    mismatchCount++;
+                    if (differences.Count < 16) differences.Add(new JObject { ["coefficientIndex"] = index,
+                        ["maxDistanceExpected"] = max ? ScalarEvidence(left.maxDistance) : null,
+                        ["maxDistanceReadback"] = max ? ScalarEvidence(right.maxDistance) : null,
+                        ["collisionSphereDistanceExpected"] = sphere ? ScalarEvidence(left.collisionSphereDistance) : null,
+                        ["collisionSphereDistanceReadback"] = sphere ? ScalarEvidence(right.collisionSphereDistance) : null });
+                }
+                var indices = new List<uint>(); var weights = new List<Vector3>(); var self = new List<uint>();
+                var particleDifferences = new JArray();
+                try { target.GetVirtualParticleIndices(indices); target.GetVirtualParticleWeights(weights); target.GetSelfAndInterCollisionIndices(self); }
+                catch (Exception error) { particleDifferences.Add(new JObject { ["field"] = "particleReadback",
+                    ["readbackError"] = error.GetType().Name + ":" + error.Message }); }
+                Action<string, IList<uint>, IList<uint>> describeIndices = (field, left, right) => {
+                    if (left.SequenceEqual(right)) return;
+                    particleDifferences.Add(new JObject { ["field"] = field, ["expectedCount"] = left.Count, ["readbackCount"] = right.Count,
+                        ["firstDifferences"] = new JArray(Enumerable.Range(0, Math.Min(left.Count, right.Count)).Where(index => left[index] != right[index])
+                            .Take(16).Select(index => new JObject { ["index"] = index, ["expected"] = left[index], ["readback"] = right[index] })) });
+                };
+                describeIndices("virtualParticleIndices", _virtualIndices, indices);
+                describeIndices("selfAndInterCollisionIndices", _selfIndices, self);
+                if (!weights.SequenceEqual(_virtualWeights)) particleDifferences.Add(new JObject {
+                    ["field"] = "virtualParticleWeights", ["expectedCount"] = _virtualWeights.Count, ["readbackCount"] = weights.Count,
+                    ["firstDifferences"] = new JArray(Enumerable.Range(0, Math.Min(weights.Count, _virtualWeights.Count)).Where(index => !weights[index].Equals(_virtualWeights[index]))
+                        .Take(16).Select(index => new JObject { ["index"] = index, ["expected"] = ScalarEvidence(_virtualWeights[index]), ["readback"] = ScalarEvidence(weights[index]) })) });
+                var skin = target.GetComponent<SkinnedMeshRenderer>();
+                return new JObject { ["sourceCloth"] = Source == null ? 0 : Source.GetInstanceID(), ["targetCloth"] = target.GetInstanceID(),
+                    ["targetEnabled"] = target.enabled, ["targetActiveSelf"] = target.gameObject.activeSelf, ["targetActiveInHierarchy"] = target.gameObject.activeInHierarchy,
+                    ["targetMesh"] = skin?.sharedMesh == null ? null : skin.sharedMesh.name,
+                    ["targetMeshVertexCount"] = skin?.sharedMesh == null ? 0 : skin.sharedMesh.vertexCount,
+                    ["scalarDifferences"] = scalars, ["expectedCoefficientCount"] = expected.Length, ["readbackCoefficientCount"] = coefficients.Length,
+                    ["coefficientMismatchCountInCommonRange"] = mismatchCount, ["firstCoefficientDifferences"] = differences,
+                    ["capsuleReferencesExact"] = Same(target.capsuleColliders, capsules),
+                    ["expectedCapsules"] = new JArray(capsules.Select(value => value == null ? 0 : value.GetInstanceID())),
+                    ["readbackCapsules"] = new JArray(target.capsuleColliders.Select(value => value == null ? 0 : value.GetInstanceID())),
+                    ["expectedSpherePairCount"] = 0, ["readbackSpherePairCount"] = target.sphereColliders.Length,
+                    ["particleDifferences"] = particleDifferences, ["comparisonWeakened"] = false,
+                    ["scope"] = "Failure-only exact scalar/reference/coefficient-index diagnostics; no geometry/pixels or acceptance claim." };
+            }
+
+            private static JToken ScalarEvidence(object value)
+            {
+                if (value is float)
+                {
+                    float number = (float)value;
+                    return new JObject { ["type"] = "System.Single", ["roundTrip"] = number.ToString("R", System.Globalization.CultureInfo.InvariantCulture),
+                        ["bits"] = "0x" + BitConverter.ToInt32(BitConverter.GetBytes(number), 0).ToString("x8", System.Globalization.CultureInfo.InvariantCulture) };
+                }
+                if (value is Vector3)
+                {
+                    var vector = (Vector3)value;
+                    return new JObject { ["type"] = "UnityEngine.Vector3", ["x"] = ScalarEvidence(vector.x), ["y"] = ScalarEvidence(vector.y), ["z"] = ScalarEvidence(vector.z) };
+                }
+                return new JObject { ["type"] = value == null ? null : value.GetType().FullName,
+                    ["value"] = value == null ? JValue.CreateNull() : JToken.FromObject(value) };
             }
 
             internal JObject Describe()

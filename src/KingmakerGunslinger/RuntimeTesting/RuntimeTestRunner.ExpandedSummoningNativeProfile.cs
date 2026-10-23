@@ -115,6 +115,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "bodies" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "gorgon-presentation" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "recovery-bodies" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "creature-commands" ||
+                            RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "alternate-console" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-commands" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-presentation" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-console" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-sources" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-learning" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "elementals-off" || RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menu-adapters" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "ettin-lifecycle" ||

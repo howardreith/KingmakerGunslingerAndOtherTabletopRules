@@ -168,6 +168,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var hooks=HarmonyInstance.Create("kmg.cleanup2.elemental-presentation."+_request.RunId);
             var nativeMode=Cleanup2EnterNativeDefault(fixture,"elemental-presentation");
             var screens=new NativeIconScreenEvidence(_request);
+            UnitEntityData[] ownedParty=null;
+            var ownedSessions=new HashSet<ElementalChooserSession>();
+            var ownedDispatched=new HashSet<AbilityData>();
+            Func<bool> fixtureUiOwned=()=>ownedParty!=null && player.Party.SequenceEqual(ownedParty) &&
+                ReferenceEquals(Game.Instance,game) && ReferenceEquals(game.UI,ui) && ReferenceEquals(ActionBarManager.Instance,bar) &&
+                ReferenceEquals(GroupController.Instance,group) && bar.Group.GroupElements.SequenceEqual(groups) &&
+                ReferenceEquals(group.GetCurrentCharacter(),fixture.Caster) && ui.SelectionManagerPC.SelectedUnits.Count==1 &&
+                ReferenceEquals(ui.SelectionManagerPC.SelectedUnits.First(),fixture.Caster) &&
+                ui.TooltipsController.ContextTooltipData==null && game.SelectedAbilityHandler?.Ability==null;
             try
             {
                 const BindingFlags statics=BindingFlags.Static|BindingFlags.NonPublic;
@@ -183,6 +192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     PrepareExpandedSummoningPlayerPathSpell(book,Cleanup2ElementalAbility(fixture,parent.Guid),
                         Cleanup2ElementalAbility(fixture,parent.Guid),parent.CanonicalTier);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View,true,true,false);group.SelectUnit(fixture.Caster);
+                ownedParty=player.Party.ToArray();
                 for(int frame=0;frame<12;frame++)yield return 0;
                 var spellGroup=groups.Single(value=>(ActionBarSlotType)typeof(ActionBarGroupElement)
                     .GetField("SlotType",Cleanup2Fields).GetValue(value)==ActionBarSlotType.Spell);
@@ -190,6 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for(int frame=0;frame<12;frame++)yield return 0;
                 var session=ElementalSourceChooserRuntime.Session(spellGroup);
                 if(session==null || !session.Current)throw new InvalidOperationException("Actual native FillSlots did not publish a current chooser session: "+ElementalSourceChooserRuntime.Outcome);
+                ownedSessions.Add(session);
                 var coverage=new JArray();
                 foreach(int rank in ElementalSourceChooserPolicy.Ranks)
                 foreach(string key in ElementalSourceChooserPolicy.Rank(rank).CreatureKeys)
@@ -288,6 +299,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ExpandedSummoningRuleCapture.Clear();ExpandedSummoningPlayerPathEvents.Clear();
                 _expandedSummoningPlayerPathRuleCastCount=0;_expandedSummoningPlayerPathSpawnActionCount=0;
                 launcher.OnClick();for(int frame=0;frame<3;frame++)yield return 0;
+                if(!fixtureUiOwned() || !session.Current || !ReferenceEquals(ElementalSourceChooserView.CurrentSession,session))
+                    throw new InvalidOperationException("Original source chooser ownership changed before dispatch.");
+                ownedDispatched.Add(source.Child);
                 ElementalSourceChooserView.ReviewChoose(2,source.CreatureKey,source,true);
                 bool handoff=ReferenceEquals(game.SelectedAbilityHandler.Ability,source.Child) &&
                     ReferenceEquals(ElementalSourceChooserRuntime.LastDispatched,source.Child) && !ElementalSourceChooserView.IsOpen;
@@ -307,12 +321,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var summoned=ExpandedSummoningRuleCapture.Where(value=>value!=null && ExpandedSummoningPlayerPathUnitExact(value,fixture.Caster)).Distinct().ToArray();
                 foreach(var unit in summoned)if(!fixture.Created.Contains(unit))fixture.Created.Add(unit);
+                var expectedSmall=SummonSignatureReader.Read(source.Child.Blueprint).Spawns().ToArray();
                 bool cast=_expandedSummoningPlayerPathRuleCastCount==1 && _expandedSummoningPlayerPathSpawnActionCount==1 &&
-                    summoned.Length==1 && CountAvailableExpandedSummoningSlots(book,2)==slots-1 && fixture.Caster.Commands.Empty &&
+                    expectedSmall.Length==1 && summoned.Length==1 && summoned[0].Blueprint.AssetGuid==expectedSmall[0].Unit &&
+                    CountAvailableExpandedSummoningSlots(book,2)==slots-1 && fixture.Caster.Commands.Empty &&
                     ReferenceEquals(source.Child.ConvertedFrom,source.Source) && ReferenceEquals(source.Child.Spellbook,book) && pins.IsRestored();
                 Cleanup2Check("elemental-chooser-native-small-fire-cast",cast,new JObject {
                     ["ruleCasts"]=_expandedSummoningPlayerPathRuleCastCount,["spawnActions"]=_expandedSummoningPlayerPathSpawnActionCount,
                     ["slotBefore"]=slots,["slotAfter"]=CountAvailableExpandedSummoningSlots(book,2),
+                    ["expectedUnit"]=expectedSmall.FirstOrDefault()?.Unit,["source"]=source.Source.Blueprint.AssetGuid,
+                    ["child"]=source.Child.Blueprint.AssetGuid,
                     ["summons"]=new JArray(summoned.Select(value=>new JObject{["unit"]=value.UniqueId,["blueprint"]=value.Blueprint.AssetGuid})),
                     ["naturalDefault"]=nativeMode.Describe(),["forcedActs"]=0,["manualCommandTicks"]=0,
                     ["scope"]="One standalone Small Fire native prepared source through actual launcher/buttons/target input, ordinary native Default progression and exact debit. Additional source/budget/input cases remain separate requirements." },
@@ -324,9 +342,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var smallSpec=ElementalSourceChooserPolicy.Rank(2);
                 var monsterParent=Cleanup2ElementalAbility(fixture,smallSpec.MonsterParentGuid);
                 PrepareExpandedSummoningPlayerPathSpell(book,monsterParent,monsterParent,2);
+                if(!fixtureUiOwned() || ElementalSourceChooserView.IsOpen || !nativeMode.Current)
+                    throw new InvalidOperationException("Native postcast fixture UI ownership changed; tab rebuild refused.");
+                bool tabWasOpen=spellGroup.ToggleState;
+                if(!tabWasOpen)spellGroup.OnClick();
                 spellGroup.Fill(fixture.Caster);
-                session=ElementalSourceChooserRuntime.Session(spellGroup);session.Levels.OnClick(2);
+                session=ElementalSourceChooserRuntime.Session(spellGroup);
+                if(session==null || !session.Current)throw new InvalidOperationException("Native tab rebuild has no current session: "+ElementalSourceChooserRuntime.Outcome);
+                ownedSessions.Add(session);
+                session.Levels.OnClick(session.MinimumLevel);
                 for(int frame=0;frame<8;frame++)yield return 0;
+                Cleanup2Check("elemental-chooser-postcast-tab-reopened",spellGroup.ToggleState && session.Current && session.LauncherAdded,
+                    new JObject { ["tabOpenBefore"]=tabWasOpen,["tabOpenAfter"]=spellGroup.ToggleState,
+                        ["nativeOnClickUsed"]=!tabWasOpen,["minimumLevel"]=session.MinimumLevel,["launcherAdded"]=session.LauncherAdded,
+                        ["fixtureUiOwned"]=fixtureUiOwned(),["selectedCharacter"]=group.GetCurrentCharacter()?.UniqueId,
+                        ["selectedUnits"]=new JArray(ui.SelectionManagerPC.SelectedUnits.Select(value=>value.UniqueId)),
+                        ["outcome"]=ElementalSourceChooserRuntime.Outcome,["exceptions"]=new JArray(session.Exceptions),
+                        ["sources"]=new JArray(session.Sources.Select(value=>new JObject { ["parent"]=value.Source.Blueprint.AssetGuid,
+                            ["child"]=value.Child.Blueprint.AssetGuid,["key"]=value.CreatureKey,["available"]=value.Preparation?.Available })),
+                        ["renderedSlots"]=new JArray(spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Select(value=>new JObject {
+                            ["active"]=value.gameObject.activeInHierarchy,["mechanism"]=value.MechanicSlot?.GetType().FullName })) },
+                    "Native Fill preserves the existing tab state; native OnClick reopens a closed tab before selecting the actual launcher level and inspecting live rows.");
                 launcher=spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Single(value=>
                     value.gameObject.activeInHierarchy && value.MechanicSlot is ElementalChooserLauncher);
                 var nativeSmall=session.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" &&
@@ -361,31 +397,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Two different real native source/child/preparation objects coexist; selecting the exhausted source cannot borrow the other source's preparation or hand off targeting.");
                 ElementalSourceChooserView.CloseOwned("exhausted-source-review-cancel");
                 if(!separated)throw new InvalidOperationException("Real two-source exhaustion separation failed.");
-                foreach(int frame in Cleanup2ChooserCastSource(fixture,book,spellGroup,monsterSmall,nativeMode,watch,"monster-with-native-exhausted"))yield return frame;
+                foreach(int frame in Cleanup2ChooserCastSource(fixture,book,spellGroup,monsterSmall,nativeMode,watch,"monster-with-native-exhausted",fixtureUiOwned,ownedSessions,ownedDispatched))yield return frame;
                 // Real native unpreparation makes the canonical source alone.
                 // These are disposable fixture allocations, never saved rows.
                 book.ForgetMemorized(nativeSmall.Preparation);
                 PrepareExpandedSummoningPlayerPathSpell(book,monsterParent,monsterParent,2);
+                if(!fixtureUiOwned() || ElementalSourceChooserView.IsOpen || !nativeMode.Current)
+                    throw new InvalidOperationException("Canonical-only fixture UI ownership changed; tab rebuild refused.");
+                if(!spellGroup.ToggleState)spellGroup.OnClick();
                 spellGroup.Fill(fixture.Caster);
                 session=ElementalSourceChooserRuntime.Session(spellGroup);
+                if(session==null || !session.Current)throw new InvalidOperationException("Canonical-only native session is not current.");
+                ownedSessions.Add(session);
                 var alone=session.Sources.Where(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book)).ToArray();
                 Cleanup2Check("elemental-chooser-canonical-source-alone",alone.Length==1 && ReferenceEquals(alone[0].Source.Blueprint,monsterParent),
                     new JObject { ["sourceCount"]=alone.Length,["standaloneStillKnown"]=book.IsKnown(Cleanup2ElementalAbility(fixture,smallSpec.Guid)),
                         ["standalonePreparationRemovedNatively"]=!book.GetMemorizedSpells(2).Any(value=>ReferenceEquals(value,nativeSmall.Preparation)) },
                     "Known legacy ownership remains while native unpreparation leaves the canonical cast source alone in the actual tab.");
                 if(alone.Length!=1)throw new InvalidOperationException("Canonical-only native source setup is ambiguous.");
-                foreach(int frame in Cleanup2ChooserCastSource(fixture,book,spellGroup,alone[0],nativeMode,watch,"monster-alone"))yield return frame;
+                foreach(int frame in Cleanup2ChooserCastSource(fixture,book,spellGroup,alone[0],nativeMode,watch,"monster-alone",fixtureUiOwned,ownedSessions,ownedDispatched))yield return frame;
             }
             finally
             {
                 try
                 {
                 // Drop only our exact dispatched child; never clear foreign input.
-                if(game.SelectedAbilityHandler?.Ability!=null && ReferenceEquals(game.SelectedAbilityHandler.Ability,ElementalSourceChooserRuntime.LastDispatched))
+                if(nativeMode.Current && game.SelectedAbilityHandler?.Ability!=null && ownedDispatched.Contains(game.SelectedAbilityHandler.Ability))
                     game.SelectedAbilityHandler.DropAbility();
-                ElementalSourceChooserView.CloseOwned("review-owned-cleanup");
+                if(ownedSessions.Contains(ElementalSourceChooserView.CurrentSession))ElementalSourceChooserView.CloseOwned("review-owned-cleanup");
                 _expandedSummoningPlayerPathCaptureActive=false;hooks.UnpatchAll(hooks.Id);
-                if(ReferenceEquals(GroupController.Instance,group) && ui.TooltipsController.ContextTooltipData==null)
+                bool untouched=player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) &&
+                    ReferenceEquals(group.GetCurrentCharacter(),selectedGroup);
+                bool authority=ReferenceEquals(Game.Instance,game) && ReferenceEquals(game.UI,ui) &&
+                    ReferenceEquals(ActionBarManager.Instance,bar) && ReferenceEquals(GroupController.Instance,group) &&
+                    bar.Group.GroupElements.SequenceEqual(groups) && ui.TooltipsController.ContextTooltipData==null &&
+                    game.SelectedAbilityHandler?.Ability==null && !ElementalSourceChooserView.IsOpen && (untouched || fixtureUiOwned());
+                if(authority)
                 {
                     for(int index=0;index<groups.Length;index++)groups[index].Toggle(toggles[index],true);
                     group.SelectUnit(selectedGroup);
@@ -395,6 +442,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool restored=player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) &&
                     ReferenceEquals(group.GetCurrentCharacter(),selectedGroup) && originalInputs.All(value=>value.Unchanged()) && bars.All(value=>value.IsRestored());
                 Cleanup2Check("elemental-chooser-native-ui-restored",restored,new JObject {
+                    ["restorationAuthority"]=authority,
                     ["partyExact"]=player.Party.SequenceEqual(party),["selectionExact"]=ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
                     ["originalInputsExact"]=originalInputs.All(value=>value.Unchanged()),["originalPinsExact"]=bars.All(value=>value.IsRestored()) },
                     "Original party, native selection/group, original slots/resources and all original pins restore before the owned native Default mode exits.");
@@ -411,10 +459,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Cleanup2ChooserCastSource(ExpandedSummoningCorrectionFixture fixture,Spellbook book,
-            ActionBarGroupElement spellGroup,ElementalNativeSource source,Cleanup2NativeDefaultScope mode,Stopwatch phase,string label)
+            ActionBarGroupElement spellGroup,ElementalNativeSource source,Cleanup2NativeDefaultScope mode,Stopwatch phase,string label,
+            Func<bool> uiOwned,ICollection<ElementalChooserSession> ownedSessions,ICollection<AbilityData> ownedDispatched)
         {
-            var session=ElementalSourceChooserRuntime.Session(spellGroup);session.Levels.OnClick(session.MinimumLevel);
+            var session=ElementalSourceChooserRuntime.Session(spellGroup);
+            if(session==null || !session.Current || !spellGroup.ToggleState || !session.Sources.Contains(source))
+                throw new InvalidOperationException("The actual open tab must still own the explicitly selected source before casting: "+label);
+            session.Levels.OnClick(session.MinimumLevel);
             for(int frame=0;frame<6;frame++)yield return 0;
+            if(!uiOwned() || !mode.Current || !session.Current || !spellGroup.ToggleState || ElementalSourceChooserView.IsOpen)
+                throw new InvalidOperationException("Source launcher UI ownership changed after frame progression: "+label);
+            ownedSessions.Add(session);
             var launcher=spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Single(value=>value.gameObject.activeInHierarchy &&
                 value.MechanicSlot is ElementalChooserLauncher);
             int before=CountAvailableExpandedSummoningSlots(book,source.Source.SpellLevel);
@@ -422,6 +477,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningRuleCapture.Clear();ExpandedSummoningPlayerPathEvents.Clear();
             _expandedSummoningPlayerPathRuleCastCount=0;_expandedSummoningPlayerPathSpawnActionCount=0;
             launcher.OnClick();for(int frame=0;frame<3;frame++)yield return 0;
+            if(!uiOwned() || !mode.Current || !session.Current || !ReferenceEquals(ElementalSourceChooserView.CurrentSession,session))
+                throw new InvalidOperationException("Source chooser ownership changed before explicit dispatch: "+label);
+            ownedDispatched.Add(source.Child);
             ElementalSourceChooserView.ReviewChoose(source.Rank,source.CreatureKey,source,true);
             bool selected=ReferenceEquals(Game.Instance.SelectedAbilityHandler.Ability,source.Child);
             bool clicked=selected && Game.Instance.SelectedAbilityHandler.OnClick(null,fixture.Caster.Position+new Vector3(2,0,2),0);
