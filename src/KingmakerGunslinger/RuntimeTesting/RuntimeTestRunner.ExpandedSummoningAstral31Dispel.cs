@@ -194,7 +194,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         value.Ability, family) || ReferenceEquals(value.Ability,
                             dismissal) || ReferenceEquals(value.Ability, dispel))
                     .ToArray();
-                bool mapping = root != null && variants.SequenceEqual(new[] {
+                bool mapping = root != null &&
+                    new[] { family, dismissal, dismissalTouch, dispel, dispelTouch }
+                        .All(value => value.Type == AbilityType.SpellLike) &&
+                    family.GetComponent<SpellComponent>()?.School == SpellSchool.Abjuration &&
+                    family.GetComponent<SpellDescriptorComponent>() != null &&
+                    (family.GetComponent<SpellDescriptorComponent>().Descriptor & SpellDescriptor.Good) != 0 &&
+                    dismissalTouch.GetComponent<SpellDescriptorComponent>() != null &&
+                    (dismissalTouch.GetComponent<SpellDescriptorComponent>().Descriptor & SpellDescriptor.Good) != 0 &&
+                    variants.SequenceEqual(new[] {
                         dismissal, dispel }) && dismissalData != null &&
                     dispelData != null && dismissalData.IsAvailable &&
                     dispelData.IsAvailable && dismissalParameters != null &&

@@ -859,6 +859,12 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispel", "BlueprintAbility"),
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispelTouch", "BlueprintAbility"),
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilWard", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvil", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissal", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissalTouch", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispel", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispelTouch", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilWard", "BlueprintBuff"),
 
     ))
     expected = sum(identity_count(name) for name in (

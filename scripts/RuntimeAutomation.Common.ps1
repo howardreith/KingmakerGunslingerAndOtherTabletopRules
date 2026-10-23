@@ -2250,7 +2250,7 @@ function Test-KmgSprints30And31ReviewPhaseScope {
     return $Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and
         @($Parameters.Keys) -ccontains 'reviewPhase' -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies')
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies')
 }
 
 function Test-KmgSprint29ReviewPhaseScope {

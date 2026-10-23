@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 479;
+        internal const int SpecialIdentityCount = 485;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -788,6 +788,12 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispel", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispelTouch", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilWard", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvil", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissal", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissalTouch", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispel", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispelTouch", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilWard", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }

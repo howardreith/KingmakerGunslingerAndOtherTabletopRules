@@ -7,15 +7,16 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Abilities are23 scoped roots plus twenty private abilities (Dretch2,
-        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier/Cure/See
-        // plus eight native mappings, Holy Smite and five Dispel Evil abilities).
-        internal const int RegisteredAbilityIdentityCount = 23 + 25;
+        // Twenty other private abilities plus one five-ability Dispel Evil
+        // family per actual caster. Its ward adds one private buff per caster.
+        internal const int RegisteredDispelEvilCasterCount = 2;
+        internal const int RegisteredAbilityIdentityCount = 23 + 20 +
+            RegisteredDispelEvilCasterCount * 5;
         internal const int RegisteredAreaIdentityCount = 3;
         internal const int RegisteredResourceIdentityCount = 6;
         internal const int RegisteredAiIdentityCount = 9;
         internal const int RegisteredBrainIdentityCount = 4;
-        internal const int RegisteredBuffIdentityCount = 10;
+        internal const int RegisteredBuffIdentityCount = 9 + RegisteredDispelEvilCasterCount;
         internal const int RegisteredFeatureIdentityCount = 8;
         internal const int RegisteredWeaponIdentityCount = 9;
         internal const int RegisteredSpellbookIdentityCount = 1;
@@ -150,7 +151,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Core phase requires automatic exit.");
             Assertions.True(RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodySequence.SequenceEqual(new[] { "lemure", "dretch" }), "Only the two supported original body subcases share this fixed phase.");
-            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "hound-armed", "hound-natural", "lantern-rays", "lantern-body", "astral-core", "astral-hammer", "astral-blade", "astral-support", "astral-atwill", "astral-smite", "astral-dispel", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies" })
+            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "hound-armed", "hound-natural", "lantern-rays", "lantern-body", "astral-core", "astral-hammer", "astral-blade", "astral-support", "astral-atwill", "astral-smite", "astral-dispel", "trumpet-dispel", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "A fixed isolated command phase is admitted in a fresh empty world.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases require automatic exit.");
@@ -159,7 +160,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, true, false, true), "Isolated phases refuse a save import.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases refuse extra parameters.");
             }
-            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Hound-Armed", "hound-armed ", "Hound-Natural", "hound-natural ", "Lantern-Rays", "lantern-rays ", "Lantern-Body", "lantern-body ", "Astral-Core", "astral-core ", "Astral-Hammer", "astral-hammer ", "Astral-Blade", "astral-blade ", "Astral-Support", "astral-support ", "Astral-Atwill", "astral-atwill ", "Astral-Smite", "astral-smite ", "Astral-Dispel", "astral-dispel ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "profiles", "routes", "", null })
+            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Hound-Armed", "hound-armed ", "Hound-Natural", "hound-natural ", "Lantern-Rays", "lantern-rays ", "Lantern-Body", "lantern-body ", "Astral-Core", "astral-core ", "Astral-Hammer", "astral-hammer ", "Astral-Blade", "astral-blade ", "Astral-Support", "astral-support ", "Astral-Atwill", "astral-atwill ", "Astral-Smite", "astral-smite ", "Astral-Dispel", "astral-dispel ", "Trumpet-Dispel", "trumpet-dispel ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "profiles", "routes", "", null })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Unimplemented or differently cased phase is refused.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Automatic exit is required.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, "bootstrap", 0, 0, 0, false, false, false, false, true), "Extra parameters are refused.");

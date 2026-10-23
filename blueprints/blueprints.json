@@ -58887,6 +58887,54 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvil",
+      "guid": "45af5f84e9c54a93a314168ee6976fc4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissal",
+      "guid": "a911b0c9ac44447c804f90aa9f0a0dea",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissalTouch",
+      "guid": "d718f7143063468e9dcab19716c68fa4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispel",
+      "guid": "bb7a0bce81024b1b9f26f3beaeb02a4d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispelTouch",
+      "guid": "268e51ddd612407a986d40459cd011df",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilWard",
+      "guid": "cf431e78a92842078c30e8a24a051b3f",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
     }
   ]
 }
