@@ -58759,6 +58759,70 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Aid",
+      "guid": "f6a33637e8d94dc4a419c553118c0da9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelMagic",
+      "guid": "636e27289db149d5af10cae609198750",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HolyAura",
+      "guid": "c0126e56cc2f41d8b914fa6b4b0e290c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HolyWord",
+      "guid": "705b1eb82aa242e38c830a853082c780",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.Invisibility",
+      "guid": "c0175c42369145c89a614e2c4e6c726f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveCurse",
+      "guid": "8812db19407c411b9df6947734dc6bd3",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveDisease",
+      "guid": "2979d2871f3b4059a19ecd2362c44dee",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveFear",
+      "guid": "bde59bfccb4142ec9b4ff4ab5aeb3d5d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
     }
   ]
 }

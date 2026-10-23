@@ -170,14 +170,46 @@ namespace KingmakerGunslinger.Blueprints
                 AstralDevaRulesPolicy.SeeInvisibilitySpellLevel,
                 seeInvisibilityResource, "See Invisibility",
                 "up to seven times per summoning");
+            var aid = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "Aid", "03a9630394d10164a9410882d31572f0", "Aid");
+            var dispelMagic = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "DispelMagic", "92681f181b507b34ea87018e8f7a528a", "Dispel Magic");
+            var holyAura = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "HolyAura", "808ab74c12df8784ab4eeaf6a107dbea", "Holy Aura");
+            var holyWord = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "HolyWord", "4737294a66c91b844842caee8cf505c8", "Holy Word");
+            var invisibility = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "Invisibility", "89940cde01689fb46946b2f8cd7b66b7", "Invisibility");
+            // The printed Astral SLA is self-only. Keep the native effect graph
+            // while removing the donor spell's ordinary ally-touch surface.
+            invisibility.Range = AbilityRange.Personal;
+            invisibility.CanTargetSelf = true;
+            invisibility.CanTargetFriends = false;
+            invisibility.CanTargetEnemies = false;
+            invisibility.CanTargetPoint = false;
+            var removeCurse = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "RemoveCurse", "b48674cef2bff5e478a007cf57d8345b", "Remove Curse");
+            var removeDisease = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "RemoveDisease", "4093d5a0eb5cae94e909eb1e0e1a6b36", "Remove Disease");
+            var removeFear = ConfigureAstralAtWillNativeSpell(library, bySymbol,
+                "RemoveFear", "55a037e514c0ee14a8e3ed14b47061de", "Remove Fear");
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
             parameters.Abilities = new[] { heal, bladeBarrier, cureLight,
-                seeInvisibility };
+                seeInvisibility, aid, dispelMagic, holyAura, holyWord,
+                invisibility, removeCurse, removeDisease, removeFear };
             parameters.SpellLevels = new[] { 6,
                 AstralDevaRulesPolicy.BladeBarrierSpellLevel,
                 AstralDevaRulesPolicy.CureLightWoundsSpellLevel,
-                AstralDevaRulesPolicy.SeeInvisibilitySpellLevel };
+                AstralDevaRulesPolicy.SeeInvisibilitySpellLevel,
+                AstralDevaRulesPolicy.AidSpellLevel,
+                AstralDevaRulesPolicy.DispelMagicSpellLevel,
+                AstralDevaRulesPolicy.HolyAuraSpellLevel,
+                AstralDevaRulesPolicy.HolyWordSpellLevel,
+                AstralDevaRulesPolicy.InvisibilitySpellLevel,
+                AstralDevaRulesPolicy.RemoveCurseSpellLevel,
+                AstralDevaRulesPolicy.RemoveDiseaseSpellLevel,
+                AstralDevaRulesPolicy.RemoveFearSpellLevel };
             parameters.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
 
             traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor,
@@ -190,7 +222,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Astral31Prefix + "Traits.Name", "Astral Deva Traits"),
                 LocalizationService.Create(Astral31Prefix + "Traits.Description",
-                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses, all at CL13. Change shape and caster travel are unavailable."), null);
+                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses. Aid, Dispel Magic, Holy Aura, Holy Word, self-only Invisibility, Remove Curse, Remove Disease and Remove Fear are at will. All SLAs are CL13. Change shape, caster travel, expensive Continual Flame, social Discern Lies and passive Detect Evil sensing are unavailable."), null);
 
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "Astral ordinary attack fallback");
@@ -242,7 +274,26 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, PowerAttackGuid, "Power Attack"),
                 Feature(library, "d09b20029e9abfe4480b356c92095623", "Toughness"),
                 extraplanar, traits, stunFeature, heal, bladeBarrier, cureLight,
-                seeInvisibility };
+                seeInvisibility, aid, dispelMagic, holyAura, holyWord,
+                invisibility, removeCurse, removeDisease, removeFear };
+        }
+
+        private static BlueprintAbility ConfigureAstralAtWillNativeSpell(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            string suffix, string nativeGuid, string title)
+        {
+            string symbol = Astral31Prefix + suffix;
+            var ability = Require<BlueprintAbility>(bySymbol, symbol);
+            CloneMephitSpell(library, ability, nativeGuid,
+                "native Astral Deva " + title);
+            ability.name = InternalName(symbol);
+            ability.Type = AbilityType.SpellLike;
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(symbol + ".Name", title),
+                LocalizationService.Create(symbol + ".Description",
+                    title + " at will at caster level13."), ability.Icon);
+            return ability;
         }
 
         private static void ConfigureAstralHammerStun(LibraryScriptableObject library,

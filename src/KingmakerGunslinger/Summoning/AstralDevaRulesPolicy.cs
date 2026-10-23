@@ -32,6 +32,14 @@ namespace KingmakerGunslinger.Summoning
         internal const int CureLightWoundsUses = 7;
         internal const int SeeInvisibilitySpellLevel = 2;
         internal const int SeeInvisibilityUses = 7;
+        internal const int AidSpellLevel = 2;
+        internal const int DispelMagicSpellLevel = 3;
+        internal const int HolyAuraSpellLevel = 8;
+        internal const int HolyWordSpellLevel = 7;
+        internal const int InvisibilitySpellLevel = 2;
+        internal const int RemoveCurseSpellLevel = 3;
+        internal const int RemoveDiseaseSpellLevel = 3;
+        internal const int RemoveFearSpellLevel = 1;
         internal static bool HasGoodSummoningDescriptor { get { return true; } }
         internal static bool HasLawSummoningDescriptor { get { return false; } }
 
@@ -76,6 +84,10 @@ namespace KingmakerGunslinger.Summoning
                 BladeBarrierSpellLevel != 6 || BladeBarrierUses != 1 ||
                 CureLightWoundsSpellLevel != 1 || CureLightWoundsUses != 7 ||
                 SeeInvisibilitySpellLevel != 2 || SeeInvisibilityUses != 7 ||
+                AidSpellLevel != 2 || DispelMagicSpellLevel != 3 ||
+                HolyAuraSpellLevel != 8 || HolyWordSpellLevel != 7 ||
+                InvisibilitySpellLevel != 2 || RemoveCurseSpellLevel != 3 ||
+                RemoveDiseaseSpellLevel != 3 || RemoveFearSpellLevel != 1 ||
                 SpellLikeCasterLevel == HitDice || !HasGoodSummoningDescriptor ||
                 HasLawSummoningDescriptor)
                 throw new InvalidOperationException("Astral adult rules policy changed.");

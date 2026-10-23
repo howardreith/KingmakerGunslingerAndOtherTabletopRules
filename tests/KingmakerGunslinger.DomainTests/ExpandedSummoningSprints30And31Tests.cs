@@ -7,9 +7,10 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Abilities are23 scoped roots plus eleven private abilities (Dretch2,
-        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier/Cure/See).
-        internal const int RegisteredAbilityIdentityCount = 23 + 11;
+        // Abilities are23 scoped roots plus nineteen private abilities (Dretch2,
+        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier/Cure/See
+        // and eight at-will native mappings).
+        internal const int RegisteredAbilityIdentityCount = 23 + 19;
         internal const int RegisteredAreaIdentityCount = 3;
         internal const int RegisteredResourceIdentityCount = 6;
         internal const int RegisteredAiIdentityCount = 9;
@@ -89,6 +90,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(7, AstralDevaRulesPolicy.CureLightWoundsUses, "Cure Light Wounds has seven independent uses per summoning.");
             Assertions.Equal(2, AstralDevaRulesPolicy.SeeInvisibilitySpellLevel, "See Invisibility retains its second-level SLA DC.");
             Assertions.Equal(7, AstralDevaRulesPolicy.SeeInvisibilityUses, "See Invisibility has seven independent uses per summoning.");
+            Assertions.Equal(2, AstralDevaRulesPolicy.AidSpellLevel, "Aid keeps its second-level SLA parameters.");
+            Assertions.Equal(3, AstralDevaRulesPolicy.DispelMagicSpellLevel, "Dispel Magic keeps its third-level SLA parameters.");
+            Assertions.Equal(8, AstralDevaRulesPolicy.HolyAuraSpellLevel, "Holy Aura keeps its eighth-level SLA DC.");
+            Assertions.Equal(7, AstralDevaRulesPolicy.HolyWordSpellLevel, "Holy Word keeps its seventh-level SLA DC.");
+            Assertions.Equal(2, AstralDevaRulesPolicy.InvisibilitySpellLevel, "Invisibility keeps its second-level SLA parameters.");
+            Assertions.Equal(3, AstralDevaRulesPolicy.RemoveCurseSpellLevel, "Remove Curse keeps its third-level SLA parameters.");
+            Assertions.Equal(3, AstralDevaRulesPolicy.RemoveDiseaseSpellLevel, "Remove Disease keeps its third-level SLA parameters.");
+            Assertions.Equal(1, AstralDevaRulesPolicy.RemoveFearSpellLevel, "Remove Fear keeps its first-level SLA parameters.");
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");

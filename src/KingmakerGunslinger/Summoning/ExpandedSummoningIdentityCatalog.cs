@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 463;
+        internal const int SpecialIdentityCount = 471;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -772,6 +772,14 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibilityResource", "BlueprintAbilityResource"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.StunFeature", "BlueprintFeature"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Stunned", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Aid", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelMagic", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.HolyAura", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.HolyWord", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.Invisibility", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveCurse", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveDisease", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveFear", "BlueprintAbility"));
             Validate(result);
             return result.AsReadOnly();
         }
