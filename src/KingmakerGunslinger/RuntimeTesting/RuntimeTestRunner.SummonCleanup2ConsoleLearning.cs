@@ -75,6 +75,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var protectedInputs=party.Select(value=>new Cleanup2TooltipInputs(value)).ToArray();
             var protectedPins=party.Select(value=>new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
             var layers=GamePad.Instance.Layers.ToArray();bool added=false;
+            var portraits=new List<Tuple<Kingmaker.UI.UnitSettings.UnitUISettings,BlueprintPortrait,PortraitData>>();
             var mode=Cleanup2EnterNativeDefault(fixture,"elementals-console-learning");
             var screens=new NativeIconScreenEvidence(_request);
             try
@@ -85,6 +86,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!completedIntake)throw new InvalidOperationException("Native console global controller is not demonstrably completed/idle; inspect exact predicates.");
                 if(!party.Contains(fixture.Caster))
                 {player.PartyCharacters.Add(fixture.Caster);added=true;player.InvalidateCharacterLists();player.UpdateCharacterLists();}
+                // Native43 fresh OFF: the native level-up spell tooltip lists party
+                // companions who know the spell and draws each SmallPortrait; the
+                // portrait-less disposable caster made native SetIcon throw. Give
+                // only owned fixture units a native CharGen portrait, restored exactly.
+                foreach(var unit in player.Party.Where(value=>(ReferenceEquals(value,fixture.Caster) || fixture.Created.Contains(value)) &&
+                    value.Descriptor.Portrait?.SmallPortrait==null))
+                {
+                    var settings=unit.Descriptor.UISettings;
+                    portraits.Add(Tuple.Create(settings,settings.PortraitBlueprintRaw,settings.CustomPortraitRaw));
+                    settings.SetPortrait(BlueprintRoot.Instance.CharGen.Portraits.First(value=>value!=null));
+                }
                 selection.SelectUnit(fixture.Caster.View,true,true,false);for(int frame=0;frame<8;frame++)yield return 0;
                 foreach(int frame in Cleanup2ConsoleNativePrepareAndUndo(fixture,book,service,screens))yield return frame;
                 foreach(int frame in Cleanup2ConsoleNativeLearnAndCancel(fixture,book,service,screens,levelUpIntake,serviceExact))yield return frame;
@@ -93,6 +105,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 try
                 {
+                    foreach(var portrait in portraits)portrait.Item1.SetPortraitUnsafe(portrait.Item2,portrait.Item3);
                     if(added){player.PartyCharacters.Remove(fixture.Caster);player.InvalidateCharacterLists();player.UpdateCharacterLists();}
                     bool selectionRestored=selectionState.Restore(fixture);
                     JObject levelUpReceipt;bool levelUpRestored=levelUpIntake.Current(out levelUpReceipt);
@@ -230,7 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             for(;releaseFrames<8 || (!off && !retiredNow() && releaseFrames<600 && releaseWatch.Elapsed.TotalSeconds<8);releaseFrames++)yield return 0;
             bool retired=!off && retiredNow(),disposedAtClose=cleanupContext!=null && cleanupContext.Disposed,boundAtClose=headerBoundNow();
             var stateAtClose=retirementState();
-            bool reopened=false,disposedAtRebind=disposedAtClose,reopenedClosed=false;int rebindFrames=0;
+            bool reopened=false,disposedAtRebind=disposedAtClose,reopenedClosed=false,retiredAtRebind=disposedAtClose,newContextCurrent=false;int rebindFrames=0;
             if(retired && !disposedAtClose)
             {
                 typeof(CharcaterServiceContext).GetMethod("OnSpellBookHandler",Cleanup2Fields).Invoke(service,null);
@@ -240,8 +253,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if(again==null || !ReferenceEquals(again.UnitEntity.Value,fixture.Caster))throw new InvalidOperationException("Native console book did not reopen for the fixture caster.");
                     again.ChooseSpellBook(book.Blueprint);again.ChooseLevel(2);reopened=true;
+                    // Native43: an unreused pooled row may keep referencing the old
+                    // header after the rebind, exactly as native row VMs stay
+                    // referenced (never disposed by 060050E1). Require the old
+                    // context released, a new current context, and no active
+                    // reopened row showing the old header; disposal is recorded.
+                    Func<ElementalConsoleBookPresentation.PreparationContext> newContext=()=>{
+                        var reopenedView=Resources.FindObjectsOfTypeAll<SpellBookView>().FirstOrDefault(value=>value.gameObject.scene.IsValid() &&
+                            value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),again));
+                        var reopenedScroll=reopenedView==null?null:reopenedView.GetComponentsInChildren<SpellbookKnownSpellsScrollView>(true)
+                            .FirstOrDefault(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),again.SpellBookKnownSpells));
+                        return reopenedScroll==null?null:ElementalConsoleBookPresentation.PreparationFor(reopenedScroll);};
+                    Func<bool> reboundNow=()=>{var current=newContext();return cleanupContext.Released && current!=null && current.Current &&
+                        !ReferenceEquals(current,cleanupContext) && !ReferenceEquals(current.Header,cleanupContext.Header) &&
+                        !Resources.FindObjectsOfTypeAll<SpellBookKnownSpellView>().Any(value=>value.gameObject.activeInHierarchy &&
+                            ReferenceEquals(value.GetViewModel(),cleanupContext.Header));};
                     var rebindWatch=Stopwatch.StartNew();
-                    for(;rebindFrames<8 || (!cleanupContext.Disposed && rebindFrames<600 && rebindWatch.Elapsed.TotalSeconds<8);rebindFrames++)yield return 0;
+                    for(;rebindFrames<8 || (!reboundNow() && rebindFrames<600 && rebindWatch.Elapsed.TotalSeconds<8);rebindFrames++)yield return 0;
+                    retiredAtRebind=reboundNow();newContextCurrent=newContext()?.Current==true;
                     disposedAtRebind=cleanupContext.Disposed && cleanupContext.Header.IsDisposed && cleanupContext.Projection==null && !headerBoundNow();
                 }
                 finally
@@ -253,7 +282,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             bool released=off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
                 bookField.GetValue(service)==null :
-                retired && (disposedAtClose || (reopened && disposedAtRebind && reopenedClosed));
+                retired && (disposedAtClose || (reopened && retiredAtRebind && reopenedClosed));
             Cleanup2Check("elemental-console-native-disposed-preparation-release",released,new JObject {
                 ["waitedFrames"]=releaseFrames,["waitedSeconds"]=releaseWatch.Elapsed.TotalSeconds,
                 ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
@@ -261,12 +290,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["ownedContextRetiredAtClose"]=retired,["ownedHeaderDisposedAtClose"]=disposedAtClose,["retirementStateAtClose"]=stateAtClose,
                 ["inactiveNativeViewStillBindsHeaderAtClose"]=boundAtClose,
                 ["nativeReopenRebind"]=reopened,["rebindFrames"]=rebindFrames,
-                ["ownedHeaderDisposedAtRebind"]=disposedAtRebind,["reopenedBookClosedExactly"]=reopenedClosed,
+                ["oldContextReleasedNewContextCurrentAtRebind"]=retiredAtRebind,["newContextCurrent"]=newContextCurrent,
+                ["ownedHeaderDisposedAtRebind"]=disposedAtRebind,["oldHeaderStillReferencedByInactivePooledRow"]=headerBoundNow(),["reopenedBookClosedExactly"]=reopenedClosed,
                 ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,
                 ["freshModuleOff"]=off,["ownedProjectionExpected"]=!off,
                 ["nativeContract"]="SpellBookKnownSpellsVM.DisposeImplementation 060050E1 clears KnownSpells/selection without disposing row VMs; inactive pooled rows stay bound until the next native rebind.",
                 ["scope"]="Actual native close, then one real native reopen (OnSpellBookHandler) and exact close. Fresh OFF has no owned header/context. No observer call to presentation Release or native VM Dispose." },
-                "After native close the owned header retires with no selection or book authority; it is disposed with its projection when the native view rebinds, exactly like native row VMs.");
+                "After native close the owned header retires with no selection or book authority; at the native rebind its context is released and replaced, and no active row shows it, exactly like native row VMs.");
             if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not retire/dispose across actual close and rebind.");
         }
 

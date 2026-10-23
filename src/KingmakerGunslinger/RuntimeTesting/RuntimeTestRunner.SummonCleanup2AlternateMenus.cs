@@ -554,9 +554,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         string routeLabel = family.Key + (route.Placement.Multiplicity == SummonMultiplicity.One ? "" : "-" + route.Placement.Multiplicity);
                         var input = new Cleanup2TooltipInputs(caster);
                         pinSnapshot = new TeleportationUiSettingsFixture(caster.UISettings);
-                        var destination = bar.CurrentPage.FirstOrDefault(value => value.IsEmpty && value.Index >= 0 &&
+                        Func<ActionBarSlotVM> emptySlot = () => bar.CurrentPage.FirstOrDefault(value => value.IsEmpty && value.Index >= 0 &&
                             value.Index < caster.UISettings.Slots.Length && caster.UISettings.Slots[value.Index] is MechanicActionBarSlotEmpty);
-                        if (destination == null) throw new InvalidOperationException("Native console fixture has no visible empty slot.");
+                        var destination = emptySlot(); int pagesAdvanced = 0;
+                        // Native43: native level-up auto-fills a caster's first
+                        // hotbar page. Reach an empty slot with the bar's own
+                        // next-page action; the route pages back afterwards.
+                        while (destination == null && pagesAdvanced < 8)
+                        {
+                            typeof(ActionBarVM).GetMethod("OnNextPage", Cleanup2Fields).Invoke(bar, null); pagesAdvanced++;
+                            for (int frame = 0; frame < 4; frame++) yield return 0;
+                            destination = emptySlot();
+                        }
+                        if (destination == null) throw new InvalidOperationException("Native console fixture has no visible empty slot on any page.");
                         pinOwner = caster; pinArray = caster.UISettings.Slots; pinContents = pinArray.ToArray(); pinIndex = destination.Index; beforePin = pinArray[pinIndex];
                         typeof(ActionBarVM).GetMethod("SetSlotSelected", Cleanup2Fields).Invoke(bar, new object[] { destination });
                         typeof(ActionBarVM).GetMethod(route.Book == null ? "ShowAbilityMenu" : "ShowSpellMenu", Cleanup2Fields).Invoke(bar, null);
@@ -676,6 +686,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ownedConverted = null;
                         Cleanup2AlternateRestorePin(bar, pinOwner, pinArray, pinContents, pinIndex, beforePin, ownedPin, pinSnapshot);
                         pinnedVm = null; ownedPin = null; pinOwner = null; pinSnapshot = null; pinArray = null; pinContents = null; pinIndex = -1;
+                        for (int page = 0; page < pagesAdvanced; page++) typeof(ActionBarVM).GetMethod("OnPrevPage", Cleanup2Fields).Invoke(bar, null);
                     }
                 }
                 Cleanup2Check("alternate-console-family-label-sample-scope", labelSamples.Count == 3, new JObject {
