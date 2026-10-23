@@ -516,15 +516,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value?.Context != null && (ReferenceEquals(
                         value.Context.MaybeCaster, owner) || ReferenceEquals(
                         value.Context.MaybeCaster, sibling)));
+                var ownerActiveCommands = owner.Commands.Raw.Where(value =>
+                    value != null && !value.IsFinished).ToArray();
+                var siblingActiveCommands = sibling.Commands.Raw.Where(value =>
+                    value != null && !value.IsFinished).ToArray();
                 bool cleanup = owner.Destroyed && sibling.Destroyed &&
                     !owner.IsInState && !sibling.IsInState && noOwnedAreas &&
-                    !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) &&
-                    !sibling.Commands.Raw.Any(value => value != null && !value.IsFinished) &&
+                    ownerActiveCommands.Length == 0 &&
+                    siblingActiveCommands.Length == 0 &&
                     target.Damage == fixture.HostileDamage &&
                     target.Descriptor.State.Size == fixture.HostileSize;
                 Sprint25Check("astral-support-owned-cleanup", cleanup,
-                    new JObject { ["ownerAbsent"] = !owner.IsInState,
+                    new JObject { ["ownerDestroyed"] = owner.Destroyed,
+                        ["siblingDestroyed"] = sibling.Destroyed,
+                        ["ownerShouldBeDestroyed"] = owner.ShouldBeDestroyed,
+                        ["siblingShouldBeDestroyed"] = sibling.ShouldBeDestroyed,
+                        ["ownerAbsent"] = !owner.IsInState,
                         ["siblingAbsent"] = !sibling.IsInState,
+                        ["ownerActiveCommands"] = new JArray(ownerActiveCommands
+                            .Select(value => value.GetType().Name).ToArray()),
+                        ["siblingActiveCommands"] = new JArray(siblingActiveCommands
+                            .Select(value => value.GetType().Name).ToArray()),
                         ["ownedAreasAbsent"] = noOwnedAreas,
                         ["cleanupFrames"] = cleanupFrames,
                         ["hostileReset"] = hostileReset,
