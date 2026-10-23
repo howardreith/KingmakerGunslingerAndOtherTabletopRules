@@ -394,14 +394,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if(vm==null)return;
                         if(!uiOwned() || !ReferenceEquals(vm.UnitEntity.Value,fixture.Caster))
                             throw new InvalidOperationException("Foreign character-service spellbook is not closed.");
-                        vm.Back();
+                        Cleanup2CloseOwnedConsoleBook(service,vm,fixture.Caster);
                     });
                     bool untouched=player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(selection.CurrentSelectUnitValue,current);
-                    bool authority=ReferenceEquals(Game.Instance,game) && ReferenceEquals(UnitSelectionManager.Instance,selection) &&
-                        ReferenceEquals(GamePad.Instance,gamepad) && bar.SelectorVm.Value==null &&
-                        typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null &&
-                        game.UI.TooltipsController.ContextTooltipData==null && game.SelectedAbilityHandler?.Ability==null && (untouched || uiOwned());
+                    var authorityPredicates=new JObject {
+                        ["sameGame"]=ReferenceEquals(Game.Instance,game), ["sameSelection"]=ReferenceEquals(UnitSelectionManager.Instance,selection),
+                        ["sameGamepad"]=ReferenceEquals(GamePad.Instance,gamepad), ["selectorClosed"]=bar.SelectorVm.Value==null,
+                        ["nativeBookFieldCleared"]=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null,
+                        ["tooltipClosed"]=game.UI.TooltipsController.ContextTooltipData==null, ["targetingClosed"]=game.SelectedAbilityHandler?.Ability==null,
+                        ["originalOrOwnedUi"]=untouched || uiOwned() };
+                    bool authority=authorityPredicates.Properties().All(value=>(bool)value.Value);
                     bool selectionRestored=false;
                     if(!authority)errors.Add("Foreign native console owner; original party/selection is not overwritten.");
                     else
@@ -417,6 +420,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["originalInputsExact"]=original.All(value=>value.Unchanged()),["pinsExact"]=originalPins.All(value=>value.IsRestored()),
                         ["nativeSelectionRestoration"]=selectionState.Describe(),
                         ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(originalLayers),["restorationAuthority"]=authority,
+                        ["restorationPredicates"]=authorityPredicates,
                         ["ownedSelectorContexts"]=ownedContexts.Count,["ownedNativeSelectorTokens"]=ownedSelectors.Count,
                         ["locallyDispatchedChildReferences"]=ownedDispatched.Count,["errors"]=new JArray(errors) },
                         "All original native party/selection/source budgets/pins and controller input layers restore before exiting the owned Default scope.");
@@ -500,14 +504,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if(owned!=null && ReferenceEquals(typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service),owned))owned.Back();
+                if(owned!=null && ReferenceEquals(typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service),owned))
+                    Cleanup2CloseOwnedConsoleBook(service,owned,fixture.Caster);
             }
             for(int frame=0;frame<8;frame++)yield return 0;
-            bool restored=before.Unchanged() && pins.IsRestored() && GamePad.Instance.Layers.SequenceEqual(layers);
+            bool nativeBookCleared=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null;
+            bool restored=nativeBookCleared && before.Unchanged() && pins.IsRestored() && GamePad.Instance.Layers.SequenceEqual(layers);
             Cleanup2Check("elemental-console-preparation-closed",restored,new JObject { ["budgetExact"]=before.Unchanged(),
-                ["pinsExact"]=pins.IsRestored(),["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers) },
+                ["pinsExact"]=pins.IsRestored(),["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers),["nativeBookFieldCleared"]=nativeBookCleared },
                 "Closing the exact native owned book removes its input layers and leaves every original source budget and pin unchanged.");
             if(!restored)throw new InvalidOperationException("Native console preparation closure unverified.");
+        }
+
+        private static void Cleanup2CloseOwnedConsoleBook(CharcaterServiceContext service,SpellBookVM owned,UnitEntityData caster)
+        {
+            var field=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields);
+            if(service==null || owned==null || field==null || !ReferenceEquals(field.GetValue(service),owned) ||
+                !ReferenceEquals(owned.UnitEntity.Value,caster))
+                throw new InvalidOperationException("Only the exact owned native spellbook may be closed.");
+            // Installed Back0600512A only disposes; it leaves the service's
+            // field populated. HideSpellbook06006255 disposes AND clears that
+            // exact field. HandleHideSpellbook skips an already-disposed VM.
+            var hide=typeof(CharcaterServiceContext).GetMethod("HideSpellbook",Cleanup2Fields,null,Type.EmptyTypes,null);
+            if(hide==null || hide.ReturnType!=typeof(void))throw new InvalidOperationException("Native spellbook close contract unavailable.");
+            hide.Invoke(service,null);
+            if(field.GetValue(service)!=null)throw new InvalidOperationException("Native spellbook field remains after exact owned close.");
         }
     }
 }

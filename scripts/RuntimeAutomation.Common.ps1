@@ -2250,7 +2250,7 @@ function Test-KmgCleanup2ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     return $Scenario -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and @($Parameters.Keys)[0] -ceq 'reviewPhase' -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('giant-lineup','giants-off','menus','elementals','bodies','cloth-probe','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','tooltips','crab-attack','production-attacks','gorgon-presentation','recovery-bodies','creature-commands','alternate-console','shared-controls')
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('giant-lineup','giants-off','menus','elementals','bodies','cloth-probe','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-pin','elementals-learning','elementals-off','menu-adapters','scale-prototype','tooltips','crab-attack','production-attacks','gorgon-presentation','recovery-bodies','creature-commands','alternate-console','shared-controls')
 }
 
 function Test-KmgCleanup2ModuleOffScope {

@@ -118,9 +118,11 @@ namespace KingmakerGunslinger.Summoning
             if (!ReferenceEquals(view.EntityData, state.Owner))
             { Release(view); return "giant:foreign-view-owner"; }
             if (state.Refused) return state.Outcome;
-            if (state.RenderOwner != null)
+            // Unity's destroyed-object null operator must not turn a retained
+            // refused owner into permission to claim the native view again.
+            if (!ReferenceEquals(state.RenderOwner, null))
             {
-                if (state.RenderOwner.IsDisposed)
+                if (state.RenderOwner.IsDisposed || state.RenderOwner == null)
                 { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=owned-renderer-refused:" + state.RenderOwner.Status; }
                 return state.Outcome;
             }
@@ -176,7 +178,7 @@ namespace KingmakerGunslinger.Summoning
             if (view == null) return;
             State state;
             if (!States.TryGetValue(view, out state)) return;
-            if (state.RenderOwner != null) state.RenderOwner.Dispose();
+            if (!ReferenceEquals(state.RenderOwner, null)) state.RenderOwner.Dispose();
             States.Remove(view);
         }
 
@@ -188,7 +190,10 @@ namespace KingmakerGunslinger.Summoning
             if (view == null || !States.TryGetValue(view, out state))
                 return new JObject { ["ownerPresent"] = false, ["outcome"] = Describe(view),
                     ["copiedClothProductionGateOpen"] = Cleanup2GiantRenderScalePrototype.ProductionCopiedClothEnabled };
-            JObject result = state.RenderOwner == null ? new JObject { ["ownerPresent"] = false } : state.RenderOwner.ObserveProduction();
+            bool retainedOwner = !ReferenceEquals(state.RenderOwner, null);
+            JObject result = retainedOwner ? state.RenderOwner.ObserveProduction() : new JObject { ["ownerPresent"] = false };
+            result["retainedOwnerReference"] = retainedOwner;
+            result["retainedOwnerUnityAlive"] = retainedOwner && state.RenderOwner != null;
             result["outcome"] = state.Outcome; result["key"] = state.Key;
             result["unitOwnerExact"] = ReferenceEquals(state.Owner, view.EntityData);
             result["nativeRootScaleExact"] = GiantSummonPresentationPolicy.Same(state.Baseline, Read(view.transform.localScale));

@@ -59,8 +59,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (toggles.Any(value => value)) throw new InvalidOperationException("Closed native groups required at intake.");
             var originalInputs = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var originalBars = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
+            var fixtureCasterAtIntake = fixture.Caster;
+            var fixtureBooksBefore = fixture.Caster.Descriptor.Spellbooks.ToArray();
+            var fixtureStatsBefore = new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue };
+            bool fixtureDetachedBefore = fixture.Caster.IsDetached;
             var addedBooks = new TeleportResourceFixtureOwner(fixture.Caster);
-            var watch = Stopwatch.StartNew(); bool added = false, selectedFixture = false;
+            var watch = Stopwatch.StartNew(); bool added = false, selectedFixture = false, bodyCompleted = false;
+            string stage = "resolve-native-routes";
             Cleanup2NativeDefaultScope nativeMode = null; NativeIconScreenEvidence screens = null;
             Action removeConversion = null;
             try
@@ -83,6 +88,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                     "b3a505fb61437dc4097f43c3f8f9a4cf", "native known-book adapter Sorcerer");
+                stage = "prepare-request-owned-books";
                 var knownBook = addedBooks.AddBook(sorcerer.Spellbook);
                 if (!knownBook.Blueprint.Spontaneous || knownBook.CasterLevel != 20)
                     throw new InvalidOperationException("Native CL20 spontaneous book required.");
@@ -96,14 +102,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var preparedBefore = new Cleanup2ElementalBookSnapshot(book);
                 if (!player.Party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
+                stage = "acquire-native-default-after-book-setup";
                 nativeMode = Cleanup2EnterNativeDefault(fixture, "menu-adapters");
-                // These are non-casting presentation observations. Pausing the
-                // owned native mode keeps availability unchanged during IO.
-                game.IsPaused = true;
+                // Native set_IsPaused(true)06000C9B queues StartMode(Pause).
+                // Presentation does not spend preparations, and requesting a
+                // Pause here would invalidate the exact Default lease on the
+                // next normal frame. Keep setup before acquisition; never
+                // remove an unexpected/foreign Pause to retain the lease.
                 screens = new NativeIconScreenEvidence(_request);
+                stage = "settle-native-fixture-selection";
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster);
                 selectedFixture = true;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
+                Cleanup2Check("menu-adapters-native-default-settled", nativeMode.Current, new JObject {
+                    ["stage"] = stage, ["nativeMode"] = nativeMode.Describe(), ["observerRequestedPause"] = false,
+                    ["bookSetupCompletedBeforeLease"] = true },
+                    "Book preparation precedes strict native Default admission; normal selection frames must preserve its exact stack and controllers without a Pause request.");
+                if (!nativeMode.Current) throw new InvalidOperationException("Native menu adapter Default/selection did not settle; inspect exact stack/controller receipt.");
                 var spellGroup = groups.Single(value => (ActionBarSlotType)typeof(ActionBarGroupElement)
                     .GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.Spell);
                 var inputs = new Cleanup2TooltipInputs(fixture.Caster);
@@ -112,6 +127,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (bool known in new[] { false, true })
                 foreach (var target in targets)
                 {
+                    stage = (known ? "known-" : "prepared-") + target.Label;
                     Cleanup2MenuAdapterBoundary(nativeMode, watch);
                     if (!spellGroup.ToggleState) spellGroup.OnClick();
                     var levels = (ActionBarSubGroupLevels)typeof(ActionBarGroupElement).GetField("m_Levels", Cleanup2Fields).GetValue(spellGroup);
@@ -148,11 +164,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "All twelve real native source/quantity rows preserve source/book identities and current labels, icons, slots, resources and pins.");
                 if (!unchanged || rows.Count != 12) throw new InvalidOperationException("Native adapter input preservation failed.");
                 var pinTarget = targets.Single(value => value.Spec.Family == SummonFamily.Monster && value.Spec.Multiplicity == SummonMultiplicity.One);
+                stage = "native-original-horse-pin";
                 foreach (int frame in Cleanup2MenuAdapterPin(fixture, book, spellGroup, pinTarget, nativeMode, watch, screens)) yield return frame;
                 Cleanup2Check("menu-adapter-pin-array-restored", fixturePins.IsRestored(),
                     new JObject { ["exactOriginalSlotArrayAndContents"] = fixturePins.IsRestored() },
                     "The native pin probe restores the entire fixture hotbar array and metadata before the next book/feature grant.");
                 if (!fixturePins.IsRestored()) throw new InvalidOperationException("Native pin probe changed unrelated hotbar state.");
+                stage = "native-druid-conversion-and-cast";
                 foreach (int frame in Cleanup2MenuAdapterDruid(fixture, addedBooks, spellGroup, nativeMode, watch, screens,
                     value => removeConversion = value)) yield return frame;
                 // Actual console activation/learning is owned by a separate
@@ -163,15 +181,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["castCostsAndSummons"] = "Only the actual Druid SNAII Horse ordinary command/cast/debit is exercised; the twelve prepared/known quantity rows remain presentation observations.",
                     ["maximumWallSeconds"] = 240, ["wallSeconds"] = watch.Elapsed.TotalSeconds },
                     "The supported desktop slice and distinct console, persistence and execution limits remain explicit.");
+                bodyCompleted = true;
             }
             finally
             {
                 var errors = new List<string>();
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { errors.Add(name + ":" + error.Message); } };
+                bool booksReleaseCompleted = false;
                 try
                 {
-                    restore("conversion-feature", () => removeConversion?.Invoke());
-                    restore("owned-books", addedBooks.Restore);
+                    JObject casterOwnership;
+                    bool ownsCaster = Cleanup2SourcesOwnsCaster(fixture, fixtureCasterAtIntake, out casterOwnership);
+                    var replacements = ownsCaster ? addedBooks.Books.Where(value => {
+                        var actual = fixture.Caster.Descriptor.GetSpellbook(value.Blueprint);
+                        return actual != null && !ReferenceEquals(actual, value);
+                    }).Select(value => value.Blueprint.AssetGuid).ToArray() : new string[0];
+                    if (!ownsCaster || replacements.Length != 0) errors.Add("Foreign extra-book replacement or unowned fixture caster; not modified.");
+                    else
+                    {
+                        restore("conversion-feature", () => removeConversion?.Invoke());
+                        restore("owned-books", () => { addedBooks.Restore(); booksReleaseCompleted = true; });
+                    }
                     bool untouchedUi = !selectedFixture && ReferenceEquals(group.GetCurrentCharacter(), selectedGroup) &&
                         ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected);
                     bool fixtureUi = ReferenceEquals(group.GetCurrentCharacter(), fixture.Caster) &&
@@ -191,21 +221,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                             restore("selection", () => ui.SelectionManagerPC.MultiSelect(selected.Where(value => value?.View != null).Select(value => value.View).ToArray(), false));
                         }
                     }
+                    // The disposable Wizard's known/prepared contents were
+                    // deliberately exercised after owner intake. Its outer
+                    // fixture teardown owns those changes. Do not use the
+                    // extra-book owner's original CONTENT fingerprint as a
+                    // claim that the native extra books failed to release.
+                    bool fixtureBooksExact = ownsCaster && fixture.Caster.Descriptor.Spellbooks.SequenceEqual(fixtureBooksBefore);
+                    bool extraBooksAbsent = ownsCaster && addedBooks.Books.All(value => fixture.Caster.Descriptor.GetSpellbook(value.Blueprint) == null);
+                    bool fixtureStatsExact = ownsCaster && new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue }
+                        .SequenceEqual(fixtureStatsBefore) && fixture.Caster.IsDetached == fixtureDetachedBefore;
+                    bool ownedReleased = booksReleaseCompleted && fixtureBooksExact && extraBooksAbsent && fixtureStatsExact;
                     bool exact = errors.Count == 0 && player.Party.SequenceEqual(party) &&
                         ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) && ReferenceEquals(group.GetCurrentCharacter(), selectedGroup) &&
-                        originalInputs.All(value => value.Unchanged()) && originalBars.All(value => value.IsRestored()) && addedBooks.IsRestored();
+                        originalInputs.All(value => value.Unchanged()) && originalBars.All(value => value.IsRestored()) && ownedReleased;
                     Cleanup2Check("menu-adapters-owned-ui-restored", exact, new JObject {
                         ["partyExact"] = player.Party.SequenceEqual(party), ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
                         ["originalInputsAndPinsExact"] = originalInputs.All(value => value.Unchanged()) && originalBars.All(value => value.IsRestored()),
-                        ["ownedBooksRemoved"] = addedBooks.IsRestored(), ["errors"] = new JArray(errors) },
+                        ["ownedBooksRemoved"] = ownedReleased, ["nativeExtraBookReleaseCompleted"] = booksReleaseCompleted,
+                        ["originalFixtureBookReferencesExact"] = fixtureBooksExact, ["ownedExtraBooksAbsent"] = extraBooksAbsent,
+                        ["fixtureStatsAndDetachmentExact"] = fixtureStatsExact, ["casterOwnership"] = casterOwnership,
+                        ["foreignBookReplacements"] = new JArray(replacements), ["lastStage"] = stage, ["bodyCompleted"] = bodyCompleted,
+                        ["disposableBookContentScope"] = "Intentionally exercised Wizard preparations/known objects are disposed by outer fixture teardown; original party resources and pins remain independently exact.",
+                        ["errors"] = new JArray(errors) },
                         "Only this disposable caster's owned books/fact/pin and native UI are changed; original party resources and pins restore exactly.");
                 }
                 finally
                 {
-                    try { if (screens != null) screens.Dispose(); }
-                    finally { if (nativeMode != null) nativeMode.Dispose(); }
+                    restore("native-screens", () => screens?.Dispose());
+                    restore("native-default", () => nativeMode?.Dispose());
                 }
-                if (errors.Count != 0) throw new InvalidOperationException("Menu adapter cleanup unverified: " + string.Join("|", errors.ToArray()));
+                Cleanup2Check("menu-adapters-finalizers", errors.Count == 0, new JObject {
+                    ["lastStage"] = stage, ["bodyCompleted"] = bodyCompleted, ["errors"] = new JArray(errors),
+                    ["originalBodyFailurePreserved"] = !bodyCompleted,
+                    ["nativeMode"] = nativeMode == null ? JValue.CreateNull() : (JToken)nativeMode.Describe() },
+                    "Finalizer failures are retained independently; they never replace an already failing menu case's original exception.");
+                if (errors.Count != 0 && bodyCompleted) throw new InvalidOperationException("Menu adapter cleanup unverified: " + string.Join("|", errors.ToArray()));
             }
         }
 

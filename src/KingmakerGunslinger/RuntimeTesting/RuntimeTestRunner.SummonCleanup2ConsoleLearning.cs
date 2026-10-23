@@ -153,7 +153,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if(owned!=null && ReferenceEquals(typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service),owned))owned.Back();
+                if(owned!=null && ReferenceEquals(typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service),owned))
+                    Cleanup2CloseOwnedConsoleBook(service,owned,fixture.Caster);
                 // Only this disposable caster's original exact source was
                 // written by this case; native rollback never touches others.
                 if(written!=null && ReferenceEquals(written.Spell,originalSource))book.ForgetMemorized(written);

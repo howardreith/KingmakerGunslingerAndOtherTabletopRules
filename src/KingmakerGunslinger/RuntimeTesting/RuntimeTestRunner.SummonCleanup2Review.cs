@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 else if (phase == "alternate-console")
                     foreach (int frame in ReviewSummonCleanup2AlternateConsoleMenus(fixture)) yield return frame;
-                else if (phase == "elementals-sources")
+                else if (phase == "elementals-sources" || phase == "elementals-pin")
                     foreach (int frame in ReviewSummonCleanup2ElementalSources(fixture, book)) yield return frame;
                 else if (phase == "elementals-off")
                 {
@@ -925,8 +925,13 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Cleanup2WaitAppearance(UnitEntityData unit, string key)
         {
-            DateTime deadline = DateTime.UtcNow.AddSeconds(12);
             bool inspectGiant = (string)_request.Parameters?["reviewPhase"] == "giant-lineup";
+            // Review31 positively records the native three-second dissolve
+            // only0.416 complete after12wall seconds (Unity delta is capped).
+            // Keep the exact opacity/appearance predicate and observe enough
+            // actual engine time; never accelerate or reset the native effect.
+            int wallBudget = inspectGiant ? 60 : 12;
+            DateTime deadline = DateTime.UtcNow.AddSeconds(wallBudget);
             JObject materialStart = inspectGiant ? Cleanup2GiantAppearanceState(unit) : null;
             bool before = _sprint25WaitingForUnityAppearance, ready = false;
             float dissolve = 1f;
@@ -950,6 +955,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { _sprint25WaitingForUnityAppearance = before; }
             Cleanup2Check("settled-" + key, ready, new JObject { ["key"] = key,
                 ["unit"] = unit.UniqueId, ["frames"] = frames, ["dissolve"] = dissolve,
+                ["wallBudgetSeconds"] = wallBudget,
                 ["fadedIn"] = EntityFadedIn(unit), ["modelStateForced"] = false,
                 ["giantMaterialStart"] = materialStart,
                 ["giantMaterialEnd"] = inspectGiant ? Cleanup2GiantAppearanceState(unit) : null },

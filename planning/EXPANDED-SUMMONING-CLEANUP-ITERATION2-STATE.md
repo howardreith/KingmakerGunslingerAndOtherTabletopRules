@@ -12,13 +12,18 @@ Quick review: [14-item acceptance status](#acceptance-status),
 ### PR #67 review corrections (2026-10-22)
 
 Latest: [PR 67 follow-up results and remaining checks](CLEANUP2-PR67-REVIEW-FOLLOWUP.md).
-Latest native input is review30, source `6f4c204ff3c7a52ca26bcf40904a2bb9a210cbb5`.
-Giant13/2 stops at Frost appearance with insufficient material/Unity-clock
-observations to identify the cause. Creature15/2 stops before attacks at actual
-scenery/bounded-camera-survey refusal. New geometry and production height remain
-unqualified; the next camera uses the already observed clear mansion stage.
-Both runs restore fresh95-save inventories, installation and settings exactly;
-window9 ends02:34:59.8359902UTC,28m14.836s. Review29 evidence below retains its
+Latest native input is review31, source `69643385199d89c2d4225bd16a26e6040f345140`.
+Giant13/2 proves native appearance still progresses; a visual invalidation also
+scheduled an unintended material/collider refresh. Both causes have narrow
+corrections. Creature10/2 correctly refuses a real mansion interchapter; the next
+camera uses the actual review28 Oleg corridor. Sources81/3 passes all24 casts and
+special slot, then refuses retained level-up state before hydration. Controller
+11/3 reaches cast and preparation, then detects incomplete native book closure.
+Adapters6/3 exposes an observer-owned Pause before any Horse pixel check.
+Exact causes, corrections and original raw identities are in the follow-up.
+New geometry and production height remain unqualified. All five runs restore
+fresh95-save inventories, installation and settings exactly; window10 ends
+03:11:37.3148940UTC,24m37.315s. Review29 evidence below retains its
 own source `ed83d7dc47c02b2a662f27312d7e3e54326bdbb9`.
 Scale93/0 positively establishes exact copied cape behavior and disabled-capsule
 contact; the production gate is now opened for its exact native signature,

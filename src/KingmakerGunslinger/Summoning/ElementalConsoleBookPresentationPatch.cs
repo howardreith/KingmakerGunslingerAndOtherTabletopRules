@@ -69,7 +69,7 @@ namespace KingmakerGunslinger.Summoning
             internal readonly PreparationContext Context;
             internal PreparationHeader(PreparationContext context,AbilityDataVM source,Spellbook book):base(source.SpellData,book)
             {Context=context;DisplayName="Elementals";Description="Confirm to show or hide original spell sources. Choose an original source to prepare, cast or edit metamagic.";
-                SchoolName="Show original spell sources";LevelIsValid=false;IsDomain=false;IsSpecial=false;}
+                SchoolName="Show sources";LevelIsValid=false;IsDomain=false;IsSpecial=false;}
         }
 
         internal sealed class LearningContext
@@ -147,7 +147,7 @@ namespace KingmakerGunslinger.Summoning
             internal void Build()
             {Projection=ElementalSourceChooserPolicy.ProjectOriginalSources(Originals,Sources,Header,Expanded,
                 source=>ReferenceEquals(Group.CurrentSelectedSpell.Value,source));
-                Header.SchoolName=Expanded?"Hide original spell sources":"Show original spell sources";}
+                Header.SchoolName=Expanded?"Hide sources":"Show sources";}
             internal void Refresh()
             {
                 typeof(SpellbookKnownSpellsScrollView).GetField("m_VirtualViews",Fields).SetValue(View,null);
@@ -290,7 +290,7 @@ namespace KingmakerGunslinger.Summoning
             var header=view.GetViewModelClass() as LearningHeader;if(header==null)return;
             var title=typeof(CharGenSpellSelectorItemView).GetField("m_SpellName",Fields).GetValue(view) as TextMeshProUGUI;
             var school=typeof(CharGenSpellSelectorItemView).GetField("m_SchoolName",Fields).GetValue(view) as TextMeshProUGUI;
-            title.text="Elementals";school.text=header.Context.Expanded?"Hide original spell sources":"Confirm to show original spell sources";
+            title.text="Elementals";school.text=header.Context.Expanded?"Hide sources":"Show sources";
         }
         internal static void PreparationHints(SpellBookView view)
         {
@@ -299,7 +299,7 @@ namespace KingmakerGunslinger.Summoning
             ((ReactiveProperty<bool>)typeof(SpellBookView).GetField("m_ContextHintActive",Fields).GetValue(view)).Value=false;
             ((ReactiveProperty<bool>)typeof(SpellBookView).GetField("m_MetaMagicHintActive",Fields).GetValue(view)).Value=false;
             ((GenericHintView)typeof(SpellBookView).GetField("m_ConfirmHint",Fields).GetValue(view)).SetLabel(
-                header.Context.Expanded?"Hide original sources":"Show original sources");
+                header.Context.Expanded?"Hide sources":"Show sources");
         }
         internal static IEnumerable<CodeInstruction> Project(IEnumerable<CodeInstruction> instructions,FieldInfo source,MethodInfo helper,int expected)
         {

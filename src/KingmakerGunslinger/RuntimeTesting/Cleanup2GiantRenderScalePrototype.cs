@@ -990,7 +990,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             // These exact native seams only invalidate/build visual receiver
             // caches. Never call UpdateCachedRenderersAndColliders: that would
             // add the disabled visual capsules to the gameplay collider cache.
-            _view.MarkRenderersAndCollidersAreUpdated();
+            // MarkRenderersAndCollidersAreUpdated also schedules the native
+            // UnitEntityView.LateUpdate full collider census and SMC reinit,
+            // which instantiates the proxies' borrowed materials. Invoke only
+            // its exact visual invalidation, leaving that native flag alone.
+            _ordinaryReceiverOwner.ReinitMaterials();
             // Installed Highlighter.UpdateRenderers consumes its dirty flag,
             // rebuilds highlight-only receivers/materials and reads original
             // sharedMaterials. It never assigns a native PF material array.
@@ -1245,7 +1249,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal JObject ObserveProduction()
         {
             JObject receipt = Describe();
-            receipt["ownerPresent"] = true;
+            receipt["ownerPresent"] = !_disposed && this != null;
+            receipt["retainedManagedOwner"] = true;
             receipt["observerCalledApplyOrSynchronize"] = false;
             bool exact = false; string reason = null;
             if (_production && !_disposed)
@@ -1463,7 +1468,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_lastReport != null) _lastReport["restoreIssues"] = new JArray(_restoreIssues);
         }
 
-        private void OnDestroy() { if (!_disposed) Dispose(); }
+        private void OnDestroy()
+        {
+            if (_disposed) return;
+            if (_production) _status = "REFUSED:owned-root-destroyed-before-release";
+            Dispose();
+        }
 
         private static string ColliderGeometry(Collider collider)
         {

@@ -49,6 +49,14 @@ duplicate attachment observer is required. **Actual native cold reconstruction
 is still unexecuted** until the new scripts and candidate are frozen together.
 These fixture results do not claim native reconstruction or live restoration.
 
+The exact module-ON trio now waits for ordinary production Cloud/Storm owners
+before its existing pause/save boundary (600 normal frames,60s wall maximum).
+General save-readiness admits finite native appearance still in progress; it
+does not promise completed palette/scale attachment. The observer reads current
+owners without applying or rebuilding them. Existing full ownership/material/
+cloth checks still decide whether saving is permitted. This sequencing correction
+awaits native execution on the coherent candidate.
+
 The remainder preserves the earlier plan and its original failed/refusing
 boundary for provenance.
 
