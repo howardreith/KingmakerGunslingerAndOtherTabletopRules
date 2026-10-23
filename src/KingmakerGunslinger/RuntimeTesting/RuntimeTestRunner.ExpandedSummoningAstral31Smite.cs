@@ -330,6 +330,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Astral31SmiteBlind(owner, owner, blinded) == null;
                     bool effect = dretchExact && wolfExact && targetExact &&
                         siblingCoherent && goodUnaffected;
+                    Buff[] victimBlinds = new[] { dretchBlind, siblingBlind }
+                        .Where(value => value != null).Distinct().ToArray();
                     Sprint25Check("astral-smite-alignment-sr-effect", effect,
                         new JObject { ["owner"] = owner.UniqueId,
                             ["goodOwner"] = observed.Row(owner),
@@ -351,25 +353,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!effect) throw new InvalidOperationException(
                         "Astral Holy Smite alignment/SR effect failed.");
 
+                    double dretchBlindBeforeSourceLoss =
+                        dretchBlind.TimeLeft.TotalSeconds;
                     DisposeExpandedSummoningUnits(fixture.Created,
                         new[] { owner });
-                    bool blindRemainedAfterOwner =
-                        Astral31SmiteBlind(dretch, owner, blinded) != null;
+                    bool blindRemainedAfterOwner = !dretchBlind.IsDisposed &&
+                        dretch.Buffs.Enumerable.Contains(dretchBlind) &&
+                        dretch.Descriptor.State.HasCondition(
+                            UnitCondition.Blindness) &&
+                        dretchBlind.TimeLeft.TotalSeconds > 0d &&
+                        dretchBlind.TimeLeft.TotalSeconds <=
+                            dretchBlindBeforeSourceLoss;
                     DateTime deadline = DateTime.UtcNow.AddSeconds(10);
                     int expiryFrames = 0;
                     while (DateTime.UtcNow < deadline && expiryFrames++ < 1000 &&
-                        new[] { sibling, dretch, wolf, target }.Any(value =>
-                            Astral31SmiteBlind(value, owner, blinded) != null))
+                        victimBlinds.Any(value => !value.IsDisposed))
                         yield return 0;
-                    bool blindExpired = new[] { sibling, dretch, wolf, target }
-                        .All(value => Astral31SmiteBlind(value, owner,
-                            blinded) == null);
+                    bool blindExpired = victimBlinds.All(value =>
+                            value.IsDisposed) &&
+                        new[] { sibling, dretch, wolf, target }.All(value =>
+                            !value.Buffs.Enumerable.Any(buff => ReferenceEquals(
+                                buff.Blueprint, blinded))) &&
+                        !dretch.Descriptor.State.HasCondition(
+                            UnitCondition.Blindness);
                     bool lifetime = owner.Destroyed && blindRemainedAfterOwner &&
                         blindExpired;
                     Sprint25Check("astral-smite-native-lifetime", lifetime,
                         new JObject { ["ownerDestroyed"] = owner.Destroyed,
                             ["failedSaveBlindRemainedAfterOwner"] =
                                 blindRemainedAfterOwner,
+                            ["dretchBlindDisposedAfterOwner"] =
+                                dretchBlind.IsDisposed,
+                            ["dretchBlindSecondsBeforeSourceLoss"] =
+                                dretchBlindBeforeSourceLoss,
+                            ["dretchBlindSecondsAfterSourceLoss"] =
+                                dretchBlind.IsDisposed ? null :
+                                    (double?)dretchBlind.TimeLeft.TotalSeconds,
+                            ["dretchContextCasterAfterSourceLoss"] =
+                                dretchBlind.Context?.MaybeCaster?.UniqueId,
+                            ["victimBuffsObserved"] = victimBlinds.Length,
                             ["allHolySmiteBlindExpired"] = blindExpired,
                             ["expiryFrames"] = expiryFrames,
                             ["manualSourceLossRemoval"] = false },
@@ -601,7 +623,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_targets.Contains(evt.Initiator) &&
                     ReferenceEquals(evt.Blueprint, _blinded) &&
                     OwnBlindContext(evt.Context) &&
-                    !Applications.Contains(evt)) Applications.Add(evt);
+                    !Applications.Any(value => ReferenceEquals(
+                        value.AppliedBuff, evt.AppliedBuff)))
+                    Applications.Add(evt);
             }
         }
     }
