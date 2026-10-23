@@ -501,6 +501,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!retained) throw new InvalidOperationException(
                     "Astral support resource retention failed.");
 
+                Sprint28SetBrainActivePreservingActions(owner, false);
+                Sprint28SetBrainActivePreservingActions(sibling, false);
                 owner.Commands.InterruptAll(true); sibling.Commands.InterruptAll(true);
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner, sibling });
