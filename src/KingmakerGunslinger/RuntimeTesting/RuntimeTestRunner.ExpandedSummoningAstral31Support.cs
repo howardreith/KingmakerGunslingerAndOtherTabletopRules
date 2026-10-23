@@ -205,21 +205,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .OfType<UnitUseAbility>().Where(value => sticky != null &&
                             ReferenceEquals(value.Spell.Blueprint,
                                 sticky.TouchDeliveryAbility)).ToArray();
-                    heldCommand = heldCandidates.Length == 1 ? heldCandidates[0] : null;
+                    bool heldFromQueue = heldCandidates.Length == 1;
+                    var heldData = touch?.Ability?.Data;
+                    heldCommand = heldFromQueue ? heldCandidates[0] :
+                        (heldData == null ? null : new UnitUseAbility(heldData,
+                            new TargetWrapper(sibling)));
                     string heldAbility = touch?.Ability?.Data?.Blueprint?.AssetGuid;
                     string stickySource = touch?.Ability?.Data?.StickyTouch?.Blueprint
                         ?.AssetGuid;
                     owner.Commands.RemoveFinishedAndUpdateQueue();
                     bool heldReady = sticky != null && touch != null &&
-                        heldCandidates.Length == 1 && heldCommand != null &&
-                        owner.Commands.Raw.Contains(heldCommand) &&
-                        heldCommand.CanStart && ReferenceEquals(heldCommand.Target?.Unit,
-                            sibling) && ReferenceEquals(touch.Ability.Data.StickyTouch
-                                ?.Blueprint, cure);
+                        heldCandidates.Length <= 1 && heldCommand != null &&
+                        (heldCommand.IsStarted || heldCommand.CanStart) &&
+                        ReferenceEquals(heldCommand.Target?.Unit, sibling) &&
+                        ReferenceEquals(heldData?.Blueprint,
+                            sticky.TouchDeliveryAbility) &&
+                        ReferenceEquals(heldData?.StickyTouch?.Blueprint, cure) &&
+                        heldData.CanTarget(new TargetWrapper(sibling));
                     if (heldReady)
                     {
-                        heldCommand.Start();
-                        CircleCompleteCommand(heldCommand, heldEvidence);
+                        if (!heldFromQueue) owner.Commands.Run(heldCommand);
+                        DateTime heldDeadline = DateTime.UtcNow.AddSeconds(25);
+                        int heldFrames = 0;
+                        while (heldFrames++ < 3000 &&
+                            DateTime.UtcNow < heldDeadline &&
+                            (!heldCommand.IsFinished ||
+                             heldCommand.ExecutionProcess == null ||
+                             !heldCommand.ExecutionProcess.IsEnded))
+                        {
+                            if (heldCommand.ExecutionProcess != null &&
+                                !heldCommand.ExecutionProcess.IsEnded)
+                                heldCommand.ExecutionProcess.Tick();
+                            yield return 0;
+                        }
+                        heldEvidence.Add("frames=" + heldFrames +
+                            ";fromQueue=" + heldFromQueue +
+                            ";started=" + heldCommand.IsStarted +
+                            ";finished=" + heldCommand.IsFinished +
+                            ";result=" + heldCommand.Result);
                         owner.Commands.RemoveFinishedAndUpdateQueue();
                     }
                     int healed = manualDamageBefore - sibling.Damage;
@@ -254,6 +277,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["heldAbility"] = heldAbility,
                             ["stickySource"] = stickySource,
                             ["heldCandidateCount"] = heldCandidates.Length,
+                            ["heldFromQueue"] = heldFromQueue,
                             ["heldReady"] = heldReady,
                             ["heldCostApplications"] = heldCommand == null ? 0 :
                                 economy.Count(heldCommand),
@@ -274,7 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .GetResourceAmount(bladeResource),
                             ["manualNativeRootAndHeldTouch"] = true,
                             ["forcedHealingRolls"] = 0 },
-                        "A real manual CL13 Cure Light Wounds root plus its native queued held-touch delivery pays one standard action, resolves native 1d8+5 healing, and spends only the caster's Cure resource.");
+                        "A real manual CL13 Cure Light Wounds root plus its exact native held-touch AbilityData delivery pays one standard action, resolves native 1d8+5 healing, and spends only the caster's Cure resource.");
                     if (!exact) throw new InvalidOperationException(
                         "Astral manual Cure Light Wounds path failed.");
                 }
