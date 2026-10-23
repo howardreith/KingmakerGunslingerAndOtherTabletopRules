@@ -40,26 +40,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             var build = ui.CharacterBuildController;
             if (game.IsControllerGamepad || !Cleanup2NoNarrativeOverlay() || group == null || ui.SelectionManagerPC == null ||
                 ui.ServiceWindow.WindowTabs.IsShow || ui.SpellBookController.IsShow || build == null || build.IsShow ||
-                build.LevelUpController != null || ui.LevelUpController != null || DialogMessageBox.Instance == null ||
+                build.LevelUpController != null || DialogMessageBox.Instance == null ||
                 DialogMessageBox.Instance.IsShown || ui.TooltipsController.ContextTooltipData != null || !fixture.Caster.Commands.Empty)
                 throw new InvalidOperationException("Closed idle native desktop book/creator and no foreign modal required.");
             var party = player.Party.ToArray(); var selected = ui.SelectionManagerPC.SelectedUnits.ToArray();
             var originalGroup = group.GetCurrentCharacter(); var buildUnit = build.Unit;
             var inputs = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var bars = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
+            var levelUpIntake = new Cleanup2SourcesLevelUpIntake(game);
             bool added = false, selectedFixture = false;
             var mode = Cleanup2EnterNativeDefault(fixture, "elementals-learning");
             var screens = new NativeIconScreenEvidence(_request); var watch = Stopwatch.StartNew();
             try
             {
-                game.IsPaused = true;
+                JObject levelUpReceipt;
+                bool completedIntake = levelUpIntake.Current(out levelUpReceipt);
+                Cleanup2Check("elemental-desktop-native-levelup-intake", completedIntake, levelUpReceipt,
+                    "The exact original native controller field may retain only a completed disposed preview; active builders, producer work or replacements refuse before learning.");
+                if (!completedIntake) throw new InvalidOperationException("Native desktop learning intake is not demonstrably completed/idle; inspect exact lifecycle predicates.");
+                // Native Pause is a separate mode and would invalidate the
+                // exact Default lease. Native service/creator screens own
+                // their normal child modes; no observer Pause is requested.
                 if (!party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 foreach (int frame in Cleanup2DesktopPrepareAndUndo(fixture, book, screens)) yield return frame;
                 if (!mode.Current || watch.Elapsed.TotalSeconds > 120) throw new InvalidOperationException("Desktop learning phase boundary expired or changed.");
-                foreach (int frame in Cleanup2DesktopLearnAndCancel(fixture, book, screens)) yield return frame;
+                foreach (int frame in Cleanup2DesktopLearnAndCancel(fixture, book, screens, levelUpIntake)) yield return frame;
                 if (!mode.Current || watch.Elapsed.TotalSeconds > 180) throw new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope.");
             }
             finally
@@ -82,14 +90,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                             restore("selection", () => ui.SelectionManagerPC.MultiSelect(selected.Where(value => value?.View != null).Select(value => value.View).ToArray(), false));
                         }
                     }
+                    JObject levelUpReceipt;
+                    bool levelUpRestored = levelUpIntake.Current(out levelUpReceipt);
                     bool exact = errors.Count == 0 && player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(group.GetCurrentCharacter(), originalGroup) && inputs.All(value => value.Unchanged()) && bars.All(value => value.IsRestored()) &&
-                        !build.IsShow && build.LevelUpController == null && ui.LevelUpController == null && ReferenceEquals(build.Unit, buildUnit) &&
+                        !build.IsShow && build.LevelUpController == null && levelUpRestored && ReferenceEquals(build.Unit, buildUnit) &&
                         !ui.ServiceWindow.WindowTabs.IsShow && !ui.SpellBookController.IsShow && !DialogMessageBox.Instance.IsShown;
                     Cleanup2Check("elemental-desktop-learning-restored", exact, new JObject {
                         ["partyExact"] = player.Party.SequenceEqual(party), ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
                         ["originalSourcesAndPinsExact"] = inputs.All(value => value.Unchanged()) && bars.All(value => value.IsRestored()),
-                        ["creatorClosed"] = !build.IsShow && build.LevelUpController == null && ui.LevelUpController == null,
+                        ["creatorClosed"] = !build.IsShow && build.LevelUpController == null && levelUpRestored,
+                        ["originalCompletedNativeControllerExact"] = levelUpReceipt,
                         ["creatorUnitExact"] = ReferenceEquals(build.Unit, buildUnit), ["errors"] = new JArray(errors),
                         ["scope"] = "Save-free native PC discovery, one pending original-source allocation/cancel and one original-source preparation/unprepare. No committed character, save hydration, console or casting claim." },
                         "Owned native screens close and original party, selection, creator owner, source objects and pins remain exact.");
@@ -219,13 +230,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             (selection.LevelCount ?? new SpellSelectionData.SpellSelectionState[0]).Where(value => value != null && value.SpellSelections != null)
                 .SelectMany(value => value.SpellSelections)).ToArray(); }
 
-        private IEnumerable<int> Cleanup2DesktopLearnAndCancel(ExpandedSummoningCorrectionFixture fixture, Spellbook fixtureBook, NativeIconScreenEvidence screens)
+        private IEnumerable<int> Cleanup2DesktopLearnAndCancel(ExpandedSummoningCorrectionFixture fixture, Spellbook fixtureBook,
+            NativeIconScreenEvidence screens, Cleanup2SourcesLevelUpIntake levelUpIntake)
         {
             var game = Game.Instance; var ui = game.UI; var build = ui.CharacterBuildController; var originalBuildUnit = build.Unit;
             var globalBefore = ui.LevelUpController; BlueprintUnit blueprint = null; UnitEntityData unit = null;
-            LevelUpController backend = null; int commits = 0;
+            LevelUpController backend = null; int commits = 0; bool presented = false;
             try
             {
+                JObject intakeReceipt;
+                if (!levelUpIntake.Current(out intakeReceipt))
+                    throw new InvalidOperationException("Original native controller/producer changed before the owned PC learning actor is created: " + intakeReceipt);
                 var wizard = fixture.Blueprints.OfType<BlueprintCharacterClass>().Single(value => ReferenceEquals(value.Spellbook, fixtureBook.Blueprint));
                 var human = BlueprintRoot.Instance.Progression.CharacterRaces.Single(value => value.AssetGuid == "0a5d473ead98b0646b94495af250fdc4");
                 blueprint = UnityEngine.Object.Instantiate(BlueprintRoot.Instance.DefaultPlayerCharacter);
@@ -252,12 +267,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 typeof(UnitProgressionData).GetProperty("Experience").SetValue(unit.Descriptor.Progression, game.BlueprintRoot.Progression.XPTable.GetBonus(3), null);
                 if (!LevelUpController.CanLevelUp(unit.Descriptor)) throw new InvalidOperationException("Native Wizard3 XP prerequisite absent.");
                 var known = book.GetAllKnownSpells().ToArray(); var resources = Cleanup2ElementalResources(unit);
-                build.HandleLevelUpStart(unit.Descriptor, null, () => commits++, LevelUpState.CharBuildMode.LevelUp);
-                backend = build.LevelUpController;
+                try { build.HandleLevelUpStart(unit.Descriptor, null, () => commits++, LevelUpState.CharBuildMode.LevelUp); }
+                finally
+                {
+                    // Retain the exact native result even if later native UI
+                    // setup throws. Never adopt the retained intake controller
+                    // or a backend for another actor.
+                    var candidate = build.LevelUpController;
+                    if (candidate != null && !ReferenceEquals(candidate, globalBefore) && ReferenceEquals(candidate.Unit, unit.Descriptor) &&
+                        ReferenceEquals(ui.LevelUpController, candidate) && ReferenceEquals(build.Unit, unit.Descriptor))
+                    { backend = candidate; presented = true; }
+                }
                 if (backend == null || backend.AutoCommit || ReferenceEquals(backend.Preview, unit.Descriptor) ||
                     !ReferenceEquals(backend.Unit, unit.Descriptor) || !ReferenceEquals(ui.LevelUpController, backend))
                     throw new InvalidOperationException("Actual PC creator did not create an independent owned preview.");
+                Func<bool> ownsCreator = () => presented && ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) &&
+                    ReferenceEquals(ui.CharacterBuildController, build) && build.IsShow && ReferenceEquals(build.Unit, unit.Descriptor) &&
+                    ReferenceEquals(build.LevelUpController, backend) && ReferenceEquals(ui.LevelUpController, backend) &&
+                    ReferenceEquals(backend.Unit, unit.Descriptor) && backend.Preview?.Unit != null && !backend.Preview.Unit.Destroyed;
                 for (int frame = 0; frame < 15; frame++) yield return 0;
+                if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before class/phase input.");
                 build.SetClass(wizard); CompleteTeleportLevelUpPrerequisites(build);
                 build.SetPhase((int)CharBPhase.Type.Spells);
                 foreach (int frame in WaitTeleportLevelUpUi(() => build.GetComponentsInChildren<CharBSelectionSwitchItem>(true).Any(value =>
@@ -266,6 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var collection = build.GetComponentsInChildren<CharBSelectionSwitchItem>(true).Where(value => value.gameObject.activeInHierarchy &&
                     ReferenceEquals(value.SpellSelectionData?.Spellbook, wizard.Spellbook) &&
                     (value.SpellSelectionData.ExtraMaxLevel == 2 || value.SpellLevel == 2)).OrderBy(value => value.SpellIndex).First();
+                if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before collection selection.");
                 collection.Toggle.isOn = true;
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var selection = build.Spells.CurrentSpellSelectionData;
@@ -278,6 +308,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var pending = Cleanup2DesktopPending(selection); var nativeRows = layer.SelectorItems.ToArray();
                 var blueprints = nativeRows.Select(value => value.BlueprintAbility).ToArray(); var callbacks = nativeRows.Select(Cleanup2DesktopNativeCallback).ToArray();
                 var header = Cleanup2DesktopDisclosure(layer);
+                if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before source disclosure.");
                 header.onClick.Invoke(); for (int frame = 0; frame < 4; frame++) yield return 0;
                 bool expanded = Cleanup2DesktopPending(selection).SequenceEqual(pending) && !book.IsKnown(source) &&
                     layer.SelectorItems.SequenceEqual(nativeRows) && nativeRows.Select(value => value.BlueprintAbility).SequenceEqual(blueprints) &&
@@ -302,7 +333,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(build.Spells.CurrentSpellSelectionData, selection) && Cleanup2NoNarrativeOverlay())) yield return frame;
                 // Toggle.isOn invokes the exact native callback captured above;
                 // no SelectSpell, source substitution or artificial allocation.
-                if (!ReferenceEquals(currentRow(), row) || row.Toggle.isOn) throw new InvalidOperationException("Native source row recycled or already selected before click.");
+                if (!ownsCreator() || !ReferenceEquals(currentRow(), row) || row.Toggle.isOn) throw new InvalidOperationException("Native source row/controller recycled or already selected before click.");
                 row.Toggle.isOn = true;
                 foreach (int frame in WaitTeleportLevelUpUi(() => backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(source), "native PC original-source preview allocation")) yield return frame;
                 bool allocated = !book.IsKnown(source) && book.GetAllKnownSpells().SequenceEqual(known) && Cleanup2ElementalResources(unit) == resources &&
@@ -322,20 +353,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeText"] = new JArray(layer.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value => value.text)) },
                     () => build.IsShow && ReferenceEquals(build.LevelUpController, backend) && backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(source) &&
                         !book.IsKnown(source) && Cleanup2NoNarrativeOverlay())) yield return frame;
+                if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before cancellation.");
                 build.OnHotKeyEscPressed();
                 foreach (int frame in WaitTeleportLevelUpUi(() => DialogMessageBox.Instance.IsShown, "native PC learning cancellation confirmation")) yield return frame;
                 var callback = (Action<DialogMessageBoxBase.BoxButton>)WorldMapPointSpellActionPatches.ConfirmationCallbackField.GetValue(DialogMessageBox.Instance);
-                if (callback == null || !ReferenceEquals(callback.Target, build)) throw new InvalidOperationException("Foreign PC cancellation dialog owner.");
+                if (!ownsCreator() || callback == null || !ReferenceEquals(callback.Target, build)) throw new InvalidOperationException("Foreign PC cancellation dialog/controller owner.");
                 TeleportationFixtureDialogButton("m_ButtonYes").onClick.Invoke();
                 foreach (int frame in WaitTeleportLevelUpUi(() => !build.IsShow && !DialogMessageBox.Instance.IsShown, "native PC learning cancelled")) yield return frame;
-                backend.Cancel();
-                if (ReferenceEquals(ui.LevelUpController, backend)) ui.LevelUpController = globalBefore;
-                backend = null; build.Unit = originalBuildUnit;
+                if (!presented || !ReferenceEquals(ui.LevelUpController, backend) || build.LevelUpController != null ||
+                    !ReferenceEquals(build.Unit, unit.Descriptor) || !ReferenceEquals(backend.Unit, unit.Descriptor))
+                    throw new InvalidOperationException("Native PC cancellation no longer owns the exact closed creator/backend; original field is not overwritten.");
+                if (backend.Preview?.Unit != null && !backend.Preview.Unit.Destroyed) backend.Cancel();
+                // Native Cancel/Commit leave UIAccess's plain field populated.
+                // Restore it only while it still contains our exact new backend.
+                if (!ReferenceEquals(ui.LevelUpController, backend)) throw new InvalidOperationException("Native PC backend changed during cancellation.");
+                ui.LevelUpController = globalBefore;
+                if (build.LevelUpController == null && ReferenceEquals(build.Unit, unit.Descriptor)) build.Unit = originalBuildUnit;
+                backend = null; presented = false;
+                JObject restoredLevelUpReceipt;
+                bool restoredLevelUp = levelUpIntake.Current(out restoredLevelUpReceipt);
                 bool cancelled = commits == 0 && unit.Descriptor.Progression.GetClassLevel(wizard) == 2 && !book.IsKnown(source) &&
-                    book.GetAllKnownSpells().SequenceEqual(known) && Cleanup2ElementalResources(unit) == resources && build.LevelUpController == null && ReferenceEquals(ui.LevelUpController, globalBefore);
+                    book.GetAllKnownSpells().SequenceEqual(known) && Cleanup2ElementalResources(unit) == resources && build.LevelUpController == null &&
+                    ReferenceEquals(ui.LevelUpController, globalBefore) && restoredLevelUp;
                 Cleanup2Check("elemental-desktop-native-learning-cancel", cancelled, new JObject { ["commits"] = commits,
                     ["classLevel"] = unit.Descriptor.Progression.GetClassLevel(wizard), ["originalKnownReferencesExact"] = book.GetAllKnownSpells().SequenceEqual(known),
                     ["originalResourcesExact"] = Cleanup2ElementalResources(unit) == resources, ["nativeInput"] = "Native Esc close + exact owned confirmation Yes; owned native preview Cancel after presenter closes",
+                    ["originalCompletedNativeControllerExact"] = restoredLevelUpReceipt,
                     ["scope"] = "Cancellation undoes the pending native allocation. No claim that turning an already-selected PC candidate Toggle off is a native unlearn action." },
                     "Actual native PC cancellation commits nothing, retains Wizard2 and original source/budget references, and closes only its owned preview.");
                 if (!cancelled) throw new InvalidOperationException("Native PC original-source cancellation failed.");
@@ -343,17 +386,23 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 bool foreign = false;
+                var activeDialog = DialogMessageBox.Instance;
+                var activeCallback = activeDialog == null ? null : (Action<DialogMessageBoxBase.BoxButton>)WorldMapPointSpellActionPatches.ConfirmationCallbackField.GetValue(activeDialog);
+                if (activeDialog != null && activeDialog.IsShown && (!presented || activeCallback == null || !ReferenceEquals(activeCallback.Target, build))) foreign = true;
+                if ((!ReferenceEquals(ui.LevelUpController, globalBefore) && !(presented && ReferenceEquals(ui.LevelUpController, backend))) ||
+                    (build.LevelUpController != null && !(presented && ReferenceEquals(build.LevelUpController, backend))) ||
+                    (!ReferenceEquals(build.Unit, originalBuildUnit) && !ReferenceEquals(build.Unit, unit?.Descriptor))) foreign = true;
                 if (backend != null)
                 {
-                    if ((ui.LevelUpController != null && !ReferenceEquals(ui.LevelUpController, backend)) ||
-                        (build.LevelUpController != null && !ReferenceEquals(build.LevelUpController, backend))) foreign = true;
+                    if (foreign || !ReferenceEquals(backend.Unit, unit?.Descriptor) || ReferenceEquals(backend, globalBefore) ||
+                        backend.AutoCommit || ReferenceEquals(backend.Preview, unit?.Descriptor)) foreign = true;
                     else
                     {
                         var dialog = DialogMessageBox.Instance;
                         var callback = dialog == null ? null : (Action<DialogMessageBoxBase.BoxButton>)WorldMapPointSpellActionPatches.ConfirmationCallbackField.GetValue(dialog);
                         if (dialog != null && dialog.IsShown && callback != null && ReferenceEquals(callback.Target, build)) dialog.HandleForceClose();
                         if (build.IsShow && ReferenceEquals(build.LevelUpController, backend)) build.Show(false);
-                        backend.Cancel();
+                        if (backend.Preview?.Unit != null && !backend.Preview.Unit.Destroyed) backend.Cancel();
                         if (ReferenceEquals(ui.LevelUpController, backend)) ui.LevelUpController = globalBefore;
                         if (build.LevelUpController == null && ReferenceEquals(build.Unit, unit?.Descriptor)) build.Unit = originalBuildUnit;
                     }

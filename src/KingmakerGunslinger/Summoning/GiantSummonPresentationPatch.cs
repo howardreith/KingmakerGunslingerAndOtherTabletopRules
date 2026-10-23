@@ -135,6 +135,9 @@ namespace KingmakerGunslinger.Summoning
             { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=native-prefab-mismatch"; }
             if (profile.RelativeVisualFactor == 1f)
                 return state.Outcome = "giant:" + state.Key + ";height=relative-baseline;factor=1";
+            string nativeReadiness = Cleanup2GiantRenderScalePrototype.ProductionAcquisitionReadiness(state.Owner, profile);
+            if (nativeReadiness != null)
+                return state.Outcome = "giant:" + state.Key + ";height=" + nativeReadiness;
             string clothAdmission = Cleanup2GiantRenderScalePrototype.ProductionClothAdmission(state.Owner, profile);
             if (clothAdmission != "no-cloth" && clothAdmission != "qualified-frozen-cape")
                 return state.Outcome = "giant:" + state.Key + ";height=" + clothAdmission;

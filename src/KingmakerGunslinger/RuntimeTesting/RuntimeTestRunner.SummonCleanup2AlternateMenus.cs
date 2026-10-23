@@ -73,7 +73,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData selectedOwned = null; object levelController = null;
             try
             {
-                mode = Cleanup2EnterNativeDefault(fixture, "alternate-menus"); game.IsPaused = true;
+                mode = Cleanup2EnterNativeDefault(fixture, "alternate-menus");
+                // Browsing spends no source resource; a native Pause request
+                // here would replace this strict Default mode on the next frame.
                 screens = new NativeIconScreenEvidence(_request);
                 var manifest = BlueprintManifest.Load(_context.ModEntry.Path);
                 foreach (var family in AlternateSummoningSourceCatalog.All)
@@ -491,7 +493,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportationUiSettingsFixture pinSnapshot = null; int pinIndex = -1;
             try
             {
-                mode = Cleanup2EnterNativeDefault(fixture, "alternate-console"); game.IsPaused = true;
+                mode = Cleanup2EnterNativeDefault(fixture, "alternate-console");
+                // Keep the exact native Default stack while browsing/cancelling.
+                // Do not request or remove a Pause/foreign input mode.
                 screens = new NativeIconScreenEvidence(_request); var manifest = BlueprintManifest.Load(_context.ModEntry.Path);
                 foreach (var family in AlternateSummoningSourceCatalog.All)
                 {

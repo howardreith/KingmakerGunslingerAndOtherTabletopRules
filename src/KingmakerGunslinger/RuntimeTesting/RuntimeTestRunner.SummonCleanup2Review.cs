@@ -560,12 +560,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     actualOwner != null && sameOwner && (bool?)before["currentOwnershipExact"] == true &&
                     (bool?)after["currentOwnershipExact"] == true && (int?)before["ownedRootInstance"] == (int?)after["ownedRootInstance"] &&
                     JToken.DeepEquals(before["privateAllocationInstances"], after["privateAllocationInstances"]) && ids.Length > 0;
-                Cleanup2Check("production-relative-scale-" + keys[i], stable && disjoint &&
-                    (bool?)after["nativeRootScaleExact"] == true && (bool?)after["unitOwnerExact"] == true,
+                bool scaleOwned = stable && disjoint && (bool?)after["nativeRootScaleExact"] == true && (bool?)after["unitOwnerExact"] == true;
+                Cleanup2Check("production-relative-scale-" + keys[i], scaleOwned,
                     new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["before"] = before, ["afterTwoProductionApplies"] = after,
                         ["sameOwner"] = sameOwner, ["privateAllocationsDisjointFromOtherInstances"] = disjoint,
                         ["firstApply"] = first, ["secondApply"] = second, ["prototypeFactoryCalled"] = false },
                     "The actual canonical summon owns production scale, repeated production application reuses its exact instance, quantities do not share allocations and the native gameplay root stays exact.");
+                if (!scaleOwned) throw new InvalidOperationException("Production scale ownership failed for " + keys[i] + "; no visibility/pose access to released private resources.");
                 if (baseline) continue;
                 bool hoverLease = false;
                 try
@@ -574,13 +575,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 3; frame++) yield return 0;
                     JObject highlighted = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
                     JObject selection = Sprint22SelectionSurface(actor);
-                    Cleanup2Check("production-native-highlight-" + keys[i],
-                        (bool?)highlighted["currentOwnershipExact"] == true && (bool?)highlighted["ordinaryOwnedReceiversExact"] == true &&
-                        (bool?)highlighted["occludedOwnedReceiversExact"] == true && (bool?)selection["selectionSurface"] == true,
+                    bool highlightOwned = (bool?)highlighted["currentOwnershipExact"] == true && (bool?)highlighted["ordinaryOwnedReceiversExact"] == true &&
+                        (bool?)highlighted["occludedOwnedReceiversExact"] == true && (bool?)selection["selectionSurface"] == true;
+                    Cleanup2Check("production-native-highlight-" + keys[i], highlightOwned,
                         new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["production"] = highlighted,
                             ["selection"] = selection, ["nativeHoverStimulus"] = true,
                             ["scope"] = "Paired native HandleHoverChange stimulus plus actual native receiver membership; this does not claim a physical mouse click or screenshot art acceptance." },
                         "Native hover/highlight receiver acquisition preserves the exact production owner, its borrowed PF material arrays and the ordinary native selection surfaces.");
+                    if (!highlightOwned) throw new InvalidOperationException("Production scale ownership changed during native highlight for " + keys[i]);
                 }
                 finally { if (hoverLease && actor.View != null) actor.View.HandleHoverChange(false); }
                 var fader = actor.View.GetComponent<EntityFader>();
@@ -598,10 +600,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 finally { if (fader != null) nativeVisibility.Invoke(fader, new object[] { true }); }
                 yield return 0;
                 JObject visible = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
-                Cleanup2Check("production-native-visibility-" + keys[i],
-                    (bool?)hidden?["currentOwnershipExact"] == true && (bool?)hidden?["lastNativeVisibility"] == false &&
+                bool visibilityOwned = (bool?)hidden?["currentOwnershipExact"] == true && (bool?)hidden?["lastNativeVisibility"] == false &&
                     (bool?)visible["currentOwnershipExact"] == true && (bool?)visible["lastNativeVisibility"] == true &&
-                    (int?)visible["nativeVisibilityWrites"] >= 2,
+                    (int?)visible["nativeVisibilityWrites"] >= 2;
+                Cleanup2Check("production-native-visibility-" + keys[i], visibilityOwned,
                     new JObject { ["key"] = keys[i], ["hidden"] = hidden, ["visible"] = visible,
                         ["nativeVisibilityMethod"] = "EntityFader.SetRendererVisibility(Boolean)",
                         ["visibleMaterialMetadata"] = new JArray(actor.View.GetComponentsInChildren<Renderer>(true)
@@ -609,6 +611,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             .SelectMany(renderer => renderer.sharedMaterials).Select(Cleanup2Material)),
                         ["scope"] = "Exact native visibility writer on disposable actors; not a fog-of-war gameplay, native FX activation or physical pointer claim. No material/dissolve value is forced." },
                     "Actual native cached-list visibility writes cover private receivers while displaced originals remain suppressed and exact source/material/collider ownership remains intact.");
+                if (!visibilityOwned) throw new InvalidOperationException("Production scale ownership changed during native visibility for " + keys[i]);
                 UnitAnimationActionHandle animation = null;
                 try
                 {
@@ -626,6 +629,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 40; frame++)
                     {
                         Game.Instance.IsPaused = false; yield return 0;
+                        if (actualOwner == null || actualOwner.IsDisposed ||
+                            !ReferenceEquals(actualOwner, GiantSummonPresentationPatch.ProductionOwner(actor.View)) || cloths.Any(cloth => cloth == null))
+                        {
+                            Cleanup2Check("production-native-pose-owner-" + keys[i], false,
+                                GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View),
+                                "The exact live production owner and private Cloth must remain present before reading native particle arrays.");
+                            throw new InvalidOperationException("Production owner released during native pose for " + keys[i]);
+                        }
                         moved |= bones.Where((bone, index) => bone != null && bone.localToWorldMatrix != initial[index]).Any();
                         for (int c = 0; c < cloths.Length; c++)
                         {

@@ -311,6 +311,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _highlightRetirementReady;
         private GiantSummonPresentationProfile _profile;
         private static readonly FieldInfo ColliderCacheField = typeof(EntityViewBase).GetField("m_Colliders", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo PendingNativeRefreshField = typeof(UnitEntityView).GetField("m_RenderersAndCollidersAreUpdated", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo OccludedRenderersField = typeof(OccludedObjectHighlighter).GetField("m_Renderers", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly MethodInfo FindOccludedRenderers = typeof(OccludedObjectHighlighter).GetMethod("FindRenderers", BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
         private static readonly FieldInfo OrdinaryReceiversField = typeof(HighlightingSystem.Highlighter).GetField("highlightableRenderers", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -320,6 +321,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _productionSourceGuid;
         private Vector3 _visualPivot, _ownedOffset;
         private int _syncCount, _lastSyncFrame;
+        private JObject _firstSourceIdentityFailure;
         private bool _sourceTransformsUnchanged = true, _colliderGeometryUnchanged = true, _colliderMatricesUnchanged = true;
         private JObject _lastReport;
         private readonly List<string> _restoreIssues = new List<string>();
@@ -333,6 +335,41 @@ namespace KingmakerGunslinger.RuntimeTesting
         // This admits only the signature below; production view/lifecycle
         // qualification remains separate from the contact control.
         internal static bool ProductionCopiedClothEnabled { get { return true; } }
+
+        internal static string ProductionAcquisitionReadiness(UnitEntityData actor, GiantSummonPresentationProfile profile)
+        {
+            if (actor == null || actor.View == null || actor.Descriptor == null || profile == null)
+                return "await-native-render-view";
+            if (PendingNativeRefreshField == null || PendingNativeRefreshField.FieldType != typeof(bool))
+                return "native-render-refresh-contract-unavailable";
+            // These are initialization/appearance predicates, not combat
+            // permissions: stun, immobility and other unrelated conditions
+            // must not decide a summon family's visual height.
+            if (actor.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null)
+                return "await-native-summon-appearance";
+            var fader = actor.View.GetComponent<EntityFader>();
+            if (fader == null || !fader.Visible) return "await-native-render-visibility";
+            if ((bool)PendingNativeRefreshField.GetValue(actor.View)) return "await-native-render-cache-refresh";
+            string bodyName = profile.NativePrefabId == "635d6dee1c7831b41aa987bdbeff14bc" ? "hill_giant_1" : "Frozen_body";
+            var bodies = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value.name == bodyName && value.enabled && value.gameObject.activeInHierarchy).ToArray();
+            if (bodies.Length != 1) return "await-native-render-body";
+            Material[] materials = bodies[0].sharedMaterials;
+            var controllers = actor.View.GetComponentsInChildren<Kingmaker.Visual.MaterialEffects.StandardMaterialController>(true);
+            if (materials.Length == 0 || materials.Length > 32 || controllers.Length == 0 || controllers.Length > 8)
+                return "native-render-material-contract-unavailable";
+            var driven = controllers.Where(value => value.enabled && value.gameObject.activeInHierarchy)
+                .Select(ExpandedSummoningPteranodonViewPatch.ControllerMaterials).ToArray();
+            foreach (Material material in materials)
+            {
+                if (material == null || !material.HasProperty("_Dissolve") ||
+                    driven.Count(values => values != null && values.Any(value => ReferenceEquals(value, material))) != 1)
+                    return "await-native-render-material-initialization";
+                float dissolve = material.GetFloat("_Dissolve");
+                if (!Finite(dissolve) || dissolve < 0f || dissolve > .02f) return "await-native-render-dissolve";
+            }
+            return null;
+        }
 
         internal static string ProductionClothAdmission(UnitEntityData actor, GiantSummonPresentationProfile profile)
         {
@@ -629,6 +666,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (source == null || markers[0].MaybeContext.MaybeCaster == null ||
                 !ReferenceEquals(GiantSummonPresentationPolicy.Resolve(true, actor.Blueprint.AssetGuid, source), profile))
                 throw new InvalidOperationException("Exact live giant summon provenance required.");
+            string readiness = ProductionAcquisitionReadiness(actor, profile);
+            if (readiness != null) throw new InvalidOperationException("Native production appearance is not initialized: " + readiness);
             // There is no source-only assertion that a copied solver consumes
             // disabled capsules or preserves cape contact at another scale.
             string clothAdmission = ProductionClothAdmission(actor, profile);
@@ -1105,9 +1144,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             Renderer[] renderers = _sourceRoot.GetComponentsInChildren<Renderer>(true).Where(value => !Owned(value.transform)).ToArray();
             if (!Same(transforms, _sourceTransforms) || !Same(renderers, _sourceRenderers) ||
                 _sourceTransforms.Where((value, i) => value.parent != _sourceParents[i]).Any())
+            {
+                RecordSourceIdentityFailure("native-hierarchy", transforms, renderers);
                 throw new InvalidOperationException("Native hierarchy/model refreshed; no replacement model is claimed.");
+            }
             if (_production && (!NativeRendererCacheExact() || !NativeColliderCacheExact() || !OccludedReceiversExact() || !OrdinaryReceiversExact()))
+            {
+                RecordSourceIdentityFailure("native-receiver-cache", transforms, renderers);
                 throw new InvalidOperationException("Native visual/collider receiver cache ownership changed.");
+            }
             foreach (Skin skin in _skins)
             {
                 Transform[] bones = committed && skin.Cloth == null ? skin.AppliedBones : skin.Bones;
@@ -1166,6 +1211,47 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (Renderer renderer in _sourceRenderers)
                 if (!(renderer is SkinnedMeshRenderer) && !(renderer is MeshRenderer) && renderer.enabled && renderer.gameObject.activeInHierarchy)
                     throw new NotSupportedException("Previously inactive unsupported renderer became active.");
+        }
+
+        private void RecordSourceIdentityFailure(string boundary, Transform[] transforms, Renderer[] renderers)
+        {
+            if (_firstSourceIdentityFailure != null) return;
+            try
+            {
+                Func<UnityEngine.Object, int> id = value => value == null ? 0 : value.GetInstanceID();
+                Func<Transform, JObject> describe = value => new JObject {
+                    ["instance"] = id(value), ["name"] = value == null ? null : value.name,
+                    ["currentPath"] = value == null ? null : RendererPath(_sourceRoot, value),
+                    ["parent"] = value == null ? 0 : id(value.parent) };
+                var colliderCache = ColliderCacheField.GetValue(_view) as System.Collections.IEnumerable;
+                Collider[] cachedColliders = colliderCache == null ? new Collider[0] : colliderCache.Cast<Collider>().ToArray();
+                Renderer[] cachedRenderers = _view.Renderers == null ? new Renderer[0] : _view.Renderers.ToArray();
+                _firstSourceIdentityFailure = new JObject {
+                    ["boundary"] = boundary, ["frame"] = Time.frameCount, ["unityTime"] = Time.time,
+                    ["lastSuccessfulSyncFrame"] = _lastSyncFrame, ["successfulSyncCount"] = _syncCount,
+                    ["nativeRefreshPending"] = PendingNativeRefreshField == null ? JValue.CreateNull() :
+                        new JValue((bool)PendingNativeRefreshField.GetValue(_view)),
+                    ["expectedTransformCount"] = _sourceTransforms.Length, ["currentTransformCount"] = transforms.Length,
+                    ["expectedRendererCount"] = _sourceRenderers.Length, ["currentRendererCount"] = renderers.Length,
+                    ["addedTransforms"] = new JArray(transforms.Where(value => !_sourceTransforms.Any(prior => ReferenceEquals(prior, value))).Take(12).Select(describe)),
+                    ["missingTransforms"] = new JArray(_sourceTransforms.Where(value => !transforms.Any(current => ReferenceEquals(current, value))).Take(12).Select(describe)),
+                    ["changedParents"] = new JArray(_sourceTransforms.Select((value, index) => new { value, index })
+                        .Where(row => row.value == null || !ReferenceEquals(row.value.parent, _sourceParents[row.index])).Take(12)
+                        .Select(row => new JObject { ["sourceIndex"] = row.index, ["current"] = describe(row.value), ["expectedParent"] = id(_sourceParents[row.index]) })),
+                    ["addedRenderers"] = new JArray(renderers.Where(value => !_sourceRenderers.Any(prior => ReferenceEquals(prior, value))).Take(12).Select(value => describe(value.transform))),
+                    ["missingRenderers"] = new JArray(_sourceRenderers.Where(value => !renderers.Any(current => ReferenceEquals(current, value))).Take(12)
+                        .Select(value => value == null ? new JObject { ["instance"] = 0 } : describe(value.transform))),
+                    ["nativeRendererCacheReferenceExact"] = ReferenceEquals(_view.Renderers, _nativeRendererCache),
+                    ["nativeRendererCacheCount"] = cachedRenderers.Length,
+                    ["cachedOwnedRendererCount"] = cachedRenderers.Count(value => _registeredRenderers.Any(owned => ReferenceEquals(owned, value))),
+                    ["nativeColliderCacheReferenceExact"] = ReferenceEquals(colliderCache, _nativeColliderCache),
+                    ["nativeColliderCacheCount"] = cachedColliders.Length,
+                    ["cachedOwnedCapsuleCount"] = cachedColliders.Count(value => _capsules.Values.Any(owned => ReferenceEquals(owned, value))),
+                    ["addedCachedColliders"] = new JArray(cachedColliders.Where(value => !(_nativeColliderCacheBefore ?? new Collider[0]).Any(prior => ReferenceEquals(prior, value)))
+                        .Take(12).Select(value => value == null ? new JObject { ["instance"] = 0 } : describe(value.transform))) };
+            }
+            catch (Exception error)
+            { _firstSourceIdentityFailure = new JObject { ["boundary"] = boundary, ["diagnosticError"] = error.GetType().Name + ":" + error.Message }; }
         }
 
         private bool Owned(Transform value)
@@ -1342,6 +1428,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return new JObject { ["runId"] = _runId, ["actor"] = _actor == null ? null : _actor.UniqueId,
                 ["status"] = _status, ["uniformVisualFactor"] = _factor, ["syncCount"] = _syncCount,
+                ["firstSourceIdentityFailure"] = _firstSourceIdentityFailure == null ? null : _firstSourceIdentityFailure.DeepClone(),
                 ["productionOwner"] = _production, ["productionCopiedClothEnabled"] = _production && _ownedCloths.Count != 0,
                 ["copiedClothProductionGateOpen"] = ProductionCopiedClothEnabled,
                 ["nativeRendererCacheRegistered"] = _rendererCacheRegistered,

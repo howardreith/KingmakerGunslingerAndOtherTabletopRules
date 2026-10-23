@@ -6,6 +6,44 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review32 readable console sources and narrowed native failures
+
+Frozen `e5b35198e8797ff12f32536c0c828b6e7e2c7de0`, package
+`2b2e9682ad379b71eb32a03bfe8bd6316af55176840ec8a5cf2b5a2064830468`, DLL
+`e3c5ef3f4c46f35011b99249f4e6328a1335fd9664d855005eca22c2efb97ac1`, MVID
+`9e6c007c-b308-43a4-8fab-1e556373fb0c`. Exact compilation,20 focused cases
+(1.6s),22 installed Harmony targets and four exact pin-phase admission/refusal
+cases pass. Initial direct PowerShell scope-check invocation hit execution
+policy before tests; the repository-standard Bypass invocation passes.
+
+The integrator inspected both actual console PNGs: book/level/preparation and
+`Hide sources` are now readable. Original source Use/cast/debit, native book
+field clearance and complete owned UI restoration pass. The local existing
+gallery now contains77 verified originals, including these two and their two
+review31 predecessors; candidate identities and failed-run status are retained.
+
+| Phase / raw evidence prefix | Result | Precise remaining cause / correction |
+| --- | --- | --- |
+| Giant lineup `20261023T0326408457665Z` | 20 PASS/4 FAIL;96.019s | Appearance succeeds after139 normal frames. SNA/SM Frost acquired production scale only one frame after spawn; first ownership refusal is native hierarchy/model refresh with cache changes, source materials preserved. Defer first acquisition until exact native appearance/material/cache readiness, without combat-permission gates or clock/opacity writes; retain first mismatch identities. Observer now stops before touching released Cloth instead of producing a secondary null exception. No production lineup image or height qualification. |
+| Creature commands `20261023T0329485513657Z` | 15 PASS/2 FAIL;78.080s | Actual flat Oleg lane/path/placement succeeds. The same native scenery collider blocks20–22 of116 unique Crab surface points in every tried angle; target rays are clear. No command or image reached. Next run retains one explicitly FAILED diagnostic frame and bounded project-body hit points, then aborts before attack; no guessed new scene or obstruction exemption. |
+| Focused pin `20261023T0333100979116Z` | 11 PASS/3 FAIL;77.924s | Rank2-only setup removes its last ordinary source when exercising Favorite. Production correctly preserves only the explicit special-source row; expecting an ordinary grouping launcher is wrong. Preserve the original six-rank fixture setup while still skipping24 casts, extra book/SNA/Extend. Hydration remains unreached. |
+| Controller `20261023T0336409655040Z` | 13 PASS/1 FAIL;81.646s | Visible source labels and prior native closure/restoration defect are fixed. Learning then refuses its old global-level-up-null assumption. Preserve exact completed intake and positively owned console backend/service rather than clearing retained native state. Learning remains unqualified. |
+
+Each game exited and its actual fresh95 original saves, installation and settings
+restored exactly. Compatibility receipts in table order:
+`compat-20261023T032612Z-7f24fff40f68`,
+`compat-20261023T032920Z-d968bd855f89`,
+`compat-20261023T033244Z-30f40efbb23e`,
+`compat-20261023T033617Z-5eff8c8f0284`. Final verification
+**03:38:18.5496847UTC** closes window11 at17m18.550s from03:21:00UTC.
+Final90-minute completion qualification has not started.
+
+The planned menu-adapter32 run was not launched: bounded source review found the
+same observer-owned post-lease Pause in PC learning, PC/controller alternate
+menus and OFF. Those four requests are removed with strict foreign-mode guards
+retained. Their corrected execution, effective Horse pixels, learning, OFF,
+production giant lifecycle and exact live cold sequence remain open.
+
 ### Review31 exact failures and review32 corrections
 
 Frozen `69643385199d89c2d4225bd16a26e6040f345140`, package

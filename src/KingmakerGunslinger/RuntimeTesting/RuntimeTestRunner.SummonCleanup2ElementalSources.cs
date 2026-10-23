@@ -125,7 +125,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ui.TooltipsController.ContextTooltipData == null && game.SelectedAbilityHandler?.Ability == null;
             try
             {
-                foreach (var parent in StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent && (!pinOnly || value.CanonicalTier == 2)))
+                // Preserve the full source phase's six-rank preparation setup
+                // even in the focused pin reproduction. Favorite intentionally
+                // removes rank2 Common access; the remaining ordinary ranks
+                // keep its real chooser/refill session present. Skip the 24
+                // casts below, not these independent fixture preparations.
+                foreach (var parent in StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent))
                     PrepareExpandedSummoningPlayerPathSpell(book, Cleanup2ElementalAbility(fixture, parent.Guid),
                         Cleanup2ElementalAbility(fixture, parent.Guid), parent.CanonicalTier);
                 var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
@@ -270,6 +275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cleanup2Check("elemental-sources-scope", true, new JObject {
                     ["all24OriginalCasts"] = casts.Count, ["maximumPhaseWallSeconds"] = 360, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                     ["reviewPhase"] = reviewPhase, ["focusedPinOnly"] = pinOnly,
+                    ["fixturePreparationRanks"] = new JArray(StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent).Select(value => value.CanonicalTier)),
                     ["all24TwoBookSnaExtendDisposition"] = pinOnly ? "NOT_EXECUTED: focused existing Favorite/pin/hydration/original-pin-cast reproduction only" : "Executed above; individual native assertions retained",
                     ["console"] = "separate native controller transaction; not exercised here", ["coldSave"] = "separate explicitly authorized fresh-load transaction; not proved by runtime pins",
                     ["moduleOff"] = "fresh process with module OFF before startup; Active is restart-only, never toggled by reflection here" },
@@ -854,10 +860,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly FieldInfo _onSuccess;
             private readonly FieldInfo _producerLock, _producerSource, _producerPending, _producerQueue, _producerThread;
             private readonly object _intakeThread;
+            private readonly bool _gamepad;
+            private readonly Func<JObject> _closedConsoleOwner;
 
-            internal Cleanup2SourcesLevelUpIntake(Game game)
+            internal Cleanup2SourcesLevelUpIntake(Game game, Func<JObject> closedConsoleOwner = null)
             {
                 _game = game; _ui = game.UI; _build = _ui.CharacterBuildController; _controller = _ui.LevelUpController;
+                _gamepad = game.IsControllerGamepad; _closedConsoleOwner = closedConsoleOwner;
                 _unit = _controller?.Unit; _preview = _controller?.Preview;
                 _state = _controller?.State; _actions = _controller?.LevelUpActions;
                 _actionItems = _controller?.LevelUpActions.Cast<object>().ToArray();
@@ -896,11 +905,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool contextExact = _controller == null || (ReferenceEquals(_controller.Unit, _unit) && ReferenceEquals(_controller.Preview, _preview) &&
                     ReferenceEquals(_controller.State, _state) && ReferenceEquals(_controller.LevelUpActions, _actions) &&
                     _actionItems != null && _controller.LevelUpActions.Cast<object>().SequenceEqual(_actionItems) && ReferenceEquals(_onSuccess?.GetValue(_controller), _callback));
+                JObject consoleOwner = _gamepad && _closedConsoleOwner != null ? _closedConsoleOwner() : null;
+                bool consoleExact = consoleOwner != null && (bool?)consoleOwner["passed"] == true;
                 var predicates = new JObject {
                     ["exactIntakeGameUi"] = ReferenceEquals(Game.Instance, _game) && ReferenceEquals(_game.UI, _ui),
-                    ["exactIntakeCharacterBuild"] = _build != null && ReferenceEquals(_ui.CharacterBuildController, _build),
-                    ["characterBuildHidden"] = _build != null && !_build.IsShow,
-                    ["noCharacterBuildController"] = _build != null && _build.LevelUpController == null,
+                    ["inputModeUnchanged"] = _game.IsControllerGamepad == _gamepad,
+                    ["positiveNativeConsoleCreatorOwner"] = !_gamepad || consoleExact,
+                    ["exactIntakeCharacterBuild"] = ReferenceEquals(_ui.CharacterBuildController, _build) && (_build != null || (_gamepad && consoleExact)),
+                    ["characterBuildHidden"] = _build != null ? !_build.IsShow : _gamepad && consoleExact,
+                    ["noCharacterBuildController"] = _build != null ? _build.LevelUpController == null : _gamepad && consoleExact,
                     ["nativeDefaultModeCurrent"] = _game.CurrentMode == GameModeType.Default,
                     ["exactIntakeGlobalController"] = controllerExact,
                     ["noControllerOrDisposedDetachedPreview"] = completed,
@@ -917,6 +930,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["controllerUnit"] = _unit?.Unit?.UniqueId, ["controllerPreviewUnit"] = _preview?.Unit?.UniqueId,
                     ["previewDestroyed"] = _preview?.Unit?.Destroyed, ["controllerAutoCommit"] = _controller?.AutoCommit,
                     ["previewProducerSourcePresent"] = source != null, ["previewRequestPending"] = pending, ["queuedPreviews"] = queued,
+                    ["closedNativeConsoleOwner"] = consoleOwner,
                     ["globalFieldOrControllerWritten"] = false, ["producerStoppedOrWritten"] = false,
                     ["contract"] = "Only the exact intake field is preserved; a nonnull controller requires native Commit/Cancel's disposed detached Preview, no active builder and no producer work. Active sessions/replacements refuse. A stopped producer thread may remain alive natively; its identity is preserved." };
                 return current;
