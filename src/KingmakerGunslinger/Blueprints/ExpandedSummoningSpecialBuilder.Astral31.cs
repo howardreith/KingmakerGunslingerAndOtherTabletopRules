@@ -387,6 +387,19 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             BlueprintUnit unit)
         {
+            return ConfigureDispelEvil31(library, bySymbol, unit,
+                Astral31Prefix, AbilityType.SpellLike,
+                "At will at caster level13, gain +4 deflection AC against attacks by evil creatures for 13 rounds and hold one selected melee touch. The touch either invokes Dismissal against an evil extraplanar creature (Will negates; spell resistance applies) or automatically removes one dispellable evil spell or evil-caster enchantment from a creature. A delivered touch discharges the ward.");
+        }
+
+        // The two actual users share the same native ward/delivery graph.
+        // Their access, parameters and resources remain owned by the caller.
+        private static BlueprintAbility[] ConfigureDispelEvil31(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintUnit unit, string prefix, AbilityType accessType,
+            string description)
+        {
             const string nativeGuid = "95f7cdcec94e293489a85afdf5af1fd7";
             const string nativeTouchGuid = "17451c1327c571641a1345bd31155209";
             var native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
@@ -409,12 +422,12 @@ namespace KingmakerGunslinger.Blueprints
                         Array.Empty<BlueprintComponent>()).Select(value =>
                             value.GetType().FullName)));
 
-            string familySymbol = Astral31Prefix + "DispelEvil";
-            string dismissalSymbol = Astral31Prefix + "DispelEvilDismissal";
+            string familySymbol = prefix + "DispelEvil";
+            string dismissalSymbol = prefix + "DispelEvilDismissal";
             string dismissalTouchSymbol = dismissalSymbol + "Touch";
-            string dispelSymbol = Astral31Prefix + "DispelEvilDispel";
+            string dispelSymbol = prefix + "DispelEvilDispel";
             string dispelTouchSymbol = dispelSymbol + "Touch";
-            string wardSymbol = Astral31Prefix + "DispelEvilWard";
+            string wardSymbol = prefix + "DispelEvilWard";
             var family = Require<BlueprintAbility>(bySymbol, familySymbol);
             var dismissal = Require<BlueprintAbility>(bySymbol, dismissalSymbol);
             var dismissalTouch = Require<BlueprintAbility>(bySymbol,
@@ -444,7 +457,7 @@ namespace KingmakerGunslinger.Blueprints
             CopyFields(nativeTouchDonor, dismissalTouch);
             dismissalTouch.name = InternalName(dismissalTouchSymbol);
             dismissalTouch.Parent = dismissal;
-            dismissalTouch.Type = AbilityType.SpellLike;
+            dismissalTouch.Type = accessType;
             dismissalTouch.Range = AbilityRange.Touch;
             dismissalTouch.CanTargetPoint = false;
             dismissalTouch.CanTargetSelf = false;
@@ -467,6 +480,8 @@ namespace KingmakerGunslinger.Blueprints
             dismissalMarker.Ward = ward;
             var dismissalDelivery = (AbilityDeliverTouch)
                 ExpandedSummoningAbilityBuilder.DeepCloneComponent(nativeTouch);
+            var dismissalGood = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            dismissalGood.Descriptor = SpellDescriptor.Good;
             dismissalTouch.ComponentsArray = new BlueprintComponent[] {
                     dismissalDelivery }
                 .Concat(nativeRuns.Select(
@@ -474,10 +489,7 @@ namespace KingmakerGunslinger.Blueprints
                 .Concat((native.ComponentsArray ??
                     Array.Empty<BlueprintComponent>()).OfType<SpellComponent>()
                     .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
-                .Concat((native.ComponentsArray ??
-                    Array.Empty<BlueprintComponent>()).OfType<
-                        SpellDescriptorComponent>().Select(
-                            ExpandedSummoningAbilityBuilder.DeepCloneComponent))
+                .Concat(new BlueprintComponent[] { dismissalGood })
                 .Concat((native.ComponentsArray ??
                     Array.Empty<BlueprintComponent>()).OfType<AbilitySpawnFx>()
                     .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
@@ -487,7 +499,7 @@ namespace KingmakerGunslinger.Blueprints
             CopyFields(nativeTouchDonor, dispelTouch);
             dispelTouch.name = InternalName(dispelTouchSymbol);
             dispelTouch.Parent = dispel;
-            dispelTouch.Type = AbilityType.SpellLike;
+            dispelTouch.Type = accessType;
             dispelTouch.Range = AbilityRange.Touch;
             dispelTouch.CanTargetPoint = false;
             dispelTouch.CanTargetSelf = true;
@@ -526,20 +538,20 @@ namespace KingmakerGunslinger.Blueprints
                     .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
                 .ToArray();
 
-            ConfigureAstralDispelEvilParent(native, dismissal,
-                dismissalSymbol, family, dismissalTouch, ward, unit,
+            ConfigureDispelEvil31Parent(native, dismissal,
+                dismissalSymbol, family, dismissalTouch, ward, unit, accessType,
                 "Dismiss Evil Extraplanar Creature",
                 "Arm Dispel Evil's ward and its Dismissal touch. A successful melee touch against an evil extraplanar creature invokes the installed Dismissal effect; Will negates and spell resistance applies.",
                 "Will negates");
-            ConfigureAstralDispelEvilParent(native, dispel, dispelSymbol,
-                family, dispelTouch, ward, unit, "Dispel Evil Spell",
+            ConfigureDispelEvil31Parent(native, dispel, dispelSymbol,
+                family, dispelTouch, ward, unit, accessType, "Dispel Evil Spell",
                 "Arm Dispel Evil's ward and a touch that automatically removes one dispellable evil spell, or one enchantment cast by an evil creature, from a creature.",
                 "None");
 
             CopyFields(native, family);
             family.name = InternalName(familySymbol);
             family.Parent = null;
-            family.Type = AbilityType.SpellLike;
+            family.Type = accessType;
             family.Range = AbilityRange.Personal;
             family.CanTargetPoint = false;
             family.CanTargetSelf = true;
@@ -556,7 +568,12 @@ namespace KingmakerGunslinger.Blueprints
             family.ResourceAssetIds = Array.Empty<string>();
             var variants = ScriptableObject.CreateInstance<AbilityVariants>();
             variants.Variants = new[] { dismissal, dispel };
-            family.ComponentsArray = new BlueprintComponent[] { variants };
+            var familySchool = ScriptableObject.CreateInstance<SpellComponent>();
+            familySchool.School = SpellSchool.Abjuration;
+            var familyGood = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            familyGood.Descriptor = SpellDescriptor.Good;
+            family.ComponentsArray = new BlueprintComponent[] {
+                variants, familySchool, familyGood };
             family.LocalizedDuration = LocalizationService.Create(
                 familySymbol + ".Duration", "1 round per caster level or until discharged");
             family.LocalizedSavingThrow = LocalizationService.Create(
@@ -567,7 +584,7 @@ namespace KingmakerGunslinger.Blueprints
                 "Dispel Evil");
             access.Configure(ward, title,
                 LocalizationService.Create(wardSymbol + ".Description",
-                    "+4 deflection AC against attacks by evil creatures while this Astral Deva holds one Dispel Evil touch."),
+                    "+4 deflection AC against attacks by evil creatures while the caster holds one Dispel Evil touch."),
                 native.Icon);
             access.Configure(dismissalTouch,
                 LocalizationService.Create(dismissalTouchSymbol + ".Name",
@@ -583,22 +600,22 @@ namespace KingmakerGunslinger.Blueprints
                 native.Icon);
             access.Configure(family, title,
                 LocalizationService.Create(familySymbol + ".Description",
-                    "At will at caster level13, gain +4 deflection AC against attacks by evil creatures for 13 rounds and hold one selected melee touch. The touch either invokes Dismissal against an evil extraplanar creature (Will negates; spell resistance applies) or automatically removes one dispellable evil spell or evil-caster enchantment from a creature. A delivered touch discharges the ward."),
+                    description),
                 native.Icon);
             return new[] { family, dismissal, dismissalTouch, dispel,
                 dispelTouch };
         }
 
-        private static void ConfigureAstralDispelEvilParent(
+        private static void ConfigureDispelEvil31Parent(
             BlueprintAbility native, BlueprintAbility ability, string symbol,
             BlueprintAbility family, BlueprintAbility delivery,
-            BlueprintBuff ward, BlueprintUnit unit, string title,
+            BlueprintBuff ward, BlueprintUnit unit, AbilityType accessType, string title,
             string description, string savingThrow)
         {
             CopyFields(native, ability);
             ability.name = InternalName(symbol);
             ability.Parent = family;
-            ability.Type = AbilityType.SpellLike;
+            ability.Type = accessType;
             ability.Range = AbilityRange.Personal;
             ability.CanTargetPoint = false;
             ability.CanTargetSelf = true;
