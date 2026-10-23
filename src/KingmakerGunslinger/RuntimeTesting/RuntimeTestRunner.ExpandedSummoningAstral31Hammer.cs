@@ -290,6 +290,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => immunityCommand = value)) yield return frame;
                 AstralDevaStunTracker immunityTracker =
                     AstralDevaHammerStun.ObservedTracker(sibling);
+                int immunityRounds = observer.DurationRolls.Count == 1 ?
+                    observer.DurationRolls[0].Result.Value : -1;
+                Buff immunityBuff = target.Buffs.Enumerable.SingleOrDefault(
+                    value => ReferenceEquals(value.Blueprint, stunnedBlueprint));
+                bool immunityConditionPresent = target.Descriptor.State
+                    .HasCondition(UnitCondition.Stunned);
+                bool targetCanActWithImmunity = target.Descriptor.State.CanAct;
+                bool immunityApplicationExact = observer.Applications.Count == 1 &&
+                    observer.Applications[0].Duration.HasValue &&
+                    Math.Abs(observer.Applications[0].Duration.Value.TotalSeconds -
+                        immunityRounds * 6d) <= .001d &&
+                    ReferenceEquals(observer.Applications[0].AppliedBuff,
+                        immunityBuff) &&
+                    ReferenceEquals(immunityBuff?.Context?.MaybeCaster, sibling);
+                target.Descriptor.State.RemoveConditionImmunity(
+                    UnitCondition.Stunned);
+                stunImmunity = false;
+                immunityBuff?.Remove();
+                for (int frame = 0; frame < 2; frame++) yield return 0;
+                bool immunityReset = !target.Descriptor.State.HasCondition(
+                        UnitCondition.Stunned) &&
+                    !target.Buffs.Enumerable.Any(value => ReferenceEquals(
+                        value.Blueprint, stunnedBlueprint)) &&
+                    target.Descriptor.State.CanAct == targetCanActBeforeStun;
                 bool immunityExact = immunityCommand != null &&
                     immunityCommand.IsFinished &&
                     immunityCommand.Result == UnitCommand.ResultType.Success &&
@@ -306,9 +330,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.Saves[0].D20.Value == 1 &&
                     !observer.Saves[0].IsPassed &&
                     observer.DurationRolls.Count == 1 &&
-                    !target.Descriptor.State.HasCondition(UnitCondition.Stunned) &&
-                    !target.Buffs.Enumerable.Any(value => ReferenceEquals(
-                        value.Blueprint, stunnedBlueprint)) &&
+                    immunityRounds >= 1 && immunityRounds <= 6 &&
+                    immunityApplicationExact && immunityBuff != null &&
+                    !immunityConditionPresent && targetCanActWithImmunity &&
+                    immunityReset &&
                     immunityTracker != null &&
                     immunityTracker.HitCount(target.UniqueId) == 2 &&
                     immunityTracker.WasAttempted(target.UniqueId);
@@ -326,20 +351,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["durationD6"] = new JArray(observer.DurationRolls
                             .Select(value => value.Result.Value)),
                         ["applications"] = observer.ApplicationRows(),
-                        ["conditionPresent"] = target.Descriptor.State
-                            .HasCondition(UnitCondition.Stunned),
-                        ["privateBuffPresent"] = target.Buffs.Enumerable.Any(
-                            value => ReferenceEquals(value.Blueprint,
-                                stunnedBlueprint)),
+                        ["conditionPresentWithImmunity"] =
+                            immunityConditionPresent,
+                        ["privateBuffPresentWithImmunity"] =
+                            immunityBuff != null,
+                        ["victimCanActWithImmunity"] =
+                            targetCanActWithImmunity,
+                        ["immunityApplicationExact"] =
+                            immunityApplicationExact,
+                        ["ownedResetExact"] = immunityReset,
                         ["trackerHits"] = immunityTracker?.HitCount(
                             target.UniqueId),
                         ["trackerAttempted"] = immunityTracker?.WasAttempted(
                             target.UniqueId) },
-                    "The second hammer hit uses live Strength for DC26 and native Stunned-condition immunity rejects the finite effect without granting another attempt that round.");
+                    "The second hammer hit uses live Strength for DC26; native Stunned-condition immunity blocks the condition while retaining one inert finite source-owned buff, grants no extra attempt that round, and resets only that owned effect before the next case.");
                 if (!immunityExact) throw new InvalidOperationException(
                     "Astral native stun-immunity contract failed.");
-                target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Stunned);
-                stunImmunity = false;
 
                 sibling.CombatState.Cooldown.StandardAction = 0;
                 sibling.CombatState.Cooldown.MoveAction = 0;
