@@ -199,34 +199,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(written!=null && ReferenceEquals(written.Spell,originalSource))book.ForgetMemorized(written);
                 pins.Restore();
             }
-            // Native39: a fixed 8-frame wait (0.22s at this session's frame rate)
-            // checked before the native close unbound its pooled rows. Poll the
-            // same observations, bounded; nothing is released or disposed here.
-            Func<bool> nativeUnboundNow=()=>cleanupContext!=null && (cleanupContext.View==null ||
-                (!ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group) &&
-                !cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true)
-                    .Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header))));
-            Func<bool> releasedNow=()=>off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
-                typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null :
-                owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
-                cleanupContext.Group.CurrentSelectedSpell==null && nativeUnboundNow() && cleanupContext.Released && cleanupContext.Disposed &&
-                cleanupContext.Header.IsDisposed && cleanupContext.Projection==null &&
-                typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null;
+            // Native40: installed SpellBookKnownSpellsVM.DisposeImplementation
+            // 060050E1 only clears its list/selection; it never disposes its row
+            // VMs, and the inactive pooled view stays bound to the disposed group
+            // until the next native rebind (6.9s/600 frames observed, no unbind).
+            // The owned header correctly retires and awaits that same rebind.
+            // Observe both native steps: retirement after close, then disposal
+            // when one real native reopen rebinds the view. Nothing is released
+            // or disposed by this observer.
+            var bookField=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields);
+            Func<bool> headerBoundNow=()=>cleanupContext!=null && cleanupContext.View!=null &&
+                cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header));
+            Func<bool> retiredNow=()=>owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
+                cleanupContext.Group.CurrentSelectedSpell==null && cleanupContext.Released && bookField.GetValue(service)==null &&
+                (cleanupContext.Disposed || (cleanupContext.View!=null && !cleanupContext.View.gameObject.activeInHierarchy &&
+                    ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group) &&
+                    !cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(false).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header))));
             var releaseWatch=Stopwatch.StartNew();int releaseFrames=0;
-            for(;releaseFrames<8 || (!releasedNow() && releaseFrames<600 && releaseWatch.Elapsed.TotalSeconds<8);releaseFrames++)yield return 0;
-            bool nativeUnbound=nativeUnboundNow(),released=releasedNow();
+            for(;releaseFrames<8 || (!off && !retiredNow() && releaseFrames<600 && releaseWatch.Elapsed.TotalSeconds<8);releaseFrames++)yield return 0;
+            bool retired=!off && retiredNow(),disposedAtClose=cleanupContext!=null && cleanupContext.Disposed,boundAtClose=headerBoundNow();
+            bool reopened=false,disposedAtRebind=disposedAtClose,reopenedClosed=false;int rebindFrames=0;
+            if(retired && !disposedAtClose)
+            {
+                typeof(CharcaterServiceContext).GetMethod("OnSpellBookHandler",Cleanup2Fields).Invoke(service,null);
+                for(int frame=0;frame<8;frame++)yield return 0;
+                var again=bookField.GetValue(service) as SpellBookVM;
+                try
+                {
+                    if(again==null || !ReferenceEquals(again.UnitEntity.Value,fixture.Caster))throw new InvalidOperationException("Native console book did not reopen for the fixture caster.");
+                    again.ChooseSpellBook(book.Blueprint);again.ChooseLevel(2);reopened=true;
+                    var rebindWatch=Stopwatch.StartNew();
+                    for(;rebindFrames<8 || (!cleanupContext.Disposed && rebindFrames<600 && rebindWatch.Elapsed.TotalSeconds<8);rebindFrames++)yield return 0;
+                    disposedAtRebind=cleanupContext.Disposed && cleanupContext.Header.IsDisposed && cleanupContext.Projection==null && !headerBoundNow();
+                }
+                finally
+                {
+                    if(again!=null && ReferenceEquals(bookField.GetValue(service),again))Cleanup2CloseOwnedConsoleBook(service,again,fixture.Caster);
+                }
+                for(int frame=0;frame<8;frame++)yield return 0;
+                reopenedClosed=again!=null && again.IsDisposed && bookField.GetValue(service)==null;
+            }
+            bool released=off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
+                bookField.GetValue(service)==null :
+                retired && (disposedAtClose || (reopened && disposedAtRebind && reopenedClosed));
             Cleanup2Check("elemental-console-native-disposed-preparation-release",released,new JObject {
                 ["waitedFrames"]=releaseFrames,["waitedSeconds"]=releaseWatch.Elapsed.TotalSeconds,
                 ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
                 ["nativeSelectionFieldCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
-                ["nativeRowsUnbound"]=nativeUnbound,["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,
-                ["ownedHeaderDisposed"]=cleanupContext!=null && cleanupContext.Header.IsDisposed,
-                ["ownedProjectionReleased"]=cleanupContext!=null && cleanupContext.Projection==null,
+                ["ownedContextRetiredAtClose"]=retired,["ownedHeaderDisposedAtClose"]=disposedAtClose,
+                ["inactiveNativeViewStillBindsHeaderAtClose"]=boundAtClose,
+                ["nativeReopenRebind"]=reopened,["rebindFrames"]=rebindFrames,
+                ["ownedHeaderDisposedAtRebind"]=disposedAtRebind,["reopenedBookClosedExactly"]=reopenedClosed,
                 ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,
                 ["freshModuleOff"]=off,["ownedProjectionExpected"]=!off,
-                ["scope"]="Actual native book closure and scene-row unbind; fresh OFF has no owned header/context to release. No observer call to presentation Release or native VM Dispose." },
-                "After native book disposal clears its selection field and native rows unbind, the owned preparation header and projection retire without dereferencing or modifying the disposed VM.");
-            if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not release after actual screen unbind.");
+                ["nativeContract"]="SpellBookKnownSpellsVM.DisposeImplementation 060050E1 clears KnownSpells/selection without disposing row VMs; inactive pooled rows stay bound until the next native rebind.",
+                ["scope"]="Actual native close, then one real native reopen (OnSpellBookHandler) and exact close. Fresh OFF has no owned header/context. No observer call to presentation Release or native VM Dispose." },
+                "After native close the owned header retires with no selection or book authority; it is disposed with its projection when the native view rebinds, exactly like native row VMs.");
+            if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not retire/dispose across actual close and rebind.");
         }
 
         private void Cleanup2ConsolePreparationFocus(SpellBookView view,SpellBookVM owner,

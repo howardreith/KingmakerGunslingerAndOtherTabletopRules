@@ -6,7 +6,71 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review39 results and review40 corrections (current, October 23)
+### Review40 results and review41 corrections (current, October 23)
+
+Frozen review40 source `f32850c67794acb7d0badba423ea827582e1024b`, fingerprint
+`3f8a63a224384b47f868c48fba4185c94bf54421a22bb696d83008f0e3365b72`; package
+`c3e06ccb666dcad59c2e0016a098e47c7066eb207e7ab1139488e1d94d9ebcc0`, DLL
+`a3c0e7861ef1bce6383127a682f081607871c1802d11f4a3dc35e8d92f768071`, MVID
+`cf510d5f-3cb7-4e89-a160-f9fb22f0c43d`. The first build attempt failed only in
+the development-gate temp cleanup (`DomainTests.exe` still locked; log retained
+as `artifacts/cleanup2-review40-build-attempt1-temp-lock.log`); the unchanged
+retry passed (186.9s): 23 selected cases, gate 9/0, installed targets 37/37.
+
+Window20 ran 11:38:05 to 11:58:43 UTC (20m38s); every transaction restored.
+
+- **Cold trio PASS, 430.2s**, transaction `cleanup2-cold-20261023T113805Z-750af1237b2d`
+  **RESTORED** (Working, settings, installation verified; no recovery debt).
+  Prepare **22/0** (`20261023T1139241573318Z`), verify-cleanup **21/0**
+  (`20261023T1141326614358Z`), verify-absent **6/0** (`20261023T1143384628952Z`).
+  All 12 captured resources are `PRIVATE_VIEW_OWNED` and released, including the
+  giant palette materials/albedos. This qualifies ART-05 cold reconstruction and
+  the authorized Working-save trio on review40 bytes.
+- Menu adapters with alternate sources **FAIL 70/1, 222.1s**, raw
+  `20261023T1147123361929Z`. Every canonical route passes: twelve SM/SNA Horse
+  quantity routes, native pin, and the **Druid conversion under CotW**: contract,
+  native Horse row, actual Horse cast/debit and source restoration. Root
+  inspected the Druid popup PNG: 21 projected creature icons, readable grid,
+  on-screen. The run then reached the seven alternate families for the first
+  time; fixture setup failed because a level-8 Monster Tactician lacked its
+  tier-II feature.
+- PC learning **PASS 17/0, 162.6s**, raw `20261023T1153462495527Z`. Root inspected
+  the corrected learning header: full-width, readable, list font, no gap.
+- Controller **FAIL 26/2, 186.7s**, raw `20261023T1156575296015Z`. After 600 frames
+  (6.9s) the native close still had not unbound its pooled rows. Installed
+  `SpellBookKnownSpellsVM.DisposeImplementation` 060050E1 clears its list and
+  selection without disposing row VMs; the inactive view stays bound until the
+  next native rebind. The owned header correctly retires and awaits that rebind;
+  the observer's expectation of an unbind at close contradicted the native contract.
+
+Window21 ran 12:01:36 to 12:15:52 UTC on the same review40 bytes:
+
+- `elementals-sources`: the agent harness's memory reaper killed the guarded
+  host (not the game) while the game was running. The game finished and exited
+  on its own; nothing was killed by the operator. Recovery after confirmed exit:
+  installation restored by the transaction's own `Restore-KmgCompatibilityTransaction`
+  (`compat-20261023T120137Z-898116a9c386` Restored, verified 12:10:20Z), settings
+  restored exactly from `game-settings-intake.json` (the game had changed screen
+  resolution height/ScreenResolution and Unity session values), and all 95
+  preexisting saves match the intake catalog by SHA-256/length. A first settings
+  attempt failed before any write (recovery-script retyping bug); its record is
+  retained as `game-settings-restoration-attempt1.json`. `protected-native.json`
+  keeps the host's last `ACTIVE` write; `host-killed-recovery.json` beside it
+  records the recovery. The in-game result was **PASS 99/0** (311.7s, raw
+  `20261023T1203112217486Z`): diagnostic only, not a qualification, because host
+  launch/result verification never ran. Native phases now run in the foreground.
+- `alternate-console` **FAIL 8/1, 200.9s**, raw `20261023T1214000205069Z`: the same
+  Monster Tactician tier-II fixture gap (shared caster setup); restored normally.
+
+Review41 corrections (observer/fixture only):
+
+- Controller check observes retirement at close, then one real native reopen
+  (`OnSpellBookHandler`) whose rebind must dispose the old header/projection,
+  then the exact owned close.
+- Monster Tactician fixture takes further real native levels (bounded at class
+  20) until its tier II-IV features are granted; failures name the granted tiers.
+
+### Review39 results and review40 corrections (October 23)
 
 Frozen review39 source `3797bf13b4c1c7633a22bb925cf7551e45a95275`, fingerprint
 `acead11b64f7361fe50bf6ed4edf426474c7597a2630510f2693666948ce7ae4`; package
