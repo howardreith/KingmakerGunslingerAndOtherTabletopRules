@@ -130,10 +130,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !observer.Saves[0].IsPassed &&
                     observer.DurationRolls.Count == 1 &&
                     rolledRounds >= 1 && rolledRounds <= 6 &&
+                    observer.Applications.Count == 1 &&
+                    observer.Applications[0].Duration.HasValue &&
+                    Math.Abs(observer.Applications[0].Duration.Value.TotalSeconds -
+                        rolledRounds * 6d) <= .001d &&
                     stun != null && target.Descriptor.State.HasCondition(
                         UnitCondition.Stunned) &&
                     ReferenceEquals(stun.Context?.MaybeCaster, owner) &&
-                    stun.TimeLeft.TotalSeconds > rolledRounds * 6d - 2d &&
+                    stun.TimeLeft.TotalSeconds > 0d &&
                     stun.TimeLeft.TotalSeconds <= rolledRounds * 6d + .001d &&
                     hammerTracker != null &&
                     hammerTracker.HitCount(target.UniqueId) == 2 &&
