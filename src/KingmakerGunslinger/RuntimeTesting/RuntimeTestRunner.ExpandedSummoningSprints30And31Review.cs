@@ -65,6 +65,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewAstral31Core(fixture)) yield return frame;
                 yield break;
             }
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31AstralHammerPhase)
+            {
+                foreach (int frame in ReviewAstral31Hammer(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == "trumpet-caster")
             {
                 foreach (int frame in ReviewTrumpet31Caster(fixture)) yield return frame;
