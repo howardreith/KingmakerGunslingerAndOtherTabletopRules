@@ -1202,7 +1202,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             object[] savedRigValues=savedRigFields.Select(field=>field.GetValue(rig)).ToArray();
             Vector3 beforePosition = camera.transform.position;
             Quaternion beforeRotation = camera.transform.rotation;
-            float beforeSize = camera.orthographicSize, beforeAspect = camera.aspect;
+            float beforeSize = camera.orthographicSize, beforeAspect = camera.aspect, beforeFieldOfView = camera.fieldOfView;
             RenderTexture beforeTarget = camera.targetTexture, beforeActive = RenderTexture.active;
             RenderTexture target = null;
             Texture2D image = null;
@@ -1234,6 +1234,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // cannot widen that projection. Fit all eight corners in the
                 // actual camera basis, with the output aspect set first.
                 camera.aspect = 1920f / 1080f;
+                // Review26's native 22-degree lens puts the camera 42m from
+                // the row: low pitches intersect the room walls, and the first
+                // unobstructed physics sample still looks through a chandelier.
+                // A temporary wider lens frames the same coplanar lineup from
+                // inside the room, below hanging scenery. Preserve normal
+                // scene rendering and restore this exact camera field below.
+                if (!camera.orthographic) camera.fieldOfView = 50f;
                 var cameraAttempts = new JArray();
                 bool clearSight = false, renderedSightProven = false;
                 // Review25's actual 35-degree image fits every head, but a
@@ -1358,6 +1365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["cameraPosition"] = SurveyVector(camera.transform.position),
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
                     ["fieldOfView"] = camera.fieldOfView, ["orthographic"] = camera.orthographic,
+                    ["nativeFieldOfViewAtIntake"] = beforeFieldOfView,
                     ["screenFade"] = screenFade, ["meanLuma"] = luma,
                     ["fixtureFacingPose"] = facingReceipt,
                     ["nativePoseFrame"]=poseFrame,["readbackFrame"]=Time.frameCount,["normalFrameProgression"]=Time.frameCount-poseFrame,
@@ -1400,9 +1408,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     rig.transform.position=beforeRigPosition;rig.transform.rotation=beforeRigRotation;
                     for(int index=0;index<savedRigFields.Length;index++)savedRigFields[index].SetValue(rig,savedRigValues[index]);
                     camera.transform.position = beforePosition;camera.transform.rotation = beforeRotation;
-                    camera.orthographicSize = beforeSize; camera.aspect = beforeAspect;
+                    camera.orthographicSize = beforeSize; camera.aspect = beforeAspect; camera.fieldOfView = beforeFieldOfView;
                     if(Vector3.Distance(rig.transform.position,beforeRigPosition)>.001f || rig.GetPosition()!=beforeRigTarget ||
-                        Quaternion.Angle(rig.transform.rotation,beforeRigRotation)>.001f ||
+                        Quaternion.Angle(rig.transform.rotation,beforeRigRotation)>.001f || camera.fieldOfView != beforeFieldOfView ||
                         !savedRigFields.Select((field,index)=>Equals(field.GetValue(rig),savedRigValues[index])).All(value=>value) ||
                         !ReferenceEquals(controller.Follower,follower) || !ReferenceEquals(rig.CameraZoom,zoom) ||
                         !followerFields.Select((field,index)=>Equals(field.GetValue(follower),followerValues[index])).All(value=>value) ||

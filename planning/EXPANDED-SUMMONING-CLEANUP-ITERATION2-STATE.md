@@ -12,18 +12,23 @@ Quick review: [14-item acceptance status](#acceptance-status),
 ### PR #67 review corrections (2026-10-22)
 
 Latest: [PR 67 follow-up results and remaining checks](CLEANUP2-PR67-REVIEW-FOLLOWUP.md).
-Current native checkpoint is review24, source `d91487c274cdc6e0ff26f45a4604dcbbab99bcc6`.
-Gorgon completes 117 originals, 5.9618144m travel and its ordinary native attack;
-root inspected the new forged plates positively, with owner approval pending.
-Scale 60/4 proves the exact 292 disabled Cloth sentinels but refuses the owned
-configuration round-trip; production Cloth remains closed and no lineup PNG
-qualifies. PC Elementals 14/1 proves the first original Small Fire cast/debit,
-then stops on an inactive/missing launcher; its overlapping-label screenshot is
-explicitly before the later layout repair. Bodies 38/5 also passes Girallon and
-Stegosaurus ordinary attacks, but their full six-meter walks lack a safe fixture
-route. All three exits, installation/settings and 95 original saves restore
-exactly. Window 4 ends at the last receipt, **2026-10-22T23:52:28.4444403Z**,
-23m59.444s after 23:28:29. Final 90-minute qualification has not started.
+Latest native input is review26, source `4f07fd6f5fc741358be137aad960dbd4fe81d692`.
+Its scale run61/3 isolates the pre-initialization enabled-solver assertion and
+Fire palette acquisition during an unfinished native dissolve animation. The
+owned Cloth configuration comparison was not reached; production Cloth remains
+closed. The actual lineup still has a chandelier across a middle torso. The
+next correction uses exact preparation/live-state gates, native palette
+settlement and a closer temporarily wider camera lens, with exact restoration.
+Review25's readable PC chooser and original Small Fire cast/debit were inspected;
+the next native preparation update invalidates the retained observer session.
+The bounded native-refill correction awaits execution. Creature25 stops on a
+receipt serializer before command execution; its correction also awaits native.
+Review24 Gorgon forged plates/walk/attack remain positively inspected under
+their original identity. Current Girallon/Stegosaurus ordinary attacks pass,
+with corrected walk-fixture qualification outstanding. All review25/26 exits,
+installations/settings and fresh95-save inventories restore exactly. Window5
+ends **2026-10-23T00:30:18.0629683Z**,27m40.063s from00:02:38UTC.
+Final90-minute completion qualification has not started.
 The existing small current comparison contains 63 originals at
 `artifacts/cleanup2-replacement-current/index.html`; historical 188-image packet
 and original FAIL records remain unchanged. Full identities/receipts are in the

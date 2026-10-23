@@ -6,6 +6,37 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review26 exact cause and restoration
+
+Frozen `4f07fd6f5fc741358be137aad960dbd4fe81d692`, package
+`2a6a2327919773152123377b9a6f84c261a63cc8539959042653064a7b204b0f`, DLL
+`8be3f78bc8c74a2800f25fb412969327a578b9a495ceb20716964f0a61c39125`, MVID
+`e3c34432-c763-4b61-ab22-fad4e89c1fe1`. Compilation, strict packaging,17 focused
+cases and21 installed Harmony targets pass. Scale run
+`20261023T0028331805091Z` records **61 PASS/3 FAIL**,87.177s.
+
+- The first pre-commit identity check requires an enabled solver even though
+  the preparation state deliberately disables it. **The revised configuration
+  round-trip was not reached.** The correction distinguishes disabled preparation
+  from initialized live state, retaining the positive initialized/finite gate.
+- Fire's exact native material intake has an unfinished cutout animation and
+  DISSOLVE_ON while its cached default is false. Native controller reinitialization
+  resets the detached original to that default. Palette acquisition must await
+  actual native animation/default settlement; full protected-state comparison
+  remains required. No shared donor state is overwritten to satisfy the check.
+- Root inspected the PNG: all heads fit, but the chandelier still covers a
+  middle torso. The22-degree native lens puts the camera42m away;20/25-degree
+  views hit room walls. The next capture uses a temporary50-degree lens to fit
+  the same coplanar row from inside the room and restores the exact original FOV.
+  Actual image inspection remains required; no visibility PASS is inferred.
+
+Transaction `compat-20261023T002806Z-e8c73578330c` is Restored and verified,
+installation/settings exact, game exit confirmed and all95 fresh original saves
+exact. Final preservation receipt **00:30:18.0629683UTC** closes development
+window5 at27m40.063s from00:02:38. PC/creature26 were not launched because the
+remaining window could not accommodate their successful full paths. Final
+90-minute completion qualification has not begun. Original FAIL records remain.
+
 ### Review25 exact causes and next bounded correction
 
 Frozen `f8b507cb2c7c46af12903c5594f56cfe69eadba0`, package
@@ -39,8 +70,8 @@ All three original FAIL records remain. Their exact compatibility transactions
 `compat-20261023T000816Z-3c812a9c77e9`, `compat-20261023T001153Z-de784223bb7e`
 and `compat-20261023T001503Z-7b98f7ba624c` report Restored and verified exact
 installation/settings. Each fresh95-save inventory is exact; final third-run
-guard receipt is00:16:56.4650279UTC. Window5 began00:02:38UTC and remains bounded
-at30minutes. Final90-minute completion qualification has not begun.
+guard receipt is00:16:56.4650279UTC. Window5 began00:02:38UTC and closed after
+review26 as recorded above. Final90-minute completion qualification has not begun.
 
 ### Review24 implementation and evidence
 

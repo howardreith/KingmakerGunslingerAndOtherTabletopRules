@@ -435,6 +435,8 @@ namespace KingmakerGunslinger.Summoning
                             return "palette:invalid-source-dissolve";
                         if (dissolve > .001f) return "palette:await-settled-dissolve";
                     }
+            string nativeSettlement = NativeDissolveSettlement(view);
+            if (nativeSettlement != null) return nativeSettlement;
             SkinnedMeshRenderer[] matches = view.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                 .Where(value => value != null && value.name == selector.Renderer &&
                     Path(view.transform, value.transform) == proof.RendererPath).ToArray();
@@ -620,6 +622,53 @@ namespace KingmakerGunslinger.Summoning
                 if (!ReferenceEquals(view, null)) Release(view, reason, view != null);
             }
             return "palette:remainingOwnerships=" + Live.Count;
+        }
+
+        private static string NativeDissolveSettlement(UnitEntityView view)
+        {
+            // Native26 has _Dissolve=0 while an unfinished cutout animation
+            // still owns DISSOLVE_ON. ReinitMaterials reverts that keyword to
+            // its cached baseline before detaching the replaced original.
+            // Acquire only after the native driver has completed and its exact
+            // materials match that baseline. Full keyword/queue/tag protection
+            // after acquisition remains unchanged.
+            StandardMaterialController[] controllers = view.GetComponentsInChildren<StandardMaterialController>(true);
+            if (controllers.Length == 0) return "palette:native-material-controller-unavailable";
+            try
+            {
+                FieldInfo driverField = typeof(StandardMaterialController).GetField("m_DissolveController",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo cacheField = typeof(StandardMaterialController).GetField("m_MaterialSettings",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (driverField == null || cacheField == null) return "palette:native-dissolve-contract-unavailable";
+                foreach (StandardMaterialController controller in controllers)
+                {
+                    object driver = driverField.GetValue(controller);
+                    FieldInfo animationField = driver == null ? null : driver.GetType().GetField("Animations",
+                        BindingFlags.Instance | BindingFlags.Public);
+                    var animations = animationField == null ? null : animationField.GetValue(driver) as IList;
+                    var cache = cacheField.GetValue(controller) as IDictionary;
+                    IList<Material> materials = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
+                    if (animations == null || cache == null || materials == null)
+                        return "palette:native-dissolve-contract-unavailable";
+                    if (animations.Count != 0) return "palette:await-settled-dissolve";
+                    foreach (Material material in materials.Where(candidate => candidate != null))
+                    {
+                        if (!cache.Contains(material)) return "palette:native-material-cache-mismatch";
+                        object settings = cache[material];
+                        if (settings == null || settings.GetType().FullName !=
+                            "Kingmaker.Visual.MaterialEffects.StandardMaterialController+MaterialSettings")
+                            return "palette:native-material-cache-contract-unavailable";
+                        FieldInfo enabled = settings.GetType().GetField("IsDissolveEnabled", BindingFlags.Instance | BindingFlags.Public);
+                        if (enabled == null || enabled.FieldType != typeof(bool))
+                            return "palette:native-dissolve-baseline-unavailable";
+                        if (material.IsKeywordEnabled("DISSOLVE_ON") != (bool)enabled.GetValue(settings))
+                            return "palette:await-settled-dissolve";
+                    }
+                }
+                return null;
+            }
+            catch (Exception error) { return "palette:native-dissolve-observation-failed:" + error.GetType().Name; }
         }
 
         private static bool StillOwnsSlot(Ownership state)

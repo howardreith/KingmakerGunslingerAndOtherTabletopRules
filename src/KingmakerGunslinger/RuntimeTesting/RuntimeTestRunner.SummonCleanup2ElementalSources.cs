@@ -107,6 +107,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var watch = Stopwatch.StartNew(); var casts = new JArray(); bool added = false, selectedFixture = false;
             Cleanup2NativeDefaultScope mode = null; NativeIconScreenEvidence screens = null;
             AbilityData pendingOwned = null;
+            UnitEntityData[] ownedParty = null;
+            var ownedSessions = new HashSet<ElementalChooserSession>();
+            Func<bool> uiOwned = () => ownedParty != null && player.Party.SequenceEqual(ownedParty) &&
+                ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && ReferenceEquals(ActionBarManager.Instance, bar) &&
+                ReferenceEquals(GroupController.Instance, group) && bar.Group.GroupElements.SequenceEqual(groups) &&
+                ReferenceEquals(group.GetCurrentCharacter(), fixture.Caster) && ui.SelectionManagerPC.SelectedUnits.Count == 1 &&
+                ReferenceEquals(ui.SelectionManagerPC.SelectedUnits.First(), fixture.Caster) &&
+                ui.TooltipsController.ContextTooltipData == null && game.SelectedAbilityHandler?.Ability == null;
             try
             {
                 foreach (var parent in StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent))
@@ -128,6 +136,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
                 mode = Cleanup2EnterNativeDefault(fixture, "elementals-sources"); screens = new NativeIconScreenEvidence(_request);
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
+                ownedParty = player.Party.ToArray();
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 var spellGroup = groups.Single(value => (ActionBarSlotType)typeof(ActionBarGroupElement).GetField("SlotType", Cleanup2Fields).GetValue(value) == ActionBarSlotType.Spell);
                 if (!spellGroup.ToggleState) spellGroup.OnClick();
@@ -137,11 +146,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (string key in ElementalSourceChooserPolicy.Rank(rank).CreatureKeys)
                 {
                     Cleanup2SourcesBoundary(mode, watch);
+                    if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; independent preparation refresh refused.");
                     // Independent native fixture cases. Rest is deliberately
                     // before the source/debit snapshot, not part of a cast.
                     book.Rest(); spellGroup.Fill(fixture.Caster);
-                    if (!spellGroup.ToggleState) spellGroup.OnClick();
-                    for (int frame = 0; frame < 4; frame++) yield return 0;
+                    foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, spellGroup, mode, uiOwned, ownedSessions,
+                        ElementalSourceChooserRuntime.Session(spellGroup), "sources-rank" + rank + "-" + key, value => { })) yield return frame;
                     var source = Cleanup2SourcesFind(spellGroup, book, key, false);
                     var prep = source.Preparation; var data = source.Child;
                     foreach (int frame in Cleanup2SourcesReady(spellGroup, source, mode, watch)) yield return frame;
@@ -160,9 +170,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 // Two different physical spellbooks expose the same real
                 // native parent. Exhausting one must never borrow the other.
+                if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; two-book refresh refused.");
                 book.Rest(); otherBook.Rest(); spellGroup.Fill(fixture.Caster);
-                if (!spellGroup.ToggleState) spellGroup.OnClick();
-                for (int frame = 0; frame < 4; frame++) yield return 0;
+                foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, spellGroup, mode, uiOwned, ownedSessions,
+                    ElementalSourceChooserRuntime.Session(spellGroup), "sources-two-books", value => { })) yield return frame;
                 var wizardFire = Cleanup2SourcesFind(spellGroup, book, "small-fire-elemental", false);
                 var druidFire = Cleanup2SourcesFind(spellGroup, otherBook, "small-fire-elemental", false);
                 bool separate = !ReferenceEquals(wizardFire.Source, druidFire.Source) && !ReferenceEquals(wizardFire.Child, druidFire.Child) &&
@@ -175,8 +186,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Cleanup2SourcesReady(spellGroup, wizardFire, mode, watch)) yield return frame;
                 foreach (int frame in Cleanup2SourcesCast(fixture, wizardFire.Child, wizardFire.Preparation,
                     () => ElementalSourceChooserView.ReviewChoose(2, wizardFire.CreatureKey, wizardFire, true), mode, watch, "small-fire-first-book", null)) yield return frame;
-                if (!spellGroup.ToggleState) spellGroup.OnClick();
-                for (int frame = 0; frame < 4; frame++) yield return 0;
+                foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, spellGroup, mode, uiOwned, ownedSessions,
+                    ElementalSourceChooserRuntime.Session(spellGroup), "sources-first-book-exhausted", value => { })) yield return frame;
                 wizardFire = Cleanup2SourcesFind(spellGroup, book, "small-fire-elemental", false);
                 druidFire = Cleanup2SourcesFind(spellGroup, otherBook, "small-fire-elemental", false);
                 foreach (int frame in Cleanup2SourcesReady(spellGroup, wizardFire, mode, watch)) yield return frame;
@@ -196,14 +207,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Cleanup2SourcesCast(fixture, druidFire.Child, druidFire.Preparation,
                     () => ElementalSourceChooserView.ReviewChoose(2, druidFire.CreatureKey, druidFire, true), mode, watch, "small-fire-second-book", null)) yield return frame;
 
-                foreach (int frame in Cleanup2SourcesNaturesAllyFire(fixture, otherBook, spellGroup, mode, watch)) yield return frame;
+                foreach (int frame in Cleanup2SourcesNaturesAllyFire(fixture, otherBook, spellGroup, mode, watch, uiOwned, ownedSessions)) yield return frame;
 
                 AbilityData authored = null;
                 foreach (int frame in Cleanup2SourcesExtend(fixture, book, smallParent, mode, watch, screens, removeFacts,
                     value => authored = value)) yield return frame;
+                if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; native metamagic refresh refused.");
                 spellGroup.Fill(fixture.Caster);
-                if (!spellGroup.ToggleState) spellGroup.OnClick();
-                for (int frame = 0; frame < 6; frame++) yield return 0;
+                foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, spellGroup, mode, uiOwned, ownedSessions,
+                    ElementalSourceChooserRuntime.Session(spellGroup), "sources-native-extend", value => { })) yield return frame;
                 var extended = Cleanup2SourcesFind(spellGroup, book, "small-fire-elemental", true);
                 bool nativeMeta = authored != null && extended.Source.HasMetamagic(Metamagic.Extend) && extended.Child.HasMetamagic(Metamagic.Extend) &&
                     extended.Source.SpellLevel == 3 && extended.Child.SpellLevel == 3 && extended.Preparation.Spell.HasMetamagic(Metamagic.Extend);
@@ -226,7 +238,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalActionExtendable"] = signature.DurationExtendable, ["nativeExpectedMultiplier"] = multiplier },
                     "Actual RuleSummonUnit duration follows the original native action's Extend eligibility; no duration/rank field is edited.");
                 if (!duration) throw new InvalidOperationException("Native Extend duration differs from original action contract.");
-                foreach (int frame in Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts)) yield return frame;
+                foreach (int frame in Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts, uiOwned, ownedSessions)) yield return frame;
                 Cleanup2Check("elemental-sources-scope", true, new JObject {
                     ["all24OriginalCasts"] = casts.Count, ["maximumPhaseWallSeconds"] = 360, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                     ["console"] = "separate native controller transaction; not exercised here", ["coldSave"] = "separate explicitly authorized fresh-load transaction; not proved by runtime pins",
@@ -294,9 +306,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Cleanup2SourcesNaturesAllyFire(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
-            ActionBarGroupElement group, Cleanup2NativeDefaultScope mode, Stopwatch phase)
+            ActionBarGroupElement group, Cleanup2NativeDefaultScope mode, Stopwatch phase,
+            Func<bool> uiOwned, ICollection<ElementalChooserSession> ownedSessions)
         {
             Cleanup2SourcesBoundary(mode, phase);
+            if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; native SNA preparation refused.");
             var rank = ElementalSourceChooserPolicy.Rank(2);
             var parent = Cleanup2ElementalAbility(fixture, rank.NaturesAllyParentGuid);
             var spec = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Single(value => value.ParentTier == 2 &&
@@ -308,8 +322,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             // This is the actual Druid list/book, not SNA granted to a Wizard
             // list or an inferred equivalent standalone/SM invocation.
             PrepareExpandedSummoningPlayerPathSpell(book, parent, parent, 2); book.Rest(); group.Fill(fixture.Caster);
-            if (!group.ToggleState) group.OnClick();
-            for (int frame = 0; frame < 4; frame++) yield return 0;
+            foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, group, mode, uiOwned, ownedSessions,
+                ElementalSourceChooserRuntime.Session(group), "sources-native-snaII", value => { })) yield return frame;
             var session = ElementalSourceChooserRuntime.Session(group);
             if (session == null || !session.Current) throw new InvalidOperationException("Current native SNA source chooser session required.");
             var source = session.Sources.Single(value => value.CreatureKey == "small-fire-elemental" && ReferenceEquals(value.Book, book) &&
@@ -575,9 +589,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Cleanup2SourcesSpecialAndPin(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
             BlueprintAbility parent, ActionBarGroupElement spellGroup, Cleanup2NativeDefaultScope mode, Stopwatch phase,
-            NativeIconScreenEvidence screens, List<Action> removes)
+            NativeIconScreenEvidence screens, List<Action> removes, Func<bool> uiOwned, ICollection<ElementalChooserSession> ownedSessions)
         {
             Cleanup2SourcesBoundary(mode, phase);
+            if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; native special-slot preparation refused.");
             var school = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
                 "cee0f7edbd874a042952ee150f878b84", "native Conjuration specialist feature");
             var list = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(BlueprintBootstrap.Library,
@@ -594,9 +609,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var special = book.GetSpecialSpells(2).Single(value => ReferenceEquals(value.Blueprint, parent));
             if (!book.Memorize(special, favorite)) throw new InvalidOperationException("Native favorite-only memorization refused.");
             book.Rest(); spellGroup.Fill(fixture.Caster);
-            if (!spellGroup.ToggleState) spellGroup.OnClick();
+            foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, spellGroup, mode, uiOwned, ownedSessions,
+                ElementalSourceChooserRuntime.Session(spellGroup), "sources-native-favorite", value => { })) yield return frame;
             var session = ElementalSourceChooserRuntime.Session(spellGroup); session.Levels.OnClick(2);
             for (int frame = 0; frame < 8; frame++) yield return 0;
+            if (!uiOwned() || !mode.Current || !session.Current) throw new InvalidOperationException("Native favorite source presentation changed after settled level selection.");
             var nativeRow = spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Single(value => value.gameObject.activeInHierarchy &&
                 value.MechanicSlot is MechanicActionBarSlotMemorizedSpell &&
                 ReferenceEquals(((MechanicActionBarSlotMemorizedSpell)value.MechanicSlot).SpellSlot, favorite));
@@ -641,8 +658,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 requested = true; destination.TryToSet(mechanism);
+                if (!uiOwned() || ElementalSourceChooserView.IsOpen) throw new InvalidOperationException("Foreign source UI; pinned native tab refresh refused.");
                 spellGroup.Fill(fixture.Caster);
-                for (int frame = 0; frame < 8; frame++) yield return 0;
+                foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, spellGroup, mode, uiOwned, ownedSessions,
+                    ElementalSourceChooserRuntime.Session(spellGroup), "sources-original-native-pin", value => { })) yield return frame;
                 bool pin = ReferenceEquals(settings.Slots, slots) && ReferenceEquals(slots[index], mechanism) && ReferenceEquals(destination.MechanicSlot, mechanism) &&
                     ReferenceEquals(destination.MechanicSlot.GetContentData(), child) && ReferenceEquals(child.ConvertedFrom, favorite.Spell);
                 Cleanup2Check("elemental-sources-native-legacy-pin-retained", pin, new JObject {

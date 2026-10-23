@@ -123,6 +123,39 @@ namespace KingmakerGunslinger.RuntimeTesting
             var screens=new NativeIconScreenEvidence(_request);var watch=Stopwatch.StartNew();
             var hooks=HarmonyInstance.Create("kmg.cleanup2.elementals-console."+_request.RunId);
             ActionBarSelectorVm ownedSelector=null;
+            var ownedSelectors=new HashSet<ActionBarSelectorVm>();
+            var ownedContexts=new HashSet<ElementalConsoleContext>();
+            var ownedDispatched=new HashSet<Kingmaker.UnitLogic.Abilities.AbilityData>();
+            InputLayer[] selectorBaseLayers=null;UnitEntityData[] ownedParty=null,ownedSelection=null;
+            var gamepad=GamePad.Instance;
+            Func<bool> uiOwned=()=>ownedParty!=null && player.Party.SequenceEqual(ownedParty) &&
+                ReferenceEquals(Game.Instance,game) && ReferenceEquals(game.RootUiContext?.InGameUiContext,inGame) &&
+                ReferenceEquals(UnitSelectionManager.Instance,selection) && ReferenceEquals(GamePad.Instance,gamepad) &&
+                ReferenceEquals(typeof(InGameUiStaticPartContext).GetField("m_ActionBarVm",Cleanup2Fields).GetValue(staticPart),bar) &&
+                ReferenceEquals(bar.Unit.Value,fixture.Caster) && ReferenceEquals(selection.CurrentSelectUnitValue,fixture.Caster) &&
+                ownedSelection!=null && selection.SelectedUnits.SequenceEqual(ownedSelection);
+            Action rememberSelector=()=>{
+                var live=bar.SelectorVm.Value;var owner=ElementalSourceChooserConsole.Context(live);
+                if(live==null || owner==null || !owner.Current || !uiOwned() || !ReferenceEquals(owner.Owner,bar) ||
+                    !ReferenceEquals(owner.Unit,fixture.Caster))return;
+                if(ownedSelectors.Contains(live) || ownedContexts.Contains(owner))
+                {ownedSelectors.Add(live);ownedContexts.Add(owner);}
+            };
+            Func<bool> selectorInputOwned=()=>{
+                var live=bar.SelectorVm.Value;var owner=ElementalSourceChooserConsole.Context(live);
+                if(live==null || selectorBaseLayers==null || !uiOwned() ||
+                    (!ownedSelectors.Contains(live) && (owner==null || !ownedContexts.Contains(owner))))return false;
+                if(owner!=null && (!owner.Current || !ownedContexts.Contains(owner) || !ReferenceEquals(owner.Owner,bar) ||
+                    !ReferenceEquals(owner.Unit,fixture.Caster)))return false;
+                var views=Resources.FindObjectsOfTypeAll<ActionBarSelectorView>().Where(value=>value.gameObject.scene.IsValid() &&
+                    value.gameObject.scene.isLoaded && value.gameObject.activeInHierarchy &&
+                    ReferenceEquals(ElementalConsoleBookPresentation.Model(value),live)).ToArray();
+                if(views.Length!=1)return false;
+                var layer=typeof(ActionBarSelectorView).GetField("m_InputLayer",Cleanup2Fields).GetValue(views[0]) as InputLayer;
+                var actual=gamepad.Layers.ToArray();
+                return layer!=null && actual.Count(value=>ReferenceEquals(value,layer))==1 &&
+                    actual.Length==selectorBaseLayers.Length+1 && actual.Where(value=>!ReferenceEquals(value,layer)).SequenceEqual(selectorBaseLayers);
+            };
             try
             {
                 const BindingFlags statics=BindingFlags.Static|BindingFlags.NonPublic;
@@ -133,6 +166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _expandedSummoningPlayerPathCaptureActive=true;
                 if(!party.Contains(fixture.Caster))
                 {player.PartyCharacters.Add(fixture.Caster);added=true;player.InvalidateCharacterLists();player.UpdateCharacterLists();}
+                ownedParty=player.Party.ToArray();
                 foreach(var parent in StandaloneElementalPresentationPolicy.All.Where(value=>value.IsParent))
                     PrepareExpandedSummoningPlayerPathSpell(book,Cleanup2ElementalAbility(fixture,parent.Guid),
                         Cleanup2ElementalAbility(fixture,parent.Guid),parent.CanonicalTier);
@@ -140,10 +174,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for(int frame=0;frame<12;frame++)yield return 0;
                 if(!ReferenceEquals(bar.Unit.Value,fixture.Caster) || !ReferenceEquals(selection.CurrentSelectUnitValue,fixture.Caster))
                     throw new InvalidOperationException("Actual console selection did not bind the owned caster.");
+                // Installed SelectedUnits returns the native grouped cohort
+                // when it contains CurrentSelectUnit, not always a singleton.
+                // Retain that established cohort; do not unlink other units
+                // or manufacture a one-element selection for this observer.
+                ownedSelection=selection.SelectedUnits.ToArray();
                 var input=new Cleanup2TooltipInputs(fixture.Caster);var pins=new TeleportationUiSettingsFixture(fixture.Caster.UISettings);
                 var layers=GamePad.Instance.Layers.ToArray();
+                selectorBaseLayers=layers;
+                if(!uiOwned() || bar.SelectorVm.Value!=null || game.SelectedAbilityHandler?.Ability!=null)
+                    throw new InvalidOperationException("Foreign console selector/selection/targeting; source menu is not opened.");
                 typeof(ActionBarVM).GetMethod("ShowSpellMenu",Cleanup2Fields).Invoke(bar,null);ownedSelector=bar.SelectorVm.Value;
+                if(ownedSelector!=null)ownedSelectors.Add(ownedSelector);rememberSelector();
                 for(int frame=0;frame<8;frame++)yield return 0;
+                rememberSelector();
                 var context=ElementalSourceChooserConsole.Context(ownedSelector);
                 if(context==null || !context.Current)throw new InvalidOperationException("Actual console spell selector did not publish an owned source context: "+ElementalSourceChooserConsole.Outcome);
                 var coverage=new JArray();
@@ -161,11 +205,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["exceptions"]=new JArray(context.Sources.Select(value=>value.Label)),["scope"]="Actual native prepared mechanisms/conversion factories and real bound console selector. This row is not a 24-cast claim." },
                     "All six ranks/four elements use original native source, child, spellbook and preparation objects in the real console selector.");
                 if(!exact)throw new InvalidOperationException("Native console source binding coverage incomplete.");
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==0 && value.Source==null,false))yield return frame;
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==0 && value.Source==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==2 && value.Creature==null,false))yield return frame;
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==2 && value.Creature==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Creature=="small-fire-elemental" && value.Source==null,false))yield return frame;
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Creature=="small-fire-elemental" && value.Source==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;context=ElementalSourceChooserConsole.Context(ownedSelector);
                 foreach(int frame in screens.Capture("elementals-console-native-original-sources",new JObject {
                     ["nativeInputMode"]="console",["renderedText"]=new JArray(context.BoundView.GetComponentsInChildren<TextMeshProUGUI>(false).Select(value=>value.text)),
@@ -181,18 +225,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Native console rank/species/source traversal and the real native decline input spend nothing and restore the original input-layer stack.");
                 if(!cancelled)throw new InvalidOperationException("Native console cancellation restoration failed.");
 
-                typeof(ActionBarVM).GetMethod("ShowSpellMenu",Cleanup2Fields).Invoke(bar,null);ownedSelector=bar.SelectorVm.Value;for(int frame=0;frame<6;frame++)yield return 0;
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==0 && value.Source==null,false))yield return frame;
+                if(!uiOwned() || bar.SelectorVm.Value!=null || game.SelectedAbilityHandler?.Ability!=null || !GamePad.Instance.Layers.SequenceEqual(selectorBaseLayers))
+                    throw new InvalidOperationException("Foreign console selector/input owner; cast source menu is not reopened.");
+                typeof(ActionBarVM).GetMethod("ShowSpellMenu",Cleanup2Fields).Invoke(bar,null);ownedSelector=bar.SelectorVm.Value;
+                if(ownedSelector!=null)ownedSelectors.Add(ownedSelector);rememberSelector();
+                for(int frame=0;frame<6;frame++)yield return 0;
+                rememberSelector();
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==0 && value.Source==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==2 && value.Creature==null,false))yield return frame;
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Rank==2 && value.Creature==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Creature=="small-fire-elemental" && value.Source==null,false))yield return frame;
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>value.Creature=="small-fire-elemental" && value.Source==null,false,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=bar.SelectorVm.Value;context=ElementalSourceChooserConsole.Context(ownedSelector);
                 var source=context.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book));
                 int before=CountAvailableExpandedSummoningSlots(book,2);string resources=Cleanup2ElementalResources(fixture.Caster);
                 ExpandedSummoningRuleCapture.Clear();ExpandedSummoningPlayerPathEvents.Clear();
                 _expandedSummoningPlayerPathRuleCastCount=0;_expandedSummoningPlayerPathSpawnActionCount=0;
-                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>ReferenceEquals(value.Source,source),true))yield return frame;
+                foreach(int frame in Cleanup2ConsoleChoose(bar,value=>ReferenceEquals(value.Source,source),true,uiOwned,selectorInputOwned,rememberSelector,ownedDispatched))yield return frame;
                 ownedSelector=null;
                 bool selectedChild=ReferenceEquals(game.SelectedAbilityHandler?.Ability,source.Child) &&
                     ReferenceEquals(ElementalSourceChooserRuntime.LastDispatched,source.Child);
@@ -226,44 +275,100 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                var errors=new List<string>();
+                Action<string,Action> restore=(name,action)=>{try{action();}catch(Exception error){errors.Add(name+":"+error.GetType().Name+":"+error.Message);}};
                 try
                 {
-                    _expandedSummoningPlayerPathCaptureActive=false;hooks.UnpatchAll(hooks.Id);
-                    if(game.SelectedAbilityHandler?.Ability!=null && ReferenceEquals(game.SelectedAbilityHandler.Ability,ElementalSourceChooserRuntime.LastDispatched))
+                    _expandedSummoningPlayerPathCaptureActive=false;
+                    restore("capture-hooks",()=>hooks.UnpatchAll(hooks.Id));
+                    restore("owned-targeting",()=>{
+                        var ability=game.SelectedAbilityHandler?.Ability;
+                        if(ability==null)return;
+                        if(!mode.Current || !uiOwned() || !ownedDispatched.Contains(ability))
+                            throw new InvalidOperationException("Foreign targeting is not dropped.");
                         game.SelectedAbilityHandler.DropAbility();
-                    if(ownedSelector!=null && ReferenceEquals(bar.SelectorVm.Value,ownedSelector))
-                        typeof(ActionBarVM).GetMethod("HideSelectorVm",Cleanup2Fields).Invoke(bar,null);
-                    if(typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service) is SpellBookVM vm &&
-                        ReferenceEquals(vm.UnitEntity.Value,fixture.Caster))vm.Back();
-                    if(added){player.PartyCharacters.Remove(fixture.Caster);player.InvalidateCharacterLists();player.UpdateCharacterLists();}
-                    bool selectionRestored=selectionState.Restore(fixture);
-                    bool restored=player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
+                    });
+                    restore("owned-selector",()=>{
+                        rememberSelector();
+                        var live=bar.SelectorVm.Value;if(live==null)return;
+                        if(!mode.Current || !selectorInputOwned())
+                            throw new InvalidOperationException("Foreign or unproved selector/input layer is not closed.");
+                        // Native decline restores selector tooltip/active
+                        // bookkeeping as well as disposing/unbinding its view.
+                        // The current VM may be newer than the caller's last
+                        // assignment after a helper yielded or threw.
+                        live.OnDecline();
+                        if(bar.SelectorVm.Value!=null || !GamePad.Instance.Layers.SequenceEqual(selectorBaseLayers))
+                            throw new InvalidOperationException("Owned native selector did not restore the captured input-layer stack.");
+                    });
+                    restore("owned-spellbook",()=>{
+                        var vm=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service) as SpellBookVM;
+                        if(vm==null)return;
+                        if(!uiOwned() || !ReferenceEquals(vm.UnitEntity.Value,fixture.Caster))
+                            throw new InvalidOperationException("Foreign character-service spellbook is not closed.");
+                        vm.Back();
+                    });
+                    bool untouched=player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
+                        ReferenceEquals(selection.CurrentSelectUnitValue,current);
+                    bool authority=ReferenceEquals(Game.Instance,game) && ReferenceEquals(UnitSelectionManager.Instance,selection) &&
+                        ReferenceEquals(GamePad.Instance,gamepad) && bar.SelectorVm.Value==null &&
+                        typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null &&
+                        game.UI.TooltipsController.ContextTooltipData==null && game.SelectedAbilityHandler?.Ability==null && (untouched || uiOwned());
+                    bool selectionRestored=false;
+                    if(!authority)errors.Add("Foreign native console owner; original party/selection is not overwritten.");
+                    else
+                    {
+                        restore("owned-party-entry",()=>{if(added){player.PartyCharacters.Remove(fixture.Caster);player.InvalidateCharacterLists();player.UpdateCharacterLists();}});
+                        restore("selection",()=>{selectionRestored=selectionState.Restore(fixture);if(!selectionRestored)throw new InvalidOperationException(selectionState.Outcome);});
+                    }
+                    bool restored=errors.Count==0 && player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(selection.CurrentSelectUnitValue,current) && original.All(value=>value.Unchanged()) && originalPins.All(value=>value.IsRestored()) &&
                         GamePad.Instance.Layers.SequenceEqual(originalLayers) && selectionRestored;
                     Cleanup2Check("elemental-console-native-ui-restored",restored,new JObject { ["partyExact"]=player.Party.SequenceEqual(party),
                         ["selectionExact"]=selection.SelectedUnits.SequenceEqual(selected),["currentUnitExact"]=ReferenceEquals(selection.CurrentSelectUnitValue,current),
                         ["originalInputsExact"]=original.All(value=>value.Unchanged()),["pinsExact"]=originalPins.All(value=>value.IsRestored()),
                         ["nativeSelectionRestoration"]=selectionState.Describe(),
-                        ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(originalLayers) },
+                        ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(originalLayers),["restorationAuthority"]=authority,
+                        ["ownedSelectorContexts"]=ownedContexts.Count,["ownedNativeSelectorTokens"]=ownedSelectors.Count,
+                        ["locallyDispatchedChildReferences"]=ownedDispatched.Count,["errors"]=new JArray(errors) },
                         "All original native party/selection/source budgets/pins and controller input layers restore before exiting the owned Default scope.");
-                    if(!restored)throw new InvalidOperationException("Original console UI restoration is unverified.");
+                    if(!restored)throw new InvalidOperationException("Original console UI restoration is unverified: "+string.Join("|",errors.ToArray()));
                 }
                 finally{try{screens.Dispose();}finally{mode.Dispose();}}
             }
         }
 
-        private IEnumerable<int> Cleanup2ConsoleChoose(ActionBarVM owner,Func<ElementalConsoleNode,bool> predicate,bool use)
+        private IEnumerable<int> Cleanup2ConsoleChoose(ActionBarVM owner,Func<ElementalConsoleNode,bool> predicate,bool use,
+            Func<bool> uiOwned,Func<bool> selectorInputOwned,Action rememberSelector,
+            ICollection<Kingmaker.UnitLogic.Abilities.AbilityData> ownedDispatched)
         {
             var model=owner.SelectorVm.Value;var context=ElementalSourceChooserConsole.Context(model);
-            if(context==null || !context.Current)throw new InvalidOperationException("Exact native console context absent before input.");
+            rememberSelector();
+            if(context==null || !context.Current || !uiOwned() || !selectorInputOwned() || Game.Instance.SelectedAbilityHandler?.Ability!=null)
+                throw new InvalidOperationException("Exact owned native console context/input layer absent before input.");
             var item=model.ItemVms.Single(value=>value.MechanicActionBarSlot is ElementalConsoleNode node && predicate(node));
             var view=context.BoundView;
             var row=view.GetComponentsInChildren<ActionBarSelectorItemView>(false).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),item));
             var navigation=(ConsoleNavigationBehavior)typeof(ActionBarSelectorView).GetField("m_NavigationBehavior",Cleanup2Fields).GetValue(view);
             if(!navigation.SelectEntityManually(row) || !ReferenceEquals(navigation.GetCurrentSelectedEntity(),row))
                 throw new InvalidOperationException("Actual native console row did not accept navigation focus.");
-            InvokeTeleportGamepadInput(view,use?"<GetInputLayer>b__11_2":"<GetInputLayer>b__11_0");
-            for(int frame=0;frame<5;frame++)yield return 0;
+            try
+            {
+                if(use && item.MechanicActionBarSlot is ElementalConsoleNode dispatchNode && dispatchNode.Source!=null)
+                    ownedDispatched.Add(dispatchNode.Source.Child);
+                InvokeTeleportGamepadInput(view,use?"<GetInputLayer>b__11_2":"<GetInputLayer>b__11_0");
+                // Capture the new positive context synchronously, before the
+                // caller can fail during this helper's yielded native frames.
+                rememberSelector();
+                for(int frame=0;frame<5;frame++)
+                {
+                    if(!uiOwned() || !Cleanup2NoNarrativeOverlay() || (!use && !selectorInputOwned()))
+                        throw new InvalidOperationException("Native console navigation lost its owned context/input layer.");
+                    yield return 0;
+                    rememberSelector();
+                }
+            }
+            finally{rememberSelector();}
         }
 
         private IEnumerable<int> Cleanup2ConsolePreparation(ExpandedSummoningCorrectionFixture fixture,Spellbook book,
