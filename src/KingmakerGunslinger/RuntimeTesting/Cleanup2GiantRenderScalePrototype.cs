@@ -306,6 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Kingmaker.Visual.UnitMultiHighlight _ordinaryHighlighter;
         private HighlightingSystem.Highlighter _ordinaryReceiverOwner;
         private bool _rendererCacheRegistered, _nativeVisibilityObserved, _nativeVisible;
+        private readonly Dictionary<Renderer, bool> _nativeVisibilityByRenderer = new Dictionary<Renderer, bool>();
         private int _nativeVisibilityWrites, _highlightRefreshes, _retainedRendererCacheReferences;
         private bool _sourceStateRestored;
         private bool _highlightRetirementReady;
@@ -1043,22 +1044,35 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private bool ExpectedNativeEnabled(Renderer renderer, bool intake)
-        { return _production && _nativeVisibilityObserved && _nativeRendererCacheBefore.Contains(renderer) ? _nativeVisible : intake; }
+        { return _production ? GiantSummonNativeVisibilityRecord.Expected(_nativeVisibilityByRenderer, renderer, intake) : intake; }
+
+        // Record what the installed fader actually wrote: enabled = visible on
+        // every live entry of the view's current list. Only captured originals
+        // that list contained change their authentic state.
+        private void RecordNativeVisibility(List<Renderer> written, bool visible)
+        {
+            _nativeVisibilityObserved = true; _nativeVisible = visible; _nativeVisibilityWrites++;
+            GiantSummonNativeVisibilityRecord.Record(_nativeVisibilityByRenderer, _nativeRendererCacheBefore, written,
+                renderer => renderer != null, visible);
+        }
 
         internal static void NativeVisibilityChanged(EntityFader fader, bool visible)
         {
             UnitEntityView view = fader == null ? null : fader.GetComponent<UnitEntityView>();
             if (view == null || !ReferenceEquals(view.GetComponent<EntityFader>(), fader)) return;
+            List<Renderer> written = view.Renderers;
             foreach (var owner in view.GetComponentsInChildren<Cleanup2GiantRenderScalePrototype>(true).Where(value =>
                 value != null && value._production && !value._disposed && value._committed && value._rendererCacheRegistered && ReferenceEquals(value._view, view)))
             {
                 try
                 {
                     // The installed fader has just written this exact cached
-                    // list. Validate every non-visibility field before taking
-                    // responsibility for its demonstrated enabled transition.
+                    // list. Record that authentic transition first: if an
+                    // unrelated validation below refuses ownership, cleanup
+                    // must restore displaced originals to this write, never
+                    // reverse the native hide/show that just completed.
+                    owner.RecordNativeVisibility(written, visible);
                     owner.RequireSourceIdentity(true, visible);
-                    owner._nativeVisibilityObserved = true; owner._nativeVisible = visible; owner._nativeVisibilityWrites++;
                     foreach (Skin skin in owner._skins.Where(value => value.Cloth != null)) skin.Source.enabled = false;
                     foreach (StaticMesh mesh in owner._statics) mesh.Source.enabled = false;
                     owner.RequireSourceIdentity(true);
@@ -1495,9 +1509,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // bone/root/bounds fields on the unchanged native mesh.
                     if (skin.Cloth != null)
                     {
-                        if (!skin.Source.enabled && Same(skin.Source.bones, skin.Bones) && skin.Source.rootBone == skin.RootBone)
-                            skin.Source.enabled = ExpectedNativeEnabled(skin.Source, skin.Enabled);
-                        else _restoreIssues.Add("foreign-cloth-renderer-state:" + skin.Source.GetInstanceID());
+                        // A refused native show already left the original at
+                        // its authentic state; there is nothing to restore.
+                        bool expected = ExpectedNativeEnabled(skin.Source, skin.Enabled);
+                        if (!Same(skin.Source.bones, skin.Bones) || skin.Source.rootBone != skin.RootBone)
+                            _restoreIssues.Add("foreign-cloth-renderer-state:" + skin.Source.GetInstanceID());
+                        else if (!skin.Source.enabled) skin.Source.enabled = expected;
+                        else if (!expected) _restoreIssues.Add("foreign-cloth-renderer-state:" + skin.Source.GetInstanceID());
                     }
                     else
                     {
@@ -1518,9 +1536,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     if (mesh.Source == null) continue;
-                    if (mesh.Filter != null && mesh.Filter.sharedMesh == mesh.Mesh && Same(mesh.Source.sharedMaterials, mesh.Materials) && !mesh.Source.enabled)
-                        mesh.Source.enabled = ExpectedNativeEnabled(mesh.Source, mesh.Enabled);
-                    else _restoreIssues.Add("foreign-static-renderer:" + mesh.Source.GetInstanceID());
+                    bool expected = ExpectedNativeEnabled(mesh.Source, mesh.Enabled);
+                    if (mesh.Filter == null || mesh.Filter.sharedMesh != mesh.Mesh || !Same(mesh.Source.sharedMaterials, mesh.Materials))
+                        _restoreIssues.Add("foreign-static-renderer:" + mesh.Source.GetInstanceID());
+                    else if (!mesh.Source.enabled) mesh.Source.enabled = expected;
+                    else if (!expected) _restoreIssues.Add("foreign-static-renderer:" + mesh.Source.GetInstanceID());
                 }
                 catch (Exception error) { _restoreIssues.Add("static:" + error.GetType().Name + ":" + error.Message); }
             // Disable only owned solver/renderers before deferred destruction.

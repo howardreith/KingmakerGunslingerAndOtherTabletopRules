@@ -172,6 +172,34 @@ namespace KingmakerGunslinger.DomainTests
                 "Storm and Hill art references must retain their selected physical-height relationship.");
         }
 
+        internal static void RefusedNativeHideRestoresThatHideNotThePreviousState()
+        {
+            object body = new object(), cape = new object(), weapon = new object(), destroyed = new object(), foreign = new object();
+            object[] captured = { body, cape, weapon, destroyed };
+            var record = new System.Collections.Generic.Dictionary<object, bool>();
+            Func<object, bool> live = value => !ReferenceEquals(value, destroyed);
+            Assertions.True(GiantSummonNativeVisibilityRecord.Expected(record, cape, true),
+                "Before any native write an original keeps its intake state.");
+            object[] cache = { body, cape, weapon, foreign, destroyed };
+            GiantSummonNativeVisibilityRecord.Record(record, captured, cache, live, true);
+            // The native fader hides the giant; an unrelated validation refuses
+            // afterwards. Cleanup must restore that hide, never the earlier show.
+            GiantSummonNativeVisibilityRecord.Record(record, captured, cache, live, false);
+            foreach (object value in new[] { body, cape, weapon })
+                Assertions.False(GiantSummonNativeVisibilityRecord.Expected(record, value, true),
+                    "Every original the native hide wrote must be restored hidden, including displaced cape and static weapon sources.");
+            Assertions.True(GiantSummonNativeVisibilityRecord.Expected(record, destroyed, true),
+                "A destroyed entry is skipped by the native writer and keeps its intake state.");
+            Assertions.False(record.ContainsKey(foreign), "A renderer outside the captured originals is never recorded.");
+            // A replaced or edited list that omits the cape did not write it.
+            GiantSummonNativeVisibilityRecord.Record(record, captured, new[] { body, weapon }, live, true);
+            Assertions.True(GiantSummonNativeVisibilityRecord.Expected(record, body, false), "A written original follows the latest native show.");
+            Assertions.False(GiantSummonNativeVisibilityRecord.Expected(record, cape, true),
+                "An original absent from the written list keeps its last authentic native write.");
+            GiantSummonNativeVisibilityRecord.Record(record, captured, null, live, true);
+            Assertions.False(GiantSummonNativeVisibilityRecord.Expected(record, cape, true), "A missing written list records nothing.");
+        }
+
         private static GiantSummonHeightCalibration Calibration(string key, GiantPresentationScale baseline)
         { return new GiantSummonHeightCalibration(key, "synthetic-prefab", baseline,
             3f, 1.8f, 6f, "synthetic-test-only"); }
