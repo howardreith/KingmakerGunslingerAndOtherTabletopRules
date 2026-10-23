@@ -2256,7 +2256,7 @@ function Test-KmgCleanup2ReviewPhaseScope {
 function Test-KmgCleanup2ModuleOffScope {
     param([string]$Scenario,[hashtable]$Parameters)
     return (Test-KmgCleanup2ReviewPhaseScope -Scenario $Scenario -Parameters $Parameters) -and
-        $Parameters.reviewPhase -cin @('elementals-off','giants-off')
+        $Parameters.reviewPhase -cin @('elementals-off','giants-off','elementals-learning','elementals-console')
 }
 
 function Test-KmgSprint27ReviewPhaseScope {

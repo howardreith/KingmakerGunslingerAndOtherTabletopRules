@@ -648,12 +648,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (anchor.node == null || !anchor.node.Walkable)
                 throw new InvalidOperationException(
                     "Ungulate art review has no walkable party anchor.");
-            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
-                value != null && value.IsInGame).ToArray();
-            // Save-free callers own a caster without putting it in the human
-            // party. Use that exact anchor for separation rather than treating
-            // an empty party as zero clearance at every candidate point.
-            if (party.Length == 0) party = new[] { anchorCaster };
+            // The save-free caster is separate from the native anchor party.
+            // Review33 selected a floor point occupied by that caster because
+            // only an EMPTY party included it; every subsequent walking lane
+            // correctly refused the occupied origin. Preserve both sets.
+            UnitEntityData[] party = Game.Instance.Player.Party.Concat(new[] { anchorCaster })
+                .Where(value => value != null && value.IsInGame).Distinct().ToArray();
             Vector3 selected = Vector3.zero;
             int bestClearance = -1, candidates = 0;
             float bestPartyGap = float.MaxValue;
@@ -1870,7 +1870,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         first.clampedPosition+Vector3.up*1.2f,last.clampedPosition+Vector3.up*1.2f,0))
                         refusal="native-geometry-path-obstructed";
                 }
-                string blockingUnit=null;
+                string blockingUnit=null; JObject blockingFootprint=null;
                 if(refusal==null)
                 foreach(var obstacle in obstacles)
                 {
@@ -1878,12 +1878,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     float fraction=Mathf.Clamp01(Vector3.Dot(relative,delta)/delta.sqrMagnitude);
                     float gap=(relative-delta*fraction).magnitude;
                     if(!Cleanup2Finite(gap) || gap<footprint+obstacle.Corpulence)
-                    {refusal="native-actor-footprint-obstruction";blockingUnit=obstacle.UniqueId;break;}
+                    {refusal="native-actor-footprint-obstruction";blockingUnit=obstacle.UniqueId;
+                        blockingFootprint=new JObject { ["position"]=SurveyVector(obstacle.Position),
+                            ["nativeCorpulence"]=obstacle.Corpulence,["closestPlanarGap"]=gap,
+                            ["requiredPlanarGap"]=footprint+obstacle.Corpulence,
+                            ["exactFixtureCaster"]=ReferenceEquals(obstacle,_sprint25Fixture.Caster) };break;}
                 }
                 attempts.Add(new JObject { ["index"]=index,["requested"]=SurveyVector(requested),
                     ["requestedPlanarMetres"]=requestedLength,
                     ["nativeEndpoint"]=SurveyVector(endpoint.clampedPosition),["planarMetres"]=delta.magnitude,
-                    ["supportCount"]=supports,["refusal"]=refusal,["blockingUnit"]=blockingUnit });
+                    ["supportCount"]=supports,["refusal"]=refusal,["blockingUnit"]=blockingUnit,
+                    ["blockingFootprint"]=blockingFootprint });
                 if(refusal==null)selected=endpoint.clampedPosition;
             }
             var receipt=new JObject { ["outward"]=outward,["unit"]=unit.UniqueId,["origin"]=SurveyVector(origin),

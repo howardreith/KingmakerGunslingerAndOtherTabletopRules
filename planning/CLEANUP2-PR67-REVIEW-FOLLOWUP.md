@@ -6,6 +6,45 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review33 actual production giant lineup and remaining corrections
+
+Frozen `4c10688600cd4aab198d2603bc641cb812a3cc43`, package
+`b7add19581526b3460b39fa9ca56b94dd7bed87906dfcb2359b9f03f20b841d4`, DLL
+`64c015292bfec661f9ce69e2d355394fdc5c9e7f60846339b14e239809fd6588`, MVID
+`4ab869c4-f328-422b-8378-26c91527359e`. Exact production compilation,
+20 focused cases (1.6s) and22 installed Harmony targets pass.
+
+The integrator inspected the production six-family lineup: all heads, bodies
+and weapons fit; Storm is largest and Hill smallest. Palette, private scale
+ownership, native roots/colliders, visibility and highlight checks pass. The
+existing gallery contains79 verified originals, with that lineup and the
+explicitly FAILED Crab diagnostic first. No owner acceptance is inferred.
+
+| Phase / raw evidence prefix | Result | Demonstrated boundary and correction |
+| --- | --- | --- |
+| Creature commands `20261023T0350574821093Z` | 14 PASS/3 FAIL;62.989s | Whole Crab and target visible; no attack issued. Bounded rays identify low claw/leg points below the same sloping ground supporting the actor. New observation records measured submerged contact UNKNOWN while retaining full framing and all above-ground blockers. Motion/contact still requires inspection. |
+| Menu adapters `20261023T0358217054900Z` | 13 PASS/4 FAIL;98.544s | Three SM Horse quantity rows retain exact source/label/approved CPU texture pixels. Actual PNG still shows beige bust; bounded layer/capture-frame diagnosis added. Native incidental hover retains ContextTooltipData; teardown now closes only an exact owned standard trigger/source, preserving foreign refusal. Druid/alternate routes unreached. |
+| Giant lineup `20261023T0401277325850Z` | 73 PASS/2 FAIL;102.927s | Clear production scale lineup inspected. Storm bones move but cape displacement is zero before camera positioning; move observation under the existing held camera with actual visibility/clock/driver evidence. Scaled idle ranges normalize to.0288-.0393 within the unchanged.05 native envelope; require exact owned factor and retain raw measurements. |
+| Focused pin `20261023T0404475780691Z` | 17 PASS/3 FAIL;75.020s | Favorite exception and original pinned-child rebuild pass. Hydration rejects a retained AutoCommit controller whose Preview aliases its destroyed Unit. Native constructor explicitly uses this alias; corrected admission requires its exact destroyed/viewless/world-absent state and unchanged context/idle producer. Console/learning repetition of this known guard was skipped. |
+| Girallon/Stegosaurus `20261023T0408562371083Z` | 26 PASS/5 FAIL;87.482s | Both ordinary native attacks/rules/costs pass. Art placement omitted its separate caster whenever a native party existed; actual stills show overlap and all walking lanes correctly refuse. Placement now always includes the exact caster. No path/footprint guard is weakened; overlapped stills are not art acceptance. |
+
+All five games exited and restored their fresh95-original save inventories,
+installation and settings exactly. Compatibility receipts in table order:
+`compat-20261023T035033Z-b9ef36a33123`,
+`compat-20261023T035753Z-3fccbf0438b9`,
+`compat-20261023T040101Z-07324a7aea78`,
+`compat-20261023T040421Z-63a02dd23bf8`,
+`compat-20261023T040833Z-e737c51fe7c7`. Last verification
+**04:10:37.4010020UTC**, window12 **25m37.401s** from03:45:00UTC.
+Final90-minute completion qualification has not started. The next coherent
+input also adds a real known-spontaneous Elemental cast/debit case, exact ON
+source-node native pinning, and reuses existing learning/controller phases under
+fresh OFF. Coherent exact-reference compilation passes (04:25:48-04:25:59UTC).
+Twenty-six focused OFF scope and early-wrapper refusal cases pass without any
+package/game/save access. The initial direct shell attempt stopped at execution
+policy; the explicit process Bypass rerun passes. Native execution is pending;
+all original FAILs remain. Development window13 starts04:25:48UTC, ceiling30m.
+
 ### Review32 readable console sources and narrowed native failures
 
 Frozen `e5b35198e8797ff12f32536c0c828b6e7e2c7de0`, package

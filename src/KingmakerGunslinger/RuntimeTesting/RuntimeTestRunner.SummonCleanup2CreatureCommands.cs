@@ -565,7 +565,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!found || hit.collider == null || !Cleanup2Finite(hit.point)) return false;
             root = new Vector3(graphPosition.x, hit.point.y + actor.FlyHeight, graphPosition.z);
             evidence = new JObject { ["graphSupport"] = SurveyVector(graphPosition), ["nativeGroundRoot"] = SurveyVector(root),
-                ["groundHit"] = SurveyVector(hit.point), ["collider"] = hit.collider.name, ["colliderInstance"] = hit.collider.GetInstanceID(),
+                ["groundHit"] = SurveyVector(hit.point), ["groundHitNormal"] = SurveyVector(hit.normal),
+                ["collider"] = hit.collider.name, ["colliderInstance"] = hit.collider.GetInstanceID(),
                 ["nativeRayOriginUp"] = rayOffset, ["nativeRayRange"] = 100f, ["nativeGroundMask"] = groundMask,
                 ["nativeFlyHeight"] = actor.FlyHeight, ["contract"] = "Read-only standing ForcePlaceAboveGround06001848 ray sequence; placement endpoints separately confirmed against actual Translocate output." };
             return Cleanup2Finite(root);

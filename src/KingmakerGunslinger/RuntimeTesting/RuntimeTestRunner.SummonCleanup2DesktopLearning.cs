@@ -34,8 +34,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion || _request.Parameters == null ||
                 _request.Parameters.Count != 1 || (string)_request.Parameters["reviewPhase"] != "elementals-learning" ||
-                !ElementalSourceChooserRuntime.Active)
-                throw new InvalidOperationException("Exact active automatic-exit desktop learning phase required.");
+                !Cleanup2LearningModuleState(Cleanup2OffState()))
+                throw new InvalidOperationException("Exact stable ON or fresh-OFF automatic-exit desktop learning phase required.");
+            bool off = Cleanup2OffState();
             var game = Game.Instance; var ui = game.UI; var player = game.Player; var group = GroupController.Instance;
             var build = ui.CharacterBuildController;
             if (game.IsControllerGamepad || !Cleanup2NoNarrativeOverlay() || group == null || ui.SelectionManagerPC == null ||
@@ -66,9 +67,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 foreach (int frame in Cleanup2DesktopPrepareAndUndo(fixture, book, screens)) yield return frame;
-                if (!mode.Current || watch.Elapsed.TotalSeconds > 120) throw new InvalidOperationException("Desktop learning phase boundary expired or changed.");
+                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 120) throw new InvalidOperationException("Desktop learning phase boundary expired or changed.");
                 foreach (int frame in Cleanup2DesktopLearnAndCancel(fixture, book, screens, levelUpIntake)) yield return frame;
-                if (!mode.Current || watch.Elapsed.TotalSeconds > 180) throw new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope.");
+                if (!mode.Current || !Cleanup2LearningModuleState(off) || watch.Elapsed.TotalSeconds > 180) throw new InvalidOperationException("Desktop learning phase exceeded its bounded native UI scope.");
             }
             finally
             {
@@ -95,13 +96,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool exact = errors.Count == 0 && player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(group.GetCurrentCharacter(), originalGroup) && inputs.All(value => value.Unchanged()) && bars.All(value => value.IsRestored()) &&
                         !build.IsShow && build.LevelUpController == null && levelUpRestored && ReferenceEquals(build.Unit, buildUnit) &&
-                        !ui.ServiceWindow.WindowTabs.IsShow && !ui.SpellBookController.IsShow && !DialogMessageBox.Instance.IsShown;
+                        !ui.ServiceWindow.WindowTabs.IsShow && !ui.SpellBookController.IsShow && !DialogMessageBox.Instance.IsShown && Cleanup2LearningModuleState(off);
                     Cleanup2Check("elemental-desktop-learning-restored", exact, new JObject {
                         ["partyExact"] = player.Party.SequenceEqual(party), ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
                         ["originalSourcesAndPinsExact"] = inputs.All(value => value.Unchanged()) && bars.All(value => value.IsRestored()),
                         ["creatorClosed"] = !build.IsShow && build.LevelUpController == null && levelUpRestored,
                         ["originalCompletedNativeControllerExact"] = levelUpReceipt,
-                        ["creatorUnitExact"] = ReferenceEquals(build.Unit, buildUnit), ["errors"] = new JArray(errors),
+                        ["creatorUnitExact"] = ReferenceEquals(build.Unit, buildUnit), ["errors"] = new JArray(errors), ["freshModuleOff"] = off,
                         ["scope"] = "Save-free native PC discovery, one pending original-source allocation/cancel and one original-source preparation/unprepare. No committed character, save hydration, console or casting claim." },
                         "Owned native screens close and original party, selection, creator owner, source objects and pins remain exact.");
                     if (!exact) throw new InvalidOperationException("Desktop learning restoration is unverified.");
@@ -109,6 +110,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 finally { try { screens.Dispose(); } finally { mode.Dispose(); } }
             }
         }
+
+        private bool Cleanup2LearningModuleState(bool off)
+        { return off ? Cleanup2OffState() : _context.FeatureModules.Active.ExpandedSummoning &&
+            ExpandedSummoningVisualVariantPatch.IsModuleActive && ElementalSourceChooserRuntime.Active; }
+
+        private static bool Cleanup2DesktopNoOwnedDisclosure(Component owner)
+        { return owner != null && !owner.GetComponentsInChildren<ElementalNativeSourceFold>(true).Any(value => value.HasFold); }
 
         private static Button Cleanup2DesktopDisclosure(Component owner)
         {
@@ -135,6 +143,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Cleanup2DesktopPrepareAndUndo(ExpandedSummoningCorrectionFixture fixture, Spellbook book, NativeIconScreenEvidence screens)
         {
+            bool off = Cleanup2OffState();
             var game = Game.Instance; var ui = game.UI; var controller = ui.SpellBookController;
             var sourceBlueprint = Cleanup2ElementalAbility(fixture, ElementalSourceChooserPolicy.Rank(2).Guid);
             if (!book.IsKnown(sourceBlueprint)) book.AddKnown(2, sourceBlueprint, true);
@@ -165,18 +174,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!ReferenceEquals(controller.CurrentSpellbook, book) || controller.CurrentBookLevel != 2 || controller.CurrentPageIndex <= previousPage)
                         throw new InvalidOperationException("Native PC pagination cannot reach the original source on its exact level.");
                 }
-                var header = Cleanup2DesktopDisclosure(view);
                 var nativeRows = view.GetComponentsInChildren<SpellItem>(true).Where(value => value.SpellData != null).ToArray();
                 var rowData = nativeRows.Select(value => value.SpellData).ToArray();
-                header.onClick.Invoke(); for (int frame = 0; frame < 4; frame++) yield return 0;
+                if (!off) { Cleanup2DesktopDisclosure(view).onClick.Invoke(); for (int frame = 0; frame < 4; frame++) yield return 0; }
                 bool disclosure = book.GetAllKnownSpells().SequenceEqual(known) && slots.Select(value => value.Spell).SequenceEqual(spells) &&
                     slots.Select(value => value.Available).SequenceEqual(available) && Cleanup2ElementalResources(fixture.Caster) == resources &&
-                    nativeRows.Select(value => value.SpellData).SequenceEqual(rowData);
+                    nativeRows.Select(value => value.SpellData).SequenceEqual(rowData) && Cleanup2LearningModuleState(off) &&
+                    (!off || Cleanup2DesktopNoOwnedDisclosure(view) && nativeRows.Any(value => ReferenceEquals(value.SpellData, source) && value.gameObject.activeInHierarchy));
                 Cleanup2Check("elemental-desktop-preparation-disclosure", disclosure, new JObject { ["source"] = sourceBlueprint.AssetGuid,
                     ["sourceBook"] = book.Blueprint.AssetGuid, ["knownObjectsExact"] = book.GetAllKnownSpells().SequenceEqual(known),
                     ["nativeRowAbilityReferencesExact"] = nativeRows.Select(value => value.SpellData).SequenceEqual(rowData),
                     ["slotsAndAvailabilityExact"] = slots.Select(value => value.Spell).SequenceEqual(spells) && slots.Select(value => value.Available).SequenceEqual(available),
-                    ["foldOutcome"] = ElementalNativeSourceFold.Outcome }, "Native PC source disclosure changes visibility without spending or replacing native source/preparation objects.");
+                    ["freshModuleOff"] = off, ["noOwnedDisclosure"] = off && Cleanup2DesktopNoOwnedDisclosure(view),
+                    ["foldOutcome"] = ElementalNativeSourceFold.Outcome }, "The native PC original source is visible without spending/replacing sources; fresh OFF has no owned disclosure.");
                 if (!disclosure) throw new InvalidOperationException("Native PC preparation disclosure changed source authority.");
                 var row = nativeRows.Single(value => ReferenceEquals(value.SpellData, source) && value.gameObject.activeInHierarchy);
                 row.Toggle.isOn = true;
@@ -233,6 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2DesktopLearnAndCancel(ExpandedSummoningCorrectionFixture fixture, Spellbook fixtureBook,
             NativeIconScreenEvidence screens, Cleanup2SourcesLevelUpIntake levelUpIntake)
         {
+            bool off = Cleanup2OffState();
             var game = Game.Instance; var ui = game.UI; var build = ui.CharacterBuildController; var originalBuildUnit = build.Unit;
             var globalBefore = ui.LevelUpController; BlueprintUnit blueprint = null; UnitEntityData unit = null;
             LevelUpController backend = null; int commits = 0; bool presented = false;
@@ -284,7 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Func<bool> ownsCreator = () => presented && ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) &&
                     ReferenceEquals(ui.CharacterBuildController, build) && build.IsShow && ReferenceEquals(build.Unit, unit.Descriptor) &&
                     ReferenceEquals(build.LevelUpController, backend) && ReferenceEquals(ui.LevelUpController, backend) &&
-                    ReferenceEquals(backend.Unit, unit.Descriptor) && backend.Preview?.Unit != null && !backend.Preview.Unit.Destroyed;
+                    ReferenceEquals(backend.Unit, unit.Descriptor) && backend.Preview?.Unit != null && !backend.Preview.Unit.Destroyed && Cleanup2LearningModuleState(off);
                 for (int frame = 0; frame < 15; frame++) yield return 0;
                 if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before class/phase input.");
                 build.SetClass(wizard); CompleteTeleportLevelUpPrerequisites(build);
@@ -307,19 +318,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.GetComponentsInChildren<CharBuildSelectorItem>(true).Any(candidate => ReferenceEquals(candidate.BlueprintAbility, source)));
                 var pending = Cleanup2DesktopPending(selection); var nativeRows = layer.SelectorItems.ToArray();
                 var blueprints = nativeRows.Select(value => value.BlueprintAbility).ToArray(); var callbacks = nativeRows.Select(Cleanup2DesktopNativeCallback).ToArray();
-                var header = Cleanup2DesktopDisclosure(layer);
                 if (!ownsCreator()) throw new InvalidOperationException("Owned native PC creator changed before source disclosure.");
-                header.onClick.Invoke(); for (int frame = 0; frame < 4; frame++) yield return 0;
+                if (!off) { Cleanup2DesktopDisclosure(layer).onClick.Invoke(); for (int frame = 0; frame < 4; frame++) yield return 0; }
                 bool expanded = Cleanup2DesktopPending(selection).SequenceEqual(pending) && !book.IsKnown(source) &&
                     layer.SelectorItems.SequenceEqual(nativeRows) && nativeRows.Select(value => value.BlueprintAbility).SequenceEqual(blueprints) &&
                     nativeRows.Select((value, index) => ReferenceEquals(Cleanup2DesktopNativeCallback(value), callbacks[index])).All(value => value) &&
-                    book.GetAllKnownSpells().SequenceEqual(known) && Cleanup2ElementalResources(unit) == resources;
+                    book.GetAllKnownSpells().SequenceEqual(known) && Cleanup2ElementalResources(unit) == resources &&
+                    (!off || Cleanup2DesktopNoOwnedDisclosure(layer) && nativeRows.Any(value => ReferenceEquals(value.BlueprintAbility, source) && value.gameObject.activeInHierarchy));
                 Cleanup2Check("elemental-desktop-learning-disclosure-no-allocation", expanded, new JObject { ["source"] = source.AssetGuid,
                     ["nativeSelectionObjectExact"] = ReferenceEquals(build.Spells.CurrentSpellSelectionData, selection), ["pendingExact"] = Cleanup2DesktopPending(selection).SequenceEqual(pending),
                     ["nativeRowAndCallbackReferencesExact"] = layer.SelectorItems.SequenceEqual(nativeRows) &&
                         nativeRows.Select((value, index) => ReferenceEquals(Cleanup2DesktopNativeCallback(value), callbacks[index])).All(value => value),
-                    ["normalExtraMaxLevel"] = selection.ExtraMaxLevel, ["extraByStat"] = selection.ExtraByStat, ["foldOutcome"] = ElementalNativeSourceFold.Outcome },
-                    "Real PC original-source disclosure reveals the existing selector rows without replacing callbacks, consuming a pending learning choice or altering the original actor.");
+                    ["normalExtraMaxLevel"] = selection.ExtraMaxLevel, ["extraByStat"] = selection.ExtraByStat, ["foldOutcome"] = ElementalNativeSourceFold.Outcome,
+                    ["freshModuleOff"] = off, ["noOwnedDisclosure"] = off && Cleanup2DesktopNoOwnedDisclosure(layer) },
+                    "Real PC original-source rows preserve callbacks/allocation; fresh OFF keeps the original row visible without an owned disclosure.");
                 if (!expanded) throw new InvalidOperationException("Native PC learning disclosure changed allocation authority.");
                 Func<CharBuildSelectorItem> currentRow = () => layer.GetComponentsInChildren<CharBuildSelectorItem>(true).SingleOrDefault(value =>
                     value.gameObject.activeInHierarchy && ReferenceEquals(value.BlueprintAbility, source) && value.Toggle.interactable);
