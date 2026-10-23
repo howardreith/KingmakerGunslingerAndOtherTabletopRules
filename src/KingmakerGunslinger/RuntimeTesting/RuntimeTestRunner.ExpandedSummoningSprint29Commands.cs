@@ -115,18 +115,35 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         UnitEntityData target = fixture.Hostile;
                         ResetExpandedSummoningHostile(fixture);
-                        Vector3 far; string lane, direction;
-                        Vector3 origin = Sprint24AiCombatLane(fixture.Caster,
-                            owner, target, 8f, out far, out lane,
-                            out direction);
-                        Vector3 forward = (far - origin).normalized;
-                        PlaceExpandedSummoningUnit(owner, origin);
-                        float separation = owner.Corpulence +
-                            target.Corpulence + .8f;
-                        PlaceExpandedSummoningUnit(target,
-                            spec.Set == 2 || spec.Key == "ettin" &&
-                                spec.Set == 1 ? far :
-                                origin + forward * separation);
+                        string lane, direction; JObject cleanup2Lane = null;
+                        if (IsSummonCleanup2Review && spec.Key == "ettin" && spec.Name == "flail-full")
+                        {
+                            // Oleg has overlapping native graphs. Reuse the
+                            // qualified query-owned walking constraint and
+                            // actual post-placement range/LOS proof instead of
+                            // treating an unconstrained nearest node as ground.
+                            // Both cases are still RTWP here; TB admission is
+                            // deliberately performed only after placement.
+                            cleanup2Lane = Cleanup2CrabAttackLane(fixture, owner, target,
+                                "ettin-flail-full-" + (turnBased ? "turn" : "rtwp"));
+                            lane = "cleanup2-native-connected-walking-graph-and-range";
+                            direction = (string)cleanup2Lane["direction"];
+                        }
+                        else
+                        {
+                            Vector3 far;
+                            Vector3 origin = Sprint24AiCombatLane(fixture.Caster,
+                                owner, target, 8f, out far, out lane,
+                                out direction);
+                            Vector3 forward = (far - origin).normalized;
+                            PlaceExpandedSummoningUnit(owner, origin);
+                            float separation = owner.Corpulence +
+                                target.Corpulence + .8f;
+                            PlaceExpandedSummoningUnit(target,
+                                spec.Set == 2 || spec.Key == "ettin" &&
+                                    spec.Set == 1 ? far :
+                                    origin + forward * separation);
+                        }
                         owner.SightCache.ClearIfNeeded();
                         target.SightCache.ClearIfNeeded();
                         var probe = new UnitAttack(target);
@@ -138,6 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             legal, new JObject { ["owner"] = owner.UniqueId,
                                 ["target"] = target.UniqueId,
                                 ["lane"] = lane, ["direction"] = direction,
+                                ["cleanup2ConstrainedLane"] = cleanup2Lane,
                                 ["distance"] = owner.DistanceTo(target),
                                 ["los"] = owner.HasLOS(target),
                                 ["inRange"] = probe.IsUnitEnoughClose,

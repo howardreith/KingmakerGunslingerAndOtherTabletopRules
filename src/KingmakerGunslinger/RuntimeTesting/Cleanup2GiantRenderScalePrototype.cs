@@ -858,9 +858,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (skin.Proxy == null || skin.Proxy.sharedMesh != skin.Mesh || !Same(skin.Proxy.sharedMaterials, skin.Materials) ||
                     !Same(skin.Proxy.bones, skin.AppliedBones) || skin.Proxy.rootBone != skin.AppliedRoot)
                     throw new InvalidOperationException("Owned cloth renderer palette/mesh/material changed.");
+            bool initializedSolver = committed || _clothInitializedBeforeSourceCommit;
             foreach (Cloth cloth in _ownedCloths)
-                if (cloth == null || !cloth.enabled || cloth.vertices.Any(value => !Finite(value)))
-                    throw new InvalidOperationException("Owned solver is missing, disabled or non-finite.");
+                if (cloth == null || cloth.enabled != initializedSolver ||
+                    (!initializedSolver && gameObject.activeInHierarchy) ||
+                    (initializedSolver && (!cloth.gameObject.activeInHierarchy || cloth.vertices.Any(value => !Finite(value)))))
+                    throw new InvalidOperationException("Owned solver phase contract failed: expected " +
+                        (initializedSolver ? "initialized-active-enabled-finite" : "prepared-inactive-disabled") + ".");
             foreach (StaticMesh mesh in _statics)
                 if (mesh.Proxy == null || !Same(mesh.Proxy.sharedMaterials, mesh.Materials) ||
                     mesh.Proxy.GetComponent<MeshFilter>().sharedMesh != mesh.Mesh)
