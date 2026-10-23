@@ -6,7 +6,46 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review41 results and review42 corrections (current, October 23)
+### Review42 results and review43 corrections (current, October 23)
+
+Frozen review42 source `a77e5e0c5f02db51c24fad23feaf6864583593ae`, fingerprint
+`f38c9e67bddbcbf01ea767a2ea0d7b2a399e860271b593b876d0b437207376a0`; package
+`9e146cb36b945764bed43c958f46008464409ab31558b9f24e6442d9d35468bd`, DLL
+`27676ee73c4e3fefec5f303b46bd4cc50a6b720912f605cc620ab919c2211ee0`, MVID
+`9551078c-4b2c-4ca2-9b75-8f3cb97e58a1`. One build (187.0s), 23 cases, gate 9/0,
+installed targets 37/37. Window23 ran 12:52:27 to 13:08:40 UTC (16m13s); every
+transaction restored normally.
+
+- Menu adapters **FAIL 75/1, 224.0s**, raw `20261023T1253535391208Z`: the tier-II
+  Monster Tactician route now passes row, hover and hover-close; the hover
+  screenshot was refused by a capture guard that admitted only the `tooltips`
+  phase.
+- Controller **FAIL 26/2, 185.8s**, raw `20261023T1258319569101Z`: the recorded state
+  shows the originally captured context unreleased but inert after close; its
+  lifetime `Update` cannot run on the inactive closed screen, so release happens at
+  the next native rebind. Retirement had been defined as `Released`.
+- Fresh-OFF controller **FAIL 25/1, 173.3s**, raw `20261023T1302330749576Z`: native
+  source rows (case-insensitive title), preparation/unprepare, OFF disposal,
+  Wizard-extra phase and learning pass; the virtual learning list had no active
+  row for the source without a disclosure.
+- Elementals OFF with alternate sources **FAIL 21/5, 201.4s**, raw
+  `20261023T1306429377262Z`: the native-only OFF popup admission and all four
+  native Small elemental choices pass. Labeled reads name the shared-surface
+  change: the Wizard list's ten `m_SpellsFiltered` cache instances, which KMG's
+  own Magic Circle/Shield Other/Teleportation publishers legitimately reset (list
+  arrays and content unchanged). The RDP pointer then left an incidental native
+  hover on another of the fixture caster's spell-tab rows; close admission
+  refused it as foreign, so fixture restoration was refused in-process.
+
+Review43 corrections (observer only): owned hover capture admits the
+`menu-adapters` and `alternate-console` hover phases; controller retirement is
+`!Current` with the native book/selection/service field gone (disposal still
+proven at rebind); fresh-OFF learning scrolls the virtual list with its own
+`TryScrollToChosenEntity`; popup-close hover ownership also admits the exact live
+trigger of the same fixture caster/book row in the enclosing native group; the
+OFF spell-list cache read compares content, not the rebuilt cache instance.
+
+### Review41 results and review42 corrections (October 23)
 
 Frozen review41 source `8a0d964517e367d997a3f863fc4b8882d84c88e8`, fingerprint
 `80b82d55e97690bbeedbfe849c86904b71dfbbc9d6281654105c471ffa0a246c`; package

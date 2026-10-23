@@ -288,16 +288,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool alreadyClosed = popup != null && !popup.gameObject.activeSelf && popupActiveField != null && popupSelectedField != null &&
                 popupSourceField != null && !(bool)popupActiveField.GetValue(popup) && popupSelectedField.GetValue(popup) == null &&
                 popupSourceField.GetValue(popup) == null && nativeSlots != null && nativeSlots.Count == 0;
-            var candidates = source == null ? new TooltipTrigger[0] : source.GetComponentsInChildren<TooltipTrigger>(true);
+            // Native42 OFF: the RDP pointer left an incidental hover on another
+            // of the fixture caster's own spell-tab rows. Search the enclosing
+            // native group too; such a row is owned only for the same caster/book.
+            var nativeGroup = source == null ? null : source.GetComponentInParent<ActionBarGroupElement>();
+            var candidates = source == null ? new TooltipTrigger[0] :
+                (nativeGroup != null ? (Component)nativeGroup : source).GetComponentsInChildren<TooltipTrigger>(true);
+            Func<TooltipTrigger, bool> popupChainRow = trigger => {
+                var row = trigger.GetComponentInParent<ActionBarSlot>();
+                var ability = row?.MechanicSlot?.GetContentData() as AbilityData;
+                return (ReferenceEquals(row, source) || (row != null && row.transform.IsChildOf(popup.transform))) &&
+                    (ReferenceEquals(ability, original) || ReferenceEquals(ability?.ConvertedFrom, original) ||
+                    ReferenceEquals(ability?.ConvertedFrom?.ConvertedFrom, original));
+            };
             var triggers = sourceExact && popupExact && context != null && activeField != null && showField != null && hideField != null ?
                 candidates.Where(trigger => {
                     var row = trigger.GetComponentInParent<ActionBarSlot>();
                     var ability = row?.MechanicSlot?.GetContentData() as AbilityData;
-                    bool ownRow = ReferenceEquals(row, source) || (row != null && row.transform.IsChildOf(popup.transform));
-                    bool chain = ReferenceEquals(ability, original) || ReferenceEquals(ability?.ConvertedFrom, original) ||
-                        ReferenceEquals(ability?.ConvertedFrom?.ConvertedFrom, original);
+                    bool fixtureRow = row != null && nativeGroup != null && row.transform.IsChildOf(nativeGroup.transform) && !row.transform.IsChildOf(popup.transform);
                     return trigger.gameObject.activeInHierarchy && trigger.isActiveAndEnabled && (bool)activeField.GetValue(trigger) &&
-                        ReferenceEquals(trigger.Data, context) && ReferenceEquals(context.AbilityData, ability) && ownRow && chain &&
+                        ReferenceEquals(trigger.Data, context) && ReferenceEquals(context.AbilityData, ability) && (popupChainRow(trigger) || fixtureRow) &&
                         ReferenceEquals(ability?.Caster, original.Caster) && ReferenceEquals(ability?.Spellbook, original.Spellbook) &&
                         showField.GetValue(trigger) == null && hideField.GetValue(trigger) == null;
                 }).ToArray() : new TooltipTrigger[0];
@@ -307,6 +317,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["contextAbility"] = context?.AbilityData?.Blueprint.AssetGuid,
                 ["contextIdentity"] = context == null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(context),
                 ["exactActiveStandardTriggerMatches"] = triggers.Length,
+                ["matchedHoverOwner"] = triggers.Length != 1 ? null : popupChainRow(triggers[0]) ? "popup-source-chain" : "fixture-caster-spell-row",
                 ["triggerCandidateCount"] = candidates.Length,
                 ["triggerCandidates"] = new JArray(candidates.Take(32).Select(trigger => {
                     var row = trigger.GetComponentInParent<ActionBarSlot>(); var ability = row?.MechanicSlot?.GetContentData() as AbilityData;

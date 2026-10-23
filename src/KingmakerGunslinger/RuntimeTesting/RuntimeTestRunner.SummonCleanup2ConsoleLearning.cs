@@ -210,15 +210,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             var bookField=typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields);
             Func<bool> headerBoundNow=()=>cleanupContext!=null && cleanupContext.View!=null &&
                 cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header));
-            // Native41: retirement is the released owned context with no native
-            // book, group selection or service field left; the closed screen's
-            // own object activity is recorded, not required.
+            // Native42: after close the owned context has no live authority
+            // (!Current) with the native book, group selection and service field
+            // gone. Its lifetime Update cannot run on the inactive closed screen,
+            // so Release/Dispose happen at the next native rebind, observed below.
             Func<bool> retiredNow=()=>owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
-                cleanupContext.Group.CurrentSelectedSpell==null && cleanupContext.Released && bookField.GetValue(service)==null;
+                cleanupContext.Group.CurrentSelectedSpell==null && !cleanupContext.Current && bookField.GetValue(service)==null;
             Func<JObject> retirementState=()=>new JObject {
                 ["ownedBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
                 ["nativeSelectionCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
-                ["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,["serviceBookFieldCleared"]=bookField.GetValue(service)==null,
+                ["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,["ownedContextLiveAuthority"]=cleanupContext!=null && cleanupContext.Current,
+                ["serviceBookFieldCleared"]=bookField.GetValue(service)==null,
                 ["viewActiveInHierarchy"]=cleanupContext!=null && cleanupContext.View!=null && cleanupContext.View.gameObject.activeInHierarchy,
                 ["viewModelStillDisposedGroup"]=cleanupContext!=null && cleanupContext.View!=null &&
                     ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group),
@@ -455,6 +457,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The real native console Wizard learning disclosure is focusable and expands original source VM references without allocating or consuming a learning choice.");
                 if(!expanded)throw new InvalidOperationException("Native console learning disclosure changed allocation authority.");
                 var source=authoritative.Single(value=>ReferenceEquals(value.Spell,legacy));
+                // Native42 fresh OFF: no disclosure places the source beside a
+                // header, so the virtual native list has no active row for it.
+                // Scroll with the list's own method; nothing is selected here.
+                if(!selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Any(value=>ReferenceEquals(value.GetViewModelClass(),source)))
+                {
+                    ElementalConsoleBookPresentation.LearningView.GetMethod("TryScrollToChosenEntity",Cleanup2Fields,null,
+                        new[]{typeof(CharGenSpellSelectorItemVM)},null).Invoke(selector,new object[]{source});
+                    for(int frame=0;frame<8;frame++)yield return 0;
+                }
                 var sourceRow=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),source));
                 if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before source allocation.");
                 detailNavigation.SetCurrentEntityManual(sourceRow);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
