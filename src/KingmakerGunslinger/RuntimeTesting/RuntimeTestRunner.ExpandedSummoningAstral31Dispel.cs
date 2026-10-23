@@ -115,6 +115,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.SightCache.ClearIfNeeded();
                 target.JoinCombat();
                 Game.Instance.Player.UpdateIsInCombat();
+                new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+                new Kingmaker.Controllers.Combat.UnitCombatPrepareController().Tick();
                 for (int frame = 0; frame < 4; frame++) yield return 0;
 
                 string prefix = ExpandedSummoningSpecialBuilder.Astral31Prefix;
@@ -243,10 +245,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 observed.Targets.Add(dismissalTarget);
                 UnitPartSummonedMonster dismissalSummon = dismissalTarget.Get<
                     UnitPartSummonedMonster>();
+                bool dismissalNativeKillAllowed = !Kingmaker.Designers.GameHelper
+                    .IsAttackingGreenNPC(dismissalOwner, dismissalTarget);
                 bool dismissalTargetReady = dismissalSummon != null &&
                     ReferenceEquals(dismissalSummon.Summoner, fixture.Hostile) &&
                     dismissalOwner.IsEnemy(dismissalTarget) &&
-                    dismissalTarget.IsEnemy(dismissalOwner);
+                    dismissalTarget.IsEnemy(dismissalOwner) &&
+                    dismissalNativeKillAllowed;
                 int evilBefore = Astral31DispelAttackAc(dismissalTarget,
                     dismissalOwner);
                 int goodBefore = Astral31DispelAttackAc(firstDispelOwner,
@@ -357,6 +362,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 dismissalOwner.IsEnemy(dismissalTarget),
                             ["targetConsidersOwnerEnemy"] =
                                 dismissalTarget.IsEnemy(dismissalOwner),
+                            ["ownerCanAttackTarget"] =
+                                dismissalOwner.CanAttack(dismissalTarget),
+                            ["ownerPlayerFaction"] = dismissalOwner.IsPlayerFaction,
+                            ["targetPlayerFaction"] = dismissalTarget.IsPlayerFaction,
+                            ["ownerInCombat"] = dismissalOwner.IsInCombat,
+                            ["targetInCombat"] = dismissalTarget.IsInCombat,
+                            ["nativeKillGuardAllows"] =
+                                dismissalNativeKillAllowed,
                             ["command"] = dismissalHeld == null ? null :
                                 Sprint27AiCommand(dismissalHeld),
                             ["touchRoll"] = dismissalRoll?.Roll.Value,
