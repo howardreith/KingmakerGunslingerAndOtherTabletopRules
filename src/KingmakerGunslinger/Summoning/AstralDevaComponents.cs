@@ -492,42 +492,90 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class AstralDispelEvilRuntime
     {
-        // Native cancellation compares AbilityData identities and does not
-        // recognize a selected child of a held menu. Retain only a child of
-        // this exact private fact/source/owner. Ordinary spells still cancel
-        // the charge and its own ward before their new effect is applied.
-        internal static bool BeforeNativeCast(
-            Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell evt)
+        private static bool TryResolve(UnitEntityData caster,
+            out UnitPartTouch touch, out AbilityData held, out Buff ward)
         {
-            UnitEntityData caster = evt == null ? null : evt.Initiator;
-            UnitPartTouch touch = caster?.Get<UnitPartTouch>();
-            AbilityData held = touch?.Ability?.Data;
-            AbilityData spell = evt == null ? null : evt.Spell;
+            touch = caster?.Get<UnitPartTouch>();
+            held = touch?.Ability?.Data;
+            ward = null;
             var marker = held?.Blueprint?.GetComponent<
                 AstralDispelEvilDeliveryMarker>();
             var arm = held?.StickyTouch?.Blueprint?.GetComponent<
                 AbilityEffectArmAstralDispelEvilTouch>();
-            if (caster == null || spell == null || marker?.Ward == null ||
-                arm == null || !ReferenceEquals(arm.SourceUnit, caster.Blueprint) ||
+            if (caster == null || marker?.Ward == null || arm == null ||
+                !ReferenceEquals(arm.SourceUnit, caster.Blueprint) ||
                 !ReferenceEquals(arm.TouchDeliveryAbility, held.Blueprint) ||
-                !ReferenceEquals(arm.Ward, marker.Ward)) return true;
+                !ReferenceEquals(arm.Ward, marker.Ward)) return false;
+            BlueprintAbility source = held.StickyTouch.Blueprint;
             Buff[] wards = caster.Buffs.Enumerable.Where(value =>
                 ReferenceEquals(value.Blueprint, marker.Ward) &&
                 ReferenceEquals(value.Context?.MaybeCaster, caster) &&
                 ReferenceEquals(value.Context?.SourceAbility,
-                    held.StickyTouch.Blueprint)).ToArray();
-            if (wards.Length != 1) return true;
-            bool ownChild = held.Blueprint.Variants != null &&
+                    source)).ToArray();
+            if (wards.Length != 1) return false;
+            ward = wards[0];
+            return true;
+        }
+
+        private static bool IsChoice(AbilityData spell, AbilityData held)
+        {
+            return spell != null && held?.Blueprint.Variants != null &&
                 held.Blueprint.Variants.Any(value => ReferenceEquals(value,
                     spell.Blueprint)) && ReferenceEquals(spell.Fact, held.Fact) &&
                 ReferenceEquals(spell.StickyTouch, held.StickyTouch) &&
                 ReferenceEquals(spell.Spellbook, held.Spellbook);
-            if (ownChild) return false;
-            if (spell != held && spell.SourceItem == null &&
-                (spell.Blueprint.Type == AbilityType.Spell ||
-                    spell.Blueprint.Type == AbilityType.SpellLike))
-                wards[0].Remove();
+        }
+
+        internal static bool BeforeNativeCast(
+            Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell evt)
+        {
+            if (evt?.Spell == null || !TryResolve(evt.Initiator,
+                out UnitPartTouch touch, out AbilityData held, out Buff ward))
+                return true;
+            if (IsChoice(evt.Spell, held)) return false;
+            if (evt.Spell != held && evt.Spell.SourceItem == null &&
+                (evt.Spell.Blueprint.Type == AbilityType.Spell ||
+                    evt.Spell.Blueprint.Type == AbilityType.SpellLike))
+                ward.Remove();
             return true;
+        }
+
+        internal static void AfterNativeCommand(Kingmaker.UnitLogic.Commands.Base.UnitCommand command)
+        {
+            var cast = command as Kingmaker.UnitLogic.Commands.UnitUseAbility;
+            if (cast == null || !TryResolve(cast.Executor,
+                out UnitPartTouch touch, out AbilityData held, out Buff ward) ||
+                !IsChoice(cast.Spell, held) || !touch.IsCastedInThisRound) return;
+            // Identical to the installed controller's free-first-touch branch,
+            // extended only to a selected child of this exact owned menu.
+            // Later rounds retain the ordinary native standard action.
+            cast.IgnoreCooldown(touch.IgnoreCooldownBeforeTime);
+        }
+
+        internal static bool BeforeNaturalContact(RuleAttackWithWeapon evt)
+        {
+            if (evt?.AttackRoll == null || !evt.AttackRoll.IsHit ||
+                evt.AttackRoll.Weapon == null ||
+                !evt.AttackRoll.Weapon.Blueprint.IsNatural ||
+                !evt.AttackRoll.Weapon.Blueprint.IsMelee ||
+                !TryResolve(evt.Initiator, out UnitPartTouch touch,
+                    out AbilityData held, out Buff ward)) return true;
+            // Native contact would otherwise cast the menu without an effect.
+            // Use its two real deliveries. Default contact prefers dismissal
+            // for an eligible enemy, then automatic removal; explicit menu
+            // use always leaves the choice to the player.
+            var target = new TargetWrapper(evt.Target);
+            BlueprintAbility[] variants = held.Blueprint.Variants;
+            if (variants == null || variants.Length != 2) return true;
+            AbilityData dismissal = new AbilityData(held, variants[0]);
+            AbilityData dispel = new AbilityData(held, variants[1]);
+            AbilityData selected = evt.Initiator.IsEnemy(evt.Target) &&
+                dismissal.CanTarget(target) ? dismissal :
+                dispel.CanTarget(target) ? dispel : null;
+            if (selected == null) ward.Remove();
+            else Rulebook.Trigger(new Kingmaker.RuleSystem.Rules.Abilities.
+                RuleCastSpell(selected, target));
+            return false;
         }
 
         internal static void DischargeWard(AbilityExecutionContext context)
@@ -553,6 +601,21 @@ namespace KingmakerGunslinger.Summoning
         private static bool Prefix(
             Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell evt)
         { return AstralDispelEvilRuntime.BeforeNativeCast(evt); }
+    }
+
+    [HarmonyPatch(typeof(TouchSpellsController), "HandleUnitRunCommand")]
+    internal static class AstralDispelEvilFirstTouchPatch
+    {
+        private static void Postfix(Kingmaker.UnitLogic.Commands.Base.UnitCommand command)
+        { AstralDispelEvilRuntime.AfterNativeCommand(command); }
+    }
+
+    [HarmonyPatch(typeof(TouchSpellsController), "OnEventDidTrigger",
+        new[] { typeof(RuleAttackWithWeapon) })]
+    internal static class AstralDispelEvilNaturalContactPatch
+    {
+        private static bool Prefix(RuleAttackWithWeapon evt)
+        { return AstralDispelEvilRuntime.BeforeNaturalContact(evt); }
     }
 
     [HarmonyPatch(typeof(TouchSpellsController), "OnAbilityEffectApplied")]

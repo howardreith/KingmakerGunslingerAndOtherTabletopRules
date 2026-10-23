@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
-            UnitEntityData owner = null, sibling = null, target = null;
+            UnitEntityData owner = null, sibling = null, lateOwner = null, target = null;
             var transient = new List<UnityEngine.Object>();
             var fixtureBuffs = new List<Buff>();
             Astral31DispelEvents observed = null;
@@ -58,7 +58,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target = fixture.Hostile;
                 owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
                 sibling = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
-                foreach (var unit in new[] { owner, sibling })
+                lateOwner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
+                foreach (var unit in new[] { owner, sibling, lateOwner })
                 {
                     Sprint28SetBrainActivePreservingActions(unit, false);
                     unit.Commands.InterruptAll(true);
@@ -68,8 +69,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(target, origin + Vector3.forward * 1.5f);
                 PlaceExpandedSummoningUnit(sibling, origin + Vector3.right * 2f);
+                PlaceExpandedSummoningUnit(lateOwner, origin + Vector3.left * 2f);
                 PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 14f);
-                foreach (var unit in new[] { owner, sibling, target })
+                foreach (var unit in new[] { owner, sibling, lateOwner, target })
                 {
                     unit.Wake(0f);
                     if (!Game.Instance.State.AwakeUnits.Contains(unit))
@@ -194,6 +196,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(heldData?.Blueprint, heldMenu) &&
                         heldMenu.Variants.SequenceEqual(new[] { dismissalTouch, touchBlueprint }) &&
                         ReferenceEquals(heldData.StickyTouch, data) &&
+                        held.IsCastedInThisRound && heldMenu.Variants.All(value =>
+                            new AbilityData(heldData, value).IsAvailable) &&
                         ReferenceEquals(heldData.Spellbook, book) &&
                         heldParameters != null && heldParameters.CasterLevel == 14 &&
                         heldParameters.SpellLevel == 5 && heldParameters.DC == 20;
@@ -206,6 +210,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["wardCaster"] = activeWard?.Context?.MaybeCaster?.UniqueId,
                             ["held"] = heldData?.Blueprint.AssetGuid,
                             ["heldBook"] = heldData?.Spellbook?.Blueprint.AssetGuid,
+                            ["nativeFirstRound"] = held?.IsCastedInThisRound,
+                            ["nativeIgnoreBefore"] = held?.IgnoreCooldownBeforeTime.ToString(),
+                            ["choices"] = new JArray(heldMenu.Variants.Select(value => {
+                                var child = new AbilityData(heldData, value);
+                                return new JObject { ["ability"] = value.AssetGuid,
+                                    ["available"] = child.IsAvailable, ["sameFact"] = ReferenceEquals(child.Fact, heldData.Fact),
+                                    ["cl"] = child.CalculateParams().CasterLevel, ["dc"] = child.CalculateParams().DC };
+                            })),
                             ["heldCl"] = heldParameters?.CasterLevel,
                             ["heldLevel"] = heldParameters?.SpellLevel, ["heldDc"] = heldParameters?.DC,
                             ["fixtureSlotDebits"] = 0 },
@@ -325,12 +337,63 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!canceled) throw new InvalidOperationException(
                     "Native intervening spell did not close the prior Dispel Evil charge/ward.");
 
+                // A separate real preparation is held beyond the native first
+                // round. No fixture clock or resource reset grants a free use.
+                Spellbook lateBook = lateOwner.Descriptor.GetSpellbook(creation.Book);
+                var lateSlot = lateBook.GetMemorizedSpellSlots(5).Single(value =>
+                    value.Available && ReferenceEquals(value.Spell?.Blueprint, family));
+                lateSlot.Spell.ParamSpellSlot = lateSlot;
+                Buff lateEffect = Astral31DispelFixtureEffect(target, fixture.Caster,
+                    "TrumpetLaterRoundEvilSpell", Guid.NewGuid().ToString("N"), Guid.NewGuid().ToString("N"),
+                    9, SpellSchool.Necromancy, SpellDescriptor.Evil, false,
+                    transient, fixtureBuffs, observed);
+                observed.Owner = lateOwner;
+                UnitUseAbility lateParent = null;
+                foreach (int frame in Astral31DispelCast(lateOwner, lateSlot.Spell,
+                    new TargetWrapper(lateOwner), value => lateParent = value)) yield return frame;
+                UnitPartTouch lateTouch = lateOwner.Get<UnitPartTouch>();
+                double lateStart = Game.Instance.TimeController.GameTime.TotalSeconds;
+                DateTime lateDeadline = DateTime.UtcNow.AddSeconds(15);
+                while (lateTouch != null && lateTouch.IsCastedInThisRound &&
+                    DateTime.UtcNow < lateDeadline) yield return 0;
+                bool laterRound = lateTouch != null && !lateTouch.IsCastedInThisRound;
+                double lateElapsed = Game.Instance.TimeController.GameTime.TotalSeconds - lateStart;
+                UnitUseAbility lateDelivery = null;
+                var lateCosts = new JArray();
+                bool lateAction;
+                using (var economy = new FirearmReviewCosts(lateOwner, lateCosts))
+                {
+                    foreach (int frame in Astral31DispelHeld(lateOwner, target, touchBlueprint,
+                        value => lateDelivery = value)) yield return frame;
+                    lateAction = lateDelivery != null && lateDelivery.IsFinished &&
+                        lateDelivery.Result == UnitCommand.ResultType.Success &&
+                        economy.Count(lateDelivery) == 1 && economy.Exact(lateDelivery, false) &&
+                        !lateDelivery.IsIgnoreCooldown;
+                }
+                var lateRule = observed.Dispels.LastOrDefault(value => ReferenceEquals(value.Buff, lateEffect));
+                bool lateExact = laterRound && lateParent != null && lateParent.IsFinished &&
+                    lateParent.Result == UnitCommand.ResultType.Success && lateAction &&
+                    lateRule != null && lateRule.Success && lateEffect.IsDisposed &&
+                    !lateSlot.Available && Trumpet31PreparedCopies(lateBook, family, 5) == 0 &&
+                    lateOwner.Get<UnitPartTouch>() == null &&
+                    !lateOwner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, ward));
+                Sprint25Check("trumpet-dispel-later-round-touch", lateExact,
+                    new JObject { ["owner"] = lateOwner.UniqueId, ["nativeLaterRound"] = laterRound,
+                        ["nativeElapsed"] = lateElapsed, ["command"] = lateDelivery == null ? null : Sprint27AiCommand(lateDelivery),
+                        ["ignoreCooldown"] = lateDelivery?.IsIgnoreCooldown, ["costs"] = lateCosts,
+                        ["effectRemoved"] = lateEffect.IsDisposed, ["nativeDispel"] = lateRule?.Success,
+                        ["ownCopiesAfter"] = Trumpet31PreparedCopies(lateBook, family, 5),
+                        ["heldAbsent"] = lateOwner.Get<UnitPartTouch>() == null,
+                        ["wardAbsent"] = !lateOwner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, ward)) },
+                    "After the native first-round window closes, the held menu delivery pays one ordinary standard action, removes its actual eligible effect and consumes no second preparation.");
+                if (!lateExact) throw new InvalidOperationException("Later-round held-touch action contract failed.");
+
                 EventBus.Unsubscribe(observed); observed = null;
                 resistance.Remove(resistanceId); resistanceId = -1;
                 JObject resistanceAfter = Lemure30SrState(target, resistanceContext);
                 bool srRestored = JToken.DeepEquals(resistanceBefore["entries"], resistanceAfter["entries"]) &&
                     (int)resistanceBefore["nativeValue"] == (int)resistanceAfter["nativeValue"];
-                var units = new[] { owner, sibling };
+                var units = new[] { owner, sibling, lateOwner };
                 var grants = target.Buffs.Enumerable.Where(value => units.Contains(value.Context?.MaybeCaster)).ToArray();
                 var weapons = units.Select(value => value.Body.PrimaryHand.MaybeWeapon).ToArray();
                 var items = units.SelectMany(value => value.Descriptor.Inventory.Items)
@@ -348,7 +411,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (UnityEngine.Object value in transient.Where(value => value != null).Reverse<UnityEngine.Object>())
                     UnityEngine.Object.DestroyImmediate(value);
                 bool cleanup = srRestored && weapons.All(value => value != null) &&
-                    !ReferenceEquals(weapons[0], weapons[1]) && items.Length >= 2 && units.All(value => value.Destroyed && !value.IsInState &&
+                    weapons.Distinct().Count() == 3 && items.Length >= 3 && units.All(value => value.Destroyed && !value.IsInState &&
                     !value.Commands.Raw.Any(command => command != null && !command.IsFinished)) &&
                     Game.Instance.State.AreaEffects.All.SequenceEqual(areaBaseline) &&
                     grants.All(value => value.IsDisposed || !target.Buffs.Enumerable.Contains(value)) &&
@@ -366,7 +429,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["ownedItemsNonlootableAbsent"] = items.All(value => !value.IsLootable && value.Collection == null),
                         ["hostileReset"] = reset, ["cleanupFrames"] = cleanupFrames,
                         ["freshProcessBoundaryRequired"] = true, ["fullDispelQualification"] = false },
-                    "The focused save-free process retires both owned casters, items, aura grants, held state and private fixture objects, restores native SR/hostile state and ends before another case.");
+                    "The focused save-free process retires all three owned casters, items, aura grants, held state and private fixture objects, restores native SR/hostile state and ends before another case.");
                 if (!cleanup) throw new InvalidOperationException("Prepared Dispel Evil owned cleanup failed.");
             }
             finally
@@ -375,7 +438,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (resistance != null && resistanceId >= 0) resistance.Remove(resistanceId);
                 if (target != null && !target.Destroyed)
                     foreach (Buff value in fixtureBuffs.Where(value => value != null && !value.IsDisposed).ToArray()) value.Remove();
-                var units = new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray();
+                var units = new[] { owner, sibling, lateOwner }.Where(value => value != null && !value.Destroyed).ToArray();
                 foreach (var unit in units) { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); }
                 DisposeExpandedSummoningUnits(fixture.Created, units);
                 ResetExpandedSummoningHostile(fixture);
