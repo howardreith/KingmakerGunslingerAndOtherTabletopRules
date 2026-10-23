@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Kingmaker.UI.ActionBar;
+using Kingmaker.UI.Group;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -29,6 +32,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private NativeIconScreenEvidence _sprints30DispelScreens;
+
         // First prepared Dispel Evil path. Full dismissal, expiry and turn
         // coverage remain separate; this proves the book/variant/touch risk.
         private IEnumerable<int> ReviewTrumpet31Dispel(
@@ -352,6 +357,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Astral31DispelCast(lateOwner, lateSlot.Spell,
                     new TargetWrapper(lateOwner), value => lateParent = value)) yield return frame;
                 UnitPartTouch lateTouch = lateOwner.Get<UnitPartTouch>();
+                AbilityData nativeChoice = null;
+                foreach (int frame in Dispel31ChooseHeldUi(lateOwner, lateTouch.Ability.Data,
+                    touchBlueprint, "trumpet-dispel", value => nativeChoice = value)) yield return frame;
                 double lateStart = Game.Instance.TimeController.GameTime.TotalSeconds;
                 DateTime lateDeadline = DateTime.UtcNow.AddSeconds(15);
                 while (lateTouch != null && lateTouch.IsCastedInThisRound &&
@@ -364,7 +372,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 using (var economy = new FirearmReviewCosts(lateOwner, lateCosts))
                 {
                     foreach (int frame in Astral31DispelHeld(lateOwner, target, touchBlueprint,
-                        value => lateDelivery = value)) yield return frame;
+                        value => lateDelivery = value, nativeChoice)) yield return frame;
                     lateAction = lateDelivery != null && lateDelivery.IsFinished &&
                         lateDelivery.Result == UnitCommand.ResultType.Success &&
                         economy.Count(lateDelivery) == 1 && economy.Exact(lateDelivery, false) &&
@@ -447,6 +455,122 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        private IEnumerable<int> Dispel31ChooseHeldUi(UnitEntityData actor,
+            AbilityData held, BlueprintAbility chosen, string phase, Action<AbilityData> selected)
+        {
+            var expected = held.CalculateParams();
+            var game = Game.Instance;
+            var ui = game.UI;
+            var bar = ActionBarManager.Instance;
+            if (ui?.SelectionManagerPC == null || bar?.Group == null ||
+                GroupController.Instance == null || actor.View == null ||
+                game.SelectedAbilityHandler.Ability != null)
+                throw new InvalidOperationException("Owned Dispel UI fixture has no clean native controls.");
+            var selection = ui.SelectionManagerPC.SelectedUnits.ToArray();
+            var originalGroup = GroupController.Instance.GetCurrentCharacter();
+            var groups = bar.Group.GroupElements.ToArray();
+            var toggles = groups.Select(value => value.ToggleState).ToArray();
+            var barSelected = typeof(ActionBarManager).GetField("m_Selected", BindingFlags.Instance | BindingFlags.NonPublic);
+            object originalBarOwner = barSelected.GetValue(bar);
+            bool paused = game.IsPaused;
+            ActionBarGroupSlot source = null;
+            AbilityData actual = null;
+            bool restored;
+            _sprints30DispelScreens = new NativeIconScreenEvidence(_request);
+            try
+            {
+                game.IsPaused = true;
+                GroupController.Instance.SelectUnit(actor);
+                ui.SelectionManagerPC.SelectUnit(actor.View, true, true, false);
+                for (int frame = 0; frame < 20; frame++) yield return 0;
+                Func<ActionBarGroupSlot, bool> matches = row =>
+                    (row.MechanicSlot?.GetContentData() as AbilityData)?.Blueprint == held.Blueprint;
+                var candidates = bar.Group.GroupElements.Where(value =>
+                    value.GetComponentsInChildren<ActionBarGroupSlot>(true).Any(matches)).ToArray();
+                if (candidates.Length != 1)
+                    throw new InvalidOperationException("Native abilities popup has no unique visible Dispel held menu; groups=" + candidates.Length);
+                var group = candidates[0];
+                if (!group.ToggleState) group.OnClick();
+                for (int frame = 0; frame < 20; frame++) yield return 0;
+                source = group.GetComponentsInChildren<ActionBarGroupSlot>(true)
+                    .Single(row => row.gameObject.activeInHierarchy && matches(row));
+                source.OnToggleGroupClick();
+                for (int frame = 0; frame < 20; frame++) yield return 0;
+                var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField(
+                    "SubGroup", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(source);
+                if (popup == null) throw new InvalidOperationException("Native held-choice popup was not created.");
+                var rows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(row =>
+                    row.gameObject.activeInHierarchy &&
+                    (row.MechanicSlot?.GetContentData() as AbilityData)?.ConvertedFrom?.Blueprint == held.Blueprint).ToArray();
+                var data = rows.Select(row => row.MechanicSlot.GetContentData() as AbilityData).ToArray();
+                bool visible = !held.Blueprint.Hidden && !held.Fact.Hidden && rows.Length == 2 &&
+                    held.Blueprint.Variants.All(value => data.Count(child => child.Blueprint == value) == 1) &&
+                    ReferenceEquals(source.Icon.sprite, held.Blueprint.Icon) &&
+                    rows.All(row => ReferenceEquals(row.Icon.sprite,
+                        (row.MechanicSlot.GetContentData() as AbilityData).Blueprint.Icon)) &&
+                    data.All(child => child.IsAvailable && ReferenceEquals(child.Fact, held.Fact) &&
+                        ReferenceEquals(child.Spellbook, held.Spellbook) && child.CalculateParams().CasterLevel == expected.CasterLevel &&
+                        child.CalculateParams().SpellLevel == expected.SpellLevel && child.CalculateParams().DC == expected.DC);
+                var evidence = new JObject { ["owner"] = actor.UniqueId,
+                    ["held"] = held.Blueprint.AssetGuid, ["hidden"] = held.Fact.Hidden,
+                    ["type"] = held.Blueprint.Type.ToString(), ["rootCl"] = expected.CasterLevel,
+                    ["rootLevel"] = expected.SpellLevel, ["rootDc"] = expected.DC,
+                    ["icon"] = source.Icon.sprite?.name,
+                    ["children"] = new JArray(data.Select(child => new JObject {
+                        ["ability"] = child.Blueprint.AssetGuid, ["icon"] = child.Icon?.name,
+                        ["available"] = child.IsAvailable, ["book"] = child.Spellbook?.Blueprint.AssetGuid,
+                        ["cl"] = child.CalculateParams().CasterLevel, ["dc"] = child.CalculateParams().DC })) };
+                if (!visible) throw new InvalidOperationException("Native held popup rows/icons/parameters differ: " + evidence);
+                foreach (int frame in _sprints30DispelScreens.Capture(phase + "-held-menu", evidence,
+                    () => visible && popup.gameObject.activeInHierarchy &&
+                        ReferenceEquals(actor.Get<UnitPartTouch>()?.Ability.Data, held))) yield return frame;
+                rows.Single(row => (row.MechanicSlot.GetContentData() as AbilityData)?.Blueprint == chosen).OnClick();
+                for (int frame = 0; frame < 6; frame++) yield return 0;
+                actual = game.SelectedAbilityHandler.Ability;
+                bool clicked = actual != null && ReferenceEquals(actual.Blueprint, chosen) &&
+                    ReferenceEquals(actual.ConvertedFrom?.Blueprint, held.Blueprint) &&
+                    ReferenceEquals(actual.Fact, held.Fact) && ReferenceEquals(actual.Spellbook, held.Spellbook);
+                evidence["clicked"] = actual?.Blueprint.AssetGuid;
+                evidence["sameFact"] = actual != null && ReferenceEquals(actual.Fact, held.Fact);
+                evidence["actualClick"] = clicked;
+                Sprint25Check(phase + "-native-ui", clicked, evidence,
+                    "The real native abilities popup renders the held menu and exactly two matching native icons; a native child click preserves the exact held fact and casting parameters for the following native consumer.");
+                if (!clicked) throw new InvalidOperationException("Native held Dispel menu click lost its exact source.");
+                selected(actual);
+            }
+            finally
+            {
+                if (source != null) source.HideSubGroup();
+                game.ClickEventsController.ClearPointerMode();
+                game.SelectedAbilityHandler.DropAbility();
+                GroupController.Instance.SelectUnit(originalGroup);
+                ui.SelectionManagerPC.MultiSelect(selection.Select(value => value.View).ToArray(), false);
+                for (int index = 0; index < groups.Length; index++) groups[index].Toggle(toggles[index], true);
+                _sprints30DispelScreens.Dispose();
+                game.IsPaused = paused;
+            }
+            for (int frame = 0; frame < 12; frame++) yield return 0;
+            restored = ReferenceEquals(barSelected.GetValue(bar), originalBarOwner) &&
+                ReferenceEquals(actor.Get<UnitPartTouch>()?.Ability.Data, held) &&
+                !actor.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
+                ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selection) &&
+                ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), originalGroup) &&
+                groups.Select(value => value.ToggleState).SequenceEqual(toggles) &&
+                game.SelectedAbilityHandler.Ability == null && game.IsPaused == paused;
+            Sprint25Check(phase + "-native-ui-restored", restored,
+                new JObject { ["barOwnerExact"] = ReferenceEquals(barSelected.GetValue(bar), originalBarOwner),
+                    ["heldFactRetained"] = ReferenceEquals(actor.Get<UnitPartTouch>()?.Ability.Data, held),
+                    ["activeCommands"] = actor.Commands.Raw.Count(command => command != null && !command.IsFinished),
+                    ["settledFrames"] = 12,
+                    ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selection),
+                    ["groupExact"] = ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), originalGroup),
+                    ["togglesExact"] = groups.Select(value => value.ToggleState).SequenceEqual(toggles),
+                    ["selectionDropped"] = game.SelectedAbilityHandler.Ability == null,
+                    ["pauseExact"] = game.IsPaused == paused },
+                "Native selection/group/popup/pointer/pause ownership is restored before the mechanical case continues.");
+            if (!restored) throw new InvalidOperationException("Owned Dispel UI state did not restore exactly.");
         }
 
         private static JArray Trumpet31DispelSlotRows(Spellbook book, BlueprintAbility exclude = null)

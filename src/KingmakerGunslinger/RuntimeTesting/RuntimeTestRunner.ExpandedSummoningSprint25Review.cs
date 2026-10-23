@@ -92,6 +92,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value => value.Status == RuntimeTestStatuses.Pass)
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 _sprint25Assertions, null);
+            _sprints30DispelScreens?.AppendEvidence(_summoningProfileResult.EvidenceFiles);
             _summoningProfileResult.EvidenceFiles.Add(report);
             return true;
         }

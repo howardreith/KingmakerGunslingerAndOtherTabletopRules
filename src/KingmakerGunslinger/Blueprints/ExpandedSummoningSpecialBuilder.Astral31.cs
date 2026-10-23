@@ -564,7 +564,7 @@ namespace KingmakerGunslinger.Blueprints
             held.CanTargetEnemies = true;
             held.SpellResistance = false;
             held.NeedEquipWeapons = false;
-            held.Hidden = true;
+            held.Hidden = false;
             held.ActionBarAutoFillIgnored = false;
             held.MaterialComponent = new BlueprintAbility.MaterialComponentData();
             held.ResourceAssetIds = Array.Empty<string>();
