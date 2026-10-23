@@ -199,7 +199,7 @@ try {
         'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = 'ab6d343e35377b0cb9d73a8b5a2ab19e70b4cfe1c6a0cb21f109673fa883d6d6'
         'assets\sprint25-giant-bodies\elephant-mesh.json' = '5afe5464331a083c0de63d7b4bee4a1266d71376fb8360f7d96b0bf7a4f13028'
         'assets\sprint25-giant-bodies\elephant-albedo.png' = '5a973962a26dbf38208b66feeb5ffd154d469ac69b25137ae487b9d6767f2919'
-        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = 'baa97de9024fcbc9b07d8a1dc857813235aff8dcb276c4c2aa9be617a729fef7'
+        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = '73f3689c5abdda09fb68f9e08182cf671c6a753966bedaf21ebb16877c04c57c'
         'assets\sprint25-giant-bodies\brachiosaurus-albedo.png' = '160e4b71ae1335d6df37a0d8eac491e863b82dc272cfe24e42173a6d40107ea4'
     }
     foreach ($entry in $protectedBodyExports.GetEnumerator()) {

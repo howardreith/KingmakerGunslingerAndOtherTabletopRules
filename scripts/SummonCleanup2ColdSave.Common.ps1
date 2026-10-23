@@ -163,6 +163,69 @@ function Test-KmgCleanup2ColdWorkingRecord($Before,$After) {
     return $true
 }
 
+function Assert-KmgCleanup2ColdRestoredWorking($Context) {
+    Assert-KmgSummonCleanup2NativeExit
+    $expected=Join-Path $Context.catalog.Directory 'Manual_299_KMG_AUTOMATION_WORKING.zks'
+    if($Context.working.path -cne $expected -or $null -eq $Context.workingLease -or -not $Context.workingLease.CanRead -or
+        $Context.workingLease.Name -cne $expected){throw 'Restored Working has no exact retained read protection.'}
+    $file=Get-Item -LiteralPath $expected -Force
+    $sections=[Security.AccessControl.AccessControlSections]::Owner -bor [Security.AccessControl.AccessControlSections]::Group -bor [Security.AccessControl.AccessControlSections]::Access
+    $security=(Get-Acl -LiteralPath $expected).GetSecurityDescriptorSddlForm($sections)
+    if($file.Length -ne $Context.working.length -or $file.CreationTimeUtc.Ticks -ne $Context.working.creationUtcTicks -or
+        $file.LastWriteTimeUtc.Ticks -ne $Context.working.writeUtcTicks -or [int]$file.Attributes -ne $Context.working.attributes -or
+        $security -cne $Context.working.securitySddl){throw 'Restored Working metadata/security changed; foreign state is preserved.'}
+    $Context.workingLease.Position=0;$sha=[Security.Cryptography.SHA256]::Create()
+    try {$hash=[BitConverter]::ToString($sha.ComputeHash($Context.workingLease)).Replace('-','').ToLowerInvariant()}
+    finally {$sha.Dispose();$Context.workingLease.Position=0}
+    if($hash -cne $Context.working.sha256){throw 'Restored Working bytes changed; foreign state is preserved.'}
+    # SetFileTime accepts FILE_WRITE_ATTRIBUTES without data-write access.
+    # CreateFile sharing explicitly excludes attribute-only access requests:
+    # https://learn.microsoft.com/windows/win32/api/fileapi/nf-fileapi-createfilea
+    # This settles only our verification read's access time while the existing
+    # read lease continuously denies data writes, deletion and renaming.
+    if(-not ('KmgCleanup2ColdAccessTime' -as [type])) {
+        Add-Type -TypeDefinition @'
+using System;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
+using Microsoft.Win32.SafeHandles;
+public static class KmgCleanup2ColdAccessTime {
+    [StructLayout(LayoutKind.Sequential)] private struct FileTime { public uint Low, High; }
+    [DllImport("kernel32.dll", CharSet=CharSet.Unicode, SetLastError=true)]
+    private static extern SafeFileHandle CreateFileW(string path, uint access, uint share, IntPtr security, uint disposition, uint flags, IntPtr template);
+    [DllImport("kernel32.dll", SetLastError=true)] [return: MarshalAs(UnmanagedType.Bool)]
+    private static extern bool SetFileTime(SafeFileHandle handle, IntPtr creation, ref FileTime access, IntPtr write);
+    public static void Set(string path, long utcTicks) {
+        long value = new DateTime(utcTicks, DateTimeKind.Utc).ToFileTimeUtc();
+        var time = new FileTime { Low=(uint)value, High=(uint)(value >> 32) };
+        using(var handle=CreateFileW(path, 0x100, 1, IntPtr.Zero, 3, 0x80, IntPtr.Zero)) {
+            if(handle.IsInvalid) throw new Win32Exception(Marshal.GetLastWin32Error());
+            if(!SetFileTime(handle, IntPtr.Zero, ref time, IntPtr.Zero)) throw new Win32Exception(Marshal.GetLastWin32Error());
+        }
+    }
+}
+'@ | Out-Null
+    }
+    Assert-KmgSummonCleanup2NativeExit
+    [KmgCleanup2ColdAccessTime]::Set($expected,[long]$Context.working.accessUtcTicks)
+    $file.Refresh()
+    $security=(Get-Acl -LiteralPath $expected).GetSecurityDescriptorSddlForm($sections)
+    $after=[pscustomobject]@{path=$file.FullName;length=[long]$file.Length;sha256=$hash;creationUtcTicks=$file.CreationTimeUtc.Ticks;
+        writeUtcTicks=$file.LastWriteTimeUtc.Ticks;accessUtcTicks=$file.LastAccessTimeUtc.Ticks;attributes=[int]$file.Attributes;securitySddl=$security}
+    if(-not(Test-KmgCleanup2ColdWorkingRecord $Context.working $after)){throw 'Retained restored Working path/bytes/metadata/security are not exact.'}
+}
+
+function Protect-KmgCleanup2ColdRestoredWorking($Context) {
+    Assert-KmgSummonCleanup2NativeExit
+    Assert-KmgCleanup2ColdTree $Context.catalog.Directory
+    if($null -eq $Context.workingLease -or -not $Context.workingLease.CanRead) {
+        $Context.workingLease=[IO.File]::Open($Context.working.path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+    }
+    # Never dispose this lease on a verification failure: the final native-exit
+    # guard owns release, and the journal retains the unresolved restore debt.
+    Assert-KmgCleanup2ColdRestoredWorking $Context
+}
+
 function Set-KmgCleanup2ColdWorkingMetadata($Context,[string]$VerifiedHash) {
     Assert-KmgSummonCleanup2NativeExit
     $expected=$Context.working.path
@@ -216,6 +279,7 @@ function Restore-KmgCleanup2ColdUnwrittenWorking($Context) {
         if($current.$name -cne $Context.working.$name){throw ('Unwritten cold Working changed: '+$name)}
     }
     Set-KmgCleanup2ColdWorkingMetadata $Context $current.sha256
+    Protect-KmgCleanup2ColdRestoredWorking $Context
     Assert-KmgCleanup2ColdCatalog $Context
 }
 
@@ -238,6 +302,7 @@ function Restore-KmgCleanup2ColdWorking($Context) {
     $verifiedHash=(Get-FileHash -LiteralPath $expected -Algorithm SHA256).Hash.ToLowerInvariant()
     if($verifiedHash -cne $Context.working.sha256) {throw 'Cold restored Working bytes differ.'}
     Set-KmgCleanup2ColdWorkingMetadata $Context $verifiedHash
+    Protect-KmgCleanup2ColdRestoredWorking $Context
     Assert-KmgCleanup2ColdCatalog $Context
 }
 

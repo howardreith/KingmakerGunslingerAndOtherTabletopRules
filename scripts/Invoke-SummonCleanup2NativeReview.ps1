@@ -5,7 +5,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][ValidateSet('0.0.163')][string]$ExpectedVersion,
-    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','giant-lineup','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')][string]$Phase,
+    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')][string]$Phase,
     [switch]$WithAlternateSources
 )
 Set-StrictMode -Version Latest
@@ -24,7 +24,7 @@ $root=Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 . (Join-Path $PSScriptRoot 'TeleportationPersistence.Common.ps1')
 . (Join-Path $PSScriptRoot 'SummonCleanup2CurrentStack.Common.ps1')
-if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','giant-lineup','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')){throw 'Exact case-sensitive Cleanup2 phase required.'}
+if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')){throw 'Exact case-sensitive Cleanup2 phase required.'}
 Assert-KmgUnelevated
 Assert-KmgNotRunning
 $candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose 'summon-cleanup-iteration2'
@@ -45,7 +45,7 @@ try {
     & (Join-Path $PSScriptRoot 'compatibility/Invoke-KingmakerCompatibilityProfile.ps1') `
         -ProfileId $profile -Scenario @('disposable-expanded-summoning-cleanup2-native-review') `
         -Parameters @{reviewPhase=$Phase} -RuntimeTimeoutSeconds $runtimeSeconds -ReuseInstalledArtifact `
-        -ExpandedSummoningDisabled:($Phase -ceq 'elementals-off') `
+        -ExpandedSummoningDisabled:($Phase -cin @('elementals-off','giants-off')) `
         -DevelopmentPurpose 'summon-cleanup-iteration2' -PackagePath $candidate.packagePath -Confirm:$false
 } catch {$failure=$_;$record.status='FAILED';$record.error=$_.Exception.Message}
 finally {

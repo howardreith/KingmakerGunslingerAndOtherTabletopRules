@@ -404,12 +404,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         // Exact creature-commands capture lease only. Normal native rendering
         // must update the occlusion command buffer at this same held pose;
         // synchronous Camera.Render at a relocated pose cannot establish that.
+        private sealed class Cleanup2CreatureCameraObstructed : InvalidOperationException
+        {
+            internal readonly bool BudgetExceeded;
+            internal Cleanup2CreatureCameraObstructed(bool budgetExceeded) : base(budgetExceeded ?
+                "No native creature camera admitted before the bounded joint lane/camera survey expired." :
+                "All bounded native creature camera candidates have demonstrated obstructions.") { BudgetExceeded = budgetExceeded; }
+        }
+
         private sealed class Cleanup2CreatureCommandCamera : IDisposable
         {
             private readonly RuntimeTestRunner _owner;
             private readonly ExpandedSummoningCorrectionFixture _fixture;
             private readonly UnitEntityData _actor, _targetUnit;
             private readonly string _key;
+            private readonly int _candidateIndex;
             private readonly Func<bool> _modeCurrent;
             private readonly Kingmaker.View.CameraRig _rig;
             private readonly Kingmaker.Controllers.Rest.CameraController _controller;
@@ -439,7 +448,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private Vector3 _position;
             private Quaternion _rotation;
             private float _size;
-            private bool _guardOwned, _subscribed, _disposed;
+            private bool _guardOwned, _subscribed, _disposed, _candidateRefused;
             private string _renderError;
             internal int RenderCount, RenderedFrame = -1;
             internal double RenderedGameSeconds = double.NegativeInfinity;
@@ -447,16 +456,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly JObject Evidence = new JObject();
 
             internal Cleanup2CreatureCommandCamera(RuntimeTestRunner owner, ExpandedSummoningCorrectionFixture fixture,
-                UnitEntityData actor, UnitEntityData target, string key, Func<bool> modeCurrent)
+                UnitEntityData actor, UnitEntityData target, string key, Func<bool> modeCurrent, int candidateIndex,
+                Vector3[] pathSurfaceRoots, Stopwatch jointSurvey)
             {
-                _owner = owner; _fixture = fixture; _actor = actor; _targetUnit = target; _key = key; _modeCurrent = modeCurrent;
+                _owner = owner; _fixture = fixture; _actor = actor; _targetUnit = target; _key = key; _modeCurrent = modeCurrent; _candidateIndex = candidateIndex;
                 if (!owner.IsSummonCleanup2Review || (string)owner._request?.Parameters?["reviewPhase"] != "creature-commands" ||
                     !owner._request.ExitAfterCompletion || fixture == null || !fixture.Created.Contains(actor) || !ReferenceEquals(fixture.Hostile, target) ||
                     !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
                     !((key == SummonAttackGesturePolicy.Crab && actor.Blueprint.AssetGuid == CrabSummonAnimationBindingPolicy.UnitGuid) ||
                         (key == SummonAttackGesturePolicy.Brachiosaurus && actor.Blueprint.AssetGuid == SummonAttackGesturePolicy.BrachiosaurusUnit)) ||
                     !ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster) || actor.Commands.Empty == false || target.Commands.Empty == false ||
-                    modeCurrent == null || !modeCurrent()) throw new InvalidOperationException("Exact owned idle creature-command camera fixture required.");
+                    modeCurrent == null || !modeCurrent() || candidateIndex < 1 || candidateIndex > 8 || jointSurvey == null ||
+                    pathSurfaceRoots == null || pathSurfaceRoots.Length != 3 || pathSurfaceRoots.Any(value => !Cleanup2Finite(value)) ||
+                    Vector3.Distance(pathSurfaceRoots[0], actor.Position) > .01f ||
+                    new Vector2(pathSurfaceRoots[2].x - target.Position.x, pathSurfaceRoots[2].z - target.Position.z).magnitude > .01f ||
+                    Mathf.Abs((pathSurfaceRoots[2].y - actor.FlyHeight) - (target.Position.y - target.FlyHeight)) > .01f)
+                    throw new InvalidOperationException("Exact owned idle creature-command camera fixture and native path support required.");
                 _rig = TeleportationCastingCamera(); _controller = Game.Instance.CameraController; _camera = _rig?.Camera;
                 _guard = _controller?.FixCamera; _occlusion = _camera?.GetComponent<Kingmaker.Visual.OccludedObjectHighlighting.OccludedObjectHighlight>();
                 if (_camera == null || !_camera.enabled || !_camera.gameObject.activeInHierarchy || _camera.targetTexture != null ||
@@ -521,20 +536,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Bounds targetBounds = new Bounds(target.Position, Vector3.one * .1f);
                     foreach (Renderer body in target.View.GetComponentsInChildren<Renderer>(true).Where(value => value.enabled && value.gameObject.activeInHierarchy &&
                         (value is SkinnedMeshRenderer || value is MeshRenderer))) targetBounds.Encapsulate(body.bounds);
-                    var boxes = new[] { atStart, atTarget, targetBounds };
-                    var metrics = boxes.Select(bounds => new Cleanup2ActorMetric { Min = bounds.min, Max = bounds.max,
-                        Crown = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z), Sole = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z) }).ToArray();
-                    var units = new[] { actor, actor, target };
-                    // More physical rays across the swept footprint, still using
-                    // the existing exact selection-collider exemption contract.
-                    var physicalMetrics = new List<Cleanup2ActorMetric>(); var physicalUnits = new List<UnitEntityData>();
-                    for (int b = 0; b < boxes.Length; b++)
-                    foreach (float x in new[] { -.8f, 0f, .8f }) foreach (float z in new[] { -.8f, 0f, .8f })
-                    {
-                        var point = boxes[b].center + Vector3.Scale(boxes[b].extents, new Vector3(x, 0, z));
-                        physicalMetrics.Add(new Cleanup2ActorMetric { Crown = new Vector3(point.x, boxes[b].max.y, point.z),
-                            Sole = new Vector3(point.x, boxes[b].min.y, point.z) }); physicalUnits.Add(units[b]);
-                    }
+                    // Framing padding/yaw spheres contain empty space below
+                    // feet and at unused corners. They are not visibility
+                    // targets (29 hit terrain/grass there from every angle).
+                    // Survey actual baked surface landmarks instead, retaining
+                    // the existing12% sole/ground-contact exclusion. Full body,
+                    // including feet, remains in the padded projection below.
+                    Vector3[] actorSurface = SurfaceLandmarks(new[] { _bodySkin });
+                    Vector3[] targetSurface = SurfaceLandmarks(target.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .Where(value => value.enabled && value.gameObject.activeInHierarchy && value.sharedMesh != null).ToArray());
+                    var metrics = new List<Cleanup2ActorMetric>(); var units = new List<UnitEntityData>();
+                    foreach (Vector3 pathRoot in pathSurfaceRoots)
+                    foreach (Vector3 surface in actorSurface)
+                    { Vector3 point = surface + pathRoot - actor.Position;
+                        metrics.Add(new Cleanup2ActorMetric { Min = point, Max = point, Crown = point, Sole = point }); units.Add(actor); }
+                    foreach (Vector3 point in targetSurface)
+                    { metrics.Add(new Cleanup2ActorMetric { Min = point, Max = point, Crown = point, Sole = point }); units.Add(target); }
+                    var sightMetrics = metrics.ToArray();
+                    Evidence["actualActorSurfaceLandmarks"] = actorSurface.Length; Evidence["actualTargetSurfaceLandmarks"] = targetSurface.Length;
+                    Evidence["sightSampleCount"] = sightMetrics.Length; Evidence["groundContactSightExclusionFraction"] = .12f;
+                    Evidence["nativePathSurfaceRoots"] = new JArray(pathSurfaceRoots.Select(SurveyVector));
+                    Evidence["sightScope"] = "Actual baked surface extrema/nearest-center samples above native lower12% ground contact, with actor samples translated along the qualified lane. No padded volume corner is a sight target; no terrain/grass/collider name is ignored. Future gesture occlusion is not inferred from this sampled survey.";
                     Bounds envelope = atStart; envelope.Encapsulate(atTarget); envelope.Encapsulate(targetBounds);
                     var corners = Cleanup2BoundsCorners(envelope).ToArray(); Vector3 centre = envelope.center;
                     _rig.ScrollToImmediately(centre); _camera.aspect = 1280f / 800f;
@@ -548,6 +570,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         foreach (float side in new[] { 1f, -1f })
                         {
+                            if (jointSurvey.Elapsed.TotalSeconds > 5) break;
                             Vector3 horizontal = (across * side + lane * .25f).normalized;
                             Vector3 direction = horizontal * Mathf.Cos(pitch * Mathf.Deg2Rad) - Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
                             _rotation = Quaternion.LookRotation(direction, Vector3.up); _rig.SetRotation(_rotation.eulerAngles.y);
@@ -556,17 +579,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             float distance = projected.Max(point => Mathf.Abs(point.z)) + Mathf.Max(4f, halfFrame / Mathf.Tan(_camera.fieldOfView * Mathf.Deg2Rad * .5f));
                             if (_camera.orthographic) _camera.orthographicSize = halfFrame;
                             _position = centre - direction * distance; _camera.transform.SetPositionAndRotation(_position, _rotation);
-                            JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, physicalUnits, physicalMetrics.ToArray(), colliderRefs, out ignored);
-                            var rendered = Cleanup2LineupRenderedObstructions(_camera, units, metrics, meshCache, survey);
+                            JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, units, sightMetrics, colliderRefs, out ignored);
+                            var rendered = Cleanup2LineupRenderedObstructions(_camera, units, sightMetrics, meshCache, survey);
                             attempts.Add(new JObject { ["pitch"] = pitch, ["side"] = side, ["position"] = SurveyVector(_position),
                                 ["physicalBlockers"] = blockers, ["ignoredExactSelectionColliders"] = ignored, ["renderedSurvey"] = rendered });
                             if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)
                             { found = true; Evidence["environmentSightProven"] = (bool)rendered["qualified"]; break; }
                         }
-                        if (found || survey.Elapsed.TotalSeconds > 15) break;
+                        if (found || survey.Elapsed.TotalSeconds > 15 || jointSurvey.Elapsed.TotalSeconds > 5) break;
                     }
                     Evidence["cameraAttempts"] = attempts;
-                    if (!found) throw new InvalidOperationException("All bounded native creature camera candidates have demonstrated obstructions.");
+                    Evidence["jointCandidateAdmissionBudgetExceeded"] = jointSurvey.Elapsed.TotalSeconds > 5;
+                    if (!found) throw new Cleanup2CreatureCameraObstructed(jointSurvey.Elapsed.TotalSeconds > 5 || survey.Elapsed.TotalSeconds > 15);
                     _size = _camera.orthographicSize;
                     _target = new RenderTexture(1280, 800, 24, RenderTextureFormat.ARGB32); _camera.targetTexture = _target;
                     _renderBoundsMesh = new Mesh();
@@ -581,10 +605,56 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 catch (Exception error)
                 {
+                    _candidateRefused = error is Cleanup2CreatureCameraObstructed;
                     Evidence["initializationError"] = error.ToString();
                     try { Dispose(); } catch (Exception cleanup) { throw new AggregateException(error, cleanup); }
                     throw;
                 }
+            }
+
+            private static Vector3[] SurfaceLandmarks(SkinnedMeshRenderer[] skins)
+            {
+                if (skins.Length == 0 || skins.Sum(value => value.sharedMesh.vertexCount) > 250000)
+                    throw new InvalidOperationException("Bounded actual native surface mesh survey unavailable.");
+                var vertices = new List<Vector3>(); var baked = new Mesh();
+                try
+                {
+                    foreach (var skin in skins)
+                    {
+                        baked.Clear(); skin.BakeMesh(baked);
+                        if (baked.vertexCount == 0 || baked.vertexCount != skin.sharedMesh.vertexCount)
+                            throw new InvalidOperationException("Actual camera-surface vertex count differs.");
+                        foreach (Vector3 vertex in baked.vertices)
+                        {
+                            Vector3 world = skin.transform.TransformPoint(vertex);
+                            if (!Cleanup2Finite(world)) throw new InvalidOperationException("Nonfinite native camera-surface point.");
+                            vertices.Add(world);
+                        }
+                    }
+                }
+                finally { UnityEngine.Object.DestroyImmediate(baked); }
+                Vector3 min = vertices.Aggregate(Vector3.Min), max = vertices.Aggregate(Vector3.Max);
+                float lowerContact = Mathf.Lerp(min.y, max.y, .12f);
+                Vector3[] surface = vertices.Where(value => value.y >= lowerContact).ToArray();
+                if (surface.Length == 0) throw new InvalidOperationException("No native body surface above ground-contact boundary.");
+                var chosen = new HashSet<int>(); Vector3 centre = (min + max) * .5f;
+                foreach (int x in new[] { -1, 0, 1 }) foreach (int y in new[] { -1, 0, 1 }) foreach (int z in new[] { -1, 0, 1 })
+                {
+                    if (x == 0 && y == 0 && z == 0) continue;
+                    Vector3 direction = new Vector3(x, y, z); int index = 0; float support = float.NegativeInfinity;
+                    for (int i = 0; i < surface.Length; i++)
+                    { float distance = Vector3.Dot(surface[i] - centre, direction); if (distance > support) { support = distance; index = i; } }
+                    chosen.Add(index);
+                }
+                foreach (float x in new[] { .2f, .5f, .8f }) foreach (float z in new[] { .2f, .5f, .8f })
+                {
+                    Vector3 desired = new Vector3(Mathf.Lerp(min.x, max.x, x), centre.y, Mathf.Lerp(min.z, max.z, z));
+                    int index = 0; float nearest = float.PositiveInfinity;
+                    for (int i = 0; i < surface.Length; i++)
+                    { float distance = (surface[i] - desired).sqrMagnitude; if (distance < nearest) { nearest = distance; index = i; } }
+                    chosen.Add(index);
+                }
+                return chosen.OrderBy(value => value).Select(value => surface[value]).ToArray();
             }
 
             internal void RequireCurrent()
@@ -705,7 +775,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Evidence["restored"] = errors.Count == 0; Evidence["restorationErrors"] = new JArray(errors);
                 Evidence["ordinaryNativeRenderCount"] = RenderCount; Evidence["lastRenderedFrame"] = RenderedFrame;
                 Evidence["observerManualCameraRenderCalled"] = false; Evidence["actorsSceneMaterialsOrOcclusionFlagsChanged"] = false;
-                _owner.Cleanup2Check("creature-command-fixed-native-camera-restored-" + _key, errors.Count == 0, Evidence,
+                _owner.Cleanup2Check("creature-command-fixed-native-camera-restored-" + _key +
+                    (_candidateRefused ? "-rejected-camera-" + _candidateIndex : ""), errors.Count == 0, Evidence,
                     "The exact native rig/pose/lens/DOF/target and counted FixCamera lease restore without changing unrelated actor/UI/scene state.");
                 if (errors.Count != 0) throw new InvalidOperationException("Native creature camera cleanup failed: " + string.Join("|", errors.ToArray()));
             }

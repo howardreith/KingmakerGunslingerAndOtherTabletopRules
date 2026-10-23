@@ -68,7 +68,10 @@ function Backup-KmgCleanup2ColdWorking($Context,[string]$RunRoot) {
 }
 function Restore-KmgCleanup2ColdBoundary($Ownership,$Context,$Record,[string]$JournalPath,$Environment,$Lease) {
     & $script:realColdBoundary $Ownership $Context $Record $JournalPath $Environment $Lease
-    if($script:currentCase.mode -ceq 'late-recovery-wait'){$script:currentCase.running=$true;$script:guardSamples=0}
+    if($script:currentCase.mode -cin @('late-recovery-wait','late-final-wait','late-final-settings')) {
+        $script:currentCase.running=$true;$script:guardSamples=0
+        if($script:currentCase.mode -ceq 'late-final-settings'){$script:currentCase.settings.Values['original']='late foreign settings'}
+    }
 }
 function Test-ColdDenied([scriptblock]$Action) {try{& $Action;return $false}catch [IO.IOException]{return $true}catch [UnauthorizedAccessException]{return $true}}
 function Test-KmgCleanup2ColdOwnerAlive($Ownership) {
@@ -109,9 +112,14 @@ function Get-KmgSummonCleanup2NativeProcessIds {
         Check (Test-ColdDenied {[IO.File]::WriteAllText((Join-Path $script:currentCase.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks'),'forbidden')}) 'cold-intake-wait-working-still-read-only'
         if($script:guardSamples -ge 3){$script:currentCase.running=$false;return @()};return @(4242)
     }
-    if($script:currentCase -and $script:currentCase.mode -ceq 'late-recovery-wait' -and $script:currentCase.running) {
+    if($script:currentCase -and $script:currentCase.mode -cin @('late-recovery-wait','late-final-wait','late-final-settings') -and $script:currentCase.running) {
         $script:guardSamples++
         Check (Test-ColdDenied {[IO.File]::WriteAllText($script:currentCase.baselinePath,'forbidden')}) 'cold-recovery-late-wait-retains-save-handles'
+        $working=Join-Path $script:currentCase.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks'
+        Check (Test-ColdDenied {[IO.File]::WriteAllText($working,'forbidden late write')}) 'cold-final-restored-working-write-denied'
+        Check (Test-ColdDenied {[IO.File]::Delete($working)}) 'cold-final-restored-working-delete-denied'
+        Check (Test-ColdDenied {[IO.File]::Move($working,$working+'.moved')}) 'cold-final-restored-working-rename-denied'
+        Check (Test-ColdDenied {$s=[IO.File]::Open($script:currentCase.lease.LockPath,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None);$s.Dispose()}) 'cold-final-owner-lock-retained'
         if($script:guardSamples -ge 3){$script:currentCase.running=$false;return @()}
         return @(4242)
     }
@@ -205,7 +213,7 @@ Check ([IO.File]::ReadAllText((Join-Path $case.environment.install 'Mods/Fixture
     'foreign change after captured current inventory') 'cold-changed-intake-preserves-unowned-change'
 Check (Test-KmgCleanup2ColdWorkingRecord $before (Get-KmgCleanup2ColdWorkingRecord $before.path)) 'cold-changed-intake-original-working-exact'
 foreach($mode in @('positive','child-fail-1','child-fail-2','child-fail-3','empty-working','interrupted-working','wrong-receipt','abnormal-wait',
-    'backup-setup-fail','acl-replaced','head-proof-missing','head-proof-mutated','head-proof-module-off','intake-evidence-fail','intake-late-wait','entry-live-before-refusal')) {
+    'backup-setup-fail','acl-replaced','head-proof-missing','head-proof-mutated','head-proof-module-off','intake-evidence-fail','intake-late-wait','entry-live-before-refusal','late-final-wait')) {
     $case=New-ColdCase $mode;$before=Get-KmgCleanup2ColdWorkingRecord (Join-Path $case.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks')
     $plan=Cold-Plan $case;$receipt=$null;$message=Refusal {$script:coldReceipt=Invoke-KmgCleanup2ColdCurrentStackTransaction $plan $case.environment}
     if($mode -ceq 'positive') {Check ($null -eq $message -and $script:coldReceipt.phaseCount -eq 3) 'cold-exact-trio-positive'}
@@ -220,6 +228,20 @@ foreach($mode in @('positive','child-fail-1','child-fail-2','child-fail-3','empt
             $journal.status -ceq 'FAILED_RESTORED' -and $journal.error -like '*original native result IO*') 'cold-shared-protected-wait-io-failure-and-original-verdict'
     }
 }
+$case=New-ColdCase 'late-final-settings';$plan=Cold-Plan $case
+Check ($null -ne (Refusal {Invoke-KmgCleanup2ColdCurrentStackTransaction $plan $case.environment})) 'cold-final-foreign-settings-refused'
+$journalPath=Join-Path (Join-Path (Join-Path $case.environment.stateRoot 'cleanup2-cold-intake') $case.runId) 'cleanup2-cold-journal.json'
+$journal=Read-KmgCompatibilityJson $journalPath
+Check ($journal.recoveryRequired -and $journal.finalBoundaryDebt -and -not $journal.settingsRestored) 'cold-final-foreign-state-debt-retained'
+Check ($case.settings.Values.original -ceq 'late foreign settings') 'cold-final-foreign-settings-preserved'
+Check (Test-Path -LiteralPath (Join-Path $case.environment.stateRoot 'compatibility.lock')) 'cold-final-debt-owned-lock-retained'
+$case.mode='late-final-recover'
+Check ($null -ne (Refusal {Restore-KmgCleanup2ColdCurrentStackTransaction $case.runId $journal.ownershipSha256 $case.environment})) 'cold-final-recovery-cannot-replace-foreign-settings'
+Check ($case.settings.Values.original -ceq 'late foreign settings') 'cold-final-recovery-preserves-foreign-settings'
+$case.settings.Values.original='human-original'
+$fixed=Restore-KmgCleanup2ColdCurrentStackTransaction $case.runId $journal.ownershipSha256 $case.environment
+Check ($fixed.status -ceq 'FAILED_RESTORED') 'cold-final-original-state-revalidation-recovers'
+Assert-Restored $case 'cold-final-verified-recovery'
 $case=New-ColdCase 'entry-rollback-metadata-debt'
 $before=Get-KmgCleanup2ColdWorkingRecord (Join-Path $case.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks')
 $plan=Cold-Plan $case

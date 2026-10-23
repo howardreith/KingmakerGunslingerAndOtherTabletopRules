@@ -103,6 +103,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (toggles.Any(value => value)) throw new InvalidOperationException("Closed native action groups required.");
             var originalInputs = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var originalBars = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
+            var fixtureCasterAtIntake = fixture.Caster;
             var fixtureBooksBefore = fixture.Caster.Descriptor.Spellbooks.ToArray();
             var fixtureStatsBefore = new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue };
             bool fixtureDetachedBefore = fixture.Caster.IsDetached;
@@ -280,8 +281,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (var remove in removeFacts.AsEnumerable().Reverse()) restore("own-native-feature", remove);
                     bool extraBookReleaseCalled = false;
                     restore("own-extra-books", () => {
-                        if (!fixture.Created.Contains(fixture.Caster) || extraBooks.Books.Any(value =>
-                            fixture.Caster.Descriptor.GetSpellbook(value.Blueprint) != null && !ReferenceEquals(fixture.Caster.Descriptor.GetSpellbook(value.Blueprint), value)))
+                        JObject casterOwnership;
+                        bool ownCaster = Cleanup2SourcesOwnsCaster(fixture, fixtureCasterAtIntake, out casterOwnership);
+                        var replacements = ownCaster ? extraBooks.Books.Where(value => fixtureCasterAtIntake.Descriptor.GetSpellbook(value.Blueprint) != null &&
+                            !ReferenceEquals(fixtureCasterAtIntake.Descriptor.GetSpellbook(value.Blueprint), value)).ToArray() : new Spellbook[0];
+                        Cleanup2Check("elemental-sources-extra-book-cleanup-admission", ownCaster && replacements.Length == 0, new JObject {
+                            ["casterOwnership"] = casterOwnership, ["foreignBookReplacements"] = new JArray(replacements.Select(value => value.Blueprint.AssetGuid)),
+                            ["bookReferencesReadUnderOwnedCaster"] = ownCaster, ["ownedExtraBookCount"] = extraBooks.Books.Count },
+                            "The separately spawned exact disposable caster and exact added book references authorize cleanup; the summon Created list does not contain the caster.");
+                        if (!ownCaster || replacements.Length != 0)
                             throw new InvalidOperationException("Foreign extra-book replacement or unowned fixture caster; not overwritten.");
                         extraBooks.Restore(); extraBookReleaseCalled = true;
                     });
@@ -340,6 +348,31 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (phase.Elapsed.TotalSeconds > 360 || !mode.Current || !Cleanup2NoNarrativeOverlay() || Game.Instance.IsControllerGamepad)
                 throw new InvalidOperationException("Native elemental source phase exceeded wall/input/ownership bound.");
+        }
+
+        private static bool Cleanup2SourcesOwnsCaster(ExpandedSummoningCorrectionFixture fixture, UnitEntityData expected, out JObject evidence)
+        {
+            var caster = fixture?.Caster;
+            // BeginExpandedSummoningCorrectionFixture spawns Caster separately;
+            // Created holds additional summons. Its teardown explicitly uses
+            // Created.Concat(Caster,Hostile), never Created membership as caster
+            // authority. Preserve the exact clone/view/census provenance here.
+            evidence = new JObject {
+                ["sameIntakeCasterReference"] = caster != null && ReferenceEquals(caster, expected),
+                ["liveCaster"] = caster != null && !caster.Destroyed,
+                ["exactOwnedBlueprintReference"] = caster != null && fixture.CasterBlueprint != null && ReferenceEquals(caster.Blueprint, fixture.CasterBlueprint),
+                ["blueprintIsDisposableClone"] = fixture?.CasterBlueprint != null && !ReferenceEquals(fixture.CasterBlueprint, BlueprintRoot.Instance.DefaultPlayerCharacter),
+                ["originalUnitSnapshotPresent"] = fixture?.UnitsBefore != null,
+                ["notOriginalUnit"] = caster != null && fixture.UnitsBefore != null && !fixture.UnitsBefore.Any(value => ReferenceEquals(value, caster)),
+                ["originalPartySnapshotPresent"] = fixture?.PartyBefore != null,
+                ["notOriginalPartyMember"] = caster != null && fixture.PartyBefore != null && !fixture.PartyBefore.Any(value => ReferenceEquals(value, caster)),
+                ["exactLiveViewData"] = caster?.View != null && ReferenceEquals(caster.View.EntityData, caster),
+                ["exactFixtureScene"] = caster != null && fixture.Scene != null && ReferenceEquals(caster.HoldingState, fixture.Scene),
+                ["registeredInNativeUnitCensus"] = caster != null && fixture.AllUnits != null && ContainsReference(fixture.AllUnits, caster) };
+            bool owned = evidence.Properties().All(value => (bool)value.Value);
+            evidence["summonCreatedListContainsCaster"] = caster != null && fixture.Created.Contains(caster);
+            evidence["casterOwnedSeparatelyFromCreatedSummons"] = owned;
+            return owned;
         }
 
         private static AbilityData _cleanup2SnaFireExpected;
@@ -808,16 +841,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             var backpack = typeof(UnitUISettings).GetField("OnChangedBackpackVisibility", Cleanup2Fields);
             var helmet = typeof(UnitUISettings).GetField("OnChangedHelmetVisibility", Cleanup2Fields);
             var serializationCount = typeof(UnitSerialization).GetField("s_Count", BindingFlags.Static | BindingFlags.NonPublic);
-            if (backpack == null || helmet == null || serializationCount == null || serializationCount.FieldType != typeof(int))
-                throw new InvalidOperationException("Exact native source UI callback/serialization-scope fields unavailable.");
-            Func<bool> serializationIdle = () => (int)serializationCount.GetValue(null) == 0;
+            bool fieldsExact = backpack != null && helmet != null && serializationCount != null && serializationCount.FieldType == typeof(int);
+            Func<bool> serializationIdle = () => fieldsExact && (int)serializationCount.GetValue(null) == 0;
+            JObject casterOwnership; bool ownCaster = Cleanup2SourcesOwnsCaster(fixture, original.Unit, out casterOwnership);
+            var registeredCasterBlueprint = ResourcesLibrary.TryGetBlueprint<BlueprintUnit>(original.Blueprint.AssetGuid);
+            bool pinIndex = original.UISettings.Slots != null && index >= 0 && index < original.UISettings.Slots.Length;
+            var admission = new JObject {
+                ["nativeCallbackAndSerializationFieldsExact"] = fieldsExact, ["nativeSerializationIdle"] = serializationIdle(),
+                ["exactFixtureUiOwned"] = uiOwned(), ["noNativeLevelUpController"] = ui.LevelUpController == null,
+                ["originalCasterTurnedOn"] = original.IsTurnedOn, ["exactFixtureCasterOwned"] = ownCaster,
+                ["noForeignMaster"] = original.Master.Value == null, ["noPet"] = original.Pet == null,
+                ["nativePinIndexValid"] = pinIndex, ["exactNativePinnedMechanism"] = pinIndex && ReferenceEquals(original.UISettings.Slots[index], mechanism),
+                ["exactNativeMechanismUnit"] = mechanism != null && ReferenceEquals(mechanism.Unit, fixture.Caster),
+                ["exactBookOwner"] = book != null && ReferenceEquals(book.Owner, original),
+                ["nativeCasterBlueprintGuidResolves"] = registeredCasterBlueprint != null && registeredCasterBlueprint.AssetGuid == original.Blueprint.AssetGuid };
+            string[] rejected = admission.Properties().Where(value => !(bool)value.Value).Select(value => value.Name).ToArray();
+            Cleanup2Check("elemental-sources-native-hydration-admission", rejected.Length == 0, new JObject {
+                ["predicates"] = admission, ["rejectedPredicates"] = new JArray(rejected), ["casterOwnership"] = casterOwnership,
+                ["unit"] = fixture.Caster.UniqueId, ["pinIndex"] = index, ["book"] = book.Blueprint.AssetGuid,
+                ["master"] = original.Master.Value?.UniqueId, ["pet"] = original.Pet?.UniqueId,
+                ["saveWrite"] = false, ["coldLoad"] = false },
+                "Every original native pin/fixture/serialization/owner admission predicate is recorded separately before any serialization or refusal.");
+            if (rejected.Length != 0) throw new InvalidOperationException("Native hydration admission refused: " + string.Join(",", rejected));
             var backpackBefore = backpack.GetValue(original.UISettings); var helmetBefore = helmet.GetValue(original.UISettings);
             Func<bool> callbacksExact = () => ReferenceEquals(backpack.GetValue(original.UISettings), backpackBefore) &&
                 ReferenceEquals(helmet.GetValue(original.UISettings), helmetBefore);
-            if (!serializationIdle() || !uiOwned() || ui.LevelUpController != null || !original.IsTurnedOn ||
-                !fixture.Created.Contains(fixture.Caster) || original.Master.Value != null || original.Pet != null ||
-                !ReferenceEquals(original.UISettings.Slots[index], mechanism) || !ReferenceEquals(mechanism.Unit, fixture.Caster))
-                throw new InvalidOperationException("Hydration requires only the positively owned active fixture pin without a foreign owner/pet or active serialization/UI controller.");
             var debit = new Cleanup2SourceDebit(fixture.Caster); var pins = new TeleportationUiSettingsFixture(original.UISettings);
             var originalBooks = original.Spellbooks.ToArray(); var party = game.Player.Party.ToArray(); var world = game.State.Units.ToArray();
             var child = mechanism.GetContentData() as AbilityData;
@@ -867,7 +915,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     restoredPreparation.Type == preparation.Type && restoredPreparation.SpellLevel == preparation.SpellLevel &&
                     restoredPreparation.Available == preparation.Available && restoredPreparation.Index == preparation.Index;
                 bool presentation = restoredPin != null && !restoredPin.IsBad() && restoredPin.GetTitle() == title && ReferenceEquals(restoredPin.GetIcon(), icon);
-                bool ids = preview.Unit.UniqueId == fixture.Caster.UniqueId && ReferenceEquals(preview.Blueprint, original.Blueprint);
+                // Native BlueprintConverter0600825F writes GUID only and
+                // ReadJson0600825E resolves ResourcesLibrary.TryGetBlueprint.
+                // The request's temporary unregistered caster clone therefore
+                // hydrates to that exact registered blueprint, not the clone.
+                bool ids = preview.Unit.UniqueId == fixture.Caster.UniqueId && preview.Blueprint.AssetGuid == original.Blueprint.AssetGuid &&
+                    ReferenceEquals(preview.Blueprint, registeredCasterBlueprint);
                 bool unchanged = debit.Unspent && pins.IsRestored() && callbacksExact() && original.IsTurnedOn &&
                     ReferenceEquals(child.ConvertedFrom, source) && ReferenceEquals(child.MetamagicData, meta) && ReferenceEquals(source.MetamagicData, sourceMeta);
                 bool pass = books && sourceChain && presentation && ids && unchanged && watch.Elapsed.TotalSeconds < 8;
@@ -878,6 +931,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["book"] = restoredBook?.Blueprint.AssetGuid, ["pinIndex"] = index, ["pinNativeType"] = restoredPin?.GetType().FullName,
                     ["allKnownCustomAndPreparedGraphs"] = books, ["sameHydratedPreparedSourceReference"] = sourceChain,
                     ["nativeTitleAndIconExact"] = presentation, ["stableUnitAndBlueprintIds"] = ids,
+                    ["temporaryCasterCloneInstance"] = original.Blueprint.GetInstanceID(), ["hydratedCasterBlueprintInstance"] = preview.Blueprint.GetInstanceID(),
+                    ["hydratedCasterBlueprintIsExactRegisteredReference"] = ReferenceEquals(preview.Blueprint, registeredCasterBlueprint),
+                    ["casterBlueprintSerialization"] = "Native GUID reference conversion; request-only unregistered clone identity is not persisted or registered. Released child/source/book references remain exact.",
                     ["originalReferencesResourcesAndPinsExact"] = unchanged, ["previewDetachedFromPartyAndWorld"] = ownership,
                     ["originalUiCallbacksExact"] = callbacksExact(), ["uiControllerUnchanged"] = ui.LevelUpController == null,
                     ["wallSeconds"] = watch.Elapsed.TotalSeconds,
@@ -914,7 +970,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // UnitSerialization itself restores its own counter in finally,
                 // but its TurnOn is after serialization, not in that finally.
                 try
-                { if (ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && fixture.Created.Contains(fixture.Caster) && !original.IsTurnedOn) original.TurnOn(); }
+                { JObject stillOwned;
+                    if (ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && Cleanup2SourcesOwnsCaster(fixture, original.Unit, out stillOwned) && !original.IsTurnedOn)
+                        original.TurnOn(); }
                 catch (Exception error) { cleanupError = cleanupError == null ? error : new AggregateException(cleanupError, error); }
                 bool previewDisposed = preview == null || preview.Unit != null && preview.Unit.Destroyed;
                 bool restored = cleanupError == null && serializationIdle() && previewDisposed && debit.Unspent && pins.IsRestored() && callbacksExact() &&

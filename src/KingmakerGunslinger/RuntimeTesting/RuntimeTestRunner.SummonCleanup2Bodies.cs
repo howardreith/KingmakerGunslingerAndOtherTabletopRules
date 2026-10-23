@@ -41,7 +41,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] keys = { "giant-crab", "griffon", "giant-stag-beetle", "girallon",
                 "ettin", "elephant", "stegosaurus", "brachiosaurus", "gorgon" };
             if (gorgonOnly) keys = new[] { "gorgon" };
-            if (recoveryBodies) keys = new[] { "girallon", "gorgon", "stegosaurus" };
+            // Review24 already qualified unchanged Gorgon travel/contact.
+            // Only the two previously refused walking lanes need this repair.
+            if (recoveryBodies) keys = new[] { "girallon", "stegosaurus" };
             if (keys.Any(key => !VisualRefinementReviewPolicy.Handles(key)))
                 throw new InvalidOperationException("A requested body lacks the existing complete refinement packet policy.");
             bool paused = Game.Instance.IsPaused, waiting = _sprint25WaitingForUnityAppearance;

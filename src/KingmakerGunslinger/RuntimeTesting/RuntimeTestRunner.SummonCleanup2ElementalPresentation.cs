@@ -125,6 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool admitted=admission.Properties().All(value=>(bool)value.Value);
                 admission["mode"]=_game.CurrentMode.ToString();
                 admission["controller"]=_game.ControllerMode.ToString();
+                if (_game.IsControllerGamepad) admission["consoleInputEvidence"]=runner._cleanup2ConsoleReadiness;
                 runner.Cleanup2Check("native-default-admission-"+purpose,admitted,admission,
                     "Only the exact save-free fixture may borrow existing native Default or push native factory Default from Dialog at an idle boundary.");
                 if(!admitted)

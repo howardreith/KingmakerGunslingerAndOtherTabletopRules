@@ -328,9 +328,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal bool IsDisposed { get { return _disposed; } }
         internal string Status { get { return _status; } }
         internal bool IsProductionOwner { get { return _production; } }
-        // Closed until the actual authored disabled-capsule contact control
-        // and native copied-cape packet both qualify. No configuration bypass.
-        internal static bool ProductionCopiedClothEnabled { get { return false; } }
+        // Review29 ed83d7dc47c0: native paired disabled-capsule contact and
+        // exact copied-cape packet PASS93/0, run20261023T0148568542755Z.
+        // This admits only the signature below; production view/lifecycle
+        // qualification remains separate from the contact control.
+        internal static bool ProductionCopiedClothEnabled { get { return true; } }
 
         internal static string ProductionClothAdmission(UnitEntityData actor, GiantSummonPresentationProfile profile)
         {

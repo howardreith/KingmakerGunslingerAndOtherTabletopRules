@@ -11,7 +11,26 @@ only after confirmed native exit. Unverified restoration retains recovery debt
 and the private backup; `Restore-SummonCleanup2ColdCurrentStack.ps1` requires the
 original ownership hash.
 
-Disposable qualification on PowerShell 5.1:
+The final restored Working now retains its exact read lease through installation
+and settings restoration and any late native process. Before guard release the
+transaction rechecks Working bytes/metadata/security, every protected original,
+settings and installation. Foreign changes retain recovery debt; verification-only
+recovery does not overwrite them. An attribute-only native handle settles the
+verification read's access timestamp while data-write/delete/rename protection
+remains continuously held.
+
+Current disposable qualification on PowerShell 5.1:
+
+- `Test-SummonCleanup2ColdCurrentStack.ps1`: **546/546 PASS**,48.479s,
+  `artifacts/cleanup2-currentstack-tests/afe7bc5250854ad6871ab79019e7e3bf`.
+- `Test-SummonCleanup2ColdProcessLifetime.ps1`: **393/393 PASS**,37.733s,
+  `artifacts/cleanup2-cold-process-tests/eea7ed4e1d014031a4c9432002dd5717`.
+  Includes a separate late stand-in process after generic restoration: actual
+  Working/baseline/other-save/backup/ownership/lock write/delete/rename denial,
+  retained original guard host, cooperative exit and exact final metadata.
+  Neither suite launches Kingmaker or touches real saves/installations.
+
+Earlier qualification retained under its original script identity:
 
 - Current-intake/backup/metadata/recovery fixtures: **458/458 PASS**, 41.783 s,
   `artifacts/cleanup2-currentstack-tests/2ec89090c4c347fbb713aec5e176f456`.

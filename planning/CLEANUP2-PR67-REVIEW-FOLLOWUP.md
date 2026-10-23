@@ -6,6 +6,92 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review29 cloth contact and Ettin ordinary commands
+
+Frozen `ed83d7dc47c02b2a662f27312d7e3e54326bdbb9`, package
+`0f2902b0aeb2fc2a1afd9e13b529e6ca29126211992deb63e2eb651d3923132e`, DLL
+`31a4cc3d4643b478ceb2f2026aebeb464f40583a930d0bd66370f596dd57f4fd`, MVID
+`c678a6a0-f9ff-49bc-a0bc-6e52897248e1`. Exact compilation,20 focused cases and22
+installed Harmony targets PASS. Initial frozen build lacked ignored current
+GamePath.props; copying the unchanged integration configuration resolved that
+build prerequisite. The failed log remains; no failed-build package was used.
+
+- Scale `20261023T0148568542755Z`: **93 PASS/0**,132.847s. Exact active
+  coefficients/pins and copied native cape configuration/poses pass. The paired
+  authored grids now positively contact the disabled capsule:64 valid samples,
+  2.0417 Unity seconds,2.4492 motion,2.0547 paired difference,0.2403 penetration
+  without collision versus0 with collision. Private controls release and source
+  materials remain alive. This supports opening the exact production cape gate;
+  production height/selection/lifecycle/OFF still require their own execution.
+- Creature commands `20261023T0153220984616Z`: **15 PASS/1 FAIL**,71.008s.
+  Every camera candidate hit scenery before any command. Padded empty bounds
+  were incorrectly used as sight targets and the selected lane rose over1m.
+  The correction keeps full-body/feet framing while checking actual surface
+  landmarks and a bounded set of flatter native-supported lanes. No obstruction
+  name is exempted, no scenery is hidden and unknown survey results stay unknown.
+  New folded Crab geometry is not qualified by this failed run.
+- Ettin `20261023T0157213050053Z`: **19 PASS/0**,86.832s. Exact owned setup
+  and join-combat Pause both settle normally. Native Default full attack produces
+  two main and two off-hand weapon packets with one native cost. The installed
+  donor selects OffHandAttack but supplies no separate action; ordinary command
+  resolution succeeds without a substituted clip/handle. The narrow turn-admitted
+  path also resolves under the established fixture clock; this is not a full
+  player turn-based UI campaign. Cold reconstruction remains unexecuted.
+  All six images were inspected: the body remains coherent, but first-frame
+  summon FX and mostly ready poses do not prove a distinct off-hand swing or
+  visual weapon contact. Mechanical resolution does not grant that visual claim.
+
+All three games exited; each fresh95-original-save inventory, installation and
+settings restored exactly. Compatibility receipts respectively
+`compat-20261023T014832Z-c40e0e7264cc`,
+`compat-20261023T015256Z-529cc572025f`,
+`compat-20261023T015655Z-cd90be69fb03`. Final save verification
+**01:59:02.5490496UTC** closes window8 at19m21.549s from01:39:41UTC.
+Final90-minute qualification has not started. Window9 began02:06:45UTC.
+
+Review29 sources `20261023T0207158091873Z`: **79 PASS/3 FAIL**,266.062s.
+All24 cast/spawn/debit cases, two books, Extend and the actual native special
+slot now pass. In-memory pin hydration refuses before serialization because
+three new guards incorrectly require `fixture.Created.Contains(fixture.Caster)`.
+The native fixture factory stores its caster separately; its exact teardown
+explicitly includes Caster/Hostile alongside Created. The correction uses that
+actual positive ownership contract and records every admission predicate.
+Original party/resources/slots/pins stay exact; failed local extra-book cleanup
+is independently retained, then the shared fixture teardown completes. Game
+exit and all95 original saves/install/settings restore exactly at
+**02:12:07.3099215UTC**, receipt `compat-20261023T020653Z-e6953608da9c`.
+The failed record is not converted to PASS.
+
+Controller29 `20261023T0213324985572Z`: **4 PASS/2 FAIL**,66.455s. Actual
+Default/Gamepad is present, but admission fails before UI actions: the PC
+narrative manager is absent in controller mode and the native console UI
+readiness aggregate is false. The existing controller lifecycle contracts and
+individual readiness predicates require inspection; absent PC objects alone
+cannot prove absence of a controller narrative. No chooser behavior is
+qualified. Exit and all95 original saves/install/settings restore exactly at
+**02:14:54.8070501UTC**, receipt `compat-20261023T021304Z-7303ac65bbbc`.
+Installed IL identifies two observer errors: controller narrative state lives
+in DialogUiContext's three VM references/configured native views, and the
+InGameInputLayer.inGameUiContext field is never assigned. The corrected input
+proof follows the actual bound InGameInputLayerView/VM and the exact layer
+created/pushed by Bind06005D20. Native hidden/unbound narrative state and each
+readiness predicate are recorded; no UI state is forced to earn admission.
+
+Combined production code compiles. Focused OFF admission10/10 PASS. The older
+whole preflight runner stopped at an unrelated private-tools ACL enumeration;
+its failed log is retained and it is not a pass. Final cold protection fixtures
+PASS546/546,48.479s and real-process393/393,37.733s. See the existing cold plan
+for exact directories and late restored-Working protection. Native cold remains
+unexecuted. A source review found no concrete giant cross-instance/native-asset
+mutation defect; actual production attach/visibility/reconstruction remain required.
+
+Subsequent Brachiosaurus mesh `73f3689c5abdda09fb68f9e08182cf671c6a753966bedaf21ebb16877c04c57c`
+blends the lower neck/chest and hip joins, narrows lower supports and removes
+flared foot rims. Inspected front/side/gameplay offline views are improved; exact
+tail/upper-neck/head, skin weights, UVs, paint and gesture remain unchanged.
+It awaits native gait/contact inspection. Fresh-OFF Cloud/Storm compatibility
+view checks and production giant ownership checks are staged for the next candidate.
+
 ### Review28 ordinary attacks and full-rank source observations
 
 Frozen `53fda8c3f62790c2bc28f0b944368396cb457c01`, package

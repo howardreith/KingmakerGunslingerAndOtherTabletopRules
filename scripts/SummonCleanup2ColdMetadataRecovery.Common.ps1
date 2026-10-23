@@ -69,7 +69,7 @@ function Restore-KmgCleanup2ColdPreentryMetadata($Ownership,[string]$ExpectedOwn
         $record.restorationErrors=@($record.restorationErrors)+@($_.Exception.Message)
         try{Write-KmgCleanup2ColdJournal $journal $record}catch{}
     } finally {
-        $late=Wait-KmgCleanup2ColdHandleRelease $record $journal $lease
+        $late=Wait-KmgCleanup2ColdHandleRelease $record $journal $lease $context $Ownership $Environment
         if($lease){$lease.Stream.Dispose()};if($ownerLease){$ownerLease.Dispose()};Close-KmgCleanup2ColdCatalog $context
         if($late -and -not $failure){$failure=$late}
     }

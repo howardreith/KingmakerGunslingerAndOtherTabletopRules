@@ -192,3 +192,64 @@ ratio is 0.752679–1.327635. No artificial pre-act windup is claimed. They prov
 an authored deformation envelope, not current native TRS, ordinary approach,
 enemy contact, timing or owner acceptance. Historical review18 native results
 retain their old asset identity; the changed neck/body needs native inspection.
+
+## Native28 follow-up: Brachiosaurus supports and chest junction
+
+The actual native28 `creature-command-brachiosaurus-ready/contact/post-act-028`
+frames in local run `20261023T0118396309129Z` showed uniform limb tubes,
+flared foot ends and rounded shoulder/hip joins. Tree-driven blue occlusion
+and changing camera views do not establish gait or tail contact. The existing
+original-mesh side/front/gameplay previews independently confirmed the shapes.
+
+`finish_brachiosaurus_supports` now narrows the lower shafts and foot rims,
+blends the upper supports into the flank, and buries the pendant lower-neck
+lip into the sloping chest. A skin-weight-dependent intermediate was rejected
+for visible wrinkles; a stronger short relaxation was rejected for four new
+opposed-normal corners. The final geometric envelope has broad feathered
+boundaries and bounded surface relaxation. Opened final front/side/gameplay
+clay and textured frames show the lower-neck stump and raised hindleg cap
+removed. This is admission for native qualification, not owner art approval.
+
+The original paint is baked before this local sculpture, preserving its exact
+bytes and UV mapping. The exact current export is:
+
+| File | SHA-256 |
+| --- | --- |
+| `brachiosaurus-mesh.json` | `73f3689c5abdda09fb68f9e08182cf671c6a753966bedaf21ebb16877c04c57c` |
+| `brachiosaurus-albedo.png` (unchanged) | `160e4b71ae1335d6df37a0d8eac491e863b82dc272cfe24e42173a6d40107ea4` |
+
+Two clean Blender 4.5.10 generations reproduce both files exactly. The focused
+decoded-byte audit verifies 8,302 vertices/12,836 triangles; identical complete
+UV/triangle/skin-weight bytes; identical metadata/scalars, 29-driver palette,
+rig SHA and `attackGestureTailRig`; all 605 tail position/normal rows exact;
+and 1,880 upper-neck/head position/normal rows at original authored Y>=4.10
+exact. Lower neck/chest rows are deliberately allowed to change. The fixed
+regions include a neighbouring normal-support ring. All source Y values below
+1.30 and the minimum sole Y `-0.025092504918575287` remain exact. The four
+existing pad driver sets retain their Y contacts with width about 0.833->0.674
+and depth about 0.94->0.73 in the same authored frame. No source bone, bind,
+private gesture, root, collider, mechanic, UV or material code changes.
+
+All three surfaces remain closed, consistently wound and positive-volume;
+weights/normals are finite and normalized. The baseline's two opposed-normal
+corners in the protected tail remain exact; there are no new ones. Local
+`artifacts/cleanup2-brachio-supports/verification.json` is the small current
+receipt. `before/clay` and `candidate/clay` contain the three corresponding
+front/side/gameplay views; `candidate/renders` contains the same three textured
+views. These are original rest-frame art previews, not native posed evidence.
+
+Reproduction from this worktree (all cache output stays local):
+
+```powershell
+$env:PYTHONDONTWRITEBYTECODE = '1'
+& 'C:/Dev/.toolchains/blender-4.5.10-windows-x64/blender.exe' -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint25-giant-bodies/refine_giant_bodies.py -- --kind brachiosaurus --output-dir assets/sprint25-giant-bodies --work-dir artifacts/cleanup2-brachio-supports/regenerated
+& 'C:/Dev/.toolchains/blender-4.5.10-windows-x64/4.5/python/bin/python.exe' artifacts/cleanup2-brachio-supports/verify.py
+```
+
+Final localized generation: 7.131 s; exact repeat: 6.879 s; final three textured
+views: 1.857 s; focused decoded-byte audit: 0.340 s. A relative-path preview
+invocation failed to load its albedo; absolute-path rerender succeeded and the
+failure log is retained locally. No native run, production build, shared pin,
+manifest or historical acceptance record was changed by this art task. Native
+gait, ordinary approach/tail appearance, current lighting and owner approval
+remain pending on the new mesh bytes.

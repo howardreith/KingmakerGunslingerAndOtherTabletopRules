@@ -43,7 +43,45 @@ function Write-KmgCleanup2ColdOwnershipNew([string]$Path,$Value) {
     } catch {$stream.Dispose();throw}
 }
 
-function Wait-KmgCleanup2ColdHandleRelease($Record,[string]$JournalPath,$Lease) {
+function Assert-KmgCleanup2ColdFinalRestoration($Ownership,$Context,$Record,$Environment) {
+    Assert-KmgSummonCleanup2NativeExit
+    $errors=New-Object 'Collections.Generic.List[string]'
+    if($Record.workingRestored) {
+        try {Assert-KmgCleanup2ColdRestoredWorking $Context}
+        catch {$Record.workingRestored=$false;$errors.Add('final-working: '+$_.Exception.Message)}
+    }
+    try {Assert-KmgCleanup2ColdCatalog $Context}
+    catch {$errors.Add('final-protected-catalog: '+$_.Exception.Message)}
+    if($Ownership -and $Environment -and $Ownership.kind -ceq 'Cleanup2ColdOriginalWorking') {
+        if($Record.settingsRestored) {
+            try {
+                $settings=Open-KmgSummonCleanup2Settings $Environment.settingsKey $false
+                try {$current=@(Get-KmgFlatGameSettingsValues $settings)}finally{$settings.Dispose()}
+                if(($current|ConvertTo-Json -Depth 12 -Compress) -cne (@($Ownership.settingsSnapshot)|ConvertTo-Json -Depth 12 -Compress)) {
+                    throw 'Original settings changed after restoration; foreign values are preserved.'
+                }
+            } catch {$Record.settingsRestored=$false;$errors.Add('final-settings: '+$_.Exception.Message)}
+        }
+        if($Record.installationRestored) {
+            try {
+                if(-not(Test-KmgCompatibilityManifestEqual @($Ownership.originalManifest) @(Get-KmgCompatibilityDirectoryManifest (Join-Path $Environment.install 'Mods')))) {
+                    throw 'Original installation changed after restoration; foreign files are preserved.'
+                }
+            } catch {$Record.installationRestored=$false;$errors.Add('final-installation: '+$_.Exception.Message)}
+        }
+    }
+    if($errors.Count) {
+        $Record.finalBoundaryDebt=$true;$Record.recoveryRequired=$true;$Record.status='RECOVERY_REQUIRED'
+        $Record.restorationErrors=@($Record.restorationErrors)+@($errors.ToArray())
+        throw ($errors -join '; ')
+    }
+    $metadataOnly=$Record -is [Collections.IDictionary] -and $Record.Contains('metadataOnlyRecovery') -and $Record.metadataOnlyRecovery
+    if($Record.workingRestored -and ($metadataOnly -or ($Record.settingsRestored -and $Record.installationRestored))) {
+        $Record.finalBoundaryDebt=$false
+    }
+}
+
+function Wait-KmgCleanup2ColdHandleRelease($Record,[string]$JournalPath,$Lease,$Context=$null,$Ownership=$null,$Environment=$null) {
     if($Record -isnot [Collections.IDictionary]) {
         foreach($name in @('protectedExitGuard','restoration')) {
             if(-not $Record.PSObject.Properties[$name]){$Record|Add-Member NoteProperty $name $null}
@@ -53,13 +91,7 @@ function Wait-KmgCleanup2ColdHandleRelease($Record,[string]$JournalPath,$Lease) 
     while($true) {
         try {
             Assert-KmgSummonCleanup2NativeExit
-            if($failure) {
-                $metadataOnly=($Record -is [Collections.IDictionary] -and $Record.Contains('metadataOnlyRecovery') -and $Record.metadataOnlyRecovery)
-                $Record.recoveryRequired=(-not ($Record.workingRestored -and ($metadataOnly -or ($Record.settingsRestored -and $Record.installationRestored))))
-                $Record.status=if($Record.recoveryRequired){'RECOVERY_REQUIRED'}else{'FAILED_RESTORED'}
-                try {Write-KmgCleanup2ColdJournal $JournalPath $Record} catch {$Record.restorationErrors=@($Record.restorationErrors)+@($_.Exception.Message)}
-            }
-            return $failure
+            break
         }
         catch {
             $exitFailure=$_
@@ -77,6 +109,34 @@ function Wait-KmgCleanup2ColdHandleRelease($Record,[string]$JournalPath,$Lease) 
             Wait-KmgSummonCleanup2ProtectedExit -Record $Record -RecordPath $JournalPath -ExitFailure $exitFailure
         }
     }
+    if($Context) {
+        try {Assert-KmgCleanup2ColdFinalRestoration $Ownership $Context $Record $Environment}
+        catch {if(-not $failure){$failure=$_};if(-not $Record.error){$Record.error=$_.Exception.Message}}
+    }
+    if($failure) {
+        if(-not $Record.error){$Record.error=$failure.Exception.Message}
+        $metadataOnly=($Record -is [Collections.IDictionary] -and $Record.Contains('metadataOnlyRecovery') -and $Record.metadataOnlyRecovery)
+        $finalDebt=$Record -is [Collections.IDictionary] -and $Record.Contains('finalBoundaryDebt') -and $Record.finalBoundaryDebt
+        $Record.recoveryRequired=$finalDebt -or (-not ($Record.workingRestored -and ($metadataOnly -or ($Record.settingsRestored -and $Record.installationRestored))))
+        $Record.status=if($Record.recoveryRequired){'RECOVERY_REQUIRED'}else{'FAILED_RESTORED'}
+    }
+    $finalGuard=$Lease -and $Lease.PSObject.Properties['FinalRestoredGuard'] -and $Lease.FinalRestoredGuard
+    if($finalGuard -and -not $Record.recoveryRequired) {
+        try {
+            Assert-KmgSummonCleanup2NativeExit;Assert-KmgRuntimeLease $Lease
+            $Lease.Stream.Dispose();Remove-KmgCompatibilityOwnedLock $Lease.LockPath $Lease.RunId
+            $Lease.FinalRestoredGuard=$false;$Record.finalBoundaryDebt=$false
+        } catch {
+            if(-not $failure){$failure=$_};if(-not $Record.error){$Record.error=$_.Exception.Message}
+            $Record.finalBoundaryDebt=$true;$Record.recoveryRequired=$true;$Record.status='RECOVERY_REQUIRED'
+            $Record.restorationErrors=@($Record.restorationErrors)+@($_.Exception.Message)
+        }
+    }
+    if($failure -or $finalGuard) {
+        try {Write-KmgCleanup2ColdJournal $JournalPath $Record}
+        catch {$Record.restorationErrors=@($Record.restorationErrors)+@($_.Exception.Message);if(-not $failure){$failure=$_}}
+    }
+    return $failure
 }
 
 function Invoke-KmgCleanup2ColdLaunch($Plan,[string]$Scenario,$Lease,[string]$Deployment,[string]$ScriptsDirectory) {
@@ -159,6 +219,13 @@ function Restore-KmgCleanup2ColdBoundary($Ownership,$Context,$Record,[string]$Jo
             $restoredManifest=@(Get-KmgCompatibilityDirectoryManifest (Join-Path $Environment.install 'Mods'))
             if(-not $state.restorationVerified -or -not(Test-KmgCompatibilityManifestEqual @($Ownership.originalManifest) $restoredManifest)) {throw 'Cold original installation restoration is unverified.'}
             $Record.installationRestored=$true
+            # The generic restore discharges its own lock. Reacquire the same
+            # exact owner before final protected-exit/revalidation; never steal
+            # an intervening foreign transaction. Working remains read-leased.
+            $lock=Acquire-KmgCompatibilityLock $Environment.stateRoot $Ownership.runId
+            $Lease.Stream=[IO.File]::Open($lock,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+            $Lease|Add-Member NoteProperty FinalRestoredGuard $true -Force
+            $Record.finalBoundaryDebt=$true
         } catch {$errors.Add('installation: '+$_.Exception.Message)}
     }
     $Record.restorationErrors=@($errors.ToArray());$Record.recoveryRequired=($errors.Count -gt 0)
@@ -188,7 +255,7 @@ function Invoke-KmgCleanup2ColdCurrentStackTransaction($Plan,$Environment) {
     $record=[ordered]@{schemaVersion=1;runId=$runId;status='PREFLIGHT';ownerProcessId=$PID;ownerStartedUtcTicks=(Get-Process -Id $PID).StartTime.ToUniversalTime().Ticks;
         candidate=$Plan.candidate;persistenceScope='giant-humanoids-ii';saveName='KMG_AUTOMATION_WORKING';nativeAttempted=$false;
         phases=@();error=$null;workingRestored=$false;settingsRestored=$false;installationRestored=$false;recoveryRequired=$false;restorationErrors=@();
-        protectedExitGuard=$null;restoration=$null;backupReady=$false;metadataOnlyRecovery=$false}
+        protectedExitGuard=$null;restoration=$null;backupReady=$false;metadataOnlyRecovery=$false;finalBoundaryDebt=$false}
     try {
         $settings=Open-KmgSummonCleanup2Settings $Environment.settingsKey $false
         try {$settingsSnapshot=@(Get-KmgFlatGameSettingsValues $settings)} finally {$settings.Dispose()}
@@ -282,7 +349,7 @@ function Invoke-KmgCleanup2ColdCurrentStackTransaction($Plan,$Environment) {
                 if($ownership){try{Write-KmgCleanup2ColdJournal $journal $record}catch{}}
             }
         }
-        $lateFailure=Wait-KmgCleanup2ColdHandleRelease $record $journal $lease
+        $lateFailure=Wait-KmgCleanup2ColdHandleRelease $record $journal $lease $context $ownership $Environment
         if($lateFailure -and -not $failure){$failure=$lateFailure}
         if($lease){$lease.Stream.Dispose()}
         if($ownershipLease){$ownershipLease.Dispose()}
@@ -335,16 +402,19 @@ function Restore-KmgCleanup2ColdCurrentStackTransaction([string]$RunId,[string]$
     $state=Read-KmgCompatibilityJson (Join-Path $runRoot 'transaction.json')
     if($state.runId -cne $RunId -or $state.profileId -cne 'cleanup2-cold-exact-current-intake' -or
         -not(Test-KmgCompatibilityManifestEqual @($ownership.originalManifest) @($state.originalManifest))){throw 'Cold compatibility transaction identity differs.'}
-    if($state.status -ceq 'Restored'){throw 'Cold installation transaction is already restored; repeated recovery cannot overwrite later Working/settings state.'}
+    $finalOnly=$state.status -ceq 'Restored' -and $record.recoveryRequired -and
+        $record.Contains('finalBoundaryDebt') -and $record.finalBoundaryDebt
+    if($state.status -ceq 'Restored' -and -not $finalOnly){throw 'Cold installation transaction is already restored; repeated recovery cannot overwrite later Working/settings state.'}
     $context=$null;$lease=$null;$ownershipLease=$null
     try {
-        if($state.status -cne 'Restored') {
+        if($state.status -cne 'Restored' -or $finalOnly) {
             $lock=Join-Path $Environment.stateRoot 'compatibility.lock'
             if((Get-Content -LiteralPath $lock -Raw).Trim() -cne $RunId){throw 'Cold recovery does not own compatibility.lock.'}
             $exclusive=[IO.File]::Open($lock,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::None)
             $exclusive.Dispose()
             $stream=[IO.File]::Open($lock,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
             $lease=[pscustomobject]@{RunId=$RunId;LockPath=$lock;ProcessId=$PID;Stream=$stream;Compatibility=$true}
+            if($finalOnly){$lease|Add-Member NoteProperty FinalRestoredGuard $true}
             Assert-KmgRuntimeLease $lease
         } elseif(-not $state.restorationVerified){throw 'Cold recovered installation state is not verified.'}
         Assert-KmgSummonCleanup2NativeExit
@@ -358,10 +428,17 @@ function Restore-KmgCleanup2ColdCurrentStackTransaction([string]$RunId,[string]$
         }
         $catalog.Files=@($ownership.allFiles|Where-Object {$_.path -cne $ownership.working.path})
         if($record.nativeAttempted){$context.backupLease=[IO.File]::Open($ownership.backupPath,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)}
-        Restore-KmgCleanup2ColdBoundary $ownership $context $record $journal $Environment $lease
+        if($finalOnly) {
+            # No byte/settings/install restoration over later human activity.
+            # Only an exact original state may discharge this final-check debt.
+            Protect-KmgCleanup2ColdRestoredWorking $context
+            $record.workingRestored=$true;$record.settingsRestored=$true;$record.installationRestored=$true
+            Assert-KmgCleanup2ColdFinalRestoration $ownership $context $record $Environment
+            $record.recoveryRequired=$false;$record.status='FAILED_RESTORED'
+        } else {Restore-KmgCleanup2ColdBoundary $ownership $context $record $journal $Environment $lease}
         return [pscustomobject]@{kind='Cleanup2ColdRecoveryReceipt';runId=$RunId;status=$record.status;ownershipSha256=$ExpectedOwnershipSha256}
     } finally {
-        $lateFailure=Wait-KmgCleanup2ColdHandleRelease $record $journal $lease
+        $lateFailure=Wait-KmgCleanup2ColdHandleRelease $record $journal $lease $context $ownership $Environment
         if($lease){$lease.Stream.Dispose()};if($ownershipLease){$ownershipLease.Dispose()};Close-KmgCleanup2ColdCatalog $context
         if($lateFailure){throw $lateFailure}
     }

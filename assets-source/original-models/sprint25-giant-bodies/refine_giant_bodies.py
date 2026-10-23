@@ -319,6 +319,104 @@ def finish_brachiosaurus(obj, weights):
             "tailPositionsWeightsUvTopologyPreserved": True}
 
 
+def finish_brachiosaurus_supports(obj, weights):
+    """Original leg/chest sculpture after painting the established UV atlas.
+
+    The reviewed upper neck/head and tail, including their one-ring normal
+    support, are fixed. Lower neck/chest joins may blend into the torso.
+    Only existing vertices move; driver rows and contact planes stay.
+    """
+    def smooth(a, b, value):
+        t = max(0., min(1., (value-a)/(b-a)))
+        return t*t*(3.-2.*t)
+
+    before = [vertex.co.copy() for vertex in obj.data.vertices]
+    protected = {i for i, row in weights.items() if any(
+        (name.startswith("Tail") or (name in ("Head", "Neck") and before[i].y >= 4.10)) and weight > 0.
+        for name, weight in row)}
+    fixed = set(protected)
+    neighbours = [[] for _ in obj.data.vertices]
+    for edge in obj.data.edges:
+        a, b = edge.vertices
+        neighbours[a].append(b)
+        neighbours[b].append(a)
+        if a in protected or b in protected:
+            fixed.update((a, b))
+    feather = [0. if i in fixed else 1. for i in range(len(before))]
+    visited, frontier = set(fixed), set(fixed)
+    for ring in range(1, 7):
+        frontier = {near for index in frontier for near in neighbours[index]}-visited
+        visited.update(frontier)
+        for index in frontier:
+            feather[index] = smooth(0., 6., ring)
+    relax = {}
+    for vertex in obj.data.vertices:
+        if vertex.index in fixed:
+            continue
+        p = before[vertex.index]
+        if not -.06 < p.y < 4.10:
+            continue
+        centre = 1.-smooth(.30, .90, abs(p.x))
+        lower_neck = smooth(2.65, 3.0, p.y)*(1.-smooth(3.80, 4.10, p.y))
+        front_neck = smooth(1.30, 1.75, -p.z)*lower_neck*centre*feather[vertex.index]
+        if front_neck:
+            # Bury the hanging lower-neck lip in a continuous sloping chest,
+            # rather than retaining a pendant stump beneath the neck root.
+            envelope = -1.45-.32*(p.y-3.10)
+            if p.z < envelope:
+                vertex.co.z += .90*front_neck*(envelope-p.z)
+            vertex.co.y += .24*front_neck
+            relax[vertex.index] = .35*front_neck
+        p = vertex.co.copy()
+        front = p.z < 0.
+        sign = 1. if p.x >= 0. else -1.
+        # Follow the published authored chain centres, not a new skeleton.
+        y = min(3.55, max(.38, p.y))
+        if front:
+            cx = sign*(.70+.10*smooth(1.35, 3.65, y))
+            cz = -1.57+.30*smooth(.38, 3.65, y)
+        else:
+            cx = sign*(.69+.12*smooth(1.28, 3.36, y))
+            cz = 1.39+.31*smooth(.38, 3.36, y)
+        distance = math.sqrt((p.x-cx)**2+(p.z-cz)**2)
+        influence = (1.-smooth(.65, 1.05, distance))*feather[vertex.index]
+        if influence == 0.:
+            continue
+        lower = 1.-smooth(.48, .90, p.y)
+        # Remove the widened foot lip, leaving a compact continuous pad. The
+        # sole Y and its original centre are unchanged; no toe is invented.
+        radial_x = 1.-influence*(.18*lower+.09*math.exp(-((p.y-1.45)/.85)**2))
+        radial_z = 1.-influence*(.22*lower+.07*math.exp(-((p.y-1.45)/.85)**2))
+        vertex.co.x = cx+(p.x-cx)*radial_x
+        vertex.co.z = cz+(p.z-cz)*radial_z
+        # Draw the round upper support cap into the flank/chest envelope.
+        # A broad smooth falloff replaces the bead-like hip/shoulder ridge
+        # without a new seam or a hard weight-threshold boundary.
+        upper = influence*smooth(2.05, 2.65, p.y)*(1.-smooth(3.25, 4.10, p.y))
+        outer = smooth(.65, 1.15, abs(p.x))
+        vertex.co.x -= sign*.16*upper*outer
+        vertex.co.z = cz+(vertex.co.z-cz)*(1.-.07*upper*outer)
+        vertex.co.y += .06*upper*outer
+        if p.y > 1.30:
+            # The broad lower blend avoids bunching triangles at a short,
+            # immobile upper-leg boundary while smoothing the raised hip cap.
+            relax[vertex.index] = max(relax.get(vertex.index, 0.), .40*influence*
+                smooth(1.30, 2.65, p.y)*(1.-smooth(3.45, 4.10, p.y)))
+    # A bounded surface relaxation blends the socket into the original flank.
+    # It uses geometry alone, avoiding visible transfer-weight contours. The
+    # fixed upper-neck/tail normal-support rings and soles remain immobile.
+    for _ in range(48):
+        points = [vertex.co.copy() for vertex in obj.data.vertices]
+        for index, amount in relax.items():
+            average = sum((points[i] for i in neighbours[index]), Vector())/len(neighbours[index])
+            obj.data.vertices[index].co = points[index].lerp(average, amount)
+    obj.data.update()
+    return {"changedOriginalVertices": sum((v.co-before[v.index]).length > 1e-8 for v in obj.data.vertices),
+            "fixedUpperNeckHeadTailAndNormalSupportVertices": len(fixed),
+            "soleYUnchanged": True, "allSkinUvTopologyUnchanged": True,
+            "nativeSkeletonWritten": False}
+
+
 def main():
     parser=argparse.ArgumentParser()
     parser.add_argument("--kind",choices=("elephant","brachiosaurus"),required=True)
@@ -333,6 +431,9 @@ def main():
     finish = finish_brachiosaurus(obj, weights) if args.kind == "brachiosaurus" else None
     albedo=out/(args.kind+"-albedo.png")
     cb.bake_albedo(obj,1024,colour_field(args.kind),albedo)
+    # Keep the established original paint bytes. This localized shape finish
+    # reuses its exact UV atlas rather than repainting changed limb positions.
+    supports = finish_brachiosaurus_supports(obj, weights) if args.kind == "brachiosaurus" else None
     cb.attach_albedo_preview(obj,albedo)
     # Preserve exact existing unit, donor and runtime schema contracts.
     extra={k:v for k,v in source.payload.items() if k not in {
@@ -343,6 +444,8 @@ def main():
         source.payload["rigSha256"],albedo,source.payload["space"],extra)
     if finish:
         report["localSculpture"] = finish
+    if supports:
+        report["supportSculpture"] = supports
     if args.kind == "brachiosaurus":
         from repair_brachiosaurus_tail_weights import repair
         report["tailGestureWeights"] = repair(out/(args.kind+"-mesh.json"))

@@ -30,6 +30,17 @@ commands pass28/0 on the **prior** Crab geometry; its Constrict attribution
 correction is mechanical observer evidence, not qualification of this new mesh.
 Old FAIL records remain unchanged. Brachiosaurus tail policy/binds are unchanged.
 
+Review29 `20261023T0153220984616Z` stops15PASS/1FAIL before any command because
+all camera candidates hit scenery. The former visibility targets included
+empty padded corners/below-foot space, and the first lane rose over1m. The
+replacement keeps the complete padded projection/feet while surveying actual
+baked surface landmarks and bounded flatter native-supported lanes. Native
+Translocate calls ForcePlaceAboveGround; graphY is not rootY. Its exact standing
+ray sequence supplies recorded real ground roots, independently confirmed
+against actual placement. No terrain name is exempted or scenery hidden.
+Completed native renders, exact camera restoration and actual command timing
+remain mandatory. New Crab and refined Brachiosaurus geometry await this run.
+
 ## Scope and status
 
 Original private render-palette gestures are authored for the registered summoned

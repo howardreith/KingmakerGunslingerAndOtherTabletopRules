@@ -1,6 +1,28 @@
 # Cleanup 2 giant render scale prototype
 
-## Experimental scope
+## Current production admission, October 23
+
+Review29 `ed83d7dc47c0`, run `20261023T0148568542755Z`, passes93/0:
+the initialized copied native cape preserves its exact configuration and six
+poses, and the separate authored paired grids positively demonstrate contact
+against disabled private capsules. Exact pins/coefficients, actual Unity time,
+penetration difference and private release are recorded in the existing follow-up.
+Earlier failed contact probes retain their original verdicts.
+
+This opens only the exact Frozen cape signature already enforced by
+`ProductionClothAdmission`. Ordinary production integration uses instance-owned
+visual proxies with Hill1,Stone1.2,Fire1.4,Frost1.5,Cloud1.8,Storm2.1 factors and
+the native body sole pivot. Gameplay roots, collision/navigation/reach/statistics
+remain native. Renderer-cache/highlight membership and native visibility calls
+are coordinated without refreshing gameplay collider caches; release checks
+preserve borrowed materials and any foreign references.
+
+Production lineup, multiple-instance/visibility/selection/release, fresh OFF
+and Cloud/Storm cold reconstruction still require execution on the gate-open
+candidate. Review28's inspected clear comparison is explicitly experimental
+height evidence. It is not production qualification or owner acceptance.
+
+## Original experimental scope (historical)
 
 `RuntimeTesting/Cleanup2GiantRenderScalePrototype.cs` is an additive,
 request-owned experiment. There is no production registration, default
