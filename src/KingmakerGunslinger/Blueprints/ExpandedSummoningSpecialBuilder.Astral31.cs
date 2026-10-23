@@ -388,16 +388,26 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnit unit)
         {
             const string nativeGuid = "95f7cdcec94e293489a85afdf5af1fd7";
+            const string nativeTouchGuid = "17451c1327c571641a1345bd31155209";
             var native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
-                library, nativeGuid, "native Dismissal held-touch spell");
-            var nativeSticky = native.GetComponents<AbilityEffectStickyTouch>()
-                .SingleOrDefault();
-            BlueprintAbility nativeDelivery = nativeSticky == null ? null :
-                nativeSticky.TouchDeliveryAbility;
-            if (nativeDelivery == null || nativeDelivery.GetComponents<
-                    AbilityDeliverTouch>().Count() != 1)
+                library, nativeGuid, "native Dismissal effect graph");
+            AbilityEffectRunAction[] nativeRuns = native.GetComponents<
+                AbilityEffectRunAction>().ToArray();
+            var nativeTouchDonor = BlueprintLibraryLookup.RequireExact<
+                BlueprintAbility>(library, nativeTouchGuid,
+                    "qualified native held-touch delivery weapon");
+            var nativeTouch = nativeTouchDonor.GetComponents<
+                AbilityDeliverTouch>().SingleOrDefault();
+            if (nativeRuns.Length == 0 || nativeTouch?.TouchWeapon == null)
                 throw new InvalidOperationException(
-                    "Native Dismissal no longer has one held-touch delivery.");
+                    "Native Dismissal has no direct effect graph, or the qualified " +
+                    "held-touch donor has no delivery weapon. dismissal=" +
+                    string.Join(",", (native.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Select(value =>
+                            value.GetType().FullName)) + ";touch=" +
+                    string.Join(",", (nativeTouchDonor.ComponentsArray ??
+                        Array.Empty<BlueprintComponent>()).Select(value =>
+                            value.GetType().FullName)));
 
             string familySymbol = Astral31Prefix + "DispelEvil";
             string dismissalSymbol = Astral31Prefix + "DispelEvilDismissal";
@@ -431,10 +441,19 @@ namespace KingmakerGunslinger.Blueprints
             ward.ComponentsArray = new BlueprintComponent[] {
                 ac, lifetime, wardDescriptor };
 
-            CopyFields(nativeDelivery, dismissalTouch);
+            CopyFields(nativeTouchDonor, dismissalTouch);
             dismissalTouch.name = InternalName(dismissalTouchSymbol);
             dismissalTouch.Parent = dismissal;
             dismissalTouch.Type = AbilityType.SpellLike;
+            dismissalTouch.Range = AbilityRange.Touch;
+            dismissalTouch.CanTargetPoint = false;
+            dismissalTouch.CanTargetSelf = false;
+            dismissalTouch.CanTargetFriends = true;
+            dismissalTouch.CanTargetEnemies = true;
+            dismissalTouch.SpellResistance = true;
+            dismissalTouch.NeedEquipWeapons = false;
+            dismissalTouch.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            dismissalTouch.EffectOnAlly = AbilityEffectOnUnit.Harmful;
             dismissalTouch.Hidden = true;
             dismissalTouch.ActionBarAutoFillIgnored = true;
             dismissalTouch.MaterialComponent = new BlueprintAbility.MaterialComponentData();
@@ -446,13 +465,26 @@ namespace KingmakerGunslinger.Blueprints
             var dismissalMarker = ScriptableObject.CreateInstance<
                 AstralDispelEvilDeliveryMarker>();
             dismissalMarker.Ward = ward;
-            dismissalTouch.ComponentsArray = (nativeDelivery.ComponentsArray ??
-                Array.Empty<BlueprintComponent>()).Select(
-                    ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+            var dismissalDelivery = (AbilityDeliverTouch)
+                ExpandedSummoningAbilityBuilder.DeepCloneComponent(nativeTouch);
+            dismissalTouch.ComponentsArray = new BlueprintComponent[] {
+                    dismissalDelivery }
+                .Concat(nativeRuns.Select(
+                    ExpandedSummoningAbilityBuilder.DeepCloneComponent))
+                .Concat((native.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<SpellComponent>()
+                    .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
+                .Concat((native.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<
+                        SpellDescriptorComponent>().Select(
+                            ExpandedSummoningAbilityBuilder.DeepCloneComponent))
+                .Concat((native.ComponentsArray ??
+                    Array.Empty<BlueprintComponent>()).OfType<AbilitySpawnFx>()
+                    .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
                 .Concat(new BlueprintComponent[] { dismissalChecker,
                     dismissalMarker }).ToArray();
 
-            CopyFields(nativeDelivery, dispelTouch);
+            CopyFields(nativeTouchDonor, dispelTouch);
             dispelTouch.name = InternalName(dispelTouchSymbol);
             dispelTouch.Parent = dispel;
             dispelTouch.Type = AbilityType.SpellLike;
@@ -471,7 +503,7 @@ namespace KingmakerGunslinger.Blueprints
             dispelTouch.ResourceAssetIds = Array.Empty<string>();
             var touch = (AbilityDeliverTouch)
                 ExpandedSummoningAbilityBuilder.DeepCloneComponent(
-                    nativeDelivery.GetComponents<AbilityDeliverTouch>().Single());
+                    nativeTouch);
             var target = ScriptableObject.CreateInstance<
                 AstralDispelEvilTargetChecker>();
             var action = ScriptableObject.CreateInstance<
@@ -489,7 +521,7 @@ namespace KingmakerGunslinger.Blueprints
             dispelMarker.Ward = ward;
             dispelTouch.ComponentsArray = new BlueprintComponent[] {
                 touch, target, run, school, good, dispelMarker }
-                .Concat((nativeDelivery.ComponentsArray ??
+                .Concat((nativeTouchDonor.ComponentsArray ??
                     Array.Empty<BlueprintComponent>()).OfType<AbilitySpawnFx>()
                     .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent))
                 .ToArray();

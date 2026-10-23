@@ -133,9 +133,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var native = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
                     BlueprintBootstrap.Library,
                     "95f7cdcec94e293489a85afdf5af1fd7",
-                    "native Dismissal held-touch graph");
-                BlueprintAbility nativeTouch = native.GetComponents<
-                    AbilityEffectStickyTouch>().Single().TouchDeliveryAbility;
+                    "native Dismissal effect graph");
+                var nativeTouchDonor = BlueprintLibraryLookup.RequireExact<
+                    BlueprintAbility>(BlueprintBootstrap.Library,
+                        "17451c1327c571641a1345bd31155209",
+                        "qualified native held-touch delivery weapon");
+                AbilityDeliverTouch nativeTouch = nativeTouchDonor.GetComponents<
+                    AbilityDeliverTouch>().SingleOrDefault();
+                AbilityEffectRunAction[] nativeRuns = native.GetComponents<
+                    AbilityEffectRunAction>().ToArray();
+                AbilityEffectRunAction[] dismissalRuns = dismissalTouch.GetComponents<
+                    AbilityEffectRunAction>().ToArray();
 
                 Ability root = dismissalOwner.Descriptor.Abilities.GetAbility(family);
                 var dismissalData = root == null ? null : new AbilityData(
@@ -148,11 +156,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ?.Variants ?? Array.Empty<BlueprintAbility>();
                 bool deliveryGraph = dismissalTouch.GetComponents<
                         AbilityDeliverTouch>().Count() == 1 &&
-                    nativeTouch.GetComponents<AbilityDeliverTouch>().Count() == 1 &&
-                    dismissalTouch.ComponentsArray.Count(value => value.GetType() ==
-                        typeof(AbilityEffectRunAction)) ==
-                    nativeTouch.ComponentsArray.Count(value => value.GetType() ==
-                        typeof(AbilityEffectRunAction)) &&
+                    nativeTouch?.TouchWeapon != null && ReferenceEquals(
+                        dismissalTouch.GetComponent<AbilityDeliverTouch>()
+                            .TouchWeapon, nativeTouch.TouchWeapon) &&
+                    nativeRuns.Length > 0 && dismissalRuns.Length ==
+                        nativeRuns.Length && !dismissalRuns.Any(value =>
+                            nativeRuns.Contains(value)) && nativeRuns.GroupBy(value =>
+                                value.GetType()).All(group => dismissalRuns.Count(value =>
+                                    value.GetType() == group.Key) == group.Count()) &&
+                    dismissalTouch.SpellResistance &&
                     dismissalTouch.GetComponent<
                         AstralDispelEvilDismissalTargetChecker>() != null &&
                     dismissalTouch.GetComponent<
@@ -200,6 +212,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["dismissalTouch"] = dismissalTouch.AssetGuid,
                         ["dispelTouch"] = dispelTouch.AssetGuid,
                         ["nativeDismissal"] = native.AssetGuid,
+                        ["nativeDismissalComponents"] = new JArray(
+                            native.ComponentsArray.Select(value =>
+                                value.GetType().FullName)),
+                        ["nativeDismissalRunActions"] = nativeRuns.Length,
+                        ["dismissalTouchRunActions"] = dismissalRuns.Length,
+                        ["nativeTouchWeapon"] = nativeTouch?.TouchWeapon?.AssetGuid,
                         ["dismissalCl"] = dismissalParameters?.CasterLevel,
                         ["dismissalSpellLevel"] = dismissalParameters?.SpellLevel,
                         ["dismissalDc"] = dismissalParameters?.DC,
@@ -211,7 +229,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["wardStacking"] = ward.Stacking.ToString(),
                         ["aiActions"] = ai.Length,
                         ["resources"] = 0, ["manualOnly"] = true },
-                    "The visible at-will family owns exactly two CL13/level5/live-DC21 variants, preserves the installed Dismissal held-touch graph, and maps its private automatic-dispel touch and finite +4 deflection ward without AI or a resource.");
+                    "The visible at-will family owns exactly two CL13/level5/live-DC21 variants, deep-clones the installed Dismissal effect graph onto the qualified native melee-touch delivery, and maps its private automatic-dispel touch and finite +4 deflection ward without AI or a resource.");
                 if (!mapping) throw new InvalidOperationException(
                     "Astral Dispel Evil native mapping failed.");
 
