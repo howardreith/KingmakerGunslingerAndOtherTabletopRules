@@ -1,5 +1,12 @@
 # Kingmaker Gunslinger
 
+The **0.0.164-expanded-summoning-cleanup2** release redraws eight Expanded
+Summoning creature bodies and the two-headed Ettin, gives the six giant families
+their own palettes and visual heights, and makes summon menus clearer: the
+painted Horse icon, family-first names, Druid conversion rows, alternate-summoner
+menus and a source-preserving elemental chooser. Rules and saved identities are
+unchanged. See the [v0.0.164 release notes](docs/RELEASE-NOTES-0.0.164.md).
+
 The **0.0.162-expanded-summoning-sprint28-giants** release adds adult Hill,
 Stone, and Fire Giants as eleven Summon Nature's Ally-only roots with owned
 equipment, rock throwing/catching, distinct bodies, and painted icons. See the
@@ -56,6 +63,13 @@ creature, route, art and historical qualification record remains in the
 Sprint 22 remains released and unchanged.
 
 ### Current release
+
+Version **0.0.164-expanded-summoning-cleanup2** keeps every identity, route and
+summon choice of v0.0.163 (1,156 visible choices). It changes creature art, the
+giant palettes and visual heights, the Horse icon and summon presentation. See
+the [v0.0.164 release notes](docs/RELEASE-NOTES-0.0.164.md).
+
+### Earlier releases
 
 Version **0.0.158-expanded-summoning-visual-refinement** keeps every identity,
 route and summon choice of v0.0.157: the 1,122 spell summon choices and the

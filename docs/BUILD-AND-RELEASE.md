@@ -1,5 +1,39 @@
 # Build, package, and publish
 
+## 0.0.164 Cleanup 2 publication authorization
+
+On 2026-10-23, after reviewing the Summon Cleanup Iteration 2 gallery and a
+Pro code review, the owner wrote "The artwork looks great" and authorized the
+release once the review's checks are clear. That covers the v0.0.164 release
+validator and Sprint-level candidate gate, merging PR #67 into master,
+publishing through `Publish-Release.ps1`, and checking the public download. The
+release is 0.0.164, one above the published 0.0.163; the publisher checks the
+tag again.
+
+`tools/validate_expanded_summoning_cleanup2_release164.py` admits, relative to
+released v0.0.163 master `a35a3277a9`:
+- no identity change;
+- the 73 pinned Cleanup 2 production files and the version metadata;
+- the 62 pinned project lines (compile items, the UniRx and Cloth module
+  references and the Gorgon parameter content);
+- the 33 pinned modified and 22 pinned added assets and source-art files, at
+  exactly their reviewed bytes;
+- its own static record.
+
+The released Sprint 29 roster and 1,156-choice census still hold. The
+historical sprint and release validators stay as they were.
+
+The branch passes one Sprint-level release candidate gate and a guarded
+creature review on that candidate. Its PR then merges normally, and the
+ordinary exact-reference publisher runs from clean, pushed `master`:
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -Publish -ConfirmReleaseReady
+```
+
+Known limits are listed in `docs/RELEASE-NOTES-0.0.164.md`.
+
 ## Selected Sprint 25 exact-artifact publication
 
 The owner explicitly authorized native qualification, public promotion, PR #49
