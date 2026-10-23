@@ -9,13 +9,13 @@ namespace KingmakerGunslinger.DomainTests
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
         // Abilities are23 scoped roots plus twenty private abilities (Dretch2,
         // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier/Cure/See
-        // plus eight native mappings and Holy Smite).
-        internal const int RegisteredAbilityIdentityCount = 23 + 20;
+        // plus eight native mappings, Holy Smite and five Dispel Evil abilities).
+        internal const int RegisteredAbilityIdentityCount = 23 + 25;
         internal const int RegisteredAreaIdentityCount = 3;
         internal const int RegisteredResourceIdentityCount = 6;
         internal const int RegisteredAiIdentityCount = 9;
         internal const int RegisteredBrainIdentityCount = 4;
-        internal const int RegisteredBuffIdentityCount = 9;
+        internal const int RegisteredBuffIdentityCount = 10;
         internal const int RegisteredFeatureIdentityCount = 8;
         internal const int RegisteredWeaponIdentityCount = 9;
         internal const int RegisteredSpellbookIdentityCount = 1;
@@ -108,6 +108,16 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteDamage(40, false, false), "Neutral failed save takes half damage.");
             Assertions.Equal(10, AstralDevaRulesPolicy.HolySmiteDamage(40, false, true), "Neutral successful save takes one-quarter damage.");
             Assertions.True(AstralDevaRulesPolicy.HolySmiteBlinds(true, false) && !AstralDevaRulesPolicy.HolySmiteBlinds(true, true) && !AstralDevaRulesPolicy.HolySmiteBlinds(false, false), "Only evil creatures that fail are blinded.");
+            Assertions.Equal(5, AstralDevaRulesPolicy.DispelEvilSpellLevel, "Dispel Evil retains its fifth-level SLA parameters.");
+            Assertions.Equal(21, AstralDevaRulesPolicy.DispelEvilWillDc(23), "The Dismissal discharge uses live Charisma at fifth level.");
+            Assertions.Equal(13, AstralDevaRulesPolicy.DispelEvilDurationRounds(13), "The ward lasts one round per caster level.");
+            Assertions.Equal(4, AstralDevaRulesPolicy.DispelEvilArmorClassBonus, "The ward retains its printed deflection bonus.");
+            Assertions.True(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, true, false, false), "An evil spell is eligible regardless of caster alignment.");
+            Assertions.True(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, false, true, true), "An enchantment from an evil caster is eligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, false, true, false), "A non-evil enchantment from a non-evil caster is ineligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, false, false, true), "An unrelated spell from an evil caster is ineligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(false, false, true, true, true), "A non-spell effect is ineligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(true, true, true, true, true), "A nondispellable spell remains protected.");
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");

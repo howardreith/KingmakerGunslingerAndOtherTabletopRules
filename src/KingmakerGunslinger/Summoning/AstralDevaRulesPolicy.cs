@@ -45,6 +45,8 @@ namespace KingmakerGunslinger.Summoning
         internal const int HolySmiteOrdinaryDice = 5;
         internal const int HolySmiteEvilOutsiderDice = 10;
         internal const int HolySmiteBlindRounds = 1;
+        internal const int DispelEvilSpellLevel = 5;
+        internal const int DispelEvilArmorClassBonus = 4;
         internal static bool HasGoodSummoningDescriptor { get { return true; } }
         internal static bool HasLawSummoningDescriptor { get { return false; } }
 
@@ -93,6 +95,20 @@ namespace KingmakerGunslinger.Summoning
         internal static bool HolySmiteBlinds(bool evil, bool saved)
         { return evil && !saved; }
 
+        internal static int DispelEvilWillDc(int liveCharismaScore)
+        { return 10 + DispelEvilSpellLevel + Modifier(liveCharismaScore); }
+
+        internal static int DispelEvilDurationRounds(int casterLevel)
+        { return Math.Max(1, casterLevel); }
+
+        internal static bool CanDispelEvilEffect(bool fromSpell,
+            bool notDispellable, bool evilDescriptor, bool enchantment,
+            bool evilCaster)
+        {
+            return fromSpell && !notDispellable &&
+                (evilDescriptor || enchantment && evilCaster);
+        }
+
         internal static bool BlocksLesserGlobe(int spellLevel, bool spell,
             bool spellLike, float sourceDistanceMeters, float sourceCorpulenceMeters)
         {
@@ -119,6 +135,13 @@ namespace KingmakerGunslinger.Summoning
                 HolySmiteDiceCount(true) != 10 || HolySmiteDieSides(true) != 6 ||
                 HolySmiteWillDc(Charisma) != 20 ||
                 HolySmiteDamage(40, false, true) != 10 ||
+                DispelEvilSpellLevel != 5 || DispelEvilArmorClassBonus != 4 ||
+                DispelEvilWillDc(Charisma) != 21 ||
+                DispelEvilDurationRounds(SpellLikeCasterLevel) != 13 ||
+                !CanDispelEvilEffect(true, false, true, false, false) ||
+                !CanDispelEvilEffect(true, false, false, true, true) ||
+                CanDispelEvilEffect(true, false, false, true, false) ||
+                CanDispelEvilEffect(true, true, true, false, true) ||
                 SpellLikeCasterLevel == HitDice || !HasGoodSummoningDescriptor ||
                 HasLawSummoningDescriptor)
                 throw new InvalidOperationException("Astral adult rules policy changed.");
