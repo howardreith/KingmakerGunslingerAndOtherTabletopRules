@@ -194,7 +194,9 @@ namespace KingmakerGunslinger.Summoning
     [HarmonyPatch(typeof(SpellBookView),"RefreshSpellsView")]
     internal static class ElementalPreparationRowsPatch
     {
-        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookView),"RefreshSpellsView",730);}
+        // Installed 2.1.7b RefreshSpellsView 06004838 is 731 IL bytes; the
+        // former 730 pin silently left this preparation fold uninstalled.
+        private static bool Prepare(){return ElementalNativeRowsPresentation.Exact(typeof(SpellBookView),"RefreshSpellsView",731);}
         private static void Prefix(SpellBookView __instance){ElementalNativeRowsPresentation.Safe(__instance,()=>ElementalNativeSourceFold.Release(__instance));}
         private static void Postfix(SpellBookView __instance){ElementalNativeRowsPresentation.Safe(__instance,()=>ElementalNativeRowsPresentation.Preparation(__instance));}
     }

@@ -6,7 +6,50 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review36 recovery state (current, October 23)
+### Review37 results and review38 corrections (current, October 23)
+
+Frozen review37 source `12af3f45a44b7a74deb46c700c715e5cec3ee03f`, fingerprint
+`43893147b1e9b0ec0c2829c2739fdc69a9315a226152ac591bbdbbde7c7ec8ab`; package
+`84c1e9d66af38d201550990c81cb1fd5a0145ac643026d3abb69e98a448a6346`, DLL
+`98ea5c35b0133f758e81252799e3cfd8bcee12e05ba52e67d64df40de59cda6f`, MVID
+`bcdb878d-da40-41ef-a9da-b11ae59ed5dd`. One build (184.4s): compilation, package,
+23 selected cases and 24/24 installed targets pass. The unchanged cold transaction
+fixtures were rerun on these exact CRLF bytes: **590/0, 70.4s**,
+`artifacts/cleanup2-currentstack-tests/c4ea5f7e636446cea5cbd25a13d1f0d0` (no game).
+
+Window17 ran 10:15:52 to 10:28:47 UTC (12m55s); both transactions restored.
+
+- Menu adapters with alternate sources **FAIL 11/2, 240.1s**, raw
+  `20261023T1017349307368Z`. It stopped at the first canonical SM II Horse popup,
+  before any Druid route. Cause is harness timing, not product: this session
+  now renders 1920x1200 (review36: 1920x1080) at about 36 fps, so the fixed
+  16-frame settle lasted 0.44s instead of 1.01s. The native HUD `UpperPart`
+  `MoveAnimator` (unscaled DOTween) was still sliding; the popup snapshot source
+  rect was 46.7px below its live rect and admission correctly refused.
+- PC learning **FAIL 11/2, 187.0s**, raw `20261023T1027154797158Z`. The review37
+  singleton-book and native close-tween corrections pass natively
+  (`native-book-selection`, `native-book-close`). The disclosure then reports
+  `not-used`. **Product defect:** `ElementalPreparationRowsPatch.Prepare` pinned
+  `SpellBookView.RefreshSpellsView` at 730 IL bytes; installed 06004838 is 731,
+  so Harmony never installed the PC preparation fold. No earlier native run ever
+  recorded a fold outcome. The installed-target checker did not cover it.
+
+Review38 corrections:
+
+- Pin corrected to 731. The installed-target checker now also covers the three
+  row-fold patches, the desktop chooser, Ettin, Pteranodon/Wasp, giant and
+  gesture patches. Against the review37 DLL it fails exactly
+  `ElementalPreparationRowsPatch` (36/37); against the corrected DLL 37/37.
+- Every Cleanup2 action-bar popup opening (menus, tooltips, adapters, Druid,
+  alternate, OFF, Favorite source) first waits for the actual source rect to stay
+  unchanged for six frames and 0.3s unscaled (bounded 600 frames/4s), failing
+  closed. The settle record is attached to each popup admission. No UI state is
+  assigned and the snapshot/live admission predicate is unchanged.
+
+Controller preparation, Brachiosaurus camera and cold trio were deliberately not
+spent on review37 bytes; they run on review38.
+
+### Review36 recovery state (October 23)
 Owner requested a Claude handoff after session errors. See
 [CLEANUP2-CLAUDE-HANDOFF-2026-10-23.md](CLEANUP2-CLAUDE-HANDOFF-2026-10-23.md)
 for the frozen/dirty source boundary and exact next actions. Last review36

@@ -2226,6 +2226,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ActionBarGroupSlot source = sources[0];
                     try
                     {
+                        foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "sna" + tier)) yield return frame;
                         source.OnToggleGroupClick();
                         for (int frame = 0; frame < 20; frame++) yield return 0;
                         foreach (int frame in Cleanup2CapturePopup(source, parent.Blueprint,
@@ -2395,6 +2396,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (int frame in Cleanup2RevealPopupRow(scroll, row, owns)) yield return frame;
                         if (!Cleanup2FullyVisible(scroll, row)) throw new InvalidOperationException("Nested native group row cannot be fully revealed: " + child.AssetGuid);
                         if (!Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Nested native group refuses an active or unknown narrative overlay.");
+                        foreach (int frame in Cleanup2AwaitStationaryNativeHud(childGroup, label + "-" + child.AssetGuid)) yield return frame;
                         childGroup.OnToggleGroupClick();
                         for (int frame = 0; frame < 12; frame++) yield return 0;
                         foreach (int frame in Cleanup2CapturePopup(childGroup, child, label + "-" + child.AssetGuid,
@@ -2549,8 +2551,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 catch { return false; }
             };
             bool admitted = proof();
-            Cleanup2Check("popup-native-scroll-" + label, admitted,
-                Cleanup2PopupSurfaceDiagnostic(source, popup, parent, rows, snapshot, admitted ? "admitted" : "admission-refused"),
+            var admission = Cleanup2PopupSurfaceDiagnostic(source, popup, parent, rows, snapshot, admitted ? "admitted" : "admission-refused");
+            admission["nativeHudSettleBeforeOpen"] = _cleanup2LastHudSettle; _cleanup2LastHudSettle = null;
+            Cleanup2Check("popup-native-scroll-" + label, admitted, admission,
                 "The exact live source/snapshot/native slot identities admit either a fitting stationary popup or its proven owned overflow viewport; no ancestor or scroll object is invented.");
             if (!admitted) throw new InvalidOperationException("Exact native popup surface proof failed: " + label);
             bool failureRecorded = false;
@@ -2568,6 +2571,51 @@ namespace KingmakerGunslinger.RuntimeTesting
             return snapshot.ScrollingRequired
                 ? new NativeIconScreenEvidence.NativeRowScroll(ownedScroll, guardedProof)
                 : NativeIconScreenEvidence.NativeRowScroll.StationaryPopup(root, guardedProof);
+        }
+
+        // Native HUD MoveAnimator slides use unscaled DOTween time with
+        // per-instance AnimationTime. A fixed frame wait therefore ended
+        // mid-slide at native37's higher 1920x1200 frame rate, and the popup
+        // snapshot taken at toggle no longer matched its live rect. Wait for
+        // the actual source rect to stop moving; geometry is only observed.
+        private JObject _cleanup2LastHudSettle;
+        private IEnumerable<int> Cleanup2AwaitStationaryNativeHud(Component source, string label)
+        {
+            var rect = source == null ? null : source.transform as RectTransform;
+            var root = source == null ? null : source.GetComponentInParent<Canvas>()?.rootCanvas;
+            var canvasRect = root == null ? null : root.transform as RectTransform;
+            if (rect == null || canvasRect == null) throw new InvalidOperationException("Exact native HUD source required: " + label);
+            var animators = source.GetComponentsInParent<Kingmaker.UI.Common.Animations.MoveAnimator>(true);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            SummonVariantMenuRect first = Cleanup2PopupCanvasRect(canvasRect, rect), last = first;
+            int frames = 0, stableFrames = 0; double stableSince = 0;
+            Func<bool> settled = () => source != null && source.gameObject.activeInHierarchy &&
+                stableFrames >= 6 && watch.Elapsed.TotalSeconds - stableSince >= .3;
+            while (!settled() && frames < 600 && watch.Elapsed.TotalSeconds < 4 && source != null && source.gameObject.activeInHierarchy)
+            {
+                yield return 0; frames++;
+                var current = Cleanup2PopupCanvasRect(canvasRect, rect);
+                bool same = Mathf.Abs(current.XMin - last.XMin) <= .01f && Mathf.Abs(current.XMax - last.XMax) <= .01f &&
+                    Mathf.Abs(current.YMin - last.YMin) <= .01f && Mathf.Abs(current.YMax - last.YMax) <= .01f;
+                if (same) stableFrames++; else { stableFrames = 0; stableSince = watch.Elapsed.TotalSeconds; }
+                last = current;
+            }
+            bool exact = settled();
+            _cleanup2LastHudSettle = new JObject { ["label"] = label, ["settled"] = exact, ["waitedFrames"] = frames,
+                ["waitedSeconds"] = watch.Elapsed.TotalSeconds, ["stableFrames"] = stableFrames,
+                ["stableSeconds"] = watch.Elapsed.TotalSeconds - stableSince, ["screen"] = Screen.width + "x" + Screen.height,
+                ["firstSourceRect"] = first.XMin + "," + first.YMin + "," + (first.XMax - first.XMin) + "," + (first.YMax - first.YMin),
+                ["settledSourceRect"] = last.XMin + "," + last.YMin + "," + (last.XMax - last.XMin) + "," + (last.YMax - last.YMin),
+                ["nativeMoveAnimators"] = new JArray(animators.Select(value => new JObject { ["name"] = value.name,
+                    ["moveByX"] = value.MoveByX, ["moveByY"] = value.MoveByY,
+                    ["animationTimeX"] = value.MovePartX?.AnimationTime, ["animationTimeY"] = value.MovePartY?.AnimationTime })),
+                ["contract"] = "Observed source canvas rect unchanged for >=6 frames and >=0.3s unscaled; bounded 600 frames/4s. No UI state assigned." };
+            if (!exact)
+            {
+                Cleanup2Check("native-hud-stationary-" + label, false, _cleanup2LastHudSettle,
+                    "The actual native source row stops moving before its popup snapshot is taken.");
+                throw new InvalidOperationException("Native HUD source did not settle before popup: " + label);
+            }
         }
 
         private static SummonVariantMenuRect Cleanup2PopupCanvasRect(RectTransform canvas, RectTransform value)

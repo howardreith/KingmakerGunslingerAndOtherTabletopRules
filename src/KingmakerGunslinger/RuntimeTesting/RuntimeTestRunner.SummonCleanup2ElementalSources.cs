@@ -970,6 +970,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "A real native specialist-only preparation retains its original native row/mechanism and is not consolidated into ordinary chooser sources.");
             if (!retained) throw new InvalidOperationException("Special-slot exception was hidden or adopted.");
             ActionBarSlot childRow = null; AbilityData child = null; MechanicActionBarSlot childMechanism = null;
+            foreach (int frame in Cleanup2AwaitStationaryNativeHud(nativeRow, "elemental-sources-favorite")) yield return frame;
             nativeRow.OnToggleGroupClick();
             try
             {
