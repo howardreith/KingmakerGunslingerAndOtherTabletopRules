@@ -116,7 +116,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool stunParametersOwned = stunParameters != null &&
                     !ReferenceEquals(stunParameters, AbilityParams.Empty) &&
                     stunParameters.CasterLevel == 0 && stunParameters.SpellLevel == 0 &&
-                    stunParameters.DC == 25 && stun.Context.ParentContext != null &&
+                    stunParameters.DC == 25 && stun.Context.SourceAbility == null &&
+                    !stun.IsFromSpell && stun.Context.ParentContext != null &&
                     stun.Context.ParentContext.ParentContext == null &&
                     ReferenceEquals(stun.Context.ParentContext.AssociatedBlueprint,
                         stunnedBlueprint) && ReferenceEquals(stunParameters,
@@ -192,6 +193,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["stunCl"] = stunParameters?.CasterLevel,
                         ["stunSpellLevel"] = stunParameters?.SpellLevel,
                         ["stunDc"] = stunParameters?.DC,
+                        ["stunAliasesSharedEmpty"] = ReferenceEquals(stunParameters,
+                            AbilityParams.Empty),
+                        ["stunSourceAbility"] = stun?.Context?.SourceAbility?.AssetGuid,
+                        ["stunFromSpell"] = stun?.IsFromSpell,
+                        ["stunVictimRoot"] = stun?.Context?.ParentContext?.AssociatedBlueprint?.AssetGuid,
+                        ["stunVictimRootParentless"] = stun?.Context?.ParentContext != null &&
+                            stun.Context.ParentContext.ParentContext == null,
+                        ["inheritsPrivateRootParameters"] = ReferenceEquals(stunParameters,
+                            stun?.Context?.ParentContext?.Params),
                         ["sharedEmptyBefore"] = new JArray(sharedCl, sharedSpellLevel, sharedDc),
                         ["sharedEmptyAfter"] = new JArray(AbilityParams.Empty.CasterLevel,
                             AbilityParams.Empty.SpellLevel, AbilityParams.Empty.DC),
@@ -318,6 +328,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Buff immunityBuff = target.Buffs.Enumerable.SingleOrDefault(
                     value => ReferenceEquals(value.Blueprint, stunnedBlueprint));
                 AbilityParams immunityParameters = immunityBuff?.Context?.Params;
+                bool immunitySupernatural = immunityBuff != null &&
+                    immunityBuff.Context != null &&
+                    immunityBuff.Context.SourceAbility == null && !immunityBuff.IsFromSpell;
                 bool immunityConditionPresent = target.Descriptor.State
                     .HasCondition(UnitCondition.Stunned);
                 bool targetCanActWithImmunity = target.Descriptor.State.CanAct;
@@ -341,7 +354,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool immunityParametersOwned = immunityParameters != null &&
                     !ReferenceEquals(immunityParameters, AbilityParams.Empty) &&
                     !ReferenceEquals(immunityParameters, stunParameters) &&
+                    immunityParameters.CasterLevel == 0 &&
+                    immunityParameters.SpellLevel == 0 &&
                     immunityParameters.DC == 26 && stunParameters.DC == 25 &&
+                    immunitySupernatural &&
                     AbilityParams.Empty.CasterLevel == sharedCl &&
                     AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
                     AbilityParams.Empty.DC == sharedDc;
@@ -391,6 +407,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["immunityApplicationExact"] =
                             immunityApplicationExact,
                         ["immunityParametersIndependent"] = immunityParametersOwned,
+                        ["immunityVictimSupernatural"] = immunitySupernatural,
+                        ["immunityCl"] = immunityParameters?.CasterLevel,
+                        ["immunitySpellLevel"] = immunityParameters?.SpellLevel,
                         ["firstStunDcStill25"] = stunParameters.DC,
                         ["immunityStunDc"] = immunityParameters?.DC,
                         ["sharedEmptyUnchanged"] = AbilityParams.Empty.CasterLevel == sharedCl &&
