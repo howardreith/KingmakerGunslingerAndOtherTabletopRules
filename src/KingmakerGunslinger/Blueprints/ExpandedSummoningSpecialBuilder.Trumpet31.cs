@@ -72,7 +72,7 @@ namespace KingmakerGunslinger.Blueprints
             var purge = ConfigureTrumpet31Purge(library, bySymbol);
             var dispelEvil = ConfigureDispelEvil31(library, bySymbol, unit,
                 Trumpet31Prefix, AbilityType.Spell,
-                "Spend one prepared 5th-level spell at caster level14 to gain +4 deflection AC against attacks by evil creatures for 14 rounds and hold one selected melee touch. The touch either invokes Dismissal against an evil extraplanar creature (Will negates; spell resistance applies) or automatically removes one dispellable evil spell or evil-caster enchantment from a creature. A delivered touch discharges the ward.");
+                "Spend one prepared 5th-level spell at caster level14 to gain +4 deflection AC against attacks by evil creatures for 14 rounds and hold one melee touch with either discharge available until use. The touch either invokes Dismissal against an evil extraplanar creature (Will negates; spell resistance applies) or automatically removes one dispellable evil spell or evil-caster enchantment from a creature. A delivered touch discharges the ward.");
             var preparations = Trumpet31NativePreparations(library, nativeBook).Concat(new[] {
                 new TrumpetPreparedSpell { Level = 3, Ability = purge, Copies = 1 },
                 new TrumpetPreparedSpell { Level = 5, Ability = dispelEvil[0], Copies = 1 } }).ToArray();

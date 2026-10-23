@@ -132,6 +132,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string prefix = ExpandedSummoningSpecialBuilder.Astral31Prefix;
                 var family = (BlueprintAbility)ExpandedSummoningBlueprints
                     .Registered.BySymbol[prefix + "DispelEvil"];
+                var heldMenu = (BlueprintAbility)ExpandedSummoningBlueprints
+                    .Registered.BySymbol[prefix + "DispelEvilHeld"];
                 var dismissal = (BlueprintAbility)ExpandedSummoningBlueprints
                     .Registered.BySymbol[prefix + "DispelEvilDismissal"];
                 var dismissalTouch = (BlueprintAbility)ExpandedSummoningBlueprints
@@ -158,13 +160,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AbilityEffectRunAction>().ToArray();
 
                 Ability root = dismissalOwner.Descriptor.Abilities.GetAbility(family);
-                var dismissalData = root == null ? null : new AbilityData(
-                    new AbilityData(root), dismissal);
-                var dispelData = root == null ? null : new AbilityData(
-                    new AbilityData(root), dispel);
+                var dismissalData = root == null ? null : new AbilityData(root);
+                var dispelData = root == null ? null : new AbilityData(root);
                 var dismissalParameters = dismissalData?.CalculateParams();
                 var dispelParameters = dispelData?.CalculateParams();
-                BlueprintAbility[] variants = family.GetComponent<AbilityVariants>()
+                BlueprintAbility[] variants = heldMenu.GetComponent<AbilityVariants>()
                     ?.Variants ?? Array.Empty<BlueprintAbility>();
                 bool deliveryGraph = dismissalTouch.GetComponents<
                         AbilityDeliverTouch>().Count() == 1 &&
@@ -195,15 +195,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             dismissal) || ReferenceEquals(value.Ability, dispel))
                     .ToArray();
                 bool mapping = root != null &&
-                    new[] { family, dismissal, dismissalTouch, dispel, dispelTouch }
+                    new[] { family, dismissal, dismissalTouch, dispel, dispelTouch, heldMenu }
                         .All(value => value.Type == AbilityType.SpellLike) &&
                     family.GetComponent<SpellComponent>()?.School == SpellSchool.Abjuration &&
                     family.GetComponent<SpellDescriptorComponent>() != null &&
                     (family.GetComponent<SpellDescriptorComponent>().Descriptor & SpellDescriptor.Good) != 0 &&
                     dismissalTouch.GetComponent<SpellDescriptorComponent>() != null &&
                     (dismissalTouch.GetComponent<SpellDescriptorComponent>().Descriptor & SpellDescriptor.Good) != 0 &&
+                    family.GetComponent<AbilityVariants>() == null &&
+                    family.GetComponent<AbilityEffectArmAstralDispelEvilTouch>()?.TouchDeliveryAbility == heldMenu &&
+                    ReferenceEquals(dismissalTouch.Parent, heldMenu) &&
+                    ReferenceEquals(dispelTouch.Parent, heldMenu) &&
                     variants.SequenceEqual(new[] {
-                        dismissal, dispel }) && dismissalData != null &&
+                        dismissalTouch, dispelTouch }) && dismissalData != null &&
                     dispelData != null && dismissalData.IsAvailable &&
                     dispelData.IsAvailable && dismissalParameters != null &&
                     dispelParameters != null &&
@@ -219,7 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ModifierDescriptor.Deflection && wardLifetime != null &&
                     wardLifetime.Deliveries != null &&
                     wardLifetime.Deliveries.SequenceEqual(new[] {
-                        dismissalTouch, dispelTouch }) &&
+                        heldMenu, dismissalTouch, dispelTouch }) &&
                     !family.ComponentsArray.OfType<AbilityResourceLogic>().Any() &&
                     !dismissal.ComponentsArray.OfType<AbilityResourceLogic>().Any() &&
                     !dispel.ComponentsArray.OfType<AbilityResourceLogic>().Any() &&
@@ -308,9 +312,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         activeWard.TimeLeft.TotalSeconds > 70d &&
                         activeWard.TimeLeft.TotalSeconds <= 78.1d && held != null &&
                         ReferenceEquals(held.Ability?.Data?.Blueprint,
-                            dismissalTouch) &&
+                            heldMenu) && heldMenu.Variants.SequenceEqual(new[] {
+                                dismissalTouch, dispelTouch }) &&
                         ReferenceEquals(held.Ability?.Data?.StickyTouch?.Blueprint,
-                            dismissal) && evilBefore == goodBefore + 4 &&
+                            family) && evilBefore == goodBefore + 4 &&
                         evilAfter == goodAfter + 4 && evilAfter == evilBefore;
                     Sprint25Check("astral-dispel-ward-held-action", armed,
                         new JObject { ["owner"] = dismissalOwner.UniqueId,
@@ -333,7 +338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["evilAcAfter"] = evilAfter,
                             ["goodAcAfter"] = goodAfter,
                             ["replacementNotStacked"] = evilAfter == evilBefore },
-                        "A real standard action applies the attributed 13-round ward and arms exactly the selected native held touch. Native AC rules retain +4 against evil and no bonus against good; Replace prevents the deva's equal aura bonus from becoming +8.");
+                        "A real standard action applies the attributed 13-round ward and arms a native held menu retaining both discharge choices. Native AC rules retain +4 against evil and no bonus against good; Replace prevents the deva's equal aura bonus from becoming +8.");
                     if (!armed) throw new InvalidOperationException(
                         "Astral Dispel Evil ward/held action failed.");
 
@@ -341,7 +346,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Cooldown.StandardAction;
                     UnitUseAbility dismissalHeld = null;
                     foreach (int frame in Astral31DispelHeld(dismissalOwner,
-                        dismissalTarget, value => dismissalHeld = value))
+                        dismissalTarget, dismissalTouch, value => dismissalHeld = value))
                         yield return frame;
                     float cooldownAfterTouch = dismissalOwner.CombatState
                         .Cooldown.StandardAction;
@@ -554,8 +559,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observed.Targets.Add(target);
                     Ability ownerRoot = row.Owner.Descriptor.Abilities
                         .GetAbility(family);
-                    var ownerDispel = new AbilityData(new AbilityData(ownerRoot),
-                        dispel);
+                    var ownerDispel = new AbilityData(ownerRoot);
                     UnitUseAbility parentCommand = null;
                     foreach (int frame in Astral31DispelCast(row.Owner,
                         ownerDispel, new TargetWrapper(row.Owner), value =>
@@ -563,7 +567,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Buff activeWard = row.Owner.Buffs.Enumerable.SingleOrDefault(
                         value => ReferenceEquals(value.Blueprint, ward));
                     UnitUseAbility touchCommand = null;
-                    foreach (int frame in Astral31DispelHeld(row.Owner, target,
+                    foreach (int frame in Astral31DispelHeld(row.Owner, target, dispelTouch,
                         value => touchCommand = value)) yield return frame;
                     RuleDispelMagic rule = observed.Dispels.LastOrDefault(value =>
                         ReferenceEquals(value.Buff, row.Expected));
@@ -651,8 +655,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 observed.Owner = expiryOwner;
                 Ability expiryRoot = expiryOwner.Descriptor.Abilities
                     .GetAbility(family);
-                var expiryData = new AbilityData(new AbilityData(expiryRoot),
-                    dispel);
+                var expiryData = new AbilityData(expiryRoot);
                 UnitUseAbility expiryCommand = null;
                 foreach (int frame in Astral31DispelCast(expiryOwner,
                     expiryData, new TargetWrapper(expiryOwner), value =>
@@ -887,10 +890,26 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Astral31DispelHeld(UnitEntityData owner,
-            UnitEntityData target, Action<UnitUseAbility> result)
+            UnitEntityData target, BlueprintAbility delivery,
+            Action<UnitUseAbility> result)
         {
             UnitPartTouch touch = owner?.Get<UnitPartTouch>();
-            AbilityData data = touch?.Ability?.Data;
+            AbilityData held = touch?.Ability?.Data;
+            BlueprintAbility[] choices = held?.Blueprint?.Variants;
+            AbilityData data = held == null || choices == null ||
+                !choices.Any(value => ReferenceEquals(value, delivery)) ? null :
+                    new AbilityData(held, delivery);
+            AbilityParams heldParams = held?.CalculateParams();
+            AbilityParams deliveryParams = data?.CalculateParams();
+            if (data == null || !ReferenceEquals(data.Fact, held.Fact) ||
+                !ReferenceEquals(data.StickyTouch, held.StickyTouch) ||
+                !ReferenceEquals(data.Spellbook, held.Spellbook) ||
+                heldParams == null || deliveryParams == null ||
+                heldParams.CasterLevel != deliveryParams.CasterLevel ||
+                heldParams.SpellLevel != deliveryParams.SpellLevel ||
+                heldParams.DC != deliveryParams.DC)
+                throw new InvalidOperationException(
+                    "Dispel Evil held native variant lost its exact fact, source, book or parameters.");
             var selected = new TargetWrapper(target);
             if (data == null || !data.CanTarget(selected))
                 throw new InvalidOperationException(

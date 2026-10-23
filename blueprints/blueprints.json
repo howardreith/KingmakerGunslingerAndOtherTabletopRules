@@ -58935,6 +58935,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S30/S31 Trumpet Dispel Evil prepared-spell dependencies; exact owner, native book/held-touch graph and real native icon; new species routes remain suppressed pending qualification."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilHeld",
+      "guid": "b4773c6cf9cf4744b00ba483727a3187",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Dispel Evil held discharge menu; both native touch choices remain available until use; exact owner/native parameters/book/icon. New species routes remain suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilHeld",
+      "guid": "ebf2eef9da44487dae49f4c887d78a2b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Dispel Evil held discharge menu; both native touch choices remain available until use; exact owner/native parameters/book/icon. New species routes remain suppressed."
     }
   ]
 }
