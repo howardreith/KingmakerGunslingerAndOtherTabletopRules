@@ -181,7 +181,7 @@ ART_MODIFIED = {
     "assets-source/original-icons/expanded-summoning/icon-manifest.json":
         "5d310b34c1dc2278f997f257d4d3f556b3ae352ffab14de79777c0b8fdac9271",
     "assets-source/original-icons/icon-catalog.json":
-        "20620c8405a7d533270c7866ec26b23296e3ccfd480ac668139a64ab4dace95c",
+        "c7bb6c0141d1983f0762ed8f230167b284a6b94e3c2ebd1739541e5e7a63a947",
     "assets-source/original-models/sprint14-insects/SOURCE.md":
         "17fac66fcc8f50b1bc0ba74ed2d798938a05591fcc2f1524836b72d0e2c25303",
     "assets-source/original-models/sprint14-insects/generate_sprint14_insects.py":
