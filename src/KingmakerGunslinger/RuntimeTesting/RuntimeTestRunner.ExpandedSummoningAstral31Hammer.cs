@@ -4,6 +4,7 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Items;
@@ -72,6 +73,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "a7b339e4f6ff93a4697df5d7a87ff619");
                     foreach (int frame in Sprint22SetPowerAttack(unit, false))
                         yield return frame;
+                    if (powerAttack.IsOn || powerAttack.IsRunning ||
+                        powerAttack.Blueprint.Buff == null ||
+                        unit.Descriptor.Buffs.GetBuff(
+                            powerAttack.Blueprint.Buff) != null)
+                        throw new InvalidOperationException(
+                            "Astral Power Attack off precondition failed.");
                 }
                 Vector3 origin = fixture.Caster.Position;
                 PlaceExpandedSummoningUnit(owner, origin + Vector3.right * 3f);
@@ -109,6 +116,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     hammerCommand.Result == UnitCommand.ResultType.Success &&
                     hammerCommand.AllAttacks.Count == 3 &&
                     observer.Attacks.Count == 3 && hammerHits == 3 &&
+                    observer.FactionIsolationExact(3) &&
+                    Astral31PowerAttackOff(owner) &&
                     observer.Attacks.All(value => ReferenceEquals(value.Weapon, hammer) &&
                         value.AttackRoll != null && value.AttackRoll.Roll.Value == 10 &&
                         !value.AttackRoll.AutoHit &&
@@ -156,6 +165,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner.Descriptor.ActivatableAbilities.Enumerable.Single(
                                 value => value.Blueprint.AssetGuid ==
                                     "a7b339e4f6ff93a4697df5d7a87ff619")),
+                        ["factionIsolation"] = observer.FactionRow(),
                         ["forcedAttackRoll"] = 10, ["forcedSaveRoll"] = 1,
                         ["autoHit"] = false },
                     "One native full-attack command resolves three +2 disrupting hammer hits; only the second same-opponent hit asks for one live-DC Fortitude save, the third cannot repeat it, and failure owns one native d6 Stunned effect.");
@@ -215,6 +225,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     slamCommand.IsFinished &&
                     slamCommand.Result == UnitCommand.ResultType.Success &&
                     observer.Attacks.Count == 1 &&
+                    observer.FactionIsolationExact(1) &&
+                    Astral31PowerAttackOff(sibling) &&
                     observer.Attacks[0].AttackRoll != null &&
                     observer.Attacks[0].AttackRoll.IsHit &&
                     !observer.Attacks[0].AttackRoll.AutoHit &&
@@ -234,6 +246,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Astral31HammerAttackRow(observer.Attacks[0]),
                         ["damage"] = new JArray(observer.Damage.Select(
                             Sprint16DamageEvent)),
+                        ["powerAttack"] = Sprint22PowerAttackState(sibling,
+                            sibling.Descriptor.ActivatableAbilities.Enumerable
+                                .Single(value => value.Blueprint.AssetGuid ==
+                                    "a7b339e4f6ff93a4697df5d7a87ff619")),
+                        ["factionIsolation"] = observer.FactionRow(),
                         ["stunSaves"] = observer.Saves.Count,
                         ["stunTrackerAbsent"] =
                             AstralDevaHammerStun.ObservedTracker(sibling) == null },
@@ -258,6 +275,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     immunityCommand.IsFinished &&
                     immunityCommand.Result == UnitCommand.ResultType.Success &&
                     observer.Attacks.Count == 3 &&
+                    observer.FactionIsolationExact(3) &&
+                    Astral31PowerAttackOff(sibling) &&
                     observer.Attacks.All(value => value.AttackRoll != null &&
                         value.AttackRoll.IsHit && !value.AttackRoll.AutoHit &&
                         ReferenceEquals(value.Weapon,
@@ -279,6 +298,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["owner"] = sibling.UniqueId,
                         ["target"] = target.UniqueId,
                         ["liveStrength"] = sibling.Stats.Strength.ModifiedValue,
+                        ["powerAttack"] = Sprint22PowerAttackState(sibling,
+                            sibling.Descriptor.ActivatableAbilities.Enumerable
+                                .Single(value => value.Blueprint.AssetGuid ==
+                                    "a7b339e4f6ff93a4697df5d7a87ff619")),
+                        ["factionIsolation"] = observer.FactionRow(),
                         ["saves"] = observer.SaveRows(),
                         ["durationD6"] = new JArray(observer.DurationRolls
                             .Select(value => value.Result.Value)),
@@ -312,6 +336,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 4; frame++) yield return 0;
                 RuleSavingThrow disruptionSave = observer.Saves.SingleOrDefault();
                 bool disruptionExact = disruption.AttackRoll != null &&
+                    observer.FactionIsolationExact(1) &&
+                    Astral31PowerAttackOff(sibling) &&
                     disruption.AttackRoll.IsHit &&
                     !disruption.AttackRoll.AutoHit &&
                     disruption.AttackRoll.Roll.Value == 10 &&
@@ -334,6 +360,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["target"] = target.UniqueId,
                         ["targetUndead"] = target.Descriptor.IsUndead,
                         ["attack"] = Astral31HammerAttackRow(disruption),
+                        ["powerAttack"] = Sprint22PowerAttackState(sibling,
+                            sibling.Descriptor.ActivatableAbilities.Enumerable
+                                .Single(value => value.Blueprint.AssetGuid ==
+                                    "a7b339e4f6ff93a4697df5d7a87ff619")),
+                        ["factionIsolation"] = observer.FactionRow(),
                         ["saves"] = observer.SaveRows(),
                         ["damage"] = new JArray(observer.Damage.Select(
                             Sprint16DamageEvent)),
@@ -346,6 +377,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!disruptionExact) throw new InvalidOperationException(
                     "Astral native disruption contract failed.");
 
+                observer.RestoreFaction();
                 EventBus.Unsubscribe(observer);
                 observerSubscribed = false;
                 foreach (UnitEntityData unit in new[] { owner, sibling }.Where(
@@ -401,6 +433,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                observer.RestoreFaction();
                 if (observerSubscribed) EventBus.Unsubscribe(observer);
                 if (stunImmunity && target != null && !target.Destroyed)
                     target.Descriptor.State.RemoveConditionImmunity(
@@ -443,6 +476,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        private static bool Astral31PowerAttackOff(UnitEntityData owner)
+        {
+            var toggle = owner.Descriptor.ActivatableAbilities.Enumerable.Single(
+                value => value.Blueprint.AssetGuid ==
+                    "a7b339e4f6ff93a4697df5d7a87ff619");
+            return !toggle.IsOn && !toggle.IsRunning &&
+                toggle.Blueprint.Buff != null &&
+                owner.Descriptor.Buffs.GetBuff(toggle.Blueprint.Buff) == null;
         }
 
         private IEnumerable<int> Astral31HammerCommand(UnitEntityData owner,
@@ -492,6 +535,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private sealed class Astral31HammerObserver :
             IGlobalRulebookHandler<RuleAttackWithWeapon>,
+            IGlobalRulebookHandler<RuleCalculateWeaponStats>,
             IGlobalRulebookHandler<RuleAttackRoll>,
             IGlobalRulebookHandler<RuleDealDamage>,
             IGlobalRulebookHandler<RuleSavingThrow>,
@@ -501,6 +545,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly UnitEntityData _target;
             private readonly BlueprintBuff _stunned;
             internal UnitEntityData Owner;
+            private BlueprintFaction _originalFaction;
+            private BlueprintFaction _playerFaction;
+            internal int FactionSwitches;
+            internal int FactionRestorations;
+            internal bool AllRollsPlayerFaction;
             internal readonly List<RuleAttackWithWeapon> Attacks =
                 new List<RuleAttackWithWeapon>();
             internal readonly List<RuleAttackRoll> Rolls =
@@ -519,12 +568,74 @@ namespace KingmakerGunslinger.RuntimeTesting
             { _target = target; _stunned = stunned; }
 
             internal void SetOwner(UnitEntityData owner)
-            { Owner = owner; Clear(); }
+            {
+                RestoreFaction();
+                Owner = owner;
+                _originalFaction = owner?.Descriptor?.Faction;
+                _playerFaction = BlueprintRoot.Instance.PlayerFaction;
+                Clear();
+            }
 
             internal void Clear()
             {
                 Attacks.Clear(); Rolls.Clear(); Damage.Clear(); Saves.Clear();
                 DurationRolls.Clear(); Applications.Clear();
+                FactionSwitches = 0;
+                FactionRestorations = 0;
+                AllRollsPlayerFaction = true;
+            }
+
+            internal void RestoreFaction()
+            {
+                if (Owner != null && _originalFaction != null &&
+                    ReferenceEquals(Owner.Descriptor.Faction, _playerFaction))
+                    Owner.Descriptor.Faction = _originalFaction;
+            }
+
+            internal bool FactionIsolationExact(int expectedRolls)
+            {
+                return expectedRolls > 0 &&
+                    FactionSwitches == expectedRolls &&
+                    FactionRestorations == expectedRolls &&
+                    AllRollsPlayerFaction &&
+                    Owner != null &&
+                    ReferenceEquals(Owner.Descriptor.Faction, _originalFaction);
+            }
+
+            internal JObject FactionRow()
+            {
+                return new JObject {
+                    ["switches"] = FactionSwitches,
+                    ["restorations"] = FactionRestorations,
+                    ["allRollsPlayerFaction"] = AllRollsPlayerFaction,
+                    ["restored"] = Owner != null && ReferenceEquals(
+                        Owner.Descriptor.Faction, _originalFaction),
+                    ["original"] = _originalFaction?.AssetGuid,
+                    ["player"] = _playerFaction?.AssetGuid,
+                    ["current"] = Owner?.Descriptor?.Faction?.AssetGuid };
+            }
+
+            private bool IsObservedAttack(RuleAttackWithWeapon evt)
+            {
+                return evt != null && ReferenceEquals(evt.Initiator, Owner) &&
+                    ReferenceEquals(evt.Target, _target);
+            }
+
+            public void OnEventAboutToTrigger(RuleCalculateWeaponStats evt) { }
+            public void OnEventDidTrigger(RuleCalculateWeaponStats evt)
+            {
+                RuleAttackWithWeapon attack = evt?.AttackWithWeapon;
+                if (!IsObservedAttack(attack) || Owner == null ||
+                    _originalFaction == null || _playerFaction == null ||
+                    !ReferenceEquals(Owner.Descriptor.Faction,
+                        _originalFaction)) return;
+                // The isolated fixture's request-owned summons are non-player
+                // faction. Switch only after native weapon stats are final so
+                // the installed non-player PowerAttackWatcher honors the
+                // explicit off toggle for the child attack roll. Restore as
+                // soon as that roll completes.
+                Owner.Descriptor.Faction = _playerFaction;
+                FactionSwitches++;
             }
 
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
@@ -537,12 +648,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (ReferenceEquals(evt.Initiator, Owner) &&
                     ReferenceEquals(evt.Target, _target))
+                {
+                    AllRollsPlayerFaction &= Owner.IsPlayerFaction;
                     UnityEngine.Random.InitState(FindNativeD20Seed(10));
+                }
             }
             public void OnEventDidTrigger(RuleAttackRoll evt)
             {
                 if (ReferenceEquals(evt.Initiator, Owner) &&
-                    ReferenceEquals(evt.Target, _target)) Rolls.Add(evt);
+                    ReferenceEquals(evt.Target, _target))
+                {
+                    Rolls.Add(evt);
+                    if (ReferenceEquals(Owner.Descriptor.Faction,
+                        _playerFaction))
+                    {
+                        Owner.Descriptor.Faction = _originalFaction;
+                        FactionRestorations++;
+                    }
+                }
             }
             public void OnEventAboutToTrigger(RuleDealDamage evt) { }
             public void OnEventDidTrigger(RuleDealDamage evt)
