@@ -132,7 +132,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 far; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner,
                     target, 8f, out far, out lane, out direction,
-                    new Feet(60).Meters + 2f);
+                    new Feet(60).Meters + 2f, new[] { sibling, ally });
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(sibling, origin + Vector3.right * 2f);
                 PlaceExpandedSummoningUnit(target, far);
