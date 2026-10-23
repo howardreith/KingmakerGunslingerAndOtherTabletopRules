@@ -1203,6 +1203,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3 beforePosition = camera.transform.position;
             Quaternion beforeRotation = camera.transform.rotation;
             float beforeSize = camera.orthographicSize, beforeAspect = camera.aspect, beforeFieldOfView = camera.fieldOfView;
+            var post = camera.GetComponent<UnityEngine.PostProcessing.PostProcessingBehaviour>();
+            var postProfile = post == null ? null : post.profile;
+            var depthOfField = postProfile == null ? null : postProfile.depthOfField;
+            bool beforeDepthOfField = depthOfField != null && depthOfField.enabled;
             RenderTexture beforeTarget = camera.targetTexture, beforeActive = RenderTexture.active;
             RenderTexture target = null;
             Texture2D image = null;
@@ -1240,7 +1244,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // A temporary wider lens frames the same coplanar lineup from
                 // inside the room, below hanging scenery. Preserve normal
                 // scene rendering and restore this exact camera field below.
-                if (!camera.orthographic) camera.fieldOfView = 50f;
+                if (!camera.orthographic) camera.fieldOfView = 60f;
                 var cameraAttempts = new JArray();
                 bool clearSight = false, renderedSightProven = false;
                 // Review25's actual 35-degree image fits every head, but a
@@ -1249,7 +1253,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // and require inspection of the actual acquired image.
                 var renderMeshes=new Dictionary<Mesh,Tuple<Vector3[],int[]>>();
                 var renderSurveyWatch=System.Diagnostics.Stopwatch.StartNew();
-                foreach (float pitch in new[] { 20f,25f,35f,45f,50f,60f,72f,80f })
+                foreach (float pitch in new[] { 8f,12f,16f,20f,25f,35f,45f,50f,60f,72f,80f })
                 {
                     foreach (float side in new[] { 1f, -1f })
                     {
@@ -1319,6 +1323,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 target = new RenderTexture(1920, 1080, 24, RenderTextureFormat.ARGB32);
                 camera.targetTexture = target;
+                // The existing close-creature capture also disables this
+                // effect: native focus distance belongs to the original lens
+                // and camera position. Review27 demonstrates blur at the new
+                // lineup distance. Hold only this exact profile/model state
+                // for the owned capture and restore its original enabled bit.
+                if (depthOfField != null) depthOfField.enabled = false;
                 requestedCameraPosition=camera.transform.position;requestedCameraRotation=camera.transform.rotation;
                 int poseFrame=Time.frameCount;
                 // Camera.Render does not run the native Update-built occlusion
@@ -1330,6 +1340,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if(!ReferenceEquals(Game.Instance.CameraController,controller) || !ReferenceEquals(controller.FixCamera,cameraGuard) ||
                         !ReferenceEquals(TeleportationCastingCamera(),rig) || cameraGuard.GuardCount!=1 ||
                         !ReferenceEquals(rig.Camera,camera) || !ReferenceEquals(camera.targetTexture,target) ||
+                        (post != null && (!ReferenceEquals(post.profile,postProfile) || !ReferenceEquals(postProfile == null ? null : postProfile.depthOfField,depthOfField))) ||
+                        (depthOfField != null && depthOfField.enabled) ||
                         !nativeOcclusion.enabled || !nativeOcclusion.gameObject.activeInHierarchy ||
                         Vector3.Distance(camera.transform.position,requestedCameraPosition)>.02f ||
                         Quaternion.Angle(camera.transform.rotation,requestedCameraRotation)>.01f)
@@ -1366,6 +1378,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["cameraRotation"] = new JArray(camera.transform.rotation.x, camera.transform.rotation.y, camera.transform.rotation.z, camera.transform.rotation.w),
                     ["fieldOfView"] = camera.fieldOfView, ["orthographic"] = camera.orthographic,
                     ["nativeFieldOfViewAtIntake"] = beforeFieldOfView,
+                    ["nativeDepthOfFieldEnabledAtIntake"] = beforeDepthOfField,
+                    ["depthOfFieldDisabledForOwnedComparison"] = depthOfField != null,
                     ["screenFade"] = screenFade, ["meanLuma"] = luma,
                     ["fixtureFacingPose"] = facingReceipt,
                     ["nativePoseFrame"]=poseFrame,["readbackFrame"]=Time.frameCount,["normalFrameProgression"]=Time.frameCount-poseFrame,
@@ -1409,6 +1423,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for(int index=0;index<savedRigFields.Length;index++)savedRigFields[index].SetValue(rig,savedRigValues[index]);
                     camera.transform.position = beforePosition;camera.transform.rotation = beforeRotation;
                     camera.orthographicSize = beforeSize; camera.aspect = beforeAspect; camera.fieldOfView = beforeFieldOfView;
+                    if (post != null && (!ReferenceEquals(post.profile,postProfile) || !ReferenceEquals(postProfile == null ? null : postProfile.depthOfField,depthOfField)))
+                        throw new InvalidOperationException("Foreign lineup post-processing profile; restoration refused.");
+                    if (depthOfField != null)
+                    {
+                        if (depthOfField.enabled && !beforeDepthOfField)
+                            throw new InvalidOperationException("Foreign lineup depth-of-field state; restoration refused.");
+                        depthOfField.enabled = beforeDepthOfField;
+                    }
                     if(Vector3.Distance(rig.transform.position,beforeRigPosition)>.001f || rig.GetPosition()!=beforeRigTarget ||
                         Quaternion.Angle(rig.transform.rotation,beforeRigRotation)>.001f || camera.fieldOfView != beforeFieldOfView ||
                         !savedRigFields.Select((field,index)=>Equals(field.GetValue(rig),savedRigValues[index])).All(value=>value) ||

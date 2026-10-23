@@ -72,7 +72,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Stack.Count!=0 && Stack.Peek().Type==GameModeType.Default &&
                 ReferenceEquals(Stack.Peek().GetController<Kingmaker.Controllers.Clicks.PointerController>(),_game.DefaultPointerController); } }
             internal JObject Describe()
-            { return new JObject { ["purpose"]=_purpose,["nativeFactoryModeOwned"]=_owned!=null,
+            {
+                object[] actualControllers=Controllers(_game);
+                int[] actualCounts=Counts.GetValue(_game) as int[] ?? new int[0];
+                bool stackExact=_owned==null ? Stack.SequenceEqual(_before) : Stack.Count==_before.Length+1 &&
+                    ReferenceEquals(Stack.Peek(),_owned) && Stack.Skip(1).SequenceEqual(_before);
+                return new JObject { ["purpose"]=_purpose,["nativeFactoryModeOwned"]=_owned!=null,
                 ["existingNativeDefaultBorrowed"]=_owned==null,
                 ["current"] = Current,["closed"]=_closed,["mode"]=_game.CurrentMode.ToString(),
                 ["stackCount"]=Stack.Count,["originalStackCount"]=_before.Length,
@@ -80,7 +85,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["manualPulsesBefore"]=_manualPulses,["manualPulsesCurrent"]=_runner._sprint25Clock.Pulses,
                 ["tickGateBefore"]=_gateBefore,["tickGateCurrent"]=_runner._sprint25Clock.NativeDefaultGateSnapshot(),
                 ["selectedAbilityHandler"]=_game.SelectedAbilityHandler?.GetType().FullName,
-                ["pointerController"]=_game.ClickEventsController?.GetType().FullName }; }
+                ["pointerController"]=_game.ClickEventsController?.GetType().FullName,
+                ["ownershipPredicates"]=new JObject {
+                    ["notClosed"]=!_closed,["modeIsNativeDefault"]=_game.CurrentMode==GameModeType.Default,
+                    ["exactModeStackReferences"]=stackExact,
+                    ["exactActiveModeCounts"]=_activeCounts!=null && actualCounts.SequenceEqual(_activeCounts),
+                    ["exactControllerReferences"]=_activeControllers!=null && actualControllers.Select((value,index)=>
+                        ReferenceEquals(value,_activeControllers[index])).All(value=>value),
+                    ["selectedAbilityAbsent"]=_game.SelectedAbilityHandler!=null && _game.SelectedAbilityHandler.Ability==null,
+                    ["immediateBoundary"]=ImmediateBoundary(_game),
+                    ["factoryDefaultPointerExact"]=_game.DefaultPointerController!=null &&
+                        ReferenceEquals(_game.ClickEventsController,_game.DefaultPointerController) && Stack.Count!=0 &&
+                        ReferenceEquals(Stack.Peek().GetController<Kingmaker.Controllers.Clicks.PointerController>(),_game.DefaultPointerController),
+                    ["gameModeTicking"]=(bool)typeof(Game).GetField("m_GameModeTicking",Cleanup2Fields).GetValue(_game),
+                    ["switchingModes"]=(bool)typeof(Game).GetField("m_SwitchingModes",Cleanup2Fields).GetValue(_game),
+                    ["pendingBeforeTickActions"]=((System.Collections.ICollection)typeof(Game).GetField("m_BeforeTickActions",Cleanup2Fields).GetValue(_game)).Count,
+                    ["selectedAbility"]=_game.SelectedAbilityHandler?.Ability?.Blueprint.AssetGuid },
+                ["activeModeCounts"]=new JArray(actualCounts),
+                ["expectedActiveModeCounts"]=_activeCounts==null ? (JToken)JValue.CreateNull() : new JArray(_activeCounts),
+                ["controllerReferences"]=new JArray(PublicControllers.Select((name,index)=>new JObject {
+                    ["name"]=name,["expectedInstance"]=_activeControllers==null || _activeControllers[index]==null ? 0 :
+                        System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(_activeControllers[index]),
+                    ["actualInstance"]=actualControllers[index]==null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(actualControllers[index]),
+                    ["same"]=_activeControllers!=null && ReferenceEquals(actualControllers[index],_activeControllers[index]) })) };
+            }
             internal Cleanup2NativeDefaultScope(RuntimeTestRunner runner,ExpandedSummoningCorrectionFixture fixture,string purpose)
             {
                 _runner=runner;_game=Game.Instance;_purpose=purpose;
@@ -126,13 +154,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     runner.Cleanup2Check("native-default-enter-"+purpose,true,Describe(),
                         "The exact existing or factory-created native Default mode and real input controllers own progression; the manual fixture clock is suspended.");
                 }
-                catch { Dispose(); throw; }
+                catch (Exception setupError)
+                {
+                    try { Dispose(); }
+                    catch (Exception cleanupError) { throw new AggregateException("Native Default setup and exact restoration both failed.",setupError,cleanupError); }
+                    throw;
+                }
             }
             public void Dispose()
             {
                 if(_closed)return;
                 if(!Current || _game.SelectedAbilityHandler.Ability!=null || !ImmediateBoundary(_game))
+                {
+                    _runner.Cleanup2Check("native-default-disposal-refused-"+_purpose,false,Describe(),
+                        "Every exact stack/count/controller/target/boundary predicate must still hold before releasing the owned native Default lease; refusal preserves it.");
                     throw new InvalidOperationException("Owned native Default scope changed or still targets an ability; foreign mode/input is not overwritten and manual clock remains suspended.");
+                }
                 if(_owned!=null)_game.StopMode(GameModeType.Default);
                 bool restored=Stack.SequenceEqual(_before) && ((int[])Counts.GetValue(_game)).SequenceEqual(_counts) &&
                     Controllers(_game).Select((value,index)=>ReferenceEquals(value,_controllers[index])).All(value=>value);

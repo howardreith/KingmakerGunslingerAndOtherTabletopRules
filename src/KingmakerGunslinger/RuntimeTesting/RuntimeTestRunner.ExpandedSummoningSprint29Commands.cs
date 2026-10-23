@@ -30,13 +30,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CreateExpandedSummoningCorrectionHostile(fixture);
             else ResetExpandedSummoningHostile(fixture);
             Cleanup2NativeDefaultScope nativeMode = null;
+            string cleanup2Stage = "fixture-setup";
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();
                 Game.Instance.IsPaused = false;
-                if(IsSummonCleanup2Review && !turnBased)
-                    nativeMode=Cleanup2EnterNativeDefault(fixture,"ettin-ordinary-rtwp");
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 foreach (var spec in new[] {
                     new { Key="ettin", Name="flail-single", Set=0,
@@ -85,11 +84,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.Key == "storm-giant" &&
                         value.Name == "bow-full"))
                 {
-                    UnitEntityData owner = CastExpandedSummoningOwnTier(
-                        fixture, spec.Key);
+                    cleanup2Stage = "qualified-synchronous-summon";
+                    UnitEntityData owner;
+                    try { owner = CastExpandedSummoningOwnTier(fixture, spec.Key); }
+                    catch (Exception error)
+                    {
+                        if (IsSummonCleanup2Review)
+                        {
+                            var expected = ExpandedSummoningUnit(fixture.Blueprints,
+                                ExpandedSummoningOwnTierVariant(spec.Key, SummonMultiplicity.One));
+                            foreach (var partial in ExpandedSummoningRuleCapture.Where(value => value != null &&
+                                ReferenceEquals(value.Blueprint, expected) && ExpandedSummoningPlayerPathUnitExact(value, fixture.Caster)))
+                                if (!fixture.Created.Contains(partial)) fixture.Created.Add(partial);
+                            Cleanup2Check("ettin-command-summon-setup-failed-" + (turnBased ? "turn" : "rtwp"), false,
+                                new JObject { ["stage"] = cleanup2Stage, ["originalException"] = error.ToString(),
+                                    ["qualifiedCastExecution"] = _expandedSummoningLastAbilityExecution,
+                                    ["nativeDefaultLeasePending"] = Cleanup2NativeDefaultPending,
+                                    ["mode"] = Game.Instance.CurrentMode.ToString() },
+                                "A synchronous fixture-summon error remains visible before any command-only native mode lease or cleanup refusal.");
+                        }
+                        throw;
+                    }
                     SetExpandedSummoningBrainActive(owner, false);
                     try
                     {
+                        cleanup2Stage = "appearance-and-native-toggle";
                         for (int frame = 0; frame < 8; frame++) yield return 0;
                         foreach (int frame in Sprint22SetPowerAttack(owner, false))
                             yield return frame;
@@ -115,6 +134,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         UnitEntityData target = fixture.Hostile;
                         ResetExpandedSummoningHostile(fixture);
+                        cleanup2Stage = "native-lane-survey";
                         string lane, direction; JObject cleanup2Lane = null;
                         if (IsSummonCleanup2Review && spec.Key == "ettin" && spec.Name == "flail-full")
                         {
@@ -165,6 +185,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Sprint 29 command has no legal visible lane.");
                         owner.JoinCombat(); target.JoinCombat();
                         owner.Memory.Add(target); target.Memory.Add(owner);
+                        // Qualified synchronous fixture summoning, appearance,
+                        // toggle and placement finish before native progression
+                        // owns the command. Never carry its lease across the
+                        // fixture cast/manual-clock lifecycle.
+                        if (IsSummonCleanup2Review && !turnBased)
+                        {
+                            cleanup2Stage = "native-command-mode-entry";
+                            nativeMode = Cleanup2EnterNativeDefault(fixture, "ettin-ordinary-rtwp");
+                            for (int frame = 0; frame < 8; frame++)
+                            {
+                                if (!nativeMode.Current || !Cleanup2NoNarrativeOverlay())
+                                    throw new InvalidOperationException("Ettin command-only native Default context changed before command issue.");
+                                yield return 0;
+                            }
+                        }
                         JObject admission = null;
                         if (turnBased)
                         {
@@ -199,6 +234,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var command = new UnitAttack(target) {
                             ForceFullAttack = spec.Full,
                             IsSingleAttack = !spec.Full };
+                        cleanup2Stage = "ordinary-native-command";
                         EventBus.Subscribe(observer);
                         try
                         {
@@ -215,6 +251,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     (!command.IsFinished ||
                                      observer.WeaponAttacks.Count < spec.Count))
                                 {
+                                    if (nativeMode != null && (!nativeMode.Current || !Cleanup2NoNarrativeOverlay()))
+                                        throw new InvalidOperationException("Ettin ordinary native command lost its exact Default lease.");
                                     if(IsSummonCleanup2Review && observer.WeaponAttacks.Count>photographedEvents)
                                     {
                                         photographedEvents=observer.WeaponAttacks.Count;
@@ -335,7 +373,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                try { if(nativeMode!=null)nativeMode.Dispose(); }
+                try
+                {
+                    if (nativeMode != null)
+                    {
+                        try { nativeMode.Dispose(); }
+                        catch (Exception cleanupError)
+                        {
+                            // A failed cleanup remains a FAIL assertion and
+                            // retains its guard/lease. It must not replace an
+                            // exception already unwinding from native setup or
+                            // command observation.
+                            Cleanup2Check("ettin-command-native-default-cleanup-failed", false,
+                                new JObject { ["lastStage"] = cleanup2Stage, ["cleanupException"] = cleanupError.ToString(),
+                                    ["qualifiedCastExecution"] = _expandedSummoningLastAbilityExecution,
+                                    ["nativeDefaultLeasePending"] = Cleanup2NativeDefaultPending, ["nativeMode"] = nativeMode.Describe() },
+                                "Exact native mode restoration must succeed; refusal preserves pending ownership and never replaces the original command/setup exception.");
+                        }
+                    }
+                }
                 finally
                 {
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;

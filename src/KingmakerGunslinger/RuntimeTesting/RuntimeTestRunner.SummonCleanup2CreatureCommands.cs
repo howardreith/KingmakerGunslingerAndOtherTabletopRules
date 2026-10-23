@@ -10,7 +10,11 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Abilities;
+using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.Enums.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -128,6 +132,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var targetPosition = target.Position; float targetOrientation = target.Orientation;
             Cleanup2NativeDefaultScope mode = null; UnitAttack command = null;
             var observer = new Sprint24AttackObserver { Owner = actor, Target = target };
+            // This existing observer is read-only with its fixture override
+            // delegates unset. It also retains the real native Grapple rules.
+            var riders = new Sprint16RuleObserver { Owner = actor, Target = target };
+            var constrict = new Dictionary<RuleDealDamage, JObject>();
             var costs = new JArray(); var endings = new JArray(); var images = new JArray(); var events = new JArray(); var paths = new JArray();
             try
             {
@@ -145,6 +153,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var route = Cleanup2CreatureApproachLane(fixture, actor, target, key);
                 var mechanics = Cleanup2ScaleMechanics(actor); var stats = Cleanup2CrabBaseStats(actor);
                 command = new UnitAttack(target) { IsSingleAttack = true, ForceFullAttack = false };
+                var grab = SummonGrabComponent.Find(actor);
+                riders.ObserveRiderContact = damage => {
+                    if (constrict.Count >= 4) return;
+                    try
+                    {
+                    var parent = Rulebook.CurrentContext == null ? new RuleAttackWithWeapon[0] :
+                        Rulebook.CurrentContext.EventStack.OfType<RuleAttackWithWeapon>().Where(value =>
+                            ReferenceEquals(value.Initiator, actor) && ReferenceEquals(value.Target, target)).ToArray();
+                    var planned = command.PlannedAttack;
+                    bool liveOwner = key == SummonAttackGesturePolicy.Crab && grab != null &&
+                        ReferenceEquals(grab.CrabProfileOwner, actor.Blueprint) &&
+                        actor.Descriptor.Buffs.RawFacts.OfType<Kingmaker.UnitLogic.Buffs.Buff>().Any(buff => buff.Components != null &&
+                            buff.Components.Any(component => ReferenceEquals(component, grab))) &&
+                        planned?.Weapon != null && grab.IsGrabLimb(actor, planned.Weapon) &&
+                        ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(actor, target), planned.Weapon);
+                    bool parentExact = parent.Length == 1 && ReferenceEquals(parent[0].Weapon, planned?.Weapon) &&
+                        ReferenceEquals(command.Executor, actor) && command.IsStarted && !command.IsFinished;
+                    bool dealConstrictStack = new StackTrace().GetFrames().Any(frame => {
+                        MethodBase method = frame.GetMethod();
+                        return method != null && method.DeclaringType == typeof(SummonGrabComponent) && method.Name == "DealConstrict";
+                    });
+                    PhysicalDamage physical = damage.DamageBundle.Count() == 1 ? damage.DamageBundle.Single() as PhysicalDamage : null;
+                    bool signature = damage.AttackRoll == null && damage.DamageBundle.Weapon == null && physical != null &&
+                        physical.Form == PhysicalDamageForm.Bludgeoning && physical.Dice.Rolls == GiantCrabRulesPolicy.ConstrictDiceCount &&
+                        (int)physical.Dice.Dice == GiantCrabRulesPolicy.ConstrictDieSides && physical.Bonus == actor.Stats.Strength.Bonus;
+                    constrict[damage] = new JObject { ["passed"] = liveOwner && parentExact && dealConstrictStack && signature,
+                        ["nativeLiveCrabAndEstablishingPincerExact"] = liveOwner, ["actualParentAttackAndPlannedWeaponExact"] = parentExact,
+                        ["productionDealConstrictOnCallStack"] = dealConstrictStack, ["exactConstrictSignature"] = signature,
+                        ["frame"] = Time.frameCount, ["damageRuleIdentity"] = RuntimeHelpers.GetHashCode(damage),
+                        ["damage"] = Sprint16DamageEvent(damage) };
+                    }
+                    catch (Exception error)
+                    {
+                        // Observability failure must not interrupt a native
+                        // damage rule or supply a replacement result.
+                        constrict[damage] = new JObject { ["passed"] = false, ["observerError"] = error.GetType().Name + ":" + error.Message };
+                    }
+                };
                 int pulseBefore = _sprint25Clock.Pulses;
                 Vector3 start = actor.Position; double gameStart = Game.Instance.Player.GameTime.TotalSeconds;
                 float maxVelocity = 0, maximumTravel = 0; bool approachImage = false, actImage = false, nativePathObserved = false;
@@ -164,6 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["actualNativeActTickDelta"] = schedules.Length == 1 ? (JToken)schedules[0].NativeActTickDelta : JValue.CreateNull() });
                 };
                 EventBus.Subscribe(observer);
+                EventBus.Subscribe(riders);
                 using (var economy = new FirearmReviewCosts(actor, costs))
                 using (var trace = new Sprint26CommandTrace(actor, endings))
                 {
@@ -172,6 +219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var actual = new FileInfo(System.IO.Path.Combine(_request.EvidenceDirectory, file));
                         bool saved = result.StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && actual.Exists && actual.Length >= 4096;
                         images.Add(new JObject { ["file"] = file, ["stage"] = stage, ["result"] = result, ["saved"] = saved,
+                            ["actualSecondsAfterAct"] = visual.Schedules.Any(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0) ?
+                                (JToken)(Game.Instance.Player.GameTime.TotalSeconds - visual.Schedules.Single(value => ReferenceEquals(value.Command, command)).ActGame) : JValue.CreateNull(),
                             ["frame"] = Time.frameCount, ["travel"] = Vector3.Distance(start, actor.Position), ["weaponEvents"] = observer.WeaponAttacks.Count }); };
                     capture("ready");
                     actor.Commands.Run(command);
@@ -205,22 +254,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // frame. Retain its first current-pose contact frame.
                     if (!actImage && observer.WeaponAttacks.Count != 0) { capture("contact"); actImage = true; }
                     double recoveryStart = Game.Instance.Player.GameTime.TotalSeconds; var recovery = Stopwatch.StartNew();
+                    float[] postActTimes = { .12f, .28f }; int postActSamples = 0;
                     while (Game.Instance.Player.GameTime.TotalSeconds - recoveryStart < 1.6 && recovery.Elapsed.TotalSeconds < 8)
-                    { if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native creature recovery mode changed."); yield return 0; }
+                    {
+                        if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native creature recovery mode changed.");
+                        var acted = visual.Schedules.SingleOrDefault(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0);
+                        if (acted != null && postActSamples < postActTimes.Length &&
+                            Game.Instance.Player.GameTime.TotalSeconds - acted.ActGame >= postActTimes[postActSamples])
+                        { capture("post-act-" + (postActSamples == 0 ? "012" : "028")); postActSamples++; }
+                        yield return 0;
+                    }
                     capture("recovery");
                     var schedules = visual.Schedules.Where(value => ReferenceEquals(value.Command, command)).ToArray();
                     var state = visual.Describe();
                     bool recovered = visual.Ready && visual.ProveCurrentPose() && visual.ProveSameFrameSourceState() &&
                         ((JArray)state["palettePoints"]).All(value => (float)value["ownedAngle"] < .001f);
+                    var hitRules = observer.WeaponAttacks.Where(value => value.AttackRoll != null && value.AttackRoll.IsHit).ToArray();
+                    var primaryDamage = hitRules.Select(value => value.MeleeDamage).Where(value => value != null).ToArray();
+                    var extraDamage = observer.Damage.Where(value => !primaryDamage.Any(primary => ReferenceEquals(primary, value))).ToArray();
+                    var checks = riders.Checks.Where(value => ReferenceEquals(value.Initiator, actor) && ReferenceEquals(value.Target, target)).ToArray();
+                    int grabsSucceeded = checks.Count(SummonManeuverChecks.Succeeded);
+                    bool primaryExact = primaryDamage.Length == hitRules.Length && primaryDamage.Distinct().Count() == primaryDamage.Length &&
+                        primaryDamage.All(value => observer.Damage.Count(actual => ReferenceEquals(actual, value)) == 1);
+                    bool ridersExact = key == SummonAttackGesturePolicy.Crab ? checks.Length <= hitRules.Length &&
+                        checks.All(value => value.Type == CombatManeuver.Grapple) && extraDamage.Length == grabsSucceeded && extraDamage.Length <= 1 &&
+                        extraDamage.All(value => constrict.ContainsKey(value) && (bool)constrict[value]["passed"]) : checks.Length == 0 && extraDamage.Length == 0;
                     bool nativeRules = issued && command.IsFinished && (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
                         command.AllAttacks.Count == 1 && observer.OwnerWeaponAttacks.Count == 1 && observer.WeaponAttacks.Count == 1 && observer.Rolls.Count == 1 &&
-                        observer.Damage.Count == observer.WeaponAttacks.Count(value => value.AttackRoll != null && value.AttackRoll.IsHit) &&
+                        primaryExact && ridersExact && observer.Damage.Distinct().Count() == observer.Damage.Count &&
                         events.Count == 1 && (bool)events[0]["exactScheduleInfoWeapon"] && (bool)events[0]["nativeInRangeAtRule"] && (bool)events[0]["nativeLOSAtRule"] &&
                         economy.Count(command) == 1 && economy.Exact(command, false) && economy.ForcedCount(command) == 0 && !command.Cutscene && !command.IsIgnoreCooldown;
                     bool nativeTravel = nativePathObserved && maximumTravel >= 1.5f && maxVelocity > .01f && approachImage;
                     bool gestureMotion =
                         schedules.Length == 1 && !schedules[0].Cancelled && schedules[0].Samples > 0 && schedules[0].MaximumAngle > .05f &&
-                        actImage && images.Count == 4 && images.All(value => (bool)value["saved"]) && recovered &&
+                        actImage && postActSamples == postActTimes.Length && images.Count == 4 + postActSamples && images.All(value => (bool)value["saved"]) && recovered &&
                         Game.Instance.Player.GameTime.TotalSeconds - recoveryStart >= 1.6;
                     bool invariants = _sprint25Clock.Pulses == pulseBefore && JToken.DeepEquals(stats, Cleanup2CrabBaseStats(actor)) &&
                         JToken.DeepEquals(mechanics, Cleanup2ScaleMechanics(actor));
@@ -235,11 +302,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["sourceMechanicsAndClockExact"] = invariants, ["plannedAttacks"] = command.AllAttacks.Count,
                         ["ownerWeaponEvents"] = observer.OwnerWeaponAttacks.Count, ["targetWeaponEvents"] = observer.WeaponAttacks.Count,
                         ["rollEvents"] = observer.Rolls.Count, ["damageEvents"] = observer.Damage.Count,
+                        ["exactHitMeleeDamageIdentities"] = primaryExact, ["attributedNativeRidersExact"] = ridersExact,
+                        ["nativeGrappleChecks"] = checks.Length, ["nativeGrapplesSucceeded"] = grabsSucceeded,
+                        ["primaryDamage"] = new JArray(primaryDamage.Select(Sprint16DamageEvent)),
+                        ["constrictDamage"] = new JArray(extraDamage.Select(value => constrict.ContainsKey(value) ? constrict[value] :
+                            new JObject { ["passed"] = false, ["damage"] = Sprint16DamageEvent(value), ["reason"] = "unattributed-extra-owner-target-damage" })),
+                        ["damageContract"] = "Every real hit requires its exact native attack.MeleeDamage object once. Only an actual successful native Crab Grapple may add one separately witnessed production DealConstrict rule with exact parent attack, establishing pincer and1d4+liveStrength Bludgeoning signature. Other extra damage fails; no roll, grab or damage is supplied.",
                         ["nativeCostCount"] = economy.Count(command), ["exactNativeCost"] = economy.Exact(command, false),
                         ["images"] = images, ["events"] = events, ["paths"] = paths, ["costs"] = costs, ["endings"] = endings,
                         ["gesture"] = state, ["gestureRecovered"] = recovered, ["nativeMode"] = mode.Describe(), ["manualClockPulses"] = _sprint25Clock.Pulses - pulseBefore,
                         ["baseStatsExact"] = JToken.DeepEquals(stats, Cleanup2CrabBaseStats(actor)), ["nativeMechanicsExact"] = JToken.DeepEquals(mechanics, Cleanup2ScaleMechanics(actor)),
-                        ["scope"] = "Actual native Default UnitAttack owns out-of-range approach and one ordinary attack; ready/approach/contact/recovery full-body frames. Contact frame is visual context, not measured mesh-to-enemy collision or owner art acceptance. No matched OFF/full routine/timing-neutral inference, forced act/hit, clip alias or synthetic locomotion." },
+                        ["scope"] = "Actual native Default UnitAttack owns out-of-range approach and one ordinary attack; ready/approach/first-act/post-act recovery/full-recovery full-body frames. Two extra frames sample actual .12/.28s post-act boundaries and record actual capture time; they do not add a pre-act windup or prove claw/enemy geometric contact. No matched OFF/full routine/timing-neutral inference, forced act/hit, clip alias or synthetic locomotion; owner art acceptance remains separate." },
                         "One exact ordinary native command walks at least1.5m from proved out-of-range placement, reaches native range/LOS, resolves one weapon rule/cost and the owned visual gesture, then recovers without changing source mechanics.");
                     if (!exact) throw new InvalidOperationException("Native creature approach/action/recovery proof failed: " + key);
                 }
@@ -251,6 +324,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try { action(); } catch (Exception error) { failures.Add(label + ":" + error.GetType().Name + ":" + error.Message); }
                 };
                 restore("rule-observer", () => EventBus.Unsubscribe(observer));
+                restore("rider-observer", () => EventBus.Unsubscribe(riders));
                 restore("owned-command", () => {
                     if (command != null && !command.IsFinished && ReferenceEquals(command.Executor, actor) && actor.Commands.Contains(command)) command.Interrupt(true);
                     actor.Commands.RemoveFinishedAndUpdateQueue();

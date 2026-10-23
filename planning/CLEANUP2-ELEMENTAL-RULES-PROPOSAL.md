@@ -1,5 +1,53 @@
 # MENU-02: standalone elemental rules proposal
 
+## CURRENT — Option B implementation in progress, 2026-10-23
+
+Later owner direction selected **Option B: common presentation with original
+source invocation** and authorized the ordinary casting, learning/preparation,
+controller and adapter implementation. The original proposal-only instruction
+and review sequence preserved below are historical. They do not require another
+approval to finish that authorized implementation. Option C's deliberate rules
+unification and any saved-object migration remain separate, unselected changes.
+
+All 24 native children retain their original rules and stable identities under
+Option B. Standalone, SM and SNA source choices remain distinct: grouping is not
+an equivalence waiver for descriptors, alignment, spawn buffs, unit identity,
+metamagic, specialization or actor-specific benefits. Original known/prepared/
+pinned objects and legitimate domain, class, item, NPC and foreign access are
+preserved. No global spell-list/Hidden mutation or conversion of one source's
+resource pool into another is part of the selected implementation.
+
+The current implementation includes a transient desktop chooser and native
+controller selector grouping, plus PC/controller learning/preparation
+disclosures that retain the original native rows/VMs and allocation callbacks.
+Mixed-creature SM/SNA parent menus remain intact. The conservative equivalence
+filter still does not justify erasing a distinct learning/list source; the
+authorized presentation reduction groups original sources instead.
+
+Review 27's desktop slice is **PASS: 21 PASS / 0 FAIL, 90.098 seconds**, source
+`a3706701502c05f8f52da42059ecd45cb5bb00b8`, native run
+`20261023T0049017020806Z-d8337630e63049bc965a1ebb59cfe542`. It observes all 24
+original source bindings, cancellation and the Small Fire standalone/SM
+source-specific casts, exhaustion and debit, with restored native fixture/UI/
+clock state. It does **not** prove 24 casts, natural learning, two-book/metamagic/
+special-slot behavior, controller operation, alternate adapters, OFF UI or
+saved reload. Those implementations have dedicated native phases that remain
+unrun at this checkpoint. Earlier failed runs remain failures on their original
+inputs; their useful diagnostics are not promoted to complete native PASS.
+
+See [the current Option B surface disposition](CLEANUP2-OPTION-B-SCREEN-DESIGN.md#current--implementation-in-progress-2026-10-23)
+for exact implemented/pending surfaces, review-27 raw identity and remaining
+checks. The historical contract differences and consumer inventory below remain
+the reason source-specific execution must be preserved. The 29 incomplete
+consumer owners are still unresolved; no presentation success closes them.
+
+## Historical original rules proposal, 2026-10-22
+
+The following original text, decisions and evidence are retained as history.
+Its request to prepare a future implementation plan is superseded by the later
+Option B authorization above; its protections against an unapproved rules
+change or unsupported equivalence remain applicable.
+
 **For owner review; implementation is not approved.** Owner direction: “Prepare
 a separate rules-change proposal for review before hiding them.” No entries
 are hidden by this proposal. Preserve current entries and original invocation

@@ -308,6 +308,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly CapsuleCollider[] _capsules = new CapsuleCollider[2];
             private readonly Vector3[][] _first = new Vector3[2][];
             private readonly string[] _spaces = new string[2];
+            private readonly JArray _initialization = new JArray();
+            private readonly JObject[] _frameEvidence = new JObject[2];
+            private JObject _firstFrameFailure;
             private readonly Vector3[] _vertices;
             private readonly Material _borrowed;
             private int _samples, _valid, _warmup, _lastFrame = -1;
@@ -362,6 +365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         skin.bones = new[] { node.transform }; skin.rootBone = node.transform;
                         skin.localBounds = _meshes[i].bounds;
                         skin.updateWhenOffscreen = true; skin.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+                        skin.enabled = false;
                         var capsuleNode = new GameObject("DisabledCapsule");
                         capsuleNode.transform.SetParent(node.transform, false);
                         _capsules[i] = capsuleNode.AddComponent<CapsuleCollider>();
@@ -369,16 +373,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _capsules[i].direction = 0; _capsules[i].center = new Vector3(0f, .9f, -.35f);
                         _capsules[i].radius = .35f; _capsules[i].height = 1.4f;
                         _cloths[i] = node.AddComponent<Cloth>();
-                        _cloths[i].useGravity = true; _cloths[i].damping = .15f;
-                        _cloths[i].bendingStiffness = .2f; _cloths[i].stretchingStiffness = .8f;
-                        _cloths[i].externalAcceleration = new Vector3(0f, 0f, -12f);
-                        _cloths[i].worldVelocityScale = 0f; _cloths[i].worldAccelerationScale = 0f;
-                        _cloths[i].coefficients = Enumerable.Range(0, _vertices.Length).Select(index =>
-                            new ClothSkinningCoefficient { maxDistance = index < Side ? 0f : 3f, collisionSphereDistance = 0f }).ToArray();
-                        _cloths[i].capsuleColliders = i == 0 ? new CapsuleCollider[0] : new[] { _capsules[i] };
-                        _cloths[i].sphereColliders = new ClothSphereColliderPair[0];
+                        _cloths[i].enabled = false;
                     }
                     _root.SetActive(true);
+                    // As established for the native cape, an inactive solver
+                    // can discard coefficient writes. Initialize both hidden
+                    // authored controls on their active owned hierarchy, then
+                    // prove all pin constraints before observing any motion.
+                    for (int i = 0; i < 2; i++)
+                    {
+                        Cloth cloth = _cloths[i];
+                        cloth.enabled = true;
+                        cloth.useGravity = true; cloth.damping = .15f;
+                        cloth.bendingStiffness = .2f; cloth.stretchingStiffness = .8f;
+                        cloth.externalAcceleration = new Vector3(0f, 0f, -12f);
+                        cloth.worldVelocityScale = 0f; cloth.worldAccelerationScale = 0f;
+                        var expected = Enumerable.Range(0, _vertices.Length).Select(index =>
+                            new ClothSkinningCoefficient { maxDistance = index < Side ? 0f : 3f, collisionSphereDistance = 0f }).ToArray();
+                        CapsuleCollider[] capsules = i == 0 ? new CapsuleCollider[0] : new[] { _capsules[i] };
+                        cloth.coefficients = expected;
+                        cloth.capsuleColliders = capsules;
+                        cloth.sphereColliders = new ClothSphereColliderPair[0];
+                        ClothSkinningCoefficient[] actual = cloth.coefficients;
+                        bool exact = cloth.gameObject.activeInHierarchy && cloth.enabled && !_capsules[i].enabled &&
+                            SameCoefficients(actual, expected) && Same(cloth.capsuleColliders, capsules) && cloth.sphereColliders.Length == 0 &&
+                            cloth.useGravity && cloth.damping.Equals(.15f) && cloth.bendingStiffness.Equals(.2f) &&
+                            cloth.stretchingStiffness.Equals(.8f) && cloth.externalAcceleration.Equals(new Vector3(0f, 0f, -12f)) &&
+                            cloth.worldVelocityScale.Equals(0f) && cloth.worldAccelerationScale.Equals(0f);
+                        var receipt = new JObject { ["grid"] = i, ["activeInHierarchy"] = cloth.gameObject.activeInHierarchy,
+                            ["enabled"] = cloth.enabled, ["rendererHiddenDuringInitialization"] = !cloth.GetComponent<SkinnedMeshRenderer>().enabled,
+                            ["expectedCoefficientCount"] = expected.Length, ["readbackCoefficientCount"] = actual.Length,
+                            ["readbackPinnedCount"] = actual.Count(value => value.maxDistance == 0f),
+                            ["coefficientsExact"] = SameCoefficients(actual, expected), ["capsuleReferencesExact"] = Same(cloth.capsuleColliders, capsules),
+                            ["ownedCapsuleDisabled"] = !_capsules[i].enabled, ["configurationExact"] = exact,
+                            ["scalarReadback"] = new JObject { ["useGravity"] = cloth.useGravity, ["damping"] = cloth.damping,
+                                ["bendingStiffness"] = cloth.bendingStiffness, ["stretchingStiffness"] = cloth.stretchingStiffness,
+                                ["externalAcceleration"] = Vector(cloth.externalAcceleration), ["worldVelocityScale"] = cloth.worldVelocityScale,
+                                ["worldAccelerationScale"] = cloth.worldAccelerationScale, ["capsuleCount"] = cloth.capsuleColliders.Length,
+                                ["spherePairCount"] = cloth.sphereColliders.Length } };
+                        _initialization.Add(receipt);
+                        if (!exact) throw new NotSupportedException("Authored Cloth control configuration did not round-trip exactly: " + receipt.ToString(Formatting.None));
+                    }
+                    foreach (Cloth cloth in _cloths) cloth.GetComponent<SkinnedMeshRenderer>().enabled = true;
                 }
                 catch { Dispose(); throw; }
             }
@@ -397,10 +433,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { _reason = "Missing/non-finite particles or authored no-seam grid count mismatch"; if (_valid == 0) { _samples--; _warmup++; } return; }
                     float localError = Enumerable.Range(0, Side).Max(index => Vector3.Distance(particles[index], _vertices[index]));
                     float worldError = Enumerable.Range(0, Side).Max(index => Vector3.Distance(particles[index], _frames[i].TransformPoint(_vertices[index])));
+                    int worst = Enumerable.Range(0, Side).OrderByDescending(index => Vector3.Distance(particles[index], _vertices[index])).First();
+                    _frameEvidence[i] = new JObject { ["grid"] = i, ["sample"] = _samples,
+                        ["maximumPinnedRendererLocalError"] = localError, ["maximumPinnedWorldError"] = worldError,
+                        ["worstRendererLocalPinnedIndex"] = worst, ["authoredPinnedLocal"] = Vector(_vertices[worst]),
+                        ["returnedAuthoredPinnedParticle"] = Vector(particles[worst]),
+                        ["authoredRendererWorldMatrix"] = Matrix(_frames[i].localToWorldMatrix),
+                        ["readbackCoefficientCount"] = _cloths[i].coefficients.Length,
+                        ["readbackPinnedCount"] = _cloths[i].coefficients.Count(value => value.maxDistance == 0f) };
                     string space = localError < .03f && worldError >= .03f ? "renderer-local" :
                         worldError < .03f && localError >= .03f ? "world" : null;
                     if (space == null || (_spaces[i] != null && _spaces[i] != space))
-                    { _reason = "Pinned authored vertices do not prove one stable particle frame"; if (_valid == 0) { _samples--; _warmup++; } return; }
+                    { _reason = "Pinned authored vertices do not prove one stable particle frame";
+                        if (_firstFrameFailure == null) _firstFrameFailure = (JObject)_frameEvidence[i].DeepClone();
+                        if (_valid == 0) { _samples--; _warmup++; } return; }
                     _spaces[i] = space;
                     local[i] = space == "renderer-local" ? particles : particles.Select(_frames[i].InverseTransformPoint).ToArray();
                     if (_first[i] == null) _first[i] = local[i];
@@ -427,6 +473,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["initializationFramesWithoutAProvenParticleFrame"] = _warmup,
                     ["particlesPerAuthoredGrid"] = _vertices.Length, ["pinnedParticlesPerGrid"] = Side,
                     ["controlParticleFrame"] = _spaces[0], ["contactParticleFrame"] = _spaces[1],
+                    ["exactActiveSolverInitialization"] = _initialization,
+                    ["latestAuthoredPinnedFrameEvidence"] = new JArray(_frameEvidence.Where(value => value != null)),
+                    ["firstAuthoredPinnedFrameFailure"] = _firstFrameFailure,
                     ["allOwnedCapsulesAlwaysDisabled"] = _disabled, ["positiveParticleMotion"] = _motion,
                     ["maximumPairedParticleDifference"] = _difference, ["noCollisionControlMaximumCapsulePenetration"] = _controlPenetration,
                     ["disabledCapsuleMaximumPenetration"] = _contactPenetration, ["reason"] = _reason,
