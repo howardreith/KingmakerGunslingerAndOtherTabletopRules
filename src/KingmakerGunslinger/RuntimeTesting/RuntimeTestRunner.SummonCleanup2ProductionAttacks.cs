@@ -612,48 +612,117 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool crab = key == SummonAttackGesturePolicy.Crab;
                     float lateral = crab ? .8f : 1.4f, forward = crab ? -1.2f : .6f;
                     float recordedPitch = Mathf.Atan2(.7f, Mathf.Sqrt(lateral * lateral + forward * forward)) * Mathf.Rad2Deg;
-                    Evidence["stageCameraCandidateSource"] = olegStage
-                        ? "Review28 actual Oleg whole-creature PNG perspective: creature-specific lateral/forward/up recipe relative to incoming path heading; current swept body/target fit and obstruction checks remain required."
-                        : "Existing bounded native camera candidates.";
-                    foreach (float pitch in olegStage ? new[] { recordedPitch, 35f, 45f, 50f, 60f } : new[] { 35f, 25f, 45f, 50f, 60f })
+                    bool rankBrachiosaurus = olegStage && key == SummonAttackGesturePolicy.Brachiosaurus;
+                    Evidence["stageCameraCandidateSource"] = rankBrachiosaurus
+                        ? "Native36 ordinary-frame Brachiosaurus images reject the recorded low/north view. Rank the existing ten poses by live static-renderer bounds crossing actual surface rays; bounds only prioritize. Existing physics/triangle admission and native image inspection remain required."
+                        : olegStage
+                            ? "Review28 actual Oleg whole-creature PNG perspective: creature-specific lateral/forward/up recipe relative to incoming path heading; current swept body/target fit and obstruction checks remain required."
+                            : "Existing bounded native camera candidates.";
+                    var cameraAngles = (olegStage ? new[] { recordedPitch, 35f, 45f, 50f, 60f } : new[] { 35f, 25f, 45f, 50f, 60f })
+                        .SelectMany(pitch => new[] { new Vector2(pitch, 1f), new Vector2(pitch, -1f) }).ToArray();
+                    Action<Vector2> placeCamera = angle => {
+                        float pitch = angle.x, side = angle.y;
+                        Vector3 horizontal = olegStage
+                            ? -(Vector3.Cross(Vector3.up, lane) * (lateral * side) + lane * forward).normalized
+                            : (across * side + lane * .25f).normalized;
+                        Vector3 direction = horizontal * Mathf.Cos(pitch * Mathf.Deg2Rad) - Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
+                        _rotation = Quaternion.LookRotation(direction, Vector3.up); _rig.SetRotation(_rotation.eulerAngles.y);
+                        Vector3[] projected = corners.Select(point => Quaternion.Inverse(_rotation) * (point - centre)).ToArray();
+                        float halfFrame = Mathf.Max(projected.Max(point => Mathf.Abs(point.y)), projected.Max(point => Mathf.Abs(point.x)) / _camera.aspect) * 1.12f;
+                        float distance = projected.Max(point => Mathf.Abs(point.z)) + Mathf.Max(4f, halfFrame / Mathf.Tan(_camera.fieldOfView * Mathf.Deg2Rad * .5f));
+                        if (_camera.orthographic) _camera.orthographicSize = halfFrame;
+                        _position = centre - direction * distance; _camera.transform.SetPositionAndRotation(_position, _rotation);
+                    };
+                    JArray brachiosaurusRanking = null;
+                    if (rankBrachiosaurus)
                     {
-                        foreach (float side in new[] { 1f, -1f })
-                        {
-                            if (jointSurvey.Elapsed.TotalSeconds > 5) break;
-                            Vector3 horizontal = olegStage
-                                ? -(Vector3.Cross(Vector3.up, lane) * (lateral * side) + lane * forward).normalized
-                                : (across * side + lane * .25f).normalized;
-                            Vector3 direction = horizontal * Mathf.Cos(pitch * Mathf.Deg2Rad) - Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
-                            _rotation = Quaternion.LookRotation(direction, Vector3.up); _rig.SetRotation(_rotation.eulerAngles.y);
-                            Vector3[] projected = corners.Select(point => Quaternion.Inverse(_rotation) * (point - centre)).ToArray();
-                            float halfFrame = Mathf.Max(projected.Max(point => Mathf.Abs(point.y)), projected.Max(point => Mathf.Abs(point.x)) / _camera.aspect) * 1.12f;
-                            float distance = projected.Max(point => Mathf.Abs(point.z)) + Mathf.Max(4f, halfFrame / Mathf.Tan(_camera.fieldOfView * Mathf.Deg2Rad * .5f));
-                            if (_camera.orthographic) _camera.orthographicSize = halfFrame;
-                            _position = centre - direction * distance; _camera.transform.SetPositionAndRotation(_position, _rotation);
-                            JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, units, sightMetrics, colliderRefs, out ignored);
-                            if (attempts.Count == 0)
+                        // Native36 accepted its first UNKNOWN after two million
+                        // triangle tests, without looking around the tree in
+                        // its normal native PNGs. Cheap bounds rank the same ten
+                        // poses first. They never qualify or exempt an occluder.
+                        Vector3[] surfacePoints = sightMetrics.Select(metric => metric.Crown).Distinct().ToArray();
+                        var scenery = Resources.FindObjectsOfTypeAll<MeshRenderer>().Where(renderer => renderer != null && renderer.enabled &&
+                            renderer.gameObject.activeInHierarchy && renderer.gameObject.scene.IsValid() && renderer.gameObject.scene.isLoaded &&
+                            (_camera.cullingMask & (1 << renderer.gameObject.layer)) != 0 &&
+                            renderer.shadowCastingMode != UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly &&
+                            renderer.GetComponentInParent<Kingmaker.View.UnitEntityView>() == null &&
+                            renderer.sharedMaterials.Any(material => material != null && material.renderQueue <= 2500))
+                            .Select(renderer => new { Bounds = renderer.bounds, Name = renderer.name, Instance = renderer.GetInstanceID() }).ToArray();
+                        var ranked = cameraAngles.Select((angle, originalIndex) => {
+                            if (jointSurvey.Elapsed.TotalSeconds > 5) throw new Cleanup2CreatureCameraObstructed(true);
+                            placeCamera(angle);
+                            var rays = surfacePoints.Select(point => {
+                                Vector3 viewport = _camera.WorldToViewportPoint(point);
+                                Ray ray = _camera.ViewportPointToRay(new Vector3(viewport.x, viewport.y, 0f));
+                                float length = Vector3.Dot(point - ray.origin, ray.direction);
+                                if (!Cleanup2Finite(length) || length <= 0f) throw new InvalidOperationException("Invalid Brachiosaurus camera-priority ray.");
+                                return Tuple.Create(ray, Mathf.Max(0f, length - .03f));
+                            }).ToArray();
+                            int pairs = 0; var overlaps = new JArray();
+                            foreach (var item in scenery)
                             {
-                                firstPosition = _position; firstRotation = _rotation; firstSize = _camera.orthographicSize;
-                                if (blockers.Count != 0)
-                                    Evidence["firstRefusedCameraBlockedProjectRays"] = DescribeBlockedProjectSurfaceRays(
-                                        _camera, actor, target, sightMetrics, units, metricRootIndices, pathSurfaceRoots, colliderRefs);
+                                if (jointSurvey.Elapsed.TotalSeconds > 5) throw new Cleanup2CreatureCameraObstructed(true);
+                                if (!Cleanup2Finite(item.Bounds.min) || !Cleanup2Finite(item.Bounds.max))
+                                    throw new InvalidOperationException("Non-finite Brachiosaurus camera-priority renderer bounds.");
+                                int rayCount = 0;
+                                foreach (var ray in rays)
+                                {
+                                    float distance;
+                                    if (item.Bounds.Contains(ray.Item1.origin) ||
+                                        (item.Bounds.IntersectRay(ray.Item1, out distance) && distance >= 0f && distance < ray.Item2)) rayCount++;
+                                }
+                                if (rayCount == 0) continue;
+                                pairs += rayCount;
+                                overlaps.Add(new JObject { ["renderer"] = item.Name, ["instance"] = item.Instance, ["surfaceRayBoundsPairs"] = rayCount });
                             }
-                            // A demonstrated physics obstruction already
-                            // rejects this candidate. Do not spend the joint
-                            // budget testing millions of mesh triangles on a
-                            // camera that cannot be admitted in any event.
-                            var rendered = blockers.Count == 0
-                                ? Cleanup2LineupRenderedObstructions(_camera, units, sightMetrics, meshCache, survey)
-                                : new JObject { ["qualified"] = false, ["actualTriangleHits"] = new JArray(),
-                                    ["unknownCandidates"] = new JArray(new JObject { ["reason"] = "not-surveyed-demonstrated-physics-obstruction" }),
-                                    ["triangleTests"] = 0, ["limits"] = "Physical blockers already reject this exact candidate; no rendered-clear claim." };
-                            attempts.Add(new JObject { ["pitch"] = pitch, ["side"] = side, ["position"] = SurveyVector(_position),
-                                ["physicalBlockers"] = blockers, ["ignoredExactSelectionColliders"] = ignored, ["renderedSurvey"] = rendered });
-                            if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)
-                            { found = true; Evidence["aboveGroundSampledSightProven"] = (bool)rendered["qualified"];
-                                Evidence["environmentSightProven"] = (bool)rendered["qualified"] && contactCount == 0; break; }
+                            return new { Angle = angle, OriginalIndex = originalIndex, Position = _position, Pairs = pairs, Overlaps = overlaps };
+                        }).OrderBy(value => value.Pairs).ThenBy(value => value.Overlaps.Count).ThenBy(value => value.OriginalIndex).ToArray();
+                        brachiosaurusRanking = new JArray(ranked.Select((value, rank) => new JObject {
+                            ["rank"] = rank + 1, ["originalCandidateIndex"] = value.OriginalIndex,
+                            ["pitch"] = value.Angle.x, ["side"] = value.Angle.y, ["position"] = SurveyVector(value.Position),
+                            ["surfaceRayBoundsPairs"] = value.Pairs, ["overlappingRendererBounds"] = value.Overlaps.Count,
+                            ["largestBoundsOverlaps"] = new JArray(value.Overlaps.OrderByDescending(row => (int)row["surfaceRayBoundsPairs"]).Take(12)),
+                            ["knownNative36OccludedPoseExcluded"] = value.OriginalIndex == 0 }));
+                        Evidence["brachiosaurusCameraPriority"] = new JObject { ["candidates"] = brachiosaurusRanking,
+                            ["surfaceRaysPerCandidate"] = surfacePoints.Length, ["staticRendererBounds"] = scenery.Length,
+                            ["rejectedNativeRun"] = "20261023T0544037476066Z-b4210998dc6b48dd9db0c6c996b99d29",
+                            ["scope"] = "Ordering only: fewer actual-surface-ray/static-renderer-bounds pairs, then fewer bounds. No AABB is declared an occluder or visibility proof. Native36's first pose is retained for comparison but excluded because its actual approach/contact/post-act/recovery PNGs show the tree over the body. All other admission and full-body framing checks remain." };
+                        cameraAngles = ranked.Where(value => value.OriginalIndex != 0).Select(value => value.Angle).ToArray();
+                    }
+                    foreach (Vector2 angle in cameraAngles)
+                    {
+                        if (jointSurvey.Elapsed.TotalSeconds > 5) break;
+                        placeCamera(angle);
+                        JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, units, sightMetrics, colliderRefs, out ignored);
+                        if (attempts.Count == 0)
+                        {
+                            firstPosition = _position; firstRotation = _rotation; firstSize = _camera.orthographicSize;
+                            if (blockers.Count != 0)
+                                Evidence["firstRefusedCameraBlockedProjectRays"] = DescribeBlockedProjectSurfaceRays(
+                                    _camera, actor, target, sightMetrics, units, metricRootIndices, pathSurfaceRoots, colliderRefs);
                         }
-                        if (found || survey.Elapsed.TotalSeconds > 15 || jointSurvey.Elapsed.TotalSeconds > 5) break;
+                        // A demonstrated physics obstruction already
+                        // rejects this candidate. Do not spend the joint
+                        // budget testing millions of mesh triangles on a
+                        // camera that cannot be admitted in any event.
+                        var rendered = blockers.Count == 0
+                            ? Cleanup2LineupRenderedObstructions(_camera, units, sightMetrics, meshCache, survey)
+                            : new JObject { ["qualified"] = false, ["actualTriangleHits"] = new JArray(),
+                                ["unknownCandidates"] = new JArray(new JObject { ["reason"] = "not-surveyed-demonstrated-physics-obstruction" }),
+                                ["triangleTests"] = 0, ["limits"] = "Physical blockers already reject this exact candidate; no rendered-clear claim." };
+                        attempts.Add(new JObject { ["pitch"] = angle.x, ["side"] = angle.y, ["position"] = SurveyVector(_position),
+                            ["physicalBlockers"] = blockers, ["ignoredExactSelectionColliders"] = ignored, ["renderedSurvey"] = rendered });
+                        if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)
+                        {
+                            found = true; Evidence["aboveGroundSampledSightProven"] = (bool)rendered["qualified"];
+                            Evidence["environmentSightProven"] = (bool)rendered["qualified"] && contactCount == 0;
+                            if (brachiosaurusRanking != null)
+                                Evidence["selectedBrachiosaurusCameraPriority"] = brachiosaurusRanking.Single(row =>
+                                    (float)row["pitch"] == angle.x && (float)row["side"] == angle.y).DeepClone();
+                            break;
+                        }
+                        if ((rankBrachiosaurus || angle.y < 0f) &&
+                            (survey.Elapsed.TotalSeconds > 15 || jointSurvey.Elapsed.TotalSeconds > 5)) break;
                     }
                     Evidence["cameraAttempts"] = attempts;
                     Evidence["jointCandidateAdmissionBudgetExceeded"] = jointSurvey.Elapsed.TotalSeconds > 5;

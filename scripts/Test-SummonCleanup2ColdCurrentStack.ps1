@@ -142,6 +142,10 @@ function Invoke-KmgCleanup2ColdLaunch($Plan,[string]$Scenario,$Lease,[string]$De
     $case.settings.Values['original']='native-cold-'+$phase
     if($phase -lt 3){[IO.File]::WriteAllText($working,'native prepared/cleaned fixture '+$phase)}
     else {Check (Test-ColdDenied {[IO.File]::WriteAllText($working,'absence phase must be read-only')}) 'cold-absence-working-os-write-denied'}
+    if($case.mode -ceq 'not-content-indexed' -and $phase -lt 3) {
+        [IO.File]::SetAttributes($working,[IO.FileAttributes]::Archive)
+        Check ([int](Get-Item -LiteralPath $working -Force).Attributes -eq 32) ('cold-indexing-flag-native-fixture-cleared-phase-'+$phase)
+    }
     if($case.mode -ceq ('child-fail-'+$phase)){throw ('Cold fixture phase '+$phase+' failed.')}
     if($case.mode -ceq 'empty-working' -and $phase -eq 1){[IO.File]::WriteAllBytes($working,[byte[]]@());throw 'Cold fixture partial native save.'}
     if($case.mode -ceq 'interrupted-working' -and $phase -eq 1){[IO.File]::Delete($working);throw 'Cold fixture native save interrupted after removal.'}
@@ -212,21 +216,43 @@ Check ($case.events.Count -eq 0 -and -not(Test-Path -LiteralPath $case.environme
 Check ([IO.File]::ReadAllText((Join-Path $case.environment.install 'Mods/FixtureMod1/settings.json')) -ceq
     'foreign change after captured current inventory') 'cold-changed-intake-preserves-unowned-change'
 Check (Test-KmgCleanup2ColdWorkingRecord $before (Get-KmgCleanup2ColdWorkingRecord $before.path)) 'cold-changed-intake-original-working-exact'
-foreach($mode in @('positive','child-fail-1','child-fail-2','child-fail-3','empty-working','interrupted-working','wrong-receipt','abnormal-wait',
+foreach($mode in @('positive','not-content-indexed','child-fail-1','child-fail-2','child-fail-3','empty-working','interrupted-working','wrong-receipt','abnormal-wait',
     'backup-setup-fail','acl-replaced','head-proof-missing','head-proof-mutated','head-proof-module-off','intake-evidence-fail','intake-late-wait','entry-live-before-refusal','late-final-wait')) {
-    $case=New-ColdCase $mode;$before=Get-KmgCleanup2ColdWorkingRecord (Join-Path $case.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks')
+    $case=New-ColdCase $mode
+    $working=Join-Path $case.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks'
+    if($mode -ceq 'not-content-indexed') {[IO.File]::SetAttributes($working,[IO.FileAttributes]::Archive -bor [IO.FileAttributes]::NotContentIndexed)}
+    $before=Get-KmgCleanup2ColdWorkingRecord $working
     $plan=Cold-Plan $case;$receipt=$null;$message=Refusal {$script:coldReceipt=Invoke-KmgCleanup2ColdCurrentStackTransaction $plan $case.environment}
-    if($mode -ceq 'positive') {Check ($null -eq $message -and $script:coldReceipt.phaseCount -eq 3) 'cold-exact-trio-positive'}
+    if($mode -cin @('positive','not-content-indexed')) {Check ($null -eq $message -and $script:coldReceipt.phaseCount -eq 3) ($mode+'-exact-trio-positive')}
     else {Check ($null -ne $message) ($mode+'-original-failure-retained')}
     Assert-Restored $case ('cold-'+$mode)
     $after=Get-KmgCleanup2ColdWorkingRecord $before.path
     Check (Test-KmgCleanup2ColdWorkingRecord $before $after) ($mode+'-exact-original-working-bytes-length-path-times-attributes-security')
     Check ($case.settings.Values.Count -eq 1 -and $case.settings.Values.original -ceq 'human-original') ($mode+'-exact-settings-restored')
+    if($mode -ceq 'not-content-indexed') {
+        $ownership=Read-KmgCompatibilityJson (Join-Path (Join-Path (Join-Path $case.environment.stateRoot 'cleanup2-cold-intake') $case.runId) 'cleanup2-cold-ownership.json')
+        $backup=Join-Path (Join-Path $case.environment.stateRoot $case.runId) 'original-working.zks'
+        Check ($before.attributes -eq 8224 -and $ownership.working.attributes -eq 8224 -and $after.attributes -eq 8224) 'cold-indexing-flag-exact-original-owned-and-restored'
+        Check ((Get-KmgCompatibilitySha256 $backup) -ceq $before.sha256 -and (Get-Item -LiteralPath $backup -Force).Length -eq $before.length) 'cold-indexing-flag-durable-original-backup-exact'
+        Check ($script:coldReceipt.phaseCount -eq 3 -and @($case.events|Where-Object {$_ -like 'working-save-*'}).Count -eq 3) 'cold-indexing-flag-all-three-fresh-fixture-phases'
+    }
     if($mode -ceq 'abnormal-wait') {
         $journal=Read-KmgCompatibilityJson (Join-Path (Join-Path (Join-Path $case.environment.stateRoot 'cleanup2-cold-intake') $case.runId) 'cleanup2-cold-journal.json')
         Check ($journal.protectedExitGuard.status -ceq 'EXIT_CONFIRMED' -and $journal.protectedExitGuard.lastEvidenceError -like '*waiting evidence IO*' -and
             $journal.status -ceq 'FAILED_RESTORED' -and $journal.error -like '*original native result IO*') 'cold-shared-protected-wait-io-failure-and-original-verdict'
     }
+}
+foreach($flag in @([IO.FileAttributes]::ReadOnly,[IO.FileAttributes]::Hidden,[IO.FileAttributes]::System,[IO.FileAttributes]::Temporary)) {
+    $case=New-ColdCase ('unsupported-attributes-'+$flag)
+    $working=Join-Path $case.environment.saveDirectory 'Manual_299_KMG_AUTOMATION_WORKING.zks'
+    $plan=Cold-Plan $case
+    try {
+        [IO.File]::SetAttributes($working,[IO.FileAttributes]::Archive -bor $flag)
+        Check (([int](Get-Item -LiteralPath $working -Force).Attributes -band [int]$flag) -ne 0) ('cold-unsupported-attribute-real-fixture-'+$flag)
+        $message=Refusal {Invoke-KmgCleanup2ColdCurrentStackTransaction $plan $case.environment}
+        Check ($message -clike '*ordinary nonlinked file*') ('cold-unsupported-attribute-refused-'+$flag)
+        Check ($case.events.Count -eq 0 -and -not(Test-Path -LiteralPath $case.environment.stateRoot)) ('cold-unsupported-attribute-before-transaction-or-native-'+$flag)
+    } finally {[IO.File]::SetAttributes($working,[IO.FileAttributes]::Archive)}
 }
 $case=New-ColdCase 'late-final-settings';$plan=Cold-Plan $case
 Check ($null -ne (Refusal {Invoke-KmgCleanup2ColdCurrentStackTransaction $plan $case.environment})) 'cold-final-foreign-settings-refused'

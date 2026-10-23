@@ -179,7 +179,63 @@ namespace KingmakerGunslinger.RuntimeTesting
             owner.GetMethod("OnDoubleClick", Cleanup2Fields).Invoke(row, null);
         }
 
+        private static int Cleanup2DesktopScreenIndex(ServiceWindowTabs tabs)
+        { return (int)typeof(FullScreenTabsWindow).GetProperty("ScreenIndex", Cleanup2Fields).GetValue(tabs, null); }
+
         private IEnumerable<int> Cleanup2DesktopPrepareAndUndo(ExpandedSummoningCorrectionFixture fixture, Spellbook book, NativeIconScreenEvidence screens)
+        {
+            var game = Game.Instance; var ui = game.UI; var controller = ui.SpellBookController;
+            var service = ui.ServiceWindow; var tabs = service.WindowTabs; var group = GroupController.Instance;
+            var selection = ui.SelectionManagerPC; bool off = Cleanup2OffState(), closeRequested = false;
+            Func<bool> ownsUi = () => ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) &&
+                ReferenceEquals(ui.ServiceWindow, service) && ReferenceEquals(service.WindowTabs, tabs) &&
+                ReferenceEquals(ui.SpellBookController, controller) && ReferenceEquals(ui.SelectionManagerPC, selection) &&
+                ReferenceEquals(GroupController.Instance, group) && group != null && ReferenceEquals(group.GetCurrentCharacter(), fixture.Caster) &&
+                selection.SelectedUnits.Count == 1 && ReferenceEquals(selection.SelectedUnits.First(), fixture.Caster) && !game.IsControllerGamepad;
+            Action requestClose = () => {
+                if (ownsUi() && controller.IsShow && ReferenceEquals(controller.CurrentCharacter, fixture.Caster) &&
+                    ReferenceEquals(controller.CurrentSpellbook, book) && tabs.IsShow && Cleanup2DesktopScreenIndex(tabs) == 2)
+                { closeRequested = true; service.HandleOpenSpellbook(); }
+            };
+            System.Runtime.ExceptionServices.ExceptionDispatchInfo failure = null;
+            using (var iterator = Cleanup2DesktopPrepareAndUndoSteps(fixture, book, screens, requestClose).GetEnumerator())
+            {
+                while (true)
+                {
+                    bool more = false;
+                    try { more = iterator.MoveNext(); }
+                    catch (Exception error) { failure = System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(error); }
+                    if (failure != null || !more) break;
+                    yield return iterator.Current;
+                }
+            }
+            if (closeRequested)
+            {
+                // Installed ServiceWindowTabs.Show(false) clears only its own
+                // IsShow. DisappearAnimation's unscaled 0.4s OnComplete -> Hide
+                // then calls the child book's native Show(false)/OnHideInternal.
+                // Keep the original exception pending while that owned callback
+                // completes; never assign IsShow or invoke Hide ahead of it.
+                Func<bool> ownsClose = () => ownsUi() && Cleanup2LearningModuleState(off) && !tabs.IsShow && Cleanup2DesktopScreenIndex(tabs) == -1 &&
+                    (!controller.IsShow || ReferenceEquals(controller.CurrentCharacter, fixture.Caster) && ReferenceEquals(controller.CurrentSpellbook, book));
+                var watch = Stopwatch.StartNew(); int frames = 0;
+                while (ownsClose() && controller.IsShow && frames < 600 && watch.Elapsed.TotalSeconds < 8)
+                { frames++; yield return 0; }
+                bool owned = ownsClose(), closed = owned && !controller.IsShow;
+                Cleanup2Check("elemental-desktop-native-book-close", closed, new JObject {
+                    ["nativeCloseRequested"] = closeRequested, ["ownershipExact"] = owned,
+                    ["nativeServiceTabsHidden"] = !tabs.IsShow, ["nativeBookHidden"] = !controller.IsShow,
+                    ["waitedFrames"] = frames, ["waitedMilliseconds"] = watch.Elapsed.TotalMilliseconds,
+                    ["originalExecutionException"] = failure?.SourceException.ToString(),
+                    ["contract"] = "ServiceWindowTabs.DisappearAnimation 06004779 -> native unscaled 0.4s completion -> Hide 0600477A -> child Show(false)/OnHideInternal; no observer UI state assignment." },
+                    "The exact owned native service-window close finishes before outer party/selection restoration, including after a preparation failure.");
+                if (!closed) throw new InvalidOperationException("Owned native desktop spellbook close did not complete within its frame/wall bound.", failure?.SourceException);
+            }
+            if (failure != null) failure.Throw();
+        }
+
+        private IEnumerable<int> Cleanup2DesktopPrepareAndUndoSteps(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
+            NativeIconScreenEvidence screens, Action requestClose)
         {
             bool off = Cleanup2OffState();
             var game = Game.Instance; var ui = game.UI; var controller = ui.SpellBookController;
@@ -196,9 +252,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Existing empty common level2 fixture preparation slot required.");
                 ui.ServiceWindow.HandleOpenSpellbook(); opened = true;
                 foreach (int frame in WaitTeleportLevelUpUi(() => controller.IsShow && ui.ServiceWindow.WindowTabs.IsShow, "desktop native spellbook")) yield return frame;
-                var view = controller.SpellBookView; int bookIndex = view.ClassToggle.Spellbooks.IndexOf(book);
-                var classTab = view.ClassToggle.GetComponentsInChildren<SpellbookClassTab>(true).Single(value => value.Index == bookIndex && value.gameObject.activeInHierarchy);
-                classTab.Toggle.isOn = true;
+                var view = controller.SpellBookView; var classToggle = view.ClassToggle;
+                int bookIndex = classToggle.Spellbooks.IndexOf(book); bool singleton = classToggle.Spellbooks.Count == 1;
+                bool nativeSelection = false;
+                if (ReferenceEquals(controller.CurrentCharacter, fixture.Caster) && bookIndex >= 0)
+                {
+                    // Installed SpellBookToggle.SetUp 0600481E hides the entire
+                    // class strip when Count <= 1. Its native current book must
+                    // already be our sole exact book; there is no visible click.
+                    if (singleton)
+                        nativeSelection = bookIndex == 0 && ReferenceEquals(classToggle.Spellbooks[0], book) &&
+                            !classToggle.gameObject.activeSelf && !classToggle.gameObject.activeInHierarchy &&
+                            ReferenceEquals(controller.CurrentSpellbook, book);
+                    else
+                    {
+                        var matches = classToggle.GetComponentsInChildren<SpellbookClassTab>(true)
+                            .Where(value => value.Index == bookIndex && value.gameObject.activeInHierarchy).ToArray();
+                        if (matches.Length == 1 && matches[0].Toggle != null && matches[0].Toggle.interactable)
+                        { matches[0].Toggle.isOn = true; nativeSelection = ReferenceEquals(controller.CurrentSpellbook, book); }
+                    }
+                }
+                Cleanup2Check("elemental-desktop-native-book-selection", nativeSelection, new JObject {
+                    ["nativeBookCount"] = classToggle.Spellbooks.Count, ["sourceBookIndex"] = bookIndex,
+                    ["currentCharacterExact"] = ReferenceEquals(controller.CurrentCharacter, fixture.Caster),
+                    ["currentBookExact"] = ReferenceEquals(controller.CurrentSpellbook, book),
+                    ["classToggleActiveSelf"] = classToggle.gameObject.activeSelf, ["classToggleActiveInHierarchy"] = classToggle.gameObject.activeInHierarchy,
+                    ["nativeInput"] = singleton ? "Native open selected the sole exact book; no class-tab click." : "Exact visible class-tab Toggle -> native OnToggle." },
+                    "The native PC book belongs to the exact fixture; a single-book class strip is natively hidden, and multiple books use their visible original tab.");
+                if (!nativeSelection) throw new InvalidOperationException("Native desktop source book/class-tab ownership differs.");
                 var level = view.LevelBookSwitcher.m_Tabs[2];
                 if (!level.gameObject.activeInHierarchy || !level.Toggle.interactable) throw new InvalidOperationException("Native desktop level2 tab unavailable.");
                 level.Toggle.isOn = true;
@@ -265,12 +346,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (opened && controller.IsShow && ReferenceEquals(controller.CurrentSpellbook, book) && ui.ServiceWindow.WindowTabs.IsShow)
-                    ui.ServiceWindow.HandleOpenSpellbook();
+                if (opened) requestClose();
                 if (written != null && ReferenceEquals(written.Spell, source)) book.ForgetMemorized(written);
                 pins.Restore();
             }
-            for (int frame = 0; frame < 8; frame++) yield return 0;
         }
 
         private static Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility[] Cleanup2DesktopPending(SpellSelectionData selection)

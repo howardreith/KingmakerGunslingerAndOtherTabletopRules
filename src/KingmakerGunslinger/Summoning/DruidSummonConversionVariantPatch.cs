@@ -50,7 +50,8 @@ namespace KingmakerGunslinger.Summoning
                 ReferenceEquals(Parent.Variants, NativeVariantArray) && NativeVariantArray != null && NativeVariantArray.SequenceEqual(Variants) &&
                 OwnedVariants.All(value => ReferenceEquals(value.Parent, Parent) && Variants.Count(variant => ReferenceEquals(variant, value)) == 1) &&
                 Book.Owner.Spellbooks.Any(value => ReferenceEquals(value, Book)) && Children.All(value => ReferenceEquals(value.ConvertedFrom, Conversion) &&
-                    ReferenceEquals(value.Spellbook, Book) && ProjectionVariants.Any(variant => ReferenceEquals(value.Blueprint, variant))); } }
+                    ReferenceEquals(value.Spellbook, Book) && ReferenceEquals(value.Fact, Conversion.Fact) &&
+                    ReferenceEquals(value.MetamagicData, Conversion.MetamagicData) && ProjectionVariants.Any(variant => ReferenceEquals(value.Blueprint, variant))); } }
         }
         internal static Receipt For(AbilityData child)
         { Receipt receipt; return child != null && Receipts.TryGetValue(child, out receipt) && receipt.Current ? receipt : null; }
@@ -61,9 +62,14 @@ namespace KingmakerGunslinger.Summoning
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
             var prepared = typeof(MechanicActionBarSlotMemorizedSpell).GetMethod("GetConvertedAbilityData", flags);
             var variants = typeof(MechanicActionBarSlotSpontaneusSpell).GetMethod("GetConvertedAbilityData", flags);
-            return prepared != null && variants != null && prepared.Module.ModuleVersionId.ToString() == ElementalSourceChooserRuntime.GameMvid &&
+            var membership = typeof(AbilityData).GetMethod("HasVariant", flags);
+            var conversion = typeof(AbilityData).GetProperty("ConvertedFrom", flags)?.GetSetMethod();
+            return prepared != null && variants != null && membership != null && conversion != null &&
+                prepared.Module.ModuleVersionId.ToString() == ElementalSourceChooserRuntime.GameMvid &&
                 prepared.MetadataToken == 0x06002fbc && prepared.GetMethodBody().GetILAsByteArray().Length == 287 &&
-                variants.MetadataToken == 0x06002fe4 && variants.GetMethodBody().GetILAsByteArray().Length == 305;
+                variants.MetadataToken == 0x06002fe4 && variants.GetMethodBody().GetILAsByteArray().Length == 305 &&
+                membership.MetadataToken == 0x06002b62 && membership.GetMethodBody().GetILAsByteArray().Length == 18 &&
+                conversion.MetadataToken == 0x06002b27 && conversion.GetMethodBody().GetILAsByteArray().Length == 171;
         }
 
         internal static bool ExactNativeFeature(BlueprintFeature feature, BlueprintCharacterClass druid)
@@ -85,9 +91,12 @@ namespace KingmakerGunslinger.Summoning
             internal BlueprintAbility[] Variants;
             internal Func<bool> Current;
             internal int Reads;
+            internal readonly List<AbilityData> Children = new List<AbilityData>();
+            internal readonly List<AbilityData> ValidatedChildren = new List<AbilityData>();
         }
         private static readonly ConditionalWeakTable<MechanicActionBarSlotSpontaneusSpell, FactoryProjection> FactoryProjections =
             new ConditionalWeakTable<MechanicActionBarSlotSpontaneusSpell, FactoryProjection>();
+        private static readonly ConditionalWeakTable<AbilityData, FactoryProjection> FactoryChildren = new ConditionalWeakTable<AbilityData, FactoryProjection>();
         internal static BlueprintAbility[] NativeFactoryVariants(BlueprintAbility blueprint, MechanicActionBarSlotSpontaneusSpell factory)
         {
             FactoryProjection projection;
@@ -97,6 +106,37 @@ namespace KingmakerGunslinger.Summoning
                 throw new InvalidOperationException("Exact native Druid factory source changed.");
             if (!projection.Current()) throw new InvalidOperationException("Native Druid quantity context changed inside its factory.");
             projection.Reads++; return projection.Variants;
+        }
+        internal static void NativeFactoryChild(AbilityData child, MechanicActionBarSlotSpontaneusSpell factory)
+        {
+            FactoryProjection projection;
+            if (factory == null || !FactoryProjections.TryGetValue(factory, out projection)) return;
+            if (child == null || !ReferenceEquals(factory.Spell, projection.Conversion) ||
+                !ReferenceEquals(factory.Unit, projection.Conversion.Caster.Unit) || !projection.Current() ||
+                child.ConvertedFrom != null || !ReferenceEquals(child.Spellbook, projection.Conversion.Spellbook) ||
+                !ReferenceEquals(child.Caster, projection.Conversion.Caster) ||
+                !projection.Variants.Any(value => ReferenceEquals(value, child.Blueprint)) ||
+                projection.Children.Any(value => ReferenceEquals(value.Blueprint, child.Blueprint)))
+                throw new InvalidOperationException("Exact native Druid variant construction changed.");
+            // Capture the exact native newobj result before the unchanged
+            // native ConvertedFrom setter. No adapter assigns its context.
+            FactoryChildren.Add(child, projection); projection.Children.Add(child);
+        }
+        internal static bool HasProjectedVariant(AbilityData source, AbilityData child)
+        {
+            if (source == null || child == null || !ReferenceEquals(child.ConvertedFrom, source)) return false;
+            FactoryProjection projection;
+            if (FactoryChildren.TryGetValue(child, out projection))
+            {
+                bool exact = ReferenceEquals(source, projection.Conversion) && projection.Current() &&
+                    ReferenceEquals(child.Spellbook, source.Spellbook) && ReferenceEquals(child.Caster, source.Caster) &&
+                    projection.Children.Any(value => ReferenceEquals(value, child)) &&
+                    projection.Variants.Any(value => ReferenceEquals(value, child.Blueprint));
+                if (exact && !projection.ValidatedChildren.Any(value => ReferenceEquals(value, child))) projection.ValidatedChildren.Add(child);
+                return exact;
+            }
+            var receipt = For(child);
+            return receipt != null && ReferenceEquals(receipt.Conversion, source);
         }
         private static List<AbilityData> NativeChildren(UnitDescriptor caster, AbilityData conversion, BlueprintAbility[] variants, Func<bool> current)
         {
@@ -111,10 +151,22 @@ namespace KingmakerGunslinger.Summoning
                 // twice, constructs each child (BlueprintAbility,Spellbook),
                 // and sets ConvertedFrom to this retained quantity object.
                 var result = native.GetConvertedAbilityData();
-                if (projection.Reads != 2 || !current()) throw new InvalidOperationException("Native Druid factory projection did not remain exact.");
-                return result;
+                if (projection.Reads != 2 || !current() || result == null || projection.Children.Count != variants.Length ||
+                    projection.Children.Any(child => result.Count(value => ReferenceEquals(value, child)) != 1 ||
+                        !projection.ValidatedChildren.Any(value => ReferenceEquals(value, child))))
+                    throw new InvalidOperationException("Native Druid factory projection did not remain exact; reads=" + projection.Reads +
+                        ";created=" + projection.Children.Count + ";validated=" + projection.ValidatedChildren.Count +
+                        ";expected=" + variants.Length + ";returned=" + (result == null ? -1 : result.Count) + ".");
+                // This factory also enumerates additional conversions. Only
+                // its exact variant-constructor results belong to this
+                // quantity projection; equal-blueprint conversion rows do not.
+                return projection.Children.ToList();
             }
-            finally { FactoryProjections.Remove(native); }
+            finally
+            {
+                foreach (var child in projection.Children) FactoryChildren.Remove(child);
+                FactoryProjections.Remove(native);
+            }
         }
 
         private static object[] References(AbilityData data)
@@ -132,22 +184,32 @@ namespace KingmakerGunslinger.Summoning
             try
             {
                 var source = __instance.Spell; var slot = __instance.SpellSlot; var book = source?.Spellbook;
+                if (book?.Blueprint.CharacterClass?.AssetGuid != DruidClassGuid) return;
+                Outcome = "checking-native-druid-source";
                 if (source == null || book == null || slot == null || slot.Type != SpellSlotType.Common || !ReferenceEquals(slot.Spell, source) ||
                     source.Caster?.Unit == null || source.Caster.Unit.Destroyed || source.SourceItem != null || book.Blueprint.Spontaneous || book.Blueprint.CharacterClass?.AssetGuid != DruidClassGuid ||
                     !ReferenceEquals(book.Owner, source.Caster) || !ReferenceEquals(__instance.Unit, source.Caster.Unit) ||
                     !source.Caster.Spellbooks.Any(value => ReferenceEquals(value, book)) ||
-                    !book.GetMemorizedSpellSlots(slot.SpellLevel).Any(value => ReferenceEquals(value, slot))) return;
+                    !book.GetMemorizedSpellSlots(slot.SpellLevel).Any(value => ReferenceEquals(value, slot)))
+                { Outcome = "preserve-native-druid-source-slot"; return; }
                 var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library, DruidClassGuid, "native Druid conversion class");
+                // Native SpontaneousSpellConversion.OnTurnOn uses
+                // DemandSpellbook(class), which falls back to the default
+                // blueprint without ClassData (06001F0C). GetSpellbook(class)
+                // instead returns null (06001F0B). Verify the existing book
+                // by its exact blueprint, without demanding or adding one.
                 if (!ReferenceEquals(book.Blueprint.CharacterClass, druid) || !ReferenceEquals(book.Blueprint, druid.Spellbook) ||
-                    !ReferenceEquals(source.Caster.GetSpellbook(druid), book)) return;
+                    !ReferenceEquals(source.Caster.GetSpellbook(druid.Spellbook), book))
+                { Outcome = "preserve-native-druid-book-identity"; return; }
                 var grants = source.Caster.Progression.Features.Enumerable.Where(feature => ExactNativeFeature(feature?.Blueprint, druid)).ToArray();
-                if (grants.Length != 1) return;
+                if (grants.Length != 1) { Outcome = "preserve-native-druid-feature-grant"; return; }
                 var granted = grants[0].Blueprint.ComponentsArray.OfType<SpontaneousSpellConversion>().SelectMany(value => value.SpellsByLevel).Where(value => value != null).ToArray();
                 var nativeConversions = book.GetSpontaneousConversionSpells(source).ToArray();
                 var candidates = __result.Where(value => value?.Blueprint != null && ReferenceEquals(value.ConvertedFrom, source) &&
                     ReferenceEquals(value.Spellbook, book) && granted.Any(blueprint => ReferenceEquals(blueprint, value.Blueprint)) &&
                     nativeConversions.Count(blueprint => ReferenceEquals(blueprint, value.Blueprint)) == 1).ToArray();
-                if (candidates.Length == 0 || candidates.GroupBy(value => value.Blueprint).Any(value => value.Count() != 1)) return;
+                if (candidates.Length == 0 || candidates.GroupBy(value => value.Blueprint).Any(value => value.Count() != 1))
+                { Outcome = "preserve-native-druid-quantity-candidates"; return; }
                 var original = __result; var originalRows = original.ToArray(); var books = source.Caster.Spellbooks.ToArray();
                 var bookState = books.Select(value => new { Book = value, Slots = Enumerable.Range(0, 10).SelectMany(value.GetMemorizedSpellSlots).ToArray() })
                     .Select(value => new { value.Book, value.Slots, Spells = value.Slots.Select(nativeSlot => nativeSlot.Spell).ToArray(),
@@ -191,7 +253,8 @@ namespace KingmakerGunslinger.Summoning
                     var children = produced == null ? new AbilityData[0] : produced.Where(value => value != null &&
                         projection.Any(variant => ReferenceEquals(variant, value.Blueprint))).ToArray();
                     bool complete = children.Length == projection.Length && projection.All(variant => children.Count(value => ReferenceEquals(value.Blueprint, variant)) == 1) &&
-                        children.All(value => ReferenceEquals(value.ConvertedFrom, conversion) && ReferenceEquals(value.Spellbook, book) && ReferenceEquals(value.Caster, source.Caster));
+                        children.All(value => ReferenceEquals(value.ConvertedFrom, conversion) && ReferenceEquals(value.Spellbook, book) &&
+                            ReferenceEquals(value.Caster, source.Caster) && ReferenceEquals(value.Fact, conversion.Fact) && ReferenceEquals(value.MetamagicData, conversion.MetamagicData));
                     if (!complete || !current()) { Outcome = "preserve-unverified-native-quantity-context"; return; }
                     replacements.Add(conversion, children);
                     receipts.Add(new Receipt { Mechanism = __instance, Source = source, Conversion = conversion, Book = book, Slot = slot, Grant = grants[0].Blueprint,
@@ -216,7 +279,7 @@ namespace KingmakerGunslinger.Summoning
                 }
                 __result = projected.ToList(); Outcome = "native-druid-quantity-variants;original-quantities-retained-in-chain;quantities=" + replacements.Count + ";children=" + receipts.Sum(value => value.Children.Length);
             }
-            catch (Exception error) { Outcome = "preserve-native-druid-conversion:" + error.GetType().Name; }
+            catch (Exception error) { Outcome = "preserve-native-druid-conversion:" + error.GetType().Name + ":" + error.Message; }
         }
     }
 
@@ -230,8 +293,12 @@ namespace KingmakerGunslinger.Summoning
             var codes = instructions.ToList();
             var getter = typeof(BlueprintAbility).GetProperty("Variants").GetGetMethod();
             var helper = typeof(DruidSummonConversionVariantPatch).GetMethod("NativeFactoryVariants", BindingFlags.Static | BindingFlags.NonPublic);
+            var constructor = typeof(AbilityData).GetConstructor(new[] { typeof(BlueprintAbility), typeof(Spellbook) });
+            var capture = typeof(DruidSummonConversionVariantPatch).GetMethod("NativeFactoryChild", BindingFlags.Static | BindingFlags.NonPublic);
             var reads = codes.Where(value => value.opcode == OpCodes.Callvirt && Equals(value.operand, getter)).ToArray();
-            if (reads.Length != 2 || helper == null) throw new InvalidOperationException("Installed native Druid variant-factory reads changed.");
+            var creates = codes.Where(value => value.opcode == OpCodes.Newobj && Equals(value.operand, constructor)).ToArray();
+            if (reads.Length != 2 || creates.Length != 1 || helper == null || capture == null)
+                throw new InvalidOperationException("Installed native Druid variant-factory reads/construction changed.");
             var patched = new List<CodeInstruction>();
             foreach (var code in codes)
             {
@@ -242,9 +309,35 @@ namespace KingmakerGunslinger.Summoning
                     code.opcode = OpCodes.Call; code.operand = helper;
                 }
                 patched.Add(code);
+                if (creates.Contains(code))
+                {
+                    if (code.blocks.Count != 0) throw new InvalidOperationException("Unexpected native Druid constructor exception boundary.");
+                    patched.Add(new CodeInstruction(OpCodes.Dup)); patched.Add(new CodeInstruction(OpCodes.Ldarg_0));
+                    patched.Add(new CodeInstruction(OpCodes.Call, capture));
+                }
             }
             Installed = true;
             return patched;
+        }
+    }
+
+    [HarmonyPatch(typeof(AbilityData), "HasVariant")]
+    internal static class DruidSummonConversionVariantMembershipPatch
+    {
+        private static bool Prepare() { return DruidSummonConversionVariantPatch.ExactFactory(); }
+        private static void Postfix(AbilityData __instance, AbilityData other, ref bool __result)
+        {
+            // The native setter (06002B27) checks this relation both for
+            // validity and for native metamagic inheritance. Keep it scoped
+            // to exact native-constructor objects/current receipts; blueprint
+            // variants and every unrelated invocation retain native results.
+            try
+            {
+                bool projected = DruidSummonConversionVariantPatch.HasProjectedVariant(__instance, other);
+                if (!__result) __result = projected;
+            }
+            catch (Exception error)
+            { DruidSummonConversionVariantPatch.Outcome = "preserve-native-druid-membership:" + error.GetType().Name; }
         }
     }
 
