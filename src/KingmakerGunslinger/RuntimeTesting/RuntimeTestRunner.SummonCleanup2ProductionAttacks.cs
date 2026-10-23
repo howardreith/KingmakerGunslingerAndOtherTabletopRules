@@ -548,17 +548,53 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Vector3[] targetSurface = SurfaceLandmarks(target.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                         .Where(value => value.enabled && value.gameObject.activeInHierarchy && value.sharedMesh != null).ToArray());
                     var metrics = new List<Cleanup2ActorMetric>(); var units = new List<UnitEntityData>();
-                    foreach (Vector3 pathRoot in pathSurfaceRoots)
-                    foreach (Vector3 surface in actorSurface)
-                    { Vector3 point = surface + pathRoot - actor.Position;
-                        metrics.Add(new Cleanup2ActorMetric { Min = point, Max = point, Crown = point, Sole = point }); units.Add(actor); }
+                    var metricRootIndices = new List<int>(); var contacts = new JArray(); var retainedPerRoot = new JArray();
+                    int contactCount = 0; float maximumContactDepth = 0f;
+                    for (int rootIndex = 0; rootIndex < pathSurfaceRoots.Length; rootIndex++)
+                    {
+                        Vector3 pathRoot = pathSurfaceRoots[rootIndex], rootSupport; JObject rootGround;
+                        bool exactRootSupport = Cleanup2CreatureNativeGroundRoot(actor, pathRoot, out rootSupport, out rootGround) &&
+                            Vector3.Distance(rootSupport, pathRoot) <= .01f;
+                        int retained = 0;
+                        foreach (Vector3 surface in actorSurface)
+                        {
+                            Vector3 point = surface + pathRoot - actor.Position, localSupport = default(Vector3); JObject localGround = null;
+                            bool measuredLocalGround = exactRootSupport &&
+                                Cleanup2CreatureNativeGroundRoot(actor, point, out localSupport, out localGround);
+                            // Native Translocate places the unit at its centre's
+                            // physical ground. Outer leg/pincer surfaces can be
+                            // below the same sloping terrain. Such a submerged
+                            // endpoint cannot have clear camera LOS from any
+                            // angle. Record it as unqualified contact rather
+                            // than pretending that terrain or anatomy is clear.
+                            if (measuredLocalGround && (int)localGround["colliderInstance"] == (int)rootGround["colliderInstance"] &&
+                                point.y < localSupport.y - actor.FlyHeight)
+                            {
+                                float depth = localSupport.y - actor.FlyHeight - point.y;
+                                contactCount++; maximumContactDepth = Mathf.Max(maximumContactDepth, depth);
+                                if (contacts.Count < 12) contacts.Add(new JObject { ["sampleRootIndex"] = rootIndex,
+                                    ["projectSurfacePoint"] = SurveyVector(point), ["depthBelowNativeLocalGround"] = depth,
+                                    ["nativeLocalGround"] = localGround, ["pathRootGround"] = rootGround,
+                                    ["visibility"] = "UNKNOWN_SUBMERGED_CONTACT_POINT; full geometry remains framed and requires native image inspection." });
+                                continue;
+                            }
+                            metrics.Add(new Cleanup2ActorMetric { Min = point, Max = point, Crown = point, Sole = point });
+                            units.Add(actor); metricRootIndices.Add(rootIndex); retained++;
+                        }
+                        retainedPerRoot.Add(retained);
+                        if (retained == 0) throw new InvalidOperationException("No actual project body surface remains above proved local contact ground.");
+                    }
                     foreach (Vector3 point in targetSurface)
-                    { metrics.Add(new Cleanup2ActorMetric { Min = point, Max = point, Crown = point, Sole = point }); units.Add(target); }
+                    { metrics.Add(new Cleanup2ActorMetric { Min = point, Max = point, Crown = point, Sole = point }); units.Add(target); metricRootIndices.Add(-1); }
                     var sightMetrics = metrics.ToArray();
                     Evidence["actualActorSurfaceLandmarks"] = actorSurface.Length; Evidence["actualTargetSurfaceLandmarks"] = targetSurface.Length;
                     Evidence["sightSampleCount"] = sightMetrics.Length; Evidence["groundContactSightExclusionFraction"] = .12f;
                     Evidence["nativePathSurfaceRoots"] = new JArray(pathSurfaceRoots.Select(SurveyVector));
-                    Evidence["sightScope"] = "Actual baked surface extrema/nearest-center samples above native lower12% ground contact, with actor samples translated along the qualified lane. No padded volume corner is a sight target; no terrain/grass/collider name is ignored. Future gesture occlusion is not inferred from this sampled survey.";
+                    Evidence["measuredSubmergedProjectContactPoints"] = contactCount;
+                    Evidence["maximumMeasuredContactDepth"] = maximumContactDepth;
+                    Evidence["submergedProjectContactObservations"] = contacts;
+                    Evidence["retainedProjectSurfaceSamplesPerRoot"] = retainedPerRoot;
+                    Evidence["sightScope"] = "Actual baked surface samples translated along the native lane. Only project points proved below local physical ground on the exact native path-support collider are recorded as contact UNKNOWN instead of impossible below-surface LOS targets. Full body geometry remains framed; every above-ground body/target ray and all scenery blockers remain. No named collider exemption or anatomy/contact acceptance; actual gesture pixels require inspection.";
                     Bounds envelope = atStart; envelope.Encapsulate(atTarget); envelope.Encapsulate(targetBounds);
                     var corners = Cleanup2BoundsCorners(envelope).ToArray(); Vector3 centre = envelope.center;
                     _rig.ScrollToImmediately(centre); _camera.aspect = 1280f / 800f;
@@ -597,7 +633,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 firstPosition = _position; firstRotation = _rotation; firstSize = _camera.orthographicSize;
                                 if (blockers.Count != 0)
                                     Evidence["firstRefusedCameraBlockedProjectRays"] = DescribeBlockedProjectSurfaceRays(
-                                        _camera, actor, target, sightMetrics, units, actorSurface.Length, pathSurfaceRoots, colliderRefs);
+                                        _camera, actor, target, sightMetrics, units, metricRootIndices, pathSurfaceRoots, colliderRefs);
                             }
                             // A demonstrated physics obstruction already
                             // rejects this candidate. Do not spend the joint
@@ -611,7 +647,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             attempts.Add(new JObject { ["pitch"] = pitch, ["side"] = side, ["position"] = SurveyVector(_position),
                                 ["physicalBlockers"] = blockers, ["ignoredExactSelectionColliders"] = ignored, ["renderedSurvey"] = rendered });
                             if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)
-                            { found = true; Evidence["environmentSightProven"] = (bool)rendered["qualified"]; break; }
+                            { found = true; Evidence["aboveGroundSampledSightProven"] = (bool)rendered["qualified"];
+                                Evidence["environmentSightProven"] = (bool)rendered["qualified"] && contactCount == 0; break; }
                         }
                         if (found || survey.Elapsed.TotalSeconds > 15 || jointSurvey.Elapsed.TotalSeconds > 5) break;
                     }
@@ -698,7 +735,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             private static JArray DescribeBlockedProjectSurfaceRays(Camera camera, UnitEntityData actor, UnitEntityData target,
-                Cleanup2ActorMetric[] metrics, IList<UnitEntityData> units, int surfacesPerRoot, Vector3[] roots,
+                Cleanup2ActorMetric[] metrics, IList<UnitEntityData> units, IList<int> rootIndices, Vector3[] roots,
                 IDictionary<Collider, JObject> selectionColliders)
             {
                 var rows = new JArray(); var seen = new List<Vector3>();
@@ -718,7 +755,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !value.collider.transform.IsChildOf(target.View.transform) && value.collider.transform != target.View.transform)
                         .OrderBy(value => value.distance).Select(value => (RaycastHit?)value).FirstOrDefault();
                     if (!hit.HasValue) continue;
-                    int rootIndex = i / surfacesPerRoot;
+                    int rootIndex = rootIndices[i];
                     rows.Add(new JObject { ["unit"] = actor.UniqueId, ["sampleRootIndex"] = rootIndex,
                         ["sampleRoot"] = SurveyVector(roots[rootIndex]), ["projectSurfacePoint"] = SurveyVector(point),
                         ["heightAboveSampleRoot"] = point.y - roots[rootIndex].y,

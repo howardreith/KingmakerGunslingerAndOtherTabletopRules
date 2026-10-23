@@ -47,6 +47,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly SpellSlot[][] _slots;
             private readonly AbilityData[][] _spells, _known, _custom;
             private readonly bool[][] _available;
+            private readonly int[][] _spontaneous;
             private readonly BlueprintScriptableObject[] _resources;
             private readonly int[] _amounts;
             internal Cleanup2SourceDebit(UnitEntityData actor)
@@ -55,6 +56,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _slots = _books.Select(book => Enumerable.Range(0, 10).SelectMany(level => RawSlots(book, level)).ToArray()).ToArray();
                 _spells = _slots.Select(slots => slots.Select(slot => slot.Spell).ToArray()).ToArray();
                 _available = _slots.Select(slots => slots.Select(slot => slot.Available).ToArray()).ToArray();
+                _spontaneous = _books.Select(book => book.Blueprint.Spontaneous ? Enumerable.Range(0, 10).Select(book.GetSpontaneousSlots).ToArray() : new int[0]).ToArray();
                 _known = _books.Select(book => book.GetAllKnownSpells().ToArray()).ToArray();
                 _custom = _books.Select(book => Enumerable.Range(0, 10).SelectMany(book.GetCustomSpells).ToArray()).ToArray();
                 var resources = new List<BlueprintScriptableObject>();
@@ -71,19 +73,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _slots[index].Select(slot => slot.Spell).SequenceEqual(_spells[index]) && book.GetAllKnownSpells().SequenceEqual(_known[index]) &&
                         Enumerable.Range(0, 10).SelectMany(book.GetCustomSpells).SequenceEqual(_custom[index])).All(value => value);
             }
-            internal bool Unspent { get { return Identities() && _slots.Select((slots, book) =>
+            private bool SpontaneousUnchanged { get { return _books.Select((book, index) => _spontaneous[index].Length == 0 ||
+                Enumerable.Range(0, 10).Select(book.GetSpontaneousSlots).SequenceEqual(_spontaneous[index])).All(value => value); } }
+            internal bool Unspent { get { return Identities() && SpontaneousUnchanged && _slots.Select((slots, book) =>
                 slots.Select((slot, index) => slot.Available == _available[book][index]).All(value => value)).All(value => value); } }
             internal SpellSlot[] Changed { get { return _slots.SelectMany((slots, book) =>
                 slots.Where((slot, index) => slot.Available != _available[book][index])).ToArray(); } }
             internal bool ExactlyOne(SpellSlot expected)
-            { return Identities() && expected != null && !expected.Available && Changed.SequenceEqual(new[] { expected }) &&
+            { return Identities() && SpontaneousUnchanged && expected != null && !expected.Available && Changed.SequenceEqual(new[] { expected }) &&
                 _slots.Select((slots, book) => slots.Select((slot, index) => !ReferenceEquals(slot, expected) || _available[book][index]).All(value => value)).All(value => value); }
+            internal bool ExactlyOneSpontaneous(Spellbook expected, int level)
+            {
+                int index = Array.IndexOf(_books, expected);
+                return Identities() && Changed.Length == 0 && index >= 0 && expected.Blueprint.Spontaneous && level >= 1 && level <= 9 &&
+                    _spontaneous[index].Length == 10 && _spontaneous[index][level] > 0 && _books.Select((book, bookIndex) =>
+                        _spontaneous[bookIndex].Length == 0 || Enumerable.Range(0, 10).All(rank => book.GetSpontaneousSlots(rank) ==
+                            _spontaneous[bookIndex][rank] - (bookIndex == index && rank == level ? 1 : 0))).All(value => value);
+            }
             internal JObject Describe(SpellSlot expected)
             { return new JObject { ["exactlyOneOriginalSlotSpent"] = ExactlyOne(expected), ["allBookSlotSpellKnownCustomAndResourceReferencesExact"] = Identities(),
                 ["books"] = new JArray(_books.Select(book => book.Blueprint.AssetGuid)), ["nativeSlotCount"] = _slots.Sum(slots => slots.Length),
+                ["allSpontaneousBudgetsUnchanged"] = SpontaneousUnchanged,
                 ["changed"] = new JArray(Changed.Select(slot => new JObject { ["source"] = slot.Spell?.Blueprint.AssetGuid,
                     ["book"] = slot.Spell?.Spellbook?.Blueprint.AssetGuid, ["level"] = slot.SpellLevel, ["type"] = slot.Type.ToString(),
                     ["expectedExactReference"] = ReferenceEquals(slot, expected), ["available"] = slot.Available })) }; }
+            internal JObject DescribeSpontaneous(Spellbook expected, int level)
+            { return new JObject { ["exactlyOneOriginalSpontaneousUseSpent"] = ExactlyOneSpontaneous(expected, level),
+                ["allBookSlotSpellKnownCustomAndResourceReferencesExact"] = Identities(), ["allPreparedSlotsUnchanged"] = Changed.Length == 0,
+                ["expectedBook"] = expected.Blueprint.AssetGuid, ["expectedLevel"] = level,
+                ["spontaneousBooks"] = new JArray(_books.Select((book, index) => new { book, index }).Where(value => _spontaneous[value.index].Length != 0)
+                    .Select(value => new JObject { ["book"] = value.book.Blueprint.AssetGuid, ["before"] = new JArray(_spontaneous[value.index]),
+                        ["after"] = new JArray(Enumerable.Range(0, 10).Select(value.book.GetSpontaneousSlots)) })) }; }
         }
 
         private IEnumerable<int> ReviewSummonCleanup2ElementalSources(ExpandedSummoningCorrectionFixture fixture, Spellbook book)
@@ -106,7 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalInputs = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var originalBars = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
             var fixtureCasterAtIntake = fixture.Caster;
-            var levelUpIntake = new Cleanup2SourcesLevelUpIntake(game);
+            Cleanup2SourcesLevelUpIntake levelUpIntake = null;
             var fixtureBooksBefore = fixture.Caster.Descriptor.Spellbooks.ToArray();
             var fixtureStatsBefore = new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue };
             bool fixtureDetachedBefore = fixture.Caster.IsDetached;
@@ -139,6 +159,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var small = ElementalSourceChooserPolicy.Rank(2);
                 var smallParent = Cleanup2ElementalAbility(fixture, small.Guid);
                 if (!pinOnly) { PrepareExpandedSummoningPlayerPathSpell(otherBook, smallParent, smallParent, 2); otherBook.Rest(); }
+                Spellbook knownBook = null;
+                if (!pinOnly)
+                {
+                    var sorcerer = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                        "b3a505fb61437dc4097f43c3f8f9a4cf", "actual native known-spontaneous source book");
+                    knownBook = extraBooks.AddBook(sorcerer.Spellbook);
+                    if (!knownBook.Blueprint.Spontaneous || knownBook.CasterLevel != 20 ||
+                        !knownBook.Blueprint.SpellList.GetSpells(2).Any(value => ReferenceEquals(value, smallParent)) ||
+                        knownBook.GetKnownSpells(2).Any(value => ReferenceEquals(value.Blueprint, smallParent)))
+                        throw new InvalidOperationException("Independent ordinary native CL20 Sorcerer book and unknown Small Elemental parent required.");
+                    // AddKnown06001E56 creates/stores the real AbilityData in
+                    // this book. false preserves ordinary known-spell state;
+                    // no ConvertedFrom/ParamSpellSlot is manufactured here.
+                    knownBook.AddKnown(2, smallParent, false); knownBook.Rest();
+                }
+                // Capture the retained controller only after all native book
+                // creation and known-spell setup has completed.
+                levelUpIntake = new Cleanup2SourcesLevelUpIntake(game);
                 const BindingFlags statics = BindingFlags.Static | BindingFlags.NonPublic;
                 hooks.Patch(typeof(RuleCastSpell).GetMethod("OnTrigger"), null,
                     new HarmonyMethod(typeof(RuntimeTestRunner).GetMethod("ExpandedSummoningPlayerPathRuleCastPostfix", statics)), null);
@@ -223,6 +261,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     () => ElementalSourceChooserView.ReviewChoose(2, druidFire.CreatureKey, druidFire, true), mode, watch, "small-fire-second-book", null)) yield return frame;
 
                 foreach (int frame in Cleanup2SourcesNaturesAllyFire(fixture, otherBook, spellGroup, mode, watch, uiOwned, ownedSessions)) yield return frame;
+                foreach (int frame in Cleanup2SourcesKnownSpontaneousFire(fixture, knownBook, smallParent, spellGroup, mode, watch, uiOwned, ownedSessions)) yield return frame;
 
                 AbilityData authored = null;
                 foreach (int frame in Cleanup2SourcesExtend(fixture, book, smallParent, mode, watch, screens, removeFacts,
@@ -276,6 +315,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["all24OriginalCasts"] = casts.Count, ["maximumPhaseWallSeconds"] = 360, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                     ["reviewPhase"] = reviewPhase, ["focusedPinOnly"] = pinOnly,
                     ["fixturePreparationRanks"] = new JArray(StandaloneElementalPresentationPolicy.All.Where(value => value.IsParent).Select(value => value.CanonicalTier)),
+                    ["knownSpontaneousSmallFire"] = pinOnly ? "NOT_EXECUTED: focused pin reproduction" : "Actual native Sorcerer known source/chooser/command/spawn and one book-level spontaneous debit observed above",
                     ["all24TwoBookSnaExtendDisposition"] = pinOnly ? "NOT_EXECUTED: focused existing Favorite/pin/hydration/original-pin-cast reproduction only" : "Executed above; individual native assertions retained",
                     ["console"] = "separate native controller transaction; not exercised here", ["coldSave"] = "separate explicitly authorized fresh-load transaction; not proved by runtime pins",
                     ["moduleOff"] = "fresh process with module OFF before startup; Active is restart-only, never toggled by reflection here" },
@@ -467,6 +507,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private IEnumerable<int> Cleanup2SourcesKnownSpontaneousFire(ExpandedSummoningCorrectionFixture fixture, Spellbook book, BlueprintAbility parent,
+            ActionBarGroupElement group, Cleanup2NativeDefaultScope mode, Stopwatch phase,
+            Func<bool> uiOwned, ICollection<ElementalChooserSession> ownedSessions)
+        {
+            Cleanup2SourcesBoundary(mode, phase);
+            if (!uiOwned() || ElementalSourceChooserView.IsOpen || book == null || !book.Blueprint.Spontaneous ||
+                !ReferenceEquals(book.Owner, fixture.Caster.Descriptor))
+                throw new InvalidOperationException("Exact owned ordinary native spontaneous book/UI required.");
+            var known = book.GetKnownSpells(2).Where(value => ReferenceEquals(value.Blueprint, parent)).ToArray();
+            if (known.Length != 1 || known[0].IsSpellCopy || known[0].ConvertedFrom != null || known[0].ParamSpellSlot != null ||
+                known[0].SourceItem != null || !ReferenceEquals(known[0].Spellbook, book) || book.GetSpontaneousSlots(2) < 1)
+                throw new InvalidOperationException("One native ordinary known source and its own positive level2 spontaneous budget required.");
+            group.Fill(fixture.Caster);
+            foreach (int frame in Cleanup2SettleChooserNativeRefill(fixture, book, group, mode, uiOwned, ownedSessions,
+                ElementalSourceChooserRuntime.Session(group), "sources-known-spontaneous-small-fire", value => { })) yield return frame;
+            var source = Cleanup2SourcesFind(group, book, "small-fire-elemental", false);
+            bool exact = source.Preparation == null && source.Mechanism is MechanicActionBarSlotSpontaneusSpell &&
+                ReferenceEquals(source.Mechanism.GetContentData(), known[0]) && ReferenceEquals(source.Source, known[0]) &&
+                ReferenceEquals(source.Child.ConvertedFrom, known[0]) && ReferenceEquals(source.Child.Spellbook, book) &&
+                source.Child.ParamSpellSlot == null && source.Validate() == null;
+            Cleanup2Check("elemental-sources-native-known-spontaneous-context", exact, new JObject {
+                ["book"] = book.Blueprint.AssetGuid, ["source"] = parent.AssetGuid, ["child"] = source.Child.Blueprint.AssetGuid,
+                ["nativeMechanism"] = source.Mechanism.GetType().FullName, ["nativeKnownObjectExact"] = ReferenceEquals(source.Source, known[0]),
+                ["nativeSourceIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(known[0]),
+                ["noPreparedSlotOrSubstitute"] = source.Preparation == null && source.Child.ParamSpellSlot == null,
+                ["spontaneousLevel2Before"] = book.GetSpontaneousSlots(2),
+                ["nativeContract"] = "AddKnown06001E56 stores AbilityData in the actual book. Native MechanicActionBarSlotSpontaneusSpell.GetConvertedAbilityData06002FE4 creates its child and original ConvertedFrom link. Spellbook.SpendInternal06001E6E IL0092–00BE decrements only m_SpontaneousSlots[GetSpellLevel(source)].",
+                ["fixtureAccess"] = "One explicitly added native Sorcerer known spell/book on the disposable caster, not natural Sorcerer progression or old-save access." },
+                "The actual native spontaneous mechanism and its native child retain the exact known-spell/book source; no preparation or invocation chain is manufactured.");
+            if (!exact) throw new InvalidOperationException("Native spontaneous source context differs from its actual known spell.");
+            foreach (int frame in Cleanup2SourcesReady(group, source, mode, phase)) yield return frame;
+            foreach (int frame in Cleanup2SourcesCast(fixture, source.Child, null,
+                () => ElementalSourceChooserView.ReviewChoose(2, source.CreatureKey, source, true),
+                mode, phase, "small-fire-native-known-spontaneous", null, book)) yield return frame;
+        }
+
         private static ElementalNativeSource Cleanup2SourcesFind(ActionBarGroupElement group, Spellbook book, string key, bool extend)
         {
             var session = ElementalSourceChooserRuntime.Session(group);
@@ -490,15 +566,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> Cleanup2SourcesCast(ExpandedSummoningCorrectionFixture fixture, AbilityData data, SpellSlot preparation,
-            Action activate, Cleanup2NativeDefaultScope mode, Stopwatch phase, string label, Action<JObject> result)
+            Action activate, Cleanup2NativeDefaultScope mode, Stopwatch phase, string label, Action<JObject> result, Spellbook knownSourceBook = null)
         {
             Cleanup2SourcesBoundary(mode, phase);
             var snapshot = new Cleanup2SourceDebit(fixture.Caster); var original = data.ConvertedFrom; var book = data.Spellbook;
             var blueprint = data.Blueprint; var meta = data.MetamagicData; bool extend = data.HasMetamagic(Metamagic.Extend);
+            bool spontaneous = preparation == null && knownSourceBook != null && ReferenceEquals(knownSourceBook, book) &&
+                book.Blueprint.Spontaneous && original != null && book.GetKnownSpells(original.SpellLevel).Any(value => ReferenceEquals(value, original)) &&
+                original.ConvertedFrom == null && original.SourceItem == null && original.ParamSpellSlot == null && data.ParamSpellSlot == null &&
+                book.GetSpontaneousSlots(original.SpellLevel) > 0;
             var expected = SummonSignatureReader.Read(blueprint).Spawns().ToArray();
-            if (expected.Length != 1 || original == null || preparation == null || !ReferenceEquals(preparation.Spell, original) ||
-                !ReferenceEquals(data.Caster, fixture.Caster.Descriptor) || !preparation.Available)
-                throw new InvalidOperationException("Exact one-spawn original prepared source required: " + label);
+            bool prepared = knownSourceBook == null && preparation != null && ReferenceEquals(preparation.Spell, original) && preparation.Available;
+            if (expected.Length != 1 || original == null || (!prepared && !spontaneous) || !ReferenceEquals(data.Caster, fixture.Caster.Descriptor))
+                throw new InvalidOperationException("Exact one-spawn original prepared or explicitly observed native known-spontaneous source required: " + label);
             ExpandedSummoningRuleCapture.Clear(); ExpandedSummoningRuleDurationCapture.Clear(); ExpandedSummoningPlayerPathEvents.Clear();
             _expandedSummoningPlayerPathRuleCastCount = 0; _expandedSummoningPlayerPathSpawnActionCount = 0;
             var watch = Stopwatch.StartNew(); var units = new UnitEntityData[0]; UnitUseAbility command = null;
@@ -520,12 +600,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var durations = ExpandedSummoningRuleDurationCapture.Where(value => units.Any(unit => ReferenceEquals(unit, value.Unit))).ToArray();
                 var lifecycle = units.SelectMany(unit => unit.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff))).ToArray();
                 bool links = ReferenceEquals(data.Blueprint, blueprint) && ReferenceEquals(data.ConvertedFrom, original) &&
-                    ReferenceEquals(data.Spellbook, book) && ReferenceEquals(data.MetamagicData, meta) && ReferenceEquals(preparation.Spell, original);
+                    ReferenceEquals(data.Spellbook, book) && ReferenceEquals(data.MetamagicData, meta) &&
+                    (spontaneous ? book.GetKnownSpells(original.SpellLevel).Any(value => ReferenceEquals(value, original)) : ReferenceEquals(preparation.Spell, original));
                 bool pass = issued && noSpendBeforeTarget && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty &&
                     _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
                     units.Length == 1 && ExpandedSummoningRuleCapture.Distinct().Count() == 1 && units[0].Blueprint.AssetGuid == expected[0].Unit &&
                     durations.Length == 1 && lifecycle.Length == 1 && (!extend || lifecycle[0].Context.HasMetamagic(Metamagic.Extend)) &&
-                    snapshot.ExactlyOne(preparation) && links;
+                    (spontaneous ? snapshot.ExactlyOneSpontaneous(book, original.SpellLevel) : snapshot.ExactlyOne(preparation)) && links;
                 var row = new JObject { ["case"] = label, ["source"] = original.Blueprint.AssetGuid, ["child"] = blueprint.AssetGuid,
                     ["book"] = book.Blueprint.AssetGuid, ["sourceDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(original),
                     ["childDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(data), ["sourceLinksExact"] = links,
@@ -535,10 +616,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["expectedUnit"] = expected[0].Unit, ["actualUnit"] = units.FirstOrDefault()?.Blueprint.AssetGuid,
                     ["baseDurationSeconds"] = durations.Length == 1 ? (JToken)durations[0].BaseDuration.TotalSeconds : JValue.CreateNull(),
                     ["bonusDurationSeconds"] = durations.Length == 1 ? (JToken)durations[0].BonusDuration.TotalSeconds : JValue.CreateNull(),
-                    ["debit"] = snapshot.Describe(preparation), ["dataLinks"] = DescribeExpandedSummoningAbilityData(data),
+                    ["nativeBudgetKind"] = spontaneous ? "known-spontaneous-book-level-use" : "original-prepared-slot",
+                    ["debit"] = spontaneous ? snapshot.DescribeSpontaneous(book, original.SpellLevel) : snapshot.Describe(preparation),
+                    ["dataLinks"] = DescribeExpandedSummoningAbilityData(data),
                     ["wallSeconds"] = watch.Elapsed.TotalSeconds, ["manualTicks"] = 0, ["forcedAct"] = false };
                 Cleanup2Check("elemental-sources-cast-" + label, pass, row,
-                    "Actual native source click/target/command produces its exact provenance-owned summon and one unchanged-context native preparation debit across all books/resources.");
+                    "Actual native source click/target/command produces its exact provenance-owned summon and exactly its original preparation or spontaneous book-level debit across all books/resources.");
                 result?.Invoke(row);
                 if (!pass) throw new InvalidOperationException("Native elemental source cast/debit failed: " + label);
             }
@@ -846,6 +929,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         // UIAccess.LevelUpController is a retained plain field. Native
         // Start06002835 assigns it; Commit0600285D/Cancel0600285E dispose
         // their detached Preview and Stop the producer without clearing it.
+        // AutoCommit .ctor06002832 instead aliases Preview=Unit and neither
+        // Commit nor Cancel disposes that owner. Its retained field can be
+        // inert only after the exact owner itself is natively destroyed,
+        // viewless and absent from party/world; a live alias is never admitted.
         // AdvanceDisposableSpellcaster uses StartWithoutAssigningStaticInstance
         // 06002836. Never cancel/clear an intake controller to make it null.
         private sealed class Cleanup2SourcesLevelUpIntake
@@ -861,12 +948,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly FieldInfo _producerLock, _producerSource, _producerPending, _producerQueue, _producerThread;
             private readonly object _intakeThread;
             private readonly bool _gamepad;
+            private readonly bool _autoCommit;
             private readonly Func<JObject> _closedConsoleOwner;
 
             internal Cleanup2SourcesLevelUpIntake(Game game, Func<JObject> closedConsoleOwner = null)
             {
                 _game = game; _ui = game.UI; _build = _ui.CharacterBuildController; _controller = _ui.LevelUpController;
                 _gamepad = game.IsControllerGamepad; _closedConsoleOwner = closedConsoleOwner;
+                _autoCommit = _controller != null && _controller.AutoCommit;
                 _unit = _controller?.Unit; _preview = _controller?.Preview;
                 _state = _controller?.State; _actions = _controller?.LevelUpActions;
                 _actionItems = _controller?.LevelUpActions.Cast<object>().ToArray();
@@ -899,10 +988,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally { if (locked) System.Threading.Monitor.Exit(sync); }
                 bool controllerExact = ReferenceEquals(_ui.LevelUpController, _controller);
-                bool completed = _controller == null || (!_controller.AutoCommit && _preview != null && _preview.Unit != null &&
-                    !ReferenceEquals(_preview, _unit) && _preview.Unit.Destroyed && _preview.Unit.View == null &&
-                    !_game.Player.Party.Any(value => ReferenceEquals(value, _preview.Unit)) && !_game.State.Units.Any(value => ReferenceEquals(value, _preview.Unit)));
+                bool disposedEntity = _preview?.Unit != null && _preview.Unit.Destroyed && _preview.Unit.View == null &&
+                    !_game.Player.Party.Any(value => ReferenceEquals(value, _preview.Unit)) &&
+                    !_game.State.Units.Any(value => ReferenceEquals(value, _preview.Unit));
+                bool detachedPreview = _controller != null && !_autoCommit && !ReferenceEquals(_preview, _unit) && disposedEntity;
+                bool destroyedAutoCommitOwner = _controller != null && _autoCommit && ReferenceEquals(_preview, _unit) && disposedEntity;
+                bool completed = _controller == null || detachedPreview || destroyedAutoCommitOwner;
                 bool contextExact = _controller == null || (ReferenceEquals(_controller.Unit, _unit) && ReferenceEquals(_controller.Preview, _preview) &&
+                    _controller.AutoCommit == _autoCommit &&
                     ReferenceEquals(_controller.State, _state) && ReferenceEquals(_controller.LevelUpActions, _actions) &&
                     _actionItems != null && _controller.LevelUpActions.Cast<object>().SequenceEqual(_actionItems) && ReferenceEquals(_onSuccess?.GetValue(_controller), _callback));
                 JObject consoleOwner = _gamepad && _closedConsoleOwner != null ? _closedConsoleOwner() : null;
@@ -929,10 +1022,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["currentControllerIdentity"] = _ui.LevelUpController == null ? (JToken)JValue.CreateNull() : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(_ui.LevelUpController),
                     ["controllerUnit"] = _unit?.Unit?.UniqueId, ["controllerPreviewUnit"] = _preview?.Unit?.UniqueId,
                     ["previewDestroyed"] = _preview?.Unit?.Destroyed, ["controllerAutoCommit"] = _controller?.AutoCommit,
+                    ["completionDisposition"] = _controller == null ? "no-retained-controller" : detachedPreview ? "disposed-independent-native-preview" :
+                        destroyedAutoCommitOwner ? "destroyed-native-autocommit-owner" : "refused-live-or-unclassified-controller",
+                    ["completionPredicates"] = new JObject { ["autoCommitModeUnchanged"] = _controller == null || _controller.AutoCommit == _autoCommit,
+                        ["previewAliasesControllerUnit"] = _preview != null && ReferenceEquals(_preview, _unit),
+                        ["previewUnitPresent"] = _preview?.Unit != null, ["previewUnitDestroyed"] = _preview?.Unit?.Destroyed == true,
+                        ["previewViewAbsent"] = _preview?.Unit != null && _preview.Unit.View == null,
+                        ["previewAbsentFromParty"] = _preview?.Unit != null && !_game.Player.Party.Any(value => ReferenceEquals(value, _preview.Unit)),
+                        ["previewAbsentFromWorld"] = _preview?.Unit != null && !_game.State.Units.Any(value => ReferenceEquals(value, _preview.Unit)),
+                        ["disposedIndependentPreview"] = detachedPreview, ["destroyedAutoCommitOwner"] = destroyedAutoCommitOwner },
                     ["previewProducerSourcePresent"] = source != null, ["previewRequestPending"] = pending, ["queuedPreviews"] = queued,
                     ["closedNativeConsoleOwner"] = consoleOwner,
                     ["globalFieldOrControllerWritten"] = false, ["producerStoppedOrWritten"] = false,
-                    ["contract"] = "Only the exact intake field is preserved; a nonnull controller requires native Commit/Cancel's disposed detached Preview, no active builder and no producer work. Active sessions/replacements refuse. A stopped producer thread may remain alive natively; its identity is preserved." };
+                    ["contract"] = "Only the exact intake field is preserved. NonAutoCommit requires Commit/Cancel's disposed independent preview. AutoCommit .ctor06002832 aliases Preview=Unit, so only that exact natively destroyed/viewless owner absent from party/world is inert. Mode, unit/preview/state/actions/callback stay exact; active builders, producer work and replacements refuse. No controller or producer is written/stopped." };
                 return current;
             }
         }

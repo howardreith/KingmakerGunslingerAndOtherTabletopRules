@@ -13,6 +13,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.ActionBar;
 using Kingmaker.UI.Group;
+using Kingmaker.UI.Tooltip;
 using Kingmaker.UI.UnitSettings;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
@@ -149,7 +150,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         source.OnToggleGroupClick();
                         for (int frame = 0; frame < 8; frame++) yield return 0;
-                        bool capture = !known && target.Spec.Multiplicity == SummonMultiplicity.One;
+                        bool capture = !known;
                         foreach (int frame in Cleanup2MenuAdapterPopup(source, target, original, inputs, nativeMode, watch,
                             screens, (known ? "known-" : "prepared-") + target.Label, capture, rows)) yield return frame;
                     }
@@ -266,11 +267,76 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Native adapter wall/input/narrative ownership boundary changed.");
         }
 
-        private static void Cleanup2MenuAdapterHide(ActionBarGroupSlot source, AbilityData original)
+        private void Cleanup2MenuAdapterHide(ActionBarGroupSlot source, AbilityData original)
         {
-            if (source == null || !ReferenceEquals(source.MechanicSlot?.GetContentData(), original) ||
-                Game.Instance.UI.TooltipsController.ContextTooltipData != null)
-                throw new InvalidOperationException("Foreign source/tooltip; popup teardown refused.");
+            var game = Game.Instance; var tips = game?.UI?.TooltipsController;
+            var popupField = typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields);
+            var popupSourceField = typeof(ActionBarSpellsGroup).GetField("m_SourceSpell", Cleanup2Fields);
+            var activeField = typeof(TooltipTrigger).GetField("IsActive", Cleanup2Fields);
+            var showField = typeof(TooltipTrigger).GetField("m_ShowTooltipAction", Cleanup2Fields);
+            var hideField = typeof(TooltipTrigger).GetField("m_HideTooltipAction", Cleanup2Fields);
+            var popup = source == null || popupField == null ? null : popupField.GetValue(source) as ActionBarSpellsGroup;
+            var context = tips?.ContextTooltipData;
+            bool sourceExact = source != null && original != null && ReferenceEquals(source.MechanicSlot?.GetContentData(), original) &&
+                ReferenceEquals(Cleanup2MenuAdapterSelected(source)?.Descriptor, original.Caster);
+            bool popupExact = popup != null && popupSourceField != null && ReferenceEquals(popupSourceField.GetValue(popup), original);
+            var popupActiveField = typeof(ActionBarSpellsGroup).GetField("m_IsActive", Cleanup2Fields);
+            var popupSelectedField = typeof(ActionBarSpellsGroup).GetField("m_Selected", Cleanup2Fields);
+            var popupSlotsField = typeof(ActionBarSpellsGroup).GetField("m_Slots", Cleanup2Fields);
+            var nativeSlots = popup == null || popupSlotsField == null ? null : popupSlotsField.GetValue(popup) as System.Collections.ICollection;
+            bool alreadyClosed = popup != null && !popup.gameObject.activeSelf && popupActiveField != null && popupSelectedField != null &&
+                popupSourceField != null && !(bool)popupActiveField.GetValue(popup) && popupSelectedField.GetValue(popup) == null &&
+                popupSourceField.GetValue(popup) == null && nativeSlots != null && nativeSlots.Count == 0;
+            var candidates = source == null ? new TooltipTrigger[0] : source.GetComponentsInChildren<TooltipTrigger>(true);
+            var triggers = sourceExact && popupExact && context != null && activeField != null && showField != null && hideField != null ?
+                candidates.Where(trigger => {
+                    var row = trigger.GetComponentInParent<ActionBarSlot>();
+                    var ability = row?.MechanicSlot?.GetContentData() as AbilityData;
+                    bool ownRow = ReferenceEquals(row, source) || (row != null && row.transform.IsChildOf(popup.transform));
+                    bool chain = ReferenceEquals(ability, original) || ReferenceEquals(ability?.ConvertedFrom, original) ||
+                        ReferenceEquals(ability?.ConvertedFrom?.ConvertedFrom, original);
+                    return trigger.gameObject.activeInHierarchy && trigger.isActiveAndEnabled && (bool)activeField.GetValue(trigger) &&
+                        ReferenceEquals(trigger.Data, context) && ReferenceEquals(context.AbilityData, ability) && ownRow && chain &&
+                        ReferenceEquals(ability?.Caster, original.Caster) && ReferenceEquals(ability?.Spellbook, original.Spellbook) &&
+                        showField.GetValue(trigger) == null && hideField.GetValue(trigger) == null;
+                }).ToArray() : new TooltipTrigger[0];
+            var receipt = new JObject { ["sourceExact"] = sourceExact, ["popupExact"] = popupExact,
+                ["nativePopupAlreadyCleared"] = alreadyClosed,
+                ["tooltipControllerPresent"] = tips != null, ["contextAbsent"] = context == null,
+                ["contextAbility"] = context?.AbilityData?.Blueprint.AssetGuid,
+                ["contextIdentity"] = context == null ? 0 : System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(context),
+                ["exactActiveStandardTriggerMatches"] = triggers.Length,
+                ["triggerCandidateCount"] = candidates.Length,
+                ["triggerCandidates"] = new JArray(candidates.Take(32).Select(trigger => {
+                    var row = trigger.GetComponentInParent<ActionBarSlot>(); var ability = row?.MechanicSlot?.GetContentData() as AbilityData;
+                    return new JObject { ["instance"] = trigger.GetInstanceID(), ["object"] = trigger.name,
+                        ["activeInHierarchy"] = trigger.gameObject.activeInHierarchy, ["enabled"] = trigger.isActiveAndEnabled,
+                        ["nativeHoverActive"] = activeField != null && (bool)activeField.GetValue(trigger),
+                        ["dataIsContext"] = context != null && ReferenceEquals(trigger.Data, context),
+                        ["dataAbilityIsExactRowObject"] = trigger.Data != null && ReferenceEquals(trigger.Data.AbilityData, ability),
+                        ["rowInstance"] = row == null ? 0 : row.GetInstanceID(), ["rowAbility"] = ability?.Blueprint.AssetGuid,
+                        ["rowSource"] = ability?.ConvertedFrom?.Blueprint.AssetGuid,
+                        ["casterExact"] = original != null && ReferenceEquals(ability?.Caster, original.Caster),
+                        ["bookExact"] = original != null && ReferenceEquals(ability?.Spellbook, original.Spellbook),
+                        ["standardNativeActions"] = showField != null && hideField != null && showField.GetValue(trigger) == null && hideField.GetValue(trigger) == null };
+                })),
+                ["sourceInstance"] = source == null ? 0 : source.GetInstanceID(), ["popupInstance"] = popup == null ? 0 : popup.GetInstanceID(),
+                ["nativeContract"] = "TooltipTrigger.OnPointerEnter06003246 may create incidental native hover. SetTemporaryCooldown06003227 hides visual tooltip but does not clear ContextTooltipData. Only one exact live standard trigger's own Data/source chain admits ShowTooltipManual(false)->StandartHide0600324C." };
+            bool admitted = sourceExact && (popupExact || alreadyClosed) && tips != null && (context == null || triggers.Length == 1);
+            Cleanup2Check("menu-adapter-popup-close-admission-" + (original?.Blueprint.AssetGuid ?? "missing"), admitted, receipt,
+                "Popup closure retains exact source ownership and refuses foreign hover; an incidental hover is owned only by one exact live native trigger and its retained source chain.");
+            if (!admitted) throw new InvalidOperationException("Foreign or unproved source/popup/tooltip; popup teardown refused: " + receipt);
+            if (context != null)
+            {
+                // Installed ShowTooltipManual0600324A delegates to the same
+                // standard hide as native pointer exit. It clears the context
+                // synchronously; visual fade may settle after this popup hides.
+                if (!ReferenceEquals(tips, game.UI.TooltipsController) || !ReferenceEquals(tips.ContextTooltipData, context) ||
+                    !ReferenceEquals(triggers[0].Data, context)) throw new InvalidOperationException("Owned hover changed before native exit; no tooltip is hidden.");
+                triggers[0].ShowTooltipManual(false);
+                if (!ReferenceEquals(tips, game.UI.TooltipsController) || tips.ContextTooltipData != null)
+                    throw new InvalidOperationException("Exact native popup hover did not release its context.");
+            }
             source.HideSubGroup();
         }
 
@@ -313,11 +379,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 string expected = SummonChoicePresentationPolicy.For("horse", target.Spec.Multiplicity).Label;
                 Image capturedImage = row.Icon; Sprite capturedSprite = capturedImage.sprite, capturedEffective = capturedImage.overrideSprite;
                 Texture capturedTexture = capturedImage.mainTexture;
+                var captureFrames = new JArray();
                 Func<bool> ownsImage = () => owns() && ReferenceEquals(row.Icon, capturedImage) &&
                     ReferenceEquals(capturedImage.sprite, capturedSprite) && ReferenceEquals(capturedImage.overrideSprite, capturedEffective) &&
                     ReferenceEquals(capturedImage.mainTexture, capturedTexture) && Cleanup2FullyVisible(scroll, row);
                 JObject renderedHorse = Cleanup2MenuHorseEffectiveImage(row, data, ownsImage);
-                var evidence = new JObject { ["surface"] = label, ["sourceMechanism"] = source.MechanicSlot.GetType().FullName,
+                int rowObservationFrame = Time.frameCount;
+                var evidence = new JObject { ["surface"] = label, ["rowObservationFrame"] = rowObservationFrame,
+                    ["sourceMechanism"] = source.MechanicSlot.GetType().FullName,
                     ["source"] = original.Blueprint.AssetGuid, ["child"] = data.Blueprint.AssetGuid,
                     ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["sourceDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(original),
                     ["childDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(data),
@@ -333,7 +402,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The actual native prepared/known/pinned source produces one exact Horse quantity row with approved decoded pixels in its effective sprite/main texture and unchanged source/book/availability.");
                 // A mismatched but still positively owned row must remain in
                 // the original framebuffer evidence before this case refuses.
-                if (capture || !pass) foreach (int frame in screens.Capture("menu-adapter-" + label, evidence, ownsImage)) yield return frame;
+                if (capture || !pass)
+                {
+                    Func<bool> captureOwner = () => {
+                        bool current = ownsImage();
+                        if (current && (captureFrames.Count == 0 || (int)captureFrames.Last["frame"] != Time.frameCount))
+                        {
+                            // Capture's own settlement occurs after the row
+                            // assertion. Keep the actual subsequent frame's
+                            // geometry rather than attach earlier coordinates
+                            // to a later native framebuffer.
+                            captureFrames.Add(Cleanup2MenuHorseFrame(row, data));
+                            if (captureFrames.Count > 32) captureFrames.RemoveAt(0);
+                        }
+                        return current;
+                    };
+                    try { foreach (int frame in screens.Capture("menu-adapter-" + label, evidence, captureOwner)) yield return frame; }
+                    finally
+                    {
+                        Cleanup2Check("menu-adapter-image-capture-" + label, ownsImage(), new JObject {
+                            ["assertionFrame"] = rowObservationFrame, ["capturedNativeFrames"] = captureFrames,
+                            ["currentImageHierarchy"] = ownsImage() ? Cleanup2MenuHorseImageHierarchy(row) : JValue.CreateNull(),
+                            ["framebufferPaintingQualified"] = false,
+                            ["limit"] = "Native framebuffer must be inspected at these capture-frame rectangles. Image identities and decoded CPU pixels alone do not prove that the painted Horse was drawn." },
+                            "The exact source row/image remains owned through normal framebuffer capture; capture-frame geometry and native foreground/background images are retained without changing their presentation.");
+                    }
+                }
                 if (!pass) throw new InvalidOperationException("Native adapter row failed: " + label);
                 if (cases != null) cases.Add(evidence);
             }
@@ -376,6 +470,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result["rowDataIdentity"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(data);
                 result["childGuid"] = data.Blueprint.AssetGuid; result["sourceGuid"] = data.ConvertedFrom?.Blueprint.AssetGuid;
                 result["image"] = identity(image); result["childIcon"] = describeSprite(data.Icon);
+                result["imageHierarchy"] = Cleanup2MenuHorseImageHierarchy(row);
                 result["sprite"] = describeSprite(sprite); result["effectiveOverrideSprite"] = describeSprite(effective);
                 result["mainTexture"] = identity(main); result["cachedHorseSprite"] = describeSprite(cached);
                 result["imageColor"] = new JArray(image.color.r, image.color.g, image.color.b, image.color.a);
@@ -426,6 +521,70 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error) { result["error"] = error.GetType().FullName + ":" + error.Message; }
             finally { if (decoded != null) UnityEngine.Object.Destroy(decoded); }
             return result;
+        }
+
+        private static JObject Cleanup2MenuHorseFrame(ActionBarSlot row, AbilityData data)
+        {
+            return new JObject { ["frame"] = Time.frameCount,
+                ["rowInstance"] = row.GetInstanceID(), ["child"] = data.Blueprint.AssetGuid,
+                ["rowScreenCorners"] = Cleanup2MenuHorseCorners(row.transform as RectTransform),
+                ["iconScreenCorners"] = Cleanup2MenuHorseCorners(row.Icon.rectTransform),
+                ["iconDepth"] = row.Icon.depth, ["iconCanvasDepth"] = row.Icon.canvasRenderer.absoluteDepth,
+                ["iconInstance"] = row.Icon.GetInstanceID(),
+                ["spriteInstance"] = row.Icon.sprite == null ? 0 : row.Icon.sprite.GetInstanceID(),
+                ["effectiveSpriteInstance"] = row.Icon.overrideSprite == null ? 0 : row.Icon.overrideSprite.GetInstanceID(),
+                ["mainTextureInstance"] = row.Icon.mainTexture == null ? 0 : row.Icon.mainTexture.GetInstanceID() };
+        }
+
+        private static JArray Cleanup2MenuHorseCorners(RectTransform rect)
+        {
+            if (rect == null) return new JArray();
+            var canvas = rect.GetComponentInParent<Canvas>()?.rootCanvas;
+            Camera camera = canvas == null || canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
+            var corners = new Vector3[4]; rect.GetWorldCorners(corners);
+            return new JArray(corners.Select(value => {
+                Vector2 point = RectTransformUtility.WorldToScreenPoint(camera, value);
+                return new JObject { ["x"] = point.x, ["y"] = point.y }; }));
+        }
+
+        private static JToken Cleanup2MenuHorseImageHierarchy(ActionBarSlot row)
+        {
+            // The native Icon field is named BackIcon in the prefab. Its
+            // sprite does not establish which foreground graphic is drawn.
+            // Retain exact native image layers and renderer-bound materials;
+            // no native/foreign texture pixels or assets are read/exported.
+            Func<UnityEngine.Object, JToken> identity = value => value == null ? JValue.CreateNull() : (JToken)new JObject {
+                ["instance"] = value.GetInstanceID(), ["name"] = value.name, ["type"] = value.GetType().FullName };
+            var fields = typeof(ActionBarSlot).GetFields(Cleanup2Fields).Where(value => value.FieldType == typeof(Image)).ToArray();
+            var images = row.GetComponentsInChildren<Image>(true);
+            return new JObject { ["imageCount"] = images.Length, ["imageLimit"] = 32,
+                ["iconIsDescendantOfExactRow"] = row.Icon != null && row.Icon.transform.IsChildOf(row.transform),
+                ["nativeImages"] = new JArray(images.Take(32).Select(image => {
+                    var chain = new List<string>(); Transform node = image.transform;
+                    for (int depth = 0; node != null && depth < 12; depth++, node = node.parent)
+                    {chain.Add(node.name + "#" + node.GetInstanceID() + "[" + node.GetSiblingIndex() + "]"); if (ReferenceEquals(node, row.transform)) break;}
+                    chain.Reverse();
+                    var renderer = image.canvasRenderer;
+                    var materials = new JArray();
+                    for (int index = 0; index < Math.Min(renderer.materialCount, 4); index++)
+                    {
+                        var material = renderer.GetMaterial(index);
+                        materials.Add(new JObject { ["index"] = index, ["material"] = identity(material),
+                            ["shader"] = identity(material?.shader),
+                            ["materialMainTexture"] = identity(material != null && material.HasProperty("_MainTex") ? material.GetTexture("_MainTex") : null),
+                            ["limit"] = "Renderer-bound material identity only; CanvasRenderer's separate bound texture has no installed public getter." });
+                    }
+                    return new JObject { ["image"] = identity(image), ["path"] = string.Join("/", chain.ToArray()),
+                        ["nativeFieldRoles"] = new JArray(fields.Where(field => ReferenceEquals(field.GetValue(row), image)).Select(field => field.Name)),
+                        ["activeSelf"] = image.gameObject.activeSelf, ["activeInHierarchy"] = image.gameObject.activeInHierarchy,
+                        ["enabled"] = image.enabled, ["depth"] = image.depth, ["absoluteCanvasDepth"] = renderer.absoluteDepth,
+                        ["relativeCanvasDepth"] = renderer.relativeDepth, ["color"] = new JArray(image.color.r, image.color.g, image.color.b, image.color.a),
+                        ["inheritedAlpha"] = renderer.GetInheritedAlpha(), ["culled"] = renderer.cull,
+                        ["sprite"] = identity(image.sprite), ["spriteTexture"] = identity(image.sprite?.texture),
+                        ["effectiveSprite"] = identity(image.overrideSprite), ["effectiveSpriteTexture"] = identity(image.overrideSprite?.texture),
+                        ["mainTexture"] = identity(image.mainTexture), ["screenCorners"] = Cleanup2MenuHorseCorners(image.rectTransform),
+                        ["rendererMaterialCount"] = renderer.materialCount, ["rendererMaterials"] = materials };
+                })) };
         }
 
         private static string Cleanup2HorseRgbaSha256(Texture2D texture)

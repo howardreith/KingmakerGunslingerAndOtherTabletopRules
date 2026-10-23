@@ -158,7 +158,7 @@ $cleanup2ModuleOff = $Scenario.Count -eq 1 -and
 if ($ExpandedSummoningDisabled -and -not $cleanup2ModuleOff -and
     ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
         $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
-    throw 'Module OFF requires exact Ankylosaurus verify/cleanup or a save-free Cleanup2 elementals-off/giants-off request.'
+    throw 'Module OFF requires exact Ankylosaurus verify/cleanup or a save-free Cleanup2 native menus, giants, learning or controller presentation request.'
 }
 if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
     throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'

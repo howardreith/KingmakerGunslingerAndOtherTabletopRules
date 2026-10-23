@@ -39,8 +39,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSummonCleanup2ConsoleLearning(ExpandedSummoningCorrectionFixture fixture,Spellbook book)
         {
             if(!IsSummonCleanup2Review || !_request.ExitAfterCompletion || _request.Parameters==null ||
-                _request.Parameters.Count!=1 || (string)_request.Parameters["reviewPhase"]!="elementals-console" || !Cleanup2ConsoleNativeUiReady())
+                _request.Parameters.Count!=1 || (string)_request.Parameters["reviewPhase"]!="elementals-console" || !Cleanup2ConsoleNativeUiReady() ||
+                !Cleanup2LearningModuleState(Cleanup2OffState()))
                 throw new InvalidOperationException("Exact native-console cleanup2 learning/preparation request required.");
+            bool off=Cleanup2OffState();
             var game=Game.Instance;var player=game.Player;var selection=UnitSelectionManager.Instance;
             var rootUi=game.RootUiContext;var inGame=rootUi.InGameUiContext;
             var staticPart=(InGameUiStaticPartContext)typeof(InGameUiContext).GetField("m_StaticPartContext",Cleanup2Fields).GetValue(game.RootUiContext.InGameUiContext);
@@ -96,13 +98,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     JObject levelUpReceipt;bool levelUpRestored=levelUpIntake.Current(out levelUpReceipt);
                     bool restored=player.Party.SequenceEqual(party) && selection.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(selection.CurrentSelectUnitValue,current) && protectedInputs.All(value=>value.Unchanged()) &&
-                        protectedPins.All(value=>value.IsRestored()) && GamePad.Instance.Layers.SequenceEqual(layers) && levelUpRestored && selectionRestored;
+                        protectedPins.All(value=>value.IsRestored()) && GamePad.Instance.Layers.SequenceEqual(layers) && levelUpRestored && selectionRestored && Cleanup2LearningModuleState(off);
                     Cleanup2Check("elemental-console-learning-native-restoration",restored,new JObject {
                         ["partyExact"]=player.Party.SequenceEqual(party),["selectionExact"]=selection.SelectedUnits.SequenceEqual(selected),
                         ["protectedInputsExact"]=protectedInputs.All(value=>value.Unchanged()),["protectedPinsExact"]=protectedPins.All(value=>value.IsRestored()),
                         ["nativeSelectionRestoration"]=selectionState.Describe(),
                         ["inputLayersExact"]=GamePad.Instance.Layers.SequenceEqual(layers),["nativeLevelUpClosed"]=levelUpRestored,
-                        ["originalCompletedNativeControllerExact"]=levelUpReceipt },
+                        ["originalCompletedNativeControllerExact"]=levelUpReceipt,["freshModuleOff"]=off },
                         "The isolated native preparation/learning screens close without changing original party sources, pins, selection or input layers.");
                     if(!restored)throw new InvalidOperationException("Console learning/preparation restoration is unverified.");
                 }
@@ -113,6 +115,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2ConsoleNativePrepareAndUndo(ExpandedSummoningCorrectionFixture fixture,Spellbook book,
             CharcaterServiceContext service,NativeIconScreenEvidence screens)
         {
+            bool off=Cleanup2OffState();
             var game=Game.Instance;SpellBookVM owned=null;
             var originalKnown=book.GetAllKnownSpells().ToArray();string resources=Cleanup2ElementalResources(fixture.Caster);
             var originalSlots=book.GetMemorizedSpellSlots(2).ToArray();var originalSpells=originalSlots.Select(value=>value.Spell).ToArray();
@@ -133,13 +136,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned));
                 var scroll=view.GetComponentsInChildren<SpellbookKnownSpellsScrollView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),owned.SpellBookKnownSpells));
                 var context=ElementalConsoleBookPresentation.PreparationFor(scroll);
-                if(context==null || !context.Current)throw new InvalidOperationException("Live native preparation disclosure required.");
+                if((!off && (context==null || !context.Current)) || (off && (context!=null || !Cleanup2LearningModuleState(true) ||
+                    owned.SpellBookKnownSpells.KnownSpells.Any(value=>value is ElementalConsoleBookPresentation.PreparationHeader) ||
+                    scroll.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>value.GetViewModel() is ElementalConsoleBookPresentation.PreparationHeader))))
+                    throw new InvalidOperationException("Native preparation disclosure/module-OFF original-row contract failed.");
                 cleanupContext=context;
                 var navigation=(ConsoleMultiNavigationCollection)typeof(SpellBookView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(view);
-                var header=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),context.Header));
-                navigation.SetCurrentEntityManual(header);InvokeTeleportGamepadInput(view,"WantConfirm");
-                for(int frame=0;frame<5;frame++)yield return 0;
-                var sourceVm=context.Sources.Single(value=>value.SpellData.Blueprint.AssetGuid==ElementalSourceChooserPolicy.Rank(2).Guid);
+                if(!off)
+                {
+                    var header=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),context.Header));
+                    navigation.SetCurrentEntityManual(header);InvokeTeleportGamepadInput(view,"WantConfirm");
+                    for(int frame=0;frame<5;frame++)yield return 0;
+                }
+                var sourceVm=owned.SpellBookKnownSpells.KnownSpells.Single(value=>value.SpellData!=null &&
+                    value.SpellData.Blueprint.AssetGuid==ElementalSourceChooserPolicy.Rank(2).Guid && ReferenceEquals(value.SpellData.Spellbook,book));
+                if(!off && !context.Sources.Any(value=>ReferenceEquals(value,sourceVm)))
+                    throw new InvalidOperationException("Native original source is absent from the owned preparation disclosure.");
                 originalSource=sourceVm.SpellData;
                 var row=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),sourceVm));
                 navigation.SetCurrentEntityManual(row);
@@ -157,7 +169,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["exactKnownAbilityDataReference"]=written!=null && ReferenceEquals(written.Spell,originalSource),
                     ["slotType"]=written?.Type.ToString(),["slotIndex"]=written?.Index,["slotLevel"]=written?.SpellLevel,
                     ["availableAfterNativeMemorize"]=written?.Available,["knownObjectsExact"]=book.GetAllKnownSpells().SequenceEqual(originalKnown),
-                    ["resourcesExact"]=Cleanup2ElementalResources(fixture.Caster)==resources,["nativeInput"]="SpellBookView.WantConfirm on exact original native source row" },
+                    ["resourcesExact"]=Cleanup2ElementalResources(fixture.Caster)==resources,["freshModuleOff"]=off,
+                    ["ownedProjectionAbsent"]=off && context==null,["nativeInput"]="SpellBookView.WantConfirm on exact original native source row" },
                     "Choosing the original source through real console preparation assigns its exact known AbilityData to one native common slot, preserving every other slot and resource.");
                 if(!exact)throw new InvalidOperationException("Native console original-source preparation failed.");
                 var prepared=view.GetComponentsInChildren<SpellBookMemorizeSlotView>(false).Single(value=>ReferenceEquals(value.GetViewModel().SpellSlot,written));
@@ -193,7 +206,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (!ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group) &&
                 !cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true)
                     .Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header))));
-            bool released=owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
+            bool released=off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
+                typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null :
+                owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
                 cleanupContext.Group.CurrentSelectedSpell==null && nativeUnbound && cleanupContext.Released && cleanupContext.Disposed &&
                 cleanupContext.Header.IsDisposed && cleanupContext.Projection==null &&
                 typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null;
@@ -204,7 +219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["ownedHeaderDisposed"]=cleanupContext!=null && cleanupContext.Header.IsDisposed,
                 ["ownedProjectionReleased"]=cleanupContext!=null && cleanupContext.Projection==null,
                 ["presentationOutcome"]=ElementalConsoleBookPresentation.Outcome,
-                ["scope"]="Actual native SpellBookVM.Back disposal and scene-row unbind; no observer call to presentation Release or native VM Dispose." },
+                ["freshModuleOff"]=off,["ownedProjectionExpected"]=!off,
+                ["scope"]="Actual native book closure and scene-row unbind; fresh OFF has no owned header/context to release. No observer call to presentation Release or native VM Dispose." },
                 "After native book disposal clears its selection field and native rows unbind, the owned preparation header and projection retire without dereferencing or modifying the disposed VM.");
             if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not release after actual screen unbind.");
         }
@@ -212,6 +228,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> Cleanup2ConsoleNativeLearnAndCancel(ExpandedSummoningCorrectionFixture fixture,Spellbook fixtureBook,
             CharcaterServiceContext service,NativeIconScreenEvidence screens,Cleanup2SourcesLevelUpIntake levelUpIntake,Func<bool> serviceExact)
         {
+            bool off=Cleanup2OffState();
             var game=Game.Instance;var player=game.Player;
             var originalGlobal=game.UI.LevelUpController;
             var backendField=typeof(CharcaterServiceContext).GetField("LevelUpController",Cleanup2Fields);
@@ -272,7 +289,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Func<bool> ownsLearning=()=>serviceExact() && owned!=null && !owned.IsDisposed && backend!=null &&
                     ReferenceEquals(backendField.GetValue(service),backend) && ReferenceEquals(charGenField.GetValue(service),owned) &&
                     ReferenceEquals(vmBackend.GetValue(owned),backend) && ReferenceEquals(game.UI.LevelUpController,ownedGlobal) &&
-                    ReferenceEquals(backend,ownedGlobal) && ReferenceEquals(backend.Unit,unit.Descriptor) && backend.Preview?.Unit!=null && !backend.Preview.Unit.Destroyed;
+                    ReferenceEquals(backend,ownedGlobal) && ReferenceEquals(backend.Unit,unit.Descriptor) && backend.Preview?.Unit!=null && !backend.Preview.Unit.Destroyed && Cleanup2LearningModuleState(off);
                 if(!ownsLearning())throw new InvalidOperationException("Exact native console learning owner changed before class selection.");
                 if(!backend.SelectClass(wizard))throw new InvalidOperationException("Native pending Wizard3 class selection failed.");
                 Cleanup2ConsoleLearningPrerequisites(backend);
@@ -288,23 +305,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var detail=root.GetComponentsInChildren<CharGenSpellsPhaseDetailedView>(true).Single(value=>value.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(value),phase));
                 var selector=detail.GetComponentsInChildren<CharGenSpellsSelectorView>(true).Single(value=>ReferenceEquals(ElementalConsoleBookPresentation.Model(value),phase.SpellsSelector.Value));
                 var context=ElementalConsoleBookPresentation.LearningFor(selector);
-                if(context==null || !context.Current)throw new InvalidOperationException("Actual native console learning source disclosure absent: "+ElementalConsoleBookPresentation.Outcome);
+                if((!off && (context==null || !context.Current)) || (off && (context!=null ||
+                    selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(true).Any(value=>value.GetViewModelClass() is ElementalConsoleBookPresentation.LearningHeader))))
+                    throw new InvalidOperationException("Actual native console learning source/module-OFF row contract failed: "+ElementalConsoleBookPresentation.Outcome);
+                var selection=off?(SpellSelectionData)typeof(CharGenSpellsPhaseVM).GetField("m_SelectionData",Cleanup2Fields).GetValue(phase):context.SelectionData;
+                if(selection==null || !ReferenceEquals(selection.Spellbook,wizard.Spellbook) || !ReferenceEquals(selection.SpellList,wizard.Spellbook.SpellList))
+                    throw new InvalidOperationException("Exact native console learning allocation unavailable.");
                 var authoritative=phase.SpellsSelector.Value.VisibleCollection.ToArray();
-                var nativeSelected=phase.UIChosenSpells.ToArray();var pending=context.SelectionData.LevelCount[2].SpellSelections.ToArray();
-                var nativeHeader=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),context.Header));
+                var nativeSelected=phase.UIChosenSpells.ToArray();var pending=selection.LevelCount[2].SpellSelections.ToArray();
                 var detailNavigation=(ConsoleMultiNavigationCollection)typeof(CharGenSpellsPhaseDetailedView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(detail);
-                detailNavigation.SetCurrentEntityManual(nativeHeader);
                 if(!ownsLearning())throw new InvalidOperationException("Native console learning owner changed before disclosure.");
-                typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
-                for(int frame=0;frame<5;frame++)yield return 0;
-                bool expanded=context.Expanded && context.Current && context.Header.CanChoose.Value==false &&
-                    phase.UIChosenSpells.SequenceEqual(nativeSelected) && context.SelectionData.LevelCount[2].SpellSelections.SequenceEqual(pending) &&
-                    phase.SpellsSelector.Value.VisibleCollection.SequenceEqual(authoritative) && !authoritative.Contains(context.Header);
-                Cleanup2Check("elemental-console-real-learning-disclosure-no-allocation",expanded,new JObject { ["expanded"]=context.Expanded,
+                CharGenSpellSelectorItemView nativeHeader=null;
+                if(!off)
+                {
+                    nativeHeader=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),context.Header));
+                    detailNavigation.SetCurrentEntityManual(nativeHeader);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
+                    for(int frame=0;frame<5;frame++)yield return 0;
+                }
+                bool expanded=(off ? context==null && !authoritative.Any(value=>value is ElementalConsoleBookPresentation.LearningHeader) :
+                    context.Expanded && context.Current && context.Header.CanChoose.Value==false && !authoritative.Contains(context.Header)) &&
+                    phase.UIChosenSpells.SequenceEqual(nativeSelected) && selection.LevelCount[2].SpellSelections.SequenceEqual(pending) &&
+                    phase.SpellsSelector.Value.VisibleCollection.SequenceEqual(authoritative);
+                Cleanup2Check("elemental-console-real-learning-disclosure-no-allocation",expanded,new JObject { ["expanded"]=!off && context.Expanded,
                     ["authoritativeVMReferencesExact"]=phase.SpellsSelector.Value.VisibleCollection.SequenceEqual(authoritative),
-                    ["headerNotAllocatable"]=!context.Header.CanChoose.Value,["allocationObjectsExact"]=phase.UIChosenSpells.SequenceEqual(nativeSelected),
-                    ["nativePendingBudgetExact"]=context.SelectionData.LevelCount[2].SpellSelections.SequenceEqual(pending),
-                    ["nativeHeaderValid"]=nativeHeader.IsValid(),["sourceCount"]=context.Sources.Length,["nativeInput"]="Actual CharGenView.ConfirmPressed/phase disclosure" },
+                    ["headerNotAllocatable"]=!off && !context.Header.CanChoose.Value,["allocationObjectsExact"]=phase.UIChosenSpells.SequenceEqual(nativeSelected),
+                    ["nativePendingBudgetExact"]=selection.LevelCount[2].SpellSelections.SequenceEqual(pending),
+                    ["nativeHeaderValid"]=nativeHeader!=null && nativeHeader.IsValid(),["freshModuleOff"]=off,["ownedProjectionAbsent"]=off && context==null,
+                    ["nativeInput"]=off?"Original native console learning row, no disclosure":"Actual CharGenView.ConfirmPressed/phase disclosure" },
                     "The real native console Wizard learning disclosure is focusable and expands original source VM references without allocating or consuming a learning choice.");
                 if(!expanded)throw new InvalidOperationException("Native console learning disclosure changed allocation authority.");
                 var source=authoritative.Single(value=>ReferenceEquals(value.Spell,legacy));
@@ -313,12 +340,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 detailNavigation.SetCurrentEntityManual(sourceRow);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
                 for(int frame=0;frame<8;frame++)yield return 0;
                 bool learned=backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy) && !book.IsKnown(legacy) &&
-                    context.SelectionData.LevelCount[2].SpellSelections.Count(value=>value!=null)==pending.Count(value=>value!=null)+1 &&
+                    selection.LevelCount[2].SpellSelections.Count(value=>value!=null)==pending.Count(value=>value!=null)+1 &&
                     phase.UIChosenSpells.Any(value=>ReferenceEquals(value.Spell,legacy)) && source.IsChoosen.Value && successes==0;
                 Cleanup2Check("elemental-console-real-learning-original-source",learned,new JObject { ["spell"]=legacy.AssetGuid,
                     ["originalNativeVMChosen"]=source.IsChoosen.Value,["previewKnowsOriginal"]=backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy),
                     ["originalActorDoesNotKnow"]=!book.IsKnown(legacy),["allocatedBefore"]=pending.Count(value=>value!=null),
-                    ["allocatedAfter"]=context.SelectionData.LevelCount[2].SpellSelections.Count(value=>value!=null),["commits"]=successes },
+                    ["allocatedAfter"]=selection.LevelCount[2].SpellSelections.Count(value=>value!=null),["commits"]=successes,["freshModuleOff"]=off },
                     "Choosing the original source through actual console learning allocates exactly one native pending choice in the independent preview and does not modify the original actor.");
                 if(!learned)throw new InvalidOperationException("Native console original-source learning allocation failed.");
                 foreach(int frame in screens.Capture("elementals-console-native-learning-preview",new JObject { ["spell"]=legacy.AssetGuid,
@@ -331,9 +358,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 detailNavigation.SetCurrentEntityManual(sourceRow);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
                 for(int frame=0;frame<8;frame++)yield return 0;
                 bool undo=!backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy) &&
-                    context.SelectionData.LevelCount[2].SpellSelections.SequenceEqual(pending) && phase.UIChosenSpells.SequenceEqual(nativeSelected) &&
+                    selection.LevelCount[2].SpellSelections.SequenceEqual(pending) && phase.UIChosenSpells.SequenceEqual(nativeSelected) &&
                     !book.IsKnown(legacy) && book.GetAllKnownSpells().SequenceEqual(originalKnown) && Cleanup2ElementalResources(unit)==originalBudget;
-                Cleanup2Check("elemental-console-real-learning-native-undo",undo,new JObject { ["pendingChoiceExact"]=context.SelectionData.LevelCount[2].SpellSelections.SequenceEqual(pending),
+                Cleanup2Check("elemental-console-real-learning-native-undo",undo,new JObject { ["pendingChoiceExact"]=selection.LevelCount[2].SpellSelections.SequenceEqual(pending),
                     ["originalKnownReferencesExact"]=book.GetAllKnownSpells().SequenceEqual(originalKnown),["originalResourcesExact"]=Cleanup2ElementalResources(unit)==originalBudget,
                     ["previewNoLongerKnows"]=!backend.Preview.GetSpellbook(wizard.Spellbook).IsKnown(legacy),["commits"]=successes },
                     "Confirming the chosen original native row again restores the original pending allocation and preserves original known objects/resources.");

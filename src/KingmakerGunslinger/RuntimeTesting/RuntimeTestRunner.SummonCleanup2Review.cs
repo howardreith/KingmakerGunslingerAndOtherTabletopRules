@@ -379,10 +379,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cleanup2Check("sm-frost-presentation", monsterFrostMetric.Valid,
                     monsterFrostMetric.Document,
                     "The retained native Frost Giant also appears through the actual SM VIII wrapper.");
-                if (heightProbe == null)
-                    foreach (int frame in Cleanup2ObserveProductionScale(actors.Skip(1).Concat(new[] { monsterFrost }).ToArray(),
-                        keys.Skip(1).Concat(new[] { "sm-frost-giant" }).ToArray())) yield return frame;
-                DisposeExpandedSummoningUnits(fixture.Created, new[] { monsterFrost });
+                if (heightProbe != null) DisposeExpandedSummoningUnits(fixture.Created, new[] { monsterFrost });
 
                 // Retain every actor's identity/material/hierarchy even if a
                 // later terrain survey or a different actor's skin proof fails.
@@ -495,10 +492,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Review19 measured the same native 22-29cm visual sole
                     // offset for Human and both giant families. Navmesh Y is a
                     // placement surface, not an engine promise of skin contact.
-                    bool stable = samples.All(v => v[i].Valid) && range <= .05f && stableScale;
+                    float factor = 1f;
+                    bool factorExact = true;
+                    if (heightProbe == null && i > 1)
+                    {
+                        JObject owner = GiantSummonPresentationPatch.ObserveProductionOwnership(actors[i].View);
+                        factor = (float?)owner["uniformVisualFactor"] ?? float.NaN;
+                        factorExact = (bool?)owner["currentOwnershipExact"] == true &&
+                            (bool?)owner["nativeRootScaleExact"] == true && Cleanup2Finite(factor) && factor > 0f;
+                    }
+                    float nativeRange = factorExact ? range / factor : float.NaN;
+                    // The same native idle motion grows with the admitted
+                    // render-only factor. Keep the original native-scale
+                    // envelope, rather than rejecting that expected growth.
+                    bool stable = samples.All(v => v[i].Valid) && factorExact && nativeRange <= .05f && stableScale;
                     standing &= stable;
                     summary.Add(new JObject { ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
                         ["meanBodyHeightWorldUnits"] = heights.Average(), ["poseHeightRange"] = range,
+                        ["admittedUniformVisualFactor"] = factor, ["productionFactorOwnershipExact"] = factorExact,
+                        ["nativeScalePoseHeightRange"] = nativeRange, ["nativeScalePoseHeightRangeLimit"] = .05f,
                         ["maximumSoleGroundGap"] = soleGap, ["stableStandingSamples"] = stable,
                         ["sameViewScaleAcrossSamples"] = stableScale,
                         ["heightOverHuman"] = heights.Average() / samples.Average(v => v[0].Height),
@@ -508,11 +520,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cleanup2Check("standing-comparison-eligibility", standing, new JObject {
                     ["actors"] = summary, ["calibrationApplied"] = false,
                     ["ratioLimitation"] = "Finite stable current-body samples support relative family comparison. Native sole/navmesh offsets are recorded, not assumed zero; no absolute Human/feet calibration is claimed." },
-                    "Four finite stable native idle body samples on the surveyed plane admit a relative render-only experiment; navmesh-to-skin offset is not an anatomy calibration.");
+                    "Four finite idle body samples retain the same native-scale motion envelope after accounting for the exact owned visual factor; navmesh-to-skin offset is not an anatomy calibration.");
                 bool scalePrototype = (string)_request.Parameters?["reviewPhase"] == "scale-prototype";
+                IEnumerable<int> productionObservation = null;
+                if (!scalePrototype)
+                {
+                    // Retain the second canonical Frost instance for exact
+                    // disjoint-owner/pose proof under the same native camera.
+                    // Its temporary placement is deferred until the camera
+                    // lease is held, so the extra actor cannot obstruct the
+                    // six-family camera admission. It is removed before PNG.
+                    productionObservation = Cleanup2ObserveProductionScale(
+                        actors.Skip(1).Concat(new[] { monsterFrost }).ToArray(),
+                        keys.Skip(1).Concat(new[] { "sm-frost-giant" }).ToArray(), fixture, monsterFrost, groundPoints[3]);
+                }
                 JObject lineupPicture=null;
                 foreach(int frame in Cleanup2CaptureLineup(fixture, actors, keys, samples.Last(),value=>lineupPicture=value,
-                    scalePrototype ? "cleanup2-scale-prototype-before.png" : null))yield return frame;
+                    scalePrototype ? "cleanup2-scale-prototype-before.png" : null, false, productionObservation))yield return frame;
                 Cleanup2Check("same-camera-lineup", (bool?)lineupPicture?["captureRecorded"]==true, lineupPicture,
                     "One nonempty native frame records the verified Human and all six projected giant bodies; obstruction and art acceptance are separately inspected.");
                 if (scalePrototype)
@@ -536,13 +560,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private IEnumerable<int> Cleanup2ObserveProductionScale(UnitEntityData[] actors, string[] keys)
+        private IEnumerable<int> Cleanup2ObserveProductionScale(UnitEntityData[] actors, string[] keys,
+            ExpandedSummoningCorrectionFixture fixture, UnitEntityData extraFrost, Vector3 extraFrostGroundPoint)
         {
+            // This iterator begins only inside Cleanup2CaptureLineup's exact
+            // held camera lease, after the normal scenery/foreign blockers
+            // have been checked. Use only the surveyed Frost support point.
+            PlaceExpandedSummoningUnit(extraFrost, extraFrostGroundPoint);
             var wait = System.Diagnostics.Stopwatch.StartNew();
             while (actors.Where((actor, index) => keys[index] != "hill-giant").Any(actor =>
                 GiantSummonPresentationPatch.ProductionOwner(actor.View) == null) && wait.Elapsed.TotalSeconds < 16d)
                 yield return 0;
             var allocations = new HashSet<int>();
+            var played = new List<Tuple<UnitEntityData, UnitAnimationActionHandle>>();
             for (int i = 0; i < actors.Length; i++)
             {
                 UnitEntityData actor = actors[i];
@@ -624,8 +654,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Matrix4x4[] initial = bones.Select(bone => bone.localToWorldMatrix).ToArray();
                     var cloths = actualOwner.OwnedCloths.ToArray();
                     Vector3[][] clothBefore = cloths.Select(cloth => cloth.vertices).ToArray();
+                    var clothSkins = cloths.Select(cloth => cloth.GetComponent<SkinnedMeshRenderer>()).ToArray();
+                    var clothDrivers = clothSkins.Select(skin => skin.bones.Where(bone => bone != null).Distinct().ToArray()).ToArray();
+                    var driverBefore = clothDrivers.Select(drivers => drivers.Select(bone => bone.localToWorldMatrix).ToArray()).ToArray();
+                    var pinned = cloths.Select(cloth => cloth.coefficients.Select((value, index) => new { value, index })
+                        .Where(row => row.value.maxDistance == 0f).Select(row => row.index).ToArray()).ToArray();
+                    int[] visibleFrames = new int[cloths.Length], frustumFrames = new int[cloths.Length];
+                    bool[] driverMoved = new bool[cloths.Length];
+                    float[] pinnedMotion = new float[cloths.Length];
+                    var poseCamera = TeleportationCastingCamera()?.Camera;
+                    if (poseCamera == null) throw new InvalidOperationException("Held native lineup camera absent before production pose.");
+                    float started = Time.time, unscaledStarted = Time.unscaledTime, deltaSum = 0f;
+                    var poseWatch = System.Diagnostics.Stopwatch.StartNew();
                     bool moved = false, clothFinite = true; float clothMotion = 0f;
                     actor.View.AnimationManager.Execute(animation);
+                    played.Add(Tuple.Create(actor, animation));
                     for (int frame = 0; frame < 40; frame++)
                     {
                         Game.Instance.IsPaused = false; yield return 0;
@@ -637,26 +680,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "The exact live production owner and private Cloth must remain present before reading native particle arrays.");
                             throw new InvalidOperationException("Production owner released during native pose for " + keys[i]);
                         }
+                        deltaSum += Time.deltaTime;
                         moved |= bones.Where((bone, index) => bone != null && bone.localToWorldMatrix != initial[index]).Any();
+                        Plane[] frustum = GeometryUtility.CalculateFrustumPlanes(poseCamera);
                         for (int c = 0; c < cloths.Length; c++)
                         {
+                            var skin = clothSkins[c];
+                            if (skin != null && skin.enabled && skin.gameObject.activeInHierarchy && skin.isVisible) visibleFrames[c]++;
+                            if (skin != null && GeometryUtility.TestPlanesAABB(frustum, skin.bounds)) frustumFrames[c]++;
+                            driverMoved[c] |= clothDrivers[c].Where((bone, index) => bone != null && bone.localToWorldMatrix != driverBefore[c][index]).Any();
                             Vector3[] points = cloths[c].vertices;
                             clothFinite &= points.Length > 0 && points.Length == clothBefore[c].Length && points.All(Cleanup2Finite);
                             if (points.Length == clothBefore[c].Length)
                                 for (int point = 0; point < points.Length; point++) clothMotion = Mathf.Max(clothMotion, Vector3.Distance(points[point], clothBefore[c][point]));
+                            foreach (int point in pinned[c])
+                                if (point < points.Length && point < clothBefore[c].Length)
+                                    pinnedMotion[c] = Mathf.Max(pinnedMotion[c], Vector3.Distance(points[point], clothBefore[c][point]));
                         }
                     }
                     JObject posed = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                    bool renderedCloth = visibleFrames.All(count => count > 0) && frustumFrames.All(count => count > 0);
                     Cleanup2Check("production-native-weapon-pose-" + keys[i], moved && clothFinite &&
-                        (cloths.Length == 0 || clothMotion > .0001f) && (bool?)posed["currentOwnershipExact"] == true,
+                        renderedCloth && (cloths.Length == 0 || clothMotion > .0001f) && (bool?)posed["currentOwnershipExact"] == true,
                         new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["weapon"] = info.Weapon.Blueprint.AssetGuid,
                             ["actualNativeBoneMotion"] = moved, ["ownedClothFiniteStableCount"] = clothFinite,
                             ["ownedClothPositiveDisplacement"] = clothMotion, ["production"] = posed,
+                            ["normalRenderCamera"] = poseCamera.GetInstanceID(), ["normalCameraLeaseHeld"] = Game.Instance.CameraController.FixCamera.GuardCount == 1,
+                            ["unityElapsedSeconds"] = Time.time - started, ["unscaledElapsedSeconds"] = Time.unscaledTime - unscaledStarted,
+                            ["unityDeltaSum"] = deltaSum, ["wallElapsedSeconds"] = poseWatch.Elapsed.TotalSeconds,
+                            ["ownedClothNormallyRendered"] = renderedCloth,
+                            ["clothRenderAndDriverSamples"] = new JArray(Enumerable.Range(0, cloths.Length).Select(c => new JObject {
+                                ["cloth"] = cloths[c].GetInstanceID(), ["renderer"] = clothSkins[c].GetInstanceID(), ["samples"] = 40,
+                                ["visibleEnabledSamples"] = visibleFrames[c], ["nativeCameraFrustumSamples"] = frustumFrames[c],
+                                ["rendererUpdateWhenOffscreen"] = clothSkins[c].updateWhenOffscreen,
+                                ["clothSleepThreshold"] = cloths[c].sleepThreshold,
+                                ["paletteBoneMotion"] = driverMoved[c], ["pinnedCount"] = pinned[c].Length,
+                                ["pinnedParticleDisplacement"] = pinnedMotion[c] })),
                             ["attackCommandOrRuleIssued"] = false },
                         "A real weapon-specific native pose moves the production-owned skin/attachments with finite positive Cloth updates and unchanged native source/collider/material ownership; this is not combat resolution or FX activation proof.");
                 }
                 finally { Cleanup2ScaleFinishAnimation(ref animation); }
             }
+            DisposeExpandedSummoningUnits(fixture.Created, new[] { extraFrost });
+            // Finish only the handles this observer created, then allow native
+            // idle/recovery and deferred extra-view teardown before the final
+            // standing image. No pose screenshot is claimed by these rows.
+            for (int frame = 0; frame < 12; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+            Func<bool> recovered = () => played.All(value => value.Item2.IsFinished &&
+                (ReferenceEquals(value.Item1, extraFrost) ? extraFrost.Destroyed :
+                    !value.Item1.Destroyed && value.Item1.View != null &&
+                    !ReferenceEquals(value.Item1.View.AnimationManager.CurrentAction, value.Item2)));
+            int recoveryFrames = 12;
+            while (!recovered() && recoveryFrames < 120) { recoveryFrames++; yield return 0; }
+            bool recoveryExact = recovered() && extraFrost.Destroyed;
+            Cleanup2Check("production-native-pose-recovered", recoveryExact, new JObject {
+                ["ownedPoseHandlesFinishedAndNotCurrent"] = recovered(), ["normalRecoveryFrames"] = recoveryFrames,
+                ["extraCanonicalFrostDisposed"] = extraFrost.Destroyed, ["poseScreenshotClaimed"] = false },
+                "Every observer-created native pose handle finishes and leaves the current action, and the extra fixture Frost is disposed before the six-family standing image.");
+            if (!recoveryExact) throw new InvalidOperationException("Native production pose recovery is unverified; no standing image is recorded.");
         }
 
         private IEnumerable<int> Cleanup2ReleaseProductionScale(UnitEntityData[] actors, string[] keys)
@@ -1387,7 +1468,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> Cleanup2CaptureLineup(ExpandedSummoningCorrectionFixture fixture,
             IList<UnitEntityData> actors, IList<string> keys, Cleanup2ActorMetric[] metrics,
-            Action<JObject> completed, string fileName = null, bool experimentalProxy = false)
+            Action<JObject> completed, string fileName = null, bool experimentalProxy = false,
+            IEnumerable<int> observationWhileCameraOwned = null)
         {
             string phase = (string)_request?.Parameters?["reviewPhase"];
             if (!IsSummonCleanup2Review || !_request.ExitAfterCompletion ||
@@ -1557,9 +1639,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Camera.Render does not run the native Update-built occlusion
                 // command buffer. Hold the real camera pose/RT across complete
                 // Unity frames and read its ordinary completed render instead.
-                for(int frame=0;frame<3;frame++)
+                Action requireCamera = () =>
                 {
-                    yield return 0;
                     if(!ReferenceEquals(Game.Instance.CameraController,controller) || !ReferenceEquals(controller.FixCamera,cameraGuard) ||
                         !ReferenceEquals(TeleportationCastingCamera(),rig) || cameraGuard.GuardCount!=1 ||
                         !ReferenceEquals(rig.Camera,camera) || !ReferenceEquals(camera.targetTexture,target) ||
@@ -1569,6 +1650,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Vector3.Distance(camera.transform.position,requestedCameraPosition)>.02f ||
                         Quaternion.Angle(camera.transform.rotation,requestedCameraRotation)>.01f)
                         throw new InvalidOperationException("Native frame-settled lineup camera ownership/pose changed.");
+                };
+                for(int frame=0;frame<3;frame++)
+                {
+                    yield return 0;
+                    requireCamera();
+                }
+                if (observationWhileCameraOwned != null)
+                {
+                    foreach (int frame in observationWhileCameraOwned)
+                    {
+                        requireCamera();
+                        yield return frame;
+                        requireCamera();
+                    }
+                    // Read standing/recovery pixels only after the callback's
+                    // owned poses and exact extra-unit cleanup have finished.
+                    for (int frame = 0; frame < 3; frame++) { yield return 0; requireCamera(); }
                 }
                 facingReceipt["capturedNativeYaw"] = new JArray(actors.Select(actor => actor.Orientation));
                 var viewport = new JArray(framed.Select((m, i) => new JObject {
@@ -1607,6 +1705,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["fixtureFacingPose"] = facingReceipt,
                     ["nativePoseFrame"]=poseFrame,["readbackFrame"]=Time.frameCount,["normalFrameProgression"]=Time.frameCount-poseFrame,
                     ["manualCameraRenderCalled"]=false,["nativeCameraFixGuardOwned"]=true,
+                    ["productionObservationUnderCameraLease"] = observationWhileCameraOwned != null,
+                    ["poseScreenshotClaimed"] = false,
                     ["nativeOcclusionComponent"]=nativeOcclusion.GetInstanceID(),["nativeOcclusionUpdateContract"]="Enabled native OccludedObjectHighlight.Update06001163 rebuilds its own command buffer during normal Unity Update; no observer visibility flag or manual highlighter update.",
                     ["nativeFollowerUnchanged"]=ReferenceEquals(controller.Follower,follower) &&
                         followerFields.Select((field,index)=>Equals(field.GetValue(follower),followerValues[index])).All(value=>value),

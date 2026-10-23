@@ -898,7 +898,7 @@ foreach($invalid in @(@{},@{reviewPhase='Giant-Lineup'},@{reviewPhase='Menus'},@
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 Assert-True (Test-KmgExactSummoningRuntimeBoundary $cleanup2ReviewArgs.Scenario) 'cleanup2-keeps-exact-receipt-and-independent-restoration-boundary'
 Assert-True (-not (Test-KmgCleanup2ReviewPhaseScope 'disposable-expanded-summoning-native-profile' @{reviewPhase='menus'})) 'cleanup2-phase-scope-does-not-authorize-another-scenario'
-foreach($phase in @('elementals-off','giants-off')) {
+foreach($phase in @('elementals-off','giants-off','elementals-learning','elementals-console')) {
     Assert-True (Test-KmgCleanup2ModuleOffScope $cleanup2ReviewArgs.Scenario @{reviewPhase=$phase}) "cleanup2-off-exact-$phase"
     Assert-True (-not (Test-KmgCleanup2ModuleOffScope $cleanup2ReviewArgs.Scenario @{reviewPhase=$phase;saveName='KMG_AUTOMATION_WORKING'})) "cleanup2-off-refuses-save-$phase"
     Assert-True (-not (Test-KmgCleanup2ModuleOffScope $cleanup2ReviewArgs.Scenario @{reviewPhase=$phase.ToUpperInvariant()})) "cleanup2-off-ordinal-$phase"
