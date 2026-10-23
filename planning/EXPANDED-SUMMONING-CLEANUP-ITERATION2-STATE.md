@@ -12,6 +12,23 @@ Quick review: [14-item acceptance status](#acceptance-status),
 ### PR #67 review corrections (2026-10-22)
 
 Latest: [PR 67 follow-up results and remaining checks](CLEANUP2-PR67-REVIEW-FOLLOWUP.md).
+Current native checkpoint is review24, source `d91487c274cdc6e0ff26f45a4604dcbbab99bcc6`.
+Gorgon completes 117 originals, 5.9618144m travel and its ordinary native attack;
+root inspected the new forged plates positively, with owner approval pending.
+Scale 60/4 proves the exact 292 disabled Cloth sentinels but refuses the owned
+configuration round-trip; production Cloth remains closed and no lineup PNG
+qualifies. PC Elementals 14/1 proves the first original Small Fire cast/debit,
+then stops on an inactive/missing launcher; its overlapping-label screenshot is
+explicitly before the later layout repair. Bodies 38/5 also passes Girallon and
+Stegosaurus ordinary attacks, but their full six-meter walks lack a safe fixture
+route. All three exits, installation/settings and 95 original saves restore
+exactly. Window 4 ends at the last receipt, **2026-10-22T23:52:28.4444403Z**,
+23m59.444s after 23:28:29. Final 90-minute qualification has not started.
+The existing small current comparison contains 63 originals at
+`artifacts/cleanup2-replacement-current/index.html`; historical 188-image packet
+and original FAIL records remain unchanged. Full identities/receipts are in the
+linked follow-up. The following earlier checkpoints retain their own provenance.
+
 The continuation after `e3cd947160` replaces the owner-rejected appended Ettin
 head with a coherent private two-headed body, hardens Gorgon plates/materials,
 separates Girallon's lower hands and narrows Stegosaurus limbs. Actual production
@@ -61,7 +78,7 @@ checkout production compilation PASS (16.1s), named resolver cases 2/2 PASS
 and test-splat attempts are preserved. This is tooling proof, not new native
 Working-save compatibility.
 
-The owner selected local gallery review. The verified packet is
+The owner selected local gallery review. The historical verified packet is
 `artifacts/cleanup2-portable-review-gallery-v2.zip`: 188 original PNGs in seven
 identity/result groups, 182,743,270 bytes, SHA256
 `eb112333d06becfc9662a8766f2071dbefe29b3d5735f4817a4ebb3d577a17c4`.
@@ -546,7 +563,7 @@ Technical validation, native evidence and owner acceptance are independent.
 An offline render is synthetic evidence. No unobserved target is PASS.
 The October 22 completion handoff now authorizes Option B implementation and
 the exact protected cold trio. Earlier proposal-only/deferred chronology is
-historical. Current changes and review19 provenance are summarized in
+historical. Current changes and review24 provenance are summarized in
 `CLEANUP2-PR67-REVIEW-FOLLOWUP.md`; no final completion qualification has begun.
 
 | ID | Reproduction / source work | Technical verification | Native evidence | Owner acceptance / remaining work |
@@ -556,14 +573,14 @@ historical. Current changes and review19 provenance are summarized in
 | ICON-01 | Painted Horse revision preserves provenance/consumer graph and protected Pony | Export/catalog checks and32/48/64 inspection PASS; current production export inspected and retained | Review7 painted Horse in SNA II-V quantity routes; review9 actual SM/SNA Horse native hover/title and matching row icons PASS, full frames inspected | **Already satisfactory in inspected views**; owner art approval and alternate surfaces remain separate |
 | ART-02 | Refined Griffon eagle/lion/wings and shoulder unions after offline rejection; retained useful revision | Geometry/weights/export and production compile PASS | Review5 canonical cast/travel/native attack and front-left/left views inspected; no justified new tear found, no native Hit action | **Repaired, awaiting owner review**; extreme intersections/motion remain unapproved |
 | ART-03 | Rebuilt Stag Beetle paired elytra, mandibles and all six legs beyond winding repair; retained | Closed/outward geometry/weights/export PASS | Review5 canonical cast/travel/attack and front-left inspected: coherent shell/mandibles/six-leg silhouette; far-leg contact ambiguous | **Repaired, awaiting owner review** for proportions/contact |
-| ART-04 | Separated distal fingers and medium-charcoal hand paint improve far-hand readability; joined neck/body/lower palms retained | Paired exports and topology/seam weights PASS | Review22 ordinary native attack/rules/cost and complete6.014m travel packet PASS. Root and reviewer inspected front/side/ordinary/attack views: attached readable fingers; side occlusion is not a demonstrated tear | **Repaired, awaiting owner review**; prior review16 retains its original identity |
+| ART-04 | Separated distal fingers and medium-charcoal hand paint improve far-hand readability; joined neck/body/lower palms retained | Paired exports and topology/seam weights PASS | Review22 ordinary attack and complete6.014m travel packet PASS, with inspected readable attached fingers. Review24 ordinary native attack/rules/cost PASS; its new walk packet refuses because the fixture has no complete safe six-meter route | **Repaired, awaiting owner review**; review22 travel retains its original identity, no new product tear demonstrated |
 | ART-05 | Coherent complete two-head body retained. Ordinary full-attack observer and exact retained-owner cold transaction now implemented | Review17 body/rig/material/lifecycle/recast/resource proof retained. Cold disposable backup/current-intake fixtures458/458 and separate-process protection316/316 PASS | Review17 front/side/main-hand poses inspected: comparable detail, coherent necks, opacity and exactly two heads. Overall77/2 due optional OffHandAttack absence | **Repaired, awaiting owner review.** Actual ordinary full-attack and new qualified cold execution remain pending; no invented dissolve-ramp claim |
 | ART-06 | Opaque continuous outward Elephant body, ears, trunk and connected limbs retained | Closed/outward geometry/weights/export PASS | Review5 front-left/body/travel/attack inspected; opacity improved. Review10 native Mastodon/Triceratops shared-controls24/24 reused unchanged | **Repaired, awaiting owner review** for body/skin/proportions; technical donor gap closed |
-| ART-07 | Raised/narrowed elongated body, continuous thighs, tapered ankles/joined toes and finer finish; plates/tail retained | Current topology/weights/export PASS; unchanged Triceratops review10 retains its identity | Review22 front/side/attack inspected: elongated body and improved visible foot contact, smooth finish remains an owner judgement. Ordinary command/cost PASS; walking packet failed .066m on an unsurveyed route | **Repaired appearance, awaiting corrected native walk and owner review** |
-| ART-08 | Six-family palettes and relative instance-owned render scale/sole pivot wired; native gameplay roots unchanged. Production Cloth remains closed | Relative-factor/identity/pivot cases PASS; exact native disabled Cloth sentinel now preserved while real overflow refuses | Review22 scale59/2 reaches Frost coefficient preflight overflow. All seven fit, but chandelier/occlusion silhouettes still obstruct final color review. Native-frame camera and bounded rendered-obstruction repair in progress | **Open:** positive cloth/scale/selection/effects/multiple-instance proof and clear comparison; exact feet are not required |
+| ART-07 | Raised/narrowed elongated body, continuous thighs, tapered ankles/joined toes and finer finish; plates/tail retained | Current topology/weights/export PASS; unchanged Triceratops review10 retains its identity | Review22 front/side/attack inspected: improved body/foot contact, finish remains an owner judgement. Review24 ordinary native attack/cost PASS; walk packet refuses before tracking because no full six-meter footprint-clear fixture route exists | **Repaired appearance, awaiting corrected native walk and owner review**; route refusal does not establish a new product defect |
+| ART-08 | Six-family palettes and relative instance-owned render scale/sole pivot wired; native gameplay roots unchanged. Production Cloth remains closed | Relative-factor/identity/pivot cases PASS; exact native disabled Cloth sentinel preserved while real overflow refuses | Review24 scale60/4 proves all292 Frost collision-distance sentinels, then refuses strict owned Cloth configuration round-trip; exact field diagnostic awaits native execution. No qualified lineup PNG: visible-environment proof refuses unreadable scene triangles | **Open:** positive cloth/scale/selection/effects/multiple-instance proof and clear comparison; camera acquisition alone is not visibility proof |
 | ART-09 | Continuous smooth neck arc, sloped chest and refined limbs/body finish replace abrupt junction/columns; exact tail geometry/weights and private attack gesture retained | Paired current export/topology/skin checks PASS; whole-body side/front/ordinary zoom and synthetic gesture inspected. Old matched attack55/55 retains review18 identity | New body and wider whole-tail/target camera have not yet been observed natively | **Implemented finish, awaiting native whole-creature approach/action/recovery and owner review** |
-| ART-10 | Review22 rectangular boards replaced by55 staggered beveled scales with neck/cheek guards and matched iron-hide finish. Underlying bull/horns/hooves/rig retained | Exact installed PF composition established; new topology/weights/two synthetic poses and9,500 unchanged body triangles PASS. Owned scalar.4, no donor/global mutation | Review22 confirms supported native highlights and ordinary attack/cost. Root rejected its broad boards; current forged-scale export inspected offline only. Walking also requires corrected route | **Implemented art/material revision; focused native view/motion and owner review pending** |
-| MENU-02 | Authorized Option B implemented for desktop/controller casting, learning and preparation; explicit original sources, no serialized chooser/rules migration | Source/stale/exhaustion/cancel/ownership cases PASS; exact console target resolution PASS; disposed prep-owner correction added | Actual native source/debit, all24 choices, two books/metamagic/special slot/pin/cancel and fresh-OFF observations remain pending | **Implemented surfaces, awaiting native qualification**; no source-equivalence or completion claim |
+| ART-10 | Review22 rectangular boards replaced by55 staggered beveled scales with neck/cheek guards and matched iron-hide finish. Underlying bull/horns/hooves/rig retained | Exact installed PF composition established; topology/weights/poses and9,500 unchanged body triangles PASS. Owned scalar.4, no donor/global mutation | Review24 full117-original packet and5.9618144m travel PASS; ordinary native weapon/rule/cost and recovery PASS. Root inspected forged plates, walk/contact/recovery positively | **Repaired, awaiting owner visual approval**; native originals are in the existing small current gallery |
+| MENU-02 | Authorized Option B implemented for desktop/controller casting, learning and preparation; explicit original sources, no serialized chooser/rules migration | Source/stale/exhaustion/cancel/ownership and exact console target checks PASS. Actual narrow text-layout defect repaired afterward; native qualification pending | Review24 PC14/1 proves standalone Small Fire native cast/debit, then fails active launcher lookup. Its bad-layout PNG is explicitly before the source fix; all24 choices/two books/metamagic/special/pin/cancel/fresh-OFF remain open | **Implemented surfaces, awaiting native qualification**; no source-equivalence or completion claim |
 | LABEL-01 | Explicit128 family-first metadata map spans generated/native choices; template/quantity/natural prose and stable IDs retained | Changed name/publication/idempotence/rollback cases PASS | Review7 all nine SNA menus; review9 actual Horse/Elemental/Mephit/Giant hover titles complete without clipping, matching rows and native cleanup PASS | Adapters, old-save presentation, other long labels and owner review remain open |
 ## Commands and limits so far
 

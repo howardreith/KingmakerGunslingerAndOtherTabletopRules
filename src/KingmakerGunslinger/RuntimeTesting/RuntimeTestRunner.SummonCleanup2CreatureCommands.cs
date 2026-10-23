@@ -347,7 +347,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["fullCenterAndShoulderLinecastsClear"] = true };
                 }
             }
-            var evidence = new JObject { ["key"] = key, ["selected"] = selected, ["attempts"] = attempts, ["refusals"] = JObject.FromObject(refusals),
+            var evidence = new JObject { ["key"] = key, ["selected"] = selected, ["attempts"] = attempts,
+                ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
                 ["surveyWallSeconds"] = watch.Elapsed.TotalSeconds,
                 ["contract"] = "Installed PathTo060018A3/ConstructTags060018C3 RTWP mask1; query-owned PathNNConstraint.SetStart + connected-area proof, <=60cm endpoint clamp,39 footprint samples with <=15cm horizontal/35cm vertical support error, full native graph/geometry center-and-shoulder linecasts and protected-unit segment clearance. Real UnitAttack.IsUnitEnoughClose must initially be false and must become true at its actual rule event. No native graph, range, collider or path is changed." };
             Cleanup2Check("creature-native-approach-lane-" + key, selected != null, evidence,

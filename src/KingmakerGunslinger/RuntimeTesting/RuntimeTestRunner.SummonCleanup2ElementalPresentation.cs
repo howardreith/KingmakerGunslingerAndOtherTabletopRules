@@ -345,16 +345,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(!fixtureUiOwned() || ElementalSourceChooserView.IsOpen || !nativeMode.Current)
                     throw new InvalidOperationException("Native postcast fixture UI ownership changed; tab rebuild refused.");
                 bool tabWasOpen=spellGroup.ToggleState;
-                if(!tabWasOpen)spellGroup.OnClick();
-                spellGroup.Fill(fixture.Caster);
-                session=ElementalSourceChooserRuntime.Session(spellGroup);
-                if(session==null || !session.Current)throw new InvalidOperationException("Native tab rebuild has no current session: "+ElementalSourceChooserRuntime.Outcome);
-                ownedSessions.Add(session);
-                session.Levels.OnClick(session.MinimumLevel);
-                for(int frame=0;frame<8;frame++)yield return 0;
+                foreach(int frame in Cleanup2SettleChooserNativeRefill(fixture,book,spellGroup,nativeMode,fixtureUiOwned,
+                    ownedSessions,session,"postcast-two-sources",value=>session=value))yield return frame;
                 Cleanup2Check("elemental-chooser-postcast-tab-reopened",spellGroup.ToggleState && session.Current && session.LauncherAdded,
                     new JObject { ["tabOpenBefore"]=tabWasOpen,["tabOpenAfter"]=spellGroup.ToggleState,
-                        ["nativeOnClickUsed"]=!tabWasOpen,["minimumLevel"]=session.MinimumLevel,["launcherAdded"]=session.LauncherAdded,
+                        ["minimumLevel"]=session.MinimumLevel,["launcherAdded"]=session.LauncherAdded,
                         ["fixtureUiOwned"]=fixtureUiOwned(),["selectedCharacter"]=group.GetCurrentCharacter()?.UniqueId,
                         ["selectedUnits"]=new JArray(ui.SelectionManagerPC.SelectedUnits.Select(value=>value.UniqueId)),
                         ["outcome"]=ElementalSourceChooserRuntime.Outcome,["exceptions"]=new JArray(session.Exceptions),
@@ -362,7 +357,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["child"]=value.Child.Blueprint.AssetGuid,["key"]=value.CreatureKey,["available"]=value.Preparation?.Available })),
                         ["renderedSlots"]=new JArray(spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Select(value=>new JObject {
                             ["active"]=value.gameObject.activeInHierarchy,["mechanism"]=value.MechanicSlot?.GetType().FullName })) },
-                    "Native Fill preserves the existing tab state; native OnClick reopens a closed tab before selecting the actual launcher level and inspecting live rows.");
+                    "Native Update consumes the real pending spellbook refill before this observer retains the fresh exact session and selects its launcher level through native OnClick.");
                 launcher=spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Single(value=>
                     value.gameObject.activeInHierarchy && value.MechanicSlot is ElementalChooserLauncher);
                 var nativeSmall=session.Sources.Single(value=>value.CreatureKey=="small-fire-elemental" &&
@@ -404,11 +399,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PrepareExpandedSummoningPlayerPathSpell(book,monsterParent,monsterParent,2);
                 if(!fixtureUiOwned() || ElementalSourceChooserView.IsOpen || !nativeMode.Current)
                     throw new InvalidOperationException("Canonical-only fixture UI ownership changed; tab rebuild refused.");
-                if(!spellGroup.ToggleState)spellGroup.OnClick();
-                spellGroup.Fill(fixture.Caster);
-                session=ElementalSourceChooserRuntime.Session(spellGroup);
-                if(session==null || !session.Current)throw new InvalidOperationException("Canonical-only native session is not current.");
-                ownedSessions.Add(session);
+                foreach(int frame in Cleanup2SettleChooserNativeRefill(fixture,book,spellGroup,nativeMode,fixtureUiOwned,
+                    ownedSessions,session,"canonical-only",value=>session=value))yield return frame;
                 var alone=session.Sources.Where(value=>value.CreatureKey=="small-fire-elemental" && ReferenceEquals(value.Book,book)).ToArray();
                 Cleanup2Check("elemental-chooser-canonical-source-alone",alone.Length==1 && ReferenceEquals(alone[0].Source.Blueprint,monsterParent),
                     new JObject { ["sourceCount"]=alone.Length,["standaloneStillKnown"]=book.IsKnown(Cleanup2ElementalAbility(fixture,smallSpec.Guid)),
@@ -456,6 +448,99 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try{screens.Dispose();}finally{nativeMode.Dispose();}
                 }
             }
+        }
+
+        private IEnumerable<int> Cleanup2SettleChooserNativeRefill(ExpandedSummoningCorrectionFixture fixture,Spellbook book,
+            ActionBarGroupElement spellGroup,Cleanup2NativeDefaultScope mode,Func<bool> uiOwned,
+            ICollection<ElementalChooserSession> ownedSessions,ElementalChooserSession captured,string label,
+            Action<ElementalChooserSession> completed)
+        {
+            // Installed HandleMemorizedSpell/HandleForgetSpell/AddSpellHandler
+            // queue m_NeedReSet. ActionBarGroup.Update clears it then calls
+            // Set(m_Selected) -> Fill on every group. FillSlots rebuilds the
+            // production session; SetType -> SetLevelSlotsSet(false) selects
+            // the highest nonempty level. A synchronous observer Fill races
+            // that queued native update and cannot establish a retained row.
+            var bar=ActionBarManager.Instance;var nativeGroup=bar.Group;
+            var reset=typeof(ActionBarGroup).GetField("m_NeedReSet",Cleanup2Fields);
+            var selected=typeof(ActionBarGroup).GetField("m_Selected",Cleanup2Fields);
+            var levelIndex=typeof(ActionBarSubGroupLevels).GetField("Index",Cleanup2Fields);
+            var levelsField=typeof(ActionBarGroupElement).GetField("m_Levels",Cleanup2Fields);
+            var launcherSession=typeof(ElementalChooserLauncher).GetField("_session",Cleanup2Fields);
+            if(reset==null || selected==null || levelIndex==null || levelsField==null || launcherSession==null)
+                throw new MissingFieldException("Exact installed native action-bar refill/level fields are unavailable.");
+            var books=fixture.Caster.Descriptor.Spellbooks.ToArray();
+            var watch=Stopwatch.StartNew();var samples=new JArray();
+            ElementalChooserSession candidate=null,requested=null,current=null;
+            int quiet=0,frames=0,replacements=0,levelRequests=0;bool reopened=false,settled=false;
+            Func<object,int> identity=value=>value==null?0:System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(value);
+            Func<JObject> describe=()=>{
+                current=ElementalSourceChooserRuntime.Session(spellGroup);
+                var levels=levelsField.GetValue(spellGroup) as ActionBarSubGroupLevels;
+                var rows=spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Where(value=>value.gameObject.activeInHierarchy).ToArray();
+                return new JObject { ["capturedSessionIdentity"]=identity(captured),["currentSessionIdentity"]=identity(current),
+                    ["currentIsCapturedSession"]=ReferenceEquals(current,captured),["currentSessionCurrent"]=current!=null && current.Current,
+                    ["currentSessionUnitExact"]=ReferenceEquals(current?.Unit,fixture.Caster),
+                    ["nativeGroupSelectedExact"]=ReferenceEquals(selected.GetValue(nativeGroup),fixture.Caster),
+                    ["nativeElementSelectedExact"]=ReferenceEquals(ElementalSourceChooserRuntime.SelectedField.GetValue(spellGroup),fixture.Caster),
+                    ["nativeResetPending"]=(bool)reset.GetValue(nativeGroup),["nativeLevelIndex"]=levels==null?(int?)null:(int)levelIndex.GetValue(levels),
+                    ["minimumLevel"]=current?.MinimumLevel,["tabOpen"]=spellGroup.ToggleState,
+                    ["currentSourceCount"]=current?.Sources.Count,["publicationOutcome"]=ElementalSourceChooserRuntime.Outcome,
+                    ["currentBooksMatchFixture"]=current!=null && current.Books.SequenceEqual(books),
+                    ["fixtureBookReferencesExact"]=fixture.Caster.Descriptor.Spellbooks.SequenceEqual(books),
+                    ["currentBooks"]=current==null?new JArray():new JArray(current.Books.Select(value=>new JObject {
+                        ["blueprint"]=value.Blueprint.AssetGuid,["identity"]=identity(value),["isObservedBook"]=ReferenceEquals(value,book) })),
+                    ["renderedSlots"]=new JArray(rows.Take(40).Select(value=>new JObject {
+                        ["mechanism"]=value.MechanicSlot?.GetType().FullName,
+                        ["launcherSessionExact"]=value.MechanicSlot is ElementalChooserLauncher &&
+                            ReferenceEquals(launcherSession.GetValue(value.MechanicSlot),current) })) };
+            };
+            string refusal=null;string previousState=null;
+            while(frames++<600 && watch.Elapsed.TotalSeconds<8)
+            {
+                if(!uiOwned() || !mode.Current || !Cleanup2NoNarrativeOverlay() || ElementalSourceChooserView.IsOpen ||
+                    !ReferenceEquals(ActionBarManager.Instance,bar) || !ReferenceEquals(bar.Group,nativeGroup) ||
+                    !nativeGroup.isActiveAndEnabled || !ReferenceEquals(selected.GetValue(nativeGroup),fixture.Caster) ||
+                    !fixture.Caster.Descriptor.Spellbooks.SequenceEqual(books) || !books.Any(value=>ReferenceEquals(value,book)))
+                {refusal="Foreign fixture UI/book/input owner; further native tab/level writes refused.";break;}
+                current=ElementalSourceChooserRuntime.Session(spellGroup);
+                bool pending=(bool)reset.GetValue(nativeGroup);
+                bool valid=current!=null && current.Current && ReferenceEquals(current.Unit,fixture.Caster) &&
+                    ReferenceEquals(current.Owner,spellGroup) && ReferenceEquals(current.Levels,levelsField.GetValue(spellGroup)) &&
+                    current.Books.SequenceEqual(books) && current.LauncherAdded;
+                if(!ReferenceEquals(candidate,current))
+                {if(candidate!=null)replacements++;candidate=current;requested=null;quiet=0;}
+                quiet=valid && !pending?quiet+1:0;
+                if(valid)ownedSessions.Add(current);
+                int index=valid?(int)levelIndex.GetValue(current.Levels):-1;
+                var launchers=spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Where(value=>value.gameObject.activeInHierarchy &&
+                    value.MechanicSlot is ElementalChooserLauncher).ToArray();
+                bool exactLauncher=valid && launchers.Length==1 && ReferenceEquals(launchers[0].MechanicSlot.Unit,fixture.Caster) &&
+                    ReferenceEquals(launcherSession.GetValue(launchers[0].MechanicSlot),current);
+                string state=identity(current)+":"+pending+":"+index+":"+exactLauncher+":"+spellGroup.ToggleState;
+                if(samples.Count<16 && (state!=previousState || quiet==3))
+                {var sample=describe();sample["frame"]=Time.frameCount;sample["quietFrames"]=quiet;samples.Add(sample);previousState=state;}
+                if(quiet>=3)
+                {
+                    if(!spellGroup.ToggleState)
+                    {spellGroup.OnClick();reopened=true;quiet=0;requested=null;}
+                    else if(!ReferenceEquals(requested,current))
+                    {current.Levels.OnClick(current.MinimumLevel);requested=current;levelRequests++;quiet=0;}
+                    else if(index!=current.MinimumLevel)
+                    {refusal="Native level changed after selection without a session refill; stale presentation is not overwritten.";break;}
+                    else if(exactLauncher)
+                    {settled=true;break;}
+                }
+                yield return 0;
+            }
+            var evidence=describe();evidence["samples"]=samples;evidence["refusal"]=refusal;
+            evidence["wallSeconds"]=watch.Elapsed.TotalSeconds;evidence["frames"]=frames;evidence["stableNativeFrames"]=quiet;
+            evidence["observedSessionReplacements"]=replacements;evidence["nativeOnClickReopenedTab"]=reopened;
+            evidence["nativeLevelSelections"]=levelRequests;evidence["observerFillCalls"]=0;
+            Cleanup2Check("elemental-chooser-settled-native-refill-"+label,settled,evidence,
+                "Normal native Update consumes pending preparation events; the fresh exact fixture session/books, chosen native level and its actual launcher remain stable across three real frames. No reset flag, level field, source chain or native row is fabricated.");
+            if(!settled)throw new InvalidOperationException("Native chooser refill did not settle: "+label+":"+(refusal??"bounded native Update/level/launcher wait expired"));
+            completed(current);
         }
 
         private IEnumerable<int> Cleanup2ChooserCastSource(ExpandedSummoningCorrectionFixture fixture,Spellbook book,

@@ -6,6 +6,44 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review25 exact causes and next bounded correction
+
+Frozen `f8b507cb2c7c46af12903c5594f56cfe69eadba0`, package
+`bfb0c32d732cfa09c2428a3884c36a6882381270859f90d4ad90b82a99ad1108`, DLL
+`0890a0dbaeb570dd6c7153409489f4e396a01a17f7e75069562b0e898e41a61f`.
+Compilation/package and17 selected cases pass;21 installed Harmony targets pass.
+The wrapper's16 exact alternate-profile pre-entry refusals pass without a game.
+
+- Scale `20261023T0008406501314Z`: **61 PASS/3 FAIL**,87.663s. Actual images
+  fit all heads, but a chandelier still crosses the middle bodies; the next
+  camera prefers lower downward views. The owned Frost cape has292 expected
+  coefficients and **zero readback while inactive in hierarchy**, with every
+  scalar/collider/particle comparison exact. The correction initializes the
+  hidden owned solver before source commit and retains the strict comparison.
+  Storm separately fails protected material queue/keyword state; exact intake/
+  current controller diagnostics are added, with no inferred admission.
+- Desktop `20261023T0012154533263Z`: **14 PASS/2 FAIL**,76.364s. Root inspected
+  the corrected, readable actual chooser. Original Small Fire cast/spawn and
+  preparation debit pass again. The retained session becomes stale after
+  preparation changes: installed native HandleMemorizedSpell queues Update's
+  refill, which replaces the session and selects the highest nonempty level.
+  The observer now waits for that native refill and three stable frames, then
+  selects the current session's level through native OnClick. No source or
+  resource contract changes; two-source/exhaustion execution remains pending.
+- Creature commands `20261023T0015287498017Z`: **13 PASS/1 FAIL**,70.457s.
+  Before any attack, the game's serializer turns the route-count dictionary
+  into an array, so JObject.FromObject throws. Explicit JProperty projection
+  fixes that receipt only; no movement, path or combat assertion is relaxed.
+
+All three original FAIL records remain. Their exact compatibility transactions
+`compat-20261023T000816Z-3c812a9c77e9`, `compat-20261023T001153Z-de784223bb7e`
+and `compat-20261023T001503Z-7b98f7ba624c` report Restored and verified exact
+installation/settings. Each fresh95-save inventory is exact; final third-run
+guard receipt is00:16:56.4650279UTC. Window5 began00:02:38UTC and remains bounded
+at30minutes. Final90-minute completion qualification has not begun.
+
+### Review24 implementation and evidence
+
 Review23 (`eea1d1a8`) compiled and passed its 17 focused cases, then strict
 packaging refused three stale Gorgon export pins. No installation or native
 process was started. The current correction pins the inspected forged-scale
@@ -38,7 +76,56 @@ passes 129 assertions in 2.432s. The failed build remains in review23 artifacts.
   Copied native Cloth remains closed in production until the bounded native
   contact/solver probe establishes its contract. No gameplay root is scaled.
 
-### Review22 current observations and bounded corrections
+### Review24 current native observations
+
+Frozen source `d91487c274cdc6e0ff26f45a4604dcbbab99bcc6`, package
+`46ba070947b8438935aa75ef50139f1454ddeda24af77fe60ed661b833b249b0`, DLL
+`7d820cb95bd8286e54fc26f525885eb087c40d5580a74f6a6945511c65aa7ae2`,
+MVID `7010835f-c8a5-49d6-8bf6-4ccd4404a737`. All results below retain this
+identity; later source repairs are not execution on these bytes.
+
+- Scale `20261022T2341070702515Z`: **60 PASS/4 FAIL**, 86.609s. The actual Frost
+  Cloth has 292 coefficients, all with exact `float.MaxValue` disabled collision
+  distance. Sentinel preservation now passes and the probe reaches the owned
+  copy, then refuses its strict Cloth configuration round-trip. The exact
+  differing field was not captured; the bounded field diagnostic awaits native
+  execution. Production Cloth remains closed. Camera acquisition/settlement
+  is separate from visible-environment proof: CPU-unreadable scene triangles
+  prevented qualification, and this run has no qualified lineup PNG.
+- PC Elementals `20261022T2345454148399Z`: **14 PASS/1 FAIL**, 76.563s. The actual
+  standalone Small Fire native cast and source debit pass. The next launcher
+  lookup finds no active unique chooser after casting. The actual first PNG
+  also exposes overlapping labels from narrow text rectangles. Layout and
+  native reopen/fresh-session observer corrections are implemented afterward,
+  but are not native-qualified here. All 24 casts, book/metamagic/special-slot
+  coverage and fresh module-OFF remain open.
+- Bodies `20261022T2350096990938Z`: **38 PASS/5 FAIL**, 121.773s. Gorgon completes
+  its 117-original packet and 5.9618144m travel; its ordinary native command
+  proves weapon/rule events, costs and recovery. Root inspected the forged
+  plates, walk and attack/recovery positively; owner art approval remains open.
+  Girallon and Stegosaurus ordinary native attacks also pass. Their walk packets
+  refuse before tracking because no complete six-meter footprint-clear route
+  avoids the caster/other actors and route clamps. This is fixture placement,
+  not a newly demonstrated product defect; the travel requirement is retained.
+
+The existing small local comparison is
+`artifacts/cleanup2-replacement-current/index.html`: **63 originals**, adding
+nine native24 Gorgon views and one explicitly failed **before-layout-fix** PC
+chooser image. Exact source/run/DLL/package/file identities accompany every new
+image. Original pixels and the historical 188-image portable packet are unchanged.
+The unchanged exporter completed in 1.248s with 63 visible-pixel checks PASS.
+
+All three hosts exited normally. Transactions
+`compat-20261022T234041Z-e4789daca88c`,
+`compat-20261022T234522Z-ea74a626a732` and
+`compat-20261022T234946Z-bacab5ac9588` each record exact installation/settings
+restoration and all 95 original saves preserved. Their protected-native receipts
+remain under frozen review24 `artifacts/cleanup2-protected-native/`. The last
+save-preservation receipt completed **2026-10-22T23:52:28.4444403Z**; window 4
+ran 23m59.444s from 23:28:29UTC. Final 90-minute qualification has **not started**.
+All original FAIL records remain unchanged.
+
+### Review22 observations (preserved)
 
 Frozen source `0781beba6196f086ad43abdaf50685b87786fa57`, package
 `ea1d4bc56d99276f1eff59dfbde2647c562ce00dda550c8211e268edb5081e7f`, DLL
