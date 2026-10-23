@@ -763,9 +763,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal void Cache(BlueprintSpellList list, int level, List<BlueprintAbility> cache)
             {
+                // Native42: KMG's own Magic Circle/Shield Other/Teleportation
+                // publishers reset the native m_SpellsFiltered cache, so its
+                // instance is legitimately rebuilt; its content is the contract.
                 BlueprintAbility[] order = cache.ToArray();
-                Read("list-cache:" + list.AssetGuid + ":" + level, () => ReferenceEquals(list.GetSpells(level), cache) &&
-                    Cleanup2SameElementalRefs(order, cache));
+                Read("list-cache:" + list.AssetGuid + ":" + level, () => Cleanup2SameElementalRefs(order, list.GetSpells(level)));
             }
             internal bool Unchanged() { return Failing().Count == 0; }
             internal JArray Failing()

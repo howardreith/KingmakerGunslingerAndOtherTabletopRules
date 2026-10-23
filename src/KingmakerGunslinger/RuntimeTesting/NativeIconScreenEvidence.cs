@@ -360,15 +360,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal IEnumerable<int> Capture(string stage, JToken state, Func<bool> ownsStableUi)
         { return CaptureCore(stage, state, ownsStableUi, null); }
 
-        // Only the bounded Cleanup 2 tooltip phase may preserve a real hover.
+        // Only the bounded Cleanup 2 hover phases may preserve a real hover:
+        // tooltips, and the alternate-family slices of menu-adapters and
+        // alternate-console (native42 reached them for the first time).
         // The normal capture API continues clearing incidental hover cards.
         internal IEnumerable<int> CaptureOwnedHover(string stage, JToken state, Func<bool> ownsStableUi,
             Kingmaker.UI.Tooltip.TooltipTrigger trigger, Kingmaker.UI.Tooltip.TooltipData data)
         {
+            string phase = _request.Parameters == null || _request.Parameters.Count != 1 ? null : (string)_request.Parameters["reviewPhase"];
             if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
-                _request.Parameters == null || _request.Parameters.Count != 1 ||
-                (string)_request.Parameters["reviewPhase"] != "tooltips")
-                throw new InvalidOperationException("Owned hover capture requires the exact Cleanup 2 tooltips phase.");
+                (phase != "tooltips" && phase != "menu-adapters" && phase != "alternate-console"))
+                throw new InvalidOperationException("Owned hover capture requires an exact Cleanup 2 hover phase.");
             return CaptureCore(stage, state, ownsStableUi, () => OwnsHover(trigger, data));
         }
 
