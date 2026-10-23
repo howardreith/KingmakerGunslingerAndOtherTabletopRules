@@ -255,7 +255,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var dretchRoll = observed.Roll(dretch);
                     var dretchHit = observed.Damage(dretch);
                     Buff dretchBlind = Astral31SmiteBlind(dretch, owner,
-                        holySmite, blinded);
+                        blinded);
                     int dretchExpected = dretchRoll == null ? -1 :
                         (int)dretchRoll.Result;
                     bool dretchExact = dretchSave != null &&
@@ -280,7 +280,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         wolfRoll.DiceFormula.Dice == DiceType.D8 &&
                         wolfHit != null && wolfHit.DamageWithoutReduction ==
                             wolfExpected && wolf.Damage == wolfHit.Damage &&
-                        Astral31SmiteBlind(wolf, owner, holySmite, blinded) == null &&
+                        Astral31SmiteBlind(wolf, owner, blinded) == null &&
                         !wolf.Descriptor.State.HasCondition(UnitCondition.Blindness);
 
                     var targetSave = observed.Save(target);
@@ -295,7 +295,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         targetRoll.DiceFormula.Dice == DiceType.D8 &&
                         targetHit != null && targetHit.DamageWithoutReduction ==
                             targetExpected && target.Damage == targetHit.Damage &&
-                        Astral31SmiteBlind(target, owner, holySmite, blinded) == null &&
+                        Astral31SmiteBlind(target, owner, blinded) == null &&
                         !target.Descriptor.State.HasCondition(UnitCondition.Blindness);
 
                     RuleSpellResistanceCheck siblingResistance =
@@ -304,7 +304,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var siblingRoll = observed.Roll(sibling);
                     var siblingHit = observed.Damage(sibling);
                     Buff siblingBlind = Astral31SmiteBlind(sibling, owner,
-                        holySmite, blinded);
+                        blinded);
                     bool siblingResolved = siblingResistance != null &&
                         siblingResistance.HasSpellResistance &&
                         siblingResistance.HasResistanceRoll &&
@@ -327,7 +327,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool goodUnaffected = observed.Save(owner) == null &&
                         observed.Roll(owner) == null &&
                         observed.Damage(owner) == null && owner.Damage == 0 &&
-                        Astral31SmiteBlind(owner, owner, holySmite, blinded) == null;
+                        Astral31SmiteBlind(owner, owner, blinded) == null;
                     bool effect = dretchExact && wolfExact && targetExact &&
                         siblingCoherent && goodUnaffected;
                     Sprint25Check("astral-smite-alignment-sr-effect", effect,
@@ -354,16 +354,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DisposeExpandedSummoningUnits(fixture.Created,
                         new[] { owner });
                     bool blindRemainedAfterOwner =
-                        Astral31SmiteBlind(dretch, owner, holySmite, blinded) != null;
+                        Astral31SmiteBlind(dretch, owner, blinded) != null;
                     DateTime deadline = DateTime.UtcNow.AddSeconds(10);
                     int expiryFrames = 0;
                     while (DateTime.UtcNow < deadline && expiryFrames++ < 1000 &&
                         new[] { sibling, dretch, wolf, target }.Any(value =>
-                            Astral31SmiteBlind(value, owner, holySmite,
-                                blinded) != null)) yield return 0;
+                            Astral31SmiteBlind(value, owner, blinded) != null))
+                        yield return 0;
                     bool blindExpired = new[] { sibling, dretch, wolf, target }
                         .All(value => Astral31SmiteBlind(value, owner,
-                            holySmite, blinded) == null);
+                            blinded) == null);
                     bool lifetime = owner.Destroyed && blindRemainedAfterOwner &&
                         blindExpired;
                     Sprint25Check("astral-smite-native-lifetime", lifetime,
@@ -458,12 +458,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static Buff Astral31SmiteBlind(UnitEntityData target,
-            UnitEntityData owner, BlueprintAbility ability, BlueprintBuff blinded)
+            UnitEntityData owner, BlueprintBuff blinded)
         {
             return target?.Buffs?.Enumerable.SingleOrDefault(value =>
                 ReferenceEquals(value.Blueprint, blinded) &&
                 ReferenceEquals(value.Context?.MaybeCaster, owner) &&
-                ReferenceEquals(value.Context?.SourceAbility, ability));
+                ReferenceEquals(value.Context?.AssociatedBlueprint, blinded));
         }
 
         private sealed class Astral31SmiteEvents :
@@ -504,6 +504,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return context != null &&
                     ReferenceEquals(context.MaybeCaster, _owner) &&
                     ReferenceEquals(context.SourceAbility, _ability);
+            }
+
+            private bool OwnBlindContext(
+                Kingmaker.UnitLogic.Mechanics.MechanicsContext context)
+            {
+                return context != null &&
+                    ReferenceEquals(context.MaybeCaster, _owner) &&
+                    ReferenceEquals(context.AssociatedBlueprint, _blinded);
             }
 
             internal RuleSpellResistanceCheck Resistance(UnitEntityData target)
@@ -551,7 +559,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["immunity"] = value.Immunity,
                             ["applied"] = value.AppliedBuff != null,
                             ["durationSeconds"] = value.Duration?.TotalSeconds,
-                            ["source"] = value.Context?.SourceAbility?.AssetGuid,
+                            ["sourceAbility"] = value.Context?.SourceAbility?.AssetGuid,
+                            ["associatedBlueprint"] =
+                                value.Context?.AssociatedBlueprint?.AssetGuid,
+                            ["parentBlueprint"] = value.Context?.ParentContext
+                                ?.AssociatedBlueprint?.AssetGuid,
                             ["caster"] = value.Context?.MaybeCaster?.UniqueId })) };
             }
 
@@ -588,7 +600,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_targets.Contains(evt.Initiator) &&
                     ReferenceEquals(evt.Blueprint, _blinded) &&
-                    OwnContext(evt.Context)) Applications.Add(evt);
+                    OwnBlindContext(evt.Context) &&
+                    !Applications.Contains(evt)) Applications.Add(evt);
             }
         }
     }
