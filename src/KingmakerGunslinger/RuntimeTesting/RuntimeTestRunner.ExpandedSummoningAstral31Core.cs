@@ -486,16 +486,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool turnHadEnemyBeforeCleanup =
                     nativeTurnController.HadEnemyAtSomePoint;
                 int turnUnitsBeforeCleanup = nativeTurnController.SortedUnits.Count();
+                bool targetBuffsExactBeforeRetirement = !target.Buffs.Enumerable
+                    .Except(targetBuffBaseline).Any();
+                bool targetCommandsClearBeforeRetirement = !target.Commands.Raw
+                    .Any(command => command != null && !command.IsFinished);
+                bool targetMemoryExactBeforeRetirement =
+                    !target.Memory.Contains(fixture.Caster);
+                if (fixture.UnitsBefore.Any(value => ReferenceEquals(value, target)) ||
+                    fixture.PartyBefore.Any(value => ReferenceEquals(value, target)))
+                    throw new InvalidOperationException(
+                        "Astral cleanup refused to retire a protected hostile.");
                 if (target.IsInCombat) target.LeaveCombat();
                 if (fixture.Caster.IsInCombat) fixture.Caster.LeaveCombat();
                 fixture.Caster.Descriptor.Alignment.Set(casterAlignment);
                 DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner, sibling });
                 ResetExpandedSummoningHostile(fixture);
+                if (!target.Destroyed) target.Destroy();
+                Game.Instance.EntityDestroyer.Tick();
+                bool targetRetiredBeforeReconciliation = target.Destroyed &&
+                    !target.IsInState;
                 nativeTurnController.Tick();
                 bool turnHasEnemyAfterTurnTick =
                     nativeTurnController.HasEnemyInCombat;
                 nativeLeaveController.Tick();
+                bool casterCombatAfterGroupLeave = fixture.Caster.IsInCombat;
+                if (fixture.Caster.IsInCombat) fixture.Caster.LeaveCombat();
                 nativeJoinController.Tick();
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 bool protectedPartyCombatExact = protectedPartyCombatBefore
@@ -510,8 +526,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool clean = owner.Destroyed && sibling.Destroyed &&
                     !owner.IsInState && !sibling.IsInState &&
                     !Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any() &&
-                    !target.Buffs.Enumerable.Except(targetBuffBaseline).Any() &&
-                    !target.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
+                    targetBuffsExactBeforeRetirement &&
+                    targetCommandsClearBeforeRetirement &&
+                    targetMemoryExactBeforeRetirement &&
+                    targetRetiredBeforeReconciliation &&
                     !fixture.Caster.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
                     !target.IsInCombat && !fixture.Caster.IsInCombat &&
                     !Game.Instance.Player.IsInCombat &&
@@ -525,14 +543,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["siblingAbsent"] = !sibling.IsInState,
                     ["areasExact"] = !Game.Instance.State.AreaEffects.All
                         .Except(areaBaseline).Any(),
-                    ["targetBuffsExact"] = !target.Buffs.Enumerable
-                        .Except(targetBuffBaseline).Any(),
+                    ["targetBuffsExact"] = targetBuffsExactBeforeRetirement,
+                    ["targetCommandsClearBeforeRetirement"] =
+                        targetCommandsClearBeforeRetirement,
+                    ["targetMemoryExactBeforeRetirement"] =
+                        targetMemoryExactBeforeRetirement,
+                    ["targetRetiredBeforeReconciliation"] =
+                        targetRetiredBeforeReconciliation,
                     ["items"] = new JArray(ownedItems.Select(item => new JObject {
                         ["blueprint"] = item.Blueprint.AssetGuid,
                         ["lootable"] = item.IsLootable,
                         ["collectionAbsent"] = item.Collection == null })),
-                    ["targetCommandsClear"] = !target.Commands.Raw.Any(command =>
-                        command != null && !command.IsFinished),
+                    ["targetCommandsClear"] =
+                        targetCommandsClearBeforeRetirement,
+                    ["targetAbsentAfterCleanup"] = target.Destroyed &&
+                        !target.IsInState,
                     ["casterCommandsClear"] = !fixture.Caster.Commands.Raw.Any(command =>
                         command != null && !command.IsFinished),
                     ["targetCombatBeforeCleanup"] = targetCombatBeforeCleanup,
@@ -559,6 +584,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["turnHasEnemyAfterTurnTick"] = turnHasEnemyAfterTurnTick,
                     ["turnHasEnemyAfterCleanup"] =
                         nativeTurnController.HasEnemyInCombat,
+                    ["casterCombatAfterGroupLeave"] =
+                        casterCombatAfterGroupLeave,
                     ["turnHadEnemyBeforeCleanup"] = turnHadEnemyBeforeCleanup,
                     ["turnHadEnemyAfterCleanup"] =
                         nativeTurnController.HadEnemyAtSomePoint,
@@ -575,7 +602,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["combatClear"] = !target.IsInCombat &&
                         !fixture.Caster.IsInCombat &&
                         !Game.Instance.Player.IsInCombat },
-                    "Both exact owners, their moving areas/victim grants, commands, memory and nonlootable weapon entities are absent before process restoration.");
+                    "Both exact Astral owners and the disposable hostile are retired; owned areas, grants, commands, memory, items and the protected combat boundary are exact before process restoration.");
                 if (!clean) throw new InvalidOperationException(
                     "Astral owned cleanup failed.");
             }
