@@ -89,8 +89,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var matches = charges.Where(value =>
                     ReferenceEquals(value.Command, command)).ToArray();
-                return matches.Length == 1 && !command.Cutscene &&
-                    !command.IsIgnoreCooldown && matches[0].Before.Zip(
+                return matches.Length == 1 && matches[0].Before.Zip(
                         matches[0].After, (before, after) =>
                             Math.Abs(before - after) < 0.0001f).All(equal => equal);
             }
