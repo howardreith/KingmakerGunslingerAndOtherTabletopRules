@@ -791,6 +791,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         moduleOn ? "The actual saved/current exact Ettin has one private two-headed body, two owned neck/head/jaw chains, unchanged borrowed donor textures and exact native controller/cached-baseline fade initialization; this observer never attaches it."
                             : "The exact module-OFF saved Ettin reconstructs without any project head root or private head allocations.");
                 }
+                if (Sprint29PersistenceScope && (receipt.Key == "cloud-giant" || receipt.Key == "storm-giant"))
+                {
+                    JObject scale = GiantSummonPresentationPatch.ObserveProductionOwnership(unit.View);
+                    var liveOwners = unit.View == null ? new Cleanup2GiantRenderScalePrototype[0] :
+                        unit.View.GetComponentsInChildren<Cleanup2GiantRenderScalePrototype>(true);
+                    var clothRows = scale["ownedCloths"] as JArray;
+                    bool clothExact = receipt.Key == "cloud-giant" ? clothRows != null && clothRows.Count == 0 :
+                        clothRows != null && clothRows.Count == 1 && clothRows.All(row => (bool?)row["enabled"] == true &&
+                            (bool?)row["allParticleCoordinatesFinite"] == true && (bool?)row["capsulesAllDisabled"] == true &&
+                            (int?)row["coefficientCount"] == 292 && (int?)row["pinnedCount"] == 92);
+                    bool giantScaleExact = moduleOn ? (bool?)scale["currentOwnershipExact"] == true &&
+                        (bool?)scale["unitOwnerExact"] == true && (bool?)scale["nativeRootScaleExact"] == true &&
+                        liveOwners.Length == 1 && clothExact && scale["currentBodySoleWorldY"] != null :
+                        (bool?)scale["ownerPresent"] == false && liveOwners.Length == 0;
+                    visual &= giantScaleExact;
+                    RosterPersistenceCheck("giant-production-render-" + receipt.Key + "-" + (prepare ? "prepare" : "cold-verify"), giantScaleExact,
+                        new JObject { ["unit"] = unit.UniqueId, ["key"] = receipt.Key, ["moduleEnabled"] = moduleOn,
+                            ["phase"] = prepare ? "prepare" : "cold-verify", ["production"] = scale,
+                            ["currentViewScaleOwnerCount"] = liveOwners.Length, ["observerCalledApplyOrRebuild"] = false },
+                        "The actual fresh-process saved Cloud/Storm owns its production relative render scale and exact private Cloth membership/state; module OFF owns none. This observer does not attach or rebuild presentation.");
+                }
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
                         ["expectedProfileForModule"] = moduleExpectedProfile, ["profileSerializedEqual"] = profileSame, ["visualExact"] = visual,

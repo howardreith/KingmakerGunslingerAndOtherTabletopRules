@@ -2115,12 +2115,43 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private string WriteRefinementImage(Vector3 position, Quaternion rotation,
-            string fileName)
+            string fileName, RenderTexture completedNativeFrame = null)
         {
             CameraRig rig = TeleportationCastingCamera();
             Camera camera = rig == null ? null : rig.Camera;
             if (camera == null) camera = Camera.main;
             if (camera == null) return "png=<none>;reason=no-camera";
+            // Creature-commands holds this exact native camera/target through
+            // ordinary Unity Update/LateUpdate/render frames. Read the last
+            // completed frame without relocating or manually rendering it:
+            // OccludedObjectHighlight.Update06001163 must see the same view.
+            // All historical synchronous callers retain their original path.
+            if (completedNativeFrame != null)
+            {
+                if (!IsSummonCleanup2Review || (string)_request?.Parameters?["reviewPhase"] != "creature-commands" ||
+                    !camera.enabled || !camera.gameObject.activeInHierarchy || !ReferenceEquals(camera.targetTexture, completedNativeFrame) ||
+                    Vector3.Distance(camera.transform.position, position) > .02f || Quaternion.Angle(camera.transform.rotation, rotation) > .01f ||
+                    completedNativeFrame.width != 1280 || completedNativeFrame.height != 800 ||
+                    System.IO.Path.GetFileName(fileName) != fileName || System.IO.File.Exists(System.IO.Path.Combine(_request.EvidenceDirectory, fileName)))
+                    throw new InvalidOperationException("Exact owned completed native creature-camera frame/new PNG required.");
+                var activeBefore = RenderTexture.active; Texture2D nativeOutput = null;
+                try
+                {
+                    RenderTexture.active = completedNativeFrame;
+                    nativeOutput = new Texture2D(completedNativeFrame.width, completedNativeFrame.height, TextureFormat.RGBA32, false, false);
+                    nativeOutput.ReadPixels(new Rect(0, 0, completedNativeFrame.width, completedNativeFrame.height), 0, 0);
+                    nativeOutput.Apply(false, false);
+                    byte[] bytes = EncodeExpandedSummoningPng(nativeOutput);
+                    if (bytes == null || bytes.Length < 4096) return "png=<none>;reason=empty-native-frame;file=" + fileName;
+                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(_request.EvidenceDirectory, fileName), bytes);
+                    return "png=" + fileName + ";bytes=" + bytes.Length;
+                }
+                finally
+                {
+                    RenderTexture.active = activeBefore;
+                    if (nativeOutput != null) UnityEngine.Object.Destroy(nativeOutput);
+                }
+            }
             Vector3 priorPosition = camera.transform.position;
             Quaternion priorRotation = camera.transform.rotation;
             float priorNear = camera.nearClipPlane;

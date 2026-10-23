@@ -57,7 +57,8 @@ try {
         @('ElementalConsoleSourceViewPatch','ActionBarSelectorView','Bind',-1),
         @('DruidSummonConversionVariantPatch','MechanicActionBarSlotMemorizedSpell','GetConvertedAbilityData',287),
         @('DruidSummonConversionSourceSlotPatch','ActionBarGroupSlot','OnToggleGroupClick',-1),
-        @('DruidSummonConversionMenuPatch','ActionBarSpellsGroup','Toggle',-1)
+        @('DruidSummonConversionMenuPatch','ActionBarSpellsGroup','Toggle',-1),
+        @('GiantSummonNativeVisibilityPatch','EntityFader','SetRendererVisibility',-1)
     )
     $failures=New-Object 'Collections.Generic.List[string]'
     $passed=0

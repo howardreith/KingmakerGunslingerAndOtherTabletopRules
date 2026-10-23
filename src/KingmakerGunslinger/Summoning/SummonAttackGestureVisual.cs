@@ -113,6 +113,8 @@ namespace KingmakerGunslinger.Summoning
                     throw new InvalidOperationException("Exact authored gesture joints absent or ambiguous.");
                 if (key == SummonAttackGesturePolicy.Brachiosaurus && (_mesh.vertexCount != 8302 || _nativeBones.Length != 29))
                     throw new InvalidOperationException("Unreviewed Brachiosaurus body revision.");
+                if (key == SummonAttackGesturePolicy.Crab && (_mesh.vertexCount != 8247 || _nativeBones.Length != 39 || _mesh.triangles.Length != 11516 * 3))
+                    throw new InvalidOperationException("Unreviewed folded-chela Crab body revision.");
                 if (key == SummonAttackGesturePolicy.Brachiosaurus) ValidateTailWeightPayload();
                 _carrier = new GameObject("KMG_OriginalAttackPalette_" + key).transform;
                 _carrier.SetParent(view.transform, false);
@@ -122,7 +124,8 @@ namespace KingmakerGunslinger.Summoning
                 {
                     int index = Array.FindIndex(_nativeBones, value => value.name == name), ordinal = Array.IndexOf(selected, name);
                     Transform source = _nativeBones[index], copy = MirrorPath(source);
-                    Vector3 offset = key == SummonAttackGesturePolicy.Brachiosaurus ? _nativeBind[index].MultiplyPoint3x4(authored[ordinal]) : Vector3.zero;
+                    Vector3 offset = _nativeBind[index].MultiplyPoint3x4(key == SummonAttackGesturePolicy.Brachiosaurus ?
+                        authored[ordinal] : AuthoredChelaPivot(ordinal % 7, ordinal / 7 == 0));
                     if (!Finite(offset)) throw new InvalidOperationException("Non-finite live bind-derived pivot.");
                     Transform turn = new GameObject("KMG_OriginalPose_" + name).transform; turn.SetParent(copy, false); turn.localPosition = offset;
                     Transform recenter = new GameObject("KMG_PivotRecenter_" + name).transform; recenter.SetParent(turn, false); recenter.localPosition = -offset;
@@ -149,6 +152,20 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private static int Depth(Transform value) { int result = 0; while (value != null && result < 256) { result++; value = value.parent; } return result; }
+        private static Vector3 AuthoredChelaPivot(int joint, bool left)
+        {
+            // Exact original centerline from build_giant_crab.py. The live
+            // bind matrix maps each point into its source bone basis. The
+            // recenter and inverse bind preserve the actual current skin at
+            // zero pose, which is checked synchronously before admission.
+            float side = left ? -1f : 1f;
+            Vector3 root = new Vector3(side * .50f, -.32f, .58f),
+                elbow = new Vector3(side * 1.42f, -.65f, .58f),
+                wrist = new Vector3(side * 1.30f, -1.30f, .52f),
+                palm = new Vector3(side * 1.05f, -1.55f, .52f);
+            return new[] { root, (root + elbow) * .5f, elbow, (elbow + wrist) * .5f,
+                wrist, (wrist + palm) * .5f, palm }[joint];
+        }
         private void ValidateTailWeightPayload()
         {
             BoneWeight[] weights = _mesh.boneWeights; int[] triangles = _mesh.triangles;

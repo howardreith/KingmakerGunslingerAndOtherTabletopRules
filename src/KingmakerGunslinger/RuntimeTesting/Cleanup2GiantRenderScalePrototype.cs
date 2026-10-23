@@ -6,6 +6,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.View;
+using Kingmaker.Visual.OccludedObjectHighlighting;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -168,6 +169,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                         RoundTripDifferences(target, coefficients, capsules).ToString(Formatting.None));
             }
 
+            internal bool MatchesOwned(Cloth target, CapsuleCollider[] capsules, ProposedClothDistances distances)
+            {
+                if (target == null || !target.enabled || !target.gameObject.activeInHierarchy ||
+                    !Same(target.capsuleColliders, capsules) || target.sphereColliders.Length != 0 ||
+                    _scalars.Any(pair => pair.Key.Name != "enabled" && !Equals(pair.Value, pair.Key.GetValue(target, null)))) return false;
+                var expected = Coefficients.ToArray();
+                for (int i = 0; i < expected.Length; i++)
+                {
+                    expected[i].maxDistance = GiantSummonPresentationPolicy.ScaleClothConstraint(expected[i].maxDistance, distances.MaxDistanceMultiplier);
+                    expected[i].collisionSphereDistance = GiantSummonPresentationPolicy.ScaleClothConstraint(expected[i].collisionSphereDistance, distances.CollisionSphereDistanceMultiplier);
+                }
+                if (!SameCoefficients(target.coefficients, expected)) return false;
+                var indices = new List<uint>(); var weights = new List<Vector3>(); var self = new List<uint>();
+                target.GetVirtualParticleIndices(indices); target.GetVirtualParticleWeights(weights); target.GetSelfAndInterCollisionIndices(self);
+                return indices.SequenceEqual(_virtualIndices) && weights.SequenceEqual(_virtualWeights) && self.SequenceEqual(_selfIndices);
+            }
+
             // Failure-only bounded scalars/references. Never export donor
             // vertices/texture pixels or change a failed comparison to PASS.
             private JObject RoundTripDifferences(Cloth target, ClothSkinningCoefficient[] expected, CapsuleCollider[] capsules)
@@ -280,6 +298,23 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool _committed, _disposed;
         private bool _production;
         private bool _clothInitializedBeforeSourceCommit;
+        private List<Renderer> _nativeRendererCache;
+        private Renderer[] _nativeRendererCacheBefore, _registeredRenderers = new Renderer[0];
+        private object _nativeColliderCache;
+        private Collider[] _nativeColliderCacheBefore;
+        private OccludedObjectHighlighter _occludedHighlighter;
+        private Kingmaker.Visual.UnitMultiHighlight _ordinaryHighlighter;
+        private HighlightingSystem.Highlighter _ordinaryReceiverOwner;
+        private bool _rendererCacheRegistered, _nativeVisibilityObserved, _nativeVisible;
+        private int _nativeVisibilityWrites, _highlightRefreshes, _retainedRendererCacheReferences;
+        private bool _sourceStateRestored;
+        private bool _highlightRetirementReady;
+        private GiantSummonPresentationProfile _profile;
+        private static readonly FieldInfo ColliderCacheField = typeof(EntityViewBase).GetField("m_Colliders", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo OccludedRenderersField = typeof(OccludedObjectHighlighter).GetField("m_Renderers", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo FindOccludedRenderers = typeof(OccludedObjectHighlighter).GetMethod("FindRenderers", BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        private static readonly FieldInfo OrdinaryReceiversField = typeof(HighlightingSystem.Highlighter).GetField("highlightableRenderers", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly MethodInfo UpdateOrdinaryRenderers = typeof(HighlightingSystem.Highlighter).GetMethod("UpdateRenderers", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, Type.EmptyTypes, null);
         private bool _retirementPending;
         private int _retainedSkinReferences, _retainedClothReferences, _retainedAnchorReferences;
         private string _productionSourceGuid;
@@ -292,6 +327,42 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal IEnumerable<Cloth> OwnedCloths { get { return _ownedCloths.ToArray(); } }
         internal bool IsDisposed { get { return _disposed; } }
         internal string Status { get { return _status; } }
+        internal bool IsProductionOwner { get { return _production; } }
+        // Closed until the actual authored disabled-capsule contact control
+        // and native copied-cape packet both qualify. No configuration bypass.
+        internal static bool ProductionCopiedClothEnabled { get { return false; } }
+
+        internal static string ProductionClothAdmission(UnitEntityData actor, GiantSummonPresentationProfile profile)
+        {
+            if (actor?.View == null || profile == null) return "missing-unit-profile";
+            Cloth[] cloths = actor.View.GetComponentsInChildren<Cloth>(true);
+            if (cloths.Length == 0) return "no-cloth";
+            if (!ProductionCopiedClothEnabled) return "await-native-copied-cloth-contact-proof";
+            if (profile.NativePrefabId != "df0f3fbceb3605d489c0dec8fa5c7d1e" ||
+                (profile.Key != "frost-giant" && profile.Key != "fire-giant" && profile.Key != "storm-giant") || cloths.Length != 1)
+                return "unqualified-cloth-profile";
+            Cloth cloth = cloths[0]; var skin = cloth.GetComponent<SkinnedMeshRenderer>();
+            if (!cloth.enabled || !cloth.gameObject.activeInHierarchy || skin == null || !skin.enabled ||
+                skin.name != "Frozen_cape1" || skin.sharedMesh == null || skin.sharedMesh.name != "Frozen_cape1" || skin.sharedMesh.vertexCount != 354 ||
+                RendererPath(actor.View.transform, skin.transform) != "Frozen_body_RIG[3]/Frozen_cape1[1]" ||
+                cloth.capsuleColliders.Length != 5 || cloth.sphereColliders.Length != 0)
+                return "native-frozen-cape-signature-mismatch";
+            ClothSkinningCoefficient[] values = cloth.coefficients;
+            ulong hash = 14695981039346656037UL;
+            unchecked { foreach (var value in values) foreach (float number in new[] { value.maxDistance, value.collisionSphereDistance })
+                foreach (byte part in BitConverter.GetBytes(number)) hash = (hash ^ part) * 1099511628211UL; }
+            return values.Length == 292 && values.Count(value => value.maxDistance == 0f) == 92 &&
+                hash.ToString("x16", System.Globalization.CultureInfo.InvariantCulture) == "1caf9c99f5b5755f"
+                ? "qualified-frozen-cape" : "native-frozen-cape-constraints-mismatch";
+        }
+
+        private static string RendererPath(Transform root, Transform value)
+        {
+            var parts = new List<string>();
+            for (Transform node = value; node != null && node != root; node = node.parent)
+                parts.Add(node.name + "[" + node.GetSiblingIndex() + "]");
+            parts.Reverse(); return string.Join("/", parts.ToArray());
+        }
 
         // A small authored cloth control, never a replacement giant asset.
         // The paired inputs differ only by an explicit DISABLED capsule array.
@@ -313,6 +384,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             private JObject _firstFrameFailure;
             private readonly Vector3[] _vertices;
             private readonly Material _borrowed;
+            private readonly System.Diagnostics.Stopwatch _elapsed = System.Diagnostics.Stopwatch.StartNew();
+            private readonly float _startedTime, _startedUnscaledTime;
+            private float _deltaSum, _minimumDelta = float.MaxValue, _maximumDelta;
+            private readonly Vector3[] _freeMinimum = new Vector3[2], _freeMaximum = new Vector3[2];
             private int _samples, _valid, _warmup, _lastFrame = -1;
             private bool _disposed, _disabled = true;
             private float _difference, _controlPenetration, _contactPenetration, _motion;
@@ -330,6 +405,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private DisabledCapsuleContactProbe(Cleanup2GiantRenderScalePrototype owner)
             {
                 _borrowed = owner._ownedCloths[0].GetComponent<SkinnedMeshRenderer>().sharedMaterials.FirstOrDefault(value => value != null);
+                _startedTime = Time.time; _startedUnscaledTime = Time.unscaledTime;
                 if (_borrowed == null) throw new InvalidOperationException("Contact control requires one borrowed live native material.");
                 _root = new GameObject("KMG_C2_DisabledCapsuleContactControl");
                 _root.SetActive(false);
@@ -389,7 +465,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         cloth.externalAcceleration = new Vector3(0f, 0f, -12f);
                         cloth.worldVelocityScale = 0f; cloth.worldAccelerationScale = 0f;
                         var expected = Enumerable.Range(0, _vertices.Length).Select(index =>
-                            new ClothSkinningCoefficient { maxDistance = index < Side ? 0f : 3f, collisionSphereDistance = 0f }).ToArray();
+                            // Zero is an enabled skinned-surface backstop,
+                            // opposing the -Z stimulus behind +Z normals.
+                            // Unity2018.4 ClothInspector uses exact MaxValue
+                            // to disable it, as does the observed native cape.
+                            new ClothSkinningCoefficient { maxDistance = index < Side ? 0f : 3f, collisionSphereDistance = float.MaxValue }).ToArray();
                         CapsuleCollider[] capsules = i == 0 ? new CapsuleCollider[0] : new[] { _capsules[i] };
                         cloth.coefficients = expected;
                         cloth.capsuleColliders = capsules;
@@ -404,6 +484,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["enabled"] = cloth.enabled, ["rendererHiddenDuringInitialization"] = !cloth.GetComponent<SkinnedMeshRenderer>().enabled,
                             ["expectedCoefficientCount"] = expected.Length, ["readbackCoefficientCount"] = actual.Length,
                             ["readbackPinnedCount"] = actual.Count(value => value.maxDistance == 0f),
+                            ["readbackDisabledBackstopCount"] = actual.Count(value => value.collisionSphereDistance == float.MaxValue),
                             ["coefficientsExact"] = SameCoefficients(actual, expected), ["capsuleReferencesExact"] = Same(cloth.capsuleColliders, capsules),
                             ["ownedCapsuleDisabled"] = !_capsules[i].enabled, ["configurationExact"] = exact,
                             ["scalarReadback"] = new JObject { ["useGravity"] = cloth.useGravity, ["damping"] = cloth.damping,
@@ -424,6 +505,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_disposed || _lastFrame == Time.frameCount) return;
                 _lastFrame = Time.frameCount;
                 _samples++;
+                _deltaSum += Time.deltaTime; _minimumDelta = Mathf.Min(_minimumDelta, Time.deltaTime); _maximumDelta = Mathf.Max(_maximumDelta, Time.deltaTime);
                 var local = new Vector3[2][];
                 for (int i = 0; i < 2; i++)
                 {
@@ -449,6 +531,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (_valid == 0) { _samples--; _warmup++; } return; }
                     _spaces[i] = space;
                     local[i] = space == "renderer-local" ? particles : particles.Select(_frames[i].InverseTransformPoint).ToArray();
+                    _freeMinimum[i] = local[i][Side]; _freeMaximum[i] = local[i][Side];
+                    for (int index = Side + 1; index < local[i].Length; index++)
+                    { _freeMinimum[i] = Vector3.Min(_freeMinimum[i], local[i][index]); _freeMaximum[i] = Vector3.Max(_freeMaximum[i], local[i][index]); }
                     if (_first[i] == null) _first[i] = local[i];
                     for (int index = Side; index < local[i].Length; index++)
                     {
@@ -467,7 +552,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             internal JObject Describe()
             {
-                bool positive = _samples >= 36 && _valid == _samples && _disabled && _motion > .03f &&
+                bool positive = ObservationWindowComplete && _samples >= 36 && _valid == _samples && _disabled && _motion > .03f &&
                     _difference > .03f && _controlPenetration > .08f && _contactPenetration <= .08f;
                 return new JObject { ["passed"] = positive, ["samples"] = _samples, ["validSamples"] = _valid,
                     ["initializationFramesWithoutAProvenParticleFrame"] = _warmup,
@@ -476,6 +561,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["exactActiveSolverInitialization"] = _initialization,
                     ["latestAuthoredPinnedFrameEvidence"] = new JArray(_frameEvidence.Where(value => value != null)),
                     ["firstAuthoredPinnedFrameFailure"] = _firstFrameFailure,
+                    ["unitySimulationElapsedSeconds"] = Time.time - _startedTime,
+                    ["unscaledElapsedSeconds"] = Time.unscaledTime - _startedUnscaledTime, ["wallElapsedSeconds"] = _elapsed.Elapsed.TotalSeconds,
+                    ["sampledDeltaTimeSum"] = _deltaSum, ["minimumSampleDeltaTime"] = _samples == 0 ? 0f : _minimumDelta,
+                    ["maximumSampleDeltaTime"] = _maximumDelta,
+                    ["latestFreeParticleRangesAuthoredLocal"] = new JArray(Enumerable.Range(0, 2).Select(index => new JObject {
+                        ["grid"] = index, ["minimum"] = Vector(_freeMinimum[index]), ["maximum"] = Vector(_freeMaximum[index]) })),
                     ["allOwnedCapsulesAlwaysDisabled"] = _disabled, ["positiveParticleMotion"] = _motion,
                     ["maximumPairedParticleDifference"] = _difference, ["noCollisionControlMaximumCapsulePenetration"] = _controlPenetration,
                     ["disabledCapsuleMaximumPenetration"] = _contactPenetration, ["reason"] = _reason,
@@ -483,6 +574,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["disposed"] = _disposed, ["allOwnedResourcesReleased"] = _disposed && _root == null && _meshes.All(value => value == null),
                     ["borrowedNativeMaterialAlive"] = _borrowed != null };
             }
+
+            internal bool ObservationWindowComplete { get { return Time.time - _startedTime >= 2f && _valid >= 36; } }
+            internal double WallElapsedSeconds { get { return _elapsed.Elapsed.TotalSeconds; } }
 
             public void Dispose()
             {
@@ -535,13 +629,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Exact live giant summon provenance required.");
             // There is no source-only assertion that a copied solver consumes
             // disabled capsules or preserves cape contact at another scale.
-            if (actor.View.GetComponentsInChildren<Cloth>(true).Length != 0)
-                throw new NotSupportedException("Production copied-Cloth activation awaits positive native solver/contact qualification.");
+            string clothAdmission = ProductionClothAdmission(actor, profile);
+            if (clothAdmission != "no-cloth" && clothAdmission != "qualified-frozen-cape")
+                throw new NotSupportedException("Production copied-Cloth refused: " + clothAdmission);
             if (actor.View.GetComponentInChildren<Cleanup2GiantRenderScalePrototype>(true) != null)
                 throw new InvalidOperationException("An existing visual scale owner cannot be replaced.");
             return TakeOwned(actor, profile.RelativeVisualFactor,
-                new ProposedClothDistances(1f, 1f, "not-used-production-has-no-cloth"), "production:" + actor.UniqueId, true,
-                NativeBodySole(actor, profile), source);
+                new ProposedClothDistances(profile.RelativeVisualFactor, profile.RelativeVisualFactor,
+                    clothAdmission == "no-cloth" ? "not-used-production-has-no-cloth" : "qualified-frozen-cape-relative-distance-v1"),
+                "production:" + actor.UniqueId, true, NativeBodySole(actor, profile), source, profile);
         }
 
         private static float NativeBodySole(UnitEntityData actor, GiantSummonPresentationProfile profile)
@@ -592,7 +688,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private static Cleanup2GiantRenderScalePrototype TakeOwned(UnitEntityData actor, float uniformFactor,
-            ProposedClothDistances proposedDistances, string identity, bool production, float nativeSoleWorldY, string productionSource = null)
+            ProposedClothDistances proposedDistances, string identity, bool production, float nativeSoleWorldY, string productionSource = null,
+            GiantSummonPresentationProfile profile = null)
         {
             Transform nativeRoot = actor.View.transform;
             if (!Finite(nativeSoleWorldY) || Vector3.Dot(nativeRoot.up, Vector3.up) < .9999f)
@@ -616,6 +713,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner._actor = actor; owner._view = actor.View; owner._sourceRoot = actor.View.transform;
                 owner._runId = identity; owner._factor = uniformFactor; owner._distances = proposedDistances; owner._production = production;
                 owner._productionSourceGuid = productionSource;
+                owner._profile = profile;
+                if (production)
+                {
+                    owner._nativeRendererCache = actor.View.Renderers;
+                    owner._nativeRendererCacheBefore = owner._nativeRendererCache?.ToArray();
+                    owner._nativeColliderCache = ColliderCacheField?.GetValue(actor.View);
+                    owner._nativeColliderCacheBefore = (owner._nativeColliderCache as System.Collections.IEnumerable)?.Cast<Collider>().ToArray();
+                    owner._occludedHighlighter = actor.View.OccludedHighlighter;
+                    owner._ordinaryHighlighter = actor.View.GetComponent<Kingmaker.Visual.UnitMultiHighlight>();
+                    owner._ordinaryReceiverOwner = owner._ordinaryHighlighter == null ? null : owner._ordinaryHighlighter.Highlighter;
+                    if (owner._nativeRendererCacheBefore == null || owner._nativeRendererCacheBefore.Length == 0 ||
+                        owner._nativeRendererCacheBefore.Any(value => value == null || !plan.Renderers.Contains(value)) ||
+                        plan.Renderers.Any(value => !owner._nativeRendererCacheBefore.Contains(value)) ||
+                        owner._nativeColliderCacheBefore == null || owner._occludedHighlighter == null || owner._ordinaryHighlighter == null ||
+                        owner._ordinaryReceiverOwner == null || OrdinaryReceiversField == null || UpdateOrdinaryRenderers == null ||
+                        OccludedRenderersField == null || FindOccludedRenderers == null)
+                        throw new NotSupportedException("Exact native renderer/collider/highlight cache intake required.");
+                }
                 owner._visualPivot = pivot; owner._ownedOffset = offset;
                 owner._sourceTransforms = plan.Transforms; owner._sourceParents = plan.Parents;
                 owner._sourceRenderers = plan.Renderers;
@@ -636,8 +751,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.VerifyNoNativeWrite(beforeInitialization, colliderInitialization);
                 owner.RequireSourceIdentity(false);
                 owner.Commit();
+                if (production) owner.RegisterNativeRenderers();
                 owner.RevealOwnedRenderers();
-                owner._status = production ? "PRODUCTION_ACTIVE_NO_CLOTH" : "EXPERIMENT_ACTIVE_COLLISION_AND_DISTANCE_CALIBRATION_UNKNOWN";
+                owner._status = production ? (owner._ownedCloths.Count == 0 ? "PRODUCTION_ACTIVE_NO_CLOTH" : "PRODUCTION_ACTIVE_QUALIFIED_FROZEN_CAPE") : "EXPERIMENT_ACTIVE_COLLISION_AND_DISTANCE_CALIBRATION_UNKNOWN";
                 owner.Synchronize();
                 return owner;
             }
@@ -823,6 +939,111 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (StaticMesh mesh in _statics) mesh.Proxy.enabled = mesh.Enabled;
         }
 
+        private void RegisterNativeRenderers()
+        {
+            if (!NativeRendererCacheExact() || !NativeColliderCacheExact())
+                throw new InvalidOperationException("Native cached visual/collider intake changed before owned registration.");
+            _registeredRenderers = _skins.Where(value => value.Proxy != null).Select(value => (Renderer)value.Proxy)
+                .Concat(_statics.Select(value => (Renderer)value.Proxy)).ToArray();
+            if (_registeredRenderers.Any(value => value == null || _nativeRendererCache.Any(source => ReferenceEquals(source, value))))
+                throw new InvalidOperationException("Owned renderer registration is missing or already present.");
+            _nativeRendererCache.AddRange(_registeredRenderers);
+            _rendererCacheRegistered = true;
+            RefreshNativeHighlighters();
+            if (!NativeRendererCacheExact() || !NativeColliderCacheExact() || !OccludedReceiversExact() || !OrdinaryReceiversExact())
+                throw new InvalidOperationException("Owned renderer registration did not preserve exact native cache membership.");
+        }
+
+        private bool NativeColliderCacheExact()
+        {
+            if (!_production) return true;
+            object current = _view == null || ColliderCacheField == null ? null : ColliderCacheField.GetValue(_view);
+            var values = current as System.Collections.IEnumerable;
+            return ReferenceEquals(current, _nativeColliderCache) && values != null &&
+                Same(values.Cast<Collider>().ToArray(), _nativeColliderCacheBefore);
+        }
+
+        private bool NativeRendererCacheExact()
+        {
+            if (!_production) return true;
+            Renderer[] expected = _rendererCacheRegistered ? _nativeRendererCacheBefore.Concat(_registeredRenderers).ToArray() : _nativeRendererCacheBefore;
+            return _view != null && ReferenceEquals(_view.Renderers, _nativeRendererCache) &&
+                Same(_nativeRendererCache.ToArray(), expected);
+        }
+
+        private bool OccludedReceiversExact()
+        {
+            if (!_production || !_rendererCacheRegistered) return true;
+            var receivers = _occludedHighlighter == null ? null : OccludedRenderersField.GetValue(_occludedHighlighter) as Renderer[];
+            return _view != null && ReferenceEquals(_view.OccludedHighlighter, _occludedHighlighter) && receivers != null &&
+                _registeredRenderers.All(renderer => receivers.Count(value => ReferenceEquals(value, renderer)) == 1);
+        }
+
+        private void RefreshNativeHighlighters()
+        {
+            if (_view == null || !ReferenceEquals(_view.GetComponent<Kingmaker.Visual.UnitMultiHighlight>(), _ordinaryHighlighter) ||
+                !ReferenceEquals(_ordinaryHighlighter.Highlighter, _ordinaryReceiverOwner) ||
+                !ReferenceEquals(_view.OccludedHighlighter, _occludedHighlighter))
+                throw new InvalidOperationException("Native highlight owner was replaced; no foreign refresh.");
+            // These exact native seams only invalidate/build visual receiver
+            // caches. Never call UpdateCachedRenderersAndColliders: that would
+            // add the disabled visual capsules to the gameplay collider cache.
+            _view.MarkRenderersAndCollidersAreUpdated();
+            // Installed Highlighter.UpdateRenderers consumes its dirty flag,
+            // rebuilds highlight-only receivers/materials and reads original
+            // sharedMaterials. It never assigns a native PF material array.
+            UpdateOrdinaryRenderers.Invoke(_ordinaryReceiverOwner, null);
+            FindOccludedRenderers.Invoke(_occludedHighlighter, null);
+            _highlightRefreshes++;
+        }
+
+        private bool ExpectedNativeEnabled(Renderer renderer, bool intake)
+        { return _production && _nativeVisibilityObserved && _nativeRendererCacheBefore.Contains(renderer) ? _nativeVisible : intake; }
+
+        internal static void NativeVisibilityChanged(EntityFader fader, bool visible)
+        {
+            UnitEntityView view = fader == null ? null : fader.GetComponent<UnitEntityView>();
+            if (view == null || !ReferenceEquals(view.GetComponent<EntityFader>(), fader)) return;
+            foreach (var owner in view.GetComponentsInChildren<Cleanup2GiantRenderScalePrototype>(true).Where(value =>
+                value != null && value._production && !value._disposed && value._committed && value._rendererCacheRegistered && ReferenceEquals(value._view, view)))
+            {
+                try
+                {
+                    // The installed fader has just written this exact cached
+                    // list. Validate every non-visibility field before taking
+                    // responsibility for its demonstrated enabled transition.
+                    owner.RequireSourceIdentity(true, visible);
+                    owner._nativeVisibilityObserved = true; owner._nativeVisible = visible; owner._nativeVisibilityWrites++;
+                    foreach (Skin skin in owner._skins.Where(value => value.Cloth != null)) skin.Source.enabled = false;
+                    foreach (StaticMesh mesh in owner._statics) mesh.Source.enabled = false;
+                    owner.RequireSourceIdentity(true);
+                }
+                catch (Exception error)
+                {
+                    owner._status = "REFUSED:native-visibility:" + error.GetType().Name + ":" + error.Message;
+                    owner.Dispose();
+                }
+            }
+        }
+
+        private void UnregisterNativeRenderers()
+        {
+            if (!_production || !_rendererCacheRegistered) return;
+            if (_view != null && !ReferenceEquals(_view.Renderers, _nativeRendererCache))
+                _restoreIssues.Add("foreign-native-renderer-cache-instance-preserved");
+            _nativeRendererCache.RemoveAll(renderer => _registeredRenderers.Any(value => ReferenceEquals(value, renderer)));
+            _rendererCacheRegistered = false;
+            if (!Same(_nativeRendererCache.ToArray(), _nativeRendererCacheBefore))
+                _restoreIssues.Add("foreign-native-renderer-cache-contents-preserved");
+            if (_occludedHighlighter != null)
+            {
+                var current = OccludedRenderersField.GetValue(_occludedHighlighter) as Renderer[];
+                if (current != null) OccludedRenderersField.SetValue(_occludedHighlighter,
+                    current.Where(renderer => !_registeredRenderers.Any(value => ReferenceEquals(value, renderer))).ToArray());
+            }
+            if (!NativeColliderCacheExact()) _restoreIssues.Add("foreign-native-collider-cache-preserved");
+        }
+
         private static void CopyRendererSettings(Renderer source, Renderer target)
         {
             target.enabled = source.enabled;
@@ -867,7 +1088,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             VerifyNoNativeWrite(transforms, matrices);
         }
 
-        private void RequireSourceIdentity(bool committed)
+        private void RequireSourceIdentity(bool committed, bool? authenticNativeVisibility = null)
         {
             if (_actor == null || _actor.Destroyed || _view == null || !ReferenceEquals(_actor.View, _view) || _sourceRoot == null)
                 throw new InvalidOperationException("Actor/view reconstruction refuses continued prototype mutation.");
@@ -879,11 +1100,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!Same(transforms, _sourceTransforms) || !Same(renderers, _sourceRenderers) ||
                 _sourceTransforms.Where((value, i) => value.parent != _sourceParents[i]).Any())
                 throw new InvalidOperationException("Native hierarchy/model refreshed; no replacement model is claimed.");
+            if (_production && (!NativeRendererCacheExact() || !NativeColliderCacheExact() || !OccludedReceiversExact() || !OrdinaryReceiversExact()))
+                throw new InvalidOperationException("Native visual/collider receiver cache ownership changed.");
             foreach (Skin skin in _skins)
             {
                 Transform[] bones = committed && skin.Cloth == null ? skin.AppliedBones : skin.Bones;
                 Transform root = committed && skin.Cloth == null ? skin.AppliedRoot : skin.RootBone;
-                bool expectedEnabled = committed && skin.Cloth != null ? false : skin.Enabled;
+                bool expectedEnabled = ExpectedNativeEnabled(skin.Source, skin.Enabled);
+                if (authenticNativeVisibility.HasValue && _nativeRendererCacheBefore.Contains(skin.Source)) expectedEnabled = authenticNativeVisibility.Value;
+                else if (committed && skin.Cloth != null) expectedEnabled = false;
                 if (skin.Source == null || skin.Source.sharedMesh != skin.Mesh || !Same(skin.Source.sharedMaterials, skin.Materials) ||
                     !Same(skin.Source.bones, bones) || skin.Source.rootBone != root || skin.Source.enabled != expectedEnabled ||
                     (skin.Cloth != null && !skin.Cloth.Unchanged()))
@@ -891,7 +1116,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             foreach (StaticMesh mesh in _statics)
                 if (mesh.Source == null || mesh.Filter == null || mesh.Filter.sharedMesh != mesh.Mesh ||
-                    !Same(mesh.Source.sharedMaterials, mesh.Materials) || mesh.Source.enabled != (committed ? false : mesh.Enabled))
+                    !Same(mesh.Source.sharedMaterials, mesh.Materials) || mesh.Source.enabled !=
+                    (authenticNativeVisibility.HasValue ? authenticNativeVisibility.Value : committed ? false : ExpectedNativeEnabled(mesh.Source, mesh.Enabled)))
                     throw new InvalidOperationException("Foreign native static renderer edit; prototype refuses continuation.");
             Collider[] colliders = _sourceRoot.GetComponentsInChildren<Collider>(true).Where(value => !Owned(value.transform)).ToArray();
             if (!Same(colliders, _nativeColliders.Select(value => value.Source).ToArray()))
@@ -907,7 +1133,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (skin.Proxy == null || skin.Proxy.sharedMesh != skin.Mesh || !Same(skin.Proxy.sharedMaterials, skin.Materials) ||
                     !Same(skin.Proxy.bones, skin.AppliedBones) || skin.Proxy.rootBone != skin.AppliedRoot)
                     throw new InvalidOperationException("Owned cloth renderer palette/mesh/material changed.");
+            if (_production && committed && _rendererCacheRegistered)
+            {
+                foreach (Skin skin in _skins.Where(value => value.Proxy != null))
+                    if (skin.Proxy.enabled != (authenticNativeVisibility ?? ExpectedNativeEnabled(skin.Source, skin.Enabled)))
+                        throw new InvalidOperationException("Owned cape renderer visibility changed outside the native fader.");
+                foreach (StaticMesh mesh in _statics)
+                    if (mesh.Proxy.enabled != (authenticNativeVisibility ?? ExpectedNativeEnabled(mesh.Source, mesh.Enabled)))
+                        throw new InvalidOperationException("Owned static renderer visibility changed outside the native fader.");
+            }
             bool initializedSolver = committed || _clothInitializedBeforeSourceCommit;
+            if (initializedSolver)
+                foreach (Skin skin in _skins.Where(value => value.Cloth != null))
+                    if (!skin.Cloth.MatchesOwned(skin.Proxy.GetComponent<Cloth>(), skin.Cloth.Capsules.Select(value => _capsules[value]).ToArray(), _distances))
+                        throw new InvalidOperationException("Owned solver exact cloned configuration changed after initialization.");
             foreach (Cloth cloth in _ownedCloths)
                 if (cloth == null || cloth.enabled != initializedSolver ||
                     (!initializedSolver && gameObject.activeInHierarchy) ||
@@ -994,14 +1233,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                 result["retainedForeignSkinReferences"] = _retainedSkinReferences;
                 result["retainedForeignClothReferences"] = _retainedClothReferences;
                 result["retainedForeignProbeAnchorReferences"] = _retainedAnchorReferences;
+                result["retainedForeignRendererCacheReferences"] = _retainedRendererCacheReferences;
                 result["ownedRootReleased"] = this == null || gameObject == null;
                 return result;
             }
             return Report();
         }
 
+        internal JObject ObserveProduction()
+        {
+            JObject receipt = Describe();
+            receipt["ownerPresent"] = true;
+            receipt["observerCalledApplyOrSynchronize"] = false;
+            bool exact = false; string reason = null;
+            if (_production && !_disposed)
+                try { RequireSourceIdentity(true); exact = true; }
+                catch (Exception error) { reason = error.GetType().Name + ":" + error.Message; }
+            receipt["currentOwnershipExact"] = exact;
+            receipt["ordinaryOwnedReceiversExact"] = OrdinaryReceiversExact();
+            receipt["ownershipFailure"] = reason;
+            receipt["ownedRootInstance"] = this == null || gameObject == null ? 0 : gameObject.GetInstanceID();
+            receipt["privateAllocationInstances"] = new JArray(_mirrors.Values.Where(value => value != null)
+                .Select(value => value.gameObject.GetInstanceID()).Concat(_ownedCloths.Where(value => value != null).Select(value => value.GetInstanceID()))
+                .Concat(_registeredRenderers.Where(value => value != null).Select(value => value.GetInstanceID()))
+                .Concat(_capsules.Values.Where(value => value != null).Select(value => value.GetInstanceID())).Distinct());
+            // Sole is a current-pose observation of the exact admitted body,
+            // never a fitted absolute human/feet calibration or contact PASS.
+            if (exact && _profile != null)
+                try { receipt["currentBodySoleWorldY"] = NativeBodySole(_actor, _profile); }
+                catch (Exception error) { receipt["currentSoleObservationFailure"] = error.GetType().Name + ":" + error.Message; }
+            return receipt;
+        }
+
+        private bool OrdinaryReceiversExact()
+        {
+            if (!_production || !_rendererCacheRegistered) return true;
+            var values = _ordinaryReceiverOwner == null ? null : OrdinaryReceiversField.GetValue(_ordinaryReceiverOwner) as System.Collections.IEnumerable;
+            if (values == null) return false;
+            Component[] receivers = values.Cast<Component>().Where(value => value != null).ToArray();
+            Renderer[] visibleSurfaces = _registeredRenderers.Concat(_skins.Where(value => value.Cloth == null).Select(value => (Renderer)value.Source)).ToArray();
+            return visibleSurfaces.All(renderer => receivers.Count(value => ReferenceEquals(value.GetComponent<Renderer>(), renderer)) == 1);
+        }
+
         private void TryRetireOwnedRoot()
         {
+            if (_production && !_highlightRetirementReady)
+            {
+                if (_view == null || _registeredRenderers.Length == 0) _highlightRetirementReady = true;
+                else try
+                {
+                    RefreshNativeHighlighters();
+                    _highlightRetirementReady = true;
+                }
+                catch (Exception) { /* Keep the exact owned allocations alive. */ }
+            }
             // Refusal must not turn a foreign/mixed palette into dangling
             // bones. Include inactive loaded receivers: a hidden cached view
             // can still reference these exact allocated transforms. This is a
@@ -1013,7 +1298,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 cloth != null && !Owned(cloth.transform) && cloth.capsuleColliders.Any(capsule => capsule != null && Owned(capsule.transform)));
             _retainedAnchorReferences = Resources.FindObjectsOfTypeAll<Renderer>().Count(renderer =>
                 renderer != null && !Owned(renderer.transform) && renderer.probeAnchor != null && Owned(renderer.probeAnchor));
-            _retirementPending = _retainedSkinReferences + _retainedClothReferences + _retainedAnchorReferences > 0;
+            // Foreign caches may legitimately retain exact borrowed renderer
+            // references. Never destroy those allocations out from under a
+            // receiver outside this owner's original native cache.
+            _retainedRendererCacheReferences = Resources.FindObjectsOfTypeAll<UnitEntityView>().Count(view => view != null && view.Renderers != null &&
+                view.Renderers.Any(renderer => _registeredRenderers.Any(owned => ReferenceEquals(owned, renderer))));
+            _retainedRendererCacheReferences += Resources.FindObjectsOfTypeAll<OccludedObjectHighlighter>().Count(highlighter => {
+                var receivers = OccludedRenderersField == null ? null : OccludedRenderersField.GetValue(highlighter) as Renderer[];
+                return receivers != null && receivers.Any(renderer => _registeredRenderers.Any(owned => ReferenceEquals(owned, renderer))); });
+            _retainedRendererCacheReferences += Resources.FindObjectsOfTypeAll<HighlightingSystem.Highlighter>().Count(highlighter => {
+                var receivers = OrdinaryReceiversField == null ? null : OrdinaryReceiversField.GetValue(highlighter) as System.Collections.IEnumerable;
+                return receivers != null && receivers.Cast<Component>().Any(component => component != null &&
+                    _registeredRenderers.Any(owned => ReferenceEquals(owned, component.GetComponent<Renderer>()))); });
+            _retirementPending = _retainedSkinReferences + _retainedClothReferences + _retainedAnchorReferences + _retainedRendererCacheReferences > 0 ||
+                (_production && !_highlightRetirementReady);
             if (_retirementPending)
             {
                 // Only our root moves. Keep its world pose and exact resources
@@ -1023,6 +1321,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _restoreIssues.Add("owned-mirrors-retained-for-foreign-references");
                 return;
             }
+            // No receiver retains these private allocations. Drop only their
+            // exact borrowed material bindings before deferred destruction so
+            // an independent palette owner can release in this same frame.
+            foreach (Skin skin in _skins.Where(value => value.Proxy != null))
+                if (Same(skin.Proxy.sharedMaterials, skin.Materials)) skin.Proxy.sharedMaterials = new Material[0];
+            foreach (StaticMesh mesh in _statics.Where(value => value.Proxy != null))
+                if (Same(mesh.Proxy.sharedMaterials, mesh.Materials)) mesh.Proxy.sharedMaterials = new Material[0];
             if (gameObject != null) { gameObject.SetActive(false); UnityEngine.Object.Destroy(gameObject); }
         }
 
@@ -1030,7 +1335,18 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             return new JObject { ["runId"] = _runId, ["actor"] = _actor == null ? null : _actor.UniqueId,
                 ["status"] = _status, ["uniformVisualFactor"] = _factor, ["syncCount"] = _syncCount,
-                ["productionOwner"] = _production, ["productionCopiedClothEnabled"] = false,
+                ["productionOwner"] = _production, ["productionCopiedClothEnabled"] = _production && _ownedCloths.Count != 0,
+                ["copiedClothProductionGateOpen"] = ProductionCopiedClothEnabled,
+                ["nativeRendererCacheRegistered"] = _rendererCacheRegistered,
+                ["nativeRendererCacheExact"] = NativeRendererCacheExact(), ["nativeColliderCacheExact"] = NativeColliderCacheExact(),
+                ["occludedOwnedReceiversExact"] = OccludedReceiversExact(),
+                ["ordinaryOwnedReceiversExact"] = OrdinaryReceiversExact(),
+                ["registeredOwnedRenderers"] = new JArray(_registeredRenderers.Select(value => value == null ? 0 : value.GetInstanceID())),
+                ["nativeVisibilityTransitionObserved"] = _nativeVisibilityObserved, ["nativeVisibilityWrites"] = _nativeVisibilityWrites,
+                ["lastNativeVisibility"] = _nativeVisibilityObserved ? (JToken)new JValue(_nativeVisible) : JValue.CreateNull(),
+                ["nativeHighlightRefreshes"] = _highlightRefreshes, ["sourceStateRestored"] = _sourceStateRestored,
+                ["borrowedMaterialReferencesExact"] = _skins.All(value => value.Source != null && Same(value.Source.sharedMaterials, value.Materials)) &&
+                    _statics.All(value => value.Source != null && Same(value.Source.sharedMaterials, value.Materials)),
                 ["ownedClothInitializedHiddenBeforeSourceCommit"] = _clothInitializedBeforeSourceCommit,
                 ["stableNativeSolePivotInView"] = Vector(_visualPivot), ["ownedVisualRootOffset"] = Vector(_ownedOffset),
                 ["lastSyncFrame"] = _lastSyncFrame, ["executionOrder"] = 10010,
@@ -1055,16 +1371,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["instance"] = value == null ? 0 : value.GetInstanceID(), ["enabled"] = value != null && value.enabled,
                     ["particles"] = value == null ? 0 : value.vertices.Length,
                     ["allParticleCoordinatesFinite"] = value != null && value.vertices.All(Finite),
+                    ["coefficientCount"] = value == null ? 0 : value.coefficients.Length,
+                    ["pinnedCount"] = value == null ? 0 : value.coefficients.Count(coefficient => coefficient.maxDistance == 0f),
                     ["capsulesAllDisabled"] = value != null && value.capsuleColliders.All(c => c != null && !c.enabled) })),
                 ["ordinarySkinRetargetCount"] = _skins.Count(value => value.Cloth == null), ["staticProxyCount"] = _statics.Count,
                 ["maxDistanceMultiplier"] = _distances.MaxDistanceMultiplier,
                 ["collisionSphereDistanceMultiplier"] = _distances.CollisionSphereDistanceMultiplier,
                 ["distanceProposal"] = _distances.Proposal,
-                ["disabledCapsuleCollisionResponse"] = "UNKNOWN_REQUIRES_NATIVE_CONTACT_PROOF",
-                ["clothDistanceCalibration"] = "EXPERIMENTAL_NOT_ACCEPTED",
-                ["renderAndHighlightEquivalence"] = "UNVERIFIED_NATIVE_CAPTURE_REQUIRED",
+                ["disabledCapsuleCollisionResponse"] = ProductionCopiedClothEnabled ? "QUALIFIED_EXACT_AUTHORED_NATIVE_CONTACT_CONTROL" : "UNKNOWN_REQUIRES_NATIVE_CONTACT_PROOF",
+                ["clothDistanceCalibration"] = _production ? (_ownedCloths.Count == 0 ? "NO_CLOTH" : "EXACT_QUALIFIED_FROZEN_PROFILE") : "EXPERIMENTAL_NOT_ACCEPTED",
+                ["renderAndHighlightEquivalence"] = _production ? "NATIVE_RECEIVER_REGISTRATION_REQUIRES_VISIBLE_REVIEW" : "UNVERIFIED_NATIVE_CAPTURE_REQUIRED",
                 ["restoreIssues"] = new JArray(_restoreIssues),
-                ["scope"] = "Request-owned visual experiment only. No original Cloth/collider/skeleton/root fields, mesh assets, materials, animation or unit components are modified or cloned. The ordinary skin palette/bounds and original cloth/static render flags are conditionally restored." };
+                ["scope"] = "Instance-owned relative visual scale. Original Cloth, collider, skeleton/root transforms, mesh assets, materials and animation are preserved. Ordinary skin palette/bounds, displaced renderer visibility and exact native visual receiver membership are conditionally restored." };
         }
 
         public void Dispose()
@@ -1084,7 +1402,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (skin.Cloth != null)
                     {
                         if (!skin.Source.enabled && Same(skin.Source.bones, skin.Bones) && skin.Source.rootBone == skin.RootBone)
-                            skin.Source.enabled = skin.Enabled;
+                            skin.Source.enabled = ExpectedNativeEnabled(skin.Source, skin.Enabled);
                         else _restoreIssues.Add("foreign-cloth-renderer-state:" + skin.Source.GetInstanceID());
                     }
                     else
@@ -1107,16 +1425,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     if (mesh.Source == null) continue;
                     if (mesh.Filter != null && mesh.Filter.sharedMesh == mesh.Mesh && Same(mesh.Source.sharedMaterials, mesh.Materials) && !mesh.Source.enabled)
-                        mesh.Source.enabled = mesh.Enabled;
+                        mesh.Source.enabled = ExpectedNativeEnabled(mesh.Source, mesh.Enabled);
                     else _restoreIssues.Add("foreign-static-renderer:" + mesh.Source.GetInstanceID());
                 }
                 catch (Exception error) { _restoreIssues.Add("static:" + error.GetType().Name + ":" + error.Message); }
-            try { _lastReport = Report(); _lastReport["disposed"] = true; }
-            catch (Exception error) { _lastReport = new JObject { ["status"] = _status, ["disposed"] = true, ["reportError"] = error.Message, ["restoreIssues"] = new JArray(_restoreIssues) }; }
             // Disable only owned solver/renderers before deferred destruction.
             foreach (Cloth cloth in _ownedCloths) if (cloth != null) cloth.enabled = false;
-            foreach (Skin skin in _skins) if (skin.Proxy != null) skin.Proxy.enabled = false;
-            foreach (StaticMesh mesh in _statics) if (mesh.Proxy != null) mesh.Proxy.enabled = false;
+            foreach (Skin skin in _skins) if (skin.Proxy != null) { skin.Proxy.enabled = false; skin.Proxy.gameObject.SetActive(false); }
+            foreach (StaticMesh mesh in _statics) if (mesh.Proxy != null) { mesh.Proxy.enabled = false; mesh.Proxy.gameObject.SetActive(false); }
+            // Native Highlighter.GrabRenderers recursively visits even
+            // inactive children. Detach only our now-hidden root before its
+            // refresh, so the receiver census genuinely excludes allocations
+            // awaiting retirement without changing a native transform.
+            if (_production && transform.parent != null) transform.SetParent(null, true);
+            try
+            {
+                UnregisterNativeRenderers();
+                _sourceStateRestored = _skins.All(skin => skin.Source != null && skin.Source.sharedMesh == skin.Mesh &&
+                    Same(skin.Source.bones, skin.Bones) && skin.Source.rootBone == skin.RootBone && (skin.Cloth != null || skin.Source.localBounds.Equals(skin.Bounds)) &&
+                    skin.Source.enabled == ExpectedNativeEnabled(skin.Source, skin.Enabled) && (skin.Cloth == null || skin.Cloth.Unchanged())) &&
+                    _statics.All(mesh => mesh.Source != null && mesh.Filter != null && mesh.Filter.sharedMesh == mesh.Mesh &&
+                        mesh.Source.enabled == ExpectedNativeEnabled(mesh.Source, mesh.Enabled)) && NativeColliderCacheExact() && NativeRendererCacheExact();
+                if (_production)
+                {
+                    // The detached root update owner remains alive through
+                    // Unity's deferred private allocation retirement.
+                    RefreshNativeHighlighters();
+                }
+                _highlightRetirementReady = true;
+            }
+            catch (Exception error) { _restoreIssues.Add("native-visual-cache-release:" + error.GetType().Name + ":" + error.Message); }
+            try { _lastReport = Report(); _lastReport["disposed"] = true; }
+            catch (Exception error) { _lastReport = new JObject { ["status"] = _status, ["disposed"] = true, ["reportError"] = error.Message, ["restoreIssues"] = new JArray(_restoreIssues) }; }
             TryRetireOwnedRoot();
             if (_lastReport != null) _lastReport["restoreIssues"] = new JArray(_restoreIssues);
         }

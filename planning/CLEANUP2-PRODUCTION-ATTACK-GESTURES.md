@@ -1,5 +1,35 @@
 # Original Crab/Brachiosaurus attack presentation checkpoint
 
+## Current Crab contact repair, October 23
+
+Review27's full-body first-act image demonstrates a reach gap on the ordinary
+native command. The target is the unchanged Human fixture (corpulence .5), not
+an inflated target. Exact authored-mesh/bind-frame FK identifies accumulated
+rotation at seven short donor pivots: the old act retracts the pincer .3601
+local units and drops it .3834. The new folded, tapered chela unfolds around
+authored shoulder/elbow/wrist/palm positions using private inverse-bind pivots.
+No stretch operator, source bone, root, collider, timing or rule changes.
+
+The exact8247-vertex/11516-triangle/39-palette body revision is guarded at
+attachment. All3984 unique non-chela position/normal/weight records and7916
+non-chela triangles remain exact; UV atlas seams are repacked. Two generator
+runs produce byte-identical LF JSON and albedo. Existing structural audit and52
+left/right synthetic post-act samples pass: protected-body motion0, finite
+poses, edge ratios .6701..1.7057 and recovery to identity. V1's elbow dent and
+V2's sharp weight gradient were rejected; V4 uses smooth hinge blending.
+Root inspected the original synthetic front/side/gameplay previews under
+`artifacts/cleanup2-crab-contact/folded-v4/`. Receipts remain local in
+`final-asset-checks.json`, `swept-pose-checks.json`, and `folded-v4/pose-metrics.json`.
+
+- Mesh SHA256: `75a6d5d625f8e88d9cfccec0de3d411610123be0f94f4655d5fc9eeadaf05472`.
+- Albedo SHA256: `ef06b21b0654bcee40ca893cfff28c20e5fea469402cadb1d7a3a524f8e48112`.
+
+Native current-pose equality, source/collider invariance, actual contact and
+owner visual acceptance remain required. Review28 ordinary Crab/Brachiosaurus
+commands pass28/0 on the **prior** Crab geometry; its Constrict attribution
+correction is mechanical observer evidence, not qualification of this new mesh.
+Old FAIL records remain unchanged. Brachiosaurus tail policy/binds are unchanged.
+
 ## Scope and status
 
 Original private render-palette gestures are authored for the registered summoned
@@ -54,8 +84,8 @@ slot to Pivot with private bind `T(-d)*B`. At zero gesture, for every arbitrary
 current source matrix M, `M*T(d)*T(-d)*B == M*B`; descendant paths likewise
 cancel. This avoids substituting old captured bind scalars for current native
 animation. During art only Pivot rotation changes. Tail0/pelvis stay literal
-source slots; Tail1..4 use authored centerline pivots. Crab offsets are zero and
-only its two pedipalp chains receive the original poses.
+source slots; Tail1..4 use authored centerline pivots. Crab now uses authored
+chela centerline pivots; only its two pedipalp chains receive the original poses.
 
 Activation requires synchronous actual current-pose BakeMesh equality at zero
 gesture (maximum renderer-local error <=.0002). A before/after source/root and

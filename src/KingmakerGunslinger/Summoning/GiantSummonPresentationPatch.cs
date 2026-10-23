@@ -9,6 +9,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.View;
 using KingmakerGunslinger.RuntimeTesting;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -132,8 +133,9 @@ namespace KingmakerGunslinger.Summoning
             { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=native-prefab-mismatch"; }
             if (profile.RelativeVisualFactor == 1f)
                 return state.Outcome = "giant:" + state.Key + ";height=relative-baseline;factor=1";
-            if (view.GetComponentsInChildren<Cloth>(true).Length != 0)
-            { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=await-native-copied-cloth-contact-proof"; }
+            string clothAdmission = Cleanup2GiantRenderScalePrototype.ProductionClothAdmission(state.Owner, profile);
+            if (clothAdmission != "no-cloth" && clothAdmission != "qualified-frozen-cape")
+                return state.Outcome = "giant:" + state.Key + ";height=" + clothAdmission;
             if (GiantSummonPalettePolicy.ProductionProof(profile.Key) != null &&
                 !GiantSummonPaletteRuntime.VerifyProductionOwnership(view).StartsWith("palette:verified-production-owner;", StringComparison.Ordinal))
                 return state.Outcome = "giant:" + state.Key + ";height=await-owned-production-palette";
@@ -178,8 +180,40 @@ namespace KingmakerGunslinger.Summoning
             States.Remove(view);
         }
 
+        // Read-only evidence from the actual production owner. This never
+        // attaches, retries, constructs a prototype or changes a native view.
+        internal static JObject ObserveProductionOwnership(UnitEntityView view)
+        {
+            State state;
+            if (view == null || !States.TryGetValue(view, out state))
+                return new JObject { ["ownerPresent"] = false, ["outcome"] = Describe(view),
+                    ["copiedClothProductionGateOpen"] = Cleanup2GiantRenderScalePrototype.ProductionCopiedClothEnabled };
+            JObject result = state.RenderOwner == null ? new JObject { ["ownerPresent"] = false } : state.RenderOwner.ObserveProduction();
+            result["outcome"] = state.Outcome; result["key"] = state.Key;
+            result["unitOwnerExact"] = ReferenceEquals(state.Owner, view.EntityData);
+            result["nativeRootScaleExact"] = GiantSummonPresentationPolicy.Same(state.Baseline, Read(view.transform.localScale));
+            result["copiedClothProductionGateOpen"] = Cleanup2GiantRenderScalePrototype.ProductionCopiedClothEnabled;
+            return result;
+        }
+
+        internal static Cleanup2GiantRenderScalePrototype ProductionOwner(UnitEntityView view)
+        {
+            State state;
+            return view != null && States.TryGetValue(view, out state) ? state.RenderOwner : null;
+        }
+
         private static GiantPresentationScale Read(Vector3 scale)
         { return new GiantPresentationScale(scale.x, scale.y, scale.z); }
+    }
+
+    // The installed fader writes EntityViewBase.Renderers, not a hierarchy
+    // census. Owned visual receivers participate in that exact native path;
+    // displaced native renderers remain suppressed after its authentic write.
+    [HarmonyPatch(typeof(EntityFader), "SetRendererVisibility", new[] { typeof(bool) })]
+    internal static class GiantSummonNativeVisibilityPatch
+    {
+        private static void Postfix(EntityFader __instance, bool visible)
+        { Cleanup2GiantRenderScalePrototype.NativeVisibilityChanged(__instance, visible); }
     }
 
     // Release scale ownership before the default-order palette owner can

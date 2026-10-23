@@ -6,6 +6,53 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review28 ordinary attacks and full-rank source observations
+
+Frozen `53fda8c3f62790c2bc28f0b944368396cb457c01`, package
+`ed22f52a75665263502efda21dd07a471548c0cdbac1c99ce09c6429af48c69b`, DLL
+`44ba275911e6ece5c4371f9bebee9f4b1284467481dfcd178f980f5d2906e4e8`, MVID
+`31a065de-659d-4f64-9227-5e1e2afefdae`. Exact compilation,17 focused cases and21
+installed Harmony targets pass. These results do not qualify subsequent bytes.
+
+- Creature commands `20261023T0118396309129Z`: **28 PASS/0**,83.617s. Both Crab
+  and Brachiosaurus actually approach and attack in native Default mode; native
+  weapon/rule/cost, Crab's attributed Constrict rider, private gesture/recovery
+  and source/collider invariants pass. Root inspected originals. Brachiosaurus
+  is opaque with the smoother neck, but tree occlusion and synchronous capture
+  limit visible contact/gait judgement. The new folded Crab arms and normal-frame
+  fixed camera are subsequent changes, not qualified by this run.
+- Scale `20261023T0113506000167Z`: **92 PASS/1 FAIL**,144.671s. Root inspected
+  both newly clear six-family lineup originals. Production colors are distinct;
+  experimental relative height is readable. The separate authored contact
+  control now has exact active coefficients and stable pins but never reaches
+  the capsule. Its zero backstop opposes the stimulus. The correction uses the
+  installed native cape's disabled-backstop sentinel and records actual Unity
+  elapsed time. Positive collision proof and production copied Cloth stay open.
+- Ettin `20261023T0122426972123Z`: **6 PASS/2 FAIL**,69.498s. Exact admission
+  diagnostics isolate native mode `Pause`; all other ownership/input predicates
+  pass. Installed native unpause ignores requests while Pause is pending;
+  owned setup and join-combat auto-pause are the two possible sources. The
+  bounded caller correction records and settles only its exact fixture Pause,
+  restoring the original stack/counts before unchanged strict Default admission.
+- Sources `20261023T0125539596463Z`: **71 PASS/2 FAIL**,257.527s. All24 original
+  elemental choices actually cast/spawn/debit. Two native books, exhaustion
+  isolation, SNA II identity and native Extend creation/cast/duration pass.
+  Fixture cleanup fails `ownedFeaturesAndBooksReleased` and masks an earlier
+  exception after Extend; special-slot and pinned-button checks were not reached.
+  Original party/resources/slots/pins are exact. This remains a failed run.
+
+All four games exited and each actual95-original-save inventory, installation
+and settings restored exactly. Compatibility receipts respectively:
+`compat-20261023T011809Z-7935ade4c5f2`,
+`compat-20261023T011322Z-695671df5ca6`,
+`compat-20261023T012217Z-4a6e3b2dce6f`,
+`compat-20261023T012531Z-ebfc7f1c3017`. Final save verification
+**01:30:26.4500841UTC** closes window7 at26m18.874s from01:04:07.576UTC.
+No console run was added. Final90-minute qualification has not started.
+The existing local comparison now contains73 original images, including the
+clear lineup pair, with identities and visible pixels checked. Owner review is
+still separate from these technical and visual observations.
+
 ### Review27 completed vertical slice and remaining reproductions
 
 Frozen `a3706701502c05f8f52da42059ecd45cb5bb00b8`, package

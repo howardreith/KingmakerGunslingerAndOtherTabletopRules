@@ -22,6 +22,8 @@ using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
+using Kingmaker.View;
+using Kingmaker.Visual.Animation.Kingmaker;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -374,6 +376,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Cleanup2Check("sm-frost-presentation", monsterFrostMetric.Valid,
                     monsterFrostMetric.Document,
                     "The retained native Frost Giant also appears through the actual SM VIII wrapper.");
+                if (heightProbe == null)
+                    foreach (int frame in Cleanup2ObserveProductionScale(actors.Skip(1).Concat(new[] { monsterFrost }).ToArray(),
+                        keys.Skip(1).Concat(new[] { "sm-frost-giant" }).ToArray())) yield return frame;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { monsterFrost });
 
                 // Retain every actor's identity/material/hierarchy even if a
@@ -509,6 +514,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "One nonempty native frame records the verified Human and all six projected giant bodies; obstruction and art acceptance are separately inspected.");
                 if (scalePrototype)
                     foreach (int frame in ReviewSummonCleanup2ScalePrototype(fixture, actors, keys, groundPoints, samples, standing)) yield return frame;
+                else
+                    foreach (int frame in Cleanup2ReleaseProductionScale(actors.Skip(1).ToArray(), keys.Skip(1).ToArray())) yield return frame;
             }
             finally
             {
@@ -523,6 +530,148 @@ namespace KingmakerGunslinger.RuntimeTesting
                         _sprint25WaitingForUnityAppearance = false;
                     }
                 }
+            }
+        }
+
+        private IEnumerable<int> Cleanup2ObserveProductionScale(UnitEntityData[] actors, string[] keys)
+        {
+            var wait = System.Diagnostics.Stopwatch.StartNew();
+            while (actors.Where((actor, index) => keys[index] != "hill-giant").Any(actor =>
+                GiantSummonPresentationPatch.ProductionOwner(actor.View) == null) && wait.Elapsed.TotalSeconds < 16d)
+                yield return 0;
+            var allocations = new HashSet<int>();
+            for (int i = 0; i < actors.Length; i++)
+            {
+                UnitEntityData actor = actors[i];
+                JObject before = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                var actualOwner = GiantSummonPresentationPatch.ProductionOwner(actor.View);
+                string first = GiantSummonPresentationPatch.ApplyRenderHeight(actor.View);
+                string second = GiantSummonPresentationPatch.ApplyRenderHeight(actor.View);
+                JObject after = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                bool baseline = keys[i] == "hill-giant";
+                int[] ids = ((JArray)after["privateAllocationInstances"] ?? new JArray()).Values<int>().ToArray();
+                bool disjoint = ids.All(value => !allocations.Contains(value));
+                foreach (int value in ids) allocations.Add(value);
+                bool sameOwner = ReferenceEquals(actualOwner, GiantSummonPresentationPatch.ProductionOwner(actor.View));
+                bool stable = baseline ? actualOwner == null && first == second && first.Contains("height=relative-baseline;factor=1") :
+                    actualOwner != null && sameOwner && (bool?)before["currentOwnershipExact"] == true &&
+                    (bool?)after["currentOwnershipExact"] == true && (int?)before["ownedRootInstance"] == (int?)after["ownedRootInstance"] &&
+                    JToken.DeepEquals(before["privateAllocationInstances"], after["privateAllocationInstances"]) && ids.Length > 0;
+                Cleanup2Check("production-relative-scale-" + keys[i], stable && disjoint &&
+                    (bool?)after["nativeRootScaleExact"] == true && (bool?)after["unitOwnerExact"] == true,
+                    new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["before"] = before, ["afterTwoProductionApplies"] = after,
+                        ["sameOwner"] = sameOwner, ["privateAllocationsDisjointFromOtherInstances"] = disjoint,
+                        ["firstApply"] = first, ["secondApply"] = second, ["prototypeFactoryCalled"] = false },
+                    "The actual canonical summon owns production scale, repeated production application reuses its exact instance, quantities do not share allocations and the native gameplay root stays exact.");
+                if (baseline) continue;
+                bool hoverLease = false;
+                try
+                {
+                    actor.View.HandleHoverChange(true); hoverLease = true;
+                    for (int frame = 0; frame < 3; frame++) yield return 0;
+                    JObject highlighted = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                    JObject selection = Sprint22SelectionSurface(actor);
+                    Cleanup2Check("production-native-highlight-" + keys[i],
+                        (bool?)highlighted["currentOwnershipExact"] == true && (bool?)highlighted["ordinaryOwnedReceiversExact"] == true &&
+                        (bool?)highlighted["occludedOwnedReceiversExact"] == true && (bool?)selection["selectionSurface"] == true,
+                        new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["production"] = highlighted,
+                            ["selection"] = selection, ["nativeHoverStimulus"] = true,
+                            ["scope"] = "Paired native HandleHoverChange stimulus plus actual native receiver membership; this does not claim a physical mouse click or screenshot art acceptance." },
+                        "Native hover/highlight receiver acquisition preserves the exact production owner, its borrowed PF material arrays and the ordinary native selection surfaces.");
+                }
+                finally { if (hoverLease && actor.View != null) actor.View.HandleHoverChange(false); }
+                var fader = actor.View.GetComponent<EntityFader>();
+                MethodInfo nativeVisibility = typeof(EntityFader).GetMethod("SetRendererVisibility",
+                    BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
+                if (fader == null || nativeVisibility == null || nativeVisibility.ReturnType != typeof(void))
+                    throw new MissingMemberException("Exact native cached-renderer visibility stimulus unavailable.");
+                JObject hidden = null;
+                try
+                {
+                    nativeVisibility.Invoke(fader, new object[] { false });
+                    yield return 0;
+                    hidden = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                }
+                finally { if (fader != null) nativeVisibility.Invoke(fader, new object[] { true }); }
+                yield return 0;
+                JObject visible = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                Cleanup2Check("production-native-visibility-" + keys[i],
+                    (bool?)hidden?["currentOwnershipExact"] == true && (bool?)hidden?["lastNativeVisibility"] == false &&
+                    (bool?)visible["currentOwnershipExact"] == true && (bool?)visible["lastNativeVisibility"] == true &&
+                    (int?)visible["nativeVisibilityWrites"] >= 2,
+                    new JObject { ["key"] = keys[i], ["hidden"] = hidden, ["visible"] = visible,
+                        ["nativeVisibilityMethod"] = "EntityFader.SetRendererVisibility(Boolean)",
+                        ["visibleMaterialMetadata"] = new JArray(actor.View.GetComponentsInChildren<Renderer>(true)
+                            .Where(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy)
+                            .SelectMany(renderer => renderer.sharedMaterials).Select(Cleanup2Material)),
+                        ["scope"] = "Exact native visibility writer on disposable actors; not a fog-of-war gameplay, native FX activation or physical pointer claim. No material/dissolve value is forced." },
+                    "Actual native cached-list visibility writes cover private receivers while displaced originals remain suppressed and exact source/material/collider ownership remains intact.");
+                UnitAnimationActionHandle animation = null;
+                try
+                {
+                    var hand = actor.Body.PrimaryHand;
+                    if (hand == null || !hand.HasWeapon) throw new NotSupportedException("Native production giant primary weapon absent.");
+                    var info = new AttackHandInfo(hand, 0, 0); info.CreateAnimationHandleForAttack(); animation = info.AnimationHandle;
+                    if (animation == null) throw new NotSupportedException("Native production giant primary pose handle absent.");
+                    Transform[] bones = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SelectMany(skin => skin.bones)
+                        .Where(bone => bone != null).Distinct().ToArray();
+                    Matrix4x4[] initial = bones.Select(bone => bone.localToWorldMatrix).ToArray();
+                    var cloths = actualOwner.OwnedCloths.ToArray();
+                    Vector3[][] clothBefore = cloths.Select(cloth => cloth.vertices).ToArray();
+                    bool moved = false, clothFinite = true; float clothMotion = 0f;
+                    actor.View.AnimationManager.Execute(animation);
+                    for (int frame = 0; frame < 40; frame++)
+                    {
+                        Game.Instance.IsPaused = false; yield return 0;
+                        moved |= bones.Where((bone, index) => bone != null && bone.localToWorldMatrix != initial[index]).Any();
+                        for (int c = 0; c < cloths.Length; c++)
+                        {
+                            Vector3[] points = cloths[c].vertices;
+                            clothFinite &= points.Length > 0 && points.Length == clothBefore[c].Length && points.All(Cleanup2Finite);
+                            if (points.Length == clothBefore[c].Length)
+                                for (int point = 0; point < points.Length; point++) clothMotion = Mathf.Max(clothMotion, Vector3.Distance(points[point], clothBefore[c][point]));
+                        }
+                    }
+                    JObject posed = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                    Cleanup2Check("production-native-weapon-pose-" + keys[i], moved && clothFinite &&
+                        (cloths.Length == 0 || clothMotion > .0001f) && (bool?)posed["currentOwnershipExact"] == true,
+                        new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["weapon"] = info.Weapon.Blueprint.AssetGuid,
+                            ["actualNativeBoneMotion"] = moved, ["ownedClothFiniteStableCount"] = clothFinite,
+                            ["ownedClothPositiveDisplacement"] = clothMotion, ["production"] = posed,
+                            ["attackCommandOrRuleIssued"] = false },
+                        "A real weapon-specific native pose moves the production-owned skin/attachments with finite positive Cloth updates and unchanged native source/collider/material ownership; this is not combat resolution or FX activation proof.");
+                }
+                finally { Cleanup2ScaleFinishAnimation(ref animation); }
+            }
+        }
+
+        private IEnumerable<int> Cleanup2ReleaseProductionScale(UnitEntityData[] actors, string[] keys)
+        {
+            for (int i = 0; i < actors.Length; i++)
+            {
+                var owner = GiantSummonPresentationPatch.ProductionOwner(actors[i].View);
+                if (owner == null) continue;
+                int[] otherRoots = actors.Where((value, index) => index != i)
+                    .Select(value => GiantSummonPresentationPatch.ProductionOwner(value.View))
+                    .Where(value => value != null).Select(value => value.gameObject.GetInstanceID()).ToArray();
+                GiantSummonPresentationPatch.Release(actors[i].View);
+                // Production receiver retirement spans the ordinary native
+                // highlighter refresh and Unity's deferred object destruction.
+                for (int frame = 0; frame < 3; frame++) yield return 0;
+                JObject receipt = owner.Describe();
+                int[] othersAfter = actors.Where((value, index) => index != i)
+                    .Select(value => GiantSummonPresentationPatch.ProductionOwner(value.View))
+                    .Where(value => value != null).Select(value => value.gameObject.GetInstanceID()).ToArray();
+                bool others = otherRoots.SequenceEqual(othersAfter) && actors.Where((value, index) => index != i)
+                    .Select(value => GiantSummonPresentationPatch.ProductionOwner(value.View)).Where(value => value != null)
+                    .All(value => (bool?)value.ObserveProduction()["currentOwnershipExact"] == true);
+                Cleanup2Check("production-owned-release-" + keys[i], (bool?)receipt["disposed"] == true &&
+                    (bool?)receipt["sourceStateRestored"] == true && (bool?)receipt["ownedRootReleased"] == true &&
+                    ((JArray)receipt["restoreIssues"])?.Count == 0 && others,
+                    new JObject { ["key"] = keys[i], ["unit"] = actors[i].UniqueId, ["release"] = receipt,
+                        ["otherInstancesRetainExactOwners"] = others, ["moduleFlagChanged"] = false,
+                        ["scope"] = "Explicit owned release on a still-live disposable canonical actor; native view reconstruction and module-OFF are separate cold observations." },
+                    "Exact owned release restores the native source fields/caches, releases all private allocations and preserves other live production owners.");
             }
         }
 
