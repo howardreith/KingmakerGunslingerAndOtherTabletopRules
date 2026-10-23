@@ -6,6 +6,42 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review34 production giants, visible Crab motion and original source pins
+
+Next coherent review35 changes only four bounded observations: recovery wait
+excludes its own PNG I/O while retaining native/rendered timing; Girallon may
+use a shorter supported retrace with the same actor/graph guards; controller
+preparation follows actual native root/branch/leaf navigation; Druid admission
+records its exact current direct progression components before any grant.
+No production model, timing or source rule is changed by this batch.
+
+Frozen `2ddff743264a0abd6a3f5267951c48e96e6963db`, source fingerprint
+`811fbeee0ae2d222b05f72e4807b5f1a269b63417ec75991344fcabdc579bc5d`, package
+`c706c3f65906884c1080804ec76e3e281faedbe07ac8d5a577837efa504827ba`, DLL
+`d6be217f354926828ec14527f845ca9783dc7270df14ede58c22bc8f305e240b`, MVID
+`e160f181-07e0-4b82-aae3-786cc4b37012`. Exact compilation, strict package,
+20 selected cases(1.6s),22 installed Harmony targets and26 OFF-scope cases pass.
+
+| Phase / raw evidence prefix | Result | Actual inspection and remaining boundary |
+| --- | --- | --- |
+| Creature commands `20261023T0432343826891Z` | 16/2 FAIL;90.378s | Root inspected all six full-body Crab originals: native approach, both claws, target, extension and folded recovery are visible. Rules/cost, travel, owned gesture and recovery state pass. PNG I/O exhausted the8s observer wait before its required1.6s rendered recovery sample. The correction excludes its own I/O from that wait while preserving exact native/rendered time,20s total and finite frame bounds. Brachiosaurus remains unreached. |
+| Giant lineup `20261023T0435348017652Z` | **76/0 PASS;161.026s** | Whole production six-family lineup inspected: Storm largest/Hill smallest, distinct palettes. In-view cape motion, weapons/clothing, exact native root/collider/cache ownership, highlighting/visibility, disjoint instances and release all pass. Fresh OFF and cold remain unrun; owner review pending. |
+| Menu adapters `20261023T0439460340729Z` | 58/1 FAIL;109.519s | Twelve prepared/known SM/SNA Horse quantity routes, native pin and all UI restorations pass. Root inspected000/003: the approved brown full-body painting is present in both families. The earlier beige-bust identification was a different tile, not a demonstrated Horse art defect; CPU coordinate mapping remains an observer limitation. Druid stops before grant at exact conversion-feature lookup; bounded actual progression/component intake is added. |
+| Focused pin `20261023T0443432873140Z` | **23/0 PASS;81.528s** | Native original pin rebuild, owning-graph serialization/hydration, source-chain retention, actual pinned-child cast/debit and exact restoration pass. This is native in-memory graph hydration, not a cold Working-save claim. |
+| Girallon/Stegosaurus `20261023T0446341568618Z` | 28/3 FAIL;113.663s | Both ordinary attacks/rules/costs pass. Stegosaurus completes5.946m/full117-frame packet. Root inspected joined hands, side bodies and motion samples. Some later Stegosaurus frames contain tree occlusion; no all-frame visibility claim. Girallon travels3.671m, then its return passes.033m too close to a moving party actor. The strict guard is retained; bounded shorter native-supported retraces are staged. Optional action flags were unreached, not proof of absent actions. |
+| Controller `20261023T0450249389618Z` | 21/1 FAIL;83.563s | Explicit SOURCE Confirm stores the original native converted child, restores its pin and spends nothing; normal Use/cast/debit and UI restoration pass. Learning admission now succeeds. Preparation refuses its original-row focus assertion; exact native navigation diagnosis is pending. |
+
+All six transactions restored fresh95-save inventories and exact installation/
+settings after confirmed exit. Compatibility receipts, in table order:
+`compat-20261023T043210Z-7caf73ba7406`, `compat-20261023T043512Z-42cf7d9f274c`,
+`compat-20261023T043912Z-dfb7ea56a45d`, `compat-20261023T044319Z-1416781e8f12`,
+`compat-20261023T044611Z-6db9359445c7`, `compat-20261023T045001Z-fd5ec01701db`.
+Last verification **04:52:02.0962708UTC**; development window13 is closed at
+**26m14.096s** from04:25:48UTC. Final90 has not started. A read-only cold wrapper
+`-WhatIf` attempt stopped in inherited hash preflight before any transaction;
+it is not cold execution or evidence of a save/process failure. The qualified
+cold transaction itself remains unrun. Existing failures retain their identities.
+
 ### Review33 actual production giant lineup and remaining corrections
 
 Frozen `4c10688600cd4aab198d2603bc641cb812a3cc43`, package

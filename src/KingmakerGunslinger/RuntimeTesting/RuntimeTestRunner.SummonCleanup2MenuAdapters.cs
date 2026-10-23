@@ -672,12 +672,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             var druid = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
                 "610d836f3a3a9ed42a4349b62f002e96", "native Druid conversion class");
             var book = books.AddBook(druid.Spellbook);
-            var features = druid.Progression.LevelEntries.SelectMany(value => value.Features).Where(value => value != null &&
+            var progressionFeatures = druid.Progression.LevelEntries.SelectMany(value => value.Features).Where(value => value != null).Distinct().ToArray();
+            var features = progressionFeatures.Where(value =>
                 value.ComponentsArray.OfType<SpontaneousSpellConversion>().Any(component => ReferenceEquals(component.CharacterClass, druid) &&
                     component.SpellsByLevel != null && component.SpellsByLevel.Length >= 10 && Enumerable.Range(1, 9).All(level =>
                         component.SpellsByLevel[level]?.AssetGuid == ExpandedSummoningInventoryObserver.CanonicalParentGuids[9 + level - 1]))).Distinct().ToArray();
-            if (features.Length != 1 || fixture.Caster.Descriptor.HasFact(features[0]))
-                throw new InvalidOperationException("Exact unique native Druid SNA conversion feature not available for owned fixture grant.");
+            bool featureGrantAdmitted = features.Length == 1 && !fixture.Caster.Descriptor.HasFact(features[0]);
+            var featureIntake = new JObject { ["class"] = druid.AssetGuid, ["progression"] = druid.Progression.AssetGuid,
+                ["book"] = book.Blueprint.AssetGuid, ["directProgressionFeatureCount"] = progressionFeatures.Length,
+                ["exactConversionFeatureCount"] = features.Length,
+                ["exactCandidateAlreadyGranted"] = features.Length == 1 && fixture.Caster.Descriptor.HasFact(features[0]),
+                ["exactCandidateGuids"] = new JArray(features.Select(value => value.AssetGuid)),
+                ["directProgressionFeatureLimit"] = 64,
+                ["directProgressionFeatures"] = new JArray(progressionFeatures.Take(64).Select(value => new JObject {
+                    ["guid"] = value.AssetGuid, ["name"] = value.name, ["alreadyGranted"] = fixture.Caster.Descriptor.HasFact(value),
+                    ["levels"] = new JArray(druid.Progression.LevelEntries.Where(level => level.Features.Any(item => ReferenceEquals(item, value))).Select(level => level.Level)),
+                    ["componentTypes"] = new JArray((value.ComponentsArray ?? new BlueprintComponent[0]).Take(24).Select(component => component?.GetType().FullName)),
+                    ["nativeConversionComponents"] = new JArray((value.ComponentsArray ?? new BlueprintComponent[0]).OfType<SpontaneousSpellConversion>().Take(8).Select(component => new JObject {
+                        ["characterClass"] = component.CharacterClass?.AssetGuid,
+                        ["exactDruidClassReference"] = ReferenceEquals(component.CharacterClass, druid),
+                        ["spellsByLevelLength"] = component.SpellsByLevel?.Length ?? -1,
+                        ["spellsByLevel"] = new JArray((component.SpellsByLevel ?? new BlueprintAbility[0]).Take(16).Select((spell, index) => new JObject {
+                            ["index"] = index, ["guid"] = spell?.AssetGuid, ["name"] = spell?.name,
+                            ["expectedCanonicalAtNativeLevel"] = index >= 1 && index <= 9 ? ExpandedSummoningInventoryObserver.CanonicalParentGuids[9 + index - 1] : null })) })) })),
+                ["scope"] = "Only the exact current Druid progression's direct features/components are observed. No global feature census, nested grant inference, replacement feature, or component is authored.",
+                ["nativeContract"] = "SpontaneousSpellConversion.OnTurnOn0600260B demands CharacterClass's book and adds its exact SpellsByLevel array; OnTurnOff0600260C removes that exact array. Unknown current grants cannot be invented from display names." };
+            Cleanup2Check("menu-adapter-druid-conversion-feature-intake", featureGrantAdmitted, featureIntake,
+                "Before any feature grant, retain the current native Druid feature/component/class/level-array identities and whether the exact candidate already belongs to the disposable caster.");
+            if (!featureGrantAdmitted)
+                throw new InvalidOperationException("Exact unique native Druid SNA conversion feature not available for owned fixture grant; candidates=" +
+                    features.Length + ";alreadyGranted=" + (features.Length == 1 && fixture.Caster.Descriptor.HasFact(features[0])) + ". Inspect bounded current feature intake.");
             var feature = features[0]; var fact = fixture.Caster.Descriptor.AddFact(feature);
             receipt(() => {
                 if (!ReferenceEquals(fixture.Caster.Descriptor.GetFact(feature), fact))

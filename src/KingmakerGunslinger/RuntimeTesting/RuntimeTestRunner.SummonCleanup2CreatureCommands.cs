@@ -240,8 +240,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 using (var economy = new FirearmReviewCosts(actor, costs))
                 using (var trace = new Sprint26CommandTrace(actor, endings))
                 {
+                    double captureWallSeconds = 0;
                     Action<string> capture = stage => { string file = "creature-command-" + key + "-" + stage + ".png";
-                        string result = cameraScope.Capture(file);
+                        var captureWatch = Stopwatch.StartNew(); string result;
+                        try { result = cameraScope.Capture(file); }
+                        finally { captureWallSeconds += captureWatch.Elapsed.TotalSeconds; }
                         var actual = new FileInfo(System.IO.Path.Combine(_request.EvidenceDirectory, file));
                         bool saved = result.StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && actual.Exists && actual.Length >= 4096;
                         images.Add(new JObject { ["file"] = file, ["stage"] = stage, ["result"] = result, ["saved"] = saved,
@@ -252,6 +255,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["renderedSecondsAfterAct"] = visual.Schedules.Any(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0) ?
                                 (JToken)(cameraScope.RenderedGameSeconds - visual.Schedules.Single(value => ReferenceEquals(value.Command, command)).ActGame) : JValue.CreateNull(),
                             ["observerManualCameraRenderCalled"] = false,
+                            ["synchronousReadbackAndPngWallSeconds"] = captureWatch.Elapsed.TotalSeconds,
                             ["frame"] = Time.frameCount, ["travel"] = Vector3.Distance(start, actor.Position), ["weaponEvents"] = observer.WeaponAttacks.Count }); };
                     capture("ready");
                     actor.Commands.Run(command);
@@ -295,9 +299,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!actImage && observer.WeaponAttacks.Count != 0 && firstAct != null && cameraScope.RenderedGameSeconds >= firstAct.ActGame)
                     { capture("contact"); actImage = true; }
                     double recoveryStart = Game.Instance.Player.GameTime.TotalSeconds; var recovery = Stopwatch.StartNew();
+                    double recoveryCaptureStart = captureWallSeconds; int recoveryFrames = 0;
                     float[] postActTimes = { .12f, .28f }; int postActSamples = 0;
+                    // PNG serialization blocks this coroutine and native
+                    // frame progression. Keep the same actual 1.6s body AND
+                    // completed-render requirement; its own readbacks do not
+                    // spend the 8s frame-wait allowance. Total wall/frame bounds
+                    // still refuse instead of supplying native time or poses.
                     while ((Game.Instance.Player.GameTime.TotalSeconds - recoveryStart < 1.6 ||
-                        cameraScope.RenderedGameSeconds - recoveryStart < 1.6) && recovery.Elapsed.TotalSeconds < 8)
+                        cameraScope.RenderedGameSeconds - recoveryStart < 1.6) && recovery.Elapsed.TotalSeconds < 20 &&
+                        recovery.Elapsed.TotalSeconds - (captureWallSeconds - recoveryCaptureStart) < 8 && recoveryFrames++ < 2400)
                     {
                         if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native creature recovery mode changed.");
                         cameraScope.RequireCurrent();
@@ -308,7 +319,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         { capture("post-act-" + (postActSamples == 0 ? "012" : "028")); postActSamples++; }
                         yield return 0;
                     }
+                    double recoveryGameSeconds = Game.Instance.Player.GameTime.TotalSeconds - recoveryStart;
+                    double recoveryRenderedSeconds = cameraScope.RenderedGameSeconds - recoveryStart;
                     capture("recovery");
+                    double recoveryWallSeconds = recovery.Elapsed.TotalSeconds;
+                    double recoveryReadbackSeconds = captureWallSeconds - recoveryCaptureStart;
                     var schedules = visual.Schedules.Where(value => ReferenceEquals(value.Command, command)).ToArray();
                     var state = visual.Describe();
                     bool recovered = visual.Ready && visual.ProveCurrentPose() && visual.ProveSameFrameSourceState() &&
@@ -329,11 +344,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         events.Count == 1 && (bool)events[0]["exactScheduleInfoWeapon"] && (bool)events[0]["nativeInRangeAtRule"] && (bool)events[0]["nativeLOSAtRule"] &&
                         economy.Count(command) == 1 && economy.Exact(command, false) && economy.ForcedCount(command) == 0 && !command.Cutscene && !command.IsIgnoreCooldown;
                     bool nativeTravel = nativePathObserved && maximumTravel >= 1.5f && maxVelocity > .01f && approachImage;
-                    bool gestureMotion =
-                        schedules.Length == 1 && !schedules[0].Cancelled && schedules[0].Samples > 0 && schedules[0].MaximumAngle > .05f &&
-                        actImage && postActSamples == postActTimes.Length && images.Count == 4 + postActSamples && images.All(value => (bool)value["saved"]) && recovered &&
-                        Game.Instance.Player.GameTime.TotalSeconds - recoveryStart >= 1.6 &&
-                        cameraScope.RenderedGameSeconds - recoveryStart >= 1.6;
+                    var gesturePredicates = new JObject {
+                        ["oneExactSchedule"] = schedules.Length == 1,
+                        ["scheduleNotCancelled"] = schedules.Length == 1 && !schedules[0].Cancelled,
+                        ["positiveOwnedMotionSamples"] = schedules.Length == 1 && schedules[0].Samples > 0 && schedules[0].MaximumAngle > .05f,
+                        ["actualActFrameCaptured"] = actImage, ["postActFramesCaptured"] = postActSamples == postActTimes.Length,
+                        ["allSixFramesSaved"] = images.Count == 4 + postActSamples && images.All(value => (bool)value["saved"]),
+                        ["privatePoseRecoveredWithSourceInvariants"] = recovered,
+                        ["actualRecoveryTimeComplete"] = recoveryGameSeconds >= 1.6,
+                        ["completedRenderedRecoveryTimeComplete"] = recoveryRenderedSeconds >= 1.6,
+                        ["recoveryWallAndFrameBounds"] = recoveryWallSeconds <= 20 && recoveryFrames <= 2400 };
+                    bool gestureMotion = gesturePredicates.Properties().All(value => (bool)value.Value);
                     bool invariants = _sprint25Clock.Pulses == pulseBefore && JToken.DeepEquals(stats, Cleanup2CrabBaseStats(actor)) &&
                         JToken.DeepEquals(mechanics, Cleanup2ScaleMechanics(actor));
                     bool exact = nativeRules && nativeTravel && gestureMotion && invariants;
@@ -344,6 +365,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeTravelMeters"] = maximumTravel, ["minimumNativeTravelMeters"] = 1.5, ["maximumNativeVelocity"] = maxVelocity,
                         ["nativeRulesAndCostProof"] = nativeRules, ["nativeTravelProof"] = nativeTravel,
                         ["nativeCurrentPathObserved"] = nativePathObserved, ["privateGestureMotionAndRecoveryProof"] = gestureMotion,
+                        ["gesturePredicates"] = gesturePredicates, ["recoveryWait"] = new JObject {
+                            ["requiredActualAndRenderedGameSeconds"] = 1.6, ["actualGameSeconds"] = recoveryGameSeconds,
+                            ["completedRenderedGameSeconds"] = recoveryRenderedSeconds, ["wallSeconds"] = recoveryWallSeconds,
+                            ["synchronousReadbackAndPngWallSeconds"] = recoveryReadbackSeconds,
+                            ["frameWaitWallSeconds"] = recoveryWallSeconds - recoveryReadbackSeconds,
+                            ["maximumFrameWaitWallSeconds"] = 8, ["maximumTotalWallSeconds"] = 20, ["frames"] = recoveryFrames,
+                            ["maximumFrames"] = 2400, ["manualClockPulses"] = 0 },
                         ["sourceMechanicsAndClockExact"] = invariants, ["plannedAttacks"] = command.AllAttacks.Count,
                         ["ownerWeaponEvents"] = observer.OwnerWeaponAttacks.Count, ["targetWeaponEvents"] = observer.WeaponAttacks.Count,
                         ["rollEvents"] = observer.Rolls.Count, ["damageEvents"] = observer.Damage.Count,
