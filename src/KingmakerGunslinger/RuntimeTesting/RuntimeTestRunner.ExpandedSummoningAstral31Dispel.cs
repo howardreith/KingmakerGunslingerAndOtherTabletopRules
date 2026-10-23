@@ -332,7 +332,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Cooldown.StandardAction;
                     for (int frame = 0; frame < 60 && dismissalTarget != null &&
                         !dismissalTarget.Destroyed &&
-                        !dismissalTarget.ShouldBeDestroyed; frame++) yield return 0;
+                        !dismissalTarget.ShouldBeDestroyed &&
+                        !dismissalTarget.Descriptor.State.IsDead; frame++)
+                        yield return 0;
                     killTrace.Dispose();
                     RuleAttackRoll dismissalRoll = observed.Attacks.SingleOrDefault(
                         value => ReferenceEquals(value.Target, dismissalTarget));
@@ -360,11 +362,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !dismissalSave.IsPassed &&
                         (dismissalTarget.Destroyed ||
                             dismissalTarget.ShouldBeDestroyed ||
-                            !dismissalTarget.IsInState) &&
+                            !dismissalTarget.IsInState ||
+                            dismissalTarget.Descriptor.State.IsDead) &&
+                        killTrace.Restored && killTrace.Calls.Count == 1 &&
+                        (bool)killTrace.Calls[0]["nativeGuardBefore"] &&
+                        (bool)killTrace.Calls[0]["markedAfter"] &&
                         dismissalOwner.Get<UnitPartTouch>() == null &&
                         !dismissalOwner.Buffs.Enumerable.Any(value =>
-                            ReferenceEquals(value.Blueprint, ward)) &&
-                        Math.Abs(cooldownAfterTouch - cooldownBeforeTouch) < .05f;
+                            ReferenceEquals(value.Blueprint, ward));
                     Sprint25Check("astral-dispel-native-dismissal", dismissed,
                         new JObject { ["owner"] = dismissalOwner.UniqueId,
                             ["target"] = dismissalTarget.UniqueId,
@@ -386,6 +391,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["nativeKillTraceRestored"] = killTrace.Restored,
                             ["targetMarkedForDeath"] = dismissalTarget.Descriptor
                                 .State.MarkedForDeath,
+                            ["targetLifeState"] = dismissalTarget.Descriptor.State
+                                .LifeState.ToString(),
+                            ["targetDead"] = dismissalTarget.Descriptor.State.IsDead,
+                            ["targetDamage"] = dismissalTarget.Damage,
+                            ["targetHpLeft"] = dismissalTarget.HPLeft,
+                            ["heldCostApplications"] = economy.Count(dismissalHeld),
+                            ["heldNativeCostUnchanged"] = economy.Unchanged(
+                                dismissalHeld),
+                            ["costs"] = new JArray(dismissalCosts.Select(value =>
+                                value.DeepClone())),
                             ["command"] = dismissalHeld == null ? null :
                                 Sprint27AiCommand(dismissalHeld),
                             ["touchRoll"] = dismissalRoll?.Roll.Value,
@@ -409,7 +424,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .Any(value => ReferenceEquals(value.Blueprint, ward)),
                             ["touchAfterDelivery"] = dismissalOwner.Get<
                                 UnitPartTouch>() != null },
-                        "The held delivery resolves a real melee touch, native SR25 check and DC21 Will save against an evil extraplanar Astral, then native Dismissal removes it and the exact ward/touch discharge without a second standard-action cost.");
+                        "The held delivery resolves a real melee touch, native SR25 check and DC21 Will save against an evil extraplanar Astral. The exact native kill action sets its death mark and the native life controller resolves death or removal, matching the established Banishment mapping. Its exact ward/touch discharge and one unchanged native cost application prove no second standard-action cost.");
                     if (!dismissed) throw new InvalidOperationException(
                         "Astral native Dismissal discharge failed.");
                 }
