@@ -199,18 +199,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if(written!=null && ReferenceEquals(written.Spell,originalSource))book.ForgetMemorized(written);
                 pins.Restore();
             }
-            for(int frame=0;frame<8;frame++)yield return 0;
-            bool nativeUnbound=cleanupContext!=null && (cleanupContext.View==null ||
+            // Native39: a fixed 8-frame wait (0.22s at this session's frame rate)
+            // checked before the native close unbound its pooled rows. Poll the
+            // same observations, bounded; nothing is released or disposed here.
+            Func<bool> nativeUnboundNow=()=>cleanupContext!=null && (cleanupContext.View==null ||
                 (!ReferenceEquals(ElementalConsoleBookPresentation.Model(cleanupContext.View),cleanupContext.Group) &&
                 !cleanupContext.View.GetComponentsInChildren<SpellBookKnownSpellView>(true)
                     .Any(value=>ReferenceEquals(value.GetViewModel(),cleanupContext.Header))));
-            bool released=off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
+            Func<bool> releasedNow=()=>off ? owned!=null && owned.IsDisposed && cleanupContext==null && Cleanup2LearningModuleState(true) &&
                 typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null :
                 owned!=null && owned.IsDisposed && cleanupContext!=null && cleanupContext.Group.IsDisposed &&
-                cleanupContext.Group.CurrentSelectedSpell==null && nativeUnbound && cleanupContext.Released && cleanupContext.Disposed &&
+                cleanupContext.Group.CurrentSelectedSpell==null && nativeUnboundNow() && cleanupContext.Released && cleanupContext.Disposed &&
                 cleanupContext.Header.IsDisposed && cleanupContext.Projection==null &&
                 typeof(CharcaterServiceContext).GetField("m_SpellBookVM",Cleanup2Fields).GetValue(service)==null;
+            var releaseWatch=Stopwatch.StartNew();int releaseFrames=0;
+            for(;releaseFrames<8 || (!releasedNow() && releaseFrames<600 && releaseWatch.Elapsed.TotalSeconds<8);releaseFrames++)yield return 0;
+            bool nativeUnbound=nativeUnboundNow(),released=releasedNow();
             Cleanup2Check("elemental-console-native-disposed-preparation-release",released,new JObject {
+                ["waitedFrames"]=releaseFrames,["waitedSeconds"]=releaseWatch.Elapsed.TotalSeconds,
                 ["nativeBookDisposed"]=owned!=null && owned.IsDisposed,["nativeGroupDisposed"]=cleanupContext!=null && cleanupContext.Group.IsDisposed,
                 ["nativeSelectionFieldCleared"]=cleanupContext!=null && cleanupContext.Group.CurrentSelectedSpell==null,
                 ["nativeRowsUnbound"]=nativeUnbound,["ownedContextReleased"]=cleanupContext!=null && cleanupContext.Released,

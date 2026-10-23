@@ -599,19 +599,34 @@ namespace KingmakerGunslinger.Summoning
                 if (used) { retained++; continue; }
                 Destroy(material); state.Materials.Remove(material);
             }
+            bool textureDeferred = false;
             if (state.Texture != null)
             {
-                bool used = retainFailedRestore || Resources.FindObjectsOfTypeAll<Material>().Any(material => material != null &&
-                    new[] { "_MainTex", "_BumpMap", "_Parameters" }.Any(slot => material.HasProperty(slot) &&
-                        ReferenceEquals(material.GetTexture(slot), state.Texture)));
-                if (used) retained++;
+                bool used = retainFailedRestore || GiantSummonPaletteJanitor.Bound(state.Texture);
+                // Native38 cold cleanup: during view teardown another component's
+                // material instance can still reference the albedo until its own
+                // OnDestroy finishes. Retire it once nothing binds it; a texture
+                // still bound to a live material after the bound is never destroyed.
+                if (used && !restore && !retainFailedRestore)
+                { GiantSummonPaletteJanitor.Retire(state.Texture); state.Texture = null; textureDeferred = true; }
+                else if (used) retained++;
                 else { Destroy(state.Texture); state.Texture = null; }
             }
             state.Outcome = "palette:" + reason + ";restored=" + restored +
-                ";foreignPreserved=" + (!owned) + ";retainedBoundObjects=" + retained +
+                ";foreignPreserved=" + (!owned) + ";retainedBoundObjects=" + retained + ";textureDeferred=" + textureDeferred +
                 ";verificationFailure=" + (verificationFailure ?? "<none>") + ";firstFailure=" + (state.Failure ?? "<none>");
             if (retained == 0 && !retainFailedRestore) { States.Remove(view); Live.Remove(state); }
             return state.Outcome;
+        }
+
+        // Read-only ownership seam for teardown observers: the exact private
+        // materials and albedo this view's palette record currently owns.
+        internal static UnityEngine.Object[] CaptureOwnedResources(UnitEntityView view)
+        {
+            Ownership state;
+            if (ReferenceEquals(view, null) || !States.TryGetValue(view, out state)) return new UnityEngine.Object[0];
+            return state.Materials.Where(value => value != null).Cast<UnityEngine.Object>()
+                .Concat(state.Texture != null ? new UnityEngine.Object[] { state.Texture } : new UnityEngine.Object[0]).ToArray();
         }
 
         internal static string ReleaseAll(string reason)
@@ -720,6 +735,47 @@ namespace KingmakerGunslinger.Summoning
             }
             return match == null || match.Context == null || match.Context.SourceAbility == null
                 ? null : match.Context.SourceAbility.AssetGuid;
+        }
+    }
+
+    // Retires private palette albedos whose owning view was destroyed while a
+    // material instance still referenced them. Each is destroyed only after no
+    // live material binds it; after its bound it is left alone as foreign-held.
+    internal sealed class GiantSummonPaletteJanitor : MonoBehaviour
+    {
+        private static readonly string[] Slots = { "_MainTex", "_BumpMap", "_Parameters" };
+        private static readonly List<KeyValuePair<Texture2D, float>> Pending = new List<KeyValuePair<Texture2D, float>>();
+        private static GiantSummonPaletteJanitor _instance;
+        internal static string Outcome = "not-used";
+
+        internal static bool Bound(Texture texture)
+        {
+            return Resources.FindObjectsOfTypeAll<Material>().Any(material => material != null &&
+                Slots.Any(slot => material.HasProperty(slot) && ReferenceEquals(material.GetTexture(slot), texture)));
+        }
+
+        internal static void Retire(Texture2D texture)
+        {
+            if (texture == null) return;
+            if (_instance == null)
+            {
+                var holder = new GameObject("KMG_GiantPaletteJanitor") { hideFlags = HideFlags.HideAndDontSave };
+                DontDestroyOnLoad(holder);
+                _instance = holder.AddComponent<GiantSummonPaletteJanitor>();
+            }
+            Pending.Add(new KeyValuePair<Texture2D, float>(texture, Time.realtimeSinceStartup + 10f));
+        }
+
+        private void LateUpdate()
+        {
+            for (int index = Pending.Count - 1; index >= 0; index--)
+            {
+                Texture2D texture = Pending[index].Key;
+                if (texture == null) { Pending.RemoveAt(index); continue; }
+                if (!Bound(texture)) { DestroyImmediate(texture); Pending.RemoveAt(index); Outcome = "retired-unbound"; }
+                else if (Time.realtimeSinceStartup >= Pending[index].Value) { Pending.RemoveAt(index); Outcome = "left-bound-after-deadline"; }
+            }
+            if (Pending.Count == 0) { _instance = null; Destroy(gameObject); }
         }
     }
 

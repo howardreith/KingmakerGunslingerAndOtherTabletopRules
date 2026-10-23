@@ -53,8 +53,12 @@ namespace KingmakerGunslinger.Summoning
             Transform parent=exact[0].Parent;
             if(parent==null || exact.Any(value=>!ReferenceEquals(value.Parent,parent)) || parent.GetComponent<LayoutGroup>()==null)
             {Outcome=operation+":preserve-unverified-native-layout";return;}
-            TMP_FontAsset font=exact.SelectMany(value=>value.Component.GetComponentsInChildren<TextMeshProUGUI>(true))
-                .Where(value=>value.font!=null).Select(value=>value.font).FirstOrDefault();
+            // Native39 PC learning: the first row text used a decorative font.
+            // Prefer the row's own title text, then its largest active text.
+            TMP_FontAsset font=exact.SelectMany(row=>row.Component.GetComponentsInChildren<TextMeshProUGUI>(true)
+                    .Where(value=>value.font!=null && value.text==row.Blueprint.Name)).Select(value=>value.font).FirstOrDefault() ??
+                exact.SelectMany(row=>row.Component.GetComponentsInChildren<TextMeshProUGUI>(false))
+                    .Where(value=>value.font!=null).OrderByDescending(value=>value.fontSize).Select(value=>value.font).FirstOrDefault();
             if(font==null){Outcome=operation+":preserve-missing-native-font";return;}
             var fold=owner.GetComponent<ElementalNativeSourceFold>() ?? owner.gameObject.AddComponent<ElementalNativeSourceFold>();
             fold._rows=exact;fold._current=current;fold._layout=layout;fold._expanded=false;
@@ -66,7 +70,17 @@ namespace KingmakerGunslinger.Summoning
             var header=new GameObject("KMG_ElementalSourceDisclosure",typeof(RectTransform),typeof(Image),typeof(Button),typeof(LayoutElement));
             fold._header=header;var rect=(RectTransform)header.transform;rect.SetParent(parent,false);
             rect.SetSiblingIndex(exact.Min(value=>value.Component.transform.GetSiblingIndex()));
+            // A layout group that does not control child width (native39 PC
+            // learning list) keeps the default 100x100 rect; match the exact
+            // native row's frame. A grid (PC preparation) still sizes its cell.
+            var template=exact[0].Component.transform as RectTransform;
+            if(template!=null)
+            {
+                rect.anchorMin=template.anchorMin;rect.anchorMax=template.anchorMax;rect.pivot=template.pivot;
+                rect.sizeDelta=new Vector2(template.sizeDelta.x,48);
+            }
             var size=header.GetComponent<LayoutElement>();size.minHeight=48;size.preferredHeight=48;size.flexibleWidth=1;
+            size.minWidth=template!=null && template.rect.width>0?template.rect.width:-1;
             header.GetComponent<Image>().color=new Color(.20f,.17f,.105f,.96f);
             var label=new GameObject("Sources",typeof(RectTransform),typeof(TextMeshProUGUI));
             var textRect=(RectTransform)label.transform;textRect.SetParent(rect,false);textRect.anchorMin=Vector2.zero;textRect.anchorMax=Vector2.one;

@@ -161,6 +161,30 @@ namespace KingmakerGunslinger.Summoning
             meta == null ? 0 : meta.SpellLevelCost, meta == null ? 0 : meta.HeightenLevel }; }
 
         private static void Postfix(MechanicActionBarSlotMemorizedSpell __instance, ref List<AbilityData> __result)
+        { ProjectRows(__instance, ref __result); }
+
+        // The PC popup projects on every spell-tab fill (one call per prepared
+        // Druid slot). The published catalog and registry are fixed once
+        // registered, so the expected child set is cached per registry.
+        private static object _expectedRegistry;
+        private static readonly Dictionary<int, BlueprintAbility[]> ExpectedChildren = new Dictionary<int, BlueprintAbility[]>();
+        private static BlueprintAbility[] Expected(int tier, SummonMultiplicity quantity)
+        {
+            var registered = ExpandedSummoningBlueprints.Registered;
+            if (!ReferenceEquals(_expectedRegistry, registered)) { ExpectedChildren.Clear(); _expectedRegistry = registered; }
+            int key = tier * 16 + (int)quantity; BlueprintAbility[] expected;
+            if (!ExpectedChildren.TryGetValue(key, out expected))
+                ExpectedChildren.Add(key, expected = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Where(value => value.ParentTier == tier &&
+                    value.Multiplicity == quantity && SummonVisibilityCatalog.IsPublished(value))
+                    .Select(value => registered.BySymbol[ExpandedSummoningIdentityCatalog.AbilitySymbol(value)] as BlueprintAbility)
+                    .Concat(SummonNativeExpansionCatalog.For(SummonFamily.NaturesAlly, tier).Where(value => value.Multiplicity == quantity)
+                        .Select(value => registered.BySymbol[value.Symbol] as BlueprintAbility)).ToArray());
+            return expected;
+        }
+
+        // Projects one actual conversion row list for this exact prepared slot:
+        // the factory result above, or the PC popup's own Conversion list.
+        internal static void ProjectRows(MechanicActionBarSlotMemorizedSpell __instance, ref List<AbilityData> __result)
         {
             if (!BlueprintBootstrap.IsInitialized || ExpandedSummoningBlueprints.Registered == null || !ExpandedSummoningVisualVariantPatch.IsModuleActive ||
                 __instance == null || __result == null) return;
@@ -211,11 +235,7 @@ namespace KingmakerGunslinger.Summoning
                     var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, AllyParents[tier - 1], "published native Druid SNA parent");
                     if (!ExpandedSummoningPublisher.IsPublishedExpandedParent(parent)) continue;
                     var variantArray = parent.Variants; var variants = variantArray?.ToArray();
-                    var expected = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Where(value => value.ParentTier == tier &&
-                        value.Multiplicity == quantity && SummonVisibilityCatalog.IsPublished(value))
-                        .Select(value => ExpandedSummoningBlueprints.Registered.BySymbol[ExpandedSummoningIdentityCatalog.AbilitySymbol(value)] as BlueprintAbility)
-                        .Concat(SummonNativeExpansionCatalog.For(SummonFamily.NaturesAlly, tier).Where(value => value.Multiplicity == quantity)
-                            .Select(value => ExpandedSummoningBlueprints.Registered.BySymbol[value.Symbol] as BlueprintAbility)).ToArray();
+                    var expected = Expected(tier, quantity);
                     if (variants == null || variants.Length == 0 || variants.Any(value => value == null) || expected.Length == 0 || expected.Any(value => value == null) ||
                         variants.Select(value => value.AssetGuid).Distinct(StringComparer.Ordinal).Count() != variants.Length ||
                         expected.Any(value => !ReferenceEquals(value.Parent, parent) || variants.Count(variant => ReferenceEquals(variant, value)) != 1))
@@ -263,6 +283,28 @@ namespace KingmakerGunslinger.Summoning
                 __result = projected.ToList(); Outcome = "native-druid-quantity-variants;original-quantities-retained-in-chain;quantities=" + replacements.Count + ";children=" + receipts.Sum(value => value.Children.Length);
             }
             catch (Exception error) { Outcome = "preserve-native-druid-conversion:" + error.GetType().Name + ":" + error.Message; }
+        }
+    }
+
+    // Native OnToggleGroupClick 060044B6 fills the PC conversion popup from this
+    // slot's Conversion list, which SetToggleAdditionalSpells 060044B3 (or Call
+    // of the Wild's replacing prefix) builds without GetConvertedAbilityData.
+    // Native39 projected the factory (21 children) while the popup kept parent-
+    // only rows. Project that exact list in place; other rows stay unchanged.
+    [HarmonyPatch(typeof(ActionBarGroupSlot), "SetToggleAdditionalSpells")]
+    internal static class DruidSummonConversionPopupRowsPatch
+    {
+        private static bool Prepare()
+        {
+            var target = typeof(ActionBarGroupSlot).GetMethod("SetToggleAdditionalSpells", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            return DruidSummonConversionVariantPatch.ExactFactory() && target != null && target.MetadataToken == 0x060044b3 &&
+                target.GetMethodBody().GetILAsByteArray().Length == 468;
+        }
+        private static void Postfix(ActionBarGroupSlot __instance, ref List<AbilityData> ___Conversion)
+        {
+            var mechanism = __instance == null ? null : __instance.MechanicSlot as MechanicActionBarSlotMemorizedSpell;
+            if (mechanism == null || ___Conversion == null) return;
+            DruidSummonConversionVariantPatch.ProjectRows(mechanism, ref ___Conversion);
         }
     }
 
