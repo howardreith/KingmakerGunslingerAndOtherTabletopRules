@@ -230,6 +230,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var archetype = family.Key == AlternateSummoningSourceCatalog.MonsterTacticianKey ? PlayerPathTacticianArchetype(new JObject()) :
                 archetypeGuid == null ? null : BlueprintLibraryLookup.RequireExact<BlueprintArchetype>(BlueprintBootstrap.Library, archetypeGuid, family.Key + " native archetype");
             AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype, 8, ref controller);
+            // Native40: a level-8 Tactician lacked the tier-II feature. The
+            // archetype's own progression decides when tiers II-IV arrive; take
+            // further real native levels (bounded at class 20) until it grants them.
+            var tiers = family.Key == AlternateSummoningSourceCatalog.MonsterTacticianKey
+                ? family.Roots.Where(value => value.Tier >= 2 && value.Tier <= 4).Select(value =>
+                    BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library, value.FeatureGuid, family.Key + " tier feature")).ToArray()
+                : new BlueprintFeature[0];
+            while (tiers.Any(value => !caster.Descriptor.HasFact(value)) && caster.Descriptor.Progression.GetClassLevel(characterClass) < 20)
+                AdvanceDisposableArchetypeCaster(caster.Descriptor, characterClass, archetype, 1, ref controller);
             foreach (BlueprintScriptableObject resource in caster.Descriptor.Resources) caster.Descriptor.Resources.Restore(resource);
             return caster;
         }
@@ -256,7 +265,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var canonical = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                     manifest.ResolveActive(canonicalSymbol, typeof(BlueprintAbility)).Id.Value, canonicalSymbol);
                 var feature = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library, rootSpec.FeatureGuid, family.Key + " actual native granting feature");
-                if (!caster.Descriptor.HasFact(feature)) throw new InvalidOperationException("Native level-up did not grant exact feature: " + family.Key + ":" + tier);
+                if (!caster.Descriptor.HasFact(feature))
+                    throw new InvalidOperationException("Native level-up did not grant exact feature: " + family.Key + ":" + tier +
+                        ";characterLevel=" + caster.Descriptor.Progression.CharacterLevel + ";classes=" +
+                        string.Join(",", caster.Descriptor.Progression.Classes.Select(value => value.CharacterClass.name + ":" + value.Level).ToArray()) +
+                        ";grantedTiers=" + string.Join(",", family.Roots.Where(value => caster.Descriptor.Progression.Features.Enumerable
+                            .Any(fact => fact?.Blueprint?.AssetGuid == value.FeatureGuid)).Select(value => value.Tier.ToString()).ToArray()));
                 BlueprintAbility root;
                 if (rootSpec.RootGuid != null) root = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library, rootSpec.RootGuid, rootSpec.RootName);
                 else if (!moduleOff) root = child.Parent;
