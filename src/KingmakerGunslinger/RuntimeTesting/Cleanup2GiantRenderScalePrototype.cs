@@ -130,8 +130,17 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             internal void CopyTo(Cloth target, CapsuleCollider[] capsules, ProposedClothDistances distances)
             {
+                var renderer = target.GetComponent<SkinnedMeshRenderer>();
+                if (!target.gameObject.activeInHierarchy || renderer == null || renderer.enabled ||
+                    capsules.Any(value => value == null || value.enabled))
+                    throw new NotSupportedException("Owned Cloth initialization requires an active owned hierarchy, hidden renderer and disabled capsule proxies.");
                 foreach (var pair in _scalars)
                     if (pair.Key.Name != "enabled") pair.Key.SetValue(target, pair.Value, null);
+                // Native25 returned zero coefficients while the hierarchy was
+                // inactive. Initialize only the hidden owned solver before
+                // assigning its exact source constraints; no native renderer
+                // has been suppressed or palette redirected at this point.
+                target.enabled = true;
                 var coefficients = Coefficients.ToArray();
                 for (int i = 0; i < coefficients.Length; i++)
                 {
@@ -146,7 +155,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.SetVirtualParticleIndices(new List<uint>(_virtualIndices));
                 target.SetVirtualParticleWeights(new List<Vector3>(_virtualWeights));
                 target.SetSelfAndInterCollisionIndices(new List<uint>(_selfIndices));
-                target.enabled = true; // Owned solver only, still under an inactive owned root.
                 if (!SameCoefficients(target.coefficients, coefficients) || !Same(target.capsuleColliders, capsules) ||
                     target.sphereColliders.Length != 0 || _scalars.Any(pair => pair.Key.Name != "enabled" &&
                     !Equals(pair.Value, pair.Key.GetValue(target, null))))
@@ -271,6 +279,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private string _runId, _status;
         private bool _committed, _disposed;
         private bool _production;
+        private bool _clothInitializedBeforeSourceCommit;
         private bool _retirementPending;
         private int _retainedSkinReferences, _retainedClothReferences, _retainedAnchorReferences;
         private string _productionSourceGuid;
@@ -568,8 +577,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.CopyMirrorPose();
                 owner.CreateOwnedRenderers();
                 owner.RequireSourceIdentity(false);
-                owner.Commit();
+                // All owned renderers and capsule physics shapes remain
+                // disabled. Only this private hierarchy becomes active so
+                // Cloth can initialize before any native source mutation.
+                Matrix4x4[] beforeInitialization = owner._sourceTransforms.Select(value => value.localToWorldMatrix).ToArray();
+                Matrix4x4[] colliderInitialization = owner._nativeColliders.Select(value => value.Source.transform.localToWorldMatrix).ToArray();
                 root.SetActive(true);
+                owner.InitializeOwnedCloth();
+                owner.VerifyNoNativeWrite(beforeInitialization, colliderInitialization);
+                owner.RequireSourceIdentity(false);
+                owner.Commit();
+                owner.RevealOwnedRenderers();
                 owner._status = production ? "PRODUCTION_ACTIVE_NO_CLOTH" : "EXPERIMENT_ACTIVE_COLLISION_AND_DISTANCE_CALIBRATION_UNKNOWN";
                 owner.Synchronize();
                 return owner;
@@ -719,9 +737,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 proxy.quality = skin.Source.quality; proxy.updateWhenOffscreen = skin.Source.updateWhenOffscreen;
                 proxy.skinnedMotionVectors = skin.Source.skinnedMotionVectors;
                 CopyRendererSettings(skin.Source, proxy);
+                proxy.enabled = false;
                 var cloth = node.AddComponent<Cloth>();
+                cloth.enabled = false;
                 _ownedCloths.Add(cloth);
-                skin.Cloth.CopyTo(cloth, skin.Cloth.Capsules.Select(CapsuleProxy).ToArray(), _distances);
+                foreach (CapsuleCollider capsule in skin.Cloth.Capsules) CapsuleProxy(capsule);
             }
             foreach (StaticMesh mesh in _statics)
             {
@@ -732,7 +752,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mesh.Proxy = node.AddComponent<MeshRenderer>();
                 mesh.Proxy.sharedMaterials = mesh.Materials;
                 CopyRendererSettings(mesh.Source, mesh.Proxy);
+                mesh.Proxy.enabled = false;
             }
+        }
+
+        private void InitializeOwnedCloth()
+        {
+            if (_committed || !gameObject.activeInHierarchy ||
+                _skins.Any(value => value.Proxy != null && value.Proxy.enabled) ||
+                _statics.Any(value => value.Proxy != null && value.Proxy.enabled))
+                throw new InvalidOperationException("Owned Cloth must initialize hidden before the native source commit.");
+            foreach (Skin skin in _skins.Where(value => value.Cloth != null))
+                skin.Cloth.CopyTo(skin.Proxy.GetComponent<Cloth>(),
+                    skin.Cloth.Capsules.Select(value => _capsules[value]).ToArray(), _distances);
+            _clothInitializedBeforeSourceCommit = _ownedCloths.Count != 0;
+        }
+
+        private void RevealOwnedRenderers()
+        {
+            foreach (Skin skin in _skins.Where(value => value.Proxy != null)) skin.Proxy.enabled = skin.Enabled;
+            foreach (StaticMesh mesh in _statics) mesh.Proxy.enabled = mesh.Enabled;
         }
 
         private static void CopyRendererSettings(Renderer source, Renderer target)
@@ -758,6 +797,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Commit()
         {
+            if (_ownedCloths.Count != 0 && !_clothInitializedBeforeSourceCommit)
+                throw new InvalidOperationException("Exact hidden owned Cloth initialization must precede native source commit.");
             Matrix4x4[] matrices = _nativeColliders.Select(value => value.Source.transform.localToWorldMatrix).ToArray();
             Matrix4x4[] transforms = _sourceTransforms.Select(value => value.localToWorldMatrix).ToArray();
             foreach (Skin skin in _skins)
@@ -937,6 +978,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject { ["runId"] = _runId, ["actor"] = _actor == null ? null : _actor.UniqueId,
                 ["status"] = _status, ["uniformVisualFactor"] = _factor, ["syncCount"] = _syncCount,
                 ["productionOwner"] = _production, ["productionCopiedClothEnabled"] = false,
+                ["ownedClothInitializedHiddenBeforeSourceCommit"] = _clothInitializedBeforeSourceCommit,
                 ["stableNativeSolePivotInView"] = Vector(_visualPivot), ["ownedVisualRootOffset"] = Vector(_ownedOffset),
                 ["lastSyncFrame"] = _lastSyncFrame, ["executionOrder"] = 10010,
                 ["nativeSourceTransformsSameFrameExact"] = _sourceTransformsUnchanged,

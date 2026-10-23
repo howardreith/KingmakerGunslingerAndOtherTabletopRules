@@ -1,11 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -65,16 +70,22 @@ namespace KingmakerGunslinger.Summoning
                 internal Shader Shader;
                 internal string[] Keywords;
                 internal int Queue;
+                internal string RenderType;
+                private readonly StandardMaterialController[] _controllers;
+                private readonly JArray _controllerIntake;
                 internal Map[] Maps;
                 internal readonly Dictionary<string, Color> Colors = new Dictionary<string, Color>();
                 internal bool HasDissolve;
                 internal float Dissolve;
 
-                internal MaterialState(Material material)
+                internal MaterialState(Material material, StandardMaterialController[] controllers)
                 {
                     Material = material; Shader = material.shader;
                     Keywords = material.shaderKeywords.OrderBy(value => value, StringComparer.Ordinal).ToArray();
                     Queue = material.renderQueue;
+                    RenderType = material.GetTag("RenderType", false);
+                    _controllers = controllers;
+                    _controllerIntake = ControllerEvidence(material);
                     Maps = new[] { "_MainTex", "_BumpMap", "_Parameters" }.Select(slot => {
                         bool present = material.HasProperty(slot);
                         return new Map { Slot = slot, Present = present,
@@ -94,8 +105,9 @@ namespace KingmakerGunslinger.Summoning
                 {
                     reason = null;
                     if (current == null || !ReferenceEquals(current.shader, Shader)) reason = "shader";
-                    else if (current.renderQueue != Queue || !current.shaderKeywords.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(Keywords))
-                        reason = "keywords-or-renderQueue";
+                    else if (current.renderQueue != Queue || current.GetTag("RenderType", false) != RenderType ||
+                        !current.shaderKeywords.OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(Keywords))
+                        reason = "keywords-or-renderQueue:" + QueueKeywordDifferences(current).ToString(Formatting.None);
                     else
                     {
                         foreach (Map map in Maps)
@@ -115,6 +127,90 @@ namespace KingmakerGunslinger.Summoning
                     }
                     return reason == null;
                 }
+
+                // Failure-only exact native ownership/cache evidence. A queue
+                // change is not admitted merely because native fade can write
+                // queues: the same material and controller must be observed.
+                private JObject QueueKeywordDifferences(Material current)
+                {
+                    string[] keywords = current.shaderKeywords.OrderBy(value => value, StringComparer.Ordinal).ToArray();
+                    return new JObject { ["materialInstance"] = current.GetInstanceID(), ["materialName"] = current.name,
+                        ["sameProtectedMaterialReference"] = ReferenceEquals(current, Material),
+                        ["shaderInstance"] = current.shader == null ? 0 : current.shader.GetInstanceID(),
+                        ["queueAtIntake"] = Queue, ["queueCurrent"] = current.renderQueue,
+                        ["renderTypeAtIntake"] = RenderType, ["renderTypeCurrent"] = current.GetTag("RenderType", false),
+                        ["keywordCountAtIntake"] = Keywords.Length, ["keywordCountCurrent"] = keywords.Length,
+                        ["keywordsAtIntake"] = new JArray(Keywords.Take(64)), ["keywordsCurrent"] = new JArray(keywords.Take(64)),
+                        ["hasDissolveAtIntake"] = HasDissolve, ["dissolveAtIntake"] = Dissolve,
+                        ["dissolveCurrent"] = current.HasProperty("_Dissolve") ? (JToken)new JValue(current.GetFloat("_Dissolve")) : JValue.CreateNull(),
+                        ["nativeControllerCountAtIntake"] = _controllers.Length,
+                        ["nativeControllersAtIntake"] = _controllerIntake,
+                        ["nativeControllersCurrent"] = ControllerEvidence(current), ["comparisonWeakened"] = false };
+                }
+
+                private JArray ControllerEvidence(Material material)
+                {
+                    var rows = new JArray();
+                    foreach (StandardMaterialController controller in _controllers.Take(8))
+                    {
+                        var row = new JObject { ["controllerInstance"] = controller == null ? 0 : controller.GetInstanceID(),
+                            ["alive"] = controller != null };
+                        rows.Add(row);
+                        if (controller == null) continue;
+                        try
+                        {
+                            IList<Material> driven = ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller);
+                            row["drivenExactMaterialCount"] = driven == null ? -1 : driven.Count(candidate => ReferenceEquals(candidate, material));
+                            FieldInfo field = typeof(StandardMaterialController).GetField("m_MaterialSettings",
+                                BindingFlags.Instance | BindingFlags.NonPublic);
+                            var settings = field == null ? null : field.GetValue(controller) as IDictionary;
+                            row["cacheAvailable"] = settings != null;
+                            bool cached = settings != null && settings.Contains(material);
+                            row["exactMaterialCached"] = cached;
+                            FieldInfo driverField = typeof(StandardMaterialController).GetField("m_DissolveController",
+                                BindingFlags.Instance | BindingFlags.NonPublic);
+                            object driver = driverField == null ? null : driverField.GetValue(controller);
+                            row["dissolveDriverType"] = driver == null ? null : driver.GetType().FullName;
+                            FieldInfo animationsField = driver == null ? null : driver.GetType().GetField("Animations",
+                                BindingFlags.Instance | BindingFlags.Public);
+                            var animations = animationsField == null ? null : animationsField.GetValue(driver) as IList;
+                            row["dissolveAnimationCount"] = animations == null ? -1 : animations.Count;
+                            var animationRows = new JArray();
+                            if (animations != null)
+                                foreach (object animation in animations.Cast<object>().Take(8))
+                                {
+                                    var animationRow = new JObject();
+                                    foreach (string name in new[] { "IsFinished", "Layer", "DissolveCutout" })
+                                    {
+                                        FieldInfo member = animation.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public);
+                                        if (member == null) throw new NotSupportedException("Native dissolve animation field unavailable: " + name);
+                                        animationRow[name] = JToken.FromObject(member.GetValue(animation));
+                                    }
+                                    PropertyInfo delayed = animation.GetType().GetProperty("IsDelayed", BindingFlags.Instance | BindingFlags.Public);
+                                    if (delayed != null) animationRow["IsDelayed"] = JToken.FromObject(delayed.GetValue(animation, null));
+                                    animationRows.Add(animationRow);
+                                }
+                            row["dissolveAnimations"] = animationRows;
+                            if (!cached) continue;
+                            object value = settings[material];
+                            if (value == null || value.GetType().FullName !=
+                                "Kingmaker.Visual.MaterialEffects.StandardMaterialController+MaterialSettings")
+                                throw new NotSupportedException("Exact native material cache entry unavailable.");
+                            var cache = new JObject();
+                            foreach (string name in new[] { "RenderQueue", "RenderTypeTagValue", "IsDissolveEnabled",
+                                "DissolveCutoutEnabled", "DissolveEmissionEnabled", "Dissolve" })
+                            {
+                                FieldInfo member = value.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public);
+                                if (member == null) throw new NotSupportedException("Native cached material field unavailable: " + name);
+                                object scalar = member.GetValue(value);
+                                cache[name] = scalar == null ? JValue.CreateNull() : JToken.FromObject(scalar);
+                            }
+                            row["cachedDefaults"] = cache;
+                        }
+                        catch (Exception error) { row["observationError"] = error.GetType().Name + ":" + error.Message; }
+                    }
+                    return rows;
+                }
             }
 
             private readonly Surface[] _surfaces;
@@ -122,12 +218,13 @@ namespace KingmakerGunslinger.Summoning
 
             internal ProtectedSurfaces(UnitEntityView view)
             {
+                StandardMaterialController[] controllers = view.GetComponentsInChildren<StandardMaterialController>(true);
                 _surfaces = view.GetComponentsInChildren<Renderer>(true).Select(renderer => new Surface {
                     Renderer = renderer, Materials = renderer.sharedMaterials,
                     Mesh = renderer is SkinnedMeshRenderer ? ((SkinnedMeshRenderer)renderer).sharedMesh :
                         (renderer.GetComponent<MeshFilter>() == null ? null : renderer.GetComponent<MeshFilter>().sharedMesh) }).ToArray();
                 foreach (Material material in _surfaces.SelectMany(surface => surface.Materials).Where(value => value != null))
-                    if (!_materials.Any(value => ReferenceEquals(value.Material, material))) _materials.Add(new MaterialState(material));
+                    if (!_materials.Any(value => ReferenceEquals(value.Material, material))) _materials.Add(new MaterialState(material, controllers));
             }
 
             internal bool Verify(Ownership owner, bool allowOwnedSlot, out string reason)

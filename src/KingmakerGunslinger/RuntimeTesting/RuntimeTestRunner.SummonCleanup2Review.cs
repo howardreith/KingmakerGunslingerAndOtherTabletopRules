@@ -1236,12 +1236,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 camera.aspect = 1920f / 1080f;
                 var cameraAttempts = new JArray();
                 bool clearSight = false, renderedSightProven = false;
-                // The old ten-degree view photographed native blue occlusion
-                // silhouettes through a wall. Use a gameplay-like downward
-                // view, test both sides, and retain each obstruction result.
+                // Review25's actual 35-degree image fits every head, but a
+                // hanging chandelier crosses the central bodies. Try lower
+                // downward views first; preserve both-side obstruction checks
+                // and require inspection of the actual acquired image.
                 var renderMeshes=new Dictionary<Mesh,Tuple<Vector3[],int[]>>();
                 var renderSurveyWatch=System.Diagnostics.Stopwatch.StartNew();
-                foreach (float pitch in new[] { 35f,45f,50f,60f,72f,80f })
+                foreach (float pitch in new[] { 20f,25f,35f,45f,50f,60f,72f,80f })
                 {
                     foreach (float side in new[] { 1f, -1f })
                     {
