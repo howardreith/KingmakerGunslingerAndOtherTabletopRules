@@ -284,6 +284,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 economy.Count(heldCommand),
                             ["heldCostUnchanged"] = heldCommand != null &&
                                 economy.Unchanged(heldCommand),
+                            ["heldCutscene"] = heldCommand?.Cutscene,
+                            ["heldIgnoreCooldown"] = heldCommand?.IsIgnoreCooldown,
                             ["touchAfterDelivery"] = owner.Get<UnitPartTouch>() != null,
                             ["heldEvidence"] = new JArray(heldEvidence),
                             ["costs"] = cureCosts,
