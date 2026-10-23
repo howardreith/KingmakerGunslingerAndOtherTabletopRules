@@ -48,6 +48,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool targetChanged = false;
             BlueprintAbility holySmite = null;
             BlueprintBuff blinded = null;
+            int sharedCl = AbilityParams.Empty.CasterLevel;
+            int sharedSpellLevel = AbilityParams.Empty.SpellLevel;
+            int sharedDc = AbilityParams.Empty.DC;
             CreateExpandedSummoningCorrectionHostile(fixture);
             target = fixture.Hostile;
             try
@@ -328,10 +331,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         observed.Roll(owner) == null &&
                         observed.Damage(owner) == null && owner.Damage == 0 &&
                         Astral31SmiteBlind(owner, owner, blinded) == null;
-                    bool effect = dretchExact && wolfExact && targetExact &&
-                        siblingCoherent && goodUnaffected;
                     Buff[] victimBlinds = new[] { dretchBlind, siblingBlind }
                         .Where(value => value != null).Distinct().ToArray();
+                    bool victimParameters = victimBlinds.Length > 0 &&
+                        victimBlinds.All(value => value.Context != null &&
+                            value.Context.ParentContext == null &&
+                            ReferenceEquals(value.Context.AssociatedBlueprint, blinded) &&
+                            value.Context.Params.CasterLevel == 13 &&
+                            value.Context.Params.SpellLevel == 4 &&
+                            value.Context.Params.DC == 20 && value.IsFromSpell &&
+                            !value.IsNotDispelable &&
+                            !ReferenceEquals(value.Context.Params, AbilityParams.Empty)) &&
+                        victimBlinds.Select(value => value.Context.Params).Distinct()
+                            .Count() == victimBlinds.Length;
+                    bool sharedParameters = AbilityParams.Empty.CasterLevel == sharedCl &&
+                        AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                        AbilityParams.Empty.DC == sharedDc;
+                    bool effect = dretchExact && wolfExact && targetExact &&
+                        siblingCoherent && goodUnaffected && victimParameters &&
+                        sharedParameters;
                     Sprint25Check("astral-smite-alignment-sr-effect", effect,
                         new JObject { ["owner"] = owner.UniqueId,
                             ["goodOwner"] = observed.Row(owner),
@@ -348,6 +366,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 null : (siblingResistance.IsSpellResisted ?
                                     "resisted" : "penetrated"),
                             ["friendlyEvilAffected"] = dretchExact,
+                            ["victimParametersIndependent"] = victimParameters,
+                            ["sharedEmptyUnchanged"] = sharedParameters,
+                            ["sharedEmptyBefore"] = new JArray(sharedCl,
+                                sharedSpellLevel, sharedDc),
+                            ["sharedEmptyAfter"] = new JArray(
+                                AbilityParams.Empty.CasterLevel,
+                                AbilityParams.Empty.SpellLevel, AbilityParams.Empty.DC),
+                            ["victimContexts"] = new JArray(victimBlinds.Select(value =>
+                                new JObject { ["owner"] = value.Context.MaybeCaster?.UniqueId,
+                                    ["associatedBlueprint"] = value.Context.AssociatedBlueprint?.AssetGuid,
+                                    ["parentless"] = value.Context.ParentContext == null,
+                                    ["cl"] = value.Context.Params.CasterLevel,
+                                    ["spellLevel"] = value.Context.Params.SpellLevel,
+                                    ["dc"] = value.Context.Params.DC,
+                                    ["fromSpell"] = value.IsFromSpell,
+                                    ["notDispellable"] = value.IsNotDispelable,
+                                    ["aliasesSharedEmpty"] = ReferenceEquals(
+                                        value.Context.Params, AbilityParams.Empty) })),
                             ["forcedRolls"] = 0 },
                         "One actual all-creature burst leaves good untouched, gives a failed-save evil outsider ally10d6 plus one-round blindness, quarters a successful neutral ally, halves a successful ordinary evil enemy, and honors the evil SR25 outsider ally's native roll before any save or effect.");
                     if (!effect) throw new InvalidOperationException(
@@ -377,7 +413,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !dretch.Descriptor.State.HasCondition(
                             UnitCondition.Blindness);
                     bool lifetime = owner.Destroyed && blindRemainedAfterOwner &&
-                        blindExpired;
+                        blindExpired && AbilityParams.Empty.CasterLevel == sharedCl &&
+                        AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
+                        AbilityParams.Empty.DC == sharedDc;
                     Sprint25Check("astral-smite-native-lifetime", lifetime,
                         new JObject { ["ownerDestroyed"] = owner.Destroyed,
                             ["failedSaveBlindRemainedAfterOwner"] =

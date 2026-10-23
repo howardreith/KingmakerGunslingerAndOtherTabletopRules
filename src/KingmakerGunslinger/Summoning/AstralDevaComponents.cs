@@ -37,6 +37,33 @@ using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
+    /// <summary>The deva's two finite victim effects keep their own lifetime
+    /// and parameters. A parentless native context otherwise inherits the
+    /// mutable global AbilityParams.Empty in Kingmaker 2.1.7b.</summary>
+    internal static class AstralVictimEffectContext
+    {
+        private static readonly FieldInfo Parameters =
+            typeof(MechanicsContext).GetField("m_Params",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+
+        internal static MechanicsContext Create(UnitEntityData caster,
+            UnitEntityData target, BlueprintBuff effect, AbilityParams parameters)
+        {
+            if (Parameters == null || Parameters.FieldType != typeof(AbilityParams))
+                throw new MissingFieldException(typeof(MechanicsContext).FullName,
+                    "m_Params");
+            if (parameters == null || ReferenceEquals(parameters, AbilityParams.Empty))
+                throw new ArgumentException("Victim effect requires private parameters.");
+            var context = new MechanicsContext(caster, target.Descriptor,
+                effect, null, new TargetWrapper(target));
+            Parameters.SetValue(context, parameters);
+            if (!ReferenceEquals(context.Params, parameters))
+                throw new InvalidOperationException(
+                    "Astral victim context did not retain its owned parameters.");
+            return context;
+        }
+    }
+
     /// <summary>Astral Deva warhammer rider. It counts exact resolved hits by
     /// this unit's private hammer, asks for one Fortitude save after the second
     /// same-opponent hit in a round, and applies one independently expiring
@@ -78,9 +105,8 @@ namespace KingmakerGunslinger.Summoning
 
             int dc = AstralDevaRulesPolicy.StunDifficultyClass(
                 owner.Stats.Strength.Bonus);
-            var context = new MechanicsContext(owner, victim.Descriptor, Stunned,
-                Fact == null ? null : Fact.MaybeContext, new TargetWrapper(victim));
-            context.Params.DC = dc;
+            var context = AstralVictimEffectContext.Create(owner, victim,
+                Stunned, new AbilityParams { DC = dc });
             var saving = new RuleSavingThrow(victim, SavingThrowType.Fortitude, dc)
             { Reason = context };
             context.TriggerRule(saving);
@@ -266,17 +292,24 @@ namespace KingmakerGunslinger.Summoning
             // associated blueprint is the caster-owned ability is retired with
             // that ability; this private victim state instead keeps its printed
             // one-round clock, while MaybeCaster still records exact ownership.
-            var blindContext = new MechanicsContext(caster, target.Descriptor,
-                Blinded, null, new TargetWrapper(target));
-            blindContext.Params.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
-            blindContext.Params.SpellLevel = AstralDevaRulesPolicy.HolySmiteSpellLevel;
-            blindContext.Params.DC = dc;
+            var blindContext = AstralVictimEffectContext.Create(caster,
+                target, Blinded, new AbilityParams {
+                    CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel,
+                    SpellLevel = AstralDevaRulesPolicy.HolySmiteSpellLevel,
+                    DC = dc });
             var apply = new RuleApplyBuff(target, Blinded, blindContext,
                 TimeSpan.FromSeconds(GameConsts.RoundDuration *
                     AstralDevaRulesPolicy.HolySmiteBlindRounds),
                 (buff, source, duration) =>
                     target.Descriptor.Buffs.AddBuff(buff, source, duration));
             Rulebook.Trigger(apply);
+            // Native buff construction retains this exact context, even if
+            // AddBuff's return value is null. Mark only this cast's actual
+            // victim state as a dispellable spell effect, like ApplyBuff does.
+            foreach (Buff buff in target.Buffs.Enumerable.Where(value =>
+                ReferenceEquals(value.Blueprint, Blinded) &&
+                ReferenceEquals(value.Context, blindContext)))
+                buff.IsFromSpell = true;
         }
     }
 

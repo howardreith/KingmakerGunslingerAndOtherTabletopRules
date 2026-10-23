@@ -724,10 +724,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created,
                     owned.Where(value => value != null && !value.Destroyed)
                         .ToArray());
+                var areasBeforeSettle = Game.Instance.State.AreaEffects.All.ToArray();
                 DateTime cleanupDeadline = DateTime.UtcNow.AddSeconds(8);
                 int cleanupFrames = 0;
+                // Destroyed units can precede native aura-area retirement.
+                // Observe that retirement; never delete an area to force PASS.
                 while (DateTime.UtcNow < cleanupDeadline && cleanupFrames++ < 1000 &&
-                    owned.Any(value => value != null && !value.Destroyed))
+                    (owned.Any(value => value != null && !value.Destroyed) ||
+                        !Game.Instance.State.AreaEffects.All.SequenceEqual(areasBefore) ||
+                        target.Buffs.Enumerable.Any(value => owned.Contains(
+                            value.Context?.MaybeCaster))))
                     yield return 0;
                 foreach (UnitEntityData unit in owned.Where(value => value != null))
                 {
@@ -736,7 +742,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 bool areasExact = Game.Instance.State.AreaEffects.All
                     .SequenceEqual(areasBefore);
-                bool cleanup = resistanceRestored &&
+                bool auraGrantsAbsent = !target.Buffs.Enumerable.Any(value =>
+                    owned.Contains(value.Context?.MaybeCaster));
+                bool cleanup = resistanceRestored && auraGrantsAbsent &&
                     AbilityParams.Empty.CasterLevel == sharedCl &&
                     AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
                     AbilityParams.Empty.DC == sharedDc &&
@@ -759,6 +767,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["activeCommands"] = owned.Sum(value => value.Commands.Raw
                             .Count(command => command != null && !command.IsFinished)),
                         ["areasExact"] = areasExact,
+                        ["areasBaseline"] = new JArray(areasBefore.Select(value =>
+                            new JObject { ["id"] = value.UniqueId,
+                                ["blueprint"] = value.Blueprint?.AssetGuid,
+                                ["owner"] = value.Context?.MaybeCaster?.UniqueId })),
+                        ["areasBeforeSettle"] = new JArray(areasBeforeSettle.Select(value =>
+                            new JObject { ["id"] = value.UniqueId,
+                                ["blueprint"] = value.Blueprint?.AssetGuid,
+                                ["owner"] = value.Context?.MaybeCaster?.UniqueId })),
+                        ["areasAfterSettle"] = new JArray(
+                            Game.Instance.State.AreaEffects.All.Select(value =>
+                                new JObject { ["id"] = value.UniqueId,
+                                    ["blueprint"] = value.Blueprint?.AssetGuid,
+                                    ["owner"] = value.Context?.MaybeCaster?.UniqueId })),
+                        ["auraGrantsAbsent"] = auraGrantsAbsent,
+                        ["remainingOwnedAuraGrants"] = new JArray(
+                            target.Buffs.Enumerable.Where(value => owned.Contains(
+                                value.Context?.MaybeCaster)).Select(value =>
+                                    new JObject { ["blueprint"] = value.Blueprint.AssetGuid,
+                                        ["owner"] = value.Context.MaybeCaster?.UniqueId })),
                         ["fixtureResistanceRestored"] = resistanceRestored,
                         ["fixtureResistanceAfter"] = resistanceAfter,
                         ["sharedEmptyUnchanged"] =
