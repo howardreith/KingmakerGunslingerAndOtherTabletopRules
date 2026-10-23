@@ -6,7 +6,74 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review38 results and review39 corrections (current, October 23)
+### Review39 results and review40 corrections (current, October 23)
+
+Frozen review39 source `3797bf13b4c1c7633a22bb925cf7551e45a95275`, fingerprint
+`acead11b64f7361fe50bf6ed4edf426474c7597a2630510f2693666948ce7ae4`; package
+`7fc6e5a14bfdc835228f1287638086ac1cb5b4f091567fb057db585f5b267f05`, DLL
+`5238afacc3e29a6a94b379fa6e4482f8fa6330414a50b8749a77ec62c2fcf7ec`, MVID
+`b7e69f2e-c4db-440d-a145-9598ccaf0ec4`. One build (183.6s): 23 selected cases,
+development gate 9/0 and 36/36 installed targets pass. Cold scripts are byte-
+identical (apart from CRLF) to the review37 590/0 fixture qualification.
+
+Window19 began 11:06:47 UTC with the **first live cold trio**:
+
+- Cold transaction `cleanup2-cold-20261023T110658Z-eceec86534a0`,
+  **FAILED_RESTORED, 307.6s**: Working, settings and installation restored and
+  verified, no recovery debt, no restoration error. Prepare **22/0**, raw
+  `20261023T1108141157162Z`. Verify-cleanup **19/2**, raw
+  `20261023T1110193647094Z`. The fresh-process reconstruction itself passes:
+  Ettin authored-head cold verify (exact two-headed full-body attachment, both
+  private chains in the native palette, 14,082 vertices/61 bones, native
+  controller adoption and source-cached fade defaults, borrowed textures
+  unchanged, no observer attach), Cloud/Storm production render cold verify
+  (2.1/1.8 factors, frozen-cape cloth ownership), equipment/resources, readiness
+  and profile views. Cleanup fails: units and legacy resources are gone, but four
+  rows are `UNRESOLVED`: both palette material instances (destroyed) and both
+  `KMG_GiantPalette_*_Albedo` textures (**still alive**). Product leak: the
+  view-teardown `Release` keeps the albedo while another component's material
+  instance still references it, and nothing retries. `exact-working-save-write`
+  fails as a consequence (no save after a failed fixture assertion). Verify-absent
+  was correctly not run.
+- PC learning **PASS 17/0, 168.5s**, raw `20261023T1117331593427Z`. Native
+  preparation and learning folds install (`preparation:native-source-fold;rows=1`,
+  `learning:native-source-fold;rows=1`); cancel's producer settled in one frame.
+  Root inspected all three PNGs: the preparation header is readable, but the
+  **learning header is a 160px right-aligned box in a decorative font, wrapped
+  and clipped**. The level-up spellbook preview collapses its single elemental
+  row behind "Elementals (1) — show original sources" (owner-review item).
+- Druid menus **FAIL 61/2, 219.1s**, raw `20261023T1122460179498Z`. Under CotW the
+  native-construction projection now works (`quantities=2;children=21`, exact
+  child -> quantity -> preparation chains, native membership, Fact/metamagic),
+  but the popup rows stayed parent-only: native `OnToggleGroupClick` fills the
+  popup from the slot's `Conversion` list, built by `SetToggleAdditionalSpells`
+  (or CotW's replacing prefix), never from `GetConvertedAbilityData`.
+- Controller **FAIL 26/2, 184.3s**, raw `20261023T1129466055804Z`. Shared screen
+  records fix the capture collision; native preparation, prepared-slot focus
+  and native unprepare pass. Root inspected the controller book: "Elementals —
+  HIDE SOURCES" header, original source row and native tooltip are readable.
+  The disposed-preparation check then ran after a fixed 8 frames (0.22s here)
+  while the native close had not yet unbound its pooled rows.
+
+Window19 closed 11:31:27 UTC (24m40s); every transaction restored.
+
+Review40 corrections:
+
+- Giant palette: view teardown retires a still-referenced private albedo through
+  a janitor that destroys it only once no live material binds it (bounded 10s;
+  a texture still bound after that is left alone). New read-only
+  `GiantSummonPaletteRuntime.CaptureOwnedResources` seam, used by the roster
+  cleanup observer beside the Ettin/primate/serpent seams.
+- PC learning header copies the exact native row's anchors/width and uses the
+  row title's font.
+- Druid: the same projection now also applies in place to the PC popup's own
+  `Conversion` list (`ActionBarGroupSlot.SetToggleAdditionalSpells` 060044B3,
+  468 bytes, after native or CotW construction). The expected child set is cached
+  per registry because this runs on every spell-tab fill. Installed targets 37/37.
+- Controller disposed-preparation check polls the same observations for the
+  native unbind (bounded 600 frames/8s); nothing is released by the observer.
+
+### Review38 results and review39 corrections (October 23)
 
 Frozen review38 source `7d5569ac306740d9164e4d28eb2f33ffcc228569`, fingerprint
 `c10cbb963a34028c22edfabefe22939936b5686fb8811917251a8b917eee3ad8`; package

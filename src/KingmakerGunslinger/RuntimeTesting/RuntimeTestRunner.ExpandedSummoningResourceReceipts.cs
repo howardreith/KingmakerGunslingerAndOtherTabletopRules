@@ -236,6 +236,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     false, true,
                     () => EttinSecondHeadVisual.CaptureOwnedResources(view)
                         .Any(item => ReferenceEquals(item, value)));
+            // Production giant palettes own one private albedo and its cloned
+            // body materials per view. Native38 cold cleanup classified them
+            // UNRESOLVED because this observer never asked their owner.
+            foreach (var value in GiantSummonPaletteRuntime.CaptureOwnedResources(view))
+                add(value, "giant palette ownership seam",
+                    "GiantSummonPaletteRuntime.Ownership", true,
+                    false, true,
+                    () => GiantSummonPaletteRuntime.CaptureOwnedResources(view)
+                        .Any(item => ReferenceEquals(item, value)));
             // Sprints 18 and 19 attach through this seam - both apes, the
             // Girallon and the Xill - and it has exposed CaptureOwnedResources
             // since the day it shipped. This observer simply never asked it,
