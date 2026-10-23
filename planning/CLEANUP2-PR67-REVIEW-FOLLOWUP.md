@@ -6,7 +6,37 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review43 results and review44 corrections (current, October 23)
+### Final completion qualification (declared October 23, 14:35 UTC)
+
+Development windows 25-26 (13:47:18-14:02:04, 14:07:13-14:31:24 UTC) passed every
+remaining coverage phase: alternate-console **48/0** (review44), fresh-OFF
+controller **28/0** (review44), module-ON controller **32/0** including real
+learning (review45), and elementals-off with alternate sources **152/0**
+(review47) after observer-only corrections for the native single-book class strip
+(review46) and the disposable caster's auto-filled hotbar (review47).
+
+Final frozen candidate review47: source `2820b2ba3fb005bdc34389ebf5fc43c2a5800094`,
+fingerprint `c2610569bc27eb33b0a734a854c903b278ad136d4112afdbb394786ef88d9db0`,
+package `4e94d056e9f3e604f6909606a058750b24da760fe1fa266e9c150cc1bc9c85df`, DLL
+`71bc5e4fb79719130284627421da644ece592edc8b29fd6ec336910a5a12fc8a`, MVID
+`3fecddb4-4dbd-4f7a-8b77-15e736fd1441`. One build (180.7s): 23 selected cases,
+development gate 9/0, installed Harmony targets 37/37.
+
+Declared scenarios (sequential, foreground, one transaction at a time), estimated
+about 52 minutes inside the owner's 90-minute ceiling plus mandatory restoration:
+cold trio (giant-humanoids-ii), giant-lineup, giants-off, creature-commands,
+menu-adapters with alternate sources, alternate-console, elementals-sources,
+elementals-learning, fresh-OFF elementals-learning, elementals-console, fresh-OFF
+elementals-console, elementals-off with alternate sources.
+
+Not re-run, evidence retained with its original identity because no creature
+mesh/material/rig/art changed since review35 and no shared dependency was
+touched: Girallon/Stegosaurus bodies (review35 31/0), Gorgon presentation
+(review24), Mastodon/Triceratops shared controls (review10 24/24), Ettin lifecycle
+(review17) and full attacks (review29 19/0), SNA I-IX menus (review7 43/43) and
+tooltips (review9 21/21).
+
+### Review43 results and review44 corrections (October 23)
 
 Frozen review43 source `dbea89ced910512b7ee3e07d30faf997a40f7d38`, fingerprint
 `cc25fce496cb6d96994320398546d15468163ef6b5aa607ca6c7c81a5667937a`; package
