@@ -400,5 +400,315 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private string Cleanup2OrdinaryAttackImage(UnitEntityData actor,UnitEntityData target,string file)
         { return Cleanup2ProductionAttackImage(actor,target,file,SummonAttackGestureVisual.For(actor)?.Key==SummonAttackGesturePolicy.Crab); }
+
+        // Exact creature-commands capture lease only. Normal native rendering
+        // must update the occlusion command buffer at this same held pose;
+        // synchronous Camera.Render at a relocated pose cannot establish that.
+        private sealed class Cleanup2CreatureCommandCamera : IDisposable
+        {
+            private readonly RuntimeTestRunner _owner;
+            private readonly ExpandedSummoningCorrectionFixture _fixture;
+            private readonly UnitEntityData _actor, _targetUnit;
+            private readonly string _key;
+            private readonly Func<bool> _modeCurrent;
+            private readonly Kingmaker.View.CameraRig _rig;
+            private readonly Kingmaker.Controllers.Rest.CameraController _controller;
+            private readonly Kingmaker.Utility.CountingGuard _guard;
+            private readonly Camera _camera;
+            private readonly Kingmaker.Visual.OccludedObjectHighlighting.OccludedObjectHighlight _occlusion;
+            private readonly object _follower, _zoom;
+            private readonly FieldInfo[] _followerFields, _zoomFields, _controlFields, _rigFields;
+            private readonly object[] _followerValues, _zoomValues, _controlValues, _rigValues;
+            private readonly Vector3 _beforeRigPosition, _beforeRigTarget, _beforeCameraPosition;
+            private readonly Quaternion _beforeRigRotation, _beforeCameraRotation;
+            private readonly Transform _cameraParent;
+            private readonly float _beforeSize, _beforeAspect, _beforeFieldOfView;
+            private readonly RenderTexture _beforeTarget;
+            private readonly UnityEngine.PostProcessing.PostProcessingBehaviour _post;
+            private readonly UnityEngine.PostProcessing.PostProcessingProfile _profile;
+            private readonly UnityEngine.PostProcessing.DepthOfFieldModel _depthOfField;
+            private readonly bool _beforeDepthOfField;
+            private readonly Camera.CameraCallback _rendered;
+            private readonly SkinnedMeshRenderer _bodySkin;
+            private readonly Mesh _bodyMesh;
+            private Mesh _renderBoundsMesh;
+            private RenderTexture _target;
+            private RenderTexture _renderedTarget;
+            private Bounds _renderedBounds;
+            private bool _renderedVisible;
+            private Vector3 _position;
+            private Quaternion _rotation;
+            private float _size;
+            private bool _guardOwned, _subscribed, _disposed;
+            private string _renderError;
+            internal int RenderCount, RenderedFrame = -1;
+            internal double RenderedGameSeconds = double.NegativeInfinity;
+            internal Vector3 RenderedActorPosition;
+            internal readonly JObject Evidence = new JObject();
+
+            internal Cleanup2CreatureCommandCamera(RuntimeTestRunner owner, ExpandedSummoningCorrectionFixture fixture,
+                UnitEntityData actor, UnitEntityData target, string key, Func<bool> modeCurrent)
+            {
+                _owner = owner; _fixture = fixture; _actor = actor; _targetUnit = target; _key = key; _modeCurrent = modeCurrent;
+                if (!owner.IsSummonCleanup2Review || (string)owner._request?.Parameters?["reviewPhase"] != "creature-commands" ||
+                    !owner._request.ExitAfterCompletion || fixture == null || !fixture.Created.Contains(actor) || !ReferenceEquals(fixture.Hostile, target) ||
+                    !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
+                    !((key == SummonAttackGesturePolicy.Crab && actor.Blueprint.AssetGuid == CrabSummonAnimationBindingPolicy.UnitGuid) ||
+                        (key == SummonAttackGesturePolicy.Brachiosaurus && actor.Blueprint.AssetGuid == SummonAttackGesturePolicy.BrachiosaurusUnit)) ||
+                    !ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster) || actor.Commands.Empty == false || target.Commands.Empty == false ||
+                    modeCurrent == null || !modeCurrent()) throw new InvalidOperationException("Exact owned idle creature-command camera fixture required.");
+                _rig = TeleportationCastingCamera(); _controller = Game.Instance.CameraController; _camera = _rig?.Camera;
+                _guard = _controller?.FixCamera; _occlusion = _camera?.GetComponent<Kingmaker.Visual.OccludedObjectHighlighting.OccludedObjectHighlight>();
+                if (_camera == null || !_camera.enabled || !_camera.gameObject.activeInHierarchy || _camera.targetTexture != null ||
+                    _guard == null || _guard.GuardCount != 0 || _rig.IsShaking() || _occlusion == null || !_occlusion.enabled || !_occlusion.gameObject.activeInHierarchy)
+                    throw new InvalidOperationException("Exact enabled native camera/occlusion, empty target and idle FixCamera guard required.");
+                _follower = _controller.Follower; _zoom = _rig.CameraZoom;
+                if (_follower == null || _zoom == null) throw new InvalidOperationException("Native camera follower/zoom authority absent.");
+                _followerFields = new[] { "m_IsOn", "m_Unit" }.Select(name => _follower.GetType().GetField(name, Cleanup2Fields)).ToArray();
+                _zoomFields = new[] { "m_PlayerScrollPosition", "m_GameScrollPosition", "m_ScrollPosition", "m_SmoothScrollPosition" }
+                    .Select(name => _zoom.GetType().GetField(name, Cleanup2Fields)).ToArray();
+                _controlFields = new[] { "AllowScroll", "AllowZoom", "Clamp" }.Select(name => _controller.GetType().GetField(name, Cleanup2Fields)).ToArray();
+                _rigFields = new[] { "m_LocalMapArea", "m_SkipClampOneFrame", "m_PrevSmoothedDt" }
+                    .Select(name => typeof(Kingmaker.View.CameraRig).GetField(name, Cleanup2Fields)).ToArray();
+                if (_followerFields.Concat(_zoomFields).Concat(_controlFields).Concat(_rigFields).Any(field => field == null))
+                    throw new MissingFieldException("Installed native creature camera restoration contract differs.");
+                _followerValues = _followerFields.Select(field => field.GetValue(_follower)).ToArray();
+                _zoomValues = _zoomFields.Select(field => field.GetValue(_zoom)).ToArray();
+                _controlValues = _controlFields.Select(field => field.GetValue(_controller)).ToArray();
+                _rigValues = _rigFields.Select(field => field.GetValue(_rig)).ToArray();
+                _beforeRigPosition = _rig.transform.position; _beforeRigTarget = _rig.GetPosition(); _beforeRigRotation = _rig.transform.rotation;
+                _beforeCameraPosition = _camera.transform.position; _beforeCameraRotation = _camera.transform.rotation; _cameraParent = _camera.transform.parent;
+                _beforeSize = _camera.orthographicSize; _beforeAspect = _camera.aspect; _beforeFieldOfView = _camera.fieldOfView; _beforeTarget = _camera.targetTexture;
+                _post = _camera.GetComponent<UnityEngine.PostProcessing.PostProcessingBehaviour>(); _profile = _post == null ? null : _post.profile;
+                _depthOfField = _profile == null ? null : _profile.depthOfField; _beforeDepthOfField = _depthOfField != null && _depthOfField.enabled;
+                var skins = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(value => value.enabled &&
+                    value.gameObject.activeInHierarchy && value.sharedMesh != null && value.sharedMesh.name == "KMG_" + key + "_Original").ToArray();
+                if (skins.Length != 1 || !ExpandedSummoningPteranodonViewPatch.HasLiveOriginalVisual(actor.View, key))
+                    throw new InvalidOperationException("Exact original creature skin required for completed-render bounds.");
+                _bodySkin = skins[0]; _bodyMesh = _bodySkin.sharedMesh;
+                _rendered = camera => {
+                    if (!ReferenceEquals(camera, _camera) || _disposed) return;
+                    try
+                    {
+                        RequireCurrent();
+                        // No ApplyCurrentPose/animator/command call here. Bake
+                        // only the already-rendered private skin in this same
+                        // native post-render callback, before another Update.
+                        _renderedBounds = ReadCompletedRenderBounds();
+                        _renderedVisible = Cleanup2BoundsCorners(_renderedBounds).All(point => {
+                            Vector3 v = _camera.WorldToViewportPoint(point);
+                            return v.z > _camera.nearClipPlane && v.x > .01f && v.x < .99f && v.y > .01f && v.y < .99f;
+                        });
+                        _renderedTarget = _target; RenderCount++; RenderedFrame = Time.frameCount;
+                        RenderedGameSeconds = Game.Instance.Player.GameTime.TotalSeconds; RenderedActorPosition = _actor.Position;
+                    }
+                    catch (Exception error) { _renderError = error.GetType().Name + ":" + error.Message; }
+                };
+                try
+                {
+                    // Same installed Tick060091BB counted guard as the lineup
+                    // lease: no follower, zoom, clamp or input object is replaced.
+                    _guard.Value = true; _guardOwned = true;
+                    if (_guard.GuardCount != 1) throw new InvalidOperationException("Native camera FixCamera acquisition changed.");
+                    var visual = SummonAttackGestureVisual.For(actor);
+                    Bounds nativeBody = visual.CurrentFramingBounds();
+                    Vector3[] bodyCorners = Cleanup2BoundsCorners(nativeBody).ToArray();
+                    float radius = bodyCorners.Max(point => new Vector2(point.x - actor.Position.x, point.z - actor.Position.z).magnitude);
+                    float margin = Mathf.Max(.35f, nativeBody.size.magnitude * .16f);
+                    var atStart = new Bounds(new Vector3(actor.Position.x, nativeBody.center.y, actor.Position.z),
+                        new Vector3(radius * 2, nativeBody.size.y, radius * 2)); atStart.Expand(margin * 2);
+                    var atTarget = atStart; atTarget.center += target.Position - actor.Position;
+                    Bounds targetBounds = new Bounds(target.Position, Vector3.one * .1f);
+                    foreach (Renderer body in target.View.GetComponentsInChildren<Renderer>(true).Where(value => value.enabled && value.gameObject.activeInHierarchy &&
+                        (value is SkinnedMeshRenderer || value is MeshRenderer))) targetBounds.Encapsulate(body.bounds);
+                    var boxes = new[] { atStart, atTarget, targetBounds };
+                    var metrics = boxes.Select(bounds => new Cleanup2ActorMetric { Min = bounds.min, Max = bounds.max,
+                        Crown = new Vector3(bounds.center.x, bounds.max.y, bounds.center.z), Sole = new Vector3(bounds.center.x, bounds.min.y, bounds.center.z) }).ToArray();
+                    var units = new[] { actor, actor, target };
+                    // More physical rays across the swept footprint, still using
+                    // the existing exact selection-collider exemption contract.
+                    var physicalMetrics = new List<Cleanup2ActorMetric>(); var physicalUnits = new List<UnitEntityData>();
+                    for (int b = 0; b < boxes.Length; b++)
+                    foreach (float x in new[] { -.8f, 0f, .8f }) foreach (float z in new[] { -.8f, 0f, .8f })
+                    {
+                        var point = boxes[b].center + Vector3.Scale(boxes[b].extents, new Vector3(x, 0, z));
+                        physicalMetrics.Add(new Cleanup2ActorMetric { Crown = new Vector3(point.x, boxes[b].max.y, point.z),
+                            Sole = new Vector3(point.x, boxes[b].min.y, point.z) }); physicalUnits.Add(units[b]);
+                    }
+                    Bounds envelope = atStart; envelope.Encapsulate(atTarget); envelope.Encapsulate(targetBounds);
+                    var corners = Cleanup2BoundsCorners(envelope).ToArray(); Vector3 centre = envelope.center;
+                    _rig.ScrollToImmediately(centre); _camera.aspect = 1280f / 800f;
+                    if (!_camera.orthographic) _camera.fieldOfView = 60f;
+                    Vector3 lane = target.Position - actor.Position; lane.y = 0; lane.Normalize();
+                    if (lane.sqrMagnitude < .5f) throw new InvalidOperationException("Finite native approach camera axis required.");
+                    Vector3 across = Vector3.Cross(lane, Vector3.up).normalized;
+                    var colliderRefs = Cleanup2NativeSelectionColliderReferences(); var meshCache = new Dictionary<Mesh, Tuple<Vector3[], int[]>>();
+                    var survey = Stopwatch.StartNew(); var attempts = new JArray(); bool found = false;
+                    foreach (float pitch in new[] { 35f, 25f, 45f, 50f, 60f })
+                    {
+                        foreach (float side in new[] { 1f, -1f })
+                        {
+                            Vector3 horizontal = (across * side + lane * .25f).normalized;
+                            Vector3 direction = horizontal * Mathf.Cos(pitch * Mathf.Deg2Rad) - Vector3.up * Mathf.Sin(pitch * Mathf.Deg2Rad);
+                            _rotation = Quaternion.LookRotation(direction, Vector3.up); _rig.SetRotation(_rotation.eulerAngles.y);
+                            Vector3[] projected = corners.Select(point => Quaternion.Inverse(_rotation) * (point - centre)).ToArray();
+                            float halfFrame = Mathf.Max(projected.Max(point => Mathf.Abs(point.y)), projected.Max(point => Mathf.Abs(point.x)) / _camera.aspect) * 1.12f;
+                            float distance = projected.Max(point => Mathf.Abs(point.z)) + Mathf.Max(4f, halfFrame / Mathf.Tan(_camera.fieldOfView * Mathf.Deg2Rad * .5f));
+                            if (_camera.orthographic) _camera.orthographicSize = halfFrame;
+                            _position = centre - direction * distance; _camera.transform.SetPositionAndRotation(_position, _rotation);
+                            JArray ignored; var blockers = Cleanup2LineupSightBlockers(_camera, physicalUnits, physicalMetrics.ToArray(), colliderRefs, out ignored);
+                            var rendered = Cleanup2LineupRenderedObstructions(_camera, units, metrics, meshCache, survey);
+                            attempts.Add(new JObject { ["pitch"] = pitch, ["side"] = side, ["position"] = SurveyVector(_position),
+                                ["physicalBlockers"] = blockers, ["ignoredExactSelectionColliders"] = ignored, ["renderedSurvey"] = rendered });
+                            if (blockers.Count == 0 && ((JArray)rendered["actualTriangleHits"]).Count == 0)
+                            { found = true; Evidence["environmentSightProven"] = (bool)rendered["qualified"]; break; }
+                        }
+                        if (found || survey.Elapsed.TotalSeconds > 15) break;
+                    }
+                    Evidence["cameraAttempts"] = attempts;
+                    if (!found) throw new InvalidOperationException("All bounded native creature camera candidates have demonstrated obstructions.");
+                    _size = _camera.orthographicSize;
+                    _target = new RenderTexture(1280, 800, 24, RenderTextureFormat.ARGB32); _camera.targetTexture = _target;
+                    _renderBoundsMesh = new Mesh();
+                    if (_depthOfField != null) _depthOfField.enabled = false;
+                    Camera.onPostRender += _rendered; _subscribed = true;
+                    Evidence["unit"] = actor.UniqueId; Evidence["target"] = target.UniqueId; Evidence["cameraInstance"] = _camera.GetInstanceID();
+                    Evidence["fixedCameraPosition"] = SurveyVector(_position); Evidence["fieldOfView"] = _camera.fieldOfView;
+                    Evidence["fullSweptEnvelopeMin"] = SurveyVector(envelope.min); Evidence["fullSweptEnvelopeMax"] = SurveyVector(envelope.max);
+                    Evidence["scope"] = "Owned body maximum horizontal radius through start-to-target travel plus16% native-body diagonal gesture margin. Same fixed normal native camera through ready/approach/act/recovery; no actor pose, scene, collider, highlighter or material override.";
+                    Evidence["visibilityLimit"] = "Sampled physics/readable-triangle survey only. Unreadable/overbudget meshes remain UNKNOWN, not clear. Actual native PNG inspection required.";
+                    RequireCurrent();
+                }
+                catch (Exception error)
+                {
+                    Evidence["initializationError"] = error.ToString();
+                    try { Dispose(); } catch (Exception cleanup) { throw new AggregateException(error, cleanup); }
+                    throw;
+                }
+            }
+
+            internal void RequireCurrent()
+            {
+                if (_disposed || !_guardOwned || !_modeCurrent() || !ReferenceEquals(Game.Instance.CameraController, _controller) ||
+                    !ReferenceEquals(TeleportationCastingCamera(), _rig) || !ReferenceEquals(_rig.Camera, _camera) || !ReferenceEquals(_controller.FixCamera, _guard) || _guard.GuardCount != 1 ||
+                    !ReferenceEquals(_camera.targetTexture, _target) || _camera.transform.parent != _cameraParent || !_camera.enabled || !_camera.gameObject.activeInHierarchy ||
+                    Vector3.Distance(_camera.transform.position, _position) > .02f || Quaternion.Angle(_camera.transform.rotation, _rotation) > .01f ||
+                    _camera.aspect != 1280f / 800f || _camera.orthographicSize != _size || (!_camera.orthographic && _camera.fieldOfView != 60f) ||
+                    !_occlusion.enabled || !_occlusion.gameObject.activeInHierarchy ||
+                    (_post != null && (!ReferenceEquals(_post.profile, _profile) || !ReferenceEquals(_profile == null ? null : _profile.depthOfField, _depthOfField))) ||
+                    (_depthOfField != null && _depthOfField.enabled) || !ReferenceEquals(_controller.Follower, _follower) || !ReferenceEquals(_rig.CameraZoom, _zoom) ||
+                    !_followerFields.Select((field, i) => Equals(field.GetValue(_follower), _followerValues[i])).All(value => value) ||
+                    !_zoomFields.Select((field, i) => Equals(field.GetValue(_zoom), _zoomValues[i])).All(value => value) ||
+                    !_controlFields.Select((field, i) => Equals(field.GetValue(_controller), _controlValues[i])).All(value => value) ||
+                    _actor.Destroyed || _targetUnit.Destroyed || !_fixture.Created.Contains(_actor) || !ReferenceEquals(_fixture.Hostile, _targetUnit) ||
+                    _bodySkin == null || !ReferenceEquals(_bodySkin.sharedMesh, _bodyMesh) || !_bodySkin.enabled || !_bodySkin.gameObject.activeInHierarchy ||
+                    !ExpandedSummoningPteranodonViewPatch.HasLiveOriginalVisual(_actor.View, _key) ||
+                    !ExpandedSummoningPlayerPathUnitExact(_actor, _fixture.Caster) || _renderError != null)
+                    throw new InvalidOperationException("Owned normal-frame creature camera context changed: " + _renderError);
+            }
+
+            private Bounds ReadCompletedRenderBounds()
+            {
+                _renderBoundsMesh.Clear(); _bodySkin.BakeMesh(_renderBoundsMesh);
+                Vector3[] vertices = _renderBoundsMesh.vertices;
+                if (vertices.Length == 0 || vertices.Length != _bodyMesh.vertexCount)
+                    throw new InvalidOperationException("Completed-render original skin vertex count differs.");
+                var bounds = new Bounds(_bodySkin.transform.TransformPoint(vertices[0]), Vector3.zero);
+                foreach (Vector3 vertex in vertices)
+                {
+                    Vector3 world = _bodySkin.transform.TransformPoint(vertex);
+                    if (!Cleanup2Finite(world)) throw new InvalidOperationException("Nonfinite completed-render body framing point.");
+                    bounds.Encapsulate(world);
+                }
+                foreach (Renderer body in _targetUnit.View.GetComponentsInChildren<Renderer>(true).Where(value => value.enabled &&
+                    value.gameObject.activeInHierarchy && (value is SkinnedMeshRenderer || value is MeshRenderer))) bounds.Encapsulate(body.bounds);
+                return bounds; // Framing only; no geometry is exported.
+            }
+
+            internal string Capture(string file)
+            {
+                RequireCurrent();
+                if (RenderCount < 3 || RenderedFrame < 0 || Time.frameCount - RenderedFrame < 0 || Time.frameCount - RenderedFrame > 1 ||
+                    !ReferenceEquals(_renderedTarget, _target))
+                    throw new InvalidOperationException("A fresh completed render of the exact owned native target is required.");
+                if (!_renderedVisible || ScreenFadeAlpha() > .02f) throw new InvalidOperationException("Completed-render full native body clips the fixed view or screen is faded.");
+                Evidence["readbackRenderedFrame"] = RenderedFrame;
+                Evidence["readbackRenderedGameSeconds"] = RenderedGameSeconds;
+                Evidence["readbackBoundsMin"] = SurveyVector(_renderedBounds.min); Evidence["readbackBoundsMax"] = SurveyVector(_renderedBounds.max);
+                Evidence["readbackTargetInstance"] = _renderedTarget.GetInstanceID();
+                return _owner.WriteRefinementImage(_position, _rotation, file, _target);
+            }
+
+            public void Dispose()
+            {
+                if (_disposed) return; _disposed = true;
+                if (_subscribed) { Camera.onPostRender -= _rendered; _subscribed = false; }
+                var errors = new List<string>();
+                try
+                {
+                    if (_guardOwned)
+                    {
+                        if (!ReferenceEquals(Game.Instance.CameraController, _controller) || !ReferenceEquals(TeleportationCastingCamera(), _rig) ||
+                            !ReferenceEquals(_rig.Camera, _camera) || !ReferenceEquals(_controller.FixCamera, _guard) || _guard.GuardCount != 1 ||
+                            _camera.transform.parent != _cameraParent) throw new InvalidOperationException("Foreign native camera/guard authority; restoration refused.");
+                        if (ReferenceEquals(_camera.targetTexture, _target)) _camera.targetTexture = _beforeTarget;
+                        else if (!ReferenceEquals(_camera.targetTexture, _beforeTarget)) throw new InvalidOperationException("Foreign native render target; not overwritten.");
+                        if (_target != null && (Vector3.Distance(_camera.transform.position, _position) > .02f || Quaternion.Angle(_camera.transform.rotation, _rotation) > .01f ||
+                            _camera.aspect != 1280f / 800f || _camera.orthographicSize != _size || (!_camera.orthographic && _camera.fieldOfView != 60f)))
+                            throw new InvalidOperationException("Foreign native camera pose/lens; not overwritten.");
+                        if (_post != null && (!ReferenceEquals(_post.profile, _profile) || !ReferenceEquals(_profile == null ? null : _profile.depthOfField, _depthOfField)))
+                            throw new InvalidOperationException("Foreign native camera post profile; not overwritten.");
+                        if (_target != null && _depthOfField != null && _depthOfField.enabled)
+                            throw new InvalidOperationException("Foreign native depth-of-field value; not overwritten.");
+                        _rig.ScrollToImmediately(_beforeRigPosition); _rig.ScrollTo(_beforeRigTarget);
+                        _rig.transform.position = _beforeRigPosition; _rig.transform.rotation = _beforeRigRotation;
+                        for (int i = 0; i < _rigFields.Length; i++) _rigFields[i].SetValue(_rig, _rigValues[i]);
+                        _camera.transform.SetPositionAndRotation(_beforeCameraPosition, _beforeCameraRotation);
+                        _camera.orthographicSize = _beforeSize; _camera.aspect = _beforeAspect; _camera.fieldOfView = _beforeFieldOfView;
+                        if (_depthOfField != null) _depthOfField.enabled = _beforeDepthOfField;
+                        if (_rig.transform.position != _beforeRigPosition || _rig.GetPosition() != _beforeRigTarget ||
+                            Quaternion.Angle(_rig.transform.rotation, _beforeRigRotation) > .001f ||
+                            Vector3.Distance(_camera.transform.position, _beforeCameraPosition) > .001f || Quaternion.Angle(_camera.transform.rotation, _beforeCameraRotation) > .001f ||
+                            _camera.orthographicSize != _beforeSize || _camera.aspect != _beforeAspect || _camera.fieldOfView != _beforeFieldOfView ||
+                            !ReferenceEquals(_camera.targetTexture, _beforeTarget) || (_depthOfField != null && _depthOfField.enabled != _beforeDepthOfField) ||
+                            !ReferenceEquals(_controller.Follower, _follower) || !ReferenceEquals(_rig.CameraZoom, _zoom) ||
+                            !_rigFields.Select((field, i) => Equals(field.GetValue(_rig), _rigValues[i])).All(value => value) ||
+                            !_followerFields.Select((field, i) => Equals(field.GetValue(_follower), _followerValues[i])).All(value => value) ||
+                            !_zoomFields.Select((field, i) => Equals(field.GetValue(_zoom), _zoomValues[i])).All(value => value) ||
+                            !_controlFields.Select((field, i) => Equals(field.GetValue(_controller), _controlValues[i])).All(value => value))
+                            throw new InvalidOperationException("Native creature camera state restoration is not exact.");
+                    }
+                }
+                catch (Exception error) { errors.Add(error.GetType().Name + ":" + error.Message); }
+                finally
+                {
+                    try
+                    {
+                        if (_guardOwned)
+                        {
+                            if (!ReferenceEquals(_controller.FixCamera, _guard) || _guard.GuardCount < 1) errors.Add("foreign-camera-guard-release-refused");
+                            else { int before = _guard.GuardCount; _guard.Value = false; if (_guard.GuardCount != before - 1) errors.Add("camera-guard-release-not-exact"); }
+                            _guardOwned = false;
+                        }
+                    }
+                    catch (Exception error) { errors.Add("guard-release:" + error.GetType().Name + ":" + error.Message); }
+                    try
+                    {
+                        if (_target != null && _camera != null && !ReferenceEquals(_camera.targetTexture, _target))
+                        { _target.Release(); UnityEngine.Object.Destroy(_target); }
+                    }
+                    catch (Exception error) { errors.Add("target-release:" + error.GetType().Name + ":" + error.Message); }
+                    try
+                    { if (_renderBoundsMesh != null) { UnityEngine.Object.DestroyImmediate(_renderBoundsMesh); _renderBoundsMesh = null; } }
+                    catch (Exception error) { errors.Add("bounds-mesh-release:" + error.GetType().Name + ":" + error.Message); }
+                }
+                Evidence["restored"] = errors.Count == 0; Evidence["restorationErrors"] = new JArray(errors);
+                Evidence["ordinaryNativeRenderCount"] = RenderCount; Evidence["lastRenderedFrame"] = RenderedFrame;
+                Evidence["observerManualCameraRenderCalled"] = false; Evidence["actorsSceneMaterialsOrOcclusionFlagsChanged"] = false;
+                _owner.Cleanup2Check("creature-command-fixed-native-camera-restored-" + _key, errors.Count == 0, Evidence,
+                    "The exact native rig/pose/lens/DOF/target and counted FixCamera lease restore without changing unrelated actor/UI/scene state.");
+                if (errors.Count != 0) throw new InvalidOperationException("Native creature camera cleanup failed: " + string.Join("|", errors.ToArray()));
+            }
+        }
     }
 }

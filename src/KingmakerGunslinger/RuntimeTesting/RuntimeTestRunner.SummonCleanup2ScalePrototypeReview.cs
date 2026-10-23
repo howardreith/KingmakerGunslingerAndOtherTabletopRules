@@ -138,6 +138,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["basisOrigin"] = SurveyVector(groundPoints[0]), ["actors"] = new JArray(measured.Select(value => value.Document)) },
                         "Actual current-pose transient baked surfaces, with verified skin-to-world convention, provide post-prototype crown/sole/height; no culling bounds substitute.");
                 }
+                int contactFrames = 0;
+                while (!contact.ObservationWindowComplete && contact.WallElapsedSeconds < 12d && contactFrames++ < 1800)
+                {
+                    if (watch.Elapsed.TotalSeconds > 120) throw new TimeoutException("Scale prototype wall bound.");
+                    Cleanup2ScaleObserveCloths(clothMotion); contact.Observe(); yield return 0;
+                }
                 JObject contactResult = contact.Describe();
                 Cleanup2Check("scale-prototype-disabled-capsule-contact", (bool?)contactResult["passed"] == true,
                     contactResult, "Two original no-seam authored cloth grids prove a stable particle frame, positive motion and a disabled-capsule response against an otherwise identical no-collider control; no enabled physics collider is permitted.");

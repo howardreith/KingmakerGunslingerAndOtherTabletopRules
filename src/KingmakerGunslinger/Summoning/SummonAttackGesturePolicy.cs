@@ -18,6 +18,8 @@ namespace KingmakerGunslinger.Summoning
         internal const string BrachiosaurusUnit = "9093aef39ecc416092ef68655a7e56fb";
         internal const string TailWeapon = "13b51070d6f84a15bfed98a04c98fa30";
         internal const float NativeStoredDelay = 1f, RecoverySeconds = .5f;
+        private static readonly float[] ChelaActYaw = { 78f, 0f, -73f, 0f, -20f, 0f, 16f };
+        private static readonly float[] ChelaRecoveryYaw = { 22f, 0f, -20f, 0f, -5f, 0f, 4f };
         internal static readonly string[] BrachiosaurusSources = {
             "5ff406f72e834d868276c43786a05133", "7ab83d22b4284fbe8ab038776d443507", "10a645ecd39f41d88fc5ea0018e5210e",
             "8edc4ca5bab3563ba34e18326926842e", "78fc5dcf4d5650df9c08e71b4d32682c", "c87b82cb13b5538080ae8d1864266fe0",
@@ -61,8 +63,14 @@ namespace KingmakerGunslinger.Summoning
         internal static float TailPitch(int index, float elapsed)
         { return Angle(elapsed, new[] { -6f, -8f, -4f, -2f }[index], new[] { 6f, 8f, 4f, 2f }[index], new[] { 2f, 3f, 1f, 0f }[index]); }
         internal static float ChelaYaw(int joint, bool left, float elapsed)
-        { return (left ? 1f : -1f) * Angle(elapsed, joint < 3 ? -10f : -3f, joint < 3 ? 12f : 4f, joint < 3 ? 4f : 1f); }
+        {
+            // The authored folded arm unfolds at shoulder, elbow, wrist and
+            // palm. Rotating every short donor joint folded the long pincer
+            // across the midline and down; it did not extend the limb.
+            if (joint < 0 || joint > 6) return 0f;
+            return (left ? 1f : -1f) * Angle(elapsed, 0f, ChelaActYaw[joint], ChelaRecoveryYaw[joint]);
+        }
         internal static float ChelaPitch(int joint, float elapsed)
-        { return Angle(elapsed, joint < 3 ? -12f : -4f, joint < 3 ? 10f : 3f, joint < 3 ? 3f : 1f); }
+        { return joint == 0 ? Angle(elapsed, 0f, -5f, -1f) : 0f; }
     }
 }

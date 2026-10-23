@@ -10,6 +10,7 @@ using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Persistence.JsonUtility;
 using Kingmaker.GameModes;
 using Kingmaker.RuleSystem.Rules.Abilities;
 using Kingmaker.UI.ActionBar;
@@ -102,9 +103,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (toggles.Any(value => value)) throw new InvalidOperationException("Closed native action groups required.");
             var originalInputs = party.Select(value => new Cleanup2TooltipInputs(value)).ToArray();
             var originalBars = party.Select(value => new TeleportationUiSettingsFixture(value.UISettings)).ToArray();
+            var fixtureBooksBefore = fixture.Caster.Descriptor.Spellbooks.ToArray();
+            var fixtureStatsBefore = new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue };
+            bool fixtureDetachedBefore = fixture.Caster.IsDetached;
             var extraBooks = new TeleportResourceFixtureOwner(fixture.Caster); var removeFacts = new List<Action>();
             var hooks = HarmonyInstance.Create("kmg.cleanup2.elemental-sources." + _request.RunId);
-            var watch = Stopwatch.StartNew(); var casts = new JArray(); bool added = false, selectedFixture = false;
+            var watch = Stopwatch.StartNew(); var casts = new JArray(); bool added = false, selectedFixture = false, bodyCompleted = false;
             Cleanup2NativeDefaultScope mode = null; NativeIconScreenEvidence screens = null;
             AbilityData pendingOwned = null;
             UnitEntityData[] ownedParty = null;
@@ -238,12 +242,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalActionExtendable"] = signature.DurationExtendable, ["nativeExpectedMultiplier"] = multiplier },
                     "Actual RuleSummonUnit duration follows the original native action's Extend eligibility; no duration/rank field is edited.");
                 if (!duration) throw new InvalidOperationException("Native Extend duration differs from original action contract.");
-                foreach (int frame in Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts, uiOwned, ownedSessions)) yield return frame;
+                using (var specialSteps = Cleanup2SourcesSpecialAndPin(fixture, book, smallParent, spellGroup, mode, watch, screens, removeFacts, uiOwned, ownedSessions).GetEnumerator())
+                {
+                    while (true)
+                    {
+                        bool next;
+                        try { next = specialSteps.MoveNext(); }
+                        catch (Exception error)
+                        {
+                            Cleanup2Check("elemental-sources-special-or-pin-exception", false, new JObject {
+                                ["exception"] = error.ToString(), ["all24CastCasesCompleted"] = casts.Count,
+                                ["scope"] = "Original immediate special/pin/hydration iterator failure; retained independently of outer cleanup." },
+                                "Any original special-slot/pin failure remains visible before teardown and is never replaced by a cleanup diagnostic.");
+                            throw;
+                        }
+                        if (!next) break;
+                        yield return specialSteps.Current;
+                    }
+                }
                 Cleanup2Check("elemental-sources-scope", true, new JObject {
                     ["all24OriginalCasts"] = casts.Count, ["maximumPhaseWallSeconds"] = 360, ["wallSeconds"] = watch.Elapsed.TotalSeconds,
                     ["console"] = "separate native controller transaction; not exercised here", ["coldSave"] = "separate explicitly authorized fresh-load transaction; not proved by runtime pins",
                     ["moduleOff"] = "fresh process with module OFF before startup; Active is restart-only, never toggled by reflection here" },
                     "The original-source cast/source-budget slice and separate controller, cold-save and fresh-OFF obligations are explicit.");
+                bodyCompleted = true;
             }
             finally
             {
@@ -256,7 +278,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         restore("own-target", () => game.SelectedAbilityHandler.DropAbility());
                     restore("capture-hooks", () => { _expandedSummoningPlayerPathCaptureActive = false; hooks.UnpatchAll(hooks.Id); });
                     foreach (var remove in removeFacts.AsEnumerable().Reverse()) restore("own-native-feature", remove);
-                    restore("own-extra-books", extraBooks.Restore);
+                    bool extraBookReleaseCalled = false;
+                    restore("own-extra-books", () => {
+                        if (!fixture.Created.Contains(fixture.Caster) || extraBooks.Books.Any(value =>
+                            fixture.Caster.Descriptor.GetSpellbook(value.Blueprint) != null && !ReferenceEquals(fixture.Caster.Descriptor.GetSpellbook(value.Blueprint), value)))
+                            throw new InvalidOperationException("Foreign extra-book replacement or unowned fixture caster; not overwritten.");
+                        extraBooks.Restore(); extraBookReleaseCalled = true;
+                    });
                     bool untouched = !selectedFixture && ReferenceEquals(group.GetCurrentCharacter(), originalGroup) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selection);
                     bool ownsUi = ReferenceEquals(GroupController.Instance, group) && ReferenceEquals(ActionBarManager.Instance, bar) &&
                         ui.TooltipsController.ContextTooltipData == null && game.SelectedAbilityHandler?.Ability == null &&
@@ -273,12 +301,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             restore("native-selection", () => ui.SelectionManagerPC.MultiSelect(selection.Where(value => value?.View != null).Select(value => value.View).ToArray(), false));
                         }
                     }
+                    // TeleportResourceFixtureOwner.IsRestored additionally
+                    // compares original book CONTENTS. This phase intentionally
+                    // prepares/casts/edits its disposable Wizard book. Those
+                    // owned experiment changes must not be confused with an
+                    // unreleased extra book or protected original-party data.
+                    bool fixtureBooksExact = fixture.Caster.Descriptor.Spellbooks.SequenceEqual(fixtureBooksBefore);
+                    bool extraBooksAbsent = extraBooks.Books.All(value => fixture.Caster.Descriptor.GetSpellbook(value.Blueprint) == null);
+                    bool fixtureStatsExact = new[] { fixture.Caster.Stats.Intelligence.BaseValue, fixture.Caster.Stats.Wisdom.BaseValue, fixture.Caster.Stats.Charisma.BaseValue }
+                        .SequenceEqual(fixtureStatsBefore) && fixture.Caster.IsDetached == fixtureDetachedBefore;
+                    bool ownedReleased = extraBookReleaseCalled && fixtureBooksExact && extraBooksAbsent && fixtureStatsExact;
                     bool exact = errors.Count == 0 && player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selection) &&
                         ReferenceEquals(group.GetCurrentCharacter(), originalGroup) && originalInputs.All(value => value.Unchanged()) &&
-                        originalBars.All(value => value.IsRestored()) && extraBooks.IsRestored();
+                        originalBars.All(value => value.IsRestored()) && ownedReleased;
                     Cleanup2Check("elemental-sources-restored", exact, new JObject {
                         ["partyExact"] = player.Party.SequenceEqual(party), ["originalResourcesSlotsPinsExact"] = originalInputs.All(value => value.Unchanged()) && originalBars.All(value => value.IsRestored()),
-                        ["ownedFeaturesAndBooksReleased"] = errors.Count == 0 && extraBooks.IsRestored(), ["errors"] = new JArray(errors) },
+                        ["ownedFeaturesAndBooksReleased"] = errors.Count == 0 && ownedReleased, ["originalFixtureBookReferencesExact"] = fixtureBooksExact,
+                        ["ownedExtraBooksAbsent"] = extraBooksAbsent, ["nativeExtraBookReleaseCompleted"] = extraBookReleaseCalled,
+                        ["fixtureStatsAndDetachmentExact"] = fixtureStatsExact, ["bodyCompleted"] = bodyCompleted,
+                        ["disposableBookContentScope"] = "Known/custom/prepared contents deliberately exercised inside this disposable caster are released by fixture teardown; every original party resource/slot/pin remains independently exact.",
+                        ["errors"] = new JArray(errors) },
                         "Owned native facts/books/pin/chooser/UI release while every original party input and reference remains exact.");
                     if (!exact) errors.Add("Original UI/resource restoration unverified.");
                 }
@@ -287,7 +329,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try { if (screens != null) screens.Dispose(); }
                     finally { if (mode != null) mode.Dispose(); }
                 }
-                if (errors.Count != 0) throw new InvalidOperationException(string.Join("|", errors.ToArray()));
+                // If the body failed (or its iterator is being disposed), its
+                // original error must propagate. Cleanup has its own FAIL row;
+                // throwing here would erase the primary native failure.
+                if (errors.Count != 0 && bodyCompleted) throw new InvalidOperationException(string.Join("|", errors.ToArray()));
             }
         }
 
@@ -472,7 +517,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Exact new native Extend feat required.");
             var extend = (Feature)fixture.Caster.Descriptor.AddFact(extendBlueprint);
             removes.Add(() => { if (!ReferenceEquals(fixture.Caster.Descriptor.GetFact(extendBlueprint), extend))
-                throw new InvalidOperationException("Foreign Extend feature; not removed."); fixture.Caster.Descriptor.RemoveFact(extend); });
+                throw new InvalidOperationException("Foreign Extend feature; not removed."); fixture.Caster.Descriptor.RemoveFact(extend);
+                if (!extend.IsDisposed || fixture.Caster.Descriptor.HasFact(extendBlueprint)) throw new InvalidOperationException("Owned Extend fact did not release exactly."); });
             var game = Game.Instance;
             var modesField = typeof(Game).GetField("m_GameModes", Cleanup2Fields);
             var countsField = typeof(Game).GetField("m_ModesCount", Cleanup2Fields);
@@ -630,12 +676,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "cee0f7edbd874a042952ee150f878b84", "native Conjuration specialist feature");
             var list = BlueprintLibraryLookup.RequireExact<BlueprintSpellList>(BlueprintBootstrap.Library,
                 "69a6eba12bc77ea4191f573d63c9df12", "native Conjuration special list");
-            if (fixture.Caster.Descriptor.HasFact(school) || !list.GetSpells(2).Any(value => ReferenceEquals(value, parent)))
+            var specialListsField = typeof(Spellbook).GetField("m_SpecialLists", Cleanup2Fields);
+            var specialLists = specialListsField?.GetValue(book) as List<BlueprintSpellList>;
+            bool existingSchool = fixture.Caster.Descriptor.HasFact(school);
+            bool parentInList = list.GetSpells(2).Any(value => ReferenceEquals(value, parent));
+            Cleanup2Check("elemental-sources-native-favorite-intake", !existingSchool && parentInList && specialLists != null, new JObject {
+                ["school"] = school.AssetGuid, ["alreadyHasSchool"] = existingSchool, ["parentInNativeSpecialList"] = parentInList,
+                ["nativeSpecialLists"] = specialLists == null ? null : new JArray(specialLists.Select(value => value.AssetGuid)),
+                ["exactNativeSchoolListComponents"] = new JArray(school.GetComponents<AddSpecialSpellList>().Select(value => new JObject {
+                    ["class"] = value.CharacterClass?.AssetGuid, ["list"] = value.SpellList?.AssetGuid })) },
+                "The native school/list/fixture intake is recorded before any specialist mutation, preserving the exact reason for refusal.");
+            if (existingSchool || !parentInList || specialLists == null)
                 throw new InvalidOperationException("Original elemental has no exact native new Conjuration special-slot access.");
             var fact = fixture.Caster.Descriptor.AddFact(school);
             removes.Add(() => { if (!ReferenceEquals(fixture.Caster.Descriptor.GetFact(school), fact))
-                throw new InvalidOperationException("Foreign school feature; not removed."); fixture.Caster.Descriptor.RemoveFact(fact); });
-            book.AddSpecialList(list); book.UpdateAllSlotsSize(false);
+                throw new InvalidOperationException("Foreign school feature; not removed."); fixture.Caster.Descriptor.RemoveFact(fact);
+                if (!fact.IsDisposed || fixture.Caster.Descriptor.HasFact(school)) throw new InvalidOperationException("Owned school fact did not release exactly."); });
+            // Installed AddSpecialSpellList.OnFactActivate06002537 already
+            // calls AddSpecialList for a real class book. AddSpecialList06001E5A
+            // and AddSpecial06001E59 append without deduplication; repeating it
+            // would duplicate the source and make the exact Single below fail.
+            bool nativeFeatureAddedList = specialLists.Any(value => ReferenceEquals(value, list));
+            if (!nativeFeatureAddedList) book.AddSpecialList(list);
+            bool exactSpecialList = ReferenceEquals(specialListsField.GetValue(book), specialLists) &&
+                specialLists.Count(value => ReferenceEquals(value, list)) == 1 &&
+                book.GetSpecialSpells(2).Count(value => ReferenceEquals(value.Blueprint, parent)) == 1;
+            Cleanup2Check("elemental-sources-native-favorite-list-once", exactSpecialList, new JObject {
+                ["nativeFeatureAddedList"] = nativeFeatureAddedList, ["observerNativeAddSpecialListCalls"] = nativeFeatureAddedList ? 0 : 1,
+                ["exactListOccurrences"] = specialLists.Count(value => ReferenceEquals(value, list)),
+                ["exactParentSpecialObjects"] = book.GetSpecialSpells(2).Count(value => ReferenceEquals(value.Blueprint, parent)) },
+                "The exact native school/list activation supplies one real specialist source; the observer never appends it a second time.");
+            if (!exactSpecialList) throw new InvalidOperationException("Native Conjuration specialist list/source is not exact and unique.");
+            book.UpdateAllSlotsSize(false);
             foreach (var common in RawSlots(book, 2).Where(value => value.Type == SpellSlotType.Common && value.Spell?.Blueprint == parent).ToArray())
                 book.ForgetMemorized(common);
             var favorite = RawSlots(book, 2).Single(value => value.Type == SpellSlotType.Favorite);
@@ -703,6 +775,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["saveWrite"] = false, ["coldHydration"] = "separate transaction" },
                     "A real native converted child pin keeps its exact original mechanism/child/source across native tab reconstruction, without transient-node serialization.");
                 if (!pin) throw new InvalidOperationException("Native legacy child pin changed identity.");
+                Cleanup2SourcesHydrateLegacyPin(fixture, book, favorite, mechanism, index, uiOwned);
                 foreach (int frame in Cleanup2SourcesCast(fixture, child, favorite, destination.OnClick, mode, phase, "small-fire-original-pinned-child", null)) yield return frame;
             }
             finally
@@ -720,6 +793,187 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!baseline.IsRestored()) throw new InvalidOperationException("Original pin array restoration unverified.");
                 }
             }
+        }
+
+        // Installed 2.1.7b: UnitSerialization.Serialize 0600828E and the
+        // LevelUpPreviewThread.Run 0600286B ToObject<UnitDescriptor> call,
+        // followed by LevelUpController.RequestPreview 0600283C's exact three
+        // calls: Buffs.SetupPreview, Unit.PostLoad, Unit.TurnOn. Retain the
+        // detached copy BEFORE those hooks so any failed hook can be disposed.
+        // No preview thread, UI controller, save file or detached cast is used.
+        private void Cleanup2SourcesHydrateLegacyPin(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
+            SpellSlot preparation, MechanicActionBarSlot mechanism, int index, Func<bool> uiOwned)
+        {
+            var game = Game.Instance; var original = fixture.Caster.Descriptor; var ui = game.UI;
+            var backpack = typeof(UnitUISettings).GetField("OnChangedBackpackVisibility", Cleanup2Fields);
+            var helmet = typeof(UnitUISettings).GetField("OnChangedHelmetVisibility", Cleanup2Fields);
+            var serializationCount = typeof(UnitSerialization).GetField("s_Count", BindingFlags.Static | BindingFlags.NonPublic);
+            if (backpack == null || helmet == null || serializationCount == null || serializationCount.FieldType != typeof(int))
+                throw new InvalidOperationException("Exact native source UI callback/serialization-scope fields unavailable.");
+            Func<bool> serializationIdle = () => (int)serializationCount.GetValue(null) == 0;
+            var backpackBefore = backpack.GetValue(original.UISettings); var helmetBefore = helmet.GetValue(original.UISettings);
+            Func<bool> callbacksExact = () => ReferenceEquals(backpack.GetValue(original.UISettings), backpackBefore) &&
+                ReferenceEquals(helmet.GetValue(original.UISettings), helmetBefore);
+            if (!serializationIdle() || !uiOwned() || ui.LevelUpController != null || !original.IsTurnedOn ||
+                !fixture.Created.Contains(fixture.Caster) || original.Master.Value != null || original.Pet != null ||
+                !ReferenceEquals(original.UISettings.Slots[index], mechanism) || !ReferenceEquals(mechanism.Unit, fixture.Caster))
+                throw new InvalidOperationException("Hydration requires only the positively owned active fixture pin without a foreign owner/pet or active serialization/UI controller.");
+            var debit = new Cleanup2SourceDebit(fixture.Caster); var pins = new TeleportationUiSettingsFixture(original.UISettings);
+            var originalBooks = original.Spellbooks.ToArray(); var party = game.Player.Party.ToArray(); var world = game.State.Units.ToArray();
+            var child = mechanism.GetContentData() as AbilityData;
+            if (child == null || !ReferenceEquals(child.ConvertedFrom, preparation.Spell) || !ReferenceEquals(child.Spellbook, book) ||
+                child.ParamSpellSlot != null || child.ParamSpellbook != null || preparation.Spell.ParamSpellSlot != null || preparation.Spell.ParamSpellbook != null)
+                throw new InvalidOperationException("Exact native persisted pin/source graph without unserialized invocation parameters required.");
+            var source = child.ConvertedFrom; var meta = child.MetamagicData; var sourceMeta = source.MetamagicData;
+            var title = mechanism.GetTitle(); var icon = mechanism.GetIcon();
+            int originalBookIndex = Array.IndexOf(originalBooks, book);
+            int originalSlotIndex = Array.IndexOf(Enumerable.Range(0, 10).SelectMany(level => RawSlots(book, level)).ToArray(), preparation);
+            if (originalBookIndex < 0 || originalSlotIndex < 0) throw new InvalidOperationException("Pinned native preparation is outside its original book.");
+            UnitDescriptor preview = null; JToken token = null;
+            bool initializationStarted = false; Exception failure = null; var watch = Stopwatch.StartNew();
+            try
+            {
+                token = UnitSerialization.Serialize(original);
+                if (!debit.Unspent || !pins.IsRestored() || !original.IsTurnedOn || !uiOwned())
+                    throw new InvalidOperationException("Native preview serialization changed the original fixture context.");
+                preview = token.ToObject<UnitDescriptor>();
+                if (preview == null || ReferenceEquals(preview, original) || preview.Unit == null || ReferenceEquals(preview.Unit, fixture.Caster) ||
+                    preview.Unit.View != null || game.Player.Party.Any(value => ReferenceEquals(value, preview.Unit)) ||
+                    game.State.Units.Any(value => ReferenceEquals(value, preview.Unit)))
+                    throw new InvalidOperationException("Native deserialization did not return a separate detached owned graph.");
+                initializationStarted = true;
+                preview.Buffs.SetupPreview(preview);
+                preview.Unit.PostLoad();
+                preview.Unit.TurnOn();
+                bool ownership = ui.LevelUpController == null && uiOwned() && preview != null && !ReferenceEquals(preview, original) &&
+                    !ReferenceEquals(preview.Unit, fixture.Caster) && preview.Unit.View == null &&
+                    game.Player.Party.SequenceEqual(party) && game.State.Units.SequenceEqual(world) &&
+                    !party.Any(value => ReferenceEquals(value, preview.Unit)) && !world.Any(value => ReferenceEquals(value, preview.Unit));
+                if (!ownership) throw new InvalidOperationException("Native hydrated preview is not an exclusive detached fixture copy.");
+                var restoredBooks = preview.Spellbooks.ToArray();
+                bool books = restoredBooks.Length == originalBooks.Length && originalBooks.Select((value, bookIndex) =>
+                    Cleanup2SourcesHydratedBook(value, restoredBooks[bookIndex], preview)).All(value => value);
+                var restoredBook = restoredBooks.Length > originalBookIndex ? restoredBooks[originalBookIndex] : null;
+                var restoredSlots = restoredBook == null ? new SpellSlot[0] : Enumerable.Range(0, 10).SelectMany(level => RawSlots(restoredBook, level)).ToArray();
+                var restoredPreparation = originalSlotIndex < restoredSlots.Length ? restoredSlots[originalSlotIndex] : null;
+                var restoredPin = preview.UISettings.Slots != null && index < preview.UISettings.Slots.Length ? preview.UISettings.Slots[index] : null;
+                var restoredChild = restoredPin?.GetContentData() as AbilityData;
+                bool sourceChain = restoredPreparation != null && restoredChild != null &&
+                    !ReferenceEquals(restoredPin, mechanism) && restoredPin.GetType() == mechanism.GetType() &&
+                    ReferenceEquals(restoredPin.Unit, preview.Unit) && ReferenceEquals(preview.UISettings.Owner, preview) &&
+                    ReferenceEquals(restoredChild.ConvertedFrom, restoredPreparation.Spell) &&
+                    Cleanup2SourcesHydratedAbility(child, restoredChild, preview) &&
+                    ReferenceEquals(restoredChild.Spellbook, restoredBook) && restoredChild.ParamSpellSlot == null && restoredChild.ParamSpellbook == null &&
+                    restoredPreparation.Type == preparation.Type && restoredPreparation.SpellLevel == preparation.SpellLevel &&
+                    restoredPreparation.Available == preparation.Available && restoredPreparation.Index == preparation.Index;
+                bool presentation = restoredPin != null && !restoredPin.IsBad() && restoredPin.GetTitle() == title && ReferenceEquals(restoredPin.GetIcon(), icon);
+                bool ids = preview.Unit.UniqueId == fixture.Caster.UniqueId && ReferenceEquals(preview.Blueprint, original.Blueprint);
+                bool unchanged = debit.Unspent && pins.IsRestored() && callbacksExact() && original.IsTurnedOn &&
+                    ReferenceEquals(child.ConvertedFrom, source) && ReferenceEquals(child.MetamagicData, meta) && ReferenceEquals(source.MetamagicData, sourceMeta);
+                bool pass = books && sourceChain && presentation && ids && unchanged && watch.Elapsed.TotalSeconds < 8;
+                Cleanup2Check("elemental-sources-native-owning-graph-hydration", pass, new JObject {
+                    ["nativePath"] = "UnitSerialization.Serialize -> JToken.ToObject<UnitDescriptor> -> exact native preview Buffs.SetupPreview/Unit.PostLoad/Unit.TurnOn",
+                    ["originalUnitId"] = fixture.Caster.UniqueId, ["hydratedUnitId"] = preview.Unit.UniqueId,
+                    ["child"] = restoredChild?.Blueprint.AssetGuid, ["source"] = restoredChild?.ConvertedFrom?.Blueprint.AssetGuid,
+                    ["book"] = restoredBook?.Blueprint.AssetGuid, ["pinIndex"] = index, ["pinNativeType"] = restoredPin?.GetType().FullName,
+                    ["allKnownCustomAndPreparedGraphs"] = books, ["sameHydratedPreparedSourceReference"] = sourceChain,
+                    ["nativeTitleAndIconExact"] = presentation, ["stableUnitAndBlueprintIds"] = ids,
+                    ["originalReferencesResourcesAndPinsExact"] = unchanged, ["previewDetachedFromPartyAndWorld"] = ownership,
+                    ["originalUiCallbacksExact"] = callbacksExact(), ["uiControllerUnchanged"] = ui.LevelUpController == null,
+                    ["wallSeconds"] = watch.Elapsed.TotalSeconds,
+                    ["saveWrite"] = false, ["coldLoad"] = false, ["oldSaveFixture"] = false, ["hydratedPreviewCast"] = false,
+                    ["limits"] = "Native in-memory hydration and native title/icon getters; no old-format save, fresh-process load, rendered cloned action bar, or cast from the detached duplicate-ID preview. The original live native pin is cast separately." },
+                    "The original native pin and known/custom/prepared graph survive the installed native serializer and preview post-load lifecycle without migrating their definitions.");
+                if (!pass) throw new InvalidOperationException("Native legacy owning-graph hydration failed.");
+            }
+            catch (Exception error)
+            {
+                failure = error;
+                Cleanup2Check("elemental-sources-native-hydration-exception", false, new JObject {
+                    ["exception"] = error.ToString(), ["nativeTokenCreated"] = token != null, ["detachedCopyRetained"] = preview != null,
+                    ["nativePostLoadInitializationStarted"] = initializationStarted, ["saveWrite"] = false, ["coldLoad"] = false },
+                    "The original native serialization/initialization failure remains recorded independently of cleanup.");
+                throw;
+            }
+            finally
+            {
+                // The copy is retained before PostLoad/TurnOn. No shared native
+                // preview thread/source or UI callback is cleared on failure.
+                Exception cleanupError = null;
+                try
+                {
+                    if (preview != null)
+                    {
+                        if (ReferenceEquals(preview, original) || preview.Unit == null || ReferenceEquals(preview.Unit, fixture.Caster) || preview.Unit.View != null ||
+                            game.Player.Party.Any(value => ReferenceEquals(value, preview.Unit)) || game.State.Units.Any(value => ReferenceEquals(value, preview.Unit)))
+                            throw new InvalidOperationException("Hydrated copy is no longer exclusively detached; foreign/attached unit disposal refused.");
+                        preview.Unit.Dispose();
+                    }
+                }
+                catch (Exception error) { cleanupError = error; }
+                // UnitSerialization itself restores its own counter in finally,
+                // but its TurnOn is after serialization, not in that finally.
+                try
+                { if (ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && fixture.Created.Contains(fixture.Caster) && !original.IsTurnedOn) original.TurnOn(); }
+                catch (Exception error) { cleanupError = cleanupError == null ? error : new AggregateException(cleanupError, error); }
+                bool previewDisposed = preview == null || preview.Unit != null && preview.Unit.Destroyed;
+                bool restored = cleanupError == null && serializationIdle() && previewDisposed && debit.Unspent && pins.IsRestored() && callbacksExact() &&
+                    original.IsTurnedOn && ReferenceEquals(Game.Instance, game) && ReferenceEquals(game.UI, ui) && ui.LevelUpController == null &&
+                    uiOwned() && game.Player.Party.SequenceEqual(party) && game.State.Units.SequenceEqual(world) &&
+                    ReferenceEquals(child.ConvertedFrom, source) && ReferenceEquals(child.MetamagicData, meta) && ReferenceEquals(source.MetamagicData, sourceMeta);
+                Cleanup2Check("elemental-sources-native-hydration-restored", restored, new JObject {
+                    ["ownedPreviewDestroyed"] = previewDisposed, ["nativePostLoadInitializationStarted"] = initializationStarted,
+                    ["nativeSerializationScopeExited"] = serializationIdle(), ["previewThreadOrUiControllerWritten"] = false,
+                    ["originalResourcesAndSourceReferencesExact"] = debit.Unspent, ["originalPinsExact"] = pins.IsRestored(),
+                    ["originalTurnedOn"] = original.IsTurnedOn, ["originalUiCallbacksExact"] = callbacksExact(), ["noSavedPartyRecordLoaded"] = true,
+                    ["cleanupError"] = cleanupError?.ToString(),
+                    ["saveWrite"] = false, ["coldLoad"] = false },
+                    "Only the retained detached native copy is disposed, including after a failed initialization hook; original live source/pin/book/party/input context remains exact for its independent actual cast.");
+                if (!restored)
+                {
+                    var error = new InvalidOperationException("Native hydration preview cleanup/original context unverified.", cleanupError);
+                    if (failure != null) throw new AggregateException(failure, error);
+                    throw error;
+                }
+            }
+        }
+
+        private static bool Cleanup2SourcesHydratedAbility(AbilityData original, AbilityData restored, UnitDescriptor owner, int depth = 0)
+        {
+            if (original == null || restored == null) return original == null && restored == null;
+            return depth < 5 && !ReferenceEquals(original, restored) && original.GetType() == restored.GetType() &&
+                ReferenceEquals(original.Blueprint, restored.Blueprint) && ReferenceEquals(restored.Caster, owner) &&
+                (original.Fact == null ? restored.Fact == null : restored.Fact != null && !ReferenceEquals(original.Fact, restored.Fact) &&
+                    ReferenceEquals(original.Fact.Blueprint, restored.Fact.Blueprint) && ReferenceEquals(restored.Fact.Owner, owner)) &&
+                Equals(original.MetamagicData, restored.MetamagicData) && original.OverrideDC == restored.OverrideDC &&
+                original.OverrideSpellLevel == restored.OverrideSpellLevel && original.DecorationColorNumber == restored.DecorationColorNumber &&
+                original.DecorationBorderNumber == restored.DecorationBorderNumber && original.IsSpellCopy == restored.IsSpellCopy &&
+                (original.Spellbook == null ? restored.Spellbook == null : restored.Spellbook != null &&
+                    !ReferenceEquals(original.Spellbook, restored.Spellbook) && ReferenceEquals(original.Spellbook.Blueprint, restored.Spellbook.Blueprint) &&
+                    ReferenceEquals(restored.Spellbook.Owner, owner)) &&
+                Cleanup2SourcesHydratedAbility(original.ConvertedFrom, restored.ConvertedFrom, owner, depth + 1);
+        }
+
+        private static bool Cleanup2SourcesHydratedBook(Spellbook original, Spellbook restored, UnitDescriptor owner)
+        {
+            if (restored == null || ReferenceEquals(original, restored) || !ReferenceEquals(original.Blueprint, restored.Blueprint) || !ReferenceEquals(restored.Owner, owner)) return false;
+            var known = original.GetAllKnownSpells().ToArray(); var restoredKnown = restored.GetAllKnownSpells().ToArray();
+            var custom = Enumerable.Range(0, 10).SelectMany(original.GetCustomSpells).ToArray();
+            var restoredCustom = Enumerable.Range(0, 10).SelectMany(restored.GetCustomSpells).ToArray();
+            var slots = Enumerable.Range(0, 10).SelectMany(level => RawSlots(original, level)).ToArray();
+            var restoredSlots = Enumerable.Range(0, 10).SelectMany(level => RawSlots(restored, level)).ToArray();
+            return known.Length == restoredKnown.Length && custom.Length == restoredCustom.Length && slots.Length == restoredSlots.Length &&
+                known.Select((value, index) => Cleanup2SourcesHydratedAbility(value, restoredKnown[index], owner)).All(value => value) &&
+                custom.Select((value, index) => Cleanup2SourcesHydratedAbility(value, restoredCustom[index], owner)).All(value => value) &&
+                slots.Select((value, index) => {
+                    var copy = restoredSlots[index];
+                    bool links = value.LinkedSlots == null ? copy.LinkedSlots == null : copy.LinkedSlots != null &&
+                        value.LinkedSlots.Length == copy.LinkedSlots.Length && value.LinkedSlots.Select((link, linkIndex) =>
+                            link == null ? copy.LinkedSlots[linkIndex] == null : Array.IndexOf(slots, link) >= 0 &&
+                                ReferenceEquals(copy.LinkedSlots[linkIndex], restoredSlots[Array.IndexOf(slots, link)])).All(exact => exact);
+                    return !ReferenceEquals(value, copy) && value.SpellLevel == copy.SpellLevel && value.Type == copy.Type && value.Index == copy.Index &&
+                        value.Available == copy.Available && value.IsOpposition == copy.IsOpposition && links && Cleanup2SourcesHydratedAbility(value.Spell, copy.Spell, owner);
+                }).All(value => value);
         }
     }
 }

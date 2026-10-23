@@ -38,7 +38,7 @@ namespace KingmakerGunslinger.DomainTests
             new Body { Path = "assets/sprint19-fourarmed/girallon-mesh.json", ClosedParts = true,
                 Sha256 = "d6a160c6b336cc0dc812f62ce03c90c5faa5baf611fcb46c7e81130ad71ca119" },
             new Body { Path = "assets/sprint21-arthropods/giant-crab-mesh.json", ClosedParts = true,
-                Sha256 = "34833285f367258ed5d00127c72d86bb96897df94459740d3c9fd800e720893e" },
+                Sha256 = "75a6d5d625f8e88d9cfccec0de3d411610123be0f94f4655d5fc9eeadaf05472" },
             new Body { Path = "assets/sprint23-armored-dinosaurs/stegosaurus-mesh.json", ClosedParts = true,
                 Sha256 = "3f9e1a219de1372bfec4db521a6de02e04771ea8e2bfc53d64a8435f440d466e" },
         };

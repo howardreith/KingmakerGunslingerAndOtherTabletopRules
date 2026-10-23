@@ -131,6 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool actorBrain = actor.IsBrainActive, actorCombat = actor.IsInCombat, targetCombat = target.IsInCombat;
             var targetPosition = target.Position; float targetOrientation = target.Orientation;
             Cleanup2NativeDefaultScope mode = null; UnitAttack command = null;
+            Cleanup2CreatureCommandCamera cameraScope = null;
             var observer = new Sprint24AttackObserver { Owner = actor, Target = target };
             // This existing observer is read-only with its fixture override
             // delegates unset. It also retains the real native Grapple rules.
@@ -151,6 +152,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !ExpandedSummoningPteranodonViewPatch.HasLiveOriginalVisual(actor.View, key) || actor.View.AnimationManager.GetAction(special) != null)
                     throw new InvalidOperationException("Exact private production body/gesture and unchanged null special-action lookup required.");
                 var route = Cleanup2CreatureApproachLane(fixture, actor, target, key);
+                cameraScope = new Cleanup2CreatureCommandCamera(this, fixture, actor, target, key,
+                    () => mode.Current && Cleanup2NoNarrativeOverlay());
+                var cameraWait = Stopwatch.StartNew(); int cameraFrames = 0;
+                while (cameraScope.RenderCount < 3 && cameraWait.Elapsed.TotalSeconds < 4 && cameraFrames++ < 240)
+                { cameraScope.RequireCurrent(); yield return 0; }
+                cameraScope.RequireCurrent();
+                bool cameraReady = cameraScope.RenderCount >= 3;
+                cameraScope.Evidence["nativeSettleFrames"] = cameraFrames;
+                cameraScope.Evidence["nativeSettleWallSeconds"] = cameraWait.Elapsed.TotalSeconds;
+                Cleanup2Check("creature-command-fixed-native-camera-ready-" + key, cameraReady, (JObject)cameraScope.Evidence.DeepClone(),
+                    "The fixed full-body/start-to-target view completes three real native camera renders before the original UnitAttack is issued. Actual pixels still require inspection.");
+                if (!cameraReady) throw new InvalidOperationException("Native creature camera did not render normally within the bounded intake.");
                 var mechanics = Cleanup2ScaleMechanics(actor); var stats = Cleanup2CrabBaseStats(actor);
                 command = new UnitAttack(target) { IsSingleAttack = true, ForceFullAttack = false };
                 var grab = SummonGrabComponent.Find(actor);
@@ -215,12 +228,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 using (var trace = new Sprint26CommandTrace(actor, endings))
                 {
                     Action<string> capture = stage => { string file = "creature-command-" + key + "-" + stage + ".png";
-                        string result = Cleanup2OrdinaryAttackImage(actor, target, file);
+                        string result = cameraScope.Capture(file);
                         var actual = new FileInfo(System.IO.Path.Combine(_request.EvidenceDirectory, file));
                         bool saved = result.StartsWith("png=" + file + ";bytes=", StringComparison.Ordinal) && actual.Exists && actual.Length >= 4096;
                         images.Add(new JObject { ["file"] = file, ["stage"] = stage, ["result"] = result, ["saved"] = saved,
                             ["actualSecondsAfterAct"] = visual.Schedules.Any(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0) ?
                                 (JToken)(Game.Instance.Player.GameTime.TotalSeconds - visual.Schedules.Single(value => ReferenceEquals(value.Command, command)).ActGame) : JValue.CreateNull(),
+                            ["ordinaryNativeRenderedFrame"] = cameraScope.RenderedFrame, ["ordinaryNativeRenderedGameSeconds"] = cameraScope.RenderedGameSeconds,
+                            ["ordinaryNativeRenderedTravel"] = Vector3.Distance(start, cameraScope.RenderedActorPosition),
+                            ["renderedSecondsAfterAct"] = visual.Schedules.Any(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0) ?
+                                (JToken)(cameraScope.RenderedGameSeconds - visual.Schedules.Single(value => ReferenceEquals(value.Command, command)).ActGame) : JValue.CreateNull(),
+                            ["observerManualCameraRenderCalled"] = false,
                             ["frame"] = Time.frameCount, ["travel"] = Vector3.Distance(start, actor.Position), ["weaponEvents"] = observer.WeaponAttacks.Count }); };
                     capture("ready");
                     actor.Commands.Run(command);
@@ -231,6 +249,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!mode.Current || !Cleanup2NoNarrativeOverlay() || !ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster) ||
                             !ReferenceEquals(SummonAttackGestureVisual.For(actor), visual) || !visual.Ready)
                             throw new InvalidOperationException("Native creature approach lost input/provenance/private-body ownership.");
+                        cameraScope.RequireCurrent();
                         float velocity = actor.View.MovementAgent.Velocity.magnitude;
                         if (!Cleanup2Finite(velocity) || !Cleanup2Finite(actor.Position)) throw new InvalidOperationException("Nonfinite native approach motion.");
                         maxVelocity = Mathf.Max(maxVelocity, velocity); maximumTravel = Mathf.Max(maximumTravel, Vector3.Distance(start, actor.Position));
@@ -245,22 +264,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ((JArray)path["connectedAreas"]).Count == 1 &&
                                 (uint)path["connectedAreas"][0] == (uint)route.Evidence["selected"]["connectedArea"];
                         }
-                        if (!approachImage && maximumTravel >= .75f && velocity > .01f && observer.WeaponAttacks.Count == 0)
+                        if (!approachImage && maximumTravel >= .75f && Vector3.Distance(start, cameraScope.RenderedActorPosition) >= .75f && velocity > .01f && observer.WeaponAttacks.Count == 0)
                         { capture("approach"); approachImage = true; }
-                        if (!actImage && observer.WeaponAttacks.Count != 0) { capture("contact"); actImage = true; }
+                        var renderedAct = visual.Schedules.SingleOrDefault(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0);
+                        if (!actImage && observer.WeaponAttacks.Count != 0 && renderedAct != null && cameraScope.RenderedGameSeconds >= renderedAct.ActGame)
+                        { capture("contact"); actImage = true; }
                         Game.Instance.IsPaused = false; yield return 0;
                     }
-                    // The exact native act may complete before the next UI
-                    // frame. Retain its first current-pose contact frame.
-                    if (!actImage && observer.WeaponAttacks.Count != 0) { capture("contact"); actImage = true; }
+                    // A command can finish before its first completed normal
+                    // camera frame. Await that actual render, without another
+                    // command, manual tick, pause change or Camera.Render.
+                    var firstAct = visual.Schedules.SingleOrDefault(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0);
+                    var contactWait = Stopwatch.StartNew(); int contactFrames = 0;
+                    while (!actImage && observer.WeaponAttacks.Count != 0 && firstAct != null && cameraScope.RenderedGameSeconds < firstAct.ActGame &&
+                        contactWait.Elapsed.TotalSeconds < 2 && contactFrames++ < 120)
+                    { cameraScope.RequireCurrent(); yield return 0; }
+                    if (!actImage && observer.WeaponAttacks.Count != 0 && firstAct != null && cameraScope.RenderedGameSeconds >= firstAct.ActGame)
+                    { capture("contact"); actImage = true; }
                     double recoveryStart = Game.Instance.Player.GameTime.TotalSeconds; var recovery = Stopwatch.StartNew();
                     float[] postActTimes = { .12f, .28f }; int postActSamples = 0;
-                    while (Game.Instance.Player.GameTime.TotalSeconds - recoveryStart < 1.6 && recovery.Elapsed.TotalSeconds < 8)
+                    while ((Game.Instance.Player.GameTime.TotalSeconds - recoveryStart < 1.6 ||
+                        cameraScope.RenderedGameSeconds - recoveryStart < 1.6) && recovery.Elapsed.TotalSeconds < 8)
                     {
                         if (!mode.Current || !Cleanup2NoNarrativeOverlay()) throw new InvalidOperationException("Native creature recovery mode changed.");
+                        cameraScope.RequireCurrent();
                         var acted = visual.Schedules.SingleOrDefault(value => ReferenceEquals(value.Command, command) && value.ActGame >= 0);
                         if (acted != null && postActSamples < postActTimes.Length &&
-                            Game.Instance.Player.GameTime.TotalSeconds - acted.ActGame >= postActTimes[postActSamples])
+                            Game.Instance.Player.GameTime.TotalSeconds - acted.ActGame >= postActTimes[postActSamples] &&
+                            cameraScope.RenderedGameSeconds - acted.ActGame >= postActTimes[postActSamples])
                         { capture("post-act-" + (postActSamples == 0 ? "012" : "028")); postActSamples++; }
                         yield return 0;
                     }
@@ -288,7 +319,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool gestureMotion =
                         schedules.Length == 1 && !schedules[0].Cancelled && schedules[0].Samples > 0 && schedules[0].MaximumAngle > .05f &&
                         actImage && postActSamples == postActTimes.Length && images.Count == 4 + postActSamples && images.All(value => (bool)value["saved"]) && recovered &&
-                        Game.Instance.Player.GameTime.TotalSeconds - recoveryStart >= 1.6;
+                        Game.Instance.Player.GameTime.TotalSeconds - recoveryStart >= 1.6 &&
+                        cameraScope.RenderedGameSeconds - recoveryStart >= 1.6;
                     bool invariants = _sprint25Clock.Pulses == pulseBefore && JToken.DeepEquals(stats, Cleanup2CrabBaseStats(actor)) &&
                         JToken.DeepEquals(mechanics, Cleanup2ScaleMechanics(actor));
                     bool exact = nativeRules && nativeTravel && gestureMotion && invariants;
@@ -310,6 +342,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["damageContract"] = "Every real hit requires its exact native attack.MeleeDamage object once. Only an actual successful native Crab Grapple may add one separately witnessed production DealConstrict rule with exact parent attack, establishing pincer and1d4+liveStrength Bludgeoning signature. Other extra damage fails; no roll, grab or damage is supplied.",
                         ["nativeCostCount"] = economy.Count(command), ["exactNativeCost"] = economy.Exact(command, false),
                         ["images"] = images, ["events"] = events, ["paths"] = paths, ["costs"] = costs, ["endings"] = endings,
+                        ["fixedNativeCamera"] = cameraScope.Evidence.DeepClone(),
                         ["gesture"] = state, ["gestureRecovered"] = recovered, ["nativeMode"] = mode.Describe(), ["manualClockPulses"] = _sprint25Clock.Pulses - pulseBefore,
                         ["baseStatsExact"] = JToken.DeepEquals(stats, Cleanup2CrabBaseStats(actor)), ["nativeMechanicsExact"] = JToken.DeepEquals(mechanics, Cleanup2ScaleMechanics(actor)),
                         ["scope"] = "Actual native Default UnitAttack owns out-of-range approach and one ordinary attack; ready/approach/first-act/post-act recovery/full-recovery full-body frames. Two extra frames sample actual .12/.28s post-act boundaries and record actual capture time; they do not add a pre-act windup or prove claw/enemy geometric contact. No matched OFF/full routine/timing-neutral inference, forced act/hit, clip alias or synthetic locomotion; owner art acceptance remains separate." },
@@ -335,6 +368,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restore("owned-hostile", () => {
                     ResetExpandedSummoningHostile(fixture); PlaceExpandedSummoningUnit(target, targetPosition); target.Orientation = targetOrientation;
                 });
+                restore("native-camera", () => { if (cameraScope != null) cameraScope.Dispose(); });
                 restore("native-mode", () => { if (mode != null) mode.Dispose(); });
                 Cleanup2Check("creature-command-local-state-restored-" + key, failures.Count == 0,
                     new JObject { ["failures"] = new JArray(failures), ["nativeModeLeaseStillPending"] = Cleanup2NativeDefaultPending },

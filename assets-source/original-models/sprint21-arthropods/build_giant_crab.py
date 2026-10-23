@@ -24,6 +24,44 @@ SIDE, UP, FORWARD = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, -1, 0))
 AXES = SIDE, UP, FORWARD
 
 
+def chela_rows(obj, line, names):
+    # A single arclength coordinate across the continuous folded limb avoids
+    # nearest-branch weight swaps on the inside of a tight elbow.
+    cumulative = [0.]
+    for a, b in zip(line, line[1:]):
+        cumulative.append(cumulative[-1] + (b - a).length)
+    result = {}
+    for vertex in obj.data.vertices:
+        nearest = []
+        for i, (a, b) in enumerate(zip(line, line[1:])):
+            axis = b - a
+            t = max(0., min(1., (vertex.co-a).dot(axis)/axis.length_squared))
+            nearest.append(((vertex.co-a.lerp(b,t)).length_squared,
+                            cumulative[i] + t*axis.length))
+        closest = min(pair[0] for pair in nearest)
+        shares = [(np.exp(-(distance-closest)/(.12*.12)), along)
+                  for distance, along in nearest]
+        along = sum(a*b for a,b in shares)/sum(a for a,b in shares)
+        def smooth(value):
+            value = max(0., min(1., value))
+            return value*value*(3.-2.*value)
+        elbow = smooth((along-cumulative[2]+.34)/.68)
+        wrist = smooth((along-cumulative[4]+.15)/.30)
+        palm = smooth((along-cumulative[6]+.10)/.20)
+        groups = (1.-elbow, elbow-wrist, wrist-palm, palm)
+        row = []
+        for group, i in enumerate((0, 2, 4)):
+            t = smooth((along-cumulative[i])/(cumulative[i+1]-cumulative[i]))
+            row.extend(((names[i], groups[group]*(1.-t)),
+                        (names[i+1], groups[group]*t)))
+        row.append((names[6], groups[3]))
+        row = [(name, value) for name,value in row if value>1e-6]
+        total = sum(value for _,value in row)
+        row = [(name,value/total) for name,value in row]
+        assert len(row)<=4 and all(value>=0. for _,value in row)
+        result[vertex.index] = row
+    return result
+
 def build(rig):
     at = lambda name: Vector(rig[name]["head"])
     parts = []
@@ -63,28 +101,28 @@ def build(rig):
                        1, 650, 3)
 
         names = [f"pedipalp{i}_{suffix}" for i in range(1, 8)]
-        joints = [at(n) for n in names]
-        # Two folded arm segments, then one broad, flattened palm. Both
-        # fingers emerge from the same continuous chela surface.
-        root = centre + SIDE * sign * .43 + FORWARD * .32 - UP * .12
-        elbow = joints[2] + SIDE * sign * .16 + FORWARD * .13
-        wrist = joints[4] + SIDE * sign * .20 + FORWARD * .24
-        palm = wrist + FORWARD * .15
+        # Original folded upper arm/forearm. The seven private render pivots
+        # follow this authored centerline; native source joints stay untouched.
+        root = Vector((sign * .50, -.32, .58))
+        elbow = Vector((sign * 1.42, -.65, .58))
+        wrist = Vector((sign * 1.30, -1.30, .52))
+        palm = Vector((sign * 1.05, -1.55, .52))
         size = 1.16 if suffix == "L" else 1.
         volume = cb.Volume(.010)
-        armline = [root, joints[0], joints[1], elbow, joints[3], wrist, palm]
+        armline = [root, root.lerp(elbow, .5), elbow, elbow.lerp(wrist, .5), wrist, wrist.lerp(palm, .5), palm]
         volume.sweep(armline, [v * size for v in
-                              (.145, .14, .135, .125, .14, .155, .18)], 20)
-        volume.ellipsoid(palm, AXES, (.21 * size, .125 * size, .24 * size))
+                              (.155, .155, .080, .135, .100, .145, .165)], 20)
+        volume.ellipsoid(palm, AXES, (.175 * size, .125 * size, .27 * size))
         lines = [(armline, names)]
         for lift in (-1, 1):
-            finger_root = palm + UP * lift * .066 * size + FORWARD * .12
-            outer = palm + UP * lift * .15 * size + FORWARD * .29 * size
-            tip = palm + UP * lift * .095 * size + FORWARD * .49 * size
+            finger_root = palm + UP * lift * .066 * size + FORWARD * .15
+            outer = palm + UP * lift * .15 * size + FORWARD * .35 * size
+            tip = palm + UP * lift * .095 * size + FORWARD * .61 * size
             line = [palm, finger_root, outer, tip]
-            volume.sweep(line, [v * size for v in (.10, .09, .067, .013)], 16)
+            volume.sweep(line, [v * size for v in (.095, .085, .060, .012)], 16)
             lines.append((line, [names[6]] * 3))
-        union_part(parts, "CrabIntegratedChela", volume, lines, 2, 1800, 4)
+        obj = union_part(parts, "CrabIntegratedChela", volume, lines, 2, 1800, 4)
+        parts[-1] = (obj, chela_rows(obj, armline, names), 2)
     return parts
 
 
@@ -100,6 +138,7 @@ def main():
     extra = dict(creature="giant-crab", donorBlueprint="9e120b5e0ad3c794491c049aa24b9fde",
                  donorRenderer="Spider", visibleLegs=8, visiblePincers=2,
                  printedSize="Medium", widthOverLength=1.3,
+                 originalChelaPivotSchema="cleanup2-folded-chela-v4",
                  legChainUsage={str(i): "full" for i in range(4)},
                  authoredLimitation="CRAB_WALKS_A_SPIDER_RIG_FRONT_TO_BACK")
     base_coat = painted((.21, .105, .065), (.48, .28, .16), 2,
@@ -112,10 +151,18 @@ def main():
         rgb += rim[:, None] * np.array((.09, .065, .035))
         speckle = np.clip((cb.fbm(p, 70., 325) - .58) * 8., 0., 1.)
         rgb *= 1. - .18 * speckle[:, None] * (region != 3)[:, None]
-        tips = ((p[:, 1] < -1.04) & (region == 2))[:, None]
-        return np.where(tips, rgb * .67, rgb)
+        tips = np.clip((-p[:, 1]-1.85)/.25, 0., 1.) * (region == 2)
+        elbow_radius = np.sqrt((np.abs(p[:, 0])-1.42)**2+(p[:, 1]+.65)**2)
+        elbow_joint = np.exp(-(elbow_radius/.11)**2) * (region == 2)
+        rgb *= (1.-.20*elbow_joint-.30*tips)[:, None]
+        return rgb
     export(args, rig_data, digest, build(rig),
            "donor renderer local; +X right, +Z up, -Y forward", extra, coat)
+    # The shared exporter uses host newline handling. Keep this pair's JSON
+    # byte identity stable across Windows generation and LF Git checkout.
+    for output in (args.mesh_data, args.report):
+        path = Path(output)
+        path.write_bytes(path.read_bytes().replace(b"\r\n", b"\n"))
 
 
 if __name__ == "__main__":

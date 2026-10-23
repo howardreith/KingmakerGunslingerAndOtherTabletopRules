@@ -196,3 +196,51 @@ movement/turn/claw/contact evidence and owner visual acceptance remain with
 the integrator; no native or aesthetic PASS is granted here.
 
 Earlier sections are retained historical source and qualification records.
+
+
+## Crab folded-chela contact repair, 2026-10-23
+
+Retained native review27 showed an ordinary successful claw rule while the
+visible pincer remained short of the target. The fixture target is the native
+DefaultPlayerCharacter clone: observed footprint sum is Crab 1.1 + Human 0.5,
+and unchanged native approach radius 2.2096. The prior seven-pivot pose curls
+its authored tip across the midline and down. Exact project-mesh bind-frame
+FK moved the left tip from (-0.54993,-1.42157,0.42573) to
+(0.24500,-1.06146,0.04236). Old native FAIL records are preserved.
+
+`build_giant_crab.py` now authors a folded upper arm, narrow elbow flex joint,
+forearm, wrist and narrower elongated open pincer. Its source centerline is
+also the exact private render-palette pivot contract in
+`SummonAttackGestureVisual.AuthoredChelaPivot`. Smooth arclength weights avoid
+abrupt nearest-branch ownership changes on the inside of the folded elbow.
+The original shell, eyestalks, eyes and all eight legs retain all 3,984 unique
+position/normal/weight records and all 7,916 protected triangles exactly.
+UV seam duplication and the atlas are repacked; the painting is rebaked.
+The bright/dark threshold formerly cutting across the forearm is replaced by
+an elbow-local joint treatment and a smooth distal finger gradient.
+
+The production gesture changes only Crab's private render palette. It maps
+authored pivots through each actual live inverse bind, with a matching
+recenter. Its existing synchronous native current-pose BakeMesh comparison
+must still pass before admission. Source bones, renderer root, native
+colliders, weapon/rule/action objects, native no-handle HasAnimation=false
+branch and actual act timing remain untouched. Brachiosaurus tail logic is
+unchanged. There is no fabricated pre-act windup: the strike begins at the
+actual native act boundary and recovers over 0.5 actual game seconds.
+
+Shipped identities, deliberately LF JSON:
+
+- Mesh 8247 vertices / 11516 triangles / 39 used bones:
+  `75a6d5d625f8e88d9cfccec0de3d411610123be0f94f4655d5fc9eeadaf05472`.
+- Original 1024x1024 albedo:
+  `ef06b21b0654bcee40ca893cfff28c20e5fea469402cadb1d7a3a524f8e48112`.
+
+Two independent Blender 4.5.10 generations matched both files byte for byte.
+Existing focused mesh/weight/closure/winding audit passed. Ignored local
+`artifacts/cleanup2-crab-contact/folded-v4/` contains reviewed original-mesh
+front, side and gameplay neutral/act/recovery previews plus exact synthetic
+FK metrics. Fifty-two left/right post-act samples stayed finite, left all
+non-chela vertices fixed, returned to neutral and kept edge-length ratios
+within 0.6701..1.7057 (act p01..p99 0.9219..1.0977). These are authoring
+checks, not native current-pose/contact or owner visual acceptance. Actual
+native single/full contact and source/collider invariance remain required.

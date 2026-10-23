@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.GameModes;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
@@ -25,6 +26,29 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
+            GameMode[] cleanup2BaseModes = null;
+            int[] cleanup2BaseCounts = null;
+            GameMode cleanup2SetupPause = null;
+            if (IsSummonCleanup2Review)
+            {
+                // The outer request fixture also pauses during setup. Retain
+                // that exact inherited Pause receipt; no arbitrary overlay or
+                // human-loaded world is admitted by this command caller.
+                if (!ReferenceEquals(fixture, _sprint25Fixture) || fixture.Caster == null ||
+                    fixture.Caster.Blueprint != fixture.CasterBlueprint || fixture.UnitsBefore.Any(value => ReferenceEquals(value, fixture.Caster)) ||
+                    (string)_request.Parameters["reviewPhase"] != "ettin-commands" || !Cleanup2NoNarrativeOverlay())
+                    throw new InvalidOperationException("Exact owned Ettin command fixture required before pause settlement.");
+                var stack = (Stack<GameMode>)typeof(Game).GetField("m_GameModes", Cleanup2Fields).GetValue(Game.Instance);
+                GameMode[] entry = stack.ToArray();
+                cleanup2SetupPause = entry.Length > 0 && entry[0].Type == GameModeType.Pause ? entry[0] : null;
+                cleanup2BaseModes = cleanup2SetupPause == null ? entry : entry.Skip(1).ToArray();
+                cleanup2BaseCounts = ((int[])typeof(Game).GetField("m_ModesCount", Cleanup2Fields).GetValue(Game.Instance)).ToArray();
+                if (cleanup2SetupPause != null) cleanup2BaseCounts[(int)GameModeType.Pause]--;
+                if (cleanup2BaseModes.Length == 0 || cleanup2BaseModes.Any(value =>
+                    value.Type != GameModeType.Default && value.Type != GameModeType.Dialog) ||
+                    cleanup2BaseCounts[(int)GameModeType.Pause] != 0)
+                    throw new InvalidOperationException("Unexpected Ettin fixture mode stack; no pause is removed.");
+            }
             Game.Instance.IsPaused = true;
             if(!IsSummonCleanup2Review || fixture.Hostile==null || fixture.Hostile.Destroyed)
                 CreateExpandedSummoningCorrectionHostile(fixture);
@@ -35,7 +59,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate();
-                Game.Instance.IsPaused = false;
+                if (IsSummonCleanup2Review)
+                    foreach (int frame in Cleanup2SettleEttinOwnedPause(fixture, cleanup2BaseModes,
+                        cleanup2BaseCounts, cleanup2SetupPause, true, "fixture-setup")) yield return frame;
+                else Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 foreach (var spec in new[] {
                     new { Key="ettin", Name="flail-single", Set=0,
@@ -191,6 +218,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // fixture cast/manual-clock lifecycle.
                         if (IsSummonCleanup2Review && !turnBased)
                         {
+                            // Joining this exact owned pair can invoke native
+                            // PauseNewEnemyAppeared. Settle that caller-owned
+                            // pause before entering the strict Default lease.
+                            foreach (int frame in Cleanup2SettleEttinOwnedPause(fixture, cleanup2BaseModes,
+                                cleanup2BaseCounts, null, true, "owned-pair-joined-combat")) yield return frame;
                             cleanup2Stage = "native-command-mode-entry";
                             nativeMode = Cleanup2EnterNativeDefault(fixture, "ettin-ordinary-rtwp");
                             for (int frame = 0; frame < 8; frame++)
@@ -399,6 +431,70 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Game.Instance.IsPaused = oldPause;
                 }
             }
+        }
+
+        private IEnumerable<int> Cleanup2SettleEttinOwnedPause(ExpandedSummoningCorrectionFixture fixture,
+            GameMode[] baseline, int[] counts, GameMode knownPause, bool callerRequestedPause, string stage)
+        {
+            var game = Game.Instance;
+            var modesField = typeof(Game).GetField("m_GameModes", Cleanup2Fields);
+            var countsField = typeof(Game).GetField("m_ModesCount", Cleanup2Fields);
+            var pendingField = typeof(Game).GetField("m_WillBePaused", Cleanup2Fields);
+            var pendingActions = typeof(Game).GetField("m_BeforeTickActions", Cleanup2Fields);
+            bool waiting = _sprint25WaitingForUnityAppearance;
+            bool stopped = false;
+            var rows = new JArray();
+            DateTime deadline = DateTime.UtcNow.AddSeconds(5);
+            _sprint25WaitingForUnityAppearance = true;
+            try
+            {
+                for (int frame = 0; frame < 90 && DateTime.UtcNow < deadline; frame++)
+                {
+                    var stack = (Stack<GameMode>)modesField.GetValue(game);
+                    int[] actual = (int[])countsField.GetValue(game);
+                    bool pending = (bool)pendingField.GetValue(game);
+                    bool baseExact = stack.SequenceEqual(baseline) && actual.SequenceEqual(counts);
+                    bool onePause = stack.Count == baseline.Length + 1 && stack.Peek().Type == GameModeType.Pause &&
+                        stack.Skip(1).SequenceEqual(baseline) && actual.Length == counts.Length &&
+                        actual.Select((value, index) => value == counts[index] + (index == (int)GameModeType.Pause ? 1 : 0)).All(value => value);
+                    bool safe = ReferenceEquals(fixture, _sprint25Fixture) && !Cleanup2NativeDefaultPending &&
+                        Cleanup2NoNarrativeOverlay() && game.SelectedAbilityHandler?.Ability == null &&
+                        (baseExact || onePause && (knownPause == null ? callerRequestedPause : ReferenceEquals(knownPause, stack.Peek())));
+                    if (rows.Count < 6) rows.Add(new JObject { ["frame"] = Time.frameCount, ["mode"] = game.CurrentMode.ToString(),
+                        ["paused"] = game.IsPaused, ["pendingOwnPause"] = pending, ["baseStackAndCountsExact"] = baseExact,
+                        ["oneExactPauseAboveBase"] = onePause, ["safe"] = safe });
+                    if (!safe)
+                    {
+                        Cleanup2Check("ettin-owned-pause-refused-" + stage, false, new JObject {
+                            ["stage"] = stage, ["samples"] = rows, ["mode"] = game.CurrentMode.ToString(),
+                            ["selectedAbility"] = game.SelectedAbilityHandler?.Ability?.Blueprint.AssetGuid },
+                            "An unexpected stack/count/input or narrative state refuses native unpause and preserves the original failure evidence.");
+                        throw new InvalidOperationException("Ettin owned pause boundary changed; foreign mode/input is retained.");
+                    }
+                    if (onePause && knownPause == null) knownPause = stack.Peek();
+                    bool immediate = !(bool)typeof(Game).GetField("m_GameModeTicking", Cleanup2Fields).GetValue(game) &&
+                        !(bool)typeof(Game).GetField("m_SwitchingModes", Cleanup2Fields).GetValue(game) &&
+                        ((System.Collections.ICollection)pendingActions.GetValue(game)).Count == 0;
+                    if (!pending && immediate && baseExact && !game.IsPaused)
+                    {
+                        stopped = true;
+                        break;
+                    }
+                    // Native setter refuses false while m_WillBePaused=true.
+                    // Wait for its own queued push, then remove only that exact
+                    // top instance through the ordinary native unpause setter.
+                    if (!pending && immediate && onePause) game.IsPaused = false;
+                    yield return 0;
+                }
+                Cleanup2Check("ettin-owned-pause-settled-" + stage, stopped, new JObject {
+                    ["stage"] = stage, ["samples"] = rows, ["ownedPauseObserved"] = knownPause != null,
+                    ["nativeUnpaused"] = !game.IsPaused, ["mode"] = game.CurrentMode.ToString(),
+                    ["manualPulsesSuspendedDuringSettlement"] = true,
+                    ["contract"] = "Native set_IsPaused ignores false while m_WillBePaused. Exact fixture pause settles and native unpause restores previous stack/count references before strict Default admission." },
+                    "Only the exact request fixture's setup/join-combat Pause is settled and removed; foreign overlays/inputs and native timing remain untouched.");
+                if (!stopped) throw new InvalidOperationException("Owned Ettin fixture pause did not settle within five seconds.");
+            }
+            finally { _sprint25WaitingForUnityAppearance = waiting; }
         }
     }
 }
