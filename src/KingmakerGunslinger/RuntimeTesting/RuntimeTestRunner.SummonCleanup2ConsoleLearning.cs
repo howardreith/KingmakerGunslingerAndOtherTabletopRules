@@ -141,11 +141,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     scroll.GetComponentsInChildren<SpellBookKnownSpellView>(true).Any(value=>value.GetViewModel() is ElementalConsoleBookPresentation.PreparationHeader))))
                     throw new InvalidOperationException("Native preparation disclosure/module-OFF original-row contract failed.");
                 cleanupContext=context;
-                var navigation=(ConsoleMultiNavigationCollection)typeof(SpellBookView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(view);
                 if(!off)
                 {
                     var header=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),context.Header));
-                    navigation.SetCurrentEntityManual(header);InvokeTeleportGamepadInput(view,"WantConfirm");
+                    Cleanup2ConsolePreparationFocus(view,owned,header,false,"disclosure");InvokeTeleportGamepadInput(view,"WantConfirm");
                     for(int frame=0;frame<5;frame++)yield return 0;
                 }
                 var sourceVm=owned.SpellBookKnownSpells.KnownSpells.Single(value=>value.SpellData!=null &&
@@ -154,8 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Native original source is absent from the owned preparation disclosure.");
                 originalSource=sourceVm.SpellData;
                 var row=scroll.GetComponentsInChildren<SpellBookKnownSpellView>(false).Single(value=>ReferenceEquals(value.GetViewModel(),sourceVm));
-                navigation.SetCurrentEntityManual(row);
-                if(!ReferenceEquals(owned.CurrentSelectedSpell.Value,sourceVm))throw new InvalidOperationException("Actual native original source row did not receive focus.");
+                Cleanup2ConsolePreparationFocus(view,owned,row,false,"original-source");
                 InvokeTeleportGamepadInput(view,"WantConfirm");for(int frame=0;frame<8;frame++)yield return 0;
                 var changed=originalSlots.Where((value,index)=>!ReferenceEquals(value.Spell,originalSpells[index])).ToArray();
                 written=changed.Length==1?changed[0]:null;
@@ -174,8 +172,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Choosing the original source through real console preparation assigns its exact known AbilityData to one native common slot, preserving every other slot and resource.");
                 if(!exact)throw new InvalidOperationException("Native console original-source preparation failed.");
                 var prepared=view.GetComponentsInChildren<SpellBookMemorizeSlotView>(false).Single(value=>ReferenceEquals(value.GetViewModel().SpellSlot,written));
-                navigation=(ConsoleMultiNavigationCollection)typeof(SpellBookView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(view);
-                navigation.SetCurrentEntityManual(prepared);
+                Cleanup2ConsolePreparationFocus(view,owned,prepared,true,"prepared-slot");
                 foreach(int frame in screens.Capture("elementals-console-native-prepared-slot",new JObject { ["source"]=originalSource.Blueprint.AssetGuid,
                     ["slotIndex"]=written.Index,["slotType"]=written.Type.ToString(),["slotReferenceExact"]=ReferenceEquals(prepared.GetViewModel().SpellSlot,written),
                     ["scope"]="Real native preparation slot after original source confirmation; no direct book.Memorize call in the observed action." },
@@ -223,6 +220,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["scope"]="Actual native book closure and scene-row unbind; fresh OFF has no owned header/context to release. No observer call to presentation Release or native VM Dispose." },
                 "After native book disposal clears its selection field and native rows unbind, the owned preparation header and projection retire without dereferencing or modifying the disposed VM.");
             if(!released)throw new InvalidOperationException("Native disposed preparation presentation did not release after actual screen unbind.");
+        }
+
+        private void Cleanup2ConsolePreparationFocus(SpellBookView view,SpellBookVM owner,
+            IConsoleMultiNavigationEntity row,bool memorized,string stage)
+        {
+            // Native UpdateNavigation06005045 puts only Left/RightNavUnit in
+            // the top collection. SetNewCurrentEntity06004CD6 silently refuses
+            // a row outside that collection's direct EntitiesList. Follow the
+            // existing native branch/child collection/row; never assign native
+            // selection properties or synthesize navigation membership.
+            var root=typeof(SpellBookView).GetField("m_ConsoleMultiNavigationCollection",Cleanup2Fields).GetValue(view) as ConsoleMultiNavigationCollection;
+            var branch=typeof(SpellBookView).GetField(memorized?"LeftNavUnit":"RightNavUnit",Cleanup2Fields).GetValue(view) as ConsoleMultiNavigationUnit;
+            ConsoleMultiNavigationCollection leaf=null;IConsoleMultiNavigationEntity middle=null;
+            if(memorized)
+            {
+                var panel=typeof(SpellBookView).GetField("m_MemorizingPanelView",Cleanup2Fields).GetValue(view) as SpellBookMemorizingPanelView;
+                middle=panel?.NavigationUnit;leaf=panel?.NavigationUnit?.Collection;
+            }
+            else
+            {
+                var scroll=typeof(SpellBookView).GetField("m_KnownSpellsView",Cleanup2Fields).GetValue(view) as SpellbookKnownSpellsScrollView;
+                middle=scroll?.Navigation;leaf=scroll?.Navigation;
+            }
+            var predicates=new JObject {
+                ["exactLiveNativeBookBinding"]=view!=null && owner!=null && !owner.IsDisposed && view.gameObject.activeInHierarchy &&
+                    ReferenceEquals(ElementalConsoleBookPresentation.Model(view),owner),
+                ["nativeRootContainsExactBranch"]=root!=null && branch!=null && root.EntitiesList.Any(value=>ReferenceEquals(value,branch)),
+                ["nativeBranchContainsExactCollection"]=branch?.Collection!=null && middle!=null && branch.Collection.EntitiesList.Any(value=>ReferenceEquals(value,middle)),
+                ["nativeLeafContainsExactBoundRow"]=leaf!=null && row!=null && leaf.EntitiesList.Any(value=>ReferenceEquals(value,row)),
+                ["nativeRowIsValid"]=row!=null && row.IsValid() };
+            bool admitted=predicates.Properties().All(value=>(bool)value.Value);
+            if(admitted)
+            {
+                root.SetCurrentEntityManual(branch);branch.Collection.SetCurrentEntityManual(middle);leaf.SetCurrentEntityManual(row);
+            }
+            var known=row as SpellBookKnownSpellView;var slot=row as SpellBookMemorizeSlotView;
+            predicates["exactNativeRootBranchFocus"]=root!=null && ReferenceEquals(root.CurrentEntity,branch);
+            predicates["exactNativeBranchCollectionFocus"]=branch?.Collection!=null && ReferenceEquals(branch.Collection.CurrentEntity,middle);
+            predicates["exactNativeLeafRowFocus"]=leaf!=null && ReferenceEquals(leaf.CurrentEntity,row);
+            predicates["nativeViewCallbackSelectedExactRow"]=ReferenceEquals(typeof(SpellBookView).GetField("m_CurrentSelected",Cleanup2Fields).GetValue(view),row);
+            predicates["nativeSelectedAbilityVmExact"]=owner!=null && (memorized ? slot!=null && owner.CurrentSelectedSpell.Value==null :
+                known!=null && ReferenceEquals(owner.CurrentSelectedSpell.Value,known.GetViewModel()));
+            bool exact=admitted && predicates.Properties().All(value=>(bool)value.Value);
+            Cleanup2Check("elemental-console-native-preparation-focus-"+stage,exact,new JObject {
+                ["predicates"]=predicates,["nativeBranch"]=memorized?"LeftNavUnit/memorizing panel":"RightNavUnit/known spells",
+                ["rowType"]=row?.GetType().FullName,["source"]=known?.GetViewModel()?.SpellData?.Blueprint.AssetGuid,
+                ["preparedSource"]=slot?.GetViewModel()?.SpellSlot?.Spell?.Blueprint.AssetGuid,
+                ["rootDirectEntityCount"]=root?.EntitiesList.Count,["leafDirectEntityCount"]=leaf?.EntitiesList.Count,
+                ["nativeInputContract"]="Direct member navigation only, SetCurrentEntityManual06004CD3 -> EntitySelected06005030 -> SelectKnownSpell06005132; no VM/selection writes." },
+                "The original source or preparation receives real focus through its exact native navigation hierarchy and callback before Confirm.");
+            if(!exact)throw new InvalidOperationException("Actual native preparation row focus failed: "+stage+"; inspect exact navigation membership/callback predicates.");
         }
 
         private IEnumerable<int> Cleanup2ConsoleNativeLearnAndCancel(ExpandedSummoningCorrectionFixture fixture,Spellbook fixtureBook,

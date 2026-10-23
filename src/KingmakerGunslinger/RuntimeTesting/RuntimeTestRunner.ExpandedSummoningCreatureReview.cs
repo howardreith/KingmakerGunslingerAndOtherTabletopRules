@@ -1830,13 +1830,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             // directions. Shorter real walking lanes still exceed the existing
             // .75m observation requirement; retain every footprint/path check.
             float[] routeLengths={6f,4f,3f};
-            int candidates = outward ? 24*routeLengths.Length : 1;
+            // Native movement left the actor off the admitted outward
+            // centerline in Review34; its direct return passed .033m too close
+            // to another actor. Admit only a shorter supported retrace toward
+            // the same origin when that complete return is currently blocked.
+            Vector3 returnDirection=originalDestination-anchor.clampedPosition;returnDirection.y=0f;
+            float returnDistance=returnDirection.magnitude;
+            int candidates = outward ? 24*routeLengths.Length : 3;
+            int selectedIndex=-1;
             for (int index=0; index<candidates && selected==null; index++)
             {
                 // Fixed world axes, never the facing left by the preceding attack.
-                float requestedLength=outward?routeLengths[index/24]:0f;
+                float requestedLength=outward?routeLengths[index/24]:
+                    index==0?returnDistance:Mathf.Min(returnDistance,index==1?1f:.75f);
                 Vector3 requested = outward ? anchor.clampedPosition +
-                    Quaternion.Euler(0f,(index%24)*15f,0f)*Vector3.forward*requestedLength : originalDestination;
+                    Quaternion.Euler(0f,(index%24)*15f,0f)*Vector3.forward*requestedLength :
+                    index==0?originalDestination:anchor.clampedPosition+returnDirection.normalized*requestedLength;
                 var endpoint = AstarPath.active.GetNearest(requested,constraint);
                 Vector3 delta = endpoint.clampedPosition-anchor.clampedPosition; delta.y=0f;
                 string refusal = null;
@@ -1846,6 +1855,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     refusal="endpoint-native-graph-or-horizontal-clamp";
                 else if (outward && Mathf.Abs(delta.magnitude-requestedLength)>.15f) refusal="requested-native-route-length-unproved";
                 else if (delta.sqrMagnitude<.01f) refusal="route-too-short";
+                else if (!outward && (Vector3.Dot(delta,returnDirection)<=0f ||
+                    new Vector2(endpoint.clampedPosition.x-originalDestination.x,
+                        endpoint.clampedPosition.z-originalDestination.z).magnitude>=returnDistance))
+                    refusal="return-does-not-progress-toward-origin";
                 Vector3 across = Vector3.Cross(delta.normalized,Vector3.up);
                 int supports=0;
                 for (int side=-1; side<=1 && refusal==null; side++)
@@ -1889,12 +1902,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeEndpoint"]=SurveyVector(endpoint.clampedPosition),["planarMetres"]=delta.magnitude,
                     ["supportCount"]=supports,["refusal"]=refusal,["blockingUnit"]=blockingUnit,
                     ["blockingFootprint"]=blockingFootprint });
-                if(refusal==null)selected=endpoint.clampedPosition;
+                if(refusal==null){selected=endpoint.clampedPosition;selectedIndex=index;}
             }
             var receipt=new JObject { ["outward"]=outward,["unit"]=unit.UniqueId,["origin"]=SurveyVector(origin),
                 ["nativeOrigin"]=SurveyVector(anchor.clampedPosition),["graphMask"]=constraint.graphMask,["nativeTags"]=tags,
                 ["graph"]=anchor.node.GraphIndex,["connectedArea"]=anchor.node.Area,["nativeFootprintWithPadding"]=footprint,
                 ["attempts"]=attempts,["selected"]=selected.HasValue?SurveyVector(selected.Value):(JToken)JValue.CreateNull(),
+                ["requestedOriginalDestination"]=SurveyVector(originalDestination),
+                ["shortenedReturnTowardOrigin"]=!outward && selectedIndex>0,
+                ["returnMeaning"]=outward?"outward lane":"Exact origin first, then a supported 1.0m/0.75m retrace toward it; no exact return or arrival is inferred.",
                 ["scope"]="Read-only native walking constraint, full straight center/shoulder path and other actor footprints; no relocation, graph/path mutation or travel-threshold change." };
             _refinementRecords.Add("cleanup2-route:"+receipt.ToString(Newtonsoft.Json.Formatting.None));
             if(!selected.HasValue)throw new InvalidOperationException("No full native footprint-clear refinement route from the actor's current position.");
