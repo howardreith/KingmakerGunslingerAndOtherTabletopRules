@@ -6,9 +6,54 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
+### Review35 complete body packets and exact remaining observer failures
+
+Frozen source `fc2b00676129460a2635356ce0a3cd39fb6f1c4a`, package
+`df34d09c8763e27accaf8267b2282b561e5c9adc2c919cb5f0a31b10c73c1cef`, DLL
+`b7c5ee470c55c752f072f7e25828f25af910f607e1d644b1fbf6100e031efcc7`.
+Results below retain these exact bytes; review36 changes are not native PASS.
+
+| Phase / raw evidence prefix | Result | Verified boundary |
+| --- | --- | --- |
+| Creature commands `20261023T0509118423366Z` | 16/2 FAIL;90.456s | Crab native command/rules/cost,2.999315m travel, gesture samples and recovered source state pass. Forty native recovery frames record1.5999999999985448 actual/rendered seconds, just below the strict1.6 requirement through subtraction cancellation. Frame-wait wall8.0978145s also exceeds8s. No relaxed recovery PASS; Brachiosaurus is unreached. |
+| Menu adapters `20261023T0512231430715Z` | 58/2 FAIL;111.660s | Prepared/known SM/SNA Horse quantity routes and original pin/UI restoration pass. Actual Druid feature `b296531ffe013c8499ad712f8ae97f6b` has three exact native Single/d3/d4plus1 conversion arrays: only rankI uses a canonical parent, ranksII-IX use native quantity leaves. Parent-array detection finds zero candidates and stops before any grant/cast. |
+| Girallon/Stegosaurus `20261023T0516203937056Z` | **31/0 PASS;125.230s** | Both ordinary native attacks and full117-frame packets pass (9 stills+108 tracking each). Travel is4.13248873m Girallon and5.96945429m Stegosaurus. Root inspected six new Girallon originals; current local gallery now contains98 originals. Packet completeness does not claim every frame unobstructed or owner art approval. |
+| PC learning `20261023T0520484720745Z` | 8/2 FAIL;66.926s | Intake, original party/selection/sources/pins and retained completed-controller fields are recorded exact. A restoration finalizer throws and masks the primary failure; its cause remains unknown. No learning allocation/preparation qualification is inferred. |
+| Fresh OFF,05:23UTC | Pre-native refusal | The staged `FeatureModules.json` file is absent; no native fixture ran. The original human FeatureModules file existed (435bytes, schema12, allON, Oct15 modification time) and was restored. Missing-defaults transaction handling is staged; disposable fixtures also cover original absence, which was not this live intake. |
+
+All selected review35 transactions restored95 original saves and exact current
+installation/settings. Last verified restoration is
+**2026-10-23T05:23:58.1234634Z**. Window14 is closed at **19m45.123s** from
+05:04:13UTC; final90-minute qualification has not started. Raw native directories
+use the table prefixes under `C:/Dev/KingmakerGunslingerLab/runtime-evidence/`
+with suffix `-disposable-expanded-summoning-cleanup2-native-review`.
+
+Staged review36 is bounded to the demonstrated failures and remaining surfaces:
+
+- Compare the exact native recovery tick deadline, retaining actual/rendered
+  recovery and wall/frame bounds; no command timing or production rules change.
+- Match the exact Druid feature/class/quantity arrays and published provenance.
+  The installed factory produces child -> original quantity conversion -> actual
+  preparation links through an exact instance-scoped variant read; no source
+  fields, shared assets or `AbilityData` are authored. Unknown rows remain native.
+- Refresh stale duplicate-slot debit tracking and retain the PC learning primary
+  exception with individual restoration diagnostics.
+- Use the actual native Wizard-extra controller learning setup; qualify the
+  existing native navigation/callbacks rather than a headless substitute.
+- Handle absent staged OFF defaults transactionally, with focused disposable
+  positive/negative fixtures for both existing and absent original settings.
+- Observe legitimate existing tier4 controller Horse-quantity, Elemental and
+  Mephit labels through native converted-row hovers. Giant controller coverage
+  stays explicit: the level8 fixture does not own the required tier6 access.
+
+Known-spontaneous source, PC/controller allocation/preparation, alternate menus,
+actual OFF, Brachiosaurus visible contact and protected cold execution remain
+open. Review34 giant76/0 and pin23/0 retain their original identity; no unchanged
+campaign or owner approval is implied.
+
 ### Review34 production giants, visible Crab motion and original source pins
 
-Next coherent review35 changes only four bounded observations: recovery wait
+The then-next review35 batch changed four bounded observations: recovery wait
 excludes its own PNG I/O while retaining native/rendered timing; Girallon may
 use a shorter supported retrace with the same actor/graph guards; controller
 preparation follows actual native root/branch/leaf navigation; Druid admission
