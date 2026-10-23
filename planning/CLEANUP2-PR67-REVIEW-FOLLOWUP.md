@@ -6,7 +6,56 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review37 results and review38 corrections (current, October 23)
+### Review38 results and review39 corrections (current, October 23)
+
+Frozen review38 source `7d5569ac306740d9164e4d28eb2f33ffcc228569`, fingerprint
+`c10cbb963a34028c22edfabefe22939936b5686fb8811917251a8b917eee3ad8`; package
+`cdea670107812431ac7bf33172ec5f4f70a8adfaeb71b2f469ee7a0ad51a74a7`, DLL
+`bceb1c6da64937cd7843ac848ec7dee80b30228db2ca27a0c9e5bf16479c079f`, MVID
+`92108a2e-4bcd-4199-9f8d-9d20bde34f4c`. One build (239.0s): 23 selected cases,
+development gate 9/0 and 37/37 installed targets pass.
+
+Window18 ran 10:39:30 to 11:00:39 UTC (21m09s); all four transactions restored.
+
+- PC learning **FAIL 16/3, 192.8s**, raw `20261023T1040445689037Z`. The corrected
+  pin installs the native PC preparation fold: disclosure, original-source
+  preparation, undo, native close, learning disclosure and native allocation
+  all **PASS**. Cancel commits nothing and keeps Wizard2, known objects and
+  resources exact, but the intake receipt refused `nativeProducerReadLockAcquired`:
+  the native `LevelUpPreviewThread` still held its own lock in the same frame
+  as the owned `Cancel()`, finishing that backend's last queued preview.
+- Menu adapters with alternate sources **FAIL 61/2, 216.6s**, raw
+  `20261023T1045186727113Z`. The HUD settle works: all twelve SM/SNA Horse
+  quantity routes and the native pin pass. Druid book lookup now passes. The
+  projection then built nothing: Call of the Wild's prefix 06000B31 replaces the
+  spontaneous factory body (returns false), so the transpiled native body never
+  ran (`reads=0;created=0`). With CotW (the owner's actual stack) the factory
+  route cannot reach native construction.
+- Controller **FAIL 25/1, 174.6s**, raw `20261023T1053392097967Z`. Real native
+  preparation and the formerly crashing prepared-slot focus pass. A second
+  capture session in the same request reused `native-ui-000.png`.
+- Creature commands **PASS 32/0, 205.5s**, raw `20261023T1058365721589Z`. The
+  ranked camera selected candidate 9 (pitch 60, side -1). Root inspected all six
+  Brachiosaurus PNGs: whole body, neck, legs, tail, contact and both targets are
+  visible from contact through recovery; the tail tip passes behind the poplar
+  (native blue silhouette) only in ready/approach. Triangle sight survey still
+  reports UNKNOWN (`environmentSightProven=false`); the pictures are the evidence.
+  Owner-review note: the torso still reads as a broad rounded dome and the tail
+  is short for a sauropod; the neck/chest transition is no longer abrupt.
+
+Review39 corrections:
+
+- Druid projection makes each child with the same two native calls as the
+  installed factory body (native constructor 06002B3A, then the unchanged native
+  `ConvertedFrom` setter 06002B27 on the retained quantity conversion), with the
+  scoped `HasVariant` membership validating and inheriting Fact/metamagic. The
+  spontaneous-factory transpiler is removed; no field is hand-assigned.
+- PC and controller cancel checks poll the same non-blocking producer reads for
+  natural completion (bounded 600 frames/8s); the producer is never stopped.
+- `NativeIconScreenEvidence` sessions in one request share one record list, so
+  file indices stay unique and `native-ui-screens.json` keeps every capture.
+
+### Review37 results and review38 corrections (October 23)
 
 Frozen review37 source `12af3f45a44b7a74deb46c700c715e5cec3ee03f`, fingerprint
 `43893147b1e9b0ec0c2829c2739fdc69a9315a226152ac591bbdbbde7c7ec8ab`; package

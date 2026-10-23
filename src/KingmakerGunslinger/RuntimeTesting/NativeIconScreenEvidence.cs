@@ -20,7 +20,12 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed class NativeIconScreenEvidence : IDisposable
     {
         private readonly RuntimeTestRequest _request;
-        private readonly JArray _records = new JArray();
+        // One request may own several capture sessions (Cleanup2 console casting
+        // then learning). They share one ordered record list per evidence
+        // directory, so file indices stay unique and native-ui-screens.json is
+        // never overwritten by a later session's partial list.
+        private static readonly Dictionary<string, JArray> SharedRecords = new Dictionary<string, JArray>(StringComparer.OrdinalIgnoreCase);
+        private readonly JArray _records;
         private readonly JObject _overlay = new JObject { ["status"] = "not-observed" };
         private object _modManager;
         private bool _closedModManager;
@@ -112,16 +117,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!Supports(request)) throw new InvalidOperationException("Exact guarded native-icon capture scenario and automatic exit required.");
             _request = request;
+            string directory = Path.GetFullPath(request.EvidenceDirectory);
+            if (!SharedRecords.TryGetValue(directory, out _records)) { _records = new JArray(); SharedRecords.Add(directory, _records); }
         }
 
         internal void AppendEvidence(ICollection<string> files)
         {
             if (_records.Count == 0) return;
-            files.Add(Path.Combine(_request.EvidenceDirectory, "native-ui-screens.json"));
+            string manifest = Path.Combine(_request.EvidenceDirectory, "native-ui-screens.json");
+            if (!files.Contains(manifest)) files.Add(manifest);
             foreach (JObject record in _records)
             {
                 string path = Path.Combine(_request.EvidenceDirectory, (string)record["file"]);
-                if (File.Exists(path)) files.Add(path);
+                if (File.Exists(path) && !files.Contains(path)) files.Add(path);
             }
         }
 

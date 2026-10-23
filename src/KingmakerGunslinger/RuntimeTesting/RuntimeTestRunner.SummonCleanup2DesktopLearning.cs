@@ -499,8 +499,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ui.LevelUpController = globalBefore;
                 if (build.LevelUpController == null && ReferenceEquals(build.Unit, unit.Descriptor)) build.Unit = originalBuildUnit;
                 backend = null; presented = false;
-                JObject restoredLevelUpReceipt;
-                bool restoredLevelUp = levelUpIntake.Current(out restoredLevelUpReceipt);
+                // Native38: the LevelUpPreviewThread still held its own lock in
+                // the Cancel frame, finishing the owned backend's last queued
+                // preview. Poll the same non-blocking reads for its natural
+                // completion; the producer is never waited on, stopped or written.
+                JObject restoredLevelUpReceipt; bool restoredLevelUp;
+                var producerWatch = Stopwatch.StartNew(); int producerFrames = 0;
+                while (!(restoredLevelUp = levelUpIntake.Current(out restoredLevelUpReceipt)) && producerFrames < 600 &&
+                    producerWatch.Elapsed.TotalSeconds < 8)
+                { producerFrames++; yield return 0; }
+                restoredLevelUpReceipt["producerSettleFrames"] = producerFrames;
+                restoredLevelUpReceipt["producerSettleSeconds"] = producerWatch.Elapsed.TotalSeconds;
                 bool cancelled = commits == 0 && unit.Descriptor.Progression.GetClassLevel(wizard) == 2 && !book.IsKnown(source) &&
                     book.GetAllKnownSpells().SequenceEqual(known) && Cleanup2ElementalResources(unit) == resources && build.LevelUpController == null &&
                     ReferenceEquals(ui.LevelUpController, globalBefore) && restoredLevelUp;
