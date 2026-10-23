@@ -1,10 +1,134 @@
 # PR 67 review follow-up
 
-Completion milestone in progress, 2026-10-22. PR stays draft; no merge/release or
-owner aesthetic approval is claimed. The completion intake was clean
+Completion milestone, 2026-10-22 to 2026-10-23. All 14 acceptance IDs are
+implemented, and the final frozen-candidate qualification ran on review47. One
+native phase (menu-adapters) still fails for an environmental reason, described
+below with its next requirement. PR stays draft; no merge/release or owner
+aesthetic approval is claimed. The completion intake was clean
 `48a6781392c3d5990c49d9a0e27363e4e3372740` on the existing integration branch.
 
 ## Completion implementation (current)
+
+### Final completion qualification results (review47, October 23)
+
+Window **14:32:31-15:49:20 UTC (76m49s)**, inside the declared 90-minute ceiling.
+About 23 minutes of it were idle. My completion waiter searched a UTF-16 log for
+ASCII text, so it never matched and waited out its 30-minute bound. No game, lock
+or transaction existed in that time. The active qualification time was about
+54 minutes, close to the 52-minute estimate.
+
+Every scenario ran sequentially on the frozen review47 bytes identified in the
+declaration below. Raw directories are under
+`C:/Dev/KingmakerGunslingerLab/runtime-evidence/<id>-disposable-expanded-summoning-cleanup2-native-review`
+(machine-local, not committed).
+
+| Scenario | Result | Duration | Raw id |
+| --- | --- | --- | --- |
+| Cold Working-save trio (Ettin, Cloud, Storm) | **PASS**: prepare 22/0, verify-cleanup 21/0, verify-absent 6/0 | 410.5s | journal `cleanup2-cold-20261023T143304Z-69a9fc47b055` Restored; phases `20261023T1434147627205Z`, `T1436180288315Z`, `T1438211832578Z` |
+| giant-lineup | **PASS 76/0** | 251.4s | `20261023T1505065401136Z` |
+| giants-off (fresh OFF) | **PASS 11/0** | 164.1s | `20261023T1509327722165Z` |
+| creature-commands (Crab, Brachiosaurus) | **PASS 32/0** | 209.7s | `20261023T1512271553940Z` |
+| menu-adapters with alternate sources | **FAIL 111/2** | 237.8s | `20261023T1515573602039Z` |
+| menu-adapters matched rerun | **FAIL 111/2** (identical) | 236.1s | `20261023T1546441058076Z` |
+| alternate-console | **PASS 48/0** | 221.3s | `20261023T1520328137164Z` |
+| elementals-sources | **PASS 99/0** | 375.3s | `20261023T1524091992633Z` |
+| elementals-learning | **PASS 17/0** | 172.6s | `20261023T1530479112624Z` |
+| elementals-learning, fresh OFF | **PASS 17/0** | 160.1s | `20261023T1533370625103Z` |
+| elementals-console | **PASS 32/0** | 180.7s | `20261023T1536245094495Z` |
+| elementals-console, fresh OFF | **PASS 28/0** | 180.1s | `20261023T1539416290432Z` |
+| elementals-off with alternate sources | **PASS 152/0** | 230.4s | `20261023T1542453690363Z` |
+
+Coverage on the final bytes:
+
+- **Menus:** twelve canonical prepared/known SM/SNA Horse quantity routes, the
+  existing native pin, and the native Druid conversion under Call of the Wild
+  with an actual Horse cast/debit and restoration. Monster Tactician tiers
+  II/III/IV, Summoner and Master Summoner pass rows, popup scroll, hover, hover
+  close and exact source budgets. All seven alternate families pass on the
+  controller (48/0).
+- **Elemental sources:** all 24 original casts/spawns/debits, two books with the
+  first exhausted, native duplicate and stale duplicate preparations (stale B
+  never falls back to A), known-spontaneous Sorcerer, actual Druid SNA II, native
+  Extend editor and duration, native Favorite, the original pinned child and
+  owning-graph hydration.
+- **PC learning and preparation:** disclosure without allocation, native
+  allocation and cancel, source preparation and undo, book selection and close.
+- **Controller:** 24 original source bindings, explicit source pin, Use/cast,
+  preparation focus on the original source and prepared slot, unprepare, real
+  Wizard-extra learning with native undo, and disposal across close.
+- **Module OFF:** native books, casting, learning and preparation on PC and
+  controller; 47 native standalone/SNA choices with alternate sources present;
+  and native giants.
+
+**Failure disposition, menu-adapters (environmental).** Both runs fail at
+`alternate-native-hover-close-Occultist` and then stop (`execution`). Every
+canonical, Druid, Monster Tactician, Summoner and Master Summoner check passes
+first. The physical RDP pointer rests where an Occultist popup row renders, so
+native `OnPointerEnter` raises that row's hover before the owned hover opens. The
+guard in `RuntimeTestRunner.SummonCleanup2AlternateMenus.cs` (around line 422)
+correctly refuses to hide or rewrite a context it does not own. The close record
+shows `foreignOwner true`, and the foreign context matches the fixture's own
+Occultist popup source (`matchedHoverOwner popup-source-chain`). This is
+observer/environment interaction, not a product defect. On review47 the
+Occultist, Naturalist, Feral Hunter and Preservationist PC hovers are therefore
+unexercised. They passed on review43 (154/0, raw `20261023T1316384102688Z`).
+Between review43 and review47 no production source changed. Only four observer
+files changed, and in the alternate-menus observer only the controller
+hotbar-paging branch changed; the PC path is untouched.
+
+Smallest next requirement, either of:
+
+1. Rerun only menu-adapters with the pointer parked outside the game window. That
+   needs a human; the automation does not move the user's pointer.
+2. Make the observer adopt an incidental hover owned by its own popup row before
+   opening the owned hover, as popup-close already does, then requalify that
+   phase alone.
+
+**Restoration.**
+- **Native phases:** all 12 host records confirm native exit with
+  `allOriginalSavesExact` and 95 pre-existing saves. The two menu-adapters records
+  have status FAILED because their in-game result failed; their restoration is
+  exact. Last save check: 15:49:20.55 UTC.
+- **Cold trio:** the transaction is Restored with `restorationVerified` at
+  14:39:40.92 UTC.
+- **Final state check (16:02 UTC):** no compatibility lock, game process or
+  `Mods.kmg-compat-*` directory remains.
+
+**Not rerun; evidence kept with its original identity.** No creature
+mesh/material/rig/art or shared dependency changed after these runs:
+- Girallon/Stegosaurus bodies: review35, 31/0.
+- Gorgon: review24.
+- Mastodon/Triceratops: review10, 24/24.
+- Ettin: lifecycle review17; full attacks review29, 19/0.
+- SNA I-IX menus: review7, 43/43. Tooltips: review9, 21/21.
+
+**Root-inspected pictures and owner-review notes.**
+- **Crab:** body and both claws stay visible with the target through approach,
+  contact, extension and recovery.
+- **Brachiosaurus:** body, neck, tail and target are visible from contact through
+  recovery. In the ready/approach frames the tail tip passes behind a small tree.
+  The torso reads as a broad dome and the tail is short; the neck transition is
+  no longer abrupt.
+- **Giants:** the six-giant lineup shows distinct palettes. Right to left: human,
+  Hill, Stone, Frost, Fire, Cloud, Storm; Storm is the largest.
+- **Horse:** the painted full-body Horse appears in SM (row 3, column 1) and SNA
+  (row 2, column 5).
+- **Elemental UI:** all elemental and OFF screens are readable. The level-up
+  preview collapses a single elemental row behind "Elementals (1)".
+- **Tooltip prose:** generated summons say "Summons X through the native summon
+  lifecycle." This is engineering wording that players see. It is pre-existing
+  master text (`ExpandedSummoningAbilityBuilder.cs`, since `a689525f6b`) and was
+  left unchanged for owner decision.
+- **Fixture artifacts:** "-unit name not set-" and blank portraits in spellbook
+  screenshots come from the disposable test caster, not product presentation.
+
+**Gallery (local, not uploaded):**
+`artifacts/cleanup2-replacement-current/index.html` has 26 groups and 69
+originals. 35 are from review47; 34 come from earlier candidates whose art did not
+change, with their original identities, plus labeled before images. Its
+`identities.json` records path, SHA-256, dimensions, source/package/DLL/MVID/run
+and visible-pixel checks. The previous page and plan are preserved as
+`index-pre-final.html` and `cleanup2-replacement-gallery-plan-pre-final.json`.
 
 ### Final completion qualification (declared October 23, 14:35 UTC)
 
