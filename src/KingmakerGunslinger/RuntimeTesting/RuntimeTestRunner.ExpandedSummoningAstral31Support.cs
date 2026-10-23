@@ -14,6 +14,7 @@ using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -189,12 +190,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int cureSiblingBefore = sibling.Descriptor.Resources
                     .GetResourceAmount(cureResource);
                 UnitUseAbility cureCommand = null;
+                UnitUseAbility heldCommand = null;
+                var heldEvidence = new List<string>();
                 var cureCosts = new JArray();
                 using (var economy = new FirearmReviewCosts(owner, cureCosts))
                 {
+                    var queuedBefore = owner.Commands.Queue.ToArray();
                     foreach (int frame in Sprint26Cast(owner, cure,
                         new TargetWrapper(sibling), value => cureCommand = value))
                         yield return frame;
+                    var sticky = cure.GetComponent<AbilityEffectStickyTouch>();
+                    var touch = owner.Get<UnitPartTouch>();
+                    var heldCandidates = owner.Commands.Queue.Except(queuedBefore)
+                        .OfType<UnitUseAbility>().Where(value => sticky != null &&
+                            ReferenceEquals(value.Spell.Blueprint,
+                                sticky.TouchDeliveryAbility)).ToArray();
+                    heldCommand = heldCandidates.Length == 1 ? heldCandidates[0] : null;
+                    string heldAbility = touch?.Ability?.Data?.Blueprint?.AssetGuid;
+                    string stickySource = touch?.Ability?.Data?.StickyTouch?.Blueprint
+                        ?.AssetGuid;
+                    owner.Commands.RemoveFinishedAndUpdateQueue();
+                    bool heldReady = sticky != null && touch != null &&
+                        heldCandidates.Length == 1 && heldCommand != null &&
+                        owner.Commands.Raw.Contains(heldCommand) &&
+                        heldCommand.CanStart && ReferenceEquals(heldCommand.Target?.Unit,
+                            sibling) && ReferenceEquals(touch.Ability.Data.StickyTouch
+                                ?.Blueprint, cure);
+                    if (heldReady)
+                    {
+                        heldCommand.Start();
+                        CircleCompleteCommand(heldCommand, heldEvidence);
+                        owner.Commands.RemoveFinishedAndUpdateQueue();
+                    }
                     int healed = manualDamageBefore - sibling.Damage;
                     bool exact = cureCommand != null && cureCommand.IsFinished &&
                         cureCommand.Result == UnitCommand.ResultType.Success &&
@@ -202,7 +229,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         cureCommand.ExecutionProcess.IsEnded && cureCommand.AiAction == null &&
                         !cureCommand.Cutscene && !cureCommand.IsIgnoreCooldown &&
                         economy.Count(cureCommand) == 1 &&
-                        economy.Exact(cureCommand, false) && healed >= 6 && healed <= 13 &&
+                        economy.Exact(cureCommand, false) && heldReady &&
+                        heldCommand.IsFinished &&
+                        heldCommand.Result == UnitCommand.ResultType.Success &&
+                        heldCommand.ExecutionProcess != null &&
+                        heldCommand.ExecutionProcess.IsEnded &&
+                        economy.Count(heldCommand) == 0 &&
+                        owner.Get<UnitPartTouch>() == null &&
+                        healed >= 6 && healed <= 13 &&
                         cureOwnerBefore == 7 && cureSiblingBefore == 7 &&
                         owner.Descriptor.Resources.GetResourceAmount(cureResource) == 6 &&
                         sibling.Descriptor.Resources.GetResourceAmount(cureResource) == 7 &&
@@ -213,8 +247,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject { ["owner"] = owner.UniqueId,
                             ["target"] = sibling.UniqueId,
                             ["lane"] = lane,
-                            ["command"] = cureCommand == null ? null :
+                            ["rootCommand"] = cureCommand == null ? null :
                                 Sprint27AiCommand(cureCommand),
+                            ["heldCommand"] = heldCommand == null ? null :
+                                Sprint27AiCommand(heldCommand),
+                            ["heldAbility"] = heldAbility,
+                            ["stickySource"] = stickySource,
+                            ["heldCandidateCount"] = heldCandidates.Length,
+                            ["heldReady"] = heldReady,
+                            ["heldCostApplications"] = heldCommand == null ? 0 :
+                                economy.Count(heldCommand),
+                            ["touchAfterDelivery"] = owner.Get<UnitPartTouch>() != null,
+                            ["heldEvidence"] = new JArray(heldEvidence),
                             ["costs"] = cureCosts,
                             ["damage"] = manualDamageBefore + "->" + sibling.Damage,
                             ["healed"] = healed,
@@ -228,9 +272,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 .GetResourceAmount(healResource),
                             ["ownerBlade"] = owner.Descriptor.Resources
                                 .GetResourceAmount(bladeResource),
-                            ["manualNativeCommand"] = true,
+                            ["manualNativeRootAndHeldTouch"] = true,
                             ["forcedHealingRolls"] = 0 },
-                        "A real manual CL13 Cure Light Wounds command pays one standard action, resolves native 1d8+5 healing, and spends only the caster's Cure resource.");
+                        "A real manual CL13 Cure Light Wounds root plus its native queued held-touch delivery pays one standard action, resolves native 1d8+5 healing, and spends only the caster's Cure resource.");
                     if (!exact) throw new InvalidOperationException(
                         "Astral manual Cure Light Wounds path failed.");
                 }
