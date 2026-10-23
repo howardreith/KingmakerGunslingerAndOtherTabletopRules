@@ -4,8 +4,11 @@ This mission adds one exact save-free request scenario:
 `disposable-expanded-summoning-cleanup2-native-review`.
 It requires automatic exit and exactly one string parameter, `reviewPhase`.
 The admitted phases are `giant-lineup`, `menus`, `elementals`, `bodies`,
-`cloth-probe`, `ettin-lifecycle`, `scale-prototype`, `tooltips`,
-`crab-attack`, `production-attacks`, `gorgon-presentation` and `shared-controls`; no save, import, extra
+`cloth-probe`, `ettin-lifecycle`, `ettin-commands`, `scale-prototype`, `tooltips`,
+`crab-attack`, `production-attacks`, `gorgon-presentation`, `recovery-bodies`,
+`creature-commands`, `elementals-presentation`, `elementals-console`,
+`elementals-sources`, `elementals-learning`, `elementals-off`, `menu-adapters`,
+`alternate-console` and `shared-controls`; no save, import, extra
 parameter, broad campaign or human-only observer is admitted.
 
 ## Execution boundaries
@@ -23,6 +26,21 @@ It preserves the actual current mod inventory and holds all original saves
 read-only; it never substitutes a historical mod-count/version intake.
 
 ## Evidence scope
+
+The public protected wrapper admits its explicit completion subset. Its
+`-WithAlternateSources` switch selects the fixed Call of the Wild profile only
+for `menu-adapters`, `alternate-console` and `elementals-off`; other combinations
+refuse before package or transaction entry. `alternate-console` requires that
+profile. The same outer save-guard process remains alive through the native
+process and restoration. Combined desktop canonical/alternate menus have a
+600-second request ceiling (240 + 180 seconds of bounded slices plus fixture
+and cleanup); other public phases retain 450 seconds. Provider absence is not
+alternate-interface qualification.
+
+`creature-commands` observes Crab and Brachiosaurus actual native Default
+approach/attack/recovery, with surveyed actor-safe paths, native movement,
+rule/weapon/action-cost events and complete-body/contact images. It does not
+force optional animation handles or use the fixture clock as ordinary combat.
 
 `giant-lineup` grants the request-owned Human Wizard actual canonical SNA giant
 parents/slots for targeted cast observation. It records Hill, Stone, Frost,

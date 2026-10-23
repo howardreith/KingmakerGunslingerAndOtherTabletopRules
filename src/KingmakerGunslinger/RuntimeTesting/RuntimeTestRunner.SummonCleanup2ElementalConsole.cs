@@ -84,8 +84,8 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private bool Cleanup2ConsoleNativeUiReady()
         {
-            if(!IsSummonCleanup2Review || _request.Parameters==null ||
-                (string)_request.Parameters["reviewPhase"]!="elementals-console" || !Game.Instance.IsControllerGamepad || GamePad.Instance==null)return false;
+            if(!IsCleanup2ConsoleReview || _request.Parameters==null ||
+                !Game.Instance.IsControllerGamepad || GamePad.Instance==null)return false;
             var context=Game.Instance.RootUiContext?.InGameUiContext;if(context==null || UnitSelectionManager.Instance==null)return false;
             var part=typeof(InGameUiContext).GetField("m_StaticPartContext",Cleanup2Fields).GetValue(context) as InGameUiStaticPartContext;
             if(part==null)return false;

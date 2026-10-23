@@ -37,6 +37,7 @@ namespace KingmakerGunslinger.Summoning
         private readonly Dictionary<ElementalNativeSource,Button> _sourceButtons=new Dictionary<ElementalNativeSource,Button>();
 
         internal static bool IsOpen { get { return _owned != null; } }
+        internal static ElementalChooserSession CurrentSession { get { return _owned == null ? null : _owned._session; } }
         internal static RectTransform RenderedPanel {get{return _owned==null?null:_owned._panel;}}
         internal static string[] RenderedText {get{return _owned==null?new string[0]:_owned.GetComponentsInChildren<TextMeshProUGUI>(false)
             .Where(value=>value.gameObject.activeInHierarchy).Select(value=>value.text).ToArray();}}
@@ -108,7 +109,7 @@ namespace KingmakerGunslinger.Summoning
             _panel=Box("Panel",transform,new Vector2(width,height));
             _panel.gameObject.AddComponent<Image>().color=new Color(.08f,.075f,.065f,.99f);
             Label(_panel,"Elementals",new Vector2(24,-14),new Vector2(width-48,42),30);
-            Label(_panel,"Choose a rank and element, then Cast using an original spell source.",new Vector2(24,-56),new Vector2(width-48,46),19);
+            Label(_panel,"Choose a rank and element, then choose which spell to cast.",new Vector2(24,-56),new Vector2(width-48,46),19);
             var rankBar=TopBox("Ranks",_panel,new Vector2(24,-108),new Vector2(width-48,48));
             int[] ranks=_session.Sources.Select(value=>value.Rank).Distinct().OrderBy(value=>value).ToArray();
             Button first=null;
@@ -160,11 +161,10 @@ namespace KingmakerGunslinger.Summoning
                 {
                     var imageRect=TopBox("ElementIcon",button.transform,new Vector2(6,-8),new Vector2(54,54));
                     var image=imageRect.gameObject.AddComponent<Image>();image.sprite=icon;image.preserveAspect=true;image.raycastTarget=false;
-                    var text=button.GetComponentInChildren<TextMeshProUGUI>();var textRect=(RectTransform)text.transform;
-                    textRect.anchoredPosition=new Vector2(66,-5);textRect.sizeDelta=new Vector2(width-78,62);
+                    InsetCaption(button.GetComponentInChildren<TextMeshProUGUI>(),66,8,5,5);
                 }
             }
-            _status.text="Choose an element. Sources retain their own spellbooks and rules.";
+            _status.text="Choose an element, then a spell to cast.";
         }
 
         private void ChooseCreature(string key)
@@ -178,9 +178,12 @@ namespace KingmakerGunslinger.Summoning
                 var button=Button(_sources,"Cast using: "+source.Label,Vector2.zero,new Vector2(_sources.rect.width-16,64),()=>ChooseSource(source));
                 _sourceButtons.Add(source,button);
                 var size=button.gameObject.AddComponent<LayoutElement>();size.minHeight=64;size.preferredHeight=64;
+                var caption=button.GetComponentInChildren<TextMeshProUGUI>();
+                size.preferredHeight=Mathf.Max(64,caption.GetPreferredValues(caption.text,_sources.rect.width-32,10000).y+12);
             }
-            var info=Label(_sources,"Each source keeps its native descriptors, effects, metamagic, costs and matching preparations.",Vector2.zero,new Vector2(_sources.rect.width-16,72),18);
-            info.gameObject.AddComponent<LayoutElement>().minHeight=72;
+            var info=Label(_sources,"Each spell keeps its own effects, metamagic and casting costs.",Vector2.zero,new Vector2(_sources.rect.width-16,72),18);
+            var infoSize=info.gameObject.AddComponent<LayoutElement>();infoSize.minHeight=72;
+            infoSize.preferredHeight=Mathf.Max(72,info.GetPreferredValues(info.text,_sources.rect.width-16,10000).y+12);
             _cast.interactable=false;_status.text=ElementalSourceChooserPolicy.Title(key)+" · choose Cast using.";
             if(choices.Length==1)ChooseSource(choices[0]);
         }
@@ -189,7 +192,8 @@ namespace KingmakerGunslinger.Summoning
         {
             if(!_selection.Select(source)) {_status.text=_selection.Outcome;return;}
             _status.text=source.Label;
-            var old=_sources.Find("NativeSourceRules");if(old!=null)Destroy(old.gameObject);
+            var old=_sources.Find("NativeSourceRules");
+            if(old!=null){old.name="RetiredSourceRules";old.gameObject.SetActive(false);Destroy(old.gameObject);}
             var text=Label(_sources,source.Cost,Vector2.zero,new Vector2(_sources.rect.width-16,240),18);
             text.name="NativeSourceRules";text.gameObject.AddComponent<LayoutElement>().preferredHeight=
                 Mathf.Max(120,text.GetPreferredValues(source.Cost,_sources.rect.width-16,10000).y+16);
@@ -272,6 +276,10 @@ namespace KingmakerGunslinger.Summoning
         private TextMeshProUGUI Label(Transform parent,string text,Vector2 position,Vector2 size,int fontSize)
         {
             var rect=TopBox("Label",parent,position,size);var label=rect.gameObject.AddComponent<TextMeshProUGUI>();
+            // TMP initializes a default text rectangle when attached. Apply
+            // the actual layout after that initialization, not before it.
+            rect.anchorMin=rect.anchorMax=new Vector2(0,1);rect.pivot=new Vector2(0,1);
+            rect.anchoredPosition=position;rect.sizeDelta=size;
             label.font=_session.Font;label.fontSize=fontSize;label.color=new Color(.91f,.86f,.72f,1);
             label.text=text;label.enableWordWrapping=true;label.raycastTarget=false;return label;
         }
@@ -280,8 +288,13 @@ namespace KingmakerGunslinger.Summoning
             var rect=TopBox("Choice",parent,position,size);var image=rect.gameObject.AddComponent<Image>();image.color=new Color(.24f,.21f,.15f,1);
             var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=image;button.onClick.AddListener(()=>action());
             rect.gameObject.AddComponent<ElementalChooserCancel>();
-            Label(rect,text,new Vector2(8,-5),new Vector2(size.x-16,size.y-10),18);
+            InsetCaption(Label(rect,text,new Vector2(8,-5),new Vector2(size.x-16,size.y-10),18),8,8,5,5);
             return button;
+        }
+        private static void InsetCaption(TextMeshProUGUI label,float left,float right,float top,float bottom)
+        {
+            var rect=(RectTransform)label.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;
+            rect.offsetMin=new Vector2(left,bottom);rect.offsetMax=new Vector2(-right,-top);
         }
         private static RectTransform Box(string name,Transform parent,Vector2 size)
         {var obj=new GameObject(name,typeof(RectTransform));var rect=(RectTransform)obj.transform;rect.SetParent(parent,false);rect.sizeDelta=size;return rect;}

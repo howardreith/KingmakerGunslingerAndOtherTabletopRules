@@ -5,17 +5,26 @@
 param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][ValidateSet('0.0.163')][string]$ExpectedVersion,
-    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies')][string]$Phase
+    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')][string]$Phase,
+    [switch]$WithAlternateSources
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
+if($WithAlternateSources -and $Phase -cnotin @('menu-adapters','elementals-off','alternate-console')) {
+    throw 'Alternate-source profile is restricted to exact menu-adapters, elementals-off or alternate-console review.'
+}
+if($Phase -ceq 'alternate-console' -and -not $WithAlternateSources) {
+    throw 'The alternate-console review requires the fixed alternate-source profile.'
+}
+$profile=if($WithAlternateSources){'gunslinger-call-of-the-wild'}else{'gunslinger-only'}
+$runtimeSeconds=if($WithAlternateSources -and $Phase -ceq 'menu-adapters'){600}else{450}
 $root=Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 . (Join-Path $PSScriptRoot 'TeleportationPersistence.Common.ps1')
 . (Join-Path $PSScriptRoot 'SummonCleanup2CurrentStack.Common.ps1')
-if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies')){throw 'Exact case-sensitive Cleanup2 phase required.'}
+if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-learning','elementals-off','menu-adapters','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')){throw 'Exact case-sensitive Cleanup2 phase required.'}
 Assert-KmgUnelevated
 Assert-KmgNotRunning
 $candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose 'summon-cleanup-iteration2'
@@ -26,7 +35,7 @@ if($candidate.candidateKind -cne 'development' -or $candidate.releaseQualificati
 if(-not $PSCmdlet.ShouldProcess('Steam App ID 640820',"run the one save-free Cleanup2 $Phase observation and restore current installation/settings")){return}
 $saves=Join-Path ([Environment]::GetFolderPath('UserProfile')) 'AppData/LocalLow/Owlcat Games/Pathfinder Kingmaker/Saved Games'
 $evidence=Join-Path $root ('artifacts/cleanup2-protected-native/'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N'))
-$record=[ordered]@{schemaVersion=1;phase=$Phase;candidate=$candidate;status='PREFLIGHT';restoration=$null}
+$record=[ordered]@{schemaVersion=1;phase=$Phase;profileId=$profile;candidate=$candidate;status='PREFLIGHT';restoration=$null}
 $catalog=$null;$failure=$null
 try {
     $catalog=Open-KmgProtectedSaveCatalog -SaveDirectory $saves -EvidenceDirectory $evidence
@@ -34,8 +43,8 @@ try {
     $record.status='ACTIVE'
     Write-KmgCompatibilityJsonAtomic (Join-Path $evidence 'protected-native.json') $record
     & (Join-Path $PSScriptRoot 'compatibility/Invoke-KingmakerCompatibilityProfile.ps1') `
-        -ProfileId 'gunslinger-only' -Scenario @('disposable-expanded-summoning-cleanup2-native-review') `
-        -Parameters @{reviewPhase=$Phase} -RuntimeTimeoutSeconds 450 -ReuseInstalledArtifact `
+        -ProfileId $profile -Scenario @('disposable-expanded-summoning-cleanup2-native-review') `
+        -Parameters @{reviewPhase=$Phase} -RuntimeTimeoutSeconds $runtimeSeconds -ReuseInstalledArtifact `
         -ExpandedSummoningDisabled:($Phase -ceq 'elementals-off') `
         -DevelopmentPurpose 'summon-cleanup-iteration2' -PackagePath $candidate.packagePath -Confirm:$false
 } catch {$failure=$_;$record.status='FAILED';$record.error=$_.Exception.Message}

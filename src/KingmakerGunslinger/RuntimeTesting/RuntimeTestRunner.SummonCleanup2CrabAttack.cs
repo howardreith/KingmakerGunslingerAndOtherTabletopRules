@@ -500,7 +500,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             string phase = (string)_request.Parameters?["reviewPhase"];
             if (!IsSummonCleanup2Review || (phase != "crab-attack" && phase != "production-attacks" &&
-                phase != "bodies" && phase != "gorgon-presentation" && phase != "recovery-bodies") ||
+                phase != "bodies" && phase != "gorgon-presentation" && phase != "recovery-bodies" && phase != "creature-commands") ||
                 fixture == null || fixture.Caster == null || actor == null || target == null || actor.Destroyed || target.Destroyed ||
                 !ReferenceEquals(fixture.Hostile, target) || !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
                 fixture.UnitsBefore.Any(value => ReferenceEquals(value, actor) || ReferenceEquals(value, target)) ||

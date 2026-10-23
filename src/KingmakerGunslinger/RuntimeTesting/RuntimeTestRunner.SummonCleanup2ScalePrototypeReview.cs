@@ -180,7 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject afterPicture=null;
                 foreach(int captureFrame in Cleanup2CaptureLineup(fixture, actors, keys, afterSamples.Last(), value=>afterPicture=value,
                     "cleanup2-scale-prototype-after.png", true))yield return captureFrame;
-                Cleanup2Check("scale-prototype-after-lineup", (bool?)afterPicture?["captureQualified"]==true, afterPicture,
+                Cleanup2Check("scale-prototype-after-lineup", (bool?)afterPicture?["captureRecorded"]==true, afterPicture,
                     "A distinct actual native-camera after image retains Human and all six experimental families; before evidence is preserved.");
 
                 _sprint25WaitingForUnityAppearance = false;
@@ -209,7 +209,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             JObject posePicture=null;
                             foreach(int captureFrame in Cleanup2CaptureLineup(fixture, actors, keys, pose, value=>posePicture=value,
                                 "cleanup2-scale-prototype-weapon-" + keys[i] + ".png", true))yield return captureFrame;
-                            Cleanup2Check("scale-prototype-native-pose-frame-" + keys[i], pose.All(value => value.Valid) && (bool?)posePicture?["captureQualified"]==true, posePicture,
+                            Cleanup2Check("scale-prototype-native-pose-frame-" + keys[i], pose.All(value => value.Valid) && (bool?)posePicture?["captureRecorded"]==true, posePicture,
                                 "An actual native-camera weapon-pose frame supports visual inspection; native weapon motion is not a combat-resolution test.");
                         }
                         Game.Instance.IsPaused = false; yield return 0;
