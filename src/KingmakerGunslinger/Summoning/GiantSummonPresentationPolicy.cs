@@ -170,4 +170,31 @@ namespace KingmakerGunslinger.Summoning
         private static KeyValuePair<string, string> S(string symbol, string guid)
         { return new KeyValuePair<string, string>(symbol, guid); }
     }
+
+    /// <summary>
+    /// Installed EntityFader.SetRendererVisibility (06001756) writes
+    /// enabled = visible to every live entry of the view's current renderer
+    /// list. Each captured original's authentic state is the last value that
+    /// writer actually set on it, recorded before any ownership validation,
+    /// so a refusal restores displaced originals to that write, never to an
+    /// earlier one. Originals absent from a replaced or edited list were not
+    /// written and keep their previous record.
+    /// </summary>
+    internal static class GiantSummonNativeVisibilityRecord
+    {
+        internal static void Record<T>(IDictionary<T, bool> record, IEnumerable<T> captured,
+            IEnumerable<T> written, Func<T, bool> live, bool visible) where T : class
+        {
+            if (record == null || captured == null || written == null || live == null) return;
+            T[] wrote = written.Where(value => value != null && live(value)).ToArray();
+            foreach (T value in captured)
+                if (value != null && wrote.Any(item => ReferenceEquals(item, value))) record[value] = visible;
+        }
+
+        internal static bool Expected<T>(IDictionary<T, bool> record, T renderer, bool intake) where T : class
+        {
+            bool written;
+            return record != null && renderer != null && record.TryGetValue(renderer, out written) ? written : intake;
+        }
+    }
 }
