@@ -19,13 +19,16 @@ using Kingmaker.RuleSystem;
 using Kingmaker.ResourceLinks;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.AreaEffects;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -193,11 +196,13 @@ namespace KingmakerGunslinger.Blueprints
                 "RemoveDisease", "4093d5a0eb5cae94e909eb1e0e1a6b36", "Remove Disease");
             var removeFear = ConfigureAstralAtWillNativeSpell(library, bySymbol,
                 "RemoveFear", "55a037e514c0ee14a8e3ed14b47061de", "Remove Fear");
+            var holySmite = ConfigureAstralHolySmite(library, bySymbol, unit,
+                holyWord.Icon);
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
             parameters.Abilities = new[] { heal, bladeBarrier, cureLight,
                 seeInvisibility, aid, dispelMagic, holyAura, holyWord,
-                invisibility, removeCurse, removeDisease, removeFear };
+                invisibility, removeCurse, removeDisease, removeFear, holySmite };
             parameters.SpellLevels = new[] { 6,
                 AstralDevaRulesPolicy.BladeBarrierSpellLevel,
                 AstralDevaRulesPolicy.CureLightWoundsSpellLevel,
@@ -209,7 +214,8 @@ namespace KingmakerGunslinger.Blueprints
                 AstralDevaRulesPolicy.InvisibilitySpellLevel,
                 AstralDevaRulesPolicy.RemoveCurseSpellLevel,
                 AstralDevaRulesPolicy.RemoveDiseaseSpellLevel,
-                AstralDevaRulesPolicy.RemoveFearSpellLevel };
+                AstralDevaRulesPolicy.RemoveFearSpellLevel,
+                AstralDevaRulesPolicy.HolySmiteSpellLevel };
             parameters.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
 
             traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor,
@@ -222,7 +228,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Astral31Prefix + "Traits.Name", "Astral Deva Traits"),
                 LocalizationService.Create(Astral31Prefix + "Traits.Description",
-                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses. Aid, Dispel Magic, Holy Aura, Holy Word, self-only Invisibility, Remove Curse, Remove Disease and Remove Fear are at will. All SLAs are CL13. Change shape, caster travel, expensive Continual Flame, social Discern Lies and passive Detect Evil sensing are unavailable."), null);
+                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses. Aid, Dispel Magic, Holy Aura, Holy Word, Holy Smite, self-only Invisibility, Remove Curse, Remove Disease and Remove Fear are at will. All SLAs are CL13. Change shape, caster travel, expensive Continual Flame, social Discern Lies and passive Detect Evil sensing are unavailable."), null);
 
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "Astral ordinary attack fallback");
@@ -275,7 +281,8 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, "d09b20029e9abfe4480b356c92095623", "Toughness"),
                 extraplanar, traits, stunFeature, heal, bladeBarrier, cureLight,
                 seeInvisibility, aid, dispelMagic, holyAura, holyWord,
-                invisibility, removeCurse, removeDisease, removeFear };
+                invisibility, removeCurse, removeDisease, removeFear,
+                holySmite };
         }
 
         private static BlueprintAbility ConfigureAstralAtWillNativeSpell(
@@ -293,6 +300,79 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description",
                     title + " at will at caster level13."), ability.Icon);
+            return ability;
+        }
+
+        private static BlueprintAbility ConfigureAstralHolySmite(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol,
+            BlueprintUnit unit, Sprite icon)
+        {
+            string symbol = Astral31Prefix + "HolySmite";
+            var ability = Require<BlueprintAbility>(bySymbol, symbol);
+            var blinded = Require<BlueprintBuff>(bySymbol,
+                Astral31Prefix + "HolySmiteBlinded");
+            blinded.name = InternalName(Astral31Prefix + "HolySmiteBlinded");
+            blinded.Stacking = StackingType.Stack;
+            blinded.IsClassFeature = false;
+            var blindness = ScriptableObject.CreateInstance<AddCondition>();
+            blindness.Condition = UnitCondition.Blindness;
+            var blindDescriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            blindDescriptor.Descriptor = SpellDescriptor.Blindness;
+            blinded.ComponentsArray = new BlueprintComponent[] {
+                blindness, blindDescriptor };
+
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius", new Feet(
+                AstralDevaRulesPolicy.HolySmiteRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And, Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var resolve = ScriptableObject.CreateInstance<ContextActionAstralHolySmite>();
+            resolve.SourceUnit = unit;
+            resolve.OutsiderType = Feature(library, OutsiderTypeGuid,
+                "native outsider type");
+            resolve.Blinded = blinded;
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList { Actions = new GameAction[] { resolve } };
+            var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Good;
+
+            ability.name = InternalName(symbol);
+            ability.Parent = null;
+            ability.Type = AbilityType.SpellLike;
+            ability.Range = AbilityRange.Medium;
+            ability.CanTargetPoint = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = true;
+            ability.CanTargetEnemies = true;
+            ability.SpellResistance = true;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.Animation = UnitAnimationActionCastSpell.CastAnimationStyle.Omni;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.MaterialComponent = new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ability.ComponentsArray = new BlueprintComponent[] {
+                around, run, descriptor };
+            // Reuse Holy Word's installed Good-spell art. It is an actual
+            // holy offensive spell icon and introduces no new bitmap asset.
+            var access = BlueprintUnitFactAccess.Resolve();
+            var title = LocalizationService.Create(symbol + ".Name", "Holy Smite");
+            access.Configure(blinded, title,
+                LocalizationService.Create(Astral31Prefix +
+                    "HolySmiteBlinded.Description",
+                    "Blinded for one round by this Astral Deva's Holy Smite."), icon);
+            access.Configure(ability, title,
+                LocalizationService.Create(symbol + ".Description",
+                    "At will at caster level13, burst holy power in a20-foot radius at medium range. Good creatures are unaffected. Evil creatures take5d8 divine damage and are blinded for one round; evil outsiders instead take10d6. A Will save halves damage and prevents blindness. Neutral creatures take half damage, or one-quarter on a successful save, and are never blinded. Spell resistance applies."), icon);
             return ability;
         }
 

@@ -58823,6 +58823,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S31 private at-will spell-like dependency; exact CL13/access/action/effect/target/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HolySmite",
+      "guid": "754cda0463884b08998c8d4ba1af3957",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private Holy Smite combat adaptation; exact CL13/DC20/range/area/alignment/outsider/save/SR/action/damage/blind/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.HolySmiteBlinded",
+      "guid": "4fef4495457a450098962b00b16b6220",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private one-round Holy Smite blindness state; exact source ownership, condition immunity, stacking and expiry qualification required before the suppressed Astral root is published."
     }
   ]
 }

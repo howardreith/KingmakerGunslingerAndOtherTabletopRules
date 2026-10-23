@@ -40,6 +40,11 @@ namespace KingmakerGunslinger.Summoning
         internal const int RemoveCurseSpellLevel = 3;
         internal const int RemoveDiseaseSpellLevel = 3;
         internal const int RemoveFearSpellLevel = 1;
+        internal const int HolySmiteSpellLevel = 4;
+        internal const int HolySmiteRadiusFeet = 20;
+        internal const int HolySmiteOrdinaryDice = 5;
+        internal const int HolySmiteEvilOutsiderDice = 10;
+        internal const int HolySmiteBlindRounds = 1;
         internal static bool HasGoodSummoningDescriptor { get { return true; } }
         internal static bool HasLawSummoningDescriptor { get { return false; } }
 
@@ -67,6 +72,27 @@ namespace KingmakerGunslinger.Summoning
         internal static int SlamDamageBonus()
         { return Modifier(Strength) * 3 / 2; }
 
+        internal static int HolySmiteWillDc(int liveCharismaScore)
+        { return 10 + HolySmiteSpellLevel + Modifier(liveCharismaScore); }
+
+        internal static int HolySmiteDiceCount(bool evilOutsider)
+        { return evilOutsider ? HolySmiteEvilOutsiderDice : HolySmiteOrdinaryDice; }
+
+        internal static int HolySmiteDieSides(bool evilOutsider)
+        { return evilOutsider ? 6 : 8; }
+
+        internal static int HolySmiteDamage(int rolledDamage, bool evil,
+            bool saved)
+        {
+            if (rolledDamage < 0) throw new ArgumentOutOfRangeException(
+                "rolledDamage");
+            int divisor = evil ? (saved ? 2 : 1) : (saved ? 4 : 2);
+            return rolledDamage / divisor;
+        }
+
+        internal static bool HolySmiteBlinds(bool evil, bool saved)
+        { return evil && !saved; }
+
         internal static bool BlocksLesserGlobe(int spellLevel, bool spell,
             bool spellLike, float sourceDistanceMeters, float sourceCorpulenceMeters)
         {
@@ -88,6 +114,11 @@ namespace KingmakerGunslinger.Summoning
                 HolyAuraSpellLevel != 8 || HolyWordSpellLevel != 7 ||
                 InvisibilitySpellLevel != 2 || RemoveCurseSpellLevel != 3 ||
                 RemoveDiseaseSpellLevel != 3 || RemoveFearSpellLevel != 1 ||
+                HolySmiteSpellLevel != 4 || HolySmiteRadiusFeet != 20 ||
+                HolySmiteDiceCount(false) != 5 || HolySmiteDieSides(false) != 8 ||
+                HolySmiteDiceCount(true) != 10 || HolySmiteDieSides(true) != 6 ||
+                HolySmiteWillDc(Charisma) != 20 ||
+                HolySmiteDamage(40, false, true) != 10 ||
                 SpellLikeCasterLevel == HitDice || !HasGoodSummoningDescriptor ||
                 HasLawSummoningDescriptor)
                 throw new InvalidOperationException("Astral adult rules policy changed.");

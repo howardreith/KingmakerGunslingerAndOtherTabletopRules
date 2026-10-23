@@ -1,20 +1,26 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.Blueprints.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.Controllers.Units;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Firing;
 using UnityEngine;
@@ -187,6 +193,75 @@ namespace KingmakerGunslinger.Summoning
             if (granted == null) return 0f;
             var data = new AbilityData(granted);
             return data.IsAvailable && data.CanTarget(new TargetWrapper(target)) ? 1f : 0f;
+        }
+    }
+
+    /// <summary>PF1 Holy Smite resolution for one creature selected by the
+    /// ability's native 20-foot burst. The ability framework owns range,
+    /// action cost and per-target spell resistance; this action owns the
+    /// alignment-sensitive dice, the real Will save and the one-round blind.</summary>
+    [Serializable]
+    public sealed class ContextActionAstralHolySmite : ContextAction
+    {
+        public BlueprintUnit SourceUnit;
+        public BlueprintUnitFact OutsiderType;
+        public BlueprintBuff Blinded;
+
+        public override string GetCaption()
+        { return "Resolve Astral Deva Holy Smite against one creature"; }
+
+        public override void RunAction()
+        {
+            UnitEntityData caster = Context == null ? null : Context.MaybeCaster;
+            UnitEntityData target = Target == null ? null : Target.Unit;
+            if (caster == null || target == null || target.Descriptor == null ||
+                target.Destroyed || target.Descriptor.State.IsDead ||
+                SourceUnit == null || OutsiderType == null || Blinded == null ||
+                !ReferenceEquals(caster.Blueprint, SourceUnit)) return;
+
+            Alignment alignment = target.Descriptor.Alignment.Value;
+            if (alignment.HasComponent(AlignmentComponent.Good)) return;
+            bool evil = alignment.HasComponent(AlignmentComponent.Evil);
+            bool evilOutsider = evil && target.Descriptor.HasFact(OutsiderType);
+            int dc = AstralDevaRulesPolicy.HolySmiteWillDc(
+                caster.Stats.Charisma.ModifiedValue);
+            var resolution = new MechanicsContext(caster, target.Descriptor,
+                Context.SourceAbility, Context, new TargetWrapper(target));
+            resolution.Params.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
+            resolution.Params.SpellLevel = AstralDevaRulesPolicy.HolySmiteSpellLevel;
+            resolution.Params.DC = dc;
+            var saving = new RuleSavingThrow(target, SavingThrowType.Will, dc) {
+                Reason = resolution };
+            resolution.TriggerRule(saving);
+
+            DiceType die = evilOutsider ? DiceType.D6 : DiceType.D8;
+            var roll = new RuleRollDice(caster, new DiceFormula(
+                AstralDevaRulesPolicy.HolySmiteDiceCount(evilOutsider), die)) {
+                Reason = resolution };
+            int rolled = resolution.TriggerRule(roll).Result;
+            int amount = AstralDevaRulesPolicy.HolySmiteDamage(rolled, evil,
+                saving.IsPassed);
+            var damage = new DirectDamage(new DiceFormula(0, DiceType.Zero), amount);
+            var dealt = new RuleDealDamage(caster, target,
+                new DamageBundle(new BaseDamage[] { damage })) {
+                HalfBecauseSavingThrow = saving.IsPassed,
+                Reason = resolution,
+                SourceAbility = Context.SourceAbility };
+            resolution.TriggerRule(dealt);
+
+            if (!AstralDevaRulesPolicy.HolySmiteBlinds(evil, saving.IsPassed))
+                return;
+            var blindContext = new MechanicsContext(caster, target.Descriptor,
+                Blinded, resolution, new TargetWrapper(target));
+            blindContext.Params.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
+            blindContext.Params.SpellLevel = AstralDevaRulesPolicy.HolySmiteSpellLevel;
+            blindContext.Params.DC = dc;
+            var apply = new RuleApplyBuff(target, Blinded, blindContext,
+                TimeSpan.FromSeconds(GameConsts.RoundDuration *
+                    AstralDevaRulesPolicy.HolySmiteBlindRounds),
+                (buff, source, duration) =>
+                    target.Descriptor.Buffs.AddBuff(buff, source, duration));
+            Rulebook.Trigger(apply);
         }
     }
 }
