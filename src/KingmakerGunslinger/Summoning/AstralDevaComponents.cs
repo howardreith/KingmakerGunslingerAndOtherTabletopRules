@@ -252,8 +252,11 @@ namespace KingmakerGunslinger.Summoning
 
             if (!AstralDevaRulesPolicy.HolySmiteBlinds(evil, saving.IsPassed))
                 return;
+            // Give the finite victim effect its own context. Keeping it as a
+            // child of the transient cast-resolution context makes source teardown
+            // dispose the blindness before its printed one-round lifetime.
             var blindContext = new MechanicsContext(caster, target.Descriptor,
-                Blinded, resolution, new TargetWrapper(target));
+                Context.SourceAbility, null, new TargetWrapper(target));
             blindContext.Params.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
             blindContext.Params.SpellLevel = AstralDevaRulesPolicy.HolySmiteSpellLevel;
             blindContext.Params.DC = dc;
