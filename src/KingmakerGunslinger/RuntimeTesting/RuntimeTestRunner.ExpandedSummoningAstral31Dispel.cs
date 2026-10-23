@@ -70,7 +70,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 dismissalOwner = CastExpandedSummoningOwnTier(fixture,
                     "astral-deva");
                 dismissalTarget = CastExpandedSummoningOwnTier(fixture,
-                    "astral-deva");
+                    "astral-deva", fixture.Hostile);
                 firstDispelOwner = CastExpandedSummoningOwnTier(fixture,
                     "astral-deva");
                 secondDispelOwner = CastExpandedSummoningOwnTier(fixture,
@@ -241,6 +241,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 dismissalTarget.Stats.SaveWill.BaseValue = -100;
                 observed.Owner = dismissalOwner;
                 observed.Targets.Add(dismissalTarget);
+                UnitPartSummonedMonster dismissalSummon = dismissalTarget.Get<
+                    UnitPartSummonedMonster>();
+                bool dismissalTargetReady = dismissalSummon != null &&
+                    ReferenceEquals(dismissalSummon.Summoner, fixture.Hostile) &&
+                    dismissalOwner.IsEnemy(dismissalTarget) &&
+                    dismissalTarget.IsEnemy(dismissalOwner);
                 int evilBefore = Astral31DispelAttackAc(dismissalTarget,
                     dismissalOwner);
                 int goodBefore = Astral31DispelAttackAc(firstDispelOwner,
@@ -319,7 +325,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     RuleSavingThrow dismissalSave = observed.Saves.SingleOrDefault(
                         value => ReferenceEquals(value.Initiator,
                             dismissalTarget));
-                    bool dismissed = dismissalHeld != null &&
+                    bool dismissed = dismissalTargetReady &&
+                        dismissalHeld != null &&
                         dismissalHeld.IsFinished && dismissalHeld.Result ==
                             UnitCommand.ResultType.Success &&
                         economy.Count(dismissalHeld) == 1 &&
@@ -344,6 +351,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("astral-dispel-native-dismissal", dismissed,
                         new JObject { ["owner"] = dismissalOwner.UniqueId,
                             ["target"] = dismissalTarget.UniqueId,
+                            ["targetSummoner"] = dismissalSummon?.Summoner?.UniqueId,
+                            ["expectedSummoner"] = fixture.Hostile.UniqueId,
+                            ["ownerConsidersTargetEnemy"] =
+                                dismissalOwner.IsEnemy(dismissalTarget),
+                            ["targetConsidersOwnerEnemy"] =
+                                dismissalTarget.IsEnemy(dismissalOwner),
                             ["command"] = dismissalHeld == null ? null :
                                 Sprint27AiCommand(dismissalHeld),
                             ["touchRoll"] = dismissalRoll?.Roll.Value,
