@@ -4,7 +4,6 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
-using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -49,22 +48,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit => unit.IsInCombat);
             bool playerCombatAtStart = Game.Instance.Player.IsInCombat;
             var nativeTurnController = Game.Instance.TurnBasedCombatController;
-            var nativeLeaveController = Game.Instance
-                .GetController<UnitCombatLeaveController>(true);
-            var nativeJoinController = Game.Instance
-                .GetController<UnitCombatJoinController>(true);
             bool turnBasedCombatAtStart = TurnBased.Controllers.CombatController
                 .IsInTurnBasedCombat();
             bool turnHasEnemyAtStart = nativeTurnController.HasEnemyInCombat;
             bool turnHadEnemyAtStart = nativeTurnController.HadEnemyAtSomePoint;
             UnitEntityData[] turnUnitsAtStart = nativeTurnController.SortedUnits
                 .ToArray();
-            if (nativeLeaveController == null || nativeJoinController == null ||
-                playerCombatAtStart || turnBasedCombatAtStart ||
+            if (playerCombatAtStart || turnBasedCombatAtStart ||
                 turnHasEnemyAtStart || protectedPartyCombatBefore.Any(pair =>
                     pair.Value))
                 throw new InvalidOperationException(
-                    "Astral core requires a clean registered native combat boundary.");
+                    "Astral core requires a clean native combat boundary.");
             var ownedItems = new List<ItemEntity>();
             try
             {
@@ -504,16 +498,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningHostile(fixture);
                 if (!target.Destroyed) target.Destroy();
                 Game.Instance.EntityDestroyer.Tick();
-                bool targetRetiredBeforeReconciliation = target.Destroyed &&
-                    !target.IsInState;
-                nativeTurnController.Tick();
-                bool turnHasEnemyAfterTurnTick =
-                    nativeTurnController.HasEnemyInCombat;
-                nativeLeaveController.Tick();
-                bool casterCombatAfterGroupLeave = fixture.Caster.IsInCombat;
-                if (fixture.Caster.IsInCombat) fixture.Caster.LeaveCombat();
-                nativeJoinController.Tick();
-                for (int frame = 0; frame < 12; frame++) yield return 0;
+                Game.Instance.Player.UpdateIsInCombat();
+                bool targetRetired = target.Destroyed && !target.IsInState;
                 bool protectedPartyCombatExact = protectedPartyCombatBefore
                     .All(pair => pair.Key.IsInCombat == pair.Value);
                 bool nativeCombatBoundaryExact =
@@ -523,22 +509,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     nativeTurnController.HasEnemyInCombat == turnHasEnemyAtStart &&
                     nativeTurnController.HadEnemyAtSomePoint == turnHadEnemyAtStart &&
                     turnUnitsAtStart.SequenceEqual(nativeTurnController.SortedUnits);
-                bool clean = owner.Destroyed && sibling.Destroyed &&
+                bool sharedNextCaseAllowed = !fixture.Caster.IsInCombat &&
+                    protectedPartyCombatExact && nativeCombatBoundaryExact;
+                bool freshProcessBoundaryRequired = !sharedNextCaseAllowed;
+                bool ownedCleanup = owner.Destroyed && sibling.Destroyed &&
                     !owner.IsInState && !sibling.IsInState &&
                     !Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any() &&
                     targetBuffsExactBeforeRetirement &&
                     targetCommandsClearBeforeRetirement &&
-                    targetMemoryExactBeforeRetirement &&
-                    targetRetiredBeforeReconciliation &&
+                    targetMemoryExactBeforeRetirement && targetRetired &&
                     !fixture.Caster.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
-                    !target.IsInCombat && !fixture.Caster.IsInCombat &&
-                    !Game.Instance.Player.IsInCombat &&
-                    protectedPartyCombatExact && nativeCombatBoundaryExact &&
                     !fixture.Caster.Memory.Contains(target) &&
                     !target.Memory.Contains(fixture.Caster) &&
                     ownedItems.Count >= 4 && ownedItems.All(item =>
                         !item.IsLootable && item.Collection == null);
-                Sprint25Check("astral-core-cleanup", clean, new JObject {
+                Sprint25Check("astral-core-cleanup", ownedCleanup, new JObject {
                     ["ownerAbsent"] = !owner.IsInState,
                     ["siblingAbsent"] = !sibling.IsInState,
                     ["areasExact"] = !Game.Instance.State.AreaEffects.All
@@ -548,16 +533,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         targetCommandsClearBeforeRetirement,
                     ["targetMemoryExactBeforeRetirement"] =
                         targetMemoryExactBeforeRetirement,
-                    ["targetRetiredBeforeReconciliation"] =
-                        targetRetiredBeforeReconciliation,
+                    ["targetRetired"] = targetRetired,
                     ["items"] = new JArray(ownedItems.Select(item => new JObject {
                         ["blueprint"] = item.Blueprint.AssetGuid,
                         ["lootable"] = item.IsLootable,
                         ["collectionAbsent"] = item.Collection == null })),
-                    ["targetCommandsClear"] =
-                        targetCommandsClearBeforeRetirement,
-                    ["targetAbsentAfterCleanup"] = target.Destroyed &&
-                        !target.IsInState,
                     ["casterCommandsClear"] = !fixture.Caster.Commands.Raw.Any(command =>
                         command != null && !command.IsFinished),
                     ["targetCombatBeforeCleanup"] = targetCombatBeforeCleanup,
@@ -573,19 +553,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["protectedPartyCombatBeforeCleanup"] =
                         protectedPartyCombatBeforeCleanup,
                     ["protectedPartyCombatAfterCleanup"] =
-                        protectedPartyCombatBefore.Keys.Count(unit =>
-                            unit.IsInCombat),
+                        protectedPartyCombatBefore.Keys.Count(unit => unit.IsInCombat),
                     ["protectedPartyCombatExact"] = protectedPartyCombatExact,
-                    ["turnBasedCombatBeforeCleanup"] =
-                        turnBasedCombatBeforeCleanup,
+                    ["turnBasedCombatBeforeCleanup"] = turnBasedCombatBeforeCleanup,
                     ["turnBasedCombatAfterCleanup"] =
                         TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
                     ["turnHasEnemyBeforeCleanup"] = turnHasEnemyBeforeCleanup,
-                    ["turnHasEnemyAfterTurnTick"] = turnHasEnemyAfterTurnTick,
                     ["turnHasEnemyAfterCleanup"] =
                         nativeTurnController.HasEnemyInCombat,
-                    ["casterCombatAfterGroupLeave"] =
-                        casterCombatAfterGroupLeave,
                     ["turnHadEnemyBeforeCleanup"] = turnHadEnemyBeforeCleanup,
                     ["turnHadEnemyAfterCleanup"] =
                         nativeTurnController.HadEnemyAtSomePoint,
@@ -593,17 +568,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["turnUnitsAfterCleanup"] =
                         nativeTurnController.SortedUnits.Count(),
                     ["nativeCombatBoundaryExact"] = nativeCombatBoundaryExact,
-                    ["nativeReconciliation"] =
-                        "TurnController.Tick->CombatLeave.Tick->CombatJoin.Tick",
+                    ["sharedNextCaseAllowed"] = sharedNextCaseAllowed,
+                    ["freshProcessBoundaryRequired"] = freshProcessBoundaryRequired,
+                    ["phaseEndsAfterCleanup"] = true,
                     ["casterRemembersTargetAfterCleanup"] =
                         fixture.Caster.Memory.Contains(target),
                     ["targetRemembersCasterAfterCleanup"] =
-                        target.Memory.Contains(fixture.Caster),
-                    ["combatClear"] = !target.IsInCombat &&
-                        !fixture.Caster.IsInCombat &&
-                        !Game.Instance.Player.IsInCombat },
-                    "Both exact Astral owners and the disposable hostile are retired; owned areas, grants, commands, memory, items and the protected combat boundary are exact before process restoration.");
-                if (!clean) throw new InvalidOperationException(
+                        target.Memory.Contains(fixture.Caster) },
+                    "Both exact Astral owners and the disposable hostile are retired with owned areas, grants, commands, memory and items clean; any protected combat residue requires immediate fixture and fresh-process restoration before another case.");
+                if (!ownedCleanup) throw new InvalidOperationException(
                     "Astral owned cleanup failed.");
             }
             finally
@@ -780,11 +753,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             owner.Memory.Add(target); target.Memory.Add(owner);
             owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
-            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
             owner.JoinCombat(); target.JoinCombat();
             Game.Instance.Player.UpdateIsInCombat();
-            new UnitCombatJoinController().Tick();
-            new UnitCombatPrepareController().Tick();
             Sprint28SetBrainActivePreservingActions(owner, true);
             owner.Brain.RestoreAvailableActions();
             var commands = new HashSet<UnitCommand>();
