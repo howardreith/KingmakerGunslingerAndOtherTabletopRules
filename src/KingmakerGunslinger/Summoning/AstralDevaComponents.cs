@@ -303,12 +303,12 @@ namespace KingmakerGunslinger.Summoning
                 (buff, source, duration) =>
                     target.Descriptor.Buffs.AddBuff(buff, source, duration));
             Rulebook.Trigger(apply);
-            // Native buff construction retains this exact context, even if
-            // AddBuff's return value is null. Mark only this cast's actual
-            // victim state as a dispellable spell effect, like ApplyBuff does.
+            // Native AddBuff CloneFor creates one buff child under this
+            // private victim root. Identify that exact child even if the API
+            // returns null; mark only this cast's real state as a spell effect.
             foreach (Buff buff in target.Buffs.Enumerable.Where(value =>
                 ReferenceEquals(value.Blueprint, Blinded) &&
-                ReferenceEquals(value.Context, blindContext)))
+                ReferenceEquals(value.Context?.ParentContext, blindContext)))
                 buff.IsFromSpell = true;
         }
     }

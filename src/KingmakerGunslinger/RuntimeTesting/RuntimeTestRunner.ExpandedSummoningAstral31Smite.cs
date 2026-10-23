@@ -335,8 +335,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Where(value => value != null).Distinct().ToArray();
                     bool victimParameters = victimBlinds.Length > 0 &&
                         victimBlinds.All(value => value.Context != null &&
-                            value.Context.ParentContext == null &&
+                            value.Context.ParentContext != null &&
+                            value.Context.ParentContext.ParentContext == null &&
                             ReferenceEquals(value.Context.AssociatedBlueprint, blinded) &&
+                            ReferenceEquals(value.Context.ParentContext.AssociatedBlueprint, blinded) &&
+                            ReferenceEquals(value.Context.Params,
+                                value.Context.ParentContext.Params) &&
                             value.Context.Params.CasterLevel == 13 &&
                             value.Context.Params.SpellLevel == 4 &&
                             value.Context.Params.DC == 20 && value.IsFromSpell &&
@@ -376,7 +380,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["victimContexts"] = new JArray(victimBlinds.Select(value =>
                                 new JObject { ["owner"] = value.Context.MaybeCaster?.UniqueId,
                                     ["associatedBlueprint"] = value.Context.AssociatedBlueprint?.AssetGuid,
-                                    ["parentless"] = value.Context.ParentContext == null,
+                                    ["privateVictimRoot"] = value.Context.ParentContext?.AssociatedBlueprint?.AssetGuid,
+                                    ["victimRootParentless"] = value.Context.ParentContext != null &&
+                                        value.Context.ParentContext.ParentContext == null,
+                                    ["inheritsPrivateRootParameters"] = ReferenceEquals(
+                                        value.Context.Params, value.Context.ParentContext?.Params),
                                     ["cl"] = value.Context.Params.CasterLevel,
                                     ["spellLevel"] = value.Context.Params.SpellLevel,
                                     ["dc"] = value.Context.Params.DC,

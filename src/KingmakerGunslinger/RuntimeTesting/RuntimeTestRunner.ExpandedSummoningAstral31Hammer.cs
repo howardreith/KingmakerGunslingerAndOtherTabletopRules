@@ -116,7 +116,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool stunParametersOwned = stunParameters != null &&
                     !ReferenceEquals(stunParameters, AbilityParams.Empty) &&
                     stunParameters.CasterLevel == 0 && stunParameters.SpellLevel == 0 &&
-                    stunParameters.DC == 25 && stun.Context.ParentContext == null &&
+                    stunParameters.DC == 25 && stun.Context.ParentContext != null &&
+                    stun.Context.ParentContext.ParentContext == null &&
+                    ReferenceEquals(stun.Context.ParentContext.AssociatedBlueprint,
+                        stunnedBlueprint) && ReferenceEquals(stunParameters,
+                            stun.Context.ParentContext.Params) &&
                     AbilityParams.Empty.CasterLevel == sharedCl &&
                     AbilityParams.Empty.SpellLevel == sharedSpellLevel &&
                     AbilityParams.Empty.DC == sharedDc;
