@@ -468,6 +468,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 CharGenSpellSelectorItemView nativeHeader=null;
                 if(!off)
                 {
+                    // Native44: the virtual list may not realize the header's row;
+                    // scroll it with the list's own method, selecting nothing.
+                    if(!selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Any(value=>ReferenceEquals(value.GetViewModelClass(),context.Header)))
+                    {
+                        ElementalConsoleBookPresentation.LearningView.GetMethod("TryScrollToChosenEntity",Cleanup2Fields,null,
+                            new[]{typeof(CharGenSpellSelectorItemVM)},null).Invoke(selector,new object[]{context.Header});
+                        for(int frame=0;frame<8;frame++)yield return 0;
+                    }
                     nativeHeader=selector.GetComponentsInChildren<CharGenSpellSelectorItemView>(false).Single(value=>ReferenceEquals(value.GetViewModelClass(),context.Header));
                     detailNavigation.SetCurrentEntityManual(nativeHeader);typeof(CharGenView).GetMethod("ConfirmPressed",Cleanup2Fields).Invoke(root,null);
                     for(int frame=0;frame<5;frame++)yield return 0;
