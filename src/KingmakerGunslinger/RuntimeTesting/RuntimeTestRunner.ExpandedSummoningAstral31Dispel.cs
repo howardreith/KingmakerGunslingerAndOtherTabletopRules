@@ -486,7 +486,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Astral31DispelBuffRow(goodEnchantment),
                         ["ordinarySpell"] = Astral31DispelBuffRow(ordinarySpell),
                         ["nondispellableEvil"] =
-                            Astral31DispelBuffRow(protectedEvil) },
+                            Astral31DispelBuffRow(protectedEvil),
+                        ["nativeFixtureApplications"] =
+                            observed.FixtureApplications },
                     "Five request-local real spell buffs prove that only a dispellable evil spell or an enchantment from an evil caster is eligible; good-caster enchantment, unrelated spell and nondispellable evil spell are refused.");
                 if (!eligibility) throw new InvalidOperationException(
                     "Astral Dispel Evil eligibility fixture failed.");
@@ -843,11 +845,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             context.Params.DC = 10;
             Buff result = target.Descriptor.Buffs.AddBuff(blueprint, context,
                 TimeSpan.FromMinutes(10));
-            if (result == null)
+            bool apiReturnedBuff = result != null;
+            RuleApplyBuff native = observed.Applications.LastOrDefault(value =>
+                ReferenceEquals(value.Blueprint, blueprint) &&
+                ReferenceEquals(value.Initiator, target));
+            Buff[] actual = target.Descriptor.Buffs.Enumerable.Where(value =>
+                ReferenceEquals(value.Blueprint, blueprint) &&
+                ReferenceEquals(value.Context?.MaybeCaster, source) &&
+                ReferenceEquals(value.Context?.SourceAbility, ability)).ToArray();
+            // The engine can insert a request-local fact yet return null.
+            // Recover only its one exact attributed live collection instance,
+            // the same narrow pattern used by other qualified native fixtures.
+            if (result == null && actual.Length == 1) result = actual[0];
+            if (result == null || actual.Length != 1 ||
+                !ReferenceEquals(result, actual[0]) || native == null ||
+                !native.CanApply || native.Immunity || native.StoryModeImmunity ||
+                result.Context.Params.CasterLevel != casterLevel ||
+                result.Context.Params.SpellLevel != 4)
             {
-                RuleApplyBuff native = observed.Applications.LastOrDefault(value =>
-                    ReferenceEquals(value.Blueprint, blueprint) &&
-                    ReferenceEquals(value.Initiator, target));
                 var refusal = new JObject {
                     ["fixture"] = name, ["target"] = target.UniqueId,
                     ["targetDead"] = target.Descriptor.State.IsDead,
@@ -856,6 +871,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReadExpandedSummoningOptionalMember(target.Descriptor.Buffs,
                             "m_Disabled")),
                     ["nativeRuleSeen"] = native != null,
+                    ["apiReturnedBuff"] = apiReturnedBuff,
+                    ["actualAttributedCount"] = actual.Length,
                     ["canApply"] = native?.CanApply,
                     ["immunity"] = native?.Immunity,
                     ["storyModeImmunity"] = native?.StoryModeImmunity,
@@ -881,6 +898,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             result.IsFromSpell = true;
             result.IsNotDispelable = nondispellable;
+            observed.FixtureApplications.Add(new JObject {
+                ["fixture"] = name, ["target"] = target.UniqueId,
+                ["apiReturnedBuff"] = apiReturnedBuff,
+                ["actualAttributedCount"] = actual.Length,
+                ["nativeCanApply"] = native.CanApply,
+                ["nativeImmunity"] = native.Immunity,
+                ["nativeStoryModeImmunity"] = native.StoryModeImmunity,
+                ["effect"] = Astral31DispelBuffRow(result) });
             applied.Add(result);
             return result;
         }
@@ -1047,6 +1072,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new List<RuleDispelMagic>();
             internal readonly List<RuleApplyBuff> Applications =
                 new List<RuleApplyBuff>();
+            internal readonly JArray FixtureApplications = new JArray();
 
             public void OnEventAboutToTrigger(RuleAttackRoll evt)
             {
