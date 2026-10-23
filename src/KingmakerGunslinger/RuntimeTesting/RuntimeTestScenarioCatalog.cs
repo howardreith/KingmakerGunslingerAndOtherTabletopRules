@@ -270,6 +270,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return ExpandedSummoningNativeProfilePolicy.AstralHammerPhase; } }
         internal static string Sprints30And31AstralBladePhase
         { get { return ExpandedSummoningNativeProfilePolicy.AstralBladePhase; } }
+        internal static string Sprints30And31AstralSupportPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralSupportPhase; } }
         internal static string[] Sprints30And31OutsiderBodySequence
         { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodySequence; } }
         internal const string DisposableExpandedSummoningSprints30And31NativeReview =

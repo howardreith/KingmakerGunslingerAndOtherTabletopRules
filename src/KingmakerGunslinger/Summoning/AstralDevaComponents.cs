@@ -172,6 +172,7 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintAbility Heal;
+        public int MinimumDamage;
         public override float Score(DecisionContext context)
         {
             UnitEntityData actor = context == null ? null : context.Unit;
@@ -181,7 +182,7 @@ namespace KingmakerGunslinger.Summoning
                 !ReferenceEquals(actor.Blueprint, OwningBlueprint) ||
                 actor.IsEnemy(target) || target.Destroyed ||
                 target.Descriptor.State.IsDead || target.Descriptor.IsUndead ||
-                target.Damage < 50) return 0f;
+                target.Damage < MinimumDamage) return 0f;
             var granted = actor.Descriptor.Abilities.GetAbility(Heal);
             if (granted == null) return 0f;
             var data = new AbilityData(granted);

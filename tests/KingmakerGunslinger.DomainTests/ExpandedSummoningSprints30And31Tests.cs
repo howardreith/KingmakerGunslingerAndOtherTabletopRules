@@ -7,12 +7,12 @@ namespace KingmakerGunslinger.DomainTests
     internal static class ExpandedSummoningSprints30And31Tests
     {
         // Exact post-v0.0.163 foundation delta for the current hidden slice.
-        // Abilities are23 scoped roots plus nine private abilities (Dretch2,
-        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier).
-        internal const int RegisteredAbilityIdentityCount = 23 + 9;
+        // Abilities are23 scoped roots plus eleven private abilities (Dretch2,
+        // Lantern full ray/Aid, Hound Aid, Trumpet Purge/Aid, Astral Heal/Barrier/Cure/See).
+        internal const int RegisteredAbilityIdentityCount = 23 + 11;
         internal const int RegisteredAreaIdentityCount = 3;
-        internal const int RegisteredResourceIdentityCount = 4;
-        internal const int RegisteredAiIdentityCount = 8;
+        internal const int RegisteredResourceIdentityCount = 6;
+        internal const int RegisteredAiIdentityCount = 9;
         internal const int RegisteredBrainIdentityCount = 4;
         internal const int RegisteredBuffIdentityCount = 8;
         internal const int RegisteredFeatureIdentityCount = 8;
@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RegisteredFogSafetyIdentityCount = 1;
         internal const int RegisteredBanishmentEligibilityIdentityCount = 1;
         internal const int RegisteredHealingEligibilityIdentityCount = 1;
-        internal const int RegisteredAstralHealingEligibilityIdentityCount = 1;
+        internal const int RegisteredAstralHealingEligibilityIdentityCount = 2;
 
         internal static void FirstSliceKeepsExactHiddenRoutesAndReleasedSurface()
         {
@@ -85,6 +85,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(13, AstralDevaRulesPolicy.SpellLikeCasterLevel, "Astral SLAs stay CL13.");
             Assertions.Equal(6, AstralDevaRulesPolicy.BladeBarrierSpellLevel, "Blade Barrier retains its sixth-level SLA DC.");
             Assertions.Equal(1, AstralDevaRulesPolicy.BladeBarrierUses, "Blade Barrier has one independent use per summoning.");
+            Assertions.Equal(1, AstralDevaRulesPolicy.CureLightWoundsSpellLevel, "Cure Light Wounds retains its first-level SLA DC.");
+            Assertions.Equal(7, AstralDevaRulesPolicy.CureLightWoundsUses, "Cure Light Wounds has seven independent uses per summoning.");
+            Assertions.Equal(2, AstralDevaRulesPolicy.SeeInvisibilitySpellLevel, "See Invisibility retains its second-level SLA DC.");
+            Assertions.Equal(7, AstralDevaRulesPolicy.SeeInvisibilityUses, "See Invisibility has seven independent uses per summoning.");
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");
@@ -117,7 +121,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Core phase requires automatic exit.");
             Assertions.True(RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodySequence.SequenceEqual(new[] { "lemure", "dretch" }), "Only the two supported original body subcases share this fixed phase.");
-            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "hound-armed", "hound-natural", "lantern-rays", "lantern-body", "astral-core", "astral-hammer", "astral-blade", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies" })
+            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "hound-armed", "hound-natural", "lantern-rays", "lantern-body", "astral-core", "astral-hammer", "astral-blade", "astral-support", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "A fixed isolated command phase is admitted in a fresh empty world.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases require automatic exit.");
@@ -126,7 +130,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, true, false, true), "Isolated phases refuse a save import.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases refuse extra parameters.");
             }
-            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Hound-Armed", "hound-armed ", "Hound-Natural", "hound-natural ", "Lantern-Rays", "lantern-rays ", "Lantern-Body", "lantern-body ", "Astral-Core", "astral-core ", "Astral-Hammer", "astral-hammer ", "Astral-Blade", "astral-blade ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "profiles", "routes", "", null })
+            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Hound-Armed", "hound-armed ", "Hound-Natural", "hound-natural ", "Lantern-Rays", "lantern-rays ", "Lantern-Body", "lantern-body ", "Astral-Core", "astral-core ", "Astral-Hammer", "astral-hammer ", "Astral-Blade", "astral-blade ", "Astral-Support", "astral-support ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "profiles", "routes", "", null })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Unimplemented or differently cased phase is refused.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Automatic exit is required.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, "bootstrap", 0, 0, 0, false, false, false, false, true), "Extra parameters are refused.");

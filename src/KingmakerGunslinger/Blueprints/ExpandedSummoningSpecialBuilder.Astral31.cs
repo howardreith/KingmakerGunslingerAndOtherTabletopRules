@@ -136,23 +136,61 @@ namespace KingmakerGunslinger.Blueprints
                 AstralDevaRulesPolicy.SpellLikeCasterLevel,
                 AstralDevaRulesPolicy.BladeBarrierSpellLevel,
                 bladeBarrierResource, "Blade Barrier");
+            var cureLight = Require<BlueprintAbility>(bySymbol,
+                Astral31Prefix + "CureLightWounds");
+            var cureLightResource = Require<BlueprintAbilityResource>(bySymbol,
+                Astral31Prefix + "CureLightWoundsResource");
+            ConfigureNamedResource(cureLightResource,
+                Astral31Prefix + "CureLightWoundsResource",
+                Astral31Prefix + "CureLightWoundsResource",
+                "Astral Deva Cure Light Wounds",
+                "Seven Cure Light Wounds uses for this Astral Deva summoning.",
+                AstralDevaRulesPolicy.CureLightWoundsUses);
+            Sprint29LimitedNativeSpell(library, cureLight,
+                Astral31Prefix + "CureLightWounds",
+                "5590652e1c2225c4ca30c4a699ab3649",
+                AstralDevaRulesPolicy.SpellLikeCasterLevel,
+                AstralDevaRulesPolicy.CureLightWoundsSpellLevel,
+                cureLightResource, "Cure Light Wounds",
+                "up to seven times per summoning");
+            var seeInvisibility = Require<BlueprintAbility>(bySymbol,
+                Astral31Prefix + "SeeInvisibility");
+            var seeInvisibilityResource = Require<BlueprintAbilityResource>(bySymbol,
+                Astral31Prefix + "SeeInvisibilityResource");
+            ConfigureNamedResource(seeInvisibilityResource,
+                Astral31Prefix + "SeeInvisibilityResource",
+                Astral31Prefix + "SeeInvisibilityResource",
+                "Astral Deva See Invisibility",
+                "Seven See Invisibility uses for this Astral Deva summoning.",
+                AstralDevaRulesPolicy.SeeInvisibilityUses);
+            Sprint29LimitedNativeSpell(library, seeInvisibility,
+                Astral31Prefix + "SeeInvisibility",
+                "30e5dc243f937fc4b95d2f8f4e1b7ff3",
+                AstralDevaRulesPolicy.SpellLikeCasterLevel,
+                AstralDevaRulesPolicy.SeeInvisibilitySpellLevel,
+                seeInvisibilityResource, "See Invisibility",
+                "up to seven times per summoning");
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
-            parameters.Abilities = new[] { heal, bladeBarrier };
+            parameters.Abilities = new[] { heal, bladeBarrier, cureLight,
+                seeInvisibility };
             parameters.SpellLevels = new[] { 6,
-                AstralDevaRulesPolicy.BladeBarrierSpellLevel };
+                AstralDevaRulesPolicy.BladeBarrierSpellLevel,
+                AstralDevaRulesPolicy.CureLightWoundsSpellLevel,
+                AstralDevaRulesPolicy.SeeInvisibilitySpellLevel };
             parameters.CasterLevel = AstralDevaRulesPolicy.SpellLikeCasterLevel;
 
             traits.ComponentsArray = new BlueprintComponent[] { dr, poison, sr, armor,
                 alertness, racialPerception,
                 equipment, proficiency, focus, parameters,
                 AddResource(healResource), AddResource(bladeBarrierResource),
+                AddResource(cureLightResource), AddResource(seeInvisibilityResource),
                 Energy(DamageEnergyType.Electricity, 10), Energy(DamageEnergyType.Fire, 10) }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Astral31Prefix + "Traits.Name", "Astral Deva Traits"),
                 LocalizationService.Create(Astral31Prefix + "Traits.Description",
-                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning at CL13. Change shape and caster travel are unavailable."), null);
+                    "Angel: DR10/evil; acid, cold and petrification immunity; electricity and fire resistance10; +4 racial saves vs poison; SR25 and Uncanny Dodge. A distinct20-foot protective aura grants +4 deflection AC and +4 resistance saves against evil sources, the shared Magic Circle against Evil, and lesser-globe protection from level0-3 spells and SLAs cast from outside. Heal and Blade Barrier are each once per summoning; Cure Light Wounds and See Invisibility each have seven uses, all at CL13. Change shape and caster travel are unavailable."), null);
 
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(
                 library, DumbBrainGuid, "Astral ordinary attack fallback");
@@ -166,10 +204,23 @@ namespace KingmakerGunslinger.Blueprints
                 Astral31Prefix + "HealEligibility");
             healEligibility.name = InternalName(Astral31Prefix + "HealEligibility");
             healEligibility.OwningBlueprint = unit; healEligibility.Heal = heal;
+            healEligibility.MinimumDamage = 50;
             healAi.TargetConsiderations = new Consideration[] { healEligibility };
             healAi.BaseScore = 6;
+            var cureAi = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol,
+                Astral31Prefix + "CureLightWoundsAi"),
+                Astral31Prefix + "CureLightWoundsAi", cureLight, 0);
+            var cureEligibility = Require<AstralHealingEligibility>(bySymbol,
+                Astral31Prefix + "CureLightWoundsEligibility");
+            cureEligibility.name = InternalName(Astral31Prefix +
+                "CureLightWoundsEligibility");
+            cureEligibility.OwningBlueprint = unit;
+            cureEligibility.Heal = cureLight; cureEligibility.MinimumDamage = 5;
+            cureAi.TargetConsiderations = new Consideration[] { cureEligibility };
+            cureAi.BaseScore = 3;
             brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>())
-                .Concat(new BlueprintAiAction[] { healAi }).ToArray(); unit.Brain = brain;
+                .Concat(new BlueprintAiAction[] { healAi, cureAi }).ToArray();
+            unit.Brain = brain;
 
             ConfigureUnitCore(unit, "AstralDeva", "Astral Deva", Alignment.NeutralGood,
                 Size.Medium, AstralDevaRulesPolicy.Strength, AstralDevaRulesPolicy.Dexterity,
@@ -190,7 +241,8 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, IronWillGuid, "Iron Will"),
                 Feature(library, PowerAttackGuid, "Power Attack"),
                 Feature(library, "d09b20029e9abfe4480b356c92095623", "Toughness"),
-                extraplanar, traits, stunFeature, heal, bladeBarrier };
+                extraplanar, traits, stunFeature, heal, bladeBarrier, cureLight,
+                seeInvisibility };
         }
 
         private static void ConfigureAstralHammerStun(LibraryScriptableObject library,

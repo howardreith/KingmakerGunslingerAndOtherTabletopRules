@@ -10,6 +10,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string AstralCorePhase = "astral-core";
         internal const string AstralHammerPhase = "astral-hammer";
         internal const string AstralBladePhase = "astral-blade";
+        internal const string AstralSupportPhase = "astral-support";
         // Fixed supported subcases; requests cannot supply code or ordering.
         internal static string[] OutsiderBodySequence
         { get { return new[] { "lemure", "dretch" }; } }
@@ -28,7 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "ai-turns" || phase == "cleave" || phase == "routes";
         }
         internal static bool Sprints30And31Phase(string phase)
-        { return phase == RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternRayPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralCorePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralHammerPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralBladePhase || phase == "bootstrap" || phase == "lemure-core" || phase == "lemure-full" || phase == "lemure-ai" || phase == "dretch-cloud" || phase == "dretch-ai" || phase == "dretch-ai-ally" || phase == "archon-core" || phase == "archon-hound" || phase == "hound-armed" || phase == "hound-natural" || phase == "trumpet-book" || phase == "trumpet-book-turn" || phase == "trumpet-caster"; }
+        { return phase == RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternRayPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralCorePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralHammerPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralBladePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralSupportPhase || phase == "bootstrap" || phase == "lemure-core" || phase == "lemure-full" || phase == "lemure-ai" || phase == "dretch-cloud" || phase == "dretch-ai" || phase == "dretch-ai-ally" || phase == "archon-core" || phase == "archon-hound" || phase == "hound-armed" || phase == "hound-natural" || phase == "trumpet-book" || phase == "trumpet-book-turn" || phase == "trumpet-caster"; }
         internal static bool Sprint29Phase(string phase)
         { return phase == "profiles" || phase == "modes" ||
             phase == "commands" || phase == "turns" ||

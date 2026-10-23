@@ -58711,6 +58711,54 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S31 private native spell-like dependency; exact CL13/resource/effect/lifetime qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWounds",
+      "guid": "d012538eaac147f596e094eb2f692f57",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsResource",
+      "guid": "e0e8eb22ced743ae97b5507a529b5ab1",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsAi",
+      "guid": "a72b4f29f0df4d1d9e0972a141b80157",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsEligibility",
+      "guid": "d5791c35bb94472681b2fb66122bdba3",
+      "plannedType": "AstralHealingEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibility",
+      "guid": "21e1faf3f674418f9c12086f4e6c526f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibilityResource",
+      "guid": "daf3bdf0898747cd8e489124ef176e6a",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S31 private finite spell-like dependency; exact CL13/resource/effect/AI qualification required before the suppressed Astral root is published."
     }
   ]
 }

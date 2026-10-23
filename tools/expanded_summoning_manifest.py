@@ -835,6 +835,12 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealEligibility", "AstralHealingEligibility"),
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.BladeBarrier", "BlueprintAbility"),
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.BladeBarrierResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWounds", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsEligibility", "AstralHealingEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibility", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibilityResource", "BlueprintAbilityResource"),
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.StunFeature", "BlueprintFeature"),
         ("KMG.Summoning.OutsiderCelestial.AstralDeva.Stunned", "BlueprintBuff"),
 

@@ -832,7 +832,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             Sprint28SetBrainActivePreservingActions(owner, false);
             var eligibility = fixture.Blueprints.OfType<AstralHealingEligibility>()
-                .Single();
+                .Single(value => ReferenceEquals(value.Heal, heal));
             float score = eligibility.Score(new Kingmaker.Controllers.Brain.DecisionContext {
                 Unit = owner,
                 Target = new Kingmaker.Controllers.Brain.TargetInfo { Unit = owner } });

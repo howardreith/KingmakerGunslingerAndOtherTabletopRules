@@ -381,7 +381,7 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library, BlueprintAbility ability,
             string symbol, string nativeGuid, int casterLevel,
             int spellLevel, BlueprintAbilityResource resource,
-            string title)
+            string title, string frequency = null)
         {
             CloneMephitSpell(library, ability, nativeGuid,
                 "native " + title + " spell effect");
@@ -403,8 +403,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description",
-                    title + " at caster level " + casterLevel +
-                    ", once per summoning."), ability.Icon);
+                    title + " at caster level " + casterLevel + ", " +
+                    (frequency ?? "once per summoning") + "."), ability.Icon);
         }
 
         private static void Sprint29CallLightning(
