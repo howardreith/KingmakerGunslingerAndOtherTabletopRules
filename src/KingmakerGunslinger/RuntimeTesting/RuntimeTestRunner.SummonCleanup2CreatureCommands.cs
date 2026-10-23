@@ -36,6 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             internal UnitAttack Range;
             internal JObject Evidence;
+            internal Cleanup2CreatureCommandCamera Camera;
         }
 
         // Exactly two actual canonical summons. A native UnitAttack starts
@@ -151,9 +152,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (visual == null || !visual.Ready || visual.Key != key || !visual.ProveCurrentPose() || !visual.ProveSameFrameSourceState() ||
                     !ExpandedSummoningPteranodonViewPatch.HasLiveOriginalVisual(actor.View, key) || actor.View.AnimationManager.GetAction(special) != null)
                     throw new InvalidOperationException("Exact private production body/gesture and unchanged null special-action lookup required.");
-                var route = Cleanup2CreatureApproachLane(fixture, actor, target, key);
-                cameraScope = new Cleanup2CreatureCommandCamera(this, fixture, actor, target, key,
+                var route = Cleanup2CreatureApproachLane(fixture, actor, target, key,
                     () => mode.Current && Cleanup2NoNarrativeOverlay());
+                cameraScope = route.Camera;
                 var cameraWait = Stopwatch.StartNew(); int cameraFrames = 0;
                 while (cameraScope.RenderCount < 3 && cameraWait.Elapsed.TotalSeconds < 4 && cameraFrames++ < 240)
                 { cameraScope.RequireCurrent(); yield return 0; }
@@ -377,7 +378,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private Cleanup2CreatureApproach Cleanup2CreatureApproachLane(ExpandedSummoningCorrectionFixture fixture, UnitEntityData actor, UnitEntityData target, string key)
+        private Cleanup2CreatureApproach Cleanup2CreatureApproachLane(ExpandedSummoningCorrectionFixture fixture, UnitEntityData actor, UnitEntityData target, string key,
+            Func<bool> cameraOwner)
         {
             if (AstarPath.active == null || Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance == null || !ExpandedSummoningPlayerPathUnitExact(actor, fixture.Caster) ||
                 !ReferenceEquals(target, fixture.Hostile) || !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) || target.IsBrainActive ||
@@ -404,25 +406,28 @@ namespace KingmakerGunslinger.RuntimeTesting
             var offsets = Enumerable.Range(-5, 11).SelectMany(x => Enumerable.Range(-5, 11).Select(z => new Vector3(x * 3, 0, z * 3))).OrderBy(value => value.sqrMagnitude).ToArray();
             Func<NNInfo, Vector3, bool> connected = (point, requested) => point.node != null && point.node.Walkable && point.node.Area == anchor.node.Area &&
                 point.node.GraphIndex == anchor.node.GraphIndex && Cleanup2Finite(point.clampedPosition) && Vector3.Distance(point.clampedPosition, requested) <= .6f;
-            var refusals = new Dictionary<string, int>(); int attempts = 0; var watch = Stopwatch.StartNew(); JObject selected = null;
+            var refusals = new Dictionary<string, int>(); int attempts = 0, cameraAttempts = 0;
+            var watch = Stopwatch.StartNew(); JObject selected = null; Cleanup2CreatureCommandCamera selectedCamera = null;
             Action<string> refuse = reason => { int count; refusals.TryGetValue(reason, out count); refusals[reason] = count + 1; };
             foreach (var offset in offsets)
             {
-                if (selected != null || attempts >= 4096 || watch.Elapsed.TotalSeconds > 5) break;
+                if (selected != null || attempts >= 4096 || cameraAttempts >= 8 || watch.Elapsed.TotalSeconds > 5) break;
+                int originCameraAttempts = 0;
                 var start = AstarPath.active.GetNearest(anchor.clampedPosition + offset, constraint);
                 if (!connected(start, anchor.clampedPosition + offset)) { refuse("origin-connected-walking-graph-clamp"); continue; }
                 foreach (Vector3 heading in CompassOffsets)
                 foreach (float extra in new[] { 3.5f, 3f, 2.5f })
                 {
-                    if (selected != null || attempts >= 4096 || watch.Elapsed.TotalSeconds > 5) break;
+                    if (selected != null || attempts >= 4096 || cameraAttempts >= 8 || originCameraAttempts >= 2 || watch.Elapsed.TotalSeconds > 5) break;
                     attempts++; var requested = start.clampedPosition + heading.normalized * (Mathf.Max(radius, footprint) + extra);
                     var end = AstarPath.active.GetNearest(requested, constraint);
                     if (!connected(end, requested)) { refuse("target-connected-walking-graph-clamp"); continue; }
+                    float horizontalRun = new Vector2(end.clampedPosition.x - start.clampedPosition.x, end.clampedPosition.z - start.clampedPosition.z).magnitude;
                     if (protectedUnits.Any(value => Cleanup2CreatureSegmentDistance(value.Position, start.clampedPosition, end.clampedPosition) <
                         Mathf.Max(3.5f, actor.Corpulence + value.Corpulence + .25f))) { refuse("protected-unit-path-clearance"); continue; }
                     if (Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(start.clampedPosition + Vector3.up * 1.2f,
                         end.clampedPosition + Vector3.up * 1.2f, 0)) { refuse("native-geometry-LOS"); continue; }
-                    bool supported = true; int supports = 0;
+                    bool supported = true; int supports = 0; var cameraRoots = new List<Vector3>();
                     Vector3 side = Vector3.Cross((end.clampedPosition - start.clampedPosition).normalized, Vector3.up).normalized;
                     foreach (float width in new[] { -actor.Corpulence, 0f, actor.Corpulence })
                     {
@@ -434,6 +439,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!connected(support, point) || new Vector2(support.clampedPosition.x - point.x, support.clampedPosition.z - point.z).magnitude > .15f ||
                                 Mathf.Abs(support.clampedPosition.y - point.y) > .35f) { supported = false; break; }
                             if (step == 0) first = support; if (step == 12) last = support; supports++;
+                            if (width == 0f && (step == 0 || step == 6 || step == 12)) cameraRoots.Add(support.clampedPosition);
                         }
                         if (!supported) break;
                         GraphHitInfo hit; var nodes = new List<GraphNode>();
@@ -441,28 +447,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(first.clampedPosition + Vector3.up * 1.2f,
                                 last.clampedPosition + Vector3.up * 1.2f, 0)) { supported = false; break; }
                     }
-                    if (!supported) { refuse("native-footprint-support-samples"); continue; }
+                    if (!supported || cameraRoots.Count != 3) { refuse("native-footprint-support-samples"); continue; }
+                    var groundRoots = new List<Vector3>(); var groundEvidence = new JArray();
+                    foreach (Vector3 graphSupport in cameraRoots)
+                    {
+                        Vector3 root; JObject ground;
+                        if (!Cleanup2CreatureNativeGroundRoot(actor, graphSupport, out root, out ground)) { supported = false; break; }
+                        groundRoots.Add(root); groundEvidence.Add(ground);
+                    }
+                    if (!supported || groundRoots.Count != 3 || target.View.IsProne)
+                    { refuse("native-standing-ground-support-unproved"); continue; }
+                    float rise = Mathf.Abs(groundRoots[2].y - groundRoots[0].y);
+                    float sampledHeightRange = groundRoots.Max(value => value.y) - groundRoots.Min(value => value.y);
+                    if (sampledHeightRange > .25f || horizontalRun <= 0 || rise / horizontalRun > .08f)
+                    { refuse("flat-native-ground-camera-staging-lane"); continue; }
                     PlaceExpandedSummoningUnit(actor, start.clampedPosition); PlaceExpandedSummoningUnit(target, end.clampedPosition);
+                    if (Vector3.Distance(actor.Position, groundRoots[0]) > .01f ||
+                        new Vector2(target.Position.x - groundRoots[2].x, target.Position.z - groundRoots[2].z).magnitude > .01f ||
+                        Mathf.Abs((target.Position.y - target.FlyHeight) - (groundRoots[2].y - actor.FlyHeight)) > .01f)
+                    { refuse("native-ground-query-translocate-disagreement"); continue; }
                     actor.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
                     float distance = actor.DistanceTo(target);
                     bool legal = !probe.IsUnitEnoughClose && distance > radius + 1.5f && actor.HasLOS(target) && target.HasLOS(actor) &&
                         actor.IsEnemy(target) && !target.Descriptor.State.IsDead && actor.Descriptor.State.CanMove;
                     if (!legal) { refuse("post-placement-native-range-LOS-enemy-state"); continue; }
-                    selected = new JObject { ["start"] = SurveyVector(actor.Position), ["target"] = SurveyVector(target.Position), ["nativeRange"] = radius,
-                        ["nativeStartingDistance"] = distance, ["nativeInitiallyInRange"] = probe.IsUnitEnoughClose, ["nativeFootprintSum"] = footprint,
-                        ["graph"] = anchor.node.GraphIndex, ["connectedArea"] = anchor.node.Area, ["graphMask"] = constraint.graphMask, ["constructTags"] = tags,
-                        ["protectedUnitCount"] = protectedUnits.Length, ["nativeFootprintSupportSamples"] = supports,
-                        ["fullCenterAndShoulderLinecastsClear"] = true };
+                    cameraAttempts++; originCameraAttempts++;
+                    try
+                    {
+                        selectedCamera = new Cleanup2CreatureCommandCamera(this, fixture, actor, target, key, cameraOwner, cameraAttempts, groundRoots.ToArray(), watch);
+                        selected = new JObject { ["start"] = SurveyVector(actor.Position), ["target"] = SurveyVector(target.Position), ["nativeRange"] = radius,
+                            ["nativeStartingDistance"] = distance, ["nativeInitiallyInRange"] = probe.IsUnitEnoughClose, ["nativeFootprintSum"] = footprint,
+                            ["graph"] = anchor.node.GraphIndex, ["connectedArea"] = anchor.node.Area, ["graphMask"] = constraint.graphMask, ["constructTags"] = tags,
+                            ["protectedUnitCount"] = protectedUnits.Length, ["nativeFootprintSupportSamples"] = supports,
+                            ["fullCenterAndShoulderLinecastsClear"] = true, ["stageRiseMeters"] = rise, ["stageSlope"] = rise / horizontalRun,
+                            ["sampledNativeGroundHeightRange"] = sampledHeightRange, ["nativeGroundSupport"] = groundEvidence,
+                            ["fixedNativeCameraCandidateSelected"] = cameraAttempts };
+                    }
+                    catch (Cleanup2CreatureCameraObstructed error)
+                    { refuse(error.BudgetExceeded ? "joint-camera-survey-budget" : "demonstrated-camera-obstruction-at-qualified-lane"); continue; }
+                    catch { if (selectedCamera != null) selectedCamera.Dispose(); throw; }
                 }
             }
             var evidence = new JObject { ["key"] = key, ["selected"] = selected, ["attempts"] = attempts,
+                ["cameraLaneCandidates"] = cameraAttempts, ["maximumCameraLaneCandidates"] = 8, ["maximumCameraCandidatesPerOrigin"] = 2,
+                ["jointSurveyCandidateAdmissionSeconds"] = 5, ["maximumStageRiseMeters"] = .25f, ["maximumStageSlope"] = .08f,
                 ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
                 ["surveyWallSeconds"] = watch.Elapsed.TotalSeconds,
                 ["contract"] = "Installed PathTo060018A3/ConstructTags060018C3 RTWP mask1; query-owned PathNNConstraint.SetStart + connected-area proof, <=60cm endpoint clamp,39 footprint samples with <=15cm horizontal/35cm vertical support error, full native graph/geometry center-and-shoulder linecasts and protected-unit segment clearance. Real UnitAttack.IsUnitEnoughClose must initially be false and must become true at its actual rule event. No native graph, range, collider or path is changed." };
-            Cleanup2Check("creature-native-approach-lane-" + key, selected != null, evidence,
-                "A finite bounded actual walking-graph lane proves a safe out-of-range start for native command-owned approach.");
-            if (selected == null) throw new InvalidOperationException("No proved safe straight creature approach lane; no placement or command proof is inferred.");
-            return new Cleanup2CreatureApproach { Range = probe, Evidence = evidence };
+            try
+            {
+                Cleanup2Check("creature-native-approach-lane-" + key, selected != null, evidence,
+                    "A bounded flat actual walking-graph lane also has an admitted fixed native camera before the original command runs; physical/path/range/LOS proofs remain exact.");
+                if (selected == null) throw new InvalidOperationException("No jointly qualified native approach lane/camera; no placement or command proof is inferred.");
+                var result = new Cleanup2CreatureApproach { Range = probe, Evidence = evidence, Camera = selectedCamera };
+                selectedCamera = null; return result;
+            }
+            finally { if (selectedCamera != null) selectedCamera.Dispose(); }
         }
 
         private static float Cleanup2CreatureSegmentDistance(Vector3 point, Vector3 start, Vector3 end)
@@ -471,6 +511,34 @@ namespace KingmakerGunslinger.RuntimeTesting
             Vector3 delta = end - start;
             float fraction = delta.sqrMagnitude <= .000001f ? 0 : Mathf.Clamp01(Vector3.Dot(point - start, delta) / delta.sqrMagnitude);
             return Vector3.Distance(point, start + delta * fraction);
+        }
+
+        private static bool Cleanup2CreatureNativeGroundRoot(UnitEntityData actor, Vector3 graphPosition, out Vector3 root, out JObject evidence)
+        {
+            root = default(Vector3); evidence = null;
+            if (actor?.View == null || actor.View.IsProne || !Cleanup2Finite(graphPosition) || !Cleanup2Finite(actor.FlyHeight)) return false;
+            // Exact standing branch of installed ForcePlaceAboveGround06001848,
+            // called by Translocate06008345. This is read-only: same native
+            // mask/offsets/range/UseGlobal trigger overload, no unit translocate,
+            // collider change, sampled offset calibration or interpolated Y.
+            const int groundMask = 2097409;
+            RaycastHit hit; float rayOffset = 1f;
+            bool found = Physics.Raycast(graphPosition + Vector3.up, Vector3.down, out hit, 100f, groundMask);
+            if (!found)
+                for (int step = 1; step < 20; step++)
+                {
+                    rayOffset = 5f * step;
+                    if (Physics.Raycast(graphPosition + Vector3.up * rayOffset, Vector3.down, out hit, 100f, groundMask)) { found = true; break; }
+                }
+            // Native no-hit leaves the original Y, but that is not positive
+            // ground support. Prone's separate torso adjustment is not inferred.
+            if (!found || hit.collider == null || !Cleanup2Finite(hit.point)) return false;
+            root = new Vector3(graphPosition.x, hit.point.y + actor.FlyHeight, graphPosition.z);
+            evidence = new JObject { ["graphSupport"] = SurveyVector(graphPosition), ["nativeGroundRoot"] = SurveyVector(root),
+                ["groundHit"] = SurveyVector(hit.point), ["collider"] = hit.collider.name, ["colliderInstance"] = hit.collider.GetInstanceID(),
+                ["nativeRayOriginUp"] = rayOffset, ["nativeRayRange"] = 100f, ["nativeGroundMask"] = groundMask,
+                ["nativeFlyHeight"] = actor.FlyHeight, ["contract"] = "Read-only standing ForcePlaceAboveGround06001848 ray sequence; placement endpoints separately confirmed against actual Translocate output." };
+            return Cleanup2Finite(root);
         }
     }
 }

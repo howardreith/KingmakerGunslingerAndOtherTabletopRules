@@ -82,6 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["selectedExact"]=_manager.SelectedUnits.SequenceEqual(_selected) };}
         }
 
+        private JObject _cleanup2ConsoleReadiness;
         private bool Cleanup2ConsoleNativeUiReady()
         {
             if(!IsCleanup2ConsoleReview || _request.Parameters==null ||
@@ -92,11 +93,96 @@ namespace KingmakerGunslinger.RuntimeTesting
             var model=typeof(InGameUiStaticPartContext).GetField("m_ActionBarVm",Cleanup2Fields).GetValue(part) as ActionBarVM;
             var config=typeof(InGameUiStaticPartContext).GetField("m_Config",Cleanup2Fields).GetValue(part) as InGameUiStaticPartConfig;
             var view=config?.ActionBarView;
-            var layers=GamePad.Instance.Layers.OfType<InGameInputLayer>().Where(value=>ReferenceEquals(
-                typeof(InGameInputLayer).GetField("inGameUiContext",Cleanup2Fields).GetValue(value),context)).ToArray();
-            return model!=null && !model.IsDisposed && view!=null && view.gameObject.scene.IsValid() && view.gameObject.scene.isLoaded &&
-                view.gameObject.activeInHierarchy && ReferenceEquals(ElementalConsoleBookPresentation.Model(view),model) &&
-                layers.Length==1 && layers[0].LayerBinded.Value;
+            // The installed InGameInputLayer.inGameUiContext field is never
+            // assigned. Bind06005D20 stores/pushes the view's exact layer;
+            // VM06005D3B retains the actual context. Observe that ownership.
+            var inputView=context.GetInGameInputLayerView();
+            var inputVm=typeof(InGameUiContext).GetField("m_InGameInputLayerVm",Cleanup2Fields).GetValue(context) as InGameInputLayerVM;
+            var inputLayer=inputView==null?null:typeof(InGameInputLayerView).GetField("m_InGameInputLayer",Cleanup2Fields).GetValue(inputView) as InGameInputLayer;
+            var layers=GamePad.Instance.Layers.OfType<InGameInputLayer>().ToArray();
+            var predicates=new JObject {
+                ["actionBarModelLive"]=model!=null && !model.IsDisposed,
+                ["actionBarViewLoaded"]=view!=null && view.gameObject.scene.IsValid() && view.gameObject.scene.isLoaded,
+                ["actionBarViewActive"]=view!=null && view.gameObject.activeInHierarchy,
+                ["actionBarBindingExact"]=view!=null && ReferenceEquals(ElementalConsoleBookPresentation.Model(view),model),
+                ["inputViewLoadedActive"]=inputView!=null && inputView.gameObject.scene.IsValid() && inputView.gameObject.scene.isLoaded && inputView.gameObject.activeInHierarchy,
+                ["inputVmLiveExactContext"]=inputVm!=null && !inputVm.IsDisposed && ReferenceEquals(inputVm.Context,context),
+                ["inputViewBindingExact"]=inputView!=null && inputVm!=null && ReferenceEquals(ElementalConsoleBookPresentation.Model(inputView),inputVm),
+                ["exactNativeInputLayer"]=inputLayer!=null && layers.Length==1 && ReferenceEquals(layers[0],inputLayer),
+                ["nativeInputLayerBound"]=inputLayer!=null && inputLayer.LayerBinded.Value };
+            bool ready=predicates.Properties().All(value=>(bool)value.Value);
+            _cleanup2ConsoleReadiness=new JObject { ["predicates"]=predicates,["ready"]=ready,
+                ["actualLayers"]=new JArray(GamePad.Instance.Layers.Select(value=>new JObject {
+                    ["type"]=value.GetType().FullName,["bound"]=value.LayerBinded.Value })),
+                ["contract"]="Actual bound InGame input view/VM/context and exact native pushed layer; unused layer.inGameUiContext is not ownership." };
+            return ready;
+        }
+
+        private bool Cleanup2ConsoleNarrativeAbsent(JObject row)
+        {
+            var game=Game.Instance;var context=game?.RootUiContext?.InGameUiContext;
+            var part=context==null?null:typeof(InGameUiContext).GetField("m_StaticPartContext",Cleanup2Fields).GetValue(context) as InGameUiStaticPartContext;
+            var dialog=part==null?null:typeof(InGameUiStaticPartContext).GetField("m_DialogUiCtx",Cleanup2Fields).GetValue(part) as DialogUiContext;
+            var config=part==null?null:typeof(InGameUiStaticPartContext).GetField("m_Config",Cleanup2Fields).GetValue(part) as InGameUiStaticPartConfig;
+            var dialogConfig=dialog==null?null:typeof(DialogUiContext).GetField("m_Config",Cleanup2Fields).GetValue(dialog) as DialogUiConfig;
+            var predicates=new JObject {
+                ["exactConsoleReview"]=IsCleanup2ConsoleReview && game!=null && game.IsControllerGamepad,
+                ["nativeDialogControllerPresent"]=game?.DialogController!=null,
+                ["noLiveBlueprintDialog"]=game?.DialogController!=null && game.DialogController.Dialog==null,
+                ["exactNativeContext"]=context!=null && part!=null && ReferenceEquals(part.InGameCtx,context),
+                ["dialogContextLive"]=dialog!=null && !dialog.IsDisposed,
+                ["nativeDialogDisabled"]=dialog!=null && !dialog.IsDialogEnabled,
+                ["exactDialogConfig"]=config!=null && dialogConfig!=null && ReferenceEquals(config.DialogConfig,dialogConfig) };
+            foreach(string name in new[]{"m_DialogVm","m_BookEventVm","m_InterchapterVM"})
+            {
+                var field=typeof(DialogUiContext).GetField(name,Cleanup2Fields);
+                predicates[name+"Absent"]=dialog!=null && field!=null && field.GetValue(dialog)==null;
+            }
+            var views=new JArray();row["consoleViews"]=views;
+            if(dialogConfig!=null)
+            {
+                foreach(string name in new[]{"DialogView","BookEventView","InterchapterView"})
+                {
+                    var field=typeof(DialogUiConfig).GetField(name,Cleanup2Fields);
+                    var view=field?.GetValue(dialogConfig) as MonoBehaviour;
+                    var observation=new JObject { ["configuredView"]=name };views.Add(observation);
+                    predicates[name+"Closed"]=Cleanup2ConsoleNarrativeViewHidden(view,name=="DialogView",observation);
+                }
+            }
+            else predicates["configuredViewsPresent"]=false;
+            row["consolePredicates"]=predicates;
+            row["contract"]="Native console DialogUiContext IsDialogEnabled0600626E and three VM refs; Stop06006276/75/73 dispose/null. Exact configured view/input ownership and native hidden rendering, no Stop/Show or layer mutation.";
+            return predicates.Properties().All(value=>(bool)value.Value);
+        }
+
+        private static bool Cleanup2ConsoleNarrativeViewHidden(MonoBehaviour view,bool ordinary,JObject row)
+        {
+            Cleanup2NarrativeObject(view,row);
+            if(view==null || GamePad.Instance==null)return false;
+            var field=view.GetType().GetField("m_InputLayer",Cleanup2Fields);
+            var layer=field?.GetValue(view) as InputLayer;
+            bool unbound=ElementalConsoleBookPresentation.Model(view)==null && field!=null &&
+                (layer==null || !layer.LayerBinded.Value && !GamePad.Instance.Layers.Any(value=>ReferenceEquals(value,layer)));
+            bool loaded=view.gameObject.scene.IsValid() && view.gameObject.scene.isLoaded;
+            var rendered=view.GetComponentsInChildren<CanvasRenderer>(true);
+            bool zero=rendered.Length>0 && rendered.All(value=>!value.gameObject.activeInHierarchy || value.GetInheritedAlpha()==0f) &&
+                !view.GetComponentsInChildren<Renderer>(true).Any(value=>value.enabled && value.gameObject.activeInHierarchy);
+            bool nativeHiddenPosition=false;
+            if(ordinary)
+            {
+                var initialized=view.GetType().GetField("m_IsInit",Cleanup2Fields);
+                var hiddenY=view.GetType().GetField("m_HidePosY",Cleanup2Fields);
+                var rect=view.transform as RectTransform;
+                nativeHiddenPosition=initialized!=null && initialized.FieldType==typeof(bool) && (bool)initialized.GetValue(view) &&
+                    hiddenY!=null && hiddenY.FieldType==typeof(int) && rect!=null && rect.anchoredPosition.y==(int)hiddenY.GetValue(view);
+                row["nativeInitializedHiddenPosition"]=nativeHiddenPosition;
+                row["anchoredY"]=rect==null?JValue.CreateNull():new JValue(rect.anchoredPosition.y);
+                row["nativeHideY"]=hiddenY==null?JValue.CreateNull():JToken.FromObject(hiddenY.GetValue(view));
+            }
+            row["loaded"]=loaded;row["modelAndInputUnbound"]=unbound;row["allRenderedAlphaZero"]=zero;
+            row["activeCanvasRenderers"]=new JArray(rendered.Where(value=>value.gameObject.activeInHierarchy).Select(value=>new JObject {
+                ["path"]=Cleanup2NarrativePath(view.transform,value.transform),["inheritedAlpha"]=value.GetInheritedAlpha() }));
+            return loaded && unbound && (!view.gameObject.activeInHierarchy || zero || nativeHiddenPosition);
         }
 
         private IEnumerable<int> ReviewSummonCleanup2ElementalConsole(ExpandedSummoningCorrectionFixture fixture,Spellbook book)

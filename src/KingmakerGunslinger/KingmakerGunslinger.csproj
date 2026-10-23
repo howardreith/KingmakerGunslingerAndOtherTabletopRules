@@ -1346,6 +1346,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2AlternateMenus.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2CreatureCommands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ModuleOff.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2GiantsOff.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ClothProbe.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2EttinLifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ScalePrototypeReview.cs" />

@@ -3,9 +3,9 @@
    content validation are fixture boundaries; no game or real save is used. #>
 [CmdletBinding()]
 param(
-    [ValidateSet('Coordinator','Host','NativeChild')][string]$Role='Coordinator',
+    [ValidateSet('Coordinator','Host','NativeChild','LateChild')][string]$Role='Coordinator',
     [string]$CaseRoot,
-    [ValidateSet('positive','child-fail-1','child-fail-2','child-fail-3','early-error-1','early-error-2','early-error-3','query-error')][string]$Mode='positive',
+    [ValidateSet('positive','child-fail-1','child-fail-2','child-fail-3','early-error-1','early-error-2','early-error-3','query-error','late-final')][string]$Mode='positive',
     [ValidateRange(1,3)][int]$Phase=1
 )
 Set-StrictMode -Version Latest
@@ -30,6 +30,15 @@ function Wait-ProcessFixtureFile([string]$Path,[int]$Seconds=35) {
     }
 }
 if($Role -cne 'Coordinator'){$CaseRoot=Assert-ProcessFixturePath $CaseRoot $processRoot}
+if($Role -ceq 'LateChild') {
+    $spec=Get-Content -LiteralPath (Join-Path $CaseRoot 'late-spec.json') -Raw|ConvertFrom-Json
+    $self=[Diagnostics.Process]::GetCurrentProcess()
+    try {$started=$self.StartTime.ToUniversalTime().Ticks}finally{$self.Dispose()}
+    $spec|Add-Member NoteProperty processId $PID;$spec|Add-Member NoteProperty startedUtcTicks $started
+    Write-ProcessFixtureJson $spec (Join-Path $CaseRoot 'late-ready.json')
+    Wait-ProcessFixtureFile (Join-Path $CaseRoot 'late-release') 50
+    exit 0
+}
 if($Role -ceq 'NativeChild') {
     $spec=Get-Content -LiteralPath (Join-Path $CaseRoot "phase-$Phase-spec.json") -Raw|ConvertFrom-Json
     $fixtureBoundary=[IO.Path]::GetFullPath((Join-Path $repository 'artifacts/cleanup2-currentstack-tests')).TrimEnd('\')+'\'
@@ -79,6 +88,20 @@ if($Role -ceq 'Host') {
     }
     function Assert-KmgNotRunning {Assert-KmgSummonCleanup2NativeExit}
     function Wait-KmgSummonCleanup2Exit {Assert-KmgSummonCleanup2NativeExit}
+    function Restore-KmgCleanup2ColdBoundary($Ownership,$Context,$Record,[string]$JournalPath,$Environment,$Lease) {
+        & $script:realColdBoundary $Ownership $Context $Record $JournalPath $Environment $Lease
+        if($Mode -ceq 'late-final') {
+            Write-ProcessFixtureJson @{ownerProcessId=$PID;working=$Context.working.path;baseline=$script:currentCase.baselinePath;
+                otherSave=(Join-Path $Environment.saveDirectory 'unrelated.zks');backup=$Context.backupPath;
+                ownership=(Join-Path (Split-Path -Parent $JournalPath) 'cleanup2-cold-ownership.json');lock=$Lease.LockPath;
+                coldJournal=$JournalPath} (Join-Path $CaseRoot 'late-spec.json')
+            $arguments=@('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+$scriptPath+'"'),'-Role','LateChild','-CaseRoot',('"'+$CaseRoot+'"'),'-Mode',$Mode)
+            $late=Start-Process -FilePath $powershell -ArgumentList $arguments -PassThru -WindowStyle Hidden `
+                -RedirectStandardOutput (Join-Path $CaseRoot 'late.stdout') -RedirectStandardError (Join-Path $CaseRoot 'late.stderr')
+            $null=$late.Handle;$script:processes.Add($late)
+            Wait-ProcessFixtureFile (Join-Path $CaseRoot 'late-ready.json')
+        }
+    }
     function Invoke-KmgCleanup2ColdLaunch($Plan,[string]$Scenario,$Lease,[string]$Deployment,[string]$ScriptsDirectory) {
         Assert-KmgRuntimeLease $Lease
         if(Test-Path -LiteralPath (Join-Path $CaseRoot 'abort')){throw 'Synthetic coordinator requested cooperative completion.'}
@@ -133,7 +156,7 @@ $clock=[Diagnostics.Stopwatch]::StartNew();$checks=0;$failures=New-Object 'Colle
 $suite=Join-Path $processRoot ([Guid]::NewGuid().ToString('N'));[void][IO.Directory]::CreateDirectory($suite)
 function Check-Process([bool]$Passed,[string]$Name){$script:checks++;if(-not $Passed){$script:failures.Add($Name)}}
 function Test-ProcessWriteDenied([scriptblock]$Action){try{& $Action;return $false}catch [IO.IOException]{return $true}catch [UnauthorizedAccessException]{return $true}}
-foreach($mode in @('positive','child-fail-1','child-fail-2','child-fail-3','early-error-1','early-error-2','early-error-3','query-error')) {
+foreach($mode in @('positive','child-fail-1','child-fail-2','child-fail-3','early-error-1','early-error-2','early-error-3','query-error','late-final')) {
     $case=Join-Path $suite $mode;[void][IO.Directory]::CreateDirectory($case)
     $hostArguments=@('-NoProfile','-ExecutionPolicy','Bypass','-File',('"'+$scriptPath+'"'),'-Role','Host','-CaseRoot',('"'+$case+'"'),'-Mode',$mode)
     $hostProcess=Start-Process -FilePath $powershell -ArgumentList $hostArguments -PassThru -WindowStyle Hidden `
@@ -163,17 +186,35 @@ foreach($mode in @('positive','child-fail-1','child-fail-2','child-fail-3','earl
                 }
             } finally {$child.Dispose();[IO.File]::WriteAllText((Join-Path $case "phase-$index-release"),'cooperative exit')}
         }
+        if($mode -ceq 'late-final') {
+            Wait-ProcessFixtureFile (Join-Path $case 'late-ready.json')
+            $ready=Get-Content -LiteralPath (Join-Path $case 'late-ready.json') -Raw|ConvertFrom-Json
+            $late=[Diagnostics.Process]::GetProcessById($ready.processId)
+            try {
+                Check-Process (-not $hostProcess.HasExited -and -not $late.HasExited -and $ready.ownerProcessId -eq $hostProcess.Id) 'late-final-original-host-and-late-child-alive'
+                foreach($path in @($ready.working,$ready.baseline,$ready.otherSave,$ready.backup,$ready.ownership,$ready.lock)) {
+                    Check-Process (Test-ProcessWriteDenied {[IO.File]::WriteAllText($path,'forbidden after restoration')}) ('late-final-write-denied-'+[IO.Path]::GetFileName($path))
+                    Check-Process (Test-ProcessWriteDenied {[IO.File]::Delete($path)}) ('late-final-delete-denied-'+[IO.Path]::GetFileName($path))
+                    Check-Process (Test-ProcessWriteDenied {[IO.File]::Move($path,$path+'.forbidden')}) ('late-final-rename-denied-'+[IO.Path]::GetFileName($path))
+                }
+                $deadline=[DateTime]::UtcNow.AddSeconds(10)
+                do {$journal=Get-Content -LiteralPath $ready.coldJournal -Raw|ConvertFrom-Json;if($journal.protectedExitGuard){break};Start-Sleep -Milliseconds 40}while([DateTime]::UtcNow -lt $deadline)
+                Check-Process ($journal.protectedExitGuard.status -ceq 'WAITING_FOR_NATIVE_EXIT' -and -not $hostProcess.HasExited) 'late-final-retained-host-waits-after-generic-restore'
+            } finally {$late.Dispose();[IO.File]::WriteAllText((Join-Path $case 'late-release'),'cooperative exit')}
+        }
         if(-not $hostProcess.WaitForExit(55000)){throw 'Cold process host did not finish after cooperative child exit.'}
         Wait-ProcessFixtureFile (Join-Path $case 'host-result.json')
         $result=Get-Content -LiteralPath (Join-Path $case 'host-result.json') -Raw|ConvertFrom-Json
         Check-Process ($hostProcess.ExitCode -eq 0 -and @($result.fixtureFailures).Count -eq 0) "$mode-host-fixture-result"
         Check-Process ($result.workingExact -and $result.installationExact -and $result.settingsExact -and $result.lockReleased -and -not $result.recoveryRequired) "$mode-exact-original-restoration"
         if($mode -ceq 'positive'){Check-Process (-not $result.error -and $result.phaseCount -eq 3) 'positive-three-fresh-process-receipts'}
+        elseif($mode -ceq 'late-final'){Check-Process ($result.error -like '*remains running*' -and $result.status -ceq 'FAILED_RESTORED') 'late-final-original-late-exit-failure-retained'}
         else {Check-Process ($result.error -like '*Synthetic*' -and $result.status -ceq 'FAILED_RESTORED') "$mode-original-failure-retained"}
     } catch {$failures.Add($mode+':'+$_.Exception.Message)}
     finally {
         [IO.File]::WriteAllText((Join-Path $case 'abort'),'cooperative stop before another child')
         for($index=1;$index -le 3;$index++){[IO.File]::WriteAllText((Join-Path $case "phase-$index-release"),'cooperative cleanup')}
+        [IO.File]::WriteAllText((Join-Path $case 'late-release'),'cooperative cleanup')
         if(-not $hostProcess.HasExited){[void]$hostProcess.WaitForExit(55000)}
         if($hostProcess.HasExited){$hostProcess.Dispose()}else{$failures.Add($mode+':guard host remains alive; no force termination used')}
     }

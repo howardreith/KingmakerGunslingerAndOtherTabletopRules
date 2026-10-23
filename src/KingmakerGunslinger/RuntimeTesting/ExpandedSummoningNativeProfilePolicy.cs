@@ -11,7 +11,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "overrun" || phase == "great-cleave";
         }
         internal static bool Cleanup2Phase(string phase)
-        { return phase == "giant-lineup" || phase == "menus" || phase == "elementals" || phase == "bodies" || phase == "cloth-probe" || phase == "ettin-lifecycle" || phase == "ettin-commands" || phase == "elementals-presentation" || phase == "elementals-console" || phase == "elementals-sources" || phase == "elementals-learning" || phase == "elementals-off" || phase == "menu-adapters" || phase == "scale-prototype" || phase == "tooltips" || phase == "crab-attack" || phase == "production-attacks" || phase == "gorgon-presentation" || phase == "recovery-bodies" || phase == "creature-commands" || phase == "alternate-console" || phase == "shared-controls"; }
+        { return phase == "giant-lineup" || phase == "giants-off" || phase == "menus" || phase == "elementals" || phase == "bodies" || phase == "cloth-probe" || phase == "ettin-lifecycle" || phase == "ettin-commands" || phase == "elementals-presentation" || phase == "elementals-console" || phase == "elementals-sources" || phase == "elementals-learning" || phase == "elementals-off" || phase == "menu-adapters" || phase == "scale-prototype" || phase == "tooltips" || phase == "crab-attack" || phase == "production-attacks" || phase == "gorgon-presentation" || phase == "recovery-bodies" || phase == "creature-commands" || phase == "alternate-console" || phase == "shared-controls"; }
         internal static bool Sprint28Phase(string phase)
         {
             return phase == "profiles" || phase == "modes" ||

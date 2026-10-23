@@ -144,6 +144,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 if (phase == "bodies" || phase == "gorgon-presentation" || phase == "recovery-bodies")
                     foreach (int frame in ReviewSummonCleanup2Bodies(fixture, book)) yield return frame;
+                else if (phase == "giants-off")
+                    foreach (int frame in ReviewSummonCleanup2GiantsOff(fixture)) yield return frame;
                 else if (phase == "elementals")
                     foreach (int frame in ReviewSummonCleanup2Elementals(fixture)) yield return frame;
                 else if (phase == "elementals-presentation")
@@ -1782,6 +1784,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var game = Game.Instance;
                 var controller = game?.DialogController;
                 var dialog = controller?.Dialog;
+                if (game != null && game.IsControllerGamepad)
+                    absent = Cleanup2ConsoleNarrativeAbsent(row);
+                else
+                {
                 var manager = game?.UI?.Common?.DialogUIManager;
                 row["mode"] = game?.CurrentMode.ToString();
                 row["dialogControllerPresent"] = controller != null;
@@ -1817,6 +1823,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     typeof(Kingmaker.UI.BookEvent.BookEventBaseController), false, interchapterRow);
                 absent = controller != null && dialog == null && manager != null &&
                     stateContract && managerShown == false && dialogHidden && bookHidden && interchapterHidden;
+                }
             }
             catch (Exception error)
             {
