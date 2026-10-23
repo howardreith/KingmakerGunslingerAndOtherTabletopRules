@@ -847,7 +847,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Same actual class/level toggles and row selection as the qualified
             // CircleGroupedMetamagicUi seam, without its Circle-only captures.
             var tabs = controller.SpellBookView.ClassToggle; int index = tabs.Spellbooks.IndexOf(book);
-            tabs.GetComponentsInChildren<SpellbookClassTab>(true).Single(value => value.Index == index && value.gameObject.activeInHierarchy).Toggle.isOn = true;
+            // Installed SpellBookToggle.SetUp 0600481E hides the whole class
+            // strip for a single book (native45 OFF preparation); its native
+            // current book must already be the exact book. Otherwise click.
+            if (tabs.Spellbooks.Count == 1)
+            {
+                if (index != 0 || tabs.gameObject.activeInHierarchy)
+                    throw new InvalidOperationException("Native single-book class strip state differs.");
+            }
+            else tabs.GetComponentsInChildren<SpellbookClassTab>(true).Single(value => value.Index == index && value.gameObject.activeInHierarchy).Toggle.isOn = true;
             if (!ReferenceEquals(controller.CurrentSpellbook, book)) throw new InvalidOperationException("Native class tab selected another book.");
             var levelTab = controller.SpellBookView.LevelBookSwitcher.m_Tabs[level];
             if (!levelTab.gameObject.activeInHierarchy || !levelTab.Toggle.interactable) throw new InvalidOperationException("Native metamagic source level unavailable.");
