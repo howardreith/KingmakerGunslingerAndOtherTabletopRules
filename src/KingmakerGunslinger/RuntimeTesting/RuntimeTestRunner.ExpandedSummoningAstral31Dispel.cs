@@ -435,35 +435,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.AC.BaseValue = -100;
                 target.Stats.SaveWill.BaseValue = 100;
                 target.Stats.HitPoints.BaseValue = 100000;
+                observed.Targets.Add(target);
                 Buff evilSpell = Astral31DispelFixtureEffect(target,
                     firstDispelOwner, "evil-spell", "d15e0000000000000000000000000001",
                     "d15e1000000000000000000000000001", 11,
                     SpellSchool.Abjuration, SpellDescriptor.Evil, false,
-                    transient, transientBuffs);
+                    transient, transientBuffs, observed);
                 Buff evilEnchantment = Astral31DispelFixtureEffect(target,
                     target, "evil-enchantment",
                     "d15e0000000000000000000000000002",
                     "d15e1000000000000000000000000002", 9,
                     SpellSchool.Enchantment, SpellDescriptor.None, false,
-                    transient, transientBuffs);
+                    transient, transientBuffs, observed);
                 Buff goodEnchantment = Astral31DispelFixtureEffect(target,
                     firstDispelOwner, "good-enchantment",
                     "d15e0000000000000000000000000003",
                     "d15e1000000000000000000000000003", 8,
                     SpellSchool.Enchantment, SpellDescriptor.None, false,
-                    transient, transientBuffs);
+                    transient, transientBuffs, observed);
                 Buff ordinarySpell = Astral31DispelFixtureEffect(target,
                     firstDispelOwner, "ordinary-spell",
                     "d15e0000000000000000000000000004",
                     "d15e1000000000000000000000000004", 7,
                     SpellSchool.Abjuration, SpellDescriptor.None, false,
-                    transient, transientBuffs);
+                    transient, transientBuffs, observed);
                 Buff protectedEvil = Astral31DispelFixtureEffect(target,
                     target, "nondispellable-evil",
                     "d15e0000000000000000000000000005",
                     "d15e1000000000000000000000000005", 15,
                     SpellSchool.Abjuration, SpellDescriptor.Evil, true,
-                    transient, transientBuffs);
+                    transient, transientBuffs, observed);
                 bool eligibility = evilSpell != null && evilEnchantment != null &&
                     goodEnchantment != null && ordinarySpell != null &&
                     protectedEvil != null && evilSpell.IsFromSpell &&
@@ -811,7 +812,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string buffGuid, int casterLevel, SpellSchool school,
             SpellDescriptor descriptor, bool nondispellable,
             ICollection<UnityEngine.Object> transient,
-            ICollection<Buff> applied)
+            ICollection<Buff> applied, Astral31DispelEvents observed)
         {
             var ability = ScriptableObject.CreateInstance<BlueprintAbility>();
             Astral31DispelSetGuid(ability, abilityGuid);
@@ -842,8 +843,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             context.Params.DC = 10;
             Buff result = target.Descriptor.Buffs.AddBuff(blueprint, context,
                 TimeSpan.FromMinutes(10));
-            if (result == null) throw new InvalidOperationException(
-                "Astral Dispel Evil fixture buff was refused: " + name);
+            if (result == null)
+            {
+                RuleApplyBuff native = observed.Applications.LastOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, blueprint) &&
+                    ReferenceEquals(value.Initiator, target));
+                var refusal = new JObject {
+                    ["fixture"] = name, ["target"] = target.UniqueId,
+                    ["targetDead"] = target.Descriptor.State.IsDead,
+                    ["targetLifeState"] = target.Descriptor.State.LifeState.ToString(),
+                    ["buffsDisabled"] = Convert.ToString(
+                        ReadExpandedSummoningOptionalMember(target.Descriptor.Buffs,
+                            "m_Disabled")),
+                    ["nativeRuleSeen"] = native != null,
+                    ["canApply"] = native?.CanApply,
+                    ["immunity"] = native?.Immunity,
+                    ["storyModeImmunity"] = native?.StoryModeImmunity,
+                    ["source"] = source.UniqueId,
+                    ["ability"] = ability.AssetGuid,
+                    ["spellLevel"] = context.Params.SpellLevel,
+                    ["casterLevel"] = context.Params.CasterLevel,
+                    ["contextDescriptors"] = context.SpellDescriptor.ToString(),
+                    ["nativeSource"] = native?.Context?.MaybeCaster?.UniqueId,
+                    ["nativeSpellLevel"] = native?.Context?.Params?.SpellLevel,
+                    ["nativeCasterLevel"] = native?.Context?.Params?.CasterLevel,
+                    ["nativeDescriptors"] = native?.Context?.SpellDescriptor.ToString(),
+                    ["removeOnResurrect"] = blueprint.RemoveOnResurrect,
+                    ["immortality"] = target.Descriptor.State.Immortality.Count,
+                    ["targetBuffs"] = new JArray(target.Buffs.Enumerable.Select(
+                        value => new JObject { ["guid"] = value.Blueprint.AssetGuid,
+                            ["name"] = value.Blueprint.name,
+                            ["source"] = value.Context?.MaybeCaster?.UniqueId }))
+                };
+                throw new InvalidOperationException(
+                    "Astral Dispel Evil fixture buff was refused: " +
+                    refusal.ToString(Newtonsoft.Json.Formatting.None));
+            }
             result.IsFromSpell = true;
             result.IsNotDispelable = nondispellable;
             applied.Add(result);
@@ -996,7 +1031,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             IGlobalRulebookHandler<RuleAttackRoll>,
             IGlobalRulebookHandler<RuleSpellResistanceCheck>,
             IGlobalRulebookHandler<RuleSavingThrow>,
-            IGlobalRulebookHandler<RuleDispelMagic>
+            IGlobalRulebookHandler<RuleDispelMagic>,
+            IGlobalRulebookHandler<RuleApplyBuff>
         {
             internal UnitEntityData Owner;
             internal readonly HashSet<UnitEntityData> Targets =
@@ -1009,6 +1045,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new List<RuleSavingThrow>();
             internal readonly List<RuleDispelMagic> Dispels =
                 new List<RuleDispelMagic>();
+            internal readonly List<RuleApplyBuff> Applications =
+                new List<RuleApplyBuff>();
 
             public void OnEventAboutToTrigger(RuleAttackRoll evt)
             {
@@ -1042,6 +1080,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (Targets.Contains(evt?.Initiator) && ReferenceEquals(
                     evt?.Reason?.Context?.MaybeCaster, Owner)) Saves.Add(evt);
+            }
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+            public void OnEventDidTrigger(RuleApplyBuff evt)
+            {
+                if (Targets.Contains(evt?.Initiator)) Applications.Add(evt);
             }
             public void OnEventAboutToTrigger(RuleDispelMagic evt) { }
             public void OnEventDidTrigger(RuleDispelMagic evt)
