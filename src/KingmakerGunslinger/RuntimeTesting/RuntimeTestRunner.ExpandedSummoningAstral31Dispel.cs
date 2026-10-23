@@ -241,9 +241,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 dismissalTarget.Stats.SaveWill.BaseValue = -100;
                 observed.Owner = dismissalOwner;
                 observed.Targets.Add(dismissalTarget);
-                int evilBefore = CircleAttackAC(dismissalTarget,
+                int evilBefore = Astral31DispelAttackAc(dismissalTarget,
                     dismissalOwner);
-                int goodBefore = CircleAttackAC(firstDispelOwner,
+                int goodBefore = Astral31DispelAttackAc(firstDispelOwner,
                     dismissalOwner);
                 UnitUseAbility dismissalParent = null;
                 var dismissalCosts = new JArray();
@@ -256,9 +256,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Buff activeWard = dismissalOwner.Buffs.Enumerable.SingleOrDefault(
                         value => ReferenceEquals(value.Blueprint, ward));
                     UnitPartTouch held = dismissalOwner.Get<UnitPartTouch>();
-                    int evilAfter = CircleAttackAC(dismissalTarget,
+                    int evilAfter = Astral31DispelAttackAc(dismissalTarget,
                         dismissalOwner);
-                    int goodAfter = CircleAttackAC(firstDispelOwner,
+                    int goodAfter = Astral31DispelAttackAc(firstDispelOwner,
                         dismissalOwner);
                     bool armed = dismissalParent != null &&
                         dismissalParent.IsFinished && dismissalParent.Result ==
@@ -287,6 +287,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["held"] = held?.Ability?.Data?.Blueprint?.AssetGuid,
                             ["stickySource"] = held?.Ability?.Data?.StickyTouch
                                 ?.Blueprint?.AssetGuid,
+                            ["evilAttackWeapon"] = dismissalTarget.Body.PrimaryHand
+                                .MaybeWeapon?.Blueprint.AssetGuid,
+                            ["goodAttackWeapon"] = firstDispelOwner.Body.PrimaryHand
+                                .MaybeWeapon?.Blueprint.AssetGuid,
                             ["evilAcBefore"] = evilBefore,
                             ["goodAcBefore"] = goodBefore,
                             ["evilAcAfter"] = evilAfter,
@@ -721,6 +725,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !command.ExecutionProcess.IsEnded)
                 throw new InvalidOperationException(
                     "Astral Dispel Evil held touch did not finish.");
+        }
+
+        private static int Astral31DispelAttackAc(UnitEntityData attacker,
+            UnitEntityData target)
+        {
+            var weapon = attacker?.Body?.PrimaryHand?.MaybeWeapon;
+            if (weapon == null) throw new InvalidOperationException(
+                "Astral Dispel Evil AC source has no equipped primary weapon.");
+            int damage = target.Damage;
+            try
+            {
+                RuleAttackRoll roll = Rulebook.Trigger(new RuleAttackWithWeapon(
+                    attacker, target, weapon, 0)).AttackRoll;
+                if (roll?.ACRule == null) throw new InvalidOperationException(
+                    "Astral Dispel Evil AC probe did not calculate target AC.");
+                return roll.TargetAC;
+            }
+            finally
+            {
+                target.Damage = damage;
+            }
         }
 
         private static Buff Astral31DispelFixtureEffect(UnitEntityData target,
