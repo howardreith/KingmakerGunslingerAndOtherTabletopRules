@@ -6,7 +6,45 @@ owner aesthetic approval is claimed. The completion intake was clean
 
 ## Completion implementation (current)
 
-### Review42 results and review43 corrections (current, October 23)
+### Review43 results and review44 corrections (current, October 23)
+
+Frozen review43 source `dbea89ced910512b7ee3e07d30faf997a40f7d38`, fingerprint
+`cc25fce496cb6d96994320398546d15468163ef6b5aa607ca6c7c81a5667937a`; package
+`a6fd5ab8c26cce37fced552f25e0abe3d275537422f95045f8d05f49f659deac`, DLL
+`d90324664ac0d69fa1fb4b0015ffa3d1c74b78a6dc1d2f09451aac8af168c99b`, MVID
+`a5b0d21b-74fe-46a4-b63e-148dde9e55cc`. One build (184.2s), 23 cases, gate 9/0,
+installed targets 37/37. Window24 ran 13:15:11 to 13:41:28 UTC (26m17s); every
+transaction restored normally.
+
+- **Menu adapters with alternate sources PASS 154/0, 291.4s**, raw
+  `20261023T1316384102688Z`: twelve canonical SM/SNA Horse quantity routes, native
+  pin, Druid conversion under CotW with actual Horse cast/debit, and all seven
+  alternate families (20 routes; Monster Tactician tiers II/III/IV each on its
+  native per-tier caster), every family's source budget exact.
+- Alternate console **FAIL 12/1, 211.7s**, raw `20261023T1321445631528Z`: Monster
+  Tactician row, hover, hover close and cancel pass; the next family's caster had
+  no empty slot on the first controller hotbar page (native level-up auto-fills).
+- Controller **FAIL 26/2, 212.4s**, raw `20261023T1327123079346Z`: retirement at close
+  now passes; the native reopen and exact second close work, but the old header was
+  not disposed after 240 frames. It stays referenced by an unreused pooled row,
+  exactly as native row VMs do (060050E1 never disposes them).
+- Fresh-OFF controller **FAIL 25/1, 209.8s**, raw `20261023T1332019864249Z`: the
+  native list scroll works; focusing the source row made the native level-up
+  tooltip draw "companions who know this spell", and native `SetIcon` threw on the
+  portrait-less disposable fixture caster's null `SmallPortrait`.
+- Elementals OFF with alternate sources **FAIL 108/2, 288.4s**, raw
+  `20261023T1338497760076Z`: all 47 native OFF choices (24 standalone, 23 SNA II-IX),
+  every OFF popup and all 14 hover-close admissions pass; the aggregate
+  book/list/presentation/pin preservation flag is false without naming its part.
+
+Review44 corrections (observer/fixture only): controller alternate routes reach an
+empty slot with the bar's own `OnNextPage` and page back; controller disposal at
+rebind requires the old context released, a new current context, and no active row
+showing the old header (disposal recorded); owned portrait-less fixture units get a
+native CharGen portrait during controller learning, restored exactly; the OFF
+desktop-menu aggregate records each preservation part.
+
+### Review42 results and review43 corrections (October 23)
 
 Frozen review42 source `a77e5e0c5f02db51c24fad23feaf6864583593ae`, fingerprint
 `f38c9e67bddbcbf01ea767a2ea0d7b2a399e860271b593b876d0b437207376a0`; package

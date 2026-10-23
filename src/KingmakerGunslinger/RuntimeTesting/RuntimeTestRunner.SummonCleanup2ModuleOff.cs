@@ -443,7 +443,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["standaloneChildren"] = menus.OfType<JObject>().Count(row => ((string)row["route"]).StartsWith("standalone-", StringComparison.Ordinal)),
                         ["nativeSnaDirectRoutes"] = 1, ["requiredNativeSnaVariantRows"] = nativeSnaRows,
                         ["additionalCurrentStackSnaRows"] = menus.Count - 24 - nativeSnaRows,
-                        ["sourceBookListsComponentsVariantsPresentationAndPinsExact"] = unchanged },
+                        ["sourceBookListsComponentsVariantsPresentationAndPinsExact"] = unchanged,
+                        ["bookSnapshotExact"] = bookSnapshot.Unchanged(book), ["fixturePinsRestored"] = fixturePins.IsRestored(),
+                        ["failingSharedReads"] = surfaces.Failing(), ["failingPresentationReads"] = presentationReads.Count(read => !read()) },
                     "All 24 standalone children and 23 SNA II-IX choices remain original native desktop rows; SNA I retains its direct native source.");
                 if (!unchanged || menus.Count != expectedRows || nativeSnaRows != 23 || smallFireRow == null) throw new InvalidOperationException("OFF original menu coverage/source preservation incomplete.");
                 foreach (int frame in Cleanup2OffPreparation(fixture, book, targets, mode, watch, screens)) yield return frame;
