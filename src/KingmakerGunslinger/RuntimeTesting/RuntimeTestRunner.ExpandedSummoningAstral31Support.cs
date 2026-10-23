@@ -503,6 +503,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 Sprint28SetBrainActivePreservingActions(sibling, false);
+                if (owner.View != null && owner.View.AgentASP != null)
+                    owner.View.AgentASP.Stop();
+                if (sibling.View != null && sibling.View.AgentASP != null)
+                    sibling.View.AgentASP.Stop();
                 owner.Commands.InterruptAll(true); sibling.Commands.InterruptAll(true);
                 owner.Commands.RemoveFinishedAndUpdateQueue();
                 sibling.Commands.RemoveFinishedAndUpdateQueue();
