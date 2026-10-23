@@ -525,6 +525,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     value?.Context != null && (ReferenceEquals(
                         value.Context.MaybeCaster, owner) || ReferenceEquals(
                         value.Context.MaybeCaster, sibling)));
+                var ownerRetirementCommands = owner.Commands.Raw.Where(value =>
+                    value != null && !value.IsFinished).ToArray();
+                var siblingRetirementCommands = sibling.Commands.Raw.Where(value =>
+                    value != null && !value.IsFinished).ToArray();
+                owner.Commands.InterruptAll(value => value != null);
+                sibling.Commands.InterruptAll(value => value != null);
+                owner.Commands.RemoveFinishedAndUpdateQueue();
+                sibling.Commands.RemoveFinishedAndUpdateQueue();
                 var ownerActiveCommands = owner.Commands.Raw.Where(value =>
                     value != null && !value.IsFinished).ToArray();
                 var siblingActiveCommands = sibling.Commands.Raw.Where(value =>
@@ -542,6 +550,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["siblingShouldBeDestroyed"] = sibling.ShouldBeDestroyed,
                         ["ownerAbsent"] = !owner.IsInState,
                         ["siblingAbsent"] = !sibling.IsInState,
+                        ["ownerRetirementCommands"] = new JArray(ownerRetirementCommands
+                            .Select(value => value.GetType().Name).ToArray()),
+                        ["siblingRetirementCommands"] = new JArray(siblingRetirementCommands
+                            .Select(value => value.GetType().Name).ToArray()),
                         ["ownerActiveCommands"] = new JArray(ownerActiveCommands
                             .Select(value => value.GetType().Name).ToArray()),
                         ["siblingActiveCommands"] = new JArray(siblingActiveCommands
