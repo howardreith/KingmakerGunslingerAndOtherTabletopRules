@@ -422,6 +422,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["scope"] = "Settled pre-placement diagnostics only; no comparable standing height or calibration claimed." },
                         "Every canonically created lineup actor retains safe identity, hierarchy and material observations before the ground survey.");
                 }
+                for (int i = 1; i < actors.Count; i++) Cleanup2DonorFrostEffectsCheck(actors[i], keys[i]);
+                if (heightProbe == null) Cleanup2DonorFrostEffectsCheck(monsterFrost, "sm-frost-giant");
                 Vector3 origin = fixture.Caster.Position;
                 Cleanup2GroundSurvey ground = Cleanup2LineupGround(origin, actors);
                 List<Vector3> groundPoints = ground.Points;
@@ -1238,6 +1240,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             parts.Reverse();
             return current == root ? "." : string.Join("/", parts.ToArray());
+        }
+
+        // Fire and Storm reuse the Frost prefab and must not spawn its SpawnFxOnStart
+        // effect; both Frost routes are the control that keeps it. Hill-prefab
+        // families carry no such component. Only names and asset ids are written.
+        private void Cleanup2DonorFrostEffectsCheck(UnitEntityData actor, string key)
+        {
+            SpawnFxOnStart component = actor.View == null ? null : actor.View.GetComponent<SpawnFxOnStart>();
+            FieldInfo spawnedField = typeof(SpawnFxOnStart).GetField("m_SpawnedFx", BindingFlags.Instance | BindingFlags.NonPublic);
+            GameObject spawned = component == null || spawnedField == null ? null : spawnedField.GetValue(component) as GameObject;
+            bool alive = spawned != null;
+            bool frostPrefab = actor.Blueprint.Prefab?.AssetId == "df0f3fbceb3605d489c0dec8fa5c7d1e";
+            bool suppressed = key == "fire-giant" || key == "storm-giant";
+            bool frost = key == "frost-giant" || key == "sm-frost-giant";
+            bool passed = spawnedField != null && (suppressed ? frostPrefab && component != null && !alive
+                : frost ? frostPrefab && component != null && alive : !frostPrefab && component == null);
+            Cleanup2Check("donor-frost-effects-" + key, passed, new JObject {
+                ["key"] = key, ["blueprint"] = actor.Blueprint.AssetGuid, ["prefab"] = actor.Blueprint.Prefab?.AssetId,
+                ["component"] = component != null, ["fxOnStart"] = component?.FxOnStart?.AssetId,
+                ["fxOnDeath"] = component?.FxOnDeath?.AssetId, ["removeOnDeath"] = component != null && component.RemoveOnDeath,
+                ["spawnedFxAlive"] = alive, ["spawnedFxName"] = alive ? spawned.name : null,
+                ["spawnedParticleSystems"] = alive ? new JArray(spawned.GetComponentsInChildren<Component>(true)
+                    .Where(value => value != null && value.GetType().FullName == "UnityEngine.ParticleSystem")
+                    .Take(64).Select(value => value.name)) : new JArray(),
+                ["expected"] = suppressed ? "Frost prefab component present; its effect never spawned."
+                    : frost ? "Native Frost control keeps its spawned effect." : "No Frost prefab component." },
+                "Only Fire and Storm drop the native Frost Giant prefab's own frost effect.");
         }
 
         private static JObject Cleanup2ShapeHierarchy(UnitEntityData unit)

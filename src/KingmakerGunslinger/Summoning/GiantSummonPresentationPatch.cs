@@ -267,4 +267,37 @@ namespace KingmakerGunslinger.Summoning
             catch (Exception) { }
         }
     }
+
+    // Native UnitEntityView.OnDataAttached calls SpawnFx and HandleDeath calls
+    // HandleUnitDeath. Skipping both for Fire and Storm leaves nothing spawned,
+    // so there is nothing to restore; native Frost keeps its own effects.
+    internal static class GiantSummonDonorFrostEffects
+    {
+        internal static bool Suppresses(SpawnFxOnStart component)
+        {
+            try
+            {
+                UnitEntityView view = component == null ? null : component.GetComponent<UnitEntityView>();
+                UnitEntityData unit = view == null ? null : view.EntityData;
+                return unit != null && unit.Blueprint != null &&
+                    GiantSummonPresentationPolicy.SuppressesDonorFrostEffects(
+                        ExpandedSummoningVisualVariantPatch.IsModuleActive, unit.Blueprint.AssetGuid);
+            }
+            catch (Exception) { return false; }
+        }
+    }
+
+    [HarmonyPatch(typeof(SpawnFxOnStart), "SpawnFx")]
+    internal static class GiantSummonDonorFrostStartFxPatch
+    {
+        private static bool Prefix(SpawnFxOnStart __instance)
+        { return !GiantSummonDonorFrostEffects.Suppresses(__instance); }
+    }
+
+    [HarmonyPatch(typeof(SpawnFxOnStart), "HandleUnitDeath")]
+    internal static class GiantSummonDonorFrostDeathFxPatch
+    {
+        private static bool Prefix(SpawnFxOnStart __instance)
+        { return !GiantSummonDonorFrostEffects.Suppresses(__instance); }
+    }
 }
