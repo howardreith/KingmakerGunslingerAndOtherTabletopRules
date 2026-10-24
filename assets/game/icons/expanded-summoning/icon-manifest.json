@@ -122,7 +122,7 @@
                   {
                       "key":  "cyclops",
                       "file":  "cyclops.png",
-                      "sha256":  "67b2301b61ee0e645717e6801449626850b18b10e4d24a4594f18aeccc9f9ddb",
+                      "sha256":  "299ebec61241a634d2559e535b13625956ecaf3c661b0a33145ec546b87d2b4d",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
@@ -725,7 +725,7 @@
                   {
                       "key":  "pony",
                       "file":  "pony.png",
-                      "sha256":  "9283971ef0e33c5600bcc95ea7f6c53d8f3c236be69531597a5e65cfdab4a212",
+                      "sha256":  "a6a310530057ea44e706774b635ce93b993050caf40d7046a867c0eb7563b8b9",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",
