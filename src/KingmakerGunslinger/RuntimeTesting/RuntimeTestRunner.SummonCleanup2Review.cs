@@ -422,6 +422,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["scope"] = "Settled pre-placement diagnostics only; no comparable standing height or calibration claimed." },
                         "Every canonically created lineup actor retains safe identity, hierarchy and material observations before the ground survey.");
                 }
+                for (int i = 1; i < actors.Count; i++) Cleanup2DonorFrostEffectsCheck(actors[i], keys[i]);
+                if (heightProbe == null) Cleanup2DonorFrostEffectsCheck(monsterFrost, "sm-frost-giant");
                 Vector3 origin = fixture.Caster.Position;
                 Cleanup2GroundSurvey ground = Cleanup2LineupGround(origin, actors);
                 List<Vector3> groundPoints = ground.Points;
@@ -496,26 +498,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool factorExact = true;
                     if (heightProbe == null && i > 1)
                     {
-                        JObject owner = GiantSummonPresentationPatch.ObserveProductionOwnership(actors[i].View);
-                        factor = (float?)owner["uniformVisualFactor"] ?? float.NaN;
-                        factorExact = (bool?)owner["currentOwnershipExact"] == true &&
-                            (bool?)owner["nativeRootScaleExact"] == true && Cleanup2Finite(factor) && factor > 0f;
+                        JObject size = GiantSummonPresentationPatch.ObserveNativeSize(actors[i].View);
+                        factor = (float?)size["uniformVisualFactor"] ?? float.NaN;
+                        factorExact = Cleanup4NativeSizeExact(size) && factor > 0f;
                     }
                     float nativeRange = factorExact ? range / factor : float.NaN;
-                    // The same native idle motion grows with the admitted
-                    // render-only factor. Keep the original native-scale
-                    // envelope, rather than rejecting that expected growth.
+                    // The same native idle motion grows with the applied
+                    // family factor. Keep the original native-scale envelope,
+                    // rather than rejecting that expected growth.
                     bool stable = samples.All(v => v[i].Valid) && factorExact && nativeRange <= .05f && stableScale;
                     standing &= stable;
                     summary.Add(new JObject { ["key"] = keys[i], ["unit"] = actors[i].UniqueId,
                         ["meanBodyHeightWorldUnits"] = heights.Average(), ["poseHeightRange"] = range,
-                        ["admittedUniformVisualFactor"] = factor, ["productionFactorOwnershipExact"] = factorExact,
+                        ["appliedUniformVisualFactor"] = factor, ["nativeSizeExact"] = factorExact,
                         ["nativeScalePoseHeightRange"] = nativeRange, ["nativeScalePoseHeightRangeLimit"] = .05f,
                         ["maximumSoleGroundGap"] = soleGap, ["stableStandingSamples"] = stable,
                         ["sameViewScaleAcrossSamples"] = stableScale,
                         ["heightOverHuman"] = heights.Average() / samples.Average(v => v[0].Height),
                         ["heightOverHill"] = heights.Average() / samples.Average(v => v[1].Height),
                         ["soleOffsetIsDiagnosticNotAdmission"] = true });
+                }
+                if (heightProbe == null)
+                {
+                    float hill = samples.Average(v => v[1].Height);
+                    var ratios = new JArray(); bool graded = Cleanup2Finite(hill) && hill > 0f;
+                    for (int i = 2; i < actors.Count; i++)
+                    {
+                        float expected = GiantSummonPresentationPolicy.All.Single(value => value.Key == keys[i]).RelativeVisualFactor;
+                        float actual = samples.Average(v => v[i].Height) / hill;
+                        bool near = Cleanup2Finite(actual) && Mathf.Abs(actual / expected - 1f) <= .05f;
+                        graded &= near;
+                        ratios.Add(new JObject { ["key"] = keys[i], ["expectedHeightOverHill"] = expected,
+                            ["measuredHeightOverHill"] = actual, ["withinFivePercent"] = near });
+                    }
+                    Cleanup2Check("native-size-heights", graded, new JObject { ["hillMeanBodyHeight"] = hill, ["ratios"] = ratios,
+                        ["basis"] = "Both donor bodies share one rest height; each family's measured body height over Hill must match its factor." },
+                        "Measured standing bodies follow the family heights: Stone 1.2, Fire 1.4, Frost 1.5, Cloud 1.8 and Storm 2.1 times Hill.");
                 }
                 Cleanup2Check("standing-comparison-eligibility", standing, new JObject {
                     ["actors"] = summary, ["calibrationApplied"] = false,
@@ -530,7 +548,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Its temporary placement is deferred until the camera
                     // lease is held, so the extra actor cannot obstruct the
                     // six-family camera admission. It is removed before PNG.
-                    productionObservation = Cleanup2ObserveProductionScale(
+                    productionObservation = Cleanup4ObserveNativeSize(
                         actors.Skip(1).Concat(new[] { monsterFrost }).ToArray(),
                         keys.Skip(1).Concat(new[] { "sm-frost-giant" }).ToArray(), fixture, monsterFrost, groundPoints[3]);
                 }
@@ -542,7 +560,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (scalePrototype)
                     foreach (int frame in ReviewSummonCleanup2ScalePrototype(fixture, actors, keys, groundPoints, samples, standing)) yield return frame;
                 else
-                    foreach (int frame in Cleanup2ReleaseProductionScale(actors.Skip(1).ToArray(), keys.Skip(1).ToArray())) yield return frame;
+                    foreach (int frame in Cleanup4ReleaseNativeSize(actors.Skip(1).ToArray(), keys.Skip(1).ToArray())) yield return frame;
             }
             finally
             {
@@ -560,168 +578,124 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private IEnumerable<int> Cleanup2ObserveProductionScale(UnitEntityData[] actors, string[] keys,
+        private static bool Cleanup4NativeSizeExact(JObject size)
+        {
+            float factor = (float?)size["uniformVisualFactor"] ?? float.NaN, footprint = (float?)size["footprintFactor"] ?? float.NaN;
+            float height = (float?)size["heightOverIntake"] ?? float.NaN, space = (float?)size["footprintOverIntake"] ?? float.NaN;
+            return (bool?)size["ownerPresent"] == true && (bool?)size["unitOwnerExact"] == true &&
+                (bool?)size["currentSizeExact"] == true && (bool?)size["rootScaleFollowsOriginal"] == true &&
+                Cleanup2Finite(factor) && Cleanup2Finite(footprint) && Mathf.Abs(height - factor) <= .0001f &&
+                Mathf.Abs(space - footprint) <= .0001f && (bool?)size["huge"] == ((string)size["mechanicalSize"] == "Huge");
+        }
+
+        // Every stimulus that refreshes native receivers in ordinary play: hover,
+        // the native renderer/collider rebuild that selection marks and weapon
+        // matching schedule, the native visibility writer, an unrelated child
+        // under the view and a weapon pose. Size must survive each unchanged.
+        private IEnumerable<int> Cleanup4ObserveNativeSize(UnitEntityData[] actors, string[] keys,
             ExpandedSummoningCorrectionFixture fixture, UnitEntityData extraFrost, Vector3 extraFrostGroundPoint)
         {
             // This iterator begins only inside Cleanup2CaptureLineup's exact
             // held camera lease, after the normal scenery/foreign blockers
             // have been checked. Use only the surveyed Frost support point.
             PlaceExpandedSummoningUnit(extraFrost, extraFrostGroundPoint);
-            var wait = System.Diagnostics.Stopwatch.StartNew();
-            while (actors.Where((actor, index) => keys[index] != "hill-giant").Any(actor =>
-                GiantSummonPresentationPatch.ProductionOwner(actor.View) == null) && wait.Elapsed.TotalSeconds < 16d)
-                yield return 0;
-            var allocations = new HashSet<int>();
+            for (int frame = 0; frame < 3; frame++) yield return 0;
             var played = new List<Tuple<UnitEntityData, UnitAnimationActionHandle>>();
             for (int i = 0; i < actors.Length; i++)
             {
                 UnitEntityData actor = actors[i];
-                JObject before = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
-                var actualOwner = GiantSummonPresentationPatch.ProductionOwner(actor.View);
-                string first = GiantSummonPresentationPatch.ApplyRenderHeight(actor.View);
-                string second = GiantSummonPresentationPatch.ApplyRenderHeight(actor.View);
-                JObject after = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
-                bool baseline = keys[i] == "hill-giant";
-                int[] ids = ((JArray)after["privateAllocationInstances"] ?? new JArray()).Values<int>().ToArray();
-                bool disjoint = ids.All(value => !allocations.Contains(value));
-                foreach (int value in ids) allocations.Add(value);
-                bool sameOwner = ReferenceEquals(actualOwner, GiantSummonPresentationPatch.ProductionOwner(actor.View));
-                bool stable = baseline ? actualOwner == null && first == second && first.Contains("height=relative-baseline;factor=1") :
-                    actualOwner != null && sameOwner && (bool?)before["currentOwnershipExact"] == true &&
-                    (bool?)after["currentOwnershipExact"] == true && (int?)before["ownedRootInstance"] == (int?)after["ownedRootInstance"] &&
-                    JToken.DeepEquals(before["privateAllocationInstances"], after["privateAllocationInstances"]) && ids.Length > 0;
-                bool scaleOwned = stable && disjoint && (bool?)after["nativeRootScaleExact"] == true && (bool?)after["unitOwnerExact"] == true;
-                Cleanup2Check("production-relative-scale-" + keys[i], scaleOwned,
-                    new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["before"] = before, ["afterTwoProductionApplies"] = after,
-                        ["sameOwner"] = sameOwner, ["privateAllocationsDisjointFromOtherInstances"] = disjoint,
-                        ["firstApply"] = first, ["secondApply"] = second, ["prototypeFactoryCalled"] = false },
-                    "The actual canonical summon owns production scale, repeated production application reuses its exact instance, quantities do not share allocations and the native gameplay root stays exact.");
-                if (!scaleOwned) throw new InvalidOperationException("Production scale ownership failed for " + keys[i] + "; no visibility/pose access to released private resources.");
-                if (baseline) continue;
+                JObject before = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
+                string first = GiantSummonPresentationPatch.ApplyNativeSize(actor.View);
+                string second = GiantSummonPresentationPatch.ApplyNativeSize(actor.View);
+                JObject after = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
+                float intakeCorpulence = (float?)after["intakeCorpulenceBase"] ?? float.NaN;
+                float footprint = (float?)after["footprintFactor"] ?? float.NaN;
+                float sizeScale = (float?)after["nativeSizeScale"] ?? float.NaN;
+                bool corpulence = Cleanup2Finite(intakeCorpulence) && Mathf.Abs(((float?)after["viewCorpulence"] ?? 0f) -
+                    Mathf.Max(.5f, intakeCorpulence * footprint * sizeScale)) <= .0001f;
+                bool sized = Cleanup4NativeSizeExact(before) && Cleanup4NativeSizeExact(after) && first == second &&
+                    JToken.DeepEquals(before, after) && corpulence;
+                Cleanup2Check("native-size-" + keys[i], sized,
+                    new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["before"] = before, ["afterTwoApplies"] = after,
+                        ["firstApply"] = first, ["secondApply"] = second, ["nativeCorpulenceFollowsBase"] = corpulence,
+                        ["selection"] = Sprint22SelectionSurface(actor) },
+                    "The actual canonical summon carries its family height on the view's own original scale and, if Huge, a 15/10 space on its own corpulence; repeated application changes nothing.");
+                if (!sized) throw new InvalidOperationException("Native giant size failed for " + keys[i]);
+                JObject expected = after;
+                Func<JObject, bool> unchanged = value => Cleanup4NativeSizeExact(value) && JToken.DeepEquals(value, expected);
+                var stimuli = new JObject();
                 bool hoverLease = false;
                 try
                 {
                     actor.View.HandleHoverChange(true); hoverLease = true;
                     for (int frame = 0; frame < 3; frame++) yield return 0;
-                    JObject highlighted = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
-                    JObject selection = Sprint22SelectionSurface(actor);
-                    bool highlightOwned = (bool?)highlighted["currentOwnershipExact"] == true && (bool?)highlighted["ordinaryOwnedReceiversExact"] == true &&
-                        (bool?)highlighted["occludedOwnedReceiversExact"] == true && (bool?)selection["selectionSurface"] == true;
-                    Cleanup2Check("production-native-highlight-" + keys[i], highlightOwned,
-                        new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["production"] = highlighted,
-                            ["selection"] = selection, ["nativeHoverStimulus"] = true,
-                            ["scope"] = "Paired native HandleHoverChange stimulus plus actual native receiver membership; this does not claim a physical mouse click or screenshot art acceptance." },
-                        "Native hover/highlight receiver acquisition preserves the exact production owner, its borrowed PF material arrays and the ordinary native selection surfaces.");
-                    if (!highlightOwned) throw new InvalidOperationException("Production scale ownership changed during native highlight for " + keys[i]);
+                    stimuli["hover"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
                 }
                 finally { if (hoverLease && actor.View != null) actor.View.HandleHoverChange(false); }
+                // Native UnitMarkManager.AddMark/RemoveMark, MatchVisuals and
+                // UpdateBeltPrefabs mark the view; its LateUpdate then rebuilds
+                // every cached renderer and collider. The copied-model scaler
+                // refused at this rebuild and reverted the giant.
+                actor.View.MarkRenderersAndCollidersAreUpdated();
+                for (int frame = 0; frame < 3; frame++) yield return 0;
+                stimuli["nativeRendererColliderRebuild"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
                 var fader = actor.View.GetComponent<EntityFader>();
                 MethodInfo nativeVisibility = typeof(EntityFader).GetMethod("SetRendererVisibility",
                     BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
                 if (fader == null || nativeVisibility == null || nativeVisibility.ReturnType != typeof(void))
                     throw new MissingMemberException("Exact native cached-renderer visibility stimulus unavailable.");
-                JObject hidden = null;
                 try
                 {
                     nativeVisibility.Invoke(fader, new object[] { false });
                     yield return 0;
-                    hidden = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
+                    stimuli["nativeHidden"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
                 }
                 finally { if (fader != null) nativeVisibility.Invoke(fader, new object[] { true }); }
                 yield return 0;
-                JObject visible = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
-                bool visibilityOwned = (bool?)hidden?["currentOwnershipExact"] == true && (bool?)hidden?["lastNativeVisibility"] == false &&
-                    (bool?)visible["currentOwnershipExact"] == true && (bool?)visible["lastNativeVisibility"] == true &&
-                    (int?)visible["nativeVisibilityWrites"] >= 2;
-                Cleanup2Check("production-native-visibility-" + keys[i], visibilityOwned,
-                    new JObject { ["key"] = keys[i], ["hidden"] = hidden, ["visible"] = visible,
-                        ["nativeVisibilityMethod"] = "EntityFader.SetRendererVisibility(Boolean)",
-                        ["visibleMaterialMetadata"] = new JArray(actor.View.GetComponentsInChildren<Renderer>(true)
-                            .Where(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy)
-                            .SelectMany(renderer => renderer.sharedMaterials).Select(Cleanup2Material)),
-                        ["scope"] = "Exact native visibility writer on disposable actors; not a fog-of-war gameplay, native FX activation or physical pointer claim. No material/dissolve value is forced." },
-                    "Actual native cached-list visibility writes cover private receivers while displaced originals remain suppressed and exact source/material/collider ownership remains intact.");
-                if (!visibilityOwned) throw new InvalidOperationException("Production scale ownership changed during native visibility for " + keys[i]);
+                stimuli["nativeShown"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
+                GameObject child = null;
+                try
+                {
+                    child = new GameObject("KMG_C4_UnrelatedNonRenderingChild");
+                    child.transform.SetParent(actor.View.transform, false);
+                    for (int frame = 0; frame < 2; frame++) yield return 0;
+                    stimuli["unrelatedChild"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
+                }
+                finally { if (child != null) UnityEngine.Object.Destroy(child); }
                 UnitAnimationActionHandle animation = null;
                 try
                 {
                     var hand = actor.Body.PrimaryHand;
-                    if (hand == null || !hand.HasWeapon) throw new NotSupportedException("Native production giant primary weapon absent.");
+                    if (hand == null || !hand.HasWeapon) throw new NotSupportedException("Native giant primary weapon absent.");
                     var info = new AttackHandInfo(hand, 0, 0); info.CreateAnimationHandleForAttack(); animation = info.AnimationHandle;
-                    if (animation == null) throw new NotSupportedException("Native production giant primary pose handle absent.");
+                    if (animation == null) throw new NotSupportedException("Native giant primary pose handle absent.");
                     Transform[] bones = actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).SelectMany(skin => skin.bones)
                         .Where(bone => bone != null).Distinct().ToArray();
                     Matrix4x4[] initial = bones.Select(bone => bone.localToWorldMatrix).ToArray();
-                    var cloths = actualOwner.OwnedCloths.ToArray();
-                    Vector3[][] clothBefore = cloths.Select(cloth => cloth.vertices).ToArray();
-                    var clothSkins = cloths.Select(cloth => cloth.GetComponent<SkinnedMeshRenderer>()).ToArray();
-                    var clothDrivers = clothSkins.Select(skin => skin.bones.Where(bone => bone != null).Distinct().ToArray()).ToArray();
-                    var driverBefore = clothDrivers.Select(drivers => drivers.Select(bone => bone.localToWorldMatrix).ToArray()).ToArray();
-                    var pinned = cloths.Select(cloth => cloth.coefficients.Select((value, index) => new { value, index })
-                        .Where(row => row.value.maxDistance == 0f).Select(row => row.index).ToArray()).ToArray();
-                    int[] visibleFrames = new int[cloths.Length], frustumFrames = new int[cloths.Length];
-                    bool[] driverMoved = new bool[cloths.Length];
-                    float[] pinnedMotion = new float[cloths.Length];
-                    var poseCamera = TeleportationCastingCamera()?.Camera;
-                    if (poseCamera == null) throw new InvalidOperationException("Held native lineup camera absent before production pose.");
-                    float started = Time.time, unscaledStarted = Time.unscaledTime, deltaSum = 0f;
-                    var poseWatch = System.Diagnostics.Stopwatch.StartNew();
-                    bool moved = false, clothFinite = true; float clothMotion = 0f;
+                    Cloth[] cloths = actor.View.GetComponentsInChildren<Cloth>(true);
+                    bool moved = false, clothFinite = true;
                     actor.View.AnimationManager.Execute(animation);
                     played.Add(Tuple.Create(actor, animation));
                     for (int frame = 0; frame < 40; frame++)
                     {
                         Game.Instance.IsPaused = false; yield return 0;
-                        if (actualOwner == null || actualOwner.IsDisposed ||
-                            !ReferenceEquals(actualOwner, GiantSummonPresentationPatch.ProductionOwner(actor.View)) || cloths.Any(cloth => cloth == null))
-                        {
-                            Cleanup2Check("production-native-pose-owner-" + keys[i], false,
-                                GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View),
-                                "The exact live production owner and private Cloth must remain present before reading native particle arrays.");
-                            throw new InvalidOperationException("Production owner released during native pose for " + keys[i]);
-                        }
-                        deltaSum += Time.deltaTime;
                         moved |= bones.Where((bone, index) => bone != null && bone.localToWorldMatrix != initial[index]).Any();
-                        Plane[] frustum = GeometryUtility.CalculateFrustumPlanes(poseCamera);
-                        for (int c = 0; c < cloths.Length; c++)
-                        {
-                            var skin = clothSkins[c];
-                            if (skin != null && skin.enabled && skin.gameObject.activeInHierarchy && skin.isVisible) visibleFrames[c]++;
-                            if (skin != null && GeometryUtility.TestPlanesAABB(frustum, skin.bounds)) frustumFrames[c]++;
-                            driverMoved[c] |= clothDrivers[c].Where((bone, index) => bone != null && bone.localToWorldMatrix != driverBefore[c][index]).Any();
-                            Vector3[] points = cloths[c].vertices;
-                            clothFinite &= points.Length > 0 && points.Length == clothBefore[c].Length && points.All(Cleanup2Finite);
-                            if (points.Length == clothBefore[c].Length)
-                                for (int point = 0; point < points.Length; point++) clothMotion = Mathf.Max(clothMotion, Vector3.Distance(points[point], clothBefore[c][point]));
-                            foreach (int point in pinned[c])
-                                if (point < points.Length && point < clothBefore[c].Length)
-                                    pinnedMotion[c] = Mathf.Max(pinnedMotion[c], Vector3.Distance(points[point], clothBefore[c][point]));
-                        }
+                        clothFinite &= cloths.All(cloth => cloth != null && cloth.vertices.Length > 0 && cloth.vertices.All(Cleanup2Finite));
                     }
-                    JObject posed = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View);
-                    bool renderedCloth = visibleFrames.All(count => count > 0) && frustumFrames.All(count => count > 0);
-                    Cleanup2Check("production-native-weapon-pose-" + keys[i], moved && clothFinite &&
-                        renderedCloth && (cloths.Length == 0 || clothMotion > .0001f) && (bool?)posed["currentOwnershipExact"] == true,
-                        new JObject { ["key"] = keys[i], ["unit"] = actor.UniqueId, ["weapon"] = info.Weapon.Blueprint.AssetGuid,
-                            ["actualNativeBoneMotion"] = moved, ["ownedClothFiniteStableCount"] = clothFinite,
-                            ["ownedClothPositiveDisplacement"] = clothMotion, ["production"] = posed,
-                            ["normalRenderCamera"] = poseCamera.GetInstanceID(), ["normalCameraLeaseHeld"] = Game.Instance.CameraController.FixCamera.GuardCount == 1,
-                            ["unityElapsedSeconds"] = Time.time - started, ["unscaledElapsedSeconds"] = Time.unscaledTime - unscaledStarted,
-                            ["unityDeltaSum"] = deltaSum, ["wallElapsedSeconds"] = poseWatch.Elapsed.TotalSeconds,
-                            ["ownedClothNormallyRendered"] = renderedCloth,
-                            ["clothRenderAndDriverSamples"] = new JArray(Enumerable.Range(0, cloths.Length).Select(c => new JObject {
-                                ["cloth"] = cloths[c].GetInstanceID(), ["renderer"] = clothSkins[c].GetInstanceID(), ["samples"] = 40,
-                                ["visibleEnabledSamples"] = visibleFrames[c], ["nativeCameraFrustumSamples"] = frustumFrames[c],
-                                ["rendererUpdateWhenOffscreen"] = clothSkins[c].updateWhenOffscreen,
-                                ["clothSleepThreshold"] = cloths[c].sleepThreshold,
-                                ["paletteBoneMotion"] = driverMoved[c], ["pinnedCount"] = pinned[c].Length,
-                                ["pinnedParticleDisplacement"] = pinnedMotion[c] })),
-                            ["attackCommandOrRuleIssued"] = false },
-                        "A real weapon-specific native pose moves the production-owned skin/attachments with finite positive Cloth updates and unchanged native source/collider/material ownership; this is not combat resolution or FX activation proof.");
+                    stimuli["weaponPose"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View);
+                    stimuli["weaponPoseBonesMoved"] = moved; stimuli["nativeClothCount"] = cloths.Length;
+                    stimuli["nativeClothFinite"] = clothFinite; stimuli["weapon"] = info.Weapon.Blueprint.AssetGuid;
                 }
                 finally { Cleanup2ScaleFinishAnimation(ref animation); }
+                bool survived = new[] { "hover", "nativeRendererColliderRebuild", "nativeHidden", "nativeShown", "unrelatedChild", "weaponPose" }
+                    .All(name => stimuli[name] is JObject && unchanged((JObject)stimuli[name])) &&
+                    (bool)stimuli["weaponPoseBonesMoved"] && (bool)stimuli["nativeClothFinite"];
+                stimuli["key"] = keys[i]; stimuli["unit"] = actor.UniqueId;
+                stimuli["scope"] = "Paired native HandleHoverChange, the public native renderer/collider rebuild request, the native visibility writer, an observer-owned unrelated child and a native weapon pose on a disposable actor. Not a physical pointer, combat rule or art acceptance.";
+                Cleanup2Check("native-size-survives-" + keys[i], survived, stimuli,
+                    "Hover, the native renderer/collider rebuild, native hide/show, an unrelated child and a weapon pose leave the giant's height and space exactly as applied.");
+                if (!survived) throw new InvalidOperationException("Native giant size changed under a native stimulus for " + keys[i]);
             }
-            foreach (int frame in Cleanup2ProductionHideRefusal(extraFrost, "sm-frost-giant")) yield return frame;
             DisposeExpandedSummoningUnits(fixture.Created, new[] { extraFrost });
             // Finish only the handles this observer created, then allow native
             // idle/recovery and deferred extra-view teardown before the final
@@ -734,112 +708,69 @@ namespace KingmakerGunslinger.RuntimeTesting
             int recoveryFrames = 12;
             while (!recovered() && recoveryFrames < 120) { recoveryFrames++; yield return 0; }
             bool recoveryExact = recovered() && extraFrost.Destroyed;
-            Cleanup2Check("production-native-pose-recovered", recoveryExact, new JObject {
+            Cleanup2Check("native-size-pose-recovered", recoveryExact, new JObject {
                 ["ownedPoseHandlesFinishedAndNotCurrent"] = recovered(), ["normalRecoveryFrames"] = recoveryFrames,
                 ["extraCanonicalFrostDisposed"] = extraFrost.Destroyed, ["poseScreenshotClaimed"] = false },
                 "Every observer-created native pose handle finishes and leaves the current action, and the extra fixture Frost is disposed before the six-family standing image.");
-            if (!recoveryExact) throw new InvalidOperationException("Native production pose recovery is unverified; no standing image is recorded.");
+            if (!recoveryExact) throw new InvalidOperationException("Native pose recovery is unverified; no standing image is recorded.");
         }
 
-        // Pro review of 425efc03b6: an ownership refusal raised inside the
-        // native hide callback must not reverse that hide. One unrelated,
-        // non-rendering child under the extra Frost's native view makes the
-        // owner's hierarchy validation refuse at the very next native write.
-        // The extra Frost is disposed next, before the standing lineup image.
-        private IEnumerable<int> Cleanup2ProductionHideRefusal(UnitEntityData actor, string key)
+        // Explicit release restores exactly the native bases this patch wrote,
+        // leaves other instances alone, and the ordinary lifetime re-acquires
+        // the same size on the next frame.
+        private IEnumerable<int> Cleanup4ReleaseNativeSize(UnitEntityData[] actors, string[] keys)
         {
-            UnitEntityView view = actor == null ? null : actor.View;
-            var owner = GiantSummonPresentationPatch.ProductionOwner(view);
-            JObject before = GiantSummonPresentationPatch.ObserveProductionOwnership(view);
-            var fader = view == null ? null : view.GetComponent<EntityFader>();
-            MethodInfo nativeVisibility = typeof(EntityFader).GetMethod("SetRendererVisibility",
-                BindingFlags.Instance | BindingFlags.NonPublic, null, new[] { typeof(bool) }, null);
-            if (owner == null || owner.IsDisposed || (bool?)before["currentOwnershipExact"] != true || fader == null ||
-                nativeVisibility == null || nativeVisibility.ReturnType != typeof(void) || view.Renderers == null)
-                throw new InvalidOperationException("Exact live production owner and native visibility writer are required for the hide-refusal regression.");
-            var ownedIds = new HashSet<int>(((JArray)before["registeredOwnedRenderers"] ?? new JArray()).Values<int>());
-            Renderer[] originals = view.Renderers.Where(renderer => renderer != null && !ownedIds.Contains(renderer.GetInstanceID())).ToArray();
-            Renderer[] owned = view.Renderers.Where(renderer => renderer != null && ownedIds.Contains(renderer.GetInstanceID())).ToArray();
-            // While the giant is visible, the originals the owner displaced
-            // (cape Cloth and static weapon sources) are the disabled ones.
-            int[] displaced = originals.Where(renderer => !renderer.enabled).Select(renderer => renderer.GetInstanceID()).ToArray();
-            GameObject child = null; bool hidden = false;
-            JObject refused = null, childState = null;
-            bool[] originalsEnabled = null, ownedEnabled = null;
-            try
-            {
-                child = new GameObject("KMG_C2_UnrelatedNonRenderingChild");
-                child.transform.SetParent(view.transform, false);
-                Vector3 position = child.transform.localPosition, scale = child.transform.localScale;
-                Quaternion rotation = child.transform.localRotation;
-                // No yield: the native hide runs before the owner's next update.
-                nativeVisibility.Invoke(fader, new object[] { false }); hidden = true;
-                originalsEnabled = originals.Select(renderer => renderer != null && renderer.enabled).ToArray();
-                ownedEnabled = owned.Select(renderer => renderer != null && renderer.enabled && renderer.gameObject.activeInHierarchy).ToArray();
-                refused = owner.Describe();
-                childState = new JObject { ["present"] = child != null,
-                    ["parentIsNativeView"] = child != null && child.transform.parent == view.transform,
-                    ["activeSelf"] = child != null && child.activeSelf,
-                    ["localPoseUnchanged"] = child != null && child.transform.localPosition == position &&
-                        child.transform.localRotation == rotation && child.transform.localScale == scale,
-                    ["componentCount"] = child == null ? 0 : child.GetComponents<Component>().Length };
-            }
-            finally
-            {
-                if (hidden) nativeVisibility.Invoke(fader, new object[] { true });
-                if (child != null) UnityEngine.Object.Destroy(child);
-            }
-            for (int frame = 0; frame < 3; frame++) yield return 0;
-            JObject released = owner.Describe();
-            bool refusedInsideHide = owner.IsDisposed && (owner.Status ?? "").StartsWith("REFUSED:native-visibility:", StringComparison.Ordinal);
-            bool originalsHidden = originalsEnabled.Length > 0 && originalsEnabled.All(value => !value);
-            bool ownedHidden = ownedEnabled.All(value => !value);
-            bool restored = (bool?)refused["sourceStateRestored"] == true && ((JArray)refused["restoreIssues"])?.Count == 0;
-            bool childExact = (bool)childState["present"] && (bool)childState["parentIsNativeView"] && (bool)childState["activeSelf"] &&
-                (bool)childState["localPoseUnchanged"] && (int)childState["componentCount"] == 1;
-            bool nativeShowRestored = originals.All(renderer => renderer != null && renderer.enabled);
-            bool pass = refusedInsideHide && displaced.Length > 0 && originalsHidden && ownedHidden && restored && childExact && nativeShowRestored;
-            Cleanup2Check("production-native-hide-refusal-" + key, pass, new JObject { ["key"] = key, ["unit"] = actor.UniqueId,
-                ["ownerStatus"] = owner.Status, ["refusedInsideNativeHide"] = refusedInsideHide,
-                ["originalCachedRenderers"] = originals.Length, ["displacedOriginalsBeforeHide"] = new JArray(displaced),
-                ["originalsEnabledAfterRefusedHide"] = new JArray(originals.Select((renderer, index) => new JObject {
-                    ["renderer"] = renderer == null ? 0 : renderer.GetInstanceID(), ["object"] = renderer == null ? null : renderer.name,
-                    ["displaced"] = renderer != null && displaced.Contains(renderer.GetInstanceID()), ["enabled"] = originalsEnabled[index] })),
-                ["ownedRenderersHidden"] = ownedHidden, ["refusalReceipt"] = refused, ["unrelatedChild"] = childState,
-                ["originalsVisibleAfterNativeShow"] = nativeShowRestored, ["releaseAfterNativeShow"] = released,
-                ["productionOutcome"] = GiantSummonPresentationPatch.Describe(view),
-                ["scope"] = "Exact native EntityFader.SetRendererVisibility(false) before the next update, with an unrelated observer-owned non-rendering child; the child is destroyed afterwards and the extra Frost is disposed." },
-                "A refusal inside the native hide leaves every original cached renderer disabled, restores exact source state without issues and leaves the unrelated child untouched.");
-        }
-
-        private IEnumerable<int> Cleanup2ReleaseProductionScale(UnitEntityData[] actors, string[] keys)
-        {
+            const BindingFlags fields = BindingFlags.Instance | BindingFlags.NonPublic;
+            FieldInfo original = typeof(UnitEntityView).GetField("m_OriginalScale", fields);
+            FieldInfo corpulence = typeof(UnitEntityView).GetField("m_Corpulence", fields);
+            FieldInfo sizeScale = typeof(UnitEntityView).GetField("m_Scale", fields);
             for (int i = 0; i < actors.Length; i++)
             {
-                var owner = GiantSummonPresentationPatch.ProductionOwner(actors[i].View);
-                if (owner == null) continue;
-                int[] otherRoots = actors.Where((value, index) => index != i)
-                    .Select(value => GiantSummonPresentationPatch.ProductionOwner(value.View))
-                    .Where(value => value != null).Select(value => value.gameObject.GetInstanceID()).ToArray();
-                GiantSummonPresentationPatch.Release(actors[i].View);
-                // Production receiver retirement spans the ordinary native
-                // highlighter refresh and Unity's deferred object destruction.
-                for (int frame = 0; frame < 3; frame++) yield return 0;
-                JObject receipt = owner.Describe();
-                int[] othersAfter = actors.Where((value, index) => index != i)
-                    .Select(value => GiantSummonPresentationPatch.ProductionOwner(value.View))
-                    .Where(value => value != null).Select(value => value.gameObject.GetInstanceID()).ToArray();
-                bool others = otherRoots.SequenceEqual(othersAfter) && actors.Where((value, index) => index != i)
-                    .Select(value => GiantSummonPresentationPatch.ProductionOwner(value.View)).Where(value => value != null)
-                    .All(value => (bool?)value.ObserveProduction()["currentOwnershipExact"] == true);
-                Cleanup2Check("production-owned-release-" + keys[i], (bool?)receipt["disposed"] == true &&
-                    (bool?)receipt["sourceStateRestored"] == true && (bool?)receipt["ownedRootReleased"] == true &&
-                    ((JArray)receipt["restoreIssues"])?.Count == 0 && others,
-                    new JObject { ["key"] = keys[i], ["unit"] = actors[i].UniqueId, ["release"] = receipt,
-                        ["otherInstancesRetainExactOwners"] = others, ["moduleFlagChanged"] = false,
-                        ["scope"] = "Explicit owned release on a still-live disposable canonical actor; native view reconstruction and module-OFF are separate cold observations." },
-                    "Exact owned release restores the native source fields/caches, releases all private allocations and preserves other live production owners.");
+                UnitEntityView view = actors[i].View;
+                JObject applied = GiantSummonPresentationPatch.ObserveNativeSize(view);
+                JObject[] others = actors.Where((value, index) => index != i)
+                    .Select(value => GiantSummonPresentationPatch.ObserveNativeSize(value.View)).ToArray();
+                JArray intake = (JArray)applied["intakeOriginalScale"];
+                float intakeCorpulence = (float?)applied["intakeCorpulenceBase"] ?? float.NaN;
+                GiantSummonPresentationPatch.Release(view);
+                Vector3 restored = (Vector3)original.GetValue(view);
+                float restoredCorpulence = (float)corpulence.GetValue(view);
+                Vector3 expected = intake == null ? Vector3.zero : new Vector3((float)intake[0], (float)intake[1], (float)intake[2]);
+                bool exact = intake != null && restored == expected && restoredCorpulence == intakeCorpulence &&
+                    view.transform.localScale == expected * (float)sizeScale.GetValue(view) &&
+                    (bool?)GiantSummonPresentationPatch.ObserveNativeSize(view)["ownerPresent"] == false;
+                bool othersKept = actors.Where((value, index) => index != i)
+                    .Select(value => GiantSummonPresentationPatch.ObserveNativeSize(value.View))
+                    .Zip(others, (now, then) => JToken.DeepEquals(now, then)).All(value => value);
+                for (int frame = 0; frame < 2; frame++) yield return 0;
+                JObject reacquired = GiantSummonPresentationPatch.ObserveNativeSize(view);
+                bool same = Cleanup4NativeSizeExact(reacquired) && JToken.DeepEquals(reacquired, applied);
+                Cleanup2Check("native-size-release-" + keys[i], exact && othersKept && same,
+                    new JObject { ["key"] = keys[i], ["unit"] = actors[i].UniqueId, ["applied"] = applied,
+                        ["restoredOriginalScale"] = new JArray(restored.x, restored.y, restored.z),
+                        ["restoredCorpulenceBase"] = restoredCorpulence, ["restoredExactly"] = exact,
+                        ["otherInstancesUnchanged"] = othersKept, ["reacquiredByLifetime"] = reacquired, ["moduleFlagChanged"] = false,
+                        ["scope"] = "Explicit release on a still-live disposable canonical actor; module-OFF and saved reconstruction are separate observations." },
+                    "Release restores exactly the view's native original scale, corpulence and root scale, leaves other giants unchanged, and the ordinary lifetime re-acquires the same size.");
             }
+        }
+
+        // Scenery between the first and last actor center at body height;
+        // colliders under any lineup actor's own view and triggers are ignored.
+        private static bool Cleanup4RowSightlineObstructed(IList<Vector3> centers, IList<UnitEntityData> actors)
+        {
+            if (centers.Count < 2) return false;
+            Transform[] views = actors.Where(actor => actor.View != null).Select(actor => actor.View.transform).ToArray();
+            foreach (float height in new[] { 1.2f, 2.5f })
+            {
+                Vector3 from = centers[0] + Vector3.up * height, to = centers[centers.Count - 1] + Vector3.up * height;
+                Vector3 delta = to - from;
+                RaycastHit[] hits = Physics.RaycastAll(from, delta.normalized, delta.magnitude,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                if (hits.Any(hit => hit.collider != null && !views.Any(view => hit.collider.transform.IsChildOf(view))))
+                    return true;
+            }
+            return false;
         }
 
         private sealed class Cleanup2GroundSurvey
@@ -985,6 +916,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (separation.magnitude < minimumGaps[i - 1] - .05f)
                                 { refusal = "insufficient-native-footprint-separation"; break; }
                             }
+                        // The Human is the fixture's only fog-of-war revealer.
+                        // A pillar standing in the row hid the Hill Giant from
+                        // it once the Huge giants' wider space moved the row.
+                        if (refusal == null && Cleanup4RowSightlineObstructed(centers, actors))
+                            refusal = "row-sightline-obstructed";
                         var row = new JObject { ["candidate"] = attempts.Count + 1,
                             ["center"] = SurveyVector(center), ["yawDegrees"] = direction * 15,
                             ["longitudinalOffset"] = longitudinal, ["lateralOffset"] = lateral,
@@ -1032,7 +968,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["candidateLimit"] = 3528, ["wallLimitSeconds"] = 15,
                 ["selected"] = selected?.Document, ["attempts"] = attempts,
                 ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
-                ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
+                ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual; no scenery collider crosses the row at 1.2 or 2.5 m. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
             Cleanup2Check("lineup-ground-survey", selected != null, diagnostic,
                 "A bounded courtyard search finds seven adequately separated native ground positions on a nondegenerate measured common plane.");
             if (selected == null)
@@ -1174,7 +1110,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["enabled"] = skin.enabled, ["active"] = skin.gameObject.activeInHierarchy,
                     ["body"] = Cleanup2BodyRenderer(skin), ["mesh"] = skin.sharedMesh?.name,
                     ["materials"] = new JArray(skin.sharedMaterials.Select(Cleanup2Material)) })),
-                ["controllers"] = rows, ["production"] = GiantSummonPresentationPatch.ObserveProductionOwnership(view) };
+                ["controllers"] = rows, ["nativeSize"] = GiantSummonPresentationPatch.ObserveNativeSize(view) };
         }
 
         private sealed class Cleanup2ActorMetric
@@ -1238,6 +1174,33 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             parts.Reverse();
             return current == root ? "." : string.Join("/", parts.ToArray());
+        }
+
+        // Fire and Storm reuse the Frost prefab and must not spawn its SpawnFxOnStart
+        // effect; both Frost routes are the control that keeps it. Hill-prefab
+        // families carry no such component. Only names and asset ids are written.
+        private void Cleanup2DonorFrostEffectsCheck(UnitEntityData actor, string key)
+        {
+            SpawnFxOnStart component = actor.View == null ? null : actor.View.GetComponent<SpawnFxOnStart>();
+            FieldInfo spawnedField = typeof(SpawnFxOnStart).GetField("m_SpawnedFx", BindingFlags.Instance | BindingFlags.NonPublic);
+            GameObject spawned = component == null || spawnedField == null ? null : spawnedField.GetValue(component) as GameObject;
+            bool alive = spawned != null;
+            bool frostPrefab = actor.Blueprint.Prefab?.AssetId == "df0f3fbceb3605d489c0dec8fa5c7d1e";
+            bool suppressed = key == "fire-giant" || key == "storm-giant";
+            bool frost = key == "frost-giant" || key == "sm-frost-giant";
+            bool passed = spawnedField != null && (suppressed ? frostPrefab && component != null && !alive
+                : frost ? frostPrefab && component != null && alive : !frostPrefab && component == null);
+            Cleanup2Check("donor-frost-effects-" + key, passed, new JObject {
+                ["key"] = key, ["blueprint"] = actor.Blueprint.AssetGuid, ["prefab"] = actor.Blueprint.Prefab?.AssetId,
+                ["component"] = component != null, ["fxOnStart"] = component?.FxOnStart?.AssetId,
+                ["fxOnDeath"] = component?.FxOnDeath?.AssetId, ["removeOnDeath"] = component != null && component.RemoveOnDeath,
+                ["spawnedFxAlive"] = alive, ["spawnedFxName"] = alive ? spawned.name : null,
+                ["spawnedParticleSystems"] = alive ? new JArray(spawned.GetComponentsInChildren<Component>(true)
+                    .Where(value => value != null && value.GetType().FullName == "UnityEngine.ParticleSystem")
+                    .Take(64).Select(value => value.name)) : new JArray(),
+                ["expected"] = suppressed ? "Frost prefab component present; its effect never spawned."
+                    : frost ? "Native Frost control keeps its spawned effect." : "No Frost prefab component." },
+                "Only Fire and Storm drop the native Frost Giant prefab's own frost effect.");
         }
 
         private static JObject Cleanup2ShapeHierarchy(UnitEntityData unit)

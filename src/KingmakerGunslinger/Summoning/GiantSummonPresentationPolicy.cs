@@ -18,6 +18,11 @@ namespace KingmakerGunslinger.Summoning
         internal float RelativeVisualFactor { get { return ReferenceHeightFeet / 10f; } }
         internal string NativePrefabId { get { return Key == "frost-giant" || Key == "fire-giant" || Key == "storm-giant"
             ? "df0f3fbceb3605d489c0dec8fa5c7d1e" : "635d6dee1c7831b41aa987bdbeff14bc"; } }
+        // Cloud and Storm are Huge; the four others are Large like both donors.
+        internal bool Huge { get { return Key == "cloud-giant" || Key == "storm-giant"; } }
+        // A Huge creature occupies a 15-foot space where a Large one occupies
+        // ten, so a Huge giant's corpulence is its Large donor's times 15/10.
+        internal float FootprintFactor { get { return Huge ? GiantSummonPresentationPolicy.HugeSpaceRatio : 1f; } }
     }
 
     internal struct GiantPresentationScale
@@ -56,12 +61,12 @@ namespace KingmakerGunslinger.Summoning
     internal static class GiantSummonPresentationPolicy
     {
         internal const string NativeFrostGuid = "590cd3d5e76fdc649a5f97bc984cd3c4";
+        internal const float HugeSpaceRatio = 15f / 10f;
         private static readonly GiantSummonPresentationProfile[] Profiles = {
             new GiantSummonPresentationProfile("hill-giant", "58770207fd8c4084a0d9addbac591616", 10f),
             new GiantSummonPresentationProfile("stone-giant", "956501547dd54479b329a315aab07a05", 12f),
             new GiantSummonPresentationProfile("frost-giant", NativeFrostGuid, 15f),
-            // The chosen art target is the midpoint of the attested 12-16 ft
-            // range. It remains unapplied until native calibration exists.
+            // The chosen art target is the midpoint of the attested 12-16 ft range.
             new GiantSummonPresentationProfile("fire-giant", "65481592185641c99c502e21ba9a5fa2", 14f),
             new GiantSummonPresentationProfile("cloud-giant", "ff4696c6336141a3b2236cb0a22c86f3", 18f),
             new GiantSummonPresentationProfile("storm-giant", "4b1143140c614a0aaaa1118c8a44c9ae", 21f)
@@ -108,6 +113,15 @@ namespace KingmakerGunslinger.Summoning
             return profile.UnitGuid != NativeFrostGuid || FrostSources.Any(value =>
                 string.Equals(value.Value, summonedBuffSourceAbilityGuid, StringComparison.Ordinal))
                 ? profile : null;
+        }
+
+        // Fire and Storm reuse the native Frost Giant prefab, whose SpawnFxOnStart
+        // carries that giant's own frost effects. Only these two owned bodies
+        // drop them; native Frost and the Hill-prefab families are untouched.
+        internal static bool SuppressesDonorFrostEffects(bool moduleActive, string unitGuid)
+        {
+            return moduleActive && Profiles.Any(value => (value.Key == "fire-giant" ||
+                value.Key == "storm-giant") && string.Equals(value.UnitGuid, unitGuid, StringComparison.Ordinal));
         }
 
         internal static float SolePivotOffset(float nativeLocalSole, float factor)
@@ -159,9 +173,35 @@ namespace KingmakerGunslinger.Summoning
             return "apply-measured-height";
         }
 
+        // The installed view keeps localScale = m_OriginalScale * size scale and
+        // Corpulence = size scale * m_Corpulence. Multiplying those two
+        // per-instance bases is how a taller body and a larger space reach every
+        // native consumer (selection ring and colliders, movement, reach and
+        // later size effects) and survive the view's own renderer refreshes.
+        internal static string PlanNativeSize(GiantSummonPresentationProfile profile,
+            GiantPresentationScale intakeScale, float intakeCorpulence,
+            GiantPresentationScale currentScale, float currentCorpulence,
+            out GiantPresentationScale targetScale, out float targetCorpulence)
+        {
+            targetScale = currentScale; targetCorpulence = currentCorpulence;
+            if (profile == null) return "not-owned";
+            if (!Valid(intakeScale) || !Valid(currentScale) || !Positive(intakeCorpulence) ||
+                !Positive(currentCorpulence)) return "invalid-native-size";
+            GiantPresentationScale desiredScale = intakeScale.Multiply(profile.RelativeVisualFactor);
+            float desiredCorpulence = intakeCorpulence * profile.FootprintFactor;
+            if (!Valid(desiredScale) || !Positive(desiredCorpulence)) return "invalid-native-size";
+            bool scaleDone = Same(currentScale, desiredScale), corpulenceDone = Near(currentCorpulence, desiredCorpulence);
+            if (scaleDone && corpulenceDone)
+            { targetScale = desiredScale; targetCorpulence = desiredCorpulence; return "already-applied"; }
+            if (!scaleDone && !Same(currentScale, intakeScale) ||
+                !corpulenceDone && !Near(currentCorpulence, intakeCorpulence)) return "foreign-size-change";
+            targetScale = desiredScale; targetCorpulence = desiredCorpulence;
+            return "apply-native-size";
+        }
+
         internal static bool Same(GiantPresentationScale left, GiantPresentationScale right)
         { return Near(left.X, right.X) && Near(left.Y, right.Y) && Near(left.Z, right.Z); }
-        private static bool Near(float left, float right)
+        internal static bool Near(float left, float right)
         { return Math.Abs(left - right) <= 0.00001f * Math.Max(1f, Math.Max(Math.Abs(left), Math.Abs(right))); }
         private static bool Valid(GiantPresentationScale scale)
         { return Positive(scale.X) && Positive(scale.Y) && Positive(scale.Z); }

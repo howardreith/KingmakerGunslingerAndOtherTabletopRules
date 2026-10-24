@@ -47,9 +47,8 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Preserve released v0.0.164 Horse pixels and the exact S30/S31 append.
-        # Metadata/pixel pins and the stale-delegation refusal remain mandatory.
-        self.assertEqual("92a92815b1293922be86ffdfb1260079c2adfcc11d9c8bfa1f50ee693ec9ba9e", actual)
+        # Preserve the released Horse/Pony/Cyclops revisions and exact S30/S31 append.
+        self.assertEqual("08e26335a0256ed34af2bbbaae70d3e7e354f63a7bb47033d9d368485f332284", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"

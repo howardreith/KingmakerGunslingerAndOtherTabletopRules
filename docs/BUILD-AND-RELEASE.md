@@ -1,5 +1,65 @@
 # Build, package, and publish
 
+## 0.0.166 Druid rows and giant sizes publication authorization
+
+On 2026-10-24 the owner reviewed the Druid duplicate and giant size fixes
+(PR #71) and wrote "Could you go ahead and push, merge, and do a new release of
+this?" That covers the v0.0.166 release validator and Sprint-level candidate
+gate, merging PR #71 into master, publishing through `Publish-Release.ps1`, and
+checking the public download. The release is 0.0.166, one above the published
+0.0.165; the publisher checks the tag again.
+
+`tools/validate_expanded_summoning_druid_giant_sizes_release166.py` admits,
+relative to released v0.0.165 master `00ef53dd82`:
+- no identity change;
+- the eight pinned production files and the version metadata;
+- the released project file, unchanged;
+- no asset or source-art change;
+- its own static record.
+
+The released roster and 1,156-choice census still hold. The historical sprint
+and release validators stay as they were. The release follows the v0.0.165
+route: one Sprint-level release candidate gate and guarded reviews on that
+candidate, a normal merge, then the ordinary exact-reference publisher from
+clean, pushed `master`. The published DLL differs from the gated candidate's
+only in its build stamps. Known limits are listed in
+`docs/RELEASE-NOTES-0.0.166.md`.
+
+## 0.0.165 cleanup follow-up publication authorization
+
+On 2026-10-24 the owner reviewed the follow-up corrections (PR #69) and wrote
+"Go ahead and merge and release please." That covers the v0.0.165 release
+validator and Sprint-level candidate gate, merging PR #69 into master,
+publishing through `Publish-Release.ps1`, and checking the public download.
+The release is 0.0.165, one above the published 0.0.164; the publisher checks
+the tag again.
+
+`tools/validate_expanded_summoning_cleanup_followup_release165.py` admits,
+relative to released v0.0.164 master `114564ac71`:
+- no identity change;
+- the six pinned follow-up production files and the version metadata;
+- the released project file, unchanged;
+- the ten pinned modified and four pinned added assets and source-art files,
+  at exactly their reviewed bytes;
+- its own static record.
+
+The released roster and 1,156-choice census still hold. The historical sprint
+and release validators stay as they were.
+
+The branch passes one Sprint-level release candidate gate and guarded reviews
+on that candidate. Its PR then merges normally, and the ordinary
+exact-reference publisher runs from clean, pushed `master`:
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -Publish -ConfirmReleaseReady
+```
+
+The publisher's build stamps the merge commit and its own PDB path, so the
+published DLL differs from the gated candidate's in those stamps only; v0.0.158
+and v0.0.164 shipped the same way. Known limits are listed in
+`docs/RELEASE-NOTES-0.0.165.md`.
+
 ## 0.0.164 Cleanup 2 publication authorization
 
 On 2026-10-23, after reviewing the Summon Cleanup Iteration 2 gallery and a
