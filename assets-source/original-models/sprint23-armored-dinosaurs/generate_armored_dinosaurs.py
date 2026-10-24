@@ -259,6 +259,9 @@ def main():
     if args.kind == "triceratops":
         raise SystemExit("triceratops is built by build_triceratops.py since "
                          "the visual refinement (VIS-002); see SOURCE.md")
+    if args.kind == "stegosaurus":
+        raise SystemExit("stegosaurus is built by build_stegosaurus.py since "
+                         "Cleanup 2; see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data, rig, rig_hash = measured_rig(args.capture, args.kind)
     armature = shared.build_armature(rig_data)

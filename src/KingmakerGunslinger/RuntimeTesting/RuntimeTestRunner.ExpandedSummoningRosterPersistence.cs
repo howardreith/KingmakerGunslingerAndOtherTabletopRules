@@ -565,19 +565,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                 units = created.ToArray();
             }
             else foreach (var unit in units) RegisterRosterReadiness(unit, caster, null);
+            bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
+                _context.FeatureModules.Active.ExpandedSummoning;
+            // The general save-readiness contract deliberately allows native
+            // appearance still in flight. This exact trio additionally checks
+            // ordinary production scale below, which attaches after its native
+            // palette lifecycle. Let that lifecycle finish BEFORE pausing it.
+            Func<bool> presentationReady = () => !cleanup2Trio || new[] { "cloud-giant", "storm-giant" }.All(key => {
+                var matching = units.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>()?.Key == key).ToArray();
+                if (matching.Length != 1 || matching[0].View == null) return false;
+                var owner = GiantSummonPresentationPatch.ProductionOwner(matching[0].View);
+                return owner != null && !owner.IsDisposed;
+            });
+            DateTime presentationDeadline = DateTime.UtcNow.AddSeconds(60);
             Game.Instance.IsPaused = false;
             for (int frame = 0; frame < 600; frame++)
             {
                 yield return 0;
                 foreach (var entry in _rosterReadiness) ObserveRosterReadiness(entry);
-                if (frame >= 30 && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave)) break;
+                if (frame >= 30 && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) && presentationReady()) break;
+                if (cleanup2Trio && DateTime.UtcNow >= presentationDeadline) break;
             }
             Game.Instance.IsPaused = true;
-            bool ready = _rosterReadiness.Count == units.Length && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) &&
+            bool productionReady = presentationReady();
+            bool ready = productionReady && _rosterReadiness.Count == units.Length && _rosterReadiness.All(entry => entry.Timeline.ReadyForSave) &&
                 units.All(unit => !unit.Destroyed && !unit.Descriptor.State.IsDead && unit.Descriptor.State.IsConscious);
             FlushAndClearRosterReadiness();
             RosterPersistenceCheck("native-appearance", ready,
-                new JObject { ["units"] = units.Length, ["ready"] = ready },
+                new JObject { ["units"] = units.Length, ["ready"] = ready,
+                    ["cleanup2TrioProductionReadyBeforePause"] = cleanup2Trio ? (JToken)new JValue(productionReady) : JValue.CreateNull(),
+                    ["productionOwnership"] = cleanup2Trio ? new JArray(units.Where(unit =>
+                        unit.Get<UnitPartRelease143RosterReceipt>()?.Key == "cloud-giant" ||
+                        unit.Get<UnitPartRelease143RosterReceipt>()?.Key == "storm-giant").Select(unit =>
+                        GiantSummonPresentationPatch.ObserveProductionOwnership(unit.View))) : null,
+                    ["observerCalledApplyOrRebuild"] = false },
                 "every owned live view naturally clears native appearance lock and has valid view/control/finite dissolve; current camera/fog/invisibility is not a save prerequisite");
             var keys = units.Select(u => u.Get<UnitPartRelease143RosterReceipt>()?.Key).OrderBy(k => k, StringComparer.Ordinal).ToArray();
             // What this asserts depends on the module, exactly as the
@@ -768,6 +789,50 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!_context.FeatureModules.Active.ExpandedSummoning)
                     visual &= variantOwner == "<none>" && rimAbsent && rimState == "<none>" &&
                         (!registeredVariant || variantOutcome == SummonVisualVariantModulePolicy.DisabledOutcome);
+                if (Sprint29PersistenceScope && receipt.Key == "ettin")
+                {
+                    JObject headReceipt;
+                    bool headExact;
+                    if (moduleOn) headExact = Cleanup2EttinAttachmentMaterialExact(unit.View, out headReceipt);
+                    else
+                    {
+                        int roots = unit.View == null ? 0 : unit.View.GetComponentsInChildren<Transform>(true)
+                            .Count(value => value.name == EttinSecondHeadVisual.ObjectPrefix + "_Root");
+                        int owned = EttinSecondHeadVisual.CaptureOwnedResources(unit.View).Length;
+                        headExact = roots == 0 && owned == 0;
+                        headReceipt = new JObject { ["rootCount"] = roots, ["ownedResourceCount"] = owned,
+                            ["attachment"] = EttinSecondHeadVisual.Describe(unit.View) };
+                    }
+                    visual &= headExact;
+                    headReceipt["unit"] = unit.UniqueId; headReceipt["moduleEnabled"] = moduleOn;
+                    headReceipt["phase"] = prepare ? "prepare" : "cold-verify";
+                    headReceipt["viewInstance"] = unit.View == null ? 0 : unit.View.GetInstanceID();
+                    headReceipt["observerCalledAttachOrRebuild"] = false;
+                    RosterPersistenceCheck("ettin-authored-head-" + (prepare ? "prepare" : "cold-verify"), headExact, headReceipt,
+                        moduleOn ? "The actual saved/current exact Ettin has one private two-headed body, two owned neck/head/jaw chains, unchanged borrowed donor textures and exact native controller/cached-baseline fade initialization; this observer never attaches it."
+                            : "The exact module-OFF saved Ettin reconstructs without any project head root or private head allocations.");
+                }
+                if (Sprint29PersistenceScope && (receipt.Key == "cloud-giant" || receipt.Key == "storm-giant"))
+                {
+                    JObject scale = GiantSummonPresentationPatch.ObserveProductionOwnership(unit.View);
+                    var liveOwners = unit.View == null ? new Cleanup2GiantRenderScalePrototype[0] :
+                        unit.View.GetComponentsInChildren<Cleanup2GiantRenderScalePrototype>(true);
+                    var clothRows = scale["ownedCloths"] as JArray;
+                    bool clothExact = receipt.Key == "cloud-giant" ? clothRows != null && clothRows.Count == 0 :
+                        clothRows != null && clothRows.Count == 1 && clothRows.All(row => (bool?)row["enabled"] == true &&
+                            (bool?)row["allParticleCoordinatesFinite"] == true && (bool?)row["capsulesAllDisabled"] == true &&
+                            (int?)row["coefficientCount"] == 292 && (int?)row["pinnedCount"] == 92);
+                    bool giantScaleExact = moduleOn ? (bool?)scale["currentOwnershipExact"] == true &&
+                        (bool?)scale["unitOwnerExact"] == true && (bool?)scale["nativeRootScaleExact"] == true &&
+                        liveOwners.Length == 1 && clothExact && scale["currentBodySoleWorldY"] != null :
+                        (bool?)scale["ownerPresent"] == false && liveOwners.Length == 0;
+                    visual &= giantScaleExact;
+                    RosterPersistenceCheck("giant-production-render-" + receipt.Key + "-" + (prepare ? "prepare" : "cold-verify"), giantScaleExact,
+                        new JObject { ["unit"] = unit.UniqueId, ["key"] = receipt.Key, ["moduleEnabled"] = moduleOn,
+                            ["phase"] = prepare ? "prepare" : "cold-verify", ["production"] = scale,
+                            ["currentViewScaleOwnerCount"] = liveOwners.Length, ["observerCalledApplyOrRebuild"] = false },
+                        "The actual fresh-process saved Cloud/Storm owns its production relative render scale and exact private Cloth membership/state; module OFF owns none. This observer does not attach or rebuild presentation.");
+                }
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
                         ["expectedProfileForModule"] = moduleExpectedProfile, ["profileSerializedEqual"] = profileSame, ["visualExact"] = visual,

@@ -138,12 +138,8 @@ namespace KingmakerGunslinger.Blueprints
                     "175d1577bb6c9a04baf88eec99c66334",
                     "9972f33f977fc724c838e59641b2fca5" }, true,
                 new[] { FireSubtypeGuid, FireImmunityGuid, ColdVulnerabilityGuid });
-            ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
-                InternalName(StoneGiantUnit), new SummonVisualTintProfile(
-                    "stone-giant", 0.66f, 0.68f, 0.69f, null, null, null)));
-            ExpandedSummoningVisualVariantPatch.Register(new SummonVisualVariant(
-                InternalName(FireGiantUnit), new SummonVisualTintProfile(
-                    "fire-giant", 0.86f, 0.45f, 0.33f, null, null, null)));
+            // Exact body-atlas palettes are applied by GiantSummonPresentationPatch
+            // after native appearance settles; armor/capes retain their own materials.
         }
 
         // The installed discriminator has differed between standalone and

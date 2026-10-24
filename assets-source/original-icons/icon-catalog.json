@@ -93,8 +93,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "6a2203de67f1e0116c159358a3b660c4a06220bde0a77814f5e1981011490ea8",
-      "scope": "135 distinct original summon/action concepts, including the S30/S31 Trumpet Blast source/effect family. Every prior source/export/assignment is preserved. HumanReview NOT_PERFORMED_NONBLOCKING; native presentation remains separate."
+      "sha256": "92a92815b1293922be86ffdfb1260079c2adfcc11d9c8bfa1f50ee693ec9ba9e",
+      "scope": "Released v0.0.164 Horse source/export and all approved prior pixels are preserved;135 concepts include the six S30/S31 new creature/action icons and their exact consumers. New-species native/final qualification remains separate; no new owner aesthetic approval."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -465,8 +465,8 @@
     },
     {
       "path": "assets/game/icons/expanded-summoning/horse.png",
-      "sha256": "c52d920b00a6dfc0f00763df3cc0a03d340d709f69351b8e0adcd4d459a31ea1",
-      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+      "sha256": "3bf6ac8d8c7b08869bf262c4018937d5aa6b72cf3e0b809efec916c6e0cf67c1",
+      "reason": "Owner-authorized cleanup iteration 2 painted Horse replacement; admitted for development review, not owner-approved. Original source retained; all Horse consumers share one concept."
     },
     {
       "path": "assets/game/icons/expanded-summoning/owlbear.png",

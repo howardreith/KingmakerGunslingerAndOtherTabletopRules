@@ -1092,9 +1092,8 @@ namespace KingmakerGunslinger.DomainTests
                 "nativePreservation", "new[] { nativePreservation }",
                 "Direct summon publication requires exactly one frozen native-preservation child",
                 "SummonNativeOptionCatalog.Find",
-                "PreserveNativeSemanticDuplicate",
+                "ReplacementCoverageIsComplete",
                 "preservedOriginals.Any(original =>",
-                "SummonNativeExpansionCatalog.Replaces",
                 "nativeAdditions", "nativeAdditionSpecs" })
                 Assertions.True(source.Contains(token),
                     "Runtime publication contract is missing: " + token);
@@ -1106,8 +1105,10 @@ namespace KingmakerGunslinger.DomainTests
                 mergePolicy.Contains("publishedReplacementCount == 0") &&
                 mergePolicy.Contains("publishedReplacementCount == 1"),
                 "Native duplicate reconciliation must preserve hidden replacements, collapse one published replacement, and reject ambiguity.");
-            Assertions.False(source.Contains("SummonElemental"),
-                "Expanded Summoning publication must not target the standalone Summon Elemental spell.");
+            // Cleanup iteration 2 deliberately adds scoped standalone elemental
+            // presentation. Its exact access/identity contracts are tested by
+            // Cleanup2ElementalPresentationTests; this canonical-parent test
+            // no longer imposes the historical blanket exclusion.
             string builder = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningAbilityBuilder.cs"));

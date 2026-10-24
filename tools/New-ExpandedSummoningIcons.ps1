@@ -108,11 +108,14 @@ if (@($OnlyKeys | Sort-Object -Unique).Count -ne $OnlyKeys.Count -or
 $blueprints = (Get-Content -LiteralPath $blueprintPath -Raw | ConvertFrom-Json).entries
 $catalogKeys = @('redcap','axiomite','soul-eater','bogeyman','movanic-deva','frost-giant','thanadaemon')
 $preservedKeys = @('mite','manticore','nereid','hamadryad')
-# Owner-approved edits of an original painting. The original stays in
-# sources/ byte for byte and is recorded beside the edit; each edit folder's
-# EDIT.md names its input, script and approval.
+# Selected revisions. Originals stay in sources/ byte for byte; EDIT.md owns
+# each revision's prompt, provenance and approval status. Horse is admitted
+# only to the owner-requested development review, with acceptance pending.
 $editedSources = @{
     'dire-rat' = @{ path = 'assets-source/original-icons/expanded-summoning/edits/dire-rat/dire-rat.png'; size = 920 }
+    # Cleanup iteration 2: owner-requested painted replacement, admitted only
+    # to the development candidate; aesthetic approval remains pending.
+    'horse' = @{ path = 'assets-source/original-icons/expanded-summoning/edits/horse/horse.png'; size = 1254 }
 }
 
 if (-not $VerifyOnly -and -not (Test-Path -LiteralPath $outputRoot)) {

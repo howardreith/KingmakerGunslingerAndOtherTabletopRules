@@ -123,6 +123,7 @@ namespace KingmakerGunslinger.Summoning
             BlueprintScriptableObject[] all = library.GetAllBlueprints()
                 .Where(value => value != null).ToArray();
             var records = new List<string>();
+            ObserveStandaloneElementals(all, records);
             BlueprintAbility[] parents = all.OfType<BlueprintAbility>()
                 .Where(value => IsSummonFamily(SearchText(value)))
                 .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
@@ -279,6 +280,94 @@ namespace KingmakerGunslinger.Summoning
             return new ExpandedSummoningInventoryObservation(parents.Length,
                 units.Length, facts.Length, donors.Length, missingDonors.Length,
                 specialCandidates.Length, records);
+        }
+
+        // Discovery only. These names are never a suppression predicate. The
+        // resulting exact GUID/use-site inventory is prerequisite evidence for
+        // a separately reviewed allowlist and replacement policy.
+        private static void ObserveStandaloneElementals(
+            BlueprintScriptableObject[] all, IList<string> records)
+        {
+            BlueprintAbility[] candidates = all.OfType<BlueprintAbility>()
+                .Where(value => ContainsAny(SearchText(value), "summonelemental",
+                    "summon elemental", "summon_elemental"))
+                .OrderBy(value => value.AssetGuid, StringComparer.Ordinal).ToArray();
+            var ids = new HashSet<string>(candidates.Select(value => value.AssetGuid),
+                StringComparer.Ordinal);
+            foreach (BlueprintAbility ability in candidates)
+                records.Add("standalone-elemental-candidate=" + Describe(ability) +
+                    ";range=" + ability.Range + ";action=" + ability.ActionType +
+                    ";components=" + ObjectGraph(ability.ComponentsArray, 12));
+            foreach (BlueprintScriptableObject owner in all)
+            {
+                int budget = 100000;
+                bool incomplete = false;
+                var seen = new HashSet<object>(ReferenceComparer.Instance);
+                ObserveElementalReferences(owner, owner, owner.GetType().Name,
+                    ids, records, seen, 32, ref budget, ref incomplete);
+                if (incomplete)
+                    records.Add("standalone-elemental-consumer-scan-incomplete=" +
+                        Describe(owner) + ";remaining-budget=" + budget);
+            }
+            records.Add("standalone-elemental-discovery-summary=candidates:" +
+                candidates.Length + ";blueprints-scanned:" + all.Length +
+                ";policy:observation-only-no-presentation-mutation");
+        }
+
+        private static void ObserveElementalReferences(object value,
+            BlueprintScriptableObject owner, string path, HashSet<string> ids,
+            IList<string> records, HashSet<object> seen, int depth,
+            ref int budget, ref bool incomplete)
+        {
+            if (value == null) return;
+            BlueprintScriptableObject reference = value as BlueprintScriptableObject;
+            if (reference != null && !ReferenceEquals(reference, owner))
+            {
+                if (ids.Contains(reference.AssetGuid))
+                    records.Add("standalone-elemental-consumer=owner:" +
+                        Describe(owner) + ";path:" + path + ";target:" +
+                        reference.AssetGuid);
+                return; // Never follow another blueprint's entire dependency graph.
+            }
+            Type type = value.GetType();
+            if (type.IsPrimitive || type.IsEnum || value is string ||
+                value is decimal || value is Type || value is Delegate) return;
+            if (!ReferenceEquals(value, owner) && value is UnityEngine.Object &&
+                !(value is BlueprintComponent)) return;
+            if (!seen.Add(value)) return;
+            if (--budget < 0 || depth <= 0)
+            {
+                if (!incomplete)
+                    records.Add("standalone-elemental-scan-limit=owner:" +
+                        Describe(owner) + ";path:" + path + ";reason:" +
+                        (depth <= 0 ? "depth" : "budget"));
+                incomplete = true;
+                return;
+            }
+            IEnumerable sequence = value as IEnumerable;
+            if (sequence != null)
+            {
+                int index = 0;
+                foreach (object item in sequence)
+                {
+                    ObserveElementalReferences(item, owner, path + "[" + index++ +
+                        "]", ids, records, seen, depth - 1, ref budget, ref incomplete);
+                    if (budget < 0) break;
+                }
+                return;
+            }
+            for (Type current = type; current != null &&
+                current != typeof(UnityEngine.Object); current = current.BaseType)
+                foreach (FieldInfo field in current.GetFields(BindingFlags.Instance |
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+                {
+                    object child;
+                    try { child = field.GetValue(value); }
+                    catch { incomplete = true; continue; }
+                    ObserveElementalReferences(child, owner, path + "." + field.Name,
+                        ids, records, seen, depth - 1, ref budget, ref incomplete);
+                    if (budget < 0) return;
+                }
         }
 
         private static void ObserveSnaMenus(IEnumerable<BlueprintAbility> parents,

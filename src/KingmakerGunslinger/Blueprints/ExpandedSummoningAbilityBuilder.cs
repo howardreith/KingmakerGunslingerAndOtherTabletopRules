@@ -45,6 +45,7 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             SummonIconCatalog.Validate();
+            SummonChoicePresentationPolicy.Validate();
             ConfigureNativeTierOnePreservation(library, bySymbol,
                 MonsterParents[0],
                 ExpandedSummoningIdentityCatalog.NativeMonsterTierOneSymbol);
@@ -235,9 +236,11 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create("KMG.ExpandedSummoning." +
                     variant.StableKey + (templateBuff == null ? "" : celestial ?
                         ".Celestial" : ".Fiendish") + ".Name",
-                    (templateBuff == null ? "" : celestial ? "Celestial " :
-                        "Fiendish ") + variant.Creature.DisplayName +
-                        QuantitySuffix(variant.Multiplicity)),
+                    SummonChoicePresentationPolicy.For(variant.Creature.Key,
+                        variant.Multiplicity, templateBuff == null ?
+                            SummonChoiceTemplate.None : celestial ?
+                            SummonChoiceTemplate.Celestial :
+                            SummonChoiceTemplate.Fiendish).Label),
                 LocalizationService.Create("KMG.ExpandedSummoning." +
                     variant.StableKey + (templateBuff == null ? "" : celestial ?
                         ".Celestial" : ".Fiendish") + ".Description",
@@ -278,8 +281,9 @@ namespace KingmakerGunslinger.Blueprints
                 new BlueprintAbility.MaterialComponentData() : native.MaterialComponent;
             BlueprintUnitFactAccess.Resolve().Configure(target,
                 LocalizationService.Create("KMG.ExpandedSummoning." +
-                    variant.StableKey + ".Name", variant.Creature.DisplayName +
-                    QuantitySuffix(variant.Multiplicity)),
+                    variant.StableKey + ".Name",
+                    SummonChoicePresentationPolicy.For(variant.Creature.Key,
+                        variant.Multiplicity).Label),
                 LocalizationService.Create("KMG.ExpandedSummoning." +
                     variant.StableKey + ".Description",
                     "Summons a celestial or fiendish " +

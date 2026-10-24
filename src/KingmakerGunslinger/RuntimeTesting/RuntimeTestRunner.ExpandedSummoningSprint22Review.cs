@@ -104,9 +104,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     unit => NativeProfileUnits().Any(value => ReferenceEquals(value, unit)));
             }
 
+            internal IDisposable AllowOwnedNativeDefault(Func<bool> current)
+            {
+                if(_disposed || _tickGate==null)throw new InvalidOperationException("Exact active frame-synchronous fixture gate required.");
+                return _tickGate.AllowOwnedNativeDefault(current);
+            }
+            internal JObject NativeDefaultGateSnapshot()
+            { return _tickGate?.Snapshot(); }
             internal void Pulse()
             {
                 if (_disposed || Game.Instance.IsPaused) return;
+                _tickGate?.AssertManualPulseAllowed();
                 float step = _frameSynchronous ? Time.deltaTime : _step;
                 if (float.IsNaN(step) || float.IsInfinity(step) || step < 0f || step > 1f)
                     throw new InvalidOperationException("Invalid native Unity frame delta.");

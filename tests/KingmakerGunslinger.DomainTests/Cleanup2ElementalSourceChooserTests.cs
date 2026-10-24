@@ -1,0 +1,197 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using KingmakerGunslinger.Summoning;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class Cleanup2ElementalSourceChooserTests
+    {
+        private sealed class Source { internal string Book; internal bool Available = true; internal long Metamagic; }
+        private sealed class Preparation {internal Source Spell;internal bool Available=true;}
+        private sealed class NativeRow
+        {internal bool Current=true,Selected,Visible=true,FailOnce;internal int Writes;}
+        private static ElementalRowVisibilityLease<NativeRow>.Row Row(NativeRow native,string parent)
+        {return new ElementalRowVisibilityLease<NativeRow>.Row {Native=native,ParentGuid=parent,
+            Current=()=>native.Current,Selected=()=>native.Selected,Visible=()=>native.Visible,
+            SetVisible=value=>{native.Visible=value;native.Writes++;if(native.FailOnce){native.FailOnce=false;throw new InvalidOperationException("native setter failure");}}};}
+
+        internal static void RetainedInvocationDriftRefusesWithoutSubstitutingFreshChild()
+        {
+            var book=new object();var slot=new object();var source=new object();var child=new object();
+            object convertedFrom=source;long metamagic=1;int dispatches=0;
+            var context=new ElementalInvocationContextSnapshot(()=>new[]{book,slot,convertedFrom},()=>new[]{metamagic});
+            var choice=new ElementalSourceSelection<object>(new[]{child},()=>true,
+                value=>context.Current?null:"retained-native-context-drift",value=>dispatches++);
+            choice.Select(child);
+            convertedFrom=new object();
+            Assertions.False(choice.Cast(),"A fresh valid factory child cannot excuse the retained child's changed source link.");
+            Assertions.True(ReferenceEquals(choice.Selected,child),"The selected original child is never substituted.");
+            convertedFrom=source;metamagic=2;
+            Assertions.False(choice.Cast(),"In-place metamagic drift is detected despite stable object references.");
+            Assertions.Equal(0,dispatches,"Neither source-context nor metamagic drift can hand off or spend.");
+            metamagic=1;
+            Assertions.True(choice.Cast() && dispatches==1,"Exact restored original invocation may dispatch once after explicit selection.");
+        }
+
+        internal static void NativeDisclosurePreservesMixedSourcesAndSelectedAllocations()
+        {
+            var native=new NativeRow();var selected=new NativeRow{Selected=true};var monster=new NativeRow();var ally=new NativeRow();
+            var spec=ElementalSourceChooserPolicy.Rank(2);
+            var lease=new ElementalRowVisibilityLease<NativeRow>(new[]{Row(native,spec.Guid),Row(selected,spec.Guid),
+                Row(monster,spec.MonsterParentGuid),Row(ally,spec.NaturesAllyParentGuid)});
+            Assertions.Equal(2,lease.Count,"Only exact standalone source rows belong to the disclosure.");
+            lease.Apply(false);
+            Assertions.False(native.Visible,"Unselected native standalone source folds.");
+            Assertions.True(selected.Visible,"Actual selected legacy allocation stays visible and undoable.");
+            Assertions.True(monster.Visible && ally.Visible && monster.Writes==0 && ally.Writes==0,
+                "Mixed SM/SNA source rows must never be folded or written.");
+            lease.Apply(true);Assertions.True(native.Visible,"Expansion restores the same original row.");
+            lease.Release();Assertions.True(native.Visible && selected.Visible,"Release restores original native visibility.");
+        }
+
+        internal static void ConsoleProjectionRetainsOriginalAuthorityAndSelectedSource()
+        {
+            var mixed=new object();var legacy=new object();var chosen=new object();var foreign=new object();var header=new object();
+            var authoritative=new List<object>{mixed,legacy,chosen,foreign};var original=authoritative.ToArray();
+            var collapsed=ElementalSourceChooserPolicy.ProjectOriginalSources(authoritative,new[]{legacy,chosen},header,false,
+                source=>ReferenceEquals(source,chosen));
+            Assertions.True(collapsed.SequenceEqual(new[]{mixed,header,chosen,foreign}),
+                "A fresh console projection folds only source rows and retains the exact selected source.");
+            Assertions.True(authoritative.SequenceEqual(original),"Native allocation/known collection retains every original object and order.");
+            var expanded=ElementalSourceChooserPolicy.ProjectOriginalSources(authoritative,new[]{legacy,chosen},header,true,source=>false);
+            Assertions.True(expanded.SequenceEqual(new[]{mixed,header,legacy,chosen,foreign}),
+                "Disclosure expands the original native VM references; it cannot create replacement rule sources.");
+            Assertions.False(authoritative.Contains(header),"Transient header never enters native allocation/known authority.");
+            var one=ElementalSourceChooserPolicy.ProjectOriginalSources(new[]{mixed,legacy},new[]{legacy},header,false,source=>false);
+            Assertions.True(one.SequenceEqual(new[]{mixed,header}),"A level-specific screen with one legacy source still has the common disclosure.");
+        }
+
+        internal static void ConsoleProjectionPreservesNativeHiddenSourcesAndRefusesDrift()
+        {
+            var hidden=new NativeRow{Visible=false};var visible=new NativeRow();var mixed=new NativeRow();var header=new NativeRow();
+            var authority=new[]{mixed,hidden,visible};var capturedSources=new[]{visible};
+            var projection=ElementalSourceChooserPolicy.ProjectOriginalSources(authority,new[]{hidden,visible},header,false,
+                row=>row.Selected,row=>row.Visible);
+            Assertions.True(projection.SequenceEqual(new[]{mixed,hidden,header}),
+                "A native-hidden source stays the same original object for the native renderer to skip; it never becomes a disclosure member.");
+            Assertions.True(ElementalSourceChooserPolicy.SourcesRemainEligible(capturedSources,row=>row.Visible),
+                "The captured originally visible source admits the current native presentation generation.");
+            visible.Visible=false;
+            Assertions.False(ElementalSourceChooserPolicy.SourcesRemainEligible(capturedSources,row=>row.Visible),
+                "Foreign/native hiding of a captured source invalidates the generation; it cannot be overwritten to keep the fold alive.");
+            Assertions.True(authority.SequenceEqual(new[]{mixed,hidden,visible}) && !hidden.Visible && !visible.Visible,
+                "Eligibility refusal changes no native object, authoritative order, or native visibility flag.");
+        }
+
+        internal static void NativeDisclosureFailureRollsBackOnlyOwnedRowGeneration()
+        {
+            var first=new NativeRow();var second=new NativeRow{FailOnce=true};var spec=ElementalSourceChooserPolicy.Rank(4);
+            var lease=new ElementalRowVisibilityLease<NativeRow>(new[]{Row(first,spec.Guid),Row(second,spec.Guid)});
+            bool failed=false;try{lease.Apply(false);}catch(InvalidOperationException){failed=true;}
+            Assertions.True(failed && first.Visible && second.Visible,"Partial native row initialization restores both exact original rows and retains failure.");
+            var foreign=new NativeRow();var owned=new NativeRow();
+            lease=new ElementalRowVisibilityLease<NativeRow>(new[]{Row(foreign,spec.Guid),Row(owned,spec.Guid)});
+            lease.Apply(false);foreign.Current=false;int writes=foreign.Writes;lease.Release();
+            Assertions.True(owned.Visible,"Owned unchanged row restores.");
+            Assertions.True(!foreign.Visible && foreign.Writes==writes,"A recycled foreign row generation is never overwritten during release.");
+        }
+
+        internal static void ExplicitSourceSelectionNeverPoolsOrFallsBack()
+        {
+            var standalone = new Source { Book = "Wizard standalone" };
+            var canonical = new Source { Book = "Wizard SM" };
+            Source dispatched = null; int spends = 0;
+            var session = new ElementalSourceSelection<Source>(new[] { standalone, canonical }, () => true,
+                value => value.Available ? null : "native-source-exhausted", value => { dispatched = value; spends++; });
+            Assertions.False(session.Cast(), "A common species cannot choose a source implicitly.");
+            Assertions.True(session.Select(standalone), "Exact original source must be selectable.");
+            Assertions.Equal(0, spends, "Selecting a source cannot dispatch or spend.");
+            standalone.Available = false;
+            Assertions.False(session.Cast(), "Exhausted selection cannot borrow canonical slots.");
+            Assertions.True(dispatched == null, "No implicit fallback is allowed.");
+            Assertions.True(session.Select(canonical) && session.Cast(), "Explicitly selecting the other source should use it.");
+            Assertions.True(ReferenceEquals(dispatched, canonical), "Dispatch must retain the exact selected source.");
+            Assertions.False(session.Cast(), "Repeated submit must not dispatch twice.");
+            Assertions.Equal(1, spends, "Exactly one selected source was handed off.");
+        }
+
+        internal static void StaleForeignAndCancelledSelectionsSpendNothing()
+        {
+            bool current = true; int dispatches = 0;
+            var source = new Source { Book = "prepared book A" };
+            var otherBook = new Source { Book = "prepared book B" };
+            var session = new ElementalSourceSelection<Source>(new[] { source }, () => current,
+                value => null, value => dispatches++);
+            Assertions.False(session.Select(otherBook), "A source from another book/session is not interchangeable.");
+            session.Select(source); current = false;
+            Assertions.False(session.Cast(), "Character/tab replacement must refuse the old selection.");
+            current = true; session.Cancel();
+            Assertions.False(session.Cast(), "Cancel must invalidate the selection.");
+            Assertions.Equal(0, dispatches, "Stale, foreign and cancelled selections must never dispatch.");
+
+            NativeAggregateRowRetainsItsExactExpectedDebit();
+        }
+
+        private static void NativeAggregateRowRetainsItsExactExpectedDebit()
+        {
+            var sourceA=new Source {Book="prepared book A"};
+            var preparationA=new Preparation {Spell=sourceA};
+            var preparationB=new Preparation {Spell=new Source {Book=sourceA.Book}};
+            var otherBook=new Preparation {Spell=new Source {Book="prepared book B"}};
+            var metamagic=new Preparation {Spell=new Source {Book=sourceA.Book,Metamagic=1}};
+            var nativeOrder=new[]{preparationA,preparationB,otherBook,metamagic};
+            // The comparison is supplied by the native AbilityData.Equals
+            // boundary in production. The policy must keep both book and
+            // metamagic matches separate while following native reverse order.
+            Func<Preparation> currentDebit=()=>ElementalSourceChooserPolicy.NativeDebitPreparation(nativeOrder,
+                value=>value.Available,value=>value.Spell.Book==sourceA.Book && value.Spell.Metamagic==sourceA.Metamagic);
+            Preparation mechanismSlot=preparationA;
+            int debitA=0,debitB=0,dispatches=0;
+            Func<ElementalSourceSelection<Source>> open=()=>{
+                Preparation expected=currentDebit();Source expectedSpell=expected?.Spell;
+                return new ElementalSourceSelection<Source>(new[]{sourceA},()=>true,
+                    value=>ElementalSourceChooserPolicy.RetainedPreparationAvailable(preparationA,mechanismSlot,true) &&
+                        ElementalSourceChooserPolicy.RetainedPreparationAvailable(expected,currentDebit(),expected!=null && expected.Available) &&
+                        ReferenceEquals(expected.Spell,expectedSpell)?null:"native-preparation-debit-changed",
+                    value=>{Assertions.True(ReferenceEquals(value,sourceA),"Dispatch retains native aggregate source A.");
+                        dispatches++;expected.Available=false;if(ReferenceEquals(expected,preparationA))debitA++;else debitB++;});
+            };
+            Assertions.True(ReferenceEquals(currentDebit(),preparationB),"Two available equal preparations use native last-available B, not the displayed row A.");
+            var positive=open();positive.Select(sourceA);
+            Assertions.True(positive.Cast() && preparationA.Available && !preparationB.Available && debitB==1 && debitA==0,
+                "An explicit source A handoff retains its captured native B debit and leaves A untouched.");
+            preparationB.Available=true;var stale=open();stale.Select(sourceA);preparationB.Available=false;
+            Assertions.True(ReferenceEquals(currentDebit(),preparationA),"A remains available after captured B is exhausted.");
+            Assertions.False(stale.Cast(),"An old B-bound choice cannot fall back to available A.");
+            Assertions.True(ReferenceEquals(stale.Selected,sourceA) && dispatches==1 && debitA==0 && debitB==1,
+                "Stale expected B neither substitutes source A nor dispatches/debits another preparation.");
+            preparationB.Available=true;mechanismSlot=preparationB;
+            Assertions.False(stale.Cast(),"Rebinding the native aggregate mechanism away from retained slot A refuses even with B available.");
+            mechanismSlot=preparationA;preparationB.Available=false;stale.Cancel();
+            var reopened=open();reopened.Select(sourceA);
+            Assertions.True(reopened.Cast() && debitA==1 && debitB==1 && dispatches==2,
+                "Only a genuinely reopened choice can capture the newly current native debit A.");
+            Assertions.True(otherBook.Available && metamagic.Available,
+                "Another book and different metamagic remain outside this source's native debit match and untouched.");
+        }
+
+        internal static void AllSixRanksAndFourElementsHaveExactNativeIdentity()
+        {
+            foreach (int rank in ElementalSourceChooserPolicy.Ranks)
+            {
+                var parent = ElementalSourceChooserPolicy.Rank(rank);
+                Assertions.Equal(4, parent.CreatureKeys.Count, "Each rank must preserve all four actual native children.");
+                foreach (string key in parent.CreatureKeys)
+                {
+                    var child = StandaloneElementalPresentationPolicy.All.Single(value => value.ParentGuid == parent.Guid && value.CreatureKeys.Contains(key));
+                    Assertions.Equal(key, ElementalSourceChooserPolicy.NativeCreature(parent.Guid, child.Guid), "Child must retain exact native parent identity.");
+                    Assertions.True(ElementalSourceChooserPolicy.Title(key).StartsWith("Elemental, "), "Chooser uses family-first presentation.");
+                    Assertions.True(ElementalSourceChooserPolicy.NativeCreature("foreign-parent", child.Guid) == null, "A child cannot be reparented by presentation.");
+                }
+            }
+            Assertions.True(ElementalSourceChooserPolicy.NativeCreature("foreign", StandaloneElementalPresentationPolicy.WrigglingManAbilityGuid) == null,
+                "The infested NPC exception must never be grouped as ordinary Elder Air.");
+        }
+    }
+}

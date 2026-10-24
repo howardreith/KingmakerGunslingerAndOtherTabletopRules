@@ -21951,16 +21951,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ? Array.Empty<Renderer>()
                         : view.GetComponentsInChildren<Renderer>(true)
                             .Where(value => value != null).ToArray();
+                    // An original attack gesture deliberately widens its skin's
+                    // culling envelope; that skin is measured at its actual
+                    // current pose instead, and the envelope is reported.
+                    SummonAttackGestureVisual gesture =
+                        SummonAttackGestureVisual.For(unit);
+                    Renderer envelopeOwner = gesture == null ? null :
+                        gesture.CullingEnvelopeRenderer;
+                    float cullingEnvelope = -1f;
                     Bounds combined = new Bounds();
                     bool hasBounds = false;
                     foreach (Renderer renderer in renderers)
                     {
+                        Bounds rendererBounds = renderer.bounds;
+                        if (ReferenceEquals(renderer, envelopeOwner))
+                        {
+                            cullingEnvelope = Mathf.Max(rendererBounds.size.x,
+                                Mathf.Max(rendererBounds.size.y,
+                                    rendererBounds.size.z));
+                            rendererBounds = gesture.CurrentFramingBounds();
+                        }
                         if (!hasBounds)
                         {
-                            combined = renderer.bounds;
+                            combined = rendererBounds;
                             hasBounds = true;
                         }
-                        else combined.Encapsulate(renderer.bounds);
+                        else combined.Encapsulate(rendererBounds);
                     }
                     bool hasMaterial = renderers.Any(value =>
                         value.sharedMaterials != null &&
@@ -22077,7 +22093,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                     diagnostics.Add(variant.Creature.Key + ":view=" + attached +
                         ";renderers=" + renderers.Length + ";bounds=" +
-                        maximumBound.ToString("R") + ";scale=" +
+                        maximumBound.ToString("R") + (cullingEnvelope < 0f ? "" :
+                            ";cullingEnvelope=" + cullingEnvelope.ToString("R")) +
+                        ";scale=" +
                         scale.ToString("R") + ";corpulence=" +
                         unit.Corpulence.ToString("R") + ";colliders=" +
                         colliderCount + ";loco=" + locomotionDetail +

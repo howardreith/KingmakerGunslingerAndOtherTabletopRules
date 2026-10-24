@@ -1,19 +1,22 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.View;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Bootstrap;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
-    /// <summary>One original second head on the retained humanoid giant rig.
-    /// Geometry, colors and ownership are project-created at runtime. The
-    /// donor's first head, native animations, meshes and materials stay intact.
-    /// The second head follows the existing head bone; independent facial
-    /// animation is deliberately outside this sprint's visual standard.</summary>
+    /// <summary>One cohesive, private two-headed body on the original giant rig.
+    /// Both detailed faces, necks and the shared shoulder surface are reshaped
+    /// together. Only this exact Ettin's body renderer is replaced; native clips,
+    /// equipment, collision and shared donor resources remain untouched.</summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class EttinSecondHeadVisual
     {
@@ -22,11 +25,47 @@ namespace KingmakerGunslinger.Summoning
             "635d6dee1c7831b41aa987bdbeff14bc";
         // Append-only project unit identity; the donor prefab remains unchanged.
         internal const string EttinUnitGuid = "2481bc73abd64ef0ae581b48438b5404";
+        private static readonly FieldInfo CachedMaterialSettings = typeof(StandardMaterialController).GetField(
+            "m_MaterialSettings", BindingFlags.Instance | BindingFlags.NonPublic);
+        private sealed class FadeDefaults
+        {
+            internal bool IsDissolveEnabled, DissolveCutoutEnabled, DissolveEmissionEnabled;
+            internal Texture2D DissolveTexture;
+            internal Vector2 DissolveTextureScale, DissolveTextureOffset;
+            internal float Dissolve, DissolveWidth, DissolveColorScale;
+            internal Color DissolveColor;
+            internal int RenderQueue;
+            internal string RenderTypeTagValue;
+        }
         private sealed class Attachment
         {
             internal GameObject Root;
+            internal readonly List<GameObject> Branches = new List<GameObject>();
+            internal Mesh Mesh;
+            internal SkinnedMeshRenderer SourceRenderer;
+            internal TheropodAccessorySuppression BodySuppression;
+            internal bool SourceRendererEnabled;
+            internal Mesh SourceMesh;
+            internal readonly List<RendererReceipt> ProtectedRenderers = new List<RendererReceipt>();
+            internal UnitEntityView View;
+            internal StandardMaterialController Controller;
+            internal Material SourceMaterial;
+            internal bool ControllerAdoptionStarted;
+            internal FadeDefaults Baseline;
+            internal JObject AttachedSourceFadeDefaults;
+            internal JArray AttachedMaterialFadeDefaults;
+            internal float SourceDefaultDissolve;
+            internal string ControllerCleanup;
             internal readonly List<Material> Materials = new List<Material>();
+            internal readonly List<Texture2D> Textures = new List<Texture2D>();
             internal string Outcome;
+        }
+        private sealed class RendererReceipt
+        {
+            internal Renderer Renderer;
+            internal Mesh Mesh;
+            internal Material[] Materials;
+            internal bool Enabled;
         }
         private static readonly ConditionalWeakTable<UnitEntityView,
             Attachment> Applied = new ConditionalWeakTable<UnitEntityView,
@@ -59,8 +98,12 @@ namespace KingmakerGunslinger.Summoning
             lock (Applied)
             {
                 Attachment ignored;
-                if (Applied.TryGetValue(__instance, out ignored)) return;
-                var owned = new Attachment { Outcome = "attach-started" };
+                if (Applied.TryGetValue(__instance, out ignored))
+                {
+                    if (ignored.Outcome != "released") return;
+                    Applied.Remove(__instance);
+                }
+                var owned = new Attachment { View = __instance, Outcome = "attach-started" };
                 Applied.Add(__instance, owned);
                 try
                 {
@@ -72,43 +115,110 @@ namespace KingmakerGunslinger.Summoning
                         throw new InvalidOperationException(
                             "The audited Hill Giant rig no longer has one head bone: " +
                             heads.Length);
+                    Transform head = heads[0];
+                    Transform neck = head.parent;
+                    if (neck == null)
+                        throw new InvalidOperationException(
+                            "The audited Hill Giant head has no neck parent.");
+                    Material template = RequireHillBodyMaterial(__instance);
+                    var sourceRenderer = __instance.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .Single(value => value.name == "hill_giant_1" && value.sharedMesh != null &&
+                            value.sharedMesh.name == "hill_giant_1");
+                    owned.SourceRenderer = sourceRenderer; owned.SourceRendererEnabled = sourceRenderer.enabled;
+                    owned.SourceMesh = sourceRenderer.sharedMesh;
+                    foreach (Renderer other in __instance.GetComponentsInChildren<Renderer>(true).Where(r => r != sourceRenderer))
+                        owned.ProtectedRenderers.Add(new RendererReceipt { Renderer = other, Mesh = RendererMesh(other),
+                            Materials = other.sharedMaterials, Enabled = other.enabled });
+                    Transform[] nativeBones = sourceRenderer.bones;
+                    if (nativeBones.Length != sourceRenderer.sharedMesh.bindposes.Length ||
+                        nativeBones[2].name != "UpperTorso" || nativeBones[3] != neck || nativeBones[4] != head ||
+                        nativeBones[5].name != "Jaw" || nativeBones[6].name != "Jaw_end" ||
+                        neck.parent != nativeBones[2] || nativeBones[5].parent != head || nativeBones[6].parent != nativeBones[5])
+                        throw new NotSupportedException("Exact Hill neck/head/jaw bind palette changed.");
+                    StandardMaterialController[] controllers = __instance
+                        .GetComponentsInChildren<StandardMaterialController>(true);
+                    FadeDefaults defaults;
+                    if (controllers.Length != 1 || ControllerMaterials(controllers[0]) == null ||
+                        !ControllerMaterials(controllers[0]).Contains(template) ||
+                        !TryGetFadeDefaults(controllers[0], template, out defaults))
+                        throw new InvalidOperationException("Exact Hill source controller/cached fade defaults unavailable.");
+                    if (float.IsNaN(defaults.Dissolve) || float.IsInfinity(defaults.Dissolve))
+                        throw new InvalidOperationException("Non-finite native cached dissolve default.");
+                    owned.Controller = controllers[0]; owned.SourceMaterial = template;
+                    owned.SourceDefaultDissolve = defaults.Dissolve;
+                    owned.Baseline = defaults;
+                    owned.AttachedSourceFadeDefaults = DescribeFadeDefaults(defaults);
                     owned.Root = new GameObject(ObjectPrefix + "_Root");
-                    owned.Root.transform.SetParent(heads[0], false);
-                    owned.Root.transform.localPosition =
-                        new Vector3(.63f, .04f, .02f);
+                    owned.Root.transform.SetParent(sourceRenderer.transform.parent, false);
+                    owned.Root.transform.localPosition = Vector3.zero;
                     owned.Root.transform.localRotation = Quaternion.identity;
-                    Material skin = MakeMaterial(owned, "Skin",
-                        new Color(.55f, .43f, .39f, 1f));
-                    Material shadow = MakeMaterial(owned, "Shadow",
-                        new Color(.31f, .25f, .23f, 1f));
-                    Material hair = MakeMaterial(owned, "Hair",
-                        new Color(.19f, .17f, .16f, 1f));
-                    Material eye = MakeMaterial(owned, "Eye",
-                        new Color(.89f, .83f, .68f, 1f));
-                    Part(owned, "Skull", skin, new Vector3(0f, .12f, 0f),
-                        new Vector3(.48f, .59f, .43f));
-                    Part(owned, "Jaw", shadow,
-                        new Vector3(0f, -.18f, .15f),
-                        new Vector3(.34f, .18f, .31f));
-                    Part(owned, "Nose", skin,
-                        new Vector3(0f, .08f, .38f),
-                        new Vector3(.16f, .22f, .22f));
-                    Part(owned, "BrowLeft", hair,
-                        new Vector3(-.20f, .23f, .34f),
-                        new Vector3(.20f, .08f, .10f));
-                    Part(owned, "BrowRight", hair,
-                        new Vector3(.20f, .23f, .34f),
-                        new Vector3(.20f, .08f, .10f));
-                    Part(owned, "EyeLeft", eye,
-                        new Vector3(-.20f, .15f, .39f),
-                        new Vector3(.09f, .07f, .05f));
-                    Part(owned, "EyeRight", eye,
-                        new Vector3(.20f, .15f, .39f),
-                        new Vector3(.09f, .07f, .05f));
-                    Part(owned, "Crown", hair,
-                        new Vector3(0f, .39f, -.04f),
-                        new Vector3(.47f, .19f, .42f));
-                    owned.Outcome = "attached;heads=2;original=1;project=1;parts=8";
+                    owned.Root.transform.localScale = Vector3.one;
+                    if (!owned.Root.transform.IsChildOf(owned.Controller.transform))
+                        throw new InvalidOperationException("Owned head is outside exact source material-controller hierarchy.");
+                    owned.Mesh = EttinBodyMesh.Build(sourceRenderer.sharedMesh);
+                    var bones = nativeBones.ToList();
+                    foreach (int side in new[] { -1, 1 })
+                    {
+                        string label = side < 0 ? "Left" : "Right";
+                        Transform parent = neck.parent;
+                        var chain = new Transform[4];
+                        for (int i = 0; i < 4; i++)
+                        {
+                            chain[i] = new GameObject(ObjectPrefix + "_" + label +
+                                new[] { "Neck", "Head", "Jaw", "JawEnd" }[i]).transform;
+                            chain[i].SetParent(parent, false); parent = chain[i]; bones.Add(chain[i]);
+                            if (i == 0) owned.Branches.Add(chain[i].gameObject);
+                        }
+                        // Offset is expressed in the native parent's BIND frame,
+                        // never an animated head frame. Each skull turns in place.
+                        Vector3 offset = sourceRenderer.sharedMesh.bindposes[2].MultiplyVector(EttinBodyMesh.BranchOffset(side));
+                        var driver = owned.Root.AddComponent<EttinHeadPoseDriver>();
+                        driver.Configure(nativeBones.Skip(3).Take(4).ToArray(), chain, offset);
+                    }
+                    Material skin = MakeMaterial(owned, "Body", template, defaults);
+                    Transform body = new GameObject(ObjectPrefix + "_Body").transform;
+                    body.SetParent(owned.Root.transform, false);
+                    body.localPosition = sourceRenderer.transform.localPosition;
+                    body.localRotation = sourceRenderer.transform.localRotation;
+                    body.localScale = sourceRenderer.transform.localScale;
+                    var renderer = body.gameObject.AddComponent<SkinnedMeshRenderer>();
+                    renderer.sharedMesh = owned.Mesh;
+                    renderer.bones = bones.ToArray();
+                    renderer.rootBone = sourceRenderer.rootBone;
+                    renderer.sharedMaterials = new[] { skin };
+                    renderer.shadowCastingMode = sourceRenderer.shadowCastingMode;
+                    renderer.receiveShadows = sourceRenderer.receiveShadows;
+                    Bounds bounds = owned.Mesh.bounds;
+                    bounds.Expand(.55f);
+                    renderer.localBounds = bounds;
+                    renderer.updateWhenOffscreen = true;
+                    // Reinit restores existing cached native defaults and then
+                    // discovers the new renderer. The private material must
+                    // cache the SOURCE BASELINE, never its transient live fade.
+                    owned.ControllerAdoptionStarted = true;
+                    string reinit = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(__instance);
+                    Material[] assigned = renderer.sharedMaterials;
+                    IList<Material> driven = ControllerMaterials(owned.Controller);
+                    if (reinit != "reinitialized" || assigned.Length != 1 ||
+                        driven == null || assigned.Any(material => !AdoptedWithBaseline(owned, material, driven)))
+                        throw new InvalidOperationException("Owned head was not adopted with exact native baseline fade defaults.");
+                    // Scalar receipt only: preserve the cache accepted here so
+                    // later native recensus/instancing is distinguishable from
+                    // an initialization mismatch. No material state is changed.
+                    owned.AttachedMaterialFadeDefaults = new JArray(assigned.Select(material => {
+                        FadeDefaults cached;
+                        TryGetFadeDefaults(owned.Controller, material, out cached);
+                        return new JObject { ["material"] = material.GetInstanceID(),
+                            ["name"] = material.name, ["cached"] = DescribeFadeDefaults(cached) };
+                    }));
+                    // Native visibility updates re-enable every renderer after
+                    // attachment. Reuse the existing exact-renderer suppression
+                    // owner; the shared mesh and all other renderers stay native.
+                    owned.BodySuppression = owned.Root.AddComponent<TheropodAccessorySuppression>();
+                    owned.BodySuppression.Configure(sourceRenderer);
+                    owned.Outcome = "attached;heads=2;original=0;project=2;body-replacement=1;" +
+                        "authored=1;continuous-shoulders=1;orbit=0;" +
+                        "shader=PF/StandardDynamic;borrowed-native-atlas=1;owned-textures=0;controller-adopted=1;fade-default=source-cache";
                 }
                 catch (Exception error)
                 {
@@ -120,50 +230,209 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
-        private static Material MakeMaterial(Attachment owned, string name,
-            Color color)
+        private static Material RequireHillBodyMaterial(UnitEntityView view)
         {
-            Shader shader = Shader.Find("Standard") ??
-                Shader.Find("Legacy Shaders/Diffuse");
-            if (shader == null)
+            SkinnedMeshRenderer[] bodies = view.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Where(value => value != null && value.name == "hill_giant_1" &&
+                    value.sharedMesh != null && value.sharedMesh.name == "hill_giant_1").ToArray();
+            Material[] materials = bodies.Length == 1 ? bodies[0].sharedMaterials : null;
+            Material source = materials != null && materials.Length == 1 ? materials[0] : null;
+            if (source == null || !ExactInstanceName(source.name, "hill_giant_01_character_d") ||
+                source.shader == null || source.shader.name != "PF/StandardDynamic" ||
+                !source.HasProperty("_MainTex") || !source.HasProperty("_Parameters") ||
+                !source.HasProperty("_BumpMap") || !source.HasProperty("_TintColor") ||
+                source.GetTexture("_MainTex") == null || source.GetTexture("_MainTex").name != "hill_giant_01_d" ||
+                source.GetTexture("_Parameters") == null || source.GetTexture("_Parameters").name != "hill_giant_01_m" ||
+                source.GetTexture("_BumpMap") != null)
                 throw new InvalidOperationException(
-                    "No visible shader for original Ettin head.");
-            var material = new Material(shader) {
-                name = ObjectPrefix + "_" + name,
-                color = color
-            };
+                    "Exact audited Hill body PF material/texture/flat-normal contract unavailable.");
+            return source;
+        }
+
+        private static Mesh RendererMesh(Renderer renderer)
+        {
+            var skin = renderer as SkinnedMeshRenderer;
+            if (skin != null) return skin.sharedMesh;
+            var filter = renderer == null ? null : renderer.GetComponent<MeshFilter>();
+            return filter == null ? null : filter.sharedMesh;
+        }
+
+        private static Material MakeMaterial(Attachment owned, string name,
+            Material template, FadeDefaults defaults)
+        {
+            // UVs and detailed painted surfaces come from the same installed
+            // mesh. Borrow textures unchanged; only the material instance is ours.
+            var material = new Material(template) { name = ObjectPrefix + "_" + name };
             owned.Materials.Add(material);
+            // Exact native DissolveAnimationController.RevertToDefaults
+            // contract. Borrow native FX references only; never own/destroy
+            // them or guess neutral fade values from the current frame.
+            if (defaults.IsDissolveEnabled) material.EnableKeyword("DISSOLVE_ON");
+            else material.DisableKeyword("DISSOLVE_ON");
+            material.SetTexture("_DissolveTex", defaults.DissolveTexture);
+            material.SetTextureScale("_DissolveTex", defaults.DissolveTextureScale);
+            material.SetTextureOffset("_DissolveTex", defaults.DissolveTextureOffset);
+            material.SetFloat("_Dissolve", defaults.Dissolve);
+            material.SetFloat("_DissolveWidth", defaults.DissolveWidth);
+            material.SetColor("_DissolveColor", defaults.DissolveColor);
+            material.SetFloat("_DissolveColorScale", defaults.DissolveColorScale);
+            material.SetFloat("_DissolveCutout", defaults.DissolveCutoutEnabled ? 1f : 0f);
+            material.SetFloat("_DissolveEmission", defaults.DissolveEmissionEnabled ? 1f : 0f);
+            material.SetOverrideTag("RenderType", defaults.RenderTypeTagValue);
+            material.renderQueue = defaults.RenderQueue;
             return material;
         }
 
-        private static void Part(Attachment owned, string name,
-            Material material, Vector3 position, Vector3 scale)
+        private static IList<Material> ControllerMaterials(StandardMaterialController controller)
+        { return ExpandedSummoningPteranodonViewPatch.ControllerMaterials(controller); }
+
+        private static T CachedField<T>(object settings, string name)
         {
-            GameObject part = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            part.name = ObjectPrefix + "_" + name;
-            part.transform.SetParent(owned.Root.transform, false);
-            part.transform.localPosition = position;
-            part.transform.localScale = scale;
-            var collider = part.GetComponent<Collider>();
-            if (collider != null) UnityEngine.Object.DestroyImmediate(collider);
-            part.GetComponent<MeshRenderer>().sharedMaterial = material;
+            FieldInfo field = settings.GetType().GetField(name, BindingFlags.Instance | BindingFlags.Public);
+            if (field == null || field.FieldType != typeof(T))
+                throw new NotSupportedException("Native cached fade field contract changed: " + name);
+            return (T)field.GetValue(settings);
+        }
+
+        private static bool TryGetFadeDefaults(StandardMaterialController controller,
+            Material material, out FadeDefaults defaults)
+        {
+            defaults = null;
+            var dictionary = controller == null || CachedMaterialSettings == null ? null :
+                CachedMaterialSettings.GetValue(controller) as IDictionary;
+            if (material == null || dictionary == null || !dictionary.Contains(material)) return false;
+            object settings = dictionary[material];
+            if (settings == null || settings.GetType().FullName !=
+                "Kingmaker.Visual.MaterialEffects.StandardMaterialController+MaterialSettings")
+                throw new NotSupportedException("Exact native cached material settings unavailable.");
+            defaults = new FadeDefaults {
+                IsDissolveEnabled = CachedField<bool>(settings, "IsDissolveEnabled"),
+                DissolveTexture = CachedField<Texture2D>(settings, "DissolveTexture"),
+                DissolveTextureScale = CachedField<Vector2>(settings, "DissolveTextureScale"),
+                DissolveTextureOffset = CachedField<Vector2>(settings, "DissolveTextureOffset"),
+                Dissolve = CachedField<float>(settings, "Dissolve"),
+                DissolveWidth = CachedField<float>(settings, "DissolveWidth"),
+                DissolveColor = CachedField<Color>(settings, "DissolveColor"),
+                DissolveColorScale = CachedField<float>(settings, "DissolveColorScale"),
+                DissolveCutoutEnabled = CachedField<bool>(settings, "DissolveCutoutEnabled"),
+                DissolveEmissionEnabled = CachedField<bool>(settings, "DissolveEmissionEnabled"),
+                RenderQueue = CachedField<int>(settings, "RenderQueue"),
+                RenderTypeTagValue = CachedField<string>(settings, "RenderTypeTagValue") };
+            return true;
+        }
+
+        private static bool AdoptedWithBaseline(Attachment owned, Material material, IList<Material> driven)
+        {
+            FadeDefaults defaults;
+            return material != null && driven.Contains(material) &&
+                TryGetFadeDefaults(owned.Controller, material, out defaults) &&
+                SameFadeBaseline(defaults, owned.Baseline);
+        }
+
+        private static bool SameFadeBaseline(FadeDefaults first, FadeDefaults second)
+        {
+            return first != null && second != null && first.IsDissolveEnabled == second.IsDissolveEnabled &&
+                ReferenceEquals(first.DissolveTexture, second.DissolveTexture) &&
+                first.DissolveTextureScale.x == second.DissolveTextureScale.x &&
+                first.DissolveTextureScale.y == second.DissolveTextureScale.y &&
+                first.DissolveTextureOffset.x == second.DissolveTextureOffset.x &&
+                first.DissolveTextureOffset.y == second.DissolveTextureOffset.y &&
+                first.Dissolve == second.Dissolve && first.DissolveWidth == second.DissolveWidth &&
+                first.DissolveColor.r == second.DissolveColor.r && first.DissolveColor.g == second.DissolveColor.g &&
+                first.DissolveColor.b == second.DissolveColor.b && first.DissolveColor.a == second.DissolveColor.a &&
+                first.DissolveColorScale == second.DissolveColorScale &&
+                first.DissolveCutoutEnabled == second.DissolveCutoutEnabled &&
+                first.DissolveEmissionEnabled == second.DissolveEmissionEnabled &&
+                first.RenderQueue == second.RenderQueue && first.RenderTypeTagValue == second.RenderTypeTagValue;
+        }
+
+        private static JObject DescribeFadeDefaults(FadeDefaults value)
+        {
+            if (value == null) return null;
+            Texture2D texture = value.DissolveTexture;
+            return new JObject {
+                ["IsDissolveEnabled"] = value.IsDissolveEnabled,
+                ["DissolveTexture"] = new JObject {
+                    ["managedNull"] = ReferenceEquals(texture, null),
+                    ["nativeAlive"] = texture != null,
+                    ["nativeInstanceId"] = ReferenceEquals(texture, null) ? 0 : texture.GetInstanceID(),
+                    ["managedIdentity"] = ReferenceEquals(texture, null) ? 0 : RuntimeHelpers.GetHashCode(texture),
+                    ["name"] = texture == null ? null : texture.name },
+                ["DissolveTextureScale"] = new JArray(value.DissolveTextureScale.x, value.DissolveTextureScale.y),
+                ["DissolveTextureOffset"] = new JArray(value.DissolveTextureOffset.x, value.DissolveTextureOffset.y),
+                ["Dissolve"] = value.Dissolve, ["DissolveWidth"] = value.DissolveWidth,
+                ["DissolveColor"] = new JArray(value.DissolveColor.r, value.DissolveColor.g,
+                    value.DissolveColor.b, value.DissolveColor.a),
+                ["DissolveColorScale"] = value.DissolveColorScale,
+                ["DissolveCutoutEnabled"] = value.DissolveCutoutEnabled,
+                ["DissolveEmissionEnabled"] = value.DissolveEmissionEnabled,
+                ["RenderQueue"] = value.RenderQueue, ["RenderTypeTagValue"] = value.RenderTypeTagValue };
+        }
+
+        // These comparisons intentionally mirror SameFadeBaseline, including
+        // managed texture identity and exact scalar comparisons; diagnostics
+        // do not replace or relax the existing admission/assertion predicate.
+        private static JArray FadeBaselineMismatches(FadeDefaults current, FadeDefaults attached)
+        {
+            var result = new JArray();
+            if (current == null || attached == null) { result.Add("cacheUnavailable"); return result; }
+            if (current.IsDissolveEnabled != attached.IsDissolveEnabled) result.Add("IsDissolveEnabled");
+            if (!ReferenceEquals(current.DissolveTexture, attached.DissolveTexture)) result.Add("DissolveTexture.managedReference");
+            if (current.DissolveTextureScale.x != attached.DissolveTextureScale.x) result.Add("DissolveTextureScale.x");
+            if (current.DissolveTextureScale.y != attached.DissolveTextureScale.y) result.Add("DissolveTextureScale.y");
+            if (current.DissolveTextureOffset.x != attached.DissolveTextureOffset.x) result.Add("DissolveTextureOffset.x");
+            if (current.DissolveTextureOffset.y != attached.DissolveTextureOffset.y) result.Add("DissolveTextureOffset.y");
+            if (current.Dissolve != attached.Dissolve) result.Add("Dissolve");
+            if (current.DissolveWidth != attached.DissolveWidth) result.Add("DissolveWidth");
+            if (current.DissolveColor.r != attached.DissolveColor.r) result.Add("DissolveColor.r");
+            if (current.DissolveColor.g != attached.DissolveColor.g) result.Add("DissolveColor.g");
+            if (current.DissolveColor.b != attached.DissolveColor.b) result.Add("DissolveColor.b");
+            if (current.DissolveColor.a != attached.DissolveColor.a) result.Add("DissolveColor.a");
+            if (current.DissolveColorScale != attached.DissolveColorScale) result.Add("DissolveColorScale");
+            if (current.DissolveCutoutEnabled != attached.DissolveCutoutEnabled) result.Add("DissolveCutoutEnabled");
+            if (current.DissolveEmissionEnabled != attached.DissolveEmissionEnabled) result.Add("DissolveEmissionEnabled");
+            if (current.RenderQueue != attached.RenderQueue) result.Add("RenderQueue");
+            if (current.RenderTypeTagValue != attached.RenderTypeTagValue) result.Add("RenderTypeTagValue");
+            return result;
+        }
+
+        private static bool ExactInstanceName(string actual, string expected)
+        {
+            return actual != null && actual.StartsWith(expected, StringComparison.Ordinal) &&
+                actual.Substring(expected.Length).Replace(" (Instance)", "") == "";
         }
 
         private static void Release(Attachment owned)
         {
             if (owned == null) return;
-            // Native renderer setup can instantiate one material per primitive
-            // after our four shared originals have been assigned. Every
-            // renderer below this exact project-created root belongs to this
-            // head, so capture those instances before destroying the root.
+            // Native setup can instantiate the private body material. Collect
+            // only its exact name + unchanged borrowed atlas provenance.
             var materials = OwnedMaterials(owned);
+            if (owned.BodySuppression != null) owned.BodySuppression.Release();
             if (owned.Root != null)
                 UnityEngine.Object.DestroyImmediate(owned.Root);
             owned.Root = null;
+            foreach (GameObject branch in owned.Branches)
+                if (branch != null) UnityEngine.Object.DestroyImmediate(branch);
+            owned.Branches.Clear();
+            if (owned.SourceRenderer != null) owned.SourceRenderer.enabled = owned.SourceRendererEnabled;
+            if (owned.ControllerAdoptionStarted && owned.View != null && owned.Controller != null)
+            {
+                try { owned.ControllerCleanup = ExpandedSummoningPteranodonViewPatch.ReinitializeMaterialController(owned.View); }
+                catch (Exception error) { owned.ControllerCleanup = "failed:" + error.GetType().Name + ":" + error.Message; }
+                // Always release our private resources even if native controller
+                // refresh fails. The explicit receipt retains that failure.
+            }
+            if (owned.Mesh != null)
+                UnityEngine.Object.DestroyImmediate(owned.Mesh);
+            owned.Mesh = null;
             foreach (Material material in materials)
                 if (material != null)
                     UnityEngine.Object.DestroyImmediate(material);
             owned.Materials.Clear();
+            foreach (Texture2D texture in owned.Textures)
+                if (texture != null) UnityEngine.Object.DestroyImmediate(texture);
+            owned.Textures.Clear();
         }
 
         private static Material[] OwnedMaterials(Attachment owned)
@@ -171,7 +440,14 @@ namespace KingmakerGunslinger.Summoning
             if (owned == null) return new Material[0];
             var assigned = owned.Root == null ? Enumerable.Empty<Material>() :
                 owned.Root.GetComponentsInChildren<Renderer>(true)
-                    .SelectMany(renderer => renderer.sharedMaterials);
+                    .SelectMany(renderer => renderer.sharedMaterials)
+                    .Where(material => material != null &&
+                        ExactInstanceName(material.name, ObjectPrefix + "_Body") &&
+                        material.shader != null && material.shader.name == "PF/StandardDynamic" &&
+                        material.HasProperty("_MainTex") && material.HasProperty("_Parameters") &&
+                        owned.SourceMaterial != null &&
+                        ReferenceEquals(material.GetTexture("_MainTex"), owned.SourceMaterial.GetTexture("_MainTex")) &&
+                        ReferenceEquals(material.GetTexture("_Parameters"), owned.SourceMaterial.GetTexture("_Parameters")));
             return owned.Materials.Concat(assigned).Where(material =>
                     material != null)
                 .GroupBy(material => material.GetInstanceID())
@@ -187,7 +463,99 @@ namespace KingmakerGunslinger.Summoning
             return (owned.Root == null ? Enumerable.Empty<UnityEngine.Object>() :
                     new UnityEngine.Object[] { owned.Root })
                 .Concat(OwnedMaterials(owned).Cast<UnityEngine.Object>())
+                .Concat(owned.Branches.Where(value => value != null).Cast<UnityEngine.Object>())
+                .Concat(owned.Textures.Where(value => value != null).Cast<UnityEngine.Object>())
+                .Concat(owned.Mesh == null ? Enumerable.Empty<UnityEngine.Object>() :
+                    new UnityEngine.Object[] { owned.Mesh })
                 .ToArray();
+        }
+
+        internal static JObject ObserveMaterialControl(UnitEntityView view)
+        {
+            Attachment owned;
+            // A retained managed view key can still expose its final cleanup
+            // receipt after Unity has destroyed the native view object.
+            if (ReferenceEquals(view, null) || !Applied.TryGetValue(view, out owned))
+                return new JObject { ["attachmentPresent"] = false };
+            Material[] assigned = owned.Root == null ? new Material[0] : owned.Root
+                .GetComponentsInChildren<Renderer>(true).SelectMany(renderer => renderer.sharedMaterials).ToArray();
+            FadeDefaults sourceCached = null;
+            Material currentSource = null;
+            string sourceObservationError = null;
+            if (view != null && owned.Root != null)
+            {
+                try { currentSource = RequireHillBodyMaterial(view); }
+                catch (Exception error) { sourceObservationError = error.GetType().Name + ":" + error.Message; }
+            }
+            bool sourceHasCache = currentSource != null && owned.Controller != null &&
+                TryGetFadeDefaults(owned.Controller, currentSource, out sourceCached);
+            JArray sourceChanges = FadeBaselineMismatches(sourceCached, owned.Baseline);
+            bool sameSource = ReferenceEquals(currentSource, owned.SourceMaterial);
+            bool persistentSourceDefaultsUnchanged = sourceHasCache && sourceChanges.All(value =>
+                (string)value == "RenderQueue" || (string)value == "RenderTypeTagValue");
+            // Installed DissolveAnimationController.Update (060011A3) uses
+            // RenderType=TransparentCutout/renderQueue=2450 for native cutout
+            // fade. Native12 observed this same paired transition in the
+            // SAME source material's cache and owned material caches.
+            // Initial adoption remains exact; later observation permits only
+            // this pair, with every persistent fade default still unchanged.
+            bool demonstratedNativeQueueTagTransition = sameSource && persistentSourceDefaultsUnchanged &&
+                owned.Baseline.IsDissolveEnabled && owned.Baseline.DissolveCutoutEnabled &&
+                owned.Baseline.RenderQueue == 2000 && owned.Baseline.RenderTypeTagValue == "Opaque" &&
+                sourceCached.RenderQueue == 2450 && sourceCached.RenderTypeTagValue == "TransparentCutout";
+            bool currentSourceBaselineAllowed = sameSource && sourceHasCache &&
+                (SameFadeBaseline(sourceCached, owned.Baseline) || demonstratedNativeQueueTagTransition);
+            return new JObject { ["attachmentPresent"] = true, ["outcome"] = owned.Outcome,
+                ["controller"] = owned.Controller == null ? 0 : owned.Controller.GetInstanceID(),
+                ["sourceMaterial"] = owned.SourceMaterial == null ? 0 : owned.SourceMaterial.GetInstanceID(),
+                ["sourceCachedDissolveBaseline"] = owned.SourceDefaultDissolve,
+                ["attachSourceCachedFadeDefaults"] = owned.AttachedSourceFadeDefaults?.DeepClone(),
+                ["attachMaterialCachedFadeDefaults"] = owned.AttachedMaterialFadeDefaults?.DeepClone(),
+                ["currentSourceMaterial"] = currentSource == null ? 0 : currentSource.GetInstanceID(),
+                ["currentSourceMatchesAttachedMaterial"] = sameSource,
+                ["currentSourceObservationError"] = sourceObservationError,
+                ["currentSourceNativeDefaultCached"] = sourceHasCache,
+                ["currentSourceCachedFadeDefaults"] = DescribeFadeDefaults(sourceCached),
+                ["currentSourceMismatchesFromAttach"] = sourceChanges,
+                ["persistentSourceDefaultsUnchangedFromAttach"] = persistentSourceDefaultsUnchanged,
+                ["demonstratedNativeQueueTagTransition"] = demonstratedNativeQueueTagTransition,
+                ["currentSourceBaselineAllowed"] = currentSourceBaselineAllowed,
+                ["controllerCleanup"] = owned.ControllerCleanup,
+                ["nativeBodySuppressed"] = owned.SourceRenderer != null && !owned.SourceRenderer.enabled,
+                ["sourceMeshReferencePreserved"] = owned.SourceRenderer != null &&
+                    ReferenceEquals(owned.SourceRenderer.sharedMesh, owned.SourceMesh),
+                ["protectedRenderers"] = new JArray(owned.ProtectedRenderers.Select(receipt => new JObject {
+                    ["renderer"] = ReferenceEquals(receipt.Renderer, null) ? 0 : receipt.Renderer.GetInstanceID(),
+                    ["name"] = receipt.Renderer == null ? null : receipt.Renderer.name,
+                    ["alive"] = receipt.Renderer != null,
+                    ["enabledMatchesAttach"] = receipt.Renderer != null && receipt.Renderer.enabled == receipt.Enabled,
+                    ["meshReferencePreserved"] = receipt.Renderer != null && ReferenceEquals(RendererMesh(receipt.Renderer), receipt.Mesh),
+                    ["materialReferencesPreserved"] = receipt.Renderer != null && receipt.Renderer.sharedMaterials.Length == receipt.Materials.Length &&
+                        receipt.Renderer.sharedMaterials.Where((material, i) => !ReferenceEquals(material, receipt.Materials[i])).Count() == 0 })),
+                ["headMaterials"] = new JArray(assigned.Select(material => {
+                    FadeDefaults cached = null;
+                    IList<Material> driven = ControllerMaterials(owned.Controller);
+                    bool member = material != null && driven != null && driven.Contains(material);
+                    bool hasCache = material != null && owned.Controller != null &&
+                        TryGetFadeDefaults(owned.Controller, material, out cached);
+                    return new JObject { ["material"] = material == null ? 0 : material.GetInstanceID(),
+                        ["name"] = material?.name, ["controllerMember"] = member,
+                        ["nativeDefaultCached"] = hasCache,
+                        ["fullCachedFadeBaselineMatchesSource"] = hasCache && currentSourceBaselineAllowed &&
+                            SameFadeBaseline(cached, sourceCached),
+                        ["fullCachedFadeBaselineMatchesAttach"] = hasCache && SameFadeBaseline(cached, owned.Baseline),
+                        ["cachedFadeDefaults"] = DescribeFadeDefaults(cached),
+                        ["cachedFadeMismatchesFromAttach"] = FadeBaselineMismatches(cached, owned.Baseline),
+                        ["cachedFadeMismatchesFromCurrentSource"] = FadeBaselineMismatches(cached, sourceCached),
+                        ["fadeTextureReferenceMatchesAttach"] = hasCache && owned.Baseline != null &&
+                            ReferenceEquals(cached.DissolveTexture, owned.Baseline.DissolveTexture),
+                        ["fadeTextureNativeEqualsAttach"] = hasCache && owned.Baseline != null &&
+                            cached.DissolveTexture == owned.Baseline.DissolveTexture,
+                        ["liveDissolve"] = material != null && material.HasProperty("_Dissolve") ?
+                            (JToken)new JValue(material.GetFloat("_Dissolve")) : JValue.CreateNull(),
+                        ["cachedDissolve"] = hasCache ? (JToken)new JValue(cached.Dissolve) : JValue.CreateNull() };
+                })), ["assignedCount"] = assigned.Length,
+                ["observationOnly"] = true, ["fadeAmountForced"] = false };
         }
 
         internal static void ReleaseView(UnitEntityView view)
@@ -196,6 +564,38 @@ namespace KingmakerGunslinger.Summoning
             if (view == null || !Applied.TryGetValue(view, out owned)) return;
             Release(owned);
             owned.Outcome = "released";
+        }
+    }
+
+    /// <summary>Private neck/head/jaw chain follows the original local poses.
+    /// Fixed neck origin prevents either skull orbiting the original head.</summary>
+    internal sealed class EttinHeadPoseDriver : MonoBehaviour
+    {
+        private Transform[] _source;
+        private Transform[] _chain;
+        private Vector3 _offset;
+
+        internal void Configure(Transform[] source, Transform[] chain,
+            Vector3 offset)
+        {
+            _source = source;
+            _chain = chain;
+            _offset = offset;
+            Follow();
+        }
+
+        private void LateUpdate() { Follow(); }
+
+        private void Follow()
+        {
+            if (_source == null || _chain == null) return;
+            for (int i = 0; i < 4; i++)
+            {
+                if (_source[i] == null || _chain[i] == null) return;
+                _chain[i].localPosition = _source[i].localPosition + (i == 0 ? _offset : Vector3.zero);
+                _chain[i].localRotation = _source[i].localRotation;
+                _chain[i].localScale = _source[i].localScale;
+            }
         }
     }
 

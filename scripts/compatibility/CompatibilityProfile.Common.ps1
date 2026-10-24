@@ -31,9 +31,77 @@ function Get-KmgCompatibilityDirectoryManifest([string]$Path) {
     return @([ordered]@{ path = '.'; kind = 'directory' }) + $directories + $files
 }
 
+function ConvertTo-KmgCompatibilityUtcTicks {
+    param([Parameter(Mandatory=$true)]$Value)
+    if($Value -is [DateTime]) {
+        if($Value.Kind -ne [DateTimeKind]::Utc) { throw 'Manifest DateTime must identify UTC explicitly.' }
+        return $Value.Ticks
+    }
+    if($Value -is [DateTimeOffset]) {
+        if($Value.Offset -ne [TimeSpan]::Zero) { throw 'Manifest DateTimeOffset must identify UTC explicitly.' }
+        return $Value.UtcDateTime.Ticks
+    }
+    if($Value -isnot [string] -or $Value -cnotmatch '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?(?:Z|\+00:00)$') {
+        throw 'Manifest timestamp must be explicit UTC ISO text with at most seven fractional digits.'
+    }
+    $parsed=[DateTimeOffset]::MinValue
+    $formats=[string[]]@("yyyy-MM-dd'T'HH:mm:ss.FFFFFFF'Z'","yyyy-MM-dd'T'HH:mm:ss'Z'",
+        "yyyy-MM-dd'T'HH:mm:ss.FFFFFFFzzz","yyyy-MM-dd'T'HH:mm:sszzz")
+    $styles=[Globalization.DateTimeStyles]::AssumeUniversal -bor [Globalization.DateTimeStyles]::AdjustToUniversal
+    if(-not [DateTimeOffset]::TryParseExact($Value,$formats,[Globalization.CultureInfo]::InvariantCulture,$styles,[ref]$parsed)) {
+        throw 'Manifest timestamp is not a valid exact UTC instant.'
+    }
+    return $parsed.UtcDateTime.Ticks
+}
+
+function ConvertTo-KmgCompatibilityCanonicalManifest {
+    param([AllowNull()]$Manifest)
+    if($null -eq $Manifest) { throw 'A manifest cannot be null.' }
+    $result=New-Object 'Collections.Generic.Dictionary[string,object]' ([StringComparer]::Ordinal)
+    foreach($row in @($Manifest)) {
+        if($null -eq $row) { throw 'A manifest row cannot be null.' }
+        $names=if($row -is [Collections.IDictionary]) {@($row.Keys)}else{@($row.PSObject.Properties.Name)}
+        if($row.path -isnot [string] -or [string]::IsNullOrWhiteSpace($row.path) -or
+            $row.kind -isnot [string] -or $row.kind -cnotin @('file','directory')) { throw 'Manifest row identity is malformed.' }
+        $allowed=if($row.kind -ceq 'file') {@('path','kind','length','lastWriteTimeUtc','sha256')}else{@('path','kind')}
+        if($names.Count -ne $allowed.Count -or @($names | Where-Object {$_ -cnotin $allowed}).Count -ne 0) {
+            throw 'Manifest row has missing, differently cased or unknown fields.'
+        }
+        if([IO.Path]::IsPathRooted($row.path) -or
+            ($row.path -cne '.' -and @($row.path -split '[\\/]' | Where-Object {$_ -cin @('','.','..')}).Count -ne 0) -or
+            ($row.path -ceq '.' -and $row.kind -cne 'directory') -or $result.ContainsKey($row.path)) {
+            throw 'Manifest has an invalid or duplicate exact relative path.'
+        }
+        $entry=[ordered]@{path=$row.path;kind=$row.kind}
+        if($row.kind -ceq 'file') {
+            if($null -eq $row.length -or $row.length.GetType().FullName -notin @('System.Byte','System.Int16','System.Int32','System.Int64','System.UInt16','System.UInt32','System.UInt64') -or
+                $row.length -lt 0 -or $row.length -gt [long]::MaxValue -or
+                $row.sha256 -isnot [string] -or $row.sha256 -cnotmatch '^[0-9a-f]{64}$') { throw 'Manifest file length or SHA-256 is malformed.' }
+            $entry.length=[long]$row.length
+            $entry.utcTicks=ConvertTo-KmgCompatibilityUtcTicks $row.lastWriteTimeUtc
+            $entry.sha256=$row.sha256
+        }
+        $result.Add($row.path,$entry)
+    }
+    if($result.Count -gt 0 -and (-not $result.ContainsKey('.') -or $result['.'].kind -cne 'directory')) { throw 'A nonempty directory manifest needs its exact root record.' }
+    return ,$result
+}
+
 function Test-KmgCompatibilityManifestEqual($Expected, $Actual) {
-    return (($Expected | ConvertTo-Json -Depth 6 -Compress) -ceq
-        ($Actual | ConvertTo-Json -Depth 6 -Compress))
+    # JSON parsers differ in DateTime handling and file collation. Identity is
+    # an ordinal path-keyed set; timestamp identity is the exact UTC tick count.
+    try {
+        $left=ConvertTo-KmgCompatibilityCanonicalManifest $Expected
+        $right=ConvertTo-KmgCompatibilityCanonicalManifest $Actual
+        if($left.Count -ne $right.Count) {return $false}
+        foreach($path in $left.Keys) {
+            if(-not $right.ContainsKey($path)) {return $false}
+            $a=$left[$path];$b=$right[$path]
+            if($a.kind -cne $b.kind) {return $false}
+            if($a.kind -ceq 'file' -and ($a.length -ne $b.length -or $a.utcTicks -ne $b.utcTicks -or $a.sha256 -cne $b.sha256)) {return $false}
+        }
+        return $true
+    } catch {return $false}
 }
 
 function Assert-KmgCompatibilityChildPath([string]$Path, [string]$Root) {
@@ -333,9 +401,33 @@ function Enter-KmgCompatibilityTransaction {
     }
 }
 
+function Assert-KmgCompatibilityResumeQuarantine {
+    param($State,[string]$StateRoot)
+    $quarantine=[string]$State.stagedQuarantinePath
+    if(-not(Test-Path -LiteralPath $quarantine -PathType Container)) {throw 'Post-move restoration resume requires its owned staged quarantine.'}
+    $entries=@(Get-Item -LiteralPath $quarantine -Force)+@(Get-ChildItem -LiteralPath $quarantine -Force -Recurse)
+    if(@($entries | Where-Object {($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0}).Count) {throw 'Resume quarantine contains a reparse point.'}
+    $sentinel=Read-KmgCompatibilityJson (Join-Path $quarantine '.kmg-compat-sentinel.json')
+    $sentinelFields=@($sentinel.PSObject.Properties.Name)
+    if($sentinelFields.Count -ne 4 -or @($sentinelFields | Where-Object {$_ -cnotin @('schemaVersion','runId','stateFile','stateSha256')}).Count -or
+        $sentinel.schemaVersion -ne 1 -or $sentinel.runId -cne $State.runId -or
+        $sentinel.stateFile -isnot [string] -or $sentinel.stateSha256 -isnot [string] -or $sentinel.stateSha256 -cnotmatch '^[0-9a-f]{64}$') {throw 'Resume quarantine sentinel has foreign or malformed ownership.'}
+    $ownershipPath=Join-Path (Join-Path ([IO.Path]::GetFullPath($StateRoot)) $State.runId) 'ownership-state.json'
+    if(-not [IO.Path]::GetFullPath($sentinel.stateFile).Equals([IO.Path]::GetFullPath($ownershipPath),[StringComparison]::OrdinalIgnoreCase) -or
+        -not(Test-Path -LiteralPath $ownershipPath -PathType Leaf) -or
+        (Get-KmgCompatibilitySha256 $ownershipPath) -cne $sentinel.stateSha256) {throw 'Resume quarantine does not bind the exact immutable ownership-state bytes.'}
+    $ownership=Read-KmgCompatibilityJson $ownershipPath
+    $fields=@('schemaVersion','runId','profileId','installRoot','modsPath','originalBackupPath','stagedQuarantinePath')
+    if(@($ownership.PSObject.Properties).Count -ne $fields.Count -or @($ownership.PSObject.Properties.Name | Where-Object {$_ -cnotin $fields}).Count) {throw 'Resume immutable ownership state has missing or unknown fields.'}
+    foreach($field in $fields) {
+        if($field -ceq 'schemaVersion') {if($ownership.$field -ne 1) {throw 'Resume ownership schema mismatch.'}}
+        elseif($ownership.$field -isnot [string] -or $ownership.$field -cne $State.$field) {throw "Resume immutable ownership mismatch: $field"}
+    }
+}
+
 function Restore-KmgCompatibilityTransaction {
     param(
-        [Parameter(Mandatory = $true)][string]$RunId,
+        [Parameter(Mandatory = $true)][ValidatePattern('^[A-Za-z0-9._-]{1,100}$')][string]$RunId,
         [Parameter(Mandatory = $true)][string]$StateRoot,
         [switch]$FixtureMode,
         [int[]]$KnownKingmakerProcessIds
@@ -351,15 +443,31 @@ function Restore-KmgCompatibilityTransaction {
         $parent = Split-Path -Parent $path
         if (-not $parent.Equals($install, [StringComparison]::OrdinalIgnoreCase)) { throw "Transaction path escaped install root: $path" }
     }
+    $expectedPaths=@{modsPath=(Join-Path $install 'Mods');originalBackupPath=(Join-Path $install "Mods.kmg-compat-$RunId.original");
+        stagedQuarantinePath=(Join-Path $install "Mods.kmg-compat-$RunId.staged");lockPath=(Join-Path ([IO.Path]::GetFullPath($StateRoot)) 'compatibility.lock')}
+    foreach($field in $expectedPaths.Keys) {
+        if(-not [IO.Path]::GetFullPath([string]$state.$field).Equals([IO.Path]::GetFullPath($expectedPaths[$field]),[StringComparison]::OrdinalIgnoreCase)) {throw "Restoration ownership path mismatch: $field"}
+    }
     if ((Get-Content -LiteralPath $state.lockPath -Raw).Trim() -cne $RunId) { throw 'Compatibility restoration does not own the shared lock.' }
     # Refuse before the first mutation while a runtime child holds this lease.
     $restoreLease = [IO.File]::Open($state.lockPath, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
     try {
     if ($PSBoundParameters.ContainsKey('KnownKingmakerProcessIds')) { Assert-KmgCompatibilityNoKingmakerProcess -KnownProcessIds $KnownKingmakerProcessIds }
     else { Assert-KmgCompatibilityNoKingmakerProcess }
+    $priorStatus=$state.status
     $state.status = 'Restoring'; Write-KmgCompatibilityJsonAtomic $statePath $state
     try {
-        if (Test-Path -LiteralPath $mods -PathType Container) {
+        $resumePostMove=$false
+        if(Test-Path -LiteralPath $backup -PathType Leaf) {throw 'Original Mods backup path is a file instead of the owned directory.'}
+        if($state.originalExisted -and -not(Test-Path -LiteralPath $backup)) {
+            if($priorStatus -cne 'RestorationFailed' -or -not(Test-Path -LiteralPath $mods -PathType Container)) {throw 'Original Mods backup is missing outside the exact post-move failure state.'}
+            $currentEntries=@(Get-Item -LiteralPath $mods -Force)+@(Get-ChildItem -LiteralPath $mods -Force -Recurse)
+            if(@($currentEntries | Where-Object {($_.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0}).Count) {throw 'Restored Mods resume intake contains a reparse point.'}
+            if(-not(Test-KmgCompatibilityManifestEqual @($state.originalManifest) @(Get-KmgCompatibilityDirectoryManifest $mods))) {throw 'Post-move resume current Mods are not the exact original intake.'}
+            Assert-KmgCompatibilityResumeQuarantine -State $state -StateRoot $StateRoot
+            $resumePostMove=$true
+        }
+        if (-not $resumePostMove -and (Test-Path -LiteralPath $mods -PathType Container)) {
             $sentinelPath = Join-Path $mods '.kmg-compat-sentinel.json'
             if (-not (Test-Path -LiteralPath $sentinelPath -PathType Leaf)) { throw 'Current Mods directory lacks the active transaction sentinel.' }
             $sentinel = Read-KmgCompatibilityJson $sentinelPath
@@ -373,19 +481,21 @@ function Restore-KmgCompatibilityTransaction {
             $state.stagedMutationObserved = -not (Test-KmgCompatibilityManifestEqual @($state.stagedManifest) $currentStaged)
             Move-Item -LiteralPath $mods -Destination $quarantine
         }
-        if ($state.originalExisted) {
+        if ($state.originalExisted -and -not $resumePostMove) {
             if (-not (Test-Path -LiteralPath $backup -PathType Container)) { throw 'Original Mods backup is missing.' }
             Move-Item -LiteralPath $backup -Destination $mods
             $after = @(Get-KmgCompatibilityDirectoryManifest $mods)
             if (-not (Test-KmgCompatibilityManifestEqual @($state.originalManifest) $after)) { throw 'Restored Mods manifest/hash mismatch.' }
-        } elseif (Test-Path -LiteralPath $mods) { throw 'Mods must remain absent because it was absent before the transaction.' }
+        } elseif (-not $state.originalExisted -and (Test-Path -LiteralPath $mods)) { throw 'Mods must remain absent because it was absent before the transaction.' }
         $bank = $state.managedSoundBank
         if ($bank.existed) {
             if (-not (Test-Path -LiteralPath $bank.backupPath -PathType Leaf)) { throw 'Managed SoundBank backup is missing.' }
             New-Item -ItemType Directory -Path (Split-Path -Parent $bank.path) -Force | Out-Null
             Copy-Item -LiteralPath $bank.backupPath -Destination $bank.path -Force
-            (Get-Item -LiteralPath $bank.path).LastWriteTimeUtc = [DateTime]::Parse($bank.lastWriteTimeUtc).ToUniversalTime()
-            if ((Get-KmgCompatibilitySha256 $bank.path) -cne $bank.sha256) { throw 'Managed SoundBank restoration hash mismatch.' }
+            $bankTicks=ConvertTo-KmgCompatibilityUtcTicks $bank.lastWriteTimeUtc
+            (Get-Item -LiteralPath $bank.path).LastWriteTimeUtc = [DateTime]::new($bankTicks,[DateTimeKind]::Utc)
+            $bankAfter=Get-Item -LiteralPath $bank.path
+            if ((Get-KmgCompatibilitySha256 $bank.path) -cne $bank.sha256 -or $bankAfter.Length -ne $bank.length -or $bankAfter.LastWriteTimeUtc.Ticks -ne $bankTicks) { throw 'Managed SoundBank restoration hash/length/exact timestamp mismatch.' }
         } elseif (Test-Path -LiteralPath $bank.path -PathType Leaf) { Remove-Item -LiteralPath $bank.path -Force }
         if (Test-Path -LiteralPath $quarantine -PathType Container) {
             $quarantineSentinel = Read-KmgCompatibilityJson (Join-Path $quarantine '.kmg-compat-sentinel.json')

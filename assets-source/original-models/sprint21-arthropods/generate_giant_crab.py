@@ -266,6 +266,8 @@ def chain_usage(used):
 
 
 def main():
+    raise SystemExit("Giant Crab is built by build_giant_crab.py since Cleanup 2; "
+                     "see SOURCE.md. The legacy geometry is retained for history.")
     parser = argparse.ArgumentParser()
     for name in ("capture", "albedo", "mesh-data", "report", "blend-out",
                  "fbx-out"):

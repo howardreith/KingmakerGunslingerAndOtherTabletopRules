@@ -36,6 +36,7 @@ $requiredFiles = @(
     'assets\flying-animals\stirge-albedo.png',
     'assets\ungulates\gorgon-mesh.json',
     'assets\ungulates\gorgon-albedo.png',
+    'assets\ungulates\gorgon-parameters.png',
     'assets\ungulates\aurochs-mesh.json',
     'assets\ungulates\aurochs-albedo.png',
     'assets\ungulates\bison-mesh.json',
@@ -151,6 +152,7 @@ $allowedRelativePaths = @{
     'assets\flying-animals\stirge-albedo.png' = $true
     'assets\ungulates\gorgon-mesh.json' = $true
     'assets\ungulates\gorgon-albedo.png' = $true
+    'assets\ungulates\gorgon-parameters.png' = $true
     'assets\ungulates\aurochs-mesh.json' = $true
     'assets\ungulates\aurochs-albedo.png' = $true
     'assets\ungulates\bison-mesh.json' = $true

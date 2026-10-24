@@ -111,24 +111,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var result = new List<SummonVariantSpec>();
             foreach (string key in keys)
             {
-                SummonCreatureSpec creature = ExpandedSummoningCatalog.All
-                    .SingleOrDefault(value => value.Key == key);
-                if (creature == null) throw new InvalidOperationException(
-                    "Unknown creature key for review: " + key + ".");
                 if (quantity != SummonMultiplicity.One &&
                     !IsGroundCrowdReviewKey(key))
                     throw new InvalidOperationException(
                         "This creature is not on the crowd review roster: " +
                         key + ".");
-                SummonFamily family = creature.NaturesAllyTier.HasValue ?
-                    SummonFamily.NaturesAlly : SummonFamily.Monster;
-                int tier = family == SummonFamily.NaturesAlly ?
-                    creature.NaturesAllyTier.Value : creature.MonsterTier.Value;
-                if (quantity == SummonMultiplicity.OneD4PlusOne) tier += 2;
-                SummonVariantSpec variant = ExpandedSummoningCatalog
-                    .GenerateVariants(family).Single(value =>
-                        value.Creature.Key == key && value.ParentTier == tier &&
-                        value.Multiplicity == quantity);
+                SummonVariantSpec variant = Cleanup2CreatureReviewRoster.ResolveGeneratedVariant(key, quantity);
                 // A withheld creature's art has to be inspected under the
                 // party camera before its suppression is lifted, which cannot
                 // be done through a published parent it does not have. Sprints
@@ -660,8 +648,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (anchor.node == null || !anchor.node.Walkable)
                 throw new InvalidOperationException(
                     "Ungulate art review has no walkable party anchor.");
-            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
-                value != null && value.IsInGame).ToArray();
+            // The save-free caster is separate from the native anchor party.
+            // Review33 selected a floor point occupied by that caster because
+            // only an EMPTY party included it; every subsequent walking lane
+            // correctly refused the occupied origin. Preserve both sets.
+            UnitEntityData[] party = Game.Instance.Player.Party.Concat(new[] { anchorCaster })
+                .Where(value => value != null && value.IsInGame).Distinct().ToArray();
             Vector3 selected = Vector3.zero;
             int bestClearance = -1, candidates = 0;
             float bestPartyGap = float.MaxValue;
@@ -1599,6 +1591,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private Quaternion _refinementCameraRotation;
         private Vector3 _refinementOrigin;
         private float _refinementTravel;
+        private UnitMoveTo _cleanup2RefinementMove;
         private bool _refinementWasPaused;
         private bool _refinementChangedPause;
         private Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle _refinementAction;
@@ -1606,6 +1599,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void BeginVisualRefinementReview(UnitEntityData unit, string key)
         {
+            _cleanup2RefinementMove = null;
             _refinementUnit = unit;
             _refinementKey = key;
             _refinementPhase = 0;
@@ -1683,12 +1677,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                         return false;
                     case 2:
                     case 3:
+                        if (_cleanup2RefinementMove != null &&
+                            (_refinementFrame == 0 || _refinementFrame == 12 || _refinementFrame == 36 ||
+                            _refinementFrame == RefinementLegFrames - 1))
+                            Cleanup2RecordRefinementMove(unit, "leg-" + _refinementPhase + "-frame-" + _refinementFrame);
                         _refinementTravel = Mathf.Max(_refinementTravel,
                             Vector3.Distance(_refinementOrigin, unit.Position));
                         if (_refinementFrame % RefinementStride == 0)
                             WriteRefinementFrame(unit, key, _refinementPhase == 2 ?
                                 "move-out" : "move-back", _refinementFrame);
                         if (++_refinementFrame < RefinementLegFrames) return false;
+                        if (_cleanup2RefinementMove != null) Cleanup2RecordRefinementMove(unit, "before-native-interrupt");
                         unit.Commands.InterruptMove();
                         if (_refinementPhase == 2)
                         {
@@ -1791,11 +1790,152 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void RunRefinementMove(UnitEntityData unit, Vector3 destination)
         {
+            bool cleanup2 = IsSummonCleanup2Review && _sprint25Fixture != null &&
+                _sprint25Fixture.Created.Contains(unit) && ReferenceEquals(_refinementUnit, unit);
+            if (cleanup2)
+                destination = Cleanup2RefinementDestination(unit, destination, _refinementPhase == 1);
             var move = new UnitMoveTo(destination, 0.5f);
             move.Init(unit);
             unit.Commands.Run(move);
             _refinementRecords.Add("move:to=" + destination.ToString("F2") +
                 ";accepted=" + unit.Commands.Contains(move));
+            if (cleanup2)
+            { _cleanup2RefinementMove = move; Cleanup2RecordRefinementMove(unit, "queued"); }
+        }
+
+        private Vector3 Cleanup2RefinementDestination(UnitEntityData unit, Vector3 originalDestination, bool outward)
+        {
+            if (AstarPath.active == null || unit.View?.AgentASP == null ||
+                TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                throw new InvalidOperationException("Cleanup2 refinement requires its actual native RTWP walking graph/agent.");
+            var agent = unit.View.AgentASP;
+            var constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+            if (constructTags == null) throw new MissingMethodException("Native walking ConstructTags.");
+            int tags = (int)constructTags.Invoke(agent, null);
+            var constraint = new Pathfinding.PathNNConstraint { graphMask = 1,
+                constrainWalkability = true, walkable = true, constrainArea = false,
+                constrainTags = true, tags = tags, constrainDistance = true,
+                distanceXZ = false, distanceXZkeepY = false };
+            Vector3 origin = unit.Position;
+            var anchor = AstarPath.active.GetNearest(origin, constraint);
+            if (anchor.node == null || !anchor.node.Walkable || !Cleanup2Finite(anchor.clampedPosition) ||
+                new Vector2(anchor.clampedPosition.x-origin.x, anchor.clampedPosition.z-origin.z).magnitude > .15f)
+                throw new InvalidOperationException("Native walking origin is not on the owned actor's supported graph.");
+            constraint.SetStart(anchor.node); constraint.constrainArea = true;
+            var graph = AstarPath.active.graphs[anchor.node.GraphIndex] as Pathfinding.IRaycastableGraph;
+            if (graph == null) throw new InvalidOperationException("Native walking graph lacks its verified direct-path linecast.");
+            float footprint = unit.Corpulence + .1f;
+            if (!Cleanup2Finite(footprint) || footprint <= 0f) throw new InvalidOperationException("Nonfinite native refinement footprint.");
+            var obstacles = Game.Instance.State.Units.Where(value => value != null && !ReferenceEquals(value,unit) &&
+                !value.Destroyed && value.IsInGame && value.View != null).ToArray();
+            var attempts = new JArray();
+            Vector3? selected = null;
+            // Review24 found no safe six-metre straight lane for Girallon and
+            // Stegosaurus: the real caster/other actor blocked the available
+            // directions. Shorter real walking lanes still exceed the existing
+            // .75m observation requirement; retain every footprint/path check.
+            float[] routeLengths={6f,4f,3f};
+            // Native movement left the actor off the admitted outward
+            // centerline in Review34; its direct return passed .033m too close
+            // to another actor. Admit only a shorter supported retrace toward
+            // the same origin when that complete return is currently blocked.
+            Vector3 returnDirection=originalDestination-anchor.clampedPosition;returnDirection.y=0f;
+            float returnDistance=returnDirection.magnitude;
+            int candidates = outward ? 24*routeLengths.Length : 3;
+            int selectedIndex=-1;
+            for (int index=0; index<candidates && selected==null; index++)
+            {
+                // Fixed world axes, never the facing left by the preceding attack.
+                float requestedLength=outward?routeLengths[index/24]:
+                    index==0?returnDistance:Mathf.Min(returnDistance,index==1?1f:.75f);
+                Vector3 requested = outward ? anchor.clampedPosition +
+                    Quaternion.Euler(0f,(index%24)*15f,0f)*Vector3.forward*requestedLength :
+                    index==0?originalDestination:anchor.clampedPosition+returnDirection.normalized*requestedLength;
+                var endpoint = AstarPath.active.GetNearest(requested,constraint);
+                Vector3 delta = endpoint.clampedPosition-anchor.clampedPosition; delta.y=0f;
+                string refusal = null;
+                if (endpoint.node==null || endpoint.node.Area!=anchor.node.Area || endpoint.node.GraphIndex!=anchor.node.GraphIndex ||
+                    !endpoint.node.Walkable || !Cleanup2Finite(endpoint.clampedPosition) ||
+                    new Vector2(endpoint.clampedPosition.x-requested.x,endpoint.clampedPosition.z-requested.z).magnitude>.15f)
+                    refusal="endpoint-native-graph-or-horizontal-clamp";
+                else if (outward && Mathf.Abs(delta.magnitude-requestedLength)>.15f) refusal="requested-native-route-length-unproved";
+                else if (delta.sqrMagnitude<.01f) refusal="route-too-short";
+                else if (!outward && (Vector3.Dot(delta,returnDirection)<=0f ||
+                    new Vector2(endpoint.clampedPosition.x-originalDestination.x,
+                        endpoint.clampedPosition.z-originalDestination.z).magnitude>=returnDistance))
+                    refusal="return-does-not-progress-toward-origin";
+                Vector3 across = Vector3.Cross(delta.normalized,Vector3.up);
+                int supports=0;
+                for (int side=-1; side<=1 && refusal==null; side++)
+                {
+                    Pathfinding.NNInfo first = default(Pathfinding.NNInfo), last = default(Pathfinding.NNInfo);
+                    for (int step=0; step<=12 && refusal==null; step++)
+                    {
+                        Vector3 support = Vector3.Lerp(anchor.clampedPosition,endpoint.clampedPosition,step/12f)+across*(side*footprint);
+                        var point=AstarPath.active.GetNearest(support,constraint);
+                        if (point.node==null || !point.node.Walkable || point.node.Area!=anchor.node.Area ||
+                            point.node.GraphIndex!=anchor.node.GraphIndex || !Cleanup2Finite(point.clampedPosition) ||
+                            new Vector2(point.clampedPosition.x-support.x,point.clampedPosition.z-support.z).magnitude>.15f ||
+                            Mathf.Abs(point.clampedPosition.y-support.y)>.35f)
+                        {refusal="native-footprint-support-unproved";break;}
+                        if(step==0)first=point;if(step==12)last=point;supports++;
+                    }
+                    if(refusal!=null)break;
+                    Pathfinding.GraphHitInfo hit;var trace=new List<Pathfinding.GraphNode>();
+                    if(graph.Linecast(first.clampedPosition,last.clampedPosition,first.node,out hit,trace))
+                        refusal="native-navmesh-path-obstructed";
+                    else if(Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance.HasObstacle(
+                        first.clampedPosition+Vector3.up*1.2f,last.clampedPosition+Vector3.up*1.2f,0))
+                        refusal="native-geometry-path-obstructed";
+                }
+                string blockingUnit=null; JObject blockingFootprint=null;
+                if(refusal==null)
+                foreach(var obstacle in obstacles)
+                {
+                    Vector3 relative=obstacle.Position-anchor.clampedPosition;relative.y=0f;
+                    float fraction=Mathf.Clamp01(Vector3.Dot(relative,delta)/delta.sqrMagnitude);
+                    float gap=(relative-delta*fraction).magnitude;
+                    if(!Cleanup2Finite(gap) || gap<footprint+obstacle.Corpulence)
+                    {refusal="native-actor-footprint-obstruction";blockingUnit=obstacle.UniqueId;
+                        blockingFootprint=new JObject { ["position"]=SurveyVector(obstacle.Position),
+                            ["nativeCorpulence"]=obstacle.Corpulence,["closestPlanarGap"]=gap,
+                            ["requiredPlanarGap"]=footprint+obstacle.Corpulence,
+                            ["exactFixtureCaster"]=ReferenceEquals(obstacle,_sprint25Fixture.Caster) };break;}
+                }
+                attempts.Add(new JObject { ["index"]=index,["requested"]=SurveyVector(requested),
+                    ["requestedPlanarMetres"]=requestedLength,
+                    ["nativeEndpoint"]=SurveyVector(endpoint.clampedPosition),["planarMetres"]=delta.magnitude,
+                    ["supportCount"]=supports,["refusal"]=refusal,["blockingUnit"]=blockingUnit,
+                    ["blockingFootprint"]=blockingFootprint });
+                if(refusal==null){selected=endpoint.clampedPosition;selectedIndex=index;}
+            }
+            var receipt=new JObject { ["outward"]=outward,["unit"]=unit.UniqueId,["origin"]=SurveyVector(origin),
+                ["nativeOrigin"]=SurveyVector(anchor.clampedPosition),["graphMask"]=constraint.graphMask,["nativeTags"]=tags,
+                ["graph"]=anchor.node.GraphIndex,["connectedArea"]=anchor.node.Area,["nativeFootprintWithPadding"]=footprint,
+                ["attempts"]=attempts,["selected"]=selected.HasValue?SurveyVector(selected.Value):(JToken)JValue.CreateNull(),
+                ["requestedOriginalDestination"]=SurveyVector(originalDestination),
+                ["shortenedReturnTowardOrigin"]=!outward && selectedIndex>0,
+                ["returnMeaning"]=outward?"outward lane":"Exact origin first, then a supported 1.0m/0.75m retrace toward it; no exact return or arrival is inferred.",
+                ["scope"]="Read-only native walking constraint, full straight center/shoulder path and other actor footprints; no relocation, graph/path mutation or travel-threshold change." };
+            _refinementRecords.Add("cleanup2-route:"+receipt.ToString(Newtonsoft.Json.Formatting.None));
+            if(!selected.HasValue)throw new InvalidOperationException("No full native footprint-clear refinement route from the actor's current position.");
+            return selected.Value;
+        }
+
+        private void Cleanup2RecordRefinementMove(UnitEntityData unit,string stage)
+        {
+            var move=_cleanup2RefinementMove;var agent=unit.View?.AgentASP;
+            if(move==null || agent==null)return;
+            var row=new JObject { ["stage"]=stage,["unit"]=unit.UniqueId,["position"]=SurveyVector(unit.Position),
+                ["requested"]=SurveyVector(move.Target),["contains"]=unit.Commands.Contains(move),
+                ["isCurrentMove"]=ReferenceEquals(unit.Commands.Move,move),["started"]=move.IsStarted,["acted"]=move.IsActed,
+                ["running"]=move.IsRunning,["finished"]=move.IsFinished,["result"]=move.Result.ToString(),
+                ["canStart"]=move.CanStart,["enoughClose"]=move.IsUnitEnoughClose,["movementDelay"]=move.MovementDelay,
+                ["canMove"]=unit.Descriptor.State.CanMove,["preventMovement"]=unit.Commands.PreventMovement(),
+                ["inCombat"]=unit.IsInCombat,["paused"]=Game.Instance.IsPaused,["velocity"]=SurveyVector(agent.Velocity),
+                ["nativePath"]=Cleanup2GroundPath(agent.GetType().GetField("m_Path",Cleanup2Fields)?.GetValue(agent) as Pathfinding.Path,unit.Position),
+                ["requestedPath"]=Cleanup2GroundPath(agent.GetType().GetField("m_RequestedPath",Cleanup2Fields)?.GetValue(agent) as Pathfinding.Path,unit.Position) };
+            _refinementRecords.Add("cleanup2-move:"+row.ToString(Newtonsoft.Json.Formatting.None));
         }
 
         private Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle
@@ -1804,11 +1944,90 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager manager =
                 unit.View == null ? null : unit.View.AnimationManager;
-            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle handle =
-                manager == null ? null : manager.CreateHandle(type, false);
+            RecordRefinementAnimationInventory(unit, manager, type);
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationActionHandle handle = null;
+            if (manager != null && type ==
+                Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.MainHandAttack)
+            {
+                // This command is never queued or executed. Native planning
+                // chooses the actor's real available hand; native animation
+                // creation then selects its special/natural attack or weapon
+                // style, attack count and variant. MainHandAttack alone is
+                // not the native animation type for most animal weapons.
+                var planning = new UnitAttack(unit);
+                planning.Init(unit);
+                List<AttackHandInfo> attacks = planning.CreateSingleAttack();
+                AttackHandInfo attack = attacks == null ? null : attacks.FirstOrDefault();
+                if (attack != null)
+                {
+                    Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType actual;
+                    Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType special;
+                    int previous;
+                    attack.GetAnimationType(out actual, out special, out previous, null);
+                    bool actionPresent = actual == Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.SpecialAttack
+                        ? special != Kingmaker.Visual.Animation.Kingmaker.UnitAnimationSpecialAttackType.None &&
+                            manager.GetAction(special) != null
+                        : actual != Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType.None &&
+                            manager.GetAction(actual) != null;
+                    _refinementRecords.Add("animation-native-attack:weapon=" + attack.Weapon.Blueprint.AssetGuid +
+                        ";hand=" + attack.Hand.GetType().Name + ";type=" + actual + ";special=" + special +
+                        ";previous=" + previous + ";actionPresent=" + actionPresent);
+                    if (actionPresent)
+                    {
+                        attack.CreateAnimationHandleForAttack(null);
+                        handle = attack.AnimationHandle;
+                    }
+                }
+                else _refinementRecords.Add("animation-native-attack:no-native-single-attack-hand");
+            }
+            else if (manager != null) handle = manager.CreateHandle(type, false);
             if (handle != null) manager.Execute(handle);
             _refinementRecords.Add("animation:" + type + ";handle=" + (handle != null));
+            if (handle != null)
+                _refinementRecords.Add("animation-state:" + type + ";started=" + handle.IsStarted +
+                    ";finished=" + handle.IsFinished + ";interrupted=" + handle.IsInterrupted +
+                    ";activeAnimation=" + (handle.ActiveAnimation != null) +
+                    ";action=" + (handle.Action == null ? "<null>" : handle.Action.GetType().FullName));
             return handle;
+        }
+
+        private void RecordRefinementAnimationInventory(UnitEntityData unit,
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager manager,
+            Kingmaker.Visual.Animation.Kingmaker.UnitAnimationType requested)
+        {
+            // Diagnostic reads only. Missing Hit must remain a missing handle;
+            // another enum/action/clip is never relabelled as a hit reaction.
+            try
+            {
+                if (manager == null)
+                {
+                    _refinementRecords.Add("animation-inventory:requested=" + requested + ";manager=<null>");
+                    return;
+                }
+                var actions = manager.ActionSet.Take(65).ToArray();
+                _refinementRecords.Add("animation-inventory:requested=" + requested +
+                    ";manager=" + manager.GetInstanceID() + ";type=" + manager.GetType().FullName +
+                    ";animationSet=" + (manager.AnimationSet == null ? "<null>" : manager.AnimationSet.name) +
+                    ";viewMatches=" + ReferenceEquals(manager.View, unit.View) +
+                    ";isStopping=" + manager.IsStopping + ";hasRequestedAction=" +
+                    (manager.GetAction(requested) != null) + ";actions=" + Math.Min(actions.Length, 64) +
+                    ";truncated=" + (actions.Length > 64));
+                foreach (var action in actions.Take(64))
+                {
+                    var clips = (action.Clips ?? Enumerable.Empty<AnimationClip>()).Where(value => value != null)
+                        .Take(9).ToArray();
+                    _refinementRecords.Add("animation-action:requested=" + requested + ";type=" + action.Type +
+                        ";class=" + action.GetType().FullName + ";name=" + action.name +
+                        ";clips=" + string.Join("|", clips.Take(8).Select(value => value.name + ":" +
+                            value.length.ToString("0.###", CultureInfo.InvariantCulture)).ToArray()) +
+                        ";clipsTruncated=" + (clips.Length > 8));
+                }
+            }
+            catch (Exception error)
+            {
+                _refinementRecords.Add("animation-inventory:requested=" + requested + ";error=" +
+                    error.GetType().Name + ":" + error.Message);
+            }
         }
 
         private void EndRefinementAnimation()
@@ -1922,12 +2141,43 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private string WriteRefinementImage(Vector3 position, Quaternion rotation,
-            string fileName)
+            string fileName, RenderTexture completedNativeFrame = null)
         {
             CameraRig rig = TeleportationCastingCamera();
             Camera camera = rig == null ? null : rig.Camera;
             if (camera == null) camera = Camera.main;
             if (camera == null) return "png=<none>;reason=no-camera";
+            // Creature-commands holds this exact native camera/target through
+            // ordinary Unity Update/LateUpdate/render frames. Read the last
+            // completed frame without relocating or manually rendering it:
+            // OccludedObjectHighlight.Update06001163 must see the same view.
+            // All historical synchronous callers retain their original path.
+            if (completedNativeFrame != null)
+            {
+                if (!IsSummonCleanup2Review || (string)_request?.Parameters?["reviewPhase"] != "creature-commands" ||
+                    !camera.enabled || !camera.gameObject.activeInHierarchy || !ReferenceEquals(camera.targetTexture, completedNativeFrame) ||
+                    Vector3.Distance(camera.transform.position, position) > .02f || Quaternion.Angle(camera.transform.rotation, rotation) > .01f ||
+                    completedNativeFrame.width != 1280 || completedNativeFrame.height != 800 ||
+                    System.IO.Path.GetFileName(fileName) != fileName || System.IO.File.Exists(System.IO.Path.Combine(_request.EvidenceDirectory, fileName)))
+                    throw new InvalidOperationException("Exact owned completed native creature-camera frame/new PNG required.");
+                var activeBefore = RenderTexture.active; Texture2D nativeOutput = null;
+                try
+                {
+                    RenderTexture.active = completedNativeFrame;
+                    nativeOutput = new Texture2D(completedNativeFrame.width, completedNativeFrame.height, TextureFormat.RGBA32, false, false);
+                    nativeOutput.ReadPixels(new Rect(0, 0, completedNativeFrame.width, completedNativeFrame.height), 0, 0);
+                    nativeOutput.Apply(false, false);
+                    byte[] bytes = EncodeExpandedSummoningPng(nativeOutput);
+                    if (bytes == null || bytes.Length < 4096) return "png=<none>;reason=empty-native-frame;file=" + fileName;
+                    System.IO.File.WriteAllBytes(System.IO.Path.Combine(_request.EvidenceDirectory, fileName), bytes);
+                    return "png=" + fileName + ";bytes=" + bytes.Length;
+                }
+                finally
+                {
+                    RenderTexture.active = activeBefore;
+                    if (nativeOutput != null) UnityEngine.Object.Destroy(nativeOutput);
+                }
+            }
             Vector3 priorPosition = camera.transform.position;
             Quaternion priorRotation = camera.transform.rotation;
             float priorNear = camera.nearClipPlane;
@@ -1992,6 +2242,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private bool FinishVisualRefinementReview()
         {
+            _cleanup2RefinementMove = null;
             if (_refinementChangedPause)
             {
                 Game.Instance.IsPaused = _refinementWasPaused;

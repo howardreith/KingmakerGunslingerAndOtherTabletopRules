@@ -18,9 +18,9 @@ directly:
   precondition cases declare zero. A wrapper that pushed and then reported the
   expected failure would fail here, which the harness-negative control at the
   end proves.
-* Branch names are compared case-sensitively. Git refs differing only in case
-  can be distinct refs, so a differently cased spelling is not the authorized
-  ref and must be refused.
+* The complete push refspec preserves the branch's exact case. The historical
+  wrapper authorizes exact allow-listed names; the current wrapper authorizes
+  the codex namespace and checks worktree, tracked files and remote ancestry.
 
 Nothing here contacts a remote, performs a push, or touches the real
 repository. The fake Git never reaches the network and every answer is
@@ -75,11 +75,23 @@ foreach ($line in $lines) {
         if ($line -match "^\s*'(.+)'\s*$") { $allowed += $Matches[1] }
     }
 }
-if ($allowed.Count -lt 2) { throw 'Could not read the wrapper allow-list.' }
+$worktreeGuardMode = $false
+if ($allowed.Count -eq 0) {
+    # Select fixtures from the real script's parameter contract, then execute
+    # its decisions below. Recognizing a contract never grants a PASS.
+    $parameterNames = @($ast.ParamBlock.Parameters | ForEach-Object {
+        $_.Name.VariablePath.UserPath })
+    if ($parameterNames -contains 'RepositoryRoot' -and
+        $parameterNames -contains 'AllowDefaultBranch') {
+        $worktreeGuardMode = $true
+    }
+    else { throw 'Could not identify the installed wrapper contract.' }
+}
+elseif ($allowed.Count -lt 2) { throw 'Could not read the wrapper allow-list.' }
 
 $sprint25 = @('codex/expanded-summoning-sprint25-brachiosaurus-elephant',
               'codex/expanded-summoning-sprint25-release-records')
-foreach ($name in $sprint25) {
+foreach ($name in $(if ($worktreeGuardMode) { @() } else { $sprint25 })) {
     if ($allowed -cnotcontains $name) {
         throw "Intended Sprint 25 branch missing from the allow-list: $name"
     }
@@ -91,6 +103,19 @@ if ($wildcards.Count -ne 0) {
 
 $root = Join-Path ([IO.Path]::GetTempPath()) ('kmg-push-audit-' + [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $root | Out-Null
+if ($worktreeGuardMode) {
+    # The current wrapper reads tracked content. Use a real isolated directory,
+    # with fake Git answers, instead of touching files in any real checkout.
+    $permittedFull = Join-Path $root 'worktree'
+    New-Item -ItemType Directory -Path $permittedFull | Out-Null
+    Set-Content -LiteralPath (Join-Path $permittedFull 'safe.cs') -Value '// ordinary fixture'
+    Set-Content -LiteralPath (Join-Path $permittedFull 'credential-fixture.cs') `
+        -Value ('-----BEGIN ' + 'PRIVATE KEY-----')
+    Set-Content -LiteralPath (Join-Path $root 'present-state') -Value 'fixture only'
+}
+$defaultBranch = if ($worktreeGuardMode) {
+    'codex/expanded-summoning-cleanup-iteration2'
+} else { $sprint25[0] }
 $argvLog = Join-Path $root 'argv.jsonl'
 $scenarioPath = Join-Path $root 'scenario.json'
 
@@ -125,7 +150,18 @@ switch ($verb) {
             if ($scenario.upstreamExit -ne 0) { Write-Output 'fatal: no upstream'; exit $scenario.upstreamExit }
             Emit $scenario.upstream; exit 0
         }
+        if ($rest -contains '--git-path') {
+            if ($scenario.gitState -ceq $rest[-1]) {
+                Emit (Join-Path $root 'present-state')
+            } else { Emit (Join-Path $root 'absent-state') }
+            exit 0
+        }
+        if ($scenario.headExit -ne 0) { exit $scenario.headExit }
         Emit $scenario.head; exit 0
+    }
+    'symbolic-ref' {
+        if ($scenario.branchExit -ne 0) { exit $scenario.branchExit }
+        Write-Output $scenario.branch; exit 0
     }
     'branch' {
         if ($scenario.branchExit -ne 0) { Write-Output 'fatal: branch lookup failed'; exit $scenario.branchExit }
@@ -133,10 +169,20 @@ switch ($verb) {
         # HEAD rather than nothing, so emit unconditionally to stay faithful.
         Write-Output $scenario.branch; exit 0
     }
-    'remote' { Emit $scenario.origin; exit 0 }
+    'remote' { Emit $scenario.origin; exit $scenario.remoteExit }
     'cat-file' { exit $scenario.catFileExit }
     'merge-base' { exit $scenario.ancestorExit }
-    'status' { foreach ($row in $scenario.status) { Emit $row }; exit 0 }
+    'status' { foreach ($row in $scenario.status) { Emit $row }; exit $scenario.statusExit }
+    'ls-files' { foreach ($row in $scenario.files) { Emit $row }; exit $scenario.filesExit }
+    'ls-remote' {
+        $pushed = @(Get-Content -LiteralPath (Join-Path $root 'argv.jsonl') |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
+            ForEach-Object { $_ | ConvertFrom-Json } |
+            Where-Object { $_.argv -ccontains 'push' }).Count -gt 0
+        $remoteHead = if ($pushed) { $scenario.verified } else { $scenario.remoteHead }
+        if ($remoteHead) { Emit ($remoteHead + "`trefs/heads/" + $scenario.branch) }
+        if ($pushed) { exit $scenario.verifyExit } else { exit $scenario.lsRemoteExit }
+    }
     'push' {
         Write-Output 'remote: progress on stderr-like channel'
         if ($scenario.pushExit -ne 0) { Write-Output 'error: failed to push some refs'; exit $scenario.pushExit }
@@ -167,7 +213,8 @@ throw "Refusing to push non-allowlisted branch 'codex/not-authorized'."
 
 # The read-only verbs the wrapper is allowed to use. Anything else, and any
 # second push, is a mutation this audit must catch.
-$readOnlyVerbs = @('rev-parse', 'branch', 'remote', 'cat-file', 'merge-base', 'status')
+$readOnlyVerbs = @('rev-parse', 'branch', 'symbolic-ref', 'remote', 'cat-file',
+    'merge-base', 'status', 'ls-files', 'ls-remote')
 
 $head = '1111111111111111111111111111111111111111'
 function New-Scenario {
@@ -175,7 +222,7 @@ function New-Scenario {
     $scenario = [ordered]@{
         toplevel = $permittedFull
         toplevelExit = 0
-        branch = $sprint25[0]
+        branch = $defaultBranch
         branchExit = 0
         origin = 'git@github.com:howardreith/KingmakerGunslingerAndOtherTabletopRules.git'
         head = $head
@@ -185,6 +232,16 @@ function New-Scenario {
         ancestorExit = 0
         pushExit = 0
         status = @()
+        gitState = ''
+        files = @('safe.cs')
+        statusExit = 0
+        remoteExit = 0
+        filesExit = 0
+        headExit = 0
+        remoteHead = $head
+        verified = $head
+        lsRemoteExit = 0
+        verifyExit = 0
     }
     foreach ($key in $Overrides.Keys) { $scenario[$key] = $Overrides[$key] }
     return $scenario
@@ -202,6 +259,7 @@ function Invoke-Case {
         [string]$ExpectMessage,
         [string]$WorkingDirectory,
         [string]$OverridePolicy,
+        [string[]]$PolicyArguments = @(),
         # The harness-negative control expects its own assertions to fail.
         [switch]$ExpectAuditFailure
     )
@@ -229,7 +287,7 @@ function Invoke-Case {
     $previousPreference = $ErrorActionPreference
     try {
         $ErrorActionPreference = 'Continue'
-        $output = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $target 2>&1 |
+        $output = & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $target @PolicyArguments 2>&1 |
             ForEach-Object { $_.ToString() }
         $code = $LASTEXITCODE
     }
@@ -270,7 +328,7 @@ function Invoke-Case {
     # The accepted push is compared as a complete ordinal argument vector,
     # including element count and case, not as a substring of a joined string.
     if ($ExpectedPushCalls -ge 1 -and $pushCalls.Count -ge 1) {
-        $branchName = if ($Scenario.ContainsKey('branch')) { $Scenario['branch'] } else { $sprint25[0] }
+        $branchName = if ($Scenario.ContainsKey('branch')) { $Scenario['branch'] } else { $defaultBranch }
         $expectedRoot = if ($Scenario.ContainsKey('toplevel')) { $Scenario['toplevel'] } else { $script:permittedFull }
         $expectedArgv = @('-C', $expectedRoot, 'push', '--set-upstream', 'origin',
             ('HEAD:refs/heads/' + $branchName))
@@ -356,7 +414,73 @@ try {
         Write-Host 'Harness-negative control ran and passed: a push-before-refusal wrapper is rejected.'
         return
     }
-    # --- Accepted: exactly one push, exact argv ---
+    if ($worktreeGuardMode) {
+        Invoke-Case -Name 'current: exact review root and codex branch' `
+            -Scenario @{} -Expect push -ExpectedPushCalls 1
+        Invoke-Case -Name 'current: exact mixed-case refspec is preserved' `
+            -Scenario @{ branch = 'codex/Review-Case' } -Expect push -ExpectedPushCalls 1
+        Invoke-Case -Name 'current: new remote branch' `
+            -Scenario @{ remoteHead = '' } -Expect push -ExpectedPushCalls 1
+        Invoke-Case -Name 'current: approved HTTPS origin' `
+            -Scenario @{ origin = 'https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules.git' } `
+            -Expect push -ExpectedPushCalls 1
+        Invoke-Case -Name 'current: wrong exact worktree root' `
+            -Scenario @{ toplevel = $labFull } -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'RepositoryRoot must be the exact Git worktree root.'
+        foreach ($branchName in @('master', 'wip/cleanup', 'codex-pretender/cleanup', 'wip/codex/cleanup')) {
+            Invoke-Case -Name "current: branch refused $branchName" `
+                -Scenario @{ branch = $branchName } -Expect refuse -ExpectedPushCalls 0 `
+                -ExpectMessage 'Branch is outside the approved scope:'
+        }
+        Invoke-Case -Name 'current: detached HEAD' `
+            -Scenario @{ branchExit = 1 } -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Git guard check failed: symbolic-ref'
+        foreach ($state in @('MERGE_HEAD', 'CHERRY_PICK_HEAD', 'REVERT_HEAD', 'rebase-merge', 'rebase-apply')) {
+            Invoke-Case -Name "current: unfinished operation $state" `
+                -Scenario @{ gitState = $state } -Expect refuse -ExpectedPushCalls 0 `
+                -ExpectMessage "Unfinished Git operation: $state"
+        }
+        Invoke-Case -Name 'current: dirty worktree' `
+            -Scenario @{ status = @(' M safe.cs') } -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Guarded push requires a clean worktree.'
+        Invoke-Case -Name 'current: unexpected origin' `
+            -Scenario @{ origin = 'git@github.com:someone-else/fork.git' } `
+            -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Origin is not the approved project repository.'
+        foreach ($file in @('artifacts/package.zip', 'saves/fixture.zks', 'private/report.txt',
+            'reference.dll', 'symbols.pdb', 'secret.pem', 'GamePath.props', '.env')) {
+            Invoke-Case -Name "current: protected tracked file $file" `
+                -Scenario @{ files = @($file) } -Expect refuse -ExpectedPushCalls 0 `
+                -ExpectMessage 'Protected or generated tracked file:'
+        }
+        Invoke-Case -Name 'current: credential-like tracked content' `
+            -Scenario @{ files = @('credential-fixture.cs') } -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Possible credential in tracked file:'
+        Invoke-Case -Name 'current: divergent remote history' `
+            -Scenario @{ ancestorExit = 1 } -Expect refuse -ExpectedPushCalls 0 `
+            -ExpectMessage 'Remote is not an ancestor; fetch and reconcile without force.'
+        foreach ($check in @(
+            @{ Name = 'root'; Field = 'toplevelExit'; Verb = 'rev-parse' },
+            @{ Name = 'status'; Field = 'statusExit'; Verb = 'status' },
+            @{ Name = 'origin'; Field = 'remoteExit'; Verb = 'remote' },
+            @{ Name = 'tracked files'; Field = 'filesExit'; Verb = 'ls-files' },
+            @{ Name = 'HEAD'; Field = 'headExit'; Verb = 'rev-parse' },
+            @{ Name = 'remote refs'; Field = 'lsRemoteExit'; Verb = 'ls-remote' })) {
+            $failureScenario = @{}; $failureScenario[$check.Field] = 128
+            Invoke-Case -Name "current: failed $($check.Name) read" `
+                -Scenario $failureScenario -Expect refuse -ExpectedPushCalls 0 `
+                -ExpectMessage "Git guard check failed: $($check.Verb)"
+        }
+        Invoke-Case -Name 'current: push rejected' -Scenario @{ pushExit = 1 } `
+            -Expect refuse -ExpectedPushCalls 1 -ExpectMessage 'Guarded push failed.'
+        Invoke-Case -Name 'current: remote verification mismatch' `
+            -Scenario @{ verified = '2222222222222222222222222222222222222222' } `
+            -Expect refuse -ExpectedPushCalls 1 -ExpectMessage 'Remote verification failed.'
+        Invoke-Case -Name 'current: remote verification read fails' `
+            -Scenario @{ verifyExit = 128 } -Expect refuse -ExpectedPushCalls 1 `
+            -ExpectMessage 'Git guard check failed: ls-remote'
+    }
+    else {
+    # --- Historical allow-list wrapper fixtures ---
     Invoke-Case -Name 'sprint27 product branch in permitted worktree' `
         -Scenario @{ branch = 'codex/expanded-summoning-sprint27-griffon' } -Expect push -ExpectedPushCalls 1
     Invoke-Case -Name 'sprint27 records branch in permitted worktree' `
@@ -456,6 +580,7 @@ try {
     Invoke-Case -Name 'upstream read fails after push' `
         -Scenario @{ upstreamExit = 128 } `
         -Expect refuse -ExpectedPushCalls 1 -ExpectMessage 'failed with exit code 128'
+    }
 
     # --- Harness-negative control ---
     # A wrapper that pushes and only then reports the expected refusal must be
@@ -468,14 +593,21 @@ try {
         -OverridePolicy $badPolicy -ExpectAuditFailure
 }
 finally {
-    try { Remove-Item -Recurse -Force -LiteralPath $root -ErrorAction Stop } catch { }
+    $cleanupRoot = [IO.Path]::GetFullPath($root)
+    $tempBoundary = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
+    if (-not $cleanupRoot.StartsWith($tempBoundary, [StringComparison]::OrdinalIgnoreCase) -or
+        -not ([IO.Path]::GetFileName($cleanupRoot)).StartsWith('kmg-push-audit-', [StringComparison]::Ordinal)) {
+        throw "Refusing cleanup outside the named temporary audit directory: $cleanupRoot"
+    }
+    Remove-Item -Recurse -Force -LiteralPath $cleanupRoot -ErrorAction Stop
 }
 
 Write-Host ''
 Write-Host "Reviewed wrapper   : $policyFull"
 Write-Host "Reviewed SHA-256   : $reviewedHash"
 Write-Host "Parser errors      : 0; statements $($ast.EndBlock.Statements.Count)"
-Write-Host "Allow-list entries : $($allowed.Count); pattern entries 0"
+if ($worktreeGuardMode) { Write-Host 'Wrapper contract   : exact worktree / codex namespace / clean tree / protected files / remote ancestry' }
+else { Write-Host "Allow-list entries : $($allowed.Count); pattern entries 0" }
 Write-Host "Permitted root     : $permittedFull"
 Write-Host ''
 $results | Format-Table -AutoSize | Out-String -Width 220 | Write-Host

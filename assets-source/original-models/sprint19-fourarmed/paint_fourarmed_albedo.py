@@ -198,13 +198,16 @@ def paint(kind, size):
                                     shared.smoothstep(0.2, 0.9, v))
                 pixels *= (0.88 + 0.24 * grain)[..., None]
             else:
-                leather = shared.mix(colour(coat["skin"]) * 1.5,
-                                     colour(coat["muzzle"]) * 1.25,
+                # Charcoal leather must retain visible finger planes in
+                # native shadow. Narrow creases describe skin without
+                # turning the complete far hand into one black silhouette.
+                leather = shared.mix(colour((.32, .29, .26)),
+                                     colour((.46, .41, .36)),
                                      shared.smoothstep(0.2, 0.9, v))
                 lines = shared.fbm(rng, height, width, 6, 3, aspect=3.0)
-                pixels = shared.mix(leather, colour(coat["skin"]) * 0.8,
-                                    shared.smoothstep(0.42, 0.56, lines))
-                pixels *= (0.9 + 0.2 * grain)[..., None]
+                crease = shared.smoothstep(.59, .70, lines) * .38
+                pixels = shared.mix(leather, colour((.23, .21, .19)), crease)
+                pixels *= (0.96 + 0.12 * grain)[..., None]
         else:
             # Keratin. Both creatures print claw attacks, so both have real
             # claws: grey-black horn on the ape, near-black chitin hooks on
