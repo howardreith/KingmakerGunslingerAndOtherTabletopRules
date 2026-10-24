@@ -100,6 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null, blocker = null; BlueprintUnit blockerBlueprint = null;
             CreateExpandedSummoningCorrectionHostile(fixture); var target = fixture.Hostile;
             int fort = target.Stats.SaveFortitude.BaseValue, ac = target.Stats.AC.BaseValue;
+            int casterFort = fixture.Caster.Stats.SaveFortitude.BaseValue;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -163,34 +164,100 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("trumpet-blast-ai-body-probe", owner.View != null && model != null && model.transform.IsChildOf(owner.View.transform),
                     viewRow, "Read-only exact owned native body/main-hand model observation for the subsequent trumpet form attachment; no donor mutation or appearance approval.");
                 foreach (int frame in Trumpet31ObserveBlastDecision(owner, target, blast, paralysis, false, "trumpet-blast-ai-unsafe-fallback")) yield return frame;
-                owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
-                DisposeExpandedSummoningUnits(fixture.Created, new[] { blocker }); blocker = null;
-                // The positive blast runs last in this isolated world. No
-                // global actor/effect deletion is used to manufacture safety.
-                origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 2f, out far, out survey, out direction,
-                    new Feet(100).Meters + 2.5f, new[] { fixture.Caster }, 30);
-                PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 40f);
-                owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded(); owner.Memory.Add(target); target.Memory.Add(owner);
+                bool negativeBookRetained = before.SequenceEqual(slots());
+                Sprint25Check("trumpet-blast-ai-fallback-book", negativeBookRetained, new JObject {
+                    ["owner"] = owner.UniqueId, ["before"] = new JArray(before), ["after"] = new JArray(slots()) },
+                    "The actual player-summoned support/attack fallback leaves every prepared slot unchanged.");
+                if (!negativeBookRetained) throw new InvalidOperationException("Fallback changed prepared slots.");
+                var priorOwner = owner;
+                var priorWeapon = priorOwner.Body.PrimaryHand.MaybeWeapon;
+                priorOwner.Commands.InterruptAll(true); priorOwner.Commands.RemoveFinishedAndUpdateQueue();
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { blocker, priorOwner }); blocker = null; owner = null;
+                ResetExpandedSummoningHostile(fixture);
+                // The native first-level hall has no ally-clear 100-foot
+                // player stance (actual189 eligible surveyed lanes, zero clear).
+                // The same exact registered brain is therefore observed from
+                // the already supported hostile-caster route. No original
+                // faction or actor is edited, removed, disabled, or ticked.
+                bool reset = priorOwner.Destroyed &&
+                    !Game.Instance.State.Units.All.Contains(priorOwner) &&
+                    !priorOwner.Commands.Raw.Any(value => value != null && !value.IsFinished) &&
+                    !Game.Instance.State.AreaEffects.All.Any(area => ReferenceEquals(area.Context?.MaybeCaster, priorOwner)) &&
+                    priorWeapon != null && !priorWeapon.IsLootable;
+                var retained = Game.Instance.State.Units.All.Where(value => value != null && !value.Destroyed)
+                    .SelectMany(unit => unit.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, priorOwner))
+                        .Select(buff => new JObject { ["target"] = unit.UniqueId, ["blueprint"] = buff.Blueprint.AssetGuid,
+                            ["end"] = buff.EndTime.ToString() })).ToArray();
+                Sprint25Check("trumpet-blast-ai-owned-reset", reset, new JObject {
+                    ["priorOwner"] = priorOwner.UniqueId, ["destroyed"] = priorOwner.Destroyed,
+                    ["sourceAreas"] = Game.Instance.State.AreaEffects.All.Count(area => ReferenceEquals(area.Context?.MaybeCaster, priorOwner)),
+                    ["sourceLiveCommands"] = priorOwner.Commands.Raw.Count(value => value != null && !value.IsFinished),
+                    ["formerWeaponLootable"] = priorWeapon?.IsLootable, ["retainedNativeVictimEffects"] = new JArray(retained),
+                    ["negativeBookRetained"] = negativeBookRetained, ["blockerDisposed"] = blocker == null,
+                    ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
+                    "Only the owned prior summon/blocker are disposed; no prior emitter area, live command or loot remains. Native Aid victim effects keep their selected finite lifetime and are recorded rather than erased; they do not change blast eligibility or the fresh actor's slots.");
+                if (!reset) throw new InvalidOperationException("Owned actor reset failed; positive AI subcase is unrun.");
+                owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon", fixture.Hostile);
+                Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
+                var positiveTarget = fixture.Caster;
+                positiveTarget.Stats.SaveFortitude.BaseValue = -100;
+                try
+                {
+                    origin = Sprint24AiCombatLane(fixture.Caster, owner, positiveTarget, 2f, out far, out survey, out direction,
+                        new Feet(100).Meters + 2.5f, new[] { fixture.Hostile }, 30);
+                }
+                catch (Exception error)
+                {
+                    Sprint25Check("trumpet-blast-ai-safe-location", false, new JObject {
+                        ["owner"] = owner.UniqueId, ["target"] = positiveTarget.UniqueId, ["ownerFaction"] = owner.Faction?.name,
+                        ["exception"] = error.ToString(), ["nearbyNonenemies"] = new JArray(safety.NearbyNonArchonNonEnemies(owner)
+                            .Select(value => new JObject { ["unit"] = value.UniqueId, ["blueprint"] = value.Blueprint.AssetGuid,
+                                ["name"] = value.Blueprint.name, ["faction"] = value.Faction?.name, ["distance"] = owner.DistanceTo(value) })) },
+                        "An unmet native clear-location precondition is recorded explicitly. No positive command is issued and no protected actor is removed to create a pass.");
+                    throw;
+                }
+                PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(positiveTarget, far);
+                PlaceExpandedSummoningUnit(fixture.Hostile, origin + Vector3.back * 40f);
+                foreach (var unit in new[] { owner, positiveTarget })
+                { unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit); unit.JoinCombat(); unit.SightCache.ClearIfNeeded(); }
+                owner.Memory.Add(positiveTarget); positiveTarget.Memory.Add(owner);
+                new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                Game.Instance.Player.UpdateIsInCombat(); new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                decision = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = owner } };
+                data = new AbilityData(owner.Descriptor.Abilities.GetAbility(blast));
+                book = owner.Descriptor.GetSpellbook(owner.Blueprint.GetComponent<TrumpetPreparedBook>().Book);
+                before = slots();
                 var remaining = safety.NearbyNonArchonNonEnemies(owner).ToArray();
-                bool positive = remaining.Length == 0 && safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) &&
-                    !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && before.SequenceEqual(slots());
-                Sprint25Check("trumpet-blast-ai-safe-ready", positive, new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
+                bool clear = remaining.Length == 0 && owner.IsEnemy(positiveTarget) &&
+                    !ReferenceEquals(priorOwner, owner) && ReferenceEquals(owner.Blueprint, priorOwner.Blueprint);
+                Sprint25Check("trumpet-blast-ai-safe-location", clear, new JObject { ["owner"] = owner.UniqueId,
+                    ["priorOwner"] = priorOwner.UniqueId, ["target"] = positiveTarget.UniqueId, ["ownerFaction"] = owner.Faction?.name,
+                    ["targetFaction"] = positiveTarget.Faction?.name, ["targetEnemy"] = owner.IsEnemy(positiveTarget),
+                    ["lane"] = survey, ["remainingNonenemies"] = new JArray(remaining.Select(value => value.UniqueId)),
+                    ["sameRegisteredBlueprintAndBrain"] = ReferenceEquals(owner.Blueprint, priorOwner.Blueprint),
+                    ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
+                    "A new real hostile-caster summon of the same exact blueprint/brain has a native walkable, visible clear stance. Original world actors/factions are unchanged; only its disposable caster is moved out of radius.");
+                if (!clear) throw new InvalidOperationException("Safe hostile-caster native location is not clear.");
+                bool positive = safety.Score(decision) == 1f && owner.Memory.ContainsVisible(positiveTarget) &&
+                    owner.IsInCombat && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && data.IsAvailable;
+                Sprint25Check("trumpet-blast-ai-safe-ready", positive, new JObject { ["owner"] = owner.UniqueId, ["target"] = positiveTarget.UniqueId,
                     ["lane"] = survey, ["score"] = safety.Score(decision), ["remainingNonenemies"] = new JArray(remaining.Select(value => value.UniqueId)),
                     ["slotsBefore"] = new JArray(before), ["slotsAfter"] = new JArray(slots()), ["blockerDisposed"] = blocker == null,
-                    ["visible"] = owner.Memory.ContainsVisible(target), ["manualAvailable"] = data.IsAvailable },
-                    "After disposing only the owned blocker and verifying the next location, no eligible nonenemy is within the actual all-creature blast radius; native memory and every prepared slot remain intact.");
+                    ["visible"] = owner.Memory.ContainsVisible(positiveTarget), ["manualAvailable"] = data.IsAvailable },
+                    "After verified owned reset, native memory/combat/access and clear nonenemy radius admit the unchanged production selection rule; the fresh summon owns its own prepared slots.");
                 if (!positive) throw new InvalidOperationException("Safe Trumpet AI location/reset preconditions are unmet.");
-                foreach (int frame in Trumpet31ObserveBlastDecision(owner, target, blast, paralysis, true, "trumpet-blast-ai-safe-cast")) yield return frame;
-                Sprint25Check("trumpet-blast-ai-book-isolation", before.SequenceEqual(slots()), new JObject {
-                    ["owner"] = owner.UniqueId, ["before"] = new JArray(before), ["after"] = new JArray(slots()) },
-                    "Both real AI decisions retain all independent prepared spell slots; the blast is supernatural and the fallback is its own sword.");
+                foreach (int frame in Trumpet31ObserveBlastDecision(owner, positiveTarget, blast, paralysis, true, "trumpet-blast-ai-safe-cast")) yield return frame;
+                Sprint25Check("trumpet-blast-ai-book-isolation", negativeBookRetained && before.SequenceEqual(slots()), new JObject {
+                    ["owner"] = owner.UniqueId, ["negativeOwner"] = priorOwner.UniqueId, ["negativeSlotsRetained"] = negativeBookRetained,
+                    ["before"] = new JArray(before), ["after"] = new JArray(slots()) },
+                    "Both actual brains retain their independent prepared spell slots; no slot is spent/refilled by the supernatural blast or sword fallback.");
             }
             finally
             {
                 if (owner != null) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
                 target.Commands.InterruptAll(true); target.Stats.SaveFortitude.BaseValue = fort; target.Stats.AC.BaseValue = ac;
+                fixture.Caster.Stats.SaveFortitude.BaseValue = casterFort;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, blocker }.Where(value => value != null && !value.Destroyed).ToArray());
                 if (blockerBlueprint != null) UnityEngine.Object.Destroy(blockerBlueprint);
                 ResetExpandedSummoningHostile(fixture);
