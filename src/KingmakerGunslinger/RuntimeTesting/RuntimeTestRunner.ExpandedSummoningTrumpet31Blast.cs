@@ -33,6 +33,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff freedom = null;
             UnitPartSpellResistance resistance = null;
             int resistanceId = -1;
+            var instrumentBaseline = Trumpet31InstrumentOwnedCounts();
+            var instrumentResources = new List<UnityEngine.Object>();
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -108,8 +110,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["srTarget"] = victim.UniqueId, ["fixtureSr"] = 1000, ["fixtureBuffNotCastProof"] = true },
                     "The controlled native Freedom of Movement fixture supplies actual paralysis immunity; SR1000 is confined to the owned victim. Neither fixture is an action/AI proof.");
                 if (!immunityReady) throw new InvalidOperationException("Trumpet blast immunity fixture failed.");
+                var appearanceDeadline = DateTime.UtcNow.AddSeconds(8);
+                while (DateTime.UtcNow < appearanceDeadline &&
+                    (!(bool)Trumpet31InstrumentState(owner, "waiting")["swordVisible"] ||
+                     !(bool)Trumpet31InstrumentState(sibling, "waiting")["swordVisible"]))
+                { Game.Instance.IsPaused = false; yield return 0; }
+                var donorBefore = Trumpet31InstrumentDonorState(owner);
+                var firstSword = Trumpet31InstrumentState(owner, "before-real-blast");
+                var siblingSword = Trumpet31InstrumentState(sibling, "sibling-before-real-blast");
+                var ownerResources = Trumpet31InstrumentOwnedResources(owner);
+                var siblingResources = Trumpet31InstrumentOwnedResources(sibling);
+                instrumentResources.AddRange(ownerResources); instrumentResources.AddRange(siblingResources);
+                bool ownedForms = (bool)firstSword["swordVisible"] && !(bool)firstSword["hornVisible"] &&
+                    (bool)siblingSword["swordVisible"] && (bool)firstSword["weaponOwnerExact"] &&
+                    (bool)firstSword["weaponWielderExact"] && !(bool)firstSword["weaponLootable"] &&
+                    (bool)firstSword["nativeModelUnderOwner"] && (bool)firstSword["hornUnderNativeModel"] &&
+                    ownerResources.Length >= 6 && siblingResources.Length >= 6 && !ownerResources.Intersect(siblingResources).Any();
+                Sprint25Check("trumpet-instrument-owned-forms", ownedForms, new JObject {
+                    ["owner"] = firstSword, ["sibling"] = siblingSword, ["donor"] = donorBefore,
+                    ["ownerResources"] = new JArray(ownerResources.Select(value => value.GetInstanceID())),
+                    ["siblingResources"] = new JArray(siblingResources.Select(value => value.GetInstanceID())),
+                    ["createdItems"] = 0, ["observerViewMutations"] = 0 },
+                    "Two real player summons bind independent original horn meshes/materials beneath their own native weapon models. The same nonlootable owned +4 swords remain authoritative; observations create no item or renderer state.");
+                if (!ownedForms) throw new InvalidOperationException("Owned trumpet/sword presentation is not coherent.");
                 observed = new TrumpetBlastObservation(blast, paralysis, owner, sibling); EventBus.Subscribe(observed);
-                foreach (int frame in Trumpet31ManualCommand(owner, data, owner, "trumpet-blast-first-command")) yield return frame;
+                var formSamples = new JArray(); string hornCamera = null; bool sawHorn = false, overlap = false;
+                foreach (int frame in Trumpet31ManualCommand(owner, data, owner, "trumpet-blast-first-command"))
+                {
+                    var form = Trumpet31InstrumentState(owner, "during-real-native-command");
+                    formSamples.Add(form); overlap |= (bool)form["bothFormsVisible"];
+                    if ((bool)form["hornVisible"])
+                    {
+                        sawHorn = true;
+                        if (hornCamera == null) hornCamera = WriteExpandedSummoningPartyCameraCapture(owner,
+                            _request.EvidenceDirectory, "s31-trumpet-horn-party.png");
+                    }
+                    yield return frame;
+                }
+                // Observe the subsequent real Unity LateUpdate rather than
+                // forcing Sync or a view state from the observer.
+                for (int frame = 0; frame < 2; frame++) yield return 0;
+                var returnedSword = Trumpet31InstrumentState(owner, "after-real-blast");
+                var siblingAfter = Trumpet31InstrumentState(sibling, "sibling-after-real-blast");
+                string swordCamera = WriteExpandedSummoningPartyCameraCapture(owner,
+                    _request.EvidenceDirectory, "s31-trumpet-sword-party.png");
+                bool formResolved = sawHorn && !overlap && (bool)returnedSword["swordVisible"] &&
+                    !(bool)returnedSword["hornVisible"] && (bool)siblingAfter["swordVisible"] &&
+                    !(bool)siblingAfter["hornVisible"] && (bool)returnedSword["weaponOwnerExact"] &&
+                    (bool)returnedSword["weaponWielderExact"] && !(bool)returnedSword["weaponLootable"] &&
+                    hornCamera != null && hornCamera.Contains("inFrame=true") && hornCamera.Contains("screenLit=true") &&
+                    swordCamera.Contains("inFrame=true") && swordCamera.Contains("screenLit=true") &&
+                    JToken.DeepEquals(donorBefore, Trumpet31InstrumentDonorState(owner));
+                Sprint25Check("trumpet-instrument-native-transition", formResolved, new JObject {
+                    ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["samples"] = formSamples,
+                    ["hornCamera"] = hornCamera, ["swordCamera"] = swordCamera,
+                    ["returnedSword"] = returnedSword, ["siblingAfter"] = siblingAfter,
+                    ["donorBefore"] = donorBefore, ["donorAfter"] = Trumpet31InstrumentDonorState(owner),
+                    ["observerViewMutations"] = 0, ["fixtureFormCommands"] = 0, ["createdItems"] = 0 },
+                    "The actual native blast command presents the original horn and then the owned sword, with real party-camera frames, no overlapping forms, no sibling/donor mutation and no replacement item or action. This is usable presentation, not owner aesthetic approval.");
+                if (!formResolved) throw new InvalidOperationException("Actual native trumpet/sword transition was not established.");
                 Game.Instance.IsPaused = true;
                 var excluded = new[] { owner, sibling, hound, hostileHound, far };
                 var eligible = new[] { victim, ally, protectedAlly };
@@ -146,6 +205,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var live = units.SelectMany(unit => unit.Buffs.Enumerable).Where(buff => ReferenceEquals(buff.Blueprint, paralysis)).ToArray();
                 var ownedVictimEffects = live.Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, owner)).ToArray();
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
+                // Match the proven owned-orb teardown observation: native
+                // entity disposal queues Unity view/component destruction.
+                // Retain the paused victim effects while observing real frames.
+                for (int frame = 0; frame < 12; frame++) yield return 0;
+                bool instrumentReleased = ownerResources.All(value => value == null) &&
+                    siblingResources.All(value => value != null) && JToken.DeepEquals(donorBefore, Trumpet31InstrumentDonorState(sibling));
+                Sprint25Check("trumpet-instrument-owner-isolation", instrumentReleased, new JObject {
+                    ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId,
+                    ["ownerPrivateResourcesAbsent"] = ownerResources.All(value => value == null),
+                    ["siblingPrivateResourcesAlive"] = siblingResources.All(value => value != null),
+                    ["donorUnchanged"] = JToken.DeepEquals(donorBefore, Trumpet31InstrumentDonorState(sibling)) },
+                    "After real source disposal and twelve Unity destruction frames, its private horn resources are absent while the sibling and native donor remain intact.");
+                if (!instrumentReleased) throw new InvalidOperationException("Trumpet private instrument teardown/isolation failed.");
                 bool retained = owner.Destroyed && !blast.GetComponent<TrumpetBlastAccess>().CorrectCaster(owner) &&
                     ownedVictimEffects.Length > 0 && ownedVictimEffects.All(buff => !buff.IsDisposed);
                 Sprint25Check("trumpet-blast-source-loss", retained, new JObject { ["source"] = owner.UniqueId, ["sourceDestroyed"] = owner.Destroyed,
@@ -175,6 +247,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningHostile(fixture); SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
+            for (int frame = 0; frame < 12; frame++) yield return 0;
+            var instrumentAfter = Trumpet31InstrumentOwnedCounts();
+            Sprint25Check("trumpet-instrument-private-cleanup", instrumentResources.All(value => value == null) &&
+                JToken.DeepEquals(instrumentBaseline, instrumentAfter), new JObject {
+                    ["before"] = instrumentBaseline, ["after"] = instrumentAfter,
+                    ["capturedPrivateResources"] = instrumentResources.Count,
+                    ["allCapturedResourcesAbsent"] = instrumentResources.All(value => value == null) },
+                "All request-owned instrument components, roots, meshes and materials return to the observed baseline after real actor disposal; no donor asset is deleted.");
         }
     }
 }
