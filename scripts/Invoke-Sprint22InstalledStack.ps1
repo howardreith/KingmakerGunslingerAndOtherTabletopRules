@@ -14,6 +14,10 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+if($PersistenceScope -ceq 'giant-humanoids-ii' -and $DevelopmentPurpose -ceq 'summon-cleanup-iteration2') {
+    Assert-KmgCleanup2EttinColdPlanScope -Scope $PersistenceScope -Purpose $DevelopmentPurpose -SaveName $SaveName -ExpectedVersion $ExpectedVersion
+    throw 'Cleanup 2 cold runtime is deferred: a retained owner spanning the entire trio and exact original-Working restoration are not wired/qualified. Planning validators do not grant live permission.'
+}
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 if($ExpandedSummoningDisabled -and $Scenario -cne 'working-save-expanded-summoning-verify-cleanup') { throw 'Module OFF is restricted to the exact cleanup stage.' }
 $development=if($PersistenceScope -ceq 'giant-humanoids-ii') {

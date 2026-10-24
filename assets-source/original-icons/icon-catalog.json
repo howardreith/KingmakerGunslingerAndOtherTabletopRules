@@ -93,8 +93,8 @@
     },
     {
       "path": "assets-source/original-icons/expanded-summoning/icon-manifest.json",
-      "sha256": "4908af334c7f21de6b92da05b675edc1c5aef5b4a170585579db07851f1c6cd7",
-      "scope": "129 distinct original summon/action concepts, including three new Sprint 29 giant paintings; prior pixels/assignments preserved. New consumer binding and native presentation pending. HumanReview NOT_PERFORMED_NONBLOCKING."
+      "sha256": "5d310b34c1dc2278f997f257d4d3f556b3ae352ffab14de79777c0b8fdac9271",
+      "scope": "129 distinct original summon/action concepts; cleanup iteration 2 replaces only Horse with an original painted revision. Every other pixel and consumer is preserved; Horse owner acceptance and native menu review remain pending."
     },
     {
       "path": "assets-source/original-icons/cord-of-stubborn-resolve/cord-of-stubborn-resolve-assets.json",
@@ -465,8 +465,8 @@
     },
     {
       "path": "assets/game/icons/expanded-summoning/horse.png",
-      "sha256": "c52d920b00a6dfc0f00763df3cc0a03d340d709f69351b8e0adcd4d459a31ea1",
-      "reason": "Project-owned Blender render added by Expanded Summoning Phase 1 Sprint 3; internally reviewed, HumanReview NOT_PERFORMED_NONBLOCKING. Protection is not fresh visual approval."
+      "sha256": "3bf6ac8d8c7b08869bf262c4018937d5aa6b72cf3e0b809efec916c6e0cf67c1",
+      "reason": "Owner-authorized cleanup iteration 2 painted Horse replacement; admitted for development review, not owner-approved. Original source retained; all Horse consumers share one concept."
     },
     {
       "path": "assets/game/icons/expanded-summoning/owlbear.png",

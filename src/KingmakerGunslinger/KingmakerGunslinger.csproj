@@ -45,6 +45,7 @@
     <Compile Include="Summoning\GiantHumanoidCombatComponents.cs" />
     <Compile Include="Summoning\GiantHumanoidAttackComponents.cs" />
     <Compile Include="Summoning\EttinSecondHeadVisual.cs" />
+    <Compile Include="Summoning\EttinBodyMesh.cs" />
     <Compile Include="Summoning\Sprint29FogAiSafety.cs" />
     <Compile Include="Summoning\Sprint29LightningAiSafety.cs" />
     <Compile Include="Summoning\Sprint29AwesomeBlow.cs" />
@@ -149,7 +150,29 @@
     <Compile Include="Summoning\SummonMultiplicity.cs" />
     <Compile Include="Summoning\SummonTemplatePolicy.cs" />
     <Compile Include="Summoning\SummonCreatureSpec.cs" />
+    <Compile Include="Summoning\Cleanup2CreatureReviewRoster.cs" />
     <Compile Include="Summoning\SummonVariantSpec.cs" />
+    <Compile Include="Summoning\SummonChoicePresentationPolicy.cs" />
+    <Compile Include="Summoning\GiantSummonPresentationPolicy.cs" />
+    <Compile Include="Summoning\GiantSummonPresentationPatch.cs" />
+    <Compile Include="Summoning\GiantSummonPalettePolicy.cs" />
+    <Compile Include="Summoning\GiantSummonPaletteRuntime.cs" />
+    <Compile Include="Summoning\CrabSummonAnimationBindingPolicy.cs" />
+    <Compile Include="Summoning\SummonAttackGesturePolicy.cs" />
+    <Compile Include="Summoning\SummonAttackGestureVisual.cs" />
+    <Compile Include="Summoning\CrabSummonAnimationBindingPatch.cs" />
+    <Compile Include="Summoning\StandaloneElementalPresentationPolicy.cs" />
+    <Compile Include="Summoning\ElementalSourceChooserPolicy.cs" />
+    <Compile Include="Summoning\ElementalSourceChooserRuntime.cs" />
+    <Compile Include="Summoning\ElementalSourceChooserView.cs" />
+    <Compile Include="Summoning\ElementalSourceChooserPatch.cs" />
+    <Compile Include="Summoning\ElementalNativeRowsPresentationPatch.cs" />
+    <Compile Include="Summoning\ElementalSourceChooserConsolePatch.cs" />
+    <Compile Include="Summoning\ElementalConsoleBookPresentationPatch.cs" />
+    <Compile Include="Summoning\DruidSummonConversionVariantPatch.cs" />
+    <Compile Include="Summoning\DruidSummonConversionPolicy.cs" />
+    <Compile Include="Summoning\StandaloneElementalDiscoveryPatch.cs" />
+    <Compile Include="Summoning\StandaloneElementalInvocationContract.cs" />
     <Compile Include="Summoning\ExpandedSummoningCatalog.cs" />
     <Compile Include="Summoning\ExpandedSummoningInventoryObserver.cs" />
     <Compile Include="Summoning\ExpandedSummoningSpecialProfiles.cs" />
@@ -444,6 +467,10 @@
       <HintPath>$(KingmakerManagedDir)\Assembly-CSharp-firstpass.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UniRx">
+      <HintPath>$(KingmakerManagedDir)\UniRx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>$(KingmakerManagedDir)\Newtonsoft.Json.dll</HintPath>
       <Private>False</Private>
@@ -466,6 +493,10 @@
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>$(KingmakerManagedDir)\UnityEngine.ClothModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="UnityEngine.UI">
@@ -1303,6 +1334,30 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Bodies.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalPresentation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleScene.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalConsole.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ConsoleLearning.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2DesktopLearning.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ElementalSources.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2MenuAdapters.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2AlternateMenus.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2CreatureCommands.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ModuleOff.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2GiantsOff.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ClothProbe.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2EttinLifecycle.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ScalePrototypeReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2PaletteReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2TooltipReview.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2CrabAttack.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2ProductionAttacks.cs" />
+    <Compile Include="RuntimeTesting\Cleanup2CharacterCpuReference.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2SharedControls.cs" />
+    <Compile Include="RuntimeTesting\Cleanup2GiantRenderScalePrototype.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Commands.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Magic.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Ai.cs" />
@@ -1739,6 +1794,10 @@
       <Link>assets\ungulates\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\..\assets\ungulates\gorgon-parameters.png">
+      <Link>assets\ungulates\gorgon-parameters.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\sprint12-quadrupeds\*-mesh.json">
       <Link>assets\sprint12-quadrupeds\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -1836,12 +1895,14 @@
   <ItemGroup Condition=" '$(KingmakerInstallDir)' != '' ">
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\Assembly-CSharp.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\Assembly-CSharp-firstpass.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UniRx.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\Newtonsoft.Json.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AnimationModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.AssetBundleModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.CoreModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.PhysicsModule.dll" />
+    <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.ClothModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerManagedDir)\UnityEngine.UI.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.UIModule.dll" />
     <RequiredKingmakerAssembly Include="$(KingmakerInstallDir)\Kingmaker_Data\Managed\UnityEngine.TextRenderingModule.dll" />
@@ -1860,6 +1921,7 @@
       <ForbiddenOutputAssembly Include="$(TargetDir)0Harmony12.dll" />
       <ForbiddenOutputAssembly Include="$(TargetDir)Assembly-CSharp.dll" />
       <ForbiddenOutputAssembly Include="$(TargetDir)Assembly-CSharp-firstpass.dll" />
+      <ForbiddenOutputAssembly Include="$(TargetDir)UniRx.dll" />
       <ForbiddenOutputAssembly Include="$(TargetDir)Newtonsoft.Json.dll" />
       <ForbiddenOutputAssembly Include="$(TargetDir)UnityEngine.dll" />
       <ForbiddenOutputAssembly Include="$(TargetDir)UnityEngine.*.dll" />

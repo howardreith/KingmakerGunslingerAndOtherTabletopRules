@@ -5,6 +5,34 @@ namespace KingmakerGunslinger.Summoning
 {
     internal static class SummonVariantMergePolicy
     {
+        internal static IList<T> UnownedOriginals<T>(IEnumerable<T> current,
+            IEnumerable<T> additions, Func<T, string> guid) where T : class
+        {
+            if (current == null || additions == null || guid == null)
+                throw new ArgumentNullException();
+            var owned = new Dictionary<string, T>(StringComparer.Ordinal);
+            foreach (T addition in additions)
+            {
+                string id = addition == null ? null : guid(addition);
+                if (string.IsNullOrWhiteSpace(id) || owned.ContainsKey(id))
+                    throw new InvalidOperationException("Publication additions contain a null or duplicate GUID.");
+                owned.Add(id, addition);
+            }
+            var seen = new HashSet<string>(StringComparer.Ordinal);
+            var result = new List<T>();
+            foreach (T original in current)
+            {
+                string id = original == null ? null : guid(original);
+                if (string.IsNullOrWhiteSpace(id) || !seen.Add(id))
+                    throw new InvalidOperationException("Publication originals contain a null or duplicate GUID.");
+                T addition;
+                if (!owned.TryGetValue(id, out addition)) result.Add(original);
+                else if (!ReferenceEquals(original, addition))
+                    throw new InvalidOperationException("Publication addition conflicts with an unrelated reference: " + id);
+            }
+            return result;
+        }
+
         internal static IList<T> Merge<T>(IList<T> current, IEnumerable<T> additions,
             Func<T, string> guid)
             where T : class

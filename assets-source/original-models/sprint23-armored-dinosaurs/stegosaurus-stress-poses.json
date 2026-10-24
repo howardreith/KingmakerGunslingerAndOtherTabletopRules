@@ -1,0 +1,17 @@
+{
+  "tail-attack": {
+    "LowerTorso": [0, 12, 0],
+    "Tail0_M": [0, 20, 0],
+    "Tail1_M": [0, 24, 0],
+    "Tail2_M": [0, 20, 0],
+    "Tail3_M": [0, 15, 0]
+  },
+  "alternate-stride": {
+    "LeftUpperArm": [25, 0, 0],
+    "LeftLowerArm": [-20, 0, 0],
+    "RightUpperLeg0": [-25, 0, 0],
+    "RightLowerLeg0": [20, 0, 0],
+    "Neck_M": [-15, 0, 0],
+    "Head": [15, 12, 0]
+  }
+}

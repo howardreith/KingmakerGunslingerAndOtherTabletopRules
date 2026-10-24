@@ -20,7 +20,12 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed class NativeIconScreenEvidence : IDisposable
     {
         private readonly RuntimeTestRequest _request;
-        private readonly JArray _records = new JArray();
+        // One request may own several capture sessions (Cleanup2 console casting
+        // then learning). They share one ordered record list per evidence
+        // directory, so file indices stay unique and native-ui-screens.json is
+        // never overwritten by a later session's partial list.
+        private static readonly Dictionary<string, JArray> SharedRecords = new Dictionary<string, JArray>(StringComparer.OrdinalIgnoreCase);
+        private readonly JArray _records;
         private readonly JObject _overlay = new JObject { ["status"] = "not-observed" };
         private object _modManager;
         private bool _closedModManager;
@@ -104,6 +109,7 @@ namespace KingmakerGunslinger.RuntimeTesting
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationSpellbookUi ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleUi ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
+             request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp);
 
@@ -111,16 +117,19 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             if (!Supports(request)) throw new InvalidOperationException("Exact guarded native-icon capture scenario and automatic exit required.");
             _request = request;
+            string directory = Path.GetFullPath(request.EvidenceDirectory);
+            if (!SharedRecords.TryGetValue(directory, out _records)) { _records = new JArray(); SharedRecords.Add(directory, _records); }
         }
 
         internal void AppendEvidence(ICollection<string> files)
         {
             if (_records.Count == 0) return;
-            files.Add(Path.Combine(_request.EvidenceDirectory, "native-ui-screens.json"));
+            string manifest = Path.Combine(_request.EvidenceDirectory, "native-ui-screens.json");
+            if (!files.Contains(manifest)) files.Add(manifest);
             foreach (JObject record in _records)
             {
                 string path = Path.Combine(_request.EvidenceDirectory, (string)record["file"]);
-                if (File.Exists(path)) files.Add(path);
+                if (File.Exists(path) && !files.Contains(path)) files.Add(path);
             }
         }
 
@@ -267,37 +276,63 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private readonly ScrollRect _standard;
             private readonly ScrollRectExtended _extended;
+            private readonly RectTransform _stationaryRoot;
+            private readonly Func<bool> _ownsPopup;
             internal readonly Component Component;
-            internal NativeRowScroll(Component component)
-            { Component = component; _standard = component as ScrollRect; _extended = component as ScrollRectExtended; }
-            internal bool Active => Component != null && (_standard != null ? _standard.isActiveAndEnabled : _extended.isActiveAndEnabled);
-            internal bool Vertical => _standard != null ? _standard.vertical : _extended.vertical;
-            internal bool Horizontal => _standard != null ? _standard.horizontal : _extended.horizontal;
-            internal RectTransform Viewport => _standard != null ? _standard.viewport : _extended.viewport;
-            internal RectTransform Content => _standard != null ? _standard.content : _extended.content;
-            internal string Api => _standard != null ? "UnityEngine.UI.ScrollRect.normalizedPosition" :
+            internal NativeRowScroll(Component component, Func<bool> ownsPopup = null)
+            {
+                Component = component; _standard = component as ScrollRect; _extended = component as ScrollRectExtended;
+                _ownsPopup = ownsPopup;
+                if (_standard == null && _extended == null) throw new ArgumentException("An actual supported native scroll component is required.", nameof(component));
+            }
+            private NativeRowScroll(RectTransform root, Func<bool> ownsPopup)
+            { Component = root; _stationaryRoot = root; _ownsPopup = ownsPopup; IsStationary = true; }
+            // Only the exact popup admission helper supplies this proof after
+            // checking the live layout snapshot/source/native slot identities.
+            // The popup's own RectTransform is a real boundary, not a fabricated
+            // viewport or an arbitrary outer action-bar ancestor.
+            internal static NativeRowScroll StationaryPopup(RectTransform root, Func<bool> ownsPopup)
+            {
+                if (root == null || ownsPopup == null || !ownsPopup())
+                    throw new InvalidOperationException("Exact fitting native popup proof required.");
+                return new NativeRowScroll(root, ownsPopup);
+            }
+            internal bool IsStationary { get; }
+            internal bool Active => Component != null && (IsStationary ? _stationaryRoot.gameObject.activeInHierarchy :
+                (_standard != null ? _standard.isActiveAndEnabled : _extended.isActiveAndEnabled)) && (_ownsPopup == null || _ownsPopup());
+            internal bool Vertical => !IsStationary && (_standard != null ? _standard.vertical : _extended.vertical);
+            internal bool Horizontal => !IsStationary && (_standard != null ? _standard.horizontal : _extended.horizontal);
+            internal RectTransform Viewport => IsStationary ? _stationaryRoot : (_standard != null ? _standard.viewport : _extended.viewport);
+            internal RectTransform Content => IsStationary ? _stationaryRoot : (_standard != null ? _standard.content : _extended.content);
+            internal string Api => IsStationary ? "Stationary exact native popup observation; no scroll API or scroll mutation" :
+                _standard != null ? "UnityEngine.UI.ScrollRect.normalizedPosition" :
                 "Kingmaker.UI.Common.ScrollRectExtended.ScrollToRectCenter";
-            internal Vector2 Position => _standard != null ? _standard.normalizedPosition : _extended.normalizedPosition;
+            internal Vector2 Position => !IsStationary ? (_standard != null ? _standard.normalizedPosition : _extended.normalizedPosition) :
+                throw new InvalidOperationException("A stationary popup has no normalized scroll position.");
             internal void RestorePosition(Vector2 value)
             {
+                if (IsStationary) throw new InvalidOperationException("A stationary popup has no scroll state to write.");
                 if (_standard != null)
                 {
-                    _standard.verticalNormalizedPosition = value.y;
+                    if (_standard.vertical) _standard.verticalNormalizedPosition = value.y;
                     if (_standard.horizontal) _standard.horizontalNormalizedPosition = value.x;
                 }
                 else
                 {
-                    _extended.verticalNormalizedPosition = value.y;
+                    if (_extended.vertical) _extended.verticalNormalizedPosition = value.y;
                     if (_extended.horizontal) _extended.horizontalNormalizedPosition = value.x;
                 }
             }
             internal Vector2 Velocity
             {
-                get => _standard != null ? _standard.velocity : _extended.velocity;
-                set { if (_standard != null) _standard.velocity = value; else _extended.velocity = value; }
+                get => !IsStationary ? (_standard != null ? _standard.velocity : _extended.velocity) :
+                    throw new InvalidOperationException("A stationary popup has no scroll velocity.");
+                set { if (IsStationary) throw new InvalidOperationException("A stationary popup has no scroll state to write.");
+                    if (_standard != null) _standard.velocity = value; else _extended.velocity = value; }
             }
             internal void Reveal(RectTransform target)
             {
+                if (IsStationary) throw new InvalidOperationException("A stationary popup is observed without a reveal mutation.");
                 if (_extended != null)
                 {
                     _extended.StopMovement();
@@ -323,16 +358,57 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         internal IEnumerable<int> Capture(string stage, JToken state, Func<bool> ownsStableUi)
+        { return CaptureCore(stage, state, ownsStableUi, null); }
+
+        // Only the bounded Cleanup 2 hover phases may preserve a real hover:
+        // tooltips, and the alternate-family slices of menu-adapters and
+        // alternate-console (native42 reached them for the first time).
+        // The normal capture API continues clearing incidental hover cards.
+        internal IEnumerable<int> CaptureOwnedHover(string stage, JToken state, Func<bool> ownsStableUi,
+            Kingmaker.UI.Tooltip.TooltipTrigger trigger, Kingmaker.UI.Tooltip.TooltipData data)
+        {
+            string phase = _request.Parameters == null || _request.Parameters.Count != 1 ? null : (string)_request.Parameters["reviewPhase"];
+            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
+                (phase != "tooltips" && phase != "menu-adapters" && phase != "alternate-console"))
+                throw new InvalidOperationException("Owned hover capture requires an exact Cleanup 2 hover phase.");
+            return CaptureCore(stage, state, ownsStableUi, () => OwnsHover(trigger, data));
+        }
+
+        private static readonly FieldInfo NativeTooltipShown = typeof(Kingmaker.UI.Tooltip.TooltipsController)
+            .GetField("m_IsShowed", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo NativeTooltipNeeded = typeof(Kingmaker.UI.Tooltip.TooltipBase)
+            .GetField("m_NeedTooltip", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo NativeTooltipData = typeof(Kingmaker.UI.Tooltip.TooltipBase)
+            .GetField("Data", BindingFlags.Instance | BindingFlags.NonPublic);
+
+        internal static bool OwnsHover(Kingmaker.UI.Tooltip.TooltipTrigger trigger, Kingmaker.UI.Tooltip.TooltipData data)
+        {
+            var controller = Kingmaker.Game.Instance?.UI?.TooltipsController;
+            var constructor = controller == null ? null : controller.TooltipConstructor;
+            return trigger != null && trigger.isActiveAndEnabled && trigger.gameObject.activeInHierarchy && data != null &&
+                ReferenceEquals(trigger.Data, data) && controller != null && constructor != null &&
+                constructor.gameObject.activeInHierarchy && ReferenceEquals(controller.ContextTooltipData, data) &&
+                ReferenceEquals(controller.LastTooltipData, data) && NativeTooltipShown != null && NativeTooltipNeeded != null &&
+                NativeTooltipData != null && (bool)NativeTooltipShown.GetValue(controller) &&
+                (bool)NativeTooltipNeeded.GetValue(constructor) && ReferenceEquals(NativeTooltipData.GetValue(constructor), data) &&
+                ReferenceEquals(Kingmaker.UI.Tooltip.TooltipBase.Owner, data.WielderTransform);
+        }
+
+        private IEnumerable<int> CaptureCore(string stage, JToken state, Func<bool> ownsStableUi, Func<bool> ownsHover)
         {
             if (!Supports(_request) || ownsStableUi == null || !ownsStableUi())
                 throw new InvalidOperationException("Native capture lost its exact request-owned UI state.");
+            Action holdHover = () => {
+                if (ownsHover == null) SuppressNativeHover();
+                else if (!ownsHover()) throw new InvalidOperationException("Exact source-owned hover changed during native capture.");
+            };
             HoldUnobscuredScreen();
             // UMM destroys its blocking Canvas at frame end. Let real rendering
             // settle before requesting a framebuffer capture.
             var settling = Stopwatch.StartNew();
             for (int settle = 0; settle < 4 || settling.Elapsed.TotalSeconds < 0.4; settle++)
             {
-                SuppressNativeHover();
+                holdHover();
                 yield return 0;
                 AssertOverlayClosed();
                 if (!ownsStableUi()) throw new InvalidOperationException("Native UI ownership changed before capture.");
@@ -346,19 +422,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .GetMethod("CaptureScreenshot", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string) }, null);
             if (method == null) throw new InvalidOperationException("Installed native screenshot API is unavailable.");
             var record = new JObject { ["stage"] = stage, ["file"] = basename, ["requestedFrame"] = Time.frameCount,
-                ["width"] = width, ["height"] = height, ["status"] = "pending", ["nativeState"] = state.DeepClone() };
+                ["width"] = width, ["height"] = height, ["status"] = "pending", ["nativeState"] = state.DeepClone(),
+                ["hoverPolicy"] = ownsHover == null ? "suppress-incidental-hover" : "preserve-exact-owned-native-hover" };
             _records.Add(record);
             Write();
             var elapsed = Stopwatch.StartNew();
             bool complete = false;
             try
             {
-                SuppressNativeHover();
+                holdHover();
                 method.Invoke(null, new object[] { path });
                 for (int frame = 0; frame < 1000 && elapsed.Elapsed.TotalSeconds < 10; frame++)
                 {
                     yield return 0;
-                    SuppressNativeHover();
+                    holdHover();
                     AssertOverlayClosed();
                     if (!ownsStableUi() || Screen.width != width || Screen.height != height)
                         throw new InvalidOperationException("Native UI ownership or rendering size changed during capture.");
@@ -446,7 +523,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             new JObject { ["schemaVersion"] = 1, ["runId"] = _request.RunId, ["scenario"] = _request.Scenario,
                 ["evidenceClass"] = "real native game screenshots; visual inspection and owner approval are separate from mechanical assertions",
                 ["captureApi"] = "UnityEngine.ScreenCapture.CaptureScreenshot(string)",
-                ["hoverSuppressionApi"] = "TooltipsController.SetTemporaryCooldown() during capture; native delay resumes normally",
+                ["hoverSuppressionApi"] = "Default: TooltipsController.SetTemporaryCooldown(); only an exact owned Cleanup 2 hover capture preserves native hover, as recorded per image.",
                 ["dllMvid"] = typeof(NativeIconScreenEvidence).Assembly.ManifestModule.ModuleVersionId.ToString(),
                 ["modManagerOverlay"] = _overlay,
                 ["records"] = _records }.ToString(Formatting.Indented));

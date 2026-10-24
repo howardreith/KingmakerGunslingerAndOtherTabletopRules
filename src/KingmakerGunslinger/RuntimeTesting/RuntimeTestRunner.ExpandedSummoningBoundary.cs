@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _request.ExpectedModVersion == _context.ModEntry.Info.Version,
                     "Unity Mod Manager ModEntry.Info.Version")
             };
+            if (!expected && !active) assertions.AddRange(ObserveSummonCleanup2ModuleOff());
             return CreateResult(assertions.All(value => value.Status == "PASS") ?
                 "PASS" : "FAIL", assertions, null);
         }

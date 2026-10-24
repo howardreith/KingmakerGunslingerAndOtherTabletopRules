@@ -78,3 +78,70 @@ UVs, weights and bones are unchanged.
 To reproduce the shipped bytes, run the generator, then the repair on its
 output. `tests/KingmakerGunslinger.DomainTests/RepairedBodyTests.cs` pins
 the result and checks it is lit from the front.
+
+## Cleanup 2 Stegosaurus revision (2026-10-21)
+
+`build_stegosaurus.py` supersedes the old Stegosaurus generator. It replaces
+the circular radius-.86 torso plus overlapping large ellipsoids with one
+elongated elliptical barrel, supported by four connected weight-blended
+legs. The narrow low neck, small eyed head, high hips, muscular six-joint
+tail, nine staggered dorsal plates and four thagomizer spikes are distinct.
+Opaque outward surfaces receive an original mottled olive skin with dorsal
+bands and a lighter belly. This is a local anatomy revision, not a uniform
+view scale change. The Triceratops source/runtime helpers and exported bytes
+are unchanged.
+
+The private `sprint22-ankylosaurus-contracts.json` supplies only the measured
+Hodag bind skeleton/action metadata, SHA-256
+`33ce3ad77a73d752d53aeae7de9effdc3b3b20a94fc8b2949d511d697f72a1c1`.
+The actual native donor identity and existing six tail controls are retained.
+
+```text
+blender -b --factory-startup --python-exit-code 1 --python assets-source/original-models/sprint23-armored-dinosaurs/build_stegosaurus.py -- --capture <private sprint22-ankylosaurus-contracts.json> --albedo <out>/stegosaurus-albedo.png --mesh-data <out>/stegosaurus-mesh.json --report <private report.json> --blend-out <private source.blend>
+```
+
+| Current file | SHA-256 |
+| --- | --- |
+| `stegosaurus-mesh.json` | `4ea887c98387d90d546e5512cf862cd47cb5694b0bbb1f99431c83c1a12c95ef` |
+| `stegosaurus-albedo.png` | `27ef9768948c6f28a2836a28cfa45e9be03220b8f590d15af656212e540511bf` |
+
+Two clean Blender 4.5.10 processes reproduce both files exactly. The scoped
+`../sprint21-arthropods/verify_cleanup2_bodies.py` checks closed outward
+components, normals, weights and one continuous body carrying all four limbs,
+neck/head and six tail controls. `stegosaurus-stress-poses.json` probes stride
+and tail extremes offline. Native side/rear views, walking/tail contact and
+owner aesthetic acceptance remain separate and unverified by those probes.
+
+Earlier sections are retained historical records.
+
+## Completion continuation: stance and feet (2026-10-22)
+
+`build_stegosaurus.py` keeps the elongated barrel, small low head, nine
+staggered plates, six tail controls and four spikes. The barrel is slightly
+narrower and 0.10 donor-local units higher, with its plate/neck/root-tail
+geometry following the authored shape. The hind-thigh path now descends
+continuously instead of going down through the native upper pivot and back
+up through the knee. Foreknees sit less outboard; narrower ankles end in
+compact supporting pads with three shallow joined toe ends. No independent
+floating toe surfaces are added. The donor skeleton and all 24 drivers stay
+unchanged; speed, mechanical size/reach and source animation are untouched.
+
+Four strongly foot-driven sole extrema span only 0.003498 donor-local units.
+Each stays within 0.0012 of its prior authored minimum. These are actual own
+mesh vertices, not culling bounds; native current-pose ground contact still
+requires observation. Skin gains fine original scale-edge/fold markings and
+plates receive quieter brown grain. No native shader property is changed,
+and diffuse paint does not establish a native roughness response.
+
+| Current file | SHA-256 |
+| --- | --- |
+| `stegosaurus-mesh.json` | `3f9e1a219de1372bfec4db521a6de02e04771ea8e2bfc53d64a8435f440d466e` |
+| `stegosaurus-albedo.png` | `ab6d343e35377b0cb9d73a8b5a2ab19e70b4cfe1c6a0cb21f109673fa883d6d6` |
+
+The existing generation command reproduces the pair exactly in two clean
+Blender 4.5.10 runs (LF JSON). Focused topology/weight checks pass: 7,754
+vertices/11,436 triangles, one continuous body with all limbs/neck/tail chains,
+17 closed outward components, 100% front-normal agreement and equal UV seam
+weights. Front/side/rear/party plus synthetic stride/tail poses were inspected
+under local `artifacts/cleanup2-completion-art/stegosaurus`. These are geometry
+probes, not native gait, tail contact, material acceptance or owner approval.
