@@ -190,9 +190,10 @@ namespace KingmakerGunslinger.Blueprints
             }
             // Native SM carriers retain native celestial/fiendish after-spawn
             // behavior even when the project creature is untemplated. Repair
-            // this scoped new route only; released unrelated graphs are untouched.
+            // these six scoped creatures only, including the in-place Lantern
+            // upgrade; unrelated released graphs are untouched.
             if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva"))
+                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva"))
             {
                 foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
                 {
@@ -213,7 +214,7 @@ namespace KingmakerGunslinger.Blueprints
             if (variant.Creature.Key == "dretch")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Chaos | SpellDescriptor.Evil;
-            if (variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon")
+            if (variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon")
                 target.ComponentsArray.OfType<SpellDescriptorComponent>().Single()
                     .Descriptor |= SpellDescriptor.Law | SpellDescriptor.Good;
             if (variant.Creature.Key == "astral-deva")
