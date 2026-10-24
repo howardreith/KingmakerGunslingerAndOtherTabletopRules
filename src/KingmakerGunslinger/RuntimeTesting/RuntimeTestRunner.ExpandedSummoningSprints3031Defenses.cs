@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
@@ -17,6 +18,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
+using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -83,6 +85,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     try
                     {
                         for (int frame = 0; frame < 16; frame++) yield return 0;
+                        var buffs = owner.Descriptor.Buffs.RawFacts.Select(buff => new JObject {
+                            ["guid"] = buff.Blueprint.AssetGuid, ["name"] = buff.Blueprint.name }).ToArray();
+                        bool noTemplate = !buffs.Any(buff => ExpandedSummoningAbilityBuilder.NativeTemplateIds.Contains((string)buff["guid"]) ||
+                            ((string)buff["name"]).StartsWith("KMG_Summoning_Template_", StringComparison.Ordinal));
+                        bool summonMarker = owner.Descriptor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) != null;
+                        var route = ExpandedSummoningOwnTierVariant(key, SummonMultiplicity.One);
+                        var summonAbility = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[
+                            ExpandedSummoningIdentityCatalog.AbilitySymbol(route)];
+                        var summonDescriptors = summonAbility.ComponentsArray.OfType<SpellDescriptorComponent>().Single().Descriptor;
+                        var alignmentMask = SpellDescriptor.Good | SpellDescriptor.Evil | SpellDescriptor.Law | SpellDescriptor.Chaos;
+                        var expected = key == "lemure" ? SpellDescriptor.Law | SpellDescriptor.Evil :
+                            key == "dretch" ? SpellDescriptor.Chaos | SpellDescriptor.Evil :
+                            key == "astral-deva" ? SpellDescriptor.Good : SpellDescriptor.Law | SpellDescriptor.Good;
+                        bool exactRoute = noTemplate && summonMarker && (summonDescriptors & alignmentMask) == expected;
+                        Sprint25Check("defenses-" + key + "-untemplated", exactRoute,
+                            new JObject { ["creature"] = key, ["owner"] = owner.UniqueId, ["buffs"] = new JArray(buffs),
+                                ["nativeTemplateIds"] = new JArray(ExpandedSummoningAbilityBuilder.NativeTemplateIds),
+                                ["noInheritedTemplate"] = noTemplate, ["nativeSummonMarker"] = summonMarker,
+                                ["route"] = summonAbility.AssetGuid, ["descriptors"] = summonDescriptors.ToString(),
+                                ["expectedAlignmentDescriptors"] = expected.ToString() },
+                            "Actual own-tier summons retain their lifecycle marker without inherited native or project templates; the registered route has the creature's exact alignment subtypes.");
+                        if (!exactRoute) throw new InvalidOperationException("Native untemplated route failed: " + key);
                         // Keep the source inside the Astral globe for the SR
                         // and descriptor probes; do not confuse spell-level
                         // exclusion with racial spell resistance/immunity.
