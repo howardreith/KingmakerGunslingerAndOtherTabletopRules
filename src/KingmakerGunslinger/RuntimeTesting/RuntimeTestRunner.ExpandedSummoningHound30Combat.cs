@@ -20,11 +20,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        // One full attack per fresh process: the prior native command fixture
+        // One combat case per fresh process: the prior native command fixture
         // demonstrated a combat-state boundary, so these are not shared cases.
-        private IEnumerable<int> ReviewHound30Combat(ExpandedSummoningCorrectionFixture fixture, bool natural)
+        private IEnumerable<int> ReviewHound30Combat(ExpandedSummoningCorrectionFixture fixture, bool natural, bool single = false, bool ai = false, bool turn = false)
         {
-            string id = natural ? "hound-natural" : "hound-armed";
+            string id = turn ? "hound-turn" : ai ? "hound-ai" : single ? "hound-single" : natural ? "hound-natural" : "hound-armed";
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             CreateExpandedSummoningCorrectionHostile(fixture);
@@ -34,6 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null;
             UnityEngine.Object[] privateResources = new UnityEngine.Object[0];
             ItemEntityWeapon[] items = new ItemEntityWeapon[0];
+            JObject queuesBeforePostCombatCancellation = null;
             try
             {
                 try
@@ -151,36 +152,84 @@ namespace KingmakerGunslinger.RuntimeTesting
                     privateResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
                     var observer = new Sprint24AttackObserver { Owner = owner, Target = target };
                     var costs = new JArray(); var endings = new JArray();
-                    var command = new UnitAttack(target) { ForceFullAttack = true, IsSingleAttack = false };
+                    var issued = ai ? null : new UnitAttack(target) { ForceFullAttack = !single, IsSingleAttack = single };
+                    UnitAttack command = issued;
+                    var commands = new HashSet<UnitCommand>();
+                    var ambient = new HashSet<string>(); int aiTicks = 0;
                     EventBus.Subscribe(observer);
                     try
                     {
                         using (var economy = new FirearmReviewCosts(owner, costs))
                         using (var trace = new Sprint26CommandTrace(owner, endings))
                         {
-                            owner.Commands.Run(command);
+                            if (turn)
+                            {
+                                var admission = new JObject();
+                                foreach (int frame in Sprint22EnrollTurnBasedOwners(new[] { owner }, target, admission)) yield return frame;
+                                int waited = 0; DateTime turnDeadline = DateTime.UtcNow.AddSeconds(30);
+                                while (waited++ < 500 && DateTime.UtcNow < turnDeadline && !Sprint18OwnerIsActing(owner)) yield return 0;
+                                bool acting = (bool)admission["admitted"] && owner.IsVisibleForPlayer && Sprint18OwnerIsActing(owner);
+                                Sprint25Check(id + "-turn-admission", acting, new JObject {
+                                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["admission"] = admission,
+                                    ["turn"] = Sprint22TurnState(owner, target), ["waitedFrames"] = waited },
+                                    "The exact owned Hound receives its real native active turn before the standard attack.");
+                                if (!acting) throw new InvalidOperationException("Hound native turn admission failed.");
+                            }
+                            if (ai)
+                            {
+                                Sprint28SetBrainActivePreservingActions(owner, true);
+                                owner.Brain.RestoreAvailableActions();
+                            }
+                            else { commands.Add(issued); owner.Commands.Run(issued); }
                             int frames = 0; DateTime deadline = DateTime.UtcNow.AddSeconds(45);
-                            int expected = natural ? 2 : 3;
-                            while (frames++ < 4000 && DateTime.UtcNow < deadline &&
-                                (!command.IsFinished || observer.WeaponAttacks.Count < expected)) yield return 0;
+                            int expected = single ? 1 : natural ? 2 : 3;
+                            while (frames++ < 4000 && DateTime.UtcNow < deadline)
+                            {
+                                if (ai && (frames == 1 || frames % 60 == 0 &&
+                                    !owner.Commands.Raw.Any(value => value != null && !value.IsFinished)))
+                                {
+                                    foreach (string candidate in Sprint24TickExactAi(owner))
+                                        if (candidate != owner.UniqueId) ambient.Add(candidate);
+                                    aiTicks++;
+                                }
+                                foreach (var observed in owner.Commands.Raw.Where(value => value != null)) commands.Add(observed);
+                                if (ai) command = commands.OfType<UnitAttack>().FirstOrDefault(value =>
+                                    value.AiAction != null && value.IsFinished &&
+                                    (value.Result == UnitCommand.ResultType.Success || trace.Exhausted(value)));
+                                if (command != null && command.IsFinished &&
+                                    observer.WeaponAttacks.Count >= command.AllAttacks.Count &&
+                                    (!ai || observer.Damage.Any(value => value.Damage > 0))) break;
+                                Game.Instance.IsPaused = false; yield return 0;
+                            }
+                            if (ai)
+                            {
+                                Sprint28SetBrainActivePreservingActions(owner, false);
+                                expected = command?.AllAttacks.Count ?? 0;
+                            }
                             int hits = observer.WeaponAttacks.Count(value => value.AttackRoll != null && value.AttackRoll.IsHit);
                             int impactFrames = 0; DateTime impactDeadline = DateTime.UtcNow.AddSeconds(10);
                             while (observer.Damage.Count < hits && impactFrames++ < 600 && DateTime.UtcNow < impactDeadline) yield return 0;
                             var mesh = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                                 .Single(value => value.name == TheropodVisualPolicy.BodyRendererName);
                             string presentation = CaptureSprint17OriginalBodyFrame(owner, mesh, id + "-combat");
-                            bool exact = command.IsFinished && (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
+                            bool aiOwned = !ai || command != null && command.AiAction != null && aiTicks > 0 &&
+                                commands.OfType<UnitAttack>().Count(value => value.AiAction != null && value.IsFinished) == 1;
+                            bool exact = command != null && command.IsFinished && aiOwned &&
+                                (ai ? expected == 1 || expected == 3 : expected == (single ? 1 : natural ? 2 : 3)) &&
+                                (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
                                 command.AllAttacks.Count == expected && observer.OwnerWeaponAttacks.Count == expected &&
                                 observer.WeaponAttacks.Count == expected && observer.Rolls.Count == expected &&
-                                observer.WeaponAttacks.Count(value => ReferenceEquals(value.Weapon, main)) == (natural ? 1 : 2) &&
-                                observer.WeaponAttacks.Count(value => ReferenceEquals(value.Weapon, bite)) == 1 &&
+                                observer.WeaponAttacks.Count(value => ReferenceEquals(value.Weapon, main)) == (expected == 1 || natural ? 1 : 2) &&
+                                observer.WeaponAttacks.Count(value => ReferenceEquals(value.Weapon, bite)) == (expected == 1 ? 0 : 1) &&
                                 observer.Damage.Count == hits && observer.Damage.Any(value => value.Damage > 0) &&
-                                !target.Descriptor.State.IsDead && economy.Count(command) == 1 && economy.Exact(command, false) &&
+                                !target.Descriptor.State.IsDead && economy.Count(command) == 1 && economy.Exact(command, turn) &&
                                 !command.Cutscene && !command.IsIgnoreCooldown;
                             Sprint25Check(id + "-resolved", exact, new JObject {
                                 ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["frames"] = frames,
-                                ["commandFinished"] = command.IsFinished, ["commandResult"] = command.Result.ToString(),
-                                ["planned"] = command.AllAttacks.Count, ["attacks"] = observer.WeaponAttacks.Count, ["hits"] = hits,
+                                ["commandFinished"] = command?.IsFinished, ["commandResult"] = command?.Result.ToString(),
+                                ["planned"] = command?.AllAttacks.Count, ["aiOwned"] = aiOwned, ["aiTicks"] = aiTicks,
+                                ["commands"] = new JArray(commands.Select(Sprint27AiCommand)),
+                                ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["attacks"] = observer.WeaponAttacks.Count, ["hits"] = hits,
                                 ["rolls"] = new JArray(observer.WeaponAttacks.Select(value => new JObject {
                                     ["weapon"] = value.Weapon?.Blueprint.AssetGuid, ["hit"] = value.AttackRoll?.IsHit,
                                     ["naturalRoll"] = value.AttackRoll?.Roll.Value, ["attackBonus"] = value.AttackRoll?.AttackBonus,
@@ -188,12 +237,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["weaponDamageBonus"] = value.AttackRoll?.WeaponStats?.DamageDescription.FirstOrDefault()?.Bonus })),
                                 ["damage"] = new JArray(observer.Damage.Select(Sprint16DamageEvent)), ["impactWaitFrames"] = impactFrames,
                                 ["costs"] = costs, ["nativeEnds"] = endings, ["powerAttack"] = Sprint22PowerAttackState(owner, toggle),
-                                ["presentation"] = presentation, ["fixtureCommands"] = 1, ["forcedRolls"] = 0,
+                                ["turnBased"] = turn, ["turnAfterCommand"] = turn ? Sprint22TurnState(owner, target) : null,
+                                ["presentation"] = presentation, ["fixtureCommands"] = ai ? 0 : 1, ["forcedRolls"] = 0,
                                 ["rendererState"] = new JArray(owner.View.GetComponentsInChildren<Renderer>(true).Select(value =>
                                     new JObject { ["name"] = value.name, ["enabled"] = value.enabled,
                                         ["center"] = new JArray(value.bounds.center.x, value.bounds.center.y, value.bounds.center.z) })) },
+                                ai ? "The unchanged native brain may make useful Aid decisions, then selects and resolves its own armed attack fallback with real damage and one native attack cost; no fixture attack command." :
+                                single ? "One native standard single attack resolves only the greatsword, with no secondary bite or extra iterative, real damage and one action cost." :
                                 "One native full-attack command spends its action and resolves the exact armed sword/bite or alternative primary slam/bite routine with native random rolls and damage.");
-                            if (!exact) throw new InvalidOperationException("Hound native full attack failed: " + id);
+                            if (!exact) throw new InvalidOperationException("Hound native attack failed: " + id);
                         }
                     }
                     finally { EventBus.Unsubscribe(observer); }
@@ -205,17 +257,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Sprint28SetBrainActivePreservingActions(owner, false);
                         owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
                         if (owner.IsInCombat) owner.LeaveCombat(); if (target.IsInCombat) target.LeaveCombat();
+                        queuesBeforePostCombatCancellation = OutsiderMeleeCleanupState(fixture, owner, targetAc);
+                        foreach (var actor in new[] { owner, target })
+                        {
+                            foreach (var pending in actor.Commands.Raw.Where(value =>
+                                value != null && !value.IsFinished).ToArray()) pending.Interrupt(true);
+                            actor.Commands.RemoveFinishedAndUpdateQueue();
+                        }
                         if (target.Memory.Contains(owner)) target.Memory.Remove(owner);
                         if (owner.Memory.Contains(target)) owner.Memory.Remove(target);
                         DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                     }
                     target.Stats.AC.BaseValue = targetAc;
                     ResetExpandedSummoningHostile(fixture); Game.Instance.Player.UpdateIsInCombat();
+                    foreach (var pending in target.Commands.Raw.Where(value =>
+                        value != null && !value.IsFinished).ToArray()) pending.Interrupt(true);
+                    target.Commands.RemoveFinishedAndUpdateQueue();
                 }
                 for (int frame = 0; frame < 8; frame++) yield return 0;
-                bool clean = owner.Destroyed && !owner.IsInState && privateResources.Length >= 3 && privateResources.All(value => value == null) &&
+                var actorCleanup = OutsiderMeleeCleanupState(fixture, owner, targetAc);
+                bool clean = (bool)actorCleanup["clean"] && privateResources.Length >= 3 && privateResources.All(value => value == null) &&
                     !Game.Instance.State.AreaEffects.All.Except(areas).Any() && items.All(value => !value.IsLootable && value.Collection == null);
                 Sprint25Check(id + "-cleanup", clean, new JObject {
+                    ["actorCleanup"] = actorCleanup, ["queuesBeforePostCombatCancellation"] = queuesBeforePostCombatCancellation,
                     ["ownerAbsent"] = !owner.IsInState, ["privateCaptured"] = privateResources.Length,
                     ["privateRemaining"] = privateResources.Count(value => value != null),
                     ["areasExact"] = !Game.Instance.State.AreaEffects.All.Except(areas).Any(),
