@@ -235,59 +235,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
-        private static bool Trumpet31FindThreatLane(UnitEntityData owner, UnitEntityData target,
-            UnitEntityData anchor, UnitEntityData caster, Vector3 intakeAnchor,
-            TrumpetBlastEligibility safety, out JArray attempts)
-        {
-            var graph = AstarPath.active;
-            if (graph == null) throw new InvalidOperationException("Positive native fixture lost its placement graph.");
-            var intake = graph.GetNearest(intakeAnchor); attempts = new JArray();
-            if (intake.node == null || !intake.node.Walkable) throw new InvalidOperationException("Owned intake anchor has no native walkable node.");
-            // Finite, local fixture-only search:49 source points and8 directions.
-            // The two17m sight segments overlap across the full100ft ally gap.
-            // Graph/clamp and the actual native LOS consumers must all agree.
-            for (int dx = -24; dx <= 24; dx += 8)
-                for (int dz = -24; dz <= 24; dz += 8)
-                {
-                    var requestedOrigin = intake.clampedPosition + new Vector3(dx, 0f, dz);
-                    var origin = graph.GetNearest(requestedOrigin);
-                    if (origin.node == null || !origin.node.Walkable || origin.node.Area != intake.node.Area ||
-                        origin.node.GraphIndex != intake.node.GraphIndex || Vector3.Distance(requestedOrigin, origin.clampedPosition) > .6f) continue;
-                    foreach (var direction in CompassOffsets)
-                    {
-                        var requestedAnchor = origin.clampedPosition + direction * 33f;
-                        var requestedCaster = requestedAnchor + new Vector3(-direction.z, 0f, direction.x) * 1.5f;
-                        var requestedTarget = origin.clampedPosition + direction * 16.5f;
-                        var anchorPoint = graph.GetNearest(requestedAnchor);
-                        var casterPoint = graph.GetNearest(requestedCaster);
-                        var targetPoint = graph.GetNearest(requestedTarget);
-                        var points = new[] { anchorPoint, casterPoint, targetPoint };
-                        if (points.Any(point => point.node == null || !point.node.Walkable || point.node.Area != origin.node.Area ||
-                            point.node.GraphIndex != origin.node.GraphIndex) ||
-                            Vector3.Distance(requestedAnchor, anchorPoint.clampedPosition) > .6f ||
-                            Vector3.Distance(requestedCaster, casterPoint.clampedPosition) > .6f ||
-                            Vector3.Distance(requestedTarget, targetPoint.clampedPosition) > .6f) continue;
-                        PlaceExpandedSummoningUnit(owner, origin.clampedPosition); PlaceExpandedSummoningUnit(target, targetPoint.clampedPosition);
-                        PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition); PlaceExpandedSummoningUnit(caster, casterPoint.clampedPosition);
-                        foreach (var unit in new[] { owner, target, anchor, caster }) unit.SightCache.ClearIfNeeded();
-                        bool sourceSight = owner.HasLOS(target) && target.HasLOS(owner);
-                        bool playerSight = target.HasLOS(anchor) && anchor.HasLOS(target);
-                        bool radius = !Kingmaker.Visual.LocalMap.LocalMapArea.IsIndoor(owner.Position) &&
-                            owner.DistanceTo(target) < new Feet(100).Meters &&
-                            owner.DistanceTo(anchor) > new Feet(100).Meters + anchor.Corpulence &&
-                            owner.DistanceTo(caster) > new Feet(100).Meters + caster.Corpulence &&
-                            !safety.NearbyNonArchonNonEnemies(owner).Any();
-                        attempts.Add(new JObject { ["origin"] = owner.Position.ToString(), ["target"] = target.Position.ToString(),
-                            ["anchor"] = anchor.Position.ToString(), ["caster"] = caster.Position.ToString(),
-                            ["sourceTargetSight"] = sourceSight, ["targetPlayerSight"] = playerSight,
-                            ["eligibleAlliesOutsideRadius"] = radius, ["sourceTargetDistance"] = owner.DistanceTo(target),
-                            ["targetAnchorDistance"] = target.DistanceTo(anchor), ["sourceAnchorDistance"] = owner.DistanceTo(anchor) });
-                        if (sourceSight && playerSight && radius) return true;
-                    }
-                }
-            return false;
-        }
-
         private IEnumerable<int> ReviewTrumpet31BlastAi(ExpandedSummoningCorrectionFixture fixture)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
@@ -382,7 +329,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewTrumpet31BlastAiSafe(ExpandedSummoningCorrectionFixture fixture)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
-            UnitEntityData owner = null, anchor = null;
+            UnitEntityData owner = null, anchor = null, witness = null;
+            BlueprintFaction witnessFaction = null;
             Vector3 anchorBefore = Vector3.zero;
             int fort = 0;
             try
@@ -417,11 +365,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var blast = (BlueprintAbility)map[prefix + "TrumpetBlast"];
                 var paralysis = (BlueprintBuff)map[prefix + "TrumpetParalyzed"];
                 var safety = (TrumpetBlastEligibility)map[prefix + "TrumpetBlastEligibility"];
+                witness = CastExpandedSummoningOwnTier(fixture, "hound-archon");
+                bool ownsWitness = fixture.Created.Contains(witness) && witness.Blueprint.AssetGuid == HoundArchonVisualPolicy.BlueprintGuid &&
+                    ReferenceEquals(witness.Blueprint, safety.Archons.Single(unit => unit.AssetGuid == HoundArchonVisualPolicy.BlueprintGuid));
+                if (!ownsWitness) throw new InvalidOperationException("The archon witness is not an exact new request-owned project Hound.");
+                Sprint28SetBrainActivePreservingActions(witness, false); witness.Commands.InterruptAll(true); witness.Commands.RemoveFinishedAndUpdateQueue();
+                witnessFaction = witness.Descriptor.Faction;
+                // An explicit disposable player-faction archon ally, matching
+                // the native hostile-memory consumer. Only this new request's
+                // actual Hound entity changes faction, never its blueprint,
+                // the source, another summon, or a protected original actor.
+                witness.Descriptor.Faction = anchor.Descriptor.Faction;
                 Vector3 far; string survey, direction; Vector3 origin;
                 try
                 {
                     origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 2f, out far, out survey, out direction,
-                        new Feet(100).Meters + 2.5f, new[] { fixture.Caster, anchor }, 30);
+                        new Feet(100).Meters + 2.5f, new[] { fixture.Caster, anchor, witness }, 30);
                 }
                 catch (Exception error)
                 {
@@ -434,23 +393,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw;
                 }
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                JArray threatLaneAttempts;
-                bool nativeLane = Trumpet31FindThreatLane(owner, target, anchor, fixture.Caster, anchorBefore, safety, out threatLaneAttempts);
-                Sprint25Check("trumpet-blast-ai-native-sight-lane", nativeLane, new JObject {
-                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["anchor"] = anchor.UniqueId,
-                    ["attempts"] = threatLaneAttempts, ["maximumSourceCandidates"] = 49,
-                    ["maximumDirectionsPerSource"] = CompassOffsets.Length,
-                    ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
-                    "A bounded native graph-and-sight survey positions only proven request-owned actors. Both native sight segments and the full unchanged100ft ally exclusion must pass; no graph, LOS, range or original actor is changed.");
-                if (!nativeLane) throw new InvalidOperationException("No native connected sight/threat lane admits the unchanged100ft blast.");
-                target.Memory.Add(anchor); anchor.Memory.Add(target);
+                var graph = AstarPath.active;
+                if (graph == null) throw new InvalidOperationException("Positive native fixture lost its placement graph.");
+                var casterPoint = graph.GetNearest(origin + Vector3.back * 40f);
+                var anchorPoint = graph.GetNearest(origin + Vector3.back * 42f);
+                var witnessPoint = graph.GetNearest(origin + Vector3.right * 2f);
+                if (new[] { casterPoint, anchorPoint, witnessPoint }.Any(point => point.node == null || !point.node.Walkable))
+                    throw new InvalidOperationException("Owned fixture actors have no native walkable ground.");
+                PlaceExpandedSummoningUnit(fixture.Caster, casterPoint.clampedPosition);
+                PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition);
+                PlaceExpandedSummoningUnit(witness, witnessPoint.clampedPosition);
+                target.Memory.Add(witness); witness.Memory.Add(target);
                 // The installed SleepingUnitsController admits awake groups
                 // through awake nonpeaceful members. The menu fixture's real
                 // clock rebuilds those lists; keep only the proven owned
                 // player actors awake while outside the unchanged100ft burst.
                 // This invokes no attack, spell, brain, or protected actor.
                 anchor.Wake(60f); fixture.Caster.Wake(60f);
-                foreach (var unit in new[] { owner, target })
+                foreach (var unit in new[] { owner, target, witness })
                 { unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit); unit.JoinCombat(); unit.SightCache.ClearIfNeeded(); }
                 owner.Memory.Add(target); target.Memory.Add(owner);
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
@@ -475,7 +435,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["combat"] = group != null && group.IsInCombat,
                         ["members"] = new JArray(Enumerable.Range(0, group.Count).Select(index => group[index])
                             .Where(unit => unit != null).Select(actorState)) })),
-                    ["ownedWakeSeconds"] = 60, ["threatSightLane"] = threatLaneAttempts, ["protectedActorTicks"] = 0, ["suppliedCombatCommands"] = 0 },
+                    ["ownedWakeSeconds"] = 60, ["archonWitness"] = actorState(witness), ["protectedActorTicks"] = 0, ["suppliedCombatCommands"] = 0 },
                     "The actual native awake-group, combat, sleeping and brain predicates are observed before the unchanged exact-AI consumer. Only the reference-proven owned player actors receive a native wake interval; no group is injected or guard bypassed.");
                 if (!admitted) throw new InvalidOperationException("Actual native awake-group AI admission is unmet; no AI command requested.");
                 var decision = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = owner } };
@@ -499,20 +459,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownedAnchor"] = anchor.UniqueId, ["ownedAnchorDistance"] = owner.DistanceTo(anchor),
                     ["disposableCaster"] = fixture.Caster.UniqueId, ["disposableCasterDistance"] = owner.DistanceTo(fixture.Caster),
                     ["exactRequestOwnedPresetClone"] = anchorOwned,
+                    ["archonWitness"] = witness.UniqueId, ["witnessFaction"] = witness.Faction.name,
+                    ["requestOwnedWitnessFactionChanges"] = 1,
                     ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
                     "A fresh actual player summon uses its production blueprint/brain in the established non-DLC Oleg outdoor fixture, with native walkable/visible clear stance and actual outdoor classification. Original actors/factions are intact; only its proven request-owned anchor clone and disposable caster are positioned out of radius.");
                 if (!clear) throw new InvalidOperationException("Safe player-summoned native outdoor location is not clear.");
-                bool threat = target.Group.Memory.HasPlayerCharacterInMemory() && target.HasLOS(anchor) &&
-                    target.DistanceTo(anchor) < new Feet(100).Meters && owner.DistanceTo(target) < new Feet(100).Meters;
+                bool threat = ownsWitness && witness.IsPlayerFaction && !owner.IsEnemy(witness) &&
+                    TrumpetBlastRulesPolicy.IsArchon(witness, safety.Archons) && target.Group.Memory.HasPlayerCharacterInMemory() &&
+                    target.HasLOS(witness) && witness.HasLOS(target) && target.Memory.ContainsVisible(witness) &&
+                    target.DistanceTo(witness) < new Feet(100).Meters && owner.DistanceTo(target) < new Feet(100).Meters;
                 Sprint25Check("trumpet-blast-ai-native-threat", threat, new JObject {
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["anchor"] = anchor.UniqueId,
+                    ["archonWitness"] = witness.UniqueId, ["witnessUnit"] = witness.Blueprint.AssetGuid,
+                    ["witnessExactOwnedProjectHound"] = ownsWitness, ["witnessPlayerFaction"] = witness.IsPlayerFaction,
+                    ["witnessActualArchonExemption"] = TrumpetBlastRulesPolicy.IsArchon(witness, safety.Archons),
+                    ["witnessNotEnemy"] = !owner.IsEnemy(witness), ["witnessDistance"] = owner.DistanceTo(witness),
+                    ["witnessOriginalFaction"] = witnessFaction.name, ["requestOwnedWitnessFactionChanges"] = 1,
                     ["hostileGroupHasPlayerMemory"] = target.Group.Memory.HasPlayerCharacterInMemory(),
-                    ["hostileSeesAnchor"] = target.Memory.ContainsVisible(anchor), ["hostileHasLosToAnchor"] = target.HasLOS(anchor),
-                    ["hostileAnchorDistance"] = target.DistanceTo(anchor), ["sourceTargetDistance"] = owner.DistanceTo(target),
+                    ["hostileSeesArchonWitness"] = target.Memory.ContainsVisible(witness), ["hostileHasLosToArchonWitness"] = target.HasLOS(witness),
+                    ["hostileWitnessDistance"] = target.DistanceTo(witness), ["sourceTargetDistance"] = owner.DistanceTo(target),
                     ["sourceAnchorDistance"] = owner.DistanceTo(anchor), ["sourceCasterDistance"] = owner.DistanceTo(fixture.Caster),
                     ["sourceVisibleTarget"] = owner.Memory.ContainsVisible(target),
                     ["originalActorOrFactionEdits"] = 0, ["suppliedCombatCommands"] = 0 },
-                    "The hostile remains a native player threat between the source and the reference-proven owned player clone; both eligible allied players remain outside the unchanged100ft blast. No combat command or faction change supplies admission.");
+                    "An exact newly cast project Hound is an explicit request-owned player-faction archon ally. Its real native perception sustains hostile/player memory while the unchanged blast exempts its actual species and both nonarchon players remain outside100ft. The source and every original actor/faction are unchanged; one owned witness faction change is disclosed.");
                 if (!threat) throw new InvalidOperationException("Native hostile/player threat preconditions are unmet.");
                 bool ready = admitted && threat && safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
                     owner.IsInCombat && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && data.IsAvailable;
@@ -524,6 +493,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Native perception/combat/access, own prepared book and clear all-creature radius admit the unchanged production blast selection; no combat command or slot debit is supplied by the fixture.");
                 if (!ready) throw new InvalidOperationException("Safe native Trumpet AI preconditions are unmet.");
                 foreach (int frame in Trumpet31ObserveBlastDecision(owner, target, blast, paralysis, true, "trumpet-blast-ai-safe-cast")) yield return frame;
+                bool witnessExempt = !witness.Descriptor.State.HasCondition(UnitCondition.Paralyzed) &&
+                    witness.IsPlayerFaction && !owner.IsEnemy(witness) && TrumpetBlastRulesPolicy.IsArchon(witness, safety.Archons);
+                Sprint25Check("trumpet-blast-ai-archon-ally-exempt", witnessExempt, new JObject {
+                    ["source"] = owner.UniqueId, ["target"] = target.UniqueId, ["witness"] = witness.UniqueId,
+                    ["witnessUnit"] = witness.Blueprint.AssetGuid, ["witnessPlayerFaction"] = witness.IsPlayerFaction,
+                    ["witnessParalyzed"] = witness.Descriptor.State.HasCondition(UnitCondition.Paralyzed),
+                    ["sourceWitnessDistance"] = owner.DistanceTo(witness), ["requestOwnedWitnessFactionChanges"] = 1 },
+                    "The real safe autonomous blast leaves its actual nearby player-faction archon ally exempt. The separate negative case protects a nonarchon player; no enemy-only or all-allies exemption is introduced.");
+                if (!witnessExempt) throw new InvalidOperationException("Native archon ally exemption failed.");
                 Sprint25Check("trumpet-blast-ai-book-isolation", before.SequenceEqual(slots()), new JObject {
                     ["owner"] = owner.UniqueId, ["before"] = new JArray(before), ["after"] = new JArray(slots()) },
                     "The real autonomous supernatural blast neither spends nor refills any independently owned prepared spell slot.");
@@ -531,9 +509,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (owner != null) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
+                if (witness != null && !witness.Destroyed)
+                {
+                    Sprint28SetBrainActivePreservingActions(witness, false); witness.Commands.InterruptAll(true);
+                    if (witnessFaction != null) witness.Descriptor.Faction = witnessFaction;
+                    Sprint25Check("trumpet-blast-ai-witness-faction-restored", witnessFaction != null &&
+                        ReferenceEquals(witness.Descriptor.Faction, witnessFaction), new JObject {
+                            ["witness"] = witness.UniqueId, ["faction"] = witness.Descriptor.Faction?.name,
+                            ["exactOriginalFactionRestored"] = ReferenceEquals(witness.Descriptor.Faction, witnessFaction),
+                            ["originalActorOrFactionEdits"] = 0 },
+                        "The single new request-owned witness entity regains its exact original faction before disposal, including on failure; no protected actor or blueprint was modified.");
+                }
                 if (fixture.Hostile != null) fixture.Hostile.Stats.SaveFortitude.BaseValue = fort;
                 if (anchor != null && !anchor.Destroyed && anchor.IsInState) PlaceExpandedSummoningUnit(anchor, anchorBefore);
-                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }.Where(value => value != null && !value.Destroyed).ToArray());
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, witness }.Where(value => value != null && !value.Destroyed).ToArray());
                 if (fixture.Hostile != null) ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
