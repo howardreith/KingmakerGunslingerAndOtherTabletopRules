@@ -47,7 +47,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int frames = 0, ticks = 0;
             bool completed = false;
             string tickFailure = null, lastObservedState = null;
-            var snapshots = new JArray();
+            var snapshots = new JArray(); var scores = new JArray();
             var startedUtc = DateTime.UtcNow;
             Action<string> record = stage =>
             {
@@ -77,6 +77,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["blastSaves"] = effects.Saves.DeepClone(), ["blastEffects"] = effects.Effects,
                         ["blastEffectEvents"] = effects.EffectEvents.DeepClone(),
                         ["blastDice"] = effects.Dice.DeepClone(), ["blastResistance"] = effects.Resistance.DeepClone(),
+                        ["nativeSafetyScores"] = scores.DeepClone(),
                         ["ambientCandidatesNeverTicked"] = new JArray(ambient),
                         ["fixtureBlastCommands"] = 0, ["fixtureAttackCommands"] = 0,
                         ["forcedRolls"] = 0 }.ToString(Formatting.Indented));
@@ -85,6 +86,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 using (var economy = new FirearmReviewCosts(owner, costs))
                 using (var trace = new Sprint26CommandTrace(owner, endings))
+                using (var scoreTrace = new Trumpet31BlastScoreTrace(owner, scores))
                 {
                     var deadline = DateTime.UtcNow.AddSeconds(45);
                     while (DateTime.UtcNow < deadline && frames++ < 4500)
@@ -188,6 +190,102 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["executionEnded"] = ability?.ExecutionProcess?.IsEnded;
             row["executionEngagesUnit"] = ability?.ExecutionProcess?.IsEngageUnit;
             return row;
+        }
+
+        // Observe the production consideration's actual returned score. Read
+        // its already-initialized enemy cache directly, never initialize or
+        // replace DecisionContext.Enemies from the observer.
+        private sealed class Trumpet31BlastScoreTrace : IDisposable
+        {
+            private static Trumpet31BlastScoreTrace active;
+            private readonly UnitEntityData owner; private readonly JArray rows;
+            private readonly Harmony12.HarmonyInstance harmony;
+            private readonly string id = "KMG.Trumpet31BlastScoreTrace." + Guid.NewGuid().ToString("N");
+            private readonly System.Reflection.MethodInfo method = typeof(TrumpetBlastEligibility).GetMethod("Score");
+            internal Trumpet31BlastScoreTrace(UnitEntityData owner, JArray rows)
+            {
+                if (active != null || method == null) throw new InvalidOperationException("Native blast score trace is nested or unavailable.");
+                this.owner = owner; this.rows = rows; harmony = Harmony12.HarmonyInstance.Create(id);
+                harmony.Patch(method, null, new Harmony12.HarmonyMethod(typeof(Trumpet31BlastScoreTrace).GetMethod("Scored",
+                    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)));
+                active = this;
+            }
+            private static void Scored(TrumpetBlastEligibility __instance, DecisionContext __0, float __result)
+            {
+                var trace = active; var actor = __0?.Unit;
+                if (trace == null || !ReferenceEquals(actor, trace.owner)) return;
+                var enemies = ReadExpandedSummoningOptionalMember(__0, "m_Enemies") as IEnumerable<TargetInfo>;
+                trace.rows.Add(new JObject { ["frame"] = Time.frameCount,
+                    ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["actor"] = actor.UniqueId, ["decisionTarget"] = __0.Target?.Unit?.UniqueId, ["score"] = __result,
+                    ["holdsInstrument"] = TrumpetBlastRulesPolicy.HoldsInstrument(actor, __instance.SourceUnit, __instance.Instrument),
+                    ["blockingNonenemies"] = new JArray(__instance.NearbyNonArchonNonEnemies(actor).Select(unit => unit.UniqueId)),
+                    ["enemiesInitialized"] = (bool)ReadExpandedSummoningOptionalMember(__0, "m_EnemiesInitialized"),
+                    ["cachedEnemies"] = new JArray((enemies ?? Enumerable.Empty<TargetInfo>()).Where(info => info?.Unit != null)
+                        .Select(info => new JObject { ["unit"] = info.Unit.UniqueId,
+                            ["visible"] = actor.Memory.ContainsVisible(info.Unit),
+                            ["paralyzed"] = info.Unit.Descriptor.State.HasCondition(UnitCondition.Paralyzed),
+                            ["nativePlayerMemory"] = info.Unit.Group.Memory.HasPlayerCharacterInMemory(),
+                            ["distance"] = actor.DistanceTo(info.Unit) })) });
+            }
+            public void Dispose()
+            {
+                harmony.Unpatch(method, Harmony12.HarmonyPatchType.All, id);
+                if (ReferenceEquals(active, this)) active = null;
+            }
+        }
+
+        private static bool Trumpet31FindThreatLane(UnitEntityData owner, UnitEntityData target,
+            UnitEntityData anchor, UnitEntityData caster, Vector3 intakeAnchor,
+            TrumpetBlastEligibility safety, out JArray attempts)
+        {
+            var graph = AstarPath.active;
+            if (graph == null) throw new InvalidOperationException("Positive native fixture lost its placement graph.");
+            var intake = graph.GetNearest(intakeAnchor); attempts = new JArray();
+            if (intake.node == null || !intake.node.Walkable) throw new InvalidOperationException("Owned intake anchor has no native walkable node.");
+            // Finite, local fixture-only search:49 source points and8 directions.
+            // The two17m sight segments overlap across the full100ft ally gap.
+            // Graph/clamp and the actual native LOS consumers must all agree.
+            for (int dx = -24; dx <= 24; dx += 8)
+                for (int dz = -24; dz <= 24; dz += 8)
+                {
+                    var requestedOrigin = intake.clampedPosition + new Vector3(dx, 0f, dz);
+                    var origin = graph.GetNearest(requestedOrigin);
+                    if (origin.node == null || !origin.node.Walkable || origin.node.Area != intake.node.Area ||
+                        origin.node.GraphIndex != intake.node.GraphIndex || Vector3.Distance(requestedOrigin, origin.clampedPosition) > .6f) continue;
+                    foreach (var direction in CompassOffsets)
+                    {
+                        var requestedAnchor = origin.clampedPosition + direction * 33f;
+                        var requestedCaster = requestedAnchor + new Vector3(-direction.z, 0f, direction.x) * 1.5f;
+                        var requestedTarget = origin.clampedPosition + direction * 16.5f;
+                        var anchorPoint = graph.GetNearest(requestedAnchor);
+                        var casterPoint = graph.GetNearest(requestedCaster);
+                        var targetPoint = graph.GetNearest(requestedTarget);
+                        var points = new[] { anchorPoint, casterPoint, targetPoint };
+                        if (points.Any(point => point.node == null || !point.node.Walkable || point.node.Area != origin.node.Area ||
+                            point.node.GraphIndex != origin.node.GraphIndex) ||
+                            Vector3.Distance(requestedAnchor, anchorPoint.clampedPosition) > .6f ||
+                            Vector3.Distance(requestedCaster, casterPoint.clampedPosition) > .6f ||
+                            Vector3.Distance(requestedTarget, targetPoint.clampedPosition) > .6f) continue;
+                        PlaceExpandedSummoningUnit(owner, origin.clampedPosition); PlaceExpandedSummoningUnit(target, targetPoint.clampedPosition);
+                        PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition); PlaceExpandedSummoningUnit(caster, casterPoint.clampedPosition);
+                        foreach (var unit in new[] { owner, target, anchor, caster }) unit.SightCache.ClearIfNeeded();
+                        bool sourceSight = owner.HasLOS(target) && target.HasLOS(owner);
+                        bool playerSight = target.HasLOS(anchor) && anchor.HasLOS(target);
+                        bool radius = !Kingmaker.Visual.LocalMap.LocalMapArea.IsIndoor(owner.Position) &&
+                            owner.DistanceTo(target) < new Feet(100).Meters &&
+                            owner.DistanceTo(anchor) > new Feet(100).Meters + anchor.Corpulence &&
+                            owner.DistanceTo(caster) > new Feet(100).Meters + caster.Corpulence &&
+                            !safety.NearbyNonArchonNonEnemies(owner).Any();
+                        attempts.Add(new JObject { ["origin"] = owner.Position.ToString(), ["target"] = target.Position.ToString(),
+                            ["anchor"] = anchor.Position.ToString(), ["caster"] = caster.Position.ToString(),
+                            ["sourceTargetSight"] = sourceSight, ["targetPlayerSight"] = playerSight,
+                            ["eligibleAlliesOutsideRadius"] = radius, ["sourceTargetDistance"] = owner.DistanceTo(target),
+                            ["targetAnchorDistance"] = target.DistanceTo(anchor), ["sourceAnchorDistance"] = owner.DistanceTo(anchor) });
+                        if (sourceSight && playerSight && radius) return true;
+                    }
+                }
+            return false;
         }
 
         private IEnumerable<int> ReviewTrumpet31BlastAi(ExpandedSummoningCorrectionFixture fixture)
@@ -336,25 +434,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw;
                 }
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                var graph = AstarPath.active;
-                if (graph == null) throw new InvalidOperationException("Positive native fixture lost its placement graph.");
-                var casterPoint = graph.GetNearest(origin + Vector3.back * 40f);
-                var anchorPoint = graph.GetNearest(origin + Vector3.back * 42f);
-                if (casterPoint.node == null || anchorPoint.node == null || !casterPoint.node.Walkable || !anchorPoint.node.Walkable)
-                    throw new InvalidOperationException("Owned fixture anchors have no native walkable ground.");
-                PlaceExpandedSummoningUnit(fixture.Caster, casterPoint.clampedPosition);
-                PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition);
-                // Keep the disposable hostile between the blast source and its
-                // owned player actors. Native DecisionContext excludes conscious
-                // enemies whose group has lost player-faction memory; separating
-                // the hostile from every player by42m made the prior seeded
-                // admission transient and the normal AI replaced the blast.
-                // Only the request-owned hostile is repositioned. Both nonarchon
-                // player actors remain outside the full unchanged100ft burst.
-                var targetPoint = graph.GetNearest(origin + Vector3.back * 24f);
-                if (targetPoint.node == null || !targetPoint.node.Walkable)
-                    throw new InvalidOperationException("Owned hostile has no native walkable threat position.");
-                PlaceExpandedSummoningUnit(target, targetPoint.clampedPosition);
+                JArray threatLaneAttempts;
+                bool nativeLane = Trumpet31FindThreatLane(owner, target, anchor, fixture.Caster, anchorBefore, safety, out threatLaneAttempts);
+                Sprint25Check("trumpet-blast-ai-native-sight-lane", nativeLane, new JObject {
+                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["anchor"] = anchor.UniqueId,
+                    ["attempts"] = threatLaneAttempts, ["maximumSourceCandidates"] = 49,
+                    ["maximumDirectionsPerSource"] = CompassOffsets.Length,
+                    ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
+                    "A bounded native graph-and-sight survey positions only proven request-owned actors. Both native sight segments and the full unchanged100ft ally exclusion must pass; no graph, LOS, range or original actor is changed.");
+                if (!nativeLane) throw new InvalidOperationException("No native connected sight/threat lane admits the unchanged100ft blast.");
                 target.Memory.Add(anchor); anchor.Memory.Add(target);
                 // The installed SleepingUnitsController admits awake groups
                 // through awake nonpeaceful members. The menu fixture's real
@@ -387,7 +475,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["combat"] = group != null && group.IsInCombat,
                         ["members"] = new JArray(Enumerable.Range(0, group.Count).Select(index => group[index])
                             .Where(unit => unit != null).Select(actorState)) })),
-                    ["ownedWakeSeconds"] = 60, ["protectedActorTicks"] = 0, ["suppliedCombatCommands"] = 0 },
+                    ["ownedWakeSeconds"] = 60, ["threatSightLane"] = threatLaneAttempts, ["protectedActorTicks"] = 0, ["suppliedCombatCommands"] = 0 },
                     "The actual native awake-group, combat, sleeping and brain predicates are observed before the unchanged exact-AI consumer. Only the reference-proven owned player actors receive a native wake interval; no group is injected or guard bypassed.");
                 if (!admitted) throw new InvalidOperationException("Actual native awake-group AI admission is unmet; no AI command requested.");
                 var decision = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = owner } };
