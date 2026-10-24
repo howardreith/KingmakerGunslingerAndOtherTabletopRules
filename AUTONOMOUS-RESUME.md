@@ -1,15 +1,63 @@
-# Summon cleanup follow-up — v0.0.165 release in progress (2026-10-24)
+# Summon cleanup follow-up — v0.0.165 RELEASED / STOP
 
-After v0.0.164 the owner asked for four corrections: contiguous Deinonychus
-arms, painted Pony and Cyclops icons, no Summon Nature's Ally I paw row, and no
-falling ice on the Fire and Storm Giants. All four are implemented on
-`codex/expanded-summoning-cleanup3-followup` and checked offline and natively
-on development candidate `05ba0dda49` (package `30067d06…a8`). See
-[the follow-up state](planning/CLEANUP2-FOLLOWUP-STATE.md). No identity or route
-changes, so the public equation stays **1,127 generated placements + 29
-retained wrappers = 1,156 visible choices**. The owner authorized the v0.0.165
-release; candidate `f216160d8e` passed the Sprint gate, visual contracts 15/15
-and the creature review 36/36. No owner aesthetic approval is claimed.
+**PR #69 is MERGED and v0.0.165 is PUBLISHED.** After v0.0.164 the owner asked
+for four corrections: contiguous Deinonychus arms, painted Pony and Cyclops
+icons, no Summon Nature's Ally I paw row, and no falling ice on the Fire and
+Storm Giants. On 2026-10-24 the owner reviewed them and wrote "Go ahead and
+merge and release please." No identity or route changes, so the public
+equation stays **1,127 generated placements + 29 retained wrappers = 1,156
+visible choices**. See [the follow-up state](planning/CLEANUP2-FOLLOWUP-STATE.md).
+
+- **Merge.** PR #69 merged normally as
+  `53446777812f18c707ef74cdd787ab4c2fd664df` (tree `28a5259f…`). Between the
+  gated candidate `f216160d8e` and the merge, only the unpackaged record
+  `8acf138c01` changed.
+- **Gates on the candidate.** The Sprint-level gate passed 2,740 / 2,740,
+  including the v0.0.165 release validator, the exact-reference build and
+  strict package validation (package `20ab0d0d…0542`). The guarded visual
+  contracts passed 15/15 and the creature review, with the Fire and Storm
+  Giants, 36/36 on that package. The Druid, menu, giant-effect and Deinonychus
+  observations are bound to development candidate `05ba0dda49`.
+- **Publication.** `Publish-Release.ps1` ran once from the clean, pushed main
+  checkout (`master` fast-forwarded to the merge) with the cleanup2 reference
+  bundle, in 710 s. Its build passed 2,740 / 2,740 domain tests, the
+  release-mode wrapper with
+  `validate_expanded_summoning_cleanup_followup_release165.py` and strict
+  package validation, and both clean builds produced identical bytes.
+
+[Stable v0.0.165](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.165)
+is published (2026-10-24T08:06:36Z) and Latest, titled "Tabletop Added Rules
+v0.0.165". Annotated tag object `711f163ebaff2c1c9934ba3093657eff5ec4ad2f`
+peels to the merge commit. The downloaded public assets match GitHub's
+digests:
+
+- `KingmakerGunslinger-0.0.165-expanded-summoning-cleanup-followup.zip`:
+  `60f8391d016a03a553e31334f83ddff1777402955c65c1cdeb083adc8b8a6184`
+  (401 files; DLL
+  `b0ac51791cc742d0c62cb5547eaa1426b61384792140813ab550ea81ce0946ce`,
+  MVID `63472c01-b57c-4595-a34c-6e9f2812d344`, assembly version 0.0.165.0);
+- `SHA256SUMS.txt`:
+  `6c5363b50d3435687dc60d75b8c1152b2ab3388bb20c3f46cc8923055aa058aa`;
+- `release-manifest.json`:
+  `1315301ab18938493f8ecce7cd8e4ccf2a3049271ecc1c527820722ea9cecde9`.
+
+The downloaded ZIP passed strict package validation. Its DLL embeds the merge
+commit and `0.0.165-expanded-summoning-cleanup-followup`. As for v0.0.164, the
+bytes differ from the gated candidate only in build stamps: 400 of 401 package
+entries are identical, and the DLL's IL differs only in the commit stamp, MVID,
+image base and the layout addresses of 188 compiler static-data fields, each
+holding identical bytes. Nothing was deployed permanently: every guarded run
+restored the live mod exactly (254 files, `5C3E4AD4…BFBB`), all 95 saves
+remain, and `KMG_AUTOMATION_WORKING` is unchanged.
+
+**Still open (owner decisions, not release blockers):**
+- Owner visual acceptance of the Deinonychus body and the Pony and Cyclops
+  icons (the owner authorized the release).
+- Other Phase 1 procedural icons, such as the six mephits, Owlbear and Tiger.
+- The Deinonychus creature-review summary check's accessory-renderer observer
+  limitation, recorded since v0.0.157.
+
+STOP: no further follow-up work is scheduled.
 
 # Summon Cleanup Iteration 2 — v0.0.164 RELEASED / STOP
 
