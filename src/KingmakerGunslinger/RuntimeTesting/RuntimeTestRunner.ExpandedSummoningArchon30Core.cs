@@ -6,6 +6,8 @@ using Kingmaker.Blueprints;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities;
@@ -24,12 +26,14 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        private IEnumerable<int> ReviewArchon30Core(ExpandedSummoningCorrectionFixture fixture, bool mixedHound = false)
+        private IEnumerable<int> ReviewArchon30Core(ExpandedSummoningCorrectionFixture fixture, bool mixedHound = false, bool boundaries = false)
         {
-            string caseId = mixedHound ? "archon-hound" : "archon-core";
+            string caseId = boundaries ? "archon-boundaries" : mixedHound ? "archon-hound" : "archon-core";
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
-            UnitEntityData owner = null, sibling = null;
+            UnitEntityData owner = null, sibling = null, resistedTarget = null;
+            var prototypes = new List<BlueprintUnit>(); var localActors = new List<UnitEntityData>();
+            Dretch30CloudSaves resistedSaves = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
             var target = fixture.Hostile;
             int will = target.Stats.SaveWill.BaseValue;
@@ -51,8 +55,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var areaBlueprint = fixture.Blueprints.OfType<BlueprintAbilityAreaEffect>()
                     .Single(value => value.name == "KMG_Summoning_OutsiderCelestial_Archon_MenaceArea");
                 PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 30f);
-                owner = CastExpandedSummoningOwnTier(fixture, mixedHound ? "hound-archon" : "lantern-archon");
-                sibling = CastExpandedSummoningOwnTier(fixture, "lantern-archon");
+                owner = CastExpandedSummoningOwnTier(fixture, boundaries ? "trumpet-archon" : mixedHound ? "hound-archon" : "lantern-archon");
+                sibling = CastExpandedSummoningOwnTier(fixture, boundaries ? "hound-archon" : "lantern-archon");
                 foreach (var unit in new[] { owner, sibling })
                 {
                     Sprint28SetBrainActivePreservingActions(unit, false);
@@ -64,6 +68,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(target, far);
                 PlaceExpandedSummoningUnit(owner, origin);
                 PlaceExpandedSummoningUnit(sibling, origin + Vector3.right);
+                if (boundaries)
+                {
+                    resistedTarget = CircleSpawn("S3031_MenaceResistance", far, fixture.Caster,
+                        localActors, prototypes, target.Blueprint.Faction);
+                    fixture.Created.Add(resistedTarget);
+                    resistedTarget.Stats.SaveWill.BaseValue = 100;
+                    resistedSaves = new Dretch30CloudSaves(new[] { resistedTarget });
+                    EventBus.Subscribe(resistedSaves);
+                }
                 target.Stats.SaveWill.BaseValue = -100;
                 var shaken = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(
                     BlueprintBootstrap.Library, "25ec6cb6ab1845c48a95f9c20b034220", "unrelated native Shaken penalty control");
@@ -78,7 +91,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int frame in ReviewHound30Profile(fixture, owner)) yield return frame;
                     bodyResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
                 }
-                else owner.Stats.Charisma.BaseValue = 14;
+                else if (!boundaries) owner.Stats.Charisma.BaseValue = 14;
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var before = new[] { target.Stats.AdditionalAttackBonus.ModifiedValue, target.Stats.AC.ModifiedValue,
                     target.Stats.SaveFortitude.ModifiedValue, target.Stats.SaveReflex.ModifiedValue,
@@ -99,7 +112,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var emitters = new[] { owner, sibling };
                 bool attribution = emitters.All(source => {
                     var rows = saves.Rows.Where(row => (string)row["caster"] == source.UniqueId).ToArray();
-                    int dc = ReferenceEquals(source, owner) ? (mixedHound ? 16 : 15) : 13;
+                    int dc = ReferenceEquals(source, owner) ? (boundaries ? 22 : mixedHound ? 16 : 15) : (boundaries ? 16 : 13);
                     return rows.Length == 1 && (int)rows[0]["dc"] == dc &&
                         ContextActionArchonMenace.HasSource(target, (bool)rows[0]["passed"] ? immunity : penalty, source) &&
                         !ContextActionArchonMenace.HasSource(target, (bool)rows[0]["passed"] ? penalty : immunity, source);
@@ -134,16 +147,95 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["value"] = modifier.ModValue, ["source"] = modifier.Source?.Blueprint?.AssetGuid })), ["forcedRolls"] = 0 },
                     "Real source-specific Will saves use each emitter's racial HD/live Charisma; their actual native penalty/immunity outcomes and stat consumers agree.");
                 if (!attribution || !modifiers) throw new InvalidOperationException("Archon source/save/penalty consumer failed.");
+                if (boundaries)
+                {
+                    PlaceExpandedSummoningUnit(resistedTarget, origin + Vector3.forward * 1.5f);
+                    DateTime resistanceDeadline = DateTime.UtcNow.AddSeconds(12);
+                    while (resistedSaves.Rows.Count < 2 && DateTime.UtcNow < resistanceDeadline) yield return 0;
+                    bool resistance = resistedSaves.Rows.Count == 2 &&
+                        resistedSaves.Rows.Any(row => (bool)row["passed"]) && emitters.All(source => {
+                            var rows = resistedSaves.Rows.Where(row => (string)row["caster"] == source.UniqueId).ToArray();
+                            return rows.Length == 1 && (int)rows[0]["dc"] == (ReferenceEquals(source, owner) ? 22 : 16) &&
+                                ContextActionArchonMenace.HasSource(resistedTarget, (bool)rows[0]["passed"] ? immunity : penalty, source) &&
+                                !ContextActionArchonMenace.HasSource(resistedTarget, (bool)rows[0]["passed"] ? penalty : immunity, source);
+                        });
+                    var resistedGrants = resistedTarget.Buffs.Enumerable.Where(buff => emitters.Contains(buff.Context?.MaybeCaster) &&
+                        (ReferenceEquals(buff.Blueprint, penalty) || ReferenceEquals(buff.Blueprint, immunity))).ToArray();
+                    resistance &= resistedGrants.Length == 2 && resistedGrants.All(buff => !buff.IsPermanent &&
+                        buff.IsNotDispelable && buff.TimeLeft.TotalSeconds > 86300 && buff.TimeLeft.TotalSeconds <= 86400);
+                    Sprint25Check(caseId + "-resistance", resistance, new JObject {
+                        ["target"] = resistedTarget.UniqueId, ["fixtureWillBase"] = 100,
+                        ["saves"] = resistedSaves.Rows.DeepClone(), ["forcedRolls"] = 0,
+                        ["sources"] = new JArray(resistedGrants.Select(buff => new JObject {
+                            ["source"] = buff.Context.MaybeCaster.UniqueId, ["buff"] = buff.Blueprint.AssetGuid,
+                            ["secondsLeft"] = buff.TimeLeft.TotalSeconds })) },
+                        "Actual high-Will native saves include a successful resistance; each exact source retains its correctly rolled immunity or natural1 penalty with a native24-hour timer.");
+                    if (!resistance) throw new InvalidOperationException("Archon resistance outcome/timer mismatch or no successful native save observed.");
+                    var timers = new JArray(sourceGrants.Select(buff => new JObject {
+                        ["source"] = buff.Context.MaybeCaster.UniqueId, ["buff"] = buff.Blueprint.AssetGuid,
+                        ["secondsLeft"] = buff.TimeLeft.TotalSeconds, ["end"] = buff.EndTime.ToString(),
+                        ["permanent"] = buff.IsPermanent, ["notDispelable"] = buff.IsNotDispelable }));
+                    bool timed = sourceGrants.All(buff => !buff.IsPermanent && buff.IsNotDispelable &&
+                        buff.TimeLeft.TotalSeconds > 86300 && buff.TimeLeft.TotalSeconds <= 86400);
+                    Sprint25Check(caseId + "-native-timers", timed,
+                        new JObject { ["grants"] = timers, ["forcedRolls"] = 0, ["advancedWorldHours"] = 0 },
+                        "Actual per-source native buff clocks retain a finite24-hour duration; no world clock jump or elapsed24-hour claim.");
+                    if (!timed) throw new InvalidOperationException("Archon native timer contract differs.");
+                    // Choose an actually failed native save. A natural20 is a
+                    // retained immunity outcome, never relabeled as failure.
+                    var hitSource = emitters.FirstOrDefault(source => ContextActionArchonMenace.HasSource(target, penalty, source));
+                    if (hitSource == null) throw new InvalidOperationException("Fixture precondition: both actual saves passed; no penalty exists for hit-break observation.");
+                    var siblingSource = emitters.Single(source => !ReferenceEquals(source, hitSource));
+                    var retained = target.Buffs.Enumerable.Single(buff => ReferenceEquals(buff.Context?.MaybeCaster, siblingSource) &&
+                        (ReferenceEquals(buff.Blueprint, penalty) || ReferenceEquals(buff.Blueprint, immunity)));
+                    int oldBab = target.Stats.BaseAttackBonus.BaseValue;
+                    int oldDamage = hitSource.Damage;
+                    var hitRows = new JArray(); bool hit = false;
+                    try
+                    {
+                        target.Stats.BaseAttackBonus.BaseValue = 100;
+                        for (int attempt = 0; attempt < 5 && !hit; attempt++)
+                        {
+                            var attack = Rulebook.Trigger(new RuleAttackWithWeapon(target, hitSource, target.Body.EmptyHandWeapon, 0));
+                            if (attack.AttackRoll == null) throw new InvalidOperationException("Native hit-break attack omitted its roll.");
+                            hit = attack.AttackRoll.IsHit;
+                            hitRows.Add(new JObject { ["source"] = target.UniqueId, ["target"] = hitSource.UniqueId,
+                                ["weapon"] = target.Body.EmptyHandWeapon.Blueprint.AssetGuid, ["roll"] = (int)attack.AttackRoll.Roll,
+                                ["bonus"] = attack.AttackRoll.AttackBonus, ["ac"] = attack.AttackRoll.TargetAC, ["hit"] = hit });
+                        }
+                    }
+                    finally { target.Stats.BaseAttackBonus.BaseValue = oldBab; hitSource.Damage = oldDamage; }
+                    var marker = target.Buffs.Enumerable.SingleOrDefault(buff => ReferenceEquals(buff.Blueprint, immunity) &&
+                        ReferenceEquals(buff.Context?.MaybeCaster, hitSource));
+                    bool broken = hit && !ContextActionArchonMenace.HasSource(target, penalty, hitSource) && marker != null &&
+                        marker.IsNotDispelable && !marker.IsPermanent && marker.TimeLeft.TotalSeconds > 86300 &&
+                        marker.TimeLeft.TotalSeconds <= 86400 && target.Buffs.Enumerable.Contains(retained) &&
+                        target.Buffs.Enumerable.Contains(foreignPenalty);
+                    Sprint25Check(caseId + "-hit-break", broken, new JObject {
+                        ["attacks"] = hitRows, ["fixtureBab"] = 100, ["forcedRolls"] = 0,
+                        ["brokenSource"] = hitSource.UniqueId, ["retainedSource"] = siblingSource.UniqueId,
+                        ["otherExactBuffRetained"] = target.Buffs.Enumerable.Contains(retained),
+                        ["immunitySecondsLeft"] = marker?.TimeLeft.TotalSeconds, ["unrelatedShakenPreserved"] = target.Buffs.Enumerable.Contains(foreignPenalty) },
+                        "A real native weapon hit breaks only the struck emitter's penalty and starts that source's native24-hour immunity; other sources and unrelated penalties remain.");
+                    if (!broken) throw new InvalidOperationException("Archon source-specific hit break failed.");
+                }
+                int resistedPrior = resistedSaves?.Rows.Count ?? 0;
+                if (boundaries) PlaceExpandedSummoningUnit(resistedTarget, far);
                 int priorSaves = saves.Rows.Count;
                 PlaceExpandedSummoningUnit(target, far);
                 for (int frame = 0; frame < 10; frame++) yield return 0;
                 PlaceExpandedSummoningUnit(target, origin + Vector3.forward);
+                if (boundaries) PlaceExpandedSummoningUnit(resistedTarget, origin + Vector3.forward * 1.5f);
                 for (int frame = 0; frame < 30; frame++) yield return 0;
-                bool noRepeat = saves.Rows.Count == priorSaves && emitters.All(source =>
+                bool noRepeat = saves.Rows.Count == priorSaves && (!boundaries ||
+                    resistedSaves.Rows.Count == resistedPrior && emitters.All(source =>
+                        ContextActionArchonMenace.HasSource(resistedTarget, penalty, source) ||
+                        ContextActionArchonMenace.HasSource(resistedTarget, immunity, source))) && emitters.All(source =>
                     ContextActionArchonMenace.HasSource(target, penalty, source) ||
                     ContextActionArchonMenace.HasSource(target, immunity, source));
                 Sprint25Check(caseId + "-reentry", noRepeat, new JObject {
                     ["savesBefore"] = priorSaves, ["savesAfter"] = saves.Rows.Count,
+                    ["resistedBefore"] = resistedPrior, ["resistedAfter"] = resistedSaves?.Rows.Count,
                     ["sourceBuffs"] = new JArray(target.Buffs.Enumerable.Where(buff => emitters.Contains(buff.Context?.MaybeCaster))
                         .Select(buff => new JObject { ["blueprint"] = buff.Blueprint.AssetGuid,
                             ["source"] = buff.Context?.MaybeCaster?.UniqueId, ["end"] = buff.EndTime.ToString() })) },
@@ -186,6 +278,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "A still-live owned emitter and its victim contribution prevent the next subcase from starting.");
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { sibling });
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                if (boundaries)
+                {
+                    foreach (var actor in new[] { target, resistedTarget })
+                    {
+                        actor.Commands.InterruptAll(true);
+                        if (actor.IsInCombat) actor.LeaveCombat();
+                        foreach (var command in actor.Commands.Raw.Where(value => value != null && !value.IsFinished).ToArray()) command.Interrupt(true);
+                        actor.Commands.RemoveFinishedAndUpdateQueue();
+                    }
+                    bool resistedClean = !resistedTarget.Buffs.Enumerable.Any(buff => emitters.Contains(buff.Context?.MaybeCaster));
+                    Sprint25Check(caseId + "-resisted-cleanup", resistedClean,
+                        new JObject { ["target"] = resistedTarget.UniqueId, ["sourceGrantsAbsent"] = resistedClean },
+                        "Both removed emitters also clean only their own grants on the resistance-control victim.");
+                    if (!resistedClean) throw new InvalidOperationException("Archon resistance victim grants remain.");
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { resistedTarget });
+                    for (int frame = 0; frame < 8; frame++) yield return 0;
+                    bool absent = resistedTarget.Destroyed && !resistedTarget.IsInState && !fixture.Created.Contains(resistedTarget);
+                    Sprint25Check(caseId + "-resisted-absent", absent,
+                        new JObject { ["target"] = resistedTarget.UniqueId, ["destroyed"] = resistedTarget.Destroyed,
+                            ["inState"] = resistedTarget.IsInState, ["inFixture"] = fixture.Created.Contains(resistedTarget) },
+                        "The additional exact-owned resistance victim is disposed before the reset assertion.");
+                    if (!absent) throw new InvalidOperationException("Archon resistance victim remains.");
+                }
                 bool reset = !Game.Instance.State.AreaEffects.All.Except(areaBaseline).Any() &&
                     !target.Buffs.Enumerable.Except(buffBaseline).Any() &&
                     !target.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
@@ -196,11 +311,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["targetBuffsExact"] = !target.Buffs.Enumerable.Except(buffBaseline).Any(), ["ownedActorsAbsent"] = !owner.IsInState && !sibling.IsInState },
                     "No leftover owned areas, victim buffs, queued target commands or source actors remain before support AI.");
                 if (!reset) throw new InvalidOperationException("Archon subcase reset failed; do not run later support case.");
-                foreach (int frame in ReviewArchon30Aid(fixture, mixedHound)) yield return frame;
+                if (!boundaries) foreach (int frame in ReviewArchon30Aid(fixture, mixedHound)) yield return frame;
             }
             finally
             {
                 EventBus.Unsubscribe(saves);
+                if (resistedSaves != null) EventBus.Unsubscribe(resistedSaves);
+                DisposeExpandedSummoningUnits(fixture.Created, localActors.Where(unit => unit != null && !unit.Destroyed).ToArray());
+                foreach (var prototype in prototypes) UnityEngine.Object.Destroy(prototype);
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(unit => unit != null && !unit.Destroyed).ToArray());
                 if (foreignPenalty != null) foreignPenalty.Remove();
                 target.Stats.SaveWill.BaseValue = will;

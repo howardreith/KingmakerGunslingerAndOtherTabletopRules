@@ -62,6 +62,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewArchon30Core(fixture, phase == "archon-hound")) yield return frame;
                 yield break;
             }
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31ArchonBoundariesPhase)
+            {
+                foreach (int frame in ReviewArchon30Core(fixture, false, true)) yield return frame;
+                yield break;
+            }
             if (phase == RuntimeTestScenarioCatalog.Sprints30And31SharedCirclesPhase)
             {
                 foreach (int frame in ReviewSprints3031Circles(fixture)) yield return frame;

@@ -258,6 +258,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint28-native-review";
         // Phase metadata comes from the strict phase policy; the scenario
         // catalog continues to contain only actual scenario identifiers.
+        internal static string Sprints30And31ArchonBoundariesPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.ArchonBoundariesPhase; } }
         internal static string Sprints30And31HoundDisarmPhase
         { get { return ExpandedSummoningNativeProfilePolicy.HoundDisarmPhase; } }
         internal static string Sprints30And31SharedCirclesPhase

@@ -166,6 +166,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "The native equipment switch selects the existing slam/bite alternative without resupplying the sword; the actual full command follows.");
                         if (!fallback) throw new InvalidOperationException("Hound disarm natural fallback failed.");
                     }
+                    // The non-player native PowerAttackWatcher can turn the
+                    // feat on at the attack-roll boundary, after the first
+                    // weapon's stats were already calculated. Keep the OFF
+                    // profile comparisons above, then settle native ON for
+                    // the real command and observe every actual attack below.
+                    if (natural) foreach (int frame in Sprint22SetPowerAttack(owner, true)) yield return frame;
                     owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
                     owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
                     Vector3 far; string lane, direction;
@@ -267,6 +273,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!nativeSword) throw new InvalidOperationException("Hound owned weapon model/mode mismatch.");
                     privateResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
                     var observer = new Sprint24AttackObserver { Owner = owner, Target = target };
+                    var powerBeforeRoll = new JArray(); var powerAfterWeapon = new JArray();
+                    observer.BeforeRoll = value => powerBeforeRoll.Add(new JObject {
+                        ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
+                        ["weapon"] = value.Weapon?.Blueprint.AssetGuid,
+                        ["powerAttack"] = Sprint22PowerAttackState(owner, toggle) });
+                    observer.AfterWeapon = value => powerAfterWeapon.Add(new JObject {
+                        ["owner"] = value.Initiator.UniqueId, ["target"] = value.Target.UniqueId,
+                        ["weapon"] = value.Weapon.Blueprint.AssetGuid,
+                        ["powerAttack"] = Sprint22PowerAttackState(owner, toggle),
+                        ["damageBonus"] = value.AttackRoll?.WeaponStats?.DamageDescription.FirstOrDefault()?.Bonus,
+                        ["attackSources"] = value.AttackRoll?.AttackBonusRule == null ? null :
+                            new JArray(value.AttackRoll.AttackBonusRule.BonusSources.Select(source => new JObject {
+                                ["bonus"] = source.Bonus, ["source"] = source.Source?.Blueprint?.AssetGuid })) });
                     var costs = new JArray(); var endings = new JArray();
                     var issued = ai ? null : new UnitAttack(target) { ForceFullAttack = !single, IsSingleAttack = single };
                     UnitAttack command = issued;
@@ -330,7 +349,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             string presentation = CaptureSprint17OriginalBodyFrame(owner, mesh, id + "-combat");
                             bool aiOwned = !ai || command != null && command.AiAction != null && aiTicks > 0 &&
                                 commands.OfType<UnitAttack>().Count(value => value.AiAction != null && value.IsFinished) == 1;
-                            bool exact = command != null && command.IsFinished && aiOwned &&
+                            bool powerExact = powerBeforeRoll.Count == expected && powerAfterWeapon.Count == expected &&
+                                powerBeforeRoll.Concat(powerAfterWeapon).All(row =>
+                                    (bool)row["powerAttack"]["isOn"] && (bool)row["powerAttack"]["isRunning"] &&
+                                    (int)row["powerAttack"]["activeBuffCount"] == 1) &&
+                                powerAfterWeapon.All(row => row["attackSources"] is JArray &&
+                                    ((JArray)row["attackSources"]).Count(source => (int)source["bonus"] == -2 &&
+                                        (string)source["source"] == toggle.Blueprint.Buff.AssetGuid) == 1 &&
+                                    (int)row["damageBonus"] == (natural ? 6 :
+                                        (string)row["weapon"] == main.Blueprint.AssetGuid ? 9 : 3));
+                            Sprint25Check(id + "-command-power", powerExact, new JObject {
+                                ["owner"] = owner.UniqueId, ["natural"] = natural,
+                                ["beforeRoll"] = powerBeforeRoll, ["afterWeapon"] = powerAfterWeapon,
+                                ["expectedDamageMain"] = natural ? 6 : 9, ["expectedDamageBite"] = natural ? 6 : 3,
+                                ["forcedRolls"] = 0 },
+                                "Native Power Attack is settled before every command attack; each actual attack retains its source-attributed penalty and PF1 role damage, without a mid-first-attack toggle ambiguity.");
+                            bool exact = command != null && command.IsFinished && aiOwned && powerExact &&
                                 (ai ? expected == 1 || expected == 3 : expected == (single ? 1 : natural ? 2 : 3)) &&
                                 (command.Result == UnitCommand.ResultType.Success || trace.Exhausted(command)) &&
                                 command.AllAttacks.Count == expected && observer.OwnerWeaponAttacks.Count == expected &&
