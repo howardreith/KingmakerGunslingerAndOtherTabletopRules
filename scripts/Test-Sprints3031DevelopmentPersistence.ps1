@@ -43,7 +43,7 @@ if(Get-Process Kingmaker -ErrorAction SilentlyContinue){throw 'No running game p
 $beforeEvidence=@(Get-ChildItem -LiteralPath $script:KmgRuntimeEvidenceRoot -Directory | ForEach-Object FullName)
 $beforeStage=Test-Path -LiteralPath $stage;$beforeLock=Test-Path -LiteralPath $lock
 foreach($scenario in @('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent')) {
- & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $scenario -ExpectedVersion $version -SaveName KMG_AUTOMATION_WORKING -Parameters @{persistenceScope='outsider-celestial'} -ExitAfterCompletion -AllowDirtyGit -WhatIf -Confirm:$false
+ & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $scenario -ExpectedVersion $version -SaveName KMG_AUTOMATION_WORKING -Parameters @{persistenceScope='outsider-celestial'} -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false
  $count++
 }
 $afterEvidence=@(Get-ChildItem -LiteralPath $script:KmgRuntimeEvidenceRoot -Directory | ForEach-Object FullName)
