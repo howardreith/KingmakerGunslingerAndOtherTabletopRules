@@ -162,6 +162,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-sprint27-native-inputs";
         internal const string ObserveExpandedSummoningSprint28Inputs =
             "observe-expanded-summoning-sprint28-native-inputs";
+        internal const string ObserveExpandedSummoningSprints30And31Inputs =
+            "observe-expanded-summoning-sprints30-31-native-inputs";
         internal const string ObserveExpandedSummoningSprint29Inputs =
             "observe-expanded-summoning-sprint29-native-inputs";
         internal const string ObserveExpandedSummoningSprint26Inputs =
@@ -254,6 +256,36 @@ namespace KingmakerGunslinger.RuntimeTesting
             "disposable-expanded-summoning-sprint25-native-review";
         internal const string DisposableExpandedSummoningSprint28NativeReview =
             "disposable-expanded-summoning-sprint28-native-review";
+        // Phase metadata comes from the strict phase policy; the scenario
+        // catalog continues to contain only actual scenario identifiers.
+        internal static string Sprints30And31OutsiderBodyPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodyPhase; } }
+        internal static string Sprints30And31LanternRayPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.LanternRayPhase; } }
+        internal static string Sprints30And31LanternBodyPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.LanternBodyPhase; } }
+        internal static string Sprints30And31AstralCorePhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralCorePhase; } }
+        internal static string Sprints30And31AstralHammerPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralHammerPhase; } }
+        internal static string Sprints30And31AstralBladePhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralBladePhase; } }
+        internal static string Sprints30And31AstralSupportPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralSupportPhase; } }
+        internal static string Sprints30And31AstralAtWillPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralAtWillPhase; } }
+        internal static string Sprints30And31AstralSmitePhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralSmitePhase; } }
+        internal static string Sprints30And31AstralDispelPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.AstralDispelPhase; } }
+        internal static string Sprints30And31TrumpetDispelPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.TrumpetDispelPhase; } }
+        internal static string Sprints30And31TrumpetBlastPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.TrumpetBlastPhase; } }
+        internal static string[] Sprints30And31OutsiderBodySequence
+        { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodySequence; } }
+        internal const string DisposableExpandedSummoningSprints30And31NativeReview =
+            "disposable-expanded-summoning-sprints30-31-native-review";
         internal const string DisposableExpandedSummoningSprint29NativeReview =
             "disposable-expanded-summoning-sprint29-native-review";
         internal const string DisposableExpandedSummoningCleanup2NativeReview =
@@ -274,6 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSprint27NativeReview ||
                 scenario == DisposableExpandedSummoningSprint28NativeReview ||
                 scenario == DisposableExpandedSummoningSprint29NativeReview ||
+                scenario == DisposableExpandedSummoningSprints30And31NativeReview ||
                 scenario == DisposableExpandedSummoningCleanup2NativeReview;
         }
         internal const string DisposableExpandedSummoningPlayerPath =
@@ -375,6 +408,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string WorkingSaveExpandedSummoningCreatureReview =
             "working-save-expanded-summoning-creature-review";
+        internal static string Sprints30And31DispelUiCase { get { return ExpandedSummoningNativeProfilePolicy.DispelUiCase; } }
+        internal static string Sprints30And31DispelUiCreatures { get { return ExpandedSummoningNativeProfilePolicy.DispelUiCreatures; } }
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";
@@ -881,6 +916,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint27Inputs,
                 ObserveExpandedSummoningSprint28Inputs,
                 ObserveExpandedSummoningSprint29Inputs,
+                ObserveExpandedSummoningSprints30And31Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
@@ -901,6 +937,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint27NativeReview,
                 DisposableExpandedSummoningSprint28NativeReview,
                 DisposableExpandedSummoningSprint29NativeReview,
+                DisposableExpandedSummoningSprints30And31NativeReview,
                 DisposableExpandedSummoningCleanup2NativeReview,
                 DisposableExpandedSummoningPlayerPath,
                 DisposableExpandedSummoningProjectedMenu,

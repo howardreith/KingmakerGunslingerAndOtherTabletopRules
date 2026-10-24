@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.Summoning
             float radius = new Feet(20).Meters;
             if (Game.Instance.State.Units.All.Any(unit =>
                 unit != null && !unit.Destroyed &&
-                !ReferenceEquals(unit, actor) && actor.IsAlly(unit) &&
+                !ReferenceEquals(unit, actor) && !actor.IsEnemy(unit) &&
                 (unit.Position - center).magnitude <= radius + unit.Corpulence))
                 return 0f;
             // Area ownership, not a global fog switch: a sibling or a
@@ -60,6 +60,28 @@ namespace KingmakerGunslinger.Summoning
                 ReferenceEquals(area.Context.MaybeCaster, actor)))
                 return 0f;
             return 1f;
+        }
+    }
+
+    /// <summary>Eligibility for Dretch's two finite SLAs. It never changes the
+    /// native effect, saving throw, resource, or another actor's state.</summary>
+    public sealed class DretchSpellAiEligibility : Consideration
+    {
+        public BlueprintUnit OwningBlueprint;
+        public Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility Ability;
+        public int MaximumHitDice;
+        public override float Score(DecisionContext context)
+        {
+            var actor = context?.Unit; var target = context?.Target?.Unit;
+            if (actor == null || target == null || !ReferenceEquals(actor.Blueprint, OwningBlueprint) ||
+                Ability == null || !actor.IsEnemy(target) || target.Destroyed || target.Descriptor.State.IsDead ||
+                MaximumHitDice > 0 && target.Descriptor.Progression.CharacterLevel > MaximumHitDice) return 0f;
+            var granted = actor.Descriptor.Abilities.GetAbility(Ability);
+            if (granted == null || !new Kingmaker.UnitLogic.Abilities.AbilityData(granted).IsAvailable) return 0f;
+            var effect = new Kingmaker.UnitLogic.Mechanics.MechanicsContext(actor, actor.Descriptor,
+                Ability, null, new TargetWrapper(target));
+            var immunity = target.Get<Kingmaker.UnitLogic.Parts.UnitPartSpellResistance>();
+            return immunity != null && immunity.IsImmune(effect) ? 0f : 1f;
         }
     }
 }

@@ -55,13 +55,14 @@ namespace KingmakerGunslinger.Summoning
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
             // Registered hidden creatures enter through visibleCatalog too.
-            string[] prepared = { "remove-stirge" };
+            string[] prepared = { "remove-stirge", "trumpet-blast" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
-            // Sprint27 registers one Griffon with its real pinned painting.
-            // Keep the immutability guard in addition to exact key equality.
-            if (Values.Length != 129 || expected.Length != 129 ||
+            // Compare the actual registered and retained concepts. Released
+            // identity/pixel preservation is enforced by the append-only ledger
+            // and icon manifest; a historical count cannot admit a new slice.
+            if (Values.Length != expected.Length ||
                 Values.Any(value => value == null ||
                     string.IsNullOrWhiteSpace(value.Key) ||
                     string.IsNullOrWhiteSpace(value.DisplayName)) ||
@@ -94,7 +95,7 @@ namespace KingmakerGunslinger.Summoning
             // removal action remains a separate concept with no creature of
             // its own, so it stays an explicit entry.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "remove-stirge", "Remove Stirge");
+                "remove-stirge", "Remove Stirge", "trumpet-blast", "Trumpet Blast");
             return result.ToArray();
         }
 

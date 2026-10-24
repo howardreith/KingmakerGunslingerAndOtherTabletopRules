@@ -239,6 +239,12 @@ foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-mesh.json") -Destination $armoredDinosaurDestination
     Copy-Item -LiteralPath (Join-Path $armoredDinosaurSource "$kind-albedo.png") -Destination $armoredDinosaurDestination
 }
+$outsiderDestination = Join-Path $modDirectory 'assets\outsider-celestial'
+New-Item -ItemType Directory -Path $outsiderDestination -Force | Out-Null
+$s3031OriginalBodyParts = @('lemure-mesh.json','lemure-albedo.png','dretch-mesh.json','dretch-albedo.png','hound-archon-mesh.json','hound-archon-albedo.png')
+foreach ($part in $s3031OriginalBodyParts) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory "assets\outsider-celestial\$part") -Destination $outsiderDestination
+}
 $theropodSource = Join-Path $outputDirectory 'assets\sprint24-theropods'
 $theropodDestination = Join-Path $modDirectory 'assets\sprint24-theropods'
 New-Item -ItemType Directory -Path $theropodDestination -Force | Out-Null
@@ -282,9 +288,15 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # three giant portraits and the v0.0.162 release notes. Sprint29 adds
 # three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
-# Cleanup2 adds one authored Gorgon material-parameter map and the v0.0.164
-# release notes.
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + 1 + 1
+# The capped S30/S31 pilot adds declared exported icons and original-body members here.
+# Count their declared, hash-validated manifest records; Lantern is in place.
+# The strict package validator still checks the exact complete path/hash set.
+$s3031IconKeys = @('lemure','dretch','hound-archon','astral-deva','trumpet-archon','trumpet-blast')
+. (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
+$summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
+$s3031IconCount = @($summonManifest.icons | Where-Object { $_.key -cin $s3031IconKeys }).Count
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count + 1 + 1
+# The final two files retain released Cleanup2 Gorgon parameters and v0.0.164 notes.
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

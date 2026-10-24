@@ -1,78 +1,26 @@
-# Summon Cleanup Iteration 2 — v0.0.164 RELEASED / STOP
+# Sprints 30-31 - ACTIVE combined release-batch pilot
 
-**PR #67 is MERGED and v0.0.164 is PUBLISHED.** On 2026-10-23 the owner
-approved the Cleanup 2 artwork ("The artwork looks great") and authorized the
-release once the Pro review's checks were clear: the release validator and
-Sprint-level gate, merging PR #67, publishing through `Publish-Release.ps1`
-and checking the public download. The release changes art, giant presentation
-and summon menus, and no identity or route. The source-derived public equation
-is unchanged from v0.0.163: **1,127 generated placements + 29 retained
-wrappers = 1,156 visible choices**.
+Continue the authorized six-workstream mission through one qualified product PR/merge, one stable release with actual public downloads verified, exact HOWARD-LAPTOP restoration and one final-records PR; then STOP before S32. Product/build/qualification/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s30-31`, branch `codex/expanded-summoning-sprints30-31-outsider-celestial-pilot`, draft [PR66](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/66). Published baseline is now v0.0.164: fetched existing remote tag peels to23952275bb8bbe5a69a8e64a961dd978093a2ec6, and master records114564ac include its final release records. Recheck remote lineage and the next free patch before promotion;164 is used. No merge/release/records PR yet. [The single active scope/disposition/coverage map](planning/SPRINT30-31-STATUS.md) controls, not the dated history.
 
-- **Merge.** PR #67 merged normally as
-  `23952275bb8bbe5a69a8e64a961dd978093a2ec6` (tree `4a8f1791…`). Between the
-  gated candidate `dcfffcd602` and the merge, only the unpackaged record
-  `06fb138d9f` changed.
-- **Gates on the candidate.** The Sprint-level gate passed 2,739 / 2,739,
-  including the v0.0.164 release validator, the exact-reference build and
-  strict package validation (package `eb60f199…64ae`). The guarded visual
-  contracts passed 15/15 and the creature review 32/32 on that package. The
-  first candidate `9a123f9675` failed visual contracts 14/1. The cause was the
-  measurement, not the art: it read the Brachiosaurus attack gesture's
-  deliberate culling envelope (25.035 m) as the body. `7c300008e1` measures the
-  gesture-owned skin at its current pose (9.131 m) and keeps every limit. See the
-  [release candidate gates](planning/CLEANUP2-PR67-REVIEW-FOLLOWUP.md#v00164-release-candidate-october-23-24).
-- **Publication.** `Publish-Release.ps1` ran once from the clean, pushed main
-  checkout (`master` fast-forwarded to the merge) with the cleanup2 reference
-  bundle, in 624 s. Its build passed 2,739 / 2,739 domain tests, the
-  release-mode wrapper with `validate_expanded_summoning_cleanup2_release164.py`
-  and strict package validation, and both clean builds produced identical
-  bytes.
+Released baseline integration: actual remote master114564ac71c5efbbf170963f7bc523ee0fcdd91d contains completed Cleanup2 productPR67 and recordsPR68 for v0.0.164. Preserve those legitimate rendering/menu/art/tooling descendants in this review branch. The completed manual blast tuple below stays frozen at its original source0ca203cb; fresh post-merge development integration is now package127/game136 below; original earlier tuples remain distinct. Select the next free stable patch at promotion;164 is already used. No change to the six-workstream scope, hidden23 routes, Lantern7 or restored human intake.
 
-[Stable v0.0.164](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.164)
-is published (2026-10-24T03:47:11Z) and Latest, titled "Tabletop Added Rules
-v0.0.164". Annotated tag object `ef6467ee42e084661e0e10dd99637f7e5bf1188e`
-peels to the merge commit. The downloaded public assets match GitHub's
-digests:
+Current slice: completed development package127/source0f4a90cc090d289d6e963176a6c4bcb8e49091b2 on the preserved released v0.0.164 baseline; source-statece1c942b3431373a3d28466fd243b53fd919897b00349ad023047efd46e4ca80; ZIPf84fc59d2c0adb67699972d1bfbbde26a2f6dce5d767b154deddf1da92a51756; DLLcf673d5bd635084eb36f2ef870d202ef911ae409fddf1994f17424695eaed9d6; MVID098426bd-1c6f-45c5-8a42-0b82900bca5f. Build07:18:57.980-07:22:42.977Z PASS24 named pilot/native-admission/label/gesture checks, exact16 installed references, strict412-file package. The new mission-owned private reference archiveSHA1b2aa0353db2563b624f68734f9c4590110b2f227fa72d5331b7d0ee1dd6270d is artifacts/s3031-refs164-20261024T071848Z; original frozen private depot remains exact. Actual game136 RunId20261024T0726172304129Z-7dcce8f390f4456c874080722c118558 fresh nativePASS10/10,107160ms; outer07:23:40.725-07:28:23.578Z, rawSHA6ac156e9001f2e2dd00f90134eeeccee01884ced66bd05fd9a6b7c24ba27c7fc. The original wrapper failed after the successful native/profile result because renaming the purpose also renamed8 expected assertion prefixes. Original wrapper/exit/raw records remain immutable; separate Read-CorrectedAssertionPrefix.ps1/reader-verdict-corrected.json PASS re-evaluates every actual fixed native assertion plus source/version/artifact/phase/physical condition/context/owner-loss/restore facts without a new game or changed observations. Native standard action, liveDC, all-creature/exact-archon/range/Freedom/SR1000 targeting, actual per-target d4/nondispellable paralysis, source removal/native expiry and sibling slots pass freshly on the merged bytes. No AI/horn/sword/mixed-source/TB/cold/public/release claim. Exact original human0.0.117 intake/Working/baseline/metadata/settings/bank restored (Mods967/saves118/refs18/settings83/tasks0/processes1Steam); no owned game/task/lease/staging/permanent installation. Next implement safe autonomous blast selection/fallback and actual owned trumpet/+4 sword presentation; all23 new routes stay hidden, Lantern7 identities/routes stay public. Original premerge native/readers and other-creature proof tuples remain intact.
 
-- `KingmakerGunslinger-0.0.164-expanded-summoning-cleanup2.zip`:
-  `0a24dd9f8998e43234d64138c481b1969f1f6c671f5bebb2d724f9eb0df0a812`
-  (400 files; DLL
-  `61c3800017f7c6829310ecd4c63b8d319a0d6946d020be924697e66b2adb5940`,
-  MVID `1a40087f-d91a-4952-979d-413d58198578`, assembly version 0.0.164.0);
-- `SHA256SUMS.txt`:
-  `b4b6b55a2c043f28d32931faff05669899b9b23687e73dedfc1f133f3196642f`;
-- `release-manifest.json`:
-  `22191e974f1fef021ad6c03e1069457dabcad359dbd5c346ca0ed8f7de1df49d`.
+Scope: five additions plus one upgrade;23 new SM roots and7 preserved/changed Lantern roots,30 affected.122 registered creatures; Monster101/568, Nature104/582,1150 registered roots;23 new hidden roots leave1127+29=1156 public choices. Final public cross-check1150+29=1179. No SNA, templates, alignment feats/variants, mounts, change shape, gestalt, new flight/navigation/illumination/social/skill framework, general actor/caster/rendering/orchestration rewrite or S32.
 
-The downloaded ZIP passed strict package validation. Its DLL embeds the merge
-commit and `0.0.164-expanded-summoning-cleanup2`. These bytes differ from the
-gated candidate because the build stamps the commit and the PDB path. Disassembly
-shows the same code: 399 of 400 package entries are identical, and the DLL's IL
-differs only in the commit stamp, MVID, image base and the layout addresses of
-188 compiler static-data fields, each holding identical bytes. The publisher's
-own run qualified the released bytes, and the native evidence stays bound to
-the candidate. Nothing was deployed permanently: every guarded run restored the
-live mod exactly (254 files, `5C3E4AD4…BFBB`), all 95 saves remain, and
-`KMG_AUTOMATION_WORKING` is unchanged.
+All previous7368 identity entries are exact. Two private blast IDs were allocated once: TrumpetBlast3bc15285b09d4b4bb9c4cb0d5c2009fb and TrumpetParalyzed9b71d4956e624291a6ad179f811cbf64; ledger7370/7367 active/3 preexisting reservations, special identities489/scoped private93, registrySHA20bffdb1b7b4cbe132861e5066da07b2c29d43e20495919b6884619cb001b638. Original blast sourceSHA51ccc53ac0c77f295b1c40d6a346634452dd518a1986cd6a455e861df23ce41d, real128px export and exact two icon consumers verified. Owner explicitly authorized the one-file copy from the managed image output after an earlier automatic rejection; no other BuffPlanner project access. Provenance names the actual tool and locally inspected style references; no reference files were supplied to the provider, and no model/owner aesthetic approval is inferred.
 
-**Still open (owner decisions, not release blockers):**
-- The level-up preview folds a single elemental row behind "Elementals (1)".
-- Generated descriptions read "Summons X through the native summon lifecycle."
-- Feral Hunter and Preservationist PC menu hovers were last exercised on
-  review43; the owner chose not to rerun menu-adapters on the final bytes.
-- Owner notes on the Brachiosaurus: the torso reads as a broad dome and the
-  tail is short.
+Retained caster proof is original package123/source68e3c3ec6d0b7ff6e2cf68307228e9089537633a, game132 fresh41/41. It proves26 native preparations in two independent genuine CL14/Wis20 books, zero cleric levels/domains/channeling, Resistance/Virtue real commands, native FreedomOfMovementCast0087fc2d64b6095478bc7b8d7d512caf and actual paralysis immunity, Aid/Banishment AI and ally refusal, Magic Vestment and escape/reset. The native Dispel menus retain original120/12913/13 proof, and the distinct prepared versus SLA mechanics retain113/121-122. Do not reopen those development campaigns; cold hydration/final integration still required. The legal equivalent prepared loadout/selected cantrips and filtered/unselected entries are explicit in the table; no Spell Immunity or Sanctuary implementation is claimed.
 
-See [the cleanup state](planning/EXPANDED-SUMMONING-CLEANUP-ITERATION2-STATE.md)
-and [the release notes](docs/RELEASE-NOTES-0.0.164.md). STOP: no further
-Cleanup 2 work is scheduled.
+136 actual game launches/transactions and127 completed development packages. This continuation's first development checkpoint used seven builds and two native transactions, about29.2 minutes of actual validation. It retained two icon metadata/count preconditions, two compile-binding failures, one exact package-count failure, and two native observer failures. The separately declared next narrow batch (one build+one native transaction) completed in8.31 minutes against an8-minute target, below the ordinary30-minute ceiling; native runtime118447ms is separate from the286740ms transaction. Do not call the residual setup avoidable or infer a speedup. Actual C: headroom last read8.63GiB; preserve frozen earlier artifacts and use only the existing owned-redundant scratch route if cleanup becomes necessary.
 
-# Sprint 29 — RELEASED / STOP
+For future build wrappers explicitly pass the new mission-owned ReferenceBundleDir above and set KingmakerManagedDir to its Managed directory. The older protected lab/private bundle lacks newly required UniRx.dll; never modify it or weaken reference checks. The repository exporter produced all16 exact installed references under limited Howard. After the merge all984 preflight/phase and both compatibility suites passed freshly on a73c8f8c; only records changed before0f4a90cc, so exact dependency/log-guarded reuse is explicit. Fix future wrapper assertion names independently of DevelopmentPurpose; retain the fixed trumpet-blast assertion IDs. Current branch includes master114564ac; do not restart Cleanup2, change its approved pixels or reopen its native campaign.
 
-Ettin, Cloud Giant and Storm Giant shipped in stable [v0.0.163](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.163) from [product PR #64](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/64), normal merge `c8c7054b3472e433ecb4bc74ae70a961620655ee`, exact tested source `a4c409c7cad4fdab5c83a6205255e52c29212662`. The 2,700/2,700 Sprint gate, 16 fresh exact-package native reviews, six fresh Working processes, publisher preflight and dry run, and actual public-asset download checks passed. All eight SNA roots are live: 1,127 generated roots plus 29 wrappers = 1,156 visible choices. The downloaded ZIP SHA-256 is `82a4d09d6394d47d3adc6a36bb5d7ee55460fe12793382133779b52d47172df4`; DLL SHA-256 `a7e03aeea0e65dafffffc45bf29f4dbb5a3795d83da947e4effa749d6b946b51`; MVID `d30f4d47-6f91-4ff7-ad58-0f87c56388aa`.
+Next work: safe Trumpet blast AI/refusal and real autonomous attack fallback, then actual trumpet/sword presentation using native body if suitable. Actual installed2.1.7b `UnitViewHandsEquipment.GetWeaponModel(bool offHand)` is public native-instance access (false=main hand; returns active slot.VisualModel); this was read-only inspected once, no rig census. Reuse the proven exact-owner original attachment/material adoption/teardown approach; no neck/articulation campaign. The UI/native body, remaining six profiles/defenses/skills/attacks, mixed auras/sources, RTWP/TB, item/disarm/death/dismissal/expiry/quantities, all30 routes, mixed persistence envelope and fresh ON/OFF/fresh absence boundaries, standalone/high-risk combined profile, old controls, internal coherent read-only review, small combined publisher manifest/refusals, public candidate and one complete final gate all remain as mapped. No dependent expansion behind an unresolved shared defect.
 
-The final full protected intake and original Working bytes/metadata are restored exactly; no owned game process, task, lease, staging or permanent development deployment remains. See the [coverage map](docs/SPRINT29-COVERAGE.md) and [release evidence](planning/SPRINT29-RELEASE-EVIDENCE.json) for the qualified RunIds, asset identities, explicit owner scope decisions and visual backlog. Dated development failures below retain their original verdicts. No owner aesthetic approval is claimed. STOP before Sprint 30.
+Use one source writer/runtime owner. Never edit tracked source during active build/native transactions. Fresh uniquely named wrapper, PS parse/head/dependency check, actual current Capture BEFORE Invoke, limited interactive Howard, guarded Steam640820 with existing Offline Mode/auth/network settings preserved, leases/package checks, then task removal and exact Compare. Human installation is0.0.117, not public163. Last restoration is exact Mods967/saves118/references18/settings83/tasks0/processes1Steam. Baseline immutable; only authorized Working/isolated fixtures mutable, restore Working bytes/metadata before source work. Push only through `C:/Dev/KingmakerGunslingerLab/codex-policy/Push-KingmakerGunslinger.ps1`; two exact branch allowlist additions were already backed up/hashed/refusal-tested. No force/reset/clean/shared rebase/historical tag or asset replacement/host update/paid backend/credential workaround/permanent deployment. Do not access DATA/Mounted Combat/other project labs. No subagents requested.
+
+Owner choices: general live PF1 Hound attack roles/Strength and Trumpet Su DC20, printed discrepancies disclosed; offensive dismissal/banishment/Dispel Evil/Holy Word legal while caster travel filtered. Consume the canonical shared Magic Circle so future improvements carry to Hound/etc, retaining accepted contact/SR-barrier and existing-control-suppression omissions. Astral keeps its distinct20ft/+4/lesser globe auraCL15 and SLA CL13. Ordinary-map aerial/passive-sense conventions apply; named noncombat omissions and legal preparations are explicit in the table. Recognizable usable bodies and real icons required; coarse anatomy/rigid wings/seams/modest harmless clipping/texture polish are backlog with no personal aesthetic approval.
 
 ## Dated development history
 
@@ -84,7 +32,7 @@ The `4105be52` Awesome Blow native task exited PASS and restored the laptop, but
 
 Cloud Giant, Storm Giant and Ettin are hidden development candidates on branch `codex/expanded-summoning-sprint29-cloud-storm-ettin`. Native profiles, equipment modes, resolved RTWP attacks and turn-based commands passed on their recorded development artifacts. Exact `b8966336` passed 10/10 direct Cloud fog predicates; exact `32f8be8b` passed 13/13 direct Storm magic predicates after the recorded CL/DC repair. Earlier autonomous AI failures and repairs remain dated in the evidence map. Exact `b6dd3752` passed 13/13 fresh RTWP AI predicates: Ettin chose four flail attacks; Cloud chose safe CL16 Fog Cloud; Storm chose Chain Lightning, then activated CL15 Call Lightning and used its granted bolt with a real DC15 save, damage and finite-state debit. No fixture attack or forced roll was injected. The `c81a9941`, `0ec04e74` and `6307228a` item failures remain dated. Exact `ff42de09` passed 14/14 fresh native item predicates: Ettin quantity siblings owned five unique items each; Cloud and Storm equipment, transfer refusal, death/expiry no-loot and exact party inventory passed. Exact `e4ea70d1` passed 13/13 native disarm predicates, including a real two-attack offhand-only Ettin command and Cloud/Storm slam fallback with no item resupply. The first `ad90de97` Awesome Blow native run failed its open-displacement/prone observation after a real successful maneuver and slam hit; the source now normalizes the native push direction and samples the force-move outcome during the action, pending native recheck. All transactions restored actual laptop intake exactly. Negative fog/target cases, later bolt cadence, turn-based AI, Awesome Blow collision, cold-load hydration, affected controls, public routes and release remain. The source-derived public equation is **1,119 generated placements + 29 retained wrappers = 1,148 visible choices**; all eight new SNA roots remain suppressed. See [the current contract](planning/EXPANDED-SUMMONING-SPRINT29-CONTRACT.md) and [evidence map](planning/SPRINT29-EVIDENCE.json). Historical Sprint 28 release evidence remains below.
 
-# Sprint 28 — RELEASED / STOP
+# Sprint 28 â€” RELEASED / STOP
 
 Hill, Stone and Fire Giants shipped in stable [v0.0.162](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.162) from product [PR #62](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/62), merge `f590aa33ced091506510981598eab184bcb293a9`, tested source `b0f5b4bac9d9c78ab30b7a32697d3960b0890ef6`. The exact downloaded ZIP SHA-256 is `4d806ea4d235db95a945ee93b0af4a47c0b92f50ecd9ee44ddb98b6b021c2f12`; DLL SHA-256 `04b7e0cafeb4f03ec6a6e2ec640bfac5aca88b0eea2b55c802da63d3bb13b6b2`; MVID `0ac0af6e-bad3-41d0-a2bd-73fe4bc5e508`.
 

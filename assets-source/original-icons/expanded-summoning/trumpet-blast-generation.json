@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "tool": "image_gen.imagegen (built-in)",
+  "providerModel": "not exposed by tool; not inferred",
+  "transparentBackground": false,
+  "key": "trumpet-blast",
+  "source": "assets-source/original-icons/expanded-summoning/sources/trumpet-blast.png",
+  "sourceSha256": "51ccc53ac0c77f295b1c40d6a346634452dd518a1986cd6a455e861df23ce41d",
+  "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a15fe6-3857-70c3-8feb-e57193228e09/exec-fc7e7544-3644-474d-9763-d533c5620230.png",
+  "copyAuthorization": "Owner explicitly approved the pending exact one-file copy after automatic review rejected its managed output location. The same scoped copy then succeeded through normal review; no other project environment access.",
+  "styleReferences": [
+    "assets-source/original-icons/shield-other/shield-other-generated-source.png",
+    "assets-source/original-icons/expanded-summoning/sources/trumpet-archon.png"
+  ],
+  "styleReferenceRole": "Inspected locally only; no reference files supplied to provider; original composition and pixels.",
+  "prompt": "Use case: stylized-concept. Asset type: ONE original square painted command icon for a Pathfinder fantasy RPG, intended for deterministic 128px export and readable at 40px. Subject: a single gleaming silver celestial trumpet or curved bugle, with an unmistakable mouthpiece, a simple curved tube and a large flared bell, emitting two broad pale blue-white sound pulses from its bell. The horn and pulses fill the central 80 percent; strong simple silhouette and clear negative space. Painterly high-fantasy material realism, textured silver with restrained warm edge highlights, cool blue radiance against a dark smoky umber/navy backdrop. The locally inspected project shield-other painting and Trumpet Archon portrait are STYLE REFERENCES ONLY; create original composition and pixels. The subject is the magical trumpet blast itself, with no person, angel, wings or creature. No lightning bolts, fire, damage, petrified body, gore or extra objects. Full-bleed opaque square, no decorative border or surrounding frame, no text, letters, numbers, UI, logo or watermark. Output a single 1024x1024 opaque painted icon.",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "status": "Source and deterministic128px export inspected; native presentation pending."
+}

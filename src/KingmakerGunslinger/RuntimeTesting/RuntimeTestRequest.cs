@@ -170,6 +170,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = (string)request.Parameters["reviewPhase"];
             return ExpandedSummoningNativeProfilePolicy.Sprint29Phase(phase) ? phase : null;
         }
+        internal static string Sprints30And31ReviewPhase(RuntimeTestRequest request)
+        {
+            if (request == null || request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview ||
+                request.Parameters == null || request.Parameters.Count != 1 ||
+                request.Parameters["reviewPhase"]?.Type != JTokenType.String) return null;
+            string phase = (string)request.Parameters["reviewPhase"];
+            return ExpandedSummoningNativeProfilePolicy.Sprints30And31Phase(phase) ? phase : null;
+        }
+        internal static bool Sprints30And31DispelUi(RuntimeTestRequest request)
+        {
+            return request != null &&
+                request.Parameters?["saveName"]?.Type == JTokenType.String &&
+                request.Parameters?["creatures"]?.Type == JTokenType.String &&
+                request.Parameters?["reviewCase"]?.Type == JTokenType.String &&
+                ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(
+                    request.ExitAfterCompletion, request.Scenario, request.Parameters.Count,
+                    (string)request.Parameters["saveName"], (string)request.Parameters["creatures"],
+                    (string)request.Parameters["reviewCase"]);
+        }
         internal static string Cleanup2ReviewPhase(RuntimeTestRequest request)
         {
             if (request == null || request.Scenario != RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
@@ -356,6 +375,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && (!request.ExitAfterCompletion || Sprint27ReviewPhase(request)==null))return "sprint27-native-review-phase-and-exit-required";
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview && (!request.ExitAfterCompletion || Sprint28ReviewPhase(request)==null))return "sprint28-native-review-phase-and-exit-required";
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview && (!request.ExitAfterCompletion || Sprint29ReviewPhase(request)==null))return "sprint29-native-review-phase-and-exit-required";
+            if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview && (!request.ExitAfterCompletion || Sprints30And31ReviewPhase(request)==null))return "sprints30-31-native-review-phase-and-exit-required";
             if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview && (!request.ExitAfterCompletion || Cleanup2ReviewPhase(request)==null))return "cleanup2-native-review-phase-and-exit-required";
             if (request.Scenario == RuntimeTestScenarioCatalog
                     .DisposableExpandedSummoningSprint26NativeReview &&
@@ -612,6 +632,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters?["creatures"]?.Type != JTokenType.String ||
                     string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
                     return "creature-review-creatures-required";
+                bool dispelUi = creatureReview && request.Parameters?["reviewCase"] != null;
+                if (dispelUi && !Sprints30And31DispelUi(request))
+                    return "sprints30-31-dispel-ui-scope-invalid";
                 bool crowdReview = creatureReview &&
                     request.Parameters?["quantity"] != null;
                 if (crowdReview &&
@@ -622,7 +645,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview || dispelUi ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";
@@ -766,12 +789,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             else if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview ||
                     request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview ||
                     request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview ||
+                    request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview ||
                     request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)
             {
                 if(request.MainMenuTimeoutSeconds!=0 || request.ActionResolutionTimeoutSeconds!=0 || request.ActionInvocationTimeoutSeconds!=0 || request.DescriptorResolutionTimeoutSeconds!=0 || request.LoadEntryTimeoutSeconds!=0 || request.FingerprintTimeoutSeconds!=0)return "scenario-timeouts-not-allowed";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview && Sprint27ReviewPhase(request)==null)return "sprint27-native-review-phase-invalid";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint28NativeReview && Sprint28ReviewPhase(request)==null)return "sprint28-native-review-phase-invalid";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview && Sprint29ReviewPhase(request)==null)return "sprint29-native-review-phase-invalid";
+                if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview && Sprints30And31ReviewPhase(request)==null)return "sprints30-31-native-review-phase-invalid";
                 if(request.Scenario==RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview && Cleanup2ReviewPhase(request)==null)return "cleanup2-native-review-phase-invalid";
             }
             else if (request.Scenario ==

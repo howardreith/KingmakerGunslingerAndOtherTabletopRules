@@ -267,6 +267,10 @@ foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
 }
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\outsider-celestial') -Force | Out-Null
+foreach ($part in @('lemure-mesh.json','lemure-albedo.png','dretch-mesh.json','dretch-albedo.png','hound-archon-mesh.json','hound-archon-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\outsider-celestial\$part") -Destination (Join-Path $buildOutput 'assets\outsider-celestial') -Force
+}
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint24-theropods') -Force | Out-Null
 foreach ($kind in @('deinonychus','tyrannosaurus')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint24-theropods\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint24-theropods') -Force

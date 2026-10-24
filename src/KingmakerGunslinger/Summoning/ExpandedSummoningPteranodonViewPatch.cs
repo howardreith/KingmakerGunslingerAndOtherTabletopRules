@@ -144,7 +144,10 @@ namespace KingmakerGunslinger.Summoning
                 { TheropodVisualPolicy.DeinonychusBlueprintName,
                     TheropodRulesPolicy.DeinonychusKey },
                 { TheropodVisualPolicy.TyrannosaurusBlueprintName,
-                    TheropodRulesPolicy.TyrannosaurusKey }
+                    TheropodRulesPolicy.TyrannosaurusKey },
+                { LemureVisualPolicy.BlueprintName, LemureVisualPolicy.Key },
+                { DretchVisualPolicy.BlueprintName, DretchVisualPolicy.Key },
+                { HoundArchonVisualPolicy.BlueprintName, HoundArchonVisualPolicy.Key }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -222,6 +225,7 @@ namespace KingmakerGunslinger.Summoning
             internal SkinnedMeshRenderer[] SuppressedRenderers;
             internal bool[] OriginalSuppressedRendererStates;
             internal TheropodAccessorySuppression TheropodSuppression;
+            internal HoundArchonSwordView HoundSword;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
@@ -327,6 +331,18 @@ namespace KingmakerGunslinger.Summoning
             string blueprintName = __instance.EntityData.Blueprint.name;
             string visualKey;
             if (!VisualKeys.TryGetValue(blueprintName, out visualKey)) return;
+            if (visualKey == LemureVisualPolicy.Key &&
+                !LemureVisualPolicy.IsExactIdentity(__instance.EntityData.Blueprint.AssetGuid,
+                    blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
+                    __instance.EntityData.Blueprint.Prefab.AssetId)) return;
+            if (visualKey == DretchVisualPolicy.Key &&
+                !DretchVisualPolicy.IsExactIdentity(__instance.EntityData.Blueprint.AssetGuid,
+                    blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
+                    __instance.EntityData.Blueprint.Prefab.AssetId)) return;
+            if (visualKey == HoundArchonVisualPolicy.Key &&
+                !HoundArchonVisualPolicy.IsExactIdentity(__instance.EntityData.Blueprint.AssetGuid,
+                    blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
+                    __instance.EntityData.Blueprint.Prefab.AssetId)) return;
             if (TheropodVisualPolicy.Handles(visualKey))
             {
                 ModContext context;
@@ -384,7 +400,25 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
-            if (attachment.VisualKey == GriffonVisualPolicy.Key)
+            if (attachment.VisualKey == HoundArchonVisualPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetHoundArchonVisual(out source,
+                    out boneNames, out albedo, out status)) return Fallback(status);
+            }
+            else if (attachment.VisualKey == DretchVisualPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetDretchVisual(out source,
+                    out boneNames, out albedo, out status)) return Fallback(status);
+            }
+            else if (attachment.VisualKey == LemureVisualPolicy.Key)
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetLemureVisual(out source,
+                    out boneNames, out albedo, out status)) return Fallback(status);
+            }
+            else if (attachment.VisualKey == GriffonVisualPolicy.Key)
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetGriffonVisual(out source,out boneNames,out albedo,out status)) return Fallback(status);
@@ -499,7 +533,10 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null && value.sharedMesh != null)
                 .ToArray();
             SkinnedMeshRenderer donor;
-            if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+            if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
+                attachment.VisualKey == LemureVisualPolicy.Key ||
+                attachment.VisualKey == DretchVisualPolicy.Key ||
+                attachment.VisualKey == HoundArchonVisualPolicy.Key)
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(
                         donors.Select(value => value.name)))
@@ -591,6 +628,9 @@ namespace KingmakerGunslinger.Summoning
                                         attachment.VisualKey) ||
                                     TheropodVisualPolicy.Handles(
                                         attachment.VisualKey) ||
+                                    attachment.VisualKey == LemureVisualPolicy.Key ||
+                                    attachment.VisualKey == DretchVisualPolicy.Key ||
+                                    attachment.VisualKey == HoundArchonVisualPolicy.Key ||
                                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
                                     : CustomVisualName;
@@ -642,12 +682,22 @@ namespace KingmakerGunslinger.Summoning
                         () => HasLiveOriginalVisual(view, attachment.VisualKey));
                 }
 
-                if (TheropodVisualPolicy.Handles(attachment.VisualKey))
+                if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
+                    attachment.VisualKey == LemureVisualPolicy.Key ||
+                    attachment.VisualKey == DretchVisualPolicy.Key ||
+                    attachment.VisualKey == HoundArchonVisualPolicy.Key)
                 {
+                    // The same measured two-renderer donor needs the same per-view suppression.
                     attachment.TheropodSuppression = view.gameObject
                         .AddComponent<TheropodAccessorySuppression>();
                     attachment.TheropodSuppression.Configure(
                         attachment.SuppressedRenderers.Single());
+                }
+
+                if (attachment.VisualKey == HoundArchonVisualPolicy.Key)
+                {
+                    attachment.HoundSword = view.gameObject.AddComponent<HoundArchonSwordView>();
+                    attachment.HoundSword.Configure(view, donor);
                 }
 
                 Action fault = PostSuppressionFaultForTest;
@@ -989,6 +1039,12 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.HoundSword != null)
+            {
+                attachment.HoundSword.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.HoundSword);
+                attachment.HoundSword = null;
+            }
             if (attachment.OriginalAttackGesture != null)
             {
                 attachment.OriginalAttackGesture.Release();
@@ -1129,7 +1185,7 @@ namespace KingmakerGunslinger.Summoning
                 .Where(value => value != null).Distinct().ToArray();
         }
 
-        /// <summary>Exact per-view owned resources for the two theropod bodies.
+        /// <summary>Exact per-view resources for original bodies on the measured free-hands donor.
         /// The disabled accessory and both donor renderers remain native and
         /// therefore never appear in this receipt.</summary>
         internal static UnityEngine.Object[] CaptureTheropodOwnedResources(
@@ -1137,7 +1193,10 @@ namespace KingmakerGunslinger.Summoning
         {
             Attachment attachment;
             if (view == null || !Applied.TryGetValue(view, out attachment) ||
-                !TheropodVisualPolicy.Handles(attachment.VisualKey))
+                (!TheropodVisualPolicy.Handles(attachment.VisualKey) &&
+                 attachment.VisualKey != LemureVisualPolicy.Key &&
+                 attachment.VisualKey != DretchVisualPolicy.Key &&
+                 attachment.VisualKey != HoundArchonVisualPolicy.Key))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
                 ? new Material[0] : attachment.Donor.sharedMaterials;
@@ -1159,7 +1218,7 @@ namespace KingmakerGunslinger.Summoning
                 .Distinct();
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh,
-                    attachment.TheropodSuppression })
+                    attachment.TheropodSuppression, attachment.HoundSword, attachment.HoundSword?.Model })
                 .Where(value => value != null).Distinct().ToArray();
         }
 
@@ -1206,6 +1265,9 @@ namespace KingmakerGunslinger.Summoning
                     attachment.VisualKey) &&
                  !TheropodVisualPolicy.Handles(
                     attachment.VisualKey) &&
+                 attachment.VisualKey != LemureVisualPolicy.Key &&
+                 attachment.VisualKey != DretchVisualPolicy.Key &&
+                 attachment.VisualKey != HoundArchonVisualPolicy.Key &&
                  !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"
                 ? StirgeVisualName : attachment.VisualKey == "giant-wasp"
@@ -1229,6 +1291,12 @@ namespace KingmakerGunslinger.Summoning
                 attachment.BeetleGlow.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
                 attachment.BeetleGlow = null;
+            }
+            if (attachment.HoundSword != null)
+            {
+                attachment.HoundSword.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.HoundSword);
+                attachment.HoundSword = null;
             }
             var materials = new HashSet<Material>();
             if (attachment.Material != null)

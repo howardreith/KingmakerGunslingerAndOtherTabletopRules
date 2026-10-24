@@ -1,11 +1,12 @@
 [CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='High')]
 param(
-    [Parameter(Mandatory=$true)][ValidateSet('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent')][string]$Scenario,
+    [Parameter(Mandatory=$true)][ValidateSet('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent','working-save-expanded-summoning-creature-review')][string]$Scenario,
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
     [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii')]
     [string]$PersistenceScope='ankylosaurus',
+    [ValidateSet('sprints30-31-dispel-ui')][string]$ReviewCase,
     [string]$DevelopmentPurpose,
     [switch]$ExpandedSummoningDisabled,
     [ValidateRange(30,900)][int]$TimeoutSeconds=600
@@ -13,14 +14,34 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
+. (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 if($PersistenceScope -ceq 'giant-humanoids-ii' -and $DevelopmentPurpose -ceq 'summon-cleanup-iteration2') {
     Assert-KmgCleanup2EttinColdPlanScope -Scope $PersistenceScope -Purpose $DevelopmentPurpose -SaveName $SaveName -ExpectedVersion $ExpectedVersion
     throw 'Cleanup 2 cold runtime is deferred: a retained owner spanning the entire trio and exact original-Working restoration are not wired/qualified. Planning validators do not grant live permission.'
 }
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
+$fixedDispelUi=$Scenario -ceq 'working-save-expanded-summoning-creature-review'
+if($fixedDispelUi) {
+    $uiParameters=@{creatures='trumpet-archon,astral-deva';reviewCase=$ReviewCase}
+    if($SaveName -cne 'KMG_AUTOMATION_WORKING' -or
+        -not(Test-KmgSprints30DispelUiParameters $uiParameters) -or
+        $PSBoundParameters.ContainsKey('PersistenceScope') -or $ExpandedSummoningDisabled -or
+        $TimeoutSeconds -ne 600) {
+        throw 'Installed-stack UI requires only the exact read-only S30/S31 case, Working save, module ON and fixed600-second process budget; no transaction entered.'
+    }
+} elseif($PSBoundParameters.ContainsKey('ReviewCase') -or
+    $Scenario -ieq 'working-save-expanded-summoning-creature-review') {
+    throw 'Installed-stack reviewCase is restricted to the exact S30/S31 UI scenario; no transaction entered.'
+}
 if($ExpandedSummoningDisabled -and $Scenario -cne 'working-save-expanded-summoning-verify-cleanup') { throw 'Module OFF is restricted to the exact cleanup stage.' }
-$development=if($PersistenceScope -ceq 'giant-humanoids-ii') {
+$development=if($fixedDispelUi) {
+    if([string]::IsNullOrEmpty($DevelopmentPurpose)) { $false }
+    elseif($DevelopmentPurpose -ceq 'sprints30-31-dispel-installed-ui') {
+        [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
+        $true
+    } else { throw 'Installed-stack fixed UI development requires its exact S30/S31 purpose; no transaction entered.' }
+} elseif($PersistenceScope -ceq 'giant-humanoids-ii') {
     Test-KmgSprint29DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } elseif($PersistenceScope -ceq 'giant-humanoids') {
     Test-KmgSprint28DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
@@ -39,7 +60,7 @@ if($development) {
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runPrefix=if($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runPrefix=if($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
 $runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {
@@ -50,9 +71,10 @@ $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Na
         sourceManifest=@(Get-KmgCompatibilityDirectoryManifest $_.FullName);id=$info.Id;version=$info.Version}
 })
 if($runtimeMods.Count -ne 10 -or @($runtimeMods.id | Sort-Object -Unique).Count -ne 10) { throw 'Sprint22 working fixture requires the exact identifiable eleven-mod installed stack.' }
-$resolution=[pscustomobject]@{profileId='gunslinger-current-installed-sprint22';runtimeCapable=$true;
+$resolution=[pscustomobject]@{profileId=$(if($fixedDispelUi){'gunslinger-current-installed-s30-31-ui'}else{'gunslinger-current-installed-sprint22'});runtimeCapable=$true;
     gunslinger=[pscustomobject]@{packagePath=$candidate.packagePath};runtimeMods=$runtimeMods}
-if(-not $PSCmdlet.ShouldProcess($mods,'stage the current compatible installed stack for one Sprint22 working-save request and restore exact originals')) { return }
+$operation=if($fixedDispelUi){'stage the exact current installed stack for one fixed read-only S30/S31 Working UI request and restore exact originals'}else{'stage the current compatible installed stack for one Sprint22 working-save request and restore exact originals'}
+if (-not $PSCmdlet.ShouldProcess($mods,$operation)) { return }
 $entered=$false;$lease=$null;$failure=$null;$receipt=$null
 $settingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
 $gameSettings=[Microsoft.Win32.Registry]::CurrentUser.OpenSubKey($settingsKey,$false)
@@ -74,14 +96,18 @@ try {
     $record=[ordered]@{schemaVersion=1;transactionRunId=$runId;scenario=$Scenario;startedUtc=[DateTime]::UtcNow.ToString('o');
         actualInstalledMods=@($runtimeMods | ForEach-Object { [ordered]@{id=$_.id;version=$_.version;directory=$_.destinationName} });
         candidateKind=$(if($development){'development'}else{'release-candidate'});releaseQualification=(-not $development);developmentPurpose=$DevelopmentPurpose;
-        moduleDisabled=[bool]$ExpandedSummoningDisabled;persistenceScope=$PersistenceScope;candidate=$candidate;originalManifest=$transaction.originalManifest;gameSettings=$settingsSnapshot;restoration=$null}
+        moduleDisabled=[bool]$ExpandedSummoningDisabled;persistenceScope=$(if($fixedDispelUi){$null}else{$PersistenceScope});reviewCase=$ReviewCase;candidate=$candidate;originalManifest=$transaction.originalManifest;gameSettings=$settingsSnapshot;restoration=$null}
     Write-KmgCompatibilityJsonAtomic (Join-Path $evidenceRoot 'installed-stack.json') $record
     $deployment=& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $candidate.packagePath -DevelopmentPurpose $DevelopmentPurpose -RuntimeLease $lease -PassThru -Confirm:$false
-    $output=@(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $Scenario -ExpectedVersion $ExpectedVersion `
-        -SaveName $SaveName -Parameters @{persistenceScope=$PersistenceScope} -TimeoutSeconds $TimeoutSeconds `
-        -ObserverStartupTimeoutSeconds $TimeoutSeconds -CompletionTimeoutSeconds $TimeoutSeconds -ExitAfterCompletion:$true `
-        -FingerprintTimeoutSeconds $TimeoutSeconds `
-        -RuntimeLease $lease -ReuseInstalledArtifact -DevelopmentPurpose $DevelopmentPurpose -PackagePath $candidate.packagePath -DeploymentManifestPath $deployment -PassThru -Confirm:$false)
+    $requestParameters=if($fixedDispelUi){$uiParameters}else{@{persistenceScope=$PersistenceScope}}
+    $completionBudget=if($fixedDispelUi){180}else{$TimeoutSeconds}
+    $arguments=@{Scenario=$Scenario;ExpectedVersion=$ExpectedVersion;SaveName=$SaveName;
+        Parameters=$requestParameters;TimeoutSeconds=$TimeoutSeconds;
+        ObserverStartupTimeoutSeconds=$TimeoutSeconds;CompletionTimeoutSeconds=$completionBudget;
+        ExitAfterCompletion=$true;FingerprintTimeoutSeconds=$TimeoutSeconds;
+        RuntimeLease=$lease;ReuseInstalledArtifact=$true;DevelopmentPurpose=$DevelopmentPurpose;
+        PackagePath=$candidate.packagePath;DeploymentManifestPath=$deployment;PassThru=$true;Confirm=$false}
+    $output=@(& (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') @arguments)
     $receipt=Get-KmgExactRuntimeLaunchReceipt -Output $output
     $record.launchReceipt=$receipt
     $result=Read-KmgCompatibilityJson (Join-Path $receipt.evidenceDirectory 'runtime-result.json')
@@ -117,4 +143,8 @@ finally {
     }
 }
 if($failure) { throw $failure }
+if($fixedDispelUi) {
+    Add-Member -InputObject $receipt -NotePropertyName transactionRunId -NotePropertyValue $runId
+    Add-Member -InputObject $receipt -NotePropertyName installedStackRecordPath -NotePropertyValue (Join-Path $evidenceRoot 'installed-stack.json')
+}
 Write-Output $receipt

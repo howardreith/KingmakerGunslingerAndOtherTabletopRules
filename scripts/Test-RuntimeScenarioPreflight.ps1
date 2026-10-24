@@ -177,6 +177,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
+    'disposable-expanded-summoning-sprints30-31-native-review',
     'disposable-expanded-summoning-cleanup2-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
@@ -187,6 +188,7 @@ $expected = @(
     'observe-expanded-summoning-sprint27-native-inputs',
     'observe-expanded-summoning-sprint28-native-inputs',
     'observe-expanded-summoning-sprint29-native-inputs',
+    'observe-expanded-summoning-sprints30-31-native-inputs',
     'observe-alternate-summoning-sources',
     'observe-alternate-summoning-blocked-family',
     'disposable-alternate-summoning-contracts',
@@ -1964,6 +1966,45 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
     $s29RequestArgs.ExitAfterCompletion = $false
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s29RequestArgs } ('s29-save-reject-no-exit-' + $phase)
 }
+
+$s3031Args = @{Scenario='disposable-expanded-summoning-sprints30-31-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='bootstrap'})) 's30-31-hidden-bootstrap-admitted'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase='lemure-core'})) 's30-31-lemure-core-admitted'
+Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='lemure-core'}} 's30-31-lemure-core-no-exit-refused'
+foreach($phase in @('lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s30-31-isolated-'+$phase+'-admitted')
+    Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase}} ('s30-31-isolated-'+$phase+'-no-exit-refused')
+    Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase;extra='x'}} ('s30-31-isolated-'+$phase+'-extra-refused')
+}
+foreach($bag in @(@{}, @{reviewPhase='Bootstrap'}, @{reviewPhase='profiles'}, @{reviewPhase='bootstrap';extra='x'}, @{ReviewPhase='bootstrap'}, @{reviewPhase='Lemure-Core'}, @{reviewPhase='lemure-core';extra='x'}, @{reviewPhase='Archon-Core'}, @{reviewPhase='archon-core '}, @{reviewPhase='Lantern-Rays'}, @{reviewPhase='lantern-rays '}, @{reviewPhase='Lantern-Body'}, @{reviewPhase='lantern-body '}, @{reviewPhase='Astral-Core'}, @{reviewPhase='astral-core '}, @{reviewPhase='Astral-Hammer'}, @{reviewPhase='astral-hammer '}, @{reviewPhase='Astral-Blade'}, @{reviewPhase='astral-blade '}, @{reviewPhase='Astral-Support'}, @{reviewPhase='astral-support '}, @{reviewPhase='Astral-Atwill'}, @{reviewPhase='astral-atwill '}, @{reviewPhase='Astral-Smite'}, @{reviewPhase='astral-smite '}, @{reviewPhase='Astral-Dispel'}, @{reviewPhase='astral-dispel '}, @{reviewPhase='Trumpet-Dispel'}, @{reviewPhase='trumpet-dispel '}, @{reviewPhase='Trumpet-Blast'}, @{reviewPhase='trumpet-blast '}, @{reviewPhase='Outsider-Bodies'}, @{reviewPhase='outsider-bodies '})) {
+    Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $true -Parameters $bag} 's30-31-hidden-bootstrap-invalid-scope-refused'
+}
+Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='bootstrap'}} 's30-31-hidden-bootstrap-no-exit-refused'
+
+$s3031UiArgs = @{Scenario='working-save-expanded-summoning-creature-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180;ExitAfterCompletion=$true;CatalogTimeoutSeconds=180;SelectionTimeoutSeconds=300;CompletionTimeoutSeconds=180;MainMenuTimeoutSeconds=180;ActionResolutionTimeoutSeconds=180;ActionInvocationTimeoutSeconds=30;DescriptorResolutionTimeoutSeconds=30;LoadEntryTimeoutSeconds=30;FingerprintTimeoutSeconds=180}
+$s3031Ui = @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $s3031Ui)) 's30-31-working-ui-fixed-admitted'
+foreach($mutation in @(
+    @{saveName='KMG_AUTOMATION_BASELINE';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='astral-deva,trumpet-archon';reviewCase='sprints30-31-dispel-ui'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='Sprints30-31-dispel-ui'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';extra='x'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';quantity='OneD4PlusOne'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $mutation } 's30-31-working-ui-invalid-refused'
+}
+# Exercise the actual request constructor and JSON round trip. Admission
+# alone cannot prove that a dispatch field survives serialization.
+$s3031UiRequest = New-KmgRuntimeRequest @s3031UiArgs -Parameters $s3031Ui -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's30-31-ui-preflight-test')
+$s3031UiRoundTrip = $s3031UiRequest | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+Assert-True ($s3031UiRoundTrip.parameters.reviewCase -ceq 'sprints30-31-dispel-ui') 's30-31-working-ui-serialized-dispatch-retained'
+Assert-True ($s3031UiRoundTrip.parameters.creatures -ceq 'trumpet-archon,astral-deva' -and $s3031UiRoundTrip.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 's30-31-working-ui-serialized-fixed-inputs-retained'
+Assert-True (@($s3031UiRoundTrip.parameters.PSObject.Properties.Name | Sort-Object -CaseSensitive) -join ',' -ceq 'creatures,reviewCase,saveName') 's30-31-working-ui-serialized-exact-three-keys'
+$s3031GenericRequest = New-KmgRuntimeRequest @s3031UiArgs -Parameters @{saveName='KMG_AUTOMATION_WORKING';creatures='lemure'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's30-31-ui-generic-preflight-test')
+Assert-True (@($s3031GenericRequest.parameters.Keys).Count -eq 2 -and -not $s3031GenericRequest.parameters.Contains('reviewCase') -and $s3031GenericRequest.parameters.creatures -ceq 'lemure') 's30-31-working-ui-generic-serialization-preserved'
+$s3031UiArgs.ExitAfterCompletion=$false
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $s3031Ui } 's30-31-working-ui-no-exit-refused'
+Assert-True (Test-KmgSprints30DispelUiParameters @{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}) 's30-31-working-ui-external-typed-admitted'
+Assert-True (-not (Test-KmgSprints30DispelUiParameters @{Creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'})) 's30-31-working-ui-key-case-refused'
 
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"

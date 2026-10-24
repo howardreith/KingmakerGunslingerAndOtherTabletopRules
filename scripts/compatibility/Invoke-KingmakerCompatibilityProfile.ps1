@@ -25,6 +25,7 @@ param(
         'observe-expanded-summoning-sprint27-native-inputs',
         'observe-expanded-summoning-sprint28-native-inputs',
         'observe-expanded-summoning-sprint29-native-inputs',
+        'observe-expanded-summoning-sprints30-31-native-inputs',
         'observe-alternate-summoning-sources',
         'observe-alternate-summoning-blocked-family',
         'disposable-alternate-summoning-contracts',
@@ -73,6 +74,7 @@ param(
         'disposable-elemental-heritage-slas',
         'disposable-bodyguard-feats-disabled',
         'working-save-smoke',
+        'working-save-expanded-summoning-creature-review',
         'disposable-brown-fur-native-cast',
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
@@ -112,6 +114,7 @@ param(
         'disposable-expanded-summoning-sprint27-native-review',
         'disposable-expanded-summoning-sprint28-native-review',
         'disposable-expanded-summoning-sprint29-native-review',
+        'disposable-expanded-summoning-sprints30-31-native-review',
         'disposable-expanded-summoning-cleanup2-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -152,6 +155,12 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeAutomation.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'RuntimeAutomation.Common.ps1')
+$workingDispelUi = $null -ne $Scenario -and @($Scenario).Count -eq 1 -and $Scenario[0] -ceq 'working-save-expanded-summoning-creature-review'
+if (@($Scenario | Where-Object { $_ -ceq 'working-save-expanded-summoning-creature-review' }).Count -gt 0 -and
+    (-not $workingDispelUi -or -not (Test-KmgSprints30DispelUiParameters $Parameters))) {
+    throw 'This profile admits only the exact fixed S30/S31 read-only Working UI subcase; no profile entered.'
+}
 . (Join-Path (Split-Path $PSScriptRoot) 'SummonCleanup2CurrentStack.Common.ps1')
 $cleanup2ModuleOff = $Scenario.Count -eq 1 -and
     (Test-KmgCleanup2ModuleOffScope -Scenario $Scenario[0] -Parameters $Parameters)
@@ -251,6 +260,7 @@ $sprint22ReviewScenario = @($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
+    'disposable-expanded-summoning-sprints30-31-native-review',
     'disposable-expanded-summoning-cleanup2-native-review') }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
@@ -310,6 +320,7 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai','ai-turns','items','disarm','awesome','awesome-turn','catch','cleave','vital','vital-turn','routes')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $Parameters.reviewPhase -cnotin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and
             -not (Test-KmgCleanup2ReviewPhaseScope -Scenario $Scenario[0] -Parameters $Parameters)) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
@@ -327,7 +338,7 @@ if ($moduleScenario) {
             'firearms-only', 'spears-only', 'eastern-only', 'all-enabled')) {
         throw 'Asset attribution requires exactly one allowlisted assetConfiguration parameter.'
     }
-} elseif ($Parameters.Count -ne 0) {
+} elseif ($Parameters.Count -ne 0 -and -not $workingDispelUi) {
     throw 'Compatibility profile parameters are supported only for feature-module, module-state vendor, or asset-attribution observations.'
 }
 
@@ -356,7 +367,7 @@ $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 $sprint22Boundary=@($Scenario | Where-Object {
-    Test-KmgExactSummoningRuntimeBoundary $_ }).Count -gt 0
+    Test-KmgExactSummoningRuntimeBoundary $_ }).Count -gt 0 -or $workingDispelUi
 if($sprint22Boundary) {
     . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
     $sprint22SettingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
@@ -490,7 +501,9 @@ try {
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = [Math]::Min($RuntimeTimeoutSeconds,600)
-            CompletionTimeoutSeconds = $RuntimeTimeoutSeconds
+            # Leave room inside the whole-process budget for a native
+            # load timeout to flush evidence and quit before restoration.
+            CompletionTimeoutSeconds = if ($workingDispelUi) { 180 } else { $RuntimeTimeoutSeconds }
             Confirm = $false
             AllowDirtyGit = [bool]$AllowDirtyGit
         }
@@ -514,7 +527,9 @@ try {
             'disposable-expanded-summoning-sprint27-native-review',
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
-            'disposable-expanded-summoning-cleanup2-native-review')) {
+            'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-cleanup2-native-review',
+            'working-save-expanded-summoning-creature-review')) {
             $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -526,7 +541,7 @@ try {
         if ($developmentCandidate) { $arguments.DevelopmentPurpose = $DevelopmentPurpose }
         if ($name -in @('musket-master-mechanics-and-starter',
             'disposable-expanded-summoning',
-            'working-save-smoke', 'disposable-brown-fur-native-cast',
+            'working-save-smoke', 'working-save-expanded-summoning-creature-review', 'disposable-brown-fur-native-cast',
             'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'disposable-teleportation-resources',
@@ -545,7 +560,7 @@ try {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         $arguments.RuntimeLease = $compatRuntimeLease
-        $exactSprint22=Test-KmgExactSummoningRuntimeBoundary $name
+        $exactSprint22=(Test-KmgExactSummoningRuntimeBoundary $name) -or $workingDispelUi
         if($exactSprint22) {
             . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
             $arguments.PassThru=$true
@@ -584,7 +599,8 @@ try {
             'disposable-expanded-summoning-sprint27-native-review',
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
-            'disposable-expanded-summoning-cleanup2-native-review')) {
+            'disposable-expanded-summoning-sprints30-31-native-review',
+    'disposable-expanded-summoning-cleanup2-native-review')) {
             $configurationId += '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -596,7 +612,10 @@ try {
         if ($name -ceq 'disposable-expanded-summoning-sprint29-native-review') {
             $configurationId = 's29-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
         }
-        if ($name -ceq 'disposable-expanded-summoning-cleanup2-native-review') {
+        if ($name -ceq 'disposable-expanded-summoning-sprints30-31-native-review') {
+            $configurationId = 's30-31-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
+        }
+        elseif ($name -ceq 'disposable-expanded-summoning-cleanup2-native-review') {
             $configurationId = 'cleanup2-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'disposable-expanded-summoning-sprint27-native-review' -and

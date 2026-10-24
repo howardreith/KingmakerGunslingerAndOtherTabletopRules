@@ -31,45 +31,79 @@ namespace KingmakerGunslinger.DomainTests
                 first.Count(value => value.PlannedType == "BlueprintUnit"),
                 "Unit identity count changed.");
             Assertions.Equal(1760 + TheropodRulesPolicy.AppendedAbilityIdentityCount +
-                    GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9,
+                    GiantBodyRulesPolicy.AppendedTotalAbilityIdentityCount + 9 +
+                    ExpandedSummoningSprints30And31Tests.RegisteredAbilityIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintAbility"),
                 "Ability identity count changed.");
             Assertions.Equal(2, first.Count(value => value.Symbol.StartsWith(
                 "KMG.Summoning.Native.", StringComparison.Ordinal)),
                 "Native tier-one preservation identity count changed.");
-            Assertions.Equal(82 + TheropodRulesPolicy.AppendedBuffIdentityCount + 2,
+            Assertions.Equal(82 + TheropodRulesPolicy.AppendedBuffIdentityCount + 2 +
+                    ExpandedSummoningSprints30And31Tests.RegisteredBuffIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintBuff"),
                 "Buff identity count changed.");
-            Assertions.Equal(29, released.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
-            Assertions.Equal(17, released.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
+            Assertions.Equal(29 + ExpandedSummoningSprints30And31Tests.RegisteredAiIdentityCount,
+                released.Count(value => value.PlannedType == "BlueprintAiCastSpell"), "AI identity count changed.");
+            Assertions.Equal(17 + ExpandedSummoningSprints30And31Tests.RegisteredBrainIdentityCount,
+                released.Count(value => value.PlannedType == "BlueprintBrain"), "Brain identity count changed.");
             Assertions.Equal(1, released.Count(value => value.PlannedType == "IsEngagedConsideration"),
                 "Only the bounded crocodilian engagement scorer is registered.");
             Assertions.Equal(29 + TheropodRulesPolicy.AppendedWeaponIdentityCount +
-                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount + 4,
+                    GiantBodyRulesPolicy.AppendedWeaponIdentityCount + 4 +
+                    ExpandedSummoningSprints30And31Tests.RegisteredWeaponIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintItemWeapon"),
                 "Weapon identity count changed.");
-            Assertions.Equal(5 + GiantBodyRulesPolicy.AppendedWeaponTypeIdentityCount + 1,
+            Assertions.Equal(5 + GiantBodyRulesPolicy.AppendedWeaponTypeIdentityCount + 1 +
+                    ExpandedSummoningSprints30And31Tests.RegisteredWeaponTypeIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintWeaponType"),
                 "Weapon-type identity count changed.");
             Assertions.Equal(16 + TheropodRulesPolicy.AppendedUnitTypeIdentityCount +
-                    GiantBodyRulesPolicy.AppendedUnitTypeIdentityCount + 2,
+                    GiantBodyRulesPolicy.AppendedUnitTypeIdentityCount + 2 +
+                    ExpandedSummoningSprints30And31Tests.RegisteredUnitTypeIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintUnitType"),
                 "Unit-type identity count changed.");
-            Assertions.Equal(18, released.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
+            Assertions.Equal(18 + ExpandedSummoningSprints30And31Tests.RegisteredResourceIdentityCount,
+                released.Count(value => value.PlannedType == "BlueprintAbilityResource"), "Resource identity count changed.");
             // The Sprint 25 chassis, plus its cloned Greater Overrun
             // carrier: a feature, because the native feat it clones is.
             Assertions.Equal(39 + TheropodRulesPolicy.AppendedFeatureIdentityCount +
                     GiantBodyRulesPolicy.AppendedFeatureIdentityCount +
-                    GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount + 2,
+                    GiantBodyRulesPolicy.AppendedGreaterOverrunIdentityCount + 2 +
+                    ExpandedSummoningSprints30And31Tests.RegisteredFeatureIdentityCount,
                 released.Count(value => value.PlannedType == "BlueprintFeature"),
                 "Feature identity count changed.");
-            Assertions.Equal(2, released.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
+            Assertions.Equal(2 + ExpandedSummoningSprints30And31Tests.RegisteredAreaIdentityCount,
+                released.Count(value => value.PlannedType == "BlueprintAbilityAreaEffect"), "Area effect identity count changed.");
             // The alignment-mode toggle, plus the Shadow Mastiff's shadow
             // blend, whose printed text makes suspending and resuming it a
             // free action and therefore a player-facing toggle.
             Assertions.Equal(2, released.Count(value => value.PlannedType ==
                 "BlueprintActivatableAbility"),
                 "Activatable toggle identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredSpellbookIdentityCount,
+                released.Count(value => value.PlannedType == "BlueprintSpellbook"),
+                "S30-31 spellbook identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredSpellListIdentityCount,
+                released.Count(value => value.PlannedType == "BlueprintSpellList"),
+                "S30-31 spell-list identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredAidEligibilityIdentityCount,
+                released.Count(value => value.PlannedType == "ArchonAidEligibility"),
+                "S30-31 Aid eligibility identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredDretchEligibilityIdentityCount,
+                released.Count(value => value.PlannedType == "DretchSpellAiEligibility"),
+                "S30 Dretch eligibility identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredFogSafetyIdentityCount,
+                released.Count(value => value.PlannedType == "Sprint29FogAiSafety"),
+                "S30 Dretch fog-safety identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredBanishmentEligibilityIdentityCount,
+                released.Count(value => value.PlannedType == "TrumpetBanishmentEligibility"),
+                "S31 Trumpet Banishment eligibility identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredHealingEligibilityIdentityCount,
+                released.Count(value => value.PlannedType == "TrumpetPreparedHealingEligibility"),
+                "S31 Trumpet healing eligibility identity count changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredAstralHealingEligibilityIdentityCount,
+                released.Count(value => value.PlannedType == "AstralHealingEligibility"),
+                "S31 Astral healing eligibility identity count changed.");
             Assertions.Equal(string.Join("|", first.Select(value => value.Symbol)),
                 string.Join("|", second.Select(value => value.Symbol)), "Identity output is not deterministic.");
         }
@@ -835,10 +869,16 @@ namespace KingmakerGunslinger.DomainTests
                 "Lantern Archon HD changed.");
             Assertions.Equal(30, ExpandedSummoningSpecialProfiles
                 .LanternRayRangeFeet, "Lantern light-ray range changed.");
+            Assertions.Equal(1, ExpandedSummoningSpecialProfiles
+                .LanternStandardRayProjectiles,
+                "Lantern standard light-ray count changed.");
             Assertions.Equal(2, ExpandedSummoningSpecialProfiles
-                .LanternRayProjectiles, "Lantern light-ray count changed.");
+                .LanternFullRayProjectiles,
+                "Lantern full light-ray count changed.");
             Assertions.Equal(6, ExpandedSummoningSpecialProfiles
                 .LanternRayDieSides, "Lantern light-ray die changed.");
+            Assertions.Equal(16, ExpandedSummoningSpecialProfiles
+                .LanternSpellResistance, "Lantern spell resistance changed.");
             Assertions.Equal(7, ExpandedSummoningSpecialProfiles
                 .InvisibleStalkerHitDice, "Invisible Stalker HD changed.");
             Assertions.Equal(9, ExpandedSummoningSpecialProfiles.ErinyesHitDice,
@@ -928,7 +968,8 @@ namespace KingmakerGunslinger.DomainTests
             string source = File.ReadAllText(Path.Combine(
                 Environment.CurrentDirectory, "src", "KingmakerGunslinger",
                 "Blueprints", "ExpandedSummoningSpecialBuilder.cs"));
-            foreach (string token in new[] { "LanternRayProjectiles",
+            foreach (string token in new[] { "LanternStandardRayProjectiles",
+                "LanternFullRayProjectiles", "SetIsFullRoundAction(fullRound)",
                 "DamageType.Direct", "DiceType.D6", "AbilityRange.Custom",
                 "AuraOfMenaceBuffGuid", "DamageAlignment.Evil",
                 "OptionalExact<BlueprintBuff>",

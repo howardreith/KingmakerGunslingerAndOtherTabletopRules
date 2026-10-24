@@ -34,6 +34,7 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'observe-expanded-summoning-sprint27-native-inputs',
         'observe-expanded-summoning-sprint28-native-inputs',
         'observe-expanded-summoning-sprint29-native-inputs',
+    'observe-expanded-summoning-sprints30-31-native-inputs',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
@@ -42,6 +43,7 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'disposable-expanded-summoning-sprint27-native-review',
         'disposable-expanded-summoning-sprint28-native-review',
         'disposable-expanded-summoning-sprint29-native-review',
+        'disposable-expanded-summoning-sprints30-31-native-review',
         'disposable-expanded-summoning-cleanup2-native-review')
 }
 

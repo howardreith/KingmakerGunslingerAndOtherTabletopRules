@@ -78,6 +78,7 @@ def suppressed_keys():
     return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
 
 DONOR_NAMES = {
+    "afe56099ff6046b40a359b7562c0424e": "MovanicDevaSummoned",
     "da807351572c540478b703957d863e68": "CR5_ManticoreStandard",
     "61dd71e874b16f742a0f783314105553": "CR7_HillGiantStandart",
     "590cd3d5e76fdc649a5f97bc984cd3c4": "FrostGiantSummoned",
@@ -220,6 +221,14 @@ def token(key):
     return "".join(part[:1].upper() + part[1:] for part in re.split(r"[^A-Za-z0-9]+", key) if part)
 
 
+def identity_count(name):
+    source = (ROOT / "src/KingmakerGunslinger/Summoning/ExpandedSummoningIdentityCatalog.cs").read_text(encoding="utf-8")
+    match = re.search(r"internal const int " + re.escape(name) + r" = (\d+);", source)
+    if match is None:
+        raise SystemExit(f"Missing literal identity authority: {name}")
+    return int(match.group(1))
+
+
 def parsed_creatures():
     values = []
     for key, name, monster, templated, ally, visual in ENTRY.findall(
@@ -232,8 +241,9 @@ def parsed_creatures():
             "ally": None if ally == "null" else int(ally),
             "visual": visual or name,
         })
-    if len(values) != 117:
-        raise SystemExit(f"Expected 117 parsed creatures; observed {len(values)}")
+    expected = identity_count("UnitCount")
+    if len(values) != expected:
+        raise SystemExit(f"Expected {expected} parsed creatures; observed {len(values)}")
     return values
 
 
@@ -273,6 +283,7 @@ def planned():
         rows.append((f"KMG.Summoning.Smite.{alignment}.Available", "BlueprintBuff"))
     rows.extend((
         ("KMG.Summoning.Special.LanternArchon.LightRay", "BlueprintAbility"),
+        ("KMG.Summoning.Special.LanternArchon.LightRayFull", "BlueprintAbility"),
         ("KMG.Summoning.Special.LanternArchon.LightRayAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Special.LanternArchon.Brain", "BlueprintBrain"),
         ("KMG.Summoning.Special.LanternArchon.Defenses", "BlueprintBuff"),
@@ -749,9 +760,121 @@ def planned():
         ("KMG.Summoning.Giant.Sprint29.CloudFogAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.Giant.Sprint29.CloudMistSafety", "Sprint29FogAiSafety"),
         ("KMG.Summoning.Giant.Sprint29.CloudFogSafety", "Sprint29FogAiSafety"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.ClawType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.Lemure.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.ClawType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Claw1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Bite1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFear", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloud", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloudAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CloudSafety", "Sprint29FogAiSafety"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CauseFearEligibility", "DretchSpellAiEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.Dretch.CloudEligibility", "DretchSpellAiEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenaceCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenaceArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenacePenalty", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.MenaceImmunity", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.LanternAid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.LanternAidAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.Archon.LanternAidEligibility", "ArchonAidEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.GreatswordType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Greatsword2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.BiteType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Bite1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.SlamType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Slam1d4", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Aid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.AidAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.AidEligibility", "ArchonAidEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.HoundArchon.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.GreatswordType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Greatsword2d6", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Spellbook", "BlueprintSpellbook"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.SpellList", "BlueprintSpellList"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.HealEligibility", "TrumpetPreparedHealingEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.InvisibilityPurge", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.PurgeRecipient", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BlindFight", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Persuasive", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.Aid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.AidEligibility", "ArchonAidEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.BanishmentEligibility", "TrumpetBanishmentEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.WarhammerType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Warhammer1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.SlamType", "BlueprintWeaponType"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Slam1d8", "BlueprintItemWeapon"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.ProtectiveRecipient", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Heal", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HealEligibility", "AstralHealingEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.BladeBarrier", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.BladeBarrierResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWounds", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.CureLightWoundsEligibility", "AstralHealingEligibility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibility", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.SeeInvisibilityResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.StunFeature", "BlueprintFeature"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Stunned", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Aid", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelMagic", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HolyAura", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HolyWord", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.Invisibility", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveCurse", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveDisease", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.RemoveFear", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HolySmite", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.HolySmiteBlinded", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvil", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDismissal", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDismissalTouch", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispel", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilDispelTouch", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilWard", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvil", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissal", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDismissalTouch", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispel", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilDispelTouch", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilWard", "BlueprintBuff"),
+        ("KMG.Summoning.OutsiderCelestial.AstralDeva.DispelEvilHeld", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.DispelEvilHeld", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast", "BlueprintAbility"),
+        ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed", "BlueprintBuff"),
 
     ))
-    if len(rows) != 2303 or len({symbol for symbol, _ in rows}) != 2303:
+    expected = sum(identity_count(name) for name in (
+        "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",
+        "NativePreservationIdentityCount", "AlignmentModeIdentityCount", "NativeExpandedOptionIdentityCount")) + 2 * identity_count("TemplatedPlacementCount")
+    if len(rows) != expected or len({symbol for symbol, _ in rows}) != expected:
         raise SystemExit(f"Foundation plan invariant failed: {len(rows)} rows")
     return rows
 

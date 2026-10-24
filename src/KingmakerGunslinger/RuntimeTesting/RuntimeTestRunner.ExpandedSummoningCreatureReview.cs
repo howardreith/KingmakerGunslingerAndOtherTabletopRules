@@ -712,6 +712,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void StepExpandedSummoningCreatureReview()
         {
+            if (RuntimeTestRequestParser.Sprints30And31DispelUi(_request))
+            {
+                StepSprints30DispelWorkingUi();
+                return;
+            }
             if (_creatureReviewQueue == null)
             {
                 if (!_context.FeatureModules.Active.ExpandedSummoning)

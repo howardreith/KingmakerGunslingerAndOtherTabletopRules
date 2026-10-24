@@ -4,6 +4,24 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string OutsiderBodyPhase = "outsider-bodies";
+        internal const string LanternRayPhase = "lantern-rays";
+        internal const string LanternBodyPhase = "lantern-body";
+        internal const string AstralCorePhase = "astral-core";
+        internal const string AstralHammerPhase = "astral-hammer";
+        internal const string AstralBladePhase = "astral-blade";
+        internal const string AstralSupportPhase = "astral-support";
+        internal const string AstralAtWillPhase = "astral-atwill";
+        internal const string AstralSmitePhase = "astral-smite";
+        internal const string AstralDispelPhase = "astral-dispel";
+        internal const string TrumpetDispelPhase = "trumpet-dispel";
+        internal const string TrumpetBlastPhase = "trumpet-blast";
+        internal const string DispelUiCase = "sprints30-31-dispel-ui";
+        internal const string DispelUiCreatures = "trumpet-archon,astral-deva";
+        // Fixed supported subcases; requests cannot supply code or ordering.
+        internal static string[] OutsiderBodySequence
+        { get { return new[] { "lemure", "dretch" }; } }
+
         internal static bool Sprint25Phase(string phase)
         {
             return phase == "rtwp-foundation" || phase == "turn-based-commands" ||
@@ -18,6 +36,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "commands" || phase == "turns" || phase == "ownership" ||
                 phase == "disarm" || phase == "catch" || phase == "ai" ||
                 phase == "ai-turns" || phase == "cleave" || phase == "routes";
+        }
+        internal static bool Sprints30And31Phase(string phase)
+        { return phase == RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternRayPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralCorePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralHammerPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralBladePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralSupportPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralAtWillPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralSmitePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralDispelPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31TrumpetDispelPhase || phase == "bootstrap" || phase == "lemure-core" || phase == "lemure-full" || phase == "lemure-ai" || phase == "dretch-cloud" || phase == "dretch-ai" || phase == "dretch-ai-ally" || phase == "archon-core" || phase == "archon-hound" || phase == "hound-armed" || phase == "hound-natural" || phase == "trumpet-book" || phase == "trumpet-book-turn" || phase == "trumpet-caster" || phase == TrumpetBlastPhase; }
+        internal static bool Sprints30And31DispelUi(bool automaticExit,
+            string scenario, int parameterCount, string saveName,
+            string creatures, string reviewCase)
+        {
+            return automaticExit && parameterCount == 3 &&
+                scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview &&
+                saveName == "KMG_AUTOMATION_WORKING" &&
+                creatures == RuntimeTestScenarioCatalog.Sprints30And31DispelUiCreatures &&
+                reviewCase == RuntimeTestScenarioCatalog.Sprints30And31DispelUiCase;
+        }
+        // Exact presentation diagnostics observed alongside a successful
+        // native Working load. All native load/JSON/identity predicates still
+        // apply; other errors, exceptions, traces and overflow remain blocking.
+        public static bool WorkingUiPresentationDiagnostic(bool error,
+            string message, string trace)
+        {
+            if (!error || !string.IsNullOrEmpty(trace)) return false;
+            return message == @"The AssetBundle 'StreamingAssets\Bundles\common_assets' can't be loaded because another AssetBundle with the same files is already loaded." ||
+                message == @"The AssetBundle 'StreamingAssets\Bundles\equipment_bundle' can't be loaded because another AssetBundle with the same files is already loaded." ||
+                message == "FogOfWarStaticMaskHolder bounds is not completely placed inside in LocationMaskRenderer bounds [JamandisMansion_Mechanics]";
         }
         internal static bool Sprint29Phase(string phase)
         { return phase == "profiles" || phase == "modes" ||
@@ -124,6 +165,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return parameters == 1 && Sprint28Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview)
                 return parameters == 1 && Sprint29Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview)
+                return parameters == 1 && Sprints30And31Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)
                 return parameters == 1 && Cleanup2Phase(reviewPhase);
             return false;
