@@ -240,14 +240,48 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw;
                 }
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 40f);
-                PlaceExpandedSummoningUnit(anchor, origin + Vector3.back * 42f);
+                var graph = Pathfinding.AstarPath.active;
+                if (graph == null) throw new InvalidOperationException("Positive native fixture lost its placement graph.");
+                var casterPoint = graph.GetNearest(origin + Vector3.back * 40f);
+                var anchorPoint = graph.GetNearest(origin + Vector3.back * 42f);
+                if (casterPoint.node == null || anchorPoint.node == null || !casterPoint.node.Walkable || !anchorPoint.node.Walkable)
+                    throw new InvalidOperationException("Owned fixture anchors have no native walkable ground.");
+                PlaceExpandedSummoningUnit(fixture.Caster, casterPoint.clampedPosition);
+                PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition);
+                // The installed SleepingUnitsController admits awake groups
+                // through awake nonpeaceful members. The menu fixture's real
+                // clock rebuilds those lists; keep only the proven owned
+                // player actors awake while outside the unchanged100ft burst.
+                // This invokes no attack, spell, brain, or protected actor.
+                anchor.Wake(60f); fixture.Caster.Wake(60f);
                 foreach (var unit in new[] { owner, target })
                 { unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit); unit.JoinCombat(); unit.SightCache.ClearIfNeeded(); }
                 owner.Memory.Add(target); target.Memory.Add(owner);
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
                 Game.Instance.Player.UpdateIsInCombat(); new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 for (int frame = 0; frame < 8; frame++) yield return 0;
+                Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
+                var nativeGroups = Game.Instance.AwakeUnitGroups.Where(group => group != null).ToArray();
+                bool admitted = nativeGroups.Any(group => group.IsInCombat &&
+                    Enumerable.Range(0, group.Count).Any(index => ReferenceEquals(group[index], owner))) &&
+                    !owner.Destroyed && owner.IsInState && owner.IsInCombat && !owner.IsSleeping &&
+                    owner.Brain != null && owner.IsBrainActive;
+                Func<UnitEntityData, JObject> actorState = unit => new JObject {
+                    ["unit"] = unit.UniqueId, ["faction"] = unit.Faction?.name,
+                    ["inGame"] = unit.IsInGame, ["inState"] = unit.IsInState, ["combat"] = unit.IsInCombat,
+                    ["sleeping"] = unit.IsSleeping, ["brainActive"] = unit.IsBrainActive, ["aiEnabled"] = unit.IsAIEnabled,
+                    ["viewVisible"] = unit.View != null && unit.View.IsVisible, ["position"] = unit.Position.ToString() };
+                Sprint25Check("trumpet-blast-ai-native-admission", admitted, new JObject {
+                    ["owner"] = actorState(owner), ["target"] = actorState(target), ["ownedAnchor"] = actorState(anchor),
+                    ["disposableCaster"] = actorState(fixture.Caster), ["nativeGroupAdmitted"] = admitted,
+                    ["awakeGroups"] = new JArray(nativeGroups.Select(group => new JObject {
+                        ["group"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(group),
+                        ["combat"] = group != null && group.IsInCombat,
+                        ["members"] = new JArray(Enumerable.Range(0, group.Count).Select(index => group[index])
+                            .Where(unit => unit != null).Select(actorState)) })),
+                    ["ownedWakeSeconds"] = 60, ["protectedActorTicks"] = 0, ["suppliedCombatCommands"] = 0 },
+                    "The actual native awake-group, combat, sleeping and brain predicates are observed before the unchanged exact-AI consumer. Only the reference-proven owned player actors receive a native wake interval; no group is injected or guard bypassed.");
+                if (!admitted) throw new InvalidOperationException("Actual native awake-group AI admission is unmet; no AI command requested.");
                 var decision = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = owner } };
                 var data = new AbilityData(owner.Descriptor.Abilities.GetAbility(blast));
                 var book = owner.Descriptor.GetSpellbook(owner.Blueprint.GetComponent<TrumpetPreparedBook>().Book);
@@ -272,12 +306,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
                     "A fresh actual player summon uses its production blueprint/brain in the established non-DLC Oleg outdoor fixture, with native walkable/visible clear stance and actual outdoor classification. Original actors/factions are intact; only its proven request-owned anchor clone and disposable caster are positioned out of radius.");
                 if (!clear) throw new InvalidOperationException("Safe player-summoned native outdoor location is not clear.");
-                bool ready = safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
+                bool ready = admitted && safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
                     owner.IsInCombat && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && data.IsAvailable;
                 Sprint25Check("trumpet-blast-ai-safe-ready", ready, new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
                     ["score"] = safety.Score(decision), ["remainingNonenemies"] = new JArray(remaining.Select(value => value.UniqueId)),
                     ["slotsBefore"] = new JArray(before), ["slotsAfter"] = new JArray(slots()),
-                    ["visible"] = owner.Memory.ContainsVisible(target), ["manualAvailable"] = data.IsAvailable,
+                    ["visible"] = owner.Memory.ContainsVisible(target), ["manualAvailable"] = data.IsAvailable, ["nativeGroupAdmitted"] = admitted,
                     ["fixtureCastCommands"] = 0, ["fixtureAttackCommands"] = 0, ["fixtureSlotDebits"] = 0 },
                     "Native perception/combat/access, own prepared book and clear all-creature radius admit the unchanged production blast selection; no combat command or slot debit is supplied by the fixture.");
                 if (!ready) throw new InvalidOperationException("Safe native Trumpet AI preconditions are unmet.");
