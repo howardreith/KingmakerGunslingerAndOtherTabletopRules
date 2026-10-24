@@ -66,7 +66,7 @@ namespace KingmakerGunslinger.Blueprints
 
             var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
             SetField(around, "m_Radius", new Feet(TrumpetBlastRulesPolicy.RadiusFeet));
-            SetField(around, "m_TargetType", TargetType.Any);
+            SetField(around, "m_TargetType", Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
             SetField(around, "m_IncludeDead", false);
             SetField(around, "m_Condition", new ConditionsChecker {
                 Operation = Operation.And, Conditions = Array.Empty<Condition>() });
