@@ -48,16 +48,25 @@ namespace KingmakerGunslinger.Summoning
 
         // Commit a fully verified projection without modifying the original
         // native list, its foreign rows, or the native conversion objects.
-        internal static T[] Project<T>(IEnumerable<T> original, IDictionary<T, T[]> replacements) where T : class
+        // A removal names an exact native row whose every child the same menu
+        // already lists, so it is dropped instead of replaced.
+        internal static T[] Project<T>(IEnumerable<T> original, IDictionary<T, T[]> replacements,
+            IEnumerable<T> removals = null) where T : class
         {
             if (original == null || replacements == null) throw new ArgumentNullException();
             var rows = original.ToArray();
+            var removed = removals == null ? new T[0] : removals.ToArray();
             if (replacements.Any(pair => pair.Key == null || rows.Count(row => ReferenceEquals(row, pair.Key)) != 1 ||
                 pair.Value == null || pair.Value.Length == 0 || pair.Value.Any(value => value == null)))
                 throw new InvalidOperationException("Incomplete exact native Druid quantity projection.");
+            if (removed.Any(value => value == null || rows.Count(row => ReferenceEquals(row, value)) != 1 ||
+                    removed.Count(other => ReferenceEquals(other, value)) != 1 ||
+                    replacements.Keys.Any(key => ReferenceEquals(key, value))))
+                throw new InvalidOperationException("Inexact native Druid quantity removal.");
             var result = new List<T>();
             foreach (var row in rows)
             {
+                if (row != null && removed.Any(value => ReferenceEquals(value, row))) continue;
                 var replacement = replacements.FirstOrDefault(value => ReferenceEquals(value.Key, row));
                 if (row != null && replacement.Key != null) result.AddRange(replacement.Value);
                 else result.Add(row);

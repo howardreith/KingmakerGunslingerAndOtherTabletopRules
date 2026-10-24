@@ -160,8 +160,10 @@ namespace KingmakerGunslinger.Summoning
             data.IsSpellCopy ? 1 : 0, data.PotionForOther ? 1 : 0, meta == null ? 0 : Convert.ToInt64(meta.MetamagicMask),
             meta == null ? 0 : meta.SpellLevelCost, meta == null ? 0 : meta.HeightenLevel }; }
 
+        // The factory (and Call of the Wild's replacement) appends the prepared
+        // spell's own variant rows to this list, so they are already present.
         private static void Postfix(MechanicActionBarSlotMemorizedSpell __instance, ref List<AbilityData> __result)
-        { ProjectRows(__instance, ref __result); }
+        { ProjectRows(__instance, ref __result, false); }
 
         // The PC popup projects on every spell-tab fill (one call per prepared
         // Druid slot). The published catalog and registry are fixed once
@@ -184,7 +186,11 @@ namespace KingmakerGunslinger.Summoning
 
         // Projects one actual conversion row list for this exact prepared slot:
         // the factory result above, or the PC popup's own Conversion list.
-        internal static void ProjectRows(MechanicActionBarSlotMemorizedSpell __instance, ref List<AbilityData> __result)
+        // sourceVariantsFollow means the menu appends the prepared spell's own
+        // variants after this list (native Fill 0600451C), rather than the
+        // list already containing them.
+        internal static void ProjectRows(MechanicActionBarSlotMemorizedSpell __instance, ref List<AbilityData> __result,
+            bool sourceVariantsFollow)
         {
             if (!BlueprintBootstrap.IsInitialized || ExpandedSummoningBlueprints.Registered == null || !ExpandedSummoningVisualVariantPatch.IsModuleActive ||
                 __instance == null || __result == null) return;
@@ -227,7 +233,7 @@ namespace KingmakerGunslinger.Summoning
                 var resources = new List<BlueprintScriptableObject>();
                 foreach (BlueprintScriptableObject resource in source.Caster.Resources) resources.Add(resource);
                 var amounts = resources.Select(source.Caster.Resources.GetResourceAmount).ToArray();
-                var replacements = new Dictionary<AbilityData, AbilityData[]>(); var receipts = new List<Receipt>();
+                var replacements = new Dictionary<AbilityData, AbilityData[]>(); var receipts = new List<Receipt>(); var removals = new List<AbilityData>();
                 foreach (var conversion in candidates)
                 {
                     int tier; SummonMultiplicity quantity;
@@ -246,6 +252,17 @@ namespace KingmakerGunslinger.Summoning
                     var projection = variants.Where(value => expected.Any(owned => ReferenceEquals(owned, value)) ||
                         SummonNativeOptionCatalog.All.Any(native => native.Family == SummonFamily.NaturesAlly && native.Tier == tier &&
                             native.Multiplicity == quantity && native.Guid == value.AssetGuid)).ToArray();
+                    // A prepared Summon Nature's Ally is itself this parent, and
+                    // the menu lists its own variants as well. Projecting the
+                    // quantity row would show every creature twice; keeping it
+                    // would show the parent's own row. Drop it when every child
+                    // is already listed by the source.
+                    if (ReferenceEquals(source.Blueprint, parent))
+                    {
+                        var listed = sourceVariantsFollow ? variants : originalRows.Where(value => value != null && !ReferenceEquals(value, conversion) &&
+                            ReferenceEquals(value.ConvertedFrom, source) && ReferenceEquals(value.Spellbook, book)).Select(value => value.Blueprint).ToArray();
+                        if (projection.All(variant => listed.Any(value => ReferenceEquals(value, variant)))) { removals.Add(conversion); continue; }
+                    }
                     if (originalRows.Any(value => value != null && !ReferenceEquals(value, conversion) &&
                         projection.Any(variant => ReferenceEquals(variant, value.Blueprint)))) continue;
                     var conversionContext = new ElementalInvocationContextSnapshot(() => References(conversion), () => Values(conversion));
@@ -273,14 +290,15 @@ namespace KingmakerGunslinger.Summoning
                         value.Slots.Select(nativeSlot => nativeSlot.Spell).SequenceEqual(value.Spells) && value.Slots.Select(nativeSlot => nativeSlot.Available).SequenceEqual(value.Available) &&
                         value.Book.GetAllKnownSpells().SequenceEqual(value.Known) && Enumerable.Range(0, 10).SelectMany(value.Book.GetCustomSpells).SequenceEqual(value.Custom)) &&
                     currentResources.SequenceEqual(resources) && resources.Select((value, index) => source.Caster.Resources.GetResourceAmount(value) == amounts[index]).All(value => value);
-                if (!intact || replacements.Count == 0) { Outcome = "preserve-unverified-native-variant-context"; return; }
-                var projected = DruidSummonConversionPolicy.Project(originalRows, replacements);
+                if (!intact || replacements.Count + removals.Count == 0) { Outcome = "preserve-unverified-native-variant-context"; return; }
+                var projected = DruidSummonConversionPolicy.Project(originalRows, replacements, removals);
                 foreach (var receipt in receipts)
                 {
                     receipt.ProjectedRows = projected;
                     foreach (var child in receipt.Children) Receipts.Add(child, receipt);
                 }
-                __result = projected.ToList(); Outcome = "native-druid-quantity-variants;original-quantities-retained-in-chain;quantities=" + replacements.Count + ";children=" + receipts.Sum(value => value.Children.Length);
+                __result = projected.ToList(); Outcome = "native-druid-quantity-variants;original-quantities-retained-in-chain;quantities=" + replacements.Count + ";children=" + receipts.Sum(value => value.Children.Length) +
+                    ";removed=" + removals.Count;
             }
             catch (Exception error) { Outcome = "preserve-native-druid-conversion:" + error.GetType().Name + ":" + error.Message; }
         }
@@ -294,17 +312,28 @@ namespace KingmakerGunslinger.Summoning
     [HarmonyPatch(typeof(ActionBarGroupSlot), "SetToggleAdditionalSpells")]
     internal static class DruidSummonConversionPopupRowsPatch
     {
+        private static bool _variantFillExact;
         private static bool Prepare()
         {
             var target = typeof(ActionBarGroupSlot).GetMethod("SetToggleAdditionalSpells", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            _variantFillExact = ExactVariantFill();
             return DruidSummonConversionVariantPatch.ExactFactory() && target != null && target.MetadataToken == 0x060044b3 &&
                 target.GetMethodBody().GetILAsByteArray().Length == 468;
+        }
+        // Installed ActionBarSpellsGroup.Fill 0600451C fills this Conversion
+        // list, then appends the source spell's own Blueprint.Variants.
+        internal static bool ExactVariantFill()
+        {
+            var fill = typeof(ActionBarSpellsGroup).GetMethod("Fill", BindingFlags.Instance | BindingFlags.NonPublic, null,
+                new[] { typeof(Kingmaker.EntitySystem.Entities.UnitEntityData), typeof(IEnumerable<AbilityData>), typeof(AbilityData) }, null);
+            return fill != null && fill.Module.ModuleVersionId.ToString() == ElementalSourceChooserRuntime.GameMvid &&
+                fill.MetadataToken == 0x0600451c && fill.GetMethodBody().GetILAsByteArray().Length == 113;
         }
         private static void Postfix(ActionBarGroupSlot __instance, ref List<AbilityData> ___Conversion)
         {
             var mechanism = __instance == null ? null : __instance.MechanicSlot as MechanicActionBarSlotMemorizedSpell;
             if (mechanism == null || ___Conversion == null) return;
-            DruidSummonConversionVariantPatch.ProjectRows(mechanism, ref ___Conversion);
+            DruidSummonConversionVariantPatch.ProjectRows(mechanism, ref ___Conversion, _variantFillExact);
         }
     }
 
