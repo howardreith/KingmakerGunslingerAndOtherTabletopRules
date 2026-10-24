@@ -58951,6 +58951,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S30/S31 Dispel Evil held discharge menu; both native touch choices remain available until use; exact owner/native parameters/book/icon. New species routes remain suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast",
+      "guid": "3bc15285b09d4b4bb9c4cb0d5c2009fb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet blast and independently expiring paralysis. Exact own instrument, all-creature native radius except actual archons, real saves/d4, native immunity; original real icon. New species routes remain suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed",
+      "guid": "9b71d4956e624291a6ad179f811cbf64",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet blast and independently expiring paralysis. Exact own instrument, all-creature native radius except actual archons, real saves/d4, native immunity; original real icon. New species routes remain suppressed."
     }
   ]
 }

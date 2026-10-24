@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.Summoning
                 "movanic-deva", "frost-giant", "thanadaemon" };
             string[] preserved = { "mite", "manticore", "nereid", "hamadryad" };
             // Registered hidden creatures enter through visibleCatalog too.
-            string[] prepared = { "remove-stirge" };
+            string[] prepared = { "remove-stirge", "trumpet-blast" };
             string[] expected = visibleCatalog.Concat(split).Concat(preserved)
                 .Concat(prepared)
                 .ToArray();
@@ -95,7 +95,7 @@ namespace KingmakerGunslinger.Summoning
             // removal action remains a separate concept with no creature of
             // its own, so it stays an explicit entry.
             Add(result, SummonProjectIconScope.KmgCatalog,
-                "remove-stirge", "Remove Stirge");
+                "remove-stirge", "Remove Stirge", "trumpet-blast", "Trumpet Blast");
             return result.ToArray();
         }
 
