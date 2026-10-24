@@ -74,6 +74,8 @@ try {
         @('GiantSummonPresentationPatch','UnitEntityView','OnDataAttached',-1),
         @('GiantSummonPresentationDestroyPatch','UnitEntityView','OnDestroy',-1),
         @('GiantSummonPresentationBuffPatch','Buff','SpawnParticleEffect',-1),
+        @('GiantSummonDonorFrostStartFxPatch','SpawnFxOnStart','SpawnFx',99),
+        @('GiantSummonDonorFrostDeathFxPatch','SpawnFxOnStart','HandleUnitDeath',79),
         @('SummonAttackGestureActPatch','UnitAttack','OnAction',-1),
         @('SummonAttackGestureTickPatch','UnitCommand','Tick',-1)
     )
@@ -117,6 +119,13 @@ try {
     $pp.GetField('containerAttributes',$flags).SetValue($unprepared,$old)
     if($null -ne $pp.GetMethod('GetOriginalMethod',$flags).Invoke($unprepared,@())){throw 'Negative fixture unexpectedly resolved the old untyped constructor.'}
     $passed++;Write-Output 'PASS old untyped constructor remains unresolved (actual Harmony12 negative fixture)'
-    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+1)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
+    # The Druid popup projection drops a prepared parent's own quantity rows
+    # only because installed Fill appends that spell's variants after them.
+    try {
+        $fillExact=$mod.GetType('KingmakerGunslinger.Summoning.DruidSummonConversionPopupRowsPatch',$true).GetMethod('ExactVariantFill',$flags).Invoke($null,@())
+        if(-not $fillExact){throw 'Installed ActionBarSpellsGroup.Fill differs from token 0x0600451C / 113 IL bytes.'}
+        $passed++;Write-Output 'PASS DruidSummonConversionPopupRowsPatch.ExactVariantFill => ActionBarSpellsGroup::Fill token=0x0600451C bytes=113'
+    } catch {$message=$_.Exception.GetBaseException().Message;$failures.Add('ExactVariantFill: '+$message);Write-Output ('FAIL ExactVariantFill: '+$message)}
+    Write-Output ('Targets: '+$passed+'/'+($catalog.Count+2)+' passed; modSha256='+(Get-FileHash -LiteralPath $modPath -Algorithm SHA256).Hash.ToLowerInvariant())
     if($failures.Count -gt 0){throw ($failures -join [Environment]::NewLine)}
 } finally {[AppDomain]::CurrentDomain.remove_AssemblyResolve($resolver)}

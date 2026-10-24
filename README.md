@@ -1,5 +1,18 @@
 # Kingmaker Gunslinger
 
+The **0.0.166-expanded-summoning-druid-giant-sizes** release lists each
+creature once in a Druid's prepared Summon Nature's Ally menu, keeps the
+summoned giants' family heights in play, and gives the Huge Cloud and Storm
+Giants a Huge space. Statistics and saved identities are unchanged. See the
+[v0.0.166 release notes](docs/RELEASE-NOTES-0.0.166.md).
+
+The **0.0.165-expanded-summoning-cleanup-followup** release joins the
+Deinonychus arms to its body, removes the Frost Giant's snow and ice from the
+Fire and Storm Giants, paints the Pony and Cyclops icons, and lists the Summon
+Nature's Ally I creatures in a Druid's level 1 conversion. Rules and saved
+identities are unchanged. See the
+[v0.0.165 release notes](docs/RELEASE-NOTES-0.0.165.md).
+
 The **0.0.164-expanded-summoning-cleanup2** release redraws eight Expanded
 Summoning creature bodies and the two-headed Ettin, gives the six giant families
 their own palettes and visual heights, and makes summon menus clearer: the
@@ -64,12 +77,24 @@ Sprint 22 remains released and unchanged.
 
 ### Current release
 
+Version **0.0.166-expanded-summoning-druid-giant-sizes** keeps every identity,
+route and summon choice of v0.0.165 (1,156 visible choices). It changes the
+Druid's prepared Summon Nature's Ally menus, the summoned giants' heights and
+the Cloud and Storm Giants' space. See the
+[v0.0.166 release notes](docs/RELEASE-NOTES-0.0.166.md).
+
+### Earlier releases
+
+Version **0.0.165-expanded-summoning-cleanup-followup** keeps every identity,
+route and summon choice of v0.0.164 (1,156 visible choices). It changes the
+Deinonychus body, the Fire and Storm Giant effects, the Pony and Cyclops icons
+and the Druid level 1 conversion menu. See the
+[v0.0.165 release notes](docs/RELEASE-NOTES-0.0.165.md).
+
 Version **0.0.164-expanded-summoning-cleanup2** keeps every identity, route and
 summon choice of v0.0.163 (1,156 visible choices). It changes creature art, the
 giant palettes and visual heights, the Horse icon and summon presentation. See
 the [v0.0.164 release notes](docs/RELEASE-NOTES-0.0.164.md).
-
-### Earlier releases
 
 Version **0.0.158-expanded-summoning-visual-refinement** keeps every identity,
 route and summon choice of v0.0.157: the 1,122 spell summon choices and the

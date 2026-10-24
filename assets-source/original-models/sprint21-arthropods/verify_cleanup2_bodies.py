@@ -1,4 +1,4 @@
-"""Verify the shipped geometry/weight risks of the four Cleanup 2 repairs.
+"""Verify the shipped geometry/weight risks of the Cleanup 2 body repairs.
 
 Run with Python 3, --root <repository> --out <private-report.json>.
 This checks authored bytes only; it explicitly cannot certify native motion,
@@ -21,6 +21,7 @@ FILES = {
     "giant-stag-beetle": "sprint14-insects",
     "girallon": "sprint19-fourarmed",
     "stegosaurus": "sprint23-armored-dinosaurs",
+    "deinonychus": "sprint24-theropods",
 }
 
 
@@ -142,6 +143,12 @@ def anatomy(key, payload, components):
             lower = {side + "_" + n for n in ("Clavicle_01", "Up_Arm_01", "Forearm_01", "Forearm_02")}
             assert sum(lower <= d for d in sets) == 2, "two connected arm/hand surfaces per side"
         assert payload.get("lowerHandsUseForearmDriver"), "explicit simplified lower-hand policy"
+    elif key == "deinonychus":
+        # The cleanup follow-up joined both forelimbs to the trunk surface.
+        for side in ("L", "R"):
+            needed = {"Torso_Lower", "Torso_Upper", "Head"} | {side + n for n in (
+                "_Arm_Upper", "_Arm_Lower", "_Palm", "_finger2", "_Bfinger2")}
+            assert sum(needed <= d for d in sets) == 1, "arm, palm and every finger chain join the trunk"
     else:
         needed = {f"Tail{i}_M" for i in range(6)} | {"Head", "Neck_M"} | \
             {s + n for s in ("Left", "Right") for n in
