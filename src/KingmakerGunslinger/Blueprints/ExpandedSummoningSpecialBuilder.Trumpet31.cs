@@ -12,10 +12,13 @@ using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.ElementsSystem;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using KingmakerGunslinger.Summoning;
@@ -28,7 +31,6 @@ namespace KingmakerGunslinger.Blueprints
         internal const string Trumpet31Prefix = "KMG.Summoning.OutsiderCelestial.TrumpetArchon.";
         private const string Trumpet31Unit = "KMG.Summoning.Unit.TrumpetArchon";
         private const string NativeClericBook31 = "4673d19a0cf2fab4f885cc4d1353da33";
-        internal const string TrumpetFreedomSpell31Guid = "4c349361d720e844e846ad8c19959b1e";
         internal const string NativeFreedomBuff31Guid = "1533e782fca42b84ea370fc1dcbf4fc1";
         internal const string TrumpetResistanceSpell31Guid = "7bc8e27cba24f0e43ae64ed201ad5785";
         internal const string NativeResistanceBuff31Guid = "df680f6687f935e408eba6fb5124930e";
@@ -166,9 +168,30 @@ namespace KingmakerGunslinger.Blueprints
         // unmodeled illumination slot, caster travel and expensive Raise Dead
         // stay unprepared; they do not become extra combat preparations.
         // Cantrips use separate real Spell/Cantrip facts, never L0 Memorize.
+        // Bind the actual preparable spell by its published native protection
+        // consumer, retaining any native root/touch-delivery relationship.
+        // A similarly named or non-cleric ability cannot satisfy this contract.
+        internal static bool IsTrumpetFreedomPreparation31(BlueprintAbility spell,
+            Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff freedomBuff)
+        {
+            if (spell == null || freedomBuff == null || spell.Type != AbilityType.Spell) return false;
+            var effect = spell.GetComponent<AbilityEffectStickyTouch>()?.TouchDeliveryAbility ?? spell;
+            var run = effect.GetComponent<AbilityEffectRunAction>();
+            return (run?.Actions?.Actions ?? Array.Empty<GameAction>())
+                .OfType<ContextActionApplyBuff>().Any(action => ReferenceEquals(action.Buff, freedomBuff));
+        }
+
         private static TrumpetPreparedSpell[] Trumpet31NativePreparations(
             LibraryScriptableObject library, BlueprintSpellbook nativeBook)
         {
+            var freedomBuff = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(
+                library, NativeFreedomBuff31Guid, "published native Freedom of Movement consumer");
+            var freedom = nativeBook.SpellList.SpellsByLevel.Single(level => level.SpellLevel == 4)
+                .Spells.Where(spell => IsTrumpetFreedomPreparation31(spell, freedomBuff)).ToArray();
+            if (freedom.Length != 1)
+                throw new InvalidOperationException("Native cleric level4 has no unique Freedom of Movement preparation: matches=" +
+                    freedom.Length + ";entries=" + string.Join("|", nativeBook.SpellList.SpellsByLevel.Single(level => level.SpellLevel == 4)
+                        .Spells.Select(spell => spell.name + ":" + spell.AssetGuid + ":" + spell.Type).ToArray()));
             var rows = new[] {
                 new { Level = 1, Copies = 1, Guid = "90e59f4a4ada87243b7b3535a06d0638" }, // Bless
                 new { Level = 1, Copies = 2, Guid = "5590652e1c2225c4ca30c4a699ab3649" }, // Cure Light Wounds
@@ -184,7 +207,7 @@ namespace KingmakerGunslinger.Blueprints
                 new { Level = 4, Copies = 1, Guid = "95f7cdcec94e293489a85afdf5af1fd7" }, // Dismissal
                 new { Level = 4, Copies = 1, Guid = "ef16771cb05d1344989519e87f25b3c5" }, // Divine Power
                 new { Level = 4, Copies = 1, Guid = "e7240516af4241b42b2cd819929ea9da" }, // Neutralize Poison
-                new { Level = 4, Copies = 1, Guid = TrumpetFreedomSpell31Guid }, // legal Spell Immunity alternative
+                new { Level = 4, Copies = 1, Guid = freedom[0].AssetGuid }, // actual native cleric preparation; legal Spell Immunity alternative
                 new { Level = 5, Copies = 1, Guid = "5d3d689392e4ff740a761ef346815074" }, // Mass Cure Light Wounds
                 new { Level = 6, Copies = 1, Guid = "d361391f645db984bbf58907711a146a" }, // Banishment
                 new { Level = 6, Copies = 2, Guid = "5da172c4c89f9eb4cbb614f3a67357d3" }, // Heal

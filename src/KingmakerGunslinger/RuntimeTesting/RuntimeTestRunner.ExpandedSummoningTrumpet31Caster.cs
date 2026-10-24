@@ -250,10 +250,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The legal native Resistance cantrip pays two actual standard actions, supplies one nonstacking +1 resistance save effect at CL14 and neither spends nor refills leveled slots.");
                 if (!resisted) throw new InvalidOperationException("Native Resistance parameters/effect/resource isolation failed.");
 
-                var freedom = creation.Preparations.Single(row => row.Ability.AssetGuid ==
-                    ExpandedSummoningSpecialBuilder.TrumpetFreedomSpell31Guid).Ability;
                 var freedomBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                     ExpandedSummoningSpecialBuilder.NativeFreedomBuff31Guid, "published native Freedom of Movement effect");
+                var freedom = creation.Preparations.Single(row => row.Level == 4 &&
+                    ExpandedSummoningSpecialBuilder.IsTrumpetFreedomPreparation31(row.Ability, freedomBuff)).Ability;
                 var freedomSlot = book.GetMemorizedSpellSlots(4).Single(slot => slot.Available && ReferenceEquals(slot.Spell?.Blueprint, freedom));
                 freedomSlot.Spell.ParamSpellSlot = freedomSlot;
                 var freedomEffects = new Trumpet31CasterEffects(owner);
