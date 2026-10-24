@@ -8,6 +8,8 @@ Trumpet blast continuation: the owner explicitly authorized the pending exact ge
 
 Build attempt f87b847d,05:28:27.191-05:30:22.714Z: affected offline preflight871 and compatibility acceptance/refusal/dispatch checks passed; no game/profile entered. Package validation stopped before production compilation because the exact delegated-icon authority test still pinned the old134-concept manifest. Update only that expected hash to the actual135-concept manifest and retain its stale-metadata refusal; no generated package and no new game launch. Original stdout/stderr/error/exit/intake remain in artifacts/s30-31-blast-build-f87b847d-20261024T052817Z. Limited task removed and exact current intake Compare PASS (Mods967/saves118/references18/settings83/tasks0/processes1). Corrected provenance to explicitly say native presentation pending.
 
+Build attempt a8c16945,05:32:35.090-05:35:04.508Z: asset/source/corruption validation passed with the updated authority pin; selected domain16/17 passed, failing only the shared derived icon-concept total, which still counted one noncreature action. It now derives two actions (Remove Stirge and Trumpet Blast) alongside the actual registered roster and retained concepts. No production compilation/package/game followed this failed precondition. Original logs/intake/explicit admission-reuse tuple remain artifacts/s30-31-blast-build-a8c16945-20261024T053225Z. Task removed and exact intake Compare PASS. Earlier failure and all original native proofs remain unchanged.
+
 ## Scope and coverage map
 
 | Charter | Creature | Routes | Current proof | Required next work |
