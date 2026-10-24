@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         // Observe every existing cleanup predicate before and after native
         // settling. This neither clears additional state nor weakens a guard.
-        private JObject Dretch30CleanupState(ExpandedSummoningCorrectionFixture fixture,
+        private JObject OutsiderMeleeCleanupState(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, int expectedAc)
         {
             var target = fixture.Hostile;
@@ -316,7 +316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.Stats.AC.BaseValue = targetAc;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 ResetExpandedSummoningHostile(fixture);
-                immediateCleanup = Dretch30CleanupState(fixture, owner, targetAc);
+                immediateCleanup = OutsiderMeleeCleanupState(fixture, owner, targetAc);
                 // An unstarted native movement remained after leaving combat
                 // on this disposable target (game164). Close it after that
                 // transition, retaining the before/after evidence and guard.
@@ -333,7 +333,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 inventoryBefore.Select(value => value.Count).SequenceEqual(inventoryCounts);
             bool areasExact = areasBefore.Length == Game.Instance.State.AreaEffects.All.Count() &&
                 areasBefore.All(value => Game.Instance.State.AreaEffects.All.Contains(value));
-            var actorCleanup = Dretch30CleanupState(fixture, owner, targetAc);
+            var actorCleanup = OutsiderMeleeCleanupState(fixture, owner, targetAc);
             bool clean = (bool)actorCleanup["clean"] && itemsSafe && bodyReleased && inventoryExact && areasExact;
             Sprint25Check("dretch-melee-" + (ai ? "ai-fallback" : "full") + "-cleanup", clean,
                 new JObject { ["ownerAbsent"] = !owner.IsInState, ["items"] = itemRows,
