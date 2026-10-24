@@ -317,7 +317,7 @@ namespace KingmakerGunslinger.DomainTests
                     (bool)tyr["tinyForearms"],
                 "Tyrannosaurus owns the large skull and tiny forearms.");
             Assertions.Equal(
-                "b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6",
+                "012c1e6fc0a6a2029d6e14fc4bb5f4ed48f3bd8029c5f99a91f2337d1411c78c",
                 Sha256("assets/sprint24-theropods/deinonychus-mesh.json"),
                 "Deterministic Deinonychus mesh bytes.");
             Assertions.Equal(
@@ -333,7 +333,7 @@ namespace KingmakerGunslinger.DomainTests
                 "assets/sprint24-theropods/deinonychus-mesh.json",
                 "deinonychus");
             Assertions.Equal(
-                "9e60ec305e08add31be809f4d82a82c727741102e3c3c4023494240f0f38780f",
+                "a487d804338a5270715affba69d0e9012924b4454775ca1bfb4ae91d2d89aaac",
                 Sha256("assets/sprint24-theropods/deinonychus-albedo.png"),
                 "Deterministic Deinonychus original paint bytes.");
             Assertions.Equal(

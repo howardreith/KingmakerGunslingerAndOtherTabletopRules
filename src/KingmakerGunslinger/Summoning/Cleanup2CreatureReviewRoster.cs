@@ -10,7 +10,7 @@ namespace KingmakerGunslinger.Summoning
         private static readonly string[] WorkingKeys = {
             "giant-crab", "griffon", "giant-stag-beetle", "girallon", "ettin", "elephant",
             "stegosaurus", "hill-giant", "stone-giant", "fire-giant", "cloud-giant",
-            "storm-giant", "brachiosaurus", "gorgon"
+            "storm-giant", "brachiosaurus", "gorgon", "deinonychus"
         };
 
         internal const string FrostDestination = "frost-giant is a retained native option, not a generated creature-review key. " +

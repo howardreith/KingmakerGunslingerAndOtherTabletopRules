@@ -113,6 +113,10 @@ $editedSources = @{
     # Cleanup iteration 2: owner-requested painted replacement, admitted only
     # to the development candidate; aesthetic approval remains pending.
     'horse' = @{ path = 'assets-source/original-icons/expanded-summoning/edits/horse/horse.png'; size = 1254 }
+    # Cleanup follow-up: owner-requested painted replacements for the two
+    # remaining procedural busts the owner named; approval remains pending.
+    'pony' = @{ path = 'assets-source/original-icons/expanded-summoning/edits/pony/pony.png'; size = 1254 }
+    'cyclops' = @{ path = 'assets-source/original-icons/expanded-summoning/edits/cyclops/cyclops.png'; size = 1254 }
 }
 
 if (-not $VerifyOnly -and -not (Test-Path -LiteralPath $outputRoot)) {

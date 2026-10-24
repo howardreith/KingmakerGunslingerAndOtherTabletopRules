@@ -66,6 +66,23 @@ namespace KingmakerGunslinger.DomainTests
                 "Missing unit identity must fail closed.");
         }
 
+        internal static void OnlyFireAndStormDropTheFrostDonorEffects()
+        {
+            foreach (GiantSummonPresentationProfile profile in GiantSummonPresentationPolicy.All)
+            {
+                bool frostBody = profile.NativePrefabId == "df0f3fbceb3605d489c0dec8fa5c7d1e";
+                Assertions.Equal(frostBody && profile.Key != "frost-giant",
+                    GiantSummonPresentationPolicy.SuppressesDonorFrostEffects(true, profile.UnitGuid),
+                    "Only owned bodies on the Frost prefab drop its frost effects: " + profile.Key);
+                Assertions.False(GiantSummonPresentationPolicy.SuppressesDonorFrostEffects(false, profile.UnitGuid),
+                    "Module-off startup must keep every native effect: " + profile.Key);
+            }
+            foreach (string other in new[] { null, "", "61dd71e874b16f742a0f783314105553",
+                GiantSummonPresentationPolicy.All.Single(value => value.Key == "fire-giant").UnitGuid.ToUpperInvariant() })
+                Assertions.False(GiantSummonPresentationPolicy.SuppressesDonorFrostEffects(true, other),
+                    "A missing, native or non-exact identity must keep its native effects.");
+        }
+
         internal static void MeasuredHeightIsRelativeToHumanAndNeverCompounds()
         {
             // Synthetic numeric fixtures prove the calculation only. They are

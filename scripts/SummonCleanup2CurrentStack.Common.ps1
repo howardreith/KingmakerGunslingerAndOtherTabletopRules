@@ -11,7 +11,7 @@ function New-KmgSummonCleanup2Plan {
     if($SaveName -cne 'KMG_AUTOMATION_WORKING') { throw 'Exact KMG_AUTOMATION_WORKING is required.' }
     $allowed=@('giant-crab','griffon','giant-stag-beetle','girallon','ettin','elephant',
         'stegosaurus','hill-giant','stone-giant','fire-giant','cloud-giant',
-        'storm-giant','brachiosaurus','gorgon')
+        'storm-giant','brachiosaurus','gorgon','deinonychus')
     if(@($CreatureKeys | Where-Object {$_ -is [string] -and $_ -ceq 'frost-giant'}).Count -gt 0) {
         throw "frost-giant is a retained native option, not a generated creature-review key. Use disposable-expanded-summoning-cleanup2-native-review with reviewPhase=giant-lineup for the existing Nature's Ally VII and Summon Monster VIII Frost routes."
     }

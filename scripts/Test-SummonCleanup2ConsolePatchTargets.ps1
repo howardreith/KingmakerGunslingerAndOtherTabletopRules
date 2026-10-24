@@ -74,6 +74,8 @@ try {
         @('GiantSummonPresentationPatch','UnitEntityView','OnDataAttached',-1),
         @('GiantSummonPresentationDestroyPatch','UnitEntityView','OnDestroy',-1),
         @('GiantSummonPresentationBuffPatch','Buff','SpawnParticleEffect',-1),
+        @('GiantSummonDonorFrostStartFxPatch','SpawnFxOnStart','SpawnFx',99),
+        @('GiantSummonDonorFrostDeathFxPatch','SpawnFxOnStart','HandleUnitDeath',79),
         @('SummonAttackGestureActPatch','UnitAttack','OnAction',-1),
         @('SummonAttackGestureTickPatch','UnitCommand','Tick',-1)
     )

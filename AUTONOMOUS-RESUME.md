@@ -1,3 +1,16 @@
+# Summon cleanup follow-up — v0.0.165 release in progress (2026-10-24)
+
+After v0.0.164 the owner asked for four corrections: contiguous Deinonychus
+arms, painted Pony and Cyclops icons, no Summon Nature's Ally I paw row, and no
+falling ice on the Fire and Storm Giants. All four are implemented on
+`codex/expanded-summoning-cleanup3-followup` and checked offline and natively
+on development candidate `05ba0dda49` (package `30067d06…a8`). See
+[the follow-up state](planning/CLEANUP2-FOLLOWUP-STATE.md). No identity or route
+changes, so the public equation stays **1,127 generated placements + 29
+retained wrappers = 1,156 visible choices**. The owner authorized the v0.0.165
+release; candidate `f216160d8e` passed the Sprint gate, visual contracts 15/15
+and the creature review 36/36. No owner aesthetic approval is claimed.
+
 # Summon Cleanup Iteration 2 — v0.0.164 RELEASED / STOP
 
 **PR #67 is MERGED and v0.0.164 is PUBLISHED.** On 2026-10-23 the owner
