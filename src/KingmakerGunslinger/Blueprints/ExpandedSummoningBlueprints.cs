@@ -132,6 +132,13 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "TrumpetBlastEligibility")
+                    blueprint = registry.Register<TrumpetBlastEligibility>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<TrumpetBlastEligibility>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "ArchonAidEligibility")
                     blueprint = registry.Register<ArchonAidEligibility>(identity.Symbol, () =>
                     {

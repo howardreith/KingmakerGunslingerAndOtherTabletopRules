@@ -150,7 +150,7 @@ namespace KingmakerGunslinger.Blueprints
             banishSafety.OwningBlueprint = unit; banishSafety.Book = book; banishSafety.Ability = banishment;
             banishSafety.Extraplanar = Feature(library, ExtraplanarSubtypeGuid, "native Banishment target consumer"); banishAi.TargetConsiderations = new Consideration[] { banishSafety };
             banishAi.BaseScore = 5;
-            brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>()).Concat(new BlueprintAiAction[] { ai, banishAi }).ToArray();
+            brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>()).Concat(new BlueprintAiAction[] { ai, banishAi, ConfigureTrumpetBlastAi31(bySymbol, unit, sword, blast) }).ToArray();
             unit.Brain = brain;
             ConfigureUnitCore(unit, "TrumpetArchon", "Trumpet Archon", Alignment.LawfulGood, Size.Medium,
                 20, 17, 25, 16, 20, 17, 40);

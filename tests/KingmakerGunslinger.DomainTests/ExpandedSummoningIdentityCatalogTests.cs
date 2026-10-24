@@ -101,6 +101,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredHealingEligibilityIdentityCount,
                 released.Count(value => value.PlannedType == "TrumpetPreparedHealingEligibility"),
                 "S31 Trumpet healing eligibility identity count changed.");
+            Assertions.Equal(1, released.Count(value => value.PlannedType == "TrumpetBlastEligibility"),
+                "The scoped blast AI owns one exact private eligibility identity.");
             Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredAstralHealingEligibilityIdentityCount,
                 released.Count(value => value.PlannedType == "AstralHealingEligibility"),
                 "S31 Astral healing eligibility identity count changed.");

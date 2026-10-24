@@ -58967,6 +58967,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Hidden S30/S31 Trumpet blast and independently expiring paralysis. Exact own instrument, all-creature native radius except actual archons, real saves/d4, native immunity; original real icon. New species routes remain suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlastAi",
+      "guid": "1fcaa2e4a54c4d81b6ffa40e3f21bada",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet blast autonomous selection only. Native perceived useful enemy, conservative nearby nonenemy refusal; real held-instrument access and effect stay unchanged. New routes remain suppressed."
+    },
+    {
+      "symbol": "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlastEligibility",
+      "guid": "1f96d2e9b2114a688712ed1bd78896a0",
+      "plannedType": "TrumpetBlastEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Hidden S30/S31 Trumpet blast autonomous selection only. Native perceived useful enemy, conservative nearby nonenemy refusal; real held-instrument access and effect stay unchanged. New routes remain suppressed."
     }
   ]
 }
