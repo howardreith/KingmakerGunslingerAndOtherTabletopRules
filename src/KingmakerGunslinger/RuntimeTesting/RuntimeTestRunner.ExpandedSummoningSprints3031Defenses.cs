@@ -7,6 +7,7 @@ using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
+using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
@@ -34,11 +35,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var sourcePosition = source.Position;
             var sourceAlignment = source.Descriptor.Alignment.Value;
             var completed = new List<UnitEntityData>();
-            var areasBefore = Game.Instance.State.AreaEffects.All.ToArray();
+            AreaEffectEntityData[] areasBefore = null;
             var partyItems = Game.Instance.Player.Inventory.Items.ToArray();
             var partyCounts = partyItems.Select(item => item.Count).ToArray();
-            var targetBuffs = source.Buffs.Enumerable.Select(buff => buff.Blueprint.AssetGuid)
-                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            string[] targetBuffs = null;
+            var sourceEvents = new Sprints3031DefenseControlEvents(source);
             var transient = new List<UnityEngine.Object>();
             var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                 FcbMagicMissileGuid, "six-creature native SR consumer");
@@ -46,9 +47,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "KMG.Summoning.OutsiderCelestial.Dretch.StinkingCloud"];
             try
             {
+                EventBus.Subscribe(sourceEvents);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
+                areasBefore = Game.Instance.State.AreaEffects.All.ToArray();
+                targetBuffs = source.Descriptor.Buffs.RawFacts.Select(buff => buff.Blueprint.AssetGuid)
+                    .OrderBy(value => value, StringComparer.Ordinal).ToArray();
                 ResetExpandedSummoningHostile(fixture);
                 // Demonstrate that relevant residue fails this same reset
                 // predicate before trusting it between creature cases.
@@ -73,7 +78,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     completed.Add(owner); Sprint28SetBrainActivePreservingActions(owner, false);
                     owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                     int hp = owner.Stats.HitPoints.BaseValue, injury = owner.Damage;
-                    var items = owner.Descriptor.Inventory.Items.ToArray();
+                    var items = owner.Descriptor.Inventory.Items.ToList();
+                    sourceEvents.Rows.Clear();
                     try
                     {
                         for (int frame = 0; frame < 16; frame++) yield return 0;
@@ -181,7 +187,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Separate real buff-application and ability-immunity consumers use susceptible controls for poison, fear, petrification and an unrelated descriptor; these are not spell casts.");
                         if (!descriptorsExact) throw new InvalidOperationException("Native defense descriptors failed: " + key);
                         // Untagged actual condition separates the native
-                        // condition immunity from descriptor rejection.
+                        // condition immunity from descriptor rejection. Its
+                        // positive control is disposable and independent of
+                        // the rule source reused by the next creature.
+                        var conditionControl = CastExpandedSummoningOwnTier(fixture, "wolf");
+                        if (!fixture.Created.Any(actor => ReferenceEquals(actor, conditionControl)))
+                            throw new InvalidOperationException("Condition control is not request-owned.");
+                        completed.Add(conditionControl);
+                        Sprint28SetBrainActivePreservingActions(conditionControl, false);
+                        conditionControl.Commands.InterruptAll(true); conditionControl.Commands.RemoveFinishedAndUpdateQueue();
+                        items.AddRange(conditionControl.Descriptor.Inventory.Items);
                         var petrify = TraitCondition("S3031-" + key + "-actual-petrify", SpellDescriptor.None, transient);
                         var condition = ScriptableObject.CreateInstance<AddCondition>();
                         condition.Condition = UnitCondition.Petrified; transient.Add(condition);
@@ -190,15 +205,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         try
                         {
                             bool ownerBefore = owner.Descriptor.State.HasCondition(UnitCondition.Petrified);
-                            bool sourceBefore = source.Descriptor.State.HasCondition(UnitCondition.Petrified);
-                            var control = ApplySprint12Buff(source, petrify, source, TimeSpan.FromSeconds(6), 10);
+                            bool sourceBefore = conditionControl.Descriptor.State.HasCondition(UnitCondition.Petrified);
+                            var control = ApplySprint12Buff(conditionControl, petrify, source, TimeSpan.FromSeconds(6), 10);
                             var actual = ApplySprint12Buff(owner, petrify, source, TimeSpan.FromSeconds(6), 10);
                             bool ownerPetrified = owner.Descriptor.State.HasCondition(UnitCondition.Petrified);
-                            bool sourcePetrified = source.Descriptor.State.HasCondition(UnitCondition.Petrified);
+                            bool sourcePetrified = conditionControl.Descriptor.State.HasCondition(UnitCondition.Petrified);
                             bool exact = !ownerBefore && !sourceBefore && control.AppliedBuff != null && sourcePetrified &&
                                 actual.AppliedBuff != null && ownerPetrified == fiend;
                             Sprint25Check("defenses-" + key + "-petrification-condition", exact,
                                 new JObject { ["creature"] = key, ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
+                                    ["conditionControl"] = conditionControl.UniqueId, ["controlSeparateFromSource"] = !ReferenceEquals(conditionControl, source),
                                     ["ownerBefore"] = ownerBefore, ["controlBefore"] = sourceBefore,
                                     ["ownerBuffApplied"] = actual.AppliedBuff != null, ["controlBuffApplied"] = control.AppliedBuff != null,
                                     ["ownerPetrified"] = ownerPetrified, ["controlPetrified"] = sourcePetrified,
@@ -206,7 +222,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 "An actual untagged native AddCondition consumer petrifies the susceptible control and fiends; each celestial blocks the condition independently of descriptor rejection.");
                             if (!exact) throw new InvalidOperationException("Native petrification condition failed: " + key);
                         }
-                        finally { RemoveSprint12Buff(owner, petrify); RemoveSprint12Buff(source, petrify); }
+                        finally
+                        {
+                            RemoveSprint12Buff(owner, petrify); RemoveSprint12Buff(conditionControl, petrify);
+                            DisposeExpandedSummoningUnits(fixture.Created, new[] { conditionControl });
+                        }
                     }
                     finally
                     {
@@ -228,6 +248,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         partyItems.SequenceEqual(Game.Instance.Player.Inventory.Items) &&
                         partyCounts.SequenceEqual(partyItems.Select(item => item.Count));
                     reset["creature"] = key; reset["owner"] = owner.UniqueId;
+                    reset["source"] = source.UniqueId;
+                    reset["sourceDamage"] = source.Damage; reset["expectedSourceDamage"] = fixture.HostileDamage;
+                    reset["sourceDead"] = source.Descriptor.State.IsDead;
+                    reset["sourcePetrified"] = source.Descriptor.State.HasCondition(UnitCondition.Petrified);
+                    reset["sourceBuffsBefore"] = new JArray(targetBuffs);
+                    reset["sourceBuffsAfter"] = new JArray(source.Descriptor.Buffs.RawFacts.Select(buff => buff.Blueprint.AssetGuid)
+                        .OrderBy(value => value, StringComparer.Ordinal));
+                    reset["sourceNativeEvents"] = sourceEvents.Rows.DeepClone();
                     reset["ownedItemsRetired"] = items.All(item => !item.IsLootable && item.Collection == null);
                     reset["partyInventoryExact"] = partyItems.SequenceEqual(Game.Instance.Player.Inventory.Items) &&
                         partyCounts.SequenceEqual(partyItems.Select(item => item.Count));
@@ -238,6 +266,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                EventBus.Unsubscribe(sourceEvents);
                 DisposeExpandedSummoningUnits(fixture.Created, completed);
                 source.Descriptor.Alignment.Set(sourceAlignment); PlaceExpandedSummoningUnit(source, sourcePosition);
                 foreach (var value in transient) if (value != null) UnityEngine.Object.DestroyImmediate(value);
@@ -255,6 +284,31 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["ignoreSpellResistance"] = rule.IgnoreSpellResistance;
             row["forcedRolls"] = 0;
             return row;
+        }
+
+        private sealed class Sprints3031DefenseControlEvents :
+            IGlobalRulebookHandler<RuleDealDamage>, IGlobalRulebookHandler<RuleApplyBuff>
+        {
+            private readonly UnitEntityData _source;
+            internal readonly JArray Rows = new JArray();
+            internal Sprints3031DefenseControlEvents(UnitEntityData source) { _source = source; }
+            public void OnEventAboutToTrigger(RuleDealDamage evt) { }
+            public void OnEventDidTrigger(RuleDealDamage evt)
+            {
+                if (ReferenceEquals(evt.Target, _source)) Rows.Add(new JObject {
+                    ["event"] = "damage", ["initiator"] = evt.Initiator?.UniqueId,
+                    ["target"] = evt.Target?.UniqueId, ["damage"] = evt.Damage,
+                    ["ability"] = evt.Reason?.Context?.SourceAbility?.AssetGuid });
+            }
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+            public void OnEventDidTrigger(RuleApplyBuff evt)
+            {
+                if (ReferenceEquals(evt.Initiator, _source)) Rows.Add(new JObject {
+                    ["event"] = "buff", ["target"] = evt.Initiator?.UniqueId,
+                    ["applied"] = evt.AppliedBuff != null, ["immune"] = evt.Immunity,
+                    ["buff"] = evt.AppliedBuff?.Blueprint?.AssetGuid,
+                    ["caster"] = evt.AppliedBuff?.Context?.MaybeCaster?.UniqueId });
+            }
         }
     }
 }
