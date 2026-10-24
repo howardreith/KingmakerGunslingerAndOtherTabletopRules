@@ -188,13 +188,31 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewTrumpet31BlastAiSafe(ExpandedSummoningCorrectionFixture fixture)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
-            UnitEntityData owner = null;
+            UnitEntityData owner = null, anchor = null;
+            Vector3 anchorBefore = Vector3.zero;
             int fort = 0;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
+                // This is the native profile's own cloned main character,
+                // proven by retained preset/blueprint object references. No
+                // original party member or campaign actor is eligible.
+                anchor = Game.Instance.Player.MainCharacter.Value;
+                bool anchorOwned = anchor != null && _summoningProfileActor != null && _summoningProfilePreset != null &&
+                    _summoningProfileOriginal != null && ReferenceEquals(anchor.Blueprint, _summoningProfileActor) &&
+                    ReferenceEquals(_summoningProfilePreset.PlayerCharacter, _summoningProfileActor) &&
+                    !ReferenceEquals(_summoningProfileOriginal.PlayerCharacter, _summoningProfileActor) &&
+                    _summoningProfileActor.name == "KMG_Runtime_Summoning_Profile_Anchor" &&
+                    _summoningProfileSaveGuard != null && _summoningProfileScenes != null;
+                Sprint25Check("trumpet-blast-ai-owned-anchor", anchorOwned, new JObject {
+                    ["anchor"] = anchor?.UniqueId, ["blueprint"] = anchor?.Blueprint.name,
+                    ["exactRequestOwnedPresetClone"] = anchorOwned, ["positionBefore"] = anchor?.Position.ToString(),
+                    ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
+                    "Only the exact native profile-owned anchor clone can be positioned outside the blast; the retained original preset and all campaign actors are protected.");
+                if (!anchorOwned) { anchor = null; throw new InvalidOperationException("Request-owned profile anchor identity is not proven."); }
+                anchorBefore = anchor.Position;
                 CreateExpandedSummoningCorrectionHostile(fixture);
                 fort = fixture.Hostile.Stats.SaveFortitude.BaseValue;
                 owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
@@ -209,7 +227,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 2f, out far, out survey, out direction,
-                        new Feet(100).Meters + 2.5f, new[] { fixture.Caster }, 30);
+                        new Feet(100).Meters + 2.5f, new[] { fixture.Caster, anchor }, 30);
                 }
                 catch (Exception error)
                 {
@@ -223,6 +241,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
                 PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 40f);
+                PlaceExpandedSummoningUnit(anchor, origin + Vector3.back * 42f);
                 foreach (var unit in new[] { owner, target })
                 { unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit); unit.JoinCombat(); unit.SightCache.ClearIfNeeded(); }
                 owner.Memory.Add(target); target.Memory.Add(owner);
@@ -238,15 +257,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var local = Kingmaker.Visual.LocalMap.LocalMapArea.GetClosest(owner.Position);
                 bool outdoor = local?.AreaPart != null && !local.AreaPart.IsIndoor && !Kingmaker.Visual.LocalMap.LocalMapArea.IsIndoor(owner.Position);
                 bool clear = remaining.Length == 0 && owner.IsEnemy(target) && outdoor &&
+                    owner.DistanceTo(anchor) > new Feet(100).Meters + anchor.Corpulence &&
+                    owner.DistanceTo(fixture.Caster) > new Feet(100).Meters + fixture.Caster.Corpulence &&
                     Game.Instance.CurrentlyLoadedArea.AssetGuid == "ead426a6c23d39548a670ee515d77df4";
                 Sprint25Check("trumpet-blast-ai-safe-location", clear, new JObject { ["owner"] = owner.UniqueId,
                     ["target"] = target.UniqueId, ["ownerFaction"] = owner.Faction?.name, ["targetFaction"] = target.Faction?.name,
                     ["targetEnemy"] = owner.IsEnemy(target), ["lane"] = survey,
                     ["remainingNonenemies"] = new JArray(remaining.Select(value => value.UniqueId)),
                     ["freshPositiveProcess"] = true, ["priorSubcases"] = 0,
-                    ["area"] = Game.Instance.CurrentlyLoadedArea.AssetGuid, ["outdoor"] = outdoor, ["areaPart"] = local.AreaPart?.AssetGuid,
+                    ["area"] = Game.Instance.CurrentlyLoadedArea.AssetGuid, ["outdoor"] = outdoor, ["areaPart"] = local?.AreaPart?.AssetGuid,
+                    ["ownedAnchor"] = anchor.UniqueId, ["ownedAnchorDistance"] = owner.DistanceTo(anchor),
+                    ["disposableCaster"] = fixture.Caster.UniqueId, ["disposableCasterDistance"] = owner.DistanceTo(fixture.Caster),
+                    ["exactRequestOwnedPresetClone"] = anchorOwned,
                     ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
-                    "A fresh actual player summon uses its production blueprint/brain in the established non-DLC Oleg outdoor fixture, with native walkable/visible clear stance and actual outdoor classification. Original actors/factions are intact; only its disposable caster is moved out of radius.");
+                    "A fresh actual player summon uses its production blueprint/brain in the established non-DLC Oleg outdoor fixture, with native walkable/visible clear stance and actual outdoor classification. Original actors/factions are intact; only its proven request-owned anchor clone and disposable caster are positioned out of radius.");
                 if (!clear) throw new InvalidOperationException("Safe player-summoned native outdoor location is not clear.");
                 bool ready = safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
                     owner.IsInCombat && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && data.IsAvailable;
@@ -266,6 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (owner != null) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
                 if (fixture.Hostile != null) fixture.Hostile.Stats.SaveFortitude.BaseValue = fort;
+                if (anchor != null && !anchor.Destroyed && anchor.IsInState) PlaceExpandedSummoningUnit(anchor, anchorBefore);
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }.Where(value => value != null && !value.Destroyed).ToArray());
                 if (fixture.Hostile != null) ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
