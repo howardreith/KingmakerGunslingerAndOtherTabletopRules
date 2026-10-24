@@ -342,28 +342,92 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!armed) throw new InvalidOperationException(
                         "Astral Dispel Evil ward/held action failed.");
 
-                    float cooldownBeforeTouch = dismissalOwner.CombatState
-                        .Cooldown.StandardAction;
+                    float cooldownBeforeTouch = 0, cooldownAfterTouch = 0;
                     UnitUseAbility dismissalHeld = null;
-                    foreach (int frame in Astral31DispelHeld(dismissalOwner,
-                        dismissalTarget, dismissalTouch, value => dismissalHeld = value))
-                        yield return frame;
-                    float cooldownAfterTouch = dismissalOwner.CombatState
-                        .Cooldown.StandardAction;
-                    for (int frame = 0; frame < 60 && dismissalTarget != null &&
-                        !dismissalTarget.Destroyed &&
-                        !dismissalTarget.ShouldBeDestroyed &&
-                        !dismissalTarget.Descriptor.State.IsDead; frame++)
-                        yield return 0;
+                    RuleAttackRoll dismissalRoll = null;
+                    RuleSpellResistanceCheck dismissalResistance = null;
+                    RuleSavingThrow dismissalSave = null;
+                    var dismissalAttempts = new JArray();
+                    for (int attempt = 0; attempt < 12; attempt++)
+                    {
+                        // Retry only an observed ordinary miss/resistance/save.
+                        // Every retry is a new real at-will parent action and
+                        // held delivery; no dice, slots or cooldowns are reset.
+                        if (attempt > 0)
+                        {
+                            UnitUseAbility rearm = null;
+                            foreach (int frame in Astral31DispelCast(dismissalOwner,
+                                dismissalData, new TargetWrapper(dismissalOwner), value => rearm = value))
+                                yield return frame;
+                            var retryWard = dismissalOwner.Buffs.Enumerable.SingleOrDefault(value =>
+                                ReferenceEquals(value.Blueprint, ward));
+                            var retryTouch = dismissalOwner.Get<UnitPartTouch>();
+                            bool rearmed = rearm != null && rearm.IsFinished &&
+                                rearm.Result == UnitCommand.ResultType.Success && economy.Count(rearm) == 1 &&
+                                economy.Exact(rearm, false) && retryWard != null &&
+                                ReferenceEquals(retryWard.Context?.MaybeCaster, dismissalOwner) &&
+                                retryWard.Context.Params.CasterLevel == 13 &&
+                                ReferenceEquals(retryTouch?.Ability?.Data?.Blueprint, heldMenu);
+                            if (!rearmed) throw new InvalidOperationException("Unforced dismissal retry did not rearm through its own standard action.");
+                        }
+                        int attackStart = observed.Attacks.Count, resistanceStart = observed.Resistances.Count,
+                            saveStart = observed.Saves.Count;
+                        cooldownBeforeTouch = dismissalOwner.CombatState.Cooldown.StandardAction;
+                        foreach (int frame in Astral31DispelHeld(dismissalOwner,
+                            dismissalTarget, dismissalTouch, value => dismissalHeld = value)) yield return frame;
+                        cooldownAfterTouch = dismissalOwner.CombatState.Cooldown.StandardAction;
+                        for (int frame = 0; frame < 60 && !dismissalTarget.Destroyed &&
+                            !dismissalTarget.ShouldBeDestroyed && !dismissalTarget.Descriptor.State.IsDead; frame++)
+                            yield return 0;
+                        dismissalRoll = observed.Attacks.Skip(attackStart).SingleOrDefault(value =>
+                            ReferenceEquals(value.Target, dismissalTarget));
+                        dismissalResistance = observed.Resistances.Skip(resistanceStart).SingleOrDefault(value =>
+                            ReferenceEquals(value.Target, dismissalTarget));
+                        dismissalSave = observed.Saves.Skip(saveStart).SingleOrDefault(value =>
+                            ReferenceEquals(value.Initiator, dismissalTarget));
+                        bool heldPresent = dismissalOwner.Get<UnitPartTouch>() != null;
+                        bool wardPresent = dismissalOwner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, ward));
+                        bool targetAlive = !dismissalTarget.Destroyed && !dismissalTarget.ShouldBeDestroyed &&
+                            dismissalTarget.IsInState && !dismissalTarget.Descriptor.State.IsDead;
+                        bool actualCommand = dismissalHeld != null && dismissalHeld.IsFinished &&
+                            dismissalHeld.Result == UnitCommand.ResultType.Success && economy.Count(dismissalHeld) == 1 &&
+                            economy.Unchanged(dismissalHeld) && dismissalRoll != null && !dismissalRoll.AutoHit &&
+                            dismissalRoll.Roll.Value >= 1 && dismissalRoll.Roll.Value <= 20;
+                        bool srExact = dismissalResistance != null && dismissalResistance.HasSpellResistance &&
+                            dismissalResistance.HasResistanceRoll && dismissalResistance.SpellResistance == 25 &&
+                            dismissalResistance.Context.Params.CasterLevel == 13;
+                        bool naturalMiss = actualCommand && !dismissalRoll.IsHit && dismissalResistance == null &&
+                            dismissalSave == null && heldPresent && wardPresent;
+                        bool resisted = actualCommand && dismissalRoll.IsHit && srExact &&
+                            dismissalResistance.IsSpellResisted && dismissalSave == null && !heldPresent && !wardPresent;
+                        bool saved = actualCommand && dismissalRoll.IsHit && srExact &&
+                            !dismissalResistance.IsSpellResisted && dismissalSave != null && dismissalSave.IsPassed &&
+                            dismissalSave.StatType == StatType.SaveWill && dismissalSave.DifficultyClass == 21 &&
+                            !heldPresent && !wardPresent;
+                        bool retry = targetAlive && killTrace.Calls.Count == 0 && (naturalMiss || resisted || saved);
+                        var attemptRow = new JObject {
+                            ["owner"] = dismissalOwner.UniqueId, ["target"] = dismissalTarget.UniqueId,
+                            ["attempt"] = attempt + 1, ["command"] = Sprint27AiCommand(dismissalHeld),
+                            ["touchRoll"] = dismissalRoll?.Roll.Value, ["hit"] = dismissalRoll?.IsHit,
+                            ["sr"] = dismissalResistance?.SpellResistance,
+                            ["srRoll"] = dismissalResistance != null && dismissalResistance.HasResistanceRoll ?
+                                (int?)dismissalResistance.Roll.Value : null,
+                            ["resisted"] = dismissalResistance?.IsSpellResisted,
+                            ["saveRoll"] = dismissalSave?.D20.Value, ["saved"] = dismissalSave?.IsPassed,
+                            ["heldPresent"] = heldPresent, ["wardPresent"] = wardPresent,
+                            ["targetAlive"] = targetAlive, ["nativeKillCalls"] = killTrace.Calls.Count,
+                            ["retryableOrdinaryOutcome"] = retry, ["forcedRolls"] = 0 };
+                        dismissalAttempts.Add(attemptRow);
+                        bool effectObserved = actualCommand && dismissalRoll.IsHit && srExact &&
+                            !dismissalResistance.IsSpellResisted && dismissalSave != null && !dismissalSave.IsPassed &&
+                            dismissalSave.StatType == StatType.SaveWill && dismissalSave.DifficultyClass == 21 &&
+                            !targetAlive && !heldPresent && !wardPresent && killTrace.Calls.Count == 1;
+                        Sprint25Check("astral-dispel-unforced-attempt-" + (attempt + 1), retry || effectObserved,
+                            (JObject)attemptRow.DeepClone(),
+                            "Each bounded real delivery records an ordinary miss/resistance/save with correct ownership, or an actual native dismissal; no random result or action economy is replaced.");
+                        if (!retry) break;
+                    }
                     killTrace.Dispose();
-                    RuleAttackRoll dismissalRoll = observed.Attacks.SingleOrDefault(
-                        value => ReferenceEquals(value.Target, dismissalTarget));
-                    RuleSpellResistanceCheck dismissalResistance = observed
-                        .Resistances.SingleOrDefault(value => ReferenceEquals(
-                            value.Target, dismissalTarget));
-                    RuleSavingThrow dismissalSave = observed.Saves.SingleOrDefault(
-                        value => ReferenceEquals(value.Initiator,
-                            dismissalTarget));
                     bool dismissed = dismissalTargetReady &&
                         dismissalHeld != null &&
                         dismissalHeld.IsFinished && dismissalHeld.Result ==
@@ -423,6 +487,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value.DeepClone())),
                             ["command"] = dismissalHeld == null ? null :
                                 Sprint27AiCommand(dismissalHeld),
+                            ["attempts"] = dismissalAttempts, ["forcedRolls"] = 0,
                             ["touchRoll"] = dismissalRoll?.Roll.Value,
                             ["touchHit"] = dismissalRoll?.IsHit,
                             ["autoHit"] = dismissalRoll?.AutoHit,
@@ -706,7 +771,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["powerAttackOff"] = Astral31PowerAttackOff(firstDispelOwner),
                         ["nativeDispel"] = contactRule?.Success, ["effectRemoved"] = contactEffect.IsDisposed,
                         ["heldAbsent"] = firstDispelOwner.Get<UnitPartTouch>() == null,
-                        ["fixtureDeliveryCasts"] = 0, ["seededNativeManualControl"] = true, ["aiCommands"] = 0 },
+                        ["fixtureDeliveryCasts"] = 0, ["forcedRolls"] = 0, ["aiCommands"] = 0 },
                     "A real single native alternative-slam hit discharges the held spell through its legal removal consumer without another issued spell/action or a fabricated hit; the exact ward/charge close.");
                 if (!contactExact) throw new InvalidOperationException("Natural-contact Dispel Evil delivery failed.");
                 foreach (int frame in Astral31SwitchWeapon(firstDispelOwner, 0)) yield return frame;
@@ -1281,34 +1346,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new List<RuleApplyBuff>();
             internal readonly JArray FixtureApplications = new JArray();
 
-            public void OnEventAboutToTrigger(RuleAttackRoll evt)
-            {
-                if (ReferenceEquals(evt?.Initiator, Owner) &&
-                    Targets.Contains(evt.Target))
-                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
-            }
+            public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
             public void OnEventDidTrigger(RuleAttackRoll evt)
             {
                 if (ReferenceEquals(evt?.Initiator, Owner) &&
                     Targets.Contains(evt.Target)) Attacks.Add(evt);
             }
-            public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt)
-            {
-                if (ReferenceEquals(evt?.Context?.MaybeCaster, Owner) &&
-                    Targets.Contains(evt.Target))
-                    UnityEngine.Random.InitState(FindNativeD20Seed(20));
-            }
+            public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt) { }
             public void OnEventDidTrigger(RuleSpellResistanceCheck evt)
             {
                 if (ReferenceEquals(evt?.Context?.MaybeCaster, Owner) &&
                     Targets.Contains(evt.Target)) Resistances.Add(evt);
             }
-            public void OnEventAboutToTrigger(RuleSavingThrow evt)
-            {
-                if (Targets.Contains(evt?.Initiator) && ReferenceEquals(
-                    evt?.Reason?.Context?.MaybeCaster, Owner))
-                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
-            }
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
             {
                 if (Targets.Contains(evt?.Initiator) && ReferenceEquals(

@@ -240,9 +240,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         duration <= 780.1d && area.UnitsInside.Contains(target) &&
                         area.UnitsInside.Contains(ally) &&
                         targetSave != null && targetSave.DifficultyClass == 22 &&
-                        targetSave.D20.Value == 1 && !targetSave.IsPassed &&
+                        targetSave.D20.Value >= 1 && targetSave.D20.Value <= 20 && !targetSave.IsPassed &&
                         allySave != null && allySave.DifficultyClass == 22 &&
-                        allySave.D20.Value == 1 && !allySave.IsPassed &&
+                        allySave.D20.Value >= 1 && allySave.D20.Value <= 20 && !allySave.IsPassed &&
                         NativePacket(targetHit) && NativePacket(allyHit);
                     Sprint25Check("astral-blade-all-creature-effect", effect,
                         new JObject { ["owner"] = owner.UniqueId,
@@ -259,8 +259,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["damage"] = events.DamageRows(),
                             ["effectWaitFrames"] = effectFrames,
                             ["eligibleAllyAffected"] = events.HasSaveAndDamage(ally),
-                            ["enemyOnlyRewrite"] = false },
-                        "The exact native area keeps its all-creature graph: both an enemy and eligible ally make real seeded natural-one Reflex saves against DC22 and receive attributed 13d6 force damage at CL13.");
+                            ["enemyOnlyRewrite"] = false, ["forcedRolls"] = 0,
+                            ["controlledTargetReflex"] = -100, ["controlledAllyReflex"] = -100 },
+                        "The exact native area keeps its all-creature graph: both an enemy and eligible ally make real unforced Reflex saves with disclosed owned target statistics against DC22 and receive attributed 13d6 force damage at CL13.");
                     if (!effect) throw new InvalidOperationException(
                         "Astral Blade Barrier native area effect is not exact.");
 
@@ -405,11 +406,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(reason.Context.SourceAbility, _ability);
             }
 
-            public void OnEventAboutToTrigger(RuleSavingThrow evt)
-            {
-                if (_targets.Contains(evt.Initiator) && ExactSource(evt.Reason))
-                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
-            }
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
             {
                 if (_targets.Contains(evt.Initiator) && ExactSource(evt.Reason))

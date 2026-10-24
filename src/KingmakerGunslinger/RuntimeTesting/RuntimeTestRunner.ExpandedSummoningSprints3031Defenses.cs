@@ -93,7 +93,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var route = ExpandedSummoningOwnTierVariant(key, SummonMultiplicity.One);
                         var summonAbility = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[
                             ExpandedSummoningIdentityCatalog.AbilitySymbol(route)];
-                        var summonDescriptors = summonAbility.ComponentsArray.OfType<SpellDescriptorComponent>().Single().Descriptor;
+                        SpellDescriptor summonDescriptors = summonAbility.ComponentsArray.OfType<SpellDescriptorComponent>().Single().Descriptor;
                         var alignmentMask = SpellDescriptor.Good | SpellDescriptor.Evil | SpellDescriptor.Law | SpellDescriptor.Chaos;
                         var expected = key == "lemure" ? SpellDescriptor.Law | SpellDescriptor.Evil :
                             key == "dretch" ? SpellDescriptor.Chaos | SpellDescriptor.Evil :
