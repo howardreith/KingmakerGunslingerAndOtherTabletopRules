@@ -473,6 +473,80 @@ $temporary = Join-Path ([IO.Path]::GetTempPath()) ('kmg-orchestration-' +
     [Guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory -Path $temporary | Out-Null
 try {
+    # ---------------------- optional staged settings are read-only and scoped
+    $settingsRoot = Join-Path $temporary 'off-settings'
+    New-Item -ItemType Directory -Path $settingsRoot | Out-Null
+    [IO.File]::WriteAllText((Join-Path $settingsRoot 'Info.json'), '{"Id":"fixture"}')
+    [IO.File]::WriteAllText((Join-Path $settingsRoot 'other-settings.json'), '{"foreign":true}')
+    $settingsPath = Join-Path $settingsRoot 'FeatureModules.json'
+    $settingsBefore = Get-KmgTreeFingerprint -Directory $settingsRoot
+    $scopedDefaults = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath -AllowMissingDefaults
+    Assert-Equal '{"schemaVersion":12,"expanded-summoning":false}' ([Text.Encoding]::UTF8.GetString($scopedDefaults)) `
+        'an explicitly scoped absent staged file returns only current-schema OFF bytes'
+    Assert-Equal $settingsBefore.Sha256 (Get-KmgTreeFingerprint -Directory $settingsRoot).Sha256 `
+        'the optional-settings reader neither creates the absent file nor changes its parent tree'
+    Assert-True (-not (Test-Path -LiteralPath $settingsPath)) 'returning defaults does not write settings'
+    $rejected = $false
+    try { $null = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath }
+    catch { $rejected = $true }
+    Assert-True $rejected 'a missing file without the exact optional-default scope is refused'
+
+    $existingText = "{`r`n  `"schemaVersion`":12,`r`n  `"gunslinger`":false,`r`n  `"expanded-summoning`" : true,`r`n  `"foreign`":{`"keep`":`"exact bytes`",`"number`":3},`r`n  `"eastern-weapons`":true`r`n}`r`n"
+    $existingBytes = [Text.Encoding]::UTF8.GetBytes($existingText)
+    [IO.File]::WriteAllBytes($settingsPath, $existingBytes)
+    $expectedText = $existingText.Replace('"expanded-summoning" : true', '"expanded-summoning" : false')
+    foreach ($allowMissing in @($false, $true)) {
+        $existingOff = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath -AllowMissingDefaults:$allowMissing
+        Assert-Equal ([Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($expectedText))) ([Convert]::ToBase64String($existingOff)) `
+            'existing settings preserve every foreign value, whitespace and newline while changing only the explicit ON token'
+        Assert-Equal ([Convert]::ToBase64String($existingBytes)) ([Convert]::ToBase64String([IO.File]::ReadAllBytes($settingsPath))) `
+            'existing-file conversion returns bytes without writing the staged file'
+    }
+    foreach ($badBytes in @(
+        [byte[]]@(), [Text.Encoding]::UTF8.GetBytes(' '), [Text.Encoding]::UTF8.GetBytes('{'),
+        [Text.Encoding]::UTF8.GetBytes('{"schemaVersion":12,"gunslinger":true}'),
+        [Text.Encoding]::UTF8.GetBytes('{"schemaVersion":12,"expanded-summoning":false}'),
+        [Text.Encoding]::UTF8.GetBytes('{"expanded-summoning":"true"}'),
+        [Text.Encoding]::UTF8.GetBytes('{"expanded-summoning":true,"expanded-summoning":true}'),
+        [byte[]]@(255, 254))) {
+        [IO.File]::WriteAllBytes($settingsPath, $badBytes)
+        $rejected = $false
+        try { $null = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath -AllowMissingDefaults }
+        catch { $rejected = $true }
+        Assert-True $rejected 'optional defaults never replace empty, malformed, invalid UTF8 or non-explicit-ON existing settings'
+        Assert-Equal ([Convert]::ToBase64String($badBytes)) ([Convert]::ToBase64String([IO.File]::ReadAllBytes($settingsPath))) `
+            'refusing existing settings preserves their exact bytes'
+    }
+    Remove-Item -LiteralPath $settingsPath -Force
+    New-Item -ItemType Directory -Path $settingsPath | Out-Null
+    $rejected = $false
+    try { $null = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath -AllowMissingDefaults }
+    catch { $rejected = $true }
+    Assert-True $rejected 'an existing settings directory is not optional-file absence'
+    Remove-Item -LiteralPath $settingsPath -Force
+    $linkTarget = Join-Path $settingsRoot 'reparse-target'
+    New-Item -ItemType Directory -Path $linkTarget | Out-Null
+    $targetWitness = Join-Path $linkTarget 'unchanged.txt'
+    [IO.File]::WriteAllText($targetWitness, 'target must remain untouched')
+    New-Item -ItemType Junction -Path $settingsPath -Target $linkTarget | Out-Null
+    try {
+        Assert-True (((Get-Item -LiteralPath $settingsPath -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) `
+            'the reparse refusal uses an actual disposable filesystem junction'
+        $rejected = $false
+        try { $null = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath -AllowMissingDefaults }
+        catch { $rejected = $true }
+        Assert-True $rejected 'a reparse settings entry is refused rather than followed or replaced'
+        Assert-Equal 'target must remain untouched' ([IO.File]::ReadAllText($targetWitness)) 'the reparse target is untouched'
+    }
+    finally { [IO.Directory]::Delete($settingsPath) } # Unlink only; never recurse through the junction.
+    foreach ($badPath in @((Join-Path $settingsRoot 'missing-parent\FeatureModules.json'), (Join-Path $targetWitness 'FeatureModules.json'))) {
+        $rejected = $false
+        try { $null = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $badPath -AllowMissingDefaults }
+        catch { $rejected = $true }
+        Assert-True $rejected 'missing or non-directory parents do not establish an owned optional staged file'
+    }
+    Assert-True (-not (Test-Path -LiteralPath (Join-Path $settingsRoot 'missing-parent'))) 'refusal never creates a missing staged parent'
+
     # --------------------------------------------------------- parse failure --
     Assert-Equal $null (Read-KmgScenarioStatus `
         -ResultPath (Join-Path $temporary 'absent.json') -Scenario $scenario) `

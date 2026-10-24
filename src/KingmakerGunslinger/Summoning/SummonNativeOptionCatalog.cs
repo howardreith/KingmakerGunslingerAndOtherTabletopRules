@@ -91,6 +91,65 @@ namespace KingmakerGunslinger.Summoning
                     StringComparison.Ordinal));
         }
 
+        /// <summary>
+        /// Complete creature coverage of a legacy selectable source, not merely
+        /// the presence of one wrapper derived from it. Frost Giant's SNA
+        /// wrappers add a choice; they do not replace the source Mastodon.
+        /// </summary>
+        internal static bool ReplacementCoverageIsComplete(
+            SummonNativeOptionSpec original,
+            IEnumerable<SummonVariantSpec> published,
+            IEnumerable<SummonNativeExpansionSpec> nativePublished)
+        {
+            if (original == null || published == null || nativePublished == null)
+                throw new ArgumentNullException();
+            SummonVariantSpec[] generated = published.ToArray();
+            SummonNativeExpansionSpec[] native = nativePublished.ToArray();
+            string[] requiredGenerated = RequiredGeneratedCreatureKeys(original);
+            SummonNativeExpansionSpec[] requiredNative =
+                SummonNativeExpansionCatalog.All.Where(value =>
+                    value.Family == original.Family && value.Tier == original.Tier &&
+                    value.SourceAbilityGuid == original.Guid &&
+                    !value.ReplacesSpawnUnit).ToArray();
+            if (requiredGenerated.Length + requiredNative.Length == 0) return false;
+            bool complete = true;
+            foreach (string key in requiredGenerated)
+            {
+                int matches = generated.Count(value => value.Family == original.Family &&
+                    value.ParentTier == original.Tier && value.Creature.Key == key &&
+                    value.Multiplicity == original.Multiplicity);
+                if (SummonVariantMergePolicy.PreserveNativeSemanticDuplicate(
+                    matches, original.Guid)) complete = false;
+            }
+            foreach (SummonNativeExpansionSpec expected in requiredNative)
+            {
+                int matches = native.Count(value => value.Symbol == expected.Symbol);
+                if (SummonVariantMergePolicy.PreserveNativeSemanticDuplicate(
+                    matches, original.Guid)) complete = false;
+            }
+            return complete;
+        }
+
+        internal static string[] RequiredGeneratedCreatureKeys(
+            SummonNativeOptionSpec original)
+        {
+            if (original == null) throw new ArgumentNullException("original");
+            if (original.IsSemanticDuplicate)
+                return new[] { original.EquivalentCreatureKey };
+            // The other alignment branch of these exact native umbrellas is
+            // represented by a generated creature, rather than a native wrapper.
+            switch (original.Guid)
+            {
+                case "0964bf88b582bed41b74e79596c4f6d9":
+                case "237d76aebbb28334e95d83475611cb47":
+                case "6e805a9e3ff445146a6386f5a704d4bc":
+                    return new[] { "bralani-azata" };
+                case "e96593e67d206ab49ad1b567327d1e75":
+                    return new[] { "ghaele-azata" };
+                default: return new string[0];
+            }
+        }
+
         internal static void Validate()
         {
             if (Values.Length != 48 || Values.Any(value => value.Tier < 1 ||

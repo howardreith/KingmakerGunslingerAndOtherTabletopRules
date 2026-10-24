@@ -16,6 +16,10 @@ $ErrorActionPreference='Stop'
 . (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'RuntimeAutomation.Common.ps1')
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+if($PersistenceScope -ceq 'giant-humanoids-ii' -and $DevelopmentPurpose -ceq 'summon-cleanup-iteration2') {
+    Assert-KmgCleanup2EttinColdPlanScope -Scope $PersistenceScope -Purpose $DevelopmentPurpose -SaveName $SaveName -ExpectedVersion $ExpectedVersion
+    throw 'Cleanup 2 cold runtime is deferred: a retained owner spanning the entire trio and exact original-Working restoration are not wired/qualified. Planning validators do not grant live permission.'
+}
 $root=Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $fixedDispelUi=$Scenario -ceq 'working-save-expanded-summoning-creature-review'
 if($fixedDispelUi) {

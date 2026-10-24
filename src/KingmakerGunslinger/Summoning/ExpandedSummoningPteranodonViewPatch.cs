@@ -220,6 +220,8 @@ namespace KingmakerGunslinger.Summoning
             internal Material[] OriginalMaterials;
             internal Material Material;
             internal Mesh Mesh;
+            internal StandardMaterialController OriginalVisualControllerReceipt;
+            internal Material[] OriginalVisualDrivenReceipt;
             internal SkinnedMeshRenderer[] SuppressedRenderers;
             internal bool[] OriginalSuppressedRendererStates;
             internal TheropodAccessorySuppression TheropodSuppression;
@@ -230,6 +232,8 @@ namespace KingmakerGunslinger.Summoning
             internal AnkylosaurusTailImpactVisual AnkylosaurusImpact;
             internal StirgeVisualTouch StirgeTouch;
             internal FireBeetleVisualGlow BeetleGlow;
+            internal SummonAttackGestureVisual OriginalAttackGesture;
+            internal Texture2D GorgonParameters;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -253,6 +257,31 @@ namespace KingmakerGunslinger.Summoning
             if (view == null || !Applied.TryGetValue(view, out attachment))
                 return "not-attempted";
             return attachment.Outcome;
+        }
+
+        // Read-only exact-reference receipt for the original Crab/Brachio
+        // bodies. A foreign controller/material refresh is not
+        // adopted merely because names or textures resemble our original.
+        internal static bool HasLiveOriginalVisual(UnitEntityView view, string key)
+        {
+            Attachment attachment;
+            if (view == null || !SummonAttackGesturePolicy.Handles(key) ||
+                !Applied.TryGetValue(view, out attachment) || attachment.VisualKey != key ||
+                attachment.Donor == null || attachment.Mesh == null || attachment.Material == null ||
+                !attachment.Donor.transform.IsChildOf(view.transform) ||
+                !ReferenceEquals(attachment.Donor.sharedMesh, attachment.Mesh) ||
+                attachment.OriginalVisualDrivenReceipt == null) return false;
+            Material[] installed = attachment.Donor.sharedMaterials;
+            if (installed == null || installed.Length != attachment.OriginalVisualDrivenReceipt.Length ||
+                installed.Where((value, index) => !ReferenceEquals(value, attachment.OriginalVisualDrivenReceipt[index])).Any()) return false;
+            var controller = view.GetComponentInChildren<StandardMaterialController>(true);
+            if (!ReferenceEquals(controller, attachment.OriginalVisualControllerReceipt)) return false;
+            if (controller == null)
+                return attachment.OriginalVisualDrivenReceipt.Length == 1 &&
+                    ReferenceEquals(attachment.OriginalVisualDrivenReceipt[0], attachment.Material);
+            IList<Material> driven = ControllerMaterials(controller);
+            return driven != null && attachment.OriginalVisualDrivenReceipt.Length > 0 &&
+                attachment.OriginalVisualDrivenReceipt.All(value => value != null && driven.Any(candidate => ReferenceEquals(candidate, value)));
         }
 
         /// <summary>
@@ -614,6 +643,8 @@ namespace KingmakerGunslinger.Summoning
                 material = new Material(donorMaterial);
                 material.name = visualName;
                 string dressing = DressMaterial(material, albedo);
+                if (attachment.VisualKey == "gorgon")
+                    dressing += ";" + DressGorgonMaterial(attachment, material);
 
                 // The swap, on this one instance's renderer component: the
                 // Pteranodon's mesh, the 46 bones its weights index, and its
@@ -638,6 +669,18 @@ namespace KingmakerGunslinger.Summoning
                 // fully dissolved stays invisible. So the clone starts intact
                 // and the controller re-reads the renderer's materials.
                 string controller = AdoptByMaterialController(view, donor, material);
+                if (SummonAttackGesturePolicy.Handles(attachment.VisualKey))
+                {
+                    attachment.OriginalVisualControllerReceipt = view.GetComponentInChildren<StandardMaterialController>(true);
+                    attachment.OriginalVisualDrivenReceipt = donor.sharedMaterials.ToArray();
+                }
+
+                if (SummonAttackGesturePolicy.Handles(attachment.VisualKey))
+                {
+                    attachment.OriginalAttackGesture = view.gameObject.AddComponent<SummonAttackGestureVisual>();
+                    attachment.OriginalAttackGesture.Configure(attachment.VisualKey, view, donor,
+                        () => HasLiveOriginalVisual(view, attachment.VisualKey));
+                }
 
                 if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
                     attachment.VisualKey == LemureVisualPolicy.Key ||
@@ -705,7 +748,9 @@ namespace KingmakerGunslinger.Summoning
                     ";accessorySuppressed=" +
                     (attachment.SuppressedRenderers == null ? 0 :
                         attachment.SuppressedRenderers.Length) + ";" + dressing +
-                    ";" + controller + (spatial.Length == 0 ? string.Empty :
+                    ";" + controller + (attachment.OriginalAttackGesture == null ? string.Empty :
+                        ";originalAttackPalette=" + (attachment.OriginalAttackGesture.Ready ? "ready" : "refused")) +
+                    (spatial.Length == 0 ? string.Empty :
                         ";" + spatial);
             }
             catch (Exception error)
@@ -762,6 +807,11 @@ namespace KingmakerGunslinger.Summoning
                 if (swapped) Revert(attachment);
                 foreach (Material candidate in rollbackMaterials)
                     if (candidate != null) UnityEngine.Object.Destroy(candidate);
+                if (attachment.GorgonParameters != null)
+                {
+                    UnityEngine.Object.Destroy(attachment.GorgonParameters);
+                    attachment.GorgonParameters = null;
+                }
                 if (mesh != null) UnityEngine.Object.Destroy(mesh);
                 attachment.Material = null;
                 attachment.Mesh = null;
@@ -909,6 +959,61 @@ namespace KingmakerGunslinger.Summoning
                 fogTreatment;
         }
 
+        private static string DressGorgonMaterial(Attachment attachment, Material material)
+        {
+            if (material.shader == null || material.shader.name != "PF/StandardDynamic" ||
+                !material.HasProperty("_Parameters") || !material.HasProperty("_Roughness") ||
+                !material.HasProperty("_Metallic") || !material.HasProperty("_Emission"))
+                throw new InvalidOperationException("Exact Gorgon PF parameter-map surface unavailable.");
+            ModContext context;
+            if (!ModContext.TryGet(out context) || context.ModEntry == null)
+                throw new InvalidOperationException("Gorgon original asset root unavailable.");
+            // Original authored UV regions, not a skin-color or donor mask.
+            // Exact installed shader label: R=Roughness G=Emission B=Metallic.
+            var requirement = new PteranodonAssetRuntime.AlbedoRequirement {
+                File = "gorgon-parameters.png", Width = 1024, Height = 1024,
+                Sha256 = "241c44e0ef86feac0acde88abd835c29ee138791e2b31af4d3b92133ea7d1351" };
+            string reason;
+            Texture2D decoded = PteranodonAssetRuntime.LoadAlbedo(
+                System.IO.Path.Combine(context.ModEntry.Path,"assets","ungulates"), requirement, out reason);
+            if (decoded == null) throw new InvalidOperationException("Gorgon parameter map refused: " + reason);
+            try
+            {
+                Color32[] pixels = decoded.GetPixels32();
+                if (pixels.Length != 1024*1024 || pixels.Any(value => value.g != 0))
+                    throw new InvalidOperationException("Gorgon parameters must be complete and nonemissive.");
+                // CPU channel bytes are copied verbatim into a LINEAR data
+                // texture, so the shader never gamma-decodes packed values.
+                attachment.GorgonParameters = new Texture2D(1024,1024,TextureFormat.RGBA32,true,true) {
+                    name = "KMG_gorgon_OriginalParameters", wrapMode = TextureWrapMode.Clamp,
+                    filterMode = FilterMode.Trilinear, anisoLevel = 4 };
+                attachment.GorgonParameters.SetPixels32(pixels);
+                attachment.GorgonParameters.Apply(true,false);
+            }
+            finally { UnityEngine.Object.Destroy(decoded); }
+            material.SetTexture("_Parameters",attachment.GorgonParameters);
+            material.SetTextureScale("_Parameters",Vector2.one);
+            material.SetTextureOffset("_Parameters",Vector2.zero);
+            // Installed PF/StandardDynamic D3D11 fragment 1221 (2.1.7b):
+            // _Parameters.r * _Roughness and _Parameters.b * _Metallic.
+            // The blue-channel term exists only in SPECULAR_ON+METALLNESS_ON;
+            // 1152 omits both, 1213 adds nonmetal specular only. These are
+            // LOCAL switches on our already-owned material, never globals.
+            material.SetFloat("_Roughness",1f);
+            // Native review19 showed nearly black plates at 0.94 metal.
+            // This installed direct-light BRDF has no environment-reflection
+            // sampler: metal removes diffuse even away from a specular lobe.
+            // A weathered-steel mixture keeps the real native specular path
+            // while retaining 1-(0.94*0.4)=0.624 of the diffuse response.
+            // This is an owned material fallback, not a global quality fix
+            // or a claim that Unity's built-in BRDF lookup is uninitialized.
+            material.SetFloat("_Metallic",0.4f);
+            material.SetFloat("_Emission",0f);
+            material.EnableKeyword("SPECULAR_ON");
+            material.EnableKeyword("METALLNESS_ON");
+            return "gorgonParameters=authored-linear;verifiedPFDirectLightMetalVariant;metalTreatment=weathered-steel-diffuse-retention;plateRoughness=0.31;plateMetalMask=0.94;metallicScalar=0.4;effectivePlateMetallic=0.376;plateDiffuseRetained=0.624;bodyMetalMask=0.68;effectiveBodyMetallic=0.272;emission=0;nativeVisualReview=pending";
+        }
+
         private static string Describe(Color value)
         {
             return string.Join("/", new[]
@@ -939,6 +1044,12 @@ namespace KingmakerGunslinger.Summoning
                 attachment.HoundSword.Release();
                 UnityEngine.Object.DestroyImmediate(attachment.HoundSword);
                 attachment.HoundSword = null;
+            }
+            if (attachment.OriginalAttackGesture != null)
+            {
+                attachment.OriginalAttackGesture.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.OriginalAttackGesture);
+                attachment.OriginalAttackGesture = null;
             }
             if (attachment.TheropodSuppression != null)
             {
@@ -1035,7 +1146,7 @@ namespace KingmakerGunslinger.Summoning
             IList<Material> driven=attachment.Donor==null?null:ControllerMaterials(attachment.Donor.GetComponentInParent<StandardMaterialController>());
             return installed.Concat(driven??new Material[0]).Concat(new[]{attachment.Material})
                 .Where(v=>v!=null && v.name.StartsWith("KMG_gorgon_Original",StringComparison.Ordinal))
-                .Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[]{attachment.Mesh})
+                .Cast<UnityEngine.Object>().Concat(new UnityEngine.Object[]{attachment.Mesh,attachment.GorgonParameters})
                 .Where(v=>v!=null).Distinct().ToArray();
         }
 
@@ -1208,6 +1319,11 @@ namespace KingmakerGunslinger.Summoning
             }
             foreach (Material material in materials)
                 if (material != null) UnityEngine.Object.DestroyImmediate(material);
+            if (attachment.GorgonParameters != null)
+            {
+                UnityEngine.Object.DestroyImmediate(attachment.GorgonParameters);
+                attachment.GorgonParameters = null;
+            }
             if (attachment.Mesh != null)
                 UnityEngine.Object.DestroyImmediate(attachment.Mesh);
             attachment.Material = null;

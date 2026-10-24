@@ -28,6 +28,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 phase == "rtwp-ai" || phase == "routes" || phase == "visual-lifecycle" ||
                 phase == "overrun" || phase == "great-cleave";
         }
+        internal static bool Cleanup2Phase(string phase)
+        { return phase == "giant-lineup" || phase == "giants-off" || phase == "menus" || phase == "elementals" || phase == "bodies" || phase == "cloth-probe" || phase == "ettin-lifecycle" || phase == "ettin-commands" || phase == "elementals-presentation" || phase == "elementals-console" || phase == "elementals-sources" || phase == "elementals-pin" || phase == "elementals-learning" || phase == "elementals-off" || phase == "menu-adapters" || phase == "scale-prototype" || phase == "tooltips" || phase == "crab-attack" || phase == "production-attacks" || phase == "gorgon-presentation" || phase == "recovery-bodies" || phase == "creature-commands" || phase == "alternate-console" || phase == "shared-controls"; }
         internal static bool Sprint28Phase(string phase)
         {
             return phase == "profiles" || phase == "modes" ||
@@ -165,6 +167,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return parameters == 1 && Sprint29Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview)
                 return parameters == 1 && Sprints30And31Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)
+                return parameters == 1 && Cleanup2Phase(reviewPhase);
             return false;
         }
         public static bool CanStart(bool automaticExit, string scenario,

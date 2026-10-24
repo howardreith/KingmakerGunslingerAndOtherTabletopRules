@@ -831,6 +831,9 @@ def main():
         parser.add_argument("--" + name, required=True)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:]
                              if "--" in sys.argv else [])
+    if args.kind == "giant-stag-beetle":
+        raise SystemExit("Giant Stag Beetle is built by build_giant_stag_beetle.py "
+                         "since Cleanup 2; see SOURCE.md")
     bpy.ops.wm.read_factory_settings(use_empty=True)
     rig_data, rig, rig_hash = measured_rig(args.capture, args.kind)
     armature = shared.build_armature(rig_data)
