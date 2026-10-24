@@ -1,5 +1,30 @@
 # Build, package, and publish
 
+## 0.0.166 Druid rows and giant sizes publication authorization
+
+On 2026-10-24 the owner reviewed the Druid duplicate and giant size fixes
+(PR #71) and wrote "Could you go ahead and push, merge, and do a new release of
+this?" That covers the v0.0.166 release validator and Sprint-level candidate
+gate, merging PR #71 into master, publishing through `Publish-Release.ps1`, and
+checking the public download. The release is 0.0.166, one above the published
+0.0.165; the publisher checks the tag again.
+
+`tools/validate_expanded_summoning_druid_giant_sizes_release166.py` admits,
+relative to released v0.0.165 master `00ef53dd82`:
+- no identity change;
+- the eight pinned production files and the version metadata;
+- the released project file, unchanged;
+- no asset or source-art change;
+- its own static record.
+
+The released roster and 1,156-choice census still hold. The historical sprint
+and release validators stay as they were. The release follows the v0.0.165
+route: one Sprint-level release candidate gate and guarded reviews on that
+candidate, a normal merge, then the ordinary exact-reference publisher from
+clean, pushed `master`. The published DLL differs from the gated candidate's
+only in its build stamps. Known limits are listed in
+`docs/RELEASE-NOTES-0.0.166.md`.
+
 ## 0.0.165 cleanup follow-up publication authorization
 
 On 2026-10-24 the owner reviewed the follow-up corrections (PR #69) and wrote
