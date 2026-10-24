@@ -46,7 +46,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(attacks); EventBus.Subscribe(effects);
             int frames = 0, ticks = 0;
             bool completed = false;
-            string tickFailure = null;
+            string tickFailure = null, lastObservedState = null;
             var snapshots = new JArray();
             var startedUtc = DateTime.UtcNow;
             Action<string> record = stage =>
@@ -59,6 +59,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["currentTurn"] = Game.Instance.TurnBasedCombatController.CurrentTurn?.Unit?.UniqueId,
                     ["gameDelta"] = Game.Instance.TimeController.GameDeltaTime,
                     ["owner"] = Trumpet31AiActorState(owner), ["target"] = Trumpet31AiActorState(target),
+                    ["ownerSeesTarget"] = owner.Memory.ContainsVisible(target), ["ownerHasLosToTarget"] = owner.HasLOS(target),
+                    ["ownerIsEnemyToTarget"] = owner.IsEnemy(target),
                     ["awakeGroups"] = new JArray(Game.Instance.AwakeUnitGroups.Where(group => group != null).Select(group => new JObject {
                         ["group"] = RuntimeHelpers.GetHashCode(group), ["combat"] = group != null && group.IsInCombat,
                         ["members"] = new JArray(Enumerable.Range(0, group.Count).Select(index => group[index])
@@ -99,6 +101,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                             finally { record("after-native-ai-tick"); }
                         }
                         foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                        string state = owner.IsInCombat + ":" + target.IsInCombat + ":" + owner.Memory.ContainsVisible(target) +
+                            ":" + target.Group.Memory.HasPlayerCharacterInMemory() + ":" +
+                            string.Join("|", commands.Select(value => RuntimeHelpers.GetHashCode(value) + ":" + value.IsStarted +
+                                ":" + value.IsActed + ":" + value.IsFinished + ":" + value.Result + ":" +
+                                (value as UnitUseAbility)?.ExecutionProcess?.IsEnded));
+                        if (state != lastObservedState) { lastObservedState = state; record("observed-native-state-change"); }
                         bool blasted = commands.OfType<UnitUseAbility>().Any(value => value.AiAction?.name ==
                             "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlastAi" && value.IsFinished &&
                             value.Result == UnitCommand.ResultType.Success && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded);
@@ -154,6 +162,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["inGame"] = unit.IsInGame, ["inState"] = unit.IsInState, ["combat"] = unit.IsInCombat,
                 ["sleeping"] = unit.IsSleeping, ["brainPresent"] = unit.Brain != null,
                 ["brainActive"] = unit.IsBrainActive, ["aiEnabled"] = unit.IsAIEnabled,
+                ["isPlayerFaction"] = unit.IsPlayerFaction,
+                ["groupHasPlayerMemory"] = unit.Group.Memory.HasPlayerCharacterInMemory(),
+                ["groupEnemies"] = new JArray(unit.Group.Memory.Enemies.Where(info => info.Unit != null).Select(info => info.Unit.UniqueId)),
                 ["canAct"] = unit.Descriptor.State.CanAct, ["dead"] = unit.Descriptor.State.IsDead,
                 ["unconscious"] = unit.Descriptor.State.IsUnconscious, ["hp"] = unit.Stats.HitPoints.ModifiedValue,
                 ["position"] = unit.Position.ToString(), ["viewVisible"] = unit.View != null && unit.View.IsVisible,
@@ -333,6 +344,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw new InvalidOperationException("Owned fixture anchors have no native walkable ground.");
                 PlaceExpandedSummoningUnit(fixture.Caster, casterPoint.clampedPosition);
                 PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition);
+                // Keep the disposable hostile between the blast source and its
+                // owned player actors. Native DecisionContext excludes conscious
+                // enemies whose group has lost player-faction memory; separating
+                // the hostile from every player by42m made the prior seeded
+                // admission transient and the normal AI replaced the blast.
+                // Only the request-owned hostile is repositioned. Both nonarchon
+                // player actors remain outside the full unchanged100ft burst.
+                var targetPoint = graph.GetNearest(origin + Vector3.back * 24f);
+                if (targetPoint.node == null || !targetPoint.node.Walkable)
+                    throw new InvalidOperationException("Owned hostile has no native walkable threat position.");
+                PlaceExpandedSummoningUnit(target, targetPoint.clampedPosition);
+                target.Memory.Add(anchor); anchor.Memory.Add(target);
                 // The installed SleepingUnitsController admits awake groups
                 // through awake nonpeaceful members. The menu fixture's real
                 // clock rebuilds those lists; keep only the proven owned
@@ -391,7 +414,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
                     "A fresh actual player summon uses its production blueprint/brain in the established non-DLC Oleg outdoor fixture, with native walkable/visible clear stance and actual outdoor classification. Original actors/factions are intact; only its proven request-owned anchor clone and disposable caster are positioned out of radius.");
                 if (!clear) throw new InvalidOperationException("Safe player-summoned native outdoor location is not clear.");
-                bool ready = admitted && safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
+                bool threat = target.Group.Memory.HasPlayerCharacterInMemory() && target.HasLOS(anchor) &&
+                    target.DistanceTo(anchor) < new Feet(100).Meters && owner.DistanceTo(target) < new Feet(100).Meters;
+                Sprint25Check("trumpet-blast-ai-native-threat", threat, new JObject {
+                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["anchor"] = anchor.UniqueId,
+                    ["hostileGroupHasPlayerMemory"] = target.Group.Memory.HasPlayerCharacterInMemory(),
+                    ["hostileSeesAnchor"] = target.Memory.ContainsVisible(anchor), ["hostileHasLosToAnchor"] = target.HasLOS(anchor),
+                    ["hostileAnchorDistance"] = target.DistanceTo(anchor), ["sourceTargetDistance"] = owner.DistanceTo(target),
+                    ["sourceAnchorDistance"] = owner.DistanceTo(anchor), ["sourceCasterDistance"] = owner.DistanceTo(fixture.Caster),
+                    ["sourceVisibleTarget"] = owner.Memory.ContainsVisible(target),
+                    ["originalActorOrFactionEdits"] = 0, ["suppliedCombatCommands"] = 0 },
+                    "The hostile remains a native player threat between the source and the reference-proven owned player clone; both eligible allied players remain outside the unchanged100ft blast. No combat command or faction change supplies admission.");
+                if (!threat) throw new InvalidOperationException("Native hostile/player threat preconditions are unmet.");
+                bool ready = admitted && threat && safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
                     owner.IsInCombat && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && data.IsAvailable;
                 Sprint25Check("trumpet-blast-ai-safe-ready", ready, new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
                     ["score"] = safety.Score(decision), ["remainingNonenemies"] = new JArray(remaining.Select(value => value.UniqueId)),
