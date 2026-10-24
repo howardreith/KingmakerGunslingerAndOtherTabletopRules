@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
+using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
@@ -42,6 +45,40 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
             EventBus.Subscribe(attacks); EventBus.Subscribe(effects);
             int frames = 0, ticks = 0;
+            bool completed = false;
+            string tickFailure = null;
+            var snapshots = new JArray();
+            var startedUtc = DateTime.UtcNow;
+            Action<string> record = stage =>
+            {
+                foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                snapshots.Add(new JObject { ["stage"] = stage, ["utc"] = DateTime.UtcNow.ToString("o"),
+                    ["frames"] = frames, ["aiTicks"] = ticks, ["unityFrame"] = Time.frameCount,
+                    ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["paused"] = Game.Instance.IsPaused, ["turnBased"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
+                    ["currentTurn"] = Game.Instance.TurnBasedCombatController.CurrentTurn?.Unit?.UniqueId,
+                    ["gameDelta"] = Game.Instance.TimeController.GameDeltaTime,
+                    ["owner"] = Trumpet31AiActorState(owner), ["target"] = Trumpet31AiActorState(target),
+                    ["awakeGroups"] = new JArray(Game.Instance.AwakeUnitGroups.Where(group => group != null).Select(group => new JObject {
+                        ["group"] = RuntimeHelpers.GetHashCode(group), ["combat"] = group != null && group.IsInCombat,
+                        ["members"] = new JArray(Enumerable.Range(0, group.Count).Select(index => group[index])
+                            .Where(unit => unit != null).Select(Trumpet31AiActorState)) })),
+                    ["commands"] = new JArray(commands.Select(Trumpet31AiCommandState)),
+                    ["costCount"] = costs.Count, ["endingCount"] = endings.Count,
+                    ["saveCount"] = effects.Saves.Count, ["effectEventCount"] = effects.EffectEvents.Count });
+                RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory, id + "-trace.json"),
+                    new JObject { ["runId"] = _request.RunId, ["scenario"] = _request.Scenario,
+                        ["decision"] = id, ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
+                        ["startedUtc"] = startedUtc.ToString("o"), ["completed"] = completed,
+                        ["tickFailure"] = tickFailure, ["snapshots"] = snapshots,
+                        ["costs"] = costs.DeepClone(), ["endings"] = endings.DeepClone(),
+                        ["blastSaves"] = effects.Saves.DeepClone(), ["blastEffects"] = effects.Effects,
+                        ["blastEffectEvents"] = effects.EffectEvents.DeepClone(),
+                        ["blastDice"] = effects.Dice.DeepClone(), ["blastResistance"] = effects.Resistance.DeepClone(),
+                        ["ambientCandidatesNeverTicked"] = new JArray(ambient),
+                        ["fixtureBlastCommands"] = 0, ["fixtureAttackCommands"] = 0,
+                        ["forcedRolls"] = 0 }.ToString(Formatting.Indented));
+            };
             try
             {
                 using (var economy = new FirearmReviewCosts(owner, costs))
@@ -51,7 +88,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     while (DateTime.UtcNow < deadline && frames++ < 4500)
                     {
                         if (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished))
-                        { foreach (string candidate in Sprint24TickExactAi(owner)) if (candidate != owner.UniqueId) ambient.Add(candidate); ticks++; }
+                        {
+                            record("before-native-ai-tick");
+                            try
+                            {
+                                foreach (string candidate in Sprint24TickExactAi(owner)) if (candidate != owner.UniqueId) ambient.Add(candidate);
+                                ticks++;
+                            }
+                            catch (Exception error) { tickFailure = error.ToString(); throw; }
+                            finally { record("after-native-ai-tick"); }
+                        }
                         foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
                         bool blasted = commands.OfType<UnitUseAbility>().Any(value => value.AiAction?.name ==
                             "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlastAi" && value.IsFinished &&
@@ -61,6 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (wantBlast ? blasted && effects.Saves.Count > 0 : attacked || effects.Saves.Count > 0) break;
                         Game.Instance.IsPaused = false; yield return 0;
                     }
+                    record("decision-loop-ended");
                     var chosen = wantBlast ? (UnitCommand)commands.OfType<UnitUseAbility>().FirstOrDefault(value =>
                         value.AiAction?.name == "KMG_Summoning_OutsiderCelestial_TrumpetArchon_TrumpetBlastAi" && value.IsFinished &&
                         value.Result == UnitCommand.ResultType.Success) : commands.OfType<UnitAttack>().FirstOrDefault(value =>
@@ -89,9 +136,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                         wantBlast ? "The real native brain selects its safe blast, pays one standard action and resolves the hostile's actual save/paralysis." :
                         "The native brain refuses an unsafe all-creature blast and selects its own held sword, with a real attack, damage and ordinary action cost.");
                     if (!native || !outcome) throw new InvalidOperationException("Trumpet native autonomous decision failed: " + id);
+                    completed = true;
                 }
             }
-            finally { Sprint28SetBrainActivePreservingActions(owner, false); EventBus.Unsubscribe(effects); EventBus.Unsubscribe(attacks); }
+            finally
+            {
+                try { record("finally-before-fixture-cleanup"); }
+                finally { Sprint28SetBrainActivePreservingActions(owner, false); EventBus.Unsubscribe(effects); EventBus.Unsubscribe(attacks); }
+            }
+        }
+
+        // Read-only failure-safe diagnostics; no command, roll, group or effect is changed.
+        private static JObject Trumpet31AiActorState(UnitEntityData unit)
+        {
+            return new JObject { ["unit"] = unit.UniqueId, ["blueprint"] = unit.Blueprint.AssetGuid,
+                ["faction"] = unit.Faction?.name, ["destroyed"] = unit.Destroyed,
+                ["inGame"] = unit.IsInGame, ["inState"] = unit.IsInState, ["combat"] = unit.IsInCombat,
+                ["sleeping"] = unit.IsSleeping, ["brainPresent"] = unit.Brain != null,
+                ["brainActive"] = unit.IsBrainActive, ["aiEnabled"] = unit.IsAIEnabled,
+                ["canAct"] = unit.Descriptor.State.CanAct, ["dead"] = unit.Descriptor.State.IsDead,
+                ["unconscious"] = unit.Descriptor.State.IsUnconscious, ["hp"] = unit.Stats.HitPoints.ModifiedValue,
+                ["position"] = unit.Position.ToString(), ["viewVisible"] = unit.View != null && unit.View.IsVisible,
+                ["buffs"] = new JArray(unit.Buffs.Enumerable.Select(buff => new JObject {
+                    ["instance"] = RuntimeHelpers.GetHashCode(buff), ["blueprint"] = buff.Blueprint.AssetGuid,
+                    ["caster"] = buff.Context?.MaybeCaster?.UniqueId, ["end"] = buff.EndTime.ToString(),
+                    ["disposed"] = buff.IsDisposed })) };
+        }
+
+        private static JObject Trumpet31AiCommandState(UnitCommand command)
+        {
+            var row = Sprint27AiCommand(command);
+            var ability = command as UnitUseAbility;
+            row["instance"] = RuntimeHelpers.GetHashCode(command);
+            row["executor"] = command.Executor?.UniqueId;
+            row["timeSinceStart"] = command.TimeSinceStart;
+            row["cutscene"] = command.Cutscene;
+            row["ignoreCooldown"] = command.IsIgnoreCooldown;
+            row["spell"] = ability?.Spell?.Blueprint.AssetGuid;
+            row["executionPresent"] = ability?.ExecutionProcess != null;
+            row["executionEnded"] = ability?.ExecutionProcess?.IsEnded;
+            row["executionEngagesUnit"] = ability?.ExecutionProcess?.IsEngageUnit;
+            return row;
         }
 
         private IEnumerable<int> ReviewTrumpet31BlastAi(ExpandedSummoningCorrectionFixture fixture)
