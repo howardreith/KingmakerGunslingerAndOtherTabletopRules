@@ -37,7 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Array.Empty<string>();
         }
 
-        private static void PrepareSprints3031PersistenceState(UnitEntityData unit, string key)
+        private void PrepareSprints3031PersistenceState(UnitEntityData unit, string key)
         {
             // Explicit saved preconditions, matching existing S29 practice.
             // These spends are NOT evidence of casts, actions, AI or effects.
@@ -55,11 +55,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var creation = unit.Blueprint.GetComponent<TrumpetPreparedBook>();
                 var book = unit.Descriptor.GetSpellbook(creation.Book);
                 if (book == null || book.CasterLevel != 14) throw new InvalidOperationException("Pilot prepared book is not CL14.");
-                var slot = book.GetMemorizedSpellSlots(6).First(value => value.Available &&
-                    ReferenceEquals(value.Spell?.Blueprint, creation.Heal));
-                slot.Spell.ParamSpellSlot = slot;
-                slot.Spell.Spend();
-                if (slot.Available) throw new InvalidOperationException("Native prepared Heal slot did not become spent.");
+                var preparations = Enumerable.Range(1, 7).SelectMany(level =>
+                    book.GetMemorizedSpellSlots(level).Select((slot, index) =>
+                        new { Level = level, Index = index, Slot = slot, Available = slot.Available })).ToArray();
+                var heals = preparations.Where(value => value.Level == 6 &&
+                    ReferenceEquals(value.Slot.Spell?.Blueprint, creation.Heal)).ToArray();
+                if (heals.Length != 2 || heals.Any(value => !value.Available) ||
+                    preparations.Any(value => value.Slot.Spell != null && !value.Available))
+                    throw new InvalidOperationException("Pilot native preparations are not fresh.");
+                var requested = heals[0];
+                var data = requested.Slot.Spell;
+                data.ParamSpellSlot = requested.Slot;
+                data.Spend();
+                // Installed2.1.7b SpendInternal scans matching preparations in
+                // reverse and AbilityData.Equals ignores ParamSpellSlot. It
+                // may debit the other identical Heal. Observe every native
+                // slot; do not write availability or prescribe its index.
+                var changed = preparations.Where(value => value.Available != value.Slot.Available).ToArray();
+                bool exact = changed.Length == 1 && changed[0].Available && !changed[0].Slot.Available &&
+                    heals.Contains(changed[0]) && heals.Count(value => value.Slot.Available) == 1;
+                RosterPersistenceCheck("s3031-prepared-slot-setup", exact,
+                    new JObject { ["owner"] = unit.UniqueId, ["book"] = book.Blueprint.AssetGuid,
+                        ["casterLevel"] = book.CasterLevel, ["requestedLevel"] = requested.Level,
+                        ["requestedIndex"] = requested.Index, ["nativeSpendCalls"] = 1,
+                        ["fixtureAvailabilityWrites"] = 0, ["fixtureSetupNotCombatProof"] = true,
+                        ["preparations"] = new JArray(preparations.Select(value => new JObject {
+                            ["level"] = value.Level, ["index"] = value.Index,
+                            ["spell"] = value.Slot.Spell?.Blueprint.AssetGuid,
+                            ["before"] = value.Available, ["after"] = value.Slot.Available })) },
+                    "One native Spend debits exactly one of two equivalent Heal preparations and preserves every other slot.");
+                if (!exact) throw new InvalidOperationException("Native prepared Heal spend changed an unexpected slot set.");
             }
         }
 
