@@ -14,6 +14,8 @@ Build attempt2f13d9e2,05:37:17.373-05:40:16.857Z: all17 selected domain checks a
 
 Build attemptbb2dd407,05:41:59.394-05:44:59.635Z: all17 selected tests/source/assets passed; production compilation had one remaining binding diagnostic because SavingThrowType belongs to EntitySystem.Stats. Use that exact qualified native enum, already compiled in the effect consumer. Prior four diagnostics were resolved. No package/game; logs and exact intake Compare PASS retained artifacts/s30-31-blast-build-bb2dd407-20261024T054149Z. The unlaunched native wrapper was also preflighted against the actual ten blast/restoration assertions, replacing copied caster-only names/input-file expectations before any game launch. Existing package/admission/source/restoration guards remain.
 
+Build attemptf6304385,05:46:40.478-05:49:53.720Z: all17 selected/source/assets and actual production compilation/reference consumers passed. DLLD7B712439B6327A88C342E857C53E5F639B4EC4A4FEFFDE8CE980E9C2EF9F89C compiled, but deterministic packaging correctly refused410 files against the prior409-file count: the actual original blast icon was omitted from the scoped count keys. Add only trumpet-blast to that declared/hash-validated icon subset and410 to the creator's finite accepted counts; strict exact path/hash validation is unchanged. Actual owned410-file creator acceptance and409-count refusal both pass in artifacts/s30-31-blast-package-contract-20261024T055225Z. No complete development package or game; original logs and exact intake Compare PASS remain artifacts/s30-31-blast-build-f6304385-20261024T054631Z.
+
 ## Scope and coverage map
 
 | Charter | Creature | Routes | Current proof | Required next work |
