@@ -102,6 +102,34 @@ back with dark bands, ochre flanks, a pale belly and a dark eye mask.
 - `deinonychus-mesh.json`: `b085f640a33b7fa1232dc7c2b2677c0fe53fcb47f87c1bc873d0a358ab6ecdf6`
   (7,037 vertices, 9,192 triangles, 46 closed outward parts, the exact 35
   reviewed drivers; two sickle claws, no massive skull, long forearms).
+  Superseded by the connected-arm revision below.
 - `deinonychus-albedo.png`: `9e60ec305e08add31be809f4d82a82c727741102e3c3c4023494240f0f38780f`.
+  Superseded by the connected-arm revision below.
 - Superseded: mesh `eb1a06fb8933d603bfb89655df82d6e240bbf861bbe98d4134c9e25df4ed16ab`,
   albedo `4e0414763bc70122a4645402724c27c6dadd72fd9341ff1b25fad4bd57c236a7`.
+
+## Deinonychus connected arms, 2026-10-24 (cleanup follow-up)
+
+After v0.0.164 the owner reported the Deinonychus arms detached. Each arm and
+finger was its own tube pushed partway into the chest: the body carried no
+arm weight and the arms were partly weighted to donor arm bones whose pivots
+sit 0.65-0.98 m from the authored arm, so any swing slid a tube out of the
+chest. The hand claws rode 100 % on their finger bones.
+
+`build_deinonychus.py` now sweeps each arm (a root buried in the chest,
+shoulder, elbow, wrist and palm) and three fingers rooted inside the palm into
+the one body volume, so `require_single_body` refuses any detached limb. Arm
+vertices take proximity-blended chain weights, restrained toward
+`Torso_Upper` by the unchanged 30-50 % arm shares, and fade in from the
+chest's own weights past the shoulder. Each hand claw carries its fingertip's
+exact skin weights. Fingers are slightly thicker (0.024-0.014 m) so the
+0.012 m voxel union keeps them; the body target is 7,600 triangles.
+`verify_cleanup2_bodies.py` now requires each side's trunk, arm, palm and
+finger chains in one closed component; the previous export fails that rule.
+Two clean Blender 4.5.10 runs with `PYTHONHASHSEED=0` produced identical bytes.
+
+- `deinonychus-mesh.json`: `012c1e6fc0a6a2029d6e14fc4bb5f4ed48f3bd8029c5f99a91f2337d1411c78c`
+  (7,513 vertices, 9,980 triangles, 38 closed outward parts; the 5,149-vertex
+  body holds every arm, palm and finger vertex, and the six hand claws are
+  rooted at the fingertips; the exact 35 reviewed drivers).
+- `deinonychus-albedo.png`: `a487d804338a5270715affba69d0e9012924b4454775ca1bfb4ae91d2d89aaac`.

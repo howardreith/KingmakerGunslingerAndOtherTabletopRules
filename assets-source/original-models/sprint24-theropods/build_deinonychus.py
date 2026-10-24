@@ -14,7 +14,11 @@ neck, a two-joint lower jaw with tooth rows, long folded arms with three
 large clawed fingers, slender digitigrade legs with a raised sickle claw on
 each foot, and a long, stiff countertail. The owner found the first
 export's arm swing comical; the arms are rooted in the chest and follow
-Torso_Upper for half or more of their weight.
+Torso_Upper for half or more of their weight. A follow-up review found the
+arms detached: each was a separate tube pushed into the chest, so any swing
+opened a gap. The arms, palms and fingers are now swept into the one body
+surface and fade from the chest's weights into their restrained arm chain
+past the shoulder; each claw carries its fingertip's exact weights.
 """
 import argparse
 import json
@@ -46,6 +50,103 @@ HEAT = ("Torso_Lower", "Torso_Upper", "neck", "neck1", "Head",
 # Shares of each forelimb segment that follow its own control; the rest
 # rides Torso_Upper, so the donor's wide A-pose swings arrive restrained.
 ARM_SHARE = {"upper": 0.30, "lower": 0.38, "hand": 0.45, "finger": 0.50}
+FINGERS = ((-0.034, "_finger1", "_finger2"), (0.0, "_finger1", "_finger2"),
+           (0.034, "_Bfinger1", "_Bfinger2"))
+
+
+def arm_lines(prefix, sign):
+    """One arm's authored chain, from a root buried in the chest through
+    the palm, and three fingers rooted inside that palm."""
+    root = Vector((sign * 0.05, 0.42, 1.07))
+    shoulder = Vector((sign * 0.14, 0.44, 1.07))
+    elbow = Vector((sign * 0.20, 0.42, 0.90))
+    wrist = Vector((sign * 0.21, 0.64, 0.86))
+    palm = wrist + FORWARD * 0.035 - UP * 0.012
+    arm = ([root, shoulder, elbow, wrist, palm],
+           [0.075, 0.060, 0.042, 0.034, 0.032],
+           ["Torso_Upper", prefix + "_Arm_Upper", prefix + "_Arm_Lower",
+            prefix + "_Palm"])
+    fingers = []
+    for offset, first, second in FINGERS:
+        knuckle = palm + SIDE * sign * offset + FORWARD * 0.02
+        tip = knuckle + FORWARD * 0.10 - UP * 0.04
+        fingers.append(([palm.lerp(knuckle, 0.35), knuckle,
+                         knuckle.lerp(tip, 0.5), tip],
+                        [0.024, 0.020, 0.017, 0.014],
+                        [prefix + "_Palm", prefix + first, prefix + second]))
+    return arm, fingers
+
+
+def share_of(bone):
+    """The arm share of one forelimb control; the rest rides Torso_Upper."""
+    if bone.endswith("_Arm_Upper"):
+        return ARM_SHARE["upper"]
+    if bone.endswith("_Arm_Lower"):
+        return ARM_SHARE["lower"]
+    if bone.endswith("_Palm"):
+        return ARM_SHARE["hand"]
+    return ARM_SHARE["finger"] if "finger" in bone else 0.0
+
+
+def nearest(point, lines):
+    """(distance, line index, segment, t, local radius) of the nearest
+    authored segment."""
+    best = None
+    for index, (points, radii, _) in enumerate(lines):
+        for segment in range(len(points) - 1):
+            a, b = points[segment], points[segment + 1]
+            axis = b - a
+            t = max(0.0, min(1.0, (point - a).dot(axis) /
+                             max(axis.length_squared, 1e-9)))
+            distance = (point - a.lerp(b, t)).length
+            if best is None or distance < best[0] - 1e-9:
+                radius = radii[segment] + (radii[segment + 1] -
+                                           radii[segment]) * t
+                best = (distance, index, segment, t, radius)
+    return best
+
+
+def arm_row(point, lines, junction=0.018, blend=0.30):
+    """Restrained chain weights shared smoothly between the arm and the
+    fingers where they meet in the palm (Girallon connected-hand pattern)."""
+    near = []
+    for points, _, bones in lines:
+        for segment in range(len(points) - 1):
+            a, b = points[segment], points[segment + 1]
+            axis = b - a
+            t = max(0.0, min(1.0, (point - a).dot(axis) /
+                             max(axis.length_squared, 1e-9)))
+            following = bones[min(segment + 1, len(bones) - 1)]
+            near.append(((point - a.lerp(b, t)).length, bones[segment],
+                         following,
+                         max(0.0, min(1.0, (t - (1.0 - blend)) / blend)) * 0.5))
+    closest = min(entry[0] for entry in near)
+    merged = {}
+    for distance, own, following, share in near:
+        strength = math.exp(-((distance - closest) / junction) ** 2)
+        if strength < 0.002:
+            continue
+        merged[own] = merged.get(own, 0.0) + strength * (1.0 - share)
+        merged[following] = merged.get(following, 0.0) + strength * share
+    total = sum(merged.values())
+    row = {}
+    for bone, value in merged.items():
+        value /= total
+        own = share_of(bone)
+        row[bone] = row.get(bone, 0.0) + value * own
+        row["Torso_Upper"] = row.get("Torso_Upper", 0.0) + value * (1.0 - own)
+    return row
+
+
+def arm_membership(point, lines):
+    """1 on the free arm, 0 on the chest; a smooth fillet past the shoulder."""
+    distance, index, segment, t, radius = nearest(point, lines)
+    if (index == 0 and segment == 0) or distance > radius + 0.02:
+        return 0.0
+    if index == 0 and segment == 1:
+        ramp = max(0.0, min(1.0, t / 0.45))
+        return ramp * ramp * (3.0 - 2.0 * ramp)
+    return 1.0
 
 
 def tail_profile():
@@ -90,9 +191,17 @@ def build(rig, armature):
                      [0.042, 0.036, 0.034])
     tail_points, tail_radii = tail_profile()
     volume.sweep(tail_points, tail_radii)
+    # Long folded arms, palms and three clawed fingers, rooted in the chest
+    # as part of this one surface.
+    limb_lines = []
+    for prefix, sign in (("L", 1.0), ("R", -1.0)):
+        arm, fingers = arm_lines(prefix, sign)
+        for points, radii, _ in [arm] + fingers:
+            volume.sweep(points, radii)
+        limb_lines.extend([arm] + fingers)
 
     body = volume.polygonise("DeinonychusBody")
-    cb.finish_surface(body, 6400, smooth_iterations=14)
+    cb.finish_surface(body, 7600, smooth_iterations=14)
     positions = [v.co.copy() for v in body.data.vertices]
     heat = cb.heat_weights(body, armature, set(HEAT))
     heat = cb.clean_weights(heat, positions, armature, set(HEAT))
@@ -127,7 +236,21 @@ def build(rig, armature):
         for name, value in share[1]:
             merged[name] = merged.get(name, 0.0) + value
         rows[index] = sorted(merged.items(), key=lambda e: (-e[1], e[0]))
-    rows = cb.clean_weights(rows, positions, armature, set(HEAT) | set(TAIL))
+    limb_bones = {bone for _, _, bones in limb_lines for bone in bones}
+    allowed = set(HEAT) | set(TAIL) | limb_bones
+    for index, point in enumerate(positions):
+        side_lines = [line for line in limb_lines
+                      if (line[0][-1].x > 0.0) == (point.x > 0.0)]
+        amount = arm_membership(point, side_lines)
+        if amount <= 0.0:
+            continue
+        merged = {}
+        for name, value in rows[index]:
+            merged[name] = merged.get(name, 0.0) + value * (1.0 - amount)
+        for name, value in arm_row(point, side_lines).items():
+            merged[name] = merged.get(name, 0.0) + value * amount
+        rows[index] = sorted(merged.items(), key=lambda e: (-e[1], e[0]))
+    rows = cb.clean_weights(rows, positions, armature, allowed)
     parts = [(body, rows, REGION["body"])]
 
     def rigid(obj, bones, region):
@@ -159,48 +282,18 @@ def build(rig, armature):
         eye = Vector((sign * 0.072, 0.80, 1.625))
         rigid(cb.blob("DeinonychusEye", eye, (SIDE, FORWARD, UP),
                       (0.020, 0.026, 0.022), 12, 8), [("Head", 1.0)], "eye")
-    # Long folded arms with three large clawed fingers, rooted in the chest.
-    for prefix, sign in (("L", 1.0), ("R", -1.0)):
-        shoulder = Vector((sign * 0.14, 0.44, 1.07))
-        elbow = Vector((sign * 0.20, 0.42, 0.90))
-        wrist = Vector((sign * 0.21, 0.64, 0.86))
-        arm = cb.tube("DeinonychusArm", [shoulder - SIDE * sign * 0.06,
-                                           shoulder, elbow, wrist],
-                        [0.060, 0.050, 0.036, 0.030], 10)
-        arm_rows = {}
-        span = (wrist - shoulder).length
-        for vertex in arm.data.vertices:
-            along = (vertex.co - shoulder).dot((wrist - shoulder).normalized()) / \
-                span
-            if along < 0.40:
-                own, name = ARM_SHARE["upper"], prefix + "_Arm_Upper"
-            elif along < 0.85:
-                own, name = ARM_SHARE["lower"], prefix + "_Arm_Lower"
-            else:
-                own, name = ARM_SHARE["hand"], prefix + "_Palm"
-            arm_rows[vertex.index] = [("Torso_Upper", 1.0 - own), (name, own)]
-        parts.append((arm, arm_rows, REGION["arm"]))
-        for offset, first, second in ((-0.034, "_finger1", "_finger2"),
-                                      (0.0, "_finger1", "_finger2"),
-                                      (0.034, "_Bfinger1", "_Bfinger2")):
-            base = wrist + SIDE * sign * offset
-            tip = base + FORWARD * 0.10 - UP * 0.04
-            finger = cb.tube("DeinonychusFinger", [base, base.lerp(tip, 0.5),
-                                                     tip],
-                               [0.016, 0.013, 0.008], 7)
-            finger_rows = {}
-            for vertex in finger.data.vertices:
-                tip_side = (vertex.co - base).dot((tip - base).normalized()) > \
-                    0.5 * (tip - base).length
-                name = prefix + (second if tip_side else first)
-                share = ARM_SHARE["finger"]
-                finger_rows[vertex.index] = [("Torso_Upper", 1.0 - share),
-                                             (name, share)]
-            parts.append((finger, finger_rows, REGION["arm"]))
-            rigid(cb.horn("DeinonychusHandClaw", tip - FORWARD * 0.01,
-                          tip + FORWARD * 0.03 - UP * 0.045, 0.011, 8, 4,
-                          hint=UP),
-                  [(prefix + second, 1.0)], "claw")
+    # Each hand claw rides exactly its fingertip's skin weights, so claw and
+    # finger move as one under any donor finger rotation.
+    for points, _, bones in limb_lines:
+        if not bones[-1].endswith("finger2"):
+            continue
+        tip = points[-1]
+        anchor = min(range(len(positions)),
+                     key=lambda index: (positions[index] - tip).length)
+        rigid(cb.horn("DeinonychusHandClaw", tip - FORWARD * 0.01,
+                      tip + FORWARD * 0.03 - UP * 0.045, 0.012, 8, 4,
+                      hint=UP),
+              list(rows[anchor]), "claw")
     # Two forward toes and the raised sickle claw on each foot.
     for prefix in ("L", "R"):
         ball, tip_bone = at(prefix + "_toe"), at(prefix + "_claw")
