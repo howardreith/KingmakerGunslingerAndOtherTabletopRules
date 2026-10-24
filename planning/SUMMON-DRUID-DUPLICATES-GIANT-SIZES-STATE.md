@@ -1,5 +1,12 @@
 # Druid duplicate rows and giant sizes after v0.0.165
 
+**Released as stable v0.0.166 on 2026-10-24** from PR #71 (merge
+`abd737c22b2f918a9c792b82e7c4172dfa62fcf6`). The public ZIP is
+`9f51cb31a0a137c4475217956f06a6077c1a0506d400677493b418b01f22f681`. It is
+downloaded and strictly validated, with the same code as the gated candidate
+`5d2760c091`; see [the resume record](../AUTONOMOUS-RESUME.md). The lane is
+closed.
+
 Development checkpoint, 2026-10-24, on
 `codex/expanded-summoning-druid-duplicates-giant-sizes` from master
 `00ef53dd82` (released v0.0.165 plus its record). The owner then wrote "Could
