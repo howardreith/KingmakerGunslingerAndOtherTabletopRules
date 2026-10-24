@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.165-expanded-summoning-cleanup-followup
+
+- Joins the Deinonychus arms, hands and fingers to its body.
+- Removes the Frost Giant's falling snow and ice from the Fire and Storm
+  Giants, which share its body.
+- Adds painted Pony and Cyclops icons.
+- Lists the ten Summon Nature's Ally I creatures in a Druid's level 1
+  spontaneous conversion instead of the "Summon Nature's Ally I" paw row. No
+  rule or saved identity changes. See the
+  [v0.0.165 release notes](docs/RELEASE-NOTES-0.0.165.md).
+
 ## 0.0.164-expanded-summoning-cleanup2
 
 - Redraws the Giant Crab, Girallon, Giant Stag Beetle, Griffon, Elephant,
