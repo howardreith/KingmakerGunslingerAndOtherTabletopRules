@@ -147,6 +147,17 @@ namespace KingmakerGunslinger.DomainTests
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview;
             string uiScenario = RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+            string bundleLog = @"The AssetBundle 'StreamingAssets\Bundles\common_assets' can't be loaded because another AssetBundle with the same files is already loaded.";
+            string equipmentLog = @"The AssetBundle 'StreamingAssets\Bundles\equipment_bundle' can't be loaded because another AssetBundle with the same files is already loaded.";
+            string fogLog = "FogOfWarStaticMaskHolder bounds is not completely placed inside in LocationMaskRenderer bounds [JamandisMansion_Mechanics]";
+            foreach (string message in new[] { bundleLog, equipmentLog, fogLog })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(true, message, ""), "Only exact measured native presentation diagnostics are classified.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(false, message, ""), "Exceptions never become presentation diagnostics.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(true, message, "native stack"), "A new traced failure remains blocking.");
+            }
+            foreach (string message in new[] { "Failed to load blueprint", "NullReferenceException", bundleLog + " changed", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(true, message, ""), "Unknown native load errors remain blocking.");
             string uiCreatures = RuntimeTestScenarioCatalog.Sprints30And31DispelUiCreatures;
             string uiCase = RuntimeTestScenarioCatalog.Sprints30And31DispelUiCase;
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "Only the exact fixed read-only Working UI batch is admitted.");

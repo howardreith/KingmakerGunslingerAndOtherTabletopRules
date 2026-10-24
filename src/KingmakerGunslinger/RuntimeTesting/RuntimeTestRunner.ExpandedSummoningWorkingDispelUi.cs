@@ -150,6 +150,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null;
             UnitReference originalMaster = default(UnitReference);
             bool masterCaptured = false;
+            BlueprintFaction originalFaction = null;
+            bool factionCaptured = false, originalControl = false;
             _sprints30DispelScreens = new NativeIconScreenEvidence(_request);
             try
             {
@@ -169,8 +171,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(owner, false);
                     owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                     originalMaster = owner.Descriptor.Master; masterCaptured = true;
+                    originalFaction = owner.Faction; factionCaptured = true;
+                    var summonPart = owner.Get<UnitPartSummonedMonster>();
+                    originalControl = summonPart != null && summonPart.IsDirectlyControllable;
+                    bool directlyBefore = owner.IsDirectlyControllable;
+                    // Established Working presentation fixture: only this
+                    // disposable actor joins the native player faction. This
+                    // is UI preparation, not product summon-control evidence.
+                    owner.Descriptor.SwitchFactions(game.Player.MainCharacter.Value.Faction, false);
+                    if (summonPart == null) throw new InvalidOperationException("Owned UI summon part missing.");
+                    summonPart.IsDirectlyControllable = true;
                     bool capitalMaster = false;
-                    if (!owner.IsDirectlyControllable)
+                    if (game.CurrentlyLoadedArea.IsCapital && !owner.IsDirectlyControllable)
                     {
                         owner.Descriptor.Master = game.Player.MainCharacter;
                         capitalMaster = true;
@@ -210,6 +222,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         new JObject { ["creature"] = key, ["owner"] = owner.UniqueId,
                             ["controlledFixture"] = true, ["nativeControlMatches"] = control.Matched,
                             ["directlyControllable"] = owner.IsDirectlyControllable, ["capitalMasterBound"] = capitalMaster,
+                            ["directlyControllableBeforeFixture"] = directlyBefore,
+                            ["nativeControlFlagBeforeFixture"] = originalControl,
+                            ["nativeControlFlag"] = summonPart.IsDirectlyControllable,
+                            ["originalFaction"] = originalFaction.AssetGuid, ["fixtureFaction"] = owner.Faction.AssetGuid,
+                            ["factionControl"] = owner.Faction.IsDirectlyControllable,
+                            ["playerFaction"] = owner.IsPlayerFaction,
+                            ["detached"] = owner.IsDetached, ["preventDirectControl"] = (bool)owner.PreventDirectControl,
+                            ["dead"] = owner.Descriptor.State.IsFinallyDead, ["panicked"] = owner.Descriptor.State.IsPanicked,
+                            ["ownedFactionFixtureWrites"] = 1, ["ownedControlFixtureWrites"] = 1,
                             ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel, ["dc"] = parameters.DC,
                             ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["slotAvailable"] = slot?.Available,
                             ["fixtureNativeSpendCalls"] = 1, ["fixtureArmCalls"] = 1, ["commandClaims"] = 0 },
@@ -220,6 +241,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var items = owner.Descriptor.Inventory.Items.Concat(new[] { owner.Body.PrimaryHand.MaybeWeapon })
                         .Where(value => value != null).Distinct().ToArray();
                     owner.Descriptor.Master = originalMaster; masterCaptured = false;
+                    summonPart.IsDirectlyControllable = originalControl;
+                    owner.Descriptor.SwitchFactions(originalFaction, false); factionCaptured = false;
                     bool cleaned;
                     EndExpandedSummoningCorrectionFixture(fixture, out cleaned); fixture = null;
                     int frames = 0; var deadline = DateTime.UtcNow.AddSeconds(8);
@@ -248,6 +271,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (masterCaptured && owner != null && !owner.Destroyed) owner.Descriptor.Master = originalMaster;
+                if (factionCaptured && owner != null && !owner.Destroyed)
+                {
+                    var part = owner.Get<UnitPartSummonedMonster>();
+                    if (part != null) part.IsDirectlyControllable = originalControl;
+                    owner.Descriptor.SwitchFactions(originalFaction, false);
+                }
                 if (fixture != null) { bool ignored; EndExpandedSummoningCorrectionFixture(fixture, out ignored); }
                 foreach (var snapshot in uiSettings) snapshot.Restore();
                 _sprints30DispelScreens.Dispose();
