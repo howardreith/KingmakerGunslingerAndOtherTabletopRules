@@ -66,7 +66,7 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.164') { throw "Build-Local supports only active version 0.0.164, observed $($info.Version)." }
+if ($info.Version -ne '0.0.165') { throw "Build-Local supports only active version 0.0.165, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root

@@ -110,6 +110,15 @@ namespace KingmakerGunslinger.Summoning
                 ? profile : null;
         }
 
+        // Fire and Storm reuse the native Frost Giant prefab, whose SpawnFxOnStart
+        // carries that giant's own frost effects. Only these two owned bodies
+        // drop them; native Frost and the Hill-prefab families are untouched.
+        internal static bool SuppressesDonorFrostEffects(bool moduleActive, string unitGuid)
+        {
+            return moduleActive && Profiles.Any(value => (value.Key == "fire-giant" ||
+                value.Key == "storm-giant") && string.Equals(value.UnitGuid, unitGuid, StringComparison.Ordinal));
+        }
+
         internal static float SolePivotOffset(float nativeLocalSole, float factor)
         {
             if (float.IsNaN(nativeLocalSole) || float.IsInfinity(nativeLocalSole) || !Positive(factor))

@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.164-expanded-summoning-cleanup2",
+  "milestone": "0.0.165-expanded-summoning-cleanup-followup",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.164",
+  "version": "0.0.165",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2633,5 +2633,20 @@
     "visibleChoiceTotal": 1156,
     "guardedNativeReviewed": true,
     "ownerVisualReview": "artwork approved by the owner on 2026-10-23"
+  },
+  "expandedSummoningCleanupFollowupRelease165": {
+    "releaseVersion": "0.0.165",
+    "releaseInformationalVersion": "0.0.165-expanded-summoning-cleanup-followup",
+    "baseStableVersion": "0.0.164",
+    "change": "Summon cleanup follow-up: the Deinonychus arms joined to its body, painted Pony and Cyclops icons, tier-I summon children linked to their parent so the Druid level-1 conversion lists creatures instead of the Summon Nature's Ally I row, and the Frost Giant prefab's frost effect dropped from the Fire and Storm Giants",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "modifiedAssets": 10,
+    "addedAssets": 4,
+    "productionFiles": 6,
+    "addedProjectLines": 0,
+    "visibleChoiceTotal": 1156,
+    "guardedNativeReviewed": true,
+    "ownerVisualReview": "release authorized by the owner on 2026-10-24"
   }
 }
