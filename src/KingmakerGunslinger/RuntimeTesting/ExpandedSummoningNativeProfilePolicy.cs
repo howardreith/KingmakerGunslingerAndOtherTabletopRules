@@ -41,6 +41,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         internal static bool Sprints30And31Phase(string phase)
         { return phase == RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternRayPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31LanternBodyPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralCorePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralHammerPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralBladePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralSupportPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralAtWillPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralSmitePhase || phase == RuntimeTestScenarioCatalog.Sprints30And31AstralDispelPhase || phase == RuntimeTestScenarioCatalog.Sprints30And31TrumpetDispelPhase || phase == "bootstrap" || phase == "lemure-core" || phase == "lemure-full" || phase == "lemure-ai" || phase == "dretch-cloud" || phase == "dretch-ai" || phase == "dretch-ai-ally" || phase == "archon-core" || phase == "archon-hound" || phase == "hound-armed" || phase == "hound-natural" || phase == "trumpet-book" || phase == "trumpet-book-turn" || phase == "trumpet-caster" || phase == TrumpetBlastPhase || phase == TrumpetBlastAiPhase || phase == TrumpetBlastAiSafePhase; }
+        internal static bool Sprints30And31Outdoor(string scenario, string phase)
+        {
+            return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview &&
+                phase == TrumpetBlastAiSafePhase;
+        }
         internal static bool Sprints30And31DispelUi(bool automaticExit,
             string scenario, int parameterCount, string saveName,
             string creatures, string reviewCase)

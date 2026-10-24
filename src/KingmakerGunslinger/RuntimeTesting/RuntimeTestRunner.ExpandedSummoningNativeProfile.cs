@@ -108,7 +108,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset = UnityEngine.Object.Instantiate(_summoningProfileOriginal);
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
-                    if ((IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
+                    if (ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(_request.Scenario, nativeReviewPhase) ||
+                        (IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
                         (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menus" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "tooltips" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "crab-attack" ||

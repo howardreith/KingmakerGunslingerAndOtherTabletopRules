@@ -169,6 +169,10 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", "astral-deva,trumpet-archon", uiCase), "The fixed batch order cannot be caller supplied.");
             foreach (string value in new[] { "SPRINTS30-31-DISPEL-UI", "sprints30-31-dispel-ui ", "", null })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, value), "UI reviewCase matching remains exact.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(scenario, "trumpet-blast-ai-safe"), "Only the fixed positive phase selects the established outdoor fixture.");
+            foreach (string value in new[] { "trumpet-blast-ai", "trumpet-blast", "TRUMPET-BLAST-AI-SAFE", "trumpet-blast-ai-safe ", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(scenario, value), "Other phases cannot switch this fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(uiScenario, "trumpet-blast-ai-safe"), "A Working request cannot select this save-free native world.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Empty guarded native world is admitted.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Implemented core consumer phase is admitted only in the same empty guarded fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
