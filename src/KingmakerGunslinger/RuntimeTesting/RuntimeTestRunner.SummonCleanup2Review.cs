@@ -755,6 +755,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        // Scenery between the first and last actor center at body height;
+        // colliders under any lineup actor's own view and triggers are ignored.
+        private static bool Cleanup4RowSightlineObstructed(IList<Vector3> centers, IList<UnitEntityData> actors)
+        {
+            if (centers.Count < 2) return false;
+            Transform[] views = actors.Where(actor => actor.View != null).Select(actor => actor.View.transform).ToArray();
+            foreach (float height in new[] { 1.2f, 2.5f })
+            {
+                Vector3 from = centers[0] + Vector3.up * height, to = centers[centers.Count - 1] + Vector3.up * height;
+                Vector3 delta = to - from;
+                RaycastHit[] hits = Physics.RaycastAll(from, delta.normalized, delta.magnitude,
+                    Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore);
+                if (hits.Any(hit => hit.collider != null && !views.Any(view => hit.collider.transform.IsChildOf(view))))
+                    return true;
+            }
+            return false;
+        }
+
         private sealed class Cleanup2GroundSurvey
         {
             internal List<Vector3> Points;
@@ -898,6 +916,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (separation.magnitude < minimumGaps[i - 1] - .05f)
                                 { refusal = "insufficient-native-footprint-separation"; break; }
                             }
+                        // The Human is the fixture's only fog-of-war revealer.
+                        // A pillar standing in the row hid the Hill Giant from
+                        // it once the Huge giants' wider space moved the row.
+                        if (refusal == null && Cleanup4RowSightlineObstructed(centers, actors))
+                            refusal = "row-sightline-obstructed";
                         var row = new JObject { ["candidate"] = attempts.Count + 1,
                             ["center"] = SurveyVector(center), ["yawDegrees"] = direction * 15,
                             ["longitudinalOffset"] = longitudinal, ["lateralOffset"] = lateral,
@@ -945,7 +968,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["candidateLimit"] = 3528, ["wallLimitSeconds"] = 15,
                 ["selected"] = selected?.Document, ["attempts"] = attempts,
                 ["refusals"] = new JObject(refusals.Select(pair => new JProperty(pair.Key, pair.Value))),
-                ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
+                ["proof"] = "Every actor center and both lateral terrain samples are finite walkable clamped points in the anchor's same connected native graph; <=35cm horizontal clamp, <=3% fitted plane grade and <=5cm vertical residual; no scenery collider crosses the row at 1.2 or 2.5 m. Requested Y is only a graph query hint. World-up anatomy and each actor's own ground contact remain independent checks. No actor moved during survey." };
             Cleanup2Check("lineup-ground-survey", selected != null, diagnostic,
                 "A bounded courtyard search finds seven adequately separated native ground positions on a nondegenerate measured common plane.");
             if (selected == null)
