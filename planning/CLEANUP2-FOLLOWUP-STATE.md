@@ -1,5 +1,12 @@
 # Summon cleanup follow-up after v0.0.164
 
+**Released as stable v0.0.165 on 2026-10-24** from PR #69 (merge
+`53446777812f18c707ef74cdd787ab4c2fd664df`). The public ZIP is
+`60f8391d016a03a553e31334f83ddff1777402955c65c1cdeb083adc8b8a6184`. It is
+downloaded and strictly validated, with the same code as the gated candidate
+`f216160d8e`; see [the resume record](../AUTONOMOUS-RESUME.md). The lane is
+closed.
+
 Development checkpoint, 2026-10-24, on `codex/expanded-summoning-cleanup3-followup`
 from master `114564ac71` (released v0.0.164 plus its record). The owner then
 authorized the v0.0.165 release ("Go ahead and merge and release please.");
