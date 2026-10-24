@@ -118,6 +118,7 @@ foreach ($case in $invalidPhaseCases) {
 
 # Execute the actual two route assignments: inventory must take both the
 # independent settings rollback and exact launcher-receipt path, not recency.
+$workingDispelUi=$false
 foreach ($assignment in @('$sprint22Boundary', '$exactSprint22')) {
     $matches=@($invokeAst.FindAll({param($node)
         $node -is [Management.Automation.Language.AssignmentStatementAst] -and
@@ -227,3 +228,38 @@ foreach ($parameters in @(@{}, @{reviewPhase='Outsider-Bodies'}, @{reviewPhase='
     $bodyDispatchChecks++
 }
 Write-Host "PASS actual S30/S31 fixed-body profile dispatch: $bodyDispatchChecks candidate-boundary/refusal checks; no profile entered."
+
+# The fixed Working UI subcase uses the actual profile entry point and stops
+# accepted requests at the same deliberately incompatible package boundary.
+$workingUiScenario='working-save-expanded-summoning-creature-review'
+$workingUiValid=@{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}
+$caught=$null
+try { & $invokePath -ProfileId gunslinger-only -Scenario $workingUiScenario -Parameters $workingUiValid -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+catch { $caught=$_.Exception.Message }
+if($caught -cne 'Compatibility package version does not match the current repository; no profile was entered.') {
+    throw "Actual fixed Working UI dispatch failed before candidate boundary: $caught"
+}
+$workingUiChecks=1
+foreach($bag in @(@{}, @{creatures='trumpet-archon,astral-deva'},
+    @{creatures='astral-deva,trumpet-archon';reviewCase='sprints30-31-dispel-ui'},
+    @{creatures='trumpet-archon,astral-deva';reviewCase='SPRINTS30-31-DISPEL-UI'},
+    @{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';extra='x'},
+    @{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';saveName='KMG_AUTOMATION_BASELINE'})) {
+    $caught=$null
+    try { & $invokePath -ProfileId gunslinger-only -Scenario $workingUiScenario -Parameters $bag -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
+    catch { $caught=$_.Exception.Message }
+    if($caught -cne 'This profile admits only the exact fixed S30/S31 read-only Working UI subcase; no profile entered.') {
+        throw "Actual fixed Working UI invalid scope was not refused: $caught"
+    }
+    $workingUiChecks++
+}
+foreach($assignment in @('$sprint22Boundary','$exactSprint22')) {
+    $node=@($invokeAst.FindAll({param($value) $value -is [Management.Automation.Language.AssignmentStatementAst] -and $value.Left.Extent.Text -ceq $assignment},$true))[0]
+    $classify=[scriptblock]::Create($node.Extent.Text+"`nreturn "+$assignment)
+    $Scenario=@($workingUiScenario);$name=$workingUiScenario;$workingDispelUi=$true
+    if(-not (& $classify)){throw 'Fixed Working UI escaped exact settings/launch attribution.'}
+    $workingDispelUi=$false
+    if(& $classify){throw 'Unqualified generic creature review entered the exact profile boundary.'}
+    $workingUiChecks+=2
+}
+Write-Host "PASS actual S30/S31 fixed Working UI dispatch: $workingUiChecks acceptance/refusal/settings/receipt checks; no profile entered."

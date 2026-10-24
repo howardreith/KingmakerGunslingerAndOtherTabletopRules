@@ -2274,6 +2274,17 @@ function Test-KmgSprint26ReviewPhaseScope {
         $Parameters.reviewPhase -cin @('rtwp-foundation', 'turn-based-commands', 'gorgon-breath-rtwp', 'gorgon-breath-turn-based', 'bulette-leap-rtwp', 'bulette-leap-turn-based', 'rtwp-ai', 'routes', 'visual-lifecycle')
 }
 
+function Test-KmgSprints30DispelUiParameters {
+    param([hashtable]$Parameters, [switch]$IncludesSaveName)
+    if ($null -eq $Parameters) { return $false }
+    $keys = if ($IncludesSaveName) { @('saveName','creatures','reviewCase') } else { @('creatures','reviewCase') }
+    if ($Parameters.Count -ne $keys.Count -or @($Parameters.Keys | Where-Object { $_ -cnotin $keys }).Count -ne 0) { return $false }
+    if ($Parameters.creatures -isnot [string] -or $Parameters.creatures -cne 'trumpet-archon,astral-deva' -or
+        $Parameters.reviewCase -isnot [string] -or $Parameters.reviewCase -cne 'sprints30-31-dispel-ui') { return $false }
+    if ($IncludesSaveName -and ($Parameters.saveName -isnot [string] -or $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING')) { return $false }
+    return $true
+}
+
 function Assert-KmgRuntimeScenarioPreflight {
     param(
         [Parameter(Mandatory = $true)][string]$Scenario,
@@ -2485,7 +2496,11 @@ function Assert-KmgRuntimeScenarioPreflight {
             $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii') -or -not $ExitAfterCompletion)) {
             throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon, giant-humanoids or giant-humanoids-ii and automatic exit.'
         }
-        $requiredParameterCount = if ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $dispelUi = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')
+        if ($dispelUi -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters -IncludesSaveName))) {
+            throw 'S30/S31 UI requires the exact fixed read-only Working case and automatic exit.'
+        }
+        $requiredParameterCount = if ($dispelUi) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
