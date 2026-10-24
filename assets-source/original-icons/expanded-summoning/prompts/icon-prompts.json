@@ -752,6 +752,13 @@
     "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted summon-choice icon for a fantasy RPG, intended for 128px export. ONE adult Pathfinder Trumpet Archon: serene lithe humanlike celestial with pale white marble-colored skin, white pupilless eyes, short silver hair, TWO powerful white-feathered wings rising behind shoulders, modest silver-and-blue ceremonial robe, holding ONE gleaming curved silver trumpet with a large flared bell prominently angled forward. Chest-up three-quarter portrait; face, clear wind-instrument mouthpiece/bell and wing silhouette readable at 48px. Restrained moonlit silver and cool blue palette with soft warm radiance behind, painterly fantasy realism and textured materials. Dog/Eagle project paintings are STYLE references only; create original subject/composition without their ornamental framing. Clearly distinguish from a bronze-skinned warhammer-carrying angel; no hammer or sword in this icon. Full-bleed opaque square, no frame/ring/border, text, numbers, UI overlays, watermark, halo disc, other characters, extra limbs/wings or gore. Keep face and trumpet bell inside central 80 percent.",
     "generator": "built-in-imagegen",
     "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint30-31-generation.json"
+},
+{
+    "key": "trumpet-blast",
+    "displayName": "Trumpet Blast",
+    "subjectPrompt": "Use case: stylized-concept. Asset type: ONE original square painted command icon for a Pathfinder fantasy RPG, intended for deterministic 128px export and readable at 40px. Subject: a single gleaming silver celestial trumpet or curved bugle, with an unmistakable mouthpiece, a simple curved tube and a large flared bell, emitting two broad pale blue-white sound pulses from its bell. The horn and pulses fill the central 80 percent; strong simple silhouette and clear negative space. Painterly high-fantasy material realism, textured silver with restrained warm edge highlights, cool blue radiance against a dark smoky umber/navy backdrop. The locally inspected project shield-other painting and Trumpet Archon portrait are STYLE REFERENCES ONLY; create original composition and pixels. The subject is the magical trumpet blast itself, with no person, angel, wings or creature. No lightning bolts, fire, damage, petrified body, gore or extra objects. Full-bleed opaque square, no decorative border or surrounding frame, no text, letters, numbers, UI, logo or watermark. Output a single 1024x1024 opaque painted icon.",
+    "generator": "built-in-imagegen",
+    "compositionBriefSource": "assets-source/original-icons/expanded-summoning/trumpet-blast-generation.json"
 }
   ]
 }

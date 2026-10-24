@@ -132,6 +132,7 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(Trumpet31Prefix + "Traits.Name", "Trumpet Archon Traits"),
                 LocalizationService.Create(Trumpet31Prefix + "Traits.Description",
                     "DR10/evil, electricity and petrification immunity, +4 racial saves vs poison, SR25. Prepared divine spells use the archon's own spell slots at caster level14. Escape Artist +17 uses the native break-free consumer only; ordinary Mobility is unchanged."), null);
+            var blast = ConfigureTrumpetBlast31(bySymbol, unit, traits, sword);
             var nativeBrain = BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library, DumbBrainGuid, "Trumpet ordinary attack fallback");
             var brain = Require<BlueprintBrain>(bySymbol, Trumpet31Prefix + "Brain");
             CopyFields(nativeBrain, brain); brain.name = InternalName(Trumpet31Prefix + "Brain");
@@ -158,7 +159,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, ElectricityImmunityGuid, "archon electricity immunity"),
                 Feature(library, NativeCleaveFeature, "ordinary native Cleave"),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
-                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue, resistance }
+                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue, resistance, blast }
                 .Concat(ConfigureTrumpet31Feats(library, bySymbol, unit)).ToArray();
         }
         // Actual copies are bounded by native CL14/Wis20 capacities. L1 has

@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  134,
+    "count":  135,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1203,6 +1203,15 @@
                       "key":  "trumpet-archon",
                       "file":  "trumpet-archon.png",
                       "sha256":  "3abe3aafe42b2adafd537adafcd54c3593e2081adb01fb1e050a2b4fecc6bed6",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "trumpet-blast",
+                      "file":  "trumpet-blast.png",
+                      "sha256":  "d730f950d15f715cbba5f61b4079fb223b618a882f2c1147ea00a0fc05ca7215",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

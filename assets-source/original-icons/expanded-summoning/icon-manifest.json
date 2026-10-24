@@ -2,7 +2,7 @@
     "schemaVersion":  1,
     "provenance":  "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
     "generator":  "tools/New-ExpandedSummoningIcons.ps1",
-    "count":  134,
+    "count":  135,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -3845,6 +3845,22 @@
                       "blueprintSymbols":  [
                                                "KMG.Summoning.Ability.SM.Tier9.TrumpetArchon.One",
                                                "KMG.Summoning.Unit.TrumpetArchon"
+                                           ]
+                  },
+                  {
+                      "key":  "trumpet-blast",
+                      "displayName":  "Trumpet Blast",
+                      "sourceFile":  "assets-source/original-icons/expanded-summoning/sources/trumpet-blast.png",
+                      "productionFile":  "assets/game/icons/expanded-summoning/trumpet-blast.png",
+                      "sourceSha256":  "51ccc53ac0c77f295b1c40d6a346634452dd518a1986cd6a455e861df23ce41d",
+                      "outputSha256":  "d730f950d15f715cbba5f61b4079fb223b618a882f2c1147ea00a0fc05ca7215",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog",
+                      "blueprintSymbols":  [
+                                               "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast",
+                                               "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed"
                                            ]
                   }
               ]

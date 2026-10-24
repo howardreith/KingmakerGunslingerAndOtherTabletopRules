@@ -36,6 +36,9 @@ function Convert-KeyToToken([string]$Key) {
 }
 
 function Get-Consumers([string]$Key, [object[]]$Entries) {
+    if ($Key -ceq 'trumpet-blast') {
+        return @('KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast', 'KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed')
+    }
     if ($Key -ceq 'remove-stirge') {
         return @('KMG.Summoning.Special.Stirge.Remove')
     }
