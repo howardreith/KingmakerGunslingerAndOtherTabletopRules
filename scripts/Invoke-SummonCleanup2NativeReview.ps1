@@ -4,7 +4,7 @@
 [CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='High')]
 param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
-    [Parameter(Mandatory=$true)][ValidateSet('0.0.163','0.0.164')][string]$ExpectedVersion,
+    [Parameter(Mandatory=$true)][ValidateSet('0.0.163','0.0.164','0.0.165')][string]$ExpectedVersion,
     [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-pin','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console','menus')][string]$Phase,
     [switch]$WithAlternateSources,
     [switch]$ExpandedSummoningDisabled

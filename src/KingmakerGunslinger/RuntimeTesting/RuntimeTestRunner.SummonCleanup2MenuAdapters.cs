@@ -853,6 +853,74 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "The observed ordinary Druid cast spends only its original preparation; a failure before casting must preserve every original input.");
             }
             foreach (int frame in Cleanup3MenuAdapterDruidTierOne(fixture, book, spellGroup, mode, watch, screens)) yield return frame;
+            foreach (int tier in new[] { 1, 2 })
+                foreach (int frame in Cleanup4MenuAdapterDruidPreparedParent(fixture, book, spellGroup, mode, watch, screens, tier)) yield return frame;
+        }
+
+        // A Druid who prepares Summon Nature's Ally I or II itself sees that
+        // spell's own variants appended by native Fill after the conversion
+        // list. Its own quantity conversions must not list the creatures again,
+        // nor leave the parent's paw or a native quantity row.
+        private IEnumerable<int> Cleanup4MenuAdapterDruidPreparedParent(ExpandedSummoningCorrectionFixture fixture, Spellbook book,
+            ActionBarGroupElement spellGroup, Cleanup2NativeDefaultScope mode, Stopwatch watch, NativeIconScreenEvidence screens, int tier)
+        {
+            Cleanup2MenuAdapterBoundary(mode, watch);
+            var parent = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                ExpandedSummoningInventoryObserver.CanonicalParentGuids[9 + tier - 1], "canonical prepared SNA parent");
+            var quantityRows = Enum.GetValues(typeof(SummonMultiplicity)).Cast<SummonMultiplicity>()
+                .Select(quantity => DruidSummonConversionPolicy.Expected(tier, quantity)).Where(value => value != null).ToArray();
+            var prepared = PrepareExpandedSummoningPlayerPathSpell(book, parent, parent, tier); book.Rest();
+            spellGroup.Fill(fixture.Caster);
+            var levels = (ActionBarSubGroupLevels)typeof(ActionBarGroupElement).GetField("m_Levels", Cleanup2Fields).GetValue(spellGroup);
+            levels.OnClick(tier);
+            for (int frame = 0; frame < 10; frame++) yield return 0;
+            var source = spellGroup.GetComponentsInChildren<ActionBarGroupSlot>(true).Single(value => value.gameObject.activeInHierarchy &&
+                ReferenceEquals(value.MechanicSlot?.GetContentData(), prepared));
+            var conversions = source.MechanicSlot.GetConvertedAbilityData().ToArray();
+            string factoryOutcome = DruidSummonConversionVariantPatch.Outcome;
+            var variants = parent.Variants ?? new BlueprintAbility[0];
+            Func<ActionBarSlot, BlueprintAbility> blueprint = row => (row.MechanicSlot?.GetContentData() as AbilityData)?.Blueprint;
+            Func<BlueprintAbility, bool> redundant = value => ReferenceEquals(value, parent) || quantityRows.Contains(value?.AssetGuid);
+            var evidence = new JObject { ["tier"] = tier, ["parent"] = parent.AssetGuid, ["source"] = prepared.Blueprint.AssetGuid,
+                ["book"] = book.Blueprint.AssetGuid, ["variants"] = variants.Length, ["nativeQuantityRows"] = new JArray(quantityRows),
+                ["conversionAdapterAfterFactory"] = factoryOutcome,
+                ["factoryRows"] = new JArray(conversions.Select(value => value.Blueprint.AssetGuid)) };
+            var inputs = new Cleanup2TooltipInputs(fixture.Caster);
+            string key = "menu-adapter-druid-prepared-sna" + tier;
+            try
+            {
+                foreach (int frame in Cleanup2AwaitStationaryNativeHud(source, "druid-prepared-sna" + tier)) yield return frame;
+                source.OnToggleGroupClick();
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField("SubGroup", Cleanup2Fields).GetValue(source);
+                if (popup == null || !popup.gameObject.activeInHierarchy) throw new InvalidOperationException("Actual prepared SNA popup absent.");
+                var all = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(value => value.gameObject.activeInHierarchy && blueprint(value) != null).ToArray();
+                var popupBlueprints = all.Select(blueprint).ToArray();
+                bool popupOnce = variants.Length != 0 && variants.All(variant => popupBlueprints.Count(value => ReferenceEquals(value, variant)) == 1);
+                bool factoryOnce = variants.Length != 0 && variants.All(variant => conversions.Count(value => ReferenceEquals(value.Blueprint, variant)) == 1);
+                int popupDuplicates = popupBlueprints.GroupBy(value => value).Sum(group => group.Count() - 1);
+                int popupRedundant = popupBlueprints.Count(redundant), factoryRedundant = conversions.Count(value => redundant(value.Blueprint));
+                evidence["popupRows"] = new JArray(all.Select(row => new JObject { ["ability"] = blueprint(row).AssetGuid,
+                    ["nativeTitle"] = (row.MechanicSlot.GetContentData() as AbilityData)?.Name, ["redundant"] = redundant(blueprint(row)) }));
+                evidence["popupRowCount"] = all.Length; evidence["popupDuplicateRows"] = popupDuplicates;
+                evidence["popupRedundantRows"] = popupRedundant; evidence["factoryRedundantRows"] = factoryRedundant;
+                evidence["everyVariantOnceInPopup"] = popupOnce; evidence["everyVariantOnceInFactory"] = factoryOnce;
+                evidence["conversionAdapter"] = DruidSummonConversionVariantPatch.Outcome;
+                bool contract = popupOnce && factoryOnce && popupDuplicates == 0 && popupRedundant == 0 && factoryRedundant == 0 &&
+                    popupBlueprints.All(value => variants.Contains(value)) && inputs.Unchanged();
+                Func<bool> owns = () => mode.Current && Cleanup2NoNarrativeOverlay() && inputs.Unchanged() &&
+                    Game.Instance.SelectedAbilityHandler.Ability == null &&
+                    ReferenceEquals(source.MechanicSlot?.GetContentData(), prepared) && popup.gameObject.activeInHierarchy;
+                Cleanup2Check(key, contract, evidence,
+                    "A Druid's prepared Summon Nature's Ally " + (tier == 1 ? "I" : "II") + " popup lists each of its creatures exactly once, with no paw or native quantity row.");
+                foreach (int frame in screens.Capture(key, evidence, owns)) yield return frame;
+            }
+            finally
+            {
+                Cleanup2MenuAdapterHide(source, prepared);
+                Cleanup2Check(key + "-inputs-restored", inputs.Unchanged(), inputs.Describe(),
+                    "Opening the prepared parent's popup spends nothing and leaves every original input unchanged.");
+            }
         }
 
         // Tier I's native Druid conversion row is the direct SNA I parent itself,

@@ -1,3 +1,19 @@
+# Druid duplicate rows and giant sizes — v0.0.166 release in progress (2026-10-24)
+
+After v0.0.165 the owner reported that a prepared Summon Nature's Ally I or II
+listed every creature twice, and that the giants all stood at one height and
+took the same space although Cloud and Storm Giants are Huge. Both are fixed on
+`codex/expanded-summoning-druid-duplicates-giant-sizes` and checked natively on
+development candidate `9e754dd2a9` (package `e791ff58…`): giant lineup PASS
+74/0, menu-adapters with Call of the Wild 147/3 with only the known Feral Hunter
+hover stop. A session memory kill interrupted the menu-adapters host; the
+machine was restored by hand and verified. See
+[the state record](planning/SUMMON-DRUID-DUPLICATES-GIANT-SIZES-STATE.md). The owner
+authorized the v0.0.166 release; candidate `5d2760c091` passed the Sprint
+gate (2,742 / 2,742), visual contracts 15/15 and the creature review 38/38.
+No owner visual approval is claimed. The giant change also widens Cloud and
+Storm reach from the space edge by about 0.55 m.
+
 # Summon cleanup follow-up — v0.0.165 RELEASED / STOP
 
 **PR #69 is MERGED and v0.0.165 is PUBLISHED.** After v0.0.164 the owner asked

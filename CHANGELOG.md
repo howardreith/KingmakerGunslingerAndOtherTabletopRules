@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.0.166-expanded-summoning-druid-giant-sizes
+
+- A Druid's prepared Summon Nature's Ally I or II lists each creature once
+  instead of twice.
+- Summoned giants keep their family heights in play (Stone 1.2, Fire 1.4,
+  Frost 1.5, Cloud 1.8 and Storm 2.1 times the Hill Giant) instead of
+  returning to their base body when selected or in combat.
+- The Huge Cloud and Storm Giants take a Huge space, one and a half times the
+  Large giants', which also extends their reach from the space edge by about
+  1.8 feet. No statistic or saved identity changes. See the
+  [v0.0.166 release notes](docs/RELEASE-NOTES-0.0.166.md).
+
 ## 0.0.165-expanded-summoning-cleanup-followup
 
 - Joins the Deinonychus arms, hands and fingers to its body.
