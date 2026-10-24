@@ -189,16 +189,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null;
-            int fort = fixture.Caster.Stats.SaveFortitude.BaseValue;
+            int fort = 0;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 CreateExpandedSummoningCorrectionHostile(fixture);
-                owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon", fixture.Hostile);
+                fort = fixture.Hostile.Stats.SaveFortitude.BaseValue;
+                owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
                 Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
-                var target = fixture.Caster;
+                var target = fixture.Hostile;
                 target.Stats.SaveFortitude.BaseValue = -100;
                 var map = ExpandedSummoningBlueprints.Registered.BySymbol; string prefix = ExpandedSummoningSpecialBuilder.Trumpet31Prefix;
                 var blast = (BlueprintAbility)map[prefix + "TrumpetBlast"];
@@ -208,7 +209,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 2f, out far, out survey, out direction,
-                        new Feet(100).Meters + 2.5f, new[] { fixture.Hostile }, 30);
+                        new Feet(100).Meters + 2.5f, new[] { fixture.Caster }, 30);
                 }
                 catch (Exception error)
                 {
@@ -221,7 +222,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw;
                 }
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                PlaceExpandedSummoningUnit(fixture.Hostile, origin + Vector3.back * 40f);
+                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 40f);
                 foreach (var unit in new[] { owner, target })
                 { unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit); unit.JoinCombat(); unit.SightCache.ClearIfNeeded(); }
                 owner.Memory.Add(target); target.Memory.Add(owner);
@@ -234,15 +235,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Func<int[]> slots = () => Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null)).ToArray();
                 var before = slots();
                 var remaining = safety.NearbyNonArchonNonEnemies(owner).ToArray();
-                bool clear = remaining.Length == 0 && owner.IsEnemy(target);
+                var local = Kingmaker.Visual.LocalMap.LocalMapArea.GetClosest(owner.Position);
+                bool outdoor = local?.AreaPart != null && !local.AreaPart.IsIndoor && !Kingmaker.Visual.LocalMap.LocalMapArea.IsIndoor(owner.Position);
+                bool clear = remaining.Length == 0 && owner.IsEnemy(target) && outdoor &&
+                    Game.Instance.CurrentlyLoadedArea.AssetGuid == "ead426a6c23d39548a670ee515d77df4";
                 Sprint25Check("trumpet-blast-ai-safe-location", clear, new JObject { ["owner"] = owner.UniqueId,
                     ["target"] = target.UniqueId, ["ownerFaction"] = owner.Faction?.name, ["targetFaction"] = target.Faction?.name,
                     ["targetEnemy"] = owner.IsEnemy(target), ["lane"] = survey,
                     ["remainingNonenemies"] = new JArray(remaining.Select(value => value.UniqueId)),
                     ["freshPositiveProcess"] = true, ["priorSubcases"] = 0,
+                    ["area"] = Game.Instance.CurrentlyLoadedArea.AssetGuid, ["outdoor"] = outdoor, ["areaPart"] = local.AreaPart?.AssetGuid,
                     ["originalActorOrFactionEdits"] = 0, ["protectedActorTicks"] = 0 },
-                    "A fresh actual hostile-caster summon uses the same production blueprint/brain in a native walkable, visible clear stance. Original actors/factions are intact; only its disposable caster is moved out of radius.");
-                if (!clear) throw new InvalidOperationException("Safe hostile-caster location is not clear.");
+                    "A fresh actual player summon uses its production blueprint/brain in the established non-DLC Oleg outdoor fixture, with native walkable/visible clear stance and actual outdoor classification. Original actors/factions are intact; only its disposable caster is moved out of radius.");
+                if (!clear) throw new InvalidOperationException("Safe player-summoned native outdoor location is not clear.");
                 bool ready = safety.Score(decision) == 1f && owner.Memory.ContainsVisible(target) && owner.HasLOS(target) &&
                     owner.IsInCombat && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) && data.IsAvailable;
                 Sprint25Check("trumpet-blast-ai-safe-ready", ready, new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
@@ -260,7 +265,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (owner != null) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
-                fixture.Caster.Stats.SaveFortitude.BaseValue = fort;
+                if (fixture.Hostile != null) fixture.Hostile.Stats.SaveFortitude.BaseValue = fort;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }.Where(value => value != null && !value.Destroyed).ToArray());
                 if (fixture.Hostile != null) ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
