@@ -1,8 +1,9 @@
 # Summon cleanup follow-up after v0.0.164
 
 Development checkpoint, 2026-10-24, on `codex/expanded-summoning-cleanup3-followup`
-from master `114564ac71` (released v0.0.164 plus its record). No release,
-version change or owner aesthetic approval is claimed.
+from master `114564ac71` (released v0.0.164 plus its record). The owner then
+authorized the v0.0.165 release ("Go ahead and merge and release please.");
+see [the release candidate](#v0165-release-candidate).
 
 The owner's correction list (2026-10-24):
 
@@ -81,6 +82,29 @@ unchanged (1,424,708 bytes, 2026-10-05 20:09:11 UTC), no lock or game process.
 
 A local review page with before/after renders, icons and native crops is at
 `artifacts/cleanup3-review/index.html` in this worktree (not uploaded).
+
+## v0.0.165 release candidate
+
+Release preparation `f216160d8e` bumps to
+`0.0.165-expanded-summoning-cleanup-followup` with the narrow
+`tools/validate_expanded_summoning_cleanup_followup_release165.py` (see
+`docs/BUILD-AND-RELEASE.md`). Gates ran in the frozen detached worktree at
+`f216160d8e` with the cleanup2 private reference bundle; native reviews deploy
+the gate's exact package through `Invoke-ExpandedSummoningRuntimeScenario.ps1`,
+which rebuilds and verifies the same bytes first.
+
+| Gate | Time | Result | Raw id |
+| --- | --- | --- | --- |
+| Sprint gate (`Invoke-KmgGate.ps1 -Level Sprint -ReferenceBundleDir <bundle>`) | 280 s | **PASS**: 2740/2740, the v0.0.165 validator, exact build, strict package; package `20ab0d0dd0367a7053db0030a47af82f9da374659fc4f07ad1d53dac80990542`, DLL `ae880adc6dc70eef8d252a5e3bf2b286d4e48be20bcef6b7aae6664d1fde99ef` | - |
+| visual contracts | 366.7 s | **PASS 15/15**: 117/117 renderable, bounded, attacking, hit and death; MVID `6fe0cf00-75ab-4a39-9e33-acb25f9ba395` | `20261024T0738205244384Z` |
+| creature review: Crab, Girallon, Stag Beetle, Griffon, Elephant, Stegosaurus, Brachiosaurus, Gorgon, Fire Giant, Storm Giant | 689.4 s (397.8 s in game) | **PASS 36/36** | `20261024T0745057530976Z` |
+
+Both reviews restored the live mod exactly (254 files, `5C3E4AD4…BFBB`); all 95
+saves and `KMG_AUTOMATION_WORKING` are unchanged. The temporary reference-bundle
+junction the harness build needs was removed afterwards. The specific Druid,
+menu, giant-effect and Deinonychus observations above remain bound to
+development candidate `05ba0dda49`, whose product source matches this
+candidate apart from the version metadata.
 
 ## Limits
 
