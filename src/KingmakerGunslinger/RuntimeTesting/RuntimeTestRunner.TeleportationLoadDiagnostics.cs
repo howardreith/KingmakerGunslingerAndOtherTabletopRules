@@ -23,10 +23,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void StartTeleportationLoadDiagnostics()
         {
-            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting) return;
+            bool fixedDispelUi = RuntimeTestRequestParser.Sprints30And31DispelUi(_request);
+            if (_request.Scenario != RuntimeTestScenarioCatalog.DisposableTeleportationCasting && !fixedDispelUi) return;
             if (!_request.ExitAfterCompletion || _workingSaveSmoke == null)
                 throw new InvalidOperationException("Load diagnostics require the guarded working-save casting request and automatic exit.");
-            _teleportationLoadDiagnostics = new TeleportationLoadDiagnostics(_request.RunId);
+            _teleportationLoadDiagnostics = new TeleportationLoadDiagnostics(_request.RunId, fixedDispelUi);
             _teleportationLoadDiagnostics.Install();
         }
 
@@ -36,8 +37,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             TeleportationLoadDiagnostics observer = _teleportationLoadDiagnostics;
             _teleportationLoadDiagnostics = null;
             bool cleaned = observer.Stop();
-            string path = Path.Combine(_request.EvidenceDirectory, "teleportation-save-load.json");
+            bool fixedDispelUi = RuntimeTestRequestParser.Sprints30And31DispelUi(_request);
+            string path = Path.Combine(_request.EvidenceDirectory,
+                fixedDispelUi ? "sprints30-31-save-load.json" : "teleportation-save-load.json");
             RuntimeTestResultWriter.WriteAtomic(path, TeleportationDiagnosticJson.Serialize(observer.Snapshot()));
+            if (fixedDispelUi && !result.EvidenceFiles.Contains(path)) result.EvidenceFiles.Add(path);
             if (result.Assertions == null) result.Assertions = new List<RuntimeTestAssertion>();
             result.Assertions.Add(Assertion("save-load-observer-cleanup",
                 "Request-local error listener and five diagnostic hooks removed; native settings retained",
@@ -56,6 +60,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             private static TeleportationLoadDiagnostics _active;
             private readonly string _runId;
+            private readonly bool _captureUnityErrors;
+            private readonly List<object> _unityErrors = new List<object>();
+            private bool _unityListenerAttached;
+            private bool _unityListenerRemoved;
             private readonly string _owner;
             private readonly HarmonyInstance _harmony;
             private readonly object _sync = new object();
@@ -77,9 +85,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             private bool _settingsRetained;
             private int _remainingHooks = -1;
 
-            internal TeleportationLoadDiagnostics(string runId)
+            internal TeleportationLoadDiagnostics(string runId, bool captureUnityErrors)
             {
-                _runId = runId;
+                _runId = runId; _captureUnityErrors = captureUnityErrors;
                 _owner = "KingmakerGunslinger.teleportation-load-diagnostics." + runId;
                 _harmony = HarmonyInstance.Create(_owner);
             }
@@ -88,6 +96,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (_active != null) throw new InvalidOperationException("A load observer is already active.");
                 _active = this;
+                if (_captureUnityErrors)
+                {
+                    UnityEngine.Application.logMessageReceived += OnUnityLog;
+                    _unityListenerAttached = true;
+                }
                 Patch(typeof(ThreadedGameLoader), "Start", typeof(Task), "LoaderPrefix", null);
                 Patch(typeof(Player), "PostLoad", typeof(void), "PlayerPrefix", "PlayerPostfix");
                 Patch(typeof(SceneEntitiesState), "PostLoad", typeof(void), "ScenePrefix", "ScenePostfix");
@@ -143,6 +156,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _resolver = _settings.ContractResolver;
                 _converters = _settings.Converters.ToArray();
                 _settings.Error += OnJsonError;
+            }
+
+            private void OnUnityLog(string message, string trace, UnityEngine.LogType type)
+            {
+                if (type != UnityEngine.LogType.Error && type != UnityEngine.LogType.Exception &&
+                    type != UnityEngine.LogType.Assert) return;
+                lock (_sync)
+                {
+                    if (_sealed || _unityErrors.Count >= 64) return;
+                    _unityErrors.Add(new { sequence = _unityErrors.Count + 1,
+                        utc = DateTime.UtcNow.ToString("o"), thread = Thread.CurrentThread.ManagedThreadId,
+                        type = type.ToString(), message = message == null || message.Length <= 4096 ?
+                            message : message.Substring(0, 4096),
+                        trace = trace == null || trace.Length <= 16384 ? trace : trace.Substring(0, 16384) });
+                }
             }
 
             private void OnJsonError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
@@ -210,6 +238,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal bool Stop()
             {
                 if (ReferenceEquals(_active, this)) _active = null;
+                if (_unityListenerAttached)
+                {
+                    UnityEngine.Application.logMessageReceived -= OnUnityLog;
+                    _unityListenerRemoved = true;
+                }
+                // If this fixed diagnostic fails before the loader starts,
+                // no JSON listener or settings change was installed.
+                if (_captureUnityErrors && _settings == null && _loaderStarts == 0)
+                { _listenerRemoved = true; _settingsRetained = true; }
                 if (_settings != null)
                 {
                     _settings.Error -= OnJsonError;
@@ -224,13 +261,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 _remainingHooks = HookCount();
                 lock (_sync) _sealed = true;
-                return _remainingHooks == 0 && _listenerRemoved && _settingsRetained && _faults.Count == 0;
+                return _remainingHooks == 0 && _listenerRemoved && _settingsRetained && _faults.Count == 0 &&
+                    (!_captureUnityErrors || _unityListenerAttached && _unityListenerRemoved);
             }
 
             internal bool LoadCompleted
             {
                 get { lock (_sync) return _loaderStarts == 1 && _playerPostfixes == 1 &&
-                    _mainMatches.Count == 4 && _mainMatches.All(value => value == 1) && _errorCount == 0 && _faults.Count == 0; }
+                    _mainMatches.Count == 4 && _mainMatches.All(value => value == 1) && _errorCount == 0 && _faults.Count == 0 &&
+                    (!_captureUnityErrors || _unityErrors.Count == 0); }
             }
 
             internal object Snapshot()
@@ -238,6 +277,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 lock (_sync) return new { schemaVersion = 1, runId = _runId,
                     claims = "Read-only native save deserialization and cross-scene main-character observations. No save-format changes or campaign persistence claim.",
                     loaderStarts = _loaderStarts, playerPostfixes = _playerPostfixes,
+                    captureUnityErrors = _captureUnityErrors, unityListenerAttached = _unityListenerAttached,
+                    unityListenerRemoved = _unityListenerRemoved, unityErrors = _unityErrors.ToArray(),
                     installedHooks = _installedHooks, remainingHooks = _remainingHooks,
                     listenerRemoved = _listenerRemoved, nativeSettingsRetained = _settingsRetained,
                     resolver = _resolver == null ? null : _resolver.GetType().AssemblyQualifiedName,
