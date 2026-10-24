@@ -113,7 +113,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var appearanceDeadline = DateTime.UtcNow.AddSeconds(8);
                 while (DateTime.UtcNow < appearanceDeadline &&
                     (!(bool)Trumpet31InstrumentState(owner, "waiting")["swordVisible"] ||
-                     !(bool)Trumpet31InstrumentState(sibling, "waiting")["swordVisible"]))
+                     !(bool)Trumpet31InstrumentState(sibling, "waiting")["swordVisible"] ||
+                     !EntityFadedIn(owner) || !EntityFadedIn(sibling) ||
+                     DissolveAmount(owner) > MotionReviewIntactDissolve || DissolveAmount(sibling) > MotionReviewIntactDissolve))
                 { Game.Instance.IsPaused = false; yield return 0; }
                 var donorBefore = Trumpet31InstrumentDonorState(owner);
                 var firstSword = Trumpet31InstrumentState(owner, "before-real-blast");
@@ -121,7 +123,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var ownerResources = Trumpet31InstrumentOwnedResources(owner);
                 var siblingResources = Trumpet31InstrumentOwnedResources(sibling);
                 instrumentResources.AddRange(ownerResources); instrumentResources.AddRange(siblingResources);
-                bool ownedForms = (bool)firstSword["swordVisible"] && !(bool)firstSword["hornVisible"] &&
+                bool ownedForms = EntityFadedIn(owner) && EntityFadedIn(sibling) &&
+                    DissolveAmount(owner) <= MotionReviewIntactDissolve && DissolveAmount(sibling) <= MotionReviewIntactDissolve &&
+                    (bool)firstSword["swordVisible"] && !(bool)firstSword["hornVisible"] &&
                     (bool)siblingSword["swordVisible"] && (bool)firstSword["weaponOwnerExact"] &&
                     (bool)firstSword["weaponWielderExact"] && !(bool)firstSword["weaponLootable"] &&
                     (bool)firstSword["nativeModelUnderOwner"] && (bool)firstSword["hornUnderNativeModel"] &&
@@ -159,7 +163,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !(bool)siblingAfter["hornVisible"] && (bool)returnedSword["weaponOwnerExact"] &&
                     (bool)returnedSword["weaponWielderExact"] && !(bool)returnedSword["weaponLootable"] &&
                     hornCamera != null && hornCamera.Contains("inFrame=true") && hornCamera.Contains("screenLit=true") &&
-                    swordCamera.Contains("inFrame=true") && swordCamera.Contains("screenLit=true") &&
+                    hornCamera.Contains("intact=true") &&
+                    swordCamera.Contains("inFrame=true") && swordCamera.Contains("screenLit=true") && swordCamera.Contains("intact=true") &&
                     JToken.DeepEquals(donorBefore, Trumpet31InstrumentDonorState(owner));
                 Sprint25Check("trumpet-instrument-native-transition", formResolved, new JObject {
                     ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["samples"] = formSamples,

@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["bothFormsVisible"] = instrument != null && instrument.HornVisible && instrument.SwordVisible,
                 ["formTransitions"] = instrument?.FormTransitions, ["hornFrames"] = instrument?.HornFrames,
                 ["swordFrames"] = instrument?.SwordFrames, ["viewVisible"] = view != null && view.IsVisible,
+                ["nativeBodyDissolve"] = owner == null ? 1f : DissolveAmount(owner),
+                ["nativeFaderVisible"] = owner != null && EntityFadedIn(owner),
                 ["nativeModelScale"] = model?.transform.lossyScale.ToString(),
                 ["hornWorldSize"] = renderer?.bounds.size.ToString(),
                 ["hornLargestWorldDimension"] = renderer == null ? 0f : Mathf.Max(renderer.bounds.size.x,
