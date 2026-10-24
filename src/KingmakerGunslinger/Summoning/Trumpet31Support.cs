@@ -28,10 +28,14 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintSpellbook Book;
         public BlueprintAbility Orison;
+        public BlueprintAbility[] AdditionalOrisons;
         public override void OnEventAboutToTrigger(RuleCalculateAbilityParams evt)
         {
             if (evt == null || Owner?.Unit == null || !ReferenceEquals(evt.Initiator, Owner.Unit) ||
-                !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) || !ReferenceEquals(evt.Blueprint, Orison)) return;
+                !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+                !ReferenceEquals(evt.Blueprint, Orison) &&
+                !(AdditionalOrisons ?? Array.Empty<BlueprintAbility>()).Any(value =>
+                    ReferenceEquals(evt.Blueprint, value))) return;
             var book = Owner.GetSpellbook(Book);
             if (book == null) return;
             evt.ReplaceCasterLevel = book.CasterLevel; evt.ReplaceSpellLevel = 0; evt.ReplaceStat = StatType.Wisdom;
