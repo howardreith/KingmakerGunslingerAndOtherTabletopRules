@@ -50,7 +50,7 @@ class IconCatalogTests(unittest.TestCase):
         # Authorized S30/S31 Lemure, Dretch, Hound, Trumpet and Astral appends, with
         # the three prior giant rows enumerating their already-released unit/root consumers.
         # Pixels and production assignments remain pinned; stale metadata still fails.
-        self.assertEqual("1e9f6b5f00da00a6c3cdb240e91e16de6694b355a7c57106b3eba131e5368560", actual)
+        self.assertEqual("6a2203de67f1e0116c159358a3b660c4a06220bde0a77814f5e1981011490ea8", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
