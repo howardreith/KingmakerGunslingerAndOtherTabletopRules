@@ -20,6 +20,7 @@ using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
+using Kingmaker.UI.ActionBar;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -526,6 +527,37 @@ namespace KingmakerGunslinger.Summoning
                 ReferenceEquals(spell.Spellbook, held.Spellbook);
         }
 
+        internal static bool BeforeNativeMenuFill(ActionBarSpellsGroup popup,
+            UnitEntityData selected, ref IEnumerable<AbilityData> spells,
+            AbilityData sourceSpell, bool opening)
+        {
+            if (popup == null || !opening || sourceSpell == null ||
+                !TryResolve(selected, out UnitPartTouch touch,
+                    out AbilityData held, out Buff ward) ||
+                !ReferenceEquals(sourceSpell.Blueprint, held.Blueprint) ||
+                !ReferenceEquals(sourceSpell.Caster, selected.Descriptor) ||
+                !ReferenceEquals(sourceSpell.Fact, held.Fact) ||
+                !ReferenceEquals(sourceSpell.Spellbook, held.Spellbook)) return false;
+            BlueprintAbility[] variants = held.Blueprint.Variants;
+            AbilityData[] supplied = spells == null ? null : spells.ToArray();
+            if (variants == null || variants.Length != 2 || supplied == null ||
+                supplied.Length != 2 || !IsChoice(supplied[0], held) ||
+                !IsChoice(supplied[1], held) ||
+                !ReferenceEquals(supplied[0].Blueprint, variants[0]) ||
+                !ReferenceEquals(supplied[1].Blueprint, variants[1])) return false;
+            // Kingmaker Fill adds a spellbook root's variants after filling
+            // the supplied sequence. The native group slot already supplies
+            // these two held choices. Keep the real book/source and let the
+            // native variant pass populate them once, with its normal data.
+            if (sourceSpell.Spellbook != null) spells = new AbilityData[0];
+            // Toggle otherwise activates this popup only after Fill. A pooled
+            // active widget reparented into the inactive popup receives Hover
+            // OnDisable before Initialize. Only this exact live owned menu is
+            // activated early; native Toggle retains visibility/close control.
+            if (!popup.gameObject.activeSelf) popup.gameObject.SetActive(true);
+            return true;
+        }
+
         internal static bool BeforeNativeCast(
             Kingmaker.RuleSystem.Rules.Abilities.RuleCastSpell evt)
         {
@@ -591,6 +623,18 @@ namespace KingmakerGunslinger.Summoning
                 value != null && ReferenceEquals(value.Blueprint,
                     marker.Ward)).ToArray())
                 ward.Remove();
+        }
+    }
+
+    [HarmonyPatch(typeof(ActionBarSpellsGroup), "Fill")]
+    internal static class AstralDispelEvilHeldMenuPatch
+    {
+        private static void Prefix(ActionBarSpellsGroup __instance,
+            UnitEntityData selected, ref IEnumerable<AbilityData> spells,
+            AbilityData sourceSpell, bool ___m_IsActive)
+        {
+            AstralDispelEvilRuntime.BeforeNativeMenuFill(__instance, selected,
+                ref spells, sourceSpell, ___m_IsActive);
         }
     }
 

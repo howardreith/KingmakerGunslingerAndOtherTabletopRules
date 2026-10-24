@@ -31,6 +31,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             _teleportationLoadDiagnostics.Install();
         }
 
+        private void SealDispelUiLoadDiagnostics()
+        {
+            if (!RuntimeTestRequestParser.Sprints30And31DispelUi(_request) ||
+                _teleportationLoadDiagnostics == null)
+                throw new InvalidOperationException("The fixed UI requires its native load observer.");
+            bool cleaned = _teleportationLoadDiagnostics.Stop();
+            if (!cleaned || !_teleportationLoadDiagnostics.LoadCompleted)
+                throw new InvalidOperationException("Native Working load/observer cleanup failed before UI interaction.");
+        }
+
         private void StopTeleportationLoadDiagnostics(RuntimeTestResult result)
         {
             if (_teleportationLoadDiagnostics == null) return;
@@ -82,6 +92,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private int _errorCount;
             private int _installedHooks;
             private bool _sealed;
+            private bool _stopSucceeded;
+            private string _stoppedUtc;
             private bool _listenerRemoved;
             private bool _settingsRetained;
             private int _remainingHooks = -1;
@@ -243,6 +255,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             internal bool Stop()
             {
+                if (_sealed) return _stopSucceeded;
                 if (ReferenceEquals(_active, this)) _active = null;
                 if (_unityListenerAttached)
                 {
@@ -266,9 +279,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     catch (Exception exception) { Fault(exception); }
                 }
                 _remainingHooks = HookCount();
-                lock (_sync) _sealed = true;
-                return _remainingHooks == 0 && _listenerRemoved && _settingsRetained && _faults.Count == 0 &&
-                    (!_captureUnityErrors || _unityListenerAttached && _unityListenerRemoved);
+                lock (_sync)
+                {
+                    _stopSucceeded = _remainingHooks == 0 && _listenerRemoved && _settingsRetained && _faults.Count == 0 &&
+                        (!_captureUnityErrors || _unityListenerAttached && _unityListenerRemoved);
+                    _stoppedUtc = DateTime.UtcNow.ToString("o");
+                    _sealed = true;
+                    return _stopSucceeded;
+                }
             }
 
             internal bool LoadCompleted
@@ -281,6 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal object Snapshot()
             {
                 lock (_sync) return new { schemaVersion = 1, runId = _runId,
+                    stoppedUtc = _stoppedUtc, stopSucceeded = _stopSucceeded,
                     claims = "Read-only native save deserialization and cross-scene main-character observations. No save-format changes or campaign persistence claim.",
                     loaderStarts = _loaderStarts, playerPostfixes = _playerPostfixes,
                     captureUnityErrors = _captureUnityErrors, unityListenerAttached = _unityListenerAttached,

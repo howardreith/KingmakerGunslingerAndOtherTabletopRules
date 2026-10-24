@@ -499,11 +499,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var popup = (ActionBarSpellsGroup)typeof(ActionBarGroupSlot).GetField(
                     "SubGroup", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(source);
                 if (popup == null) throw new InvalidOperationException("Native held-choice popup was not created.");
-                var rows = popup.GetComponentsInChildren<ActionBarSlot>(true).Where(row =>
+                var nativeSlots = (List<ActionBarSpontaneousConvertedSlot>)typeof(ActionBarSpellsGroup)
+                    .GetField("m_Slots", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(popup);
+                var rows = nativeSlots.Cast<ActionBarSlot>().Where(row =>
                     row.gameObject.activeInHierarchy &&
                     (row.MechanicSlot?.GetContentData() as AbilityData)?.ConvertedFrom?.Blueprint == held.Blueprint).ToArray();
                 var data = rows.Select(row => row.MechanicSlot.GetContentData() as AbilityData).ToArray();
-                bool visible = actor.IsDirectlyControllable && ui.SelectionManagerPC.SelectedUnits.Contains(actor) && !held.Blueprint.Hidden && !held.Fact.Hidden && rows.Length == 2 &&
+                bool refusedChildSource = false, refusedIncompleteChoices = false;
+                if (data.Length == 2)
+                {
+                    IEnumerable<AbilityData> supplied = data;
+                    refusedChildSource = !AstralDispelEvilRuntime.BeforeNativeMenuFill(popup,
+                        actor, ref supplied, data[0], true) && ReferenceEquals(supplied, data);
+                    IEnumerable<AbilityData> incomplete = new[] { data[0] };
+                    var originalIncomplete = incomplete;
+                    refusedIncompleteChoices = !AstralDispelEvilRuntime.BeforeNativeMenuFill(popup,
+                        actor, ref incomplete, held, true) && ReferenceEquals(incomplete, originalIncomplete);
+                }
+                bool visible = refusedChildSource && refusedIncompleteChoices && actor.IsDirectlyControllable && ui.SelectionManagerPC.SelectedUnits.Contains(actor) && !held.Blueprint.Hidden && !held.Fact.Hidden && rows.Length == 2 &&
                     held.Blueprint.Variants.All(value => data.Count(child => child.Blueprint == value) == 1) &&
                     ReferenceEquals(source.Icon.sprite, held.Blueprint.Icon) &&
                     rows.All(row => ReferenceEquals(row.Icon.sprite,
@@ -516,14 +529,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["type"] = held.Blueprint.Type.ToString(), ["rootCl"] = expected.CasterLevel,
                     ["rootLevel"] = expected.SpellLevel, ["rootDc"] = expected.DC,
                     ["icon"] = source.Icon.sprite?.name,
+                    ["refusedChildSource"] = refusedChildSource, ["refusedIncompleteChoices"] = refusedIncompleteChoices,
+                    ["nativeSlotCount"] = nativeSlots.Count, ["visibleMatchingRows"] = rows.Length,
+                    ["popupInstance"] = popup.GetInstanceID(), ["popupActive"] = popup.gameObject.activeInHierarchy,
+                    ["rows"] = new JArray(rows.Select(row => new JObject {
+                        ["component"] = row.GetInstanceID(), ["gameObject"] = row.gameObject.GetInstanceID(),
+                        ["icon"] = row.Icon.GetInstanceID(), ["name"] = row.gameObject.name,
+                        ["parent"] = row.transform.parent?.name,
+                        ["ability"] = (row.MechanicSlot.GetContentData() as AbilityData)?.Blueprint.AssetGuid })),
                     ["children"] = new JArray(data.Select(child => new JObject {
                         ["ability"] = child.Blueprint.AssetGuid, ["icon"] = child.Icon?.name,
                         ["available"] = child.IsAvailable, ["book"] = child.Spellbook?.Blueprint.AssetGuid,
                         ["cl"] = child.CalculateParams().CasterLevel, ["dc"] = child.CalculateParams().DC })) };
-                if (!visible) throw new InvalidOperationException("Native held popup rows/icons/parameters differ: " + evidence);
                 foreach (int frame in _sprints30DispelScreens.Capture(phase + "-held-menu", evidence,
-                    () => visible && popup.gameObject.activeInHierarchy &&
+                    () => popup.gameObject.activeInHierarchy &&
                         ReferenceEquals(actor.Get<UnitPartTouch>()?.Ability.Data, held))) yield return frame;
+                if (!visible) throw new InvalidOperationException("Native held popup rows/icons/parameters differ: " + evidence);
                 rows.Single(row => (row.MechanicSlot.GetContentData() as AbilityData)?.Blueprint == chosen).OnClick();
                 for (int frame = 0; frame < 6; frame++) yield return 0;
                 actual = game.SelectedAbilityHandler.Ability;
