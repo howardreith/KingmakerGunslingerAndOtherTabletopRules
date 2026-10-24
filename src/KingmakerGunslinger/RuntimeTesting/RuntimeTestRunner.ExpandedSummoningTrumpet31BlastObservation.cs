@@ -7,6 +7,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -19,7 +20,8 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         // Read-only native rules. AddBuff raises an inner RuleApplyBuff before
         // the outer callback finishes; retain both events and separately read
-        // the real terminal buff state once per owned application context.
+        // the real terminal state once per actual physical buff. Native inner/outer
+        // contexts may differ while referencing that same buff and private parameters.
         private sealed class TrumpetBlastObservation :
             IGlobalRulebookHandler<RuleSavingThrow>,
             IGlobalRulebookHandler<RuleApplyBuff>,
@@ -29,8 +31,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly BlueprintAbility _blast;
             private readonly BlueprintBuff _paralyzed;
             private readonly HashSet<UnitEntityData> _sources;
-            private readonly Dictionary<MechanicsContext, BlastApplication> _applications =
-                new Dictionary<MechanicsContext, BlastApplication>();
+            private readonly List<BlastApplication> _applications = new List<BlastApplication>();
             internal readonly JArray Saves = new JArray();
             internal readonly JArray EffectEvents = new JArray();
             internal readonly JArray Dice = new JArray();
@@ -40,6 +41,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 internal UnitEntityData Target;
                 internal Buff Buff;
+                internal AbilityParams Parameters;
                 internal JObject LastEvent;
                 internal int NativeEventCount;
                 internal JObject Snapshot()
@@ -57,7 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
 
             internal JArray Effects
-            { get { return new JArray(_applications.Values.Select(value => value.Snapshot())); } }
+            { get { return new JArray(_applications.Select(value => value.Snapshot())); } }
 
             internal TrumpetBlastObservation(BlueprintAbility blast,
                 BlueprintBuff paralyzed, params UnitEntityData[] sources)
@@ -101,16 +103,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["notDispelable"] = evt.AppliedBuff?.IsNotDispelable,
                     ["nativeParalyzed"] = evt.Initiator.Descriptor.State.HasCondition(UnitCondition.Paralyzed) };
                 EffectEvents.Add(row);
-                BlastApplication application;
-                if (!_applications.TryGetValue(evt.Context, out application))
+                var application = _applications.FirstOrDefault(value =>
+                    evt.AppliedBuff != null ? ReferenceEquals(value.Buff, evt.AppliedBuff) :
+                    value.Buff == null && ReferenceEquals(value.Target, evt.Initiator) &&
+                    ReferenceEquals(value.Parameters, evt.Context.Params));
+                if (application == null)
                 {
-                    application = new BlastApplication { Target = evt.Initiator };
-                    _applications.Add(evt.Context, application);
+                    application = new BlastApplication { Target = evt.Initiator,
+                        Parameters = evt.Context.Params };
+                    _applications.Add(application);
                 }
                 if (!ReferenceEquals(application.Target, evt.Initiator) ||
+                    !ReferenceEquals(application.Parameters, evt.Context.Params) ||
                     application.Buff != null && evt.AppliedBuff != null &&
                     !ReferenceEquals(application.Buff, evt.AppliedBuff))
-                    throw new InvalidOperationException("One blast victim context was reused for another native buff/target.");
+                    throw new InvalidOperationException("One physical blast buff was reused for another target/private parameter set.");
                 application.NativeEventCount++;
                 application.Buff = evt.AppliedBuff;
                 application.LastEvent = row;
