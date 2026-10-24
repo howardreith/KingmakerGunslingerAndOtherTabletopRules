@@ -104,6 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string id = ai ? "ai-fallback" : "full";
             int targetAc = target.Descriptor.Stats.AC.BaseValue;
             JObject immediateCleanup = null;
+            JObject queuesBeforePostCombatCancellation = null;
             try
             {
                 // Match the final successful native command fixture: allow
@@ -293,6 +294,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
                 if (owner.IsInCombat) owner.LeaveCombat(); if (target.IsInCombat) target.LeaveCombat();
+                // Both exact disposable actors can retain return movement
+                // after combat. Stop it while the owner is still alive, before
+                // destroying its view/items; never touch a party actor's queue.
+                queuesBeforePostCombatCancellation = new JObject {
+                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
+                    ["ownerCommands"] = new JArray(owner.Commands.Raw.Where(value =>
+                        value != null && !value.IsFinished).Select(Sprint27AiCommand)),
+                    ["targetCommands"] = new JArray(target.Commands.Raw.Where(value =>
+                        value != null && !value.IsFinished).Select(Sprint27AiCommand)) };
+                foreach (var actor in new[] { owner, target })
+                {
+                    foreach (var pending in actor.Commands.Raw.Where(value =>
+                        value != null && !value.IsFinished).ToArray()) pending.Interrupt(true);
+                    actor.Commands.RemoveFinishedAndUpdateQueue();
+                }
                 Game.Instance.Player.UpdateIsInCombat();
                 if (target.Memory.Contains(owner)) target.Memory.Remove(owner);
                 if (owner.Memory.Contains(target)) owner.Memory.Remove(target);
@@ -322,6 +338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint25Check("dretch-melee-" + (ai ? "ai-fallback" : "full") + "-cleanup", clean,
                 new JObject { ["ownerAbsent"] = !owner.IsInState, ["items"] = itemRows,
                     ["immediateActorCleanup"] = immediateCleanup, ["actorCleanup"] = actorCleanup,
+                    ["queuesBeforePostCombatCancellation"] = queuesBeforePostCombatCancellation,
                     ["bodyResourcesReleased"] = bodyReleased, ["partyInventoryExact"] = inventoryExact,
                     ["areasExact"] = areasExact, ["targetCombatState"] = target.IsInCombat,
                     ["nextCaseAdmitted"] = false, ["freshProcessBoundary"] = true },
