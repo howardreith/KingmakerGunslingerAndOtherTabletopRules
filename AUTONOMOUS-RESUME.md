@@ -1,18 +1,65 @@
-# Druid duplicate rows and giant sizes — v0.0.166 release in progress (2026-10-24)
+# Druid duplicate rows and giant sizes — v0.0.166 RELEASED / STOP
 
-After v0.0.165 the owner reported that a prepared Summon Nature's Ally I or II
-listed every creature twice, and that the giants all stood at one height and
-took the same space although Cloud and Storm Giants are Huge. Both are fixed on
-`codex/expanded-summoning-druid-duplicates-giant-sizes` and checked natively on
-development candidate `9e754dd2a9` (package `e791ff58…`): giant lineup PASS
-74/0, menu-adapters with Call of the Wild 147/3 with only the known Feral Hunter
-hover stop. A session memory kill interrupted the menu-adapters host; the
-machine was restored by hand and verified. See
-[the state record](planning/SUMMON-DRUID-DUPLICATES-GIANT-SIZES-STATE.md). The owner
-authorized the v0.0.166 release; candidate `5d2760c091` passed the Sprint
-gate (2,742 / 2,742), visual contracts 15/15 and the creature review 38/38.
-No owner visual approval is claimed. The giant change also widens Cloud and
-Storm reach from the space edge by about 0.55 m.
+**PR #71 is MERGED and v0.0.166 is PUBLISHED.** After v0.0.165 the owner
+reported that a prepared Summon Nature's Ally I or II listed every creature
+twice, and that the giants all stood at one height and took the same space
+although Cloud and Storm Giants are Huge. On 2026-10-24 the owner wrote "Could
+you go ahead and push, merge, and do a new release of this?" No identity or
+route changes, so the public equation stays **1,127 generated placements + 29
+retained wrappers = 1,156 visible choices**. See
+[the state record](planning/SUMMON-DRUID-DUPLICATES-GIANT-SIZES-STATE.md).
+
+- **Merge.** PR #71 merged normally as
+  `abd737c22b2f918a9c792b82e7c4172dfa62fcf6`. Between the gated candidate
+  `5d2760c091` and the merge, only the unpackaged record `af117865cc` changed.
+- **Gates on the candidate.** The Sprint-level gate passed 2,742 / 2,742 with
+  the v0.0.166 release validator, the exact-reference build and strict package
+  validation (package `71cce0f2…`). The guarded visual contracts passed 15/15
+  and the creature review, with the Fire, Storm and Cloud Giants, 38/38 on that
+  package. The Druid and giant-size observations are bound to development
+  candidate `9e754dd2a9` (giant lineup 74/0; menu-adapters 147/3 with only the
+  known Feral Hunter hover stop, host interrupted by a memory kill and the
+  machine restored by hand).
+- **Publication.** `Publish-Release.ps1` ran once from the clean, pushed main
+  checkout (`master` fast-forwarded to the merge) with the cleanup2 reference
+  bundle, in 609 s. Its build passed 2,742 / 2,742 domain tests, the
+  release-mode wrapper with
+  `validate_expanded_summoning_druid_giant_sizes_release166.py` and strict
+  package validation, and both clean builds produced identical bytes.
+
+[Stable v0.0.166](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.166)
+is published (2026-10-24T15:50:15Z) and Latest, titled "Tabletop Added Rules
+v0.0.166". Annotated tag object `9cc989fb7b9245a88c16973118770ccb26f112ab`
+peels to the merge commit. The downloaded public assets match GitHub's
+digests:
+
+- `KingmakerGunslinger-0.0.166-expanded-summoning-druid-giant-sizes.zip`:
+  `9f51cb31a0a137c4475217956f06a6077c1a0506d400677493b418b01f22f681`
+  (402 files; DLL
+  `5dd1be6c13e086b98a4f3b203357b2dfa71526e8f2b92ead03b351bc3ef1e6cd`,
+  MVID `3c2a6bfe-19fc-4bfa-837a-8c1c60857ff1`, assembly version 0.0.166.0);
+- `SHA256SUMS.txt`:
+  `30148ce7318fd0daca870ef324f2bd51d12e7f62621f5d3c304cf3dad62e6b44`;
+- `release-manifest.json`:
+  `f9652641da7410a2e35dd2cec48f4d5e0e5ce5e60913a53381cca99643c7230a`.
+
+The downloaded ZIP passed strict package validation. Its DLL embeds the merge
+commit and `0.0.166-expanded-summoning-druid-giant-sizes`. As for v0.0.165,
+the bytes differ from the gated candidate only in build stamps: 401 of 402
+package entries are identical, and the DLL's IL differs only in stamps and
+layout addresses, with all 188 compiler static-data fields holding identical
+bytes. Nothing was deployed permanently: every guarded run restored the live
+mod exactly (254 files, `5C3E4AD4…BFBB`) and all 95 saves remain.
+
+**Still open (owner decisions, not release blockers):**
+- Owner visual acceptance of the giant heights and Huge space, and of the
+  extra Cloud/Storm reach from the space edge (about 0.55 m).
+- Native save/reload of a summoned Cloud or Storm Giant (the cold flow is
+  pinned to 0.0.163).
+- Other Phase 1 procedural icons, such as the six mephits, Owlbear and Tiger.
+
+STOP: no further follow-up work is scheduled.
+
 
 # Summon cleanup follow-up — v0.0.165 RELEASED / STOP
 
