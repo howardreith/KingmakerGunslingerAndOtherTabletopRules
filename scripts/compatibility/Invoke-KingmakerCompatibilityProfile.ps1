@@ -74,6 +74,7 @@ param(
         'disposable-elemental-heritage-slas',
         'disposable-bodyguard-feats-disabled',
         'working-save-smoke',
+        'working-save-expanded-summoning-creature-review',
         'disposable-brown-fur-native-cast',
         'observe-elven-branched-spear-contracts',
         'observe-eastern-weapon-contracts',
@@ -152,6 +153,12 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'RuntimeAutomation.Common.ps1')
+$workingDispelUi = $null -ne $Scenario -and @($Scenario).Count -eq 1 -and $Scenario[0] -ceq 'working-save-expanded-summoning-creature-review'
+if (@($Scenario | Where-Object { $_ -ceq 'working-save-expanded-summoning-creature-review' }).Count -gt 0 -and
+    (-not $workingDispelUi -or -not (Test-KmgSprints30DispelUiParameters $Parameters))) {
+    throw 'This profile admits only the exact fixed S30/S31 read-only Working UI subcase; no profile entered.'
+}
 if ($ExpandedSummoningDisabled -and
     ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
         $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
@@ -323,7 +330,7 @@ if ($moduleScenario) {
             'firearms-only', 'spears-only', 'eastern-only', 'all-enabled')) {
         throw 'Asset attribution requires exactly one allowlisted assetConfiguration parameter.'
     }
-} elseif ($Parameters.Count -ne 0) {
+} elseif ($Parameters.Count -ne 0 -and -not $workingDispelUi) {
     throw 'Compatibility profile parameters are supported only for feature-module, module-state vendor, or asset-attribution observations.'
 }
 
@@ -352,7 +359,7 @@ $compatRuntimeLease = $null
 if (-not $PSCmdlet.ShouldProcess((Join-Path $KingmakerInstallDir 'Mods'),
     "run isolated profile $ProfileId and restore exact original state")) { return }
 $sprint22Boundary=@($Scenario | Where-Object {
-    Test-KmgExactSummoningRuntimeBoundary $_ }).Count -gt 0
+    Test-KmgExactSummoningRuntimeBoundary $_ }).Count -gt 0 -or $workingDispelUi
 if($sprint22Boundary) {
     . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
     $sprint22SettingsKey='Software\Owlcat Games\Pathfinder Kingmaker'
@@ -510,7 +517,8 @@ try {
             'disposable-expanded-summoning-sprint27-native-review',
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
-            'disposable-expanded-summoning-sprints30-31-native-review')) {
+            'disposable-expanded-summoning-sprints30-31-native-review',
+            'working-save-expanded-summoning-creature-review')) {
             $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -522,7 +530,7 @@ try {
         if ($developmentCandidate) { $arguments.DevelopmentPurpose = $DevelopmentPurpose }
         if ($name -in @('musket-master-mechanics-and-starter',
             'disposable-expanded-summoning',
-            'working-save-smoke', 'disposable-brown-fur-native-cast',
+            'working-save-smoke', 'working-save-expanded-summoning-creature-review', 'disposable-brown-fur-native-cast',
             'disposable-magic-circle-evil', 'disposable-magic-circle-ui', 'disposable-magic-circle-terrain',
             'observe-teleportation-world-map', 'disposable-teleportation-familiarity',
             'disposable-teleportation-resources',
@@ -541,7 +549,7 @@ try {
             $arguments.SaveName = 'KMG_AUTOMATION_WORKING'
         }
         $arguments.RuntimeLease = $compatRuntimeLease
-        $exactSprint22=Test-KmgExactSummoningRuntimeBoundary $name
+        $exactSprint22=(Test-KmgExactSummoningRuntimeBoundary $name) -or $workingDispelUi
         if($exactSprint22) {
             . (Join-Path $root 'scripts\ExpandedSummoningOrchestration.Common.ps1')
             $arguments.PassThru=$true

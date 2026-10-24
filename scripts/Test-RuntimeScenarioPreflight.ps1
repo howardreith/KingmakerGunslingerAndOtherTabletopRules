@@ -1946,6 +1946,22 @@ foreach($bag in @(@{}, @{reviewPhase='Bootstrap'}, @{reviewPhase='profiles'}, @{
 }
 Assert-Throws {Assert-KmgRuntimeScenarioPreflight @s3031Args -ExitAfterCompletion $false -Parameters @{reviewPhase='bootstrap'}} 's30-31-hidden-bootstrap-no-exit-refused'
 
+$s3031UiArgs = @{Scenario='working-save-expanded-summoning-creature-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180;ExitAfterCompletion=$true;CatalogTimeoutSeconds=180;SelectionTimeoutSeconds=300;CompletionTimeoutSeconds=180;MainMenuTimeoutSeconds=180;ActionResolutionTimeoutSeconds=180;ActionInvocationTimeoutSeconds=30;DescriptorResolutionTimeoutSeconds=30;LoadEntryTimeoutSeconds=30;FingerprintTimeoutSeconds=180}
+$s3031Ui = @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $s3031Ui)) 's30-31-working-ui-fixed-admitted'
+foreach($mutation in @(
+    @{saveName='KMG_AUTOMATION_BASELINE';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='astral-deva,trumpet-archon';reviewCase='sprints30-31-dispel-ui'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='Sprints30-31-dispel-ui'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';extra='x'},
+    @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';quantity='OneD4PlusOne'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $mutation } 's30-31-working-ui-invalid-refused'
+}
+$s3031UiArgs.ExitAfterCompletion=$false
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $s3031Ui } 's30-31-working-ui-no-exit-refused'
+Assert-True (Test-KmgSprints30DispelUiParameters @{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}) 's30-31-working-ui-external-typed-admitted'
+Assert-True (-not (Test-KmgSprints30DispelUiParameters @{Creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'})) 's30-31-working-ui-key-case-refused'
+
 if ($failures.Count -ne 0) {
     throw "Runtime scenario preflight tests failed: $($failures -join ', ')"
 }

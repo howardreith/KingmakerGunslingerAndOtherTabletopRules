@@ -1,0 +1,218 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.GameModes;
+using Kingmaker.PubSubSystem;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Parts;
+using Kingmaker.Utility;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        private IEnumerator<int> _sprints30WorkingUiSteps;
+        private DateTime _sprints30WorkingUiDeadline;
+        private readonly List<RuntimeTestAssertion> _sprints30WorkingUiAssertions =
+            new List<RuntimeTestAssertion>();
+
+        private void Sprints30DispelUiCheck(string id, bool pass, JObject facts,
+            string expected)
+        {
+            facts["runId"] = _request.RunId;
+            facts["caseId"] = id;
+            _sprints30WorkingUiAssertions.Add(Assertion("sprints30-31-" + id,
+                expected, facts.ToString(Newtonsoft.Json.Formatting.None), pass,
+                "Fixed read-only Working save UI; controlled disposable summons; no action or AI claim."));
+            if (!pass) throw new InvalidOperationException("Working Dispel UI failed: " + id);
+        }
+
+        private void StepSprints30DispelWorkingUi()
+        {
+            if (_sprints30WorkingUiSteps == null)
+            {
+                _sprints30WorkingUiDeadline = DateTime.UtcNow.AddSeconds(150);
+                _sprints30WorkingUiSteps = RunSprints30DispelWorkingUi().GetEnumerator();
+            }
+            Exception error = null;
+            try
+            {
+                if (DateTime.UtcNow > _sprints30WorkingUiDeadline)
+                    throw new TimeoutException("Fixed Working Dispel UI exceeded its bounded observation window.");
+                if (_sprints30WorkingUiSteps.MoveNext()) return;
+            }
+            catch (Exception failure) { error = failure; }
+            try { _sprints30WorkingUiSteps.Dispose(); }
+            catch (Exception failure) { error = error == null ? failure : new AggregateException(error, failure); }
+            _sprints30WorkingUiSteps = null;
+            WorkingSaveSmokeEvidence save = _workingSaveSmoke.Stop();
+            bool readOnly = save.WorkingMatchCount == 1 && save.BaselineMatchCount == 1 &&
+                save.DescriptorReferenceCorrelated && save.ExpectedWorkingSaveRoutineCount == 0 &&
+                !save.SaveWritingApiObserved;
+            _sprints30WorkingUiAssertions.Add(Assertion("sprints30-31-dispel-ui-exact-readonly-working",
+                "One correlated exact Working load, distinct baseline, no save-writing API.",
+                "working=" + save.WorkingMatchCount + ";baseline=" + save.BaselineMatchCount +
+                ";correlated=" + save.DescriptorReferenceCorrelated + ";saveCalls=" +
+                save.ExpectedWorkingSaveRoutineCount + ";write=" + save.SaveWritingApiObserved,
+                readOnly, "Existing guarded Working-load observer and immutable outer save envelope."));
+            string[] required = { "trumpet-dispel-fixture", "trumpet-dispel-native-ui",
+                "trumpet-dispel-native-ui-restored", "trumpet-dispel-ui-owned-cleanup",
+                "astral-dispel-fixture", "astral-dispel-native-ui",
+                "astral-dispel-native-ui-restored", "astral-dispel-ui-owned-cleanup",
+                "dispel-ui-world-restored" };
+            bool complete = required.All(id => _sprints30WorkingUiAssertions.Count(row =>
+                row.Name == "sprints30-31-" + id && row.Status == RuntimeTestStatuses.Pass) == 1);
+            var result = CreateResult(error == null && readOnly && complete &&
+                _sprints30WorkingUiAssertions.All(row => row.Status == RuntimeTestStatuses.Pass)
+                    ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
+                _sprints30WorkingUiAssertions, error?.ToString());
+            result.WorkingSaveSmoke = save;
+            _sprints30DispelScreens?.AppendEvidence(result.EvidenceFiles);
+            Complete(result);
+        }
+
+        private IEnumerable<int> RunSprints30DispelWorkingUi()
+        {
+            var game = Game.Instance;
+            if (!RuntimeTestRequestParser.Sprints30And31DispelUi(_request) ||
+                !_context.FeatureModules.Active.ExpandedSummoning ||
+                game.CurrentMode != GameModeType.Default || game.SelectedAbilityHandler == null ||
+                game.SelectedAbilityHandler.Ability != null || _workingSaveSmoke.WriteObserved)
+                throw new InvalidOperationException("Working Dispel UI requires the exact read-only case and idle native Default-mode input.");
+            var unitsBefore = game.State.Units.All.ToArray();
+            var partyBefore = game.Player.Party.ToArray();
+            var areasBefore = game.State.AreaEffects.All.ToArray();
+            var buffsBefore = unitsBefore.ToDictionary(unit => unit, unit => unit.Buffs.Enumerable.ToArray());
+            var positionsBefore = unitsBefore.ToDictionary(unit => unit, unit => unit.Position);
+            var uiSettings = partyBefore.Select(unit => new TeleportationUiSettingsFixture(unit.UISettings)).ToArray();
+            bool paused = game.IsPaused;
+            TimeSpan timeBefore = game.TimeController.GameTime;
+            var randomBefore = UnityEngine.Random.state;
+            ExpandedSummoningCorrectionFixture fixture = null;
+            UnitEntityData owner = null;
+            UnitReference originalMaster = default(UnitReference);
+            bool masterCaptured = false;
+            _sprints30DispelScreens = new NativeIconScreenEvidence(_request);
+            try
+            {
+                game.IsPaused = true;
+                // Two fixed actual users, each followed by a verified reset.
+                foreach (string key in new[] { "trumpet-archon", "astral-deva" })
+                {
+                    string phase = key == "trumpet-archon" ? "trumpet-dispel" : "astral-dispel";
+                    fixture = BeginExpandedSummoningCorrectionFixture("KMG_S30_31_DispelUiCaster");
+                    string unitSymbol = key == "trumpet-archon" ?
+                        "KMG.Summoning.Unit.TrumpetArchon" : "KMG.Summoning.Unit.AstralDeva";
+                    var control = new Sprint16ManualSummonControl { Caster = fixture.Caster,
+                        Blueprint = (BlueprintUnit)ExpandedSummoningBlueprints.Registered.BySymbol[unitSymbol] };
+                    EventBus.Subscribe(control);
+                    try { owner = CastExpandedSummoningOwnTier(fixture, key); }
+                    finally { EventBus.Unsubscribe(control); }
+                    Sprint28SetBrainActivePreservingActions(owner, false);
+                    owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
+                    originalMaster = owner.Descriptor.Master; masterCaptured = true;
+                    bool capitalMaster = false;
+                    if (!owner.IsDirectlyControllable)
+                    {
+                        owner.Descriptor.Master = game.Player.MainCharacter;
+                        capitalMaster = true;
+                    }
+                    string prefix = key == "trumpet-archon" ? ExpandedSummoningSpecialBuilder.Trumpet31Prefix :
+                        ExpandedSummoningSpecialBuilder.Astral31Prefix;
+                    var family = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvil"];
+                    var delivery = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilDispelTouch"];
+                    var menu = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + "DispelEvilHeld"];
+                    AbilityData data;
+                    SpellSlot slot = null;
+                    if (key == "trumpet-archon")
+                    {
+                        var creation = owner.Blueprint.GetComponent<TrumpetPreparedBook>();
+                        var book = owner.Descriptor.GetSpellbook(creation.Book);
+                        slot = book.GetMemorizedSpellSlots(5).Single(value => value.Available && ReferenceEquals(value.Spell?.Blueprint, family));
+                        data = slot.Spell; data.ParamSpellSlot = slot;
+                    }
+                    else data = new AbilityData(owner.Descriptor.Abilities.GetAbility(family));
+                    var parameters = data.CalculateParams();
+                    bool rootAvailable = data.IsAvailable;
+                    // UI-only fixture preparation: consume the native owner
+                    // preparation and invoke its real arm component. This is
+                    // not a command/action/AI or fresh mechanics verdict.
+                    data.Spend();
+                    var context = new AbilityExecutionContext(data, parameters, new TargetWrapper(owner), null);
+                    family.GetComponent<AbilityEffectArmAstralDispelEvilTouch>().Apply(context, new TargetWrapper(owner));
+                    var held = owner.Get<UnitPartTouch>();
+                    int expectedCl = key == "trumpet-archon" ? 14 : 13;
+                    int expectedDc = key == "trumpet-archon" ? 20 : 21;
+                    bool ready = rootAvailable && control.Matched == 1 && owner.IsDirectlyControllable &&
+                        owner.Get<UnitPartSummonedMonster>()?.IsDirectlyControllable == true &&
+                        held != null && ReferenceEquals(held.Ability.Data.Blueprint, menu) && !menu.Hidden &&
+                        parameters.CasterLevel == expectedCl && parameters.SpellLevel == 5 && parameters.DC == expectedDc &&
+                        (slot == null || !slot.Available);
+                    Sprints30DispelUiCheck(phase + "-fixture", ready,
+                        new JObject { ["creature"] = key, ["owner"] = owner.UniqueId,
+                            ["controlledFixture"] = true, ["nativeControlMatches"] = control.Matched,
+                            ["directlyControllable"] = owner.IsDirectlyControllable, ["capitalMasterBound"] = capitalMaster,
+                            ["cl"] = parameters.CasterLevel, ["spellLevel"] = parameters.SpellLevel, ["dc"] = parameters.DC,
+                            ["book"] = data.Spellbook?.Blueprint.AssetGuid, ["slotAvailable"] = slot?.Available,
+                            ["fixtureNativeSpendCalls"] = 1, ["fixtureArmCalls"] = 1, ["commandClaims"] = 0 },
+                        "A controlled owned summon has its actual native held state and parameters; UI preparation is explicit and makes no action/AI claim.");
+                    AbilityData selected = null;
+                    foreach (int frame in Dispel31ChooseHeldUi(owner, held.Ability.Data, delivery,
+                        phase, value => selected = value)) yield return frame;
+                    var items = owner.Descriptor.Inventory.Items.Concat(new[] { owner.Body.PrimaryHand.MaybeWeapon })
+                        .Where(value => value != null).Distinct().ToArray();
+                    owner.Descriptor.Master = originalMaster; masterCaptured = false;
+                    bool cleaned;
+                    EndExpandedSummoningCorrectionFixture(fixture, out cleaned); fixture = null;
+                    int frames = 0; var deadline = DateTime.UtcNow.AddSeconds(8);
+                    while (DateTime.UtcNow < deadline && frames++ < 1200 &&
+                        (!game.State.Units.All.SequenceEqual(unitsBefore) ||
+                         !game.State.AreaEffects.All.SequenceEqual(areasBefore))) yield return 0;
+                    bool reset = cleaned && selected != null && owner.Destroyed && !owner.IsInState &&
+                        game.State.Units.All.SequenceEqual(unitsBefore) && game.Player.Party.SequenceEqual(partyBefore) &&
+                        game.State.AreaEffects.All.SequenceEqual(areasBefore) &&
+                        buffsBefore.All(pair => pair.Key.Buffs.Enumerable.SequenceEqual(pair.Value)) &&
+                        positionsBefore.All(pair => pair.Key.Position == pair.Value) &&
+                        items.All(item => !item.IsLootable && item.Collection == null) &&
+                        game.SelectedAbilityHandler.Ability == null && !_workingSaveSmoke.WriteObserved;
+                    Sprints30DispelUiCheck(phase + "-ui-owned-cleanup", reset,
+                        new JObject { ["ownerAbsent"] = owner.Destroyed && !owner.IsInState,
+                            ["unitsExact"] = game.State.Units.All.SequenceEqual(unitsBefore),
+                            ["partyExact"] = game.Player.Party.SequenceEqual(partyBefore),
+                            ["areasExact"] = game.State.AreaEffects.All.SequenceEqual(areasBefore),
+                            ["originalBuffsExact"] = buffsBefore.All(pair => pair.Key.Buffs.Enumerable.SequenceEqual(pair.Value)),
+                            ["ownedItemsAbsentNonlootable"] = items.All(item => !item.IsLootable && item.Collection == null),
+                            ["settlingFrames"] = frames, ["writeObserved"] = _workingSaveSmoke.WriteObserved },
+                        "The owned actor/caster/items/areas/grants and UI target retire; original world and party remain exact before the next fixed case.");
+                    owner = null;
+                }
+            }
+            finally
+            {
+                if (masterCaptured && owner != null && !owner.Destroyed) owner.Descriptor.Master = originalMaster;
+                if (fixture != null) { bool ignored; EndExpandedSummoningCorrectionFixture(fixture, out ignored); }
+                foreach (var snapshot in uiSettings) snapshot.Restore();
+                _sprints30DispelScreens.Dispose();
+                UnityEngine.Random.state = randomBefore;
+                game.IsPaused = paused;
+            }
+            bool world = game.State.Units.All.SequenceEqual(unitsBefore) && game.Player.Party.SequenceEqual(partyBefore) &&
+                game.State.AreaEffects.All.SequenceEqual(areasBefore) && game.TimeController.GameTime == timeBefore &&
+                buffsBefore.All(pair => pair.Key.Buffs.Enumerable.SequenceEqual(pair.Value)) &&
+                positionsBefore.All(pair => pair.Key.Position == pair.Value) && !_workingSaveSmoke.WriteObserved;
+            Sprints30DispelUiCheck("dispel-ui-world-restored", world,
+                new JObject { ["worldExact"] = world, ["gameTimeExact"] = game.TimeController.GameTime == timeBefore,
+                    ["writeObserved"] = _workingSaveSmoke.WriteObserved, ["fixedCases"] = 2 },
+                "Both UI cases finish with the original world/party/time and no save writes; this remains read-only UI evidence.");
+        }
+    }
+}

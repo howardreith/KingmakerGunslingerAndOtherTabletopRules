@@ -357,9 +357,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Astral31DispelCast(lateOwner, lateSlot.Spell,
                     new TargetWrapper(lateOwner), value => lateParent = value)) yield return frame;
                 UnitPartTouch lateTouch = lateOwner.Get<UnitPartTouch>();
-                AbilityData nativeChoice = null;
-                foreach (int frame in Dispel31ChooseHeldUi(lateOwner, lateTouch.Ability.Data,
-                    touchBlueprint, "trumpet-dispel", value => nativeChoice = value)) yield return frame;
                 double lateStart = Game.Instance.TimeController.GameTime.TotalSeconds;
                 DateTime lateDeadline = DateTime.UtcNow.AddSeconds(15);
                 while (lateTouch != null && lateTouch.IsCastedInThisRound &&
@@ -372,7 +369,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 using (var economy = new FirearmReviewCosts(lateOwner, lateCosts))
                 {
                     foreach (int frame in Astral31DispelHeld(lateOwner, target, touchBlueprint,
-                        value => lateDelivery = value, nativeChoice)) yield return frame;
+                        value => lateDelivery = value)) yield return frame;
                     lateAction = lateDelivery != null && lateDelivery.IsFinished &&
                         lateDelivery.Result == UnitCommand.ResultType.Success &&
                         economy.Count(lateDelivery) == 1 && economy.Exact(lateDelivery, false) &&
@@ -466,8 +463,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var bar = ActionBarManager.Instance;
             if (ui?.SelectionManagerPC == null || bar?.Group == null ||
                 GroupController.Instance == null || actor.View == null ||
-                game.SelectedAbilityHandler.Ability != null)
-                throw new InvalidOperationException("Owned Dispel UI fixture has no clean native controls.");
+                game.SelectedAbilityHandler == null || game.SelectedAbilityHandler.Ability != null)
+                throw new InvalidOperationException("Owned Dispel UI fixture requires loaded Default-mode native controls.");
             var selection = ui.SelectionManagerPC.SelectedUnits.ToArray();
             var originalGroup = GroupController.Instance.GetCurrentCharacter();
             var groups = bar.Group.GroupElements.ToArray();
@@ -478,7 +475,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             ActionBarGroupSlot source = null;
             AbilityData actual = null;
             bool restored;
-            _sprints30DispelScreens = new NativeIconScreenEvidence(_request);
+            if (_sprints30DispelScreens == null)
+                _sprints30DispelScreens = new NativeIconScreenEvidence(_request);
             try
             {
                 game.IsPaused = true;
@@ -505,7 +503,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row.gameObject.activeInHierarchy &&
                     (row.MechanicSlot?.GetContentData() as AbilityData)?.ConvertedFrom?.Blueprint == held.Blueprint).ToArray();
                 var data = rows.Select(row => row.MechanicSlot.GetContentData() as AbilityData).ToArray();
-                bool visible = !held.Blueprint.Hidden && !held.Fact.Hidden && rows.Length == 2 &&
+                bool visible = actor.IsDirectlyControllable && ui.SelectionManagerPC.SelectedUnits.Contains(actor) && !held.Blueprint.Hidden && !held.Fact.Hidden && rows.Length == 2 &&
                     held.Blueprint.Variants.All(value => data.Count(child => child.Blueprint == value) == 1) &&
                     ReferenceEquals(source.Icon.sprite, held.Blueprint.Icon) &&
                     rows.All(row => ReferenceEquals(row.Icon.sprite,
@@ -535,7 +533,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 evidence["clicked"] = actual?.Blueprint.AssetGuid;
                 evidence["sameFact"] = actual != null && ReferenceEquals(actual.Fact, held.Fact);
                 evidence["actualClick"] = clicked;
-                Sprint25Check(phase + "-native-ui", clicked, evidence,
+                Sprints30DispelUiCheck(phase + "-native-ui", clicked, evidence,
                     "The real native abilities popup renders the held menu and exactly two matching native icons; a native child click preserves the exact held fact and casting parameters for the following native consumer.");
                 if (!clicked) throw new InvalidOperationException("Native held Dispel menu click lost its exact source.");
                 selected(actual);
@@ -548,7 +546,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 GroupController.Instance.SelectUnit(originalGroup);
                 ui.SelectionManagerPC.MultiSelect(selection.Select(value => value.View).ToArray(), false);
                 for (int index = 0; index < groups.Length; index++) groups[index].Toggle(toggles[index], true);
-                _sprints30DispelScreens.Dispose();
                 game.IsPaused = paused;
             }
             for (int frame = 0; frame < 12; frame++) yield return 0;
@@ -559,7 +556,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReferenceEquals(GroupController.Instance.GetCurrentCharacter(), originalGroup) &&
                 groups.Select(value => value.ToggleState).SequenceEqual(toggles) &&
                 game.SelectedAbilityHandler.Ability == null && game.IsPaused == paused;
-            Sprint25Check(phase + "-native-ui-restored", restored,
+            Sprints30DispelUiCheck(phase + "-native-ui-restored", restored,
                 new JObject { ["barOwnerExact"] = ReferenceEquals(barSelected.GetValue(bar), originalBarOwner),
                     ["heldFactRetained"] = ReferenceEquals(actor.Get<UnitPartTouch>()?.Ability.Data, held),
                     ["activeCommands"] = actor.Commands.Raw.Count(command => command != null && !command.IsFinished),

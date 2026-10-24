@@ -178,6 +178,17 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = (string)request.Parameters["reviewPhase"];
             return ExpandedSummoningNativeProfilePolicy.Sprints30And31Phase(phase) ? phase : null;
         }
+        internal static bool Sprints30And31DispelUi(RuntimeTestRequest request)
+        {
+            return request != null &&
+                request.Parameters?["saveName"]?.Type == JTokenType.String &&
+                request.Parameters?["creatures"]?.Type == JTokenType.String &&
+                request.Parameters?["reviewCase"]?.Type == JTokenType.String &&
+                ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(
+                    request.ExitAfterCompletion, request.Scenario, request.Parameters.Count,
+                    (string)request.Parameters["saveName"], (string)request.Parameters["creatures"],
+                    (string)request.Parameters["reviewCase"]);
+        }
         internal static string Sprint27ReviewPhase(RuntimeTestRequest request)
         {
             if(request==null || request.Scenario!=RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint27NativeReview || request.Parameters==null || request.Parameters.Count!=1 || request.Parameters["reviewPhase"]?.Type!=JTokenType.String)return null;
@@ -612,6 +623,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     request.Parameters?["creatures"]?.Type != JTokenType.String ||
                     string.IsNullOrWhiteSpace((string)request.Parameters["creatures"])))
                     return "creature-review-creatures-required";
+                bool dispelUi = creatureReview && request.Parameters?["reviewCase"] != null;
+                if (dispelUi && !Sprints30And31DispelUi(request))
+                    return "sprints30-31-dispel-ui-scope-invalid";
                 bool crowdReview = creatureReview &&
                     request.Parameters?["quantity"] != null;
                 if (crowdReview &&
@@ -622,7 +636,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview || dispelUi ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

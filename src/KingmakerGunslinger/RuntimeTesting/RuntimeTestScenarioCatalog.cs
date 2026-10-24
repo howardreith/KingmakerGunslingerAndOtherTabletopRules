@@ -403,6 +403,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// </summary>
         internal const string WorkingSaveExpandedSummoningCreatureReview =
             "working-save-expanded-summoning-creature-review";
+        internal static string Sprints30And31DispelUiCase { get { return ExpandedSummoningNativeProfilePolicy.DispelUiCase; } }
+        internal static string Sprints30And31DispelUiCreatures { get { return ExpandedSummoningNativeProfilePolicy.DispelUiCreatures; } }
         internal const string DisposableShieldOther = "disposable-shield-other";
         internal const string ObserveOptionalModCompatibility =
             "observe-optional-mod-compatibility";

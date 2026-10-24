@@ -137,6 +137,11 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The existing player-path fixture requires typed -SaveName and only playerPathScope=representative with automatic exit.'
         }
         $Parameters = @{ saveName = $SaveName; playerPathScope = $Parameters.playerPathScope }
+    } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')) {
+        if (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters)) {
+            throw 'Use typed Working SaveName and only the fixed S30/S31 UI creatures/reviewCase with automatic exit.'
+        }
+        $Parameters = @{saveName=$SaveName;creatures=$Parameters.creatures;reviewCase=$Parameters.reviewCase}
     } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
         $crowd = $Parameters.ContainsKey('quantity')
         if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or

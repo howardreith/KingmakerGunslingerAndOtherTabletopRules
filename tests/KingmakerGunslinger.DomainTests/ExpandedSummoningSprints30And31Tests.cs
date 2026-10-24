@@ -146,14 +146,18 @@ namespace KingmakerGunslinger.DomainTests
         internal static void BootstrapCannotAdmitSaveOrUnsupportedPhases()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview;
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 1, "trumpet-dispel"), "Only an exact fixed owned Dispel UI phase admits native framebuffer evidence.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(false, scenario, 1, "trumpet-dispel"), "UI evidence requires automatic exit.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 2, "trumpet-dispel"), "UI evidence refuses extra parameters.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview, 1, "trumpet-dispel"), "UI evidence cannot admit another scenario.");
-            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 1, "astral-dispel"), "The actual SLA user also receives its separate native UI proof.");
-            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(false, scenario, 1, "astral-dispel"), "The SLA UI case also requires automatic exit.");
-            foreach (string other in new[] { "Trumpet-Dispel", "trumpet-dispel ", "Astral-Dispel", "astral-dispel ", "bootstrap", "", null })
-                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 1, other), "UI evidence cannot widen phase or case matching.");
+            string uiScenario = RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+            string uiCreatures = RuntimeTestScenarioCatalog.Sprints30And31DispelUiCreatures;
+            string uiCase = RuntimeTestScenarioCatalog.Sprints30And31DispelUiCase;
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "Only the exact fixed read-only Working UI batch is admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(false, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "UI requires automatic exit.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "The first-area mechanics fixture cannot qualify UI.");
+            foreach (int count in new[] { 0, 1, 2, 4 }) Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, count, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "The UI batch refuses missing/extra fields.");
+            foreach (string save in new[] { "KMG_AUTOMATION_BASELINE", "kmg_automation_working", "KMG_AUTOMATION_WORKING ", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, save, uiCreatures, uiCase), "Only the exact named disposable Working save is allowed.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", "astral-deva,trumpet-archon", uiCase), "The fixed batch order cannot be caller supplied.");
+            foreach (string value in new[] { "SPRINTS30-31-DISPEL-UI", "sprints30-31-dispel-ui ", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, value), "UI reviewCase matching remains exact.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Empty guarded native world is admitted.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Implemented core consumer phase is admitted only in the same empty guarded fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");

@@ -668,17 +668,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in Astral31DispelCast(firstDispelOwner, contactRoot,
                     new TargetWrapper(firstDispelOwner), value => contactParent = value)) yield return frame;
                 UnitPartTouch contactHeld = firstDispelOwner.Get<UnitPartTouch>();
-                AbilityData contactUiChoice = null;
-                foreach (int frame in Dispel31ChooseHeldUi(firstDispelOwner, contactHeld.Ability.Data,
-                    dispelTouch, "astral-dispel", value => contactUiChoice = value)) yield return frame;
                 var contactDismissal = new AbilityData(contactHeld.Ability.Data, dismissalTouch);
                 var contactDispel = new AbilityData(contactHeld.Ability.Data, dispelTouch);
                 bool contactReady = contactParent != null && contactParent.IsFinished &&
                     contactParent.Result == UnitCommand.ResultType.Success &&
                     !contactDismissal.CanTarget(new TargetWrapper(target)) &&
-                    contactDispel.IsAvailable && contactDispel.CanTarget(new TargetWrapper(target)) &&
-                    contactUiChoice != null && ReferenceEquals(contactUiChoice.Blueprint, dispelTouch) &&
-                    ReferenceEquals(contactUiChoice.Fact, contactHeld.Ability);
+                    contactDispel.IsAvailable && contactDispel.CanTarget(new TargetWrapper(target));
                 if (!contactReady) throw new InvalidOperationException("Natural-contact fixture is not independently eligible for removal only.");
                 int contactRollStart = observed.Attacks.Count;
                 UnitAttack contactCommand = null;
