@@ -85,11 +85,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "astral-deva");
                 secondDispelOwner = CastExpandedSummoningOwnTier(fixture,
                     "astral-deva");
-                expiryOwner = CastExpandedSummoningOwnTier(fixture,
-                    "astral-deva");
                 UnitEntityData[] owned = { dismissalOwner, dismissalTarget,
                     firstDispelOwner, secondDispelOwner, expiryOwner };
-                foreach (UnitEntityData unit in owned)
+                foreach (UnitEntityData unit in owned.Where(value => value != null))
                 {
                     Sprint28SetBrainActivePreservingActions(unit, false);
                     unit.Commands.InterruptAll(true);
@@ -104,19 +102,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     origin + Vector3.right * 2f);
                 PlaceExpandedSummoningUnit(secondDispelOwner,
                     origin + Vector3.left * 2f);
-                PlaceExpandedSummoningUnit(expiryOwner,
-                    origin + Vector3.back * 2f);
                 PlaceExpandedSummoningUnit(target,
                     origin + Vector3.forward * 1.5f);
                 PlaceExpandedSummoningUnit(fixture.Caster,
                     origin + Vector3.back * 14f);
-                foreach (UnitEntityData unit in owned.Concat(new[] { target }))
+                foreach (UnitEntityData unit in owned.Where(value => value != null).Concat(new[] { target }))
                 {
                     unit.Wake(0f);
                     if (!Game.Instance.State.AwakeUnits.Contains(unit))
                         Game.Instance.State.AwakeUnits.Add(unit);
                 }
-                foreach (UnitEntityData unit in owned)
+                foreach (UnitEntityData unit in owned.Where(value => value != null))
                 {
                     unit.Memory.Add(target); target.Memory.Add(unit);
                     unit.SightCache.ClearIfNeeded();
@@ -634,7 +630,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         int rollStart = observed.Attacks.Count, dispelStart = observed.Dispels.Count,
                             saveStart = observed.Saves.Count;
                         var costs = new JArray();
-                        bool actionExact;
+                        bool actionExact, nativeFirstRound = false;
+                        bool parentCostExact = false, touchCostUnchanged = false;
                         using (var economy = new FirearmReviewCosts(row.Owner, costs))
                         {
                             // These two cases are at-will SLAs. A confirmed
@@ -643,16 +640,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             foreach (int frame in Astral31DispelCast(row.Owner,
                                 ownerDispel, new TargetWrapper(row.Owner), value => parentCommand = value)) yield return frame;
                             activeWard = row.Owner.Buffs.Enumerable.SingleOrDefault(value => ReferenceEquals(value.Blueprint, ward));
+                            nativeFirstRound = row.Owner.Get<UnitPartTouch>()?.IsCastedInThisRound == true;
                             foreach (int frame in Astral31DispelHeld(row.Owner, target, dispelTouch,
                                 value => touchCommand = value)) yield return frame;
                             automaticTouchAttempts++;
+                            parentCostExact = parentCommand != null && economy.Count(parentCommand) == 1 &&
+                                economy.Exact(parentCommand, false);
+                            touchCostUnchanged = touchCommand != null && economy.Count(touchCommand) == 1 &&
+                                economy.Unchanged(touchCommand);
                             actionExact = parentCommand != null && parentCommand.IsFinished &&
                                 parentCommand.Result == UnitCommand.ResultType.Success &&
-                                economy.Count(parentCommand) == 1 && economy.Exact(parentCommand, false) &&
+                                parentCostExact && !parentCommand.Cutscene && !parentCommand.IsIgnoreCooldown &&
                                 touchCommand != null && touchCommand.IsFinished &&
                                 touchCommand.Result == UnitCommand.ResultType.Success &&
-                                economy.Count(touchCommand) == 1 && economy.Unchanged(touchCommand) &&
-                                !parentCommand.IsIgnoreCooldown && !touchCommand.IsIgnoreCooldown;
+                                touchCostUnchanged && nativeFirstRound && !touchCommand.Cutscene &&
+                                touchCommand.IsIgnoreCooldown;
                         }
                         var rolls = observed.Attacks.Skip(rollStart).ToArray();
                         bool actualRoll = rolls.Length == 1 && ReferenceEquals(rolls[0].Initiator, row.Owner) &&
@@ -666,15 +668,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                             observed.Dispels.Count == dispelStart && observed.Saves.Count == saveStart;
                         var attemptRow = new JObject { ["owner"] = row.Owner.UniqueId, ["target"] = target.UniqueId,
                             ["case"] = row.Label, ["attempt"] = attempt + 1, ["rolls"] = Astral31DispelRollRows(rolls),
-                            ["costs"] = costs, ["parent"] = Sprint27AiCommand(parentCommand),
+                            ["costs"] = costs, ["nativeFirstRound"] = nativeFirstRound,
+                            ["parentCostExact"] = parentCostExact, ["touchCostUnchanged"] = touchCostUnchanged,
+                            ["parentIgnoreCooldown"] = parentCommand?.IsIgnoreCooldown,
+                            ["touchIgnoreCooldown"] = touchCommand?.IsIgnoreCooldown,
+                            ["parentCutscene"] = parentCommand?.Cutscene, ["touchCutscene"] = touchCommand?.Cutscene,
+                            ["parent"] = Sprint27AiCommand(parentCommand),
                             ["touch"] = Sprint27AiCommand(touchCommand), ["confirmedMiss"] = confirmedMiss,
                             ["selectedStillPresent"] = !row.Expected.IsDisposed && target.Buffs.Enumerable.Contains(row.Expected),
                             ["wardPresent"] = activeWard != null && !activeWard.IsDisposed,
                             ["heldPresent"] = row.Owner.Get<UnitPartTouch>() != null, ["forcedRolls"] = 0 };
                         removalAttempts.Add(attemptRow);
+                        bool attemptObserved = actionExact && actualRoll && (rolls[0].IsHit || confirmedMiss);
                         Sprint25Check("astral-dispel-removal-attempt-" + row.Label + "-" + (attempt + 1),
-                            actionExact && actualRoll && (rolls[0].IsHit || confirmedMiss), (JObject)attemptRow.DeepClone(),
-                            "An actual attributed native touch records its roll and real standard-parent/free-touch costs; only a confirmed miss retaining the selected effect and owned charge may retry.");
+                            attemptObserved, (JObject)attemptRow.DeepClone(),
+                            "An attributed first-round touch uses the production native free-touch window with one unchanged cost application after one ordinary standard parent cast; only a confirmed miss retaining the effect and owned charge may retry.");
+                        if (!attemptObserved) throw new InvalidOperationException(
+                            "Automatic Dispel Evil touch/action attribution failed: " + row.Label);
                         if (!confirmedMiss) break;
                     }
                     RuleDispelMagic rule = observed.Dispels.LastOrDefault(value =>
@@ -822,6 +832,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!contactExact) throw new InvalidOperationException("Natural-contact Dispel Evil delivery failed.");
                 foreach (int frame in Astral31SwitchWeapon(firstDispelOwner, 0)) yield return frame;
 
+                // This independent lifetime case starts with its own fresh
+                // native summon. Earlier unforced delivery attempts must not
+                // consume its duration; no timer or existing actor is refreshed.
+                expiryOwner = CastExpandedSummoningOwnTier(fixture, "astral-deva");
+                owned[4] = expiryOwner;
+                Sprint28SetBrainActivePreservingActions(expiryOwner, false);
+                expiryOwner.Commands.InterruptAll(true);
+                expiryOwner.Commands.RemoveFinishedAndUpdateQueue();
+                PlaceExpandedSummoningUnit(expiryOwner, origin + Vector3.back * 2f);
+                expiryOwner.Wake(0f);
+                if (!Game.Instance.State.AwakeUnits.Contains(expiryOwner))
+                    Game.Instance.State.AwakeUnits.Add(expiryOwner);
+                expiryOwner.Memory.Add(target); target.Memory.Add(expiryOwner);
+                expiryOwner.SightCache.ClearIfNeeded(); expiryOwner.JoinCombat();
+                Game.Instance.Player.UpdateIsInCombat();
+                new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+                new Kingmaker.Controllers.Combat.UnitCombatPrepareController().Tick();
+                for (int frame = 0; frame < 4; frame++) yield return 0;
+                var initialSummonLifetime = expiryOwner.Buffs.Enumerable.SingleOrDefault(value =>
+                    ReferenceEquals(value.Blueprint, Kingmaker.Blueprints.Root.BlueprintRoot.Instance
+                        .SystemMechanics.SummonedUnitBuff));
+                double initialSummonSeconds = initialSummonLifetime?.TimeLeft.TotalSeconds ?? 0d;
+                bool expiryReady = expiryOwner.IsInGame && expiryOwner.Descriptor.State.CanAct &&
+                    initialSummonSeconds > 90d;
+                Sprint25Check("astral-dispel-expiry-ready", expiryReady,
+                    new JObject { ["owner"] = expiryOwner.UniqueId,
+                        ["nativeSummonSecondsBeforeWard"] = initialSummonSeconds,
+                        ["durationRefreshed"] = false, ["clockChanged"] = false },
+                    "A newly cast exact owner has sufficient native summon duration for the independent 78-second ward expiry; no existing lifetime or clock is extended.");
+                if (!expiryReady) throw new InvalidOperationException("Independent ward-expiry owner is not ready.");
                 observed.Owner = expiryOwner;
                 Ability expiryRoot = expiryOwner.Descriptor.Abilities
                     .GetAbility(family);
@@ -861,6 +901,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["command"] = expiryCommand == null ? null :
                             Sprint27AiCommand(expiryCommand),
                         ["initialWardSeconds"] = 78,
+                        ["nativeSummonSecondsBeforeWard"] = initialSummonSeconds,
                         ["ownerAlive"] = expiryOwnerAlive,
                         ["nativeSummonSecondsRemaining"] =
                             summonLifetime?.TimeLeft.TotalSeconds,
