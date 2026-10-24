@@ -36,6 +36,8 @@ namespace KingmakerGunslinger.Blueprints
             {
                 Record record = _records[index];
                 record.Parent.ComponentsArray = record.OriginalComponents;
+                foreach (BlueprintAbility child in record.LinkedChildren)
+                    if (ReferenceEquals(child.Parent, record.Parent)) child.Parent = null;
             }
         }
 
@@ -47,6 +49,7 @@ namespace KingmakerGunslinger.Blueprints
             internal AbilityVariants PublishedVariants;
             internal BlueprintAbility[] PublishedVariantArray;
             internal BlueprintAbility[] PublishedChoices;
+            internal BlueprintAbility[] LinkedChildren = Array.Empty<BlueprintAbility>();
         }
     }
 
@@ -243,12 +246,20 @@ namespace KingmakerGunslinger.Blueprints
                 before.Concat(new BlueprintComponent[] { variants }).ToArray() :
                 before.Select(value => ReferenceEquals(value, existing) ?
                     (BlueprintComponent)variants : value).ToArray();
-            records.Add(new ExpandedSummoningPublication.Record {
+            var record = new ExpandedSummoningPublication.Record {
                 Parent = parent, OriginalComponents = before,
                 PublishedComponents = after, PublishedVariants = variants,
                 PublishedVariantArray = variants.Variants,
-                PublishedChoices = variants.Variants.ToArray() });
+                PublishedChoices = variants.Variants.ToArray() };
+            records.Add(record);
             parent.ComponentsArray = after;
+            // Children built from a direct tier-I parent carry no Parent link.
+            // Link the owned additions as every native variant child is linked,
+            // so native Parent readers and the Druid conversion treat tier I
+            // like tiers II-IX. Rollback unlinks exactly these.
+            record.LinkedChildren = additions.Concat(nativeAdditions)
+                .Where(value => value.Parent == null).ToArray();
+            foreach (BlueprintAbility child in record.LinkedChildren) child.Parent = parent;
             if (!ReferenceEquals(parent.ComponentsArray, after) ||
                 additions.Any(addition => variants.Variants.Count(value =>
                     value.AssetGuid == addition.AssetGuid) != 1) ||
