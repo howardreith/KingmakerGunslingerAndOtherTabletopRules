@@ -2256,7 +2256,7 @@ function Test-KmgSprints30And31ReviewPhaseScope {
     return $Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and $Parameters.ContainsKey('reviewPhase') -and
         @($Parameters.Keys) -ccontains 'reviewPhase' -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn')
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn','hound-disarm','shared-circles')
 }
 
 function Test-KmgSprint29ReviewPhaseScope {

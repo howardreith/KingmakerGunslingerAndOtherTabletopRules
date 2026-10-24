@@ -4,6 +4,8 @@ using System.Linq;
 using System.Reflection;
 using Kingmaker;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.Blueprints.Root;
+using Kingmaker.Enums;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.PubSubSystem;
@@ -22,14 +24,21 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         // One combat case per fresh process: the prior native command fixture
         // demonstrated a combat-state boundary, so these are not shared cases.
-        private IEnumerable<int> ReviewHound30Combat(ExpandedSummoningCorrectionFixture fixture, bool natural, bool single = false, bool ai = false, bool turn = false)
+        private IEnumerable<int> ReviewHound30Combat(ExpandedSummoningCorrectionFixture fixture, bool natural, bool single = false, bool ai = false, bool turn = false, bool disarm = false)
         {
-            string id = turn ? "hound-turn" : ai ? "hound-ai" : single ? "hound-single" : natural ? "hound-natural" : "hound-armed";
+            string id = disarm ? "hound-disarm" : turn ? "hound-turn" : ai ? "hound-ai" : single ? "hound-single" : natural ? "hound-natural" : "hound-armed";
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             CreateExpandedSummoningCorrectionHostile(fixture);
             var target = fixture.Hostile;
             int targetAc = target.Stats.AC.BaseValue;
+            int targetBab = target.Stats.BaseAttackBonus.BaseValue;
+            ItemEntity[] partyItems = Game.Instance.Player.Inventory.Items.ToArray();
+            int[] partyCounts = partyItems.Select(value => value.Count).ToArray();
+            ItemEntity[] hostileItems = target.Descriptor.Inventory.Items.ToArray();
+            int[] hostileCounts = hostileItems.Select(value => value.Count).ToArray();
+            ItemEntity[] disarmItems = new ItemEntity[0];
+            int[] disarmCounts = new int[0];
             var areas = Game.Instance.State.AreaEffects.All.ToArray();
             UnitEntityData owner = null;
             UnityEngine.Object[] privateResources = new UnityEngine.Object[0];
@@ -50,6 +59,62 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(owner, false);
                     foreach (int frame in Outsider30NativeAppearance(owner, "hound-archon")) yield return frame;
                     foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
+                    if (disarm)
+                    {
+                        // Hydrate the existing alternate once before snapshotting;
+                        // the later native switch cannot be mistaken for resupply.
+                        foreach (int index in new[] { 1, 0 })
+                        {
+                            var hydrate = new UnitSwitchHandEquipmentSet(index); owner.Commands.Run(hydrate);
+                            DateTime until = DateTime.UtcNow.AddSeconds(20);
+                            while (!hydrate.IsFinished && DateTime.UtcNow < until) yield return 0;
+                            if (!hydrate.IsFinished || hydrate.Result != UnitCommand.ResultType.Success ||
+                                owner.Body.CurrentHandEquipmentSetIndex != index)
+                                throw new InvalidOperationException("Hound disarm equipment hydration failed.");
+                        }
+                        disarmItems = owner.Descriptor.Inventory.Items.ToArray();
+                        disarmCounts = disarmItems.Select(value => value.Count).ToArray();
+                        var manufactured = owner.Body.PrimaryHand.MaybeWeapon;
+                        bool readyDisarm = manufactured != null &&
+                            ReferenceEquals(manufactured.Blueprint, owner.Blueprint.Body.PrimaryHand) &&
+                            ReferenceEquals(manufactured.Owner, owner.Descriptor) && target.CanAttack(owner) &&
+                            disarmItems.All(value => value.IsNonRemovable && !value.IsLootable) &&
+                            Sprint28InventoryExact(target.Descriptor.Inventory, hostileItems, hostileCounts) &&
+                            Sprint28PartyInventoryExact(partyItems, partyCounts);
+                        Sprint25Check(id + "-disarm-ready", readyDisarm, new JObject {
+                            ["owner"] = owner.UniqueId, ["source"] = target.UniqueId,
+                            ["weapon"] = manufactured?.Blueprint.AssetGuid,
+                            ["items"] = new JArray(disarmItems.Select(value => value.Blueprint.AssetGuid)) },
+                            "Exact owned manufactured weapon and hydrated natural alternative precede a real native Disarm.");
+                        if (!readyDisarm) throw new InvalidOperationException("Hound disarm preconditions failed.");
+                        var attempts = new JArray(); bool success = false;
+                        try
+                        {
+                            target.Stats.BaseAttackBonus.BaseValue = 50;
+                            for (int attempt = 0; attempt < 5 && !success; attempt++)
+                            {
+                                var result = Rulebook.Trigger(new RuleCombatManeuver(target, owner, CombatManeuver.Disarm));
+                                success = result.Success;
+                                attempts.Add(new JObject { ["success"] = success, ["partial"] = result.IsPartialSuccess });
+                            }
+                        }
+                        finally { target.Stats.BaseAttackBonus.BaseValue = targetBab; }
+                        bool disabled = owner.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff) != null;
+                        bool retained = success && disabled &&
+                            Sprint28InventoryExact(owner.Descriptor.Inventory, disarmItems, disarmCounts) &&
+                            disarmItems.All(value => ReferenceEquals(value.Owner, owner.Descriptor) && value.IsNonRemovable && !value.IsLootable) &&
+                            Sprint28InventoryExact(target.Descriptor.Inventory, hostileItems, hostileCounts) &&
+                            Sprint28PartyInventoryExact(partyItems, partyCounts);
+                        Sprint25Check(id + "-disarm-owned", retained, new JObject {
+                            ["owner"] = owner.UniqueId, ["source"] = target.UniqueId,
+                            ["attempts"] = attempts, ["nativeMainHandBuff"] = disabled, ["forcedRolls"] = 0,
+                            ["disposableSourceBab"] = 50, ["sourceBabRestored"] = target.Stats.BaseAttackBonus.BaseValue == targetBab,
+                            ["ownedInventoryExact"] = Sprint28InventoryExact(owner.Descriptor.Inventory, disarmItems, disarmCounts),
+                            ["sourceInventoryExact"] = Sprint28InventoryExact(target.Descriptor.Inventory, hostileItems, hostileCounts),
+                            ["partyExact"] = Sprint28PartyInventoryExact(partyItems, partyCounts) },
+                            "Native Disarm disables the sword without transferring, duplicating or exposing any summon-owned equipment as loot.");
+                        if (!retained) throw new InvalidOperationException("Hound disarm ownership failed.");
+                    }
                     if (natural)
                     {
                         var change = new UnitSwitchHandEquipmentSet(1); owner.Commands.Run(change);
@@ -60,7 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     var main = owner.Body.PrimaryHand.MaybeWeapon;
                     var bite = owner.Body.AdditionalLimbs.Select(slot => slot.MaybeWeapon).Single(value => value != null);
-                    items = new[] { main, bite };
+                    items = disarm ? disarmItems.OfType<ItemEntityWeapon>().ToArray() : new[] { main, bite };
                     var toggle = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
                         value.Blueprint.AssetGuid == "a7b339e4f6ff93a4697df5d7a87ff619");
                     var offMain = Sprint29WeaponRule(owner, main); var offBite = Sprint29WeaponRule(owner, bite);
@@ -87,6 +152,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["bonus"] = value.Bonus, ["source"] = value.Source?.Blueprint?.AssetGuid })) },
                         "Native toggle/buff, source-attributed attack modifiers and actual equipped weapon rules precede the resolved command.");
                     if (!source || !rules) throw new InvalidOperationException("Hound native Power Attack/rules precondition failed.");
+                    if (disarm)
+                    {
+                        bool fallback = natural && owner.Body.CurrentHandEquipmentSetIndex == 1 &&
+                            ReferenceEquals(main.Blueprint, owner.Blueprint.Body.PrimaryHandAlternative1) &&
+                            Sprint28InventoryExact(owner.Descriptor.Inventory, disarmItems, disarmCounts) &&
+                            disarmItems.All(value => ReferenceEquals(value.Owner, owner.Descriptor) && !value.IsLootable);
+                        Sprint25Check(id + "-natural-fallback", fallback, new JObject {
+                            ["owner"] = owner.UniqueId, ["activeSet"] = owner.Body.CurrentHandEquipmentSetIndex,
+                            ["slam"] = main.Blueprint.AssetGuid, ["bite"] = bite.Blueprint.AssetGuid,
+                            ["mainHandStillDisabled"] = owner.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff) != null,
+                            ["itemsExact"] = Sprint28InventoryExact(owner.Descriptor.Inventory, disarmItems, disarmCounts) },
+                            "The native equipment switch selects the existing slam/bite alternative without resupplying the sword; the actual full command follows.");
+                        if (!fallback) throw new InvalidOperationException("Hound disarm natural fallback failed.");
+                    }
                     owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
                     owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
                     Vector3 far; string lane, direction;
@@ -314,7 +393,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var actorCleanup = OutsiderMeleeCleanupState(fixture, owner, targetAc);
                 bool clean = (bool)actorCleanup["clean"] && privateResources.Length >= 3 && privateResources.All(value => value == null) &&
-                    !Game.Instance.State.AreaEffects.All.Except(areas).Any() && items.All(value => !value.IsLootable && value.Collection == null);
+                    !Game.Instance.State.AreaEffects.All.Except(areas).Any() && items.All(value => !value.IsLootable && value.Collection == null) &&
+                    (!disarm || disarmItems.All(value => !value.IsLootable && value.Collection == null) &&
+                        Sprint28PartyInventoryExact(partyItems, partyCounts) &&
+                        Sprint28InventoryExact(target.Descriptor.Inventory, hostileItems, hostileCounts));
                 Sprint25Check(id + "-cleanup", clean, new JObject {
                     ["actorCleanup"] = actorCleanup, ["queuesBeforePostCombatCancellation"] = queuesBeforePostCombatCancellation,
                     ["ownerAbsent"] = !owner.IsInState, ["privateCaptured"] = privateResources.Length,
@@ -328,6 +410,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                target.Stats.BaseAttackBonus.BaseValue = targetBab;
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
