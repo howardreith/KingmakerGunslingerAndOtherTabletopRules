@@ -4,8 +4,8 @@
 [CmdletBinding(SupportsShouldProcess=$true,ConfirmImpact='High')]
 param(
     [Parameter(Mandatory=$true)][string]$PackagePath,
-    [Parameter(Mandatory=$true)][ValidateSet('0.0.163')][string]$ExpectedVersion,
-    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-pin','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')][string]$Phase,
+    [Parameter(Mandatory=$true)][ValidateSet('0.0.163','0.0.164')][string]$ExpectedVersion,
+    [Parameter(Mandatory=$true)][ValidateSet('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-pin','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console','menus')][string]$Phase,
     [switch]$WithAlternateSources,
     [switch]$ExpandedSummoningDisabled
 )
@@ -28,7 +28,7 @@ $root=Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 . (Join-Path $PSScriptRoot 'TeleportationPersistence.Common.ps1')
 . (Join-Path $PSScriptRoot 'SummonCleanup2CurrentStack.Common.ps1')
-if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-pin','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console')){throw 'Exact case-sensitive Cleanup2 phase required.'}
+if($Phase -cnotin @('production-attacks','ettin-lifecycle','ettin-commands','elementals-presentation','elementals-console','elementals-sources','elementals-pin','elementals-learning','elementals-off','menu-adapters','giant-lineup','giants-off','scale-prototype','shared-controls','gorgon-presentation','recovery-bodies','creature-commands','alternate-console','menus')){throw 'Exact case-sensitive Cleanup2 phase required.'}
 Assert-KmgUnelevated
 Assert-KmgNotRunning
 $candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose 'summon-cleanup-iteration2'
