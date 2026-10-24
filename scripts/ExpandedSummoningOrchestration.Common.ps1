@@ -625,6 +625,15 @@ function Test-KmgSprint28DevelopmentPersistence {
 # The hidden Sprint 29 development package may enter only its exact selected
 # Working-save trio. This leaves candidate identity, save and release checks
 # in the installed-stack wrapper unchanged.
+function Test-KmgSprints3031DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'outsider-celestial' -or $Purpose -cne 'sprints30-31-persistence') {
+        throw 'Pilot development persistence permits only exact outsider-celestial scope and sprints30-31-persistence purpose.'
+    }
+    return $true
+}
+
 function Test-KmgSprint29DevelopmentPersistence {
     param([string]$Scope,[string]$Purpose)
     if([string]::IsNullOrEmpty($Purpose)){return $false}

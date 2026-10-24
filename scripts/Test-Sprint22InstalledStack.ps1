@@ -143,6 +143,9 @@ Assert-Stack ($arguments.SaveName -ceq $SaveName -and $arguments.ExitAfterComple
 $fixedDispelUi=$false;$PersistenceScope='giant-humanoids-ii'
 foreach($expression in $construction){. $expression}
 Assert-Stack ($arguments.Parameters.Count -eq 1 -and $arguments.Parameters.persistenceScope -ceq $PersistenceScope -and $arguments.CompletionTimeoutSeconds -eq 600) 'existing persistence forwarding and native budget remain unchanged'
+$fixedDispelUi=$false;$PersistenceScope='outsider-celestial';$DevelopmentPurpose='sprints30-31-persistence'
+foreach($expression in $construction){. $expression}
+Assert-Stack ($arguments.Parameters.Count -eq 1 -and $arguments.Parameters.persistenceScope -ceq $PersistenceScope -and $arguments.SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $arguments.ExitAfterCompletion -and $arguments.CompletionTimeoutSeconds -eq 600 -and $arguments.RuntimeLease -eq $lease -and $arguments.ReuseInstalledArtifact -and $arguments.DevelopmentPurpose -ceq $DevelopmentPurpose) 'pilot persistence actual request keeps fixed scope, native budget, purpose, lease, artifact and Working guards'
 $receiptNodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.IfStatementAst] -and $node.Extent.Text.Contains('NotePropertyName installedStackRecordPath')},$true))
 if($receiptNodes.Count -ne 1){throw 'Fixed UI installed-stack receipt binding is absent or ambiguous.'}
 $receiptBinding=[scriptblock]::Create($receiptNodes[0].Extent.Text)
