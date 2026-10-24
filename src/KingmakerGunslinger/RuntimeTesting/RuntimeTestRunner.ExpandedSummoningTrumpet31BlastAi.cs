@@ -240,7 +240,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     throw;
                 }
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
-                var graph = Pathfinding.AstarPath.active;
+                var graph = AstarPath.active;
                 if (graph == null) throw new InvalidOperationException("Positive native fixture lost its placement graph.");
                 var casterPoint = graph.GetNearest(origin + Vector3.back * 40f);
                 var anchorPoint = graph.GetNearest(origin + Vector3.back * 42f);
