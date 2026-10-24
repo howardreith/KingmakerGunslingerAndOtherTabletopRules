@@ -90,6 +90,8 @@ namespace KingmakerGunslinger.Summoning
         private float _tickBefore, _tickDelta;
         internal string Key { get { return _key; } }
         internal bool Ready { get { return _configured && !_released && ExactPalette() && _receipt != null && _receipt(); } }
+        // The skin whose culling envelope this currently widens, if any.
+        internal Renderer CullingEnvelopeRenderer { get { return Ready && _renderer.localBounds.Equals(_ownedBounds) ? _renderer : null; } }
         internal IList<Schedule> Schedules { get { return _schedules.AsReadOnly(); } }
 
         internal void Configure(string key, UnitEntityView view, SkinnedMeshRenderer renderer, Func<bool> receipt)
