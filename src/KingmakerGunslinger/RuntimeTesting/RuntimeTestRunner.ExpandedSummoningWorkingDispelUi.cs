@@ -69,6 +69,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             return false;
         }
 
+        private readonly List<JObject> _sprints30DispelUiErrors = new List<JObject>();
+        private int _sprints30DispelUiErrorCount;
+        private bool _sprints30DispelUiListenerAttached, _sprints30DispelUiListenerRemoved;
+
+        private void ObserveDispelUiError(string message, string trace, UnityEngine.LogType type)
+        {
+            if (type != UnityEngine.LogType.Error && type != UnityEngine.LogType.Exception &&
+                type != UnityEngine.LogType.Assert) return;
+            _sprints30DispelUiErrorCount++;
+            if (_sprints30DispelUiErrors.Count >= 64) return;
+            _sprints30DispelUiErrors.Add(new JObject { ["sequence"] = _sprints30DispelUiErrorCount,
+                ["utc"] = DateTime.UtcNow.ToString("o"), ["type"] = type.ToString(),
+                ["message"] = message == null || message.Length <= 4096 ? message : message.Substring(0, 4096),
+                ["trace"] = trace == null || trace.Length <= 16384 ? trace : trace.Substring(0, 16384) });
+        }
+
         private IEnumerator<int> _sprints30WorkingUiSteps;
         private DateTime _sprints30WorkingUiDeadline;
         private readonly List<RuntimeTestAssertion> _sprints30WorkingUiAssertions =
@@ -103,6 +119,20 @@ namespace KingmakerGunslinger.RuntimeTesting
             try { _sprints30WorkingUiSteps.Dispose(); }
             catch (Exception failure) { error = error == null ? failure : new AggregateException(error, failure); }
             _sprints30WorkingUiSteps = null;
+            string uiErrorsPath = System.IO.Path.Combine(_request.EvidenceDirectory,
+                "sprints30-31-dispel-ui-errors.json");
+            RuntimeTestResultWriter.WriteAtomic(uiErrorsPath, new JObject {
+                ["runId"] = _request.RunId, ["scope"] = "UI interaction after sealed native Working load; all errors/exceptions/asserts block",
+                ["count"] = _sprints30DispelUiErrorCount, ["overflow"] = _sprints30DispelUiErrorCount > 64,
+                ["listenerAttached"] = _sprints30DispelUiListenerAttached,
+                ["listenerRemoved"] = _sprints30DispelUiListenerRemoved,
+                ["errors"] = new JArray(_sprints30DispelUiErrors) }.ToString(Newtonsoft.Json.Formatting.Indented));
+            bool uiErrorsClean = _sprints30DispelUiErrorCount == 0 &&
+                _sprints30DispelUiListenerAttached && _sprints30DispelUiListenerRemoved;
+            _sprints30WorkingUiAssertions.Add(Assertion("sprints30-31-dispel-ui-native-errors",
+                "Both native owned menus open/click/reset without Unity errors, exceptions or asserts; UI listener removed.",
+                "errors=" + _sprints30DispelUiErrorCount + ";listenerRemoved=" + _sprints30DispelUiListenerRemoved,
+                uiErrorsClean, uiErrorsPath));
             WorkingSaveSmokeEvidence save = _workingSaveSmoke.Stop();
             bool readOnly = save.WorkingMatchCount == 1 && save.BaselineMatchCount == 1 &&
                 save.DescriptorReferenceCorrelated && save.ExpectedWorkingSaveRoutineCount == 0 &&
@@ -125,6 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail,
                 _sprints30WorkingUiAssertions, error?.ToString());
             result.WorkingSaveSmoke = save;
+            result.EvidenceFiles.Add(uiErrorsPath);
             _sprints30DispelScreens?.AppendEvidence(result.EvidenceFiles);
             Complete(result);
         }
@@ -137,6 +168,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 game.CurrentMode != GameModeType.Default || game.SelectedAbilityHandler == null ||
                 game.SelectedAbilityHandler.Ability != null || _workingSaveSmoke.WriteObserved)
                 throw new InvalidOperationException("Working Dispel UI requires the exact read-only case and idle native Default-mode input.");
+            SealDispelUiLoadDiagnostics();
             var unitsBefore = game.State.Units.All.ToArray();
             var partyBefore = game.Player.Party.ToArray();
             var areasBefore = game.State.AreaEffects.All.ToArray();
@@ -155,6 +187,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             _sprints30DispelScreens = new NativeIconScreenEvidence(_request);
             try
             {
+                UnityEngine.Application.logMessageReceived += ObserveDispelUiError;
+                _sprints30DispelUiListenerAttached = true;
                 game.IsPaused = true;
                 // Two fixed actual users, each followed by a verified reset.
                 foreach (string key in new[] { "trumpet-archon", "astral-deva" })
@@ -270,18 +304,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                if (masterCaptured && owner != null && !owner.Destroyed) owner.Descriptor.Master = originalMaster;
-                if (factionCaptured && owner != null && !owner.Destroyed)
+                try
                 {
-                    var part = owner.Get<UnitPartSummonedMonster>();
-                    if (part != null) part.IsDirectlyControllable = originalControl;
-                    owner.Descriptor.SwitchFactions(originalFaction, false);
+                    if (masterCaptured && owner != null && !owner.Destroyed) owner.Descriptor.Master = originalMaster;
+                    if (factionCaptured && owner != null && !owner.Destroyed)
+                    {
+                        var part = owner.Get<UnitPartSummonedMonster>();
+                        if (part != null) part.IsDirectlyControllable = originalControl;
+                        owner.Descriptor.SwitchFactions(originalFaction, false);
+                    }
+                    if (fixture != null) { bool ignored; EndExpandedSummoningCorrectionFixture(fixture, out ignored); }
+                    foreach (var snapshot in uiSettings) snapshot.Restore();
+                    _sprints30DispelScreens.Dispose();
+                    UnityEngine.Random.state = randomBefore;
+                    game.IsPaused = paused;
                 }
-                if (fixture != null) { bool ignored; EndExpandedSummoningCorrectionFixture(fixture, out ignored); }
-                foreach (var snapshot in uiSettings) snapshot.Restore();
-                _sprints30DispelScreens.Dispose();
-                UnityEngine.Random.state = randomBefore;
-                game.IsPaused = paused;
+                finally
+                {
+                    UnityEngine.Application.logMessageReceived -= ObserveDispelUiError;
+                    _sprints30DispelUiListenerRemoved = true;
+                }
             }
             bool world = game.State.Units.All.SequenceEqual(unitsBefore) && game.Player.Party.SequenceEqual(partyBefore) &&
                 game.State.AreaEffects.All.SequenceEqual(areasBefore) && game.TimeController.GameTime == timeBefore &&
