@@ -1,5 +1,34 @@
 # Original Griffon body
 
+## Cleanup iteration 2 (2026-10-21)
+
+`refine_griffon.py` supersedes the feasibility generator for the current export.
+It reads `cleanup2-griffon-input.json`, the exact original project .163 geometry
+export, and the shared continuous-body library. No native bind transforms,
+geometry, textures or animation curves are supplied or reconstructed.
+
+The baseline's 75 components were already outward/closed. Exact-byte renders
+instead showed needle-like feather rows, exposed primitive shoulder joins,
+long thin foretalons and a straight rod tail with a ball tip. The current mesh
+unions the lion body/eagle neck/forelimb skin, broadens the scapular bridges under
+closed feather coverts, replaces needles with overlapping tapered vanes over
+closed fan webs, shortens/root-connects the foretalons and authors a curved
+muscular tail with a tapered swept tuft. Original native bone names/weights
+transfer over closest triangles and are smoothed; no animation/mechanics change.
+A new painted 1024px albedo blends the eagle/lion regions over the new UVs.
+
+```text
+blender -b --factory-startup --python-exit-code 1 -P assets-source/original-models/sprint27-griffon/refine_griffon.py -- --output-dir <absolute assets/sprint27-griffon> --work-dir <absolute private output>
+```
+
+Use Blender 4.5.10 LTS and `PYTHONHASHSEED=0`. Two clean runs match byte for byte.
+Exact-byte culling renders were inspected front/side/rear/party/below; these are
+synthetic stills. Native travel, turns, attacks, and actual implemented transition
+states still require review. Owner acceptance is pending. Exact asset identities
+and known limits are in `planning/CLEANUP2-LARGE-CREATURES-NOTES.md`.
+
+## Retained Sprint 27 baseline record
+
 Project-owned geometry, UVs and deterministic matte albedo, authored by
 build_griffon.py using established project primitives and schema-2 exporter.
 Blender4.5.10 LTS; one2,930-vertex/5,560-triangle feasibility prototype.

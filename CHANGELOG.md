@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.164-expanded-summoning-cleanup2
+
+- Redraws the Giant Crab, Girallon, Giant Stag Beetle, Griffon, Elephant,
+  Stegosaurus, Brachiosaurus and Gorgon bodies and gives the Ettin one body
+  with two authored heads.
+- Gives the six giant families their own palettes and visual heights; their
+  mechanical size, reach and collision are unchanged.
+- Adds the painted Horse icon, family-first summon names, the Druid Call of
+  the Wild conversion rows, family-first alternate-summoner menus, and the
+  source-preserving elemental chooser, learning and preparation. No rule or
+  saved identity changes. The owner approved the artwork. See the
+  [v0.0.164 release notes](docs/RELEASE-NOTES-0.0.164.md).
+
 ## 0.0.162-expanded-summoning-sprint28-giants
 
 - Adds the adult Hill, Stone, and Fire Giants and eleven SNA-only quantity roots.

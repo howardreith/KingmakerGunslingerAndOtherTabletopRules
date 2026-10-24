@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "Expanded Summoning Sprint 27 - Griffon",
+  "milestone": "0.0.164-expanded-summoning-cleanup2",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.163",
+  "version": "0.0.164",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2618,5 +2618,20 @@
     "qualificationEvidence": "Separate exact-artifact Sprint 29 release ledger; this source record does not claim native, public-route or publication acceptance.",
     "scope": "Adult Ettin, Cloud Giant and Storm Giant; eight untemplated SNA-only roots; named skill, movement and static-wall object limitations disclosed without replacing required combat magic.",
     "stage": "public"
+  },
+  "expandedSummoningCleanup2Release164": {
+    "releaseVersion": "0.0.164",
+    "releaseInformationalVersion": "0.0.164-expanded-summoning-cleanup2",
+    "baseStableVersion": "0.0.163",
+    "change": "Summon Cleanup Iteration 2: revised Crab, Girallon, Stag Beetle, Stegosaurus, Elephant, Brachiosaurus, Griffon, Gorgon and two-headed Ettin bodies, owned giant palettes and relative render scale, the painted Horse icon, family-first summon labels, the Druid Call of the Wild conversion projection, alternate-source menus and the source-preserving elemental chooser, learning and preparation",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "modifiedAssets": 33,
+    "addedAssets": 22,
+    "productionFiles": 74,
+    "addedProjectLines": 62,
+    "visibleChoiceTotal": 1156,
+    "guardedNativeReviewed": true,
+    "ownerVisualReview": "artwork approved by the owner on 2026-10-23"
   }
 }

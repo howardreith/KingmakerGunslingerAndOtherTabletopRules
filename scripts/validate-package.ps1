@@ -67,6 +67,7 @@ try {
         'docs\RELEASE-NOTES-0.0.161.md',
         'docs\RELEASE-NOTES-0.0.162.md',
         'docs\RELEASE-NOTES-0.0.163.md',
+        'docs\RELEASE-NOTES-0.0.164.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -87,6 +88,7 @@ try {
         'assets\flying-animals\stirge-albedo.png',
         'assets\ungulates\gorgon-mesh.json',
         'assets\ungulates\gorgon-albedo.png',
+        'assets\ungulates\gorgon-parameters.png',
         'assets\ungulates\aurochs-mesh.json',
         'assets\ungulates\aurochs-albedo.png',
         'assets\ungulates\bison-mesh.json',
@@ -161,21 +163,28 @@ try {
         'blueprints\blueprints.json',
         'blueprints\blueprints.schema.json'
     )
-    # The two original Sprint 18 ape bodies, pinned to the exact files
-    # the offline review passed. A mesh without its own painting is not
-    # the reviewed creature, so both halves are checked.
-    $primateBodies = @{
-        'assets\sprint27-griffon\griffon-mesh.json' = '4694292d3cc275590fddade1e68169968884185573cc172455daf8b875e048ac'
-        'assets\sprint27-griffon\griffon-albedo.png' = '997a14e3fc55a642136c2bf33612c650c36dd3f4153f5abfb7d8642f0912ec78'
+    function Assert-KmgProtectedBodyExports {
+    param([Parameter(Mandatory=$true)][string]$ModDirectory)
+    # Curated mesh/painting pairs admitted by technical export review. Cleanup 2
+    # replaces the Girallon, Crab and Griffon pins and adds the other revised
+    # Stag Beetle, Stegosaurus, Elephant, Brachiosaurus and Gorgon pairs. This checks
+    # exact export integrity; owner visual approval remains pending separately.
+    # All unrelated protected pairs retain their existing exact identities.
+    $protectedBodyExports = @{
+        'assets\ungulates\gorgon-mesh.json' = '2d524e002371fe10ca3f89ac2b59a32de823711cc3d05fc2e174104bb6f53370'
+        'assets\ungulates\gorgon-albedo.png' = '8974f854b188eb5f40589b214a6babca9df7fb002c2038f56109a46199075ffe'
+        'assets\ungulates\gorgon-parameters.png' = '241c44e0ef86feac0acde88abd835c29ee138791e2b31af4d3b92133ea7d1351'
+        'assets\sprint27-griffon\griffon-mesh.json' = 'e3db5d71b8f4c2bf4647bbcfdcea1b2438f4a060ad3d6c1ddc3ec6649af3eab9'
+        'assets\sprint27-griffon\griffon-albedo.png' = '1ccd2ade87b48b1162910270395c32c294c7e84c20c3f961b8e720b40eddd124'
 
-        'assets\sprint19-fourarmed\girallon-mesh.json' = '003512a54f6daeabd483f7cb85b1e84bf05b57b0d45a9ab1374cc09ca857d0bb'
-        'assets\sprint19-fourarmed\girallon-albedo.png' = '21e970e238983c79971709e05d562c3b04b5534a2019eeb55b491ff31fc0dfe6'
+        'assets\sprint19-fourarmed\girallon-mesh.json' = 'd6a160c6b336cc0dc812f62ce03c90c5faa5baf611fcb46c7e81130ad71ca119'
+        'assets\sprint19-fourarmed\girallon-albedo.png' = '3070d2d51d578060fd74bcc7b85ef074491699b0701768707ebc655fa06cc841'
         'assets\sprint19-fourarmed\xill-mesh.json' = 'd7a0cb0ade14f00e6df09bc8b5a57654083cbd1ebe23599fcdb37ec497f1a243'
         'assets\sprint19-fourarmed\xill-albedo.png' = 'eca0206533fad6c67cb2cbce79c5ff4eac7987b3311229c8d9f6b883522999fa'
         'assets\sprint20-arachnids\giant-scorpion-mesh.json' = '1b48a74e4296f4fc0e4903b3fa9ec1b776aae1b85f512d91ebc833e3619bba7f'
         'assets\sprint20-arachnids\giant-scorpion-albedo.png' = 'c4a5a29d54ee52c3c1679de55a6c0f3d7e46e8ad56d02b0c25e51c43f55feb1a'
-        'assets\sprint21-arthropods\giant-crab-mesh.json' = 'dd7448eb9fc384350baf734fa8e7430994a5b4c08858f79b53eab1c30d2ed8eb'
-        'assets\sprint21-arthropods\giant-crab-albedo.png' = '42be10115e53644da45f66f5e1d9beb989a310eeee061756d1fe842d78c07781'
+        'assets\sprint21-arthropods\giant-crab-mesh.json' = '75a6d5d625f8e88d9cfccec0de3d411610123be0f94f4655d5fc9eeadaf05472'
+        'assets\sprint21-arthropods\giant-crab-albedo.png' = 'ef06b21b0654bcee40ca893cfff28c20e5fea469402cadb1d7a3a524f8e48112'
         'assets\sprint21-arthropods\bebelith-mesh.json' = '7ff4e4dd8fc8edf4beb9dd983f245c329f40d94c751111888e8c5c658d1ab68e'
         'assets\sprint21-arthropods\bebelith-albedo.png' = 'afd98003bcc96ae32db4c3da63fdf3377d84f07141148ef7742cf8d3742fd554'
         'assets\ankylosaurus\ankylosaurus-mesh.json' = '3eb7585e6f410711c7bf84bf4e23ff0df2c04fbe06ec226a0552a715c9fa9ca9'
@@ -184,13 +193,24 @@ try {
         'assets\sprint18-primates\ape-mesh.json' = '2f0196eca297019770894b66d69cb474e9bba59c449a95590326f888086631ee'
         'assets\sprint18-primates\dire-ape-albedo.png' = '37bdc23e705bfa0771105b768d1cd052157dfdc1d2c6bbd2a99236cf8268e219'
         'assets\sprint18-primates\dire-ape-mesh.json' = 'd0c1d0324cf7a12bbbc9b64874dfefb3ba010fb82020b87f72a47c9d9658700a'
+
+        'assets\sprint14-insects\giant-stag-beetle-mesh.json' = '2ecf222413eb857051b70df8b5fd61592a939108c7661ccdfb96f20fbcea794d'
+        'assets\sprint14-insects\giant-stag-beetle-albedo.png' = '967d506b96019914fd40363cc80b21b0ce08f80662ef96ef259f5e0a8caecde4'
+        'assets\sprint23-armored-dinosaurs\stegosaurus-mesh.json' = '3f9e1a219de1372bfec4db521a6de02e04771ea8e2bfc53d64a8435f440d466e'
+        'assets\sprint23-armored-dinosaurs\stegosaurus-albedo.png' = 'ab6d343e35377b0cb9d73a8b5a2ab19e70b4cfe1c6a0cb21f109673fa883d6d6'
+        'assets\sprint25-giant-bodies\elephant-mesh.json' = '5afe5464331a083c0de63d7b4bee4a1266d71376fb8360f7d96b0bf7a4f13028'
+        'assets\sprint25-giant-bodies\elephant-albedo.png' = '5a973962a26dbf38208b66feeb5ffd154d469ac69b25137ae487b9d6767f2919'
+        'assets\sprint25-giant-bodies\brachiosaurus-mesh.json' = '73f3689c5abdda09fb68f9e08182cf671c6a753966bedaf21ebb16877c04c57c'
+        'assets\sprint25-giant-bodies\brachiosaurus-albedo.png' = '160e4b71ae1335d6df37a0d8eac491e863b82dc272cfe24e42173a6d40107ea4'
     }
-    foreach ($entry in $primateBodies.GetEnumerator()) {
-        $path = Join-Path $modDirectory $entry.Key
-        if ((Get-KmgSha256 -Path $path) -cne $entry.Value) {
-            throw "A packaged protected original body differs from its reviewed export: $($entry.Key)"
+    foreach ($entry in $protectedBodyExports.GetEnumerator()) {
+        $path = Join-Path $ModDirectory $entry.Key
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or (Get-KmgSha256 -Path $path) -cne $entry.Value) {
+            throw "A packaged protected original body differs from its current technical export: $($entry.Key)"
         }
     }
+    }
+    Assert-KmgProtectedBodyExports -ModDirectory $modDirectory
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
     if ((Get-KmgSha256 -Path $humanMesh) -cne 'b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19') {
         throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'

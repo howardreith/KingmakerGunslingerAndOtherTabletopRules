@@ -112,6 +112,7 @@ param(
         'disposable-expanded-summoning-sprint27-native-review',
         'disposable-expanded-summoning-sprint28-native-review',
         'disposable-expanded-summoning-sprint29-native-review',
+        'disposable-expanded-summoning-cleanup2-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
         'summon-same-turn-multiple',
@@ -149,11 +150,15 @@ $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
+. (Join-Path (Split-Path $PSScriptRoot) 'RuntimeAutomation.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'ExpandedSummoningOrchestration.Common.ps1')
-if ($ExpandedSummoningDisabled -and
+. (Join-Path (Split-Path $PSScriptRoot) 'SummonCleanup2CurrentStack.Common.ps1')
+$cleanup2ModuleOff = $Scenario.Count -eq 1 -and
+    (Test-KmgCleanup2ModuleOffScope -Scenario $Scenario[0] -Parameters $Parameters)
+if ($ExpandedSummoningDisabled -and -not $cleanup2ModuleOff -and
     ($Scenario.Count -ne 1 -or $Scenario[0] -cne 'working-save-expanded-summoning-verify-cleanup' -or
         $Parameters.saveName -cne 'KMG_AUTOMATION_WORKING' -or $Parameters.persistenceScope -cne 'ankylosaurus')) {
-    throw 'Sprint 22 module OFF requires the exact Ankylosaurus working-save verify/cleanup request.'
+    throw 'Module OFF requires exact Ankylosaurus verify/cleanup or a save-free Cleanup2 native menus, giants, learning or controller presentation request.'
 }
 if (-not [string]::IsNullOrWhiteSpace($DeploymentManifestPath)) {
     throw 'A profile transaction requires a fresh deployment record; an external -DeploymentManifestPath cannot survive restoration/profile changes.'
@@ -245,7 +250,8 @@ $sprint22ReviewScenario = @($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint26-native-review',
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
-    'disposable-expanded-summoning-sprint29-native-review') }).Count -gt 0
+    'disposable-expanded-summoning-sprint29-native-review',
+    'disposable-expanded-summoning-cleanup2-native-review') }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
 }
@@ -304,6 +310,8 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai','ai-turns','items','disarm','awesome','awesome-turn','catch','cleave','vital','vital-turn','routes')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and
+            -not (Test-KmgCleanup2ReviewPhaseScope -Scenario $Scenario[0] -Parameters $Parameters)) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
@@ -437,8 +445,8 @@ try {
     }
     if ($ExpandedSummoningDisabled) {
         $settingsPath = Join-Path $KingmakerInstallDir 'Mods\KingmakerGunslinger\FeatureModules.json'
-        $settingsBefore = [IO.File]::ReadAllBytes($settingsPath)
-        $settingsOff = ConvertTo-KmgDisabledExpandedSummoningSettingsBytes -OriginalBytes $settingsBefore
+        $settingsOff = Get-KmgExpandedSummoningOffSettingsBytes -SettingsPath $settingsPath `
+            -AllowMissingDefaults:$cleanup2ModuleOff
         [IO.File]::WriteAllBytes($settingsPath, $settingsOff)
     }
     if ($moduleScenario) {
@@ -505,7 +513,8 @@ try {
             'disposable-expanded-summoning-sprint26-native-review',
             'disposable-expanded-summoning-sprint27-native-review',
             'disposable-expanded-summoning-sprint28-native-review',
-            'disposable-expanded-summoning-sprint29-native-review')) {
+            'disposable-expanded-summoning-sprint29-native-review',
+            'disposable-expanded-summoning-cleanup2-native-review')) {
             $arguments.Parameters = $Parameters
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -574,7 +583,8 @@ try {
             'disposable-expanded-summoning-sprint26-native-review',
             'disposable-expanded-summoning-sprint27-native-review',
             'disposable-expanded-summoning-sprint28-native-review',
-            'disposable-expanded-summoning-sprint29-native-review')) {
+            'disposable-expanded-summoning-sprint29-native-review',
+            'disposable-expanded-summoning-cleanup2-native-review')) {
             $configurationId += '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'observe-kmg-compatibility-asset-attribution') {
@@ -585,6 +595,9 @@ try {
         }
         if ($name -ceq 'disposable-expanded-summoning-sprint29-native-review') {
             $configurationId = 's29-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
+        }
+        if ($name -ceq 'disposable-expanded-summoning-cleanup2-native-review') {
+            $configurationId = 'cleanup2-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'disposable-expanded-summoning-sprint27-native-review' -and
             $configurationId.Length -gt 120) {
@@ -610,6 +623,23 @@ catch {
     $primaryError = $_
 }
 finally {
+    # Cleanup 2 save-free reviews also run under an outer protected-save
+    # catalog in this same process. Keep its OS handles AND this lease alive
+    # if native result writing suppresses automatic exit. A throw here would
+    # otherwise unwind the original standalone host and release those guards.
+    if ($entered -and $Scenario.Count -eq 1 -and
+        $Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review') {
+        try { Wait-KmgSummonCleanup2Exit }
+        catch {
+            $exitFailure = $_
+            if ($null -eq $primaryError) { $primaryError = $exitFailure }
+            $exitRecord = [ordered]@{ schemaVersion=1; transactionRunId=$runId;
+                scenario=$Scenario[0]; status='FAILED'; restoration=$null }
+            Wait-KmgSummonCleanup2ProtectedExit -Record $exitRecord `
+                -RecordPath (Join-Path $StateRoot "$runId/cleanup2-protected-exit.json") `
+                -ExitFailure $exitFailure
+        }
+    }
     if ($null -ne $compatRuntimeLease) { $compatRuntimeLease.Stream.Dispose() }
     if ($entered) {
         $deadline = [DateTime]::UtcNow.AddSeconds(60)

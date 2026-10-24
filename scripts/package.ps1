@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-sprint29-giants.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-cleanup2.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -82,7 +82,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.160.md',
     'docs\RELEASE-NOTES-0.0.161.md',
     'docs\RELEASE-NOTES-0.0.162.md',
-    'docs\RELEASE-NOTES-0.0.163.md')) {
+    'docs\RELEASE-NOTES-0.0.163.md',
+    'docs\RELEASE-NOTES-0.0.164.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -139,6 +140,7 @@ if (Test-Path -LiteralPath $ungulateSource -PathType Container) {
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-mesh.json") -Destination $ungulateDestination
         Copy-Item -LiteralPath (Join-Path $ungulateSource "$kind-albedo.png") -Destination $ungulateDestination
     }
+    Copy-Item -LiteralPath (Join-Path $ungulateSource 'gorgon-parameters.png') -Destination $ungulateDestination
 }
 $sprint12QuadrupedSource = Join-Path $outputDirectory 'assets\sprint12-quadrupeds'
 if (Test-Path -LiteralPath $sprint12QuadrupedSource -PathType Container) {
@@ -280,7 +282,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # three giant portraits and the v0.0.162 release notes. Sprint29 adds
 # three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1
+# Cleanup2 adds one authored Gorgon material-parameter map and the v0.0.164
+# release notes.
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + 1 + 1
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

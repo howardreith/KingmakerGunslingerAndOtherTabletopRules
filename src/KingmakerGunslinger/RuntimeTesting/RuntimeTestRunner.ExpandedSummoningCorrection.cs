@@ -66,6 +66,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal BlueprintScriptableObject[] Blueprints;
             internal UnitEntityData Caster;
             internal BlueprintUnit CasterBlueprint;
+            internal Cleanup2CharacterCpuReference CpuReference;
             internal Kingmaker.EntitySystem.SceneEntitiesState Scene;
             internal object SceneEntities;
             internal object AllUnits;
@@ -123,30 +124,66 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "The guarded working save has no party unit in an exact area state.");
             fixture.Scene = areaAnchor.HoldingState;
-            fixture.CasterBlueprint = UnityEngine.Object.Instantiate(
-                BlueprintRoot.Instance.DefaultPlayerCharacter);
-            fixture.CasterBlueprint.name = casterName;
-            fixture.CasterBlueprint.IsCheater = true;
-            fixture.Caster = Game.Instance.EntityCreator.SpawnUnit(fixture.CasterBlueprint,
-                areaAnchor.Position, Quaternion.identity, fixture.Scene);
-            if (fixture.Caster == null || fixture.Caster.View == null ||
-                fixture.Caster.View.Data == null)
-                throw new InvalidOperationException(
-                    "Native entity creation did not produce a live caster view.");
-            Game.Instance.EntityCreator.Tick();
-            if (!fixture.Caster.IsInState)
-                throw new InvalidOperationException(
-                    "The disposable caster did not enter the exact loaded-area state.");
-            fixture.SceneEntities = fixture.Scene.AllEntityData;
-            fixture.Caster.Descriptor.Stats.HitPoints.BaseValue = 100000;
-            // A good caster: the Summon Monster executions of templated
-            // creatures choose the celestial template from the caster's
-            // alignment, and the disposable caster stays out of the AI.
-            fixture.Caster.Descriptor.Alignment.Set(Alignment.NeutralGood);
-            SetExpandedSummoningBrainActive(fixture.Caster, false);
-            PlaceExpandedSummoningUnit(fixture.Caster, fixture.Caster.Position);
-            fixture.ExactStart = SnapshotReferences(fixture.SceneEntities);
-            return fixture;
+            bool cpuReferenceRequested = Cleanup2CharacterCpuReference.RequestAllowed(_request);
+            try
+            {
+                fixture.CasterBlueprint = UnityEngine.Object.Instantiate(
+                    BlueprintRoot.Instance.DefaultPlayerCharacter);
+                fixture.CasterBlueprint.name = casterName;
+                fixture.CasterBlueprint.IsCheater = true;
+                if (cpuReferenceRequested)
+                {
+                    BlueprintRace human = BlueprintLibraryLookup.RequireExact<BlueprintRace>(BlueprintBootstrap.Library,
+                        "0a5d473ead98b0646b94495af250fdc4", "Cleanup2 request-owned Human CPU-reference fixture");
+                    if (!BlueprintRoot.Instance.Progression.CharacterRaces.Any(race => ReferenceEquals(race, human)))
+                        throw new InvalidOperationException("Exact registered Human race is absent from native progression.");
+                    // The native pre-chargen default has no chosen race. Set
+                    // only this request-owned clone before its native build;
+                    // later descriptor/fact verification remains unchanged.
+                    fixture.CasterBlueprint.Race = human;
+                    fixture.CpuReference = Cleanup2CharacterCpuReference.Begin(_request, fixture.CasterBlueprint);
+                }
+                fixture.Caster = Game.Instance.EntityCreator.SpawnUnit(fixture.CasterBlueprint,
+                    areaAnchor.Position, Quaternion.identity, fixture.Scene);
+                if (fixture.Caster == null || fixture.Caster.View == null ||
+                    fixture.Caster.View.Data == null)
+                    throw new InvalidOperationException(
+                        "Native entity creation did not produce a live caster view.");
+                Game.Instance.EntityCreator.Tick();
+                if (!fixture.Caster.IsInState)
+                    throw new InvalidOperationException(
+                        "The disposable caster did not enter the exact loaded-area state.");
+                fixture.SceneEntities = fixture.Scene.AllEntityData;
+                fixture.Caster.Descriptor.Stats.HitPoints.BaseValue = 100000;
+                // A good caster: the Summon Monster executions of templated
+                // creatures choose the celestial template from the caster's
+                // alignment, and the disposable caster stays out of the AI.
+                fixture.Caster.Descriptor.Alignment.Set(Alignment.NeutralGood);
+                SetExpandedSummoningBrainActive(fixture.Caster, false);
+                PlaceExpandedSummoningUnit(fixture.Caster, fixture.Caster.Position);
+                fixture.ExactStart = SnapshotReferences(fixture.SceneEntities);
+                return fixture;
+            }
+            catch (Exception constructionError)
+            {
+                // The caller cannot own a fixture which was never returned.
+                // This new request-only lease must still release on partial
+                // construction, using only this fixture's positive references.
+                if (cpuReferenceRequested)
+                {
+                    try
+                    {
+                        if (fixture.SceneEntities != null && fixture.ExactStart == null)
+                            fixture.ExactStart = SnapshotReferences(fixture.SceneEntities);
+                        bool cleaned;
+                        EndExpandedSummoningCorrectionFixture(fixture, out cleaned);
+                        if (!cleaned) throw new InvalidOperationException("Partial CPU-reference fixture did not restore its exact census.");
+                    }
+                    catch (Exception cleanupError)
+                    { throw new AggregateException("CPU-reference fixture construction and cleanup failed.", constructionError, cleanupError); }
+                }
+                throw;
+            }
         }
 
         /// <summary>
@@ -238,6 +275,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                Exception cpuReleaseError = null;
+                if (fixture.CpuReference != null)
+                {
+                    JObject receipt = fixture.CpuReference.Describe();
+                    try { fixture.CpuReference.Dispose(); fixture.CpuReference = null; }
+                    catch (Exception error) { cpuReleaseError = error; }
+                    receipt["leaseReleased"] = cpuReleaseError == null;
+                    receipt["releaseError"] = cpuReleaseError == null ? null : cpuReleaseError.GetType().Name + ":" + cpuReleaseError.Message;
+                    try { Cleanup2Check("character-cpu-reference-lease-released", cpuReleaseError == null, receipt,
+                        "Only the exact request-owned Character CPU-reference hook and transient records are removed before caster destruction."); }
+                    catch (Exception evidenceError)
+                    { cpuReleaseError = cpuReleaseError == null ? evidenceError : new AggregateException(cpuReleaseError, evidenceError); }
+                }
                 _expandedSummoningRuleCaptureActive = false;
                 ExpandedSummoningRuleCapture.Clear();
                 if (fixture.SummonRuleMethod != null)
@@ -258,11 +308,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.EntityDestroyer.Tick();
                 if (fixture.CasterBlueprint != null)
                     UnityEngine.Object.Destroy(fixture.CasterBlueprint);
-                cleaned = SameReferences(fixture.UnitsBefore, SnapshotReferences(fixture.AllUnits)) &&
+                cleaned = cpuReleaseError == null && SameReferences(fixture.UnitsBefore, SnapshotReferences(fixture.AllUnits)) &&
                     SameReferences(fixture.PartyBefore, SnapshotReferences(fixture.Party)) &&
                     fixture.OriginalAreas.All(pair => !pair.Key.Destroyed &&
                         ReferenceEquals(pair.Key.HoldingState, pair.Value)) &&
                     (fixture.Caster == null || !ContainsReference(fixture.AllUnits, fixture.Caster));
+                if (cpuReleaseError != null)
+                    throw new InvalidOperationException("Exact CPU-reference lease teardown failed.", cpuReleaseError);
             }
         }
 

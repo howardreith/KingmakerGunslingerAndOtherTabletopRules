@@ -1024,6 +1024,37 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly System.Reflection.MethodInfo executions=typeof(Kingmaker.Controllers.AbilityExecutionProcess).GetMethod("Tick");
             private readonly Dictionary<Kingmaker.Controllers.AbilityExecutionProcess,int> executionFrames=new Dictionary<Kingmaker.Controllers.AbilityExecutionProcess,int>();
             private bool inPulse;
+            private NativeDefaultLease nativeDefault;
+            private int nativeActions, nativeCooldowns, nativeExecutions, refusedNativeTicks;
+            private sealed class NativeDefaultLease : IDisposable
+            {
+                internal Sprint26ClockGate Gate;
+                internal Func<bool> Current;
+                public void Dispose()
+                {
+                    if(Gate==null)return;
+                    if(!ReferenceEquals(active,Gate) || !ReferenceEquals(Gate.nativeDefault,this) || Gate.inPulse)
+                        throw new InvalidOperationException("Native Default clock-gate ownership changed.");
+                    Gate.nativeDefault=null;Gate.executionFrames.Clear();Gate=null;
+                }
+            }
+            internal IDisposable AllowOwnedNativeDefault(Func<bool> current)
+            {
+                if(!ReferenceEquals(active,this) || inPulse || nativeDefault!=null || current==null || !current())
+                    throw new InvalidOperationException("One exact active native Default scope is required.");
+                executionFrames.Clear();
+                return nativeDefault=new NativeDefaultLease {Gate=this,Current=current};
+            }
+            internal void AssertManualPulseAllowed()
+            {
+                if(nativeDefault!=null)throw new InvalidOperationException("Manual fixture pulse refused while native Default owns progression.");
+            }
+            private bool NativeDefaultCurrent()
+            {
+                bool current=nativeDefault.Current();
+                if(!current)refusedNativeTicks++;
+                return current;
+            }
             private int blockedActions, blockedCooldowns, allowedActions, allowedCooldowns, maximumPerFrame;
             private int allowedExecutions,blockedDuplicateExecutions,maximumExecutionTicks;
             private readonly Dictionary<string, int> perFrame = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -1040,12 +1071,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     active = this;
                 } catch { Dispose(); throw; }
             }
-            internal void BeginPulse() { if (inPulse) throw new InvalidOperationException("Nested native frame pulse."); inPulse = true; }
+            internal void BeginPulse() { AssertManualPulseAllowed(); if (inPulse) throw new InvalidOperationException("Nested native frame pulse."); inPulse = true; }
             internal void EndPulse() { inPulse = false; }
             private static bool Actions(UnitEntityData __0)
             {
                 var gate = active;
                 if (gate == null || !gate.owns(__0)) return true;
+                if(gate.nativeDefault!=null){bool valid=gate.NativeDefaultCurrent();if(valid)gate.nativeActions++;return valid;}
                 if (!gate.inPulse) { gate.blockedActions++; return false; }
                 gate.allowedActions++;
                 string key = __0.UniqueId + ":" + Time.frameCount;
@@ -1057,6 +1089,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var gate = active;
                 if (gate == null || !gate.owns(__0)) return true;
+                if(gate.nativeDefault!=null){bool valid=gate.NativeDefaultCurrent();if(valid)gate.nativeCooldowns++;return valid;}
                 if (!gate.inPulse) { gate.blockedCooldowns++; return false; }
                 gate.allowedCooldowns++; return true;
             }
@@ -1064,6 +1097,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var gate=active;var owner=__instance?.Context?.MaybeCaster;
                 if(gate==null||owner==null||!gate.owns(owner))return true;
+                if(gate.nativeDefault!=null){bool valid=gate.NativeDefaultCurrent();if(valid)gate.nativeExecutions++;return valid;}
                 int last;
                 if(gate.executionFrames.TryGetValue(__instance,out last)&&last==Time.frameCount){gate.blockedDuplicateExecutions++;return false;}
                 gate.executionFrames[__instance]=Time.frameCount;gate.allowedExecutions++;
@@ -1072,7 +1106,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal JObject Snapshot()
             {
-                return new JObject { ["allowedAbilityExecutionTicks"]=allowedExecutions,["blockedDuplicateAbilityExecutionTicks"]=blockedDuplicateExecutions,
+                return new JObject { ["nativeDefaultLeaseActive"]=nativeDefault!=null,["nativeDefaultActions"]=nativeActions,
+                    ["nativeDefaultCooldowns"]=nativeCooldowns,["nativeDefaultExecutions"]=nativeExecutions,["refusedStaleNativeTicks"]=refusedNativeTicks,
+                    ["allowedAbilityExecutionTicks"]=allowedExecutions,["blockedDuplicateAbilityExecutionTicks"]=blockedDuplicateExecutions,
                     ["maximumAbilityExecutionTicksPerProcessPerUnityFrame"]=maximumExecutionTicks,
                     ["allowedActionTicks"] = allowedActions, ["allowedCooldownTicks"] = allowedCooldowns,
                     ["blockedAmbientActionTicks"] = blockedActions, ["blockedAmbientCooldownTicks"] = blockedCooldowns,
