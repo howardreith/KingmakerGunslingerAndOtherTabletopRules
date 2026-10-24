@@ -2502,6 +2502,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 WriteLifecycleStage(_workingStartupStage);
             }
             _workingSaveSmoke.Poll();
+            if (!ObserveSprints30DispelLoadBoundary()) return;
             if (_circlePersistenceStarted) { PollMagicCirclePersistence(); return; }
             if (_midgameSaveStarted) { PollWorkingMidgameFirearms(); return; }
             if (_craftMagicItemsPersistenceSaveStarted)

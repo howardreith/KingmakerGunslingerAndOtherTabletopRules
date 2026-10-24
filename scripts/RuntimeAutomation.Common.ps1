@@ -2829,6 +2829,11 @@ function New-KmgRuntimeRequest {
             if ($Parameters.ContainsKey('quantity')) {
                 $creatureReviewParameters.quantity = [string]$Parameters.quantity
             }
+            if ($Parameters.ContainsKey('reviewCase')) {
+                # Preflight admits only the exact fixed read-only UI case.
+                # Preserve its dispatch key through actual JSON serialization.
+                $creatureReviewParameters.reviewCase = [string]$Parameters.reviewCase
+            }
             $creatureReviewParameters
         } elseif ($Scenario -cin @('summon-same-turn-activation',
                 'summon-same-turn-rtwp-control',

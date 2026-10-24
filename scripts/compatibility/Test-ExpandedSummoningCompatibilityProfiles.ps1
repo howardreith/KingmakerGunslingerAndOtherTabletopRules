@@ -262,4 +262,12 @@ foreach($assignment in @('$sprint22Boundary','$exactSprint22')) {
     if(& $classify){throw 'Unqualified generic creature review entered the exact profile boundary.'}
     $workingUiChecks+=2
 }
+$completionPairs=@($invokeAst.FindAll({param($node) $node -is [Management.Automation.Language.HashtableAst]},$true) | ForEach-Object {$_.KeyValuePairs} | Where-Object {$_.Item1.Extent.Text -ceq 'CompletionTimeoutSeconds'})
+if($completionPairs.Count -ne 1){throw 'Native completion budget expression is absent or ambiguous.'}
+$completionBudget=[scriptblock]::Create($completionPairs[0].Item2.Extent.Text)
+$RuntimeTimeoutSeconds=600;$workingDispelUi=$true
+if((& $completionBudget) -ne 180){throw 'Fixed UI native completion cannot safely precede the whole-process deadline.'}
+$workingDispelUi=$false
+if((& $completionBudget) -ne 600){throw 'Other profile native completion budgets changed.'}
+$workingUiChecks+=2
 Write-Host "PASS actual S30/S31 fixed Working UI dispatch: $workingUiChecks acceptance/refusal/settings/receipt checks; no profile entered."

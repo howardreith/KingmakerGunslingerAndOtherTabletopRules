@@ -20,6 +20,55 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private DateTime _sprints30DispelNextLoadObservation;
+        private readonly List<JObject> _sprints30DispelLoadObservations = new List<JObject>();
+
+        // Read-only diagnosis of the actual failed load boundary. No input,
+        // dialog dismissal, load retry, save write or actor mutation.
+        private bool ObserveSprints30DispelLoadBoundary()
+        {
+            if (!RuntimeTestRequestParser.Sprints30And31DispelUi(_request) ||
+                _workingSaveSmoke.Stage != "load-completion" || _workingSaveSmoke.Complete)
+                return true;
+            var dialog = Kingmaker.UI.DialogMessageBox.Instance;
+            bool shown = dialog != null && dialog.IsShown;
+            if (!shown && DateTime.UtcNow < _sprints30DispelNextLoadObservation) return true;
+            _sprints30DispelNextLoadObservation = DateTime.UtcNow.AddSeconds(10);
+            var game = Game.Instance;
+            var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+            string message = null;
+            if (shown)
+            {
+                var field = typeof(Kingmaker.UI.DialogMessageBox).GetField("m_Messagelabel",
+                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+                if (field == null) throw new MissingFieldException(typeof(Kingmaker.UI.DialogMessageBox).FullName, "m_Messagelabel");
+                var label = field.GetValue(dialog);
+                message = label?.GetType().GetProperty("text")?.GetValue(label, null) as string;
+            }
+            var row = new JObject { ["utc"] = DateTime.UtcNow.ToString("o"),
+                ["runId"] = _request.RunId, ["stage"] = _workingSaveSmoke.Stage,
+                ["stageElapsedMs"] = _workingSaveSmoke.StageElapsedMilliseconds,
+                ["mode"] = game.CurrentMode.ToString(), ["area"] = game.CurrentlyLoadedArea?.AssetGuid,
+                ["partyCount"] = game.Player?.Party?.Count(),
+                ["loading"] = loading != null && loading.IsLoadingInProcess,
+                ["screen"] = loading != null && loading.IsLoadingScreenActive,
+                ["manualScreen"] = loading != null && loading.IsManualLoadingScreenActive,
+                ["processTag"] = loading?.CurrentProcessTag.ToString(),
+                ["progress"] = loading?.CurrentProcessProgressNorm,
+                ["dialogShown"] = shown, ["dialogMessage"] = message,
+                ["writeObserved"] = _workingSaveSmoke.WriteObserved };
+            if (_sprints30DispelLoadObservations.Count >= 64)
+                throw new InvalidOperationException("Fixed load observer exceeded its bounded observation count.");
+            _sprints30DispelLoadObservations.Add(row);
+            RuntimeTestResultWriter.WriteAtomic(System.IO.Path.Combine(_request.EvidenceDirectory,
+                "sprints30-31-working-load-boundary.json"), new JArray(_sprints30DispelLoadObservations)
+                    .ToString(Newtonsoft.Json.Formatting.Indented));
+            if (!shown) return true;
+            CompleteWorkingSaveSmoke(RuntimeTestStatuses.Fail, "fixed-dispel-ui-unexpected-load-dialog",
+                "Unexpected native load dialog; no input was supplied: " + message);
+            return false;
+        }
+
         private IEnumerator<int> _sprints30WorkingUiSteps;
         private DateTime _sprints30WorkingUiDeadline;
         private readonly List<RuntimeTestAssertion> _sprints30WorkingUiAssertions =

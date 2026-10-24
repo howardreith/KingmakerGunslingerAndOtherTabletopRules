@@ -493,7 +493,9 @@ try {
             ExitAfterCompletion = $true
             TimeoutSeconds = $RuntimeTimeoutSeconds
             ObserverStartupTimeoutSeconds = [Math]::Min($RuntimeTimeoutSeconds,600)
-            CompletionTimeoutSeconds = $RuntimeTimeoutSeconds
+            # Leave room inside the whole-process budget for a native
+            # load timeout to flush evidence and quit before restoration.
+            CompletionTimeoutSeconds = if ($workingDispelUi) { 180 } else { $RuntimeTimeoutSeconds }
             Confirm = $false
             AllowDirtyGit = [bool]$AllowDirtyGit
         }

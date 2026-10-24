@@ -1957,6 +1957,15 @@ foreach($mutation in @(
     @{saveName='KMG_AUTOMATION_WORKING';creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui';quantity='OneD4PlusOne'})) {
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $mutation } 's30-31-working-ui-invalid-refused'
 }
+# Exercise the actual request constructor and JSON round trip. Admission
+# alone cannot prove that a dispatch field survives serialization.
+$s3031UiRequest = New-KmgRuntimeRequest @s3031UiArgs -Parameters $s3031Ui -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's30-31-ui-preflight-test')
+$s3031UiRoundTrip = $s3031UiRequest | ConvertTo-Json -Depth 20 | ConvertFrom-Json
+Assert-True ($s3031UiRoundTrip.parameters.reviewCase -ceq 'sprints30-31-dispel-ui') 's30-31-working-ui-serialized-dispatch-retained'
+Assert-True ($s3031UiRoundTrip.parameters.creatures -ceq 'trumpet-archon,astral-deva' -and $s3031UiRoundTrip.parameters.saveName -ceq 'KMG_AUTOMATION_WORKING') 's30-31-working-ui-serialized-fixed-inputs-retained'
+Assert-True (@($s3031UiRoundTrip.parameters.PSObject.Properties.Name | Sort-Object -CaseSensitive) -join ',' -ceq 'creatures,reviewCase,saveName') 's30-31-working-ui-serialized-exact-three-keys'
+$s3031GenericRequest = New-KmgRuntimeRequest @s3031UiArgs -Parameters @{saveName='KMG_AUTOMATION_WORKING';creatures='lemure'} -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 's30-31-ui-generic-preflight-test')
+Assert-True (@($s3031GenericRequest.parameters.Keys).Count -eq 2 -and -not $s3031GenericRequest.parameters.Contains('reviewCase') -and $s3031GenericRequest.parameters.creatures -ceq 'lemure') 's30-31-working-ui-generic-serialization-preserved'
 $s3031UiArgs.ExitAfterCompletion=$false
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s3031UiArgs -Parameters $s3031Ui } 's30-31-working-ui-no-exit-refused'
 Assert-True (Test-KmgSprints30DispelUiParameters @{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}) 's30-31-working-ui-external-typed-admitted'
