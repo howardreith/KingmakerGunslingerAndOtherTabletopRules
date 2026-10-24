@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private static BlueprintAbilityResource Sprints3031PersistenceResource(string key, string suffix)
         {
-            string prefix = key == "dretch" ? ExpandedSummoningSpecialBuilder.Dretch30Prefix :
+            string prefix = key == "dretch" ? "KMG.Summoning.OutsiderCelestial.Dretch." :
                 key == "astral-deva" ? ExpandedSummoningSpecialBuilder.Astral31Prefix :
                 throw new InvalidOperationException("No pilot SLA resource contract for this key.");
             return (BlueprintAbilityResource)ExpandedSummoningBlueprints.Registered.BySymbol[prefix + suffix];
@@ -160,8 +160,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             var hound = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "hound-archon");
             var dretch = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "dretch");
-            var aid = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[ExpandedSummoningSpecialBuilder.Hound30Prefix + "Aid"];
-            var data = hound.Descriptor.Abilities.GetAbility(aid);
+            var aid = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol["KMG.Summoning.OutsiderCelestial.HoundArchon." + "Aid"];
+            var granted = hound.Descriptor.Abilities.GetAbility(aid);
+            if (granted == null) throw new InvalidOperationException("Pilot Hound has no native Aid access.");
+            var data = new AbilityData(granted);
             var aidBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                 "319b4679f25779e4e9d04360381254e1", "pilot saved native Aid effect");
             var aidContext = new AbilityExecutionContext(data, data.CalculateParams(), new TargetWrapper(dretch), null);
