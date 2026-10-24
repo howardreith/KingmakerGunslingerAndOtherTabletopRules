@@ -331,6 +331,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, anchor = null, witness = null;
             BlueprintFaction witnessFaction = null;
+            bool anchorBrainBefore = false, anchorBrainCaptured = false;
             Vector3 anchorBefore = Vector3.zero;
             int fort = 0;
             try
@@ -355,6 +356,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Only the exact native profile-owned anchor clone can be positioned outside the blast; the retained original preset and all campaign actors are protected.");
                 if (!anchorOwned) { anchor = null; throw new InvalidOperationException("Request-owned profile anchor identity is not proven."); }
                 anchorBefore = anchor.Position;
+                anchorBrainBefore = anchor.IsBrainActive; anchorBrainCaptured = true;
+                Sprint28SetBrainActivePreservingActions(anchor, false);
+                anchor.Commands.InterruptAll(true); anchor.Commands.RemoveFinishedAndUpdateQueue();
                 CreateExpandedSummoningCorrectionHostile(fixture);
                 fort = fixture.Hostile.Stats.SaveFortitude.BaseValue;
                 owner = CastExpandedSummoningOwnTier(fixture, "trumpet-archon");
@@ -438,6 +442,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownedWakeSeconds"] = 60, ["archonWitness"] = actorState(witness), ["protectedActorTicks"] = 0, ["suppliedCombatCommands"] = 0 },
                     "The actual native awake-group, combat, sleeping and brain predicates are observed before the unchanged exact-AI consumer. Only the reference-proven owned player actors receive a native wake interval; no group is injected or guard bypassed.");
                 if (!admitted) throw new InvalidOperationException("Actual native awake-group AI admission is unmet; no AI command requested.");
+                bool anchorQuiet = !anchor.IsBrainActive && !anchor.Commands.Raw.Any(command => command != null && !command.IsFinished);
+                Sprint25Check("trumpet-blast-ai-owned-anchor-stationary", anchorQuiet, new JObject {
+                    ["anchor"] = anchor.UniqueId, ["exactRequestOwnedPresetClone"] = anchorOwned,
+                    ["originalBrainActive"] = anchorBrainBefore, ["currentBrainActive"] = anchor.IsBrainActive,
+                    ["position"] = anchor.Position.ToString(), ["sourceDistance"] = owner.DistanceTo(anchor),
+                    ["commands"] = new JArray(anchor.Commands.Raw.Where(command => command != null).Select(Sprint27AiCommand)),
+                    ["protectedActorBrainOrCommandEdits"] = 0, ["sourceBrainOrActionCostEdits"] = 0 },
+                    "Only the reference-proven disposable profile anchor has AI disabled and its own prior movement canceled. The source's real brain/actions remain native and protected actors are untouched.");
+                if (!anchorQuiet) throw new InvalidOperationException("Disposable anchor has a live autonomous/movement command.");
                 var decision = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = owner } };
                 var data = new AbilityData(owner.Descriptor.Abilities.GetAbility(blast));
                 var book = owner.Descriptor.GetSpellbook(owner.Blueprint.GetComponent<TrumpetPreparedBook>().Book);
@@ -493,6 +506,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Native perception/combat/access, own prepared book and clear all-creature radius admit the unchanged production blast selection; no combat command or slot debit is supplied by the fixture.");
                 if (!ready) throw new InvalidOperationException("Safe native Trumpet AI preconditions are unmet.");
                 foreach (int frame in Trumpet31ObserveBlastDecision(owner, target, blast, paralysis, true, "trumpet-blast-ai-safe-cast")) yield return frame;
+                bool clearAfter = owner.DistanceTo(anchor) > new Feet(100).Meters + anchor.Corpulence &&
+                    owner.DistanceTo(fixture.Caster) > new Feet(100).Meters + fixture.Caster.Corpulence &&
+                    !safety.NearbyNonArchonNonEnemies(owner).Any() && !anchor.IsBrainActive &&
+                    !anchor.Commands.Raw.Any(command => command != null && !command.IsFinished);
+                Sprint25Check("trumpet-blast-ai-safe-radius-retained", clearAfter, new JObject {
+                    ["owner"] = owner.UniqueId, ["anchor"] = anchor.UniqueId,
+                    ["anchorDistance"] = owner.DistanceTo(anchor), ["casterDistance"] = owner.DistanceTo(fixture.Caster),
+                    ["blockingNonenemies"] = new JArray(safety.NearbyNonArchonNonEnemies(owner).Select(unit => unit.UniqueId)),
+                    ["anchorBrainActive"] = anchor.IsBrainActive },
+                    "The actual full100ft nonarchon-ally clearance remains satisfied after the native blast resolves; no owned anchor AI may walk into the precondition during the observation.");
+                if (!clearAfter) throw new InvalidOperationException("Positive native AI case lost its full ally-clear radius.");
                 bool witnessExempt = !witness.Descriptor.State.HasCondition(UnitCondition.Paralyzed) &&
                     witness.IsPlayerFaction && !owner.IsEnemy(witness) && TrumpetBlastRulesPolicy.IsArchon(witness, safety.Archons);
                 Sprint25Check("trumpet-blast-ai-archon-ally-exempt", witnessExempt, new JObject {
@@ -521,7 +545,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "The single new request-owned witness entity regains its exact original faction before disposal, including on failure; no protected actor or blueprint was modified.");
                 }
                 if (fixture.Hostile != null) fixture.Hostile.Stats.SaveFortitude.BaseValue = fort;
-                if (anchor != null && !anchor.Destroyed && anchor.IsInState) PlaceExpandedSummoningUnit(anchor, anchorBefore);
+                if (anchor != null && !anchor.Destroyed && anchor.IsInState)
+                {
+                    anchor.Commands.InterruptAll(true); PlaceExpandedSummoningUnit(anchor, anchorBefore);
+                    if (anchorBrainCaptured) Sprint28SetBrainActivePreservingActions(anchor, anchorBrainBefore);
+                    Sprint25Check("trumpet-blast-ai-owned-anchor-brain-restored", anchorBrainCaptured &&
+                        anchor.IsBrainActive == anchorBrainBefore, new JObject {
+                            ["anchor"] = anchor.UniqueId, ["before"] = anchorBrainBefore, ["after"] = anchor.IsBrainActive,
+                            ["positionRestored"] = anchor.Position.ToString(), ["protectedActorEdits"] = 0 },
+                        "The disposable profile anchor regains its actual original brain state and position in finally; all human/campaign actors remain untouched.");
+                }
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, witness }.Where(value => value != null && !value.Destroyed).ToArray());
                 if (fixture.Hostile != null) ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
