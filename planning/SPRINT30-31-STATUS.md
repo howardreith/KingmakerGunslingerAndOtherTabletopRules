@@ -12,6 +12,8 @@ Build attempt a8c16945,05:32:35.090-05:35:04.508Z: asset/source/corruption valid
 
 Build attempt2f13d9e2,05:37:17.373-05:40:16.857Z: all17 selected domain checks and source/asset validation passed. First actual production compilation failed on five integration diagnostics: missing SpellDescriptor/component/save namespaces and two observer API signatures (AddBuff requires UnitEntityData; native SR removal is Remove). Corrected those together against existing successful Astral/Trumpet source consumers. No package/game followed; original logs and exact intake Compare PASS retained at artifacts/s30-31-blast-build-2f13d9e2-20261024T053708Z. Admission proof remains the unchanged original f87b tuple, not a new execution.
 
+Build attemptbb2dd407,05:41:59.394-05:44:59.635Z: all17 selected tests/source/assets passed; production compilation had one remaining binding diagnostic because SavingThrowType belongs to EntitySystem.Stats. Use that exact qualified native enum, already compiled in the effect consumer. Prior four diagnostics were resolved. No package/game; logs and exact intake Compare PASS retained artifacts/s30-31-blast-build-bb2dd407-20261024T054149Z. The unlaunched native wrapper was also preflighted against the actual ten blast/restoration assertions, replacing copied caster-only names/input-file expectations before any game launch. Existing package/admission/source/restoration guards remain.
+
 ## Scope and coverage map
 
 | Charter | Creature | Routes | Current proof | Required next work |

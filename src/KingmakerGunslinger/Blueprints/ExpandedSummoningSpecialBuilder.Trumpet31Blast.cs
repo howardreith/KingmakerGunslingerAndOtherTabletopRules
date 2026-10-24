@@ -61,7 +61,7 @@ namespace KingmakerGunslinger.Blueprints
                 Require<BlueprintUnit>(bySymbol, Hound30Unit),
                 Require<BlueprintUnit>(bySymbol, LanternUnitSymbol) };
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
-            run.SavingThrowType = SavingThrowType.Unknown;
+            run.SavingThrowType = Kingmaker.EntitySystem.Stats.SavingThrowType.Unknown;
             run.Actions = new ActionList { Actions = new GameAction[] { resolve } };
             var access = ScriptableObject.CreateInstance<TrumpetBlastAccess>();
             access.SourceUnit = unit; access.Instrument = instrument;
