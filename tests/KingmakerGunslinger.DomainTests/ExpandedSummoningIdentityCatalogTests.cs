@@ -879,8 +879,8 @@ namespace KingmakerGunslinger.DomainTests
                 "Lantern full light-ray count changed.");
             Assertions.Equal(6, ExpandedSummoningSpecialProfiles
                 .LanternRayDieSides, "Lantern light-ray die changed.");
-            Assertions.Equal(16, ExpandedSummoningSpecialProfiles
-                .LanternSpellResistance, "Lantern spell resistance changed.");
+            Assertions.Equal(0, ExpandedSummoningSpecialProfiles
+                .LanternSpellResistance, "PF1 Lantern has no racial spell resistance.");
             Assertions.Equal(7, ExpandedSummoningSpecialProfiles
                 .InvisibleStalkerHitDice, "Invisible Stalker HD changed.");
             Assertions.Equal(9, ExpandedSummoningSpecialProfiles.ErinyesHitDice,

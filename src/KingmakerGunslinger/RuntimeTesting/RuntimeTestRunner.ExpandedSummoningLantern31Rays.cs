@@ -11,11 +11,14 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -64,6 +67,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitUseAbility command = null;
             var observer = new Sprint24AttackObserver();
             Lantern31ResistanceObserver resistance = null;
+            UnitPartSpellResistance fixtureResistance = null;
+            int fixtureResistanceId = -1;
             try
             {
                 owner = CastExpandedSummoningOwnTier(fixture, "lantern-archon");
@@ -162,7 +167,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var parameters = data.CalculateParams();
                 var context = new AbilityExecutionContext(
                     data, parameters, selected, null);
-                int nativeSr = target.Get<UnitPartSpellResistance>()?.GetValue(context) ?? 0;
+                var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    FcbMagicMissileGuid, "Lantern actual SR-allowing rule control");
+                var ownerSr = Astral31Resistance(target, owner, missile, 3, 1);
+                var targetSr = Astral31Resistance(owner, target, missile, 3, 1);
+                bool noRacialSr = ownerSr.SpellResistance == 0 && targetSr.SpellResistance == 0 &&
+                    !ownerSr.HasSpellResistance && !targetSr.HasSpellResistance &&
+                    !ownerSr.TargetIsImmune && !targetSr.TargetIsImmune;
+                // SR16 is a disclosed native part on this exact disposable
+                // target, never a Lantern rule or a campaign blueprint grant.
+                if (!fixture.Created.Any(value => ReferenceEquals(value, target)))
+                    throw new InvalidOperationException("Ray SR fixture target is not request-owned.");
+                fixtureResistance = target.Ensure<UnitPartSpellResistance>();
+                fixtureResistanceId = fixtureResistance.AddResistance(16, null, null);
+                int nativeSr = fixtureResistance.GetValue(context);
                 var dr = target.Get<UnitPartDamageReduction>();
                 var drSources = dr == null ? new JArray() : new JArray(dr.AllSources.Select(value =>
                     new JObject { ["component"] = value.GetType().FullName,
@@ -185,7 +203,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data.IsAvailable && data.CanTarget(selected) &&
                     data.Blueprint.ActionType == UnitCommand.CommandType.Standard &&
                     data.Blueprint.IsFullRoundAction == fullRound &&
-                    touch != ordinary && nativeSr > 0 &&
+                    touch != ordinary && noRacialSr && nativeSr == 16 &&
                     drSources.OfType<JObject>().Any(row => (int)row["value"] >= 10);
                 Sprint25Check(id + "-ready", ready, new JObject {
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
@@ -215,8 +233,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["deliveryRangeMeters"] = delivery.Length.Meters,
                     ["targetCheckers"] = targetCheckerRows,
                     ["touchAc"] = touch, ["ordinaryAc"] = ordinary,
-                    ["nativeSpellResistance"] = nativeSr, ["damageReduction"] = drSources },
-                    "The exact owned ray has its intended action mode and 30-foot delivery/native approach distance; native targeting accepts a distant enemy for approach but refuses friends and self, and the proven 8-m lane acquires the enemy facing distinct live touch AC, SR and DR consumers.");
+                    ["nativeSpellResistance"] = nativeSr, ["damageReduction"] = drSources,
+                    ["unmodifiedOwnerSr"] = Astral31ResistanceRow(ownerSr),
+                    ["unmodifiedTargetSr"] = Astral31ResistanceRow(targetSr),
+                    ["controlledTargetSr"] = 16, ["fixtureTargetExactOwned"] = true },
+                    "The exact owned ray has its intended action mode and 30-foot delivery/native approach distance; native targeting accepts a distant enemy for approach but refuses friends and self, and the proven 8-m lane acquires the enemy facing distinct live touch AC, DR and controlled target SR16 consumers. Actual SR-allowing checks first prove both unmodified Lanterns have SR0; the target-only fixture does not change creature rules.");
                 if (!ready) throw new InvalidOperationException("Lantern ray native preconditions failed: " + id);
 
                 var costs = new JArray();
@@ -304,6 +325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 EventBus.Unsubscribe(resistance);
                 EventBus.Unsubscribe(observer);
+                if (fixtureResistance != null && fixtureResistanceId >= 0) fixtureResistance.Remove(fixtureResistanceId);
                 foreach (UnitEntityData unit in new[] { owner, target }.Where(value =>
                     value != null && !value.Destroyed))
                 {
