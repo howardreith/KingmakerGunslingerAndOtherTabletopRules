@@ -30,6 +30,31 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RegisteredHealingEligibilityIdentityCount = 1;
         internal const int RegisteredAstralHealingEligibilityIdentityCount = 2;
 
+        internal static void PersistenceScopeOwnsExactlySixUnits()
+        {
+            string scope = ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialScope;
+            var keys = ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys;
+            foreach (string key in keys)
+            {
+                var route = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key);
+                Assertions.True(route.Creature.Key == key && route.Family == SummonFamily.Monster &&
+                    route.Multiplicity == SummonMultiplicity.One, "The fixed scope selects the exact own-tier SM unit.");
+                int alignment = ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(route);
+                Assertions.Equal(key == "lemure" ? 12 : key == "dretch" ? 20 :
+                    key == "hound-archon" || key == "trumpet-archon" ? 10 : 3,
+                    alignment, "Each creature has its own legal fixture alignment; Lantern keeps its existing mapping.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Reverse()), "Load order may change, exact membership cannot.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Skip(1).Concat(new[] { "dretch" })), "Duplicate cannot replace Lemure.");
+            Assertions.Throws<System.InvalidOperationException>(() => ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, "hill-giant"), "Unrelated creature refused.");
+            foreach (string phase in new[] { "working-save-expanded-summoning-prepare", "working-save-expanded-summoning-verify-cleanup", "working-save-expanded-summoning-verify-absent" })
+            {
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(phase, scope), "All existing fresh-load stages retained.");
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(phase, "Outsider-celestial"), "Scope remains case sensitive.");
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(phase, scope + " "), "No trailing-space scope.");
+            }
+        }
+
         internal static void FirstSliceKeepsExactHiddenRoutesAndReleasedSurface()
         {
             ExpandedSummoningCatalog.Validate();

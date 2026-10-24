@@ -93,7 +93,7 @@ foreach ($scenario in $scenarios) {
     $historical = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
         saveName = 'KMG_AUTOMATION_WORKING' }
     if ($historical.parameters.Count -ne 1) { throw 'The historical fixture was changed.' }
-    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon')) {
+    foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'outsider-celestial')) {
         $targeted = New-KmgRuntimeRequest @requestBase -Scenario $scenario -Parameters @{
             saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope }
         $json = $targeted | ConvertTo-Json -Depth 20 | ConvertFrom-Json
@@ -129,7 +129,7 @@ foreach ($scenario in $scenarios) {
         $rejections++
     }
 }
-foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon')) {
+foreach ($scope in @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'outsider-celestial')) {
     $rejected = $false
     try { $null = New-KmgRuntimeRequest @requestBase -Scenario 'working-save-smoke' -Parameters @{
         saveName = 'KMG_AUTOMATION_WORKING'; persistenceScope = $scope } }
