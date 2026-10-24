@@ -1,6 +1,13 @@
 # Summon cleanup iteration 2
 
-Active development lane, 2026-10-21 to 2026-10-23. This record supersedes no
+**Released as stable v0.0.164 on 2026-10-24** from PR #67 (merge
+`23952275bb8bbe5a69a8e64a961dd978093a2ec6`). The public ZIP is
+`0a24dd9f8998e43234d64138c481b1969f1f6c671f5bebb2d724f9eb0df0a812`. It is
+downloaded and strictly validated, with the same code as the gated candidate
+`dcfffcd602`; see [the resume record](../AUTONOMOUS-RESUME.md). The lane is
+closed.
+
+Development lane, 2026-10-21 to 2026-10-24. This record supersedes no
 historical PASS or release record. All 14 acceptance IDs are implemented, and the
 final frozen-candidate qualification ran on review47. On October 23 the owner
 approved the artwork and authorized the v0.0.164 release. The Pro review's one
