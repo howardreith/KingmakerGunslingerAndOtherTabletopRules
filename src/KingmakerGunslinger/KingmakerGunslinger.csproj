@@ -1321,6 +1321,7 @@
     <Compile Include="Summoning\TrumpetArchonInstrumentView.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Instrument.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031Lifecycle.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031Defenses.cs" />
     <Compile Include="Summoning\DretchVisualPolicy.cs" />
     <Compile Include="Summoning\LemureVisualPolicy.cs" />
     <Compile Include="Summoning\BrachiosaurusOverrunKnockdown.cs" />
