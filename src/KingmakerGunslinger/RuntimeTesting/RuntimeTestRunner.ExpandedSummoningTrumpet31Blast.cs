@@ -122,24 +122,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["alliedVictim"] = ally.UniqueId, ["mindlessVictim"] = victim.UniqueId, ["hostileArchon"] = hostileHound.UniqueId,
                     ["distances"] = new JArray(units.Select(unit => new JObject { ["unit"] = unit.UniqueId,
                         ["meters"] = Vector3.Distance(owner.Position, unit.Position), ["enemy"] = owner.IsEnemy(unit) })),
-                    ["saves"] = observed.Saves, ["effects"] = observed.Effects, ["dice"] = observed.Dice, ["srChecks"] = observed.Resistance },
+                    ["saves"] = observed.Saves, ["effects"] = observed.Effects, ["effectEvents"] = observed.EffectEvents, ["dice"] = observed.Dice, ["srChecks"] = observed.Resistance },
                     "A real blast tests friendly and hostile nonarchons, including mindless Lemures; native Freedom immunity holds. Both factions' archons and the outside-radius unit are exempt. No save is fabricated.");
                 if (!targeting) throw new InvalidOperationException("Trumpet blast native target consumer failed.");
                 bool effects = observed.Saves.Any(row => !(bool)row["passed"] && (string)row["target"] != protectedAlly.UniqueId) &&
-                    observed.Effects.Any(row => (bool)row["applied"] && (string)row["target"] == victim.UniqueId) &&
+                    observed.Effects.Any(row => (bool)row["applied"] && (bool)row["nativeParalyzed"] && (string)row["target"] == victim.UniqueId) &&
                     observed.Effects.Where(row => (bool)row["applied"]).All(row => (int)row["dc"] == 20 && (int)row["cl"] == 14 &&
                         (double)row["durationSeconds"] >= 6 && (double)row["durationSeconds"] <= 24 && (bool?)row["notDispelable"] == true) &&
                     observed.Dice.Count > 0 && observed.Dice.All(row => (int)row["nativeResult"] >= 1 && (int)row["nativeResult"] <= 4) &&
-                    observed.Resistance.Count == 0 && slotsBefore.SequenceEqual(slots());
+                    observed.Resistance.Any(row => (string)row["target"] == victim.UniqueId && (int)row["resistance"] == 1000) &&
+                    observed.Resistance.All(row => !(bool)row["hasRoll"] && !(bool)row["resisted"]) &&
+                    observed.Effects.Count == observed.Dice.Count &&
+                    observed.Effects.All(effect => observed.Dice.Any(roll =>
+                        (string)roll["caster"] == (string)effect["caster"] &&
+                        (string)roll["target"] == (string)effect["target"] &&
+                        (int)roll["nativeResult"] * 6d == (double)effect["durationSeconds"])) &&
+                    slotsBefore.SequenceEqual(slots());
                 Sprint25Check("trumpet-blast-live-effect", effects, new JObject { ["saves"] = observed.Saves.DeepClone(),
-                    ["effects"] = observed.Effects.DeepClone(), ["dice"] = observed.Dice.DeepClone(),
+                    ["effects"] = observed.Effects.DeepClone(), ["effectEvents"] = observed.EffectEvents.DeepClone(), ["dice"] = observed.Dice.DeepClone(),
                     ["srChecks"] = observed.Resistance.DeepClone(), ["slotsBefore"] = new JArray(slotsBefore), ["slotsAfter"] = new JArray(slots()) },
                     "Real failed Fortitude saves and native d4 rolls produce independent finite nondispellable paralysis through SR1000 without using either book's slots; native immunity remains decisive.");
                 if (!effects) throw new InvalidOperationException("Trumpet blast effect preconditions/outcome not established; inspect actual saves.");
                 var live = units.SelectMany(unit => unit.Buffs.Enumerable).Where(buff => ReferenceEquals(buff.Blueprint, paralysis)).ToArray();
                 var ownedVictimEffects = live.Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, owner)).ToArray();
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
-                bool retained = ownedVictimEffects.Length > 0 && ownedVictimEffects.All(buff => !buff.IsDisposed);
+                bool retained = owner.Destroyed && !blast.GetComponent<TrumpetBlastAccess>().CorrectCaster(owner) &&
+                    ownedVictimEffects.Length > 0 && ownedVictimEffects.All(buff => !buff.IsDisposed);
                 Sprint25Check("trumpet-blast-source-loss", retained, new JObject { ["source"] = owner.UniqueId, ["sourceDestroyed"] = owner.Destroyed,
                     ["victimEffects"] = new JArray(ownedVictimEffects.Select(buff => new JObject { ["buff"] = buff.Blueprint.AssetGuid,
                         ["disposed"] = buff.IsDisposed, ["end"] = buff.EndTime.ToString(), ["caster"] = buff.Context?.MaybeCaster?.UniqueId })),
@@ -149,9 +157,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var expiryDeadline = DateTime.UtcNow.AddSeconds(35);
                 while (DateTime.UtcNow < expiryDeadline && ownedVictimEffects.Any(buff => !buff.IsDisposed))
                 { Game.Instance.IsPaused = false; yield return 0; }
-                bool expired = ownedVictimEffects.All(buff => buff.IsDisposed);
+                int[] siblingSlotsAfter = Enumerable.Range(1, 7).Select(level => otherBook.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null)).ToArray();
+                bool expired = ownedVictimEffects.All(buff => buff.IsDisposed) && siblingSlotsAfter.SequenceEqual(slotsBefore.Skip(7));
                 Sprint25Check("trumpet-blast-native-expiry", expired, new JObject { ["effects"] = ownedVictimEffects.Length,
-                    ["allDisposed"] = ownedVictimEffects.All(buff => buff.IsDisposed), ["slotsAfter"] = new JArray(slots()) },
+                    ["allDisposed"] = ownedVictimEffects.All(buff => buff.IsDisposed), ["siblingSlotsAfter"] = new JArray(siblingSlotsAfter) },
                     "The real victim effects expire naturally after their rolled durations; no blanket source-loss deletion or fixture removal supplies the expiry verdict.");
                 if (!expired) throw new InvalidOperationException("Trumpet blast finite native expiry failed.");
             }
