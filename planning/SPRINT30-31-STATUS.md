@@ -10,6 +10,8 @@ Build attempt f87b847d,05:28:27.191-05:30:22.714Z: affected offline preflight871
 
 Build attempt a8c16945,05:32:35.090-05:35:04.508Z: asset/source/corruption validation passed with the updated authority pin; selected domain16/17 passed, failing only the shared derived icon-concept total, which still counted one noncreature action. It now derives two actions (Remove Stirge and Trumpet Blast) alongside the actual registered roster and retained concepts. No production compilation/package/game followed this failed precondition. Original logs/intake/explicit admission-reuse tuple remain artifacts/s30-31-blast-build-a8c16945-20261024T053225Z. Task removed and exact intake Compare PASS. Earlier failure and all original native proofs remain unchanged.
 
+Build attempt2f13d9e2,05:37:17.373-05:40:16.857Z: all17 selected domain checks and source/asset validation passed. First actual production compilation failed on five integration diagnostics: missing SpellDescriptor/component/save namespaces and two observer API signatures (AddBuff requires UnitEntityData; native SR removal is Remove). Corrected those together against existing successful Astral/Trumpet source consumers. No package/game followed; original logs and exact intake Compare PASS retained at artifacts/s30-31-blast-build-2f13d9e2-20261024T053708Z. Admission proof remains the unchanged original f87b tuple, not a new execution.
+
 ## Scope and coverage map
 
 | Charter | Creature | Routes | Current proof | Required next work |

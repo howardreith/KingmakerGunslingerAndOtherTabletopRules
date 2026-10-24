@@ -100,7 +100,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ready) throw new InvalidOperationException("Trumpet blast access fixture failed.");
                 var freedomBlueprint = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                     ExpandedSummoningSpecialBuilder.NativeFreedomBuff31Guid, "native freedom immunity fixture");
-                freedom = protectedAlly.Descriptor.AddBuff(freedomBlueprint, owner.Descriptor, TimeSpan.FromMinutes(5));
+                freedom = protectedAlly.Descriptor.AddBuff(freedomBlueprint, owner, TimeSpan.FromMinutes(5));
                 resistance = victim.Ensure<UnitPartSpellResistance>(); resistanceId = resistance.AddResistance(1000, null, null);
                 bool immunityReady = freedom != null && protectedAlly.Descriptor.State.HasConditionImmunity(UnitCondition.Paralyzed);
                 Sprint25Check("trumpet-blast-native-immunity-fixture", immunityReady, new JObject { ["target"] = protectedAlly.UniqueId,
@@ -158,7 +158,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (observed != null) EventBus.Unsubscribe(observed);
-                if (resistance != null && resistanceId >= 0) resistance.RemoveResistance(resistanceId);
+                if (resistance != null && resistanceId >= 0) resistance.Remove(resistanceId);
                 if (freedom != null && !freedom.IsDisposed) freedom.Remove();
                 foreach (var unit in units.Where(value => value != null && !value.Destroyed))
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); }
