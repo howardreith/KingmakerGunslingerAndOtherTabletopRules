@@ -46,6 +46,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                 creatures == RuntimeTestScenarioCatalog.Sprints30And31DispelUiCreatures &&
                 reviewCase == RuntimeTestScenarioCatalog.Sprints30And31DispelUiCase;
         }
+        // Exact presentation diagnostics observed alongside a successful
+        // native Working load. All native load/JSON/identity predicates still
+        // apply; other errors, exceptions, traces and overflow remain blocking.
+        public static bool WorkingUiPresentationDiagnostic(bool error,
+            string message, string trace)
+        {
+            if (!error || !string.IsNullOrEmpty(trace)) return false;
+            return message == @"The AssetBundle 'StreamingAssets\Bundles\common_assets' can't be loaded because another AssetBundle with the same files is already loaded." ||
+                message == @"The AssetBundle 'StreamingAssets\Bundles\equipment_bundle' can't be loaded because another AssetBundle with the same files is already loaded." ||
+                message == "FogOfWarStaticMaskHolder bounds is not completely placed inside in LocationMaskRenderer bounds [JamandisMansion_Mechanics]";
+        }
         internal static bool Sprint29Phase(string phase)
         { return phase == "profiles" || phase == "modes" ||
             phase == "commands" || phase == "turns" ||

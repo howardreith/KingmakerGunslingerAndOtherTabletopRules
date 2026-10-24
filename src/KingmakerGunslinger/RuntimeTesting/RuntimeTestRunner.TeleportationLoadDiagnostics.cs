@@ -62,6 +62,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly string _runId;
             private readonly bool _captureUnityErrors;
             private readonly List<object> _unityErrors = new List<object>();
+            private int _unityErrorCount, _blockingUnityErrorCount;
             private bool _unityListenerAttached;
             private bool _unityListenerRemoved;
             private readonly string _owner;
@@ -164,8 +165,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     type != UnityEngine.LogType.Assert) return;
                 lock (_sync)
                 {
-                    if (_sealed || _unityErrors.Count >= 64) return;
-                    _unityErrors.Add(new { sequence = _unityErrors.Count + 1,
+                    if (_sealed) return;
+                    _unityErrorCount++;
+                    bool presentation = ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(
+                        type == UnityEngine.LogType.Error, message, trace);
+                    if (!presentation) _blockingUnityErrorCount++;
+                    if (_unityErrors.Count >= 64) return;
+                    _unityErrors.Add(new { sequence = _unityErrorCount, presentationDiagnostic = presentation,
                         utc = DateTime.UtcNow.ToString("o"), thread = Thread.CurrentThread.ManagedThreadId,
                         type = type.ToString(), message = message == null || message.Length <= 4096 ?
                             message : message.Substring(0, 4096),
@@ -269,7 +275,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 get { lock (_sync) return _loaderStarts == 1 && _playerPostfixes == 1 &&
                     _mainMatches.Count == 4 && _mainMatches.All(value => value == 1) && _errorCount == 0 && _faults.Count == 0 &&
-                    (!_captureUnityErrors || _unityErrors.Count == 0); }
+                    (!_captureUnityErrors || _blockingUnityErrorCount == 0 && _unityErrorCount <= 64); }
             }
 
             internal object Snapshot()
@@ -279,6 +285,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     loaderStarts = _loaderStarts, playerPostfixes = _playerPostfixes,
                     captureUnityErrors = _captureUnityErrors, unityListenerAttached = _unityListenerAttached,
                     unityListenerRemoved = _unityListenerRemoved, unityErrors = _unityErrors.ToArray(),
+                    unityErrorCount = _unityErrorCount, blockingUnityErrorCount = _blockingUnityErrorCount,
+                    unityErrorOverflow = _unityErrorCount > 64,
                     installedHooks = _installedHooks, remainingHooks = _remainingHooks,
                     listenerRemoved = _listenerRemoved, nativeSettingsRetained = _settingsRetained,
                     resolver = _resolver == null ? null : _resolver.GetType().AssemblyQualifiedName,
