@@ -2,7 +2,9 @@
 
 Development checkpoint, 2026-10-24, on
 `codex/expanded-summoning-druid-duplicates-giant-sizes` from master
-`00ef53dd82` (released v0.0.165 plus its record). Not released.
+`00ef53dd82` (released v0.0.165 plus its record). The owner then wrote "Could
+you go ahead and push, merge, and do a new release of this?"; see
+[the v0.0.166 release candidate](#v0166-release-candidate).
 
 The owner's reports (2026-10-24):
 
@@ -87,6 +89,33 @@ and all 95 saves compared against the wrapper's `preexisting-saves.json`
 catalog (no change, no new file). The wrapper's own `protected-native.json`
 still reads `ACTIVE` because it never reached its finally block. The
 menu-adapters phase was not rerun.
+
+## v0.0.166 release candidate
+
+Release preparation `5d2760c091`: version
+`0.0.166-expanded-summoning-druid-giant-sizes`;
+`tools/validate_expanded_summoning_druid_giant_sizes_release166.py` admits,
+relative to master `00ef53dd82`, no identity change, the eight pinned
+production files and the version metadata, the unchanged project file, no
+asset change and its own static record (21 corruption fixtures); the package
+gains the v0.0.166 release notes (402 files with the SoundBank).
+
+Gates in the frozen worktree `artifacts/worktrees/summon-cleanup4-release166`
+at `5d2760c091`:
+
+| Gate | Result |
+| --- | --- |
+| `Invoke-KmgGate.ps1 -Level Sprint -ReferenceBundleDir <cleanup2 bundle>` | PASS in 216.9 s: repository wrapper with the v0.0.166 validator, complete domain suite 2,742 / 2,742, exact-reference build and strict package validation. Package `71cce0f22488739e572b927f98d00ded6ce8d700b583b3b67944b4a2dc2293b8`, DLL `c671a3f0acdf56da0b1b888ab4e58eed5c384e78e5dd8b63121800cfe6d317bf`. The first attempt failed 23 tests only because the fresh worktree lacked the local `artifacts/inspection/bodyguard-native/Assembly-CSharp.il` dump; it was copied in unchanged (`33b4ad38…`), as for v0.0.165. |
+| `disposable-expanded-summoning-visual-contracts` on that package | PASS 15/15 in 335.5 s, run `20261024T1524430216031Z` (result `77f24b96…`): all 117 creatures render within bounds and move, attack, take hits and die. |
+| `working-save-expanded-summoning-creature-review`, creatures giant-crab, girallon, giant-stag-beetle, griffon, elephant, stegosaurus, brachiosaurus, gorgon, fire-giant, storm-giant, cloud-giant | PASS 38/38 in 616.5 s, run `20261024T1530391995990Z` (result `8ca29258…`). |
+
+Both guarded runs restored the live mod exactly (`5C3E4AD4…BFBB`, the owner's
+0.0.140, 254 files); 95 saves remain. The temporary reference junction under
+`artifacts/worktrees/private/extracted-references` was created for the
+harness's release build and removed afterwards. The Druid and giant
+observations stay bound to development candidate `9e754dd2a9`, whose source
+differs from the release only in its version metadata, release validator and
+documents.
 
 ## Deferred
 
