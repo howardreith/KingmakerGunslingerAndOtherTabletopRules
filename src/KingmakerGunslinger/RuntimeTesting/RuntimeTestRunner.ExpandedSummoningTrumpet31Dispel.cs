@@ -230,6 +230,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!cast) throw new InvalidOperationException("Prepared Dispel Evil parent/slot failed.");
                 }
 
+                int deliveryRollStart = observed.Attacks.Count;
                 UnitUseAbility delivery = null;
                 var deliveryCosts = new JArray();
                 using (var economy = new FirearmReviewCosts(owner, deliveryCosts))
@@ -253,6 +254,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("trumpet-dispel-held-native-removal", removed,
                         new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
                             ["command"] = delivery == null ? null : Sprint27AiCommand(delivery),
+                            ["rolls"] = Astral31DispelRollRows(observed.Attacks.Skip(deliveryRollStart)),
                             ["costs"] = deliveryCosts, ["nativeDispel"] = rule?.Success,
                             ["checkType"] = rule?.Check.ToString(), ["checkRoll"] = rule?.CheckRoll,
                             ["removedBuff"] = selected.Blueprint.AssetGuid,
@@ -262,7 +264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["saves"] = saves.Length, ["ownCopiesAfterTouch"] = Trumpet31PreparedCopies(book, family, 5),
                             ["wardAbsent"] = !owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, ward)),
                             ["heldAbsent"] = owner.Get<UnitPartTouch>() == null,
-                            ["nativeSeededManualControl"] = true, ["aiCommands"] = 0 },
+                            ["forcedRolls"] = 0, ["aiCommands"] = 0 },
                         "The native held melee touch removes one actual eligible effect through no-check RuleDispelMagic, bypasses SR1000 without a save, closes its own ward/touch and spends no second slot or action.");
                     if (!removed) throw new InvalidOperationException("Prepared Dispel Evil held removal failed.");
                 }
@@ -363,6 +365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     DateTime.UtcNow < lateDeadline) yield return 0;
                 bool laterRound = lateTouch != null && !lateTouch.IsCastedInThisRound;
                 double lateElapsed = Game.Instance.TimeController.GameTime.TotalSeconds - lateStart;
+                int lateRollStart = observed.Attacks.Count;
                 UnitUseAbility lateDelivery = null;
                 var lateCosts = new JArray();
                 bool lateAction;
@@ -385,6 +388,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("trumpet-dispel-later-round-touch", lateExact,
                     new JObject { ["owner"] = lateOwner.UniqueId, ["nativeLaterRound"] = laterRound,
                         ["nativeElapsed"] = lateElapsed, ["command"] = lateDelivery == null ? null : Sprint27AiCommand(lateDelivery),
+                        ["rolls"] = Astral31DispelRollRows(observed.Attacks.Skip(lateRollStart)), ["forcedRolls"] = 0,
                         ["ignoreCooldown"] = lateDelivery?.IsIgnoreCooldown, ["costs"] = lateCosts,
                         ["effectRemoved"] = lateEffect.IsDisposed, ["nativeDispel"] = lateRule?.Success,
                         ["ownCopiesAfter"] = Trumpet31PreparedCopies(lateBook, family, 5),

@@ -614,6 +614,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int savesBeforeDispel = observed.Saves.Count;
                 int resistanceBeforeDispel = observed.Resistances.Count;
                 int dispelsBefore = observed.Dispels.Count;
+                int automaticTouchAttempts = 0;
                 foreach (var row in new[] {
                     new { Owner = firstDispelOwner, Expected = evilSpell,
                         Preserved = evilEnchantment, Label = "evil-spell" },
@@ -625,15 +626,57 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Ability ownerRoot = row.Owner.Descriptor.Abilities
                         .GetAbility(family);
                     var ownerDispel = new AbilityData(ownerRoot);
-                    UnitUseAbility parentCommand = null;
-                    foreach (int frame in Astral31DispelCast(row.Owner,
-                        ownerDispel, new TargetWrapper(row.Owner), value =>
-                            parentCommand = value)) yield return frame;
-                    Buff activeWard = row.Owner.Buffs.Enumerable.SingleOrDefault(
-                        value => ReferenceEquals(value.Blueprint, ward));
-                    UnitUseAbility touchCommand = null;
-                    foreach (int frame in Astral31DispelHeld(row.Owner, target, dispelTouch,
-                        value => touchCommand = value)) yield return frame;
+                    UnitUseAbility parentCommand = null, touchCommand = null;
+                    Buff activeWard = null;
+                    var removalAttempts = new JArray();
+                    for (int attempt = 0; attempt < 5; attempt++)
+                    {
+                        int rollStart = observed.Attacks.Count, dispelStart = observed.Dispels.Count,
+                            saveStart = observed.Saves.Count;
+                        var costs = new JArray();
+                        bool actionExact;
+                        using (var economy = new FirearmReviewCosts(row.Owner, costs))
+                        {
+                            // These two cases are at-will SLAs. A confirmed
+                            // miss may rearm through another real standard
+                            // parent cast, followed by its native free touch.
+                            foreach (int frame in Astral31DispelCast(row.Owner,
+                                ownerDispel, new TargetWrapper(row.Owner), value => parentCommand = value)) yield return frame;
+                            activeWard = row.Owner.Buffs.Enumerable.SingleOrDefault(value => ReferenceEquals(value.Blueprint, ward));
+                            foreach (int frame in Astral31DispelHeld(row.Owner, target, dispelTouch,
+                                value => touchCommand = value)) yield return frame;
+                            automaticTouchAttempts++;
+                            actionExact = parentCommand != null && parentCommand.IsFinished &&
+                                parentCommand.Result == UnitCommand.ResultType.Success &&
+                                economy.Count(parentCommand) == 1 && economy.Exact(parentCommand, false) &&
+                                touchCommand != null && touchCommand.IsFinished &&
+                                touchCommand.Result == UnitCommand.ResultType.Success &&
+                                economy.Count(touchCommand) == 1 && economy.Unchanged(touchCommand) &&
+                                !parentCommand.IsIgnoreCooldown && !touchCommand.IsIgnoreCooldown;
+                        }
+                        var rolls = observed.Attacks.Skip(rollStart).ToArray();
+                        bool actualRoll = rolls.Length == 1 && ReferenceEquals(rolls[0].Initiator, row.Owner) &&
+                            ReferenceEquals(rolls[0].Target, target) && !rolls[0].AutoHit &&
+                            rolls[0].Roll.Value >= 1 && rolls[0].Roll.Value <= 20;
+                        bool confirmedMiss = actionExact && actualRoll && !rolls[0].IsHit &&
+                            activeWard != null && !activeWard.IsDisposed && row.Owner.Buffs.Enumerable.Contains(activeWard) &&
+                            row.Owner.Get<UnitPartTouch>() != null && !row.Expected.IsDisposed &&
+                            target.Buffs.Enumerable.Contains(row.Expected) &&
+                            (row.Preserved == null || !row.Preserved.IsDisposed && target.Buffs.Enumerable.Contains(row.Preserved)) &&
+                            observed.Dispels.Count == dispelStart && observed.Saves.Count == saveStart;
+                        var attemptRow = new JObject { ["owner"] = row.Owner.UniqueId, ["target"] = target.UniqueId,
+                            ["case"] = row.Label, ["attempt"] = attempt + 1, ["rolls"] = Astral31DispelRollRows(rolls),
+                            ["costs"] = costs, ["parent"] = Sprint27AiCommand(parentCommand),
+                            ["touch"] = Sprint27AiCommand(touchCommand), ["confirmedMiss"] = confirmedMiss,
+                            ["selectedStillPresent"] = !row.Expected.IsDisposed && target.Buffs.Enumerable.Contains(row.Expected),
+                            ["wardPresent"] = activeWard != null && !activeWard.IsDisposed,
+                            ["heldPresent"] = row.Owner.Get<UnitPartTouch>() != null, ["forcedRolls"] = 0 };
+                        removalAttempts.Add(attemptRow);
+                        Sprint25Check("astral-dispel-removal-attempt-" + row.Label + "-" + (attempt + 1),
+                            actionExact && actualRoll && (rolls[0].IsHit || confirmedMiss), (JObject)attemptRow.DeepClone(),
+                            "An actual attributed native touch records its roll and real standard-parent/free-touch costs; only a confirmed miss retaining the selected effect and owned charge may retry.");
+                        if (!confirmedMiss) break;
+                    }
                     RuleDispelMagic rule = observed.Dispels.LastOrDefault(value =>
                         ReferenceEquals(value.Buff, row.Expected));
                     bool removed = parentCommand != null &&
@@ -657,6 +700,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Sprint27AiCommand(parentCommand),
                             ["touch"] = touchCommand == null ? null :
                                 Sprint27AiCommand(touchCommand),
+                            ["attempts"] = removalAttempts, ["forcedRolls"] = 0,
                             ["selected"] = row.Expected.Blueprint.AssetGuid,
                             ["selectedCl"] = row.Expected.Context.Params.CasterLevel,
                             ["checkType"] = rule?.Check.ToString(),
@@ -677,7 +721,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     .Resistances.Skip(resistanceBeforeDispel).ToArray();
                 bool automaticBoundary = observed.Dispels.Count ==
                         dispelsBefore + 2 && observed.Saves.Count ==
-                        savesBeforeDispel && automaticResistance.Length == 2 &&
+                        savesBeforeDispel && automaticResistance.Length >= 2 &&
+                        automaticResistance.Length <= automaticTouchAttempts &&
                     automaticResistance.All(value => ReferenceEquals(value.Ability,
                             dispelTouch) && !value.Ability.SpellResistance &&
                         ReferenceEquals(value.Target, target) &&
@@ -695,6 +740,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["rules"] = observed.Dispels.Count - dispelsBefore,
                         ["newSaves"] = observed.Saves.Count - savesBeforeDispel,
                         ["nativeResistanceEvents"] = automaticResistance.Length,
+                        ["actualTouchAttempts"] = automaticTouchAttempts,
                         ["actualResistanceChecks"] = automaticResistance.Count(
                             value => value.HasResistanceRoll),
                         ["resistance"] = new JArray(automaticResistance.Select(
@@ -1059,6 +1105,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !command.ExecutionProcess.IsEnded)
                 throw new InvalidOperationException(
                     "Astral Dispel Evil held touch did not finish.");
+        }
+
+        private static JArray Astral31DispelRollRows(IEnumerable<RuleAttackRoll> rolls)
+        {
+            return new JArray(rolls.Select(value => new JObject {
+                ["owner"] = value.Initiator?.UniqueId, ["target"] = value.Target?.UniqueId,
+                ["weapon"] = value.Weapon?.Blueprint?.AssetGuid, ["roll"] = value.Roll.Value,
+                ["hit"] = value.IsHit, ["autoHit"] = value.AutoHit, ["attackBonus"] = value.AttackBonus }));
         }
 
         private static int Astral31DispelAttackAc(UnitEntityData attacker,
