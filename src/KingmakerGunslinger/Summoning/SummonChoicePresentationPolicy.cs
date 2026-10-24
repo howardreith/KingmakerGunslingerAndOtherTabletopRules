@@ -115,6 +115,12 @@ namespace KingmakerGunslinger.Summoning
             P("hill-giant", "Giant", "Hill"), P("stone-giant", "Giant", "Stone"),
             P("fire-giant", "Giant", "Fire"), P("ettin", "Ettin"),
             P("cloud-giant", "Giant", "Cloud"), P("storm-giant", "Giant", "Storm"),
+            // Hidden S30/S31 candidates use the released explicit family
+            // presentation policy too; labels never grant public access.
+            P("lemure", "Devil", "Lemure"), P("dretch", "Demon", "Dretch"),
+            P("hound-archon", "Archon", "Hound"),
+            P("astral-deva", "Deva", "Astral"),
+            P("trumpet-archon", "Archon", "Trumpet"),
             // Released retained-native wrappers use their existing icon keys.
             P("redcap", "Redcap"), P("axiomite", "Axiomite"), P("soul-eater", "Soul Eater"),
             P("bogeyman", "Bogeyman"), P("movanic-deva", "Deva", "Movanic"),
