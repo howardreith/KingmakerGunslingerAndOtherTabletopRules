@@ -40,6 +40,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewLemure30Core(fixture, phase)) yield return frame;
                 yield break;
             }
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31DretchMeleePhase ||
+                phase == RuntimeTestScenarioCatalog.Sprints30And31DretchMeleeAiPhase)
+            {
+                foreach (int frame in ReviewDretch30Melee(fixture,
+                    phase == RuntimeTestScenarioCatalog.Sprints30And31DretchMeleeAiPhase)) yield return frame;
+                yield break;
+            }
             if (phase == "dretch-cloud")
             {
                 foreach (int frame in ReviewDretch30Cloud(fixture)) yield return frame;
