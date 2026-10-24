@@ -109,7 +109,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     owner.Memory.Add(target); target.Memory.Add(owner);
                     owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
-                    new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                    if (turn)
+                    {
+                        // Use the successful Trumpet/S29 turn setup: refresh
+                        // only this pair's existing memory after native LOS.
+                        // Do not refresh intake actors' hostile memory.
+                        if (owner.HasLOS(target)) owner.Memory.Add(target).Visible = true;
+                        if (target.HasLOS(owner)) target.Memory.Add(owner).Visible = true;
+                    }
+                    else new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
                     owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
                     new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                     bool ready = owner.IsInGame && owner.View.IsInGame && target.IsInGame && target.View.IsInGame &&
@@ -121,23 +129,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["inRange"] = probe.IsUnitEnoughClose, ["approachRadius"] = probe.ApproachRadius,
                         ["distance"] = owner.DistanceTo(target), ["los"] = owner.HasLOS(target),
                         ["visible"] = owner.Memory.ContainsVisible(target), ["targetAc"] = target.Stats.AC.ModifiedValue,
+                        ["memoryRefresh"] = turn ? "exact-owned-pair-after-native-los" : "native-scene-controller",
+                        ["reverseLos"] = target.HasLOS(owner), ["reverseVisible"] = target.Memory.ContainsVisible(owner),
                         ["powerAttack"] = Sprint22PowerAttackState(owner, toggle) },
                         "A fresh awake visible disposable hostile and native action/range preconditions precede the command.");
                     if (!ready) throw new InvalidOperationException("Hound native attack fixture is not ready.");
                     if (turn)
                     {
+                        var tickCoverage = _sprint25Clock.DescribeTurnCoverage();
+                        var tickIds = ((JArray)tickCoverage["tickUnits"]).Values<string>().ToArray();
                         var foreignCombatants = Game.Instance.State.Units.All.Where(value => value != null &&
                             !value.Destroyed && value.IsInState && value.Descriptor != null && value.IsInCombat &&
-                            !ReferenceEquals(value, owner) && !ReferenceEquals(value, target) &&
-                            !ReferenceEquals(value, fixture.Caster) && !fixture.Created.Contains(value)).ToArray();
+                            !tickIds.Contains(value.UniqueId, StringComparer.Ordinal)).ToArray();
                         Sprint25Check(id + "-isolation", foreignCombatants.Length == 0, new JObject {
                             ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
                             ["ownerPosition"] = owner.Position.ToString(), ["targetPosition"] = target.Position.ToString(),
+                            ["nativeTickCoverage"] = tickCoverage,
                             ["foreignCombatants"] = new JArray(foreignCombatants.Select(value => new JObject {
                                 ["unit"] = value.UniqueId, ["blueprint"] = value.Blueprint.AssetGuid,
                                 ["name"] = value.Blueprint.name, ["position"] = value.Position.ToString(),
                                 ["fixtureIntake"] = fixture.UnitsBefore.Any(prior => ReferenceEquals(prior, value)) })) },
-                            "Only the disposable combat pair enters the turn fixture; native actors outside its ownership are observed and never ticked or reset.");
+                            "The existing native clock defines exact admitted actors, including its saved profile-party anchor; any other combatants are observed and refused before turn activation.");
                         if (foreignCombatants.Length != 0) throw new InvalidOperationException("Hound turn fixture admitted foreign combatants.");
                     }
                     var swordView = owner.View.GetComponent<HoundArchonSwordView>();
