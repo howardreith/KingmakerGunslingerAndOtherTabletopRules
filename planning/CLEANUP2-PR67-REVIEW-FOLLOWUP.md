@@ -1,11 +1,13 @@
 # PR 67 review follow-up
 
-Completion milestone, 2026-10-22 to 2026-10-23. All 14 acceptance IDs are
-implemented, and the final frozen-candidate qualification ran on review47. One
-native phase (menu-adapters) still fails for an environmental reason, described
-below with its next requirement. PR stays draft; no merge/release or owner
-aesthetic approval is claimed. The completion intake was clean
-`48a6781392c3d5990c49d9a0e27363e4e3372740` on the existing integration branch.
+Completion milestone, 2026-10-22 to 2026-10-24. All 14 acceptance IDs are
+implemented, and the final frozen-candidate qualification ran on review47. On
+October 23 the owner approved the artwork and authorized the v0.0.164 release.
+The Pro review's P2 fix is natively qualified on review49, and the
+[release candidate](#v00164-release-candidate-october-23-24) passed its gates on
+`dcfffcd602`. menu-adapters keeps the owner's environmental disposition below.
+The completion intake was clean `48a6781392c3d5990c49d9a0e27363e4e3372740` on
+the existing integration branch.
 
 ## Completion implementation (current)
 
@@ -76,6 +78,66 @@ chose not to rerun again. Occultist and Naturalist PC hovers now pass
 natively on the fixed bytes. Feral Hunter and Preservationist PC hovers keep
 their review43 pass. No production menu code changed after review43. Pro found
 no production-menu defect.
+
+### v0.0.164 release candidate (October 23-24)
+
+Release preparation (`1ed009dbd3`, `969e4314d3`, `9a123f9675`) bumps to
+`0.0.164-expanded-summoning-cleanup2`. It adds the narrow
+`tools/validate_expanded_summoning_cleanup2_release164.py`; see
+`docs/BUILD-AND-RELEASE.md`. Each candidate ran in its own frozen detached
+worktree with the cleanup2 private reference bundle. The Sprint gate is
+`scripts/Invoke-KmgGate.ps1 -Level Sprint -ReferenceBundleDir <bundle>`: the
+complete domain suite, the repository wrapper (dispatching to the v0.0.164
+validator), exact-reference Release build, build-output, SoundBank and strict
+package validation. Native reviews deploy the gate's exact package through
+`Invoke-ExpandedSummoningRuntimeScenario.ps1`, which rebuilds it and verifies
+the same bytes before deployment.
+
+| Candidate | Gate | Time | Result | Raw id |
+| --- | --- | --- | --- | --- |
+| `9a123f9675` | Sprint gate | 256.5s | **PASS**: 2739/2739; package `58ff146d…6d94`, DLL `0f928c95…33f3` | — |
+| `9a123f9675` | creature review: Crab, Girallon, Stag Beetle, Griffon, Elephant, Stegosaurus, Brachiosaurus, Gorgon | 674.0s (385.6s in game) | **PASS 32/32** | `20261023T2007360758705Z` |
+| `9a123f9675` | visual contracts | 401.4s | **FAIL 14/1**: bounded footprints 116/117 | `20261024T0237571765755Z` |
+| `dcfffcd602` | Sprint gate | 250.4s | **PASS**: 2739/2739; package `eb60f199…64ae`, DLL `5183dc26…6249` | — |
+| `dcfffcd602` | visual contracts | 351.9s (68.2s in game) | **PASS 15/15**; bounded footprints 117/117 | `20261024T0256086221209Z` |
+| `dcfffcd602` | creature review (same eight) | 655.2s (373.6s in game) | **PASS 32/32** | `20261024T0302418663811Z` |
+
+**Visual-contracts failure and fix.** On `9a123f9675` the Brachiosaurus
+measured 25.035 m against the review's unchanged 25 m sanity cap. That number is
+not the body. Cleanup 2's `SummonAttackGestureVisual` deliberately widens its
+skin's culling envelope by 12 m (5 m for the Crab) so the tail and claw swings
+are not culled, and the review read `renderer.bounds`, which is that envelope.
+`7c300008e1` measures a gesture-owned skin at its actual current pose (the
+existing `CurrentFramingBounds` bake). It reports the envelope beside that
+measurement, and it changes no limit and no product behavior. The only
+production change is a read-only accessor naming the owned skin. On
+`dcfffcd602` the Brachiosaurus body is 9.131 m (envelope 25.035 m) and the
+Crab body 1.829 m (envelope 6.533 m). `dcfffcd602` admits `RuntimeTestRunner.cs`
+in the validator's pins, now 74 production files. The machine's previous
+visual-contracts run was on v0.0.158 (107 creatures, no Brachiosaurus).
+
+Identities:
+- **`9a123f9675`:** MVID `021039cd-85af-4da5-a73b-1cc06f632ea2`; source state
+  `394ad01f4a845c5ceb65a0aab783ef3e86df5ff88ee0210ed3cba5a220c0b6f6`.
+- **`dcfffcd602`:** package
+  `eb60f19929ee148322700207553270ea52446b3db530a135dc746b5cd79664ae`, DLL
+  `5183dc263e6e7c675f3466e2efb123e3c29e2390c191a90ab7cb83ee658c6249`, MVID
+  `badb4a1d-daaf-4102-86f1-1e9bd66cdee7`; source state
+  `007b9d5eeb4836207ef990e646afde4bfaaccfdfc00a49e1c8be4c7aaf3a84e5`.
+
+Launch notes: a first `9a123f9675` visual-contracts launch refused in 2.6 s
+before any deployment, because the scenario requires `-SaveName
+KMG_AUTOMATION_WORKING`. The harness still exited 0, so each review is read
+from its runtime result, never from the exit code alone. During the first
+creature review Claude Code's low-memory reaper stopped the session's process
+watcher, not the review. An unrelated long-running `gcloud` Python process held
+about 4-5 GB.
+
+Every review restored the live mod exactly (254 files, `5C3E4AD4…BFBB`). No
+lock or game process remained, and there were 95 saves with
+`KMG_AUTOMATION_WORKING` unchanged (1,424,708 bytes, 2026-10-05 20:09:11 UTC).
+The PR then merges normally and `Publish-Release.ps1` runs from clean, pushed
+`master`.
 
 
 

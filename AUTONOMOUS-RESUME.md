@@ -5,7 +5,10 @@ on 2026-10-23. Release preparation is on `codex/expanded-summoning-cleanup-itera
 (PR #67). It changes art, giant presentation and summon menus, and no
 identity or route. The source-derived public equation is unchanged from
 v0.0.163: **1,127 generated placements + 29 retained wrappers = 1,156 visible
-choices**. See [the cleanup state](planning/EXPANDED-SUMMONING-CLEANUP-ITERATION2-STATE.md)
+choices**. Release candidate `dcfffcd602` passed the Sprint gate and guarded
+visual-contracts and creature reviews; see the
+[release candidate gates](planning/CLEANUP2-PR67-REVIEW-FOLLOWUP.md#v00164-release-candidate-october-23-24).
+See [the cleanup state](planning/EXPANDED-SUMMONING-CLEANUP-ITERATION2-STATE.md)
 and [the release notes](docs/RELEASE-NOTES-0.0.164.md).
 
 # Sprint 29 — RELEASED / STOP
