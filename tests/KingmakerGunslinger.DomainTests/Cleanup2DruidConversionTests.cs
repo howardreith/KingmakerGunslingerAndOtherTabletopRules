@@ -70,5 +70,29 @@ namespace KingmakerGunslinger.DomainTests
                 new Dictionary<Row, Row[]> { { single, new Row[0] } }), "An incomplete projection cannot silently erase a native source.");
             Assertions.True(original.SequenceEqual(before), "Refusal leaves every original row untouched.");
         }
+
+        // A prepared Summon Nature's Ally lists its own variants after the
+        // conversion rows. Its own quantity rows are dropped, never projected,
+        // so no creature appears twice; other rows keep identity and order.
+        internal static void PreparedParentDropsItsOwnQuantityRowsWithoutDuplicates()
+        {
+            var foreign = new Row { Id = "foreign" }; var self = new Row { Id = "native-single" }; var d3 = new Row { Id = "native-d3" };
+            var d3Child = new Row { Id = "published-d3" };
+            var original = new[] { foreign, self, d3 }; var before = original.ToArray();
+            var projected = DruidSummonConversionPolicy.Project(original, new Dictionary<Row, Row[]> { { d3, new[] { d3Child } } }, new[] { self });
+            Assertions.True(projected.SequenceEqual(new[] { foreign, d3Child }) && ReferenceEquals(projected[0], foreign),
+                "The prepared parent's own quantity row is removed; foreign rows and other projections are kept in order.");
+            var dropped = DruidSummonConversionPolicy.Project(original, new Dictionary<Row, Row[]>(), new[] { self, d3 });
+            Assertions.True(dropped.SequenceEqual(new[] { foreign }), "Every self quantity row can be removed when the source lists all children.");
+            Assertions.True(original.SequenceEqual(before), "Removal leaves the original native list intact.");
+            var lookalike = new Row { Id = "native-single" };
+            Assertions.Throws<InvalidOperationException>(() => DruidSummonConversionPolicy.Project(original, new Dictionary<Row, Row[]>(), new[] { lookalike }),
+                "Only the exact native row object can be removed, not an equal-looking one.");
+            Assertions.Throws<InvalidOperationException>(() => DruidSummonConversionPolicy.Project(original, new Dictionary<Row, Row[]>(), new[] { self, self }),
+                "A row cannot be removed twice.");
+            Assertions.Throws<InvalidOperationException>(() => DruidSummonConversionPolicy.Project(original,
+                new Dictionary<Row, Row[]> { { self, new[] { d3Child } } }, new[] { self }), "A row cannot be both projected and removed.");
+            Assertions.True(original.SequenceEqual(before), "Refusal leaves every original row untouched.");
+        }
     }
 }

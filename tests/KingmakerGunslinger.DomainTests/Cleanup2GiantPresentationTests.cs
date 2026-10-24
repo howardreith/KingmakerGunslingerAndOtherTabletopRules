@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using KingmakerGunslinger.Summoning;
@@ -115,6 +116,52 @@ namespace KingmakerGunslinger.DomainTests
                 "An unrelated rescale must be preserved.");
             Assertions.True(GiantSummonPresentationPolicy.Same(foreign, second),
                 "Refused application must leave the foreign transform intact.");
+        }
+
+        // Cloud and Storm are Huge (a 15-foot space), the rest Large (ten feet).
+        // Height follows each family's factor on the view's own original scale
+        // and space its own corpulence; application is exact and never compounds.
+        internal static void NativeSizeAppliesFamilyHeightAndHugeSpaceOnce()
+        {
+            var expected = new Dictionary<string, float[]> {
+                { "hill-giant", new[] { 1f, 1f } }, { "stone-giant", new[] { 1.2f, 1f } },
+                { "frost-giant", new[] { 1.5f, 1f } }, { "fire-giant", new[] { 1.4f, 1f } },
+                { "cloud-giant", new[] { 1.8f, 1.5f } }, { "storm-giant", new[] { 2.1f, 1.5f } } };
+            Assertions.Equal(expected.Count, GiantSummonPresentationPolicy.All.Count, "Every giant family has an expected size.");
+            var intake = new GiantPresentationScale(1f, 1f, 1f);
+            const float corpulence = 1.1f;
+            foreach (GiantSummonPresentationProfile profile in GiantSummonPresentationPolicy.All)
+            {
+                float[] size = expected[profile.Key];
+                Assertions.True(Math.Abs(profile.RelativeVisualFactor - size[0]) < .00001f, profile.Key + " height factor.");
+                Assertions.True(Math.Abs(profile.FootprintFactor - size[1]) < .00001f, profile.Key + " space factor.");
+                Assertions.Equal(size[1] > 1f, profile.Huge, profile.Key + " size category.");
+                GiantPresentationScale target; float space;
+                string first = GiantSummonPresentationPolicy.PlanNativeSize(profile, intake, corpulence, intake, corpulence, out target, out space);
+                Assertions.Equal(size[0] == 1f && size[1] == 1f ? "already-applied" : "apply-native-size", first,
+                    profile.Key + " applies from its native intake.");
+                Assertions.True(Math.Abs(target.Y - size[0]) < .00001f && Math.Abs(target.X - size[0]) < .00001f &&
+                    Math.Abs(space - corpulence * size[1]) < .00001f, profile.Key + " target height and space.");
+                GiantPresentationScale again; float againSpace;
+                Assertions.Equal("already-applied", GiantSummonPresentationPolicy.PlanNativeSize(profile, intake, corpulence,
+                    target, space, out again, out againSpace), profile.Key + " repeated attach must not compound.");
+                Assertions.True(GiantSummonPresentationPolicy.Same(again, target) && againSpace == space, profile.Key + " idempotent target.");
+            }
+            GiantSummonPresentationProfile storm = GiantSummonPresentationPolicy.All.Single(value => value.Key == "storm-giant");
+            GiantPresentationScale kept; float keptSpace;
+            Assertions.Equal("foreign-size-change", GiantSummonPresentationPolicy.PlanNativeSize(storm, intake, corpulence,
+                new GiantPresentationScale(3f, 3f, 3f), corpulence, out kept, out keptSpace), "An unrelated rescale is kept.");
+            Assertions.True(GiantSummonPresentationPolicy.Same(kept, new GiantPresentationScale(3f, 3f, 3f)) && keptSpace == corpulence,
+                "A refused plan leaves the foreign scale and space.");
+            Assertions.Equal("foreign-size-change", GiantSummonPresentationPolicy.PlanNativeSize(storm, intake, corpulence,
+                intake, 2f, out kept, out keptSpace), "An unrelated corpulence change is kept.");
+            Assertions.Equal("invalid-native-size", GiantSummonPresentationPolicy.PlanNativeSize(storm, intake, 0f,
+                intake, 0f, out kept, out keptSpace), "A nonpositive corpulence is refused.");
+            Assertions.Equal("invalid-native-size", GiantSummonPresentationPolicy.PlanNativeSize(storm,
+                new GiantPresentationScale(float.NaN, 1f, 1f), corpulence, intake, corpulence, out kept, out keptSpace),
+                "A non-finite intake scale is refused.");
+            Assertions.Equal("not-owned", GiantSummonPresentationPolicy.PlanNativeSize(null, intake, corpulence,
+                intake, corpulence, out kept, out keptSpace), "No profile, no change.");
         }
 
         internal static void MissingWrongOrInvalidCalibrationNeverChangesScale()

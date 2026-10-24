@@ -569,13 +569,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _context.FeatureModules.Active.ExpandedSummoning;
             // The general save-readiness contract deliberately allows native
             // appearance still in flight. This exact trio additionally checks
-            // ordinary production scale below, which attaches after its native
-            // palette lifecycle. Let that lifecycle finish BEFORE pausing it.
+            // its ordinary native size below, applied as each view attaches.
             Func<bool> presentationReady = () => !cleanup2Trio || new[] { "cloud-giant", "storm-giant" }.All(key => {
                 var matching = units.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>()?.Key == key).ToArray();
                 if (matching.Length != 1 || matching[0].View == null) return false;
-                var owner = GiantSummonPresentationPatch.ProductionOwner(matching[0].View);
-                return owner != null && !owner.IsDisposed;
+                return (bool?)GiantSummonPresentationPatch.ObserveNativeSize(matching[0].View)["currentSizeExact"] == true;
             });
             DateTime presentationDeadline = DateTime.UtcNow.AddSeconds(60);
             Game.Instance.IsPaused = false;
@@ -597,7 +595,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["productionOwnership"] = cleanup2Trio ? new JArray(units.Where(unit =>
                         unit.Get<UnitPartRelease143RosterReceipt>()?.Key == "cloud-giant" ||
                         unit.Get<UnitPartRelease143RosterReceipt>()?.Key == "storm-giant").Select(unit =>
-                        GiantSummonPresentationPatch.ObserveProductionOwnership(unit.View))) : null,
+                        GiantSummonPresentationPatch.ObserveNativeSize(unit.View))) : null,
                     ["observerCalledApplyOrRebuild"] = false },
                 "every owned live view naturally clears native appearance lock and has valid view/control/finite dissolve; current camera/fog/invisibility is not a save prerequisite");
             var keys = units.Select(u => u.Get<UnitPartRelease143RosterReceipt>()?.Key).OrderBy(k => k, StringComparer.Ordinal).ToArray();
@@ -814,24 +812,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 if (Sprint29PersistenceScope && (receipt.Key == "cloud-giant" || receipt.Key == "storm-giant"))
                 {
-                    JObject scale = GiantSummonPresentationPatch.ObserveProductionOwnership(unit.View);
+                    JObject scale = GiantSummonPresentationPatch.ObserveNativeSize(unit.View);
                     var liveOwners = unit.View == null ? new Cleanup2GiantRenderScalePrototype[0] :
                         unit.View.GetComponentsInChildren<Cleanup2GiantRenderScalePrototype>(true);
-                    var clothRows = scale["ownedCloths"] as JArray;
-                    bool clothExact = receipt.Key == "cloud-giant" ? clothRows != null && clothRows.Count == 0 :
-                        clothRows != null && clothRows.Count == 1 && clothRows.All(row => (bool?)row["enabled"] == true &&
-                            (bool?)row["allParticleCoordinatesFinite"] == true && (bool?)row["capsulesAllDisabled"] == true &&
-                            (int?)row["coefficientCount"] == 292 && (int?)row["pinnedCount"] == 92);
-                    bool giantScaleExact = moduleOn ? (bool?)scale["currentOwnershipExact"] == true &&
-                        (bool?)scale["unitOwnerExact"] == true && (bool?)scale["nativeRootScaleExact"] == true &&
-                        liveOwners.Length == 1 && clothExact && scale["currentBodySoleWorldY"] != null :
+                    float factor = (float?)scale["uniformVisualFactor"] ?? float.NaN;
+                    bool giantScaleExact = moduleOn ? (bool?)scale["currentSizeExact"] == true &&
+                        (bool?)scale["unitOwnerExact"] == true && (bool?)scale["rootScaleFollowsOriginal"] == true &&
+                        (bool?)scale["huge"] == true && (string)scale["mechanicalSize"] == "Huge" &&
+                        Mathf.Abs(((float?)scale["heightOverIntake"] ?? 0f) - factor) <= .0001f &&
+                        Mathf.Abs(((float?)scale["footprintOverIntake"] ?? 0f) - GiantSummonPresentationPolicy.HugeSpaceRatio) <= .0001f &&
+                        liveOwners.Length == 0 :
                         (bool?)scale["ownerPresent"] == false && liveOwners.Length == 0;
                     visual &= giantScaleExact;
-                    RosterPersistenceCheck("giant-production-render-" + receipt.Key + "-" + (prepare ? "prepare" : "cold-verify"), giantScaleExact,
+                    RosterPersistenceCheck("giant-native-size-" + receipt.Key + "-" + (prepare ? "prepare" : "cold-verify"), giantScaleExact,
                         new JObject { ["unit"] = unit.UniqueId, ["key"] = receipt.Key, ["moduleEnabled"] = moduleOn,
-                            ["phase"] = prepare ? "prepare" : "cold-verify", ["production"] = scale,
-                            ["currentViewScaleOwnerCount"] = liveOwners.Length, ["observerCalledApplyOrRebuild"] = false },
-                        "The actual fresh-process saved Cloud/Storm owns its production relative render scale and exact private Cloth membership/state; module OFF owns none. This observer does not attach or rebuild presentation.");
+                            ["phase"] = prepare ? "prepare" : "cold-verify", ["nativeSize"] = scale,
+                            ["copiedModelOwnerCount"] = liveOwners.Length, ["observerCalledApplyOrRebuild"] = false },
+                        "The actual fresh-process saved Cloud/Storm carries its family height and Huge space on its own native view bases; module OFF changes neither. This observer does not attach or rebuild presentation.");
                 }
                 RosterPersistenceCheck("profile-view-" + receipt.Key, profileSame && visual && giantFactsAbilitiesExact,
                     new JObject { ["key"] = receipt.Key, ["profile"] = profile, ["savedProfile"] = receipt.Profile,
