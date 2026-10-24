@@ -74,6 +74,7 @@ CLEANUP_PRODUCTION = {
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.SummonCleanup2ScalePrototypeReview.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.SummonCleanup2SharedControls.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.SummonCleanup2TooltipReview.cs",
+    "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.cs",
     "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestScenarioCatalog.cs",
     "src/KingmakerGunslinger/RuntimeTesting/VisualRefinementReviewPolicy.cs",
     "src/KingmakerGunslinger/Summoning/Cleanup2CreatureReviewRoster.cs",
