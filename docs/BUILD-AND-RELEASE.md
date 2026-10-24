@@ -13,7 +13,7 @@ tag again.
 `tools/validate_expanded_summoning_cleanup2_release164.py` admits, relative to
 released v0.0.163 master `a35a3277a9`:
 - no identity change;
-- the 73 pinned Cleanup 2 production files and the version metadata;
+- the 74 pinned Cleanup 2 production files and the version metadata;
 - the 62 pinned project lines (compile items, the UniRx and Cloth module
   references and the Gorgon parameter content);
 - the 33 pinned modified and 22 pinned added assets and source-art files, at
