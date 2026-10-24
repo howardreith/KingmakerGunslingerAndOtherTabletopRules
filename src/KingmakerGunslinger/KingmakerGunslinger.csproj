@@ -1356,6 +1356,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Smite.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLemure30Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Cloud.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Melee.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Ai.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningArchon30Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Profile.cs" />
