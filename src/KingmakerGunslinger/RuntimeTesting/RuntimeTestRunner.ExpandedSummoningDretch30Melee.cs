@@ -301,6 +301,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 ResetExpandedSummoningHostile(fixture);
                 immediateCleanup = Dretch30CleanupState(fixture, owner, targetAc);
+                // An unstarted native movement remained after leaving combat
+                // on this disposable target (game164). Close it after that
+                // transition, retaining the before/after evidence and guard.
+                foreach (var pending in target.Commands.Raw.Where(value =>
+                    value != null && !value.IsFinished).ToArray()) pending.Interrupt(true);
+                target.Commands.RemoveFinishedAndUpdateQueue();
             }
             for (int frame = 0; frame < 8; frame++) yield return 0;
             var itemRows = new JArray((items ?? Array.Empty<Kingmaker.Items.ItemEntity>()).Select(value =>
