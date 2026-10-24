@@ -280,6 +280,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return ExpandedSummoningNativeProfilePolicy.AstralDispelPhase; } }
         internal static string Sprints30And31TrumpetDispelPhase
         { get { return ExpandedSummoningNativeProfilePolicy.TrumpetDispelPhase; } }
+        internal static string Sprints30And31TrumpetBlastAiSafePhase
+        { get { return ExpandedSummoningNativeProfilePolicy.TrumpetBlastAiSafePhase; } }
         internal static string Sprints30And31TrumpetBlastAiPhase
         { get { return ExpandedSummoningNativeProfilePolicy.TrumpetBlastAiPhase; } }
         internal static string Sprints30And31TrumpetBlastPhase
