@@ -107,6 +107,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewTrumpet31Caster(ExpandedSummoningCorrectionFixture fixture)
         {
+            CaptureCelestial31CasterInputs();
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null, victim = null, blocker = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
