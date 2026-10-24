@@ -28,10 +28,15 @@ namespace KingmakerGunslinger.Blueprints
         internal const string Trumpet31Prefix = "KMG.Summoning.OutsiderCelestial.TrumpetArchon.";
         private const string Trumpet31Unit = "KMG.Summoning.Unit.TrumpetArchon";
         private const string NativeClericBook31 = "4673d19a0cf2fab4f885cc4d1353da33";
+        internal const string TrumpetFreedomSpell31Guid = "4c349361d720e844e846ad8c19959b1e";
+        internal const string NativeFreedomBuff31Guid = "1533e782fca42b84ea370fc1dcbf4fc1";
+        internal const string TrumpetResistanceSpell31Guid = "7bc8e27cba24f0e43ae64ed201ad5785";
+        internal const string NativeResistanceBuff31Guid = "df680f6687f935e408eba6fb5124930e";
 
-        // Hidden caster continuation after the native Heal ownership proof.
-        // Available printed preparations and the first private missing spell
-        // use the real book. The remaining named consumers stay explicit.
+        // Bounded legal cleric preparation under the summon-caster filter.
+        // The disposition table records the two legal prepared alternatives,
+        // cantrip selection and omitted noncombat/filtered entries explicitly.
+        // All leveled access remains the native prepared book, not SLAs.
         private static void ConfigureTrumpet31(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintFeature extraplanar)
         {
@@ -106,8 +111,14 @@ namespace KingmakerGunslinger.Blueprints
                 "d3a852385ba4cd740992d1970170301a", "captured printed Virtue orison");
             if (virtue.Type != AbilityType.Spell || virtue.GetComponent<CantripComponent>() == null)
                 throw new InvalidOperationException("Trumpet Virtue must remain a native Spell/Cantrip fact.");
+            var resistance = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library,
+                TrumpetResistanceSpell31Guid, "captured native Resistance cantrip");
+            if (resistance.Type != AbilityType.Spell || resistance.GetComponent<CantripComponent>() == null ||
+                !nativeBook.SpellList.SpellsByLevel.Single(row => row.SpellLevel == 0).Spells.Contains(resistance))
+                throw new InvalidOperationException("Trumpet Resistance must be the native cleric cantrip.");
             var orison = ScriptableObject.CreateInstance<TrumpetOrisonParameters>();
             orison.OwningBlueprint = unit; orison.Book = book; orison.Orison = virtue;
+            orison.AdditionalOrisons = new[] { resistance };
             var namedSkills = ScriptableObject.CreateInstance<TrumpetNamedPersuasion>(); namedSkills.OwningBlueprint = unit;
             var proficiency = ScriptableObject.CreateInstance<AddProficiencies>();
             proficiency.WeaponProficiencies = new[] { sword.Category }; proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
@@ -145,16 +156,16 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, ElectricityImmunityGuid, "archon electricity immunity"),
                 Feature(library, NativeCleaveFeature, "ordinary native Cleave"),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
-                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue }
+                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue, resistance }
                 .Concat(ConfigureTrumpet31Feats(library, bySymbol, unit)).ToArray();
         }
-        // Native leveled portion of the printed preparation. Native
-        // UpdateAllSlotsSize initializes only levels1-7; do not send the
-        // separate level-zero orison access path through Memorize.
-        // Native portion of the printed preparation. Missing named combat
-        // consumers are completed separately; their slots remain unprepared
-        // until their real dependencies exist. Filtered travel/material spells
-        // never become replacement combat slots. This is not the final loadout.
+        // Actual copies are bounded by native CL14/Wis20 capacities. L1 has
+        // two Cure Light copies and a second Shield of Faith instead of
+        // Sanctuary; L2 drops expensive Consecrate and one Lesser Restoration.
+        // L4 uses Freedom of Movement instead of Spell Immunity. Daylight's
+        // unmodeled illumination slot, caster travel and expensive Raise Dead
+        // stay unprepared; they do not become extra combat preparations.
+        // Cantrips use separate real Spell/Cantrip facts, never L0 Memorize.
         private static TrumpetPreparedSpell[] Trumpet31NativePreparations(
             LibraryScriptableObject library, BlueprintSpellbook nativeBook)
         {
@@ -162,7 +173,7 @@ namespace KingmakerGunslinger.Blueprints
                 new { Level = 1, Copies = 1, Guid = "90e59f4a4ada87243b7b3535a06d0638" }, // Bless
                 new { Level = 1, Copies = 2, Guid = "5590652e1c2225c4ca30c4a699ab3649" }, // Cure Light Wounds
                 new { Level = 1, Copies = 1, Guid = "9d5d2d3ffdd73c648af3eb3e585b1113" }, // Divine Favor
-                new { Level = 1, Copies = 1, Guid = "183d5bb91dea3a1489a6db6c9cb64445" }, // Shield of Faith
+                new { Level = 1, Copies = 2, Guid = "183d5bb91dea3a1489a6db6c9cb64445" }, // Shield of Faith; legal Sanctuary alternative
                 new { Level = 2, Copies = 1, Guid = "4c3d08935262b6544ae97599b3a9556d" }, // Bull's Strength
                 new { Level = 2, Copies = 2, Guid = "6b90c773a6543dc49b2505858ce33db5" }, // Cure Moderate Wounds
                 new { Level = 2, Copies = 1, Guid = "f0455c9295b53904f9e02fc571dd2ce1" }, // Owl's Wisdom
@@ -173,6 +184,7 @@ namespace KingmakerGunslinger.Blueprints
                 new { Level = 4, Copies = 1, Guid = "95f7cdcec94e293489a85afdf5af1fd7" }, // Dismissal
                 new { Level = 4, Copies = 1, Guid = "ef16771cb05d1344989519e87f25b3c5" }, // Divine Power
                 new { Level = 4, Copies = 1, Guid = "e7240516af4241b42b2cd819929ea9da" }, // Neutralize Poison
+                new { Level = 4, Copies = 1, Guid = TrumpetFreedomSpell31Guid }, // legal Spell Immunity alternative
                 new { Level = 5, Copies = 1, Guid = "5d3d689392e4ff740a761ef346815074" }, // Mass Cure Light Wounds
                 new { Level = 6, Copies = 1, Guid = "d361391f645db984bbf58907711a146a" }, // Banishment
                 new { Level = 6, Copies = 2, Guid = "5da172c4c89f9eb4cbb614f3a67357d3" }, // Heal

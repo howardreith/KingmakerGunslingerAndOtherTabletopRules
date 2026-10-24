@@ -221,6 +221,65 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["preparedSlotsAfter"] = new JArray(Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null))) },
                     "Printed at-will Virtue is a native Spell/Cantrip fact, pays actions twice, grants one temporary HP without stacking and never spends or refills leveled slots.");
                 if (!orisonEffect) throw new InvalidOperationException("Native Virtue effect or leveled-resource isolation failed.");
+                var resistance = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
+                    ExpandedSummoningSpecialBuilder.TrumpetResistanceSpell31Guid, "selected legal Resistance cantrip");
+                var resistanceBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
+                    ExpandedSummoningSpecialBuilder.NativeResistanceBuff31Guid, "captured native Resistance effect");
+                int[] savesBeforeResistance = { owner.Stats.SaveFortitude.ModifiedValue,
+                    owner.Stats.SaveReflex.ModifiedValue, owner.Stats.SaveWill.ModifiedValue };
+                foreach (int frame in Trumpet31ManualCommand(owner,
+                    new AbilityData(owner.Descriptor.Abilities.GetAbility(resistance)), owner,
+                    "trumpet-caster-resistance-first-command")) yield return frame;
+                foreach (int frame in Trumpet31ManualCommand(owner,
+                    new AbilityData(owner.Descriptor.Abilities.GetAbility(resistance)), owner,
+                    "trumpet-caster-resistance-second-command")) yield return frame;
+                var resistances = owner.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, resistanceBuff)).ToArray();
+                int[] savesAfterResistance = { owner.Stats.SaveFortitude.ModifiedValue,
+                    owner.Stats.SaveReflex.ModifiedValue, owner.Stats.SaveWill.ModifiedValue };
+                bool resisted = resistances.Length == 1 && ReferenceEquals(resistances[0].Context.MaybeCaster, owner) &&
+                    resistances[0].Context.Params.CasterLevel == 14 &&
+                    savesAfterResistance.SequenceEqual(savesBeforeResistance.Select(value => value + 1)) &&
+                    initialSlots.SequenceEqual(Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null)));
+                Sprint25Check("trumpet-caster-resistance-effect", resisted, new JObject {
+                    ["owner"] = owner.UniqueId, ["buffCount"] = resistances.Length,
+                    ["cl"] = resistances.FirstOrDefault()?.Context?.Params.CasterLevel,
+                    ["savesBefore"] = new JArray(savesBeforeResistance), ["savesAfter"] = new JArray(savesAfterResistance),
+                    ["availableAgain"] = new AbilityData(owner.Descriptor.Abilities.GetAbility(resistance)).IsAvailable,
+                    ["leveledSlotsBefore"] = new JArray(initialSlots),
+                    ["leveledSlotsAfter"] = new JArray(Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null))) },
+                    "The legal native Resistance cantrip pays two actual standard actions, supplies one nonstacking +1 resistance save effect at CL14 and neither spends nor refills leveled slots.");
+                if (!resisted) throw new InvalidOperationException("Native Resistance parameters/effect/resource isolation failed.");
+
+                var freedom = creation.Preparations.Single(row => row.Ability.AssetGuid ==
+                    ExpandedSummoningSpecialBuilder.TrumpetFreedomSpell31Guid).Ability;
+                var freedomBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
+                    ExpandedSummoningSpecialBuilder.NativeFreedomBuff31Guid, "published native Freedom of Movement effect");
+                var freedomSlot = book.GetMemorizedSpellSlots(4).Single(slot => slot.Available && ReferenceEquals(slot.Spell?.Blueprint, freedom));
+                freedomSlot.Spell.ParamSpellSlot = freedomSlot;
+                var freedomEffects = new Trumpet31CasterEffects(owner);
+                EventBus.Subscribe(freedomEffects);
+                try
+                {
+                    foreach (int frame in Trumpet31ManualCommand(owner, freedomSlot.Spell, owner,
+                        "trumpet-caster-freedom-command")) yield return frame;
+                }
+                finally { EventBus.Unsubscribe(freedomEffects); }
+                var actualFreedom = owner.Buffs.Enumerable.SingleOrDefault(buff => ReferenceEquals(buff.Blueprint, freedomBuff));
+                double freedomRemaining = actualFreedom == null ? -1 :
+                    (actualFreedom.EndTime - Game.Instance.TimeController.GameTime).TotalSeconds;
+                bool freed = actualFreedom != null && ReferenceEquals(actualFreedom.Context.MaybeCaster, owner) &&
+                    actualFreedom.Context.Params.CasterLevel == 14 && freedomRemaining > 8390 && freedomRemaining <= 8400.1 &&
+                    !freedomSlot.Available && Trumpet31PreparedCopies(otherBook, freedom, 4) == 1 &&
+                    initialSlots.Select((value, index) => index == 3 ? value - 1 : value).SequenceEqual(
+                        Enumerable.Range(1, 7).Select(level => book.GetMemorizedSpellSlots(level).Count(slot => slot.Available && slot.Spell != null)));
+                Sprint25Check("trumpet-caster-freedom-effect", freed, new JObject {
+                    ["owner"] = owner.UniqueId, ["cl"] = actualFreedom?.Context?.Params.CasterLevel,
+                    ["sourceAbility"] = actualFreedom?.Context?.SourceAbility?.AssetGuid,
+                    ["remainingSeconds"] = freedomRemaining, ["nativeEffects"] = freedomEffects.Rows,
+                    ["ownSlotAvailable"] = freedomSlot.Available, ["siblingCopies"] = Trumpet31PreparedCopies(otherBook, freedom, 4),
+                    ["nativeParalysisImmunity"] = owner.Descriptor.State.HasConditionImmunity(UnitCondition.Paralyzed) },
+                    "The legal fourth-level native Freedom of Movement preparation pays one standard action, applies its actual CL14/140-minute protection and spends exactly its own slot while the sibling's copy remains available. Its published native protection consumer is retained; this row is spell/access/resource proof.");
+                if (!freed) throw new InvalidOperationException("Native Freedom preparation/effect/resource isolation failed.");
                 // Native sight caps player units at11.7m and an out-of-combat
                 // enemy at8.5m. Enroll this exact disposable pair before the
                 // survey;10.5m fits real combat sight and clears a30ft burst.
