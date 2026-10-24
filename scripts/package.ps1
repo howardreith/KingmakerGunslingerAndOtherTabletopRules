@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-cleanup-followup.zip"
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-druid-giant-sizes.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -84,7 +84,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.162.md',
     'docs\RELEASE-NOTES-0.0.163.md',
     'docs\RELEASE-NOTES-0.0.164.md',
-    'docs\RELEASE-NOTES-0.0.165.md')) {
+    'docs\RELEASE-NOTES-0.0.165.md',
+    'docs\RELEASE-NOTES-0.0.166.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -284,8 +285,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
 # two-file delta.
 # Cleanup2 adds one authored Gorgon material-parameter map and the v0.0.164
-# release notes. The cleanup follow-up adds the v0.0.165 release notes.
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + 1 + 1 + 1
+# release notes. The cleanup follow-up adds the v0.0.165 release notes, and the
+# Druid rows and giant sizes release the v0.0.166 notes.
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + 1 + 1 + 1 + 1
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

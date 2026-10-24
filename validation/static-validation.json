@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.165-expanded-summoning-cleanup-followup",
+  "milestone": "0.0.166-expanded-summoning-druid-giant-sizes",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.165",
+  "version": "0.0.166",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2644,6 +2644,21 @@
     "modifiedAssets": 10,
     "addedAssets": 4,
     "productionFiles": 6,
+    "addedProjectLines": 0,
+    "visibleChoiceTotal": 1156,
+    "guardedNativeReviewed": true,
+    "ownerVisualReview": "release authorized by the owner on 2026-10-24"
+  },
+  "expandedSummoningDruidGiantSizesRelease166": {
+    "releaseVersion": "0.0.166",
+    "releaseInformationalVersion": "0.0.166-expanded-summoning-druid-giant-sizes",
+    "baseStableVersion": "0.0.165",
+    "change": "A Druid's prepared Summon Nature's Ally lists each creature once instead of twice, and the summoned giants keep their family heights in ordinary play on the view's own scale, with a Huge space for the Cloud and Storm Giants",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "modifiedAssets": 0,
+    "addedAssets": 0,
+    "productionFiles": 8,
     "addedProjectLines": 0,
     "visibleChoiceTotal": 1156,
     "guardedNativeReviewed": true,

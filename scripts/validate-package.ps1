@@ -69,6 +69,7 @@ try {
         'docs\RELEASE-NOTES-0.0.163.md',
         'docs\RELEASE-NOTES-0.0.164.md',
         'docs\RELEASE-NOTES-0.0.165.md',
+        'docs\RELEASE-NOTES-0.0.166.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
