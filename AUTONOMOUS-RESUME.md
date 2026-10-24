@@ -1,15 +1,72 @@
-# Summon Cleanup Iteration 2 — v0.0.164 release in progress
+# Summon Cleanup Iteration 2 — v0.0.164 RELEASED / STOP
 
-The owner approved the Cleanup 2 artwork and authorized the v0.0.164 release
-on 2026-10-23. Release preparation is on `codex/expanded-summoning-cleanup-iteration2`
-(PR #67). It changes art, giant presentation and summon menus, and no
-identity or route. The source-derived public equation is unchanged from
-v0.0.163: **1,127 generated placements + 29 retained wrappers = 1,156 visible
-choices**. Release candidate `dcfffcd602` passed the Sprint gate and guarded
-visual-contracts and creature reviews; see the
-[release candidate gates](planning/CLEANUP2-PR67-REVIEW-FOLLOWUP.md#v00164-release-candidate-october-23-24).
+**PR #67 is MERGED and v0.0.164 is PUBLISHED.** On 2026-10-23 the owner
+approved the Cleanup 2 artwork ("The artwork looks great") and authorized the
+release once the Pro review's checks were clear: the release validator and
+Sprint-level gate, merging PR #67, publishing through `Publish-Release.ps1`
+and checking the public download. The release changes art, giant presentation
+and summon menus, and no identity or route. The source-derived public equation
+is unchanged from v0.0.163: **1,127 generated placements + 29 retained
+wrappers = 1,156 visible choices**.
+
+- **Merge.** PR #67 merged normally as
+  `23952275bb8bbe5a69a8e64a961dd978093a2ec6` (tree `4a8f1791…`). Between the
+  gated candidate `dcfffcd602` and the merge, only the unpackaged record
+  `06fb138d9f` changed.
+- **Gates on the candidate.** The Sprint-level gate passed 2,739 / 2,739,
+  including the v0.0.164 release validator, the exact-reference build and
+  strict package validation (package `eb60f199…64ae`). The guarded visual
+  contracts passed 15/15 and the creature review 32/32 on that package. The
+  first candidate `9a123f9675` failed visual contracts 14/1. The cause was the
+  measurement, not the art: it read the Brachiosaurus attack gesture's
+  deliberate culling envelope (25.035 m) as the body. `7c300008e1` measures the
+  gesture-owned skin at its current pose (9.131 m) and keeps every limit. See the
+  [release candidate gates](planning/CLEANUP2-PR67-REVIEW-FOLLOWUP.md#v00164-release-candidate-october-23-24).
+- **Publication.** `Publish-Release.ps1` ran once from the clean, pushed main
+  checkout (`master` fast-forwarded to the merge) with the cleanup2 reference
+  bundle, in 624 s. Its build passed 2,739 / 2,739 domain tests, the
+  release-mode wrapper with `validate_expanded_summoning_cleanup2_release164.py`
+  and strict package validation, and both clean builds produced identical
+  bytes.
+
+[Stable v0.0.164](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.164)
+is published (2026-10-24T03:47:11Z) and Latest, titled "Tabletop Added Rules
+v0.0.164". Annotated tag object `ef6467ee42e084661e0e10dd99637f7e5bf1188e`
+peels to the merge commit. The downloaded public assets match GitHub's
+digests:
+
+- `KingmakerGunslinger-0.0.164-expanded-summoning-cleanup2.zip`:
+  `0a24dd9f8998e43234d64138c481b1969f1f6c671f5bebb2d724f9eb0df0a812`
+  (400 files; DLL
+  `61c3800017f7c6829310ecd4c63b8d319a0d6946d020be924697e66b2adb5940`,
+  MVID `1a40087f-d91a-4952-979d-413d58198578`, assembly version 0.0.164.0);
+- `SHA256SUMS.txt`:
+  `b4b6b55a2c043f28d32931faff05669899b9b23687e73dedfc1f133f3196642f`;
+- `release-manifest.json`:
+  `22191e974f1fef021ad6c03e1069457dabcad359dbd5c346ca0ed8f7de1df49d`.
+
+The downloaded ZIP passed strict package validation. Its DLL embeds the merge
+commit and `0.0.164-expanded-summoning-cleanup2`. These bytes differ from the
+gated candidate because the build stamps the commit and the PDB path. Disassembly
+shows the same code: 399 of 400 package entries are identical, and the DLL's IL
+differs only in the commit stamp, MVID, image base and the layout addresses of
+188 compiler static-data fields, each holding identical bytes. The publisher's
+own run qualified the released bytes, and the native evidence stays bound to
+the candidate. Nothing was deployed permanently: every guarded run restored the
+live mod exactly (254 files, `5C3E4AD4…BFBB`), all 95 saves remain, and
+`KMG_AUTOMATION_WORKING` is unchanged.
+
+**Still open (owner decisions, not release blockers):**
+- The level-up preview folds a single elemental row behind "Elementals (1)".
+- Generated descriptions read "Summons X through the native summon lifecycle."
+- Feral Hunter and Preservationist PC menu hovers were last exercised on
+  review43; the owner chose not to rerun menu-adapters on the final bytes.
+- Owner notes on the Brachiosaurus: the torso reads as a broad dome and the
+  tail is short.
+
 See [the cleanup state](planning/EXPANDED-SUMMONING-CLEANUP-ITERATION2-STATE.md)
-and [the release notes](docs/RELEASE-NOTES-0.0.164.md).
+and [the release notes](docs/RELEASE-NOTES-0.0.164.md). STOP: no further
+Cleanup 2 work is scheduled.
 
 # Sprint 29 — RELEASED / STOP
 
