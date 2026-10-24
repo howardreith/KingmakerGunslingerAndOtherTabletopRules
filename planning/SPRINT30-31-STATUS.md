@@ -22,6 +22,8 @@ Integration preservation: backup/hash of all31 overlapping files and raw16 confl
 
 Coverage dependency boundary: published common rendering/gesture/menu/publisher/reference-observer and native fixture/tooling changes are retained. Previous mechanics/body/menu/native records keep their original source/artifact/environment tuples; they are not fresh proof of this merged artifact. Fresh affected admission/dispatch/refusal and production/integration checks precede native work. Determine final fresh/reused rows by actual production/asset/observer/environment dependencies; common visual/item/aura/caster changes invalidate every affected consumer. Do not replay unrelated historical rosters or restart the cleanup campaign. The private Trumpet blast/book production mechanics and original new icons are unchanged; canonical Magic Circle relationships are retained.
 
+Integration audit found the newly published explicit choice-label policy validates every registered candidate, including hidden roots. Add exactly five scoped mappings using its established family/subtype labels (Devil/Lemure, Demon/Dretch, Archon/Hound, Deva/Astral, Archon/Trumpet); preserve all released labels and visibility. This resolves a known registration dependency before attempting a post-merge build/native bootstrap. Actual v0.0.164 development-baseline and all30 icon ownership/corruption/refusal checks passed on the merged source; append-only roster/identity validation remains exact. Fresh combined admission/dispatch/refusal, named label/native-policy tests and actual production compilation are next; no new native claims.
+
 ## Scope and coverage map
 
 | Charter | Creature | Routes | Current proof | Required next work |
