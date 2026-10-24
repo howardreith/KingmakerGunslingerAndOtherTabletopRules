@@ -37,6 +37,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null, sibling = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
             UnitEntityData target = fixture.Hostile;
+            if (target == null || fixture.UnitsBefore.Any(value => ReferenceEquals(value, target)) ||
+                fixture.PartyBefore.Any(value => ReferenceEquals(value, target)))
+                throw new InvalidOperationException("Unforced hammer fixture requires its exact disposable hostile.");
+            int targetAcBefore = target.Stats.AC.BaseValue;
+            int targetFortBefore = target.Stats.SaveFortitude.BaseValue;
+            int targetWillBefore = target.Stats.SaveWill.BaseValue;
             var areaBaseline = Game.Instance.State.AreaEffects.All.ToArray();
             var targetBuffBaseline = target.Buffs.Enumerable.ToArray();
             var items = new List<ItemEntity>();
@@ -92,6 +98,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     origin + Vector3.back * 12f);
                 target.Descriptor.Stats.HitPoints.BaseValue = 100000;
                 target.Descriptor.Stats.AC.BaseValue = -100;
+                target.Stats.SaveFortitude.BaseValue = -100;
+                target.Stats.SaveWill.BaseValue = -100;
                 bool targetCanActBeforeStun = target.Descriptor.State.CanAct;
                 if (!targetCanActBeforeStun)
                     throw new InvalidOperationException(
@@ -141,14 +149,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.FactionIsolationExact(3) &&
                     Astral31PowerAttackOff(owner) &&
                     observer.Attacks.All(value => ReferenceEquals(value.Weapon, hammer) &&
-                        value.AttackRoll != null && value.AttackRoll.Roll.Value == 10 &&
+                        value.AttackRoll != null && value.AttackRoll.Roll.Value >= 1 && value.AttackRoll.Roll.Value <= 20 &&
                         !value.AttackRoll.AutoHit &&
                         value.AttackRoll.WeaponStats.DamageDescription.First().Bonus == 14) &&
                     observer.Damage.Count == 3 &&
                     observer.Saves.Count == 1 &&
                     observer.Saves[0].StatType == StatType.SaveFortitude &&
                     observer.Saves[0].DifficultyClass == 25 &&
-                    observer.Saves[0].D20.Value == 1 &&
+                    observer.Saves[0].D20.Value >= 1 && observer.Saves[0].D20.Value <= 20 &&
                     !observer.Saves[0].IsPassed &&
                     observer.DurationRolls.Count == 1 &&
                     rolledRounds >= 1 && rolledRounds <= 6 &&
@@ -211,7 +219,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value => value.Blueprint.AssetGuid ==
                                     "a7b339e4f6ff93a4697df5d7a87ff619")),
                         ["factionIsolation"] = observer.FactionRow(),
-                        ["forcedAttackRoll"] = 10, ["forcedSaveRoll"] = 1,
+                        ["forcedAttackRolls"] = 0, ["forcedSaveRolls"] = 0,
+                        ["controlledTargetAc"] = -100, ["controlledTargetFortitude"] = -100, ["controlledTargetWill"] = -100,
                         ["autoHit"] = false },
                     "One native full-attack command resolves three +2 disrupting hammer hits; only the second same-opponent hit asks for one live-DC Fortitude save, the third cannot repeat it, and failure owns one native d6 Stunned effect.");
                 if (!hammerExact) throw new InvalidOperationException(
@@ -374,7 +383,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     observer.Saves.Count == 1 &&
                     observer.Saves[0].StatType == StatType.SaveFortitude &&
                     observer.Saves[0].DifficultyClass == 26 &&
-                    observer.Saves[0].D20.Value == 1 &&
+                    observer.Saves[0].D20.Value >= 1 && observer.Saves[0].D20.Value <= 20 &&
                     !observer.Saves[0].IsPassed &&
                     observer.DurationRolls.Count == 1 &&
                     immunityRounds >= 1 && immunityRounds <= 6 &&
@@ -442,7 +451,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Astral31PowerAttackOff(sibling) &&
                     disruption.AttackRoll.IsHit &&
                     !disruption.AttackRoll.AutoHit &&
-                    disruption.AttackRoll.Roll.Value == 10 &&
+                    disruption.AttackRoll.Roll.Value >= 1 && disruption.AttackRoll.Roll.Value <= 20 &&
                     ReferenceEquals(disruption.Weapon, disruptingHammer) &&
                     disruptingHammer.Enchantments.Any(value =>
                         value.Blueprint.AssetGuid ==
@@ -450,7 +459,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     disruptionSave != null &&
                     disruptionSave.StatType == StatType.SaveWill &&
                     disruptionSave.DifficultyClass == 14 &&
-                    disruptionSave.D20.Value == 1 &&
+                    disruptionSave.D20.Value >= 1 && disruptionSave.D20.Value <= 20 &&
                     !disruptionSave.IsPassed &&
                     (target.Descriptor.State.IsDead || target.Destroyed) &&
                     observer.DurationRolls.Count == 0 &&
@@ -535,6 +544,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                target.Stats.AC.BaseValue = targetAcBefore;
+                target.Stats.SaveFortitude.BaseValue = targetFortBefore;
+                target.Stats.SaveWill.BaseValue = targetWillBefore;
                 observer.RestoreFaction();
                 if (observerSubscribed) EventBus.Unsubscribe(observer);
                 if (stunImmunity && target != null && !target.Destroyed)
@@ -752,7 +764,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(evt.Target, _target))
                 {
                     AllRollsPlayerFaction &= Owner.IsPlayerFaction;
-                    UnityEngine.Random.InitState(FindNativeD20Seed(10));
                 }
             }
             public void OnEventDidTrigger(RuleAttackRoll evt)
@@ -775,11 +786,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (ReferenceEquals(evt.Initiator, Owner) &&
                     ReferenceEquals(evt.Target, _target)) Damage.Add(evt);
             }
-            public void OnEventAboutToTrigger(RuleSavingThrow evt)
-            {
-                if (ReferenceEquals(evt.Initiator, _target))
-                    UnityEngine.Random.InitState(FindNativeD20Seed(1));
-            }
+            public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
             {
                 if (ReferenceEquals(evt.Initiator, _target)) Saves.Add(evt);
