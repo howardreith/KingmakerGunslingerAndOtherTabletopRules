@@ -1273,6 +1273,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-druid-native-arrays", Cleanup2DruidConversionTests.ExactNativeQuantityArraysReplaceTheIncorrectParentAssumption),
             Case("expanded-summoning.cleanup2-druid-native-quantity", Cleanup2DruidConversionTests.EveryNativeSourceResolvesItsOwnRankAndQuantity),
             Case("expanded-summoning.cleanup2-druid-projection-ownership", Cleanup2DruidConversionTests.ProjectionRetainsOriginalSourceAndForeignObjectAuthority),
+            Case("expanded-summoning.cleanup4-druid-prepared-parent-rows", Cleanup2DruidConversionTests.PreparedParentDropsItsOwnQuantityRowsWithoutDuplicates),
             Case("expanded-summoning.cleanup2-elemental-source-stale-cancel", Cleanup2ElementalSourceChooserTests.StaleForeignAndCancelledSelectionsSpendNothing),
             Case("expanded-summoning.cleanup2-elemental-source-identities", Cleanup2ElementalSourceChooserTests.AllSixRanksAndFourElementsHaveExactNativeIdentity),
             Case("expanded-summoning.cleanup2-elemental-source-disclosure", Cleanup2ElementalSourceChooserTests.NativeDisclosurePreservesMixedSourcesAndSelectedAllocations),
