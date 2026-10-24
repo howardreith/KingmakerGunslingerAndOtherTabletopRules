@@ -41,6 +41,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                     Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
+                    // Keep the disposable enemy away from native actors while
+                    // the summon and its moving auras initialize, as in the
+                    // successful prepared-caster turn fixture.
+                    if (turn) PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 40f);
                     for (int frame = 0; frame < 16; frame++) yield return 0;
                     owner = CastExpandedSummoningOwnTier(fixture, "hound-archon");
                     Sprint28SetBrainActivePreservingActions(owner, false);
@@ -86,12 +90,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Commands.InterruptAll(true); target.Commands.InterruptAll(true);
                     owner.Commands.RemoveFinishedAndUpdateQueue(); target.Commands.RemoveFinishedAndUpdateQueue();
                     Vector3 far; string lane, direction;
-                    Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 5f, out far, out lane, out direction);
+                    Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, turn ? 8f : 5f,
+                        out far, out lane, out direction, turn ? new Kingmaker.Utility.Feet(20).Meters + 1f : 0f);
                     PlaceExpandedSummoningUnit(owner, origin);
-                    PlaceExpandedSummoningUnit(target, origin + (far - origin).normalized * (owner.Corpulence + target.Corpulence + .8f));
+                    PlaceExpandedSummoningUnit(target, turn ? far : origin + (far - origin).normalized * (owner.Corpulence + target.Corpulence + .8f));
                     var probe = new UnitAttack(target); probe.Init(owner);
-                    PlaceExpandedSummoningUnit(target, origin + (far - origin).normalized * Math.Max(
-                        owner.Corpulence + target.Corpulence + .01f, probe.ApproachRadius - .05f));
+                    float reach = Math.Max(owner.Corpulence + target.Corpulence + .01f, probe.ApproachRadius - .05f);
+                    if (turn)
+                        // Preserve the surveyed hostile exclusion point. Move
+                        // only our owner into melee range of that same point.
+                        PlaceExpandedSummoningUnit(owner, far - (far - origin).normalized * reach);
+                    else PlaceExpandedSummoningUnit(target, origin + (far - origin).normalized * reach);
                     target.Stats.AC.BaseValue = 0; // Disposable target only; no supplied roll or hit.
                     foreach (var actor in new[] { owner, target })
                     {
@@ -115,6 +124,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["powerAttack"] = Sprint22PowerAttackState(owner, toggle) },
                         "A fresh awake visible disposable hostile and native action/range preconditions precede the command.");
                     if (!ready) throw new InvalidOperationException("Hound native attack fixture is not ready.");
+                    if (turn)
+                    {
+                        var foreignCombatants = Game.Instance.State.Units.All.Where(value => value != null &&
+                            !value.Destroyed && value.IsInState && value.Descriptor != null && value.IsInCombat &&
+                            !ReferenceEquals(value, owner) && !ReferenceEquals(value, target) &&
+                            !ReferenceEquals(value, fixture.Caster) && !fixture.Created.Contains(value)).ToArray();
+                        Sprint25Check(id + "-isolation", foreignCombatants.Length == 0, new JObject {
+                            ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
+                            ["ownerPosition"] = owner.Position.ToString(), ["targetPosition"] = target.Position.ToString(),
+                            ["foreignCombatants"] = new JArray(foreignCombatants.Select(value => new JObject {
+                                ["unit"] = value.UniqueId, ["blueprint"] = value.Blueprint.AssetGuid,
+                                ["name"] = value.Blueprint.name, ["position"] = value.Position.ToString(),
+                                ["fixtureIntake"] = fixture.UnitsBefore.Any(prior => ReferenceEquals(prior, value)) })) },
+                            "Only the disposable combat pair enters the turn fixture; native actors outside its ownership are observed and never ticked or reset.");
+                        if (foreignCombatants.Length != 0) throw new InvalidOperationException("Hound turn fixture admitted foreign combatants.");
+                    }
                     var swordView = owner.View.GetComponent<HoundArchonSwordView>();
                     bool nativeSword = false;
                     int visibilityWaits = 0;
