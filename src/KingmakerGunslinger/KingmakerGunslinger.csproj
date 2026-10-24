@@ -1383,6 +1383,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Book.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Caster.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Blast.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31BlastAi.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31BlastObservation.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningOutsiderEscape.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningOutsiderBodies.cs" />

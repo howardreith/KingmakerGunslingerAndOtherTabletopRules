@@ -4,6 +4,8 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Controllers.Brain.Blueprints;
+using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.Blueprints.Facts;
@@ -27,6 +29,21 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal static partial class ExpandedSummoningSpecialBuilder
     {
+        private static BlueprintAiCastSpell ConfigureTrumpetBlastAi31(
+            IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintUnit unit,
+            BlueprintItemWeapon instrument, BlueprintAbility blast)
+        {
+            var ai = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol,
+                Trumpet31Prefix + "TrumpetBlastAi"), Trumpet31Prefix + "TrumpetBlastAi", blast, 0);
+            var safety = Require<TrumpetBlastEligibility>(bySymbol, Trumpet31Prefix + "TrumpetBlastEligibility");
+            safety.SourceUnit = unit; safety.Instrument = instrument; safety.Blast = blast;
+            safety.Archons = new[] { unit, Require<BlueprintUnit>(bySymbol, Hound30Unit),
+                Require<BlueprintUnit>(bySymbol, LanternUnitSymbol) };
+            ai.ActorConsiderations = new Consideration[] { safety };
+            ai.BaseScore = 4.5f; // Heal6, Banishment5, safe blast4.5, useful Aid4, native attack.
+            return ai;
+        }
+
         private static BlueprintAbility ConfigureTrumpetBlast31(
             IDictionary<string, BlueprintScriptableObject> bySymbol,
             BlueprintUnit unit, BlueprintFeature traits,

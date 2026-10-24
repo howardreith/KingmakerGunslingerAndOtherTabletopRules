@@ -17,6 +17,7 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.Utility;
+using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -55,6 +56,50 @@ namespace KingmakerGunslinger.Summoning
             return target != null && actualArchons != null &&
                 actualArchons.Any(value => value != null &&
                     ReferenceEquals(target.Blueprint, value));
+        }
+    }
+
+
+    /// <summary>AI selection only. The real blast retains all-creature
+    /// eligibility. Nearby nonenemies are conservatively protected even when
+    /// immune; useful enemies must be visible in the native decision memory.</summary>
+    public sealed class TrumpetBlastEligibility : Kingmaker.Controllers.Brain.Blueprints.Considerations.Consideration
+    {
+        public BlueprintUnit SourceUnit;
+        public BlueprintItemWeapon Instrument;
+        public BlueprintAbility Blast;
+        public BlueprintUnit[] Archons;
+
+        internal System.Collections.Generic.IEnumerable<UnitEntityData> NearbyNonArchonNonEnemies(UnitEntityData actor)
+        {
+            if (actor == null || Game.Instance?.State?.Units == null)
+                return Enumerable.Empty<UnitEntityData>();
+            float radius = new Feet(TrumpetBlastRulesPolicy.RadiusFeet).Meters;
+            return Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed && unit.IsInState &&
+                !unit.Descriptor.State.IsDead && !ReferenceEquals(unit, actor) && !actor.IsEnemy(unit) &&
+                !TrumpetBlastRulesPolicy.IsArchon(unit, Archons) &&
+                Vector3.Distance(actor.Position, unit.Position) <= radius + Math.Max(0f, unit.Corpulence));
+        }
+        public override float Score(Kingmaker.Controllers.Brain.DecisionContext context)
+        {
+            var actor = context?.Unit;
+            if (!TrumpetBlastRulesPolicy.HoldsInstrument(actor, SourceUnit, Instrument) ||
+                Blast == null || Game.Instance?.State?.Units == null || NearbyNonArchonNonEnemies(actor).Any()) return 0f;
+            var granted = actor.Descriptor.Abilities.GetAbility(Blast);
+            if (granted == null || !new AbilityData(granted).IsAvailable) return 0f;
+            float radius = new Feet(TrumpetBlastRulesPolicy.RadiusFeet).Meters;
+            return context.Enemies.Any(info => {
+                var target = info.Unit;
+                if (target == null || target.Destroyed || !target.IsInState || target.Descriptor.State.IsDead ||
+                    !actor.IsEnemy(target) || !actor.Memory.ContainsVisible(target) || !actor.HasLOS(target) ||
+                    TrumpetBlastRulesPolicy.IsArchon(target, Archons) ||
+                    target.Descriptor.State.HasCondition(UnitCondition.Paralyzed) ||
+                    target.Descriptor.State.HasConditionImmunity(UnitCondition.Paralyzed) ||
+                    Vector3.Distance(actor.Position, target.Position) > radius) return false;
+                var effect = new MechanicsContext(actor, actor.Descriptor, Blast, null, new TargetWrapper(target));
+                var immunity = target.Get<Kingmaker.UnitLogic.Parts.UnitPartSpellResistance>();
+                return immunity == null || !immunity.IsImmune(effect);
+            }) ? 1f : 0f;
         }
     }
 

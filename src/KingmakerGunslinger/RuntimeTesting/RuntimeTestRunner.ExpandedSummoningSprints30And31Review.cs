@@ -100,6 +100,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewTrumpet31Dispel(fixture)) yield return frame;
                 yield break;
             }
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31TrumpetBlastAiPhase)
+            {
+                foreach (int frame in ReviewTrumpet31BlastAi(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == RuntimeTestScenarioCatalog.Sprints30And31TrumpetBlastPhase)
             {
                 foreach (int frame in ReviewTrumpet31Blast(fixture)) yield return frame;
