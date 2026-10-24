@@ -35,6 +35,29 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Observe every existing cleanup predicate before and after native
+        // settling. This neither clears additional state nor weakens a guard.
+        private JObject Dretch30CleanupState(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, int expectedAc)
+        {
+            var target = fixture.Hostile;
+            var ownerCommands = owner.Commands.Raw.Where(value => value != null && !value.IsFinished).ToArray();
+            var targetCommands = target.Commands.Raw.Where(value => value != null && !value.IsFinished).ToArray();
+            bool absent = owner.Destroyed && !owner.IsInState && !fixture.Created.Contains(owner);
+            bool memory = !target.Memory.Contains(owner);
+            bool commands = ownerCommands.Length == 0 && targetCommands.Length == 0;
+            bool ac = target.Stats.AC.BaseValue == expectedAc;
+            bool damage = target.Damage == fixture.HostileDamage;
+            return new JObject { ["clean"] = absent && memory && commands && ac && damage,
+                ["ownerDestroyed"] = owner.Destroyed, ["ownerInState"] = owner.IsInState,
+                ["ownerInFixture"] = fixture.Created.Contains(owner), ["targetRemembersOwner"] = !memory,
+                ["unfinishedOwnerCommands"] = new JArray(ownerCommands.Select(Sprint27AiCommand)),
+                ["unfinishedTargetCommands"] = new JArray(targetCommands.Select(Sprint27AiCommand)),
+                ["targetAc"] = target.Stats.AC.BaseValue, ["expectedTargetAc"] = expectedAc,
+                ["targetDamage"] = target.Damage, ["expectedTargetDamage"] = fixture.HostileDamage,
+                ["targetCombatState"] = target.IsInCombat };
+        }
+
         private IEnumerable<int> ReviewDretch30Melee(ExpandedSummoningCorrectionFixture fixture, bool ai)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
@@ -80,6 +103,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint28SetBrainActivePreservingActions(owner, false);
             string id = ai ? "ai-fallback" : "full";
             int targetAc = target.Descriptor.Stats.AC.BaseValue;
+            JObject immediateCleanup = null;
             try
             {
                 // Match the final successful native command fixture: allow
@@ -276,6 +300,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.Stats.AC.BaseValue = targetAc;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
                 ResetExpandedSummoningHostile(fixture);
+                immediateCleanup = Dretch30CleanupState(fixture, owner, targetAc);
             }
             for (int frame = 0; frame < 8; frame++) yield return 0;
             var itemRows = new JArray((items ?? Array.Empty<Kingmaker.Items.ItemEntity>()).Select(value =>
@@ -286,13 +311,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 inventoryBefore.Select(value => value.Count).SequenceEqual(inventoryCounts);
             bool areasExact = areasBefore.Length == Game.Instance.State.AreaEffects.All.Count() &&
                 areasBefore.All(value => Game.Instance.State.AreaEffects.All.Contains(value));
-            bool clean = owner.Destroyed && !owner.IsInState && !fixture.Created.Contains(owner) &&
-                !target.Memory.Contains(owner) && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished) &&
-                !target.Commands.Raw.Any(value => value != null && !value.IsFinished) &&
-                target.Stats.AC.BaseValue == targetAc && target.Damage == fixture.HostileDamage &&
-                itemsSafe && bodyReleased && inventoryExact && areasExact;
+            var actorCleanup = Dretch30CleanupState(fixture, owner, targetAc);
+            bool clean = (bool)actorCleanup["clean"] && itemsSafe && bodyReleased && inventoryExact && areasExact;
             Sprint25Check("dretch-melee-" + (ai ? "ai-fallback" : "full") + "-cleanup", clean,
                 new JObject { ["ownerAbsent"] = !owner.IsInState, ["items"] = itemRows,
+                    ["immediateActorCleanup"] = immediateCleanup, ["actorCleanup"] = actorCleanup,
                     ["bodyResourcesReleased"] = bodyReleased, ["partyInventoryExact"] = inventoryExact,
                     ["areasExact"] = areasExact, ["targetCombatState"] = target.IsInCombat,
                     ["nextCaseAdmitted"] = false, ["freshProcessBoundary"] = true },
