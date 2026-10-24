@@ -76,8 +76,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     for (int frame = 0; frame < 12; frame++)
                     { if (!inactive() || watch.Elapsed.TotalSeconds > 60) throw new InvalidOperationException("Actual OFF state changed or phase bound exceeded."); yield return 0; }
                     var components = actor.View.GetComponentsInChildren<MonoBehaviour>(true);
-                    bool noAllocations = GiantSummonPresentationPatch.ProductionOwner(actor.View) == null &&
-                        !(bool)GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View)["ownerPresent"] &&
+                    bool noAllocations = !(bool)GiantSummonPresentationPatch.ObserveNativeSize(actor.View)["ownerPresent"] &&
                         !components.Any(value => value is GiantSummonRenderScaleLifetime || value is GiantSummonPaletteLifetime || value is Cleanup2GiantRenderScalePrototype) &&
                         !actor.View.GetComponentsInChildren<Transform>(true).Any(value => value.name.StartsWith("KMG_C2_", StringComparison.Ordinal)) &&
                         original.Meshes.All(value => value != null && !value.name.StartsWith("KMG_", StringComparison.Ordinal)) &&
@@ -90,7 +89,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["nativeDonor"] = donor.AssetGuid, ["nativePrefab"] = donor.Prefab.AssetId, ["freshExactCreation"] = fresh,
                         ["nativeBodyMeshRetained"] = nativeBody, ["noPresentationAllocations"] = noAllocations,
                         ["view"] = Cleanup2SharedViewScalars(actor.View), ["stats"] = stats, ["colliders"] = Cleanup2ClothColliderState(actor, false),
-                        ["scaleOwnership"] = GiantSummonPresentationPatch.ObserveProductionOwnership(actor.View),
+                        ["scaleOwnership"] = GiantSummonPresentationPatch.ObserveNativeSize(actor.View),
                         ["palette"] = GiantSummonPaletteRuntime.Describe(actor.View), ["sourcePrefabUnchanged"] = Cleanup2SharedSameView(source),
                         ["scope"] = "Actual native EntityCreator/view construction of the existing OFF compatibility blueprint. Original source mesh/material/bone/collider/configuration identities remain; native material-controller instances are allowed. No summon/rule call, forced visual apply, saved hydration or mechanical acceptance." },
                         "Cloud/Storm compatibility views construct normally in actual OFF without private scale/palette/renderers or native source changes.");

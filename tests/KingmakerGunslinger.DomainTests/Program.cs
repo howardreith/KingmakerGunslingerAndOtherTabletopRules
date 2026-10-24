@@ -1295,6 +1295,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.cleanup2-giant-calibration-refusal", Cleanup2GiantPresentationTests.MissingWrongOrInvalidCalibrationNeverChangesScale),
             Case("expanded-summoning.cleanup2-giant-visibility-refusal", Cleanup2GiantPresentationTests.RefusedNativeHideRestoresThatHideNotThePreviousState),
             Case("expanded-summoning.cleanup3-giant-frost-effects", Cleanup2GiantPresentationTests.OnlyFireAndStormDropTheFrostDonorEffects),
+            Case("expanded-summoning.cleanup4-giant-native-size", Cleanup2GiantPresentationTests.NativeSizeAppliesFamilyHeightAndHugeSpaceOnce),
             Case("expanded-summoning.cleanup2-giant-palette-scope", Cleanup2GiantPaletteTests.ExactBodySelectorsAndSummonScope),
             Case("expanded-summoning.cleanup2-giant-palette-proof", Cleanup2GiantPaletteTests.ProofRequiresExactIdentityAndWholeBodyTreatment),
             Case("expanded-summoning.cleanup2-giant-palette-channels", Cleanup2GiantPaletteTests.WholeBodyTransformsLiftCloudAndRetainAlphaAndShading),

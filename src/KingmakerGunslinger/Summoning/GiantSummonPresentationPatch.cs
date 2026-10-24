@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Harmony12;
 using Kingmaker.Blueprints.Root;
@@ -15,8 +16,11 @@ using UnityEngine;
 namespace KingmakerGunslinger.Summoning
 {
     /// <summary>
-    /// Exact owned palettes and relative render-only family scale. No native
-    /// gameplay root, skeleton pose, collider or mechanical size is scaled.
+    /// Exact owned palettes and each summoned giant family's size. Height is
+    /// the view's own original scale and a Huge giant's space its own
+    /// corpulence, so the installed view applies both to every native consumer
+    /// and keeps them through selection, renderer refreshes and size effects.
+    /// Unit Size, statistics, weapon reach and blueprints are not written.
     /// </summary>
     [HarmonyPatch(typeof(UnitEntityView), "OnDataAttached")]
     internal static class GiantSummonPresentationPatch
@@ -24,16 +28,33 @@ namespace KingmakerGunslinger.Summoning
         private sealed class State
         {
             internal UnitEntityData Owner;
-            internal GiantPresentationScale Baseline;
-            internal string Outcome;
             internal string Key;
-            internal Cleanup2GiantRenderScalePrototype RenderOwner;
-            internal bool Refused;
+            internal string Outcome;
+            internal GiantPresentationScale IntakeScale, AppliedScale;
+            internal float IntakeCorpulence, AppliedCorpulence;
+            internal bool Applied, Refused;
         }
 
+        private const BindingFlags Fields = BindingFlags.Instance | BindingFlags.NonPublic;
+        // Installed UnitEntityView.Awake captures m_OriginalScale; OnDataAttached
+        // and LateUpdate write localScale = m_OriginalScale * m_Scale, and
+        // get_Corpulence returns max(0.5, GetSizeScale() * m_Corpulence).
+        private static readonly FieldInfo OriginalScaleField = typeof(UnitEntityView).GetField("m_OriginalScale", Fields);
+        private static readonly FieldInfo SizeScaleField = typeof(UnitEntityView).GetField("m_Scale", Fields);
+        private static readonly FieldInfo CorpulenceField = typeof(UnitEntityView).GetField("m_Corpulence", Fields);
         private static readonly ConditionalWeakTable<UnitEntityView, State> States =
             new ConditionalWeakTable<UnitEntityView, State>();
         private static string _probeRunId;
+
+        internal static bool NativeSizeContract
+        {
+            get
+            {
+                return OriginalScaleField != null && OriginalScaleField.FieldType == typeof(Vector3) &&
+                    SizeScaleField != null && SizeScaleField.FieldType == typeof(float) &&
+                    CorpulenceField != null && CorpulenceField.FieldType == typeof(float);
+            }
+        }
 
         internal static IDisposable BeginRenderScaleProbe(RuntimeTestRequest request)
         {
@@ -68,6 +89,14 @@ namespace KingmakerGunslinger.Summoning
                 ? "giant:native-frost-without-authorized-provenance" : "giant:not-owned";
         }
 
+        // Before native OnDataAttached builds the root scale, selection
+        // colliders and movement agent from these two bases.
+        private static void Prefix(UnitEntityView __instance)
+        {
+            try { ApplyNativeSize(__instance); }
+            catch (Exception) { }
+        }
+
         private static void Postfix(UnitEntityView __instance)
         { Apply(__instance); }
 
@@ -83,24 +112,10 @@ namespace KingmakerGunslinger.Summoning
                     unit.Blueprint.AssetGuid, SummonedSourceGuid(unit));
                 if (profile == null) return "giant:not-owned";
                 GiantSummonPaletteRuntime.Schedule(view, profile);
-                State state;
-                if (States.TryGetValue(view, out state) && !ReferenceEquals(state.Owner, unit))
-                {
-                    Release(view);
-                    state = null;
-                }
-                if (state == null)
-                {
-                    state = new State { Owner = unit, Key = profile.Key,
-                        Baseline = Read(view.transform.localScale) };
-                    States.Add(view, state);
-                }
-                if (_probeRunId != null)
-                    return state.Outcome = "giant:" + profile.Key + ";height=request-owned-native-baseline;run=" + _probeRunId;
                 GiantSummonRenderScaleLifetime lifetime = view.GetComponent<GiantSummonRenderScaleLifetime>();
                 if (lifetime == null) lifetime = view.gameObject.AddComponent<GiantSummonRenderScaleLifetime>();
                 lifetime.View = view;
-                return ApplyRenderHeight(view);
+                return ApplyNativeSize(view);
             }
             catch (Exception exception)
             {
@@ -109,52 +124,72 @@ namespace KingmakerGunslinger.Summoning
             }
         }
 
-        internal static string ApplyRenderHeight(UnitEntityView view)
+        internal static string ApplyNativeSize(UnitEntityView view)
         {
-            State state;
-            if (view == null || !States.TryGetValue(view, out state)) return "giant:not-owned";
+            if (view == null) return "giant:no-view";
             if (!ExpandedSummoningVisualVariantPatch.IsModuleActive)
             { Release(view); return "giant:module-off"; }
-            if (!ReferenceEquals(view.EntityData, state.Owner))
-            { Release(view); return "giant:foreign-view-owner"; }
-            if (state.Refused) return state.Outcome;
-            // Unity's destroyed-object null operator must not turn a retained
-            // refused owner into permission to claim the native view again.
-            if (!ReferenceEquals(state.RenderOwner, null))
+            UnitEntityData unit = view.EntityData;
+            if (unit == null || unit.Blueprint == null) return "giant:no-unit";
+            State state;
+            if (States.TryGetValue(view, out state) && !ReferenceEquals(state.Owner, unit))
             {
-                if (state.RenderOwner.IsDisposed || state.RenderOwner == null)
-                { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=owned-renderer-refused:" + state.RenderOwner.Status; }
+                Release(view);
+                state = null;
+            }
+            if (state != null && (state.Refused || state.Applied && CurrentSizeExact(view, state)))
                 return state.Outcome;
-            }
-            string source = SummonedSourceGuid(state.Owner);
-            var profile = GiantSummonPresentationPolicy.Resolve(true, state.Owner.Blueprint.AssetGuid, source);
-            if (profile == null || source == null) return state.Outcome = "giant:" + state.Key + ";height=await-live-summon-context";
-            if (!GiantSummonPresentationPolicy.Same(state.Baseline, Read(view.transform.localScale)))
-            { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=foreign-native-root-scale-refused"; }
-            if (state.Owner.Blueprint.Prefab?.AssetId != profile.NativePrefabId)
-            { state.Refused = true; return state.Outcome = "giant:" + state.Key + ";height=native-prefab-mismatch"; }
-            if (profile.RelativeVisualFactor == 1f)
-                return state.Outcome = "giant:" + state.Key + ";height=relative-baseline;factor=1";
-            string nativeReadiness = Cleanup2GiantRenderScalePrototype.ProductionAcquisitionReadiness(state.Owner, profile);
-            if (nativeReadiness != null)
-                return state.Outcome = "giant:" + state.Key + ";height=" + nativeReadiness;
-            string clothAdmission = Cleanup2GiantRenderScalePrototype.ProductionClothAdmission(state.Owner, profile);
-            if (clothAdmission != "no-cloth" && clothAdmission != "qualified-frozen-cape")
-                return state.Outcome = "giant:" + state.Key + ";height=" + clothAdmission;
-            if (GiantSummonPalettePolicy.ProductionProof(profile.Key) != null &&
-                !GiantSummonPaletteRuntime.VerifyProductionOwnership(view).StartsWith("palette:verified-production-owner;", StringComparison.Ordinal))
-                return state.Outcome = "giant:" + state.Key + ";height=await-owned-production-palette";
-            try
+            // A native Frost view may attach before its summoned buff exists;
+            // the buff patch and the lifetime retry once provenance is live.
+            GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.Resolve(true,
+                unit.Blueprint.AssetGuid, SummonedSourceGuid(unit));
+            if (profile == null) return state != null ? state.Outcome : Describe(view);
+            if (!NativeSizeContract)
+                return Refuse(view, state, unit, profile, "native-size-contract-unavailable");
+            if (state == null)
             {
-                state.RenderOwner = Cleanup2GiantRenderScalePrototype.TakeProduction(state.Owner, profile);
-                return state.Outcome = "giant:" + state.Key + ";height=owned-relative-render-scale;factor=" +
-                    profile.RelativeVisualFactor.ToString("0.###", CultureInfo.InvariantCulture);
+                state = new State { Owner = unit, Key = profile.Key,
+                    IntakeScale = Read((Vector3)OriginalScaleField.GetValue(view)),
+                    IntakeCorpulence = (float)CorpulenceField.GetValue(view) };
+                States.Add(view, state);
             }
-            catch (Exception error)
+            if (_probeRunId != null)
+                return state.Outcome = "giant:" + profile.Key + ";height=request-owned-native-baseline;run=" + _probeRunId;
+            GiantPresentationScale target; float corpulence;
+            string plan = GiantSummonPresentationPolicy.PlanNativeSize(profile, state.IntakeScale, state.IntakeCorpulence,
+                Read((Vector3)OriginalScaleField.GetValue(view)), (float)CorpulenceField.GetValue(view), out target, out corpulence);
+            if (plan != "apply-native-size" && plan != "already-applied")
+                return Refuse(view, state, unit, profile, plan);
+            if (plan == "apply-native-size")
             {
-                state.Refused = true;
-                return state.Outcome = "giant:" + state.Key + ";height=refused:" + error.GetType().Name + ":" + error.Message;
+                Vector3 scale = new Vector3(target.X, target.Y, target.Z);
+                OriginalScaleField.SetValue(view, scale);
+                CorpulenceField.SetValue(view, corpulence);
+                view.transform.localScale = scale * (float)SizeScaleField.GetValue(view);
             }
+            state.AppliedScale = target; state.AppliedCorpulence = corpulence; state.Applied = true;
+            return state.Outcome = "giant:" + profile.Key + ";size=native;factor=" +
+                profile.RelativeVisualFactor.ToString("0.###", CultureInfo.InvariantCulture) + ";footprint=" +
+                profile.FootprintFactor.ToString("0.###", CultureInfo.InvariantCulture);
+        }
+
+        private static string Refuse(UnitEntityView view, State state, UnitEntityData unit,
+            GiantSummonPresentationProfile profile, string reason)
+        {
+            if (state == null)
+            {
+                state = new State { Owner = unit, Key = profile.Key };
+                States.Add(view, state);
+            }
+            state.Refused = true;
+            return state.Outcome = "giant:" + profile.Key + ";size=refused:" + reason;
+        }
+
+        private static bool CurrentSizeExact(UnitEntityView view, State state)
+        {
+            return NativeSizeContract &&
+                GiantSummonPresentationPolicy.Same(Read((Vector3)OriginalScaleField.GetValue(view)), state.AppliedScale) &&
+                GiantSummonPresentationPolicy.Near((float)CorpulenceField.GetValue(view), state.AppliedCorpulence);
         }
 
         private static string SummonedSourceGuid(UnitEntityData unit)
@@ -176,42 +211,62 @@ namespace KingmakerGunslinger.Summoning
             return buffs[0].Context.SourceAbility.AssetGuid;
         }
 
+        // Restores the native bases only while they still hold this patch's
+        // values; a later foreign size change is kept.
         internal static void Release(UnitEntityView view)
         {
             if (view == null) return;
             State state;
             if (!States.TryGetValue(view, out state)) return;
-            if (!ReferenceEquals(state.RenderOwner, null)) state.RenderOwner.Dispose();
             States.Remove(view);
+            if (!state.Applied || !CurrentSizeExact(view, state)) return;
+            Vector3 scale = new Vector3(state.IntakeScale.X, state.IntakeScale.Y, state.IntakeScale.Z);
+            OriginalScaleField.SetValue(view, scale);
+            CorpulenceField.SetValue(view, state.IntakeCorpulence);
+            view.transform.localScale = scale * (float)SizeScaleField.GetValue(view);
         }
 
-        // Read-only evidence from the actual production owner. This never
-        // attaches, retries, constructs a prototype or changes a native view.
-        internal static JObject ObserveProductionOwnership(UnitEntityView view)
+        // Read-only evidence of the current native size. This never applies,
+        // retries or restores anything.
+        internal static JObject ObserveNativeSize(UnitEntityView view)
         {
             State state;
-            if (view == null || !States.TryGetValue(view, out state))
-                return new JObject { ["ownerPresent"] = false, ["outcome"] = Describe(view),
-                    ["copiedClothProductionGateOpen"] = Cleanup2GiantRenderScalePrototype.ProductionCopiedClothEnabled };
-            bool retainedOwner = !ReferenceEquals(state.RenderOwner, null);
-            JObject result = retainedOwner ? state.RenderOwner.ObserveProduction() : new JObject { ["ownerPresent"] = false };
-            result["retainedOwnerReference"] = retainedOwner;
-            result["retainedOwnerUnityAlive"] = retainedOwner && state.RenderOwner != null;
-            result["outcome"] = state.Outcome; result["key"] = state.Key;
+            var result = new JObject { ["outcome"] = Describe(view), ["nativeSizeContract"] = NativeSizeContract };
+            if (view == null || !NativeSizeContract) { result["ownerPresent"] = false; return result; }
+            Vector3 original = (Vector3)OriginalScaleField.GetValue(view);
+            float sizeScale = (float)SizeScaleField.GetValue(view), corpulence = (float)CorpulenceField.GetValue(view);
+            result["currentOriginalScale"] = Vector(original);
+            result["currentLocalScale"] = Vector(view.transform.localScale);
+            result["nativeSizeScale"] = sizeScale;
+            result["currentCorpulenceBase"] = corpulence;
+            result["viewCorpulence"] = view.Corpulence;
+            result["mechanicalSize"] = view.EntityData == null ? null : view.EntityData.Descriptor.State.Size.ToString();
+            bool owned = States.TryGetValue(view, out state);
+            result["ownerPresent"] = owned;
+            if (!owned) return result;
+            GiantSummonPresentationProfile profile = GiantSummonPresentationPolicy.All.Single(value => value.Key == state.Key);
+            result["key"] = state.Key;
             result["unitOwnerExact"] = ReferenceEquals(state.Owner, view.EntityData);
-            result["nativeRootScaleExact"] = GiantSummonPresentationPolicy.Same(state.Baseline, Read(view.transform.localScale));
-            result["copiedClothProductionGateOpen"] = Cleanup2GiantRenderScalePrototype.ProductionCopiedClothEnabled;
+            result["applied"] = state.Applied; result["refused"] = state.Refused;
+            result["uniformVisualFactor"] = profile.RelativeVisualFactor;
+            result["footprintFactor"] = profile.FootprintFactor;
+            result["huge"] = profile.Huge;
+            result["intakeOriginalScale"] = Vector(new Vector3(state.IntakeScale.X, state.IntakeScale.Y, state.IntakeScale.Z));
+            result["intakeCorpulenceBase"] = state.IntakeCorpulence;
+            bool exact = state.Applied && CurrentSizeExact(view, state);
+            result["currentSizeExact"] = exact;
+            result["rootScaleFollowsOriginal"] = GiantSummonPresentationPolicy.Same(Read(view.transform.localScale),
+                Read(original * sizeScale));
+            result["heightOverIntake"] = state.IntakeScale.Y > 0f ? original.y / state.IntakeScale.Y : float.NaN;
+            result["footprintOverIntake"] = state.IntakeCorpulence > 0f ? corpulence / state.IntakeCorpulence : float.NaN;
             return result;
-        }
-
-        internal static Cleanup2GiantRenderScalePrototype ProductionOwner(UnitEntityView view)
-        {
-            State state;
-            return view != null && States.TryGetValue(view, out state) ? state.RenderOwner : null;
         }
 
         private static GiantPresentationScale Read(Vector3 scale)
         { return new GiantPresentationScale(scale.x, scale.y, scale.z); }
+
+        private static JArray Vector(Vector3 value)
+        { return new JArray(value.x, value.y, value.z); }
     }
 
     // The installed fader writes EntityViewBase.Renderers, not a hierarchy
@@ -224,15 +279,15 @@ namespace KingmakerGunslinger.Summoning
         { Cleanup2GiantRenderScalePrototype.NativeVisibilityChanged(__instance, visible); }
     }
 
-    // Release scale ownership before the default-order palette owner can
-    // discharge its independent materials on module-off. Normal mirror pose
-    // following stays at10010 after native WeaponSnap.
+    // Release size ownership before the default-order palette owner can
+    // discharge its independent materials on module-off. Applied views only
+    // compare their two native bases each frame.
     [DefaultExecutionOrder(-10)]
     internal sealed class GiantSummonRenderScaleLifetime : MonoBehaviour
     {
         internal UnitEntityView View;
         private void LateUpdate()
-        { if (View != null) GiantSummonPresentationPatch.ApplyRenderHeight(View); }
+        { if (View != null) GiantSummonPresentationPatch.ApplyNativeSize(View); }
         private void OnDestroy()
         { if (View != null) GiantSummonPresentationPatch.Release(View); }
     }
