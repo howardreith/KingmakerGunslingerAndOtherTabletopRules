@@ -284,8 +284,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["powerAttack"] = Sprint22PowerAttackState(owner, toggle),
                         ["damageBonus"] = value.AttackRoll?.WeaponStats?.DamageDescription.FirstOrDefault()?.Bonus,
                         ["attackSources"] = value.AttackRoll?.AttackBonusRule == null ? null :
-                            new JArray(value.AttackRoll.AttackBonusRule.BonusSources.Select(source => new JObject {
-                                ["bonus"] = source.Bonus, ["source"] = source.Source?.Blueprint?.AssetGuid })) });
+                            new JArray(value.AttackRoll.AttackBonusRule.BonusSources.Select(modifier => new JObject {
+                                ["bonus"] = modifier.Bonus, ["source"] = modifier.Source?.Blueprint?.AssetGuid })) });
                     var costs = new JArray(); var endings = new JArray();
                     var issued = ai ? null : new UnitAttack(target) { ForceFullAttack = !single, IsSingleAttack = single };
                     UnitAttack command = issued;
@@ -354,8 +354,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     (bool)row["powerAttack"]["isOn"] && (bool)row["powerAttack"]["isRunning"] &&
                                     (int)row["powerAttack"]["activeBuffCount"] == 1) &&
                                 powerAfterWeapon.All(row => row["attackSources"] is JArray &&
-                                    ((JArray)row["attackSources"]).Count(source => (int)source["bonus"] == -2 &&
-                                        (string)source["source"] == toggle.Blueprint.Buff.AssetGuid) == 1 &&
+                                    ((JArray)row["attackSources"]).Count(modifier => (int)modifier["bonus"] == -2 &&
+                                        (string)modifier["source"] == toggle.Blueprint.Buff.AssetGuid) == 1 &&
                                     (int)row["damageBonus"] == (natural ? 6 :
                                         (string)row["weapon"] == main.Blueprint.AssetGuid ? 9 : 3));
                             Sprint25Check(id + "-command-power", powerExact, new JObject {
