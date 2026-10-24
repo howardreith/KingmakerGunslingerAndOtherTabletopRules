@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "magicvestment", "magicalvestment", "neutralizepoison", "owlswisdom", "protectionfromenergy", "protectionenergy",
                 "removecurse", "removedisease", "removefear", "restorationlesser", "lesserrestoration", "sanctuary",
                 "shieldoffaith", "stabilize", "virtue", "invisibilitypurge", "spellimmunity",
-                "deathward", "resistance" };
+                "deathward", "resistance", "freedomofmovement" };
             Func<string, string> normalize = name => new string((name ?? "").Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
             var rows = new JArray();
             foreach (var level in native.SpellList.SpellsByLevel.Where(value => value.SpellLevel >= 0 && value.SpellLevel <= 7))
