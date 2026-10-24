@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff freedom = null;
             UnitPartSpellResistance resistance = null;
             int resistanceId = -1;
+            var controlledFortitude = new Dictionary<UnitEntityData, int>();
             var instrumentBaseline = Trumpet31InstrumentOwnedCounts();
             var instrumentResources = new List<UnityEngine.Object>();
             try
@@ -104,11 +105,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningSpecialBuilder.NativeFreedomBuff31Guid, "native freedom immunity fixture");
                 freedom = protectedAlly.Descriptor.AddBuff(freedomBlueprint, owner, TimeSpan.FromMinutes(5));
                 resistance = victim.Ensure<UnitPartSpellResistance>(); resistanceId = resistance.AddResistance(1000, null, null);
-                bool immunityReady = freedom != null && protectedAlly.Descriptor.State.HasConditionImmunity(UnitCondition.Paralyzed);
+                // Controlled disposable targets make the effect/immunity paths
+                // observable without overriding any native d20 or save result.
+                // A natural 20 still succeeds and leaves the effect row unmet.
+                foreach (var target in new[] { victim, protectedAlly })
+                {
+                    if (!fixture.Created.Any(value => ReferenceEquals(value, target)))
+                        throw new InvalidOperationException("Blast save fixture target is not request-owned.");
+                    controlledFortitude.Add(target, target.Stats.SaveFortitude.BaseValue);
+                    target.Stats.SaveFortitude.BaseValue = -100;
+                }
+                bool immunityReady = freedom != null && protectedAlly.Descriptor.State.HasConditionImmunity(UnitCondition.Paralyzed) &&
+                    controlledFortitude.Count == 2 && controlledFortitude.Keys.All(value => value.Stats.SaveFortitude.BaseValue == -100);
                 Sprint25Check("trumpet-blast-native-immunity-fixture", immunityReady, new JObject { ["target"] = protectedAlly.UniqueId,
                     ["nativeBuff"] = freedomBlueprint.AssetGuid, ["paralysisImmunity"] = protectedAlly.Descriptor.State.HasConditionImmunity(UnitCondition.Paralyzed),
-                    ["srTarget"] = victim.UniqueId, ["fixtureSr"] = 1000, ["fixtureBuffNotCastProof"] = true },
-                    "The controlled native Freedom of Movement fixture supplies actual paralysis immunity; SR1000 is confined to the owned victim. Neither fixture is an action/AI proof.");
+                    ["srTarget"] = victim.UniqueId, ["fixtureSr"] = 1000, ["fixtureBuffNotCastProof"] = true,
+                    ["controlledTargetFortitude"] = new JArray(controlledFortitude.Select(pair => new JObject {
+                        ["target"] = pair.Key.UniqueId, ["originalBase"] = pair.Value,
+                        ["fixtureBase"] = pair.Key.Stats.SaveFortitude.BaseValue })), ["forcedRolls"] = 0 },
+                    "The controlled native Freedom of Movement fixture supplies actual paralysis immunity; SR1000 is confined to the owned victim. Two exact-owned targets use controlled Fortitude -100; actual native d20/save outcomes remain untouched. Neither fixture is an action/AI proof.");
                 if (!immunityReady) throw new InvalidOperationException("Trumpet blast immunity fixture failed.");
                 var appearanceDeadline = DateTime.UtcNow.AddSeconds(8);
                 while (DateTime.UtcNow < appearanceDeadline &&
@@ -244,6 +259,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (observed != null) EventBus.Unsubscribe(observed);
+                foreach (var pair in controlledFortitude) pair.Key.Stats.SaveFortitude.BaseValue = pair.Value;
                 if (resistance != null && resistanceId >= 0) resistance.Remove(resistanceId);
                 if (freedom != null && !freedom.IsDisposed) freedom.Remove();
                 foreach (var unit in units.Where(value => value != null && !value.Destroyed))
