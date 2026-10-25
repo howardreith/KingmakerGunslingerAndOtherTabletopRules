@@ -1,15 +1,16 @@
 {
   "schemaVersion": 1,
   "creature": "hound-archon",
-  "pipeline": "original volume and closed surface primitives, continuous_body exporter/albedo bake, exact measured native bone interfaces",
-  "reference": "Existing project-owned original Hound Archon painting: canine head, floppy ears, cloth and native-held sword; no painting pixels copied into the texture",
-  "tool": "installed Blender4.5.10LTS",
-  "privateCaptureRun": "20261014T0546181325834Z-observe-expanded-summoning-sprint24-theropod-census",
-  "privateCaptureSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+  "pipeline": "signed-distance sculpt (sdf_sculpt.py) meshed by OpenVDB in canonical order, with a separate closed garment shell weighted from the body, then the continuous_body relaxation, weights, albedo bake and outward export; exact measured native bone interfaces",
+  "reference": "Existing project-owned original Hound Archon painting: brown brindled mastiff head with dark muzzle and floppy ears, pale draped cloth, bronze accents and a native-held sword; no painting pixels copied into the texture",
+  "tool": "installed Blender4.5.10LTS (bundled numpy and OpenVDB)",
+  "privateCaptureRun": "20261017T0224053339821Z-observe-expanded-summoning-sprint24-theropod-census",
+  "privateCaptureSha256": "6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d",
+  "rigEquivalence": "The October 14 capture (727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4) that built the released v0.0.167 export is not on the lab machine. All three released builders, rerun unchanged with this October 17 recapture of the same Lizardfolk Free Hands donor, reproduced their released mesh payloads and albedos byte for byte except the rigSha256 field.",
   "generation": {
     "schemaVersion": 1,
     "builder": "build_hound_archon.py",
-    "rigSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+    "rigSha256": "6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d",
     "creature": "hound-archon",
     "donorFamily": "lizardfolk-free-hands",
     "nativeDonor": "a8cbd4cdb0feaf64eab1452257c3c971",
@@ -23,9 +24,9 @@
     "canineHead": true,
     "humanoidBody": true,
     "jawJoints": 2,
-    "vertices": 6401,
-    "triangles": 8420,
-    "components": 24,
+    "vertices": 8192,
+    "triangles": 10904,
+    "components": 8,
     "bones": [
       "Head",
       "L_Arm_Lower",
@@ -57,10 +58,10 @@
       "neck",
       "neck1"
     ],
-    "minimumComponentVolume": 4.347309489579224e-06,
+    "minimumComponentVolume": 2.5865811039693383e-06,
     "albedo": {
       "file": "hound-archon-albedo.png",
-      "sha256": "3cd8134f082ee44d7fec44b5d837177a44180c5582a09cc43b6d651bcab63cc3",
+      "sha256": "5bb8806bbffa8ada24f3107b413863b845124006c14b8c9181f1374005ed8433",
       "width": 1024,
       "height": 1024,
       "bitDepth": 8,
@@ -68,12 +69,18 @@
     }
   },
   "files": {
-    "assets/outsider-celestial/hound-archon-mesh.json": "2b3037797dad47e54cd486c9179435e32b003b239f8d07196e03a4b7080480a8",
-    "assets/outsider-celestial/hound-archon-albedo.png": "3cd8134f082ee44d7fec44b5d837177a44180c5582a09cc43b6d651bcab63cc3",
-    "assets-source/original-models/outsider-celestial/build_hound_archon.py": "21f21d1e567ce1fe9c42b7b97848fe6df068d0b0f88e99c43fac7b9553c836dd",
+    "assets/outsider-celestial/hound-archon-mesh.json": "f7cb0529686aee779dd76cd00e7514598d733e01db58f7b57c442c5bbfef482e",
+    "assets/outsider-celestial/hound-archon-albedo.png": "5bb8806bbffa8ada24f3107b413863b845124006c14b8c9181f1374005ed8433",
+    "assets-source/original-models/outsider-celestial/build_hound_archon.py": "5b18b4cc8739f576624329e097a6fe0462ebb74eb384aa94e4121fe54df37f0d",
+    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "22728990fd6d09dbf9667003666147bef5d41cc26ef17b225e23846f12589cf5",
     "assets-source/original-icons/expanded-summoning/sources/hound-archon.png": "99d63f3aeef8b6c80b9cd871d17eca5158a2d28b7fd07abcfdc3d6498df2c2bd"
+  },
+  "supersedes": {
+    "release": "v0.0.167",
+    "assets/outsider-celestial/hound-archon-mesh.json": "2b3037797dad47e54cd486c9179435e32b003b239f8d07196e03a4b7080480a8",
+    "assets/outsider-celestial/hound-archon-albedo.png": "3cd8134f082ee44d7fec44b5d837177a44180c5582a09cc43b6d651bcab63cc3"
   },
   "redistributedNativeAssets": false,
   "ownerVisualApproval": false,
-  "previewHistory": "One original canine-headed humanoid geometry export; offline preview inspected. A second identical geometry export corrects only the report builder filename; both generation logs retained. Native presentation is pending."
+  "previewHistory": "October 25 refinement: replaces the toy-like primitives and the cream colour mask with a mastiff skull (brow, stop, short deep muzzle, flews, lower jaw on the native jaw controls), heavy shoulders and arms, connected fingers and thumbs, digitigrade legs in boots, and real cloth geometry: a sleeveless tunic with neckline, belt, split folded hem and a mantle over the right shoulder. Offline previews and posed checks inspected; an early unbounded jaw-weight rule was corrected before export. Native presentation and the held-sword grip are pending native review."
 }
