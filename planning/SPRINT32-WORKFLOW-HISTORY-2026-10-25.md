@@ -380,3 +380,38 @@ synthetic flag inputs against installed field/getter; this is an offline managed
 contract check, not activation/death/gameplay proof. Production compile and
 selected route PASS. Remaining post-carrier lookups reuse captured/accepted
 native facts and reviewed component shapes. Fresh native proof is still required.
+
+## Preserved Lillend command-replacement failure
+
+Current candidate `2e1ffcf25c6d2b2f254dae7e94d03266554f3cc7`, purpose
+`sprint32-lillend-support`, retained0.0.167. Complete wrapper, selected hidden
+route, exact compilation and strict417-file package PASS. Related554-test
+execution on7e16 is reviewed reuse, not fresh execution of2e1.
+ZIP SHA256 `f970c747950ee72aceefa12ca1d124c02ff1bbde65de14931db5fda351d983af`;
+DLL `5a8dc64a07676915a58984a2997aa9a542813d53837153e83c5c44fe55375aab`;
+MVID `aaa0dd1d-5263-432a-950a-e47e3028b391`.
+Native `20261025T1721428986869Z-0964fdd65f634f98bec28cc1eb2b90c1` **FAIL**:
+4/6 assertions pass, including native7CL/slots5/4/2/rounds20 and restoration.
+Courage did run, charge one Move/round20->19, grant ally+2 and exclude enemy;
+this is useful partial product evidence, not a passed activation contract.
+Healing/fallback stages were NOT_RUN after Courage failed.
+Independent review found the product adapter replaced the original AI command:
+native `IsActivateWithSameCommand` recognizes Judgment only, even for the same
+bard toggle. Earlier assumption that queued identity alone prevents replacement
+was wrong. Frame snapshots missed the original command and the replacement lost
+AI provenance. No weakened predicate or reader-only relabeling is accepted.
+Correction: same-instance native compatibility postfix limited to the exact
+private Lillend Traits owner/Courage; every other result unchanged. Review of
+all five native callsites found no free-command-credit/cancellation expansion.
+Fixture now retains native command-start events and requires one original AI
+activation with exact performance identity, action debit and ally effects.
+Fresh execution is required. Original7e/8af startup failures,124-case native
+managed flag check and their exact candidate identities remain in history.
+
+Latest raw evidence folder `20261025T1721428206203Z-disposable-expanded-summoning-sprint32-native-review`;
+result SHA256 `edc2f805e06f81476b1c3a4cdff3fdcfb7e9840a73651dbeb029afc6cc30b68b`.
+Original Unity log retained under `artifacts/sprint32-lillend-2e1ffcf2/`, SHA256
+`63f9752df16a23dbddd711b9fdfb29437a75adc0c4f67d80df718affd46915bd`.
+Transaction `compat-20261025T171922Z-3df2d2c516bb` Restored/verified17:24:10UTC;
+protected Compare PASS967mods/118saves/18refs/83settings/0tasks/unchangedSteam.
+No owned live transaction/game remains. Native128.432s, transaction289.04s.
