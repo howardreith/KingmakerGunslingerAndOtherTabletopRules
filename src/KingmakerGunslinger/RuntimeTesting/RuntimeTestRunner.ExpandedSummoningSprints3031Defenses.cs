@@ -6,6 +6,9 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Designers.Mechanics.Buffs;
+using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
@@ -17,6 +20,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -44,6 +48,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string[] targetBuffs = null;
             var sourceEvents = new Sprints3031DefenseControlEvents(source);
             var transient = new List<UnityEngine.Object>();
+            var airborneControls = new Dictionary<string, JArray>(StringComparer.Ordinal);
             var missile = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                 FcbMagicMissileGuid, "six-creature native SR consumer");
             var poisonAbility = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[
@@ -211,7 +216,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["probes"] = descriptors, ["controlledDescriptorProbes"] = true },
                             "Separate real buff-application and ability-immunity consumers use susceptible controls for poison, fear, petrification and an unrelated descriptor; these are not spell casts.");
                         if (!descriptorsExact) throw new InvalidOperationException("Native defense descriptors failed: " + key);
-                        var airborneRow = Sprints3031AirborneProbe(key, owner, source, transient);
+                        var airborneRow = Sprints3031AirborneProbe(key, owner, source, transient, airborneControls);
                         Sprint25Check("defenses-" + key + "-airborne", (bool)airborneRow["exact"], airborneRow,
                             "The constructed unit owns exactly one native Airborne fact when it flies (Lantern and Astral are the established flyers on it) and none when grounded; each of that fact's own condition and descriptor consumers is observed on the unit against the grounded susceptible source.");
                         if (!(bool)airborneRow["exact"]) throw new InvalidOperationException("Native Airborne consumer failed: " + key);
@@ -305,26 +310,58 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         // Probes come from the native Airborne fact's own components, so the
-        // check follows that fact rather than an assumed list. A component
-        // kind without a direct consumer here is recorded, not passed.
+        // check follows that fact rather than an assumed list: vanilla holds
+        // conditional attack/damage terms, while Call of the Wild replaces
+        // them with ground and difficult-terrain immunities. A component kind
+        // without a consumer here is recorded, not passed. Trumpet's
+        // conditional terms must evaluate exactly as the established Lantern
+        // and Astral flyers' do against the same grounded source.
         private JObject Sprints3031AirborneProbe(string key, UnitEntityData owner, UnitEntityData source,
-            ICollection<UnityEngine.Object> transient)
+            ICollection<UnityEngine.Object> transient, IDictionary<string, JArray> flyerControls)
         {
             var airborne = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
                 "70cffb448c132fa409e49156d013b175", "native Airborne fact");
             bool flyer = key == "lantern-archon" || key == "astral-deva" || key == "trumpet-archon";
-            int ownerFacts = owner.Descriptor.Progression.Features.Enumerable
-                .Count(feature => ReferenceEquals(feature.Blueprint, airborne));
+            var ownerFeatures = owner.Descriptor.Progression.Features.Enumerable
+                .Where(feature => ReferenceEquals(feature.Blueprint, airborne)).ToArray();
+            int ownerFacts = ownerFeatures.Length;
+            var ownerFact = ownerFeatures.FirstOrDefault();
+            bool factActive = ownerFact != null && ownerFact.Active;
             bool sourceGrounded = !source.Descriptor.HasFact(airborne);
             var probes = new JArray();
             var unobserved = new JArray();
+            var conditional = new JArray();
             int index = 0;
             foreach (var component in airborne.ComponentsArray)
             {
                 var condition = component as AddConditionImmunity;
                 var buffImmunity = component as BuffDescriptorImmunity;
                 var abilityImmunity = component as SpellImmunityToSpellDescriptor;
-                if (condition != null)
+                var attack = component as AttackBonusConditional;
+                var damage = component as DamageBonusConditional;
+                if (attack != null || damage != null)
+                {
+                    var checker = attack != null ? attack.Conditions : damage.Conditions;
+                    var value = attack != null ? attack.Bonus : damage.Bonus;
+                    var gates = new JArray((checker?.Conditions ?? Array.Empty<Condition>()).Select(gate =>
+                    {
+                        var hasFact = gate as ContextConditionHasFact;
+                        return (JToken)(hasFact == null ? gate?.GetType().FullName :
+                            "HasFact:" + hasFact.Fact?.AssetGuid + ":" + hasFact.Fact?.name + ":not=" + hasFact.Not);
+                    }));
+                    bool? applies = null;
+                    int? amount = null;
+                    if (ownerFact != null && checker != null && value != null)
+                    {
+                        using (ownerFact.Context.GetDataScope(source)) applies = checker.Check(null);
+                        amount = value.Calculate(ownerFact.Context) * ownerFact.GetRank();
+                    }
+                    conditional.Add(component.GetType().Name + "|" + applies + "|" + amount);
+                    probes.Add(new JObject { ["component"] = component.GetType().FullName, ["conditions"] = gates,
+                        ["appliesAgainstSource"] = applies, ["value"] = amount,
+                        ["exact"] = flyer ? factActive && applies.HasValue && amount.HasValue : ownerFact == null });
+                }
+                else if (condition != null)
                 {
                     bool ownerImmune = owner.Descriptor.State.HasConditionImmunity(condition.Condition);
                     bool sourceImmune = source.Descriptor.State.HasConditionImmunity(condition.Condition);
@@ -362,12 +399,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else unobserved.Add(component == null ? "null" : component.GetType().FullName);
                 index++;
             }
-            bool exact = ownerFacts == (flyer ? 1 : 0) && sourceGrounded && probes.Count > 0 &&
-                probes.All(row => (bool)row["exact"]);
+            if (flyer && key != "trumpet-archon") flyerControls[key] = conditional;
+            var controlKeys = new[] { "lantern-archon", "astral-deva" };
+            bool controlsMatch = key != "trumpet-archon" || controlKeys.All(control =>
+                flyerControls.ContainsKey(control) && JToken.DeepEquals(flyerControls[control], conditional));
+            bool exact = ownerFacts == (flyer ? 1 : 0) && factActive == flyer && sourceGrounded &&
+                probes.Count > 0 && probes.All(row => (bool)row["exact"]) && controlsMatch;
             return new JObject { ["creature"] = key, ["owner"] = owner.UniqueId, ["source"] = source.UniqueId,
                 ["airborneFact"] = airborne.AssetGuid, ["expectedFlyer"] = flyer, ["ownerAirborneFacts"] = ownerFacts,
-                ["sourceGrounded"] = sourceGrounded, ["probes"] = probes, ["unobservedComponents"] = unobserved,
-                ["exact"] = exact };
+                ["factActive"] = factActive, ["sourceGrounded"] = sourceGrounded, ["probes"] = probes,
+                ["conditionalTerms"] = conditional,
+                ["flyerControls"] = new JObject(flyerControls.Select(entry => new JProperty(entry.Key, entry.Value.DeepClone()))),
+                ["controlsMatch"] = controlsMatch, ["unobservedComponents"] = unobserved, ["exact"] = exact };
         }
 
         private static JObject Sprints3031DefenseSrRow(RuleSpellResistanceCheck rule)
