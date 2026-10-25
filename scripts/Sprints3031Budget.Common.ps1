@@ -11,7 +11,7 @@ function Invoke-KmgSprints3031Budget {
     if(-not (Test-Path -LiteralPath $Path -PathType Leaf)) { throw 'Persistent owner budget is missing; do not recreate it.' }
     $b=Get-Content -LiteralPath $Path -Raw | ConvertFrom-Json
     $amended=$b.PSObject.Properties.Name -contains 'budgetIsolationAmendment'
-    $maximum=3
+    $maximum=3;$maximumGames=24;$authorizedMinutes=420
     if($amended) {
         $a=$b.budgetIsolationAmendment
         if($a.authority -cne 'Owner repair budget isolation reconcile accounting continue closeout' -or
@@ -32,10 +32,22 @@ function Invoke-KmgSprints3031Budget {
         }
         $maximum=6
     }
+    if($b.PSObject.Properties.Name -contains 'unattendedCloseoutAmendment') {
+        $a=$b.unattendedCloseoutAmendment
+        if($maximum -ne 6 -or $a.authority -cne 'Owner Sprints30-31 unattended functional closeout' -or
+            $a.oldMaximumBuildAttempts -ne 6 -or $null -ne $a.newMaximumBuildAttempts -or
+            $a.oldMaximumGameLaunches -ne 24 -or $a.newMaximumGameLaunches -ne 30 -or
+            $a.oldMaximumChargedMinutes -ne 420 -or $a.newMaximumChargedMinutes -ne 600 -or
+            $a.retainedBuildAttempts -ne 5 -or $a.retainedGameLaunches -ne 9 -or
+            $b.buildAttemptCount -lt $a.retainedBuildAttempts -or $b.actualGameLaunchCount -lt $a.retainedGameLaunches) {
+            throw 'Unsupported unattended owner budget amendment.'
+        }
+        $maximum=$null;$maximumGames=30;$authorizedMinutes=600
+    }
     if($b.authority -cne 'Owner bounded Sprints30-31 closeout decision' -or
-        $b.maximumBuildAttempts -ne $maximum -or $b.maximumGameLaunches -ne 24 -or
-        $b.buildAttemptCount -lt 0 -or $b.buildAttemptCount -gt $maximum -or
-        $b.actualGameLaunchCount -lt 0 -or $b.actualGameLaunchCount -gt 24 -or $MinimumRemainingMinutes -lt 0) {
+        $b.maximumBuildAttempts -ne $maximum -or $b.maximumGameLaunches -ne $maximumGames -or
+        $b.buildAttemptCount -lt 0 -or ($null -ne $maximum -and $b.buildAttemptCount -gt $maximum) -or
+        $b.actualGameLaunchCount -lt 0 -or $b.actualGameLaunchCount -gt $maximumGames -or $MinimumRemainingMinutes -lt 0) {
         throw 'Unexpected owner budget.'
     }
     $now=[DateTime]::UtcNow
@@ -54,6 +66,7 @@ function Invoke-KmgSprints3031Budget {
         budgetIsolationAmendment='Owner repair budget isolation reconcile accounting continue closeout'
         h1RepairAuthorization='Owner authorize H1 lifetime cleanup repair and continue'
         h4RayObserverAmendment='Owner repair H4 ray-only observer and finish existing closeout'
+        unattendedCloseoutAmendment='Owner Sprints30-31 unattended functional closeout'
     }
     foreach($name in $authorities.Keys) {
         if($b.PSObject.Properties.Name -notcontains $name){continue}
@@ -70,14 +83,14 @@ function Invoke-KmgSprints3031Budget {
         elseif($pauseStart -lt $readyClosed){throw 'Suspension crosses the recorded readiness completion.'}
         $lastResume=$resume
     }
-    if($end-$start-$suspended -ne [TimeSpan]::FromHours(7) -or
+    if($end-$start-$suspended -ne [TimeSpan]::FromMinutes($authorizedMinutes) -or
         $ready-$start-$readinessSuspended -ne [TimeSpan]::FromMinutes(120)) { throw 'Owner deadlines were changed.' }
     if($Action -ne 'Stop') {
         if($b.status -cne 'ACTIVE' -or (Test-Path -LiteralPath $b.ownerStopMarker)) { throw 'Owner CONTROL stop: no new dispatch.' }
         if($now -ge $end -or $now.AddMinutes($MinimumRemainingMinutes) -ge $end) { throw 'Elapsed budget cannot fit the next stage.' }
         if($b.currentStage -ceq 'no-game-readiness' -and $now -ge $ready) { throw 'No-game readiness deadline expired.' }
-        if($Action -ceq 'Build' -and $b.buildAttemptCount -ge $maximum) { throw 'Candidate build admission ceiling reached.' }
-        if($Action -ceq 'Game' -and $b.actualGameLaunchCount -ge 24) { throw 'Game admission ceiling reached.' }
+        if($Action -ceq 'Build' -and $null -ne $maximum -and $b.buildAttemptCount -ge $maximum) { throw 'Candidate build admission ceiling reached.' }
+        if($Action -ceq 'Game' -and $b.actualGameLaunchCount -ge $maximumGames) { throw 'Game admission ceiling reached.' }
         if($Action -in @('Game','Build') -and $b.currentStage -ceq 'no-game-readiness') { throw 'Readiness has not been closed; candidate/game dispatch refused.' }
     }
     if($Action -ceq 'Check') { return $b }

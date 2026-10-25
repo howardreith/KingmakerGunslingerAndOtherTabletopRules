@@ -149,6 +149,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             int connectedOrigins = 0;
                             int graphClusters = 0;
                             int nativeClusters = 0;
+                            JObject selectedGeometry = null;
+                            var threatHand = UnitEngagementExtension.GetThreatHand(owner);
+                            if (threatHand?.MaybeWeapon == null)
+                                throw new InvalidOperationException("Cleave owner lacks its actual threat weapon.");
+                            float weaponReach = threatHand.MaybeWeapon.AttackRange.Meters;
+                            // Installed IsReach compares center distance strictly below
+                            // weapon reach plus both view footprints, then requires LOS.
+                            float clearance = targets.Max(value => owner.Corpulence + value.Corpulence) + .15f;
+                            float reachLimit = targets.Min(value => owner.Corpulence + value.Corpulence) + weaponReach - .20f;
+                            float targetSpacing = targets.Max(value => value.Corpulence) * 2f + .15f;
+                            if (celestialCloseout && reachLimit <= clearance)
+                                throw new InvalidOperationException("No non-overlapping Cleave radius within native reach.");
+                            float[] distances = celestialCloseout ? new[] {
+                                Mathf.Lerp(clearance, reachLimit, .35f),
+                                Mathf.Lerp(clearance, reachLimit, .65f) } : new[] { 2.6f, 3.4f };
                             foreach (Vector3 offset in Enumerable.Range(-2, 5)
                                 .SelectMany(dx => Enumerable.Range(-2, 5)
                                     .Select(dz => new Vector3(dx * 3f, 0f,
@@ -177,14 +192,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     (far - surveyedOrigin).normalized }.Concat(
                                         CompassOffsets))
                                 {
-                                foreach (float distance in new[] { 2.6f, 3.4f })
+                                foreach (float distance in distances)
                                 {
                                     Vector3 side = Vector3.Cross(forward,
                                         Vector3.up).normalized;
+                                    // Three distinct enemies on a compact arc. The two
+                                    // side targets remain adjacent to the first and each
+                                    // other; actual native predicates below decide legality.
+                                    float angle = celestialCloseout ? 2f * Mathf.Asin(
+                                        Mathf.Clamp01(targetSpacing / (2f * distance))) : 0f;
                                     Vector3[] points = Enumerable.Range(0, 3)
-                                        .Select(index => trialOrigin + forward *
-                                            distance + side * (index - 1) *
-                                            1.2f).ToArray();
+                                        .Select(index => celestialCloseout ? trialOrigin +
+                                            (forward * Mathf.Cos((index - 1) * angle) +
+                                             side * Mathf.Sin((index - 1) * angle)) * distance :
+                                            trialOrigin + forward * distance + side * (index - 1) * 1.2f).ToArray();
                                     var nodes = points.Select(value =>
                                         AstarPath.active.GetNearest(value))
                                         .ToArray();
@@ -214,8 +235,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     owner.SightCache.ClearIfNeeded();
                                     bool reached = targets.All(value =>
                                         owner.HasLOS(value) &&
-                                        UnitEngagementExtension.IsReach(owner,
-                                            value, owner.Body.PrimaryHand));
+                                        owner.DistanceTo(value) >= owner.Corpulence + value.Corpulence &&
+                                        !Game.Instance.Player.Party.Any(party => party != null && party.IsInGame &&
+                                            party.DistanceTo(value) < party.Corpulence + value.Corpulence + .15f) &&
+                                        UnitEngagementExtension.IsReach(owner, value, threatHand));
                                     for (int first = 0; first < targets.Length;
                                         first++)
                                     for (int second = first + 1;
@@ -247,6 +270,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                                                             owner.Body
                                                                 .PrimaryHand))) });
                                     if (!reached) continue;
+                                    selectedGeometry = new JObject {
+                                        ["kind"] = celestialCloseout ? "reach-sized-arc" : "giant-row",
+                                        ["radius"] = distance, ["angleRadians"] = angle,
+                                        ["weapon"] = threatHand.MaybeWeapon.Blueprint.AssetGuid,
+                                        ["weaponReachMeters"] = weaponReach,
+                                        ["ownerFootprint"] = owner.Corpulence,
+                                        ["connectedOrigins"] = connectedOrigins, ["graphClusters"] = graphClusters,
+                                        ["rejectedNativeClusters"] = graphClusters - nativeClusters - 1,
+                                        ["earlierPositions"] = attemptedPositions,
+                                        ["targets"] = new JArray(targets.Select(value => new JObject {
+                                            ["id"] = value.UniqueId, ["position"] = SurveyVector(value.Position),
+                                            ["centerDistance"] = owner.DistanceTo(value), ["footprint"] = value.Corpulence,
+                                            ["nativeReach"] = UnitEngagementExtension.IsReach(owner, value, threatHand),
+                                            ["los"] = owner.HasLOS(value) })) };
                                     nativeClusters++;
                                     origin = trialOrigin;
                                     lane = lane + ";clusterOrigin=" + origin +
@@ -427,6 +464,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["mode"] = turnBased ?
                                         "turn-based" : "rtwp",
                                     ["lane"] = lane,
+                                    ["geometry"] = selectedGeometry,
                                     ["admission"] = admission,
                                     ["attackSetupBonus"] = 20,
                                     ["expectFirstMiss"] = expectFirstMiss,
@@ -467,9 +505,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             SettingsRoot.Instance.EnableTurnBasedMode
                                 .CurrentValue = false;
                             Game.Instance.TurnBasedCombatController.Activate();
-                            foreach (UnitEntityData unit in created)
+                            foreach (UnitEntityData unit in created.Where(value => value != null && !value.Destroyed))
                             {
-                                unit.Commands.InterruptAll(true);
+                                unit.Commands.InterruptAll(pending => true);
                                 if (unit.IsInCombat) unit.LeaveCombat();
                             }
                             Game.Instance.Player.UpdateIsInCombat();
