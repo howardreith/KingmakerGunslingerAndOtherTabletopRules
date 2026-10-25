@@ -385,7 +385,7 @@ def main():
              "nativeDonor": donor.DONOR_GUID, "nativePrefab": donor.PREFAB_GUID,
              "bodyRenderer": donor.BODY_RENDERER, "accessoryRenderer": donor.ACCESSORY_RENDERER,
              "nativeRendererCount": 2, "visibleArms": 2, "visibleLegs": 2,
-             "visibleTail": False, "jawJoints": 2}
+             "visibleTail": False, "potbelly": True, "largeEars": True, "jawJoints": 2}
     summary = cb.write_mesh_data(args.mesh_data, mesh, weights, rig_hash, args.albedo,
                                  "donor renderer local; +X lateral, +Y forward, +Z up", extra)
     report = {"schemaVersion": 1, "builder": Path(__file__).name, "rigSha256": rig_hash,

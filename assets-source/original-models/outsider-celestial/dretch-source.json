@@ -21,6 +21,8 @@
     "visibleArms": 2,
     "visibleLegs": 2,
     "visibleTail": false,
+    "potbelly": true,
+    "largeEars": true,
     "jawJoints": 2,
     "vertices": 7769,
     "triangles": 10000,
@@ -67,9 +69,9 @@
     }
   },
   "files": {
-    "assets/outsider-celestial/dretch-mesh.json": "b8b61e1487cc76aeb1f2ee0dab5c2d7d75f47111ca3c9446bce0a20ffe7d0e8e",
+    "assets/outsider-celestial/dretch-mesh.json": "016f3ce58f008f93dae835c8de146427f91c3cee526ecc6cdd2ec988fc3eb52d",
     "assets/outsider-celestial/dretch-albedo.png": "d9d12d2f7077d66b9ecad9de793d7dfed57f30dcf2167bb66c39c847072c6b42",
-    "assets-source/original-models/outsider-celestial/build_dretch.py": "2077ef130b24c9c45830ede72fe401b1609ce0b6c4bd9179c680c512d400eab0",
+    "assets-source/original-models/outsider-celestial/build_dretch.py": "3bca5dbca69e83c6f9b69d6640daf1209f91f0135b643f21978eb29748bb45e0",
     "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "2dd16a84e5248361eb3ee700127ab711cd8f01c590815bbeaae1e42f4b85d345",
     "assets-source/original-icons/expanded-summoning/sources/dretch.png": "1e5b158b197a6a5a9099adf85c0c148d1c5bfc59bd37e0202864b4e33fe87527"
   },

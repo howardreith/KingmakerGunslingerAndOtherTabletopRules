@@ -1,6 +1,9 @@
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -147,6 +150,54 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
             Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
             Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");
+        }
+
+        // A shipped body the runtime loader refuses silently keeps the donor,
+        // so each export must carry its loader's exact contract, ship closed
+        // outward components and agree with its source record.
+        internal static void OutsiderBodiesSatisfyTheirLoaderContracts()
+        {
+            foreach (string key in new[] { LemureVisualPolicy.Key, DretchVisualPolicy.Key, HoundArchonVisualPolicy.Key })
+            {
+                string mesh = "assets/outsider-celestial/" + key + "-mesh.json";
+                JObject payload = JObject.Parse(File.ReadAllText(mesh));
+                var bones = payload["bones"].Values<string>().ToArray();
+                bool permitted = key == LemureVisualPolicy.Key ? LemureVisualPolicy.IsPermitted(key, bones) :
+                    key == DretchVisualPolicy.Key ? DretchVisualPolicy.IsPermitted(key, bones) :
+                    HoundArchonVisualPolicy.IsPermitted(key, bones);
+                string rig = key == LemureVisualPolicy.Key ? LemureVisualPolicy.RigSha256 :
+                    key == DretchVisualPolicy.Key ? DretchVisualPolicy.RigSha256 : HoundArchonVisualPolicy.RigSha256;
+                Assertions.True(permitted, key + " owns its exact reviewed driver set.");
+                Assertions.Equal(rig, (string)payload["rigSha256"], key + " names the pinned measured rig.");
+                Assertions.True((string)payload["nativeDonor"] == TheropodVisualPolicy.DonorGuid &&
+                    (string)payload["nativePrefab"] == TheropodVisualPolicy.DonorPrefabGuid &&
+                    (string)payload["bodyRenderer"] == TheropodVisualPolicy.BodyRendererName &&
+                    (string)payload["accessoryRenderer"] == TheropodVisualPolicy.AccessoryRendererName &&
+                    (int?)payload["nativeRendererCount"] == 2 && (int?)payload["visibleArms"] == 2 &&
+                    (bool?)payload["visibleTail"] == false, key + " binds only the measured two-renderer donor.");
+                if (key == LemureVisualPolicy.Key)
+                    Assertions.True((int?)payload["visibleLegs"] == 0 && (bool?)payload["amorphousLowerBody"] == true,
+                        "Lemure keeps its legless amorphous loader contract.");
+                else if (key == DretchVisualPolicy.Key)
+                    Assertions.True((int?)payload["visibleLegs"] == 2 && (bool?)payload["potbelly"] == true &&
+                        (bool?)payload["largeEars"] == true && (int?)payload["jawJoints"] == 2,
+                        "Dretch keeps its potbelly, large-ear and jaw loader contract.");
+                else
+                    Assertions.True((int?)payload["visibleLegs"] == 2 && (bool?)payload["canineHead"] == true &&
+                        (bool?)payload["humanoidBody"] == true && (int?)payload["jawJoints"] == 2,
+                        "Hound Archon keeps its canine-head humanoid jaw loader contract.");
+                OriginalMeshOrientation.AssertShippedBody(mesh, key);
+                JObject source = JObject.Parse(File.ReadAllText(
+                    "assets-source/original-models/outsider-celestial/" + key + "-source.json"));
+                foreach (JProperty file in ((JObject)source["files"]).Properties())
+                    Assertions.Equal((string)file.Value, Sha256(file.Name), key + " source record pins " + file.Name + ".");
+            }
+        }
+
+        private static string Sha256(string path)
+        {
+            using (var sha = SHA256.Create())
+                return string.Concat(sha.ComputeHash(File.ReadAllBytes(path)).Select(value => value.ToString("x2")).ToArray());
         }
 
         internal static void AstralHammerStunTracksEachOpponentOncePerRound()

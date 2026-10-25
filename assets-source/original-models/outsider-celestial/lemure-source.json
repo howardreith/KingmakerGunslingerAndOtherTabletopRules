@@ -47,7 +47,7 @@
     "minimumComponentVolume": 2.4009174921957263e-05,
     "albedo": {
       "file": "lemure-albedo.png",
-      "sha256": "9bfbbf32d0acd6d4efd86376fe07e0024649e2c6b2803d71b8bbfdfc3991c225",
+      "sha256": "86d4718ab825096391f8561d7836a8332ffbbaaf4b565a9cbfcae57b52f0568a",
       "width": 1024,
       "height": 1024,
       "bitDepth": 8,
@@ -55,9 +55,9 @@
     }
   },
   "files": {
-    "assets/outsider-celestial/lemure-mesh.json": "371885aa7cd9b5794dd03b0cfd4e1d3deebdf3364a8bdd8c9b42e1d287edfaaa",
-    "assets/outsider-celestial/lemure-albedo.png": "9bfbbf32d0acd6d4efd86376fe07e0024649e2c6b2803d71b8bbfdfc3991c225",
-    "assets-source/original-models/outsider-celestial/build_lemure.py": "0af7fc669faf02640a9a22bdee17405dab5ce549a158482a4ad6a6a36e77e59e",
+    "assets/outsider-celestial/lemure-mesh.json": "cf727788440c8796f99eeb04d73d29339dbaa80f2914dc585a8bed40212380e4",
+    "assets/outsider-celestial/lemure-albedo.png": "86d4718ab825096391f8561d7836a8332ffbbaaf4b565a9cbfcae57b52f0568a",
+    "assets-source/original-models/outsider-celestial/build_lemure.py": "3703c467d6ed81e52a0e0427b416896303af2cb455711adc7943a47299b7d29b",
     "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "2dd16a84e5248361eb3ee700127ab711cd8f01c590815bbeaae1e42f4b85d345",
     "assets-source/original-icons/expanded-summoning/sources/lemure.png": "b742a9462547674ecde44fac7e52a3b0cbcc6b278fe84c76a678d48cc30faf18"
   },
