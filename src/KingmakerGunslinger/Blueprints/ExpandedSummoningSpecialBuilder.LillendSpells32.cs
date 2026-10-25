@@ -124,7 +124,7 @@ namespace KingmakerGunslinger.Blueprints
             string slaSymbol = Lillend32Prefix + "CharmPersonSla";
             var sla = Require<BlueprintAbility>(bySymbol, slaSymbol);
             var resource = Require<BlueprintAbilityResource>(bySymbol, Lillend32Prefix + "CharmPersonSlaResource");
-            ConfigureNamedResource(resource, Lillend32Prefix + "CharmPersonSlaResource", slaSymbol,
+            ConfigureNamedResource(resource, Lillend32Prefix + "CharmPersonSlaResource", Lillend32Prefix + "CharmPersonSlaResource",
                 "Charm Person", "One innate use for this Lillend, independent of bard spell slots.", 1);
             Sprint29LimitedNativeSpell(library, sla, slaSymbol, "1af9d5995090e5a4185a30decf0959ad", 7, 1, resource, "Charm Person");
             var traits = Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Lillend32Prefix + "Traits");
