@@ -44,28 +44,33 @@ melee/feats/SLAs, optional Suggestion, Lillend implementation/body, public route
 and final qualification remain incomplete. Original icons have provenance;
 only Satyr has a runtime export. Native presentation remains NOT_RUN.
 
-Last built source `c43ff80e1a610334cde8e59f99e79960ca517ff3` is pushed.
+Latest built source `986b8de9ef96a87d832ad9ef86827e65e1a9dd4d`.
 Development purpose `sprint32-satyr-control`, retained version0.0.167; not release.
-ZIP `KingmakerGunslinger-0.0.167-development-sprint32-satyr-control-c43ff80e1a61.zip`
-SHA256 `7b4ef5aadcf9292ec95fe517f40a0187240647c09f37a862b1270fdc75176f02`;
-DLL `cf1524f66b6760f95c8dcf087c6c918b5f2ef4b30f6737024a825fe833d7bfe1`;
-MVID `5b186dad-e017-45ed-8c5f-471c5787f0fb`.
-Complete offline wrapper, exact compile,6 selected domain tests and strict 416-file
-package PASS. Native run `20261025T1543568321269Z-c69f8f0d104f4b3ba30662e359dbaf8d`
-FAILED at initialization: missing Satyr menu-presentation mapping; zero creature
-assertions. This is a product registration defect, not observed AI failure.
+ZIP `KingmakerGunslinger-0.0.167-development-sprint32-satyr-control-986b8de9ef96.zip`
+SHA256 `6042437853500e3d539ad2fb03134742b71860917911577d3bebf8643af78681`;
+DLL `f89d87cd97f04ff2d36d10e8fea9e9a7176ab51c3751b4a484a5f987e3976dcf`;
+MVID `f4a058c6-9655-4b40-a0da-9e020d6d4949`.
+Complete offline wrapper, exact compile,553/553 summoning-domain checks and
+strict416-file package PASS. Native run
+`20261025T1608320243890Z-6bfd690ced414184bfc6dd38f879f0e9` FAILED at
+initialization: captured natural armor5 is BlueprintUnitFact, but the builder
+requested BlueprintFeature. Zero creature assertions; no AI result.
 
-The mapping is now repaired. The summoning-domain selection found 8 failures:
-one reproduces that defect; seven exposed stale count/public-only/document or
-package-token expectations. Corrected historical scope while retaining old
-identity/routes and immutable records; actual package positive/corruption tests
-replace incidental token checks.552/553 then passed; last obsolete package-token
-assertion corrected and its affected case plus production compilation PASS.
-These executions do not qualify changed native bytes; a corrected package/run
-is next. Original failures are retained. The35f184d0 source gate refused a stale
-derived roster after the visual metadata correction; regenerated its one Satyr
-row with the existing manifest tool. Development source validation PASS; no
-compilation or launch occurred in that attempt.
+Prior c43 native initialization failure (missing Satyr menu mapping) remains
+FAIL; repaired mapping and affected historical test scopes passed the553 checks.
+The35f184d0 precompile refusal was the stale derived Satyr roster row, regenerated
+before986b8de9. Original logs/receipts remain immutable.
+
+Replan after two distinct registration failures: correct the exact armor fact
+lookup, inspect every remaining Satyr native lookup against the captured inputs,
+and obtain a focused independent contract/fixture review before another launch.
+The exact lookup is corrected. Focused production compilation and the actual
+`sprint32-hidden-satyr-routes` test PASS. An initial misspelled filter selected
+zero tests and correctly refused; its log is retained and is not a pass.
+Independent focused reviewer completed the exact input/type and fixture
+cross-check: no additional concrete blocker; donor/Fey8, facts, Fear, bow and
+private registration types agree with the immutable capture. Gameplay remains
+unproved. Do not infer native PASS from compilation or review.
 
 ## Finite acceptance table
 
@@ -97,14 +102,14 @@ replanning, not a quota or a new approval ledger.
 
 [Historical workflow/early evidence](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md)
 retains all original results, exact artifact/cleanup identities and limitations.
-Local logs: `artifacts/sprint32-intake/`; native wrapper/intake/log:
-`artifacts/sprint32-control-c43ff80e/`. Raw result directory under runtime-evidence
-starts `20261025T1543568008867Z-disposable-expanded-summoning-sprint32-native-review`.
-Original output log SHA256 `b3f73744bc66c9c581c1880603f7c1a855016cc9ec49ff090cabee86bcf2bc90`.
-Transaction `compat-20261025T154133Z-8fabc8c327b9` Restored/verified; full protected
-Compare PASS Mods967/saves118/references18/settings83/tasks0/unchangedSteam.
-No owned live transaction or game process remains. Original metadata-only native
-audit is reviewed evidence of native inputs, not mechanics.
+Local logs: `artifacts/sprint32-intake/`; latest native wrapper/intake/log:
+`artifacts/sprint32-control-986b8de9/`. Raw result directory under runtime-evidence
+starts `20261025T1608319212635Z-disposable-expanded-summoning-sprint32-native-review`.
+Original output log SHA256 `0e05a7365a12c41991f82841f94d0bb8f550ebf1555bfa5f90735a84ce63061f`.
+Transaction `compat-20261025T160603Z-137ce53251c1` Restored/verified at16:10:00UTC;
+full protected Compare PASS Mods967/saves118/references18/settings83/tasks0 and
+unchangedSteam. No owned live transaction or game process remains. Original
+metadata-only native audit is reviewed input evidence, not mechanics.
 
 Independent read-only reviews completed for workflow, early Satyr fixture and
 packaging corrections; concrete early fixture findings repaired. Final coherent
@@ -113,19 +118,19 @@ retained for research; no provider installation/integration yet.
 
 Storage: verified closed duplicate cleanup recovered 3,511,693,023 plus
 1,344,249,872bytes; unique packages/raw evidence/backups/saves retained. Free space
-before c43 dispatch 4,002,836,480bytes; required allowance 1.1 GB peak plus 2 GB margin.
+before986 dispatch3,642,130,432bytes; required allowance 1.1 GB peak plus 2 GB margin.
 Recheck before next package/dispatch. A full extra checkout measures 1,019,350,022
 bytes, so do not casually duplicate it; final records-only checkout can be bounded.
 
-Build attempts/validated development packages/native launches:8/2/2.
-Observed native setup/execution/restoration 255.68 + 224.24 seconds. Full active-time
+Build attempts/validated development packages/native launches:9/3/3.
+Observed native setup/execution/restoration255.68 +224.24 +238.49 seconds. Full active-time
 category totals unavailable; retain timestamps, do not infer throughput.
 Repeated blockers were old admission/count assumptions, now exercised through
-actual offline/package checks. Current failure is the diagnosed menu mapping.
+actual offline/package checks. Current failures are diagnosed registration assumptions, not gameplay.
 
-Next: commit the coherent registration/test corrections, build one corrected
-candidate with the affected summoning-domain selection, rerun the bounded native
-probe, then implement and prove Lillend support. No owner decision is pending.
+Next: finish the focused native-contract review, commit the armor lookup
+correction, build one corrected candidate and rerun the bounded native probe.
+Then implement/prove Lillend support. No owner decision is pending.
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all 30 public-route/body/icon,
 standalone final integration, highest-risk combined final integration. Their
 [original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
