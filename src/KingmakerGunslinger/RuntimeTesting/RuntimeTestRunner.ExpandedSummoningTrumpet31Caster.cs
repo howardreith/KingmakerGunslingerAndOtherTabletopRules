@@ -332,16 +332,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var aidBuff = aidTarget?.Buffs.Enumerable.FirstOrDefault(buff => buff.Blueprint.AssetGuid == "319b4679f25779e4e9d04360381254e1" &&
                     ReferenceEquals(buff.Context.MaybeCaster, owner));
                 int aidHitPointBonus = Math.Min(10, aidBuff?.Context?.Params?.CasterLevel ?? 0);
+                // Virtue was deliberately cast earlier in this same case. Its
+                // independent temporary HP must not be attributed to Aid's d8.
+                // Inspect the actual native modifier owned by this exact buff.
+                var aidModifiers = aidTarget?.Stats.TemporaryHitPoints.Modifiers
+                    .Where(value => ReferenceEquals(value.Source, aidBuff)).ToArray();
+                int aidHitPoints = aidModifiers == null ? 0 : aidModifiers.Sum(value => value.ModValue);
                 bool aided = aidBuff != null && aidBuff.Context.Params.CasterLevel == 14 &&
-                    aidTarget.Descriptor.TemporaryHP >= 1 + aidHitPointBonus && aidTarget.Descriptor.TemporaryHP <= 8 + aidHitPointBonus &&
+                    aidModifiers != null && aidModifiers.Length == 1 &&
+                    aidHitPoints >= 1 + aidHitPointBonus && aidHitPoints <= 8 + aidHitPointBonus &&
+                    aidTarget.Descriptor.TemporaryHP >= aidHitPoints &&
                     Trumpet31PreparedCopies(book, banishment, 6) == 1 && Trumpet31HealSlots(book, creation.Heal) == 2 &&
                     Trumpet31HealSlots(otherBook, creation.Heal) == 2 && !victim.Destroyed;
                 Sprint25Check("trumpet-caster-aid-effect", aided, new JObject { ["caster"] = owner.UniqueId,
                     ["target"] = aidTarget?.UniqueId, ["cl"] = aidBuff?.Context?.Params.CasterLevel,
                     ["temporaryHp"] = aidTarget?.Descriptor?.TemporaryHP, ["temporaryHpCasterBonus"] = aidHitPointBonus,
+                    ["aidTemporaryHp"] = aidHitPoints, ["aidModifierCount"] = aidModifiers?.Length,
+                    ["temporaryHpModifiers"] = aidTarget == null ? new JArray() : new JArray(
+                        aidTarget.Stats.TemporaryHitPoints.Modifiers.Select(value => new JObject {
+                            ["value"] = value.ModValue, ["source"] = value.Source?.Blueprint?.AssetGuid,
+                            ["exactAidBuff"] = ReferenceEquals(value.Source, aidBuff),
+                            ["earlierVirtueBuff"] = ReferenceEquals(value.Source, actualVirtue) })),
                     ["temporaryHpBounds"] = new JArray(1 + aidHitPointBonus, 8 + aidHitPointBonus), ["banishmentSlot"] = Trumpet31PreparedCopies(book, banishment, 6),
                     ["healSlots"] = Trumpet31HealSlots(book, creation.Heal), ["siblingHealSlots"] = Trumpet31HealSlots(otherBook, creation.Heal) },
-                    "With unsafe Banishment refused, the native brain chooses useful at-will CL14 Aid and applies real support without spending any prepared spell slot.");
+                    "With unsafe Banishment refused, the native brain chooses useful at-will CL14 Aid; its exact buff contributes 1d8+10 native temporary HP independently of earlier Virtue, without spending any prepared spell slot.");
                 if (!aided) throw new InvalidOperationException("Trumpet native Aid effect/slot isolation failed.");
                 PlaceExpandedSummoningUnit(blocker, origin - Vector3.right * 3f);
                 victim.Stats.SaveWill.BaseValue = -100; // owned accuracy fixture; the native die/save is not forced
