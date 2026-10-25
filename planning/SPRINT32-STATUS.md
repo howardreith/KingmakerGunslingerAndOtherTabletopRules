@@ -87,6 +87,24 @@ checked remaining reflected assignments and Courage component lookup shapes
 against installed/captured types, with no additional concrete startup blocker.
 This correction still requires fresh native execution.
 
+Corrected candidate `8af313222015ce6abd724682b55f0ced573ef73b` passed the complete
+wrapper, selected hidden-Lillend route, exact compile and417-file package.
+ZIP SHA256 `18ce6079a7818698fa0c14b949cb65eff147760b7722067421a4706ee7e85a25`;
+DLL `b90e5ab5f615296a7b9312a461b5091cbb2b9c10687770ae62e03012cbf195b2`;
+MVID `2453ba44-1794-450e-b48f-6200648bdef8`.
+Native `20261025T1706472103348Z-f64399131c6e472c97155d130ec22dfa` also FAILed
+initialization, zero gameplay assertions: the native Courage carrier does have
+StayOnDeath. The prior static review had not established that copied flag.
+Replan after these two startup failures: stop launches, inspect the actual
+native enum/getter and every remaining startup assumption, and reproduce the
+correction directly against the installed managed field before packaging again.
+The private carrier/recipient now clear only StayOnDeath, preserving all other
+flags and leaving native donors untouched. Actual compiled adapter PASS124
+synthetic flag inputs against installed field/getter; this is an offline managed
+contract check, not activation/death/gameplay proof. Production compile and
+selected route PASS. Remaining post-carrier lookups reuse captured/accepted
+native facts and reviewed component shapes. Fresh native proof is still required.
+
 ## Finite acceptance table
 
 Final rows remain incomplete. A3 has the exact early RTWP execution above; all
@@ -140,6 +158,13 @@ original Unity failure log `4ae34ecef9fa7e23a4b55664118be259555b453cb1a606cb58b4
 Transaction `compat-20261025T165106Z-edd4bc213ad9` Restored/verified16:55:35UTC;
 full protected Compare PASS967mods/118saves/18refs/83settings/0tasks/unchangedSteam.
 No owned live transaction/game remains. Native70.778s; full transaction270.60s.
+Latest8af wrapper/intake `artifacts/sprint32-lillend-8af31322/`; evidence folder
+`20261025T1706471321780Z-disposable-expanded-summoning-sprint32-native-review`.
+Result SHA256 `e7aaa6537e47fe042bdaaa6ae2b44236a9677cb8fa029e3e63cb798999b76068`;
+original Unity failure log `5c5b657b5aea1e74a515acd1854df4e742289c69f55303e76679d0cf84623ab4`.
+Transaction `compat-20261025T170420Z-2871883ca6d8` Restored/verified; protected
+Compare PASS967mods/118saves/18refs/83settings/0tasks/unchangedSteam. No owned live
+transaction/game. Native67.856s; full transaction233.46s.
 
 Independent read-only reviews completed for workflow, early Satyr fixture and
 packaging corrections; concrete early fixture findings repaired. Final coherent
@@ -156,8 +181,8 @@ before12d dispatch3,311,755,264bytes; required allowance 1.1 GB peak plus 2 GB m
 Recheck before next package/dispatch. A full extra checkout measures 1,019,350,022
 bytes, so do not casually duplicate it; final records-only checkout can be bounded.
 
-Build attempts/validated development packages/native launches:11/5/5.
-Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 seconds. Full active-time
+Build attempts/validated development packages/native launches:12/6/6.
+Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 +233.46 seconds. Full active-time
 category totals unavailable; retain timestamps, do not infer throughput.
 Repeated blockers were old admission/count assumptions, now exercised through
 actual offline/package checks. The corrected registration assumptions are closed by12d natural gameplay PASS.
@@ -175,7 +200,8 @@ are explicitly outside this first-debit probe and remain final acceptance work.
 Icon catalog30/30 and canonical137-source/export validation PASS; all136 prior
 rows remain identical. Production compile and corrected hidden/proxy test PASS.
 
-Next: commit the corrected enchantment binding, package once and rerun the same bounded
+Next: commit the inspected private lifetime-flag correction, package once and
+rerun the same bounded
 Lillend native probe. Unchanged554-test evidence is reviewed reuse; exact
 production compile/package and selected hidden-route check run on corrected bytes. No owner decision
 is pending. Full final product/rules/coverage review remains pending.
