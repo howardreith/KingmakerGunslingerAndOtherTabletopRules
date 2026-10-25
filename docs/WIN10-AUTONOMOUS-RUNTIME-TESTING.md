@@ -1,3 +1,11 @@
+Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
+read-only mod-load audit of Satyr/Lillend candidates and required native control,
+bard/performance, spellbook, defense and weapon consumers. Empty parameters;
+no actor, save selection, input, native mutation or geometry export. It reuses
+the existing bounded graph/prefab metadata reader. Exact package, lease and
+transactional restoration remain required. `sprint32-inputs.json` establishes
+research observations only, never gameplay, visual suitability or qualification.
+
 The fixed S30/S31 persistence scope 'outsider-celestial' selects exactly Lemure, Dretch, Hound Archon, retained Lantern Archon, Astral Deva and Trumpet Archon. Development admission requires exact purpose 'sprints30-31-persistence'; it does not change release identity or Working/baseline guards. One controlled six-owner mix uses the existing prepare, cold verify/cleanup and fresh-absence scenarios and source-bound installed-stack transactions. Native resource/slot spends and Menace/Aid victim buffs are explicitly saved preconditions, not cast/save/AI proof: Dretch cloud0/fear1; Astral Heal0/Blade1/Cure6/See7; one of Trumpet's two Heal slots spent in its native26-preparation CL14 book; Lemure receives two source-specific penalties and one immunity, Dretch a finite Hound Aid buff. All explicitly prepared victim state belongs to those six units; native auras retain their usual recipient rules. Actual cold aura recipients, AC/save consumers, ownership, nonloot items, finite effect deadlines, cleanup and private resource absence remain mandatory. This fixture refuses a preexisting selected aura rather than deleting unrelated effects. Preserve separate processes and restore original Working bytes/metadata before source work or stopping. No persistence pass is claimed by admission tests.
 
 The fixed S30/S31 `public-routes` phase uses the existing player-route helper in one save-free process: Lemure II–IX (8), Dretch III–IX (7), Hound IV–IX (6), existing Lantern III–IX (7), Astral IX (1), Trumpet IX (1). It refuses any hidden/missing/extra affected family or tier before dispatch and retains each native parent/variant, slot, quantity, duration, alignment and exact per-route cleanup observation. No arbitrary subcase ordering is accepted.
