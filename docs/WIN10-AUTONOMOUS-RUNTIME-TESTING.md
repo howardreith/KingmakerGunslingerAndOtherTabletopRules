@@ -47,6 +47,19 @@ AlwaysEnemy is false, and the target is mutually hostile to the disposable caste
 All nonplayer intake actors must be mutually nonhostile to it before combat frames
 advance. The private faction is destroyed after its actors. Neutral intake actors,
 their memories and the exact-owner native clock guard remain unchanged.
+Turn attack completion records the exact command's native act/end, actual attack
+plan/index and attributed weapon rules. A later Interrupt is accepted only after
+that same command's final native Success act completed the actual plan with exact
+weapon order/target and normal action debit; arbitrary interruption never passes.
+This proves mechanical completion, not animation completion or the interrupt caller.
+Lillend's Move activation retains its first20-to19/ally+2 proof. Its later fallback
+checks one native OnNewRound debit per observed eligible owner turn, with exact
+remaining20-minus-observed-upkeep and untouched sibling pool; a second legal turn
+is not forced to retain19. These hooks only observe the exact performance instance.
+The existing phases also probe each new adult's native Knowledge(nature) total,
+Intelligence dependency, preserved Wisdom/Perception dependency and sibling isolation.
+Only owned disposable ability bases are changed temporarily and restored; no load
+or persistence result is inferred from these creation-time observations.
 The optional Suggestion phase requires the settled investigated provider and
 uses one fresh Satyr pair followed by one fresh Lillend pair. The exact target
 has declared low Will, Charm-only descriptor immunity and Sleep/Paralysis/Stun

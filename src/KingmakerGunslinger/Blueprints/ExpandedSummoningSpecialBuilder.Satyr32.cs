@@ -46,7 +46,9 @@ namespace KingmakerGunslinger.Blueprints
             racial.BaseFortitude = 2; racial.BaseReflex = 6; racial.BaseWill = 6;
             racial.PerceptionRanks = 6; racial.PersuasionRanks = 8;
             racial.StealthRanks = 8;
-            unit.ComponentsArray = new BlueprintComponent[] { levels, racial };
+            var nature = ScriptableObject.CreateInstance<FeyCelestialNatureKnowledge32>();
+            nature.OwningBlueprint = unit; nature.TrainedContribution = 9; nature.FeyClassSkill = true;
+            unit.ComponentsArray = new BlueprintComponent[] { levels, racial, nature };
             unit.Skills = new BlueprintUnit.UnitSkills(); unit.Race = null;
             ConfigureUnitCore(unit, "Satyr", "Satyr", Alignment.ChaoticNeutral,
                 Size.Medium, 14, 15, 15, 12, 14, 19, 40);
