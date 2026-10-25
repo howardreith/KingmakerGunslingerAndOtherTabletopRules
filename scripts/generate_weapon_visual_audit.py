@@ -405,7 +405,26 @@ def make_record(entry: dict) -> dict:
             "clippingOrientationConcerns": "outside this cleanup; preserve qualified creature donor contract",
             "mappingScope": "summoning-only exclusion",
         })
-        if symbol.startswith("KMG.Summoning.Natural.Gorgon."):
+        if symbol.startswith("KMG.Summoning.OutsiderCelestial."):
+            species, attack = symbol.split(".")[-2:]
+            weapon_kind = attack.split("1d")[0].split("2d")[0]
+            manufactured = weapon_kind in ("Greatsword", "Warhammer")
+            common.update({
+                "familyOrFirearmKind": "Sprints 30-31 outsider/celestial attack",
+                "weaponType": symbol.rsplit(".", 1)[0] + "." + weapon_kind + "Type",
+                "currentItemLevelVisual": "summon-owned native weapon reference" if manufactured else "natural attack; body-owned presentation",
+                "effectiveEquippedPrefab": "summon-owned native manufactured weapon" if manufactured else "project creature body; no separate transferable visual",
+                "gripHandednessContract": "two-handed manufactured weapon" if manufactured else "creature-specific natural attack role; alternative slam or bite where configured",
+                "currentManyToOneVisualGroup": "ExpandedSummoning.OutsiderCelestial." + species,
+                "clippingOrientationConcerns": "functional-first body and armament; rough anatomy, seams, rigid wings and modest clipping remain accepted visual debt",
+            })
+            if species == "HoundArchon" and manufactured:
+                common.update({
+                    "effectiveEquippedPrefab": "native greatsword visual attached to the owned Free Hands rig right palm by HoundArchonSwordView; no extra item",
+                    "deterministicGenerator": "HoundArchonSwordView exact-owner runtime attachment of existing weapon visual",
+                    "animationDonorStyle": "measured Free Hands rig; native hand equipment unavailable without Character avatar",
+                })
+        elif symbol.startswith("KMG.Summoning.Natural.Gorgon."):
             common.update({
                 "effectiveEquippedPrefab": "original project Gorgon body: assets/ungulates/gorgon-mesh.json",
                 "sourceFbx": "none; original procedural mesh data",

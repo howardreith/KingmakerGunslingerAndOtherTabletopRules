@@ -16,6 +16,8 @@ Next fixed native sequence on the frozen final artifact: one grouped30-route/bod
 
 Headroom recovery removes only hash-verified inactive extraction/redeployment/build duplicates with canonical ZIPs/PDBs/receipts/evidence retained. Current intake remains Mods967/saves118/references18/settings83, no owned game/task/lease/transaction, original Steam only. Accepted rough anatomy/rigid wings/seams/modest clipping/texture debt and recorded PF1/aura choices remain closed. No personal aesthetic approval, permanent development installation, scope expansion or Sprint32.
 
+Final gate attempt8 at ef988988 stopped before compilation/package: 23 checks lacked the local exact-reference IL fixture; the package-name/version oracle and weapon audit retained stale pre-batch expectations. The installed Assembly-CSharp SHA3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb was disassembled locally with installed ILDASM; proprietary output remains ignored. The two test expectations and existing audit generator now reflect actual version selection and the nine exact new weapon identities, including Hound's existing palm-owned sword visual. No production mechanics, compiled native observer or assets changed. Attempt8 FAIL and exact restoration remain recorded. Current counters8 candidate admissions/14 launches; final package and native public qualification still pending.
+
 ## Dated history â€” superseded action instructions
 
 ### H7 suspension report (2026-10-25, before unattended authority)
