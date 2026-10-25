@@ -1,8 +1,25 @@
 """Focused corruption checks; no candidate, game or publication."""
-import copy,json,unittest
+import copy,json,unittest,tempfile,subprocess
 from pathlib import Path
 import validate_expanded_summoning_sprints3031 as v
 class Boundary(unittest.TestCase):
+    def test_released_asset_git_text_and_binary_rules(self):
+        with tempfile.TemporaryDirectory(prefix='kmg-s3031-asset-contract-') as folder:
+            root=Path(folder)
+            def git(*args):return subprocess.run(['git','-C',str(root),*args],check=True,capture_output=True,text=True).stdout.strip()
+            git('init','--quiet')
+            (root/'.gitattributes').write_text('*.txt text\n*.bin binary\n',encoding='utf-8')
+            (root/'record.txt').write_bytes(b'original\nsecond\n')
+            (root/'asset.bin').write_bytes(b'\x00\x0d\x0a\xff')
+            git('add','.');git('-c','user.name=Fixture','-c','user.email=fixture@invalid','commit','--quiet','-m','owned fixture')
+            baseline=git('rev-parse','HEAD')
+            (root/'record.txt').write_bytes(b'original\r\nsecond\r\n')
+            self.assertTrue(v.released_asset_unchanged(root,'record.txt',baseline))
+            self.assertTrue(v.released_asset_unchanged(root,'asset.bin',baseline))
+            (root/'record.txt').write_bytes(b'changed\r\nsecond\r\n')
+            self.assertFalse(v.released_asset_unchanged(root,'record.txt',baseline))
+            (root/'asset.bin').write_bytes(b'\x00\x0a\xff')
+            self.assertFalse(v.released_asset_unchanged(root,'asset.bin',baseline))
     def test_scope(self):
         prior=[('lantern-archon',3,False,None)]; current=prior+sorted(v.ADDITIONS)
         v.check_scope(prior,current,set())

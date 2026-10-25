@@ -55,7 +55,7 @@ namespace KingmakerGunslinger.DomainTests
             }
         }
 
-        internal static void FirstSliceKeepsExactHiddenRoutesAndReleasedSurface()
+        internal static void BatchKeepsExactPublicRoutesAndReleasedSurface()
         {
             ExpandedSummoningCatalog.Validate();
             SummonIconCatalog.Validate();
@@ -69,21 +69,21 @@ namespace KingmakerGunslinger.DomainTests
             var lemure = all.Where(value => value.Creature.Key == "lemure").ToArray();
             var astral = all.Where(value => value.Creature.Key == "astral-deva").ToArray();
             Assertions.True(lemure.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(2, 8)), "Exact SM II-IX Lemure routes.");
-            Assertions.True(lemure.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "No SNA/template/public Lemure root.");
+            Assertions.True(lemure.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value)), "Published Lemure roots retain no SNA or template variants.");
             Assertions.True(all.Where(value => value.Creature.Key != "lemure" && value.Creature.Key != "dretch" && value.Creature.Key != "hound-archon" && value.Creature.Key != "trumpet-archon" && value.Creature.Key != "astral-deva").All(SummonVisibilityCatalog.IsPublished), "Every released creature stays public.");
-            Assertions.True(dretch.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(3, 7)) && dretch.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "Dretch owns exactly seven hidden untemplated SM III-IX roots.");
+            Assertions.True(dretch.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(3, 7)) && dretch.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value)), "Dretch owns exactly seven public untemplated SM III-IX roots.");
             Assertions.Equal(SummonMultiplicity.One, dretch[0].Multiplicity, "SM III Dretch is one.");
             Assertions.Equal(SummonMultiplicity.OneD3, dretch[1].Multiplicity, "SM IV Dretch is 1d3.");
             Assertions.True(dretch.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM V-IX Dretch are 1d4+1.");
-            Assertions.Equal(lemure.Length + dretch.Length + hound.Length + trumpet.Length + astral.Length, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "Only the implemented first slice is suppressed.");
-            Assertions.Equal(all.Length - lemure.Length - dretch.Length - hound.Length - trumpet.Length - astral.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
-            Assertions.True(hound.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(4, 6)) && hound.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && !SummonVisibilityCatalog.IsPublished(value)), "Hound owns exactly six hidden untemplated SM IV-IX roots.");
+            Assertions.Equal(0, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "The complete selected batch has no suppressed roots.");
+            Assertions.Equal(all.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
+            Assertions.True(hound.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(4, 6)) && hound.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value)), "Hound owns exactly six public untemplated SM IV-IX roots.");
             Assertions.True(astral.Length == 1 && astral[0].ParentTier == 9 && astral[0].Family == SummonFamily.Monster &&
                 astral[0].Multiplicity == SummonMultiplicity.One && !astral[0].Creature.MonsterTemplated &&
-                !SummonVisibilityCatalog.IsPublished(astral[0]), "Astral owns exactly one hidden untemplated SM IX root.");
+                SummonVisibilityCatalog.IsPublished(astral[0]), "Astral owns exactly one public untemplated SM IX root.");
             Assertions.True(trumpet.Length == 1 && trumpet[0].ParentTier == 9 && trumpet[0].Family == SummonFamily.Monster &&
                 trumpet[0].Multiplicity == SummonMultiplicity.One && !trumpet[0].Creature.MonsterTemplated &&
-                !SummonVisibilityCatalog.IsPublished(trumpet[0]), "Trumpet owns exactly one hidden untemplated SM IX root.");
+                SummonVisibilityCatalog.IsPublished(trumpet[0]), "Trumpet owns exactly one public untemplated SM IX root.");
             Assertions.Equal(SummonMultiplicity.One, hound[0].Multiplicity, "SM IV Hound is one.");
             Assertions.Equal(SummonMultiplicity.OneD3, hound[1].Multiplicity, "SM V Hound is 1d3.");
             Assertions.True(hound.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM VI-IX Hound are1d4+1.");

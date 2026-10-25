@@ -1218,7 +1218,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint28.identities", ExpandedSummoningSprint28Tests.IdentitiesAppendAndDonorsRemainExact),
             Case("expanded-summoning.sprint28.rock-policy", ExpandedSummoningSprint28Tests.RockArithmeticAndCatchAreBounded),
             Case("expanded-summoning.sprint28.stone-terrain", ExpandedSummoningSprint28Tests.StoneRockyStealthRequiresSelectedArea),
-            Case("expanded-summoning.sprints30-31.hidden-first-slice", ExpandedSummoningSprints30And31Tests.FirstSliceKeepsExactHiddenRoutesAndReleasedSurface),
+            Case("expanded-summoning.sprints30-31.exact-public-routes", ExpandedSummoningSprints30And31Tests.BatchKeepsExactPublicRoutesAndReleasedSurface),
             Case("expanded-summoning.sprints30-31.astral-core-rules", ExpandedSummoningSprints30And31Tests.AstralCoreRulesKeepDistinctLevelsAndAuraBoundary),
             Case("expanded-summoning.sprints30-31.astral-hammer-stun", ExpandedSummoningSprints30And31Tests.AstralHammerStunTracksEachOpponentOncePerRound),
             Case("expanded-summoning.sprints30-31.persistence-scope", ExpandedSummoningSprints30And31Tests.PersistenceScopeOwnsExactlySixUnits),

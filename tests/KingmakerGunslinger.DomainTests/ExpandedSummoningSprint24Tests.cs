@@ -405,7 +405,8 @@ namespace KingmakerGunslinger.DomainTests
                     "class TheropodAccessorySuppression") &&
                 attachment.Contains("private void LateUpdate()") &&
                 attachment.Contains("attachment.TheropodSuppression.Release()") &&
-                attachment.Contains("attachment.TheropodSuppression })") &&
+                System.Text.RegularExpressions.Regex.IsMatch(attachment,
+                    @"\.Concat\(new UnityEngine\.Object\[\]\s*\{[^}]*attachment\.TheropodSuppression\s*[,}]") &&
                 attachment.Contains("string ownedMaterialName") &&
                 attachment.Contains("StartsWith(\n                    ownedMaterialName, StringComparison.Ordinal)"),
                 "Per-view suppression survives native fade updates, appears in the owned-resource receipt and releases before exact donor restoration.");

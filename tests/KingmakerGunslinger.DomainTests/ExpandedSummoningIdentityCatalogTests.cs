@@ -385,7 +385,7 @@ namespace KingmakerGunslinger.DomainTests
                     "$arguments.SaveName = 'KMG_AUTOMATION_WORKING'"),
                 "Compatibility matrix scenarios must remain working-save-only.");
             Assertions.True(compatibility.Contains(
-                    "CompletionTimeoutSeconds = $RuntimeTimeoutSeconds"),
+                    "CompletionTimeoutSeconds = if ($workingDispelUi) { 180 } else { $RuntimeTimeoutSeconds }"),
                 "Compatibility save-backed runs must propagate their bounded " +
                 "profile timeout through load completion.");
             int cleanupStart = scenario.IndexOf("private void Cleanup()",
