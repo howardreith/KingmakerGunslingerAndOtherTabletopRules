@@ -111,7 +111,7 @@ The prior owner acceptance is not a Sprint 32 waiver. Original dispositions:
 
 Intake: refreshed master, created isolated review worktree, read current policy
 and relevant charter, identified stale active pointers and S30–31 build gates.
-Build-Local attempts/packages/native launches: 4/1/1. A separate focused
+Build-Local attempts/packages/native launches: 5/1/1. A separate focused
 production compilation passed. Native task including staging and restoration:
 255.68 seconds. Accumulated active work-category times are not yet available;
 retain timestamped logs rather than infer throughput.
@@ -283,3 +283,17 @@ and rejects the stale released hash; protected asset checks remain. Focused
 validator PASS, catalog corruption30 PASS (15.31s), runtime evidence6 PASS and
 native screenshot reader25 PASS. Original failures remain. This correction
 changes tooling only and does not create gameplay evidence.
+
+The eee47b03 package attempt reached a second historical fixture: S30-31
+corruption tests treated the current registry as the old exact232-entry tail.
+The fixture now reads the actual v0.0.167 commit272b729f4094ce7bb5fa1ea9495c00d66f7d2a1d;
+its corruption, deletion and extra-append refusals remain. Focused3 PASS.
+Independent read-only review found no blocking issue in either test correction
+and independently confirmed all135 prior icon records unchanged. The full
+development offline wrapper then passed before another package attempt
+(`offline-wrapper-after-stale-fixture-fixes.log`). No native launch occurred.
+
+CowWithHat public release1.4.5 ZIP retained locally for optional integration
+research: SHA256 cbfcd6ae378bf7d6a3ad5af8d85801504f63e5e092c67a3588d4ce1e088c99fa,
+82,577bytes. Its released NewSpells.cs confirms the same Suggestion GUID and
+adaptation as inspected master. No provider installation or integration yet.
