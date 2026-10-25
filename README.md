@@ -1,5 +1,17 @@
 # Kingmaker Gunslinger
 
+The **0.0.168-expanded-summoning-sprints30-31-followup** release makes the
+Astral Deva's protective aura a true lesser globe of invulnerability, extends
+its circle protection to the full 20-foot aura, gives the Trumpet Archon the
+ordinary Airborne fact, rebuilds the Lemure, Dretch and Hound Archon bodies and
+puts the Hound's sword in its fist. Routes and saved identities are unchanged.
+See the [v0.0.168 release notes](docs/RELEASE-NOTES-0.0.168.md).
+
+The **0.0.167-expanded-summoning-sprints30-31-outsider-celestial** release adds
+the Lemure, Dretch, Hound Archon, Astral Deva and Trumpet Archon summons and
+upgrades the Lantern Archon in place. See the
+[v0.0.167 release notes](docs/RELEASE-NOTES-0.0.167.md).
+
 The **0.0.166-expanded-summoning-druid-giant-sizes** release lists each
 creature once in a Druid's prepared Summon Nature's Ally menu, keeps the
 summoned giants' family heights in play, and gives the Huge Cloud and Storm
@@ -77,13 +89,24 @@ Sprint 22 remains released and unchanged.
 
 ### Current release
 
+Version **0.0.168-expanded-summoning-sprints30-31-followup** keeps every
+identity, route and summon choice of v0.0.167 (1,179 visible choices). It
+changes the Astral Deva protective aura, the Trumpet Archon's Airborne fact,
+the Lemure, Dretch and Hound Archon bodies and the Hound's sword grip. See the
+[v0.0.168 release notes](docs/RELEASE-NOTES-0.0.168.md).
+
+### Earlier releases
+
+Version **0.0.167-expanded-summoning-sprints30-31-outsider-celestial** adds
+five Outsider/Celestial summons with 23 new routes and upgrades the Lantern
+Archon in place (1,179 visible choices). See the
+[v0.0.167 release notes](docs/RELEASE-NOTES-0.0.167.md).
+
 Version **0.0.166-expanded-summoning-druid-giant-sizes** keeps every identity,
 route and summon choice of v0.0.165 (1,156 visible choices). It changes the
 Druid's prepared Summon Nature's Ally menus, the summoned giants' heights and
 the Cloud and Storm Giants' space. See the
 [v0.0.166 release notes](docs/RELEASE-NOTES-0.0.166.md).
-
-### Earlier releases
 
 Version **0.0.165-expanded-summoning-cleanup-followup** keeps every identity,
 route and summon choice of v0.0.164 (1,156 visible choices). It changes the

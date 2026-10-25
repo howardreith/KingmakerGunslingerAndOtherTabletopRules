@@ -1,9 +1,12 @@
 # v0.0.167 review follow-up: rules fixes and model refinement
 
-Development checkpoint, 2026-10-25, branch `codex/s30-31-rules-and-model-refinement`
-from master `48e6fb4abf`, lab machine DATA. It answers the owner's October 25
-rules review and model refinement plan. **No release is authorized or
-prepared.** The released v0.0.167 records stay as published.
+Branch `codex/s30-31-rules-and-model-refinement` from master `48e6fb4abf`, lab
+machine DATA, 2026-10-25. It answers the owner's October 25 rules review and
+model refinement plan, then the owner's second review the same day, which
+asked for a true lesser globe and a fixed sword grip and authorized
+finalization, merge and release without another approval. The work ships as
+v0.0.168 ([release notes](RELEASE-NOTES-0.0.168.md)). The released v0.0.167
+records stay as published.
 
 ## R1: Trumpet Archon Airborne (fixed)
 
@@ -38,6 +41,74 @@ The aura recipient gains one named, stateless component. Native
 `Fact.PostLoad` matches saved component data by name and starts new
 components fresh, so saved recipients load without conflict. Serialized aura
 ownership (carrier, area, link) is unchanged; no cold-load case was run.
+
+## R3: Astral protective aura is a lesser globe (fixed)
+
+The owner's second review: the protective aura acts as a lesser globe of
+invulnerability, not spell resistance, against all spells of 3rd level or
+lower regardless of how the spell interacts with spell resistance, without
+depending on Call of the Wild.
+
+`AstralProtectiveGlobe` used to be a `RuleTargetLogicComponent` that set
+`RuleSpellResistanceCheck.TargetIsImmune`. That blocked most casts, but a
+caster's `IgnoreSpellResistance` or Primal Magic Essence bypassed it, and a
+persistent area without spell resistance (clouds, mists, webs) never asked.
+It is now a plain owned component on the aura recipient, read by two native
+consumers:
+
+- `AbilityExecutionProcess.DoApplyEffect` prefix: the single native dispatch of
+  an ability effect to one target (single target, burst, line, projectile,
+  delivered touch). A level 0-3 Spell or SLA whose caster stands outside the
+  emitter's 20-foot aura is skipped for the covered creature before any spell
+  resistance check. A held touch charge is judged on delivery, as native spell
+  resistance does.
+- `AreaEffectEntityData.ShouldUnitBeInside` postfix: such a persistent area
+  excludes the covered creature, which returns to it once it leaves the globe
+  or the aura ends (suppressed, not dispelled).
+
+The level, Spell/SLA and outside-origin rules are the unchanged
+`AstralDevaRulesPolicy.BlocksLesserGlobe`. Spells of 4th level or higher
+(including heightened), casts from inside and the caster's own effects pass.
+The constant archon and angel circles from `ArchonConstantMagicCircle` carry a
+Magic Circle spell context but are supernatural: a context with no ability
+fact, spellbook or item whose caster owns that grant is never treated as a
+cast. Call of the Wild's own globe (`UnitPartSpellInvulnerability`, patching
+`UnitPartSpellResistance.IsImmune` and `AbilityEffectRunAction.Apply`) was
+read for reference only; nothing depends on it. The recipient text now says
+"Like a lesser globe of invulnerability ... whether or not they allow spell
+resistance, and their areas exclude it."
+
+The aura recipient keeps its component name and position; the component is
+stateless, so saved recipients load as before.
+
+### What the Movanic Deva uses
+
+The owner suggested reusing the Movanic Deva's implementation. The native
+inputs capture (`20261025T1715544517250Z`, gunslinger-only) shows the summoned
+Movanic Deva gets its aura from `SubtypeAngel` (`65d9b688…`), which adds
+`ProtectiveAuraFeature` (`bd3c71c5…`) -> `ProtectiveToggleAbility` ->
+`ProtectiveAuraSourceBuff` -> `ProtectiveAuraAreaEffect` ->
+`ProtectiveAuraEffectBuff` (`c30fd512…`). That effect buff has only
+`SavingThrowBonusAgainstAlignment` and `ArmorClassBonusAgainstAlignment`
+(+4 resistance and +4 deflection against evil), the same native components
+the Astral aura already uses. Its in-game text (`b0388551…`) promises a magic
+circle and a lesser globe, but no native component implements either, and no
+installed mod changes the Movanic Deva. There was no native globe to reuse; the
+native Movanic Deva is unchanged.
+
+## Hound sword grip (fixed)
+
+The owned greatsword was parented at the `R_Palm` origin (the wrist) with
+identity rotation and passed through the body. A grip observation in
+`hound-armed` measured the palm frame in game (fingers along -X curling to +Y,
+thumb on +Z) and the native `WP_GreatswordBarbarian` clone (blade along model
++Y, hilt below the origin, not CPU-readable). `HoundArchonSwordView` now places
+the hilt across the fist, leaving on the thumb side with the flat facing the
+palm, the origin 7 cm past the fist centre so the guard clears it. A first
+15-degree tip toward the fingers reached the floor at idle; the shipped grip
+is tipped 5 degrees toward the wrist: level in the measured combat stance and
+angled down without touching the floor at idle. The armed check asserts the
+exact transform.
 
 ## Model refinement
 
@@ -105,6 +176,49 @@ and its conditional terms equal the Lantern and Astral flyers'.
 
 Hound mesh and albedo bytes are identical in art 1 and art 2.
 
+Second-review candidates (development, none is a release):
+
+| Candidate | Commit | Package | DLL | MVID |
+|---|---|---|---|---|
+| globe 1 | `5b755a119d` | `d5ba53f9…` | `c1663e9c…` | `97f208d8…` |
+| grip | `53bb76e7ad` | `9ca1ef0e…` | `0349fd5e…` | `7e786479…` |
+| globe probe | `1452b22251` | `8d63f3f7…` | `750918b3…` | `2dde3bfa…` |
+
+Product source is identical from globe 1 to globe probe except the grip
+transform; later commits changed only the astral-core observer.
+
+| Case | Candidate, stack | Result | Evidence |
+|---|---|---|---|
+| astral-core incl. lesser globe | globe probe, KMG-only | PASS 13/13 | `20261025T1806320876453Z` |
+| hound-armed (measured grip asserted) | grip, KMG-only | PASS 9/9 | `20261025T1738243118908Z` |
+| hound-disarm | grip, KMG-only | PASS 12/12 | `20261025T1741019771262Z` |
+| creature review, Hound, Working save | grip, full stack | packet + cleanup PASS, motion FAIL (classified) | `20261025T1742587364973Z` |
+| shared-circles | globe 1, KMG-only | PASS 20/20 | `20261025T1705195684488Z` |
+| defense-consumers | globe 1, KMG-only | PASS 51/51 | `20261025T1708024286684Z` |
+| astral-support | globe 1, KMG-only | PASS 9/9 | `20261025T1710381372850Z` |
+| astral-atwill | globe 1, KMG-only | PASS 6/6 | `20261025T1713192874959Z` |
+| native inputs (Movanic, angel aura) | globe 1, KMG-only | research | `20261025T1715544517250Z` |
+| grip measurement | `dafcbc730d`, KMG-only | research | `20261025T1634235189829Z` |
+| astral-core | globe 1 | FAIL: pilot-era hidden-route check | `20261025T1656356528526Z` |
+| astral-core | `fb1b8f4b17` | FAIL: native buffs carry SR false | `20261025T1722323227092Z` |
+| astral-core | grip | FAIL: probe context lacked FxSpawners | `20261025T1736025919270Z` |
+| astral-core | `2b15141c38` | FAIL: Magic Missile control dealt no damage | `20261025T1750456166568Z` |
+
+The globe probe dispatches real native effect components through the private
+`DoApplyEffect` with its Harmony prefix, and observes the native spell
+resistance rule. From outside the aura, Mage Armor (spell resistance no), Magic
+Missile at CL50 (spell resistance yes) and the Hound's Aid SLA never reach the
+covered creature and never reach a spell resistance check. From inside, Mage
+Armor applies and Magic Missile reaches exactly one check, which CL50
+overcomes against the Astral's SR 25. Mage Armor heightened to level 4 and
+Mage Armor on an uncovered creature apply. A native Obscuring Mist (level 1,
+area spell resistance no) cast from outside excludes the covered creature,
+includes it after it leaves the aura, excludes it again on return, then ends
+with no lingering buff. A second Astral 11 m away still covers the shared
+creature with its own constant aura. Magic Missile's damage does not arrive
+through a direct one-target dispatch (no damage packet even from inside), so
+its pair proves the spell resistance boundary, not damage.
+
 Every run restored the live mod exactly (254 files, `5C3E4AD4…BFBB`). The
 Working-save reviews left the baseline and Working saves byte-identical (95
 saves before and after).
@@ -127,18 +241,12 @@ saves before and after).
 
 ## Open items
 
-- **Owner aesthetic review** of the three bodies. Offline renders and native
-  frames are supporting art evidence, not approval.
-- **Hound sword grip.** The owned sword is parented at the `R_Palm` origin (the
-  wrist joint) with identity rotation. In native idle stills the greatsword
-  rests near horizontal at hip height and appears to pass behind or through
-  the skirt line. This attachment is unchanged by this work. The smallest
-  alternative is a measured local offset and rotation in
-  `HoundArchonSwordView`, verified by rerunning `hound-armed`; it is proposed,
-  not implemented.
-- **Astral globe SR=no dispatch** (the review's qualification question) was not
-  investigated; no defect is claimed.
+- **Owner aesthetic review.** The owner accepted the changes and authorized
+  release on October 25; no separate personal approval of the bodies or grip
+  is claimed.
+- **Stale pilot-era observers.** `dretch-cloud`, `archon-hound`, `bootstrap`,
+  `trumpet-book` and `trumpet-dispel` still require routes hidden that v0.0.167
+  published, as astral-core did. They were not run here and are not repaired.
 - **Not run:** cold-load or persistence, public routes, standalone and combined
-  final integration, the complete domain suite, and any release candidate.
-  Releasing this work needs a new release validator, because the v0.0.167
-  validator pins the released art bytes.
+  final integration, and the full-stack (Call of the Wild) native profile for
+  these phases.

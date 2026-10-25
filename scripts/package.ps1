@@ -24,7 +24,7 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $suffix=if($info.Version -eq '0.0.167'){'expanded-summoning-sprints30-31-outsider-celestial'}else{'expanded-summoning-druid-giant-sizes'}
+    $suffix=if($info.Version -eq '0.0.168'){'expanded-summoning-sprints30-31-followup'}elseif($info.Version -eq '0.0.167'){'expanded-summoning-sprints30-31-outsider-celestial'}else{'expanded-summoning-druid-giant-sizes'}
     $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-$suffix.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
@@ -87,7 +87,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.164.md',
     'docs\RELEASE-NOTES-0.0.165.md',
     'docs\RELEASE-NOTES-0.0.166.md',
-    'docs\RELEASE-NOTES-0.0.167.md')) {
+    'docs\RELEASE-NOTES-0.0.167.md',
+    'docs\RELEASE-NOTES-0.0.168.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -299,8 +300,8 @@ $s3031IconKeys = @('lemure','dretch','hound-archon','astral-deva','trumpet-archo
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
 $s3031IconCount = @($summonManifest.icons | Where-Object { $_.key -cin $s3031IconKeys }).Count
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count + 1 + 1 + 1 + 1 + 1
-# Retain released Cleanup2 Gorgon parameters and v0.0.164/165/166 notes; add the declared v0.0.167 candidate notes.
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count + 1 + 1 + 1 + 1 + 1 + 1
+# Retain released Cleanup2 Gorgon parameters and v0.0.164/165/166/167 notes; add the v0.0.168 follow-up notes.
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
