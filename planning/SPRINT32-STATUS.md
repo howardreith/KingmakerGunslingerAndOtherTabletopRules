@@ -140,7 +140,7 @@ extractions, retaining exact ZIPs/evidence/receipts/backups/saves. Recovered
 Local selection/script `artifacts/sprint32-intake/*s29-review-margin*`.
 Recheck headroom before each build/staging selection.
 
-Build-Local attempts/validated development packages/native launches:28/19/25.
+Build-Local attempts/validated development packages/native launches:29/19/25.
 Latest cc wrappers279.810s(Satyr)/269.268s(Lillend); native114.782s/109.281s.
 After both transactions free4,158,525,440bytes; recheck before staging.
 Current focused compile27s/tests1s; earlier measured subsets stay in history.
