@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
+using Kingmaker.Blueprints.Root;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -55,7 +56,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while (DateTime.UtcNow < deadline && (owner.View == null || !EntityFadedIn(owner) ||
                     DissolveAmount(owner) > MotionReviewIntactDissolve || !owner.Descriptor.State.CanAct))
                 {
-                    _sprint25WaitingForUnityAppearance = EntityFadedIn(owner);
+                    // Keep native buff/action pulses until gameplay appearance
+                    // is ready. Unity-only settling is for the final dissolve.
+                    _sprint25WaitingForUnityAppearance = EntityFadedIn(owner) && owner.Descriptor.State.CanAct &&
+                        owner.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null;
                     Game.Instance.IsPaused = false; yield return 0;
                 }
                 if (owner.View == null) throw new InvalidOperationException("Sprint32 body view absent.");

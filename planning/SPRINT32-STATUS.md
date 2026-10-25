@@ -140,7 +140,7 @@ extractions, retaining exact ZIPs/evidence/receipts/backups/saves. Recovered
 Local selection/script `artifacts/sprint32-intake/*s29-review-margin*`.
 Recheck headroom before each build/staging selection.
 
-Build-Local attempts/validated development packages/native launches:29/19/25.
+Build-Local attempts/validated development packages/native launches:30/20/25.
 Latest cc wrappers279.810s(Satyr)/269.268s(Lillend); native114.782s/109.281s.
 After both transactions free4,158,525,440bytes; recheck before staging.
 Current focused compile27s/tests1s; earlier measured subsets stay in history.
@@ -154,6 +154,13 @@ selection over the existing fixture. Full summoning focused check PASS557/2753,
 production compile24.4s/domain22.6s. Admission script PASS1148 in isolation; its
 first execution correctly detected concurrent compilation and remains FAIL,
 classified as orchestration interference, with no guard changes.
+Package c6d425e8 PASS557 selected/full wrappers/strict package, but NOT_DISPATCHED:
+independent batch review identified two P2 fixture risks. Corrected Unity-only
+appearance waiting to preserve native gameplay pulses until ready; corrected
+lifecycle to capture the exact external CourageRecipient on a surviving owned
+caster, one emitter at a time. Fresh correction compile23.5s/test1s PASS5.
+No additional concrete batch-review blocker; full final review remains pending.
+Exact package tuple and original findings retained in history.
 
 Next selection: commit/package this coherent development batch once, then run
 standalone satyr-routes, lillend-routes and support-lifecycle as three fresh

@@ -86,8 +86,10 @@ This adds no save access or arbitrary caster/case input.
 Sprint32 fixed `support-lifecycle` selects exactly two Satyrs and two Lillends
 through the existing source-lifecycle fixture. Native Lillend toggles are
 explicitly requested ON as lifecycle preconditions; normal controllers must
-produce distinct source areas/grants before testing. Separated emitters avoid
-replacing identical grants. This is not activation/action/AI evidence. Actual
+produce the exact CourageRecipient on the surviving owned fixture caster. Only
+one Lillend emits at a time: owner expiry is verified before sibling activation
+and fresh area/recipient-reference capture for death. Self/carrier buffs cannot
+substitute for external-recipient cleanup. This is not activation/action/AI evidence. Actual
 native scheduler expiry, independent siblings, native death, subsequent expiry,
 nonloot equipment, body resources, source areas/grants and exact inventory reset
 are observed. The established owned-buff deadline helper is disclosed; it does
