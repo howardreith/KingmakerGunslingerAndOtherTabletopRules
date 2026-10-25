@@ -130,6 +130,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             PteranodonAssetRuntime.TryGetGiantWaspVisual(out mesh, out bones, out paint); add(mesh, "GiantWasp.Mesh"); add(paint, "GiantWasp.Albedo");
             PteranodonAssetRuntime.TryGetStirgeVisual(out mesh, out bones, out paint); add(mesh, "Stirge.Mesh"); add(paint, "Stirge.Albedo");
             PteranodonAssetRuntime.TryGetAnkylosaurusVisual(out mesh, out bones, out paint, out status); add(mesh, "Ankylosaurus.Mesh"); add(paint, "Ankylosaurus.Albedo");
+            // The three outsider originals have dedicated process caches,
+            // not entries in the older family dictionaries below. Query their
+            // actual immutable references; names/count stability alone are not
+            // ownership proof. These getters do not load or create Unity assets.
+            PteranodonAssetRuntime.TryGetLemureVisual(out mesh, out bones, out paint, out status); add(mesh, "Lemure.Mesh"); add(paint, "Lemure.Albedo");
+            PteranodonAssetRuntime.TryGetDretchVisual(out mesh, out bones, out paint, out status); add(mesh, "Dretch.Mesh"); add(paint, "Dretch.Albedo");
+            PteranodonAssetRuntime.TryGetHoundArchonVisual(out mesh, out bones, out paint, out status); add(mesh, "HoundArchon.Mesh"); add(paint, "HoundArchon.Albedo");
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||
@@ -250,7 +257,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (receipt.Key == "lantern-archon" || receipt.Key == "trumpet-archon")
                 foreach (var value in Sprints3031PrivateResources(unit, receipt.Key))
                     add(value, "S30/31 exact private visual owner",
-                        receipt.Key == "lantern-archon" ? "LanternArchonOrbView" : "Trumpet31InstrumentView",
+                        receipt.Key == "lantern-archon" ? "LanternArchonOrbView" : "TrumpetArchonInstrumentView",
                         true, false, true, () => !unit.Destroyed && unit.View != null &&
                             Sprints3031PrivateResources(unit, receipt.Key).Any(item => ReferenceEquals(item, value)));
             // Sprints 18 and 19 attach through this seam - both apes, the
