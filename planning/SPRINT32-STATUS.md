@@ -49,6 +49,19 @@ count/offset failures remain in the earlier log. All7,437 previous manifest
 entries are unchanged;14 private identities append. Evidence:
 `artifacts/sprint32-intake/satyr-adult-melee-fixture.log` and
 `satyr-adult-related-domain-corrected.log`. Native proof of this batch is pending.
+The selected d49e76dc candidate passed its complete offline wrapper, exact
+compile,2 selected tests and strict package validation, then the added metadata
+reader failed before gameplay: `RequireExact` was incorrectly given a base type.
+This observer defect is corrected with the six observed concrete types. Research
+failure will remain FAIL while allowing independent gameplay cases to execute.
+Source `d49e76dcb0c34b00c4bd26830a763f6e6df152a9`; purpose`sprint32-satyr-control`;
+ZIP SHA256`fd1cec4108af8a3dd6454a13b3a1f62f888b8c9504cb324c63149798a0d52124`;
+DLL`168239ee43f6df82e9e1372afe67dd668bb0f65adad96bff8367fa0177434dc8`;
+MVID`fd8a5c47-886a-4b79-918d-3ab17b360ad0`. Original run
+`20261025T1817496513281Z-4a5770cedb3849a9b61b6d1e21b4f000` remains FAIL,
+resultSHA`2510aba5a0615aa2d45e5b63496203ce6dd9d133d96c7c69dcbb79e7777c9932`.
+Wrapper/failure log: `artifacts/sprint32-control-d49e76dc/`; preserved Unity log
+SHA`61efdf851166d78af9ca2e0f5bdd9421338132794fffe39fc56816b12eb8ca45`.
 
 Lillend has outsider7/HP73, private native spontaneous bard7 slots5/4/2,
 Cure Light/Serious,20 owned native performance rounds, Courage+2, normal melee
@@ -124,8 +137,8 @@ Current Satyr review found no static dispatch blocker; its concrete melee/full-
 attack coverage limits caused the bounded added case/plan observations above.
 Full coherent final product/rules/coverage/evidence review remains pending.
 
-Latest runtime transaction`compat-20261025T173647Z-2aef333cbcf8` restored/verified
-at17:41:23UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
+Latest runtime transaction`compat-20261025T181527Z-3473c825afd3` restored/verified
+at18:19:39UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
 tasks0/one unchangedSteam process. No owned live transaction/game remains.
 
 Required free space: measured1.1GB combined build/extraction/staging/restoration
@@ -138,9 +151,9 @@ Protected Compare PASS; unique ZIPs/raw evidence/original failures/receipts/
 backups and saves retained. Prior cleanup receipts remain in history and
 `artifacts/sprint32-intake/`. Recheck before package/dispatch.
 
-Build-Local attempts/validated development packages/native launches:15/8/8
+Build-Local attempts/validated development packages/native launches:16/9/9
 before the next selected candidate. Native setup/execution/restoration times:
-255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85seconds.
+255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32seconds.
 Lillend482 native109.797seconds; full wrapper276.85seconds. Complete historical
 active-time category totals are unavailable. Current work retains timestamped
 compile/test/build/wrapper logs; do not infer throughput from unlike sprints.
