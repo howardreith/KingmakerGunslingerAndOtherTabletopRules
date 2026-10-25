@@ -1,11 +1,20 @@
-# v0.0.167 rules review and model refinement — CHECKPOINT FOR OWNER REVIEW
+# v0.0.168 Sprints 30-31 follow-up — RELEASE AUTHORIZED
 
-The owner's October 25 review of released v0.0.167 found two source-level
-rules defects and requested a model refinement pass. Branch
+The owner's October 25 reviews of released v0.0.167 found three rules defects
+and asked for model refinement and a fixed Hound sword grip, then authorized
+finalization, merge and release of v0.0.168 without another approval. Branch
 `codex/s30-31-rules-and-model-refinement`, worktree
 `C:/Dev/KingmakerGunslingerLab/worktrees/s30-31-rules-model-refinement`, lab
-machine DATA, base master `48e6fb4abf`. No release is authorized or prepared.
-Full record: [review follow-up](docs/SPRINT30-31-REVIEW-FOLLOWUP.md).
+machine DATA, base master `48e6fb4abf`. Full record:
+[review follow-up](docs/SPRINT30-31-REVIEW-FOLLOWUP.md); notes:
+[v0.0.168](docs/RELEASE-NOTES-0.0.168.md).
+
+- **R3 fixed:** the Astral aura is a lesser globe through the native effect
+  dispatch and persistent-area membership, not spell resistance; native
+  astral-core PASS 13/13. The native Movanic Deva aura implements no globe.
+- **Grip fixed:** measured in game; hound-armed 9/9, hound-disarm 12/12.
+
+Earlier checkpoint summary (same branch):
 
 - **R1 fixed:** Trumpet grants the native Airborne fact; native
   defense-consumers PASS 51/51 (KMG-only).
@@ -17,10 +26,7 @@ Full record: [review follow-up](docs/SPRINT30-31-REVIEW-FOLLOWUP.md).
 - **Classified, retained failures:** the full-stack defense reset (Call of the
   Wild) and the creature-review motion check (accessory renderer); both
   reproduce on unchanged master.
-- **Open:** owner aesthetic review; the Hound sword grip (proposed measured
-  offset, not implemented); the Astral globe SR=no question (not
-  investigated); cold-load, public routes, final integration and any release
-  validator/candidate (not run).
+- **Not run for v0.0.168:** cold-load, public routes and final integration.
 
 v0.0.167's released records below stay as published.
 
