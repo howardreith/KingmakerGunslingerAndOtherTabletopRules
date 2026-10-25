@@ -39,8 +39,8 @@ quantity adapters, summon lifecycle and accepted flight adaptation.
 
 ## Finite acceptance table
 
-All rows are NOT_RUN. Proposed routes below identify existing mechanisms to
-reuse; Sprint 32 case admission/implementation is not yet present or proved.
+All final acceptance rows are NOT_RUN. The hidden early-control slice and its
+bounded native admission are implemented; native gameplay remains unproved.
 
 | ID | Observable result | Route and evidence | Mode/profile | Invalidated by |
 |---|---|---|---|---|
@@ -95,9 +95,9 @@ verification. The provider is absent from the current human Mods intake.
 Storage: initial approximately 307-311 MB was insufficient; verified duplicate
 cleanup recovered 3,511,693,023 bytes. Before native dispatch, the actual ZIP was
 63,058,159 bytes / 98,188,734 expanded bytes and free space was 3,382,882,304.
-After the closed/restored native transaction, free space is 3,076,726,784 bytes.
-Re-establish the declared peak-plus-margin allowance before another package or
-native dispatch through verified duplicates only; unique artifacts remain.
+A second verified closed-transaction cleanup recovered 1,344,249,872 bytes.
+Free space before the next package was 4,333,584,384 bytes, above the measured
+1.1 GB combined peak allowance plus 2 GB working margin. Unique artifacts remain.
 No owned live transaction, game process or KMG task remains. Exact protected
 intake Compare PASS after the native audit: Mods967, saves118, references18,
 settings83, tasks0, one unchanged Steam process.
@@ -111,7 +111,7 @@ The prior owner acceptance is not a Sprint 32 waiver. Original dispositions:
 
 Intake: refreshed master, created isolated review worktree, read current policy
 and relevant charter, identified stale active pointers and S30–31 build gates.
-Build-Local attempts/packages/native launches: 3/1/1. A separate focused
+Build-Local attempts/packages/native launches: 4/1/1. A separate focused
 production compilation passed. Native task including staging and restoration:
 255.68 seconds. Accumulated active work-category times are not yet available;
 retain timestamped logs rather than infer throughput.
@@ -275,3 +275,11 @@ metadata defect, not native gameplay failure. Updated that existing current
 hash only after verifying all7,372 prior ledger entries form the exact unchanged
 prefix; 29 entries are appended. Historical published hash retained. Focused
 icon-catalog validator PASS; original build failure retained. No new native run.
+
+The 5b22acb3 package attempt also stopped before compilation/package: one icon
+corruption fixture hardcoded the entire Sprint31 manifest hash. Replanned after
+two icon admission failures: the fixture now checks exact current manifest bytes
+and rejects the stale released hash; protected asset checks remain. Focused
+validator PASS, catalog corruption30 PASS (15.31s), runtime evidence6 PASS and
+native screenshot reader25 PASS. Original failures remain. This correction
+changes tooling only and does not create gameplay evidence.

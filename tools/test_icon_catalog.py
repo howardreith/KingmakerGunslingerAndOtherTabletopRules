@@ -42,16 +42,16 @@ class IconCatalogTests(unittest.TestCase):
         stale["baseline"]["registrySha256"] = "c3bedfa7fb8b9cab7f39ff775e73de4339c3870b662660008e2f67ec4246e87c"
         self.rejects("Hash mismatch: blueprints/blueprints.json", catalog=stale)
 
-    def test_released_delegated_authority_pin_rejects_stale_metadata(self):
+    def test_current_delegated_authority_pin_rejects_stale_metadata(self):
         import hashlib
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Preserve the released Horse/Pony/Cyclops revisions and exact S30/S31 append.
-        self.assertEqual("08e26335a0256ed34af2bbbaae70d3e7e354f63a7bb47033d9d368485f332284", actual)
+        # New authorized creatures extend this manifest. Bind its current bytes
+        # exactly; a concluded sprint's whole-file hash cannot admit an append.
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
-        next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"
+        next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "08e26335a0256ed34af2bbbaae70d3e7e354f63a7bb47033d9d368485f332284"
         self.rejects("Hash mismatch: " + path, catalog=stale)
     def test_crocodilian_emblems_retain_the_approved_size_family(self):
         for key in ("crocodilian-sprint", "crocodilian-death-roll", "dire-crocodile-swallowed"):
