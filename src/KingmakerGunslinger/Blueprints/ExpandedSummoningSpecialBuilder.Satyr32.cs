@@ -70,7 +70,8 @@ namespace KingmakerGunslinger.Blueprints
                     "DR5/cold iron. Fear once per summoning at caster level8, Charisma-based DC. No pipes or nested summoning."), null);
             unit.AddFacts = new BlueprintUnitFact[] {
                 Feature(library, "018af8005220ac94a9a4f47b3e9c2b4e", "fey type"),
-                Feature(library, "7661741dbb9604842a642457456fd0e4", "natural armor5"),
+                BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
+                    "7661741dbb9604842a642457456fd0e4", "captured native natural armor5 fact"),
                 Feature(library, "90e54424d682d104ab36436bd527af09", "Weapon Finesse"),
                 Feature(library, "97e216dbb46ae3c4faef90cf6bbe6fd5", "Dodge"),
                 Feature(library, "a3a24fe738fc836479d6f4e9a8b84bc4", "DR5/cold iron"),
