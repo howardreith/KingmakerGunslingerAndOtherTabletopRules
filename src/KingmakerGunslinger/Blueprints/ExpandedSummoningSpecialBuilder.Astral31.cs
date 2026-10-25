@@ -753,7 +753,7 @@ namespace KingmakerGunslinger.Blueprints
                     "+4 deflection AC and +4 resistance saves against evil sources. " +
                     (circleControl ? "Like the deva's Magic Circle against Evil, the 20-foot aura prevents new charm, domination, and similar effects that would place a covered creature under the control of an evil creature. " +
                         Spells.ProtectionFromAlignment.ProtectionFromAlignmentDescriptions.ExistingControlLimitation + " " : "") +
-                    "Level 0-3 spells and SLAs cast from outside this deva's 20-foot aura cannot affect this creature."), null);
+                    "Like a lesser globe of invulnerability, level 0-3 spells and spell-like abilities cast from outside this deva's 20-foot aura cannot affect this creature, whether or not they allow spell resistance, and their areas exclude it."), null);
         }
     }
 }

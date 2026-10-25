@@ -249,7 +249,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             nativeSword = swordView != null && swordView.isActiveAndEnabled && swordView.LateUpdates > 0 &&
                                 swordView.ObservedEquipmentSet == owner.Body.CurrentHandEquipmentSetIndex &&
                                 swordView.ObservedWeaponGuid == main.Blueprint.AssetGuid && swordView.Model != null &&
-                                swordView.Model.activeSelf == !natural && swordView.Model.GetComponentsInChildren<Renderer>(true).Any();
+                                swordView.Model.activeSelf == !natural && swordView.Model.GetComponentsInChildren<Renderer>(true).Any() &&
+                                (swordView.Model.transform.localPosition - HoundArchonSwordView.GripPosition).sqrMagnitude < 1e-8f &&
+                                Quaternion.Angle(swordView.Model.transform.localRotation, HoundArchonSwordView.GripRotation) < 0.01f;
                             if (nativeSword) break;
                             // This observer's native clock can process the switch within
                             // one Unity Update. Observe the actual per-view LateUpdate;
@@ -270,7 +272,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["parent"] = swordView?.Model?.transform.parent?.name,
                         ["nativeCharacterAvatarPresent"] = owner.View.GetComponent<Kingmaker.Visual.CharacterSystem.Character>() != null,
                         ["grip"] = Hound30GripObservation(owner.View.transform, swordView) },
-                        "The exact owned native sword model follows the measured palm only while that weapon is equipped; natural mode hides it.");
+                        "The exact owned native sword model follows the measured palm grip only while that weapon is equipped; natural mode hides it.");
                     if (!nativeSword) throw new InvalidOperationException("Hound owned weapon model/mode mismatch.");
                     privateResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
                     var observer = new Sprint24AttackObserver { Owner = owner, Target = target };
