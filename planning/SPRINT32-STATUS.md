@@ -30,6 +30,9 @@ No general bard/performance, flight/navigation, AI or summoning-feat expansion.
   Custom Spells** and omitted when absent; source inspection/cloning authorized.
   Its actual fixed avoid-combat/fascinate-until-harmed behavior is used, with
   minutes/level, Will and SR. It is not unrestricted tabletop instructions.
+- Owner explicitly authorized omitting Lillend's printed Darkness SLA after
+  disclosure of the missing illumination/vision subsystem. No lighting subsystem
+  or substitute fog effect is included; the three-per-day ability remains absent.
 - Only guarded Steam640820 transactions; immutable baseline save, protected
   current human installation/saves/settings/references. Exact fresh intake and
   restoration. Frozen source/package for native work; records worktree at final
@@ -69,37 +72,31 @@ types and fixture assumptions before12d launch. The35f184d0 precompile refusal
 native gameplay failures. Current Lillend compile PASS; related domain554 tests
 initially exposed stale current roster/proxy declarations, now corrected. The
 previous553 passing assertions are retained; the affected proxy test rerun PASS.
-No Lillend runtime or final qualification claim follows from these offline checks.
+Those offline checks alone established no native or final qualification.
 
-Current candidate `2e1ffcf25c6d2b2f254dae7e94d03266554f3cc7`, purpose
-`sprint32-lillend-support`, retained0.0.167. Complete wrapper, selected hidden
-route, exact compilation and strict417-file package PASS. Related554-test
-execution on7e16 is reviewed reuse, not fresh execution of2e1.
-ZIP SHA256 `f970c747950ee72aceefa12ca1d124c02ff1bbde65de14931db5fda351d983af`;
-DLL `5a8dc64a07676915a58984a2997aa9a542813d53837153e83c5c44fe55375aab`;
-MVID `aaa0dd1d-5263-432a-950a-e47e3028b391`.
-Native `20261025T1721428986869Z-0964fdd65f634f98bec28cc1eb2b90c1` **FAIL**:
-4/6 assertions pass, including native7CL/slots5/4/2/rounds20 and restoration.
-Courage did run, charge one Move/round20->19, grant ally+2 and exclude enemy;
-this is useful partial product evidence, not a passed activation contract.
-Healing/fallback stages were NOT_RUN after Courage failed.
-Independent review found the product adapter replaced the original AI command:
-native `IsActivateWithSameCommand` recognizes Judgment only, even for the same
-bard toggle. Earlier assumption that queued identity alone prevents replacement
-was wrong. Frame snapshots missed the original command and the replacement lost
-AI provenance. No weakened predicate or reader-only relabeling is accepted.
-Correction: same-instance native compatibility postfix limited to the exact
-private Lillend Traits owner/Courage; every other result unchanged. Review of
-all five native callsites found no free-command-credit/cancellation expansion.
-Fixture now retains native command-start events and requires one original AI
-activation with exact performance identity, action debit and ally effects.
-Fresh execution is required. Original7e/8af startup failures,124-case native
-managed flag check and their exact candidate identities remain in history.
+Current early support PASS candidate `4827296ea941906bee3c1d715491c01c72747bc9`,
+purpose `sprint32-lillend-support`, retained0.0.167. Complete wrapper, selected
+hidden route, exact compilation and strict417-file package PASS. Related554-test
+execution on7e16 is reviewed reuse, not fresh execution of482.
+ZIP SHA256 `ddbf6b71b7d3fa312f164f4e0bfb57237a82bc14a9c5c67ec2d0b7075c4b1303`;
+DLL `0114b3d2cbdf13b4aa327707c379fd7c740ed590cbe202564ca339c698bae88f`;
+MVID `11946561-f273-412a-8128-a0db99df8fdd`.
+Native `20261025T1739131530378Z-ccd48e42bfa1400cb6797bf881c8e092` **PASS7/7**:
+CL7/slots5/4/2/rounds20; one original AI Courage command/Move/round20->19;
+owned ally+2 and enemy exclusion; natural Cure Serious heals18 damage to0 with
+one Standard action/ownL3 slot2->1; healthy/running-performance refusal produces
+a normal full attack, two weapon events and one native action cost. Sibling
+slots2/rounds20 remain unchanged. No fixture casts/attacks/debits/forced rolls.
+The exact private same-instance performance guard corrected the demonstrated
+native command replacement. Independent read-only review found P1/P2 addressed
+in the actual482 diff; native command-start evidence confirms one original AI
+activation. Sustained-round consumption, turn-based, lifecycle and final body
+remain separate acceptance work. Original7e/8af/2e FAIL results are retained.
 
 ## Finite acceptance table
 
 Final rows remain incomplete. A3 has the early RTWP execution above; A4 has
-partial Courage observations with a failed activation contract. Other final
+the early natural support/fallback PASS above. Other final
 gameplay/visual/persistence/integration coverage remains NOT_RUN.
 
 | ID | Observable result | Route and evidence | Mode/profile | Invalidated by |
@@ -169,12 +166,12 @@ Additional four closed Sprint32 extraction duplicates recovered393,168,768bytes;
 all exact packages/failure logs/receipts retained. Cleanup plan SHA256
 `0839095c060c231715170b7d0b41123f564b7ec0d97c3e0b92224fd64f1962ab`;
 protected Compare PASS. Free after cleanup3,690,156,032bytes. Free space
-before12d dispatch3,311,755,264bytes; required allowance 1.1 GB peak plus 2 GB margin.
+before482 dispatch3,349,237,760bytes; after restoration3,139,276,800bytes; required allowance 1.1 GB peak plus 2 GB margin.
 Recheck before next package/dispatch. A full extra checkout measures 1,019,350,022
 bytes, so do not casually duplicate it; final records-only checkout can be bounded.
 
-Build attempts/validated development packages/native launches:13/7/7.
-Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 +233.46 +289.04 seconds. Full active-time
+Build attempts/validated development packages/native launches:14/8/8.
+Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 +233.46 +289.04 +276.85 seconds. Full active-time
 category totals unavailable; retain timestamps, do not infer throughput.
 Repeated blockers were old admission/count assumptions, now exercised through
 actual offline/package checks. The corrected registration assumptions are closed by12d natural gameplay PASS.
@@ -192,31 +189,20 @@ are explicitly outside this first-debit probe and remain final acceptance work.
 Icon catalog30/30 and canonical137-source/export validation PASS; all136 prior
 rows remain identical. Production compile and corrected hidden/proxy test PASS.
 
-Latest raw evidence folder `20261025T1721428206203Z-disposable-expanded-summoning-sprint32-native-review`;
-result SHA256 `edc2f805e06f81476b1c3a4cdff3fdcfb7e9840a73651dbeb029afc6cc30b68b`.
-Original Unity log retained under `artifacts/sprint32-lillend-2e1ffcf2/`, SHA256
-`63f9752df16a23dbddd711b9fdfb29437a75adc0c4f67d80df718affd46915bd`.
-Transaction `compat-20261025T171922Z-3df2d2c516bb` Restored/verified17:24:10UTC;
+Latest raw evidence folder `20261025T1739131217766Z-disposable-expanded-summoning-sprint32-native-review`;
+result SHA256 `ffca6995724f9cb68349c1c39e27e878d58ad321d37a6a5c092bb75df7517708`.
+Wrapper/current-intake/profile receipts: `artifacts/sprint32-lillend-4827296e/`.
+Transaction `compat-20261025T173647Z-2aef333cbcf8` Restored/verified17:41:23UTC;
 protected Compare PASS967mods/118saves/18refs/83settings/0tasks/unchangedSteam.
-No owned live transaction/game remains. Native128.432s, transaction289.04s.
+No owned live transaction/game remains. Native109.797s, transaction276.85s.
 Six further closed S29 duplicate extractions recovered503,971,440bytes;
 plan SHA256 `d165d9a36f49373d2e0bd808e9d492f1617b07a5f50a58088cf8844eea4d6a48`.
 Exact ZIP/receipts/failures/backups retained, protected Compare PASS; free3,498,569,728.
 
-Pending owner decision: Lillend Darkness has no established native/mod mapping.
-The prior83,023-blueprint native audit contains no Darkness spell; native engine
-lacks mechanical illumination grades and the accepted Shadow Blend adaptation
-is a bounded day/night/Daylight rule. PF1 Darkness needs light-level/vision-aware
-concealment and light interaction, not fog. Asked owner whether to authorize a
-bounded summon-owned darkness subsystem with caster-carried-object adaptation
-(estimated12-30 active hours, substantial uncertainty) or explicitly omit it.
-A1/A4 Darkness remains pending; no implementation or silent omission. Other
-mechanics continue. Countersong/Suggestion decisions remain unchanged.
-
-Next: package the compiled/route-tested command correction once and rerun the
-bounded Lillend support phase. Full final
-product/rules/coverage review remains pending. Current replan produced a concrete
-native-command contract correction, not another unchanged retry.
+Next: complete bounded adult attacks/feats and supported spell families,
+conditional Suggestion adapter, and original Lillend body; batch uncertain native
+graph observations with affected product proof. No owner decision is pending.
+The full independent final product/rules/coverage review remains pending.
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all 30 public-route/body/icon,
 standalone final integration, highest-risk combined final integration. Their
 [original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
