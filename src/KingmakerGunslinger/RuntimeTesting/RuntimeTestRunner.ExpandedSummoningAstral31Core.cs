@@ -893,10 +893,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             var data = granted == null ? new AbilityData(ability, source.Descriptor) :
                 new AbilityData(granted);
             // As AbilityExecutionProcess prepares a cast: native SpawnFxs
-            // reads this list for every applied effect.
+            // reads this list for every applied effect, and PrepareCast
+            // computes ranks and shared values (damage dice, durations). Its
+            // RecalculateAbilityParams step is skipped so the probe keeps its
+            // explicit caster and spell levels.
             var context = new AbilityExecutionContext(data, new AbilityParams {
                 CasterLevel = casterLevel, SpellLevel = spellLevel }, target, null);
             context.FxSpawners = ability.GetComponents<AbilitySpawnFx>().ToList();
+            context.RecalculateRanks();
+            context.RecalculateSharedValues();
             return context;
         }
 
