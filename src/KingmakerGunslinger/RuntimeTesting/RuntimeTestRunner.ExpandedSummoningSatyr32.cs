@@ -116,7 +116,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["canAct"] = owner.Descriptor.State.CanAct, ["aiEnabled"] = owner.IsAIEnabled,
                     ["distanceMeters"] = owner.DistanceTo(target), ["weaponRangeFeet"] = weapon?.AttackRange.Value,
                     ["eligibility"] = score, ["targetFearImmune"] = target.Descriptor.State.HasConditionImmunity(UnitCondition.Frightened),
-                    ["controlEligibility"] = JObject.FromObject(controlScores), ["targetMindImmune"] = mindImmunity != null,
+                    // Native JSON defaults encode dictionaries as arrays. Build
+                    // this receipt object explicitly; no default converter.
+                    ["controlEligibility"] = new JObject(controlScores.Select(pair =>
+                        new JProperty(pair.Key, pair.Value))), ["targetMindImmune"] = mindImmunity != null,
                     ["fearUses"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                     ["fixtureWillBase"] = -100, ["fixtureAcBase"] = -100,
                     ["fixtureResourceDebits"] = 0, ["protectedPartyOutside"] = protectedClear },
