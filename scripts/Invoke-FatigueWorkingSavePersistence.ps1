@@ -1,4 +1,4 @@
-﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [string]$ExpectedVersion = '0.0.126',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
@@ -53,8 +53,9 @@ function Wait-ForGuardedKingmakerExit([string]$phase) {
 
 if (-not $ReuseInstalledArtifact) {
     & $build
-    $PackagePath = Join-Path $root (
-        "artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip")
+    $PackagePath = (Get-KmgLocalCandidateLayout -RepositoryRoot $root `
+            -Commit ((& git -C $root rev-parse HEAD).Trim()) `
+            -Id 'KingmakerGunslinger' -Version $ExpectedVersion).PackagePath
     if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
         throw "Build-Local did not produce the expected package: $PackagePath"
     }

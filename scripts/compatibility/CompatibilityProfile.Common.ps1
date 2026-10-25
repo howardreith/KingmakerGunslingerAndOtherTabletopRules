@@ -1,5 +1,7 @@
 Set-StrictMode -Version Latest
 
+. (Join-Path $PSScriptRoot '..\common.ps1')
+
 function Get-KmgCompatibilityRepositoryRoot {
     return (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 }
@@ -150,7 +152,9 @@ function Get-KmgCompatibilityPackageVersion([string]$PackagePath) {
 
 function Get-KmgCompatibilityDefaultPackage([string]$RepositoryRoot) {
     $version = [string](Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'Info.json')).Version
-    return Join-Path $RepositoryRoot ("artifacts\local-runtime\{0}\KingmakerGunslinger-{0}-local-runtime.zip" -f $version)
+    return (Get-KmgLocalCandidateLayout -RepositoryRoot $RepositoryRoot `
+        -Commit ((& git -C $RepositoryRoot rev-parse HEAD).Trim()) `
+        -Id 'KingmakerGunslinger' -Version $version).PackagePath
 }
 
 function Resolve-KmgCompatibilityProfile {

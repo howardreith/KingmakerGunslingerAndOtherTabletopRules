@@ -63,3 +63,24 @@ function Get-KmgSha256 {
 
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
+
+# One layout for the builder and its build-then-consume callers. Explicit older
+# packages still use their original manifests; this selects only new candidates.
+function Get-KmgLocalCandidateLayout {
+    param(
+        [Parameter(Mandatory = $true)][string]$RepositoryRoot,
+        [Parameter(Mandatory = $true)][string]$Commit,
+        [Parameter(Mandatory = $true)][string]$Id,
+        [Parameter(Mandatory = $true)][string]$Version
+    )
+    if ($Commit -cnotmatch '^[0-9a-f]{40}$' -or
+        $Id -cne 'KingmakerGunslinger' -or
+        $Version -cnotmatch '^[0-9]+\.[0-9]+\.[0-9]+$') {
+        throw 'Candidate layout requires an exact commit, mod ID and version.'
+    }
+    $root = Join-Path $RepositoryRoot ("artifacts\local-runtime\$Version\" + $Commit.Substring(0, 12))
+    return [pscustomobject]@{
+        Root = $root
+        PackagePath = Join-Path $root "$Id-$Version-local-runtime.zip"
+    }
+}

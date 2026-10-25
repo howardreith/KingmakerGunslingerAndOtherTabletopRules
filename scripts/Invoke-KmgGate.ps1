@@ -41,6 +41,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
+. (Join-Path $PSScriptRoot 'common.ps1')
 
 $root = Split-Path -Parent $PSScriptRoot
 if (-not $TimingPath) { $TimingPath = Join-Path $root 'artifacts\gate-timings.jsonl' }
@@ -120,9 +121,8 @@ if ($Level -eq 'Focused') {
             # was validated. The gate's own success requires the exact receipt.
             $info = Get-Content -LiteralPath (Join-Path $root 'Info.json') -Raw |
                 ConvertFrom-Json
-            $package = Join-Path $root (
-                'artifacts\local-runtime\' + $info.Version + '\' +
-                $info.Id + '-' + $info.Version + '-local-runtime.zip')
+            $package = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $commit `
+                -Id $info.Id -Version $info.Version).PackagePath
             $manifestPath = $package + '.build-local.json'
             if (-not (Test-Path -LiteralPath $package -PathType Leaf) -or
                 -not (Test-Path -LiteralPath $manifestPath -PathType Leaf)) {

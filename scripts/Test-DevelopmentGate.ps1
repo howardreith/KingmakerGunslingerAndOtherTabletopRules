@@ -72,7 +72,8 @@ param($ReferenceBundleDir,$MSBuildPath,$KingmakerInstallDir,[switch]$SkipDomainT
 @{event='candidate';skipDomainTests=[bool]$SkipDomainTests;filter=$env:KMG_TEST_FILTER} | ConvertTo-Json -Compress | Add-Content $env:KMG_GATE_FIXTURE_TRACE
 $root = Split-Path -Parent $PSScriptRoot
 $output = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
-$package = Join-Path $root 'artifacts\local-runtime\0.0.150\KingmakerGunslinger-0.0.150-local-runtime.zip'
+. (Join-Path $PSScriptRoot 'common.ps1')
+$package = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit ((& git -C $root rev-parse HEAD).Trim()) -Id 'KingmakerGunslinger' -Version '0.0.150').PackagePath
 New-Item -ItemType Directory -Path $output,(Split-Path $package) -Force | Out-Null
 'fixture DLL' | Set-Content (Join-Path $output 'KingmakerGunslinger.dll')
 'fixture package' | Set-Content $package
@@ -118,7 +119,20 @@ if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.15
     if (-not $missingManifestRefused -or $env:KMG_TEST_FILTER -cne 'prior') {
         throw 'Full gate accepted an unreceipted package or leaked its filter.'
     }
-    Write-Host 'Development gate: PASS=9 FAIL=0; observed production/test children, publisher reuse/filter isolation and package output guards. Offline orchestration only.'
+    # A validated package at the exact shared layout must be consumed by the
+    # actual Sprint gate; a mismatched receipt must still be rejected.
+    . (Join-Path $fixtureScripts 'common.ps1')
+    $head = (& git -C $boundary rev-parse HEAD).Trim()
+    $candidatePath = (Get-KmgLocalCandidateLayout -RepositoryRoot $boundary -Commit $head -Id 'KingmakerGunslinger' -Version '0.0.150').PackagePath
+    $receipt = @{commit=$head;version='0.0.150';validated=$true;packagePath=$candidatePath;packageSha256=(Get-FileHash $candidatePath -Algorithm SHA256).Hash.ToLowerInvariant()}
+    $receipt | ConvertTo-Json | Set-Content ($candidatePath + '.build-local.json')
+    & $gate -Level Sprint -MSBuildPath $compiler
+    $receipt.commit = 'b' * 40
+    $receipt | ConvertTo-Json | Set-Content ($candidatePath + '.build-local.json')
+    $staleRefused = $false
+    try { & $gate -Level Sprint -MSBuildPath $compiler } catch { $staleRefused = $_.Exception.Message -like '*receipt does not match*' }
+    if (-not $staleRefused) { throw 'Full gate accepted a stale candidate receipt.' }
+    Write-Host 'Development gate: PASS=11 FAIL=0; observed production/test children, publisher reuse/filter isolation and package output guards. Offline orchestration only.'
 } finally {
     $env:KMG_GATE_FIXTURE_TRACE = $oldTrace
     $env:KMG_TEST_FILTER = $oldFilter

@@ -207,9 +207,9 @@ try {
             elseif ($first) {
                 # Capture what the deploying run produced so later scenarios can
                 # name it exactly; the harness refuses a vague reuse.
-                $candidate = Join-Path $repositoryRoot (
-                    "artifacts\local-runtime\$ExpectedVersion\" +
-                    "KingmakerGunslinger-$ExpectedVersion-local-runtime.zip")
+                $candidate = (Get-KmgLocalCandidateLayout -RepositoryRoot $repositoryRoot `
+            -Commit ((& git -C $repositoryRoot rev-parse HEAD).Trim()) `
+            -Id 'KingmakerGunslinger' -Version $ExpectedVersion).PackagePath
                 if (Test-Path -LiteralPath $candidate -PathType Leaf) {
                     $reusePackage = $candidate
                 }
