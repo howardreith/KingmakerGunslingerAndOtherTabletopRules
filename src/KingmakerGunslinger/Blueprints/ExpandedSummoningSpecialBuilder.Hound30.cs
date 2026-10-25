@@ -19,6 +19,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using KingmakerGunslinger.Spells.ProtectionFromAlignment;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -158,6 +159,23 @@ namespace KingmakerGunslinger.Blueprints
             astralProtectiveGrant.CasterLevel = 15;
             astralTraits.ComponentsArray = astralTraits.ComponentsArray.Concat(
                 new BlueprintComponent[] { astralGrant, astralProtectiveGrant }).ToArray();
+            // PF1 Protective Aura functions as Magic Circle against Evil with a
+            // 20-foot radius. The canonical 10-foot circle above stays bound, and
+            // the angel's own 20-foot recipient also carries the canonical
+            // recipient's configured control protection, cloned here so the
+            // startup choice and fixes to that shared component carry through.
+            // Its +2 typed defenses are not copied: the aura's +4 supersedes them.
+            // Normal, Hound and Trumpet circles keep their 10-foot reach.
+            var astralRecipient = Require<BlueprintBuff>(summoning.BySymbol,
+                Astral31Prefix + "ProtectiveRecipient");
+            if (astralRecipient.GetComponents<ProtectionFromAlignmentControlImmunityComponent>().Any())
+                throw new InvalidOperationException("Astral aura circle protection was bound twice.");
+            var circleControl = circle.Recipient.GetComponents<ProtectionFromAlignmentControlImmunityComponent>()
+                .Select(value => ExpandedSummoningAbilityBuilder.DeepCloneComponent(value)).ToArray();
+            for (int index = 0; index < circleControl.Length; index++)
+                circleControl[index].name = "$KMG_S3031_AstralAuraCircleControl_" + index;
+            astralRecipient.ComponentsArray = astralRecipient.ComponentsArray.Concat(circleControl).ToArray();
+            ConfigureAstralProtectiveRecipientText(astralRecipient, circleControl.Length != 0);
             // Native Fact.PostLoad restores by unique component name, including
             // the exact applied carrier references. These three new private
             // features have never shipped; name their previously unnamed logic
