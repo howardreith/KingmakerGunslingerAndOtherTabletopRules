@@ -111,7 +111,7 @@ The prior owner acceptance is not a Sprint 32 waiver. Original dispositions:
 
 Intake: refreshed master, created isolated review worktree, read current policy
 and relevant charter, identified stale active pointers and S30–31 build gates.
-Build-Local attempts/packages/native launches: 2/1/1. A separate focused
+Build-Local attempts/packages/native launches: 3/1/1. A separate focused
 production compilation passed. Native task including staging and restoration:
 255.68 seconds. Accumulated active work-category times are not yet available;
 retain timestamped logs rather than infer throughput.
@@ -258,3 +258,20 @@ reuse/reset the one owned hostile; optional bounded origin clearance in the
 existing lane helper; call the same phase predicate before staging. Narrowed
 the claimed observation to Frightened rather than unobserved flight movement.
 Reviewed production/observer compilation PASS. This is not final product review.
+
+Headroom replenished through the same verified-duplicate route: 16 restored
+Sprint29 transaction extractions exactly matched the retained v0.0.163 ZIP
+`82a4d09d6394d47d3adc6a36bb5d7ee55460fe12793382133779b52d47172df4`.
+Removed 1,344,249,872 duplicate bytes; free space 3,000,053,760 to 4,361,039,872.
+Plan SHA-256 `170f3789c1254dbf5f819c2da5d02807adaf8058dcc12f2297203b67429d74f1`.
+Fresh protected intake comparison PASS: Mods967/saves118/references18/settings83,
+tasks0, unchanged Steam process. Original selection shortfall, script syntax
+failure and unelevated task-query refusal remain local; no deletion occurred in
+those attempts. All packages, receipts, evidence, unique files and saves retained.
+
+The e9b948ff early-control package attempt stopped before compilation/package:
+the icon catalog still pinned the previous complete registry hash. This is a
+metadata defect, not native gameplay failure. Updated that existing current
+hash only after verifying all7,372 prior ledger entries form the exact unchanged
+prefix; 29 entries are appended. Historical published hash retained. Focused
+icon-catalog validator PASS; original build failure retained. No new native run.
