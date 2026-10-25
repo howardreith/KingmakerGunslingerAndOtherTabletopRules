@@ -7,11 +7,17 @@ using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
+using Kingmaker.Designers.EventConditionActionSystem.Actions;
+using Kingmaker.ElementsSystem;
+using Kingmaker.Enums;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -83,25 +89,50 @@ namespace KingmakerGunslinger.Blueprints
                     !(component is SpellDescriptorComponent) && !(component is Kingmaker.UnitLogic.Mechanics.Components.ContextRankConfig)))
                 throw new InvalidOperationException("Optional Suggestion must retain the investigated native-only contract.");
             var sourceRun = source.GetComponents<AbilityEffectRunAction>().Single();
-            if (sourceRun.Actions.Actions.Length != 1 || !(sourceRun.Actions.Actions[0] is ContextActionConditionalSaved))
+            if (sourceRun.GetType() != typeof(AbilityEffectRunAction) || sourceRun.Actions.Actions.Length != 1 ||
+                sourceRun.Actions.Actions[0]?.GetType() != typeof(ContextActionConditionalSaved))
                 throw new InvalidOperationException("Optional Suggestion acquired an unexpected sibling action.");
             var saved = (ContextActionConditionalSaved)sourceRun.Actions.Actions[0];
-            if (saved.Succeed.Actions.Length != 0 || saved.Failed.Actions.Length != 1 ||
+            if (saved.Succeed.Actions.Length != 0 || (saved.Failed.Actions.Length != 1 && saved.Failed.Actions.Length != 2) ||
                 !(saved.Failed.Actions[0] is ContextActionApplyBuff))
                 throw new InvalidOperationException("Optional Suggestion acquired an unexpected save branch: success=" +
                     string.Join(",", saved.Succeed.Actions.Select(action => action == null ? "<null>" : action.GetType().FullName).ToArray()) +
                     ";failure=" + string.Join(",", saved.Failed.Actions.Select(action => action == null ? "<null>" : action.GetType().FullName).ToArray()));
             var sourceApply = (ContextActionApplyBuff)saved.Failed.Actions[0];
+            // CotW adds this wizard-discovery branch after Cow creates Suggestion.
+            // Neither adult has the discovery. Recognize its exact positive gate;
+            // do not import its foreign actions, buffs or feature into our copies.
+            if (saved.Failed.Actions.Length == 2)
+            {
+                var extra = saved.Failed.Actions[1] as Conditional;
+                var checker = extra?.ConditionsChecker;
+                var condition = checker?.Conditions.SingleOrDefault() as ContextConditionCasterHasFact;
+                if (extra?.GetType() != typeof(Conditional) || checker == null || checker.Operation != Operation.And || checker.Conditions.Length != 1 ||
+                    condition?.GetType() != typeof(ContextConditionCasterHasFact) || condition.Not || condition.Fact?.AssetGuid != Sprint32Suggestion.ExcludedWizardDiscoveryGuid ||
+                    condition.Fact.name != "InfectiousCharmsArcaneDiscoveryFeature" || extra.IfFalse.Actions.Length != 0)
+                    throw new InvalidOperationException("Optional Suggestion acquired an unknown conditional branch.");
+                foreach (var name in new[] { "Satyr", "LillendAzata" })
+                    if (Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit." + name).AddFacts.Any(fact =>
+                        fact?.AssetGuid == Sprint32Suggestion.ExcludedWizardDiscoveryGuid))
+                        throw new InvalidOperationException("Private creature unexpectedly owns the excluded wizard discovery.");
+            }
             if (sourceRun.SavingThrowType != Kingmaker.EntitySystem.Stats.SavingThrowType.Will ||
                 !ReferenceEquals(sourceApply.Buff, sourceBuff) || sourceApply.Permanent || sourceApply.UseDurationSeconds ||
-                sourceApply.ToCaster || sourceApply.DurationValue.Rate != Kingmaker.UnitLogic.Mechanics.DurationRate.Minutes)
+                sourceApply.ToCaster || !sourceApply.IsFromSpell || sourceApply.IsNotDispelable || sourceApply.AsChild ||
+                sourceApply.DurationValue.Rate != DurationRate.Minutes || sourceApply.DurationValue.DiceType != Kingmaker.RuleSystem.DiceType.Zero ||
+                sourceApply.DurationValue.DiceCountValue.ValueType != ContextValueType.Simple || sourceApply.DurationValue.DiceCountValue.Value != 0 ||
+                sourceApply.DurationValue.BonusValue.ValueType != ContextValueType.Rank ||
+                sourceApply.DurationValue.BonusValue.ValueRank != AbilityRankType.Default)
                 throw new InvalidOperationException("Optional Suggestion save/effect/duration contract changed.");
             // Compare the complete provider terminal-component shape with its
             // stated native donor. Nested blueprint references must be the
             // identical native objects, not just matching root component types.
             if (!SuggestionNativeGraphEqual32(sourceBuff.ComponentsArray, nativeBuff.ComponentsArray, 0))
                 throw new InvalidOperationException("Optional Suggestion terminal graph diverged from native Rainbow Pattern.");
-            foreach (var component in sourceComponents)
+            // Validate only the supported core that will be copied. The exact
+            // excluded discovery gate above is unavailable to these creatures.
+            ValidateSuggestionGraph32(sourceApply, sourceBuff, new HashSet<object>(), 0);
+            foreach (var component in sourceComponents.Where(value => !(value is AbilityEffectRunAction)))
                 ValidateSuggestionGraph32(component, sourceBuff, new HashSet<object>(), 0);
             foreach (var component in sourceBuff.ComponentsArray)
                 ValidateSuggestionGraph32(component, nativeBuff, new HashSet<object>(), 0);
@@ -126,10 +157,21 @@ namespace KingmakerGunslinger.Blueprints
                     staged.name = InternalName(pair[1] + "Suggestion"); staged.Hidden = false;
                     staged.Type = pair[0] == "Satyr" ? AbilityType.SpellLike : AbilityType.Spell;
                     var guard = ScriptableObject.CreateInstance<Sprint32SuggestionAvailable>(); guard.OwningBlueprint = unit;
-                    staged.ComponentsArray = sourceComponents.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                    staged.ComponentsArray = sourceComponents.Select(component => CloneSuggestionCore32(component, ownedBuff))
                         .Concat(new BlueprintComponent[] { guard }).ToArray();
-                    staged.GetComponents<AbilityEffectRunAction>().Single().Actions.Actions.OfType<ContextActionConditionalSaved>().Single()
-                        .Failed.Actions.OfType<ContextActionApplyBuff>().Single().Buff = ownedBuff;
+                    // Cow1.4.5 declares rank(Default) minutes but supplies no
+                    // rank component. Bind the advertised live caster-level
+                    // duration in our private copies using the proven native seam.
+                    if (staged.GetComponents<ContextRankConfig>().Any())
+                        throw new InvalidOperationException("Optional Suggestion now supplies a rank contract; reconcile it explicitly.");
+                    var rank = ScriptableObject.CreateInstance<ContextRankConfig>();
+                    SetField(rank, "m_Type", AbilityRankType.Default);
+                    SetField(rank, "m_BaseValueType", ContextRankBaseValueType.CasterLevel);
+                    SetField(rank, "m_Progression", ContextRankProgression.AsIs);
+                    SetField(rank, "m_UseMin", false); SetField(rank, "m_UseMax", false);
+                    staged.ComponentsArray = staged.ComponentsArray.Concat(new BlueprintComponent[] { rank }).ToArray();
+                    foreach (var component in staged.ComponentsArray.Where(value => !ReferenceEquals(value, guard)))
+                        ValidateSuggestionGraph32(component, ownedBuff, new HashSet<object>(), 0);
                 }
                 // All cloning, nested checks and guard construction are done.
                 // Every possible old/new component array remains guarded while
@@ -146,6 +188,22 @@ namespace KingmakerGunslinger.Blueprints
                 UnityEngine.Object.DestroyImmediate(stagedBuff);
                 foreach (var pair in stagedAbilities) UnityEngine.Object.DestroyImmediate(pair.Value);
             }
+        }
+
+        private static BlueprintComponent CloneSuggestionCore32(BlueprintComponent component, BlueprintBuff terminal)
+        {
+            var sourceRun = component as AbilityEffectRunAction;
+            if (sourceRun == null) return ExpandedSummoningAbilityBuilder.DeepCloneComponent(component);
+            var saved = (ContextActionConditionalSaved)sourceRun.Actions.Actions.Single();
+            var apply = (ContextActionApplyBuff)ExpandedSummoningAbilityBuilder.DeepCloneComponentObject(saved.Failed.Actions[0]);
+            apply.Buff = terminal;
+            var privateSaved = ScriptableObject.CreateInstance<ContextActionConditionalSaved>();
+            privateSaved.Succeed = new ActionList { Actions = Array.Empty<GameAction>() };
+            privateSaved.Failed = new ActionList { Actions = new GameAction[] { apply } };
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            CopyFields(sourceRun, run);
+            run.Actions = new ActionList { Actions = new GameAction[] { privateSaved } };
+            return run;
         }
 
         // Private provider-shape checks, not a general blueprint registry.

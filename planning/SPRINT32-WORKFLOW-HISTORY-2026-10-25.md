@@ -1000,3 +1000,12 @@ conditional Suggestion and original body; group the next coherent product checks
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.
 Their [original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
+
+
+## Superseded investigation evidence ? 2026-10-25 21:00 UTC
+
+892eafcc standalone: run`20261025T2043252830276Z-496e5b3f8bc54475bbf31d03f626402a`, **FAIL**, 9PASS/2FAIL, native137743ms; result SHA`5a59e8c104b9067327ad7c387b680f6a29885858c55d1ba2de7b1dfb2eddc8a1`. Raw folder`20261025T2043251748303Z-disposable-expanded-summoning-sprint32-native-review`.
+
+892eafcc provider: run`20261025T2053487013587Z-620dfd0b3542414cba8e140a497c0cf0`, **FAIL**, 5PASS/2FAIL, native151587ms; result SHA`ba01b52f1533091a546e7ef8b21f47ee5ae3475ee671bd6ee87d97040b3257f7`. Raw folder`20261025T2053486670343Z-disposable-expanded-summoning-sprint32-native-review`.
+
+Standalone original Unity log SHA`205ab2c8cee6a9d323e5f70b5f9e79c30dc3816b79f42a0af08f05fe8bd072bc`; provider log SHA`fd6c9e140da313e933edfa7c0c91430fbfc887ee52d4fc834a5ae643ea06a60d`. Both protected Compare PASS967/118/18/83/0/1. Standalone txn`compat-20261025T204052Z-8bebb1346a40` restored20:46:04.5934944UTC; provider txn`compat-20261025T205121Z-f5b26e0e9599` restored20:56:46.0116520UTC. These executions do not qualify later adapter/fixture/turn edits. Body cleanup assertion was skipped after the original error and remains NOT_RUN, despite exact world/installation restoration.

@@ -36,15 +36,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewLillend32Support(fixture)) yield return frame;
                 yield break;
             }
-            // Resettable RTWP cases, each with a fresh exact-owner summon.
+            if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendTurnPhase)
+            {
+                foreach (bool wounded in new[] { false, true })
+                    foreach (int frame in ReviewLillend32Turn(fixture, wounded)) yield return frame;
+                yield break;
+            }
+            bool turnBased = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrTurnPhase;
+            // Resettable cases, each with a fresh exact-owner summon.
             // Final mode/profile/persistence qualification remains separate.
             CreateExpandedSummoningCorrectionHostile(fixture);
             foreach (bool immune in new[] { false, true })
-                foreach (int frame in ReviewSatyr32Control(fixture, immune)) yield return frame;
-            foreach (int frame in ReviewSatyr32Control(fixture, true, true)) yield return frame;
+                foreach (int frame in ReviewSatyr32Control(fixture, immune, false, turnBased)) yield return frame;
+            foreach (int frame in ReviewSatyr32Control(fixture, true, true, turnBased)) yield return frame;
         }
 
-        private IEnumerable<int> ReviewSatyr32Control(ExpandedSummoningCorrectionFixture fixture, bool immune, bool melee = false)
+        private IEnumerable<int> ReviewSatyr32Control(ExpandedSummoningCorrectionFixture fixture, bool immune, bool melee = false, bool turnBased = false)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
@@ -53,6 +60,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int will = target.Stats.SaveWill.BaseValue, ac = target.Stats.AC.BaseValue;
             BlueprintFeature mindImmunity = null;
             string id = melee ? "satyr-melee-fallback" : immune ? "satyr-immune-fallback" : "satyr-control";
+            if (turnBased) id += "-turn";
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -96,6 +104,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
                 owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+                var admission = new JObject();
+                if (turnBased)
+                {
+                    foreach (int frame in Sprint22EnrollTurnBasedOwners(new[] { owner }, target, admission)) yield return frame;
+                    DateTime deadline = DateTime.UtcNow.AddSeconds(30); int frames = 0;
+                    while (frames++ < 500 && DateTime.UtcNow < deadline && !Sprint18OwnerIsActing(owner)) yield return 0;
+                    if (!(bool)admission["admitted"] || !owner.IsVisibleForPlayer || !Sprint18OwnerIsActing(owner))
+                        throw new InvalidOperationException("Exact Satyr native turn admission failed: " + admission);
+                }
                 Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
                 float score = eligibility.Score(new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } });
                 var controlScores = fixture.Blueprints.OfType<SatyrControlEligibility>()
@@ -114,6 +131,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
                     ["visible"] = owner.Memory.ContainsVisible(target), ["los"] = owner.HasLOS(target),
                     ["canAct"] = owner.Descriptor.State.CanAct, ["aiEnabled"] = owner.IsAIEnabled,
+                    ["turnBased"] = turnBased, ["turnAdmission"] = admission,
                     ["distanceMeters"] = owner.DistanceTo(target), ["weaponRangeFeet"] = weapon?.AttackRange.Value,
                     ["eligibility"] = score, ["targetFearImmune"] = target.Descriptor.State.HasConditionImmunity(UnitCondition.Frightened),
                     // Native JSON defaults encode dictionaries as arrays. Build
@@ -128,20 +146,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var commands = new HashSet<UnitCommand>(); var costs = new JArray(); var ambient = new HashSet<string>();
                 var saves = new Dretch30CloudSaves(new[] { target });
                 var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
-                EventBus.Subscribe(saves); EventBus.Subscribe(attacks);
+                var starts = new Lillend32CommandStarts { Owner = owner };
+                EventBus.Subscribe(saves); EventBus.Subscribe(attacks); EventBus.Subscribe(starts);
                 try
                 {
                     using (var economy = new FirearmReviewCosts(owner, costs))
                     {
-                        DateTime deadline = DateTime.UtcNow.AddSeconds(40); int frames = 0, ticks = 0;
+                        DateTime deadline = DateTime.UtcNow.AddSeconds(40); int frames = 0, ticks = 0, nativeTurnFrames = 0;
                         while (DateTime.UtcNow < deadline && frames++ < 4000)
                         {
-                            if (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished))
+                            if (!turnBased && (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished)))
                             {
                                 foreach (var candidate in Sprint24TickExactAi(owner)) if (candidate != owner.UniqueId) ambient.Add(candidate);
                                 ticks++;
                             }
+                            if (turnBased && Sprint18OwnerIsActing(owner)) nativeTurnFrames++;
                             foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                            foreach (var command in starts.Commands) commands.Add(command);
                             if (immune ? attacks.WeaponAttacks.Count > 0 && commands.OfType<UnitAttack>().Any(value => value.IsFinished) :
                                 commands.OfType<UnitUseAbility>().Any(value => value.IsFinished && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded)) break;
                             Game.Instance.IsPaused = false; yield return 0;
@@ -163,18 +184,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         UnitCommand resolved = immune ? (UnitCommand)attack : cast;
                         bool outcome = immune ? cast == null && attacks.WeaponAttacks.Count > 0 &&
                             owner.Descriptor.Resources.GetResourceAmount(resource) == 1 && weaponPlan &&
-                            (melee ? change != null && economy.Count(change) == 1 && economy.Exact(change, false) &&
+                            (melee ? change != null && economy.Count(change) == 1 && economy.Exact(change, turnBased) &&
                                 attacks.WeaponAttacks.Any(value => value.Weapon.Blueprint.name == "KMG_Summoning_FeyCelestial_Satyr_Dagger") :
                                 attacks.WeaponAttacks.All(value => value.Weapon.Blueprint.AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9")) :
                             cast != null && target.Descriptor.State.HasCondition(UnitCondition.Frightened) &&
                             owner.Descriptor.Resources.GetResourceAmount(resource) == 0 &&
                             saves.Rows.Any(value => (int)value["dc"] == 18 && (string)value["caster"] == owner.UniqueId &&
                                 (string)value["sourceAbility"] == fear.AssetGuid);
-                        bool exact = ticks > 0 && resolved != null && economy.Count(resolved) == 1 &&
-                            economy.Exact(resolved, false) && !resolved.Cutscene && !resolved.IsIgnoreCooldown && outcome;
+                        bool exact = (turnBased ? nativeTurnFrames > 0 && ticks == 0 : ticks > 0) && resolved != null && economy.Count(resolved) == 1 &&
+                            economy.Exact(resolved, turnBased) && !resolved.Cutscene && !resolved.IsIgnoreCooldown && outcome;
                         Sprint25Check(id + "-resolved", exact, new JObject {
                             ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["frames"] = frames, ["aiTicks"] = ticks,
                             ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
+                            ["turnBased"] = turnBased, ["nativeTurnFrames"] = nativeTurnFrames,
+                            ["nativeCommandStarts"] = starts.Rows,
                             ["saves"] = saves.Rows, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
                             ["weaponEvents"] = new JArray(attacks.WeaponAttacks.Select(value => value.Weapon.Blueprint.name)),
                             ["queriedFullAttackPlan"] = new JArray(plan.Select(value => value.name)),
@@ -193,12 +216,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!exact) throw new InvalidOperationException("Satyr native AI observation failed: " + id);
                     }
                 }
-                finally { EventBus.Unsubscribe(saves); EventBus.Unsubscribe(attacks); }
+                finally { EventBus.Unsubscribe(starts); EventBus.Unsubscribe(saves); EventBus.Unsubscribe(attacks); }
             }
             finally
             {
+                if (turnBased) { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false; Game.Instance.TurnBasedCombatController.Activate(); }
                 if (owner != null) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
                 target.Commands.InterruptAll(true);
+                if (turnBased)
+                {
+                    foreach (var unit in new[] { owner, target }.Where(value => value != null && !value.Destroyed))
+                        if (unit.IsInCombat) unit.LeaveCombat();
+                    Game.Instance.Player.UpdateIsInCombat();
+                }
                 foreach (var buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
                     owner != null && ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray()) target.Descriptor.Buffs.RemoveFact(buff);
                 if (mindImmunity != null)

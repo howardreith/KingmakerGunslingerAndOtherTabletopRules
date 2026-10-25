@@ -1,5 +1,5 @@
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
-`reviewPhase=satyr-control` or `reviewPhase=lillend-support`, with automatic exit. The existing save-free first-area
+`reviewPhase=satyr-control`, `lillend-support`, `satyr-turn` or `lillend-turn`, with automatic exit. The existing save-free first-area
 fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh
 Satyr refusing the reset hostile with explicit native mind-affecting buff immunity and
 using its ordinary bow. It records real commands, action costs, resource debit,
@@ -17,7 +17,10 @@ The fixed Lillend phase uses two fresh independent hidden bard7 summons and
 one owned hostile: native Move-action Inspire Courage, first native NewRound
 resource debit, owned ally+2/enemy exclusion, Standard-action real Cure Serious
 Wounds/own spontaneous slot debit, then healthy-target/running-performance
-refusal and a natural melee fallback against an owned native mind-immune target.
+refusal and a natural melee fallback against an owned native mind-immune and
+maneuver-immune target. Maneuver immunity belongs only to this fixture and isolates
+ordinary fallback from the separately required real-grab transition. A successful
+grab can naturally interrupt the attacker and stop performance through CantAct.
 The expanded book is observed by actual known-spell tier, with settled provider
 state; adult HP/AC/abilities and sword/tail native reach are observed. The fallback
 case explicitly starts with a healthy actor after retaining the healing outcome.
@@ -28,9 +31,14 @@ adult profile/body. The original-body extension in the same Lillend phase requir
 owned body bindings, finite owner/sibling rest poses and preserved native actions.
 Bounded weapon-event frames and tail counters are diagnostic; they do not establish
 contact or full presentation. Native disposal must release captured owned body/tail
-resources while borrowed actions/clips survive. Exact optional provider roots are
-captured for the unresolved live save-branch refusal; absence remains explicit.
-Both fixed phases retain source/package, empty-world and
+resources while borrowed actions/clips survive, even when an earlier assertion
+fails; the retained original error is rethrown after cleanup observation. Exact
+optional provider roots capture the installed contract; absence remains explicit.
+The turn phases reuse native RTWP enrollment then the real turn controller, with
+zero fixture AI ticks. Satyr uses fresh control, immune bow and close dagger cases.
+Lillend uses fresh healthy Courage/ordinary attack and wounded healing cases, with
+independent sibling pools and exact native turn action debits.
+All fixed phases retain source/package, empty-world and
 exact restoration guards; no Working-save access is selected here.
 
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
