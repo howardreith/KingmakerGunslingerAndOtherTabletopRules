@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param(
     [string]$MSBuildPath,
+    # Optional caller pin; source validation still admits only a registered
+    # release version or development derived from that exact released tag.
+    [string]$ExpectedVersion,
     [string]$ReferenceBundleDir,
     [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     # Prints a descriptive plan only; it does not prove actual child counts
@@ -66,7 +69,13 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -notin @('0.0.166','0.0.167')) { throw "Build-Local supports released166 development or the selected167 public candidate, observed $($info.Version)." }
+if ([string]$info.Version -cnotmatch '^[0-9]+\.[0-9]+\.[0-9]+$' -or
+    ($ExpectedVersion -and $ExpectedVersion -cne $info.Version)) {
+    throw "Candidate version differs: expected '$ExpectedVersion', source '$($info.Version)'."
+}
+# validate-repository below retains the version-specific release dispatcher or
+# the development validator's exact released-tag/version/ancestry contract.
+# Runtime reuse additionally binds ExpectedVersion to the selected receipt.
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -112,21 +121,21 @@ if ($development) {
     }
 }
 
-# All read-only prerequisites and immutable-output refusals precede admission.
-# The bounded S30-31 worktree has persistent cumulative dispatch authority.
-# PlanOnly exits above; compile-only editing uses build.ps1, not this pipeline.
-if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
-    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
-    [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
-        -Action Build -Stage ('candidate:' + $git.Commit) -MinimumRemainingMinutes 20)
-}
-
 if ($development) {
     if (Test-Path -LiteralPath $developmentLayout.Root) {
-        # An earlier attempt for this exact commit stopped before its receipt.
-        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
-            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
-        Remove-Item -LiteralPath $partial -Recurse -Force
+        # Preserve every failed attempt's unique logs and partial outputs. A
+        # completed receipt was refused above; it is never moved or rebuilt.
+        $candidateRoot = Join-Path $root $script:KmgDevelopmentCandidateRoot
+        $partial = Assert-KmgPathWithin -Path (Resolve-Path -LiteralPath $developmentLayout.Root).Path `
+            -Root $candidateRoot
+        if ((Get-Item -LiteralPath $partial -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw 'Development attempt directory is a reparse point.'
+        }
+        $retained = Assert-KmgPathWithin -Path ($partial + '.failed-' +
+            [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
+            [Guid]::NewGuid().ToString('N').Substring(0, 8)) -Root $candidateRoot
+        Move-Item -LiteralPath $partial -Destination $retained
+        Write-Host "Prior incomplete development attempt retained: $retained"
     }
     New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
 }
@@ -169,10 +178,11 @@ if (-not $SkipDomainTests) {
 }
 
 $localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
-# The pilot can repair a final observer without overwriting any earlier
-# exact candidate, manifest, compile archive or evidence-bound path.
-if (-not $development -and $info.Version -ceq '0.0.167') {
-    $localRoot = Join-Path $localRoot $git.Commit.Substring(0, 12)
+# Each exact candidate retains its own output; preserve earlier packages and
+# evidence-bound paths regardless of the selected release version.
+if (-not $development) {
+    $localRoot = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $git.Commit `
+        -Id $info.Id -Version $info.Version).Root
     if (Test-Path -LiteralPath $localRoot) { throw 'This exact final candidate output already exists; preserve its bytes.' }
 }
 $exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { Join-Path $localRoot 'exact-build' }
@@ -433,14 +443,11 @@ $manifest = [ordered]@{
     firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
 }
-# The named S30-31 reuse contract compares exact installed reference identities
-# on the final artifact as well as on original development receipts.
-if ($git.Branch -ceq 'codex/expanded-summoning-sprints30-31-outsider-celestial-pilot') {
-    $manifest.references = [ordered]@{
-        bundleDirectory = $ReferenceBundleDir
-        installDirectory = $KingmakerInstallDir
-        files = @($referenceIdentity)
-    }
+# Every selected candidate records the exact verified reference identity.
+$manifest.references = [ordered]@{
+    bundleDirectory = $ReferenceBundleDir
+    installDirectory = $KingmakerInstallDir
+    files = @($referenceIdentity)
 }
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $manifestPath -Encoding UTF8

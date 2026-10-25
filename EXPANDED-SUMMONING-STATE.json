@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Owner 2026-10-19: Sprint28 Hill, Stone and Fire Giants on HOWARD-LAPTOP through scoped implementation, qualification, exact restoration and release. Only Sprint28; see planning/SPRINT28-STATUS.md and planning/EXPANDED-SUMMONING-SPRINT28-CONTRACT.md.",
+    "activeTask": "Owner 2026-10-25: Sprint 32 Satyr and Lillend Azata plus narrow unattended workflow repair. Sole active record: planning/SPRINT32-STATUS.md. Finish at reviewed, validated PR; no merge/release or Sprint 33.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-STATE-before-workflow-reset-2026-10-11.json"
   },
@@ -213,7 +213,7 @@
     "finalReportingSeparate": true,
     "nextAction": "STOP; no Sprint22"
   },
-  "currentCharterMission": {
+  "historicalCharterMissionBeforeSprint32": {
     "authority": "Owner 2026-10-12 original charter page 21 excerpt",
     "coreRosterThroughSprint": 41,
     "optionalSprints": [
@@ -231,5 +231,12 @@
     "sprint23Started": false,
     "nextAction": "Freeze reviewed Sprint22 candidate; one Sprint gate and targeted native package reuse, then qualified PR39 merge/stable release and exact restoration. No Sprint23.",
     "coverage": "docs/SPRINT22-COVERAGE.md"
+  },
+  "currentCharterMission": {
+    "authority": "Owner 2026-10-25 unattended workflow repair and Sprint 32 mission",
+    "activeSprint": 32,
+    "record": "planning/SPRINT32-STATUS.md",
+    "status": "IN_PROGRESS_NOT_QUALIFIED",
+    "nextAction": "Follow the sole active record; no Sprint 33 or publication."
   }
 }

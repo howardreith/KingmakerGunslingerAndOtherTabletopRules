@@ -46,6 +46,13 @@ function Write-RunnerLog([string]$Path, [string]$Filter, [int]$Selected,
 }
 
 try {
+    foreach ($version in @('0.0.156', '0.0.167', '0.0.200')) {
+        $local = Get-KmgLocalCandidateLayout -RepositoryRoot $boundary -Commit ('a' * 40) -Id 'KingmakerGunslinger' -Version $version
+        Assert-That ($local.PackagePath -ceq (Join-Path $boundary "artifacts\local-runtime\$version\aaaaaaaaaaaa\KingmakerGunslinger-$version-local-runtime.zip")) "local-candidate-layout-$version"
+    }
+    foreach ($bad in @(@('short','KingmakerGunslinger','0.0.167'), @(('a'*40),'../escape','0.0.167'), @(('a'*40),'KingmakerGunslinger','../escape'))) {
+        Assert-That ((Get-Refusal { Get-KmgLocalCandidateLayout -RepositoryRoot $boundary -Commit $bad[0] -Id $bad[1] -Version $bad[2] }) -like '*exact commit*') 'invalid-candidate-layout-refused'
+    }
     $repository = Join-Path $boundary 'repository'
     New-Item -ItemType Directory -Path $repository -Force | Out-Null
     '{"Id":"KingmakerGunslinger","Version":"0.0.156"}' |
@@ -240,14 +247,14 @@ try {
     New-Item -ItemType Directory -Path $fixtureScripts, (Join-Path $fixture 'tools') -Force | Out-Null
     foreach ($name in @('Build-Local.ps1', 'RuntimeHarness.Common.ps1', 'common.ps1',
         'RuntimeCoordination.Common.ps1', 'DevelopmentCandidate.Common.ps1',
-        'ReferenceProvenance.Common.ps1', 'KmgGate.Common.ps1', 'Sprints3031Budget.Common.ps1')) {
+        'ReferenceProvenance.Common.ps1', 'KmgGate.Common.ps1')) {
         Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $fixtureScripts
     }
     New-Item -ItemType Directory -Path (Join-Path $fixtureScripts 'compatibility') | Out-Null
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'compatibility\CompatibilityProfile.Common.ps1') `
         -Destination (Join-Path $fixtureScripts 'compatibility')
-    # The fixture carries the active version, which the copied Build-Local pins.
-    $fixtureVersion = (Get-Content -Raw -LiteralPath (Join-Path $PSScriptRoot '..\Info.json') | ConvertFrom-Json).Version
+    # The fixture carries a released version outside the concluded campaign pair.
+    $fixtureVersion = '0.0.156'
     ([ordered]@{ Id = 'KingmakerGunslinger'; Version = $fixtureVersion } | ConvertTo-Json -Compress) |
         Set-Content (Join-Path $fixture 'Info.json')
     "artifacts/`n" | Set-Content (Join-Path $fixture '.gitignore')
@@ -258,13 +265,11 @@ param([string]$RepositoryRoot, [string]$DevelopmentPurpose, [string]$Development
     ConvertTo-Json -Compress | Add-Content $env:KMG_DEVELOPMENT_FIXTURE_TRACE
 if ($DevelopmentSummaryPath) { '{"validator":"tools/validate_development_candidate.py"}' | Set-Content $DevelopmentSummaryPath }
 # Exercise the same nested missing-reference probe against this isolated copy.
-$budget=Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json'
-$before=(Get-FileHash $budget).Hash
 $missing=Join-Path (Split-Path -Parent $PSScriptRoot) 'absent-references'
 $message=$null
 try { & (Join-Path $PSScriptRoot 'Build-Local.ps1') -ReferenceBundleDir $missing -KingmakerInstallDir $missing }
 catch { $message=$_.Exception.Message }
-if($message -cne ('Qualified private reference bundle is missing: '+$missing) -or (Get-FileHash $budget).Hash -cne $before){throw 'Nested offline reference refusal mutated admission or failed for the wrong reason.'}
+if($message -cne ('Qualified private reference bundle is missing: '+$missing)){throw 'Nested offline reference refusal failed for the wrong reason.'}
 
 '@ | Set-Content (Join-Path $fixtureScripts 'validate-repository.ps1')
     @'
@@ -292,29 +297,20 @@ sys.exit(3)
     }
     $msbuildFixture = Join-Path $boundary 'msbuild-fixture.exe'
     'not executed' | Set-Content $msbuildFixture
-    # The production admission hook is exercised in the existing copied-script
-    # fixture. Only its exact lab-root literal is rebound to the temporary root;
-    # no product bypass or live-budget path is introduced.
-    $fixtureBuild=Join-Path $fixtureScripts 'Build-Local.ps1'
-    $buildText=[IO.File]::ReadAllText($fixtureBuild)
-    $labLiteral="'C:\Dev\KingmakerGunslingerLab\wt\s30-31'"
-    if(($buildText.Split(@($labLiteral),[StringSplitOptions]::None)).Count -ne 2){throw 'Expected one exact admission root in copied fixture.'}
-    [IO.File]::WriteAllText($fixtureBuild,$buildText.Replace($labLiteral,("'"+$fixture+"'")),[Text.UTF8Encoding]::new($false))
-    $fixtureBudget=Join-Path $fixture 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json'
-    [void][IO.Directory]::CreateDirectory((Split-Path $fixtureBudget))
-    $now=[DateTime]::UtcNow
-    $budget=[ordered]@{schemaVersion=1;authority='Owner bounded Sprints30-31 closeout decision';startUtc=$now.ToString('o');deadlineUtc=$now.AddHours(7).ToString('o');readinessDeadlineUtc=$now.AddMinutes(120).ToString('o');maximumBuildAttempts=3;maximumGameLaunches=24;buildAttemptCount=0;actualGameLaunchCount=0;currentStage='no-game-readiness';status='ACTIVE';events=@();ownerStopMarker=(Join-Path $fixture 'OWNER-STOP');restorationOverrunSeconds=0}
-    [IO.File]::WriteAllText($fixtureBudget,($budget|ConvertTo-Json),[Text.UTF8Encoding]::new($false))
-    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
-    Invoke-KmgSprints3031Budget $fixtureBudget Ready hidden|Out-Null
     & git -C $fixture init --quiet
     & git -C $fixture add -A
     & git -C $fixture -c user.name=DevelopmentFixture -c user.email=fixture@example.invalid commit --quiet -m fixture
     if ($LASTEXITCODE -ne 0) { throw 'Could not create the bounded Git fixture.' }
     $fixtureBuild = Join-Path $fixtureScripts 'Build-Local.ps1'
     $buildArguments = @{ DevelopmentPurpose = $purpose; DevelopmentTestFilter = 'selected-behavior'
-        ReferenceBundleDir = $bundle; KingmakerInstallDir = $install; MSBuildPath = $msbuildFixture }
+        ReferenceBundleDir = $bundle; KingmakerInstallDir = $install; MSBuildPath = $msbuildFixture
+        ExpectedVersion = $fixtureVersion }
     $env:KMG_TEST_FILTER = 'prior'
+    $buildArguments.ExpectedVersion = '0.0.157'
+    $message = Get-Refusal { & $fixtureBuild @buildArguments }
+    Assert-That ($message -like '*Candidate version differs*' -and
+        -not (Test-Path -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE)) 'wrong-selected-version-refused-before-children'
+    $buildArguments.ExpectedVersion = $fixtureVersion
     $message = Get-Refusal { & $fixtureBuild @buildArguments }
     if (-not (Test-Path -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE)) {
         throw "The fixture development build stopped before its children: $message"
@@ -327,8 +323,6 @@ sys.exit(3)
     $runs = @($trace | Where-Object event -eq 'test-domain')
     $builds = @($trace | Where-Object event -eq 'exact-build')
     Assert-That ($message -like '*Exact-reference Release build failed with exit code 3*') "build-reached-compiler-boundary ($message)"
-    $charged=Get-Content $fixtureBudget -Raw|ConvertFrom-Json
-    Assert-That ($charged.buildAttemptCount -eq 1 -and @($charged.events|Where-Object {$_.action -ceq 'Build'}).Count -eq 1) 'failed-real-admission-counted-once-despite-nested-refusal'
     Assert-That ($wrappers.Count -eq 1 -and $wrappers[0].purpose -ceq $purpose -and
         $wrappers[0].summary -ceq $fixtureLayout.ValidationSummaryPath) 'build-ran-development-wrapper-once'
     Assert-That ($runs.Count -eq 1 -and $runs[0].filter -ceq 'selected-behavior' -and $runs[0].clean -and
@@ -340,10 +334,15 @@ sys.exit(3)
     Assert-That (-not (Test-Path (Join-Path $fixture 'artifacts\local-runtime'))) 'build-left-release-location-untouched'
     Assert-That ($env:KMG_TEST_FILTER -ceq 'prior') 'build-restored-filter'
 
+    $firstAttemptLogHash = (Get-FileHash -LiteralPath $fixtureLayout.TestLogPath).Hash
     Remove-Item -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE
     $env:KMG_DEVELOPMENT_FIXTURE_FAIL = '1'
     $message = Get-Refusal { & $fixtureBuild @buildArguments }
     Remove-Item Env:\KMG_DEVELOPMENT_FIXTURE_FAIL
+    $retainedAttempts = @(Get-ChildItem -LiteralPath (Split-Path $fixtureLayout.Root) -Directory |
+        Where-Object Name -like ($fixtureCommit.Substring(0, 12) + '.failed-*'))
+    Assert-That ($retainedAttempts.Count -eq 1 -and
+        (Get-FileHash -LiteralPath (Join-Path $retainedAttempts[0].FullName 'selected-domain-tests.log')).Hash -ceq $firstAttemptLogHash) 'retry-retains-original-failed-attempt-log'
     $trace = @(Get-Content -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json })
     Assert-That ($message -like '*empty, failed or inconsistent*' -and
         @($trace | Where-Object event -eq 'exact-build').Count -eq 0) 'failed-selection-stops-before-build'
@@ -361,7 +360,6 @@ sys.exit(3)
     Assert-That ($message -like '*already exists and is immutable*' -and
         -not (Test-Path -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE)) 'existing-candidate-not-overwritten'
 
-    Assert-That ((Get-Content $fixtureBudget -Raw|ConvertFrom-Json).buildAttemptCount -eq 2) 'two-admitted-failures-retained-prerequisite-refusals-uncharged'
     if ($failures.Count -ne 0) { throw ('Development-candidate contract failures: ' + ($failures -join ', ')) }
     Write-Host "Development candidate contract: PASS=$checks FAIL=0. Offline fixtures only; no deployment, lease or game launch."
 } finally {

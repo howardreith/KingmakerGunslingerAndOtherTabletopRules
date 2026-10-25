@@ -1,3 +1,13 @@
+# Sprint 32 ? IN PROGRESS
+
+The sole active record is [planning/SPRINT32-STATUS.md](planning/SPRINT32-STATUS.md).
+Owner mission: 2026-10-25; unattended Satyr/Lillend implementation and validation
+through a reviewable PR. No merge/release or Sprint 33 authority.
+
+Everything below is historical and does not select current work.
+
+## Historical resume records
+
 # Sprints 30-31 - RELEASED / STOP
 
 Stable [v0.0.167](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.167) is published from tested source `07166abedd17ec1abcf3a4806cd0939ff5c543c9`.
