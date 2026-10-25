@@ -78,7 +78,7 @@ Pinned source and actual provider/CotW IL describe direct failed-save ApplyBuff;
 live branch remains unknown. New exact provider graph capture and branch-type
 exception detail will narrow it; no guessed acceptance or weakened guard.
 
-Current source afterbb840287 adds the original Lillend body on the accepted
+Current body source`cd2c34ec50a04474a239a69a612a5bcf9c38620a` adds the original Lillend body on the accepted
 human/owned-tail seam; unchanged Salamander gait/playback/settlement helpers.
 Original wings/elven upper body/serpent coil; no new rig/navigation subsystem.
 Exports and provenance: [authoring](../assets-source/original-models/sprint32-support/README.md).
@@ -87,6 +87,13 @@ final-source mesh/paint reproduction byte-identical. Offline rest views inspecte
 new body native loading/contact/lifecycle remain **NOT_RUN**. Existing support
 phase now records body binding, finite poses, weapon-event frames and owned cleanup.
 This changes binary identity; prior native results are reviewed reuse only.
+Its first Build-Local attempt passed source,21 tests and exact compilation, then
+stopped before packaging/native staging: the build-output child's closed inventory
+lacked the two Lillend files. Add those exact required/allowed paths; retain
+`build-lillend-body-cd2c34ec.*` as the original prelaunch failure. Gameplay source
+and assets are unchanged by this admission correction. The corrected child passes
+on that existing output and still rejects an undeclared sibling file; exact receipt
+`artifacts/sprint32-intake/lillend-build-output-correction.json`.
 
 Reviewed earlier evidence: Satyr0723 natural Fear/DC18/one Standard/resource,
 full mind-immune bow, close immune native switch/dagger PASS9/9. Queried horns
@@ -129,7 +136,7 @@ free3,491,672,064bytes. Protected Capture/Compare PASS. Plan SHA
 `0fa48c7dc0e862273ef80e4d88ef4db03e13802276d1eba7eaf5e87bf62d4bb9`;
 logs `artifacts/sprint32-intake/cleanup-s32-provider-*`. Recheck before dispatch.
 
-Build-Local attempts/validated development packages/native launches:22/14/15.
+Build-Local attempts/validated development packages/native launches:23/14/15.
 Latest native setup/execution/restoration wrappers265.75s(standalone),330.54s(provider);
 inside-game106.403s/147.750s. Earlier categories/counts in history. Complete active
 implementation/fixture/build/native/waiting totals unavailable; retained timestamped
