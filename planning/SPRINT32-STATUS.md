@@ -63,6 +63,28 @@ resultSHA`2510aba5a0615aa2d45e5b63496203ce6dd9d133d96c7c69dcbb79e7777c9932`.
 Wrapper/failure log: `artifacts/sprint32-control-d49e76dc/`; preserved Unity log
 SHA`61efdf851166d78af9ca2e0f5bdd9421338132794fffe39fc56816b12eb8ca45`.
 
+Current validated Satyr candidate: source`6d28b102eb28ee68b7ef87db983b23de15b2e08d`,
+same purpose/development version. ZIP SHA256
+`dc8d40acedd710b77d03e77170ff70ca40de87c8e1fee0cd19eb0addf094ea68`;
+DLL`5a22767ad46b98c096abe2983282fecd6f90686f14b948e083d089eecf60d748`;
+MVID`58a2d64f-0572-4741-953b-78c86d2b4254`. Complete offline wrapper/package PASS.
+Run`20261025T1831274351804Z-132fca0f84c54079a5e926b1edb6fa86` captured the
+selected native graphs, then failed before gameplay: native JSON defaults encode
+dictionaries as arrays, so `JObject.FromObject(controlScores)` threw. This is an
+observer defect; affected gameplay remains NOT_RUN. ResultSHA
+`811a229c18d9c86216694859a63b5969c9ed2a36605c166bb7f830daf234e974`;
+preserved Unity logSHA`aaef004d1888c9cab80a762010fbb9940adc034d36cfae0ea6f214a407b20a64`.
+Raw folder`20261025T1831273973740Z-disposable-expanded-summoning-sprint32-native-review`;
+wrapper/intake`artifacts/sprint32-control-6d28b102/`.
+Replan after the two added-observer failures: pause repeated dispatch; inspect
+all new receipt construction and fixture assumptions together, replace the one
+default dictionary serialization with explicit JSON properties, round-trip it
+using installed Newtonsoft.Json, and obtain read-only fixture review before
+another candidate. The explicit three-score object round-trip PASS is a reader
+construction check, never gameplay proof. No product stats change in this fix.
+Corrected observer production compilation PASS25.4seconds and selected domain
+tests2/2 PASS0.9seconds: `artifacts/sprint32-intake/satyr-explicit-score-receipt.log`.
+
 Lillend has outsider7/HP73, private native spontaneous bard7 slots5/4/2,
 Cure Light/Serious,20 owned native performance rounds, Courage+2, normal melee
 fallback and independent equipment. The retained human carrier is investigation
@@ -137,8 +159,8 @@ Current Satyr review found no static dispatch blocker; its concrete melee/full-
 attack coverage limits caused the bounded added case/plan observations above.
 Full coherent final product/rules/coverage/evidence review remains pending.
 
-Latest runtime transaction`compat-20261025T181527Z-3473c825afd3` restored/verified
-at18:19:39UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
+Latest runtime transaction`compat-20261025T182857Z-05cb51dd4c22` restored/verified
+at18:33:24UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
 tasks0/one unchangedSteam process. No owned live transaction/game remains.
 
 Required free space: measured1.1GB combined build/extraction/staging/restoration
@@ -151,9 +173,9 @@ Protected Compare PASS; unique ZIPs/raw evidence/original failures/receipts/
 backups and saves retained. Prior cleanup receipts remain in history and
 `artifacts/sprint32-intake/`. Recheck before package/dispatch.
 
-Build-Local attempts/validated development packages/native launches:16/9/9
+Build-Local attempts/validated development packages/native launches:17/10/10
 before the next selected candidate. Native setup/execution/restoration times:
-255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32seconds.
+255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05seconds.
 Lillend482 native109.797seconds; full wrapper276.85seconds. Complete historical
 active-time category totals are unavailable. Current work retains timestamped
 compile/test/build/wrapper logs; do not infer throughput from unlike sprints.
