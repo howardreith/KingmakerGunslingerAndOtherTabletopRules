@@ -62,10 +62,20 @@ namespace KingmakerGunslinger.DomainTests
                 "The hidden actor must still have its deliberate menu identity.");
             var owned = ExpandedSummoningIdentityCatalog.Build().Where(value =>
                 value.Symbol.StartsWith("KMG.Summoning.FeyCelestial.Satyr.", StringComparison.Ordinal)).ToArray();
-            var types = new[] { "BlueprintFeature", "BlueprintAbility", "BlueprintAbilityResource",
-                "BlueprintAiCastSpell", "SatyrControlEligibility", "BlueprintBrain" };
-            Assertions.True(owned.Select(value => value.PlannedType).OrderBy(value => value)
-                .SequenceEqual(types.OrderBy(value => value)), "Satyr's private native-control graph has its exact declared types.");
+            var graph = owned.ToDictionary(value => value.Symbol);
+            foreach (var suffix in new[] { "Fear", "CharmPerson", "Sleep" })
+            {
+                Assertions.Equal("BlueprintAbility", graph["KMG.Summoning.FeyCelestial.Satyr." + suffix].PlannedType,
+                    "Each supported control retains its own ability identity.");
+                Assertions.Equal("SatyrControlEligibility", graph["KMG.Summoning.FeyCelestial.Satyr." + suffix + "Eligibility"].PlannedType,
+                    "Each control has its owned eligibility mapping.");
+            }
+            foreach (var suffix in new[] { "Melee", "Ranged" })
+                Assertions.Equal("BlueprintAiSwitchWeapon", graph["KMG.Summoning.FeyCelestial.Satyr." + suffix + "Ai"].PlannedType,
+                    "Weapon choice uses native equipment commands.");
+            foreach (var suffix in new[] { "Dagger", "Horns" })
+                Assertions.Equal("BlueprintItemWeapon", graph["KMG.Summoning.FeyCelestial.Satyr." + suffix].PlannedType,
+                    "Adult melee attacks retain separate owned item identities.");
         }
 
         internal static void FrozenRosterAndPlacementCounts()

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
@@ -13,6 +15,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
@@ -27,27 +30,29 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewSprint32(ExpandedSummoningCorrectionFixture fixture)
         {
+            CaptureSprint32ControlGraphs();
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendSupportPhase)
             {
                 foreach (int frame in ReviewLillend32Support(fixture)) yield return frame;
                 yield break;
             }
-            // Two resettable RTWP cases, each with a fresh exact-owner summon.
+            // Resettable RTWP cases, each with a fresh exact-owner summon.
             // Final mode/profile/persistence qualification remains separate.
             CreateExpandedSummoningCorrectionHostile(fixture);
             foreach (bool immune in new[] { false, true })
                 foreach (int frame in ReviewSatyr32Control(fixture, immune)) yield return frame;
+            foreach (int frame in ReviewSatyr32Control(fixture, true, true)) yield return frame;
         }
 
-        private IEnumerable<int> ReviewSatyr32Control(ExpandedSummoningCorrectionFixture fixture, bool immune)
+        private IEnumerable<int> ReviewSatyr32Control(ExpandedSummoningCorrectionFixture fixture, bool immune, bool melee = false)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null;
             var target = fixture.Hostile;
             int will = target.Stats.SaveWill.BaseValue, ac = target.Stats.AC.BaseValue;
-            bool addedImmunity = false;
-            string id = immune ? "satyr-immune-fallback" : "satyr-control";
+            BlueprintFeature mindImmunity = null;
+            string id = melee ? "satyr-melee-fallback" : immune ? "satyr-immune-fallback" : "satyr-control";
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -64,7 +69,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var eligibility = fixture.Blueprints.OfType<SatyrControlEligibility>().Single(value =>
                     ReferenceEquals(value.OwningBlueprint, owner.Blueprint) && ReferenceEquals(value.Ability, fear));
                 Vector3 far; string lane, direction;
-                var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 8f,
+                var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, melee ? 1.4f : 8f,
                     out far, out lane, out direction,
                     originAllyExclusionRadius: new Feet(30).Meters + 1f);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
@@ -74,8 +79,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.SaveWill.BaseValue = -100; target.Stats.AC.BaseValue = -100;
                 if (immune)
                 {
-                    target.Descriptor.State.AddConditionImmunity(UnitCondition.Frightened);
-                    addedImmunity = true;
+                    var component = ScriptableObject.CreateInstance<BuffDescriptorImmunity>();
+                    component.Descriptor = SpellDescriptor.MindAffecting;
+                    mindImmunity = ScriptableObject.CreateInstance<BlueprintFeature>();
+                    mindImmunity.name = "KMG_Runtime_Satyr32_MindImmunity";
+                    mindImmunity.Ranks = 1; mindImmunity.ComponentsArray = new BlueprintComponent[] { component };
+                    target.Descriptor.AddFact(mindImmunity);
                 }
                 foreach (var unit in new[] { owner, target })
                 {
@@ -89,10 +98,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
                 Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
                 float score = eligibility.Score(new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } });
+                var controlScores = fixture.Blueprints.OfType<SatyrControlEligibility>()
+                    .Where(value => ReferenceEquals(value.OwningBlueprint, owner.Blueprint))
+                    .ToDictionary(value => value.Ability.name, value => value.Score(
+                        new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } }));
                 var weapon = owner.Body.PrimaryHand.MaybeWeapon;
                 bool ready = protectedClear && owner.IsAIEnabled && owner.Descriptor.State.CanAct &&
                     owner.IsInCombat && owner.IsEnemy(target) && owner.HasLOS(target) &&
                     owner.Memory.ContainsVisible(target) && score == (immune ? 0f : 1f) &&
+                    (!immune || controlScores.Values.All(value => value == 0f)) &&
                     owner.Descriptor.Resources.GetResourceAmount(resource) == 1 &&
                     weapon?.Blueprint.AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9" &&
                     owner.DistanceTo(target) <= new Feet(30).Meters;
@@ -102,6 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["canAct"] = owner.Descriptor.State.CanAct, ["aiEnabled"] = owner.IsAIEnabled,
                     ["distanceMeters"] = owner.DistanceTo(target), ["weaponRangeFeet"] = weapon?.AttackRange.Value,
                     ["eligibility"] = score, ["targetFearImmune"] = target.Descriptor.State.HasConditionImmunity(UnitCondition.Frightened),
+                    ["controlEligibility"] = JObject.FromObject(controlScores), ["targetMindImmune"] = mindImmunity != null,
                     ["fearUses"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                     ["fixtureWillBase"] = -100, ["fixtureAcBase"] = -100,
                     ["fixtureResourceDebits"] = 0, ["protectedPartyOutside"] = protectedClear },
@@ -133,9 +148,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.IsFinished && value.Result == UnitCommand.ResultType.Success);
                         var attack = commands.OfType<UnitAttack>().FirstOrDefault(value =>
                             value.AiAction != null && value.IsFinished && value.Result == UnitCommand.ResultType.Success);
+                        var change = commands.OfType<UnitSwitchHandEquipmentSet>().FirstOrDefault(value =>
+                            value.AiAction?.name == "KMG_Summoning_FeyCelestial_Satyr_MeleeAi" &&
+                            value.IsFinished && value.Result == UnitCommand.ResultType.Success);
+                        var planQuery = new UnitAttack(target); planQuery.Init(owner);
+                        var plan = planQuery.CreateFullAttack().Select(value => value.Hand.MaybeWeapon.Blueprint).ToArray();
+                        bool weaponPlan = melee ? plan.Length == 2 &&
+                            plan[0].name == "KMG_Summoning_FeyCelestial_Satyr_Dagger" &&
+                            plan[1].name == "KMG_Summoning_FeyCelestial_Satyr_Horns" :
+                            plan.Length == 1 && plan[0].AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9";
                         UnitCommand resolved = immune ? (UnitCommand)attack : cast;
                         bool outcome = immune ? cast == null && attacks.WeaponAttacks.Count > 0 &&
-                            owner.Descriptor.Resources.GetResourceAmount(resource) == 1 :
+                            owner.Descriptor.Resources.GetResourceAmount(resource) == 1 && weaponPlan &&
+                            (melee ? change != null && economy.Count(change) == 1 && economy.Exact(change, false) &&
+                                attacks.WeaponAttacks.Any(value => value.Weapon.Blueprint.name == "KMG_Summoning_FeyCelestial_Satyr_Dagger") :
+                                attacks.WeaponAttacks.All(value => value.Weapon.Blueprint.AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9")) :
                             cast != null && target.Descriptor.State.HasCondition(UnitCondition.Frightened) &&
                             owner.Descriptor.Resources.GetResourceAmount(resource) == 0 &&
                             saves.Rows.Any(value => (int)value["dc"] == 18 && (string)value["caster"] == owner.UniqueId &&
@@ -146,6 +173,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["frames"] = frames, ["aiTicks"] = ticks,
                             ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                             ["saves"] = saves.Rows, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
+                            ["weaponEvents"] = new JArray(attacks.WeaponAttacks.Select(value => value.Weapon.Blueprint.name)),
+                            ["queriedFullAttackPlan"] = new JArray(plan.Select(value => value.name)),
+                            ["planQueryWasNotIssued"] = true,
                             ["targetFrightened"] = target.Descriptor.State.HasCondition(UnitCondition.Frightened),
                             ["fearUses"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                             ["nativeBuffs"] = new JArray(target.Descriptor.Buffs.RawFacts.OfType<Buff>()
@@ -154,7 +184,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["cl"] = value.Context.Params.CasterLevel, ["dc"] = value.Context.Params.DC })),
                             ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["fixtureCastCommands"] = 0,
                             ["fixtureAttackCommands"] = 0, ["forcedRolls"] = 0, ["fixtureResourceDebits"] = 0 },
-                            immune ? "Native AI rejects an explicitly fear-immune hostile and fires its real bow without spending Fear." :
+                            melee ? "Native AI pays for its hand-set switch and attacks with its dagger; the queried melee full-attack plan also contains its secondary horns. This does not alone prove a resolved two-hit full attack." :
+                            immune ? "Native AI rejects all control against a mind-affecting-immune hostile and fires its real bow without spending Fear; the queried ranged full-attack plan contains no out-of-reach horns." :
                                 "Native AI casts Fear at DC18, spends one owned resource and a normal action, and applies native Frightened.");
                         if (!exact) throw new InvalidOperationException("Satyr native AI observation failed: " + id);
                     }
@@ -167,7 +198,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Commands.InterruptAll(true);
                 foreach (var buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
                     owner != null && ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray()) target.Descriptor.Buffs.RemoveFact(buff);
-                if (addedImmunity) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Frightened);
+                if (mindImmunity != null)
+                {
+                    target.Descriptor.RemoveFact(mindImmunity);
+                    foreach (var component in mindImmunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component);
+                    UnityEngine.Object.DestroyImmediate(mindImmunity);
+                }
                 target.Stats.SaveWill.BaseValue = will; target.Stats.AC.BaseValue = ac;
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture);

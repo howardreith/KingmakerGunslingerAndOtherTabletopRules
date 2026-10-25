@@ -1,9 +1,14 @@
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
 `reviewPhase=satyr-control` or `reviewPhase=lillend-support`, with automatic exit. The existing save-free first-area
 fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh
-Satyr refusing the reset hostile with explicit native frightened immunity and
+Satyr refusing the reset hostile with explicit native mind-affecting buff immunity and
 using its ordinary bow. It records real commands, action costs, resource debit,
 saves and weapon events; no fixture-issued cast/attack or supplied roll. A
+third close immune case observes the native hand-set switch and dagger fallback.
+Queried full-attack plans check dagger/secondary horns and distant bow/horns
+exclusion; those queries do not alone prove resolved full attacks. Selected
+existing Charm/Sleep/Fascinate graphs are captured more deeply in the same run.
+A
 bounded origin-clearance parameter protects party actors from the cone. The
 single owned hostile is reset between cases and retained for exact teardown.
 This RTWP seam probe does not qualify other spells, turn-based play, public

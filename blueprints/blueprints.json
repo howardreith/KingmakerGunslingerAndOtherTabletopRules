@@ -59503,6 +59503,118 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.Dagger",
+      "guid": "25698949bdea41d2bcbe13ad8783aa4d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.DaggerType",
+      "guid": "b2ba7766959344fb8536d4a3f7281441",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.Horns",
+      "guid": "fe9b4722730744dfadbf0ae3b10c07f9",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.HornsType",
+      "guid": "261b62148fec4ebf909792ab4976683c",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.CharmPerson",
+      "guid": "5a14ce54f22e40eaa2171c0d9a0d1a7b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.CharmPersonAi",
+      "guid": "b60cce9314794fd5bf7d9d91b000ca1e",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.CharmPersonEligibility",
+      "guid": "e60f472c497b46e9a420a1b6b3c1f6ed",
+      "plannedType": "SatyrControlEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.Sleep",
+      "guid": "f30aeaff3d9943fbb9ddfc004cd7f598",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.SleepAi",
+      "guid": "7cb02f454b394f0e92192cb2e080cac5",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.SleepEligibility",
+      "guid": "7dc6e7c07f444f7c99ff883adf48cf29",
+      "plannedType": "SatyrControlEligibility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.MeleeAi",
+      "guid": "8f3ba262beaa42cb83fdb4625c69e291",
+      "plannedType": "BlueprintAiSwitchWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.MeleeEligibility",
+      "guid": "03bb32e05a5d4374971252a2bb855770",
+      "plannedType": "SatyrWeaponChoice32",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.RangedAi",
+      "guid": "5ed831fb067d4bf7ae860cf89a05efc0",
+      "plannedType": "BlueprintAiSwitchWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.Satyr.RangedEligibility",
+      "guid": "b4464bae954f4b3c86dd382aa72d61d6",
+      "plannedType": "SatyrWeaponChoice32",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -13,6 +14,25 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // The first input receipt stopped inside nested conditional actions.
+        // Capture only these selected existing control graphs more deeply in
+        // the next owned native review; no new actor or separate launch.
+        private void CaptureSprint32ControlGraphs()
+        {
+            string[] ids = { "1af9d5995090e5a4185a30decf0959ad", "bb7ecad2d3d2c8247a38f44855c99061",
+                "a4fc1c0798359974e99e1d790935501d", "2d4bd347dec7d8648afd502ee40ae661",
+                "a50373fa77d30d34c8c6efb198b36921", "8a59ee053e804e2429355eecd749e4e7" };
+            var rows = new JArray(ids.Select(id => {
+                var value = BlueprintLibraryLookup.RequireExact<BlueprintScriptableObject>(
+                    BlueprintBootstrap.Library, id, "selected Sprint32 native control graph");
+                return new JObject { ["guid"] = id, ["name"] = value.name,
+                    ["graph"] = DescribeGraph(value, 0,
+                        new HashSet<object>(NativeDonorReferenceComparer.Instance), 12) };
+            }));
+            RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                "sprint32-control-graphs.json"), rows.ToString(Formatting.Indented));
+        }
+
         // Fixed research scope: no actor, save, input, native mutation or geometry export.
         // Presence/capture is not a gameplay or donor-suitability verdict.
         private RuntimeTestResult RunExpandedSummoningSprint32Inputs()
