@@ -264,7 +264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Variants.Length).Sum();
                 bool hidden = route.ParentTier == 9 &&
                     route.Multiplicity == SummonMultiplicity.One &&
-                    !SummonVisibilityCatalog.IsPublished(route) && publicExact &&
+                    SummonVisibilityCatalog.IsPublished(route) && publicExact &&
                     publicReferences == SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                     choices == publicReferences +
                         ExpandedSummoningIdentityCatalog.NativeExpandedOptionIdentityCount &&
@@ -277,9 +277,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["publicReferences"] = publicReferences, ["choices"] = choices,
                     ["iconWidth"] = routeAbility.Icon?.texture?.width,
                     ["iconHeight"] = routeAbility.Icon?.texture?.height },
-                    "Exactly one Astral SM IX root remains hidden, all released choices stay exact and the actual route resolves its128px icon.");
+                    "Since v0.0.167 exactly one Astral SM IX root is published, all released choices stay exact and the actual route resolves its 128px icon.");
                 if (!hidden) throw new InvalidOperationException(
-                    "Astral hidden route/public/icon contract failed.");
+                    "Astral released route/public/icon contract failed.");
 
                 ItemEntityWeapon hammer = owner.Body.PrimaryHand.MaybeWeapon;
                 ownedItems.AddRange(owner.Descriptor.Inventory.Items);
