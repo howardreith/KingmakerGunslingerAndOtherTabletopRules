@@ -41,7 +41,7 @@ independent sibling pools and exact native turn action debits.
 The phase owns the RTWP setup baseline until all nested cleanup frames finish;
 only explicit turn enrollment enables turn mode. A single hostile is retained
 for phase teardown and starts40m from the party before setup frames advance.
-Only the two turn phases use a private faction, following the established elemental
+The two turn phases and support-lifecycle use a private faction, following the established elemental
 native-turn fixture: AttackFactions contains only the native player faction,
 AlwaysEnemy is false, and the target is mutually hostile to the disposable caster.
 All nonplayer intake actors must be mutually nonhostile to it before combat frames
@@ -84,12 +84,16 @@ at gameplay camera for body/icon/selection and owned-resource disposal.
 This adds no save access or arbitrary caster/case input.
 
 Sprint32 fixed `support-lifecycle` selects exactly two Satyrs and two Lillends
-through the existing source-lifecycle fixture. Native Lillend toggles are
-explicitly requested ON as lifecycle preconditions; normal controllers must
+through the existing source-lifecycle fixture. A fixture-issued native Lillend
+activation command in the isolated owned combat is a lifecycle precondition;
+normal controllers must
 produce the exact CourageRecipient on the surviving owned fixture caster. Only
 one Lillend emits at a time: owner expiry is verified before sibling activation
 and fresh area/recipient-reference capture for death. Self/carrier buffs cannot
-substitute for external-recipient cleanup. This is not activation/action/AI evidence. Actual
+substitute for external-recipient cleanup. Activation state, command result,
+resource and exact recipient are recorded before a failed prerequisite can throw.
+The owned caster/hostile keep combat active through source removal; no effects or
+costs are supplied. This is not natural AI selection evidence. Actual
 native scheduler expiry, independent siblings, native death, subsequent expiry,
 nonloot equipment, body resources, source areas/grants and exact inventory reset
 are observed. The established owned-buff deadline helper is disclosed; it does
