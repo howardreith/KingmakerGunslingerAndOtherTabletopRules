@@ -1244,4 +1244,9 @@
     <Compile Include="ElementalCharacterTraitSaveTests.cs" />
     <Compile Include="..\..\src\KingmakerGunslinger\RuntimeTesting\ElementalCharacterTraitSaveContract.cs"><Link>RuntimeTesting\ElementalCharacterTraitSaveContract.cs</Link></Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="LillendVisual32Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\LillendHumanBindingPolicy.cs"><Link>Summoning\LillendHumanBindingPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\LillendTailAnimationPolicy.cs"><Link>Summoning\LillendTailAnimationPolicy.cs</Link></Compile>
+  </ItemGroup>
 </Project>

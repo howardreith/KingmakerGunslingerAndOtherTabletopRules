@@ -39,6 +39,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["guid"] = value.AssetGuid, ["name"] = value.name,
                     ["graph"] = DescribeGraph(value, 0,
                         new HashSet<object>(NativeDonorReferenceComparer.Instance), 12) }));
+                // Exact optional provider roots, including their live nested save branches.
+                // Missing provider roots are absence evidence; never fabricate a graph.
+                var optional = library.GetAllBlueprints().Where(value => value != null &&
+                    (value.AssetGuid == KingmakerGunslinger.Summoning.Sprint32Suggestion.AbilityGuid ||
+                     value.AssetGuid == KingmakerGunslinger.Summoning.Sprint32Suggestion.BuffGuid)).ToArray();
+                receipt["optionalSuggestion"] = new JArray(optional.Select(value => new JObject {
+                    ["guid"] = value.AssetGuid, ["name"] = value.name,
+                    ["graph"] = DescribeGraph(value, 0,
+                        new HashSet<object>(NativeDonorReferenceComparer.Instance), 16) }));
                 // Fixed remaining Lillend native consumers, research only.
                 // An absent mapping remains an explicit implementation question.
                 string[] names = { "Daze", "Lullaby", "Invisibility", "Light", "CombatCasting", "Hover" };
