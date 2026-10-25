@@ -1062,6 +1062,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-expanded-summoning-sprint32-native-review' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'disposable-expanded-summoning-sprints30-31-native-review' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -2258,6 +2264,17 @@ function Test-KmgSprint28ReviewPhaseScope {
         $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')
 }
 
+function Test-KmgSprint32ReviewPhaseScope {
+    param([string]$Scenario,[hashtable]$Parameters)
+    # The selected C# declaration owns the phase name; no second phase list.
+    $catalog = Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs') -Raw
+    $match = [regex]::Match($catalog, 'Sprint32SatyrControlPhase = "([a-z0-9-]+)";')
+    if (-not $match.Success) { throw 'Sprint32 phase declaration is missing.' }
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review' -and $null -ne $Parameters -and
+        $Parameters.Count -eq 1 -and @($Parameters.Keys) -ccontains 'reviewPhase' -and
+        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -ceq $match.Groups[1].Value
+}
+
 function Test-KmgSprints30And31ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     return $Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $null -ne $Parameters -and
@@ -2360,6 +2377,7 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint27-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint27ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint27 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint28-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint28ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint28 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint29-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint29ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint29 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
+    if ($Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint32ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint32 native review requires automatic exit and its exact declared phase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30And31ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprints30-31 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgCleanup2ReviewPhaseScope $Scenario $Parameters))) { throw 'Cleanup2 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
@@ -2697,6 +2715,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint29-native-review') {
         if (-not (Test-KmgSprint29ReviewPhaseScope $Scenario $Parameters)) { throw "$Scenario requires exactly one allowlisted reviewPhase." }
     }
+    elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review') {
+        if (-not (Test-KmgSprint32ReviewPhaseScope $Scenario $Parameters)) { throw 'Sprint32 requires its exact declared phase.' }
+    }
     elseif ($Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review') {
         if (-not (Test-KmgSprints30And31ReviewPhaseScope $Scenario $Parameters)) { throw "$Scenario requires exactly one allowlisted reviewPhase." }
     }
@@ -2927,6 +2948,7 @@ function New-KmgRuntimeRequest {
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
             'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
             'disposable-expanded-summoning-cleanup2-native-review')) {
             [ordered]@{ reviewPhase = [string]$Parameters.reviewPhase }
         } elseif ($Scenario -ceq

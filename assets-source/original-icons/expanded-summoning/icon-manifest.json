@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 135,
+  "count": 136,
   "icons": [
     {
       "key": "air-mephit",
@@ -3867,6 +3867,27 @@
       "blueprintSymbols": [
         "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast",
         "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed"
+      ]
+    },
+    {
+      "key": "satyr",
+      "displayName": "Satyr",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/satyr.png",
+      "productionFile": "assets/game/icons/expanded-summoning/satyr.png",
+      "sourceSha256": "3d26bd2210712523dabbedcdea3b161b8141905393e7651fc74477328d27908c",
+      "outputSha256": "80cdb1ab07aaf4d6e5486271785f974acfc8cf07d9238f9a6082682f3cc39297",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SNA.Tier4.Satyr.One",
+        "KMG.Summoning.Ability.SNA.Tier5.Satyr.OneD3",
+        "KMG.Summoning.Ability.SNA.Tier6.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Ability.SNA.Tier7.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Ability.SNA.Tier8.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Ability.SNA.Tier9.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Unit.Satyr"
       ]
     }
   ]

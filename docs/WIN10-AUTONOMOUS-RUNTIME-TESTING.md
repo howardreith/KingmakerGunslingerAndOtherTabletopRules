@@ -1,3 +1,14 @@
+Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
+`reviewPhase=satyr-control` and automatic exit. The existing save-free first-area
+fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh
+Satyr refusing the reset hostile with explicit native frightened immunity and
+using its ordinary bow. It records real commands, action costs, resource debit,
+saves and weapon events; no fixture-issued cast/attack or supplied roll. A
+bounded origin-clearance parameter protects party actors from the cone. The
+single owned hostile is reset between cases and retained for exact teardown.
+This RTWP seam probe does not qualify other spells, turn-based play, public
+routes, full presentation or persistence. Exact package and restoration apply.
+
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
 read-only mod-load audit of Satyr/Lillend candidates and required native control,
 bard/performance, spellbook, defense and weapon consumers. Empty parameters;

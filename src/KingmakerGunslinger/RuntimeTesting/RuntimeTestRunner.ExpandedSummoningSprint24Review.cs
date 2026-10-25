@@ -3669,7 +3669,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             out Vector3 target, out string survey, out string direction,
             float targetAllyExclusionRadius = 0f,
             IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null,
-            int originSearchRadiusMeters = 15)
+            int originSearchRadiusMeters = 15,
+            float originAllyExclusionRadius = 0f)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3704,7 +3705,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int nativeLosCandidates = 0;
             int allyClearCandidates = 0;
             if (originSearchRadiusMeters < 15 || originSearchRadiusMeters > 30 ||
-                originSearchRadiusMeters % 3 != 0)
+                originSearchRadiusMeters % 3 != 0 || float.IsNaN(originAllyExclusionRadius) ||
+                originAllyExclusionRadius < 0f || originAllyExclusionRadius > 30f)
                 throw new InvalidOperationException(
                     "Sprint 24 AI lane search radius is outside its fixed bounds.");
             for (int dx = -originSearchRadiusMeters;
@@ -3747,6 +3749,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Vector3.Distance(value.Position,
                                     targetPoint.clampedPosition)));
                         if (partyGap < 3.5f) continue;
+                        if (originAllyExclusionRadius > 0f &&
+                            Game.Instance.State.Units.All.Any(value =>
+                                value != null && !value.Destroyed &&
+                                !ReferenceEquals(value, owner) && !ReferenceEquals(value, targetUnit) &&
+                                !owner.IsEnemy(value) && Vector3.Distance(value.Position,
+                                    origin.clampedPosition) <= originAllyExclusionRadius + value.Corpulence))
+                            continue;
                         laneCandidates++;
                         PlaceExpandedSummoningUnit(owner,
                             origin.clampedPosition);

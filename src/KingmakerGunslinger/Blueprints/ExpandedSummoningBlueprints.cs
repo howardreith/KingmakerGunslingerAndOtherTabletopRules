@@ -146,6 +146,13 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "SatyrControlEligibility")
+                    blueprint = registry.Register<SatyrControlEligibility>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<SatyrControlEligibility>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "DretchSpellAiEligibility")
                     blueprint = registry.Register<DretchSpellAiEligibility>(identity.Symbol, () =>
                     {

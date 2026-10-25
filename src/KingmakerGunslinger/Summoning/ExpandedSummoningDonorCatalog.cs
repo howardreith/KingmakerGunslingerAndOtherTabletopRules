@@ -117,7 +117,8 @@ namespace KingmakerGunslinger.Summoning
                 "dretch|a8cbd4cdb0feaf64eab1452257c3c971|0",
                 "hound-archon|a8cbd4cdb0feaf64eab1452257c3c971|0",
                 "trumpet-archon|afe56099ff6046b40a359b7562c0424e|1",
-                "astral-deva|afe56099ff6046b40a359b7562c0424e|1"
+                "astral-deva|afe56099ff6046b40a359b7562c0424e|1",
+                "satyr|6114adae73a1338498412b3c63c946f8|1"
             });
         }
 

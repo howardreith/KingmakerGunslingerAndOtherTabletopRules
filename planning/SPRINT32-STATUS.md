@@ -54,6 +54,13 @@ reuse; Sprint 32 case admission/implementation is not yet present or proved.
 | A8 | Standalone and directly affected high-risk combined integration work; changed shared consumers retain behavior | Selected existing profile transaction and focused baseline/control cases | Standalone; high-risk combined; additional profile only for concrete dependency | Shared AI/registration/serialization or changed integrations |
 
 Early proof selects A3/A4's uncertain native seams before secondary detail.
+Selected first gameplay probe: `disposable-expanded-summoning-sprint32-native-review`,
+`reviewPhase=satyr-control`, standalone RTWP; one process, 10-15 minutes including
+staging/restoration, 600-second native deadline. Existing save-free fixture;
+fresh Satyr per positive/immune-fallback case, one owned resettable hostile.
+Expected evidence: native AI command, Will/DC18 and Frightened, real one-use
+resource and standard action, then refusal plus a real shortbow event against
+explicit native frightened immunity. No prescribed dice or issued casts/attacks.
 The final sequence is scoped to this table; necessary fresh-process/profile
 boundaries remain. Expected duration will be declared after fixture selection,
 before dispatch. A focused ordinary selection targets 15 minutes and at most
@@ -62,17 +69,38 @@ an hour without useful evidence triggers a changed approach, not a new quota.
 
 ## Candidate, evidence and questions
 
-Current candidate / source / ZIP / DLL / MVID: none. PR: not yet created.
+Development research candidate: `a7ca336f3d261ba30894abf3c78b49660410ff09`,
+purpose `sprint32-native-inputs`, version retained `0.0.167` (not a release).
+ZIP `KingmakerGunslinger-0.0.167-development-sprint32-native-inputs-a7ca336f3d26.zip`
+SHA-256 `bc91a74f6cbfa36d19588777eefd9591a061e3e977302769067aee7f03aa6e48`;
+DLL SHA-256 `688a7f62c18c24376073e9612e51b4e9ea11944b24c8770af5b323dfd43df9e7`;
+MVID `e435985a-4909-4f02-a7d2-dcb39695c655`.
+[Draft PR #74](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/74).
+Creature/publication/final candidate: not yet built.
 Independent workflow review completed; concrete findings repaired. Product review remains pending.
-Subsystem decisions: none requested or approved; feasibility investigation pending.
+Owner decisions, 2026-10-25: omit Countersong ("Don't worry about countersong");
+Suggestion is contingent on **CowWithHat's Custom Spells**, and omitted when
+that mod is absent. The owner corrected the initially named Call of the Wild
+dependency and authorized source inspection/cloning. No new safe-withdrawal
+subsystem is approved or needed for this selected integration.
+Upstream `MangledMouse/KingmakerCustomSpellsMod` commit
+`d26793c14957db6fe947986730f4143b5a84a818` defines Suggestion ability
+`3682197d956543e2a694e163b5fdcc6c`, buff `729fa06959ad4a0ca1e761b955b6ff62`.
+Its own adaptation is a fixed avoid-combat/introspection instruction, fascinate
+until harmed, minutes/level, Will negates and SR; bard2/wizard3. This integration
+will use that supplied behavior, not claim unrestricted tabletop instructions.
+Optional provider load/availability, target eligibility and persistence need
+verification. The provider is absent from the current human Mods intake.
 
-Intake storage: approximately 307–311 MB free after creating the worktree.
-This is insufficient for build/extraction/staging/restoration. Measure the
-combined peak and obtain a practical margin through the existing byte-verified
-closed-transaction duplicate cleanup route before native dispatch. Unique ZIPs,
-logs, failures, receipts, saves and protected backups must remain.
-No Kingmaker process, KMG scheduled task or compatibility lock observed at
-intake. No game/save/install transaction has been opened by this mission.
+Storage: initial approximately 307-311 MB was insufficient; verified duplicate
+cleanup recovered 3,511,693,023 bytes. Before native dispatch, the actual ZIP was
+63,058,159 bytes / 98,188,734 expanded bytes and free space was 3,382,882,304.
+After the closed/restored native transaction, free space is 3,076,726,784 bytes.
+Re-establish the declared peak-plus-margin allowance before another package or
+native dispatch through verified duplicates only; unique artifacts remain.
+No owned live transaction, game process or KMG task remains. Exact protected
+intake Compare PASS after the native audit: Mods967, saves118, references18,
+settings83, tasks0, one unchanged Steam process.
 
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all-30 public-route/body/icon
 check, standalone final integration, highest-risk combined final integration.
@@ -83,13 +111,15 @@ The prior owner acceptance is not a Sprint 32 waiver. Original dispositions:
 
 Intake: refreshed master, created isolated review worktree, read current policy
 and relevant charter, identified stale active pointers and S30–31 build gates.
-Builds/packages/native launches: 0/0/0. Restoration: not applicable; no owned
-live transaction. Timing summary will use observed timestamps; no speedup claim.
+Build-Local attempts/packages/native launches: 2/1/1. A separate focused
+production compilation passed. Native task including staging and restoration:
+255.68 seconds. Accumulated active work-category times are not yet available;
+retain timestamped logs rather than infer throughput.
 
-Next: compile one hidden development candidate for the bounded native-input
-audit, inspect actual control/performance mappings, then implement and observe
-one useful natural action and refusal/fallback per creature. This research
-route creates no actors, changes no saves and grants no presentation approval.
+Next: implement the supported hidden Satyr control/fallback and Lillend native
+support/book paths, then observe natural action and refusal/fallback. Suggestion
+will use the owner-selected optional Custom Spells provider; Countersong is an accepted omission. Lillend's final body is
+unresolved; temporary research donors grant no proxy or visual acceptance.
 
 ## Workflow checkpoint evidence
 
@@ -139,11 +169,11 @@ yet been built, so its exact selected-path refusal was expected.
 
 Workflow commit: `72a35cc3`; follow-up fixes two parent-script imports and the
 lease fixture's current-candidate lookup identified by the same review. No
-further issue found in that bounded review. Push/PR BLOCKED: sanctioned wrapper
-refused the new branch. Automatic approval review refused editing its external
-allowlist without explicit owner authority. One exact-branch approval request
-is pending in the active conversation; local authorized work continues. No
-external policy file was changed and no alternate push route was used.
+further issue found in that bounded review. The initial sanctioned push refused the branch; automatic review refused an
+external allowlist edit without explicit authority. The owner subsequently
+approved exactly this branch addition. Only that entry changed; before/after
+hashes and original bytes are retained in `push-policy-addition.json` and
+`push-policy-before-sprint32.ps1`. Sanctioned push succeeded; no alternate route.
 
 Headroom planning uses measured approximately88MB expanded package and128MB
 installed Mods: build/assembly/archive copies about400MB, extraction/deployment
@@ -169,3 +199,62 @@ explicit ignored local configuration fixed it. Narrow retest: 3/3 selected
 scenario tests PASS (6.4 seconds including build), production compilation PASS.
 Original package attempt and local-configuration failures remain in intake logs.
 Build/package attempts: 1 failed / 0 packages; native launches: 0. No transaction.
+
+## First native evidence and disposition
+
+Fresh save-free metadata audit PASS, one assertion. Runtime run
+`20261025T1422355690305Z-d7fe00b1d68f42cea23593840d806d48`, evidence directory
+`runtime-evidence/20261025T1422355423416Z-observe-expanded-summoning-sprint32-native-inputs`.
+Raw result SHA-256 `c6fe5e6ed8eaec4605e153818e497823a7f5a15afeb47a8a324d076ca5a355f2`.
+Profile transaction `compat-20261025T142009Z-423c29fb9671`: Restored,
+restorationVerified true, exact feature settings restored, final full intake
+comparison PASS. Local task/child exits both0, 14:20:07.951-14:24:23.633 UTC.
+No actors, saves or player input were used; A1-A8 remain NOT_RUN.
+
+Observed 14 native Satyr units, no Lillend unit by name. Native Satyr archer
+`6114adae73a1338498412b3c63c946f8` has the expected adult attributes, Fey8 and
+prefab `22dfc39c941704743a5b3fd9769327a0`. Fear, Sleep, Charm Person, bard book,
+Inspire Courage/Competence and Fascinate mappings exist. No named Suggestion,
+Charm Monster or Countersong mapping was found. Charm Monster needs further
+bounded mapping review; absence alone does not establish subsystem necessity.
+Primary rules: [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
+[Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend),
+[Suggestion](https://legacy.aonprd.com/coreRulebook/spells/suggestion.html).
+
+Corrected orchestration258 PASS; isolated preflight1097 PASS. Earlier corrected
+preflight first failed a missing import, then failed because concurrent package
+creation changed its artifact snapshot. Both original logs retained; isolated
+retry changed no guard. Package validation/receipt consumer PASS. Original outer
+PowerShell build capture exit1 is retained: independent reviewer reproduced
+normal unittest stderr causing outer $? false while child exit0. The original
+build child exit was not captured, so it is not retrospectively labeled exit0.
+`package-reuse-verification.json` records independent validated artifact reuse.
+All native child exits were captured as actual process codes. Product review,
+mechanical/visual/persistence/integration qualification remain pending.
+
+## Hidden Satyr development slice
+
+Native adult archer shell, Fey8/printed attributes, racial HP/save bases,
+native DR5/cold iron, private CL8/DC18 Fear and its one-use resource, bounded
+visibility/eligibility/immunity/control/ally-cone targeting and ordinary bow
+fallback are implemented for the early probe. Six SNA IV-IX roots remain hidden;
+all 1,150 accepted roots remain public. All previous 7,372 identity records are
+retained exactly, with 29 new unit/root/private/adapter identities. This is not
+the complete Satyr: melee routine, remaining legal feats/SLAs, full support,
+publication and acceptance are still pending. No Lillend body/proxy is published.
+
+Original Satyr and Lillend paintings and exact prompts/provenance are retained
+in `assets-source/original-icons/expanded-summoning/sprint32-generation.json`.
+Satyr's 128px export was agent-inspected: horns/goat legs/bow/casting pose are
+readable. All 135 prior icon records/pixels are preserved. Lillend source is not
+yet a runtime icon. Native presentation and owner aesthetic review are separate.
+
+Focused production compile PASS (after repairing a hand-item/weapon type cast);
+route/quantity3 PASS (after correcting the catalog's old SNA cardinality).
+Original failure logs remain in `artifacts/sprint32-intake/`. New admission
+preflight1,106 PASS. Independent early-slice review identified hostile overwrite,
+lane-clearance-center mismatch and missing pre-staging phase validation. Fixed:
+reuse/reset the one owned hostile; optional bounded origin clearance in the
+existing lane helper; call the same phase predicate before staging. Narrowed
+the claimed observation to Frightened rather than unobserved flight movement.
+Reviewed production/observer compilation PASS. This is not final product review.
