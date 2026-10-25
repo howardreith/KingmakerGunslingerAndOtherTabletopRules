@@ -45,6 +45,7 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'disposable-expanded-summoning-sprint28-native-review',
         'disposable-expanded-summoning-sprint29-native-review',
         'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
         'disposable-expanded-summoning-cleanup2-native-review')
 }
 

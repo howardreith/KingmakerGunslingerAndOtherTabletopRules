@@ -2069,4 +2069,9 @@
     <Compile Include="RuntimeTesting\ElementalCharacterTraitSavePlan.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ElementalCharacterTraitSave.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Summoning\SatyrControlEligibility.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Satyr32.cs" />
+  </ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" /></ItemGroup>
 </Project>

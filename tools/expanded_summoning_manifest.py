@@ -78,6 +78,7 @@ def suppressed_keys():
     return set(re.findall(r'"([a-z0-9-]+)"', match.group(1)))
 
 DONOR_NAMES = {
+    "6114adae73a1338498412b3c63c946f8": "CR4_SatyrShortbowStandard",
     "afe56099ff6046b40a359b7562c0424e": "MovanicDevaSummoned",
     "da807351572c540478b703957d863e68": "CR5_ManticoreStandard",
     "61dd71e874b16f742a0f783314105553": "CR7_HillGiantStandart",
@@ -872,6 +873,12 @@ def planned():
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlastAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlastEligibility", "TrumpetBlastEligibility"),
 
+        ("KMG.Summoning.FeyCelestial.Satyr.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.FeyCelestial.Satyr.Fear", "BlueprintAbility"),
+        ("KMG.Summoning.FeyCelestial.Satyr.FearResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.FeyCelestial.Satyr.FearAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.FeyCelestial.Satyr.FearEligibility", "SatyrControlEligibility"),
+        ("KMG.Summoning.FeyCelestial.Satyr.Brain", "BlueprintBrain"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",

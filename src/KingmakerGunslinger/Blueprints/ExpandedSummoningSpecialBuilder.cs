@@ -677,6 +677,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSprint29Giants(library, bySymbol, extraplanar);
             ConfigureLemure30(library, bySymbol, extraplanar);
             ConfigureDretch30(library, bySymbol, extraplanar);
+            ConfigureSatyr32(library, bySymbol);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
             ConfigureTrumpet31(library, bySymbol, extraplanar);
             ConfigureAstralDeva31(library, bySymbol, extraplanar);

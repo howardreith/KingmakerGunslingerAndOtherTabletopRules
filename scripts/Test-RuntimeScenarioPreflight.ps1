@@ -178,6 +178,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
     'disposable-expanded-summoning-sprints30-31-native-review',
+    'disposable-expanded-summoning-sprint32-native-review',
     'disposable-expanded-summoning-cleanup2-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
@@ -1974,6 +1975,14 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
     $s29RequestArgs.Parameters.persistenceScope = 'giant-humanoids-ii'
     $s29RequestArgs.ExitAfterCompletion = $false
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s29RequestArgs } ('s29-save-reject-no-exit-' + $phase)
+}
+
+$s32Args = @{Scenario='disposable-expanded-summoning-sprint32-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='satyr-control'})) 's32-satyr-control-admitted'
+Assert-True (Test-KmgExactSummoningRuntimeBoundary $s32Args.Scenario) 's32-exact-restoration-boundary'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='satyr-control'} } 's32-no-exit-refused'
+foreach ($bag in @(@{}, @{reviewPhase='unknown'}, @{reviewPhase='Satyr-Control'}, @{ReviewPhase='satyr-control'}, @{reviewPhase='satyr-control';saveName='KMG_AUTOMATION_WORKING'}, @{reviewPhase=@('satyr-control')})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters $bag } 's32-unselected-scope-refused'
 }
 
 $s3031Args = @{Scenario='disposable-expanded-summoning-sprints30-31-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}

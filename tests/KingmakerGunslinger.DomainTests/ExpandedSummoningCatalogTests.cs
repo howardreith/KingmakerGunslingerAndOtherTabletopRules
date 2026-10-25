@@ -6,6 +6,29 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningCatalogTests
     {
+        internal static void SatyrHiddenRoutesPreservePublishedSurface()
+        {
+            var satyr = ExpandedSummoningCatalog.All.Single(value => value.Key == "satyr");
+            Assertions.False(satyr.MonsterTier.HasValue, "Satyr has no Summon Monster placement.");
+            Assertions.False(satyr.MonsterTemplated, "Satyr has no alignment template children.");
+            var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
+                .Where(value => value.Creature.Key == "satyr").OrderBy(value => value.ParentTier).ToArray();
+            Assertions.True(routes.Select(value => value.ParentTier).SequenceEqual(new[] { 4, 5, 6, 7, 8, 9 }),
+                "Satyr must occupy exactly SNA IV through IX.");
+            Assertions.True(routes.Select(value => value.Multiplicity).SequenceEqual(new[] {
+                SummonMultiplicity.One, SummonMultiplicity.OneD3, SummonMultiplicity.OneD4PlusOne,
+                SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne }),
+                "Satyr quantities must propagate from its own tier.");
+            Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)),
+                "Unqualified Satyr routes must remain hidden.");
+            var prior = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
+                .Where(value => value.Creature.Key != "satyr").ToArray();
+            Assertions.Equal(1150, prior.Length, "Accepted public route surface must be preserved.");
+            Assertions.True(prior.All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
+            SummonVisibilityCatalog.Validate();
+        }
+
         internal static void FrozenRosterAndPlacementCounts()
         {
             ExpandedSummoningCatalog.Validate();

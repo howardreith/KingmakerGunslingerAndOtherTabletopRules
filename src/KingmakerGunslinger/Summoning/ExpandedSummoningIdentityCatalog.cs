@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 122;
-        internal const int LogicalAbilityCount = 1150;
+        internal const int UnitCount = 123;
+        internal const int LogicalAbilityCount = 1156;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 491;
+        internal const int SpecialIdentityCount = 497;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -800,6 +800,12 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlastAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlastEligibility", "TrumpetBlastEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Fear", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearEligibility", "SatyrControlEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

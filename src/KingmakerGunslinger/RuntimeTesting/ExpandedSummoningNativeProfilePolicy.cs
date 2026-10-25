@@ -4,6 +4,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string Sprint32SatyrControlPhase = "satyr-control";
         internal const string OutsiderBodyPhase = "outsider-bodies";
         internal const string SourceLifecyclePhase = "source-lifecycle";
         internal const string DefenseConsumersPhase = "defense-consumers";
@@ -183,6 +184,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return parameters == 1 && Sprint28Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview)
                 return parameters == 1 && Sprint29Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview)
+                return parameters == 1 && reviewPhase == RuntimeTestScenarioCatalog.Sprint32SatyrControlPhase;
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview)
                 return parameters == 1 && Sprints30And31Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)

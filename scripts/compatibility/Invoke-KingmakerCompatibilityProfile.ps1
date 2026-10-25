@@ -116,6 +116,7 @@ param(
         'disposable-expanded-summoning-sprint28-native-review',
         'disposable-expanded-summoning-sprint29-native-review',
         'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
         'disposable-expanded-summoning-cleanup2-native-review',
         'summon-same-turn-activation',
         'summon-same-turn-acadamae',
@@ -262,6 +263,7 @@ $sprint22ReviewScenario = @($Scenario | Where-Object { $_ -cin @(
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
     'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
     'disposable-expanded-summoning-cleanup2-native-review') }).Count -gt 0
 if ($assetAttributionScenario -and $Scenario.Count -ne 1) {
     throw 'Asset attribution must run as one fresh-process profile scenario.'
@@ -324,6 +326,8 @@ if ($moduleScenario) {
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $Parameters.reviewPhase -cnotin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn','hound-disarm','shared-circles','archon-boundaries','public-routes','final-integration','boundary-lemure','boundary-dretch','boundary-hound-archon','boundary-lantern-archon','boundary-astral-deva','boundary-trumpet-archon','celestial-cleave')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and
             -not (Test-KmgCleanup2ReviewPhaseScope -Scenario $Scenario[0] -Parameters $Parameters)) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint32-native-review' -and
+            -not (Test-KmgSprint32ReviewPhaseScope -Scenario $Scenario[0] -Parameters $Parameters)) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
             $Parameters.reviewPhase -cnotin @('rtwp-foundation', 'turn-based-commands',
                 'gorgon-breath-rtwp', 'gorgon-breath-turn-based',
@@ -529,6 +533,7 @@ try {
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
             'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
             'disposable-expanded-summoning-cleanup2-native-review',
             'working-save-expanded-summoning-creature-review')) {
             $arguments.Parameters = $Parameters
@@ -601,6 +606,7 @@ try {
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
             'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
     'disposable-expanded-summoning-cleanup2-native-review')) {
             $configurationId += '-' + [string]$Parameters.reviewPhase
         }
@@ -612,6 +618,9 @@ try {
         }
         if ($name -ceq 'disposable-expanded-summoning-sprint29-native-review') {
             $configurationId = 's29-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
+        }
+        if ($name -ceq 'disposable-expanded-summoning-sprint32-native-review') {
+            $configurationId = 's32-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
         }
         if ($name -ceq 'disposable-expanded-summoning-sprints30-31-native-review') {
             $configurationId = 's30-31-' + $ProfileId + '-' + [string]$Parameters.reviewPhase
