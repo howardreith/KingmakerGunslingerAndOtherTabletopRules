@@ -1,12 +1,22 @@
-# Sprints 30–31 — final public candidate preparation
+# Sprints 30-31 - RELEASED / STOP
 
-The current owner instruction authorizes unattended functional closeout within cumulative600 charged minutes and30 actual game launches; candidate admissions remain counted without a separate build ceiling. Preserve the persistent authority/history in `artifacts/closeout-triage/CLOSEOUT-BUDGET.json`. Readiness and master integration are complete. No new campaign, budget reset or Sprint32.
+Stable [v0.0.167](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.167) is published from tested source `07166abedd17ec1abcf3a4806cd0939ff5c543c9`.
+Product PR66 merged as `272b729f4094ce7bb5fa1ea9495c00d66f7d2a1d`. Actual downloaded ZIP/manifest/checksums,
+contained DLL/MVID, source/merge/tag lineage and stable release state are verified.
+The laptop and original Working bytes/metadata are restored exactly.
 
-HOWARD-LAPTOP only; product/build/test/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s30-31`; draft PR66. Hidden H1–H9 now have complete scoped PASS evidence under their original artifact identities, including H7 ordinary Cleave, H8 prepared casting/Aid/Banishment and H9 Lantern Aid. Original failed aggregates remain failed. The current public source candidate has 1,150 generated placements +29 retained wrappers =1,179 visible choices: five additions,23 new routes and seven preserved Lantern routes.
+The owner directed release with three final executions explicitly deferred:
+all 30 public routes/body/icons, standalone integration and high-risk combined
+integration. They remain NOT_RUN; acceptance is
+OWNER_ACCEPTED_WITH_DEFERRED_FINAL_CHECKS, not complete qualification.
+The 2,747-check complete gate, six fresh persistence processes /149 assertions,
+and 39 scoped reused complete mechanics cases retain their actual provenance.
 
-Next: finish the narrow public-source checks and dependency binding, freeze source/assets/observers/version/publication inputs, then one complete final build/package gate. Qualify all30 routes/body/icons, two mixed persistence envelopes in six genuinely fresh processes and two final integration profiles on those exact bytes. Only after every required row passes: publisher preflight/dry-run, product merge, exact-byte stable release, actual download/lineage verification, exact intake/Working restoration and final-records merge. Current package and machine-local evidence are development proof, not final-public qualification.
-
-The laptop and original Working fixture are restored. Keep guarded unelevated Steam640820 execution, current intake capture, owned lease and exact restoration. No source/DLL change during native transactions. Recover only verified redundant owned scratch; preserve canonical archives, unique raw evidence, references and original save backups. Routine in-scope repairs are delegated; safety/permission/scope failure, lack of diagnostic progress or the cumulative ceiling stops new dispatch. See [current status](planning/SPRINT30-31-STATUS.md) and [candidate surface](planning/SPRINT30-31-RELEASE-EVIDENCE.json). Accepted rules and rough visuals remain closed.
+No rebuild or game launch was used for publication or final records. Do not
+resume old build/run instructions below. No Sprint 32 or new work is selected.
+See [current status](planning/SPRINT30-31-STATUS.md),
+[coverage](docs/SPRINT30-31-COVERAGE.md), and
+[release identities](planning/SPRINT30-31-RELEASE-EVIDENCE.json).
 
 ## Prior pilot checkpoint (historical, superseded chronology)
 

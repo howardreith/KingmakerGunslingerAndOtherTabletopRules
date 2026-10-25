@@ -1,8 +1,25 @@
 {
   "schemaVersion": 1,
   "mission": "Sprints3031OutsiderCelestialPilot",
-  "status": "PUBLIC_TEST_CANDIDATE_NOT_QUALIFIED",
-  "releaseEligible": false,
+  "status": "RELEASED_STOP",
+  "qualificationStatus": "OWNER_ACCEPTED_WITH_DEFERRED_FINAL_CHECKS",
+  "fullyQualified": false,
+  "ownerAcceptedRelease": true,
+  "ownerInstruction": "Codex - could you please just finalize the work, merge it to the default branch, and build and cut a new release? IF there are issues I'll address them in the next run.",
+  "releaseUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.167",
+  "tag": "v0.0.167",
+  "tagObject": "fa5d3c5cce12fb137939b7c3255045fd5341503f",
+  "productPr": 66,
+  "productMerge": "272b729f4094ce7bb5fa1ea9495c00d66f7d2a1d",
+  "testedSource": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+  "sourceFingerprint": "14233c459133cf55c4000d53df55bbd660efea331b12c6421ffc6f78c95d654a",
+  "zipSha256": "ce071cf753dbbe57eea5c0535702c790c62b9a8e14c1270298b3fee506c62094",
+  "dllSha256": "1a1d8715efe4a156c7dfbf2a8dbf29e4a363d1b1eacf508c37a9643c3fc096ef",
+  "dllMvid": "628b90a5-f69d-434d-939a-47a9dd82694f",
+  "publicManifestSha256": "af4f2a953936aa6f396bf9e972c8d90180b158bbf1547eaf8599e4d71ff27a11",
+  "publicChecksumsSha256": "ca9e9622523cf16ab5a63534154b235a9f6115e9a13553a1425ccfa83a840996",
+  "publicDownloadsVerifiedUtc": "2026-10-25T12:56:13.1569483Z",
+  "packageEntries": 415,
   "publicSurface": {
     "generatedPlacements": 1150,
     "retainedNativeWrappers": 29,
@@ -14,13 +31,122 @@
     "newRoutes": 23,
     "preservedLanternRoutes": 7
   },
-  "hiddenMechanics": "39 complete scoped development rows retain their original provenance; final fresh qualification pending.",
-  "pending": [
-    "complete final build/package gate",
-    "all30 public routes and inventory/body/icon integration",
-    "six fresh mixed persistence processes",
-    "two final integration profiles",
-    "publisher and actual public-asset verification"
+  "fullSourceBuildPackageGate": {
+    "registered": 2747,
+    "exitCode": 0,
+    "elapsedSeconds": 107.5,
+    "executed": 2747,
+    "failures": 0,
+    "unfiltered": true
+  },
+  "freshPersistence": [
+    {
+      "stage": "on-prepare",
+      "result": "PASS",
+      "runId": "20261025T0957353024759Z-1fedd57f90f4413d8f3ed6e0721f4ae0",
+      "source": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+      "rawSha256": "a7b3807213159c39efcab09d08acb5e3d6ac6d98509711204ddfe9a82ab02a96",
+      "executionReceiptSha256": "736a726463894f849b43d5b550cd510a5392b4fd6a36242cdf814db3ac822bdf",
+      "assertions": 35,
+      "freshProcess": true,
+      "restorationVerified": true
+    },
+    {
+      "stage": "on-cleanup",
+      "result": "PASS",
+      "runId": "20261025T1005367109796Z-32b2584145fe4b71a3e86da93c60e927",
+      "source": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+      "rawSha256": "71d2a092d3cb7dbb0ebf04b29fb12d4ec01c23bb3b643e02c7468b71905c7a03",
+      "executionReceiptSha256": "582d47d8804a97c32c1aad13f54c2073be97cfea59493a53dacda719924fe0b0",
+      "assertions": 32,
+      "freshProcess": true,
+      "restorationVerified": true
+    },
+    {
+      "stage": "on-absent",
+      "result": "PASS",
+      "runId": "20261025T1013096619271Z-91bed2fe6c0a4273982f2663fd69c9dc",
+      "source": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+      "rawSha256": "3b6c65379811363c17a77cea06ef92b89dd1c68a08d521a0ad3eb25607245235",
+      "executionReceiptSha256": "3169b0ede0ad277b6692a3be8e3eb3e7596c3adcc90b932f580a4cab7348cac7",
+      "assertions": 7,
+      "freshProcess": true,
+      "restorationVerified": true
+    },
+    {
+      "stage": "off-prepare",
+      "result": "PASS",
+      "runId": "20261025T1025478656775Z-c9f78c26deb84fa1a585975f6054126c",
+      "source": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+      "rawSha256": "1962d0405e2c5047c9a00a642e21aaa5b560458e25eee2a7b3246c2414826bf4",
+      "executionReceiptSha256": "0736762a3f292e68525d1d1c1ebf67246660d223d52fe52eb7a59f8cfbec74a6",
+      "assertions": 35,
+      "freshProcess": true,
+      "restorationVerified": true
+    },
+    {
+      "stage": "off-cleanup",
+      "result": "PASS",
+      "runId": "20261025T1033508030183Z-b84210ce0f604e7eb43bb478baa57881",
+      "source": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+      "rawSha256": "25d1fa9438f20330e47a2a8a02915b6c7492396b0ca27448f9a2ef4d91d39b17",
+      "executionReceiptSha256": "3bf94833194fa9a2b382181136a5de8b89657896b87ef30ea1b5bdf176bd8d31",
+      "assertions": 33,
+      "freshProcess": true,
+      "restorationVerified": true
+    },
+    {
+      "stage": "off-absent",
+      "result": "PASS",
+      "runId": "20261025T1041117950684Z-aedd7c76bdc84b76890caa5518b08e41",
+      "source": "07166abedd17ec1abcf3a4806cd0939ff5c543c9",
+      "rawSha256": "0f8e483aa8c5c795dd6a00e836ccd8a31aa9df77e8ff8ad51f18ba610f5b2b8f",
+      "executionReceiptSha256": "3d9352ab73f4b6f3556e23d23cb4f75bfa3967f7e76f7ef727a02deef441bd4d",
+      "assertions": 7,
+      "freshProcess": true,
+      "restorationVerified": true
+    }
   ],
+  "freshPersistenceAssertions": 149,
+  "scopedReusedMechanicsCases": 39,
+  "reusedMechanicsProvenance": "Actual original tuples and raw hashes are retained in the public release-manifest.json; neither development receipts nor aggregate failures are relabeled fresh PASS.",
+  "deferredFinalChecks": [
+    {
+      "id": "public-thirty-routes-bodies-icons",
+      "status": "NOT_RUN_OWNER_DEFERRED",
+      "description": "Grouped 23 new and 7 preserved Lantern public routes, bodies and icons on the final artifact"
+    },
+    {
+      "id": "standalone-final-integration",
+      "status": "NOT_RUN_OWNER_DEFERRED",
+      "description": "Selected final-artifact standalone integration and old controls"
+    },
+    {
+      "id": "high-risk-combined-final-integration",
+      "status": "NOT_RUN_OWNER_DEFERRED",
+      "description": "Selected final-artifact combined installed-stack integration and old controls"
+    }
+  ],
+  "originalFailuresPreserved": true,
+  "restoration": {
+    "actualIntakeExact": true,
+    "originalWorkingBytesAndMetadataExact": true,
+    "noOwnedGameTaskLeaseOrStaging": true,
+    "noPermanentDevelopmentInstallation": true,
+    "verifiedUtc": "2026-10-25T12:56:13.1569483Z"
+  },
+  "cumulativeContinuationAccounting": {
+    "asOfUtc": "2026-10-25T13:00:38.176340+00:00",
+    "candidateAdmissions": 13,
+    "actualGameLaunches": 27,
+    "chargedMinutes": 630.088,
+    "authorizedMinutes": 780,
+    "maximumGames": 32,
+    "documentedSuspensionMinutes": 327.683,
+    "newBuildsForPublication": 0,
+    "newGamesForPublication": 0,
+    "restorationOverrunSeconds": 0
+  },
+  "visualAcceptance": "Functional-first rough anatomy, rigid wings, seams, harmless clipping and texture polish remain backlog; owner personal aesthetic approval is not claimed.",
   "sprint32Started": false
 }
