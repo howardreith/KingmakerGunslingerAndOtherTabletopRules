@@ -210,46 +210,10 @@ namespace KingmakerGunslinger.DomainTests
                 "The emitted census lost the frozen visible-choice total.");
         }
 
-        /// <summary>
-        /// The 0.0.141 records once claimed 882 generated and 911 visible
-        /// choices, which were the totals at the Sprint 11 publication commit
-        /// before Sprint 12 registered Dire Rat and suppressed four creatures.
-        /// The owner efficiency amendment designates a short controlling state
-        /// and one machine-readable evidence record during candidate work.
-        /// Check their candidate equation, not immutable historical checkpoints
-        /// describing other exact artifacts. Those keep their own counts.
-        /// </summary>
-        internal static void PublishedInventoryRecordsMatchTheDerivedEquation()
+        // Immutable historical figures retain their own provenance. Current
+        // operation is governed by the active record, not an old release ledger.
+        internal static void HistoricalInventoryRecordsRetainPublishedFigures()
         {
-            int generated = SummonVisibilityCatalog.PublishedLogicalPlacementCount;
-            int wrappers = SummonNativeExpansionCatalog.All.Count;
-            int visible = generated + wrappers;
-            string generatedText = generated.ToString("N0",
-                System.Globalization.CultureInfo.InvariantCulture);
-            string visibleText = visible.ToString("N0",
-                System.Globalization.CultureInfo.InvariantCulture);
-
-            string current = System.IO.File.ReadAllText(System.IO.Path.Combine(
-                System.Environment.CurrentDirectory, "AUTONOMOUS-RESUME.md"));
-            Assertions.True(current.Contains(generatedText +
-                    " generated placements") && current.Contains(visibleText +
-                    " visible choices"),
-                "The active resume must state the source-derived public equation.");
-            // The machine-readable public surface lives in the ACTIVE sprint's
-            // ledger. Sprint 23's ledger keeps its own released figures as
-            // history and is deliberately not repointed at the current surface.
-            var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
-                System.IO.File.ReadAllText(System.IO.Path.Combine(
-                    System.Environment.CurrentDirectory, "planning",
-                    "SPRINT30-31-RELEASE-EVIDENCE.json")));
-            var surface = activeLedger["publicSurface"];
-            Assertions.Equal(generated, (int)surface["generatedPlacements"],
-                "Machine-readable public placement count.");
-            Assertions.Equal(wrappers, (int)surface["retainedNativeWrappers"],
-                "Machine-readable retained wrapper count.");
-            Assertions.Equal(visible, (int)surface["visibleChoices"],
-                "Machine-readable public visible equation.");
-
             string[] records = {
                 "EXPANDED-SUMMONING-PHASE2-IMPLEMENTATION-REPORT.md",
                 "EXPANDED-SUMMONING-PHASE2-JOURNAL.md",

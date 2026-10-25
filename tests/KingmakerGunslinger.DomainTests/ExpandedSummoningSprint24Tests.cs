@@ -437,20 +437,9 @@ namespace KingmakerGunslinger.DomainTests
                 rows.All(value => value["blueprintSymbols"].Any()),
                 "Theropod paintings are distinct and own concrete consumers.");
 
-            string package = File.ReadAllText("scripts/package.ps1");
-            string packager = File.ReadAllText(
-                "tools/create_deterministic_package.py");
-            // 363 is the base the released v0.0.154 animal-companion build
-            // qualified; Sprint 24 appends four original theropod body files
-            // The released v0.0.158 package has 374 files including the
-            // sound bank; Sprint 25 adds four body files, one icon and
-            // v0.0.159 notes: 378 base files, 380 with the bank.
-            Assertions.True(System.Text.RegularExpressions.Regex.IsMatch(package, @"\$basePackageFileCount = [0-9]+") &&
-                    package.Contains("$basePackageFileCount + 2") &&
-                    package.Contains(
-                        "--expected-file-count $expectedPackageFileCount") &&
-                    packager.Contains("371, 372, 373, 374, 376, 378, 380,"),
-                "The strict package inventory adds exactly four bodies and two icons.");
+            // Package admission is exercised by the actual packager/refusal
+            // tests; historical source-token counts are not an asset contract.
+
         }
 
         internal static void NativeReviewIsClosedAndObservesRequiredSeams()

@@ -27,6 +27,15 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(1150, prior.Length, "Accepted public route surface must be preserved.");
             Assertions.True(prior.All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
             SummonVisibilityCatalog.Validate();
+            SummonChoicePresentationPolicy.Validate();
+            Assertions.Equal("Satyr", SummonChoicePresentationPolicy.For("satyr").Label,
+                "The hidden actor must still have its deliberate menu identity.");
+            var owned = ExpandedSummoningIdentityCatalog.Build().Where(value =>
+                value.Symbol.StartsWith("KMG.Summoning.FeyCelestial.Satyr.", StringComparison.Ordinal)).ToArray();
+            var types = new[] { "BlueprintFeature", "BlueprintAbility", "BlueprintAbilityResource",
+                "BlueprintAiCastSpell", "SatyrControlEligibility", "BlueprintBrain" };
+            Assertions.True(owned.Select(value => value.PlannedType).OrderBy(value => value)
+                .SequenceEqual(types.OrderBy(value => value)), "Satyr's private native-control graph has its exact declared types.");
         }
 
         internal static void FrozenRosterAndPlacementCounts()

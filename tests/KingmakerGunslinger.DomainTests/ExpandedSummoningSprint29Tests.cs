@@ -35,9 +35,9 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(SummoningCurrentSurface.RegisteredLogicalPlacements, all.Length, "Current registered logical roots derive from the catalog; exact Sprint29 tiers remain checked above.");
             Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements, all.Count(SummonVisibilityCatalog.IsPublished),
                 "All eight new roots join the preserved published roots.");
-            Assertions.Equal(0, all.Count(value =>
-                !SummonVisibilityCatalog.IsPublished(value)),
-                "No registered root remains suppressed.");
+            Assertions.True(all.Where(value => !SummoningCurrentSurface.IsWithheld(value.Creature.Key))
+                .All(SummonVisibilityCatalog.IsPublished),
+                "No released root may become suppressed by a later hidden candidate.");
         }
 
         internal static void UnexpectedSuppressionOrMissingIdentityIsRejected()
