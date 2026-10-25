@@ -23,7 +23,7 @@ $candidate=[pscustomobject]@{commit=$head;version='0.0.167';packageSha256=('2'*6
 $native=Proof 'unit-native.json' ([pscustomobject]@{gitCommit=$head;runId='unit-prior';status='PASS';gameVersion='2.1.7b';assertions=@([pscustomobject]@{name='unit-observation';status='PASS'})})
 $receipt=Proof 'unit-development.json' ([pscustomobject]@{candidateKind='development';releaseQualification=$false;repositoryRoot='C:\Dev\KingmakerGunslingerLab\wt\s30-31';branch='codex/expanded-summoning-sprints30-31-outsider-celestial-pilot';commit=$head;sourceStateSha256=('4'*64);packageSha256=('5'*64);dllSha256=('6'*64);dllMvid='11111111-0123-4567-8901-012345678901';references=$refs})
 $profile=Proof 'unit-profile.json' ([pscustomobject]@{candidateKind='development';releaseQualification=$false;profileId='gunslinger-only';packageSha256=('5'*64);restorationVerified=$true;runtimeResults=@([pscustomobject]@{runId='unit-prior';status='PASS';runtimeResultSha256=$native.sha256})})
-$dependencyPath='src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs'
+$dependencyPath='src/KingmakerGunslinger/Summoning/LemureRacialProfile.cs'
 $blob=Get-KmgSprints3031Blob $head $dependencyPath
 $source=[pscustomobject]@{source=$head;sourceFingerprint=('4'*64);packageSha256=('5'*64);dllSha256=('6'*64);dllMvid='11111111-0123-4567-8901-012345678901';runId='unit-prior';originalVerdict='PASS';profile='gunslinger-only';gameVersion='2.1.7b';receiptProof=$receipt;profileProof=$profile;nativeProof=$native;requiredAssertions=@('unit-observation');observedOutcome='UNIT FIXTURE ONLY';observerMeaning='Unit schema fixture';environmentComparison='Same fixture references';dependencies=@(@('production','configuration','asset','shared-helper','observer')|ForEach-Object {[pscustomobject]@{category=$_;path=$dependencyPath;originalBlob=$blob;candidateBlob=$blob;comparison='IDENTICAL_RELEVANT_BYTES'}})}
 $requirements=Get-KmgSprints3031MechanicsRequirements
@@ -144,6 +144,23 @@ if(-not $blocked){throw 'Invalid scoped review hash accepted'};$checks++
 $refused=$false
 try { Assert-KmgClosureProofFiles -Ledger $ledger } catch { $refused=$true }
 if(-not $refused) { throw 'Non-batch development refusal weakened.' };$checks++
+# Only the two exact installed references added by integrated cleanup may be
+# absent from an older receipt; every original reference must remain exact.
+$extendedCandidate=$candidate|ConvertTo-Json -Depth 30|ConvertFrom-Json
+$extra=@([pscustomobject]@{relativePath='UniRx.dll';sha256='bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a'},[pscustomobject]@{relativePath='UnityEngine.ClothModule.dll';sha256='390e7edea7c242f764c4645c8582cf02bfdb3d2d86f51d4ea8d8b91ac5e57e91'})
+$extendedCandidate.references.files=@($extendedCandidate.references.files)+$extra
+$reuse=$ledger.coverage[0]|ConvertTo-Json -Depth 30|ConvertFrom-Json
+$refReview=Proof 'unit-reference-review.json' ([pscustomobject]@{mission='Sprints3031OutsiderCelestialPilot';integratedMaster='60175837909f75e7507200bc1e22a6add04ddd51';referenceAdditions=[pscustomobject]@{identities=@($extra|ForEach-Object {$_.relativePath+':'+$_.sha256});unchangedConsumerReason='UNIT FIXTURE ONLY: exact addition contract'}})
+$reuse.evidenceSources[0]|Add-Member dependencyReviewProof $refReview
+$reuse.proofs+=@($refReview)
+Assert-KmgSprints3031ReusedMechanics $reuse $extendedCandidate;$checks++
+$extendedCandidate.references.files[1].sha256=('f'*64)
+$blocked=$false;try {Assert-KmgSprints3031ReusedMechanics $reuse $extendedCandidate}catch{$blocked=$true}
+if(-not $blocked){throw 'Wrong additional reference hash accepted'};$checks++
+$extendedCandidate.references.files[1].sha256='bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a'
+$extendedCandidate.references.files[0].sha256=('e'*64)
+$blocked=$false;try {Assert-KmgSprints3031ReusedMechanics $reuse $extendedCandidate}catch{$blocked=$true}
+if(-not $blocked){throw 'Changed original reference accepted'};$checks++
 Write-Host "S30-31 publisher behavior PASS=$checks; synthetic unit fixtures only, no release qualification."
 
 $budgetPath=Join-Path $temp 'budget.json';$now=[DateTime]::UtcNow

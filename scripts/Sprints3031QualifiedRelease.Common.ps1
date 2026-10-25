@@ -75,7 +75,21 @@ function Assert-KmgSprints3031ReusedMechanics {
         }
         $oldRefs=@($receipt.references.files | ForEach-Object {$_.relativePath+':'+$_.sha256.ToLowerInvariant()} | Sort-Object -CaseSensitive)
         $newRefs=@($Candidate.references.files | ForEach-Object {$_.relativePath+':'+$_.sha256.ToLowerInvariant()} | Sort-Object -CaseSensitive)
-        if($oldRefs.Count -eq 0 -or ($oldRefs -join '|') -cne ($newRefs -join '|')) { throw 'Relevant installed references changed.' }
+        if($oldRefs.Count -eq 0 -or @($oldRefs|Where-Object {$newRefs -cnotcontains $_}).Count -gt 0) { throw 'Relevant installed references changed.' }
+        $addedRefs=@($newRefs|Where-Object {$oldRefs -cnotcontains $_})
+        if($addedRefs.Count -gt 0) {
+            # The integrated cleanup code explicitly references two assemblies
+            # already supplied by the same installed2.1.7b runtime. Never permit
+            # replacement/loss of any original reference or arbitrary additions.
+            $allowed=@('UniRx.dll:bfee7eca22156d8b95c149ba1383f065124b7b44a62ed4eafc32a5e67f6bc68a',
+                'UnityEngine.ClothModule.dll:390e7edea7c242f764c4645c8582cf02bfdb3d2d86f51d4ea8d8b91ac5e57e91')|Sort-Object -CaseSensitive
+            $review=Read-KmgSprints3031Proof $source.dependencyReviewProof
+            if(($addedRefs -join '|') -cne ($allowed -join '|') -or
+                $review.mission -cne 'Sprints3031OutsiderCelestialPilot' -or
+                $review.integratedMaster -cne '60175837909f75e7507200bc1e22a6add04ddd51' -or
+                (@($review.referenceAdditions.identities|Sort-Object -CaseSensitive) -join '|') -cne ($allowed -join '|') -or
+                [string]::IsNullOrWhiteSpace([string]$review.referenceAdditions.unchangedConsumerReason)) { throw 'Unreviewed explicit reference additions.' }
+        }
         foreach($category in @('production','configuration','asset','shared-helper','observer')) {
             if(@($source.dependencies | Where-Object {$_.category -ceq $category}).Count -eq 0) { throw "Missing dependency category: $category" }
         }
