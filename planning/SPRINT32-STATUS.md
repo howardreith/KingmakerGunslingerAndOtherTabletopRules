@@ -48,29 +48,45 @@ Intimidate. Lillend: adult Outsider7/HP73/AC20; Large +1 longsword/secondary tai
 bard7 book5/4/2, independent20-round Courage pool/Move activation, safe healing,
 control and ally-safe Sound Burst eligibility; separate one-use Charm Person SLA.
 The working candidate exposes all ten legal new roots;1150 prior roots remain
-published. Public native route qualification, pending performances and full
-acceptance remain incomplete. The cc artifact below predates publication.
+published. The ten prepared public-route checks now pass. Distinct natural
+input/spontaneous/conversion paths, pending performances and full acceptance
+remain incomplete.
 
-Current validated development source `cc74175e033a79d8f483764749e48ca2a3e975ca`:
-ZIP `8455caf8e98121484e306db25716b2e47d8ee932eeedee1524d18e09eb2b0ecf`;
-DLL `85be717720bf30b6ab7d40b576588f51aed01bb58450e87e033a0d5e0f2364e7`;
-MVID `2715abbd-148a-4354-8892-b0742ae9717e`.
-SourceState `fa0faf6acf7420a959ac0d345dcfdc8fdaf47f208017ad94c905baaa3f8b7cad`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/cc74175e033a/`.
-Wrappers,22 selected/2753 registered checks, exact-reference compile and strict
-419-file package PASS. This is a development candidate, not final qualification.
+Current validated development source `392728874ba2ef5519078dedaaacfc247d0f90d2`:
+ZIP `9ca155b12438c3cc2a91e121ee51545062fd3f447cba745caab1d1eda43b3eb5`;
+DLL `0322f4eebb62119b38c6b91f7482a8b7e1913585f2d769165264ed35d549b29f`;
+MVID `a1c361a2-b3a4-4fe6-929a-89c46e41b064`.
+SourceState `16c944d5335cee94bf315b6fbea6f4177347a79578abb555f6c143abae60bc6d`.
+Canonical path `artifacts/development-candidates/sprint32-lillend-support/392728874ba2/`.
+Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
+419-file package PASS. Development candidate only; final gate/qualification pending.
 
-Fresh cc native executions, standalone:
+Fresh392 standalone executions:
 
-| Case | Result | Observed behavior | Local evidence |
+| Case | Native result | Observed scope | Local evidence |
 |---|---|---|---|
-| Satyr turn | PASS11/11 | Nature+10/live Int/sibling isolation; native Fear and one resource; immune bow; Move hand switch then actual dagger/horns completed plan with normal full-round debit | `artifacts/sprint32-satyr-turn-cc74175e/`; raw folder `20261025T2243084094213Z-disposable-expanded-summoning-sprint32-native-review` |
-| Lillend turn | PASS10/10 | Nature+9/live Int/sibling isolation; Move Courage, ally+2, exact native upkeep20-to19-to18 in owner rounds1/2; actual sword/sword/tail completed plan; separate Standard healing/own slot2-to1, sibling2 | `artifacts/sprint32-lillend-turn-cc74175e/`; raw folder `20261025T2248529144541Z-disposable-expanded-summoning-sprint32-native-review` |
+| Satyr public prepared routes | PASS12/12 | Druid20 SNA IV-IX; counts1/1/5/2/3/2; one slot each;120s each; native public inventory/body/icon/selection/reset | `artifacts/sprint32-satyr-routes-39272887/`; raw `20261025T2324526063522Z-disposable-expanded-summoning-sprint32-native-review` |
+| Lillend public prepared routes | PASS10/10 | Wizard20 SM VI-IX; counts1/3/2/2; one slot each;120s each; native public inventory/original body/icon/selection/owned-resource reset | `artifacts/sprint32-lillend-routes-39272887/`; raw `20261025T2331344042836Z-disposable-expanded-summoning-sprint32-native-review` |
+| Support lifecycle | FAIL1; cleanup PASS2 | Quiet toggle setup did not establish exact external CourageRecipient; no lifecycle behavior passed | `artifacts/sprint32-support-lifecycle-39272887/`; raw `20261025T2336582876467Z-disposable-expanded-summoning-sprint32-native-review` |
 
-Both attack traces prove final native Success at the actual plan's end before
-terminal Interrupt. This proves mechanical completion, not animation completion
-or the exact interruption caller. Private-faction ownership guards pass without
-modifying intake actors. Original clock/terminal failures remain immutable.
+Agent inspected both gameplay-camera captures: recognizable Satyr and visible
+original winged-serpent Lillend. Crowded rest views do not prove motion/contact,
+full deformation/lifecycle/performance or personal aesthetic approval. The
+existing prepared helper synchronously pumps native commands/animations; it
+proves the declared cast/slot/quantity/duration scope, not natural input timing.
+Its positive-route `withinCastRange` diagnostic is an unassigned default, not an
+observed failed range check; actual range remains for natural-input observation.
+
+Satyr's outer reader originally FAILed on an invented `sprint32-phase` assertion.
+Original exit/error/reader remain immutable. Corrected reader verifies immutable
+result hash, actual accepted request phase/RunId, all eleven core requirements
+and every native verdict; reviewed reuse PASS, no new launch. Other two readers
+used the actual request contract before dispatch. Native result itself was PASS12.
+
+Lifecycle root cause remains unobserved; classify as fixture prerequisite not
+established, without assigning a product defect. Next bounded change reuses the
+proven owned combat activation path and records command/resource/recipient state
+before removal; do not repeat unchanged quiet-toggle setup.
 
 Knowledge(nature) uses native Lore Nature identification with each owner's live
 Intelligence. Satyr has six ranks plus Fey class skill; Lillend has seven native
@@ -86,10 +102,14 @@ Survival; Lillend Fly/Perform/Survival. Sense Motive shares Lillend's+13 Percept
 mapping, not an independent native check. Survival is not merged into Nature.
 Reconcile these against applicable accepted scope before final completion.
 
-Reviewed reuse on earlier bytes:2d optional-provider Suggestion PASS7/7 and
+Reviewed reuse on earlier bytes:cc Satyr turn PASS11/11 and Lillend turn PASS10/10
+prove live Nature/sibling isolation, normal control/healing actions, exact completed
+attack plans and native Courage upkeep20-to19-to18. Final Success acts precede
+terminal Interrupt; this proves mechanics, not animation completion/caller.
+2d optional-provider Suggestion PASS7/7 and
 standalone Lillend support/body cleanup PASS11/11;0723 Satyr RTWP control/refusal/
-fallback PASS9/9. The cc product change is only Nature; new attack tracing is
-turn-only. These old executions are not fresh cc qualification. Suggestion proved
+fallback PASS9/9. Since cc, production changed only publication; the new fixture changes do not
+change these combat mechanics. These are reviewed reuse, not fresh392 executions. Suggestion proved
 natural Satyr DC17/CL8 and Lillend DC16/CL7 casts, standard costs, native duration,
 active-effect refusal and own level2 slot debit. Positive Will/high SR, elapsed
 expiry, damage break and provider cold load remain NOT_RUN. Lillend body cleanup
@@ -128,51 +148,38 @@ P2 findings (nested links/default inclusion) are closed. Full final independent 
 remains pending. Body draft read-only review found no binding/lifecycle blocker;
 corrected exact mesh pin/provenance and deterministic package's two-file count.
 
-Latest transaction `compat-20261025T224634Z-b01d75f1c126` restored/verified
-22:51:01.6995512UTC. Protected Compare PASS: Mods967/saves118/references18/settings83,
-tasks0/one unchanged Steam. No owned live game/task/transaction remains.
+Latest transaction `compat-20261025T233432Z-3cd9044ba52e` restored/verified
+23:39:01.1994536UTC. Every new transaction protected Compare PASS:
+Mods967/saves118/references18/settings83/tasks0/one unchanged Steam. No owned live
+transaction/game/task remains. Original Unity logs copied before later launches.
 
-Measured combined build/extract/stage/restore peak1.1GB plus2GB practical margin.
-Latest approved cleanup22:33:47UTC removed16 verified reproducible closed S29 package
-extractions, retaining exact ZIPs/evidence/receipts/backups/saves. Recovered
-1,342,958,720bytes; free4,722,253,824bytes; protected Capture/Compare PASS. Plan SHA
-`f744c0747df66a7131490f7c1d7ee6fd531f4fbf6edd5b4ddc3f0017c7094890`.
-Local selection/script `artifacts/sprint32-intake/*s29-review-margin*`.
-Recheck headroom before each build/staging selection.
+Working disk floor is measured1.1GB peak plus2GB margin. Before the third native
+transaction free3,414,593,536bytes; remeasure and use the approved exact duplicate
+extraction cleanup route before another package/staging batch. Prior cleanup,
+plan SHA and protected comparisons remain in history; unique ZIPs/raw failures/
+receipts/backups/saves are retained.
 
-Build-Local attempts/validated development packages/native launches:30/20/25.
-Latest cc wrappers279.810s(Satyr)/269.268s(Lillend); native114.782s/109.281s.
-After both transactions free4,158,525,440bytes; recheck before staging.
-Current focused compile27s/tests1s; earlier measured subsets stay in history.
-Approximate current work since21:18UTC is mainly observer repair/review and native
-supervision; overlapping work prevents honest summed category totals. Complete
-active implementation/observer/build/native/owner-wait totals remain unavailable.
+Build-Local attempts/validated development packages/native launches:31/21/28.
+Latest full build log elapsed254.175s; preceding unused c6 package259.899s.
+Fresh wrappers265.507s/259.803s/270.071s (total795.381s); native portions
+96.057s/93.497s/103.873s. Focused checks47.569s then correction compile23.5s/tests1s.
+Implementation/observer repair overlapped supervised waiting; complete summed
+active category totals remain unavailable. No speedup inference. Owner decisions
+remain pending; elapsed waiting is not approval.
 
-Current source batch: publish ten candidate routes; native Druid20 Satyr and
-Wizard20 Lillend prepared-route/body/icon checks, plus fixed four-summon lifecycle
-selection over the existing fixture. Full summoning focused check PASS557/2753,
-production compile24.4s/domain22.6s. Admission script PASS1148 in isolation; its
-first execution correctly detected concurrent compilation and remains FAIL,
-classified as orchestration interference, with no guard changes.
-Package c6d425e8 PASS557 selected/full wrappers/strict package, but NOT_DISPATCHED:
-independent batch review identified two P2 fixture risks. Corrected Unity-only
-appearance waiting to preserve native gameplay pulses until ready; corrected
-lifecycle to capture the exact external CourageRecipient on a surviving owned
-caster, one emitter at a time. Fresh correction compile23.5s/test1s PASS5.
-No additional concrete batch-review blocker; full final review remains pending.
-Exact package tuple and original findings retained in history.
+Independent bounded batch review found two P2 fixture issues. Appearance pulse
+readiness is corrected and passes native public loading. External recipient
+predicate is corrected to refuse self/carrier-only proof; its new prerequisite
+failed, so removal coverage remains pending. No other concrete batch-review
+blocker; full final product/rules/coverage review remains required.
 
-Next selection: commit/package this coherent development batch once, then run
-standalone satyr-routes, lillend-routes and support-lifecycle as three fresh
-guarded transactions. Each is planned at10minutes,600s runtime ceiling; the
-three-stage sequence is predeclared at30minutes plus mandatory safe restoration.
-Inspect public gameplay-camera captures before further presentation expansion.
-Keep pending subsystem scope pending. Batch coherent changes before another
-candidate; ordinary native selections retain10-15minute target/30minute ceiling,
-fresh-process boundaries and guarded restoration. Final qualification remains
-separate and uses one frozen full-gate candidate plus a records worktree.
-Full final independent review and every final acceptance row remain incomplete.
-Pending owner decisions remain pending; no implementation treats silence as assent.
+Next: preserve this exact checkpoint and draft PR evidence, restore comfortable
+headroom through the approved duplicate-only route, then batch the bounded
+lifecycle setup repair with the remaining natural public-source/presentation and
+persistence observations over existing fixtures. No provisional pending subsystem
+work. Each ordinary selection retains10-15minute target/30minute ceiling and fresh
+process/restoration boundaries. Final qualification uses one frozen complete-gate
+candidate and a separate records worktree; every final acceptance row is incomplete.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.
