@@ -57,6 +57,19 @@ namespace KingmakerGunslinger.Blueprints
                 marker.OwningBlueprint = unit;
                 marker.NativeMarker = nativeMarker;
                 unit.ComponentsArray = unit.ComponentsArray.Concat(new BlueprintComponent[] { marker }).ToArray();
+                // Each selected owner already has its own traits fact. Attach
+                // the lifetime callback there, never to a campaign donor or fixture.
+                var traits = Require<BlueprintUnitFact>(bySymbol, name == "LanternArchon" ?
+                    LanternDefenseSymbol : "KMG.Summoning.OutsiderCelestial." + name + ".Traits");
+                var existing = traits.GetComponents<OutsiderLifetimeBoundary>().ToArray();
+                if (existing.Length != 0) {
+                    if (existing.Length != 1 || !ReferenceEquals(existing[0].OwningBlueprint, unit))
+                        throw new InvalidOperationException("Outsider lifetime owner is duplicated or mismatched.");
+                    continue;
+                }
+                var lifetime = ScriptableObject.CreateInstance<OutsiderLifetimeBoundary>();
+                lifetime.OwningBlueprint = unit;
+                traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] { lifetime }).ToArray();
             }
         }
 

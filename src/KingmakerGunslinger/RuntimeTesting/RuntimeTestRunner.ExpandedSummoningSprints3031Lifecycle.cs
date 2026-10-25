@@ -226,7 +226,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["viewPresent"] = actor.View != null, ["holdingStatePresent"] = actor.HoldingState != null,
                 ["ownedAreas"] = Sprints3031OwnedAreaCount(actor), ["liveSourceGrants"] = Sprints3031LiveSourceGrantCount(actor),
                 ["unfinishedRawCommands"] = actor.Commands.Raw.Count(command => command != null && !command.IsFinished),
-                ["commandsNote"] = "No action queued: this phase does not qualify action cancellation." };
+                ["commandsNote"] = "Snapshot only; action retirement requires the calling case's attributed command/queue observations." };
         }
     }
 }

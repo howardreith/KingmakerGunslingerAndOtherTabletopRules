@@ -58,6 +58,7 @@
     <Compile Include="Summoning\GriffonRules.cs" />
     <Compile Include="Summoning\GriffonReachPatch.cs" />
     <Compile Include="Summoning\GriffonLifetimeBoundary.cs" />
+    <Compile Include="Summoning\OutsiderLifetimeBoundary.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Lifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Extras.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Griffon.cs" />

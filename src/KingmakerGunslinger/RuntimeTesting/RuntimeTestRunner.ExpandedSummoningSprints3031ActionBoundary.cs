@@ -49,6 +49,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var fixtureAid = new List<Buff>();
             var observer = new Sprint24AttackObserver();
             bool subscribed = false;
+            string ownerId = null, targetId = target.UniqueId;
+            Sprints3031LifetimeTrace lifetime = null;
+            var cleanupErrors = new JArray();
+            var cleanupActors = new JArray();
+            Action<string, Action> cleanup = (stage, action) => {
+                try { action(); }
+                catch (Exception error) { cleanupErrors.Add(new JObject { ["stage"] = stage, ["exception"] = error.ToString() }); }
+            };
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -56,6 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 40f);
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 owner = CastExpandedSummoningOwnTier(fixture, key);
+                ownerId = owner.UniqueId;
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                 // Native presentation must become usable; no renderer/rig repair.
@@ -228,6 +237,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnitCommand afterExpiry = Sprints3031FutureCommand(owner, target, key);
                     owner.Commands.Run(afterExpiry);
                     bool expiryQueued = owner.Commands.Raw.Contains(afterExpiry) && !afterExpiry.IsStarted;
+                    lifetime = new Sprints3031LifetimeTrace(owner, key);
+                    var queuedBeforeExpiry = Sprints3031QueueState(owner);
                     var expiry = ExpireSprint16OwnedBuff(owner, owner.Buffs.Enumerable.Single(buff =>
                         ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)));
                     DateTime expiryDeadline = DateTime.UtcNow.AddSeconds(20);
@@ -235,7 +246,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { Game.Instance.IsPaused = false; yield return 0; }
                     var live = Game.Instance.State.Units.All.Where(value => value != null && !value.Destroyed && value.IsInState).ToArray();
                     var itemRows = new JArray(items.Select(item => OutsiderEscapeItemState(item, owner, live)));
-                    bool expired = expiryQueued && Sprints3031SourceAbsent(owner) && afterExpiry.IsFinished &&
+                    var queueAfterExpiry = Sprints3031QueueState(owner);
+                    bool retired = lifetime.Calls.Count == 1 && lifetime.Calls.All(row =>
+                        (bool)row["validOwnerBefore"] && (int)row["after"]["unfinishedRaw"] == 0 &&
+                        (int)row["after"]["unfinishedQueued"] == 0 && (bool)row["stateUnspent"]);
+                    bool noFutureWork = Sprints3031Commands(owner).All(command => command.IsFinished ||
+                        command is UnitMoveTo && lifetime.NativeMoves.Contains(command)) &&
+                        (!TurnBased.Controllers.CombatController.IsInTurnBasedCombat() ||
+                            !ReferenceEquals(Game.Instance.TurnBasedCombatController.CurrentTurn?.Unit, owner));
+                    bool expired = expiryQueued && retired && noFutureWork && Sprints3031SourceAbsent(owner) && afterExpiry.IsFinished &&
                         afterExpiry.Result != UnitCommand.ResultType.Success && economy.Count(afterExpiry) == 0 &&
                         observer.Rolls.Count == rollsBefore && observer.Damage.Count == damageEventsBefore &&
                         privateResources.All(value => value == null) && itemRows.All(row => (bool)row["safe"]) &&
@@ -243,6 +262,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check(key + "-queued-expiry", expired, new JObject {
                         ["owner"] = owner.UniqueId, ["queued"] = expiryQueued, ["expiry"] = expiry,
                         ["command"] = Sprint27AiCommand(afterExpiry), ["costApplications"] = economy.Count(afterExpiry),
+                        ["queueBeforeExpiry"] = queuedBeforeExpiry, ["queueAfterExpiry"] = queueAfterExpiry,
+                        ["productLifetimeCallbacks"] = lifetime.Calls, ["nativeMovementOrigins"] = lifetime.MovementOrigins,
+                        ["nativeTurnAfterExpiry"] = Sprint22TurnState(owner, target), ["ownerFutureWorkRetired"] = noFutureWork,
+                        ["fixtureInterruptsAfterExpiry"] = 0,
                         ["ownerState"] = Sprints3031LifecycleState(owner), ["items"] = itemRows,
                         ["privateResourcesAbsent"] = privateResources.All(value => value == null), ["fixtureDisposalsBeforeAssertion"] = 0, ["capturedPrivateResources"] = privateResources.Length },
                         "Native summon expiry closes the owned future command and source grants without a later attack/blast, cost, transferable item or private-resource leak.");
@@ -250,25 +273,158 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             finally {
-                if (subscribed) EventBus.Unsubscribe(observer);
-                foreach (var buff in fixtureAid.Where(value => value != null && !value.IsDisposed)) buff.Remove();
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false; Game.Instance.TurnBasedCombatController.Activate();
+                // Record secondary failures without replacing a primary iterator
+                // exception. Every independent safe restoration step is attempted.
+                cleanup("lifetime-observer-hooks", () => lifetime?.Dispose());
+                cleanup("unsubscribe", () => { if (subscribed) EventBus.Unsubscribe(observer); });
+                foreach (var buff in fixtureAid.Where(value => value != null && !value.IsDisposed))
+                    cleanup("fixture-aid", () => buff.Remove());
+                cleanup("rtwp-setting", () => SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false);
+                cleanup("rtwp-controller", () => Game.Instance.TurnBasedCombatController.Activate());
                 foreach (var actor in new[] { owner, target }.Where(value => value != null)) {
-                    actor.Commands.InterruptAll(true); if (actor.IsInCombat) actor.LeaveCombat();
-                    foreach (var command in actor.Commands.Raw.Where(value => value != null && !value.IsFinished).ToArray()) command.Interrupt(true);
-                    actor.Commands.RemoveFinishedAndUpdateQueue();
+                    string id = ReferenceEquals(actor, owner) ? ownerId : targetId;
+                    cleanupActors.Add(new JObject { ["owner"] = id, ["destroyed"] = actor.Destroyed,
+                        ["inState"] = actor.IsInState, ["viewPresent"] = actor.View != null });
+                    // Destroyed data must not enter native view-dependent OnEnded.
+                    if (actor.Destroyed) continue;
+                    cleanup("live-queue-" + id, () => {
+                        if (!actor.IsInState || actor.View == null)
+                            throw new InvalidOperationException("Live disposable actor lacks safe command teardown state: " + id);
+                        actor.Commands.InterruptAll(command => true);
+                    });
+                    cleanup("live-combat-" + id, () => { if (!actor.Destroyed && actor.IsInCombat) actor.LeaveCombat(); });
                 }
-                if (owner != null && !owner.Destroyed) DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
-                target.Stats.AC.BaseValue = oldAc; target.Stats.HitPoints.BaseValue = oldHp;
-                ResetExpandedSummoningHostile(fixture); Game.Instance.Player.UpdateIsInCombat();
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+                cleanup("live-owner-disposal", () => {
+                    if (owner == null || owner.Destroyed) return;
+                    if (Sprints3031Commands(owner).Any(command => !command.IsFinished))
+                        throw new InvalidOperationException("Live owner still has executable work before fixture disposal.");
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { owner });
+                });
+                cleanup("target-ac", () => target.Stats.AC.BaseValue = oldAc);
+                cleanup("target-hp", () => target.Stats.HitPoints.BaseValue = oldHp);
+                cleanup("target-reset", () => {
+                    if (target.Destroyed || !target.IsInState || target.View == null)
+                        throw new InvalidOperationException("Disposable target cannot safely enter native reset.");
+                    ResetExpandedSummoningHostile(fixture);
+                });
+                cleanup("player-combat", () => Game.Instance.Player.UpdateIsInCombat());
+                cleanup("restore-mode", () => SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode);
+                cleanup("restore-controller", () => Game.Instance.TurnBasedCombatController.Activate());
+                cleanup("restore-pause", () => Game.Instance.IsPaused = oldPause);
+                // A primary failure continues unwinding unchanged. If there is
+                // none, the following cleanup assertion fails on these errors.
+                if (cleanupErrors.Count != 0)
+                    Sprint25Check(key + "-secondary-cleanup-errors", false,
+                        new JObject { ["owner"] = ownerId, ["target"] = targetId, ["errors"] = cleanupErrors },
+                        "All safe cleanup steps are attempted; secondary failures remain separate from the original assertion/exception.");
             }
-            bool clean = !Game.Instance.State.AreaEffects.All.Except(areasBefore).Any() && Sprint28PartyInventoryExact(partyItems, partyCounts) &&
-                !target.Commands.Raw.Any(command => command != null && !command.IsFinished);
-            Sprint25Check(key + "-boundary-cleanup", clean, new JObject { ["areasExact"] = !Game.Instance.State.AreaEffects.All.Except(areasBefore).Any(),
+            bool clean = cleanupErrors.Count == 0 && !Game.Instance.State.AreaEffects.All.Except(areasBefore).Any() &&
+                Sprint28PartyInventoryExact(partyItems, partyCounts) && !Sprints3031Commands(target).Any(command => !command.IsFinished);
+            Sprint25Check(key + "-boundary-cleanup", clean, new JObject { ["cleanupErrors"] = cleanupErrors,
+                ["actorsBeforeCleanup"] = cleanupActors, ["areasExact"] = !Game.Instance.State.AreaEffects.All.Except(areasBefore).Any(),
                 ["partyInventoryExact"] = Sprint28PartyInventoryExact(partyItems, partyCounts), ["targetQueueEmpty"] = !target.Commands.Raw.Any(command => command != null && !command.IsFinished) },
                 "The isolated case restores areas, owned queues and protected inventory; a failed cleanup stops the sequence.");
             if (!clean) throw new InvalidOperationException("Bounded action fixture cleanup failed.");
+        }
+
+        private static UnitCommand[] Sprints3031QueuedCommands(UnitEntityData actor)
+        {
+            var field = typeof(UnitCommands).GetField("m_Queue", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var queue = field?.GetValue(actor.Commands) as LinkedList<UnitCommand>;
+            if (queue == null) throw new InvalidOperationException("Installed native command queue contract is absent.");
+            return queue.Where(command => command != null).ToArray();
+        }
+        private static UnitCommand[] Sprints3031Commands(UnitEntityData actor)
+        {
+            return actor.Commands.Raw.Where(command => command != null).Concat(Sprints3031QueuedCommands(actor)).Distinct().ToArray();
+        }
+        private static JObject Sprints3031CommandSummary(UnitCommand command)
+        {
+            // Terminal snapshots read data only, never live range/view predicates.
+            return new JObject { ["type"] = command.GetType().Name, ["owner"] = command.Executor?.UniqueId,
+                ["target"] = command.TargetUnit?.UniqueId, ["started"] = command.IsStarted,
+                ["acted"] = command.IsActed, ["finished"] = command.IsFinished, ["result"] = command.Result.ToString() };
+        }
+        private static JObject Sprints3031QueueState(UnitEntityData actor)
+        {
+            var raw = actor.Commands.Raw.Where(command => command != null).ToArray();
+            var queued = Sprints3031QueuedCommands(actor);
+            return new JObject { ["owner"] = actor.UniqueId, ["destroyed"] = actor.Destroyed, ["inState"] = actor.IsInState,
+                ["awake"] = Game.Instance.State.AwakeUnits.Contains(actor), ["viewPresent"] = actor.View != null,
+                ["raw"] = new JArray(raw.Select(Sprints3031CommandSummary)), ["queued"] = new JArray(queued.Select(Sprints3031CommandSummary)),
+                ["unfinishedRaw"] = raw.Count(command => !command.IsFinished), ["unfinishedQueued"] = queued.Count(command => !command.IsFinished) };
+        }
+        // Read-only hooks around the actual product callback; no command writes.
+        private sealed class Sprints3031LifetimeTrace : IDisposable
+        {
+            private static Sprints3031LifetimeTrace active;
+            private readonly UnitEntityData owner;
+            private readonly string key;
+            private readonly string id = "KMG.S3031.Lifetime." + Guid.NewGuid().ToString("N");
+            private readonly Harmony12.HarmonyInstance harmony;
+            private readonly System.Reflection.MethodInfo callback = typeof(OutsiderLifetimeBoundary).GetMethod("HandleBuffDidRemoved");
+            private readonly System.Reflection.MethodInfo run = typeof(UnitCommands).GetMethod("Run", new[] { typeof(UnitCommand) });
+            internal readonly JArray Calls = new JArray();
+            internal readonly JArray MovementOrigins = new JArray();
+            internal readonly HashSet<UnitCommand> NativeMoves = new HashSet<UnitCommand>();
+            internal Sprints3031LifetimeTrace(UnitEntityData owner, string key)
+            {
+                if (active != null) throw new InvalidOperationException("Nested S30/31 lifetime observation.");
+                this.owner = owner; this.key = key; harmony = Harmony12.HarmonyInstance.Create(id);
+                var flags = System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic;
+                try {
+                    harmony.Patch(callback, new Harmony12.HarmonyMethod(typeof(Sprints3031LifetimeTrace).GetMethod("Before", flags)),
+                        new Harmony12.HarmonyMethod(typeof(Sprints3031LifetimeTrace).GetMethod("After", flags)));
+                    harmony.Patch(run, new Harmony12.HarmonyMethod(typeof(Sprints3031LifetimeTrace).GetMethod("Running", flags)));
+                    active = this;
+                } catch (Exception original) {
+                    try { Dispose(); } catch (Exception secondary) { throw new AggregateException(original, secondary); }
+                    throw;
+                }
+            }
+            private static void Before(OutsiderLifetimeBoundary __instance, Buff buff, out JObject __state)
+            {
+                __state = null; var trace = active;
+                if (trace == null || !ReferenceEquals(__instance.Owner?.Unit, trace.owner) ||
+                    !ReferenceEquals(buff?.Owner?.Unit, trace.owner) ||
+                    !ReferenceEquals(buff?.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)) return;
+                __state = new JObject { ["owner"] = trace.owner.UniqueId, ["marker"] = buff.Blueprint.AssetGuid,
+                    ["validOwnerBefore"] = !trace.owner.Destroyed && trace.owner.IsInState && trace.owner.View != null,
+                    ["before"] = Sprints3031QueueState(trace.owner), ["stateBefore"] = Sprints3031PersistenceState(trace.owner, trace.key) };
+            }
+            private static void After(JObject __state)
+            {
+                var trace = active; if (trace == null || __state == null) return;
+                __state["after"] = Sprints3031QueueState(trace.owner);
+                __state["stateAfter"] = Sprints3031PersistenceState(trace.owner, trace.key);
+                __state["stateUnspent"] = JToken.DeepEquals(__state["stateBefore"], __state["stateAfter"]);
+                trace.Calls.Add(__state);
+            }
+            private static void Running(UnitCommands __instance, UnitCommand __0)
+            {
+                var trace = active; if (trace == null || !ReferenceEquals(__instance, trace.owner.Commands) || !(__0 is UnitMoveTo)) return;
+                var frames = new System.Diagnostics.StackTrace(1, false).GetFrames() ?? Array.Empty<System.Diagnostics.StackFrame>();
+                var methods = frames.Select(frame => frame.GetMethod()).Where(method => method != null).ToArray();
+                bool native = methods.Any(method => method.DeclaringType != null && method.DeclaringType != typeof(UnitCommands) &&
+                    method.DeclaringType.Assembly == typeof(UnitCommands).Assembly);
+                if (native) trace.NativeMoves.Add(__0);
+                trace.MovementOrigins.Add(new JObject { ["type"] = __0.GetType().Name, ["nativeCaller"] = native,
+                    ["callers"] = new JArray(methods.Take(12).Select(method => (method.DeclaringType?.FullName ?? "<dynamic>") + "." + method.Name)) });
+            }
+            public void Dispose()
+            {
+                if (ReferenceEquals(active, this)) active = null;
+                var failures = new List<Exception>();
+                foreach (var hook in new[] { callback, run }.Where(value => value != null)) {
+                    try {
+                        harmony.Unpatch(hook, Harmony12.HarmonyPatchType.All, id);
+                        var info = harmony.GetPatchInfo(hook);
+                        if (info != null && (info.Prefixes.Any(value => value.owner == id) || info.Postfixes.Any(value => value.owner == id)))
+                            throw new InvalidOperationException("S30/31 lifetime observation hook remains.");
+                    } catch (Exception error) { failures.Add(error); }
+                }
+                if (failures.Count != 0) throw new AggregateException("Lifetime observation teardown failed.", failures);
+            }
         }
 
         private IEnumerable<int> Sprints3031HeldEscape(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner, string key)
