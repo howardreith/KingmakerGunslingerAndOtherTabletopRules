@@ -394,6 +394,15 @@ Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
 Assert-True (($expected | Sort-Object) -join "`n" -ceq
     ($powershellNames -join "`n")) 'documented-scenarios-retained'
+. (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+# Every bounded native-input audit must use exact receipt identity and the
+# independent settings/install restoration boundary. Derive from the existing
+# admitted catalog, so adding an audit cannot silently select the legacy path.
+foreach ($audit in @($powershellNames | Where-Object {
+    $_ -cmatch '^observe-expanded-summoning-sprints?[0-9-]+-native-inputs$'
+})) {
+    Assert-True (Test-KmgExactSummoningRuntimeBoundary $audit) "native-input-exact-restoration-$audit"
+}
 $crocodilianMetadata = Get-KmgRuntimeScenarioMetadata 'disposable-expanded-summoning-crocodilians'
 Assert-True ($crocodilianMetadata.RequiresSaveName -and
     $crocodilianMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
@@ -898,7 +907,6 @@ foreach($invalid in @(@{},@{reviewPhase='Giant-Lineup'},@{reviewPhase='Menus'},@
     Assert-Throws {Assert-KmgRuntimeScenarioPreflight @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters $invalid} 'cleanup2-refuses-missing-case-type-phase-and-extra'
     Assert-Throws {New-KmgRuntimeRequest @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters $invalid -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'cleanup2-invalid-request')} 'cleanup2-request-refuses-invalid-parameters'
 }
-. (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 Assert-True (Test-KmgExactSummoningRuntimeBoundary $cleanup2ReviewArgs.Scenario) 'cleanup2-keeps-exact-receipt-and-independent-restoration-boundary'
 Assert-True (-not (Test-KmgCleanup2ReviewPhaseScope 'disposable-expanded-summoning-native-profile' @{reviewPhase='menus'})) 'cleanup2-phase-scope-does-not-authorize-another-scenario'
 foreach($phase in @('elementals-off','giants-off','elementals-learning','elementals-console')) {
