@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Harmony12;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Controllers.Brain;
@@ -110,7 +111,8 @@ namespace KingmakerGunslinger.Summoning
 
     // WithUnitCommand's native DidAct handler starts only an enabled toggle.
     // Arm it at the matching command's native start, while that unacted command
-    // is already queued. Native OnTurnOn sees it and does not queue a duplicate.
+    // is already queued. The exact same-instance compatibility patch below
+    // lets native OnTurnOn recognize it instead of replacing the AI command.
     // No buff application, TryStart, action debit or direct effect here.
     [Serializable]
     public sealed class LillendPerformanceCommand32 : OwnedGameLogicComponent<UnitDescriptor>,
@@ -130,6 +132,30 @@ namespace KingmakerGunslinger.Summoning
             if (!Owner.Unit.Commands.Raw.Any(value => ReferenceEquals(value, activate)))
                 throw new InvalidOperationException("Lillend performance start has no exact queued native command.");
             activate.Ability.IsOn = true;
+        }
+    }
+
+    // Kingmaker's native same-command predicate recognizes Judgment only,
+    // even when asked about the identical bard toggle. Preserve that native
+    // behavior everywhere except this private owner's identical performance.
+    // No command credit, effect, resource or action cost is supplied here.
+    [HarmonyPatch(typeof(ActivatableAbility), "IsActivateWithSameCommand",
+        new[] { typeof(ActivatableAbility) })]
+    internal static class LillendPerformanceSameCommand32
+    {
+        private static void Postfix(ActivatableAbility __instance,
+            ActivatableAbility __0, ref bool __result)
+        {
+            if (__result || __instance == null || !ReferenceEquals(__instance, __0)) return;
+            var unit = __instance.Owner?.Unit;
+            // This component belongs to the private Traits fact, not directly
+            // to BlueprintUnit. Match that declared fact's exact owner/toggle.
+            var rule = unit?.Blueprint?.AddFacts?
+                .Where(value => value != null)
+                .SelectMany(value => value.GetComponents<LillendPerformanceCommand32>())
+                .SingleOrDefault();
+            if (rule != null && ReferenceEquals(rule.OwningBlueprint, unit.Blueprint) &&
+                ReferenceEquals(rule.Courage, __instance.Blueprint)) __result = true;
         }
     }
 }

@@ -43,17 +43,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var performAi = owner.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single();
                 var performance = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
                     ReferenceEquals(value.Blueprint, performAi.Courage));
+                var siblingPerformance = sibling.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint, performAi.Courage));
                 var heal = fixture.Blueprints.OfType<LillendHealingEligibility32>().Single();
                 bool mapping = book != null && siblingBook != null && !ReferenceEquals(book, siblingBook) &&
                     book.Blueprint.Spontaneous && book.CasterLevel == 7 &&
                     new[] { 1, 2, 3 }.Select(book.GetSpontaneousSlots).SequenceEqual(new[] { 5, 4, 2 }) &&
                     new[] { 1, 2, 3 }.Select(siblingBook.GetSpontaneousSlots).SequenceEqual(new[] { 5, 4, 2 }) &&
                     owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
-                    sibling.Descriptor.Resources.GetResourceAmount(resource) == 20;
+                    sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
+                    performance.IsActivateWithSameCommand(performance) &&
+                    !performance.IsActivateWithSameCommand(siblingPerformance);
                 Sprint25Check("lillend-support-native-mapping", mapping, new JObject {
                     ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["cl"] = book?.CasterLevel,
                     ["hp"] = owner.Stats.HitPoints.ModifiedValue, ["slots"] = book == null ? null : new JArray(new[] { 1, 2, 3 }.Select(book.GetSpontaneousSlots)),
                     ["performanceRounds"] = owner.Descriptor.Resources.GetResourceAmount(resource),
+                    ["samePerformanceCommand"] = performance.IsActivateWithSameCommand(performance),
+                    ["siblingPerformanceCommandRejected"] = !performance.IsActivateWithSameCommand(siblingPerformance),
                     ["independentBooks"] = !ReferenceEquals(book, siblingBook), ["finalProfileQualification"] = false },
                     "Native spontaneous bard7 slots5/4/2 and20 performance rounds are independent per summon.");
                 if (!mapping) throw new InvalidOperationException("Lillend support mapping failed.");
@@ -86,7 +92,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int slotsBefore = book.GetSpontaneousSlots(3), damageBefore = owner.Damage;
                     var commands = new HashSet<UnitCommand>(); var costs = new JArray(); var ambient = new HashSet<string>();
                     var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
-                    EventBus.Subscribe(attacks);
+                    var starts = new Lillend32CommandStarts { Owner = owner };
+                    EventBus.Subscribe(attacks); EventBus.Subscribe(starts);
                     try
                     {
                         Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
@@ -99,12 +106,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished))
                                 { foreach (var candidate in Sprint24TickExactAi(owner)) if (candidate != owner.UniqueId) ambient.Add(candidate); ticks++; }
                                 foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                                foreach (var command in starts.Commands) commands.Add(command);
                                 resolved = commands.FirstOrDefault(value => value.IsFinished && value.Result == UnitCommand.ResultType.Success &&
-                                    (stage == "courage" ? value is UnitActivateAbility && value.AiAction == performAi :
+                                    (stage == "courage" ? value is UnitActivateAbility && value.AiAction == performAi &&
+                                        ReferenceEquals(((UnitActivateAbility)value).Ability, performance) :
                                      stage == "healing" ? value is UnitUseAbility && value.AiAction?.name == "KMG_Summoning_FeyCelestial_LillendAzata_HealAi" &&
                                          ((UnitUseAbility)value).ExecutionProcess != null && ((UnitUseAbility)value).ExecutionProcess.IsEnded :
                                      value is UnitAttack && value.AiAction != null));
-                                if (resolved != null && (stage != "courage" || owner.Descriptor.Resources.GetResourceAmount(resource) < 20)) break;
+                                if (resolved != null && (stage != "courage" ||
+                                    owner.Descriptor.Resources.GetResourceAmount(resource) < 20 &&
+                                    sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2)) break;
                                 Game.Instance.IsPaused = false; yield return 0;
                             }
                             var ownedEffects = sibling.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
@@ -115,6 +126,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             float healthyScore = heal.Score(new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = owner } });
                             bool outcome = stage == "courage" ? performance.IsRunning &&
                                 commands.OfType<UnitActivateAbility>().Count() == 1 &&
+                                starts.Commands.OfType<UnitActivateAbility>().Count() == 1 &&
                                 owner.Descriptor.Resources.GetResourceAmount(resource) == 19 &&
                                 ownedEffects.Length == 1 && sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2 && enemySafe &&
                                 book.GetSpontaneousSlots(3) == slotsBefore :
@@ -127,6 +139,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint25Check("lillend-" + stage + "-resolved", passed, new JObject {
                                 ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["frames"] = frames, ["aiTicks"] = ticks,
                                 ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
+                                ["nativeCommandStarts"] = starts.Rows,
                                 ["performanceRunning"] = performance.IsRunning, ["performanceRounds"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                                 ["allyAttackBefore"] = allyAttack, ["allyAttackAfter"] = sibling.Stats.AdditionalAttackBonus.ModifiedValue,
                                 ["ownedAllyEffects"] = ownedEffects.Length, ["enemySafe"] = enemySafe,
@@ -142,7 +155,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             if (!passed) throw new InvalidOperationException("Lillend early support observation failed: " + stage);
                         }
                     }
-                    finally { EventBus.Unsubscribe(attacks); }
+                    finally { EventBus.Unsubscribe(starts); EventBus.Unsubscribe(attacks); }
                 }
             }
             finally
@@ -154,6 +167,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        // Event-bound observation retains a command replaced within one frame;
+        // frame snapshots alone missed the original in the preserved 2e1 run.
+        private sealed class Lillend32CommandStarts : IUnitCommandStartHandler
+        {
+            internal UnitEntityData Owner;
+            internal readonly HashSet<UnitCommand> Commands = new HashSet<UnitCommand>();
+            internal readonly JArray Rows = new JArray();
+            public void HandleUnitCommandDidStart(UnitCommand command)
+            {
+                if (command == null || !ReferenceEquals(command.Executor, Owner)) return;
+                Commands.Add(command);
+                var row = Sprint27AiCommand(command);
+                row["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command);
+                row["ability"] = (command as UnitActivateAbility)?.Ability?.Blueprint?.AssetGuid;
+                Rows.Add(row);
             }
         }
     }
