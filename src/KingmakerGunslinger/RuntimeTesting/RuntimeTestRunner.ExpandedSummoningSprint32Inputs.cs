@@ -5,6 +5,7 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
@@ -19,18 +20,48 @@ namespace KingmakerGunslinger.RuntimeTesting
         // the next owned native review; no new actor or separate launch.
         private void CaptureSprint32ControlGraphs()
         {
-            string[] ids = { "1af9d5995090e5a4185a30decf0959ad", "bb7ecad2d3d2c8247a38f44855c99061",
-                "a4fc1c0798359974e99e1d790935501d", "2d4bd347dec7d8648afd502ee40ae661",
-                "a50373fa77d30d34c8c6efb198b36921", "8a59ee053e804e2429355eecd749e4e7" };
-            var rows = new JArray(ids.Select(id => {
-                var value = BlueprintLibraryLookup.RequireExact<BlueprintScriptableObject>(
-                    BlueprintBootstrap.Library, id, "selected Sprint32 native control graph");
-                return new JObject { ["guid"] = id, ["name"] = value.name,
+            var receipt = new JObject(); bool passed = false;
+            try
+            {
+                var library = BlueprintBootstrap.Library;
+                // RequireExact deliberately rejects a base type. The concrete
+                // types below are in the retained first native input receipt.
+                BlueprintScriptableObject[] selected = {
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, "1af9d5995090e5a4185a30decf0959ad", "native Charm Person"),
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, "bb7ecad2d3d2c8247a38f44855c99061", "native Sleep"),
+                    BlueprintLibraryLookup.RequireExact<BlueprintAbilityAreaEffect>(library, "a4fc1c0798359974e99e1d790935501d", "native Fascinate area"),
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "2d4bd347dec7d8648afd502ee40ae661", "native Fascinate effect"),
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "a50373fa77d30d34c8c6efb198b36921", "native Fascinate immunity"),
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "8a59ee053e804e2429355eecd749e4e7", "native Fascinate combat marker")
+                };
+                receipt["controls"] = new JArray(selected.Select(value => new JObject {
+                    ["guid"] = value.AssetGuid, ["name"] = value.name,
                     ["graph"] = DescribeGraph(value, 0,
-                        new HashSet<object>(NativeDonorReferenceComparer.Instance), 12) };
-            }));
+                        new HashSet<object>(NativeDonorReferenceComparer.Instance), 12) }));
+                // Fixed remaining Lillend native consumers, research only.
+                // An absent mapping remains an explicit implementation question.
+                string[] names = { "Daze", "Lullaby", "Invisibility", "Light", "CombatCasting", "Hover" };
+                var native = library.GetAllBlueprints().Where(value => value != null &&
+                    value.name != null && !value.name.StartsWith("KMG_", StringComparison.Ordinal)).ToArray();
+                receipt["remainingConsumers"] = new JArray(names.Select(name => new JObject {
+                    ["query"] = name, ["matches"] = new JArray(native.Where(value =>
+                        value.name.Equals(name, StringComparison.OrdinalIgnoreCase) ||
+                        value.name.StartsWith(name + "Ability", StringComparison.OrdinalIgnoreCase) ||
+                        value.name.StartsWith(name + "Buff", StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(value => value.name, StringComparer.Ordinal).Take(8).Select(value => new JObject {
+                            ["guid"] = value.AssetGuid, ["name"] = value.name,
+                            ["graph"] = DescribeGraph(value, 0,
+                                new HashSet<object>(NativeDonorReferenceComparer.Instance), 8) })) }));
+                passed = true;
+            }
+            catch (Exception error) { receipt["exception"] = error.ToString(); }
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
-                "sprint32-control-graphs.json"), rows.ToString(Formatting.Indented));
+                "sprint32-control-graphs.json"), receipt.ToString(Formatting.Indented));
+            // A research-reader failure remains FAIL but does not prevent the
+            // independent owned gameplay cases from producing useful evidence.
+            Sprint25Check("native-control-graphs", passed, new JObject {
+                ["captured"] = passed, ["exception"] = receipt["exception"] },
+                "Selected existing native control graphs captured; metadata is not a gameplay verdict.");
         }
 
         // Fixed research scope: no actor, save, input, native mutation or geometry export.
