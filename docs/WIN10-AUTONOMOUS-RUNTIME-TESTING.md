@@ -41,6 +41,12 @@ independent sibling pools and exact native turn action debits.
 The phase owns the RTWP setup baseline until all nested cleanup frames finish;
 only explicit turn enrollment enables turn mode. A single hostile is retained
 for phase teardown and starts40m from the party before setup frames advance.
+Only the two turn phases use a private faction, following the established elemental
+native-turn fixture: AttackFactions contains only the native player faction,
+AlwaysEnemy is false, and the target is mutually hostile to the disposable caster.
+All nonplayer intake actors must be mutually nonhostile to it before combat frames
+advance. The private faction is destroyed after its actors. Neutral intake actors,
+their memories and the exact-owner native clock guard remain unchanged.
 The optional Suggestion phase requires the settled investigated provider and
 uses one fresh Satyr pair followed by one fresh Lillend pair. The exact target
 has declared low Will, Charm-only descriptor immunity and Sleep/Paralysis/Stun

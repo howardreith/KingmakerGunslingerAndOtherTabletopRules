@@ -57,8 +57,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendTurnPhase)
             {
-                CreateExpandedSummoningCorrectionHostile(fixture);
-                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
+                CreateSprint32TurnHostile(fixture);
                 foreach (bool wounded in new[] { false, true })
                     foreach (int frame in ReviewLillend32Turn(fixture, wounded)) yield return frame;
                 yield break;
@@ -74,13 +73,57 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool turnBased = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrTurnPhase;
             // Resettable cases, each with a fresh exact-owner summon.
             // Final mode/profile/persistence qualification remains separate.
-            CreateExpandedSummoningCorrectionHostile(fixture);
+            if (turnBased) CreateSprint32TurnHostile(fixture);
+            else CreateExpandedSummoningCorrectionHostile(fixture);
             // Keep the fresh hostile away from the fixture party during setup;
             // only the surveyed lane later establishes the intended encounter.
             PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
             foreach (bool immune in new[] { false, true })
                 foreach (int frame in ReviewSatyr32Control(fixture, immune, false, turnBased)) yield return frame;
             foreach (int frame in ReviewSatyr32Control(fixture, true, true, turnBased)) yield return frame;
+        }
+
+        private void CreateSprint32TurnHostile(ExpandedSummoningCorrectionFixture fixture)
+        {
+            if (fixture.Hostile != null || fixture.HostileBlueprint != null || fixture.OwnedHostileFaction != null)
+                throw new InvalidOperationException("Sprint32 turn target is already owned.");
+            // The general hostile donor can attack neutral civilians and enroll them
+            // through native group memory. Use the already proven ElementalTraitNativeTurn
+            // private-faction seam; never change an intake actor or widen clock ownership.
+            var faction = UnityEngine.Object.Instantiate(fixture.Caster.Blueprint.Faction);
+            fixture.OwnedHostileFaction = faction;
+            faction.name = "KMG_Runtime_Sprint32Turn_HostileFaction";
+            faction.Peaceful = faction.AlwaysEnemy = faction.Neutral = faction.IsDirectlyControllable = false;
+            faction.Dummy = null;
+            faction.AttackFactions = new[] { fixture.Caster.Blueprint.Faction };
+            var blueprint = UnityEngine.Object.Instantiate(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.DefaultPlayerCharacter);
+            fixture.HostileBlueprint = blueprint;
+            blueprint.name = "KMG_Runtime_Sprint32Turn_HostileTarget";
+            blueprint.IsCheater = true;
+            ExpandedSummoningFields(typeof(BlueprintUnit)).Single(value =>
+                value.Name == "Faction" || value.Name == "m_Faction").SetValue(blueprint, faction);
+            var target = Game.Instance.EntityCreator.SpawnUnit(blueprint,
+                fixture.Caster.Position + Vector3.forward * 40f, Quaternion.identity, fixture.Scene);
+            fixture.Hostile = target;
+            target.Stats.HitPoints.BaseValue = 100000;
+            fixture.HostileSize = target.Descriptor.State.Size;
+            fixture.HostileDamage = target.Descriptor.Damage;
+            SetExpandedSummoningBrainActive(target, false);
+            PlaceExpandedSummoningUnit(target, target.Position);
+            var neutrals = fixture.UnitsBefore.OfType<UnitEntityData>().Where(value => value != null &&
+                !value.Destroyed && value.Blueprint.Faction != fixture.Caster.Blueprint.Faction).ToArray();
+            bool isolated = target.IsEnemy(fixture.Caster) && fixture.Caster.IsEnemy(target) &&
+                neutrals.All(value => !value.IsEnemy(target) && !target.IsEnemy(value));
+            Sprint25Check("sprint32-turn-hostile-faction", isolated, new JObject {
+                ["target"] = target.UniqueId, ["privateFaction"] = faction.name,
+                ["alwaysEnemy"] = faction.AlwaysEnemy, ["attackFaction"] = faction.AttackFactions.Single().name,
+                ["casterIsEnemy"] = fixture.Caster.IsEnemy(target), ["targetIsEnemy"] = target.IsEnemy(fixture.Caster),
+                ["intakeNonPlayerRelations"] = new JArray(neutrals.Select(value => new JObject {
+                    ["unit"] = value.UniqueId, ["blueprint"] = value.Blueprint.name,
+                    ["faction"] = value.Blueprint.Faction.name, ["unitIsEnemy"] = value.IsEnemy(target),
+                    ["targetIsEnemy"] = target.IsEnemy(value) })) },
+                "Private target attacks only the native player faction; unchanged nonplayer intake actors are not enemies. The exact-owner clock guard remains mandatory.");
+            if (!isolated) throw new InvalidOperationException("Sprint32 private hostile faction does not isolate native intake relations.");
         }
 
         private IEnumerable<int> ReviewSatyr32Control(ExpandedSummoningCorrectionFixture fixture, bool immune, bool melee = false, bool turnBased = false)
