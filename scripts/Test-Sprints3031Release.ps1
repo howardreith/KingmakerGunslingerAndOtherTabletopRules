@@ -198,6 +198,24 @@ Invoke-KmgSprints3031Budget $p Game fifth-artifact-native|Out-Null
 $b=Get-Content $p -Raw|ConvertFrom-Json
 if($b.buildAttemptCount -ne 5 -or $b.actualGameLaunchCount -ne 1){throw 'Fifth build prevented independent game admission or was charged twice'}
 
+$p=New-BudgetFixture sixth 5 5 -Amended
+Change-BudgetFixture $p {param($b)
+    $start=[DateTime]::Parse($b.startUtc)
+    $b | Add-Member h4RayObserverAmendment ([pscustomobject]@{
+        authority='Owner repair H4 ray-only observer and finish existing closeout'
+        oldMaximumBuildAttempts=5;newMaximumBuildAttempts=6;retainedBuildAttempts=4;retainedGameLaunches=5
+        pauseStartUtc=$start.AddMinutes(45).ToString('o');resumeUtc=$start.AddMinutes(50).ToString('o');excludedTicks=[TimeSpan]::FromMinutes(5).Ticks})
+    $b.maximumBuildAttempts=6;$b.deadlineUtc=([DateTime]::Parse($b.deadlineUtc).AddMinutes(5)).ToString('o')
+}
+Invoke-KmgSprints3031Budget $p Build sixth|Out-Null
+Refuse-Budget $p Build 'Candidate build admission ceiling reached.'
+Invoke-KmgSprints3031Budget $p Game sixth-artifact-native|Out-Null
+$hash=(Get-FileHash $p).Hash
+Invoke-KmgSprints3031Budget $p Check sixth-artifact-verification|Out-Null
+if((Get-FileHash $p).Hash -cne $hash){throw 'Sixth build verification mutated its budget'}
+Change-BudgetFixture $p {param($b) $b.h4RayObserverAmendment.authority='unsupported'}
+Refuse-Budget $p Check 'Unsupported H4 owner budget amendment.'
+
 $p=New-BudgetFixture last-game 4 23 -Amended
 $cleanup=$false
 try {

@@ -106,9 +106,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 far; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 8f, out far, out lane, out direction, new Feet(20).Meters + 1f);
                 PlaceExpandedSummoningUnit(target, far);
-                var probe = new UnitAttack(target) { IsSingleAttack = true, ForceFullAttack = false };
-                probe.Init(owner);
-                float distance = key == "lantern-archon" ? 5f : Mathf.Max(.25f, probe.ApproachRadius - .1f);
+                UnitAttack probe = null;
+                AbilityData rayProbe = null;
+                var probeTarget = new TargetWrapper(target);
+                float distance;
+                if (key == "lantern-archon") {
+                    // Ray-only owners have no weapon attack to initialize. Resolve
+                    // the granted ray for observation only; production AI selects it.
+                    rayProbe = new AbilityData(owner.Descriptor.Abilities.Enumerable.Single(value =>
+                        value.Blueprint.AssetGuid == Lantern31StandardRay));
+                    distance = 5f;
+                } else {
+                    probe = new UnitAttack(target) { IsSingleAttack = true, ForceFullAttack = false };
+                    probe.Init(owner);
+                    distance = Mathf.Max(.25f, probe.ApproachRadius - .1f);
+                }
                 PlaceExpandedSummoningUnit(owner, far - (far - origin).normalized * distance);
                 target.Stats.AC.BaseValue = 0; target.Stats.HitPoints.BaseValue = 1000;
                 if (key == "trumpet-archon") ObserveSprints3031BlindFight(fixture, owner, target);
@@ -126,14 +138,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var tickIds = ((JArray)coverage["tickUnits"]).Values<string>().ToArray();
                 var foreign = Game.Instance.State.Units.All.Where(actor => actor != null && !actor.Destroyed && actor.IsInState &&
                     actor.IsInCombat && !tickIds.Contains(actor.UniqueId, StringComparer.Ordinal)).ToArray();
+                bool targetEligible = rayProbe != null && rayProbe.CanTarget(probeTarget);
+                float approachDistance = rayProbe != null ? rayProbe.GetApproachDistance(target) : probe.ApproachRadius;
+                float actualDistance = owner.DistanceTo(target);
+                bool inRange = rayProbe != null ? actualDistance < approachDistance : probe.IsUnitEnoughClose;
                 bool ready = foreign.Length == 0 && owner.View != null && owner.Descriptor.State.CanAct &&
                     owner.HasLOS(target) && owner.Memory.ContainsVisible(target) && owner.IsEnemy(target) &&
-                    !target.Descriptor.State.IsDead && (ai || probe.IsUnitEnoughClose);
+                    !target.Descriptor.State.IsDead && (rayProbe != null ?
+                        rayProbe.IsAvailable && targetEligible && inRange : (ai || inRange));
                 Sprint25Check(key + "-boundary-preconditions", ready, new JObject {
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
                     ["nativeClock"] = coverage, ["foreignCombatants"] = new JArray(foreign.Select(actor => actor.UniqueId)),
                     ["los"] = owner.HasLOS(target), ["visible"] = owner.Memory.ContainsVisible(target),
-                    ["range"] = probe.IsUnitEnoughClose, ["healingPreconditionDamage"] = owner.Damage },
+                    ["probeKind"] = rayProbe != null ? "granted-ray-ability" : "native-weapon-attack",
+                    ["rayIdentity"] = rayProbe?.Blueprint.AssetGuid,
+                    ["rayAvailable"] = rayProbe == null ? (bool?)null : rayProbe.IsAvailable,
+                    ["rayTargetEligible"] = rayProbe == null ? (bool?)null : targetEligible,
+                    ["distanceMeters"] = actualDistance, ["nativeApproachDistanceMeters"] = approachDistance,
+                    ["range"] = inRange, ["healingPreconditionDamage"] = owner.Damage },
                     "Only the exact owned pair and the established profile anchor enter the native turn clock.");
                 if (!ready) throw new InvalidOperationException("Bounded turn fixture preconditions failed: " + key);
                 var admission = new JObject();

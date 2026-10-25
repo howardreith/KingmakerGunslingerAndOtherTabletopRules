@@ -23,6 +23,15 @@ function Invoke-KmgSprints3031Budget {
         }
         $maximum=5
     }
+    if($b.PSObject.Properties.Name -contains 'h4RayObserverAmendment') {
+        $a=$b.h4RayObserverAmendment
+        if(-not $amended -or $a.authority -cne 'Owner repair H4 ray-only observer and finish existing closeout' -or
+            $a.oldMaximumBuildAttempts -ne 5 -or $a.newMaximumBuildAttempts -ne 6 -or
+            $a.retainedBuildAttempts -ne 4 -or $a.retainedGameLaunches -ne 5) {
+            throw 'Unsupported H4 owner budget amendment.'
+        }
+        $maximum=6
+    }
     if($b.authority -cne 'Owner bounded Sprints30-31 closeout decision' -or
         $b.maximumBuildAttempts -ne $maximum -or $b.maximumGameLaunches -ne 24 -or
         $b.buildAttemptCount -lt 0 -or $b.buildAttemptCount -gt $maximum -or
@@ -43,6 +52,8 @@ function Invoke-KmgSprints3031Budget {
         authorizedSuspension='Owner S30-31 compiler unblock addendum'
         compileCeilingAmendment='Owner remove compile-count bottleneck amendment'
         budgetIsolationAmendment='Owner repair budget isolation reconcile accounting continue closeout'
+        h1RepairAuthorization='Owner authorize H1 lifetime cleanup repair and continue'
+        h4RayObserverAmendment='Owner repair H4 ray-only observer and finish existing closeout'
     }
     foreach($name in $authorities.Keys) {
         if($b.PSObject.Properties.Name -notcontains $name){continue}
