@@ -75,7 +75,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error)
             {
                 var failure = new JObject { ["exception"] = error.ToString() };
-                if (IsSprint28Review && _sprint25Clock != null &&
+                if ((IsSprint28Review || IsSprint32Review) && _sprint25Clock != null &&
                     error.Message.Contains("native-clock-turn-order-coverage"))
                     failure["turnCoverage"] =
                         _sprint25Clock.DescribeTurnCoverage();
