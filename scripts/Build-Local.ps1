@@ -71,32 +71,6 @@ $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
 $sourceStateSha256 = Get-KmgSourceStateFingerprint -RepositoryRoot $root
-# The bounded S30-31 worktree has persistent cumulative dispatch authority.
-# PlanOnly exits above; compile-only editing uses build.ps1, not this pipeline.
-if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
-    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
-    [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
-        -Action Build -Stage ('candidate:' + $git.Commit) -MinimumRemainingMinutes 20)
-}
-
-if ($development) {
-    if ($git.Status.Count -ne 0) {
-        throw 'A development candidate is built only from an exactly clean commit.'
-    }
-    $developmentLayout = Get-KmgDevelopmentCandidateLayout -RepositoryRoot $root `
-        -Purpose $DevelopmentPurpose -Commit $git.Commit -Id $info.Id -Version $info.Version
-    if (Test-Path -LiteralPath $developmentLayout.ReceiptPath) {
-        throw "This commit's '$DevelopmentPurpose' development candidate already exists and is immutable: $($developmentLayout.PackagePath)"
-    }
-    if (Test-Path -LiteralPath $developmentLayout.Root) {
-        # An earlier attempt for this exact commit stopped before its receipt.
-        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
-            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
-        Remove-Item -LiteralPath $partial -Recurse -Force
-    }
-    New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
-}
-
 if (-not $ReferenceBundleDir) {
     $cursor = [IO.DirectoryInfo]$root
     for ($depth = 0; $depth -lt 6 -and $cursor; $depth++) {
@@ -125,6 +99,36 @@ if (-not $csc) { throw 'Roslyn csc.dll was not found beneath the installed dotne
 $net47 = 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7'
 if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Leaf)) {
     throw ".NET Framework 4.7 reference assemblies are missing: $net47"
+}
+
+if ($development) {
+    if ($git.Status.Count -ne 0) {
+        throw 'A development candidate is built only from an exactly clean commit.'
+    }
+    $developmentLayout = Get-KmgDevelopmentCandidateLayout -RepositoryRoot $root `
+        -Purpose $DevelopmentPurpose -Commit $git.Commit -Id $info.Id -Version $info.Version
+    if (Test-Path -LiteralPath $developmentLayout.ReceiptPath) {
+        throw "This commit's '$DevelopmentPurpose' development candidate already exists and is immutable: $($developmentLayout.PackagePath)"
+    }
+}
+
+# All read-only prerequisites and immutable-output refusals precede admission.
+# The bounded S30-31 worktree has persistent cumulative dispatch authority.
+# PlanOnly exits above; compile-only editing uses build.ps1, not this pipeline.
+if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
+    [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
+        -Action Build -Stage ('candidate:' + $git.Commit) -MinimumRemainingMinutes 20)
+}
+
+if ($development) {
+    if (Test-Path -LiteralPath $developmentLayout.Root) {
+        # An earlier attempt for this exact commit stopped before its receipt.
+        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
+            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
+        Remove-Item -LiteralPath $partial -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
 }
 
 if ($development) {

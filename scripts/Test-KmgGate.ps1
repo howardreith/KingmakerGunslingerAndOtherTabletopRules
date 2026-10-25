@@ -77,9 +77,14 @@ Assert ($env:KMG_TEST_FILTER -eq 'prior') 'a-failing-body-still-restores-the-fil
 Remove-Item Env:\KMG_TEST_FILTER -ErrorAction SilentlyContinue
 
 $missingInput = Join-Path ([IO.Path]::GetTempPath()) ('kmg-no-reference-input-' + [Guid]::NewGuid().ToString('N'))
-Assert (Throws {
-    & (Join-Path $PSScriptRoot 'Build-Local.ps1') -ReferenceBundleDir $missingInput -KingmakerInstallDir $missingInput
-}) 'real-build-refuses-missing-references'
+$liveBudget=Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json'
+$budgetHashBefore=if(Test-Path -LiteralPath $liveBudget){(Get-FileHash -LiteralPath $liveBudget).Hash}else{$null}
+$missingMessage=$null
+try { & (Join-Path $PSScriptRoot 'Build-Local.ps1') -ReferenceBundleDir $missingInput -KingmakerInstallDir $missingInput }
+catch { $missingMessage=$_.Exception.Message }
+Assert ($missingMessage -ceq ('Qualified private reference bundle is missing: '+$missingInput)) 'real-build-refuses-missing-references'
+$budgetHashAfter=if(Test-Path -LiteralPath $liveBudget){(Get-FileHash -LiteralPath $liveBudget).Hash}else{$null}
+Assert ($budgetHashAfter -ceq $budgetHashBefore) 'missing-reference-refusal-preserves-budget'
 Assert (-not (Test-Path -LiteralPath $missingInput)) 'refused-build-creates-no-reference-fixture'
 if ($failures.Count -ne 0) { throw ('Gate-level contract failures: ' + ($failures -join ', ')) }
 Write-Host 'Gate filter/refusal contracts passed.'

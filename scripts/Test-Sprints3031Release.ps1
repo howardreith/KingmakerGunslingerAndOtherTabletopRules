@@ -163,57 +163,84 @@ $blocked=$false;try {Assert-KmgSprints3031ReusedMechanics $reuse $extendedCandid
 if(-not $blocked){throw 'Changed original reference accepted'};$checks++
 Write-Host "S30-31 publisher behavior PASS=$checks; synthetic unit fixtures only, no release qualification."
 
-$budgetPath=Join-Path $temp 'budget.json';$now=[DateTime]::UtcNow
-$budget=[ordered]@{schemaVersion=1;authority='Owner bounded Sprints30-31 closeout decision';startUtc=$now.ToString('o');deadlineUtc=$now.AddHours(7).ToString('o');readinessDeadlineUtc=$now.AddMinutes(120).ToString('o');maximumBuildAttempts=3;maximumGameLaunches=24;buildAttemptCount=0;actualGameLaunchCount=0;currentStage='no-game-readiness';status='ACTIVE';events=@();ownerStopMarker=(Join-Path $temp 'OWNER-STOP');restorationOverrunSeconds=0}
-[IO.File]::WriteAllText($budgetPath,($budget|ConvertTo-Json),[Text.UTF8Encoding]::new($false))
-$refused=$false;try { Invoke-KmgSprints3031Budget $budgetPath Game test|Out-Null } catch {$refused=$true}
-if(-not $refused) {throw 'Game admitted before readiness'}
-Invoke-KmgSprints3031Budget $budgetPath Ready hidden|Out-Null
-Invoke-KmgSprints3031Budget $budgetPath Build hidden|Out-Null
-Invoke-KmgSprints3031Budget $budgetPath Game hidden|Out-Null
-$b=Get-Content $budgetPath -Raw|ConvertFrom-Json
-if($b.buildAttemptCount -ne 1 -or $b.actualGameLaunchCount -ne 1 -or $b.events.Count -ne 3) {throw 'Predispatch counts not persisted'}
-[IO.File]::WriteAllText($budget.ownerStopMarker,'CONTROL ONLY')
-$refused=$false;try {Invoke-KmgSprints3031Budget $budgetPath Game test|Out-Null} catch {$refused=$true}
-if(-not $refused) {throw 'Owner stop marker ignored'}
-Invoke-KmgSprints3031Budget $budgetPath Stop stopped|Out-Null
-Write-Host 'S30-31 budget guard accepted persisted counters and refused pre-readiness/owner-stop dispatch; no actual launch.'
-
-# Each negative has its own immutable source fixture; no actual dispatch occurs.
-function Check-BudgetRefusal([string]$Name,[scriptblock]$Change) {
-    $test=$budget|ConvertTo-Json -Depth 12|ConvertFrom-Json
-    $test.ownerStopMarker=Join-Path $temp 'not-present-control-marker'
-    $test.currentStage='hidden';$test.status='ACTIVE'
-    & $Change $test
-    $p=Join-Path $temp ('budget-'+$Name+'.json')
-    [IO.File]::WriteAllText($p,($test|ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
-    $blocked=$false;try {Invoke-KmgSprints3031Budget $p Game test|Out-Null} catch {$blocked=$true}
-    if(-not $blocked){throw ('Budget admitted '+$Name)}
-}
-Check-BudgetRefusal 'build-cap' {$args[0].buildAttemptCount=3}
-Check-BudgetRefusal 'game-cap' {$args[0].actualGameLaunchCount=24}
-Check-BudgetRefusal 'extended-deadline' {$args[0].deadlineUtc=$now.AddHours(8).ToString('o')}
-Check-BudgetRefusal 'expired' {$b=$args[0];$s=$now.AddHours(-8);$b.startUtc=$s.ToString('o');$b.deadlineUtc=$s.AddHours(7).ToString('o');$b.readinessDeadlineUtc=$s.AddMinutes(120).ToString('o')}
-Check-BudgetRefusal 'readiness-expired' {$b=$args[0];$s=$now.AddHours(-3);$b.startUtc=$s.ToString('o');$b.deadlineUtc=$s.AddHours(7).ToString('o');$b.readinessDeadlineUtc=$s.AddMinutes(120).ToString('o');$b.currentStage='no-game-readiness'}
-$realPath=Join-Path (Split-Path -Parent $PSScriptRoot) 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json'
-if(Test-Path -LiteralPath $realPath) {
-    $real=Get-Content -LiteralPath $realPath -Raw|ConvertFrom-Json
-    if($real.PSObject.Properties.Name -contains 'authorizedSuspension') {
-        $p=Join-Path $temp 'authorized-pause.json'
-        $real.ownerStopMarker=Join-Path $temp 'not-present-control-marker'
-        [IO.File]::WriteAllText($p,($real|ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
-        Invoke-KmgSprints3031Budget $p Check test|Out-Null
-        if($real.PSObject.Properties.Name -contains 'compileCeilingAmendment') {
-            $real.compileCeilingAmendment.excludedTicks++
-            [IO.File]::WriteAllText($p,($real|ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
-            $blocked=$false;try {Invoke-KmgSprints3031Budget $p Check test|Out-Null} catch {$blocked=$true}
-            if(-not $blocked){throw 'Unapproved second suspension admitted'}
-            $real.compileCeilingAmendment.excludedTicks--
-        }
-        $real.authorizedSuspension.excludedTicks++
-        [IO.File]::WriteAllText($p,($real|ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
-        $blocked=$false;try {Invoke-KmgSprints3031Budget $p Check test|Out-Null} catch {$blocked=$true}
-        if(-not $blocked){throw 'Unapproved pause duration admitted'}
+# All guard tests below use independent temporary budgets. None reads or
+# rewrites the real campaign ledger, even when a candidate invokes this file.
+function New-BudgetFixture([string]$Name,[int]$Builds=0,[int]$Games=0,[switch]$Amended) {
+    $now=[DateTime]::UtcNow;$start=$now.AddHours(-1)
+    $b=[ordered]@{schemaVersion=1;authority='Owner bounded Sprints30-31 closeout decision';startUtc=$start.ToString('o');deadlineUtc=$start.AddHours(7).ToString('o');readinessDeadlineUtc=$start.AddMinutes(120).ToString('o');maximumBuildAttempts=3;maximumGameLaunches=24;buildAttemptCount=$Builds;actualGameLaunchCount=$Games;currentStage='hidden';status='ACTIVE';events=@([pscustomobject]@{utc=$start.AddMinutes(20).ToString('o');action='Ready';builds=0;gameLaunches=0});ownerStopMarker=(Join-Path $temp ($Name+'.stop'));restorationOverrunSeconds=0}
+    if($Amended) {
+        $event=$start.AddMinutes(10).ToString('o')
+        $b.events=@([pscustomobject]@{utc=$event;action='Build';builds=2;gameLaunches=0})+$b.events
+        $b.maximumBuildAttempts=5;$b.deadlineUtc=$start.AddHours(7).AddMinutes(10).ToString('o')
+        $b.budgetIsolationAmendment=[pscustomobject]@{authority='Owner repair budget isolation reconcile accounting continue closeout';oldMaximumBuildAttempts=3;newMaximumBuildAttempts=5;oldBuildAttemptCount=3;effectiveBuildAttemptCount=2;nonCandidateEventUtc=$event;reason='ISOLATED UNIT FIXTURE ONLY';evidence=@('fixture-attempt1','fixture-attempt2');pauseStartUtc=$start.AddMinutes(30).ToString('o');resumeUtc=$start.AddMinutes(40).ToString('o');excludedTicks=[TimeSpan]::FromMinutes(10).Ticks}
     }
+    $path=Join-Path $temp ('budget-'+$Name+'.json')
+    [IO.File]::WriteAllText($path,($b|ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
+    return $path
 }
-Write-Host 'S30-31 budget ceilings, deadlines and exact authorized suspension checks PASS.'
+function Refuse-Budget([string]$Path,[string]$Action,[string]$Message) {
+    $before=(Get-FileHash $Path).Hash;$actual=$null
+    try {Invoke-KmgSprints3031Budget $Path $Action test|Out-Null}catch{$actual=$_.Exception.Message}
+    if($actual -cne $Message -or (Get-FileHash $Path).Hash -cne $before){throw "Wrong/mutating budget refusal: $Action; $actual"}
+}
+function Change-BudgetFixture([string]$Path,[scriptblock]$Change) {
+    $b=Get-Content $Path -Raw|ConvertFrom-Json
+    & $Change $b
+    [IO.File]::WriteAllText($Path,($b|ConvertTo-Json -Depth 12),[Text.UTF8Encoding]::new($false))
+}
+$p=New-BudgetFixture fifth 4 0 -Amended
+Invoke-KmgSprints3031Budget $p Build fifth|Out-Null
+$hash=(Get-FileHash $p).Hash
+Invoke-KmgSprints3031Budget $p Check fifth-artifact-verification|Out-Null
+if((Get-FileHash $p).Hash -cne $hash){throw 'Read-only verification changed its budget'}
+Refuse-Budget $p Build 'Candidate build admission ceiling reached.'
+Invoke-KmgSprints3031Budget $p Game fifth-artifact-native|Out-Null
+$b=Get-Content $p -Raw|ConvertFrom-Json
+if($b.buildAttemptCount -ne 5 -or $b.actualGameLaunchCount -ne 1){throw 'Fifth build prevented independent game admission or was charged twice'}
+
+$p=New-BudgetFixture last-game 4 23 -Amended
+$cleanup=$false
+try {
+    Invoke-KmgSprints3031Budget $p Game twenty-fourth|Out-Null
+    # An admitted transaction's children have no new admission. A failed
+    # outcome retains its reservation and does not guard/interrupt finally.
+    throw 'fixture-native-failure'
+} catch {if($_.Exception.Message -cne 'fixture-native-failure'){throw}} finally {$cleanup=$true}
+if(-not $cleanup -or (Get-Content $p -Raw|ConvertFrom-Json).actualGameLaunchCount -ne 24){throw 'Last game admission/cleanup contract failed'}
+Refuse-Budget $p Game 'Game admission ceiling reached.'
+Invoke-KmgSprints3031Budget $p Check artifact-verification|Out-Null
+Invoke-KmgSprints3031Budget $p Build independent-build|Out-Null
+Invoke-KmgSprints3031Budget $p Stop restored|Out-Null
+
+$p=New-BudgetFixture marker
+$b=Get-Content $p -Raw|ConvertFrom-Json
+[IO.File]::WriteAllText($b.ownerStopMarker,'CONTROL ONLY')
+foreach($action in @('Check','Build','Game')){Refuse-Budget $p $action 'Owner CONTROL stop: no new dispatch.'}
+Invoke-KmgSprints3031Budget $p Stop safely-finished|Out-Null
+
+$p=New-BudgetFixture expired
+Change-BudgetFixture $p {param($b) $start=[DateTime]::UtcNow.AddHours(-8);$b.startUtc=$start.ToString('o');$b.deadlineUtc=$start.AddHours(7).ToString('o');$b.readinessDeadlineUtc=$start.AddMinutes(120).ToString('o');$b.events[0].utc=$start.AddMinutes(20).ToString('o')}
+Refuse-Budget $p Build 'Elapsed budget cannot fit the next stage.'
+Invoke-KmgSprints3031Budget $p Stop safely-finished|Out-Null
+
+$p=New-BudgetFixture authority
+Change-BudgetFixture $p {param($b) $b.authority='unsupported'}
+Refuse-Budget $p Check 'Unexpected owner budget.'
+$p=New-BudgetFixture widened
+Change-BudgetFixture $p {param($b) $b.maximumBuildAttempts=6}
+Refuse-Budget $p Build 'Unexpected owner budget.'
+$p=New-BudgetFixture pause 2 0 -Amended
+Change-BudgetFixture $p {param($b) $b.budgetIsolationAmendment.excludedTicks++}
+Refuse-Budget $p Check 'Unsupported owner suspension adjustment.'
+$p=New-BudgetFixture deadline
+Change-BudgetFixture $p {param($b) $b.deadlineUtc=([DateTime]::Parse($b.deadlineUtc).AddHours(1)).ToString('o')}
+Refuse-Budget $p Check 'Owner deadlines were changed.'
+
+$p=New-BudgetFixture readiness
+Change-BudgetFixture $p {param($b) $b.currentStage='no-game-readiness';$b.events=@()}
+Refuse-Budget $p Build 'Readiness has not been closed; candidate/game dispatch refused.'
+Invoke-KmgSprints3031Budget $p Ready hidden|Out-Null
+$p=New-BudgetFixture readiness-complete
+Change-BudgetFixture $p {param($b) $start=[DateTime]::UtcNow.AddHours(-3);$b.startUtc=$start.ToString('o');$b.deadlineUtc=$start.AddHours(7).ToString('o');$b.readinessDeadlineUtc=$start.AddMinutes(120).ToString('o');$b.events[0].utc=$start.AddMinutes(107).ToString('o')}
+Invoke-KmgSprints3031Budget $p Check completed-readiness|Out-Null
+Write-Host 'S30-31 isolated admission tests PASS: independent build/game ceilings, read-only verification, last-admission completion, authority/deadline/stop and completed readiness. No live budget mutation or actual build/game.'
