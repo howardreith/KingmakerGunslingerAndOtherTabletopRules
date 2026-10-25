@@ -24,8 +24,13 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $suffix=if($info.Version -eq '0.0.167'){'expanded-summoning-sprints30-31-outsider-celestial'}else{'expanded-summoning-druid-giant-sizes'}
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-$suffix.zip"
+    [xml]$versionProperties = Get-Content -LiteralPath (Join-Path $repositoryRoot 'Directory.Build.props') -Raw
+    $informational = [string]$versionProperties.Project.PropertyGroup.KmgInformationalVersion
+    if (-not $informational.StartsWith($info.Version + '-', [StringComparison]::Ordinal) -or
+        $informational -cnotmatch '^[0-9]+\.[0-9]+\.[0-9]+-[a-z0-9-]+$') {
+        throw 'Package name requires the source version and its declared informational suffix.'
+    }
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$informational.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -286,21 +291,13 @@ if (Test-Path -LiteralPath $checksumPath) {
 $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
-# Released v0.0.159 contains 380 files with the soundbank. Sprint26 adds
-# the original Gorgon mesh/albedo, two summon medallions, Leap emblem and
-# v0.0.160 notes: six files. Griffon adds its assets/notes; Sprint28 adds
-# three giant portraits and the v0.0.162 release notes. Sprint29 adds
-# three original giant portraits and the v0.0.163 release notes. The optional bank/manifest remain a
-# two-file delta.
-# The capped S30/S31 pilot adds declared exported icons and original-body members here.
-# Count their declared, hash-validated manifest records; Lantern is in place.
-# The strict package validator still checks the exact complete path/hash set.
-$s3031IconKeys = @('lemure','dretch','hound-archon','astral-deva','trumpet-archon','trumpet-blast')
+# Count every declared summon icon, including authorized new creatures. The
+# other 272 paths and original-body members retain the existing inventory;
+# strict package validation below still requires its exact complete path/hash
+# set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$s3031IconCount = @($summonManifest.icons | Where-Object { $_.key -cin $s3031IconKeys }).Count
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count + 1 + 1 + 1 + 1 + 1
-# Retain released Cleanup2 Gorgon parameters and v0.0.164/165/166 notes; add the declared v0.0.167 candidate notes.
+$basePackageFileCount = 272 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

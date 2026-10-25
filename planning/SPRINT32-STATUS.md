@@ -111,7 +111,7 @@ The prior owner acceptance is not a Sprint 32 waiver. Original dispositions:
 
 Intake: refreshed master, created isolated review worktree, read current policy
 and relevant charter, identified stale active pointers and S30–31 build gates.
-Build-Local attempts/packages/native launches: 5/1/1. A separate focused
+Build-Local attempts/packages/native launches: 6/1/1. A separate focused
 production compilation passed. Native task including staging and restoration:
 255.68 seconds. Accumulated active work-category times are not yet available;
 retain timestamped logs rather than infer throughput.
@@ -297,3 +297,17 @@ CowWithHat public release1.4.5 ZIP retained locally for optional integration
 research: SHA256 cbfcd6ae378bf7d6a3ad5af8d85801504f63e5e092c67a3588d4ce1e088c99fa,
 82,577bytes. Its released NewSpells.cs confirms the same Suggestion GUID and
 adaptation as inspected master. No provider installation or integration yet.
+
+The 9e26821a attempt passed the complete offline wrapper, selected6 domain
+tests and exact-reference compilation, then refused packaging: the concluded
+S30-31 six-icon count expected415 files; Satyr produces416. Corrected the count
+to use all declared existing icon-manifest entries, preserving exact strict
+path/hash validation and an explicit positive matching serializer count. The
+default package filename now uses the source informational version, checked
+against Info.json, rather than a fixed release pair. Independent read-only
+review found no guard regression. Focused416-file determinism/count/positive
+and negative checks PASS; actual packager-only strict validation PASS; a
+same-count corrupted Satyr icon ZIP was refused at its exact hash boundary.
+These local ZIPs are unqualified test artifacts, not native candidates.
+Original failed build/partial compilation retained. Next: one clean-commit
+Satyr development package and the already scoped guarded native probe.

@@ -35,6 +35,8 @@ if ($null -eq $python) {
 if ($LASTEXITCODE -ne 0) { throw 'Repository validator regression fixtures failed.' }
 & $python.Source (Join-Path $repositoryRoot 'tools\test_development_candidate_validator.py')
 if ($LASTEXITCODE -ne 0) { throw 'Development-candidate validator corruption fixtures failed.' }
+& $python.Source (Join-Path $repositoryRoot 'tools\test_deterministic_package.py')
+if ($LASTEXITCODE -ne 0) { throw 'Deterministic package count/refusal fixtures failed.' }
 if ([string]::IsNullOrEmpty($DevelopmentPurpose)) {
     if ($DevelopmentSummaryPath) { throw '-DevelopmentSummaryPath requires -DevelopmentPurpose.' }
     & $python.Source $validator --root $repositoryRoot
