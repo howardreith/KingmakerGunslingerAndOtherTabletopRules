@@ -15,6 +15,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'common.ps1')
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $invoke = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
 $build = Join-Path $PSScriptRoot 'Build-Local.ps1'
