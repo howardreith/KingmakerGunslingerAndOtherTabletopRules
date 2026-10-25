@@ -198,6 +198,12 @@ foreach ($kind in @('viper','constrictor-snake','salamander')) {
     Copy-Item -LiteralPath (Join-Path $serpentineSource "$kind-albedo.png") -Destination $serpentineDestination
 }
 Copy-Item -LiteralPath (Join-Path $serpentineSource 'salamander-human-mesh.json') -Destination $serpentineDestination
+# Two exact original Lillend exports; no authoring files or native capture.
+$lillendDestination = Join-Path $modDirectory 'assets\sprint32-support'
+New-Item -ItemType Directory -Path $lillendDestination -Force | Out-Null
+foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint32-support\'+$file)) -Destination $lillendDestination
+}
 # Closed four-file original Sprint 18 body inventory: one mesh and one
 # painting for each ape. Fail closed on a missing export; no private
 # authoring outputs and no broad folder copy.
@@ -292,12 +298,12 @@ $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Count every declared summon icon, including authorized new creatures. The
-# other 272 paths and original-body members retain the existing inventory;
+# other 274 paths include the two exact Sprint32 Lillend exports;
 # strict package validation below still requires its exact complete path/hash
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 272 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
+$basePackageFileCount = 274 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

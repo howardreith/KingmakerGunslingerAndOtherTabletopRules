@@ -30,6 +30,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             CreateExpandedSummoningCorrectionHostile(fixture);
             var target = fixture.Hostile; int ac = target.Stats.AC.BaseValue;
             BlueprintFeature mindImmunity = null;
+            LillendHumanVisualAttachment ownerBody = null, siblingBody = null;
+            var bodyResources = new List<UnityEngine.Object>();
+            var borrowedBodyResources = new List<UnityEngine.Object>();
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -39,6 +42,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sibling = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
                 foreach (var unit in new[] { owner, sibling })
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue(); }
+                for (int frame = 0; frame < 180; frame++)
+                {
+                    ownerBody = owner.View?.GetComponent<LillendHumanVisualAttachment>();
+                    siblingBody = sibling.View?.GetComponent<LillendHumanVisualAttachment>();
+                    if (ownerBody != null && ownerBody.Live && siblingBody != null && siblingBody.Live) break;
+                    yield return 0;
+                }
+                bool bodies = ownerBody != null && ownerBody.Live && siblingBody != null && siblingBody.Live &&
+                    ownerBody.NativeActionsUnchanged && siblingBody.NativeActionsUnchanged &&
+                    ownerBody.AuxiliaryGeometrySuppressed && siblingBody.AuxiliaryGeometrySuppressed &&
+                    !ReferenceEquals(ownerBody.Body.sharedMesh, siblingBody.Body.sharedMesh) &&
+                    !ReferenceEquals(ownerBody.Body.sharedMaterial, siblingBody.Body.sharedMaterial) &&
+                    !ReferenceEquals(ownerBody.TailAction, siblingBody.TailAction);
+                if (bodies) foreach (var attachment in new[] { ownerBody, siblingBody })
+                {
+                    bodyResources.AddRange(attachment.CaptureOwnedResources()); bodyResources.Add(attachment);
+                    borrowedBodyResources.AddRange(attachment.BorrowedResources());
+                }
+                var bodyRow = new JObject { ["ownerBinding"] = ExpandedSummoningLillendViewPatch.DescribeView(owner.View),
+                    ["siblingBinding"] = ExpandedSummoningLillendViewPatch.DescribeView(sibling.View),
+                    ["independentOwnedBodies"] = bodies, ["finalVisualQualification"] = false };
+                if (bodies)
+                {
+                    bodyRow["restPose"] = Lillend32BodySample(owner, ownerBody);
+                    bodyRow["siblingRestPose"] = Lillend32BodySample(sibling, siblingBody);
+                    bodyRow["supportingRestFrame"] = CaptureSprint17OriginalBodyFrame(owner, ownerBody.Body, "s32-lillend-rest");
+                    bodies = (bool)bodyRow["restPose"]["finite"] && (bool)bodyRow["siblingRestPose"]["finite"];
+                }
+                Sprint25Check("lillend-original-body-bound", bodies, bodyRow,
+                    "Both exact Lillends load independent original bodies, preserve borrowed native actions and retain finite rest poses.");
+                if (!bodies) throw new InvalidOperationException("Original Lillend body failed; native carrier is not an accepted proxy.");
                 var creation = owner.Blueprint.GetComponents<LillendBardBook32>().Single();
                 var book = owner.Descriptor.GetSpellbook(creation.Book);
                 var siblingBook = sibling.Descriptor.GetSpellbook(creation.Book);
@@ -147,6 +181,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int slotsBefore = book.GetSpontaneousSlots(3), damageBefore = owner.Damage;
                     var commands = new HashSet<UnitCommand>(); var costs = new JArray(); var ambient = new HashSet<string>();
                     var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
+                    var presentation = new JArray();
+                    attacks.AfterWeapon = rule => {
+                        if (presentation.Count >= 3) return;
+                        try {
+                            var row = Lillend32BodySample(owner, ownerBody);
+                            row["weapon"] = rule.Weapon.Blueprint.AssetGuid;
+                            row["category"] = rule.Weapon.Blueprint.Category.ToString();
+                            row["tailActEvents"] = ownerBody.TailAction.ActEvents;
+                            row["tailNativeTime"] = ownerBody.TailAction.LastNativeTime;
+                            row["supportingFrame"] = CaptureSprint17OriginalBodyFrame(owner, ownerBody.Body,
+                                "s32-lillend-" + stage + "-attack-" + presentation.Count);
+                            presentation.Add(row);
+                        } catch (Exception error) { presentation.Add(new JObject { ["error"] = error.ToString() }); }
+                    };
                     var starts = new Lillend32CommandStarts { Owner = owner };
                     EventBus.Subscribe(attacks); EventBus.Subscribe(starts);
                     try
@@ -194,7 +242,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Sprint25Check("lillend-" + stage + "-resolved", passed, new JObject {
                                 ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["frames"] = frames, ["aiTicks"] = ticks,
                                 ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
-                                ["nativeCommandStarts"] = starts.Rows,
+                                ["nativeCommandStarts"] = starts.Rows, ["bodyAtWeaponEvents"] = presentation,
+                                ["tailStarts"] = ownerBody.TailAction.StartedHandles, ["tailActs"] = ownerBody.TailAction.ActEvents,
+                                ["tailFinishes"] = ownerBody.TailAction.FinishedHandles, ["tailFailure"] = ownerBody.TailAction.Failure,
                                 ["performanceRunning"] = performance.IsRunning, ["performanceRounds"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                                 ["allyAttackBefore"] = allyAttack, ["allyAttackAfter"] = sibling.Stats.AdditionalAttackBonus.ModifiedValue,
                                 ["ownedAllyEffects"] = ownedEffects.Length, ["enemySafe"] = enemySafe,
@@ -230,6 +280,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
+            for (int frame = 0; frame < 8; frame++) yield return 0;
+            bool bodyCleanup = bodyResources.Count > 0 && bodyResources.All(value => value == null) &&
+                borrowedBodyResources.Count > 0 && borrowedBodyResources.All(value => value != null);
+            Sprint25Check("lillend-original-body-cleanup", bodyCleanup, new JObject {
+                ["ownedResources"] = bodyResources.Count, ["ownedRemaining"] = bodyResources.Count(value => value != null),
+                ["borrowedResources"] = borrowedBodyResources.Distinct().Count(),
+                ["borrowedMissing"] = borrowedBodyResources.Count(value => value == null) },
+                "Native summon disposal destroys owned body/tail resources and preserves borrowed native actions/clips.");
+        }
+
+        private static JObject Lillend32BodySample(UnitEntityData unit, LillendHumanVisualAttachment attachment)
+        {
+            Vector3[] points = Sprint17OriginalWorldVertices(attachment.Body);
+            bool finite = points.Length > 0 && points.All(point =>
+                LillendTailAnimationPolicy.Finite(point.x) && LillendTailAnimationPolicy.Finite(point.y) &&
+                LillendTailAnimationPolicy.Finite(point.z));
+            return new JObject { ["frame"] = Time.frameCount, ["finite"] = finite,
+                ["vertices"] = points.Length, ["worldHeight"] = points.Max(p => p.y) - points.Min(p => p.y),
+                ["worldWidth"] = points.Max(p => p.x) - points.Min(p => p.x),
+                ["floor"] = Sprint17MeasuredFloor(unit, unit.Position),
+                ["lowestAboveActor"] = points.Min(p => p.y) - unit.Position.y,
+                ["nativeActionsUnchanged"] = attachment.NativeActionsUnchanged,
+                ["gait"] = attachment.DescribeGait() };
         }
 
         // Event-bound observation retains a command replaced within one frame;

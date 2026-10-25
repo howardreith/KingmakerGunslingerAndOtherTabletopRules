@@ -932,6 +932,8 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.roster-and-placements", ExpandedSummoningCatalogTests.FrozenRosterAndPlacementCounts),
             Case("expanded-summoning.sprint32-hidden-satyr-routes", ExpandedSummoningCatalogTests.SatyrHiddenRoutesPreservePublishedSurface),
             Case("expanded-summoning.sprint32-hidden-lillend-routes", ExpandedSummoningCatalogTests.LillendHiddenRoutesPreservePublishedSurface),
+            Case("expanded-summoning.sprint32-lillend-visual-owner", LillendVisual32Tests.ExactOwnerAndNativeCarrierOnly),
+            Case("expanded-summoning.sprint32-lillend-visual-drivers", LillendVisual32Tests.ExportedDriversKeepNativeAndOriginalOwnership),
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),
             Case("expanded-summoning.catalog-guards", ExpandedSummoningCatalogTests.CatalogGuardsInvalidSpecs),

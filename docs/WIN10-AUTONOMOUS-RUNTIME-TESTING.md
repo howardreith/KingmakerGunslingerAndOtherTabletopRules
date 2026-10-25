@@ -24,7 +24,13 @@ case explicitly starts with a healthy actor after retaining the healing outcome.
 No supplied casts, attacks, rolls or
 resource/slot debits. The existing Dialog activatable controller supplies its
 first-round tick; this is not proof of sustained round expenditure or final
-adult profile/body. Both fixed phases retain source/package, empty-world and
+adult profile/body. The original-body extension in the same Lillend phase requires two independent
+owned body bindings, finite owner/sibling rest poses and preserved native actions.
+Bounded weapon-event frames and tail counters are diagnostic; they do not establish
+contact or full presentation. Native disposal must release captured owned body/tail
+resources while borrowed actions/clips survive. Exact optional provider roots are
+captured for the unresolved live save-branch refusal; absence remains explicit.
+Both fixed phases retain source/package, empty-world and
 exact restoration guards; no Working-save access is selected here.
 
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,

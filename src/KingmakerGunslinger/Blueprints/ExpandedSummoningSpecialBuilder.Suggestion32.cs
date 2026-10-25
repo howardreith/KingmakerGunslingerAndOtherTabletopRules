@@ -88,7 +88,9 @@ namespace KingmakerGunslinger.Blueprints
             var saved = (ContextActionConditionalSaved)sourceRun.Actions.Actions[0];
             if (saved.Succeed.Actions.Length != 0 || saved.Failed.Actions.Length != 1 ||
                 !(saved.Failed.Actions[0] is ContextActionApplyBuff))
-                throw new InvalidOperationException("Optional Suggestion acquired an unexpected save branch.");
+                throw new InvalidOperationException("Optional Suggestion acquired an unexpected save branch: success=" +
+                    string.Join(",", saved.Succeed.Actions.Select(action => action == null ? "<null>" : action.GetType().FullName).ToArray()) +
+                    ";failure=" + string.Join(",", saved.Failed.Actions.Select(action => action == null ? "<null>" : action.GetType().FullName).ToArray()));
             var sourceApply = (ContextActionApplyBuff)saved.Failed.Actions[0];
             if (sourceRun.SavingThrowType != Kingmaker.EntitySystem.Stats.SavingThrowType.Will ||
                 !ReferenceEquals(sourceApply.Buff, sourceBuff) || sourceApply.Permanent || sourceApply.UseDurationSeconds ||
