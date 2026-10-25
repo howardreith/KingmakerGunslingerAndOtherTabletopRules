@@ -877,7 +877,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             for (int frame = 0; frame < 3; frame++) yield return 0;
             Astral31RefreshAreas(new[] { ownerAura, siblingAura }, actors);
             Sprint25Check("astral-core-lesser-globe", exact, details,
-                "Through the actual native effect dispatch, level 1 spells with and without spell resistance (Magic Missile at CL50, which always overcomes the Astral's SR 25) and a level 2 SLA cast from outside the aura never reach the covered creature, while the same spells cast from inside, the buff heightened to level 4, or a cast at an uncovered creature apply. A real level 1 persistent area without spell resistance excludes the covered creature, includes it once it leaves the globe and excludes it again on return, then ends without residue. A second Astral's constant aura still covers the shared creature.");
+                "Through the actual native effect dispatch, a level 1 spell without spell resistance (Mage Armor), a level 1 spell with it (Magic Missile at CL50) and a level 2 SLA cast from outside the aura never reach the covered creature: no effect and no spell resistance check. Mage Armor cast from inside, heightened to level 4, or cast at an uncovered creature applies, and Magic Missile cast from inside reaches the native spell resistance check, which CL50 overcomes. A real level 1 persistent area without spell resistance excludes the covered creature, includes it once it leaves the globe and excludes it again on return, then ends without residue. A second Astral's constant aura still covers the shared creature.");
             if (!exact) throw new InvalidOperationException(
                 "Astral lesser-globe native consumers failed.");
         }
@@ -918,6 +918,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             Astral31DoApplyEffect.Invoke(null, new object[] { context, target, effect });
         }
 
+        private sealed class Astral31ResistanceObserver :
+            Kingmaker.PubSubSystem.IGlobalRulebookHandler<RuleSpellResistanceCheck>
+        {
+            internal readonly List<RuleSpellResistanceCheck> Checks =
+                new List<RuleSpellResistanceCheck>();
+            public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt) { }
+            public void OnEventDidTrigger(RuleSpellResistanceCheck evt) { Checks.Add(evt); }
+        }
+
         private static JObject Astral31Dispatch(UnitEntityData source,
             UnitEntityData target, BlueprintAbility ability, int casterLevel,
             int spellLevel, bool expectApplied)
@@ -927,7 +936,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             var before = target.Buffs.Enumerable.ToArray();
             int damageBefore = target.Damage;
             bool blocks = AstralProtectiveGlobe.Blocks(target, context);
-            Astral31InvokeDispatch(context, wrapper, ability.GetComponent<AbilityApplyEffect>());
+            var resistance = new Astral31ResistanceObserver();
+            Kingmaker.PubSubSystem.EventBus.Subscribe(resistance);
+            try
+            {
+                Astral31InvokeDispatch(context, wrapper, ability.GetComponent<AbilityApplyEffect>());
+            }
+            finally { Kingmaker.PubSubSystem.EventBus.Unsubscribe(resistance); }
+            var checks = resistance.Checks.Where(value => ReferenceEquals(value.Target, target)).ToArray();
             var added = target.Buffs.Enumerable.Except(before).ToArray();
             var addedGuids = new JArray(added.Select(buff => buff.Blueprint.AssetGuid));
             int damageDelta = target.Damage - damageBefore;
@@ -936,15 +952,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool removed = !target.Buffs.Enumerable.Intersect(added).Any() &&
                 target.Damage == damageBefore;
             bool applied = added.Length > 0 || damageDelta > 0;
+            // A spell that allows spell resistance reaches the target when
+            // the native rule runs; inside it must be overcome at CL50.
+            bool reached = applied || checks.Length > 0;
+            // Native dispatch runs the rule for every unit target, even when
+            // the spell allows no resistance; a blocked cast never reaches it.
+            bool resistanceExact = expectApplied ?
+                checks.Length == 1 && !checks[0].IsSpellResisted : checks.Length == 0;
             return new JObject { ["source"] = source.UniqueId, ["target"] = target.UniqueId,
                 ["ability"] = ability.AssetGuid, ["name"] = ability.name,
                 ["type"] = ability.Type.ToString(), ["spellResistance"] = ability.SpellResistance,
                 ["casterLevel"] = casterLevel, ["spellLevel"] = spellLevel,
                 ["sourcePosition"] = new JArray(source.Position.x, source.Position.y, source.Position.z),
                 ["globeBlocks"] = blocks, ["applied"] = applied, ["addedBuffs"] = addedGuids,
-                ["damageDelta"] = damageDelta,
+                ["damageDelta"] = damageDelta, ["spellResistanceChecks"] = checks.Length,
+                ["spellResisted"] = checks.Any(value => value.IsSpellResisted),
+                ["reached"] = reached,
                 ["probeBuffsRemoved"] = removed, ["expectedApplied"] = expectApplied,
-                ["exact"] = applied == expectApplied && blocks == !expectApplied && removed };
+                ["exact"] = (ability.SpellResistance ? reached : applied) == expectApplied &&
+                    blocks == !expectApplied && removed && resistanceExact };
         }
 
         private static bool Astral31Covered(UnitEntityData unit,
