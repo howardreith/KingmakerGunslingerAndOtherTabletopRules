@@ -13,7 +13,9 @@ $testRoot = Join-Path $root ('artifacts/local-runtime/lease-tests-' + [Guid]::Ne
 [void][IO.Directory]::CreateDirectory($testRoot)
 $package = Join-Path $testRoot 'candidate.zip'
 $version = (Get-KmgModInfo $root).Version
-$candidate = Join-Path $root "artifacts/local-runtime/$version/KingmakerGunslinger-$version-local-runtime.zip"
+$candidate = (Get-KmgLocalCandidateLayout -RepositoryRoot $root `
+    -Commit (Get-KmgGitState -RepositoryRoot $root).Commit `
+    -Id 'KingmakerGunslinger' -Version $version).PackagePath
 Copy-Item -LiteralPath $candidate -Destination $package
 Expand-Archive -LiteralPath $package -DestinationPath (Join-Path $testRoot 'installed')
 $live = Join-Path $testRoot 'installed/KingmakerGunslinger'

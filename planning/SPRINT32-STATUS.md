@@ -136,3 +136,19 @@ use the passing actual gate/candidate contract fixtures for this path change.
 The broad candidate-reuse fixture remains FAIL/BASELINE_FIXTURE, not PASS.
 Profile-resolution dry-run is NOT_RUN beyond precondition: no candidate ZIP has
 yet been built, so its exact selected-path refusal was expected.
+
+Workflow commit: `72a35cc3`; follow-up fixes two parent-script imports and the
+lease fixture's current-candidate lookup identified by the same review. No
+further issue found in that bounded review. Push/PR BLOCKED: sanctioned wrapper
+refused the new branch. Automatic approval review refused editing its external
+allowlist without explicit owner authority. One exact-branch approval request
+is pending in the active conversation; local authorized work continues. No
+external policy file was changed and no alternate push route was used.
+
+Headroom planning uses measured approximately88MB expanded package and128MB
+installed Mods: build/assembly/archive copies about400MB, extraction/deployment
+about180MB, full-stack staging/rollback reserve260MB, reference worktree copies
+and bounded raw logs reserve250MB; initial combined allowance1.1GB plus2GB
+working margin. Current3.85GB clears3.1GB. Re-measure actual new package and
+Working-save copy sizes before native dispatch; this estimate is not a license
+to dip into the emergency floor.
