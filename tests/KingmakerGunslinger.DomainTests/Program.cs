@@ -1524,6 +1524,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("feature-modules.runtime-matrix", FeatureModuleSettingsTests.RuntimeMatrixUsesAuthoritativeTwelveModuleCatalog),
             Case("protection-alignment.policy-alignments", ProtectionFromAlignmentControlImmunityTests.MatchingAndMismatchedAlignmentsAreExact),
             Case("protection-alignment.terminal-and-succubus", ProtectionFromAlignmentControlImmunityTests.TerminalAndExpandedSuccubusRegistrationsBlock),
+            Case("protection-alignment.sprint32-suggestion", ProtectionFromAlignmentControlImmunityTests.Sprint32SuggestionUsesLiveAlignmentAndExactTerminal),
             Case("protection-alignment.descriptor-regression", ProtectionFromAlignmentControlImmunityTests.BroadDescriptorsAndUnrelatedEffectsRemainAllowed),
             Case("protection-alignment.unknown-source", ProtectionFromAlignmentControlImmunityTests.UnknownSourcesFailOpenUnlessTrusted),
             Case("protection-alignment.catalog", ProtectionFromAlignmentControlImmunityTests.CatalogIsExplicitCompleteAndIdempotent),

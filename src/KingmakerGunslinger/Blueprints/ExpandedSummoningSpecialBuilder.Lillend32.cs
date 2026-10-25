@@ -54,7 +54,7 @@ namespace KingmakerGunslinger.Blueprints
             var racial = ScriptableObject.CreateInstance<SummonGiantRacialProfile>();
             racial.OwningBlueprint = unit; racial.BaseRacialHitPoints = 38;
             racial.BaseFortitude = 2; racial.BaseReflex = 5; racial.BaseWill = 5;
-            racial.PerceptionRanks = 7; racial.PersuasionRanks = 7; racial.StealthRanks = 7;
+            racial.PerceptionRanks = 7; racial.PersuasionRanks = 7;
             var nativeBook = BlueprintLibraryLookup.RequireExact<BlueprintSpellbook>(library,
                 "bc04fc157a8801d41b877ad0d9af03dd", "captured native spontaneous bard book");
             if (!nativeBook.Spontaneous) throw new InvalidOperationException("Native bard book is not spontaneous.");
@@ -67,9 +67,9 @@ namespace KingmakerGunslinger.Blueprints
                 throw new InvalidOperationException("Captured Lillend healing spells lost their native bard tiers.");
             var list = Require<BlueprintSpellList>(bySymbol, Lillend32Prefix + "SpellList");
             list.name = InternalName(Lillend32Prefix + "SpellList");
+            var knownSpells = LillendKnownSpells32(library, bySymbol);
             list.SpellsByLevel = Enumerable.Range(0, 10).Select(level => new SpellLevelList {
-                SpellLevel = level, Spells = (level == 1 ? new[] { light } :
-                    level == 3 ? new[] { serious } : Array.Empty<BlueprintAbility>()).ToList() }).ToArray();
+                SpellLevel = level, Spells = (level <= 3 ? knownSpells[level] : Array.Empty<BlueprintAbility>()).ToList() }).ToArray();
             var book = Require<BlueprintSpellbook>(bySymbol, Lillend32Prefix + "Spellbook");
             CopyFields(nativeBook, book); book.name = InternalName(Lillend32Prefix + "Spellbook");
             book.ComponentsArray = Array.Empty<BlueprintComponent>(); book.SpellList = list;
@@ -84,12 +84,21 @@ namespace KingmakerGunslinger.Blueprints
                 Size.Large, 20, 17, 21, 14, 16, 19, 30);
             var sword = Sprint29Weapon(library, bySymbol, Lillend32Prefix + "Longsword",
                 Lillend32Prefix + "LongswordType", "03d706655c07d804cb9d5a5583f9aec5",
-                Size.Large, 2, DiceType.D6, 0);
+                Size.Large, 2, DiceType.D6, 9);
             var nativeSword = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library,
                 "03d706655c07d804cb9d5a5583f9aec5", "captured native +1 longsword");
             SetField(sword, "m_Enchantments", nativeSword.Enchantments.Cast<BlueprintWeaponEnchantment>().ToArray());
+            var tail = Sprint29Weapon(library, bySymbol, Lillend32Prefix + "Tail",
+                Lillend32Prefix + "TailType", LargeTailGuid, Size.Large, 2, DiceType.D6, 9);
+            // Installed type getter subtracts four from values <=10. Nine
+            // therefore gives a five-foot weapon contribution; the owner's
+            // native ReachRange adds five at Large, ten at Huge, etc. This
+            // represents printed10-foot reach while preserving live size/reach
+            // changes, without an ItemEntityWeapon or command patch.
+            if (sword.AttackRange.Value != 5 || tail.AttackRange.Value != 5)
+                throw new InvalidOperationException("Lillend native weapon reach contribution changed.");
             unit.Body = new BlueprintUnit.UnitBody { PrimaryHand = sword,
-                AdditionalLimbs = Array.Empty<BlueprintItemWeapon>(), AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
+                AdditionalLimbs = Array.Empty<BlueprintItemWeapon>(), AdditionalSecondaryLimbs = new[] { tail },
                 QuickSlots = Array.Empty<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>() };
             var resource = Require<BlueprintAbilityResource>(bySymbol, Lillend32Prefix + "PerformanceResource");
             ConfigureNamedResource(resource, Lillend32Prefix + "PerformanceResource", Lillend32Prefix + "PerformanceResource",
@@ -100,7 +109,7 @@ namespace KingmakerGunslinger.Blueprints
             var armor = ScriptableObject.CreateInstance<AddStatBonus>();
             armor.Stat = StatType.AC; armor.Descriptor = ModifierDescriptor.NaturalArmor; armor.Value = 8;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();
-            equipment.OwningBlueprint = unit; equipment.GreatWeapon = sword;
+            equipment.OwningBlueprint = unit; equipment.GreatWeapon = sword; equipment.Slam = tail;
             var proficiency = ScriptableObject.CreateInstance<AddProficiencies>();
             proficiency.WeaponProficiencies = new[] { sword.Category };
             proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
@@ -116,8 +125,21 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = new BlueprintUnitFact[] { Feature(library, OutsiderTypeGuid, "outsider type"),
                 Feature(library, GoodSubtypeGuid, "good subtype"), Feature(library, ChaoticSubtypeGuid, "chaotic subtype"),
                 Feature(library, ElectricityImmunityGuid, "electricity immunity"), Feature(library, PoisonImmunityGuid, "poison immunity"),
+                Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"),
+                Feature(library, "c1b26f97b974aec469613f968439e7bb", "accepted native legless trip immunity"),
+                Feature(library, "06964d468fde1dc4aa71a92ea04d930d", "captured native Combat Casting"),
                 Feature(library, IronWillGuid, "Iron Will"), Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
                 Feature(library, AirborneGuid, "accepted ordinary-map flight adaptation"), traits, courage };
+            ConfigureGrabber(library, bySymbol, "KMG.Summoning.Unit.LillendAzata",
+                Lillend32Prefix + "GrabTraits", "LillendAzata", "Lillend Grab and Constrict",
+                "Only this lillend's tail grabs a foe no larger than itself. A successful grab and " +
+                "each later successful maintain deal 2d6+5 constrict at baseline, using live size " +
+                "and Strength. The accepted summon grapple lifecycle resets active holds on reload.",
+                new GrabSpec { Additional = 1,
+                    Hold = Require<BlueprintBuff>(bySymbol, GrappleHoldSymbol),
+                    Grappled = Require<BlueprintBuff>(bySymbol, GrappleGrappledSymbol),
+                    ConstrictDice = 2, ConstrictDie = DiceType.D6, ConstrictBonus = 5,
+                    LiveLillendConstrict = true });
             var healAi = ConfigureMephitAiAction(Require<BlueprintAiCastSpell>(bySymbol, Lillend32Prefix + "HealAi"),
                 Lillend32Prefix + "HealAi", serious, 0);
             var eligibility = Require<LillendHealingEligibility32>(bySymbol, Lillend32Prefix + "HealEligibility");
@@ -135,6 +157,7 @@ namespace KingmakerGunslinger.Blueprints
                 .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             brain.Actions = (nativeBrain.Actions ?? Array.Empty<BlueprintAiAction>())
                 .Concat(new BlueprintAiAction[] { healAi, perform }).ToArray(); unit.Brain = brain;
+            AddLillendSpellsAndAi32(library, bySymbol, unit, book, knownSpells);
         }
 
         private static BlueprintActivatableAbility ConfigureLillendCourage32(LibraryScriptableObject library,

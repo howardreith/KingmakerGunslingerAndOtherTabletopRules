@@ -5,6 +5,7 @@ using System.Reflection;
 using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Brain.Blueprints.Considerations;
 using Kingmaker.UnitLogic;
@@ -15,6 +16,7 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
+using KingmakerGunslinger.Spells.ProtectionFromAlignment;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Summoning
@@ -32,6 +34,7 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintAbility Ability;
         public int MaximumHitDice;
+        public string ControlBuffGuid;
         public bool FearCone;
         public UnitCondition? RejectedCondition;
 
@@ -39,28 +42,10 @@ namespace KingmakerGunslinger.Summoning
         {
             var actor = context?.Unit;
             var target = context?.Target?.Unit;
-            if (actor == null || target == null || Ability == null ||
-                !ReferenceEquals(actor.Blueprint, OwningBlueprint) ||
-                !actor.IsEnemy(target) || target.Destroyed || !target.IsInState ||
-                target.Descriptor.State.IsDead || !actor.HasLOS(target) ||
-                !actor.Memory.ContainsVisible(target) ||
-                MaximumHitDice > 0 && target.Descriptor.Progression.CharacterLevel > MaximumHitDice ||
-                target.Descriptor.State.HasCondition(UnitCondition.Frightened) ||
-                target.Descriptor.State.HasCondition(UnitCondition.Sleeping)) return 0f;
+            if (actor == null || !ReferenceEquals(actor.Blueprint, OwningBlueprint) || Ability == null) return 0f;
             var granted = actor.Descriptor.Abilities.GetAbility(Ability);
-            if (granted == null) return 0f;
-            var data = new AbilityData(granted);
-            if (!data.IsAvailable || !data.CanTarget(new TargetWrapper(target))) return 0f;
-            var effect = new MechanicsContext(actor, actor.Descriptor, Ability,
-                null, new TargetWrapper(target));
-            var immunity = target.Get<UnitPartSpellResistance>();
-            if (immunity != null && immunity.IsImmune(effect)) return 0f;
-            if (target.Descriptor.Progression.Features.Enumerable.Cast<Kingmaker.Blueprints.Facts.Fact>()
-                .Concat(target.Descriptor.Buffs.Enumerable).Where(fact => fact.IsTurnedOn)
-                .SelectMany(fact => fact.SelectComponents<BuffDescriptorImmunity>())
-                .Any(value => (bool)BuffImmunity.Invoke(value, new object[] { effect }))) return 0f;
-            if (RejectedCondition.HasValue &&
-                target.Descriptor.State.HasConditionImmunity(RejectedCondition.Value)) return 0f;
+            if (granted == null || !ControlTargetIsEligible(actor, target, new AbilityData(granted),
+                MaximumHitDice, RejectedCondition, ControlBuffGuid)) return 0f;
             if (FearCone)
             {
                 if (target.Descriptor.State.HasConditionImmunity(UnitCondition.Frightened) ||
@@ -86,6 +71,51 @@ namespace KingmakerGunslinger.Summoning
             }
             return 1f;
         }
+
+        // These two creature policies ask the same native immunity/target
+        // predicates. This never executes a save, applies a buff or debits a
+        // resource. Book spells supply their actual owned AbilityData.
+        internal static bool ControlTargetIsEligible(UnitEntityData actor, UnitEntityData target,
+            AbilityData data, int maximumHitDice, UnitCondition? rejectedCondition, string controlBuffGuid)
+        {
+            if (actor == null || target == null || data?.Blueprint == null ||
+                !actor.IsEnemy(target) || target.Destroyed || !target.IsInState ||
+                target.Descriptor.State.IsDead || !actor.HasLOS(target) ||
+                !actor.Memory.ContainsVisible(target) ||
+                maximumHitDice > 0 && target.Descriptor.Progression.CharacterLevel > maximumHitDice ||
+                target.Descriptor.State.HasCondition(UnitCondition.Frightened) ||
+                target.Descriptor.State.HasCondition(UnitCondition.Sleeping) ||
+                rejectedCondition.HasValue && (target.Descriptor.State.HasCondition(rejectedCondition.Value) ||
+                    target.Descriptor.State.HasConditionImmunity(rejectedCondition.Value)) ||
+                !data.IsAvailable || !data.CanTarget(new TargetWrapper(target))) return false;
+            var effect = new MechanicsContext(actor, actor.Descriptor, data.Blueprint,
+                null, new TargetWrapper(target));
+            var immunity = target.Get<UnitPartSpellResistance>();
+            if (immunity != null && immunity.IsImmune(effect)) return false;
+            var facts = target.Descriptor.Progression.Features.Enumerable.Cast<Kingmaker.Blueprints.Facts.Fact>()
+                .Concat(target.Descriptor.Buffs.Enumerable).Where(fact => fact.IsTurnedOn).ToArray();
+            if (facts.SelectMany(fact => fact.SelectComponents<BuffDescriptorImmunity>())
+                .Any(value => (bool)BuffImmunity.Invoke(value, new object[] { effect }))) return false;
+            // Use the project's existing alignment-control decision, including
+            // its exact terminal buff classification and the live caster's
+            // alignment. Charm immunity is not general mind immunity.
+            if (!string.IsNullOrEmpty(controlBuffGuid))
+            {
+                foreach (var guard in facts.SelectMany(fact =>
+                    fact.SelectComponents<ProtectionFromAlignmentControlImmunityComponent>()))
+                {
+                    ProtectionAlignment against;
+                    if (ProtectionFromAlignmentRuntime.TryMapProtectedAlignment(guard.ProtectedAgainstAlignment, out against) &&
+                        ProtectionFromAlignmentRuntime.Evaluate(new ProtectionControlImmunityRequest(against,
+                            data.Blueprint.AssetGuid, controlBuffGuid, actor.Descriptor.Alignment != null,
+                            actor.Descriptor.Alignment == null ? ProtectionAlignment.None :
+                            ProtectionFromAlignmentRuntime.FromNativeAlignment(actor.Descriptor.Alignment.Value))).ShouldBlock)
+                        return false;
+                }
+            }
+            return true;
+        }
+
     }
 
     // Native full attacks append every additional limb, regardless of the

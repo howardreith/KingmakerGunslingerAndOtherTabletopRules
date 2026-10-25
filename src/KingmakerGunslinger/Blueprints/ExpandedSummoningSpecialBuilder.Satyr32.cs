@@ -14,6 +14,7 @@ using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -43,8 +44,8 @@ namespace KingmakerGunslinger.Blueprints
             var racial = ScriptableObject.CreateInstance<SummonGiantRacialProfile>();
             racial.OwningBlueprint = unit; racial.BaseRacialHitPoints = 28;
             racial.BaseFortitude = 2; racial.BaseReflex = 6; racial.BaseWill = 6;
-            racial.PerceptionRanks = 8; racial.PersuasionRanks = 8;
-            racial.StealthRanks = 8; racial.MobilityRanks = 8;
+            racial.PerceptionRanks = 6; racial.PersuasionRanks = 8;
+            racial.StealthRanks = 8;
             unit.ComponentsArray = new BlueprintComponent[] { levels, racial };
             unit.Skills = new BlueprintUnit.UnitSkills(); unit.Race = null;
             ConfigureUnitCore(unit, "Satyr", "Satyr", Alignment.ChaoticNeutral,
@@ -84,7 +85,16 @@ namespace KingmakerGunslinger.Blueprints
             var proficiency = ScriptableObject.CreateInstance<Kingmaker.UnitLogic.FactLogic.AddProficiencies>();
             proficiency.WeaponProficiencies = new[] { dagger.Category, bow.Category };
             proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
-            traits.ComponentsArray = new BlueprintComponent[] { AddResource(resource), parameters, equipment, proficiency };
+            var perception = ScriptableObject.CreateInstance<AddStatBonus>();
+            perception.Stat = StatType.SkillPerception; perception.Value = 4;
+            perception.Descriptor = ModifierDescriptor.Racial;
+            var stealth = ScriptableObject.CreateInstance<AddStatBonus>();
+            stealth.Stat = StatType.SkillStealth; stealth.Value = 4;
+            stealth.Descriptor = ModifierDescriptor.Racial;
+            var intimidate = ScriptableObject.CreateInstance<SatyrIntimidateRanks32>();
+            intimidate.OwningBlueprint = unit;
+            traits.ComponentsArray = new BlueprintComponent[] { AddResource(resource), parameters,
+                equipment, proficiency, perception, stealth, intimidate };
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Satyr32Prefix + "Traits.Name", "Satyr Traits"),
                 LocalizationService.Create(Satyr32Prefix + "Traits.Description",
@@ -106,6 +116,8 @@ namespace KingmakerGunslinger.Blueprints
             eligibility.OwningBlueprint = unit; eligibility.Ability = fear; eligibility.FearCone = true;
             ai.TargetConsiderations = new Consideration[] { eligibility }; ai.BaseScore = 5;
             var charmAi = ConfigureSatyrControlAi32(bySymbol, unit, "CharmPerson", charm, 4);
+            Require<SatyrControlEligibility>(bySymbol, Satyr32Prefix + "CharmPersonEligibility").ControlBuffGuid =
+                "9dc29118addce3d48ae9b92be953b5b4";
             var sleepAi = ConfigureSatyrControlAi32(bySymbol, unit, "Sleep", sleep, 4);
             var sleepEligibility = Require<SatyrControlEligibility>(bySymbol, Satyr32Prefix + "SleepEligibility");
             sleepEligibility.MaximumHitDice = 4; sleepEligibility.RejectedCondition = UnitCondition.Sleeping;

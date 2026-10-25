@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 526;
+        internal const int SpecialIdentityCount = 557;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -835,6 +835,37 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.MeleeEligibility", "SatyrWeaponChoice32"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.RangedAi", "BlueprintAiSwitchWeapon"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.RangedEligibility", "SatyrWeaponChoice32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Tail", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.TailType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.GrabTraits", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmMonster", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmPersonSla", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmPersonSlaResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.DazeAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.DazeEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmPersonAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmPersonEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CureLightAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CureLightEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SleepAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SleepEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.HoldPersonAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.HoldPersonEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.InvisibilityAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.InvisibilityEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SoundBurstAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SoundBurstEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmMonsterAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmMonsterEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmPersonSlaAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CharmPersonSlaEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.SuggestionBuff", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Suggestion", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.SuggestionAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.SuggestionEligibility", "SatyrControlEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Suggestion", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SuggestionAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SuggestionEligibility", "LillendSpellEligibility32"));
             Validate(result);
             return result.AsReadOnly();
         }

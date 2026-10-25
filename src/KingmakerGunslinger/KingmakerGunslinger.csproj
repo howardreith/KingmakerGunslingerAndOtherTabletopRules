@@ -2072,9 +2072,16 @@
   <ItemGroup>
     <Compile Include="Summoning\SatyrControlEligibility.cs" />
     <Compile Include="Summoning\LillendBard32.cs" />
+    <Compile Include="Summoning\LillendSpells32.cs" />
+    <Compile Include="Summoning\Sprint32Suggestion.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Suggestion32.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Lillend32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.LillendSpells32.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Satyr32.cs" />
   </ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /></ItemGroup>
+  <ItemGroup>
+    <Compile Include="Summoning\FeyCelestialAdult32.cs" />
+  </ItemGroup>
 </Project>

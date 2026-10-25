@@ -32,7 +32,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     BlueprintLibraryLookup.RequireExact<BlueprintAbilityAreaEffect>(library, "a4fc1c0798359974e99e1d790935501d", "native Fascinate area"),
                     BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "2d4bd347dec7d8648afd502ee40ae661", "native Fascinate effect"),
                     BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "a50373fa77d30d34c8c6efb198b36921", "native Fascinate immunity"),
-                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "8a59ee053e804e2429355eecd749e4e7", "native Fascinate combat marker")
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "8a59ee053e804e2429355eecd749e4e7", "native Fascinate combat marker"),
+                    BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, "6477ae917b0ec7a4ca76bc9f36b023ac", "native Rainbow Pattern terminal donor")
                 };
                 receipt["controls"] = new JArray(selected.Select(value => new JObject {
                     ["guid"] = value.AssetGuid, ["name"] = value.name,
