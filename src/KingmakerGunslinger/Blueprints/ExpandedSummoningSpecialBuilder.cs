@@ -679,6 +679,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureDretch30(library, bySymbol, extraplanar);
             ConfigureSatyr32(library, bySymbol);
             ConfigureLillend32(library, bySymbol);
+            ConfigureSuggestion32(library, bySymbol);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
             ConfigureTrumpet31(library, bySymbol, extraplanar);
             ConfigureAstralDeva31(library, bySymbol, extraplanar);
@@ -2512,6 +2513,7 @@ namespace KingmakerGunslinger.Blueprints
             internal int ConstrictBonus;
             internal bool LiveSerpentineConstrict;
             internal bool LiveSalamanderConstrict;
+            internal bool LiveLillendConstrict;
             /// <summary>
             /// Sprint 21's Giant Crab: its printed constrict at the claw's own
             /// die plus live Strength, applied to the foe the holding claw is
@@ -3188,6 +3190,7 @@ namespace KingmakerGunslinger.Blueprints
             grab.ConstrictBonus = spec.ConstrictBonus;
             if (spec.LiveSerpentineConstrict) grab.ConstrictProfileOwner = unit;
             if (spec.LiveSalamanderConstrict) grab.SalamanderProfileOwner = unit;
+            if (spec.LiveLillendConstrict) grab.LillendProfileOwner = unit;
             if (spec.LiveCrabConstrict) grab.CrabProfileOwner = unit;
             if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
             {

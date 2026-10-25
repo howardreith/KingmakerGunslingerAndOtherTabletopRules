@@ -17,7 +17,11 @@ The fixed Lillend phase uses two fresh independent hidden bard7 summons and
 one owned hostile: native Move-action Inspire Courage, first native NewRound
 resource debit, owned ally+2/enemy exclusion, Standard-action real Cure Serious
 Wounds/own spontaneous slot debit, then healthy-target/running-performance
-refusal and a natural melee fallback. No supplied casts, attacks, rolls or
+refusal and a natural melee fallback against an owned native mind-immune target.
+The expanded book is observed by actual known-spell tier, with settled provider
+state; adult HP/AC/abilities and sword/tail native reach are observed. The fallback
+case explicitly starts with a healthy actor after retaining the healing outcome.
+No supplied casts, attacks, rolls or
 resource/slot debits. The existing Dialog activatable controller supplies its
 first-round tick; this is not proof of sustained round expenditure or final
 adult profile/body. Both fixed phases retain source/package, empty-world and

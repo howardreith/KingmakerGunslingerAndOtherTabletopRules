@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -26,6 +29,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData owner = null, sibling = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
             var target = fixture.Hostile; int ac = target.Stats.AC.BaseValue;
+            BlueprintFeature mindImmunity = null;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -63,6 +67,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["independentBooks"] = !ReferenceEquals(book, siblingBook), ["finalProfileQualification"] = false },
                     "Native spontaneous bard7 slots5/4/2 and20 performance rounds are independent per summon.");
                 if (!mapping) throw new InvalidOperationException("Lillend support mapping failed.");
+                var tail = owner.Body.AdditionalLimbs.Single().MaybeWeapon;
+                var bookKnown = new JObject(Enumerable.Range(0, 4).Select(level => new JProperty(level.ToString(),
+                    new JArray(book.GetKnownSpells(level).Select(value => value.Blueprint.AssetGuid)))));
+                bool adult = owner.Stats.HitPoints.ModifiedValue == 73 && owner.Stats.AC.ModifiedValue == 20 &&
+                    owner.Stats.Strength.ModifiedValue == 20 && owner.Stats.Dexterity.ModifiedValue == 17 &&
+                    owner.Stats.Constitution.ModifiedValue == 21 && owner.Stats.Charisma.ModifiedValue == 19 &&
+                    owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value == 10 && tail.AttackRange.Value == 10 &&
+                    tail.IsSecondary && tail.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_Tail" &&
+                    book.GetKnownSpells(0).Count() == 1 && book.GetKnownSpells(1).Count() == 3 &&
+                    book.GetKnownSpells(2).Count() == (Sprint32Suggestion.Active ? 4 : 3) && book.GetKnownSpells(3).Count() == 2 &&
+                    Sprint32Suggestion.Settled && book.IsKnown(creation.OptionalSuggestion) == Sprint32Suggestion.Active;
+                Sprint25Check("lillend-adult-spell-mapping", adult, new JObject {
+                    ["hp"] = owner.Stats.HitPoints.ModifiedValue, ["ac"] = owner.Stats.AC.ModifiedValue,
+                    ["strength"] = owner.Stats.Strength.ModifiedValue, ["dexterity"] = owner.Stats.Dexterity.ModifiedValue,
+                    ["constitution"] = owner.Stats.Constitution.ModifiedValue, ["charisma"] = owner.Stats.Charisma.ModifiedValue,
+                    ["swordReachFeet"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value,
+                    ["tailReachFeet"] = tail.AttackRange.Value, ["tailSecondary"] = tail.IsSecondary,
+                    ["knownSpells"] = bookKnown, ["suggestionSettled"] = Sprint32Suggestion.Settled,
+                    ["suggestionDisposition"] = Sprint32Suggestion.Disposition,
+                    ["suggestionKnown"] = book.IsKnown(creation.OptionalSuggestion), ["finalQualification"] = false },
+                    "Composed native adult HP/AC/abilities, Large ten-foot sword/tail reach and real known spell families; optional Suggestion matches settled provider state.");
+                if (!adult) throw new InvalidOperationException("Lillend adult/spell composition mismatch.");
+                // The expanded spellbook makes the old unguarded fallback foe
+                // ineligible for an attack-only expectation. This owned target
+                // receives actual native mind immunity; product rules stay intact.
+                var immune = ScriptableObject.CreateInstance<BuffDescriptorImmunity>();
+                immune.Descriptor = SpellDescriptor.MindAffecting;
+                mindImmunity = ScriptableObject.CreateInstance<BlueprintFeature>();
+                mindImmunity.name = "KMG_Runtime_Lillend32_MindImmunity"; mindImmunity.Ranks = 1;
+                mindImmunity.ComponentsArray = new BlueprintComponent[] { immune };
+                target.Descriptor.AddFact(mindImmunity);
                 Vector3 far; string lane, direction;
                 var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 1.4f, out far, out lane, out direction);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(sibling, origin + Vector3.right);
@@ -89,6 +124,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(owner, false);
                     owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                     if (stage == "healing") owner.Damage = 18;
+                    if (stage == "fallback") owner.Damage = 0; // new healthy-target fixture state, after retaining the real healing result
+                    var controlScores = fixture.Blueprints.OfType<LillendSpellEligibility32>()
+                        .Where(value => ReferenceEquals(value.OwningBlueprint, owner.Blueprint))
+                        .ToDictionary(value => value.Choice.ToString(), value => value.Score(new DecisionContext {
+                            Unit = owner, Target = new TargetInfo { Unit = target } }));
                     int slotsBefore = book.GetSpontaneousSlots(3), damageBefore = owner.Damage;
                     var commands = new HashSet<UnitCommand>(); var costs = new JArray(); var ambient = new HashSet<string>();
                     var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
@@ -131,7 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ownedEffects.Length == 1 && sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2 && enemySafe &&
                                 book.GetSpontaneousSlots(3) == slotsBefore :
                                 stage == "healing" ? owner.Damage < damageBefore && book.GetSpontaneousSlots(3) == slotsBefore - 1 :
-                                attacks.WeaponAttacks.Count > 0 && healthyScore == 0f && !performAi.IsAvailable(new DecisionContext { Unit = owner }) &&
+                                attacks.WeaponAttacks.Count > 0 && controlScores.Values.All(value => value == 0f) && healthyScore == 0f && !performAi.IsAvailable(new DecisionContext { Unit = owner }) &&
                                 book.GetSpontaneousSlots(3) == slotsBefore;
                             bool passed = resolved != null && economy.Count(resolved) == 1 && economy.Exact(resolved, false) &&
                                 resolved.Type == (stage == "courage" ? UnitCommand.CommandType.Move : UnitCommand.CommandType.Standard) &&
@@ -146,7 +186,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["damageBefore"] = damageBefore, ["damageAfter"] = owner.Damage,
                                 ["level3SlotsBefore"] = slotsBefore, ["level3SlotsAfter"] = book.GetSpontaneousSlots(3),
                                 ["siblingLevel3Slots"] = siblingBook.GetSpontaneousSlots(3), ["siblingPerformanceRounds"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
-                                ["healthyHealingScore"] = healthyScore, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
+                                ["controlEligibility"] = new JObject(controlScores.Select(pair => new JProperty(pair.Key, pair.Value))),
+                                ["targetMindImmune"] = true, ["healthyHealingScore"] = healthyScore, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
                                 ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["fixtureCastCommands"] = 0,
                                 ["fixtureAttackCommands"] = 0, ["fixtureSlotDebits"] = 0, ["forcedRolls"] = 0 },
                                 stage == "courage" ? "Native AI starts Inspire Courage with one move action, grants an ally+2 without buffing the enemy and spends one native performance round." :
@@ -163,6 +204,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var unit in new[] { owner, sibling }.Where(value => value != null && !value.Destroyed))
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); }
                 target.Commands.InterruptAll(true); target.Stats.AC.BaseValue = ac;
+                if (mindImmunity != null)
+                {
+                    target.Descriptor.RemoveFact(mindImmunity);
+                    foreach (var component in mindImmunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component);
+                    UnityEngine.Object.DestroyImmediate(mindImmunity);
+                }
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;

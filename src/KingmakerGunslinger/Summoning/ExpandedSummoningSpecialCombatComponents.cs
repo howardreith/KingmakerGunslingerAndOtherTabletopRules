@@ -821,6 +821,9 @@ namespace KingmakerGunslinger.Summoning
         // Separate opt-in: Salamander constricts with its additional tail and
         // fire, never the snake's primary bite/physical-only damage path.
         public BlueprintUnit SalamanderProfileOwner;
+        // Lillend uses the same owned tail/maintain lifecycle, with purely
+        // physical Large2d6 plus one live Strength modifier; no Salamander heat.
+        public BlueprintUnit LillendProfileOwner;
         // Third opt-in, Sprint 21: the Giant Crab constricts with whichever
         // pincer is holding the foe, at its own die plus live Strength. The
         // snake's path takes the primary bite because a snake has one mouth;
@@ -937,7 +940,7 @@ namespace KingmakerGunslinger.Summoning
             UnitEntityData owner = Owner == null ? null : Owner.Unit;
             if (owner == null || target == null || target.Descriptor == null)
                 return false;
-            BlueprintUnit liveConstrictOwner = ConstrictProfileOwner ?? SalamanderProfileOwner;
+            BlueprintUnit liveConstrictOwner = ConstrictProfileOwner ?? SalamanderProfileOwner ?? LillendProfileOwner;
             if (liveConstrictOwner != null &&
                 (!ReferenceEquals(owner.Blueprint, liveConstrictOwner) ||
                  !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
@@ -1020,7 +1023,18 @@ namespace KingmakerGunslinger.Summoning
             }
             DiceFormula dice = new DiceFormula(ConstrictDiceCount, ConstrictDiceType);
             int bonus = ConstrictBonus;
-            if (CrabProfileOwner != null)
+            if (LillendProfileOwner != null)
+            {
+                if (!ReferenceEquals(owner.Blueprint, LillendProfileOwner) ||
+                    !CrocodilianRulesPolicy.CanMaintainLiveTarget(owner.Destroyed,
+                        owner.Descriptor.State.IsConscious, target.Destroyed, target.Descriptor.State.IsDead)) return;
+                ItemEntityWeapon tail = SummonGrappleLinks.EstablishingWeapon(owner, target);
+                if (tail?.Blueprint == null || !IsGrabLimb(owner, tail)) return;
+                dice = WeaponDamageScaleTable.Scale(dice, owner.Descriptor.State.Size,
+                    Size.Large, tail.Blueprint);
+                bonus = owner.Descriptor.Stats.Strength.Bonus;
+            }
+            else if (CrabProfileOwner != null)
             {
                 if (!ReferenceEquals(owner.Blueprint, CrabProfileOwner) ||
                     target.Destroyed || target.Descriptor.State.IsDead) return;
@@ -1048,7 +1062,7 @@ namespace KingmakerGunslinger.Summoning
             var rule = new RuleDealDamage(owner, target, damage);
             if (context != null) context.TriggerRule(rule);
             else Rulebook.Trigger(rule);
-            if (ConstrictProfileOwner != null &&
+            if ((ConstrictProfileOwner != null || LillendProfileOwner != null) &&
                 (target.Destroyed || target.Descriptor.State.IsDead))
                 SummonHoldComponent.ReleaseLink(owner, target, this, true);
         }
@@ -1614,8 +1628,10 @@ namespace KingmakerGunslinger.Summoning
                 ReferenceEquals(owner.Blueprint, grab.ConstrictProfileOwner);
             bool salamander = grab != null && grab.SalamanderProfileOwner != null &&
                 ReferenceEquals(owner.Blueprint, grab.SalamanderProfileOwner);
-            bool liveConstrict = snake || salamander;
-            string constrictKind = salamander ? "salamander" : "snake";
+            bool lillend = grab != null && grab.LillendProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.LillendProfileOwner);
+            bool liveConstrict = snake || salamander || lillend;
+            string constrictKind = lillend ? "lillend" : salamander ? "salamander" : "snake";
             bool guardedRider = crocodilian || liveConstrict;
             bool targetOwned = !guardedRider ||
                 ReferenceEquals(HeldTarget(owner), target);

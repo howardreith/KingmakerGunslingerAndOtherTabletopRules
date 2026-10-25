@@ -27,6 +27,24 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintSpellbook Book;
+        public BlueprintAbility OptionalSuggestion;
+        public override void PostLoad()
+        {
+            base.PostLoad();
+            ReconcileOptionalSpell();
+        }
+        public override void OnTurnOn() { ReconcileOptionalSpell(); }
+        internal void ReconcileOptionalSpell()
+        {
+            if (!Sprint32Suggestion.Settled || Owner?.Unit == null || !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+                OptionalSuggestion == null || Book == null) return;
+            var book = Owner.GetSpellbook(Book);
+            if (book == null) return;
+            if (Sprint32Suggestion.Active)
+            { if (!book.IsKnown(OptionalSuggestion)) book.AddKnown(2, OptionalSuggestion, true); }
+            else book.RemoveSpell(OptionalSuggestion);
+            // Never Rest or replenish slots during reconciliation.
+        }
         public void OnEntityCreated(UnitEntityData unit)
         {
             if (unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint) ||

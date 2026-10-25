@@ -629,3 +629,42 @@ The full independent final product/rules/coverage review remains pending.
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all 30 public-route/body/icon,
 standalone final integration, highest-risk combined final integration. Their
 [original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
+
+
+## Historical Satyr observer repair receipts before 0723 proof
+
+The selected d49e76dc candidate passed its complete offline wrapper, exact
+compile,2 selected tests and strict package validation, then the added metadata
+reader failed before gameplay: `RequireExact` was incorrectly given a base type.
+This observer defect is corrected with the six observed concrete types. Research
+failure will remain FAIL while allowing independent gameplay cases to execute.
+Source `d49e76dcb0c34b00c4bd26830a763f6e6df152a9`; purpose`sprint32-satyr-control`;
+ZIP SHA256`fd1cec4108af8a3dd6454a13b3a1f62f888b8c9504cb324c63149798a0d52124`;
+DLL`168239ee43f6df82e9e1372afe67dd668bb0f65adad96bff8367fa0177434dc8`;
+MVID`fd8a5c47-886a-4b79-918d-3ab17b360ad0`. Original run
+`20261025T1817496513281Z-4a5770cedb3849a9b61b6d1e21b4f000` remains FAIL,
+resultSHA`2510aba5a0615aa2d45e5b63496203ce6dd9d133d96c7c69dcbb79e7777c9932`.
+Wrapper/failure log: `artifacts/sprint32-control-d49e76dc/`; preserved Unity log
+SHA`61efdf851166d78af9ca2e0f5bdd9421338132794fffe39fc56816b12eb8ca45`.
+
+Current validated Satyr candidate: source`6d28b102eb28ee68b7ef87db983b23de15b2e08d`,
+same purpose/development version. ZIP SHA256
+`dc8d40acedd710b77d03e77170ff70ca40de87c8e1fee0cd19eb0addf094ea68`;
+DLL`5a22767ad46b98c096abe2983282fecd6f90686f14b948e083d089eecf60d748`;
+MVID`58a2d64f-0572-4741-953b-78c86d2b4254`. Complete offline wrapper/package PASS.
+Run`20261025T1831274351804Z-132fca0f84c54079a5e926b1edb6fa86` captured the
+selected native graphs, then failed before gameplay: native JSON defaults encode
+dictionaries as arrays, so `JObject.FromObject(controlScores)` threw. This is an
+observer defect; affected gameplay remains NOT_RUN. ResultSHA
+`811a229c18d9c86216694859a63b5969c9ed2a36605c166bb7f830daf234e974`;
+preserved Unity logSHA`aaef004d1888c9cab80a762010fbb9940adc034d36cfae0ea6f214a407b20a64`.
+Raw folder`20261025T1831273973740Z-disposable-expanded-summoning-sprint32-native-review`;
+wrapper/intake`artifacts/sprint32-control-6d28b102/`.
+Replan after the two added-observer failures: pause repeated dispatch; inspect
+all new receipt construction and fixture assumptions together, replace the one
+default dictionary serialization with explicit JSON properties, round-trip it
+using installed Newtonsoft.Json, and obtain read-only fixture review before
+another candidate. The explicit three-score object round-trip PASS is a reader
+construction check, never gameplay proof. No product stats change in this fix.
+Corrected observer production compilation PASS25.4seconds and selected domain
+tests2/2 PASS0.9seconds: `artifacts/sprint32-intake/satyr-explicit-score-receipt.log`.

@@ -29,6 +29,11 @@ No general performance, flight/navigation, AI or summoning-feat expansion.
   absent. Source/clone research authorized. Its fixed avoid-combat/fascinate-until-
   harmed behavior, minutes/level, Will and SR are the conditional adaptation;
   it does not implement unrestricted tabletop instructions.
+- Lullaby: native lookup absent; sustained concentration lacks a proven native
+  contract. Owner decision requested in conversation: Lillend-only sustained
+  concentration (estimated8-20 active hours), recommended legal cast-and-immediate-
+  release policy with7-round tail (2-5hours), or explicit omission. No Lullaby
+  implementation while pending. Independent work continues; no silence assumed.
 - Exact branch addition in sanctioned push wrapper authorized and applied.
 - Guarded Steam640820 transactions only. Immutable baseline save; exact fresh
   human-installation/save/settings/reference intake and restoration. No weaker
@@ -48,50 +53,95 @@ PASS after reconciling the single stale test-surface count. The original13
 count/offset failures remain in the earlier log. All7,437 previous manifest
 entries are unchanged;14 private identities append. Evidence:
 `artifacts/sprint32-intake/satyr-adult-melee-fixture.log` and
-`satyr-adult-related-domain-corrected.log`. Native proof of this batch is pending.
-The selected d49e76dc candidate passed its complete offline wrapper, exact
-compile,2 selected tests and strict package validation, then the added metadata
-reader failed before gameplay: `RequireExact` was incorrectly given a base type.
-This observer defect is corrected with the six observed concrete types. Research
-failure will remain FAIL while allowing independent gameplay cases to execute.
-Source `d49e76dcb0c34b00c4bd26830a763f6e6df152a9`; purpose`sprint32-satyr-control`;
-ZIP SHA256`fd1cec4108af8a3dd6454a13b3a1f62f888b8c9504cb324c63149798a0d52124`;
-DLL`168239ee43f6df82e9e1372afe67dd668bb0f65adad96bff8367fa0177434dc8`;
-MVID`fd8a5c47-886a-4b79-918d-3ab17b360ad0`. Original run
-`20261025T1817496513281Z-4a5770cedb3849a9b61b6d1e21b4f000` remains FAIL,
-resultSHA`2510aba5a0615aa2d45e5b63496203ce6dd9d133d96c7c69dcbb79e7777c9932`.
-Wrapper/failure log: `artifacts/sprint32-control-d49e76dc/`; preserved Unity log
-SHA`61efdf851166d78af9ca2e0f5bdd9421338132794fffe39fc56816b12eb8ca45`.
+`satyr-adult-related-domain-corrected.log`. The bounded fresh native proof is recorded below.
+Current validated Satyr candidate: source`0723b5dc2a8d9568f687763c740336177b4c6666`,
+purpose`sprint32-satyr-control`, development0.0.167, never a release.
+ZIP SHA256`4d841d01e3186fc9e72f582f356fcf5a1580ea9687c510ca476cc101940666c8`;
+DLL`75f037b0190d061dbd4b4cd328d00c8c0a4c9d7510dcab756ec710fd287204f3`;
+MVID`01308e95-07b0-4a4c-8368-a029deb61642`. Complete offline wrapper, exact compile,
+2 selected tests and strict package validation PASS. Related554/554 is reviewed
+reuse from the unchanged product batch, not fresh testing of this observer DLL.
+Run`20261025T1846192242029Z-9aa5cf603327442e9dd60e0a664f6451` PASS9/9:
+natural Fear/DC18/one Standard/resource1to0; full mind-affecting immunity makes
+Fear/Charm/Sleep scores0 and produces a real bow attack; close immunity produces
+a native Move hand-set switch followed by a real dagger Standard attack.
+Queried plans exclude distant horns and include melee dagger+secondary horns;
+this is not a resolved two-hit full attack. No fixture casts/attacks/forced rolls
+or supplied resource debits. Positive Fear also left a queued, unstarted Charm;
+final active-effect/cancellation coverage must inspect its later disposition.
+ResultSHA`5e4a95b2f616a582cdbc1f7dc683c71bb0c842d4402e2590fce3667cdd66b215`.
+Raw folder`20261025T1846191828893Z-disposable-expanded-summoning-sprint32-native-review`;
+wrapper/intake`artifacts/sprint32-control-0723b5dc/`. Native106.841seconds;
+setup/execution/restoration270.96seconds. Final RTWP/TB/public/visual/persistence
+qualification remains incomplete.
+The d49 concrete-type and6d native-dictionary-serialization observer FAILs remain
+immutable in raw evidence and [history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md).
+After two failures, dispatch paused for a complete new-receipt/fixture check,
+installed-JSON round-trip, compile and independent read-only review. Explicit
+JSON properties fixed the demonstrated converter boundary; the reviewed retry
+above establishes fresh gameplay proof. No creature rule changed for the fixture.
 
-Current validated Satyr candidate: source`6d28b102eb28ee68b7ef87db983b23de15b2e08d`,
-same purpose/development version. ZIP SHA256
-`dc8d40acedd710b77d03e77170ff70ca40de87c8e1fee0cd19eb0addf094ea68`;
-DLL`5a22767ad46b98c096abe2983282fecd6f90686f14b948e083d089eecf60d748`;
-MVID`58a2d64f-0572-4741-953b-78c86d2b4254`. Complete offline wrapper/package PASS.
-Run`20261025T1831274351804Z-132fca0f84c54079a5e926b1edb6fa86` captured the
-selected native graphs, then failed before gameplay: native JSON defaults encode
-dictionaries as arrays, so `JObject.FromObject(controlScores)` threw. This is an
-observer defect; affected gameplay remains NOT_RUN. ResultSHA
-`811a229c18d9c86216694859a63b5969c9ed2a36605c166bb7f830daf234e974`;
-preserved Unity logSHA`aaef004d1888c9cab80a762010fbb9940adc034d36cfae0ea6f214a407b20a64`.
-Raw folder`20261025T1831273973740Z-disposable-expanded-summoning-sprint32-native-review`;
-wrapper/intake`artifacts/sprint32-control-6d28b102/`.
-Replan after the two added-observer failures: pause repeated dispatch; inspect
-all new receipt construction and fixture assumptions together, replace the one
-default dictionary serialization with explicit JSON properties, round-trip it
-using installed Newtonsoft.Json, and obtain read-only fixture review before
-another candidate. The explicit three-score object round-trip PASS is a reader
-construction check, never gameplay proof. No product stats change in this fix.
-Corrected observer production compilation PASS25.4seconds and selected domain
-tests2/2 PASS0.9seconds: `artifacts/sprint32-intake/satyr-explicit-score-receipt.log`.
+The next unqualified product batch adds Lillend's Large2d6 secondary tail,
+same-size-or-smaller grab, live2d6+Strength constrict/maintain, native trip
+immunity, Combat Casting and extraplanar consumer. Private type range9 maps
+through installed native range getters to10 feet at Large and preserves live
+size/reach changes; no range Harmony patch. Satyr receives printed racial
+Perception/Stealth+4, six Perception ranks and check-specific Intimidate-6;
+unprinted Mobility ranks and Lillend Stealth ranks are removed. Full remaining
+skill reconciliation is still pending. Three private identities append; all
+7,451 prior entries are unchanged. Current registry binding is updated without
+changing the published binding or protected icon bytes. Compile PASS23.5seconds,
+selected route tests2/2 PASS4.2seconds; related summoning554/554 PASS15.2seconds
+(`artifacts/sprint32-intake/fey-celestial-adult-related.log`). Native/visual proof
+of this batch is NOT_RUN.
+Original missing-namespace compile failure is retained; corrected log:
+`artifacts/sprint32-intake/fey-celestial-adult-tail-corrected.log`.
 
-Lillend has outsider7/HP73, private native spontaneous bard7 slots5/4/2,
-Cure Light/Serious,20 owned native performance rounds, Courage+2, normal melee
-fallback and independent equipment. The retained human carrier is investigation
-only, not an approved final proxy. Full profiles/spell families, conditional
-Suggestion, original Lillend body, public paths and final qualification remain
-incomplete. Both original128px icons have provenance/export checks; technical
-native presentation is NOT_RUN.
+The coherent unqualified batch also fills native Daze, Charm Person/Sleep,
+Hold Person/Invisibility/Sound Burst, Cure Light/Serious and a private Charm
+Monster using native Charm control with broadened eligible creature types and
+CL days. A separate CL7/DC15 innate Charm Person owns one use independently of
+bard slots. AI checks native immunity, eligible HD/conditions, occupied Sound
+Burst ally footprint, healthy targets and existing invisibility. Satyr/Lillend
+Charm choices consult the existing exact alignment-control protection policy.
+
+Conditional Suggestion now has guarded private ability/buff identities and a
+first-UMM-update adapter for the pinned CowWithHat provider. The private spell
+and Satyr SLA use its native avoid-combat effect only when active; absence
+leaves them unavailable. Saved known-spell/effect reconciliation distinguishes
+pending from settled absence, never Resting slots. The provider graph is checked
+before guarded clones are staged. Provider-present execution and cold-load
+hydration ordering remain NOT_RUN. Bardic Suggestion performance, Fascinate,
+Competence, Lullaby disposition, remaining skills and the original Lillend body
+remain incomplete. The human carrier remains investigation-only.
+
+This full batch appends31 private entries; all7,451 prior entries are unchanged.
+Icon provenance/current registry binding PASS; no approved icon pixels or
+assignments changed. Compile PASS22.7seconds and14 selected routes/protection
+checks PASS0.9seconds (`suggestion-adapter-fixture-focused.log`). Related566
+selection passed565 and found one historical-type-filter defect: the shared
+Suggestion buff fell outside the old creature-specific exclusion. The exact
+historical baseline filter now excludes the Sprint32 namespace; its affected
+case freshly PASS1/1 (`suggestion-adapter-identity-corrected.log`). The original
+FAIL remains in `suggestion-adapter-related.log`; no product rule was changed.
+Earlier missing-namespace/API compile failures also remain in their original
+logs. Final graph-type guard is included in the next candidate compile.
+
+Independent read-only review found three adapter defects (unguarded partial
+binding, insufficient nested graph validation, premature absence cleanup).
+Staging complete guarded clones, bounded native graph checks and a settled
+state fixed them. The corrected standalone/provider-absent support fixture
+has no review dispatch blocker. Provider-present/cold-load proof remains pending.
+
+Next ordinary selection: frozen development purpose`sprint32-lillend-support`,
+standalone RTWP, existing save-free600-second phase. Observe actual composed
+adult HP/AC/abilities, sword/tail reach, known-spell tiers and provider-absent
+state, then natural Courage/heal/immune melee fallback with real costs and
+independent siblings. Target mind immunity and ally proximity make all expanded
+control choices ineligible; no product rule is altered to force fallback.
+Expected10-15minutes including packaging/setup/restoration, ordinary ceiling30.
+This is not final spell, tail-grapple, provider-present, TB, visual or save proof.
+Both original128px icons retain provenance; native presentation remains NOT_RUN.
 
 Last validated Lillend candidate: source
 `4827296ea941906bee3c1d715491c01c72747bc9`, purpose`sprint32-lillend-support`,
@@ -134,14 +184,14 @@ must be executed on its bound candidate; old execution is never fresh evidence.
 | A7 | Loading, selection, scale, movement, attack contact, hit/death/despawn and performance are technically usable at gameplay camera | Existing native creature-review/presentation route, agent-inspected captures plus structured facts | Standalone and relevant combined seam | Assets, renderer, attachment, loading, lifecycle |
 | A8 | Standalone and directly affected high-risk combined integration work; changed shared consumers retain behavior | Selected existing profile transaction and focused baseline/control cases | Standalone; high-risk combined; additional profile only for concrete dependency | Shared AI/registration/serialization or changed integrations |
 
-Next ordinary selection: existing guarded save-free Sprint32 review,
+Completed early selection: existing guarded save-free Sprint32 review,
 `reviewPhase=satyr-control`, standalone RTWP,600-second game deadline.
 Fresh Satyr per positive Fear, fully control-immune bow fallback, and close
 control-immune native hand-switch/dagger case. Query native full-attack plans
 to check distant horns exclusion and dagger+secondary-horns mapping; a queried
 plan alone is not a resolved full attack. Capture only the existing selected
 Charm/Sleep/Fascinate nested graphs more deeply in this same process.
-Target10-15minutes including restoration, ceiling30minutes. Final sequence
+Completed within its10-15minute target including restoration, ceiling30minutes. Final sequence
 duration will be declared before selection. Two repeated orchestration failures
 or about one active hour without useful evidence triggers a narrower approach.
 
@@ -159,8 +209,8 @@ Current Satyr review found no static dispatch blocker; its concrete melee/full-
 attack coverage limits caused the bounded added case/plan observations above.
 Full coherent final product/rules/coverage/evidence review remains pending.
 
-Latest runtime transaction`compat-20261025T182857Z-05cb51dd4c22` restored/verified
-at18:33:24UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
+Latest runtime transaction`compat-20261025T184356Z-fb4d34c3e88c` restored/verified
+at18:48:26UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
 tasks0/one unchangedSteam process. No owned live transaction/game remains.
 
 Required free space: measured1.1GB combined build/extraction/staging/restoration
@@ -173,9 +223,17 @@ Protected Compare PASS; unique ZIPs/raw evidence/original failures/receipts/
 backups and saves retained. Prior cleanup receipts remain in history and
 `artifacts/sprint32-intake/`. Recheck before package/dispatch.
 
-Build-Local attempts/validated development packages/native launches:17/10/10
+Follow-up authorized cleanup18:52:07UTC: seven closed Sprint32 extraction
+directories were byte-identical to their retained validated ZIPs; recovered
+688,413,824bytes, free3,863,474,176bytes. PlanSHA
+`69756aed35e6d1eb5de5bff80f7165a0a316835c2fdc4a98e5d851f052341bc4`.
+Selection/execute logs: `artifacts/sprint32-intake/cleanup-s32-followup-*`.
+Fresh protected Capture/Compare PASS; all unique packages/raw evidence/original
+failures/receipts/backups/saves retained. No owned runtime or task remains.
+
+Build-Local attempts/validated development packages/native launches:18/11/11
 before the next selected candidate. Native setup/execution/restoration times:
-255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05seconds.
+255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05+270.96seconds.
 Lillend482 native109.797seconds; full wrapper276.85seconds. Complete historical
 active-time category totals are unavailable. Current work retains timestamped
 compile/test/build/wrapper logs; do not infer throughput from unlike sprints.
@@ -187,9 +245,8 @@ the icon catalog's current registry hash still described the previous ledger.
 Rebind that current hash to the verified14-entry append; protected icon bytes
 and assignments remain unchanged. Original log: `build-satyr-adult-4246c336.log`.
 
-Next: finish the adult Satyr batch and its selected native proof; inspect deeper
-control graphs, then complete Lillend's bounded remaining rules, optional
-Suggestion and original body. No owner decision is pending. No Sprint33.
+Next: complete remaining adult profiles, Lillend's bounded performances/spells,
+conditional Suggestion and original body; group the next coherent product checks. Lullaby decision pending; no Sprint33.
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.
 Their [original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
