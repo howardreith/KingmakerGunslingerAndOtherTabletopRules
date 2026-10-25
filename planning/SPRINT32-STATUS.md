@@ -159,3 +159,13 @@ Satyr/Lillend and their spell/performance consumers. Expected build/preflight
 bounded ordinary selections. This is feasibility research, not gameplay PASS.
 Reference identity: verified current installed 16-file bundle at
 `s3031-refs164-20261024T071848Z/expanded/KingmakerGunslinger-private-build-references`.
+
+Audit pre-dispatch review found one omitted exact-receipt/settings-restoration
+boundary declaration. Corrected that existing declaration and added a catalog-
+derived consistency check; no game ran with the incomplete admission. The first
+candidate attempt stopped in test compilation because local KingmakerManagedDir
+was unset. The stock GamePath example alone did not set that test property;
+explicit ignored local configuration fixed it. Narrow retest: 3/3 selected
+scenario tests PASS (6.4 seconds including build), production compilation PASS.
+Original package attempt and local-configuration failures remain in intake logs.
+Build/package attempts: 1 failed / 0 packages; native launches: 0. No transaction.
