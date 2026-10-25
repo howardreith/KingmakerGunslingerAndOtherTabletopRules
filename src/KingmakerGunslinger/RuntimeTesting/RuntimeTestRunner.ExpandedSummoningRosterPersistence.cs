@@ -475,6 +475,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 unit, unit.Get<UnitPartRelease143RosterReceipt>().Key)).ToArray() : Array.Empty<UnityEngine.Object>();
             foreach (var step in ObserveRosterResourceCleanup(units, stage)) yield return step;
             if (Sprints3031PersistenceScope) {
+                // The fixture is paused. Let only these captured disposable
+                // areas run native end/exit/destruction after their owners go.
+                // No ForceEnd, clock jump, grant deletion or foreign actor tick.
+                for (int frame = 0; frame < 3; frame++)
+                {
+                    foreach (var area in pilotAreas.Where(value => !value.Destroyed)) area.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                    yield return 0;
+                }
                 bool exact = units.All(Sprints3031SourceAbsent) && pilotAreas.All(area => area.Destroyed && !area.IsInState) &&
                     pilotPrivate.All(value => value == null) && !Game.Instance.State.Units.All
                         .Where(unit => unit != null && !unit.Destroyed).SelectMany(unit => unit.Buffs.Enumerable).Any(pilotGrants.Contains);

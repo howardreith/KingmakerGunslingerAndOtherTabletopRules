@@ -280,7 +280,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["key"] = key, ["owner"] = unit.UniqueId, ["expectedAreas"] = expected,
                         ["areas"] = new JArray(areas.Select(area => new JObject { ["id"] = area.UniqueId,
                             ["blueprint"] = area.Blueprint.AssetGuid, ["source"] = area.Context?.MaybeCaster?.UniqueId,
-                            ["cl"] = area.Context?.Params.CasterLevel })),
+                            ["cl"] = area.Context?.Params.CasterLevel, ["ended"] = area.IsEnded,
+                            ["destroyed"] = area.Destroyed, ["inGame"] = area.IsInGame, ["inState"] = area.IsInState,
+                            ["parentCarrierMatches"] = unit.Buffs.Enumerable.Count(buff => ReferenceEquals(buff.Context, area.Context?.ParentContext)) })),
+                        ["carriers"] = new JArray(unit.Buffs.Enumerable.Where(buff =>
+                            buff.SelectComponents<Kingmaker.UnitLogic.Buffs.Components.AddAreaEffect>().Any()).Select(buff =>
+                            new JObject { ["blueprint"] = buff.Blueprint.AssetGuid, ["active"] = buff.Active,
+                                ["components"] = new JArray(buff.SelectComponents<Kingmaker.UnitLogic.Buffs.Components.AddAreaEffect>().Select(component =>
+                                    new JObject { ["name"] = component.name, ["areaId"] =
+                                        (typeof(Kingmaker.UnitLogic.Buffs.Components.AddAreaEffect).GetField("m_AreaEffectInstance",
+                                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(component) as AreaEffectEntityData)?.UniqueId })) })),
                         ["recipient"] = dretch.UniqueId, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning },
                     prepare ? "Pre-save native aura owners and recipient grants have each source's own caster level; no cold-load claim." :
                         "Cold native aura owners and recipient grants reconstruct once with each source's own caster level; observation does not refresh or recreate them.");

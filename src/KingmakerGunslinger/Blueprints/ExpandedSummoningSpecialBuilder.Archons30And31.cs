@@ -70,6 +70,10 @@ namespace KingmakerGunslinger.Blueprints
             var emanation = ScriptableObject.CreateInstance<AddAreaEffect>(); emanation.AreaEffect = area;
             var cleanup = ScriptableObject.CreateInstance<ArchonMenaceEmitterCleanup>();
             cleanup.Penalty = penalty; cleanup.Immunity = immunity;
+            // Both are saved GameLogicComponents. Empty duplicate names make
+            // native Fact.PostLoad unable to recover the exact area reference.
+            emanation.name = "$KMG_S3031_MenaceEmanation";
+            cleanup.name = "$KMG_S3031_MenaceCleanup";
             carrier.ComponentsArray = new BlueprintComponent[] { emanation, cleanup };
             if (carrier.StayOnDeath) throw new InvalidOperationException("Archon emitter must end on death.");
             var nativeExtraplanar = Feature(library, ExtraplanarSubtypeGuid, "Lantern native extraplanar spell consumer");
