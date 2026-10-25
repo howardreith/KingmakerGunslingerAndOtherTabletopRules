@@ -1,3 +1,22 @@
+# v0.0.167 rules review and model refinement — IN PROGRESS / PARTIAL
+
+The owner's October 25 review of released v0.0.167 found two source-level
+rules defects and requested a model refinement pass. Branch
+`codex/s30-31-rules-and-model-refinement`, worktree
+`C:/Dev/KingmakerGunslingerLab/worktrees/s30-31-rules-model-refinement`, lab
+machine DATA, base master `48e6fb4abf`. No release is authorized.
+
+- **R1 (OPEN):** Trumpet Archon's rebuilt facts omit the native Airborne fact
+  that Astral and Lantern carry.
+- **R2 (OPEN):** Astral Deva's configured Magic Circle control protection
+  reaches 10 feet; its Protective Aura requires 20 feet.
+- **SR=no globe dispatch:** an unverified engine-path question, not a defect.
+- **Models:** Lemure, Dretch and Hound Archon visible surfaces to be rebuilt on
+  the retained rig, identity and runtime contracts.
+
+v0.0.167's released records below stay as published. Status returns to
+complete only when source, tests, native observations and records agree.
+
 # Sprints 30-31 - RELEASED / STOP
 
 Stable [v0.0.167](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.167) is published from tested source `07166abedd17ec1abcf3a4806cd0939ff5c543c9`.
