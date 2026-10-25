@@ -299,8 +299,8 @@ $s3031IconKeys = @('lemure','dretch','hound-archon','astral-deva','trumpet-archo
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
 $s3031IconCount = @($summonManifest.icons | Where-Object { $_.key -cin $s3031IconKeys }).Count
-$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count + 1 + 1 + 1 + 1
-# Retain released Cleanup2 Gorgon parameters and v0.0.164/165/166 notes.
+$basePackageFileCount = 384 + 4 + 3 + 1 + 3 + 1 + $s3031IconCount + $s3031OriginalBodyParts.Count + 1 + 1 + 1 + 1 + 1
+# Retain released Cleanup2 Gorgon parameters and v0.0.164/165/166 notes; add the declared v0.0.167 candidate notes.
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
