@@ -42,6 +42,21 @@ No general performance, flight/navigation, AI or summoning-feat expansion.
 
 ## Current product and evidence boundary
 
+Latest development source`098b3b5c9804d6cca51807cbb678f7657aba3e1d` passed the
+complete offline wrapper,14 selected tests, exact-reference compile and strict
+417-file package validation. ZIP SHA256
+`0a559c627c5857024624af5d989372c3f81c91f11fb9a37a39292e422639ad26`;
+DLL`97ed9c05dacaf310707e6a1e8cee5231deafe3afa1e5ded46cd4ca4ab12dea74`;
+MVID`ba454bcd-64cc-4824-93ab-d6213f341e05`. Its fresh standalone Lillend run
+`20261025T1937208911636Z-f075c2b513e0457589b627bc8ff572be` **FAIL** during
+blueprint initialization, before gameplay assertions: the new Charm Person SLA
+resource reused the spell's localization prefix with a different description.
+Product defect, corrected by using the resource's own existing identity prefix;
+no rule, native observer or protection check changed. Original Unity log
+`artifacts/sprint32-lillend-098b3b5c/output_log-original.txt`, SHA256
+`8c2a19f341979f6c16a922bd393d67e47f94fc82e8dd840d7ba9f469b86586da`.
+The affected standalone selection below must rerun on the corrected package.
+
 IN_PROGRESS. Ten new roots remain hidden; all1,150 accepted roots stay published.
 The current source batch expands Satyr's Fey8/HP44/CL8 profile with dagger,
 secondary horns, Mobility/Skill Focus, native Charm Person/Sleep, bounded native
@@ -209,8 +224,8 @@ Current Satyr review found no static dispatch blocker; its concrete melee/full-
 attack coverage limits caused the bounded added case/plan observations above.
 Full coherent final product/rules/coverage/evidence review remains pending.
 
-Latest runtime transaction`compat-20261025T184356Z-fb4d34c3e88c` restored/verified
-at18:48:26UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
+Latest runtime transaction`compat-20261025T193501Z-8e384f0cffa0` restored/verified
+at19:38:46.7387637UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
 tasks0/one unchangedSteam process. No owned live transaction/game remains.
 
 Required free space: measured1.1GB combined build/extraction/staging/restoration
@@ -231,9 +246,9 @@ Selection/execute logs: `artifacts/sprint32-intake/cleanup-s32-followup-*`.
 Fresh protected Capture/Compare PASS; all unique packages/raw evidence/original
 failures/receipts/backups/saves retained. No owned runtime or task remains.
 
-Build-Local attempts/validated development packages/native launches:18/11/11
+Build-Local attempts/validated development packages/native launches:19/12/12
 before the next selected candidate. Native setup/execution/restoration times:
-255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05+270.96seconds.
+255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05+270.96+227.35seconds.
 Lillend482 native109.797seconds; full wrapper276.85seconds. Complete historical
 active-time category totals are unavailable. Current work retains timestamped
 compile/test/build/wrapper logs; do not infer throughput from unlike sprints.
