@@ -66,11 +66,19 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.166') { throw "Build-Local supports only active version 0.0.166, observed $($info.Version)." }
+if ($info.Version -notin @('0.0.166','0.0.167')) { throw "Build-Local supports released166 development or the selected167 public candidate, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
 $sourceStateSha256 = Get-KmgSourceStateFingerprint -RepositoryRoot $root
+# The bounded S30-31 worktree has persistent cumulative dispatch authority.
+# PlanOnly exits above; compile-only editing uses build.ps1, not this pipeline.
+if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
+    [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
+        -Action Build -Stage ('candidate:' + $git.Commit) -MinimumRemainingMinutes 20)
+}
+
 if ($development) {
     if ($git.Status.Count -ne 0) {
         throw 'A development candidate is built only from an exactly clean commit.'

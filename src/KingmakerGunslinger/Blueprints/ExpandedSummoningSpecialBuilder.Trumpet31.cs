@@ -157,7 +157,9 @@ namespace KingmakerGunslinger.Blueprints
             unit.AddFacts = new BlueprintUnitFact[] { Feature(library, OutsiderTypeGuid, "outsider type"),
                 Feature(library, GoodSubtypeGuid, "good subtype"), Feature(library, LawfulSubtypeGuid, "lawful subtype"),
                 Feature(library, ElectricityImmunityGuid, "archon electricity immunity"),
-                Feature(library, NativeCleaveFeature, "ordinary native Cleave"),
+                // Shared project Cleave keeps ordinary two-target behavior in both
+                // standalone and combined profiles; never inherit the donor discriminator bug.
+                Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue, resistance, blast }
                 .Concat(ConfigureTrumpet31Feats(library, bySymbol, unit)).ToArray();

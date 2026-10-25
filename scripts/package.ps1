@@ -24,7 +24,8 @@ $stagingDirectory = Join-Path $repositoryRoot 'artifacts\staging\install'
 $modDirectory = Join-Path $stagingDirectory $info.Id
 $packagesDirectory = Join-Path $repositoryRoot 'artifacts\packages'
 if (-not $PackagePath) {
-    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-expanded-summoning-druid-giant-sizes.zip"
+    $suffix=if($info.Version -eq '0.0.167'){'expanded-summoning-sprints30-31-outsider-celestial'}else{'expanded-summoning-druid-giant-sizes'}
+    $PackagePath = Join-Path $packagesDirectory "$($info.Id)-$($info.Version)-$suffix.zip"
 }
 $packagePath = [IO.Path]::GetFullPath($PackagePath)
 $artifactRoot = [IO.Path]::GetFullPath((Join-Path $repositoryRoot 'artifacts')).TrimEnd('\') + '\'
@@ -85,7 +86,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.163.md',
     'docs\RELEASE-NOTES-0.0.164.md',
     'docs\RELEASE-NOTES-0.0.165.md',
-    'docs\RELEASE-NOTES-0.0.166.md')) {
+    'docs\RELEASE-NOTES-0.0.166.md',
+    'docs\RELEASE-NOTES-0.0.167.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative

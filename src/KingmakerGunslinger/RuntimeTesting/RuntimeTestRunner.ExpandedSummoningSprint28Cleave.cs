@@ -37,13 +37,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ReviewSprint28Cleave(
-            ExpandedSummoningCorrectionFixture fixture)
+            ExpandedSummoningCorrectionFixture fixture, bool celestialCloseout = false, bool reuseHostile = false)
         {
             bool mode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool pause = Game.Instance.IsPaused;
             Vector3 casterBefore = fixture.Caster.Position;
             Game.Instance.IsPaused = true;
-            CreateExpandedSummoningCorrectionHostile(fixture);
+            if (!reuseHostile) CreateExpandedSummoningCorrectionHostile(fixture);
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -101,14 +101,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!graph) throw new InvalidOperationException(
                     "Giant Cleave graph mismatch.");
                 foreach (bool turnBased in new[] { false, true })
-                foreach (string key in IsSprint29Review ?
+                foreach (string key in celestialCloseout ?
+                    new[] { "astral-deva", "trumpet-archon", "hill-giant" } : IsSprint29Review ?
                     new[] { "cloud-giant", "storm-giant", "ettin",
                         "hill-giant", "fire-giant" } :
                     new[] { "hill-giant", "fire-giant" })
                 {
-                    bool ordinary = key == "hill-giant" ||
+                    bool ordinary = celestialCloseout || key == "hill-giant" ||
                         key == "storm-giant" || key == "ettin";
-                    string prefix = IsSprint29Review ? "s29-" : "s28-";
+                    string prefix = celestialCloseout ? "s3031-" : IsSprint29Review ? "s29-" : "s28-";
                     var trials = new JArray();
                     bool passed = false;
                     bool missObserved = false;

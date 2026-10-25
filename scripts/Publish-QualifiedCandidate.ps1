@@ -14,6 +14,7 @@ param(
     [switch]$Sprint27Griffon,
     [switch]$Sprint28Giants,
     [switch]$Sprint29Giants,
+    [switch]$Sprints3031,
     [switch]$PreflightOnly,
     [string]$ExpectedBaseCommit,
     [string]$ProductPrNumber,
@@ -26,6 +27,7 @@ $root = Split-Path -Parent $PSScriptRoot
 . (Join-Path $PSScriptRoot 'QualifiedRelease.Common.ps1')
 . (Join-Path $PSScriptRoot 'Sprint28QualifiedRelease.Common.ps1')
 . (Join-Path $PSScriptRoot 'Sprint29QualifiedRelease.Common.ps1')
+. (Join-Path $PSScriptRoot 'Sprints3031QualifiedRelease.Common.ps1')
 function Get-KmgReleaseCommandText([string]$Command, [string[]]$Arguments) {
     $output = @(& $Command @Arguments)
     if ($LASTEXITCODE -ne 0) { throw "$Command failed with exit code $LASTEXITCODE." }
@@ -37,11 +39,12 @@ function Resolve-KmgReleaseInput([string]$Path) {
 }
 Push-Location $root
 try {
-    Assert-KmgQualifiedCandidateInvocationMode -PreflightOnly:$PreflightOnly -Sprint25GiantBodies:$Sprint25GiantBodies -Sprint26MagicalBeasts:$Sprint26MagicalBeasts -Sprint27Griffon:$Sprint27Griffon -Sprint28Giants:$Sprint28Giants -Sprint29Giants:$Sprint29Giants `
+    Assert-KmgQualifiedCandidateInvocationMode -PreflightOnly:$PreflightOnly -Sprint25GiantBodies:$Sprint25GiantBodies -Sprint26MagicalBeasts:$Sprint26MagicalBeasts -Sprint27Griffon:$Sprint27Griffon -Sprint28Giants:$Sprint28Giants -Sprint29Giants:$Sprint29Giants -Sprints3031:$Sprints3031 `
         -Publish:$Publish -ConfirmReleaseReady:$ConfirmReleaseReady -MergedReleaseCommit $MergedReleaseCommit `
         -ExpectedBaseCommit $ExpectedBaseCommit
     $git = Get-KmgGitState -RepositoryRoot $root
-    if(@($Sprint22,$Sprint23ChargeRounding,$Sprint24Theropods,$Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants | Where-Object {$_}).Count -gt 1) { throw 'Select only one qualified-candidate release contract.' }
+    if(@($Sprint22,$Sprint23ChargeRounding,$Sprint24Theropods,$Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants,$Sprints3031 | Where-Object {$_}).Count -gt 1) { throw 'Select only one qualified-candidate release contract.' }
+    if($Sprints3031 -and ($ProductPrNumber -cne '66' -or [IO.Path]::GetFullPath($root).TrimEnd('\') -ine 'C:\Dev\KingmakerGunslingerLab\wt\s30-31')) { throw 'S30-31 publication requires PR66 and wt/s30-31.' }
     if($Sprint29Giants -and ($ProductPrNumber -cne '64' -or
         [IO.Path]::GetFullPath($root).TrimEnd('\') -ine 'C:\Dev\KingmakerGunslingerLab\wt\s29')) {
         throw 'Sprint 29 publication requires product PR 64 and its assigned wt/s29 root.'
@@ -69,9 +72,9 @@ try {
     if($Sprint24Theropods -and $ProductPrNumber -cnotmatch '^\d+$') {
         throw 'Sprint 24 theropod publication requires its numeric product PR.'
     }
-    $selectedBranch=if($Sprint29Giants){'codex/expanded-summoning-sprint29-cloud-storm-ettin'}elseif($Sprint28Giants){'codex/expanded-summoning-sprint28-hill-stone-fire-giants'}elseif($Sprint27Griffon){'codex/expanded-summoning-sprint27-griffon'}elseif($Sprint26MagicalBeasts){'codex/expanded-summoning-sprint26-gorgon-bulette'}elseif($Sprint25GiantBodies){'codex/expanded-summoning-sprint25-brachiosaurus-elephant'}elseif($Sprint24Theropods){'codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus'}elseif($Sprint23ChargeRounding){'codex/expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
-    $selectedPr=if($Sprint29Giants -or $Sprint28Giants -or $Sprint27Griffon -or $Sprint26MagicalBeasts -or $Sprint25GiantBodies -or $Sprint24Theropods -or $Sprint23ChargeRounding){$ProductPrNumber}elseif($Sprint22){'39'}else{'36'}
-    $selectedSuffix=if($Sprint29Giants){'expanded-summoning-sprint29-giants'}elseif($Sprint28Giants){'expanded-summoning-sprint28-giants'}elseif($Sprint27Griffon){'expanded-summoning-sprint27-griffon'}elseif($Sprint26MagicalBeasts){'expanded-summoning-sprint26-gorgon-bulette'}elseif($Sprint25GiantBodies){'expanded-summoning-sprint25-giant-bodies'}elseif($Sprint24Theropods){'expanded-summoning-sprint24-theropods'}elseif($Sprint23ChargeRounding){'expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'expanded-summoning-sprint22-ankylosaurus'}else{'expanded-summoning-sprint21'}
+    $selectedBranch=if($Sprints3031){'codex/expanded-summoning-sprints30-31-outsider-celestial-pilot'}elseif($Sprint29Giants){'codex/expanded-summoning-sprint29-cloud-storm-ettin'}elseif($Sprint28Giants){'codex/expanded-summoning-sprint28-hill-stone-fire-giants'}elseif($Sprint27Griffon){'codex/expanded-summoning-sprint27-griffon'}elseif($Sprint26MagicalBeasts){'codex/expanded-summoning-sprint26-gorgon-bulette'}elseif($Sprint25GiantBodies){'codex/expanded-summoning-sprint25-brachiosaurus-elephant'}elseif($Sprint24Theropods){'codex/expanded-summoning-sprint24-deinonychus-tyrannosaurus'}elseif($Sprint23ChargeRounding){'codex/expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'codex/expanded-summoning-sprint22-ankylosaurus'}else{'codex/expanded-summoning-sprint21-bebelith-giant-crab'}
+    $selectedPr=if($Sprints3031 -or $Sprint29Giants -or $Sprint28Giants -or $Sprint27Griffon -or $Sprint26MagicalBeasts -or $Sprint25GiantBodies -or $Sprint24Theropods -or $Sprint23ChargeRounding){$ProductPrNumber}elseif($Sprint22){'39'}else{'36'}
+    $selectedSuffix=if($Sprints3031){'expanded-summoning-sprints30-31-outsider-celestial'}elseif($Sprint29Giants){'expanded-summoning-sprint29-giants'}elseif($Sprint28Giants){'expanded-summoning-sprint28-giants'}elseif($Sprint27Griffon){'expanded-summoning-sprint27-griffon'}elseif($Sprint26MagicalBeasts){'expanded-summoning-sprint26-gorgon-bulette'}elseif($Sprint25GiantBodies){'expanded-summoning-sprint25-giant-bodies'}elseif($Sprint24Theropods){'expanded-summoning-sprint24-theropods'}elseif($Sprint23ChargeRounding){'expanded-summoning-sprint23-charge-rounding'}elseif($Sprint22){'expanded-summoning-sprint22-ankylosaurus'}else{'expanded-summoning-sprint21'}
     if ($git.Status.Count -ne 0 -or $git.Branch -cne $selectedBranch) {
         throw 'Promotion requires the selected clean reporting branch.'
     }
@@ -112,6 +115,7 @@ try {
     }
     }
     $candidateRoot = (Resolve-Path -LiteralPath $CandidateRepositoryRoot).Path
+    if($Sprints3031 -and [IO.Path]::GetFullPath($candidateRoot).TrimEnd('\') -ine 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') { throw 'S30-31 requires its original product/build root.' }
     if($Sprint29Giants -and [IO.Path]::GetFullPath($candidateRoot).TrimEnd('\') -ine
         'C:\Dev\KingmakerGunslingerLab\wt\s29') {
         throw 'Sprint 29 promotion requires the original wt/s29 production root.'
@@ -162,7 +166,10 @@ try {
         # in the candidate package: the archive carries no scripts/ entry.
         'scripts/Test-Sprint24ReportingLineage.ps1',
         'scripts/validate-repository.ps1')
-    if ($Sprint29Giants) {
+    if ($Sprints3031) {
+        $allowedReportingPaths=@('AUTONOMOUS-RESUME.md','planning/SPRINT30-31-STATUS.md','planning/SPRINT30-31-RELEASE-EVIDENCE.json','docs/SPRINT30-31-COVERAGE.md')
+    }
+    elseif ($Sprint29Giants) {
         $allowedReportingPaths=@('AUTONOMOUS-RESUME.md','docs/SPRINT29-COVERAGE.md',
             ('docs/RELEASE-NOTES-'+$candidate.version+'.md'),'planning/SPRINT29-EVIDENCE.json',
             'planning/EXPANDED-SUMMONING-SPRINT29-CONTRACT.md',
@@ -221,7 +228,10 @@ try {
     $notesPath = Resolve-KmgReleaseInput $ReleaseNotesPath
     $notes = [IO.File]::ReadAllText($notesPath)
     if($PreflightOnly) {
-        if($Sprint29Giants) {
+        if($Sprints3031) {
+            Assert-KmgSprints3031PremergeAuthority -Ledger $ledger -Candidate $candidate -Notes $notes -PullRequest $pr `
+                -RemoteProductHead $remoteProduct -RemoteMaster $remoteMaster -ExpectedBaseCommit $ExpectedBaseCommit
+        } elseif($Sprint29Giants) {
             Assert-KmgSprint29PremergeAuthority -Ledger $ledger -Candidate $candidate -Notes $notes -PullRequest $pr `
                 -RemoteProductHead $remoteProduct -RemoteMaster $remoteMaster -ExpectedBaseCommit $ExpectedBaseCommit
         } elseif($Sprint28Giants) {
@@ -237,6 +247,10 @@ try {
             Assert-KmgSprint25PremergeAuthority -Ledger $ledger -Candidate $candidate -PullRequest $pr `
                 -RemoteProductHead $remoteProduct -RemoteMaster $remoteMaster -ExpectedBaseCommit $ExpectedBaseCommit
         }
+    }
+    elseif($Sprints3031) {
+        Assert-KmgSprints3031ReleaseDecision -Ledger $ledger -Candidate $candidate -Notes $notes
+        if($ledger.publication.productMergeCommit -cne $MergedReleaseCommit) { throw 'Ledger merge differs from verified GitHub/Git lineage.' }
     }
     elseif($Sprint29Giants) {
         Assert-KmgSprint29GiantsReleaseDecision -Ledger $ledger -Candidate $candidate -Notes $notes
@@ -262,13 +276,13 @@ try {
     elseif($Sprint23ChargeRounding) { Assert-KmgSprint23ChargeRoundingReleaseDecision -Ledger $ledger -Candidate $candidate }
     elseif($Sprint22) { Assert-KmgSprint22ReleaseDecision -Ledger $ledger -Candidate $candidate }
     else { Assert-KmgClosureReleaseDecision -Ledger $ledger -Candidate $candidate }
-    Assert-KmgClosureProofFiles -Ledger $ledger
+    Assert-KmgClosureProofFiles -Ledger $ledger -Sprints3031:$Sprints3031 -Candidate $candidate
     Assert-KmgNotRunning
     if (Test-Path -LiteralPath 'C:/Dev/KingmakerGunslingerLab/compatibility-state/compatibility.lock') {
         throw 'A runtime transaction is still active; publication is refused.'
     }
     $intake = Get-Content -LiteralPath (Join-Path $ledger.evidenceRoot $ledger.restoration.intakeManifest) -Raw | ConvertFrom-Json
-    if($Sprint22 -or $Sprint23ChargeRounding -or $Sprint24Theropods -or $Sprint25GiantBodies -or $Sprint26MagicalBeasts -or $Sprint27Griffon -or $Sprint28Giants -or $Sprint29Giants) { $intake=@($intake.modsManifest) }
+    if($Sprint22 -or $Sprint23ChargeRounding -or $Sprint24Theropods -or $Sprint25GiantBodies -or $Sprint26MagicalBeasts -or $Sprint27Griffon -or $Sprint28Giants -or $Sprint29Giants -or $Sprints3031) { $intake=@($intake.modsManifest) }
     $currentMods = Get-KmgCompatibilityDirectoryManifest 'C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker/Mods'
     if (-not (Test-KmgCompatibilityManifestEqual $intake $currentMods)) { throw 'Actual human installation has not been restored.' }
     if (-not $notes.Contains($candidate.version) -or
@@ -288,7 +302,7 @@ try {
     if($PreflightOnly) {
         # No output directory, tag, push or release is created by this path.
         # A real product merge must still pass the unchanged publication path.
-        [pscustomobject]@{kind=$(if($Sprint29Giants){'KmgSprint29PremergePreflight'}elseif($Sprint28Giants){'KmgSprint28PremergePreflight'}elseif($Sprint27Griffon){'KmgSprint27PremergePreflight'}elseif($Sprint26MagicalBeasts){'KmgSprint26PremergePreflight'}else{'KmgSprint25PremergePreflight'});status='PASS';published=$false;
+        [pscustomobject]@{kind=$(if($Sprints3031){'KmgSprints3031PremergePreflight'}elseif($Sprint29Giants){'KmgSprint29PremergePreflight'}elseif($Sprint28Giants){'KmgSprint28PremergePreflight'}elseif($Sprint27Griffon){'KmgSprint27PremergePreflight'}elseif($Sprint26MagicalBeasts){'KmgSprint26PremergePreflight'}else{'KmgSprint25PremergePreflight'});status='PASS';published=$false;
             checkedUtc=[DateTime]::UtcNow.ToString('o');requiresProductMerge=$true;productPr=[int]$selectedPr;
             expectedBaseCommit=$ExpectedBaseCommit;testedSource=$candidate.commit;tag=$tag;
             candidateRoot=$candidateRoot;packageSha256=$candidate.packageSha256;
@@ -315,8 +329,9 @@ try {
         publisherScriptSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Publish-QualifiedCandidate.ps1');
         publisherCommonSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'QualifiedRelease.Common.ps1');
         sprint28PublisherCommonSha256=$(if($Sprint28Giants){Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Sprint28QualifiedRelease.Common.ps1')}else{$null});
+        sprints3031PublisherCommonSha256=$(if($Sprints3031){Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Sprints3031QualifiedRelease.Common.ps1')}else{$null});
         sprint29PublisherCommonSha256=$(if($Sprint29Giants){Get-KmgSha256 -Path (Join-Path $PSScriptRoot 'Sprint29QualifiedRelease.Common.ps1')}else{$null});
-        publisherTestSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot $(if($Sprint29Giants){'Test-Sprint29Release.ps1'}elseif($Sprint28Giants){'Test-Sprint28Release.ps1'}elseif($Sprint27Griffon){'Test-Sprint27Release.ps1'}elseif($Sprint26MagicalBeasts){'Test-Sprint26Release.ps1'}elseif($Sprint25GiantBodies){'Test-Sprint25Release.ps1'}else{'Test-Sprint24Release.ps1'}));
+        publisherTestSha256=Get-KmgSha256 -Path (Join-Path $PSScriptRoot $(if($Sprints3031){'Test-Sprints3031Release.ps1'}elseif($Sprint29Giants){'Test-Sprint29Release.ps1'}elseif($Sprint28Giants){'Test-Sprint28Release.ps1'}elseif($Sprint27Griffon){'Test-Sprint27Release.ps1'}elseif($Sprint26MagicalBeasts){'Test-Sprint26Release.ps1'}elseif($Sprint25GiantBodies){'Test-Sprint25Release.ps1'}else{'Test-Sprint24Release.ps1'}));
         package=$assetName; packageSha256=$candidate.packageSha256; dllSha256=$candidate.dllSha256; dllMvid=$candidate.dllMvid;
         buildLocalManifestSha256=Get-KmgSha256 -Path ($candidate.packagePath+'.build-local.json');
         fullSuite=$ledger.candidate.fullSuite; harness=$ledger.harness; qualificationStatus=$ledger.status;

@@ -715,7 +715,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
                 if (Sprints3031PersistenceScope)
                     ObserveSprints3031PersistentUnit(unit, receipt.Key, profile, units,
-                        giantPartyItems, giantPartyCounts);
+                        giantPartyItems, giantPartyCounts, prepare);
                 if (Sprint28PersistenceScope)
                     ObserveSprint28PersistentGiant(unit, receipt, profile, prepare,
                         giantPartyItems, giantPartyCounts);
@@ -944,7 +944,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     units, prepare, verify)) yield return step;
             if (Sprint26PersistenceScope)
                 foreach (int step in Sprint26PersistentStates(caster, units, prepare, verify)) yield return step;
-            if (Sprints3031PersistenceScope) ObserveSprints3031PersistentAuras(units);
+            if (Sprints3031PersistenceScope) ObserveSprints3031PersistentAuras(units, prepare);
             if (verify) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,

@@ -278,7 +278,9 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, AcidImmunityGuid, "angel acid immunity"),
                 Feature(library, ColdImmunityGuid, "angel cold immunity"),
                 Feature(library, "3c08d842e802c3e4eb19d15496145709", "native Uncanny Dodge"),
-                Feature(library, NativeCleaveFeature, "ordinary native Cleave"),
+                // Shared project Cleave keeps ordinary two-target behavior in both
+                // standalone and combined profiles; never inherit the donor discriminator bug.
+                Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
                 Feature(library, "79042cb55f030614ea29956177977c52", "Great Fortitude"),
                 Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
                 Feature(library, IronWillGuid, "Iron Will"),
