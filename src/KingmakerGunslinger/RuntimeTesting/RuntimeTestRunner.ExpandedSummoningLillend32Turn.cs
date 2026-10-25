@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Harmony12;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
@@ -9,6 +11,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
@@ -35,6 +38,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 owner = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
                 sibling = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
+                ReadSprint32NatureKnowledge(owner, sibling, id + "-nature-knowledge");
                 foreach (var unit in new[] { owner, sibling })
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue(); }
                 var creation = owner.Blueprint.GetComponents<LillendBardBook32>().Single();
@@ -77,35 +81,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 try
                 {
                     Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
+                    using (var upkeep = new Lillend32PerformanceRounds(performance, resource))
                     using (var economy = new FirearmReviewCosts(owner, costs))
                     {
                         DateTime deadline = DateTime.UtcNow.AddSeconds(45); int nativeFrames = 0;
+                        bool firstDebitAndAllyObserved = false;
                         UnitCommand resolved = null; UnitActivateAbility activation = null; UnitAttack attack = null;
                         while (DateTime.UtcNow < deadline)
                         {
                             if (Sprint18OwnerIsActing(owner)) nativeFrames++;
+                            upkeep.ObserveOwnerTurn();
+                            if (upkeep.Rows.Count == 1 && performance.IsRunning &&
+                                owner.Descriptor.Resources.GetResourceAmount(resource) == 19 &&
+                                sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2)
+                                firstDebitAndAllyObserved = true;
                             foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
                             foreach (var command in starts.Commands) commands.Add(command);
                             activation = commands.OfType<UnitActivateAbility>().FirstOrDefault(value => value.IsFinished && value.Result == UnitCommand.ResultType.Success &&
                                 ReferenceEquals(value.Ability, performance) && value.AiAction == performAi);
-                            attack = commands.OfType<UnitAttack>().FirstOrDefault(value => value.IsFinished && value.Result == UnitCommand.ResultType.Success && value.AiAction != null);
+                            attack = commands.OfType<UnitAttack>().FirstOrDefault(value => value.AiAction != null && starts.CompletedAttack(value, target));
                             resolved = wounded ? (UnitCommand)commands.OfType<UnitUseAbility>().FirstOrDefault(value => value.IsFinished &&
                                 value.Result == UnitCommand.ResultType.Success && value.AiAction?.name == "KMG_Summoning_FeyCelestial_LillendAzata_HealAi" &&
                                 value.ExecutionProcess != null && value.ExecutionProcess.IsEnded) : activation;
                             if (resolved != null && (wounded || attack != null && performance.IsRunning &&
-                                owner.Descriptor.Resources.GetResourceAmount(resource) == 19 && sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2)) break;
+                                sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2)) break;
                             Game.Instance.IsPaused = false; yield return 0;
                         }
                         bool exact = nativeFrames > 0 && resolved != null && economy.Count(resolved) == 1 && economy.Exact(resolved, true) &&
                             siblingBook.GetSpontaneousSlots(3) == 2 && sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                             (wounded ? resolved.Type == UnitCommand.CommandType.Standard && owner.Damage < 18 && book.GetSpontaneousSlots(3) == 1 :
                                 resolved.Type == UnitCommand.CommandType.Move && performance.IsRunning &&
-                                owner.Descriptor.Resources.GetResourceAmount(resource) == 19 && sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2 &&
+                                firstDebitAndAllyObserved && upkeep.Exact() && sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2 &&
                                 commands.OfType<UnitActivateAbility>().Count(value => value.IsStarted) == 1 &&
                                 attack != null && economy.Count(attack) == 1 && economy.Exact(attack, true) && attacks.WeaponAttacks.Count > 0 && book.GetSpontaneousSlots(3) == 2);
                         Sprint25Check(id + "-resolved", exact, new JObject { ["owner"] = owner.UniqueId,
                             ["nativeTurnFrames"] = nativeFrames, ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                             ["nativeCommandStarts"] = starts.Rows, ["damageBefore"] = wounded ? 18 : 0, ["damageAfter"] = owner.Damage,
+                            ["nativeAttackLifecycle"] = starts.AttackRows,
+                            ["firstDebitAndAllyObserved"] = firstDebitAndAllyObserved, ["nativePerformanceUpkeep"] = upkeep.Rows,
+                            ["runningOwnerRounds"] = new JArray(upkeep.OwnerRounds),
                             ["ownLevel3Slots"] = book.GetSpontaneousSlots(3), ["siblingLevel3Slots"] = siblingBook.GetSpontaneousSlots(3),
                             ["performanceRunning"] = performance.IsRunning, ["performanceRounds"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                             ["siblingPerformanceRounds"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
@@ -114,7 +128,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["turn"] = Sprint22TurnState(owner, target), ["fixtureAiTicks"] = 0, ["fixtureCastCommands"] = 0,
                             ["fixtureAttackCommands"] = 0, ["fixtureSlotDebits"] = 0, ["forcedRolls"] = 0 },
                             wounded ? "Native turn AI spends a real standard action and one own bard slot to heal meaningful damage." :
-                                "Native turn AI spends one Move action for Courage and a legal ordinary attack cost, debits one performance round, and preserves sibling pools.");
+                                "Native turn AI spends one Move action for Courage, first debits20-to19 with the ally effect, then pays one upkeep per observed native owner turn through the completed ordinary attack; sibling pools are preserved.");
                         if (!exact) throw new InvalidOperationException("Lillend native turn outcome failed: " + id);
                     }
                 }
@@ -132,6 +146,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        // Observe the exact native performance instance; never call upkeep,
+        // spend a resource, credit an action or advance a turn from this hook.
+        private sealed class Lillend32PerformanceRounds : IDisposable
+        {
+            private static Lillend32PerformanceRounds active;
+            private readonly ActivatableAbility ability;
+            private readonly BlueprintAbilityResource resource;
+            private readonly HarmonyInstance harmony;
+            private readonly MethodInfo method;
+            private readonly string id = "KMG.Sprint32PerformanceRounds." + Guid.NewGuid().ToString("N");
+            internal readonly JArray Rows = new JArray();
+            internal readonly HashSet<int> OwnerRounds = new HashSet<int>();
+            private readonly HashSet<int> upkeepRounds = new HashSet<int>();
+            private bool exact = true;
+            private sealed class Round { internal int Before, Number; internal bool OwnerTurn; }
+            internal Lillend32PerformanceRounds(ActivatableAbility ability, BlueprintAbilityResource resource)
+            {
+                if (active != null) throw new InvalidOperationException("Nested performance upkeep observation.");
+                this.ability = ability; this.resource = resource;
+                method = typeof(ActivatableAbility).GetMethod("OnNewRound", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                if (method == null) throw new MissingMethodException("Native performance upkeep boundary.");
+                harmony = HarmonyInstance.Create(id);
+                harmony.Patch(method,
+                    new HarmonyMethod(typeof(Lillend32PerformanceRounds).GetMethod("Before", BindingFlags.Static | BindingFlags.NonPublic)),
+                    new HarmonyMethod(typeof(Lillend32PerformanceRounds).GetMethod("After", BindingFlags.Static | BindingFlags.NonPublic)));
+                active = this;
+            }
+            internal void ObserveOwnerTurn()
+            {
+                if (ability.IsRunning && IsOwnerTurn(ability.Owner.Unit))
+                    OwnerRounds.Add(Game.Instance.TurnBasedCombatController.RoundNumber);
+            }
+            private static void Before(ActivatableAbility __instance, out Round __state)
+            {
+                __state = null;
+                if (active == null || !ReferenceEquals(__instance, active.ability)) return;
+                __state = new Round { Before = __instance.Owner.Resources.GetResourceAmount(active.resource),
+                    Number = Game.Instance.TurnBasedCombatController.RoundNumber,
+                    OwnerTurn = IsOwnerTurn(__instance.Owner.Unit) };
+            }
+            private static bool IsOwnerTurn(UnitEntityData owner)
+            {
+                var turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
+                return turn != null && ReferenceEquals(turn.Unit, owner) &&
+                    (turn.Status == TurnBased.Controllers.TurnController.TurnStatus.Preparing ||
+                     turn.Status == TurnBased.Controllers.TurnController.TurnStatus.Acting || turn.IsEnding);
+            }
+            private static void After(Round __state)
+            {
+                if (__state == null) return;
+                int after = active.ability.Owner.Resources.GetResourceAmount(active.resource);
+                active.exact &= __state.OwnerTurn && active.upkeepRounds.Add(__state.Number) &&
+                    __state.Before == 20 - active.Rows.Count && after == __state.Before - 1;
+                active.Rows.Add(new JObject { ["owner"] = active.ability.Owner.Unit.UniqueId,
+                    ["nativeRound"] = __state.Number, ["exactOwnerTurn"] = __state.OwnerTurn,
+                    ["before"] = __state.Before, ["after"] = after });
+            }
+            internal bool Exact()
+            {
+                return exact && Rows.Count > 0 && upkeepRounds.SetEquals(OwnerRounds) &&
+                    ability.Owner.Resources.GetResourceAmount(resource) == 20 - Rows.Count;
+            }
+            public void Dispose()
+            {
+                harmony.Unpatch(method, HarmonyPatchType.All, id);
+                if (ReferenceEquals(active, this)) active = null;
             }
         }
     }

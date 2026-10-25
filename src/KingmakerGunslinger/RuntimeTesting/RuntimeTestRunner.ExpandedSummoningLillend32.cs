@@ -5,10 +5,12 @@ using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.FactLogic;
@@ -78,6 +80,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 owner = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
                 sibling = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
+                ReadSprint32NatureKnowledge(owner, sibling, "lillend-nature-knowledge");
                 foreach (var unit in new[] { owner, sibling })
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue(); }
                 for (int frame = 0; frame < 180; frame++)
@@ -349,11 +352,16 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // Event-bound observation retains a command replaced within one frame;
         // frame snapshots alone missed the original in the preserved 2e1 run.
-        private sealed class Lillend32CommandStarts : IUnitCommandStartHandler
+        private sealed class Lillend32CommandStarts : IUnitCommandStartHandler,
+            IUnitCommandActHandler, IUnitCommandEndHandler, IGlobalRulebookHandler<RuleAttackWithWeapon>
         {
             internal UnitEntityData Owner;
             internal readonly HashSet<UnitCommand> Commands = new HashSet<UnitCommand>();
             internal readonly JArray Rows = new JArray();
+            internal readonly JArray AttackRows = new JArray();
+            private readonly Dictionary<UnitAttack, BlueprintItemWeapon[]> completedPlans = new Dictionary<UnitAttack, BlueprintItemWeapon[]>();
+            private readonly Dictionary<UnitAttack, List<BlueprintItemWeapon>> resolvedWeapons = new Dictionary<UnitAttack, List<BlueprintItemWeapon>>();
+            private bool ambiguousWeaponAttribution;
             public void HandleUnitCommandDidStart(UnitCommand command)
             {
                 if (command == null || !ReferenceEquals(command.Executor, Owner)) return;
@@ -362,6 +370,71 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command);
                 row["ability"] = (command as UnitActivateAbility)?.Ability?.Blueprint?.AssetGuid;
                 Rows.Add(row);
+            }
+
+            public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
+            public void OnEventDidTrigger(RuleAttackWithWeapon evt)
+            {
+                if (!ReferenceEquals(evt.Initiator, Owner) || !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return;
+                var candidates = Owner.Commands.Raw.OfType<UnitAttack>().Where(value => value.IsRunning &&
+                    !value.IsFinished && Commands.Contains(value) && ReferenceEquals(value.Target, evt.Target)).ToArray();
+                if (candidates.Length != 1)
+                {
+                    ambiguousWeaponAttribution = true;
+                    AttackRows.Add(new JObject { ["event"] = "weapon-attribution-refused", ["candidates"] = candidates.Length,
+                        ["target"] = evt.Target?.UniqueId, ["weapon"] = evt.Weapon.Blueprint.AssetGuid });
+                    return;
+                }
+                var command = candidates[0];
+                List<BlueprintItemWeapon> weapons;
+                if (!resolvedWeapons.TryGetValue(command, out weapons)) resolvedWeapons.Add(command, weapons = new List<BlueprintItemWeapon>());
+                weapons.Add(evt.Weapon.Blueprint);
+                var row = AttackSnapshot(command, "weapon-rule-resolved");
+                row["weapon"] = evt.Weapon.Blueprint.AssetGuid;
+                AttackRows.Add(row);
+            }
+
+            public void HandleUnitCommandDidAct(UnitCommand command)
+            {
+                var attack = command as UnitAttack;
+                if (attack == null || !ReferenceEquals(attack.Executor, Owner) || !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return;
+                var row = AttackSnapshot(attack, "native-command-act");
+                AttackRows.Add(row);
+                var plan = attack.AllAttacks.Select(value => value.Hand.MaybeWeapon.Blueprint).ToArray();
+                if (attack.Result == UnitCommand.ResultType.Success && plan.Length > 0 &&
+                    (int)ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex") == plan.Length)
+                    completedPlans[attack] = plan;
+            }
+
+            public void HandleUnitCommandDidEnd(UnitCommand command)
+            {
+                var attack = command as UnitAttack;
+                if (attack != null && ReferenceEquals(attack.Executor, Owner) && TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                    AttackRows.Add(AttackSnapshot(attack, "native-command-end"));
+            }
+
+            private static JObject AttackSnapshot(UnitAttack attack, string kind)
+            {
+                var row = Sprint27AiCommand(attack);
+                row["event"] = kind;
+                row["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack);
+                row["attackIndex"] = (int)ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex");
+                row["actualPlan"] = new JArray(attack.AllAttacks.Select(value => value.Hand.MaybeWeapon.Blueprint.AssetGuid));
+                row["plannedAbsent"] = attack.PlannedAttack == null;
+                row["nativeRound"] = Game.Instance.TurnBasedCombatController.RoundNumber;
+                row["nativeTurn"] = Sprint22TurnState(attack.Executor, attack.Target);
+                return row;
+            }
+
+            internal bool CompletedAttack(UnitAttack command, UnitEntityData target)
+            {
+                BlueprintItemWeapon[] plan; List<BlueprintItemWeapon> weapons;
+                return command != null && command.IsFinished && !ambiguousWeaponAttribution &&
+                    ReferenceEquals(command.Target, target) && Commands.Contains(command) &&
+                    (command.Result == UnitCommand.ResultType.Success || command.Result == UnitCommand.ResultType.Interrupt) &&
+                    completedPlans.TryGetValue(command, out plan) && resolvedWeapons.TryGetValue(command, out weapons) &&
+                    plan.SequenceEqual(weapons) && command.AllAttacks.Count == plan.Length &&
+                    (int)ReadExpandedSummoningOptionalMember(command, "m_AttackIndex") == plan.Length;
             }
         }
     }

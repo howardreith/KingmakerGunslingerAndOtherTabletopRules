@@ -78,7 +78,12 @@ namespace KingmakerGunslinger.Blueprints
             book.Name = LocalizationService.Create(Lillend32Prefix + "Spellbook.Name", "Lillend Bard Spells");
             var caster = ScriptableObject.CreateInstance<LillendBardBook32>();
             caster.OwningBlueprint = unit; caster.Book = book;
-            unit.ComponentsArray = new BlueprintComponent[] { levels, racial, caster };
+            var nature = ScriptableObject.CreateInstance<FeyCelestialNatureKnowledge32>();
+            // Printed +9 less Int+2 leaves seven trained points. Native class
+            // skill status determines four or seven ranks; no unique tabletop
+            // allocation is inferred from the printed total alone.
+            nature.OwningBlueprint = unit; nature.TrainedContribution = 7;
+            unit.ComponentsArray = new BlueprintComponent[] { levels, racial, caster, nature };
             unit.Skills = new BlueprintUnit.UnitSkills(); unit.Race = null; unit.Type = type;
             ConfigureUnitCore(unit, "LillendAzata", "Lillend Azata", Alignment.ChaoticGood,
                 Size.Large, 20, 17, 21, 14, 16, 19, 30);

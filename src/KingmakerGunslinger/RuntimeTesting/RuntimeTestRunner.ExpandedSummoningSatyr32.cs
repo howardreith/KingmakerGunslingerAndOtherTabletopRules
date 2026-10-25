@@ -144,6 +144,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner = CastExpandedSummoningOwnTier(fixture, "satyr");
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
+                if (!immune)
+                {
+                    var skillSibling = CastExpandedSummoningOwnTier(fixture, "satyr");
+                    Sprint28SetBrainActivePreservingActions(skillSibling, false);
+                    ReadSprint32NatureKnowledge(owner, skillSibling, id + "-nature-knowledge");
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { skillSibling });
+                }
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var fear = fixture.Blueprints.OfType<BlueprintAbility>().Single(value =>
                     value.name == "KMG_Summoning_FeyCelestial_Satyr_Fear");
@@ -246,7 +253,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             value.AiAction?.name == "KMG_Summoning_FeyCelestial_Satyr_FearAi" &&
                             value.IsFinished && value.Result == UnitCommand.ResultType.Success);
                         var attack = commands.OfType<UnitAttack>().FirstOrDefault(value =>
-                            value.AiAction != null && value.IsFinished && value.Result == UnitCommand.ResultType.Success);
+                            value.AiAction != null && (turnBased ? starts.CompletedAttack(value, target) :
+                                value.IsFinished && value.Result == UnitCommand.ResultType.Success));
                         var change = commands.OfType<UnitSwitchHandEquipmentSet>().FirstOrDefault(value =>
                             value.AiAction?.name == "KMG_Summoning_FeyCelestial_Satyr_MeleeAi" &&
                             value.IsFinished && value.Result == UnitCommand.ResultType.Success);
@@ -273,6 +281,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                             ["turnBased"] = turnBased, ["nativeTurnFrames"] = nativeTurnFrames,
                             ["nativeCommandStarts"] = starts.Rows,
+                            ["nativeAttackLifecycle"] = starts.AttackRows,
                             ["saves"] = saves.Rows, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
                             ["weaponEvents"] = new JArray(attacks.WeaponAttacks.Select(value => value.Weapon.Blueprint.name)),
                             ["queriedFullAttackPlan"] = new JArray(plan.Select(value => value.name)),
@@ -318,6 +327,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        private void ReadSprint32NatureKnowledge(UnitEntityData owner, UnitEntityData sibling, string predicate)
+        {
+            var profile = owner.Blueprint.GetComponents<FeyCelestialNatureKnowledge32>().Single();
+            var skill = (Kingmaker.EntitySystem.Stats.ModifiableValueSkill)owner.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillLoreNature);
+            var siblingSkill = (Kingmaker.EntitySystem.Stats.ModifiableValueSkill)sibling.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillLoreNature);
+            int intelligence = owner.Stats.Intelligence.BaseValue, wisdom = owner.Stats.Wisdom.BaseValue;
+            int before = skill.ModifiedValue, siblingBefore = siblingSkill.ModifiedValue;
+            int perceptionBefore = owner.Stats.SkillPerception.ModifiedValue;
+            int intelligenceDelta = 0, wisdomDelta = 0, perceptionDelta = 0;
+            try
+            {
+                owner.Stats.Intelligence.BaseValue += 2;
+                intelligenceDelta = skill.ModifiedValue - before;
+                int afterIntelligence = skill.ModifiedValue;
+                owner.Stats.Wisdom.BaseValue += 2;
+                wisdomDelta = skill.ModifiedValue - afterIntelligence;
+                perceptionDelta = owner.Stats.SkillPerception.ModifiedValue - perceptionBefore;
+            }
+            finally
+            {
+                owner.Stats.Wisdom.BaseValue = wisdom;
+                owner.Stats.Intelligence.BaseValue = intelligence;
+            }
+            bool exact = before == (profile.FeyClassSkill ? 10 : 9) &&
+                skill.BaseValue == (profile.FeyClassSkill ? 6 : skill.ClassSkill ? 4 : 7) &&
+                (!profile.FeyClassSkill || skill.ClassSkill) &&
+                ReferenceEquals(skill.BaseStat, owner.Stats.Intelligence) &&
+                ReferenceEquals(siblingSkill.BaseStat, sibling.Stats.Intelligence) && !ReferenceEquals(skill, siblingSkill) &&
+                intelligenceDelta == 1 && wisdomDelta == 0 && perceptionDelta == 1 &&
+                skill.ModifiedValue == before && siblingSkill.ModifiedValue == siblingBefore && siblingBefore == before;
+            Sprint25Check(predicate, exact, new JObject {
+                ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["knowledgeNature"] = before,
+                ["nativeRanks"] = skill.BaseValue, ["nativeClassSkill"] = (bool)skill.ClassSkill,
+                ["intelligencePlusTwoDelta"] = intelligenceDelta, ["wisdomPlusTwoDelta"] = wisdomDelta,
+                ["ordinaryPerceptionWisdomDelta"] = perceptionDelta,
+                ["restoredKnowledge"] = skill.ModifiedValue, ["siblingBefore"] = siblingBefore,
+                ["siblingAfter"] = siblingSkill.ModifiedValue, ["coldLoadQualified"] = false },
+                "Printed Knowledge (nature) total uses the exact adult's live Intelligence, preserves ordinary Wisdom dependencies and sibling isolation; both fixture ability probes are restored. Fresh-load preservation remains separate.");
+            if (!exact) throw new InvalidOperationException("Sprint32 native nature-knowledge mapping failed.");
         }
     }
 }

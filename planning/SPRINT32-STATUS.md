@@ -50,16 +50,27 @@ control and ally-safe Sound Burst eligibility; separate one-use Charm Person SLA
 Ten new roots remain hidden;1150 accepted roots remain published. Remaining
 skills, pending performances, public routes and full acceptance are incomplete.
 
-Current validated development source `2d8f6f6e284a5e9524982834da8defb0a48a769e`:
-ZIP `8403517080d9466103171fdbb8cd6f1c8c1f1b1260522b01d25b893f079447fe`;
-DLL `cb8e017ff0bbb37908f7f1ef9773c305e023934d5613fc1d0bb1a9c9dd3b81d1`;
-MVID `1f575a5a-4d1e-4355-b07c-3d8088e84ed7`.
-SourceState `818b9ce3d1c32e58e17048e438410f411bb0424cdee9c5c340a9a38015d58d0f`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/2d8f6f6e284a/`.
+Current validated development source `846f384c9d0c33c125542daa414c47c729098f18`:
+ZIP `6862751249b2edd6cf1c9ac1acb3c51c4ad5a1a9a68925515270a599b6a9cbb6`;
+DLL `fc5b5a4e1f0deaf012d12bbdc31eccbc8fcece2f00fcaeeda47f6bdd2c56f0d9`;
+MVID `3a669436-e6a3-463d-b0cc-9bf7b46313a3`.
+SourceState `9e520b48e7bdbd1df2007666142f074abd28a06f939aa00541b355680004f2df`.
+Canonical path `artifacts/development-candidates/sprint32-lillend-support/846f384c9d0c/`.
 Offline wrappers,22 selected checks, exact-reference compile, strict419-file ZIP PASS.
 This is an investigation candidate, not final qualification.
 
-Fresh optional-provider run `20261025T2137497774325Z-2c9ef7c3098a40d3ae86872f4f0c0a71`
+Fresh846 Satyr-turn `20261025T2212298234001Z-0bc53dd76f13433ba86078d6d5bf3098`
+**FAIL9PASS/2FAIL**: private-faction isolation, native turn Fear and immune bow
+fallback PASS. Close fallback emitted dagger and horns with normal switch/attack
+costs but ended Interrupt. The observer required terminal Success; installed IL
+proves a completed native attack may later become Interrupt while finishing its
+animation. The original execution lacks exact command completion snapshots and
+remains FAIL. Lillend turn is held because it shares that observer assumption.
+The narrow next batch observes actual command act/end, plan index and attributed
+weapon rules; it also counts native Courage upkeep rather than assuming a later
+attack still occurs in the first performance round. No product action rule changes.
+
+Reviewed reuse on earlier2d source: optional-provider run `20261025T2137497774325Z-2c9ef7c3098a40d3ae86872f4f0c0a71`
 **PASS7/7**: each adult naturally cast native Suggestion once with Standard cost,
 failed unforced Will save, CL duration and active-effect refusal. Satyr DC17/CL8,
 478.804s; Lillend DC16/CL7,419.509s and own level2 slots4-to3/sibling4. Declared
@@ -67,23 +78,45 @@ Fear/performance/other-tier pre-spends isolate the choice and are not cast proof
 Actual expiry, damage break, positive Will/high SR and provider cold load remain
 NOT_RUN. Provider1.4.5 existed only in the guarded optional profile.
 
-Fresh standalone run `20261025T2144411971768Z-f526b8825a714c668a9ffc73bba5a4af`
+Earlier2d standalone run `20261025T2144411971768Z-f526b8825a714c668a9ffc73bba5a4af`
 **PASS11/11**: original body binding, adult/book/reach, real Move Courage,
 Standard Cure Serious/own slot and native sword/sword/tail fallback. Post-disposal
 cleanup now proves62 owned resources gone and158 distinct borrowed resources
 retained. Actual grab, sustained performance and full gameplay-camera presentation
 remain separate. Earlier cleanup failure is retained unchanged in history.
 
-Fresh Satyr-turn run `20261025T2150018376046Z-b05730f7968c4819aa171c7927f28418`
+Retained2d Satyr-turn run `20261025T2150018376046Z-b05730f7968c4819aa171c7927f28418`
 **FAIL3PASS/1FAIL**, before ready/gameplay: the unchanged ownership guard refused
 Kanerah_Capital_prologue, native Neutrals faction, intake/unowned and in combat.
-Both turn phases are held. Distance alone cannot prevent native group-memory combat
-enrollment. The narrower pending correction uses the proven elemental turn fixture's
+Distance alone cannot prevent native group-memory combat
+enrollment. The narrower846 correction uses the proven elemental turn fixture's
 private target faction, hostile only to the player faction, with native nonplayer
 intake-neutrality checks before advancing. No intake actor or guard is changed.
 Independent read-only review found no concrete dispatch blocker in this bounded
-correction. Focused compile22.4s/22 tests0.9s PASS; prevention of ambient enrollment
-still requires the selected native execution.
+correction. Focused compile22.4s/22 tests0.9s PASS;846's native faction and turn
+admission now establish the correction, without relabeling the original failure.
+
+Current unvalidated adult addition maps native Lore Nature identification to each
+owner's live Intelligence: Satyr+10/six ranks and Fey class skill; Lillend+9/seven
+trained points, allocated across native ranks/class-skill contribution. Sources:
+[Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
+[Fey](https://www.aonprd.com/MonsterTypes.aspx?ItemName=Fey),
+[Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
+One private creation-only adapter updates the exact native serialized ability
+reference/dependency links, with no load-time rerank. Native totals, live Int/Wis
+dependency and sibling checks are added to existing phases; cold-load remains A6.
+This ordinary mapping is not a new skills subsystem. First compile caught the
+native BaseStat field's readonly declaration; the corrected adapter validates
+and writes that exact native instance field through reflection, as required by
+its serialized reference contract. Native execution must still prove it.
+Unmapped skills remain disclosed, not silently waived: Satyr Disguise/Perform/
+Survival; Lillend Fly/Perform/Survival. Sense Motive shares Lillend's+13 Perception
+mapping and is not an independent native check. Do not map Survival onto Nature.
+Reconcile these against applicable accepted scope before final completion.
+Independent batch review found no remaining dispatch blocker after matching
+native upkeep's Preparing/Acting/Ending states. Initial corrected focused compile
+22.9s/22 tests0.9s PASS; final guard batch compile27s/22 tests1s PASS before
+freeze. New attack lifecycle capture is restricted to turn mode.
 
 Exact raw/result/log/restoration identities are in [history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md).
 Local records: `artifacts/sprint32-{suggestion,lillend,satyr-turn}-2d8f6f6e/`.
@@ -138,31 +171,32 @@ P2 findings (nested links/default inclusion) are closed. Full final independent 
 remains pending. Body draft read-only review found no binding/lifecycle blocker;
 corrected exact mesh pin/provenance and deterministic package's two-file count.
 
-Latest transaction `compat-20261025T214740Z-d96cdeadfd40` restored/verified
-21:51:54.5847888UTC. Protected Compare PASS: Mods967/saves118/references18/settings83,
+Latest transaction `compat-20261025T221001Z-7c80c39bbe60` restored/verified
+22:14:46.2461607UTC. Protected Compare PASS: Mods967/saves118/references18/settings83,
 tasks0/one unchanged Steam. No owned live game/task/transaction remains.
 
 Measured combined build/extract/stage/restore peak1.1GB plus2GB practical margin.
-Latest approved cleanup21:55:03UTC removed6 verified reproducible closed package
+Latest approved cleanup22:33:47UTC removed16 verified reproducible closed S29 package
 extractions, retaining exact ZIPs/evidence/receipts/backups/saves. Recovered
-595,397,174bytes; free3,729,502,208bytes; protected Capture/Compare PASS. Plan SHA
-`15b5c1befe185f1e2cf34bba1ad4d53db70b46cf6b2a881d5faabded5521d1a4`.
-Local selection/script `artifacts/sprint32-intake/*s32-native-margin*`.
+1,342,958,720bytes; free4,722,253,824bytes; protected Capture/Compare PASS. Plan SHA
+`f744c0747df66a7131490f7c1d7ee6fd531f4fbf6edd5b4ddc3f0017c7094890`.
+Local selection/script `artifacts/sprint32-intake/*s29-review-margin*`.
 Recheck headroom before each build/staging selection.
 
-Build-Local attempts/validated development packages/native launches:26/17/22.
+Build-Local attempts/validated development packages/native launches:27/18/23.
+Latest846 wrapper286.520s/native116.932s.
 Latest wrappers340.147s(provider),276.877s(standalone),255.267s(Satyr-turn);
 native157.658s/110.499s/93.620s respectively.
-Current focused compile23.8s/tests4.3s; earlier measured subsets stay in history.
+Current focused compile27s/tests1s; earlier measured subsets stay in history.
 Approximate current work since21:18UTC is mainly observer repair/review and native
 supervision; overlapping work prevents honest summed category totals. Complete
 active implementation/observer/build/native/owner-wait totals remain unavailable.
 
-Next: review/compile the bounded private-faction correction, build once and run
-Satyr turn; only proceed to Lillend turn if actor ownership is established. Each
+Next: build the reviewed Knowledge/turn-completion/upkeep batch once and run
+Satyr and Lillend turn cases against its exact validated ZIP. Each
 is a fresh save-free600-second process,10-15minute target/30minute ceiling with
 guarded intake/restoration. If the bounded changed approach still cannot establish
-ownership, retain the blocker and continue other authorized acceptance work.
+the corrected completion contract, retain the blocker and continue other authorized acceptance work.
 Full final independent review and every final acceptance row remain incomplete.
 Pending owner decisions remain pending; no implementation treats silence as assent.
 
