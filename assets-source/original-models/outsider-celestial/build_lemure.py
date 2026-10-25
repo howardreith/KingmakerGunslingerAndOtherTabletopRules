@@ -281,9 +281,13 @@ def colours_for(body, at):
         blush = sd.smoothstep(0.15, 0.55, sd.fbm(p, 6.0, 303))
         # Desaturated pale flesh with restrained warm blush; deeper values in
         # the folds come from the field's own cavity term.
-        flesh = np.array([.85, .72, .66]) * (0.90 + 0.12 * broad[:, None])
-        flesh = flesh * (1 - 0.30 * blush[:, None]) + np.array([.86, .56, .54]) * 0.30 * blush[:, None]
-        flesh = flesh * (0.95 + 0.07 * fine[:, None])
+        # Native lighting washes pale flesh out at the party camera, so the
+        # base sits mid-value with warm mottling and red-violet creases.
+        flesh = np.array([.74, .57, .52]) * (0.86 + 0.18 * broad[:, None])
+        flesh = flesh * (1 - 0.38 * blush[:, None]) + np.array([.78, .44, .44]) * 0.38 * blush[:, None]
+        flesh = flesh * (0.93 + 0.10 * fine[:, None])
+        crease = np.clip(1.0 - ao, 0.0, 1.0)[:, None]
+        flesh = flesh * (1 - 0.55 * crease) + np.array([.42, .20, .24]) * 0.55 * crease
         palette = {MOUTH: np.array([.24, .07, .07]), EYE: np.array([.80, .70, .30]),
                    CLAW: np.array([.07, .06, .06]), LIP: np.array([.62, .38, .36])}
         out[:] = flesh
@@ -291,7 +295,7 @@ def colours_for(body, at):
             sel = mat == key
             if sel.any():
                 out[sel] = colour * (0.92 + 0.10 * broad[sel, None])
-        shade = 0.55 + 0.45 * ao
+        shade = 0.50 + 0.50 * ao
         return out * shade[:, None]
     return colours
 

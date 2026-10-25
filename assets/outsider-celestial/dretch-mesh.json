@@ -63,5 +63,7 @@
  "visibleArms": 2,
  "visibleLegs": 2,
  "visibleTail": false,
+ "potbelly": true,
+ "largeEars": true,
  "jawJoints": 2
 }
