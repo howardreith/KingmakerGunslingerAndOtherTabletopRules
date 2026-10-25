@@ -63,7 +63,7 @@ an hour without useful evidence triggers a changed approach, not a new quota.
 ## Candidate, evidence and questions
 
 Current candidate / source / ZIP / DLL / MVID: none. PR: not yet created.
-Independent review: pending coherent diff and evidence.
+Independent workflow review completed; concrete findings repaired. Product review remains pending.
 Subsystem decisions: none requested or approved; feasibility investigation pending.
 
 Intake storage: approximately 307–311 MB free after creating the worktree.
@@ -86,9 +86,10 @@ and relevant charter, identified stale active pointers and S30–31 build gates.
 Builds/packages/native launches: 0/0/0. Restoration: not applicable; no owned
 live transaction. Timing summary will use observed timestamps; no speedup claim.
 
-Next: recover verified duplicate space, make the narrow candidate/admission
-repair with positive/negative checks in a separate commit, then reconcile native
-Satyr control and Lillend bard/performance contracts for early execution.
+Next: compile one hidden development candidate for the bounded native-input
+audit, inspect actual control/performance mappings, then implement and observe
+one useful natural action and refusal/fallback per creature. This research
+route creates no actors, changes no saves and grants no presentation approval.
 
 ## Workflow checkpoint evidence
 
@@ -117,9 +118,8 @@ tasks 0, one Steam process, no active runtime lease or compatibility lock.
 Record: `artifacts/sprint32-intake/intake.json`. The first cleanup preview
 refused two already-empty extraction directories and deleted nothing. A bounded
 40-transaction selection subsequently passed every-file SHA-256 comparison with
-retained canonical ZIPs: 3,511,693,023 duplicate bytes. Cleanup execution is
-expected to take 10?20 minutes; its plan/result and exact intake comparison
-remain required. No game transaction was opened.
+retained canonical ZIPs: 3,511,693,023 duplicate bytes. Cleanup execution and exact intake comparison completed as recorded below.
+No game transaction was opened.
 
 Cleanup completed: 40 duplicate directories / 3,511,693,023 bytes removed. Free space increased from 294,428,672 to 3,848,278,016 bytes. Protected intake Compare PASS (7.96 s): exact Mods/saves/references/settings/sound-bank/process/task/lease state. No live transaction. Plan SHA-256 `284ee04be5aca56bdcc152711125abe0a098396840839f7bb503d91b6396ccb4`; local plan/result under `artifacts/sprint32-intake/verified-cleanup-20261025T135508Z`.
 
@@ -152,3 +152,10 @@ and bounded raw logs reserve250MB; initial combined allowance1.1GB plus2GB
 working margin. Current3.85GB clears3.1GB. Re-measure actual new package and
 Working-save copy sizes before native dispatch; this estimate is not a license
 to dip into the emergency floor.
+
+Native-input selection: existing mod-load metadata audit adapted for exactly
+Satyr/Lillend and their spell/performance consumers. Expected build/preflight
+10-15 minutes and one native capture/restoration 5-10 minutes, separately
+bounded ordinary selections. This is feasibility research, not gameplay PASS.
+Reference identity: verified current installed 16-file bundle at
+`s3031-refs164-20261024T071848Z/expanded/KingmakerGunslinger-private-build-references`.
