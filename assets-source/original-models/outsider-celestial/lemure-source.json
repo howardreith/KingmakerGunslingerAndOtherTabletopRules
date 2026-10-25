@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "creature": "lemure",
+  "pipeline": "original procedural volume, reviewed native bone interfaces, continuous_body export and original albedo bake",
+  "tool": "installed Blender 4.5.10 LTS",
+  "privateCaptureRun": "20261014T0546181325834Z-observe-expanded-summoning-sprint24-theropod-census",
+  "privateCaptureSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+  "generation": {
+    "schemaVersion": 1,
+    "builder": "build_lemure.py",
+    "rigSha256": "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4",
+    "creature": "lemure",
+    "donorFamily": "lizardfolk-free-hands",
+    "nativeDonor": "a8cbd4cdb0feaf64eab1452257c3c971",
+    "nativePrefab": "d6db6ba3b2c459a48ba0730beef0bac8",
+    "bodyRenderer": "_lizardman001",
+    "accessoryRenderer": "_ammunition04",
+    "nativeRendererCount": 2,
+    "visibleArms": 2,
+    "visibleLegs": 0,
+    "visibleTail": false,
+    "amorphousLowerBody": true,
+    "vertices": 4107,
+    "triangles": 5528,
+    "components": 16,
+    "bones": [
+      "Head",
+      "L_Arm_Lower",
+      "L_Arm_Upper",
+      "L_Bfinger2",
+      "L_Palm",
+      "L_finger1",
+      "L_finger2",
+      "R_Arm_Lower",
+      "R_Arm_Upper",
+      "R_Bfinger2",
+      "R_Palm",
+      "R_finger1",
+      "R_finger2",
+      "Torso_Lower",
+      "Torso_Upper",
+      "neck",
+      "neck1"
+    ],
+    "minimumComponentVolume": 7.407028336577571e-05,
+    "albedo": {
+      "file": "lemure-albedo.png",
+      "sha256": "38d84196ebabaa34a52988651bde02c11ca99afeab0723530a830efab7662402",
+      "width": 1024,
+      "height": 1024,
+      "bitDepth": 8,
+      "colorType": 2
+    }
+  },
+  "files": {
+    "assets/outsider-celestial/lemure-mesh.json": "80724617887774edaf4dfbec254d6a629962d0a04e48021c82c53862d65bd11d",
+    "assets/outsider-celestial/lemure-albedo.png": "38d84196ebabaa34a52988651bde02c11ca99afeab0723530a830efab7662402",
+    "assets-source/original-models/outsider-celestial/build_lemure.py": "38cdbc49f710579956bdcffa2c0338447d0a4418010e108d03a410aab08df438"
+  },
+  "redistributedNativeAssets": false,
+  "ownerVisualApproval": false
+}

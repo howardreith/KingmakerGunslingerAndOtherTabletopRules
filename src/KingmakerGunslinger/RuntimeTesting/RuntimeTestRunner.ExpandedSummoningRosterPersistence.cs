@@ -37,11 +37,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
             Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope ||
             Sprint27PersistenceScope || Sprint28PersistenceScope ||
-            Sprint29PersistenceScope; } }
+            Sprint29PersistenceScope || Sprints3031PersistenceScope; } }
         private bool Sprint27PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GriffonScope; } }
         private bool Sprint28PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsScope; } }
+        private bool Sprints3031PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialScope; } }
         private bool Sprint29PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoScope; } }
         private bool Sprint26PersistenceScope
@@ -63,6 +65,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint27PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GriffonKeys :
             Sprint28PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidKeys :
             Sprint29PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoKeys :
+            Sprints3031PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
@@ -225,7 +228,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     buff.MaybeContext != null && ReferenceEquals(buff.MaybeContext.MaybeCaster, caster)) == 1;
         }
 
-        private static JObject RosterPersistenceProfile(UnitEntityData unit)
+        private static JObject RosterPersistenceProfile(UnitEntityData unit, bool pilot = false)
         {
             var s = unit.Stats;
             var profile=new JObject { ["blueprint"] = unit.Blueprint.AssetGuid, ["size"] = unit.Descriptor.State.Size.ToString(),
@@ -288,6 +291,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     profile["breathDc"]=new AbilityData(breath).CalculateParams().DC;
                 }
             }
+            string pilotKey = unit.Get<UnitPartRelease143RosterReceipt>()?.Key;
+            if (pilot && ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys.Contains(pilotKey))
+                profile["sprints3031"] = Sprints3031PersistenceState(unit, pilotKey);
             return profile;
         }
 
@@ -460,7 +466,37 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> DestroyRosterPersistence(UnitEntityData[] units, string stage)
         {
+            var pilotAreas = Sprints3031PersistenceScope ? Game.Instance.State.AreaEffects.All
+                .Where(area => units.Contains(area.Context?.MaybeCaster)).ToArray() : Array.Empty<AreaEffectEntityData>();
+            var pilotGrants = Sprints3031PersistenceScope ? Game.Instance.State.Units.All
+                .Where(unit => unit != null && !unit.Destroyed).SelectMany(unit => unit.Buffs.Enumerable)
+                .Where(buff => units.Contains(buff.Context?.MaybeCaster)).ToArray() : Array.Empty<Kingmaker.UnitLogic.Buffs.Buff>();
+            var pilotPrivate = Sprints3031PersistenceScope ? units.SelectMany(unit => Sprints3031PrivateResources(
+                unit, unit.Get<UnitPartRelease143RosterReceipt>().Key)).ToArray() : Array.Empty<UnityEngine.Object>();
             foreach (var step in ObserveRosterResourceCleanup(units, stage)) yield return step;
+            if (Sprints3031PersistenceScope) {
+                // The fixture is paused. Let only these captured disposable
+                // areas run native end/exit/destruction after their owners go.
+                // No ForceEnd, clock jump, grant deletion or foreign actor tick.
+                for (int frame = 0; frame < 3; frame++)
+                {
+                    foreach (var area in pilotAreas.Where(value => !value.Destroyed)) area.Tick();
+                    Game.Instance.EntityDestroyer.Tick();
+                    yield return 0;
+                }
+                bool exact = units.All(Sprints3031SourceAbsent) && pilotAreas.All(area => area.Destroyed && !area.IsInState) &&
+                    pilotPrivate.All(value => value == null) && !Game.Instance.State.Units.All
+                        .Where(unit => unit != null && !unit.Destroyed).SelectMany(unit => unit.Buffs.Enumerable).Any(pilotGrants.Contains);
+                RosterPersistenceCheck("s3031-" + stage + "-owned-state-cleanup", exact,
+                    new JObject { ["owners"] = units.Length, ["capturedAreas"] = pilotAreas.Length,
+                        ["capturedGrants"] = pilotGrants.Length, ["privateObjects"] = pilotPrivate.Length,
+                        ["allOwnersAbsent"] = units.All(Sprints3031SourceAbsent),
+                        ["areasAbsent"] = pilotAreas.All(area => area.Destroyed && !area.IsInState),
+                        ["privateObjectsAbsent"] = pilotPrivate.All(value => value == null) },
+                    "Native owned-unit cleanup retires captured aura/effect objects and private resources; unresolved source references cannot hide residue.");
+                if (!exact) throw new InvalidOperationException("Pilot native cleanup failed; no cleanup save.");
+                Sprints3031PersistenceAbsence(stage);
+            }
         }
 
         private IEnumerable<int> RunRosterPersistence()
@@ -476,7 +512,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var party = Game.Instance.Player.Party.Where(u => u != null && u.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
             ItemEntity[] giantPartyItems =
-                Sprint28PersistenceScope || Sprint29PersistenceScope ?
+                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope ?
                 Game.Instance.Player.Inventory.Items.ToArray() : null;
             int[] giantPartyCounts = giantPartyItems?.Select(item => item.Count).ToArray();
             var caster = party.First(u => u.HoldingState != null);
@@ -511,6 +547,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         existing, false, false)) yield return step;
                 if (Sprint26PersistenceScope)
                     foreach (int step in Sprint26PersistentStates(caster, existing, false, false)) yield return step;
+                if (Sprints3031PersistenceScope) Sprints3031PersistenceAbsence("fresh");
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -519,6 +556,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!_context.FeatureModules.Active.ExpandedSummoning) throw new InvalidOperationException("Prepare requires module ON.");
                 foreach (var step in DestroyRosterPersistence(existing, "stale")) yield return step;
                 if (_rosterPersistenceChecks.Any(a => a.Status != RuntimeTestStatuses.Pass)) throw new InvalidOperationException("Owned stale fixture failed to retire.");
+                if (Sprints3031PersistenceScope) Sprints3031PersistenceAbsence("intake");
                 var created = new List<UnitEntityData>();
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
@@ -563,6 +601,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "per-cast legal fixture alignment is restored before any native save");
                 }
                 units = created.ToArray();
+                if (Sprints3031PersistenceScope)
+                    for (int index = 0; index < units.Length; index++)
+                        PlaceExpandedSummoningUnit(units[index], caster.Position +
+                            Vector3.forward * (2f + index / 3) + Vector3.right * ((index % 3 - 1) * 1.25f));
             }
             else foreach (var unit in units) RegisterRosterReadiness(unit, caster, null);
             bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
@@ -617,7 +659,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
                 Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope ||
                 Sprint26PersistenceScope || Sprint27PersistenceScope ||
-                Sprint28PersistenceScope || Sprint29PersistenceScope) && verify;
+                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -635,6 +677,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     : savedTargetedSubset
                         ? "the exact saved targeted receipts reconstruct natively while module-OFF publication and private visual allocations remain disabled"
                         : "with the module off not one of this mod's creatures may instantiate at all");
+            if (Sprints3031PersistenceScope && prepare) {
+                foreach (var unit in units) PrepareSprints3031PersistenceState(unit,
+                    unit.Get<UnitPartRelease143RosterReceipt>().Key);
+                PrepareSprints3031SavedEffects(units);
+            }
             foreach (var unit in units)
             {
                 var receipt = unit.Get<UnitPartRelease143RosterReceipt>();
@@ -669,12 +716,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         unit.Descriptor.Resources.Spend(limited, 1);
                     }
                 }
-                var profile = RosterPersistenceProfile(unit);
+                var profile = RosterPersistenceProfile(unit, Sprints3031PersistenceScope);
                 // Keep the stable racial/weapon receipt independent of
                 // module-ON-only observations added below. Those observations
                 // are evidence, not a second serialized feature schema.
                 if (prepare) receipt.Profile = profile.ToString(Formatting.None);
                 bool profileSame = receipt.Profile == profile.ToString(Formatting.None);
+                if (Sprints3031PersistenceScope)
+                    ObserveSprints3031PersistentUnit(unit, receipt.Key, profile, units,
+                        giantPartyItems, giantPartyCounts, prepare);
                 if (Sprint28PersistenceScope)
                     ObserveSprint28PersistentGiant(unit, receipt, profile, prepare,
                         giantPartyItems, giantPartyCounts);
@@ -903,6 +953,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     units, prepare, verify)) yield return step;
             if (Sprint26PersistenceScope)
                 foreach (int step in Sprint26PersistentStates(caster, units, prepare, verify)) yield return step;
+            if (Sprints3031PersistenceScope) ObserveSprints3031PersistentAuras(units, prepare);
             if (verify) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,

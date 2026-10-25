@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  129,
+    "count":  135,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1158,6 +1158,60 @@
                       "key":  "ettin",
                       "file":  "ettin.png",
                       "sha256":  "230b7b479f28f94fae8f32e48f3d65ab358f8bda29d42b25a9bbccd40b92c900",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "lemure",
+                      "file":  "lemure.png",
+                      "sha256":  "c03bc1c797069cb6646d59519ca7ba8859a34ef9152d7f309cef98ffc05790b9",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "dretch",
+                      "file":  "dretch.png",
+                      "sha256":  "bd591e82e9fa075d4b822dae5fcd2440c855953e1f66512adeae8a17ead9e6ee",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "hound-archon",
+                      "file":  "hound-archon.png",
+                      "sha256":  "bb98e26a8ed2d48e5d401eba5906b6af481388f25e6ad49accca851534a6aae3",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "astral-deva",
+                      "file":  "astral-deva.png",
+                      "sha256":  "ef392c647741ec0257947bb723c2bca14c8161b103681c41d8b34f62999b93d2",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "trumpet-archon",
+                      "file":  "trumpet-archon.png",
+                      "sha256":  "3abe3aafe42b2adafd537adafcd54c3593e2081adb01fb1e050a2b4fecc6bed6",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "trumpet-blast",
+                      "file":  "trumpet-blast.png",
+                      "sha256":  "d730f950d15f715cbba5f61b4079fb223b618a882f2c1147ea00a0fc05ca7215",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

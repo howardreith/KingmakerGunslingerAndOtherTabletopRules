@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "mission": "Sprints3031OutsiderCelestialPilot",
+  "status": "PUBLIC_TEST_CANDIDATE_NOT_QUALIFIED",
+  "releaseEligible": false,
+  "publicSurface": {
+    "generatedPlacements": 1150,
+    "retainedNativeWrappers": 29,
+    "visibleChoices": 1179
+  },
+  "scope": {
+    "newCreatures": 5,
+    "existingUpgrade": "lantern-archon",
+    "newRoutes": 23,
+    "preservedLanternRoutes": 7
+  },
+  "hiddenMechanics": "39 complete scoped development rows retain their original provenance; final fresh qualification pending.",
+  "pending": [
+    "complete final build/package gate",
+    "all30 public routes and inventory/body/icon integration",
+    "six fresh mixed persistence processes",
+    "two final integration profiles",
+    "publisher and actual public-asset verification"
+  ],
+  "sprint32Started": false
+}

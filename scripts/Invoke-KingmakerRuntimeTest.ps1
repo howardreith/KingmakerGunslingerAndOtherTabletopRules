@@ -126,8 +126,8 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
         if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii') -or -not $ExitAfterCompletion) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon, giant-humanoids or giant-humanoids-ii and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial') -or -not $ExitAfterCompletion) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon, giant-humanoids, giant-humanoids-ii or outsider-celestial and automatic exit.'
         }
         $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
     } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and
@@ -137,6 +137,11 @@ if ($scenarioMetadata.RequiresSaveName) {
             throw 'The existing player-path fixture requires typed -SaveName and only playerPathScope=representative with automatic exit.'
         }
         $Parameters = @{ saveName = $SaveName; playerPathScope = $Parameters.playerPathScope }
+    } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')) {
+        if (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters)) {
+            throw 'Use typed Working SaveName and only the fixed S30/S31 UI creatures/reviewCase with automatic exit.'
+        }
+        $Parameters = @{saveName=$SaveName;creatures=$Parameters.creatures;reviewCase=$Parameters.reviewCase}
     } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
         $crowd = $Parameters.ContainsKey('quantity')
         if ($Parameters.Count -ne $(if ($crowd) { 2 } else { 1 }) -or
@@ -393,6 +398,13 @@ try {
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
         -Record $orchestration)
     Write-Host 'Stage: steam-launch-requested'
+    # One named owner-bounded lab, immediately before native dispatch. The
+    # ordinary lease, package, save and restoration guards remain in force.
+    if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+        . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
+        [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
+            -Action Game -Stage ($Scenario + ':' + $request.runId) -MinimumRemainingMinutes 15)
+    }
     $launchOutput = @(Start-KmgSteamKingmaker -SteamPath $SteamPath `
         -AppId $SteamAppId -RequestPath $requestPath `
         -PreLaunchProcesses @($preLaunchProcesses) `

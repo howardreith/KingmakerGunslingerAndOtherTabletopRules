@@ -1,0 +1,224 @@
+using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
+using KingmakerGunslinger.Summoning;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class ExpandedSummoningSprints30And31Tests
+    {
+        // Exact post-v0.0.163 foundation delta for the current hidden slice.
+        // Twenty other private abilities plus one six-ability Dispel Evil
+        // family per actual caster. Its ward adds one private buff per caster.
+        internal const int RegisteredDispelEvilCasterCount = 2;
+        internal const int RegisteredAbilityIdentityCount = 23 + 21 +
+            RegisteredDispelEvilCasterCount * 6;
+        internal const int RegisteredAreaIdentityCount = 3;
+        internal const int RegisteredResourceIdentityCount = 6;
+        internal const int RegisteredAiIdentityCount = 10;
+        internal const int RegisteredBrainIdentityCount = 4;
+        internal const int RegisteredBuffIdentityCount = 10 + RegisteredDispelEvilCasterCount;
+        internal const int RegisteredFeatureIdentityCount = 8;
+        internal const int RegisteredWeaponIdentityCount = 9;
+        internal const int RegisteredSpellbookIdentityCount = 1;
+        internal const int RegisteredSpellListIdentityCount = 1;
+        internal const int RegisteredUnitTypeIdentityCount = 5;
+        internal const int RegisteredWeaponTypeIdentityCount = 9;
+        internal const int RegisteredAidEligibilityIdentityCount = 3;
+        internal const int RegisteredDretchEligibilityIdentityCount = 2;
+        internal const int RegisteredFogSafetyIdentityCount = 1;
+        internal const int RegisteredBanishmentEligibilityIdentityCount = 1;
+        internal const int RegisteredHealingEligibilityIdentityCount = 1;
+        internal const int RegisteredAstralHealingEligibilityIdentityCount = 2;
+
+        internal static void PersistenceScopeOwnsExactlySixUnits()
+        {
+            string scope = ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialScope;
+            var keys = ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys;
+            foreach (string key in keys)
+            {
+                var route = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key);
+                Assertions.True(route.Creature.Key == key && route.Family == SummonFamily.Monster &&
+                    route.Multiplicity == SummonMultiplicity.One, "The fixed scope selects the exact own-tier SM unit.");
+                int alignment = ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(route);
+                Assertions.Equal(key == "lemure" ? 12 : key == "dretch" ? 20 :
+                    key == "hound-archon" || key == "trumpet-archon" ? 10 : 3,
+                    alignment, "Each creature has its own legal fixture alignment; Lantern keeps its existing mapping.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Reverse()), "Load order may change, exact membership cannot.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Skip(1).Concat(new[] { "dretch" })), "Duplicate cannot replace Lemure.");
+            Assertions.Throws<System.InvalidOperationException>(() => ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, "hill-giant"), "Unrelated creature refused.");
+            foreach (string phase in new[] { "working-save-expanded-summoning-prepare", "working-save-expanded-summoning-verify-cleanup", "working-save-expanded-summoning-verify-absent" })
+            {
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(phase, scope), "All existing fresh-load stages retained.");
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(phase, "Outsider-celestial"), "Scope remains case sensitive.");
+                Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(phase, scope + " "), "No trailing-space scope.");
+            }
+        }
+
+        internal static void BatchKeepsExactPublicRoutesAndReleasedSurface()
+        {
+            ExpandedSummoningCatalog.Validate();
+            SummonIconCatalog.Validate();
+            SummonVisibilityCatalog.Validate();
+            ExpandedSummoningIdentityCatalog.Build();
+            var monster = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
+            var all = monster.Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)).ToArray();
+            var dretch = all.Where(value => value.Creature.Key == "dretch").ToArray();
+            var trumpet = all.Where(value => value.Creature.Key == "trumpet-archon").ToArray();
+            var hound = all.Where(value => value.Creature.Key == "hound-archon").ToArray();
+            var lemure = all.Where(value => value.Creature.Key == "lemure").ToArray();
+            var astral = all.Where(value => value.Creature.Key == "astral-deva").ToArray();
+            Assertions.True(lemure.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(2, 8)), "Exact SM II-IX Lemure routes.");
+            Assertions.True(lemure.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value)), "Published Lemure roots retain no SNA or template variants.");
+            Assertions.True(all.Where(value => value.Creature.Key != "lemure" && value.Creature.Key != "dretch" && value.Creature.Key != "hound-archon" && value.Creature.Key != "trumpet-archon" && value.Creature.Key != "astral-deva").All(SummonVisibilityCatalog.IsPublished), "Every released creature stays public.");
+            Assertions.True(dretch.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(3, 7)) && dretch.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value)), "Dretch owns exactly seven public untemplated SM III-IX roots.");
+            Assertions.Equal(SummonMultiplicity.One, dretch[0].Multiplicity, "SM III Dretch is one.");
+            Assertions.Equal(SummonMultiplicity.OneD3, dretch[1].Multiplicity, "SM IV Dretch is 1d3.");
+            Assertions.True(dretch.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM V-IX Dretch are 1d4+1.");
+            Assertions.Equal(0, SummonVisibilityCatalog.SuppressedLogicalPlacementCount, "The complete selected batch has no suppressed roots.");
+            Assertions.Equal(all.Length, SummonVisibilityCatalog.PublishedLogicalPlacementCount, "Published count derives from actual routes.");
+            Assertions.True(hound.Select(value => value.ParentTier).SequenceEqual(Enumerable.Range(4, 6)) && hound.All(value => value.Family == SummonFamily.Monster && !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value)), "Hound owns exactly six public untemplated SM IV-IX roots.");
+            Assertions.True(astral.Length == 1 && astral[0].ParentTier == 9 && astral[0].Family == SummonFamily.Monster &&
+                astral[0].Multiplicity == SummonMultiplicity.One && !astral[0].Creature.MonsterTemplated &&
+                SummonVisibilityCatalog.IsPublished(astral[0]), "Astral owns exactly one public untemplated SM IX root.");
+            Assertions.True(trumpet.Length == 1 && trumpet[0].ParentTier == 9 && trumpet[0].Family == SummonFamily.Monster &&
+                trumpet[0].Multiplicity == SummonMultiplicity.One && !trumpet[0].Creature.MonsterTemplated &&
+                SummonVisibilityCatalog.IsPublished(trumpet[0]), "Trumpet owns exactly one public untemplated SM IX root.");
+            Assertions.Equal(SummonMultiplicity.One, hound[0].Multiplicity, "SM IV Hound is one.");
+            Assertions.Equal(SummonMultiplicity.OneD3, hound[1].Multiplicity, "SM V Hound is 1d3.");
+            Assertions.True(hound.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM VI-IX Hound are1d4+1.");
+            Assertions.Equal(SummonMultiplicity.One, lemure[0].Multiplicity, "SM II is one.");
+            Assertions.Equal(SummonMultiplicity.OneD3, lemure[1].Multiplicity, "SM III is 1d3.");
+            Assertions.True(lemure.Skip(2).All(value => value.Multiplicity == SummonMultiplicity.OneD4PlusOne), "SM IV-IX are 1d4+1.");
+            string packager = System.IO.File.ReadAllText("tools/create_deterministic_package.py");
+            Assertions.True(packager.Contains("404, 406, 407, 408, 409"),
+                "The exact no-bank/bank package counts admit the five S30/S31 icons without weakening unrelated counts.");
+        }
+        internal static void AstralCoreRulesKeepDistinctLevelsAndAuraBoundary()
+        {
+            AstralDevaRulesPolicy.Validate();
+            Assertions.Equal(172, AstralDevaRulesPolicy.AdultHitPoints(), "Adult racial dice, Constitution and Toughness remain distinct.");
+            Assertions.Equal(25, AstralDevaRulesPolicy.StunDifficultyClass(), "Two-hit stun uses racial HD and live Strength.");
+            Assertions.Equal(26, AstralDevaRulesPolicy.WarhammerAttackBonus(), "Enhanced focused warhammer attack.");
+            Assertions.Equal(14, AstralDevaRulesPolicy.WarhammerDamageBonus(), "Two-handed hammer uses live one-and-a-half Strength plus enhancement.");
+            Assertions.Equal(23, AstralDevaRulesPolicy.SlamAttackBonus(), "Alternative slam has no hammer enhancement or focus.");
+            Assertions.Equal(12, AstralDevaRulesPolicy.SlamDamageBonus(), "Lone primary slam uses live one-and-a-half Strength.");
+            Assertions.True(AstralDevaRulesPolicy.BlocksLesserGlobe(3, true, false, 6.7f, 0.5f), "Outside level-three spell is blocked.");
+            Assertions.True(AstralDevaRulesPolicy.BlocksLesserGlobe(0, false, true, 7f, 0f), "Outside level-zero SLA is blocked.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(3, true, false, 6.596f, 0.5f), "Origin on the aura boundary remains inside.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(4, true, false, 20f, 0f), "Level-four spell passes the lesser globe.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(3, false, false, 20f, 0f), "Non-spell and non-SLA effects pass.");
+            Assertions.False(AstralDevaRulesPolicy.BlocksLesserGlobe(-1, true, false, 20f, 0f), "Missing spell-level attribution cannot manufacture immunity.");
+            Assertions.Equal(13, AstralDevaRulesPolicy.SpellLikeCasterLevel, "Astral SLAs stay CL13.");
+            Assertions.Equal(6, AstralDevaRulesPolicy.BladeBarrierSpellLevel, "Blade Barrier retains its sixth-level SLA DC.");
+            Assertions.Equal(1, AstralDevaRulesPolicy.BladeBarrierUses, "Blade Barrier has one independent use per summoning.");
+            Assertions.Equal(1, AstralDevaRulesPolicy.CureLightWoundsSpellLevel, "Cure Light Wounds retains its first-level SLA DC.");
+            Assertions.Equal(7, AstralDevaRulesPolicy.CureLightWoundsUses, "Cure Light Wounds has seven independent uses per summoning.");
+            Assertions.Equal(2, AstralDevaRulesPolicy.SeeInvisibilitySpellLevel, "See Invisibility retains its second-level SLA DC.");
+            Assertions.Equal(7, AstralDevaRulesPolicy.SeeInvisibilityUses, "See Invisibility has seven independent uses per summoning.");
+            Assertions.Equal(2, AstralDevaRulesPolicy.AidSpellLevel, "Aid keeps its second-level SLA parameters.");
+            Assertions.Equal(3, AstralDevaRulesPolicy.DispelMagicSpellLevel, "Dispel Magic keeps its third-level SLA parameters.");
+            Assertions.Equal(8, AstralDevaRulesPolicy.HolyAuraSpellLevel, "Holy Aura keeps its eighth-level SLA DC.");
+            Assertions.Equal(7, AstralDevaRulesPolicy.HolyWordSpellLevel, "Holy Word keeps its seventh-level SLA DC.");
+            Assertions.Equal(2, AstralDevaRulesPolicy.InvisibilitySpellLevel, "Invisibility keeps its second-level SLA parameters.");
+            Assertions.Equal(3, AstralDevaRulesPolicy.RemoveCurseSpellLevel, "Remove Curse keeps its third-level SLA parameters.");
+            Assertions.Equal(3, AstralDevaRulesPolicy.RemoveDiseaseSpellLevel, "Remove Disease keeps its third-level SLA parameters.");
+            Assertions.Equal(1, AstralDevaRulesPolicy.RemoveFearSpellLevel, "Remove Fear keeps its first-level SLA parameters.");
+            Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteWillDc(23), "Holy Smite uses its fourth-level SLA and live Charisma.");
+            Assertions.Equal(5, AstralDevaRulesPolicy.HolySmiteDiceCount(false), "Ordinary targets use the capped five-die line.");
+            Assertions.Equal(8, AstralDevaRulesPolicy.HolySmiteDieSides(false), "Ordinary targets use d8s.");
+            Assertions.Equal(10, AstralDevaRulesPolicy.HolySmiteDiceCount(true), "Evil outsiders use the capped ten-die line.");
+            Assertions.Equal(6, AstralDevaRulesPolicy.HolySmiteDieSides(true), "Evil outsiders use d6s.");
+            Assertions.Equal(40, AstralDevaRulesPolicy.HolySmiteDamage(40, true, false), "Failed evil save keeps full damage.");
+            Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteDamage(40, true, true), "Successful evil save halves damage.");
+            Assertions.Equal(20, AstralDevaRulesPolicy.HolySmiteDamage(40, false, false), "Neutral failed save takes half damage.");
+            Assertions.Equal(10, AstralDevaRulesPolicy.HolySmiteDamage(40, false, true), "Neutral successful save takes one-quarter damage.");
+            Assertions.True(AstralDevaRulesPolicy.HolySmiteBlinds(true, false) && !AstralDevaRulesPolicy.HolySmiteBlinds(true, true) && !AstralDevaRulesPolicy.HolySmiteBlinds(false, false), "Only evil creatures that fail are blinded.");
+            Assertions.Equal(5, AstralDevaRulesPolicy.DispelEvilSpellLevel, "Dispel Evil retains its fifth-level SLA parameters.");
+            Assertions.Equal(21, AstralDevaRulesPolicy.DispelEvilWillDc(23), "The Dismissal discharge uses live Charisma at fifth level.");
+            Assertions.Equal(13, AstralDevaRulesPolicy.DispelEvilDurationRounds(13), "The ward lasts one round per caster level.");
+            Assertions.Equal(4, AstralDevaRulesPolicy.DispelEvilArmorClassBonus, "The ward retains its printed deflection bonus.");
+            Assertions.True(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, true, false, false), "An evil spell is eligible regardless of caster alignment.");
+            Assertions.True(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, false, true, true), "An enchantment from an evil caster is eligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, false, true, false), "A non-evil enchantment from a non-evil caster is ineligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(true, false, false, false, true), "An unrelated spell from an evil caster is ineligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(false, false, true, true, true), "A non-spell effect is ineligible.");
+            Assertions.False(AstralDevaRulesPolicy.CanDispelEvilEffect(true, true, true, true, true), "A nondispellable spell remains protected.");
+            Assertions.Equal(15, AstralDevaRulesPolicy.AuraCasterLevel, "Angel aura and shared circle stay CL15/HD15.");
+            Assertions.True(AstralDevaRulesPolicy.HasGoodSummoningDescriptor, "Neutral-good Astral routes retain the Good descriptor.");
+            Assertions.False(AstralDevaRulesPolicy.HasLawSummoningDescriptor, "Neutral-good Astral routes do not acquire the archons' Law descriptor.");
+        }
+
+        internal static void AstralHammerStunTracksEachOpponentOncePerRound()
+        {
+            var tracker = new AstralDevaStunTracker();
+            Assertions.False(tracker.RecordHit(null), "A missing target cannot arm stun.");
+            Assertions.False(tracker.RecordHit("target-a"), "One hammer hit does not arm stun.");
+            Assertions.False(tracker.RecordHit("target-b"), "A hit on another opponent does not combine with the first.");
+            Assertions.True(tracker.RecordHit("target-a"), "The second same-opponent hit arms one save.");
+            Assertions.False(tracker.RecordHit("target-a"), "Later hits cannot repeat the save in that round.");
+            Assertions.True(tracker.RecordHit("target-b"), "A second opponent owns an independent two-hit gate.");
+            Assertions.Equal(2, tracker.HitCount("target-a"), "The attempted opponent remains capped at its decisive two hits.");
+            Assertions.True(tracker.WasAttempted("target-a") && tracker.WasAttempted("target-b"), "Both target-local attempts are recorded.");
+            tracker.Reset();
+            Assertions.Equal(0, tracker.HitCount("target-a"), "A native round boundary clears old hits.");
+            Assertions.False(tracker.RecordHit("target-a"), "The next round starts with a new first hit.");
+            Assertions.Equal(25, AstralDevaRulesPolicy.StunDifficultyClass(8), "Adult live Strength gives DC25.");
+            Assertions.Equal(26, AstralDevaRulesPolicy.StunDifficultyClass(9), "An odd live Strength increase raises the DC.");
+            Assertions.Equal(15, AstralDevaRulesPolicy.StunDifficultyClass(-2), "A live Strength penalty lowers the DC without a hidden floor.");
+        }
+
+        internal static void BootstrapCannotAdmitSaveOrUnsupportedPhases()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview;
+            string uiScenario = RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningCreatureReview;
+            string bundleLog = @"The AssetBundle 'StreamingAssets\Bundles\common_assets' can't be loaded because another AssetBundle with the same files is already loaded.";
+            string equipmentLog = @"The AssetBundle 'StreamingAssets\Bundles\equipment_bundle' can't be loaded because another AssetBundle with the same files is already loaded.";
+            string fogLog = "FogOfWarStaticMaskHolder bounds is not completely placed inside in LocationMaskRenderer bounds [JamandisMansion_Mechanics]";
+            foreach (string message in new[] { bundleLog, equipmentLog, fogLog })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(true, message, ""), "Only exact measured native presentation diagnostics are classified.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(false, message, ""), "Exceptions never become presentation diagnostics.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(true, message, "native stack"), "A new traced failure remains blocking.");
+            }
+            foreach (string message in new[] { "Failed to load blueprint", "NullReferenceException", bundleLog + " changed", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.WorkingUiPresentationDiagnostic(true, message, ""), "Unknown native load errors remain blocking.");
+            string uiCreatures = RuntimeTestScenarioCatalog.Sprints30And31DispelUiCreatures;
+            string uiCase = RuntimeTestScenarioCatalog.Sprints30And31DispelUiCase;
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "Only the exact fixed read-only Working UI batch is admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(false, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "UI requires automatic exit.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, scenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "The first-area mechanics fixture cannot qualify UI.");
+            foreach (int count in new[] { 0, 1, 2, 4 }) Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, count, "KMG_AUTOMATION_WORKING", uiCreatures, uiCase), "The UI batch refuses missing/extra fields.");
+            foreach (string save in new[] { "KMG_AUTOMATION_BASELINE", "kmg_automation_working", "KMG_AUTOMATION_WORKING ", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, save, uiCreatures, uiCase), "Only the exact named disposable Working save is allowed.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", "astral-deva,trumpet-archon", uiCase), "The fixed batch order cannot be caller supplied.");
+            foreach (string value in new[] { "SPRINTS30-31-DISPEL-UI", "sprints30-31-dispel-ui ", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31DispelUi(true, uiScenario, 3, "KMG_AUTOMATION_WORKING", uiCreatures, value), "UI reviewCase matching remains exact.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(scenario, "trumpet-blast-ai-safe"), "Only the fixed positive phase selects the established outdoor fixture.");
+            foreach (string value in new[] { "trumpet-blast-ai", "trumpet-blast", "TRUMPET-BLAST-AI-SAFE", "trumpet-blast-ai-safe ", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(scenario, value), "Other phases cannot switch this fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(uiScenario, "trumpet-blast-ai-safe"), "A Working request cannot select this save-free native world.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Empty guarded native world is admitted.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Implemented core consumer phase is admitted only in the same empty guarded fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "lemure-core", 0, 0, 0, false, false, true, false, true), "Core phase cannot import a save.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "lemure-core", 0, 0, 0, false, false, false, false, true), "Core phase requires automatic exit.");
+            Assertions.True(RuntimeTestScenarioCatalog.Sprints30And31OutsiderBodySequence.SequenceEqual(new[] { "lemure", "dretch" }), "Only the two supported original body subcases share this fixed phase.");
+            foreach (string isolated in new[] { "lemure-full", "lemure-ai", "dretch-cloud", "dretch-ai", "dretch-ai-ally", "archon-core", "archon-hound", "hound-armed", "hound-natural", "lantern-rays", "lantern-body", "astral-core", "astral-hammer", "astral-blade", "astral-support", "astral-atwill", "astral-smite", "astral-dispel", "trumpet-dispel", "trumpet-blast", "trumpet-blast-ai", "trumpet-blast-ai-safe", "trumpet-book", "trumpet-book-turn", "trumpet-caster", "outsider-bodies", "source-lifecycle", "defense-consumers", "dretch-melee", "dretch-melee-ai", "hound-single", "hound-ai", "hound-turn", "hound-disarm", "shared-circles", "archon-boundaries", "public-routes", "final-integration", "boundary-lemure", "boundary-dretch", "boundary-hound-archon", "boundary-lantern-archon", "boundary-astral-deva", "boundary-trumpet-archon", "celestial-cleave" })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "A fixed isolated command phase is admitted in a fresh empty world.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases require automatic exit.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 1, 0, 0, false, false, false, false, true), "Isolated phases refuse a prior unit.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 1, 0, false, false, false, false, true), "Isolated phases refuse a prior party.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, isolated, 0, 0, 0, false, false, true, false, true), "Isolated phases refuse a save import.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, isolated, 0, 0, 0, false, false, false, false, true), "Isolated phases refuse extra parameters.");
+            }
+            foreach (string phase in new[] { "Bootstrap", "Lemure-Core", "lemure-core ", "Lemure-Full", "lemure-ai ", "Dretch-Cloud", "dretch-cloud ", "Archon-Core", "archon-core ", "Archon-Hound", "archon-hound ", "Hound-Armed", "hound-armed ", "Hound-Natural", "hound-natural ", "Lantern-Rays", "lantern-rays ", "Lantern-Body", "lantern-body ", "Astral-Core", "astral-core ", "Astral-Hammer", "astral-hammer ", "Astral-Blade", "astral-blade ", "Astral-Support", "astral-support ", "Astral-Atwill", "astral-atwill ", "Astral-Smite", "astral-smite ", "Astral-Dispel", "astral-dispel ", "Trumpet-Dispel", "trumpet-dispel ", "Trumpet-Blast", "trumpet-blast ", "Trumpet-Blast-Ai", "trumpet-blast-ai ", "Trumpet-Blast-Ai-Safe", "trumpet-blast-ai-safe ", "Trumpet-Book", "trumpet-book ", "Trumpet-Book-Turn", "trumpet-book-turn ", "Trumpet-Caster", "trumpet-caster ", "Outsider-Bodies", "outsider-bodies ", "Source-Lifecycle", "source-lifecycle ", "Archon-Boundaries", "archon-boundaries ", "Hound-Disarm", "hound-disarm ", "Shared-Circles", "shared-circles ", "Hound-Single", "hound-single ", "Hound-Ai", "hound-ai ", "Hound-Turn", "hound-turn ", "Dretch-Melee", "dretch-melee ", "Dretch-Melee-Ai", "dretch-melee-ai ", "Defense-Consumers", "defense-consumers ", "Public-Routes", "public-routes ", "Final-Integration", "final-integration ", "BOUNDARY-LEMURE", "boundary-lemure ", "BOUNDARY-DRETCH", "boundary-dretch ", "BOUNDARY-HOUND-ARCHON", "boundary-hound-archon ", "BOUNDARY-LANTERN-ARCHON", "boundary-lantern-archon ", "BOUNDARY-ASTRAL-DEVA", "boundary-astral-deva ", "BOUNDARY-TRUMPET-ARCHON", "boundary-trumpet-archon ", "CELESTIAL-CLEAVE", "celestial-cleave ", "profiles", "routes", "", null })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Unimplemented or differently cased phase is refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, "bootstrap", 0, 0, 0, false, false, false, false, true), "Automatic exit is required.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 2, "bootstrap", 0, 0, 0, false, false, false, false, true), "Extra parameters are refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 1, 0, 0, false, false, false, false, true), "A populated world is refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 0, 1, 0, false, false, false, false, true), "A human party is refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, "bootstrap", 0, 0, 0, false, false, true, false, true), "A save import is refused.");
+        }
+    }
+}

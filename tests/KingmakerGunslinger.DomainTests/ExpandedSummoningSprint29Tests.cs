@@ -32,8 +32,8 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(SummonIconCatalog.All.Any(value =>
                     value.Key == row.Key), row.Key + " has a real icon record.");
             }
-            Assertions.Equal(1127, all.Length, "Registered logical roots.");
-            Assertions.Equal(1127, all.Count(SummonVisibilityCatalog.IsPublished),
+            Assertions.Equal(SummoningCurrentSurface.RegisteredLogicalPlacements, all.Length, "Current registered logical roots derive from the catalog; exact Sprint29 tiers remain checked above.");
+            Assertions.Equal(SummoningCurrentSurface.FinalPublishedLogicalPlacements, all.Count(SummonVisibilityCatalog.IsPublished),
                 "All eight new roots join the preserved published roots.");
             Assertions.Equal(0, all.Count(value =>
                 !SummonVisibilityCatalog.IsPublished(value)),

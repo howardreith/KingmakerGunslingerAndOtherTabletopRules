@@ -734,6 +734,7 @@ foreach($name in @('observe-expanded-summoning-inventory',
     'observe-expanded-summoning-sprint27-native-inputs',
     'observe-expanded-summoning-sprint28-native-inputs',
     'observe-expanded-summoning-sprint29-native-inputs',
+    'observe-expanded-summoning-sprints30-31-native-inputs',
     'disposable-expanded-summoning-sprint22-native-review',
     'disposable-expanded-summoning-sprint23-native-review',
     'disposable-expanded-summoning-sprint24-native-review',
@@ -741,7 +742,8 @@ foreach($name in @('observe-expanded-summoning-inventory',
     'disposable-expanded-summoning-sprint26-native-review',
     'disposable-expanded-summoning-sprint27-native-review',
     'disposable-expanded-summoning-sprint28-native-review',
-    'disposable-expanded-summoning-sprint29-native-review')) {
+    'disposable-expanded-summoning-sprint29-native-review',
+    'disposable-expanded-summoning-sprints30-31-native-review')) {
     Assert-True (Test-KmgExactSummoningRuntimeBoundary $name) 'Released and new observations require exact receipts and settings rollback'
     Assert-True (-not (Test-KmgExactSummoningRuntimeBoundary ($name+'-suffix'))) 'A suffix cannot opt into a named restoration contract'
     Assert-True (-not (Test-KmgExactSummoningRuntimeBoundary $name.ToUpperInvariant())) 'Runtime boundary names stay ordinal'

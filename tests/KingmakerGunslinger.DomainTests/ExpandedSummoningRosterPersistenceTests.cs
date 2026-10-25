@@ -253,12 +253,14 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void FixtureAlignmentRespectsEveryVariantAndNativeBranch()
         {
-            var evil = new[] { "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith" };
-            var good = new[] { "lantern-archon", "bralani-azata", "ghaele-azata" };
+            var evil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith" };
+            var good = new[] { "astral-deva", "lantern-archon", "bralani-azata", "ghaele-azata" };
             foreach (var variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)))
             {
                 int expected = variant.Family == SummonFamily.NaturesAlly ? 17 :
+                    variant.Creature.Key == "dretch" ? 20 :
+                    variant.Creature.Key == "hound-archon" || variant.Creature.Key == "trumpet-archon" ? 10 :
                     variant.Creature.MonsterTemplated || good.Contains(variant.Creature.Key) ? 3 :
                     evil.Contains(variant.Creature.Key) ? 12 : 1;
                 Assertions.Equal(expected, ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(variant),

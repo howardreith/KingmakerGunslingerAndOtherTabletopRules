@@ -66,29 +66,11 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -ne '0.0.166') { throw "Build-Local supports only active version 0.0.166, observed $($info.Version)." }
+if ($info.Version -notin @('0.0.166','0.0.167')) { throw "Build-Local supports released166 development or the selected167 public candidate, observed $($info.Version)." }
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
 $sourceStateSha256 = Get-KmgSourceStateFingerprint -RepositoryRoot $root
-if ($development) {
-    if ($git.Status.Count -ne 0) {
-        throw 'A development candidate is built only from an exactly clean commit.'
-    }
-    $developmentLayout = Get-KmgDevelopmentCandidateLayout -RepositoryRoot $root `
-        -Purpose $DevelopmentPurpose -Commit $git.Commit -Id $info.Id -Version $info.Version
-    if (Test-Path -LiteralPath $developmentLayout.ReceiptPath) {
-        throw "This commit's '$DevelopmentPurpose' development candidate already exists and is immutable: $($developmentLayout.PackagePath)"
-    }
-    if (Test-Path -LiteralPath $developmentLayout.Root) {
-        # An earlier attempt for this exact commit stopped before its receipt.
-        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
-            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
-        Remove-Item -LiteralPath $partial -Recurse -Force
-    }
-    New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
-}
-
 if (-not $ReferenceBundleDir) {
     $cursor = [IO.DirectoryInfo]$root
     for ($depth = 0; $depth -lt 6 -and $cursor; $depth++) {
@@ -117,6 +99,36 @@ if (-not $csc) { throw 'Roslyn csc.dll was not found beneath the installed dotne
 $net47 = 'C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7'
 if (-not (Test-Path -LiteralPath (Join-Path $net47 'mscorlib.dll') -PathType Leaf)) {
     throw ".NET Framework 4.7 reference assemblies are missing: $net47"
+}
+
+if ($development) {
+    if ($git.Status.Count -ne 0) {
+        throw 'A development candidate is built only from an exactly clean commit.'
+    }
+    $developmentLayout = Get-KmgDevelopmentCandidateLayout -RepositoryRoot $root `
+        -Purpose $DevelopmentPurpose -Commit $git.Commit -Id $info.Id -Version $info.Version
+    if (Test-Path -LiteralPath $developmentLayout.ReceiptPath) {
+        throw "This commit's '$DevelopmentPurpose' development candidate already exists and is immutable: $($developmentLayout.PackagePath)"
+    }
+}
+
+# All read-only prerequisites and immutable-output refusals precede admission.
+# The bounded S30-31 worktree has persistent cumulative dispatch authority.
+# PlanOnly exits above; compile-only editing uses build.ps1, not this pipeline.
+if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
+    [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
+        -Action Build -Stage ('candidate:' + $git.Commit) -MinimumRemainingMinutes 20)
+}
+
+if ($development) {
+    if (Test-Path -LiteralPath $developmentLayout.Root) {
+        # An earlier attempt for this exact commit stopped before its receipt.
+        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
+            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
+        Remove-Item -LiteralPath $partial -Recurse -Force
+    }
+    New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
 }
 
 if ($development) {
@@ -157,6 +169,12 @@ if (-not $SkipDomainTests) {
 }
 
 $localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
+# The pilot can repair a final observer without overwriting any earlier
+# exact candidate, manifest, compile archive or evidence-bound path.
+if (-not $development -and $info.Version -ceq '0.0.167') {
+    $localRoot = Join-Path $localRoot $git.Commit.Substring(0, 12)
+    if (Test-Path -LiteralPath $localRoot) { throw 'This exact final candidate output already exists; preserve its bytes.' }
+}
 $exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { Join-Path $localRoot 'exact-build' }
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
@@ -266,6 +284,10 @@ New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint23-armo
 foreach ($kind in @('triceratops','stegosaurus')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint23-armored-dinosaurs\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint23-armored-dinosaurs') -Force
+}
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\outsider-celestial') -Force | Out-Null
+foreach ($part in @('lemure-mesh.json','lemure-albedo.png','dretch-mesh.json','dretch-albedo.png','hound-archon-mesh.json','hound-archon-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $root "assets\outsider-celestial\$part") -Destination (Join-Path $buildOutput 'assets\outsider-celestial') -Force
 }
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint24-theropods') -Force | Out-Null
 foreach ($kind in @('deinonychus','tyrannosaurus')) {
@@ -410,6 +432,15 @@ $manifest = [ordered]@{
     firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
     firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
+}
+# The named S30-31 reuse contract compares exact installed reference identities
+# on the final artifact as well as on original development receipts.
+if ($git.Branch -ceq 'codex/expanded-summoning-sprints30-31-outsider-celestial-pilot') {
+    $manifest.references = [ordered]@{
+        bundleDirectory = $ReferenceBundleDir
+        installDirectory = $KingmakerInstallDir
+        files = @($referenceIdentity)
+    }
 }
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $manifestPath -Encoding UTF8

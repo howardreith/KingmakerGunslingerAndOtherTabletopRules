@@ -58,6 +58,7 @@
     <Compile Include="Summoning\GriffonRules.cs" />
     <Compile Include="Summoning\GriffonReachPatch.cs" />
     <Compile Include="Summoning\GriffonLifetimeBoundary.cs" />
+    <Compile Include="Summoning\OutsiderLifetimeBoundary.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Lifecycle.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Extras.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Griffon.cs" />
@@ -1313,6 +1314,17 @@
     <Compile Include="Assets\PteranodonAssetRuntime.ArmoredDinosaurs.cs" />
     <Compile Include="Summoning\TheropodVisualPolicy.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Theropods.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Lemure.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Dretch.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.HoundArchon.cs" />
+    <Compile Include="Summoning\HoundArchonVisualPolicy.cs" />
+    <Compile Include="Summoning\HoundArchonSwordView.cs" />
+    <Compile Include="Summoning\TrumpetArchonInstrumentView.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Instrument.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031Lifecycle.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031Defenses.cs" />
+    <Compile Include="Summoning\DretchVisualPolicy.cs" />
+    <Compile Include="Summoning\LemureVisualPolicy.cs" />
     <Compile Include="Summoning\BrachiosaurusOverrunKnockdown.cs" />
     <Compile Include="Summoning\BrachiosaurusTailCombat.cs" />
     <Compile Include="Summoning\ElephantNativeCombat.cs" />
@@ -1332,6 +1344,62 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint27Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Review.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Core.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Hammer.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Blade.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Support.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Dispel.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Dispel.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningWorkingDispelUi.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31AtWill.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Smite.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLemure30Core.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Cloud.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Melee.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningDretch30Ai.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningArchon30Core.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Profile.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHound30Combat.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031Circles.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints3031ActionBoundary.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLantern31Rays.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLantern31Body.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Outsiders30And31.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Archons30And31.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Hound30.cs" />
+    <Compile Include="Summoning\LemureRacialProfile.cs" />
+    <Compile Include="Summoning\ArchonAuraOfMenace.cs" />
+    <Compile Include="Summoning\ArchonConstantMagicCircle.cs" />
+    <Compile Include="Summoning\LanternArchonRayTargeting.cs" />
+    <Compile Include="Summoning\LanternArchonOrbView.cs" />
+    <Compile Include="Summoning\TrumpetPreparedBook.cs" />
+    <Compile Include="Summoning\Trumpet31Support.cs" />
+    <Compile Include="Summoning\TrumpetBlast.cs" />
+    <Compile Include="Summoning\OutsiderEscapeArtist.cs" />
+    <Compile Include="Summoning\OutsiderExtraplanarIdentity.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Support.cs" />
+    <Compile Include="Summoning\TrumpetInvisibilityPurgeArea.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Purge.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Trumpet31Blast.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Astral31.cs" />
+    <Compile Include="Summoning\AstralDevaComponents.cs" />
+    <Compile Include="Summoning\AstralDevaStunTracker.cs" />
+    <Compile Include="Summoning\AstralDevaRulesPolicy.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Book.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Caster.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Blast.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31BlastAi.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31BlastObservation.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningOutsiderEscape.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningOutsiderBodies.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Purge.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningTrumpet31Turn.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCelestial31Inputs.cs" />
+    <Compile Include="Summoning\ContextActionRemoveInheritedSummonTemplates.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SummonCleanup2Review.cs" />
@@ -1864,6 +1932,30 @@
     </Content>
     <Content Include="..\..\assets\sprint27-griffon\*">
       <Link>assets\sprint27-griffon\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\hound-archon-mesh.json">
+      <Link>assets\outsider-celestial\hound-archon-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\hound-archon-albedo.png">
+      <Link>assets\outsider-celestial\hound-archon-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\dretch-mesh.json">
+      <Link>assets\outsider-celestial\dretch-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\dretch-albedo.png">
+      <Link>assets\outsider-celestial\dretch-albedo.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\lemure-mesh.json">
+      <Link>assets\outsider-celestial\lemure-mesh.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\assets\outsider-celestial\lemure-albedo.png">
+      <Link>assets\outsider-celestial\lemure-albedo.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="..\..\assets\sprint24-theropods\*-mesh.json">

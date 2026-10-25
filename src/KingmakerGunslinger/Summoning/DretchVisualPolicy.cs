@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace KingmakerGunslinger.Summoning
+{
+    internal static class DretchVisualPolicy
+    {
+        internal const string Key = "dretch";
+        internal const string BlueprintName = "KMG_Summoning_Unit_Dretch";
+        internal const string BlueprintGuid = "717d3fdec4284e42b21efe83bc03eb25";
+        internal const string RigSha256 = "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4";
+        internal static readonly string[] Bones = {
+            "Head",
+            "L_Arm_Lower",
+            "L_Arm_Upper",
+            "L_Bfinger2",
+            "L_Foot0",
+            "L_Leg0_Lower",
+            "L_Leg0_Upper",
+            "L_Palm",
+            "L_claw",
+            "L_finger1",
+            "L_finger2",
+            "L_toe",
+            "R_Arm_Lower",
+            "R_Arm_Upper",
+            "R_Bfinger2",
+            "R_Foot0",
+            "R_Leg0_Lower",
+            "R_Leg0_Upper",
+            "R_Palm",
+            "R_claw",
+            "R_finger1",
+            "R_finger2",
+            "R_toe",
+            "Torso_Lower",
+            "Torso_Upper",
+            "jaw",
+            "jaw1",
+            "neck",
+            "neck1",
+        };
+        internal static bool IsPermitted(string key, IEnumerable<string> bones)
+        {
+            if (key != Key || bones == null) return false;
+            string[] names = bones.ToArray();
+            return names.Length == Bones.Length &&
+                names.Distinct(StringComparer.Ordinal).Count() == names.Length &&
+                new HashSet<string>(names, StringComparer.Ordinal).SetEquals(Bones);
+        }
+        internal static bool IsExactIdentity(string guid, string name, string prefab)
+        {
+            return guid == BlueprintGuid && name == BlueprintName &&
+                prefab == TheropodVisualPolicy.DonorPrefabGuid;
+        }
+    }
+}

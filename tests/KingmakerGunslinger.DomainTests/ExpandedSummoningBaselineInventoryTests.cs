@@ -161,9 +161,14 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(ExpandedSummoningBaselineInventory.ProxyVisualCreatures
                 .Contains("dire-tiger<Smilodon"),
                 "Smilodon displays under its own name and is not a proxy.");
+            string[] batchAdditions = { "lemure", "dretch", "hound-archon", "astral-deva", "trumpet-archon" };
+            Assertions.True(batchAdditions.All(key => ExpandedSummoningBaselineInventory.ProxyVisualCreatures
+                    .Count(value => value.StartsWith(key + "<", StringComparison.Ordinal)) == 1),
+                "Each selected new body retains its actual borrowed-rig disclosure.");
             Assertions.Equal(43 + TheropodRulesPolicy.AppendedCreatureCount +
                     GiantBodyRulesPolicy.AppendedCreatureCount + 1 + GiantHumanoidRulesPolicy.BorrowedVisualCount + 3,
-                ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count(value => !value.StartsWith("griffon<", StringComparison.Ordinal)),
+                ExpandedSummoningBaselineInventory.ProxyVisualCreatures.Count(value => !value.StartsWith("griffon<", StringComparison.Ordinal) &&
+                    !batchAdditions.Any(key => value.StartsWith(key + "<", StringComparison.Ordinal))),
                 "The frozen borrowed-body proxy count changed. A creature counts here while it rides another creature's rig, including both Sprint 23 dinosaurs whose project-owned bodies bind to their measured native animation donors.");
         }
 
@@ -236,7 +241,7 @@ namespace KingmakerGunslinger.DomainTests
             var activeLedger = Newtonsoft.Json.Linq.JObject.Parse(
                 System.IO.File.ReadAllText(System.IO.Path.Combine(
                     System.Environment.CurrentDirectory, "planning",
-                    "SPRINT29-EVIDENCE.json")));
+                    "SPRINT30-31-RELEASE-EVIDENCE.json")));
             var surface = activeLedger["publicSurface"];
             Assertions.Equal(generated, (int)surface["generatedPlacements"],
                 "Machine-readable public placement count.");
