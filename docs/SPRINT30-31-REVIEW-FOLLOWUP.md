@@ -239,6 +239,18 @@ saves before and after).
 - **Dirty-tree refusal.** One `shared-circles` launch was refused because a
   draft file was created in the worktree during the run (operator error).
 
+## Release candidate gate
+
+Sprint-level gate on release commit `eccc0d6130` (v0.0.168, 2026-10-25,
+4.5 minutes): repository wrapper with the v0.0.168 release validator and its 22
+corruption fixtures, the complete domain suite (2,748 of 2,748), exact-reference
+Release build and strict package validation. Candidate package `b762a304…`,
+DLL `669ff4a1…`. A first attempt on `44e28c522a` failed 24 tests: 23 read a
+machine-local native IL extract absent from this worktree
+(`artifacts/inspection/bodyguard-native`, copied from the main checkout), and
+one required the active resume to state the public equation, which the
+v0.0.167 release record had dropped (fixed in `eccc0d6130`).
+
 ## Open items
 
 - **Owner aesthetic review.** The owner accepted the changes and authorized
