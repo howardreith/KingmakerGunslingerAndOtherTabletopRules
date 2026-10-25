@@ -251,6 +251,16 @@ machine-local native IL extract absent from this worktree
 one required the active resume to state the public equation, which the
 v0.0.167 release record had dropped (fixed in `eccc0d6130`).
 
+## Publication
+
+PR #75 merged as `b306f85b55`. `Publish-Release.ps1` built twice from clean,
+pushed master (identical package and DLL), tagged `v0.0.168` and published
+[Tabletop Added Rules v0.0.168](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.168)
+at 2026-10-25T18:36:51Z. Asset SHA-256 `b9cf5e2b…ace6`, DLL `6f7e92fc…3340`,
+416 files. The downloaded asset matched `SHA256SUMS.txt` and the release
+manifest, and the tag resolves to the merge commit. The published DLL differs
+from the gated candidate (`669ff4a1…`) only in build stamps (commit and path).
+
 ## Open items
 
 - **Owner aesthetic review.** The owner accepted the changes and authorized
