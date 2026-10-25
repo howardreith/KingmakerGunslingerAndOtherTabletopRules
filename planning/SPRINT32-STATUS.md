@@ -138,7 +138,7 @@ Protected Compare PASS; unique ZIPs/raw evidence/original failures/receipts/
 backups and saves retained. Prior cleanup receipts remain in history and
 `artifacts/sprint32-intake/`. Recheck before package/dispatch.
 
-Build-Local attempts/validated development packages/native launches:14/8/8
+Build-Local attempts/validated development packages/native launches:15/8/8
 before the next selected candidate. Native setup/execution/restoration times:
 255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85seconds.
 Lillend482 native109.797seconds; full wrapper276.85seconds. Complete historical
@@ -147,6 +147,10 @@ compile/test/build/wrapper logs; do not infer throughput from unlike sprints.
 Repeated failures: obsolete admission/count assumptions, two native registration
 type/flag defects, and the native activatable same-command defect; all original
 results retained. The latter is closed by482's useful natural gameplay PASS.
+The4246 candidate attempt stopped before compilation/native staging because
+the icon catalog's current registry hash still described the previous ledger.
+Rebind that current hash to the verified14-entry append; protected icon bytes
+and assignments remain unchanged. Original log: `build-satyr-adult-4246c336.log`.
 
 Next: finish the adult Satyr batch and its selected native proof; inspect deeper
 control graphs, then complete Lillend's bounded remaining rules, optional
