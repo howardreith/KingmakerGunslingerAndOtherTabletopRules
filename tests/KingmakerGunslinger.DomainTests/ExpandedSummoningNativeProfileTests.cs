@@ -5,6 +5,21 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void Sprint32RequiresExactFreshSaveFreePhase()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
+            foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn" })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact Sprint32 phase admitted.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Automatic exit required.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 1, 0, 0, false, false, false, false, true), "Existing world protected.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, true, false, true), "No save imports.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, false), "Owned idle menu required.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 2, phase), "Extra scope refused.");
+            }
+            foreach (string phase in new[] { null, "all", "Satyr-Turn", "lillend-turn ", "trumpet-book-turn" })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase), "Unselected or malformed phase refused.");
+        }
         internal static void Cleanup2RequiresExactFreshSaveFreePhase()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview;

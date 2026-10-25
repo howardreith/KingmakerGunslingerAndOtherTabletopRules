@@ -25,14 +25,51 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerable<int> ReviewLillend32Support(ExpandedSummoningCorrectionFixture fixture)
         {
+            var bodyResources = new List<UnityEngine.Object>();
+            var borrowedBodyResources = new List<UnityEngine.Object>();
+            Exception failure = null;
+            var iterator = ReviewLillend32SupportCore(fixture, bodyResources, borrowedBodyResources).GetEnumerator();
+            // The established tooltip observer pattern lets native destruction
+            // settle after a failed case without losing the original failure.
+            try
+            {
+                while (true)
+                {
+                    bool next = false;
+                    try { next = iterator.MoveNext(); }
+                    catch (Exception error) { failure = error; }
+                    if (!next) break;
+                    yield return iterator.Current;
+                }
+            }
+            finally
+            {
+                try { iterator.Dispose(); }
+                catch (Exception error) { failure = failure == null ? error : new AggregateException(failure, error); }
+            }
+            for (int frame = 0; frame < 8; frame++) yield return 0;
+            bool bodyCleanup = bodyResources.Count > 0 && bodyResources.All(value => value == null) &&
+                borrowedBodyResources.Count > 0 && borrowedBodyResources.All(value => value != null);
+            Sprint25Check("lillend-original-body-cleanup", bodyCleanup, new JObject {
+                ["ownedResources"] = bodyResources.Count, ["ownedRemaining"] = bodyResources.Count(value => value != null),
+                ["borrowedResources"] = borrowedBodyResources.Distinct().Count(),
+                ["borrowedMissing"] = borrowedBodyResources.Count(value => value == null),
+                ["originalFailure"] = failure?.ToString() },
+                "Native fixture disposal destroys owned body/tail resources and preserves borrowed native actions/clips; expiry/dismissal are separate cases.");
+            if (failure != null) throw new InvalidOperationException("Lillend support failed; original error retained after body cleanup observation.", failure);
+            if (!bodyCleanup) throw new InvalidOperationException("Lillend body cleanup failed.");
+        }
+
+        private IEnumerable<int> ReviewLillend32SupportCore(ExpandedSummoningCorrectionFixture fixture,
+            List<UnityEngine.Object> bodyResources, List<UnityEngine.Object> borrowedBodyResources)
+        {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
             var target = fixture.Hostile; int ac = target.Stats.AC.BaseValue;
             BlueprintFeature mindImmunity = null;
             LillendHumanVisualAttachment ownerBody = null, siblingBody = null;
-            var bodyResources = new List<UnityEngine.Object>();
-            var borrowedBodyResources = new List<UnityEngine.Object>();
+            bool addedManeuverImmunity = false;
             try
             {
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
@@ -147,6 +184,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 mindImmunity.name = "KMG_Runtime_Lillend32_MindImmunity"; mindImmunity.Ranks = 1;
                 mindImmunity.ComponentsArray = new BlueprintComponent[] { immune };
                 target.Descriptor.AddFact(mindImmunity);
+                // Isolate ordinary weapon fallback from the separate real
+                // tail-grab case. A successful native grab disables the owner
+                // and can legitimately interrupt attacks and performance.
+                if (target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers))
+                    throw new InvalidOperationException("Disposable target already has maneuver immunity; ownership ambiguous.");
+                target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+                addedManeuverImmunity = true;
                 Vector3 far; string lane, direction;
                 var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 1.4f, out far, out lane, out direction);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(sibling, origin + Vector3.right);
@@ -165,7 +209,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check("lillend-support-ready", ready, new JObject { ["lane"] = lane,
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["ally"] = sibling.UniqueId,
                     ["enemyVisible"] = owner.Memory.ContainsVisible(target), ["allyLos"] = owner.HasLOS(sibling),
-                    ["distanceMeters"] = owner.DistanceTo(target), ["weaponRangeFeet"] = owner.Body.PrimaryHand.MaybeWeapon?.AttackRange.Value },
+                    ["distanceMeters"] = owner.DistanceTo(target), ["weaponRangeFeet"] = owner.Body.PrimaryHand.MaybeWeapon?.AttackRange.Value,
+                    ["fixtureManeuverImmune"] = target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers) },
                     "Exact support actor, nearby ally and visible hostile admit the native self-performance decision.");
                 if (!ready) throw new InvalidOperationException("Lillend support fixture preconditions failed.");
                 foreach (var stage in new[] { "courage", "healing", "fallback" })
@@ -252,7 +297,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["level3SlotsBefore"] = slotsBefore, ["level3SlotsAfter"] = book.GetSpontaneousSlots(3),
                                 ["siblingLevel3Slots"] = siblingBook.GetSpontaneousSlots(3), ["siblingPerformanceRounds"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
                                 ["controlEligibility"] = new JObject(controlScores.Select(pair => new JProperty(pair.Key, pair.Value))),
-                                ["targetMindImmune"] = true, ["healthyHealingScore"] = healthyScore, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
+                                ["targetMindImmune"] = true,
+                                ["fixtureManeuverImmune"] = target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers),
+                                ["healthyHealingScore"] = healthyScore, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
                                 ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["fixtureCastCommands"] = 0,
                                 ["fixtureAttackCommands"] = 0, ["fixtureSlotDebits"] = 0, ["forcedRolls"] = 0 },
                                 stage == "courage" ? "Native AI starts Inspire Courage with one move action, grants an ally+2 without buffing the enemy and spends one native performance round." :
@@ -269,6 +316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var unit in new[] { owner, sibling }.Where(value => value != null && !value.Destroyed))
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); }
                 target.Commands.InterruptAll(true); target.Stats.AC.BaseValue = ac;
+                if (addedManeuverImmunity) target.Descriptor.State.RemoveCondition(UnitCondition.ImmuneToCombatManeuvers);
                 if (mindImmunity != null)
                 {
                     target.Descriptor.RemoveFact(mindImmunity);
@@ -280,14 +328,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
-            for (int frame = 0; frame < 8; frame++) yield return 0;
-            bool bodyCleanup = bodyResources.Count > 0 && bodyResources.All(value => value == null) &&
-                borrowedBodyResources.Count > 0 && borrowedBodyResources.All(value => value != null);
-            Sprint25Check("lillend-original-body-cleanup", bodyCleanup, new JObject {
-                ["ownedResources"] = bodyResources.Count, ["ownedRemaining"] = bodyResources.Count(value => value != null),
-                ["borrowedResources"] = borrowedBodyResources.Distinct().Count(),
-                ["borrowedMissing"] = borrowedBodyResources.Count(value => value == null) },
-                "Native summon disposal destroys owned body/tail resources and preserves borrowed native actions/clips.");
+
         }
 
         private static JObject Lillend32BodySample(UnitEntityData unit, LillendHumanVisualAttachment attachment)

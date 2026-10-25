@@ -22,6 +22,7 @@ namespace KingmakerGunslinger.Summoning
         internal const string ModId = "CowWithHatsCustomSpellsMod";
         internal const string AbilityGuid = "3682197d956543e2a694e163b5fdcc6c";
         internal const string BuffGuid = "729fa06959ad4a0ca1e761b955b6ff62";
+        internal const string ExcludedWizardDiscoveryGuid = "1a4bd53d5b8848d9a717084d7f9dfa0c";
         internal const string OwnedBuffSymbol = "KMG.Summoning.FeyCelestial.SuggestionBuff";
         private static UnityModManager.ModEntry _provider;
         private static ModContext _context;
@@ -95,7 +96,17 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintUnit OwningBlueprint;
         public bool CorrectCaster(UnitEntityData caster)
-        { return Sprint32Suggestion.Active && caster != null && ReferenceEquals(caster.Blueprint, OwningBlueprint); }
+        {
+            if (!Sprint32Suggestion.Active || caster == null || !ReferenceEquals(caster.Blueprint, OwningBlueprint)) return false;
+            var dictionary = BlueprintBootstrap.Library?.BlueprintsByAssetId;
+            if (dictionary == null) return false;
+            BlueprintScriptableObject discovery;
+            if (!dictionary.TryGetValue(Sprint32Suggestion.ExcludedWizardDiscoveryGuid, out discovery)) return true;
+            var fact = discovery as Kingmaker.Blueprints.Facts.BlueprintUnitFact;
+            // Match ContextConditionCasterHasFact's native membership check,
+            // including Logic-owned facts, without serializing a provider link.
+            return fact != null && !Kingmaker.UnitLogic.UnitHelper.HasFact(caster.Descriptor, fact);
+        }
         public string GetReason() { return "Requires active CowWithHat's Custom Spells Suggestion support."; }
     }
 
