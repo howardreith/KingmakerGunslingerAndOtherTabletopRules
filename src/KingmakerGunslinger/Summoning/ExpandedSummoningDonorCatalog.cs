@@ -112,7 +112,12 @@ namespace KingmakerGunslinger.Summoning
                 "fire-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1",
                 "ettin|61dd71e874b16f742a0f783314105553|0",
                 "cloud-giant|61dd71e874b16f742a0f783314105553|0",
-                "storm-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1"
+                "storm-giant|590cd3d5e76fdc649a5f97bc984cd3c4|1",
+                "lemure|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "dretch|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "hound-archon|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "trumpet-archon|afe56099ff6046b40a359b7562c0424e|1",
+                "astral-deva|afe56099ff6046b40a359b7562c0424e|1"
             });
         }
 

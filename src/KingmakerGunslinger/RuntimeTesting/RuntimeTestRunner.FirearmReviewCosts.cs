@@ -85,6 +85,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal int ForcedCount(UnitCommand command) { return forced.Count(value => ReferenceEquals(value, command)); }
             internal int Count(UnitCommand command) { return charges.Count(c => ReferenceEquals(c.Command, command)); }
+            internal bool Unchanged(UnitCommand command)
+            {
+                var matches = charges.Where(value =>
+                    ReferenceEquals(value.Command, command)).ToArray();
+                return matches.Length == 1 && matches[0].Before.Zip(
+                        matches[0].After, (before, after) =>
+                            Math.Abs(before - after) < 0.0001f).All(equal => equal);
+            }
             internal bool Exact(UnitCommand command, bool turnBased)
             {
                 var matches = charges.Where(value => ReferenceEquals(value.Command, command)).ToArray();

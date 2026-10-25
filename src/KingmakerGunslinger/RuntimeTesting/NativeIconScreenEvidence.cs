@@ -111,7 +111,8 @@ namespace KingmakerGunslinger.RuntimeTesting
              request.Scenario == RuntimeTestScenarioCatalog.DisposableMagicCircleTerrain ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview ||
              request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationInteraction ||
-             request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp);
+             request.Scenario == RuntimeTestScenarioCatalog.DisposableTeleportationLevelUp ||
+             RuntimeTestRequestParser.Sprints30And31DispelUi(request));
 
         internal NativeIconScreenEvidence(RuntimeTestRequest request)
         {

@@ -829,7 +829,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         /// pass as a review image.
         /// </summary>
         internal static string WriteExpandedSummoningPartyCameraCapture(
-            UnitEntityData unit, string evidenceDirectory, string fileName)
+            UnitEntityData unit, string evidenceDirectory, string fileName, string exactRendererName = null)
         {
             if (unit == null || unit.View == null ||
                 string.IsNullOrWhiteSpace(evidenceDirectory))
@@ -866,7 +866,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     viewport.x < 0.98f && viewport.y > 0.02f && viewport.y < 0.98f;
                 SkinnedMeshRenderer renderer = unit.View
                     .GetComponentsInChildren<SkinnedMeshRenderer>(true)
-                    .FirstOrDefault(value => value != null && value.sharedMesh != null);
+                    .FirstOrDefault(value => value != null && value.sharedMesh != null &&
+                        (exactRendererName == null || value.name == exactRendererName));
                 // Mean luminance of a coarse sample of the frame: a screen
                 // still faded to black reads near zero.
                 Color32[] pixels = output.GetPixels32();

@@ -77,11 +77,11 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166')) {
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
@@ -108,7 +108,7 @@ if ($activeVersion -eq '0.0.160') {
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 26 corruption fixtures failed.' }
 }
 
-if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166')) {
+if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint27161.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 27 corruption fixtures failed.' }
 }
@@ -143,6 +143,11 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
 & (Join-Path $PSScriptRoot 'Test-DevelopmentCandidate.ps1')
+# Named batch policy is independent of the active released version used for a
+# hidden development build; it does not change another sprint's acceptance.
+& (Join-Path $PSScriptRoot 'Test-Sprints3031Release.ps1')
+& $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprints3031.py')
+if ($LASTEXITCODE -ne 0) { throw 'S30-31 source-boundary corruption fixtures failed.' }
 & (Join-Path $PSScriptRoot 'Test-Sprint22Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24Release.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint25Release.ps1')

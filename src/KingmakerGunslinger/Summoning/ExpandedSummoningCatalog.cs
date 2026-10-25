@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
 
         internal static void Validate()
         {
-            if (Creatures.Length != 117) throw new InvalidOperationException("Expanded Summoning unique creature count must be 117.");
+            if (Creatures.Length != ExpandedSummoningIdentityCatalog.UnitCount) throw new InvalidOperationException("Expanded Summoning creature count does not match its registered unit identities.");
             if (Creatures.Select(v => v.Key).Distinct(StringComparer.Ordinal).Count() != Creatures.Length)
                 throw new InvalidOperationException("Duplicate creature key.");
             // Sprint 18 adds the two apes: the Ape at Summon Monster and
@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 96, 545);
+            ValidateFamily(SummonFamily.Monster, 101, 568);
             ValidateFamily(SummonFamily.NaturesAlly, 104, 582);
         }
 
@@ -144,7 +144,13 @@ namespace KingmakerGunslinger.Summoning
                 // Sprint 29 hidden adult candidates: SNA-only, untemplated.
                 C("ettin","Ettin",null,false,5,"Hill Giant"),
                 C("cloud-giant","Cloud Giant",null,false,8,"Hill Giant"),
-                C("storm-giant","Storm Giant",null,false,9,"Frost Giant")
+                C("storm-giant","Storm Giant",null,false,9,"Frost Giant"),
+                // S30 first hidden slice: exact species mechanics; borrowed biped visual pending original body.
+                C("lemure","Lemure",2,false,null,"Lizardfolk rig; original body pending"),
+                C("dretch","Dretch",3,false,null,"Lizardfolk rig; original body pending"),
+                C("hound-archon","Hound Archon",4,false,null,"Lizardfolk rig; original canine-headed body pending"),
+                C("trumpet-archon","Trumpet Archon",9,false,null,"Native deva; body and trumpet presentation pending"),
+                C("astral-deva","Astral Deva",9,false,null,"Native deva")
             };
         }
 

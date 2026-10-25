@@ -47,9 +47,8 @@ class IconCatalogTests(unittest.TestCase):
         path = "assets-source/original-icons/expanded-summoning/icon-manifest.json"
         authority = next(d for d in self.catalog["delegatedManifests"] if d["path"] == path)
         actual = hashlib.sha256((ROOT / path).read_bytes()).hexdigest()
-        # Cleanup iteration 2 changed the Horse row; its follow-up changes only
-        # the Pony and Cyclops rows. Originals and every other row are preserved.
-        self.assertEqual("9f4da34f398612e83223b7d9741194954189e6f06dd0585c465aa796cd5e34f6", actual)
+        # Preserve the released Horse/Pony/Cyclops revisions and exact S30/S31 append.
+        self.assertEqual("08e26335a0256ed34af2bbbaae70d3e7e354f63a7bb47033d9d368485f332284", actual)
         self.assertEqual(actual, authority["sha256"])
         stale = copy.deepcopy(self.catalog)
         next(d for d in stale["delegatedManifests"] if d["path"] == path)["sha256"] = "00ba3473d2fd9eece7fc1074596cdc1a43b97830d3eac9d855991a958f7277fe"

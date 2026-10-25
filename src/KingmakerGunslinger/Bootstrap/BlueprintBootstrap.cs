@@ -863,6 +863,10 @@ namespace KingmakerGunslinger.Bootstrap
                         "Magic Circle publication failed; new casts are disabled.", circleException);
                 }
 
+                // Register the shared spell implementation before binding the
+                // hidden Hound's constant native carrier; fail closed if absent.
+                ExpandedSummoningSpecialBuilder.BindArchonMagicCircle(expandedSummoning, _magicCircles);
+
                 ShieldOtherBlueprintSet shieldOther =
                     ShieldOtherBlueprints.Register(library, registry);
                 if (publicationPlan.ShieldOtherSpellLists)

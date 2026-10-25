@@ -272,10 +272,13 @@ namespace KingmakerGunslinger.Summoning
         internal const int LanternCharisma = 10;
         internal const int LanternSpeedFeet = 60;
         internal const int LanternRayRangeFeet = 30;
-        internal const int LanternRayProjectiles = 2;
+        internal const int LanternStandardRayProjectiles = 1;
+        internal const int LanternFullRayProjectiles = 2;
         internal const int LanternRayDiceCount = 1;
         internal const int LanternRayDieSides = 6;
         internal const int LanternDamageReduction = 10;
+        // Adult PF1 Lantern and its archon subtype grant no racial SR.
+        internal const int LanternSpellResistance = 0;
         internal const int LanternPoisonSaveBonus = 4;
         internal const int LanternEvilSaveAndAcBonus = 2;
 

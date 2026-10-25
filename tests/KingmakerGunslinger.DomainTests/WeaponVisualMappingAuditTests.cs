@@ -38,8 +38,13 @@ namespace KingmakerGunslinger.DomainTests
                     GiantBodyRulesPolicy.AppendedWeaponIdentityCount +
                     Sprint26MagicalBeastRules.AppendedWeaponIdentityCount +
                     GiantHumanoidRulesPolicy.AppendedWeaponIdentityCount + 10,
-                expected.Count(value => !((string)value["symbol"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal)),
+                expected.Count(value => !((string)value["symbol"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) &&
+                !((string)value["symbol"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal)),
                 "The released pre-Griffon custom-weapon baseline changed.");
+            Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredWeaponIdentityCount,
+                expected.Count(value => ((string)value["symbol"]).StartsWith(
+                    "KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal)),
+                "The selected batch weapon identity set changed.");
             Assertions.Equal(expected.Length, actual.Length,
                 "The visual audit does not cover every active custom weapon.");
             string[] expectedIdentities = expected.Select(value =>
@@ -108,7 +113,8 @@ namespace KingmakerGunslinger.DomainTests
                     GiantHumanoidRulesPolicy.AppendedWeaponIdentityCount + 10,
                 audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion" &&
-                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal)),
+                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) &&
+                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal)),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
                     (string)value["mappingScope"] == "equipped project weapon")

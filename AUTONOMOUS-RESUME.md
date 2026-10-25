@@ -1,3 +1,42 @@
+# Sprints 30–31 — final public candidate preparation
+
+The current owner instruction authorizes unattended functional closeout within cumulative600 charged minutes and30 actual game launches; candidate admissions remain counted without a separate build ceiling. Preserve the persistent authority/history in `artifacts/closeout-triage/CLOSEOUT-BUDGET.json`. Readiness and master integration are complete. No new campaign, budget reset or Sprint32.
+
+HOWARD-LAPTOP only; product/build/test/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s30-31`; draft PR66. Hidden H1–H9 now have complete scoped PASS evidence under their original artifact identities, including H7 ordinary Cleave, H8 prepared casting/Aid/Banishment and H9 Lantern Aid. Original failed aggregates remain failed. The current public source candidate has 1,150 generated placements +29 retained wrappers =1,179 visible choices: five additions,23 new routes and seven preserved Lantern routes.
+
+Next: finish the narrow public-source checks and dependency binding, freeze source/assets/observers/version/publication inputs, then one complete final build/package gate. Qualify all30 routes/body/icons, two mixed persistence envelopes in six genuinely fresh processes and two final integration profiles on those exact bytes. Only after every required row passes: publisher preflight/dry-run, product merge, exact-byte stable release, actual download/lineage verification, exact intake/Working restoration and final-records merge. Current package and machine-local evidence are development proof, not final-public qualification.
+
+The laptop and original Working fixture are restored. Keep guarded unelevated Steam640820 execution, current intake capture, owned lease and exact restoration. No source/DLL change during native transactions. Recover only verified redundant owned scratch; preserve canonical archives, unique raw evidence, references and original save backups. Routine in-scope repairs are delegated; safety/permission/scope failure, lack of diagnostic progress or the cumulative ceiling stops new dispatch. See [current status](planning/SPRINT30-31-STATUS.md) and [candidate surface](planning/SPRINT30-31-RELEASE-EVIDENCE.json). Accepted rules and rough visuals remain closed.
+
+## Prior pilot checkpoint (historical, superseded chronology)
+
+# Active mission — Sprints30–31 combined pilot
+
+Continue the owner-authorized six-creature batch through one qualified product merge/release, public verification, exact restoration and final-records PR; STOP before32. Ordinary checkpoints are milestones. No pending owner question.
+
+Product root `C:/Dev/KingmakerGunslingerLab/wt/s30-31`; branch `codex/expanded-summoning-sprints30-31-outsider-celestial-pilot`; draft PR66. Only HOWARD-LAPTOP/Gunslinger lab. Released master114564ac includes stable164; next patch165 is not reserved. Preserve newer descendants.
+
+Authoritative concise scope, abilities, coverage, artifact tuple and remaining work: [planning/SPRINT30-31-STATUS.md](planning/SPRINT30-31-STATUS.md). Older complete tuples/failures are retained in its immutable checkpoint links and local raw records.
+
+Latest built source36500cf1/package159; counters159 completed packages/177 actual launches. ON persistence prepare177 failed before saving at a first-Heal-only spend assertion; all original Working bytes/metadata and protected intake restored, all tasks removed. Native IL shows Spellbook.SpendInternal searches equivalent preparations in reverse and AbilityData.Equals ignores ParamSpellSlot. The corrected observer requires/records exactly one of two native Heal slots debited and every other slot unchanged; it never writes availability. Fresh build and ON envelope are next, then separate OFF envelope.177 lacks the needed full delta and remains FAIL. Complete tuples and limits are in the map.
+
+Publisher batch extension remains unimplemented. Six-owner persistence is integrated; cold cleanup/absence and OFF stages have not run. No pilot persistence save has been written. Main-only publisher drafts are planning, not evidence. Remaining creature action/cancellation/public/final requirements stay explicit in the map.
+
+Use the sanctioned push wrapper and guarded limited Howard task wrappers. Keep source frozen during builds/native transactions. Current original intake observations: human0.0.117, Mods967/saves118/references18/settings83/tasks0/processes1Steam; recapture actual intake each transaction. Never alter baseline/other saves, Steam authentication/cloud/network or other labs. Retain fresh combat/profile/cold-load boundaries. Check disk headroom and preserve every unique archive/log/raw failure.
+
+Read docs/VALIDATION-POLICY.md when selecting checks. Retain all owner rules decisions and canonical shared Magic Circle. One concise batch map, one final publisher contract, one combined final gate. No repeated donor/articulation census, generic testing framework, unqualified public exposure or personal aesthetic approval.
+
+Offline attempt516f036f (19:01:56.747-19:01:58.729Z) stopped in the new source-only outer-route test: its Boolean ExitAfterCompletion argument was mistakenly supplied as a switch. No compilation, package, game or save occurred; original failure retained and exact Compare PASS/task removed. The invocation now passes the explicit Boolean; all selected tests and compilation remain required.
+
+Offline attempt ae7b2fee (19:03:20.917-19:05:51.510Z): purpose/outer routing11, persistence30 round trips/280 refusals and installed-stack47 predicates PASS. Selected domain47/48 passed; the independent older alignment table still expected TrueNeutral for the five new species. Its explicit legal alignment cases are now extended (LemureLE, DretchCE, Hound/TrumpetLG, AstralNG), preserving all old cases. No production compilation, package, game or save; exact Compare PASS/task removed. Unchanged PS proofs may be reused, but the affected domain check and compilation must rerun.
+
+Offline c5e78003 (19:07:55.363-19:10:50.479Z): all48 selected domain checks PASS; production compilation caught the missing explicit project include for the new observer file (CS0103 callers). The include is corrected. No package/game/save occurred; exact Compare PASS/task removed. Retain prior48-domain and unchanged PS proofs with original identities; the next focused build must compile the actual observer and pass package guards.
+
+Offline b259cf6d (19:12:37.253-19:15:31.711Z) passed the selected scope check and reached actual observer compilation. It caught two private builder-prefix accesses and an Ability-versus-AbilityData mismatch. Observer lookup now uses the audited existing registry keys and the same native AbilityData(ownedAbility) constructor as the qualified Astral observer. No gameplay code change, package/game/save; exact Compare PASS/task removed. Recompile/package remains required.
+
+
+## Released master records (historical)
+
 # Druid duplicate rows and giant sizes — v0.0.166 RELEASED / STOP
 
 **PR #71 is MERGED and v0.0.166 is PUBLISHED.** After v0.0.165 the owner

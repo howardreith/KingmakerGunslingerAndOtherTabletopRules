@@ -2,6 +2,7 @@
 param()
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
+. (Join-Path $PSScriptRoot 'RuntimeHarness.Common.ps1')
 . (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 . (Join-Path $PSScriptRoot 'compatibility/CompatibilityProfile.Common.ps1')
 $checks=0
@@ -101,4 +102,58 @@ Assert-StackThrows {
 Assert-StackThrows {
     & (Join-Path $PSScriptRoot 'Invoke-Sprint22InstalledStack.ps1') -Scenario working-save-expanded-summoning-prepare -SaveName KMG_AUTOMATION_WORKING -PackagePath missing -ExpectedVersion 0.0.151 -ExpandedSummoningDisabled -Confirm:$false
 } 'Module OFF is restricted'
+# Actual fixed UI entrypoint refusals precede candidate/installation work.
+$uiEntry=Join-Path $PSScriptRoot 'Invoke-Sprint22InstalledStack.ps1'
+$uiArguments=@{Scenario='working-save-expanded-summoning-creature-review';SaveName='KMG_AUTOMATION_WORKING';
+    PackagePath=(Join-Path $fixture 'missing-ui-development.zip');ExpectedVersion=(Get-KmgModInfo -RepositoryRoot $repo).Version;
+    ReviewCase='sprints30-31-dispel-ui';DevelopmentPurpose='sprints30-31-dispel-installed-ui';Confirm=$false}
+$bag=$uiArguments.Clone();$bag.Remove('ReviewCase');Assert-StackThrows { & $uiEntry @bag } 'Installed-stack UI requires only'
+foreach($change in @(@{ReviewCase='SPRINTS30-31-DISPEL-UI'},
+    @{PersistenceScope='ankylosaurus'},@{ExpandedSummoningDisabled=$true},@{TimeoutSeconds=300},
+    @{SaveName='kmg_automation_working'})) {
+    $bag=$uiArguments.Clone();foreach($key in $change.Keys){$bag[$key]=$change[$key]}
+    Assert-StackThrows { & $uiEntry @bag } 'Installed-stack UI requires only'
+}
+$bag=$uiArguments.Clone();$bag.DevelopmentPurpose='sprint29-hidden-working'
+Assert-StackThrows { & $uiEntry @bag } 'requires its exact S30/S31 purpose'
+$bag=$uiArguments.Clone();$bag.Scenario='working-save-expanded-summoning-prepare'
+Assert-StackThrows { & $uiEntry @bag } 'reviewCase is restricted'
+$bag=$uiArguments.Clone();$bag.Scenario='Working-Save-Expanded-Summoning-Creature-Review'
+Assert-StackThrows { & $uiEntry @bag } 'reviewCase is restricted'
+Assert-StackThrows { & $uiEntry @uiArguments } 'missing-ui-development.zip'
+# Execute the shipped argument-construction expressions with fixture values.
+# This observes actual forwarding, not a duplicated request implementation.
+$parseTokens=$null;$parseErrors=$null
+$entryAst=[Management.Automation.Language.Parser]::ParseFile($uiEntry,[ref]$parseTokens,[ref]$parseErrors)
+Assert-Stack ($parseErrors.Count -eq 0) 'installed-stack entrypoint parses'
+$construction=@()
+foreach($variable in @('$requestParameters','$completionBudget','$arguments')) {
+    $nodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.AssignmentStatementAst] -and $node.Left.Extent.Text -ceq $variable},$true))
+    if($nodes.Count -ne 1){throw 'Installed-stack shipped request construction is absent or ambiguous.'}
+    $construction += [scriptblock]::Create($nodes[0].Extent.Text)
+}
+$fixedDispelUi=$true;$uiParameters=@{creatures='trumpet-archon,astral-deva';reviewCase='sprints30-31-dispel-ui'}
+$Scenario='working-save-expanded-summoning-creature-review';$ExpectedVersion='fixture-version'
+$SaveName='KMG_AUTOMATION_WORKING';$TimeoutSeconds=600;$PersistenceScope='ankylosaurus'
+$lease=[pscustomobject]@{fixture=$true};$candidate=[pscustomobject]@{packagePath='fixture-package'}
+$deployment='fixture-deployment';$DevelopmentPurpose='sprints30-31-dispel-installed-ui'
+foreach($expression in $construction){. $expression}
+Assert-Stack ($arguments.Parameters.Count -eq 2 -and $arguments.Parameters.reviewCase -ceq 'sprints30-31-dispel-ui' -and $arguments.Parameters.creatures -ceq 'trumpet-archon,astral-deva' -and -not $arguments.Parameters.ContainsKey('persistenceScope')) 'fixed UI actual forwarding retains exactly its two external parameters'
+Assert-Stack ($arguments.SaveName -ceq $SaveName -and $arguments.ExitAfterCompletion -and $arguments.CompletionTimeoutSeconds -eq 180 -and $arguments.TimeoutSeconds -eq 600 -and $arguments.RuntimeLease -eq $lease -and $arguments.ReuseInstalledArtifact) 'fixed UI actual forwarding retains save exit timing lease and artifact guards'
+$fixedDispelUi=$false;$PersistenceScope='giant-humanoids-ii'
+foreach($expression in $construction){. $expression}
+Assert-Stack ($arguments.Parameters.Count -eq 1 -and $arguments.Parameters.persistenceScope -ceq $PersistenceScope -and $arguments.CompletionTimeoutSeconds -eq 600) 'existing persistence forwarding and native budget remain unchanged'
+$fixedDispelUi=$false;$PersistenceScope='outsider-celestial';$DevelopmentPurpose='sprints30-31-persistence'
+foreach($expression in $construction){. $expression}
+Assert-Stack ($arguments.Parameters.Count -eq 1 -and $arguments.Parameters.persistenceScope -ceq $PersistenceScope -and $arguments.SaveName -ceq 'KMG_AUTOMATION_WORKING' -and $arguments.ExitAfterCompletion -and $arguments.CompletionTimeoutSeconds -eq 600 -and $arguments.RuntimeLease -eq $lease -and $arguments.ReuseInstalledArtifact -and $arguments.DevelopmentPurpose -ceq $DevelopmentPurpose) 'pilot persistence actual request keeps fixed scope, native budget, purpose, lease, artifact and Working guards'
+$receiptNodes=@($entryAst.FindAll({param($node) $node -is [Management.Automation.Language.IfStatementAst] -and $node.Extent.Text.Contains('NotePropertyName installedStackRecordPath')},$true))
+if($receiptNodes.Count -ne 1){throw 'Fixed UI installed-stack receipt binding is absent or ambiguous.'}
+$receiptBinding=[scriptblock]::Create($receiptNodes[0].Extent.Text)
+$receipt=[pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='fixture-native-run'}
+$fixedDispelUi=$true;$runId='fixture-stack-run';$evidenceRoot=Join-Path $fixture 'stack-record'
+. $receiptBinding
+Assert-Stack ($receipt.transactionRunId -ceq $runId -and $receipt.installedStackRecordPath -ceq (Join-Path $evidenceRoot 'installed-stack.json') -and $receipt.runId -ceq 'fixture-native-run') 'fixed UI returned receipt binds native and installed-stack run identities'
+$receipt=[pscustomobject]@{kind='KmgRuntimeLaunchReceipt';runId='fixture-native-run'};$fixedDispelUi=$false
+. $receiptBinding
+Assert-Stack ($null -eq $receipt.PSObject.Properties['transactionRunId'] -and $null -eq $receipt.PSObject.Properties['installedStackRecordPath']) 'existing persistence receipt shape remains unchanged'
 Write-Host "Sprint22 installed-stack safety PASS: $checks predicates; fixture filesystem only; no game, native settings or real installation touched."

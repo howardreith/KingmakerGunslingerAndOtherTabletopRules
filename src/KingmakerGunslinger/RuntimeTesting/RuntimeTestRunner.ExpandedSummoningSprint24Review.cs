@@ -3667,7 +3667,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static Vector3 Sprint24AiCombatLane(UnitEntityData anchorCaster,
             UnitEntityData owner, UnitEntityData targetUnit, float distance,
             out Vector3 target, out string survey, out string direction,
-            float targetAllyExclusionRadius = 0f)
+            float targetAllyExclusionRadius = 0f,
+            IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null,
+            int originSearchRadiusMeters = 15)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3689,6 +3691,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
                 value != null && value.IsInGame).ToArray();
+            UnitEntityData[] exclusionExceptions =
+                (targetAllyExclusionExceptions ?? Enumerable.Empty<UnitEntityData>())
+                    .Where(value => value != null).ToArray();
             Vector3 selectedOrigin = Vector3.zero;
             Vector3 selectedTarget = Vector3.zero;
             float selectedPartyGap = -1f;
@@ -3698,8 +3703,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             int laneCandidates = 0;
             int nativeLosCandidates = 0;
             int allyClearCandidates = 0;
-            for (int dx = -15; dx <= 15; dx += 3)
-                for (int dz = -15; dz <= 15; dz += 3)
+            if (originSearchRadiusMeters < 15 || originSearchRadiusMeters > 30 ||
+                originSearchRadiusMeters % 3 != 0)
+                throw new InvalidOperationException(
+                    "Sprint 24 AI lane search radius is outside its fixed bounds.");
+            for (int dx = -originSearchRadiusMeters;
+                dx <= originSearchRadiusMeters; dx += 3)
+                for (int dz = -originSearchRadiusMeters;
+                    dz <= originSearchRadiusMeters; dz += 3)
                 {
                     Vector3 requestedOrigin = anchor.clampedPosition +
                         new Vector3(dx, 0f, dz);
@@ -3751,7 +3762,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value != null && !value.Destroyed &&
                                 !ReferenceEquals(value, owner) &&
                                 !ReferenceEquals(value, targetUnit) &&
-                                owner.IsAlly(value) &&
+                                !exclusionExceptions.Any(exempt =>
+                                    ReferenceEquals(value, exempt)) &&
+                                !owner.IsEnemy(value) &&
                                 Vector3.Distance(value.Position,
                                     targetPoint.clampedPosition) <=
                                     targetAllyExclusionRadius + value.Corpulence))
@@ -3774,7 +3787,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 selectedDirection + "@" + distance.ToString("0.#",
                     System.Globalization.CultureInfo.InvariantCulture) +
                 "m(graph-and-sight)";
-            survey = "originCandidates=" + originCandidates +
+            survey = "searchRadiusMeters=" + originSearchRadiusMeters +
+                ";originCandidates=" + originCandidates +
                 ";laneCandidates=" + laneCandidates +
                 ";nativeLosCandidates=" + nativeLosCandidates +
                 ";allyClearCandidates=" + allyClearCandidates +

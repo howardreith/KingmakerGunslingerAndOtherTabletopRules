@@ -20,7 +20,7 @@ namespace KingmakerGunslinger.DomainTests
         {
             string[] all = new[] { Environment.CurrentDirectory, "src",
                 "KingmakerGunslinger" }.Concat(parts).ToArray();
-            return File.ReadAllText(Path.Combine(all));
+            return File.ReadAllText(Path.Combine(all)).Replace("\r\n", "\n");
         }
 
         /// <summary>
