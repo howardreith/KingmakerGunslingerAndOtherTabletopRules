@@ -213,6 +213,31 @@ Invoke-KmgSprints3031Budget $p Game sixth-artifact-native|Out-Null
 $hash=(Get-FileHash $p).Hash
 Invoke-KmgSprints3031Budget $p Check sixth-artifact-verification|Out-Null
 if((Get-FileHash $p).Hash -cne $hash){throw 'Sixth build verification mutated its budget'}
+# Explicit unattended authority retains all counts; no numerical build veto.
+$unattended=Join-Path $temp 'budget-unattended.json'
+Copy-Item -LiteralPath $p -Destination $unattended
+Change-BudgetFixture $unattended {param($b)
+    $start=[DateTime]::Parse($b.startUtc)
+    $b | Add-Member unattendedCloseoutAmendment ([pscustomobject]@{
+        authority='Owner Sprints30-31 unattended functional closeout'
+        oldMaximumBuildAttempts=6;newMaximumBuildAttempts=$null
+        oldMaximumGameLaunches=24;newMaximumGameLaunches=30
+        oldMaximumChargedMinutes=420;newMaximumChargedMinutes=600
+        retainedBuildAttempts=5;retainedGameLaunches=9
+        pauseStartUtc=$start.AddMinutes(51).ToString('o');resumeUtc=$start.AddMinutes(53).ToString('o');excludedTicks=[TimeSpan]::FromMinutes(2).Ticks})
+    $b.maximumBuildAttempts=$null;$b.maximumGameLaunches=30;$b.actualGameLaunchCount=29
+    $b.deadlineUtc=([DateTime]::Parse($b.deadlineUtc).AddMinutes(182)).ToString('o')
+}
+Invoke-KmgSprints3031Budget $unattended Build seventh-counted|Out-Null
+Invoke-KmgSprints3031Budget $unattended Game thirtieth-counted|Out-Null
+$u=Get-Content $unattended -Raw|ConvertFrom-Json
+if($u.buildAttemptCount -ne 7 -or $u.actualGameLaunchCount -ne 30){throw 'Unattended admission lost counts'}
+Refuse-Budget $unattended Game 'Game admission ceiling reached.'
+$hash=(Get-FileHash $unattended).Hash
+Invoke-KmgSprints3031Budget $unattended Check verification|Out-Null
+if((Get-FileHash $unattended).Hash -cne $hash){throw 'Unattended verification mutated budget'}
+Change-BudgetFixture $unattended {param($b) $b.unattendedCloseoutAmendment.newMaximumChargedMinutes=601}
+Refuse-Budget $unattended Build 'Unsupported unattended owner budget amendment.'
 Change-BudgetFixture $p {param($b) $b.h4RayObserverAmendment.authority='unsupported'}
 Refuse-Budget $p Check 'Unsupported H4 owner budget amendment.'
 

@@ -1,5 +1,25 @@
 # Sprints 30–31 — Outsider/Celestial release-batch pilot
 
+## Current controlling status — unattended functional closeout
+
+Owner authorizes cumulative 600 charged minutes and 30 actual game launches, with candidate attempts counted but no numerical build veto. The persistent ledger retains 5 attempts, 9 launches and 256.94 prior charged minutes, all old events/reconciliation and original start. Only the documented suspended owner-wait interval is credited; resumed source work, checks, builds, waiting and native transactions are charged. Readiness is already complete. PR66 remains draft; no qualification or release is claimed.
+
+H1–H3 retain complete original PASS evidence on `5b33861a3ea7e2b09ab7329896c88f8fa7961112`; H4–H6 retain complete original PASS evidence on `f27d1210a59bec55a3a127a57337da0c080e3d16`. Their production, assets, lifetime component and action observer are unchanged by this correction. They are scoped REUSED development mechanics, never fresh final-artifact proof. Earlier failed aggregates remain failed.
+
+H7 failed before its first Cleave command because its giant-specific 2.6/3.4m row exceeded Astral's actual native reach. The observer now computes two bounded arc radii from the real weapon reach and body footprints, with three distinct targets and actual native reach/LOS, adjacency, non-overlap, connected walkable placement and protected-party exclusion. It records selected geometry and rejected candidates. Native `IsReach(UnitEntityData, UnitEntityData, WeaponSlot)` compares center distance strictly below weapon range plus both footprints and requires LOS. No creature reach, attack, AI, lifetime or rules changed. Destroyed trial owners are excluded from native command teardown. The ordinary-Cleave product correction remains runtime-unqualified until H7 passes.
+
+The complete H7 path and H8/H9/public-route/persistence adapters received one narrow capability/lifetime review. H8 uses real prepared abilities and filters destroyed owners; H9 uses real aura/Aid consumers and owned cleanup. Public-route/body observations retain actual per-route identity/slot/quantity/duration/eligibility/reset and body/icon checks. Persistence retains the corrected native CircleAttackAC and exactly-one matching Heal preparation consumer. No broad rules/art review or added acceptance matrix.
+
+Compile-only passed against installed Kingmaker2.1.7b references. Focused publisher and isolated budget behavior tests passed without changing the real ledger; they are not native proof. The normal batch release manifest now carries its already-validated reference identities so the approved scoped reuse consumer can compare them. Package inventory/guards remain exact.
+
+Next fixed sequence: one coherent repaired hidden build, H7 first, then H8/H9 on those unchanged bytes. After sufficient hidden fresh/reused coverage, freeze the final public version/source/assets/observers/publisher inputs, remove only five new-species suppressions and build through the complete gate. Then all30 routes/body/icons in one supported sequence, two mixed persistence envelopes with six fresh processes, and two final integration profiles. No duplicate hidden persistence, H1–H6 replay, or new runner. Twelve planned launches; actual failures count. Routine supported repairs continue automatically. Safety/permission/scope blockers, no diagnostic progress after the authorized review sequence, or the cumulative ceiling stop new dispatch and require exact restoration.
+
+Headroom recovery is limited to exact hash-verified inactive extraction copies with canonical ZIPs, source, receipts and evidence retained; current machine-local recovery and intake comparisons are in `artifacts/closeout-triage`. Original Working bytes/metadata and protected human intake remain the restoration authority. No permanent deployment, merge or release before mandatory qualification. Accepted rough visuals and rules choices remain closed; STOP before Sprint32.
+
+## Dated history — superseded action instructions
+
+### H7 suspension report (2026-10-25, before unattended authority)
+
 **BOUNDED STOP at H7; PR66 stays draft.** Tested product source `f27d1210a59bec55a3a127a57337da0c080e3d16`. The H4 ray-only observer repair passed; automatic continuation also passed H5 Astral and H6 Trumpet on the same exact attempt5 package. No gameplay, asset or lifetime code changed in this continuation. H1–H3 remain explicitly REUSED complete observations on their original5b33861a artifact, not fresh on attempt5. Original H4 FAIL remains immutable.
 
 | New case | Result | RunId |

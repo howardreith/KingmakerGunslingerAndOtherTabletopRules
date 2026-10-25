@@ -427,6 +427,15 @@ $manifest = [ordered]@{
     firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
 }
+# The named S30-31 reuse contract compares exact installed reference identities
+# on the final artifact as well as on original development receipts.
+if ($git.Branch -ceq 'codex/expanded-summoning-sprints30-31-outsider-celestial-pilot') {
+    $manifest.references = [ordered]@{
+        bundleDirectory = $ReferenceBundleDir
+        installDirectory = $KingmakerInstallDir
+        files = @($referenceIdentity)
+    }
+}
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $manifestPath -Encoding UTF8
 Write-Host "Package: $packagePath"
