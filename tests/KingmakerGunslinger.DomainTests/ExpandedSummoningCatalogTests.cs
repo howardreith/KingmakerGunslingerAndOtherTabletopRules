@@ -6,7 +6,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningCatalogTests
     {
-        internal static void LillendHiddenRoutesPreservePublishedSurface()
+        internal static void LillendPublicRoutesPreservePublishedSurface()
         {
             var lillend = ExpandedSummoningCatalog.All.Single(value => value.Key == "lillend-azata");
             Assertions.False(lillend.NaturesAllyTier.HasValue, "Lillend has no Nature's Ally placement.");
@@ -19,11 +19,11 @@ namespace KingmakerGunslinger.DomainTests
                 SummonMultiplicity.One, SummonMultiplicity.OneD3,
                 SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne }),
                 "Lillend quantities propagate from its own tier.");
-            Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Unqualified Lillend routes remain hidden.");
+            Assertions.True(routes.All(SummonVisibilityCatalog.IsPublished),
+                "The candidate exposes every legal Lillend route.");
             SummonVisibilityCatalog.Validate(); SummonChoicePresentationPolicy.Validate();
             Assertions.Equal("Lillend Azata", SummonChoicePresentationPolicy.For(lillend.Key).Label,
-                "The hidden creature has its deliberate identity.");
+                "The creature retains its deliberate identity.");
             var identities = ExpandedSummoningIdentityCatalog.Build().ToDictionary(value => value.Symbol);
             foreach (var row in new[] {
                 new { Suffix = "Spellbook", Type = "BlueprintSpellbook" },
@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.DomainTests
                     "Lillend's private native support dependency retains its declared type.");
         }
 
-        internal static void SatyrHiddenRoutesPreservePublishedSurface()
+        internal static void SatyrPublicRoutesPreservePublishedSurface()
         {
             var satyr = ExpandedSummoningCatalog.All.Single(value => value.Key == "satyr");
             Assertions.False(satyr.MonsterTier.HasValue, "Satyr has no Summon Monster placement.");
@@ -49,8 +49,8 @@ namespace KingmakerGunslinger.DomainTests
                 SummonMultiplicity.One, SummonMultiplicity.OneD3, SummonMultiplicity.OneD4PlusOne,
                 SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne }),
                 "Satyr quantities must propagate from its own tier.");
-            Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)),
-                "Unqualified Satyr routes must remain hidden.");
+            Assertions.True(routes.All(SummonVisibilityCatalog.IsPublished),
+                "The candidate exposes every legal Satyr route.");
             var prior = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
                 .Where(value => value.Creature.Key != "satyr" && value.Creature.Key != "lillend-azata").ToArray();
@@ -59,7 +59,7 @@ namespace KingmakerGunslinger.DomainTests
             SummonVisibilityCatalog.Validate();
             SummonChoicePresentationPolicy.Validate();
             Assertions.Equal("Satyr", SummonChoicePresentationPolicy.For("satyr").Label,
-                "The hidden actor must still have its deliberate menu identity.");
+                "The actor retains its deliberate menu identity.");
             var owned = ExpandedSummoningIdentityCatalog.Build().Where(value =>
                 value.Symbol.StartsWith("KMG.Summoning.FeyCelestial.Satyr.", StringComparison.Ordinal)).ToArray();
             var graph = owned.ToDictionary(value => value.Symbol);

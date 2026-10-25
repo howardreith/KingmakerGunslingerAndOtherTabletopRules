@@ -49,6 +49,19 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
+            string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32LifecyclePhase)
+            {
+                foreach (int frame in ReviewSprints3031SourceLifecycle(fixture, true)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrRoutesPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32LillendRoutesPhase)
+            {
+                foreach (int frame in ReviewSprint32PublicRoutes(fixture,
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrRoutesPhase)) yield return frame;
+                yield break;
+            }
             CaptureSprint32ControlGraphs();
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendSupportPhase)
             {

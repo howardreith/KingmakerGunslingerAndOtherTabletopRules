@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void Sprint32RequiresExactFreshSaveFreePhase()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
-            foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion" })
+            foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion", "satyr-routes", "lillend-routes", "support-lifecycle" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact Sprint32 phase admitted.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Automatic exit required.");

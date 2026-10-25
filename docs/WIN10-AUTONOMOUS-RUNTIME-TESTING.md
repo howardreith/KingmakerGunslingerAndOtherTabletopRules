@@ -72,6 +72,29 @@ damage break, high SR and cold-load/provider removal remain separate cases.
 All fixed phases retain source/package, empty-world and
 exact restoration guards; no Working-save access is selected here.
 
+Sprint32 fixed `satyr-routes` and `lillend-routes` phases each use a fresh
+save-free caster/process and the existing native parent/selected-child helper.
+Satyr uses native Druid20/Wisdom30; Lillend uses Wizard20/Intelligence30. Every
+canonical parent must belong to that class's spell list at the legal tier.
+All six/four public roots retain real native command/cast/spawn, prepared-slot,
+quantity, CL20 duration and exact cleanup assertions. The existing helper pumps
+commands/animation synchronously; natural input timing, spontaneous sources and
+Druid conversion are separate. The same exact published adult is then observed
+at gameplay camera for body/icon/selection and owned-resource disposal.
+This adds no save access or arbitrary caster/case input.
+
+Sprint32 fixed `support-lifecycle` selects exactly two Satyrs and two Lillends
+through the existing source-lifecycle fixture. Native Lillend toggles are
+explicitly requested ON as lifecycle preconditions; normal controllers must
+produce distinct source areas/grants before testing. Separated emitters avoid
+replacing identical grants. This is not activation/action/AI evidence. Actual
+native scheduler expiry, independent siblings, native death, subsequent expiry,
+nonloot equipment, body resources, source areas/grants and exact inventory reset
+are observed. The established owned-buff deadline helper is disclosed; it does
+not prove elapsed full-duration, dismissal or command cancellation. No actor,
+area, item or recipient grant is directly deleted to supply a verdict. The
+original six-creature lifecycle selection remains unchanged by default.
+
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
 read-only mod-load audit of Satyr/Lillend candidates and required native control,
 bard/performance, spellbook, defense and weapon consumers. Empty parameters;
