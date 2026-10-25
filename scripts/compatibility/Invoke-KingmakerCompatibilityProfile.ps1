@@ -5,6 +5,7 @@ param(
         'gunslinger-only',
         'gunslinger-races-unleashed',
         'gunslinger-call-of-the-wild',
+        'gunslinger-cowwithhat-suggestion',
         'gunslinger-call-of-the-wild-races-unleashed',
         'gunslinger-tweak-or-treat',
         'gunslinger-call-of-the-wild-favored-class',
@@ -153,6 +154,8 @@ Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 . (Join-Path $PSScriptRoot 'CompatibilityProfile.Common.ps1')
+Assert-KmgSuggestionProfileSelection -ProfileId $ProfileId -Scenario $Scenario -PackagePath $PackagePath `
+    -ReferenceRoot $ReferenceRoot -RepositoryRoot $root
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeCoordination.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeHarness.Common.ps1')
 . (Join-Path (Split-Path $PSScriptRoot) 'RuntimeAutomation.Common.ps1')
@@ -229,6 +232,7 @@ $favoredTraitsMode = if ($ProfileId -ceq
 }
 
 $cotwProfileIds = @('gunslinger-call-of-the-wild',
+    'gunslinger-cowwithhat-suggestion',
     'gunslinger-call-of-the-wild-races-unleashed',
     'gunslinger-tweak-or-treat',
     'gunslinger-call-of-the-wild-favored-class',

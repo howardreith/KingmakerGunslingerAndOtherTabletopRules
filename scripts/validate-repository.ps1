@@ -143,6 +143,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # installation, so it belongs in the gate that runs every build rather
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
+& (Join-Path $PSScriptRoot 'compatibility/Test-SuggestionProfileSelection.ps1')
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
 & (Join-Path $PSScriptRoot 'Test-DevelopmentCandidate.ps1')
 # Named batch policy is independent of the active released version used for a

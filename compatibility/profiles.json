@@ -2,6 +2,29 @@
   "schemaVersion": 1,
   "profiles": [
     {
+      "id": "gunslinger-cowwithhat-suggestion",
+      "description": "Isolated CowWithHat Custom Spells and its Call of the Wild dependency for Sprint32 Suggestion.",
+      "requiredGunslingerPackage": "explicit-validated-candidate",
+      "modKeys": [
+        "call-of-the-wild",
+        "cowwithhat-custom-spells"
+      ],
+      "runtimeLoadableRequired": true,
+      "scenarios": [
+        "mod-load-smoke",
+        "observe-expanded-summoning-sprint32-native-inputs",
+        "disposable-expanded-summoning-sprint32-native-review"
+      ],
+      "workingSaveSmokePermitted": false,
+      "expectedUmmIds": [
+        "KingmakerGunslinger",
+        "CallOfTheWild",
+        "CowWithHatsCustomSpellsMod"
+      ],
+      "disposition": "NOT-TESTED",
+      "notes": "Only the declared save-free scenarios are admitted. Select an exact validated package and isolated ReferenceRoot explicitly; do not install the provider permanently. Provider-present gameplay and persistence are not yet qualified."
+    },
+    {
       "id": "gunslinger-races-unleashed",
       "description": "Exact local Races Unleashed coexistence profile.",
       "requiredGunslingerPackage": "KingmakerGunslinger-0.0.151-local-runtime.zip",

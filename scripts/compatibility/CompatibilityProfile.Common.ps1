@@ -10,6 +10,58 @@ function Get-KmgCompatibilitySha256([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
 }
 
+# The new optional provider is authorized only for its declared save-free
+# scenarios. Read that existing profile declaration rather than copying its
+# scenario list into another admission layer. Other profiles keep their scope.
+function Assert-KmgSuggestionProfileSelection {
+    param([string]$ProfileId, [string[]]$Scenario, [string]$PackagePath,
+        [string]$ReferenceRoot, [string]$RepositoryRoot)
+    if ($ProfileId -cne 'gunslinger-cowwithhat-suggestion') { return }
+    $profiles = Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/profiles.json')
+    $matches = @($profiles.profiles | Where-Object id -ceq $ProfileId)
+    if ($matches.Count -ne 1 -or $matches[0].requiredGunslingerPackage -cne 'explicit-validated-candidate' -or
+        $matches[0].workingSaveSmokePermitted -or @($Scenario).Count -eq 0 -or
+        @($Scenario | Where-Object { $_ -cnotin @($matches[0].scenarios) }).Count -gt 0) {
+        throw 'Optional Suggestion profile requires its declared save-free scenario selection; no profile entered.'
+    }
+    if ([string]::IsNullOrWhiteSpace($PackagePath) -or [string]::IsNullOrWhiteSpace($ReferenceRoot)) {
+        throw 'Optional Suggestion profile requires explicit candidate and isolated reference root; no profile entered.'
+    }
+    $references = [IO.Path]::GetFullPath($ReferenceRoot).TrimEnd('\')
+    $isolated = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot 'artifacts')).TrimEnd('\') + '\'
+    if (-not $references.StartsWith($isolated, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Optional Suggestion reference root must be isolated under this worktree artifacts; no profile entered.'
+    }
+    for ($parent = $references; $parent.Length -ge $isolated.TrimEnd('\').Length; $parent = Split-Path -Parent $parent) {
+        if ((Test-Path -LiteralPath $parent) -and
+            ((Get-Item -LiteralPath $parent -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw 'Optional Suggestion reference root contains a reparse point; no profile entered.'
+        }
+    }
+    $catalog = Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/reference-catalog.json')
+    foreach ($key in $matches[0].modKeys) {
+        $entries = @($catalog.references | Where-Object key -ceq $key)
+        if ($entries.Count -ne 1) { throw 'Optional Suggestion reference key is ambiguous; no profile entered.' }
+        foreach ($alias in $entries[0].folderAliases) {
+            $source = Assert-KmgCompatibilityChildPath (Join-Path $references $alias) $references
+            if (-not (Test-Path -LiteralPath $source)) { continue } # resolver reports missing references
+            $pending = [Collections.Generic.Queue[IO.FileSystemInfo]]::new()
+            $pending.Enqueue((Get-Item -LiteralPath $source -Force))
+            while ($pending.Count -gt 0) {
+                $item = $pending.Dequeue()
+                if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                    throw 'Optional Suggestion selected reference tree contains a reparse point; no profile entered.'
+                }
+                # Check a directory before descending: never enumerate a
+                # linked tree even when this is only an admission read.
+                if ($item.PSIsContainer) {
+                    foreach ($child in @(Get-ChildItem -LiteralPath $item.FullName -Force)) { $pending.Enqueue($child) }
+                }
+            }
+        }
+    }
+}
+
 function Get-KmgCompatibilityRelativePath([string]$Root, [string]$Path) {
     $rootUri = [Uri]([IO.Path]::GetFullPath($Root).TrimEnd('\') + '\')
     return [Uri]::UnescapeDataString($rootUri.MakeRelativeUri([Uri][IO.Path]::GetFullPath($Path)).ToString()).Replace('/', '\')
