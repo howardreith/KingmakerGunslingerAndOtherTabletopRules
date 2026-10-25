@@ -35,6 +35,13 @@ No general performance, flight/navigation, AI or summoning-feat expansion.
   release policy with7-round tail (2-5hours), or explicit omission. No Lullaby
   implementation while pending. Independent work continues; no silence assumed.
 - Exact branch addition in sanctioned push wrapper authorized and applied.
+- Noncombat performances: independent read-only review found native summon AI
+  selects actions only in combat; no accepted production noncombat order route
+  exists. Fascinate cannot faithfully start in combat. Owner decision requested
+  for a Lillend-only autonomous noncombat dispatcher (estimated6-14 active hours,
+  substantial uncertainty) or explicit omission of Fascinate, Inspire Competence
+  and dependent bardic Suggestion. No dispatcher or provisional performance
+  implementation while pending. Conditional spell/SLA Suggestion is independent.
 - Guarded Steam640820 transactions only. Immutable baseline save; exact fresh
   human-installation/save/settings/reference intake and restoration. No weaker
   source/package identity checks. Final frozen candidate and separate records
@@ -42,7 +49,47 @@ No general performance, flight/navigation, AI or summoning-feat expansion.
 
 ## Current product and evidence boundary
 
-Latest development source`098b3b5c9804d6cca51807cbb678f7657aba3e1d` passed the
+Latest validated development source`4804fa9d5252cb899c4ebae08d3b922d2edda828`
+passed the offline wrapper,14 selected tests, exact-reference compile and strict
+package gate. ZIP`c8805c14698c41572918eae62de06ae2c13810aeca21a68a9fa842d6bb41f70a`;
+DLL`475c3bc7068b517aa5b7781b3ea4f7a74266274c4f4c44d9f1308fcacc2743f9`;
+MVID`d45d1c52-7214-4f78-88c2-1accba9f0db4`. Fresh standalone run
+`20261025T1948418853831Z-9f7976be888e48d5867e1e1557b6b9f9` **FAIL**4PASS/2FAIL:
+initialization succeeded, independent Bard7 slots5/4/2 and20 rounds passed;
+adult observation retained correct HP73/AC20/abilities/known spells and absent
+Suggestion, but both weapons reached9feet instead of10. Support actions did
+not run. ResultSHA`7bba27eef3e069f01f069aa35c8b3389d6db2babf9bf2ae322036fa4ef011898`;
+original Unity logSHA`b0e97d1949a8c396ee2217b47db3af2b31b8b81999ddc39964cb8bff7a8eef08`
+under`artifacts/sprint32-lillend-4804fa9d/`. Native IL and accepted Large-giant
+mapping identify a product error: stored melee10 becomes6, plus this Large
+body's4, not stored9/5 plus an assumed5. Correct both private types to10 and
+record native reach contributions; keep the required10-foot predicate.
+Current corrected batch compiled23.8seconds and passed14 selected checks0.9seconds; native rerun
+pending. Original failure is immutable, not reinterpreted as PASS.
+
+The same batch adds the narrow `gunslinger-cowwithhat-suggestion` profile,
+using declared save-free scenarios and explicit validated package/isolated
+reference root. Admission14PASS includes actual entry and nested-junction refusal; selected
+read-only resolution PASS with CotW1.14.4c-2.1 DLL
+`4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915` and
+CowWithHat1.4.5 DLL`38e19b52d2adb38bdf86044640a9ea92f736e0d0d221ed86c46df21540d82bd9`.
+No provider staging/gameplay yet. The native fixture now requires a present
+healthy provider to produce an active adapter, preventing false absence PASS.
+Independent review found two tooling P2 issues: nested links could evade root
+isolation, and default profile resolution included an explicit-only profile.
+Selected-tree checks now reject links before descent; default resolution
+retains its prior selection and reports the optional profile NOT_RUN. Fresh
+14-case admission and actual prior-default resolution PASS, without staging
+or game launch. Logs`artifacts/sprint32-intake/suggestion-profile-admission-reviewed-final.log`
+and`profile-default-resolution-reviewed.log`; actual isolated reference-tree
+admission also PASS. No product/fixture dispatch blocker found in this review.
+After coherent review, rerun standalone support and then the same support
+phase in this narrow provider profile, each a fresh600-second process with
+10-15minute target/30minute ceiling and exact restoration. Provider binding,
+book presence and ordinary support are this profile's first scope; Suggestion
+casts, spell costs/effects and cold-load remain separately pending.
+
+Prior development source`098b3b5c9804d6cca51807cbb678f7657aba3e1d` passed the
 complete offline wrapper,14 selected tests, exact-reference compile and strict
 417-file package validation. ZIP SHA256
 `0a559c627c5857024624af5d989372c3f81c91f11fb9a37a39292e422639ad26`;
@@ -224,8 +271,8 @@ Current Satyr review found no static dispatch blocker; its concrete melee/full-
 attack coverage limits caused the bounded added case/plan observations above.
 Full coherent final product/rules/coverage/evidence review remains pending.
 
-Latest runtime transaction`compat-20261025T193501Z-8e384f0cffa0` restored/verified
-at19:38:46.7387637UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
+Latest runtime transaction`compat-20261025T194623Z-232ba1474c7c` restored/verified
+at19:50:35.4833264UTC. Protected Compare PASS: Mods967/saves118/references18/settings83/
 tasks0/one unchangedSteam process. No owned live transaction/game remains.
 
 Required free space: measured1.1GB combined build/extraction/staging/restoration
@@ -246,9 +293,20 @@ Selection/execute logs: `artifacts/sprint32-intake/cleanup-s32-followup-*`.
 Fresh protected Capture/Compare PASS; all unique packages/raw evidence/original
 failures/receipts/backups/saves retained. No owned runtime or task remains.
 
-Build-Local attempts/validated development packages/native launches:19/12/12
+Follow-up cleanup19:55:52UTC: seven closed S28 installed-stack extractions
+matched retained validated ZIPs exactly; recovered585,461,317bytes, free
+3,674,853,376bytes. PlanSHA
+`4b2cc44a4a018e9e5d77141a79f6c71f62ad5ba7feb0c0cac995a7f8e43f4006`.
+Logs`artifacts/sprint32-intake/cleanup-s28-followup-*`; protected Capture/Compare
+PASS, no unique package, evidence, receipt, backup or save removed.
+
+Build-Local attempts/validated development packages/native launches:21/13/13
 before the next selected candidate. Native setup/execution/restoration times:
-255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05+270.96+227.35seconds.
+255.68+224.24+238.49+270.34+270.60+233.46+289.04+276.85+254.32+268.05+270.96+227.35+253.35seconds.
+4804's first build invocation stopped before compilation when PowerShell's
+in-process redirection treated Python unittest stderr as a terminating error;
+the supervised child with separate OS stdout/stderr handles passed. Preserve
+`build-lillend-localization-4804fa9d.log` and the corrected stdout/stderr logs.
 Lillend482 native109.797seconds; full wrapper276.85seconds. Complete historical
 active-time category totals are unavailable. Current work retains timestamped
 compile/test/build/wrapper logs; do not infer throughput from unlike sprints.
