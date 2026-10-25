@@ -158,6 +158,17 @@ namespace KingmakerGunslinger.Blueprints
             astralProtectiveGrant.CasterLevel = 15;
             astralTraits.ComponentsArray = astralTraits.ComponentsArray.Concat(
                 new BlueprintComponent[] { astralGrant, astralProtectiveGrant }).ToArray();
+            // Native Fact.PostLoad restores by unique component name, including
+            // the exact applied carrier references. These three new private
+            // features have never shipped; name their previously unnamed logic
+            // without changing any released fact or canonical Circle component.
+            foreach (var feature in new[] { traits, trumpetTraits, astralTraits })
+                for (int index = 0; index < feature.ComponentsArray.Length; index++)
+                {
+                    var component = feature.ComponentsArray[index];
+                    if (string.IsNullOrEmpty(component.name))
+                        component.name = "$KMG_S3031_" + component.GetType().Name + "_" + index;
+                }
         }
     }
 }

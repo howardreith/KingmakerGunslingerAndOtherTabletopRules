@@ -245,6 +245,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     false, true,
                     () => GiantSummonPaletteRuntime.CaptureOwnedResources(view)
                         .Any(item => ReferenceEquals(item, value)));
+            // Query the actual private owners already used by the S30/31
+            // lifecycle observer; names alone never establish ownership.
+            if (receipt.Key == "lantern-archon" || receipt.Key == "trumpet-archon")
+                foreach (var value in Sprints3031PrivateResources(unit, receipt.Key))
+                    add(value, "S30/31 exact private visual owner",
+                        receipt.Key == "lantern-archon" ? "LanternArchonOrbView" : "Trumpet31InstrumentView",
+                        true, false, true, () => !unit.Destroyed && unit.View != null &&
+                            Sprints3031PrivateResources(unit, receipt.Key).Any(item => ReferenceEquals(item, value)));
             // Sprints 18 and 19 attach through this seam - both apes, the
             // Girallon and the Xill - and it has exposed CaptureOwnedResources
             // since the day it shipped. This observer simply never asked it,
