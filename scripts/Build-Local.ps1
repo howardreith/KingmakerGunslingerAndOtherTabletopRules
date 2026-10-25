@@ -169,6 +169,12 @@ if (-not $SkipDomainTests) {
 }
 
 $localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
+# The pilot can repair a final observer without overwriting any earlier
+# exact candidate, manifest, compile archive or evidence-bound path.
+if (-not $development -and $info.Version -ceq '0.0.167') {
+    $localRoot = Join-Path $localRoot $git.Commit.Substring(0, 12)
+    if (Test-Path -LiteralPath $localRoot) { throw 'This exact final candidate output already exists; preserve its bytes.' }
+}
 $exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { Join-Path $localRoot 'exact-build' }
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
