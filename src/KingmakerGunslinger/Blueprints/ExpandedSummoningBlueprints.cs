@@ -146,6 +146,16 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "LillendHealingEligibility32")
+                    blueprint = registry.Register<LillendHealingEligibility32>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<LillendHealingEligibility32>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "LillendCourageAi32")
+                    blueprint = registry.Register<LillendCourageAi32>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<LillendCourageAi32>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "SatyrControlEligibility")
                     blueprint = registry.Register<SatyrControlEligibility>(identity.Symbol, () =>
                     {

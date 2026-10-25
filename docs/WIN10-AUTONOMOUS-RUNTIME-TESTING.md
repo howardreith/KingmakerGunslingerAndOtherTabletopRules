@@ -1,5 +1,5 @@
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
-`reviewPhase=satyr-control` and automatic exit. The existing save-free first-area
+`reviewPhase=satyr-control` or `reviewPhase=lillend-support`, with automatic exit. The existing save-free first-area
 fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh
 Satyr refusing the reset hostile with explicit native frightened immunity and
 using its ordinary bow. It records real commands, action costs, resource debit,
@@ -8,6 +8,15 @@ bounded origin-clearance parameter protects party actors from the cone. The
 single owned hostile is reset between cases and retained for exact teardown.
 This RTWP seam probe does not qualify other spells, turn-based play, public
 routes, full presentation or persistence. Exact package and restoration apply.
+The fixed Lillend phase uses two fresh independent hidden bard7 summons and
+one owned hostile: native Move-action Inspire Courage, first native NewRound
+resource debit, owned ally+2/enemy exclusion, Standard-action real Cure Serious
+Wounds/own spontaneous slot debit, then healthy-target/running-performance
+refusal and a natural melee fallback. No supplied casts, attacks, rolls or
+resource/slot debits. The existing Dialog activatable controller supplies its
+first-round tick; this is not proof of sustained round expenditure or final
+adult profile/body. Both fixed phases retain source/package, empty-world and
+exact restoration guards; no Working-save access is selected here.
 
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
 read-only mod-load audit of Satyr/Lillend candidates and required native control,

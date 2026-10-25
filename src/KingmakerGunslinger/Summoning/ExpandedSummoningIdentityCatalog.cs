@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 123;
-        internal const int LogicalAbilityCount = 1156;
+        internal const int UnitCount = 124;
+        internal const int LogicalAbilityCount = 1160;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 497;
+        internal const int SpecialIdentityCount = 512;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -806,6 +806,21 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearEligibility", "SatyrControlEligibility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SpellList", "BlueprintSpellList"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Spellbook", "BlueprintSpellbook"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Longsword", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.LongswordType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.PerformanceResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageRecipient", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Courage", "BlueprintActivatableAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.HealAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.HealEligibility", "LillendHealingEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageAi", "LillendCourageAi32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Brain", "BlueprintBrain"));
             Validate(result);
             return result.AsReadOnly();
         }

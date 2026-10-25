@@ -5,6 +5,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     public static class ExpandedSummoningNativeProfilePolicy
     {
         internal const string Sprint32SatyrControlPhase = "satyr-control";
+        internal const string Sprint32LillendSupportPhase = "lillend-support";
+        internal static bool Sprint32Phase(string phase)
+        { return phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase; }
         internal const string OutsiderBodyPhase = "outsider-bodies";
         internal const string SourceLifecyclePhase = "source-lifecycle";
         internal const string DefenseConsumersPhase = "defense-consumers";
@@ -185,7 +188,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview)
                 return parameters == 1 && Sprint29Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview)
-                return parameters == 1 && reviewPhase == RuntimeTestScenarioCatalog.Sprint32SatyrControlPhase;
+                return parameters == 1 && Sprint32Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview)
                 return parameters == 1 && Sprints30And31Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)

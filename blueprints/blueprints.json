@@ -59215,6 +59215,294 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.LillendAzata",
+      "guid": "71a8adf916b4409680023e853d28583b",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier6.LillendAzata.One",
+      "guid": "024f6cbb46c64f5c86496ff1ce02cb43",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.LillendAzata.OneD3",
+      "guid": "4d83dfe49f5841db9f379c35212be351",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.LillendAzata.OneD4PlusOne",
+      "guid": "2ed74a1693f046c69524075bf637e148",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.LillendAzata.OneD4PlusOne",
+      "guid": "9d7e7958d7e045f489d7fc87768eb613",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.UnitType",
+      "guid": "85e48935459940048d6efdff76286716",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.Traits",
+      "guid": "99a5f3ebe0e2464abefa8021cad68f85",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.SpellList",
+      "guid": "ca74d830438e4c789f1a31ec01a4701c",
+      "plannedType": "BlueprintSpellList",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.Spellbook",
+      "guid": "26fb96055f434fbf8b8aa73c116995c9",
+      "plannedType": "BlueprintSpellbook",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.Longsword",
+      "guid": "f2a606d19b0240abb62255da5e4e1973",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.LongswordType",
+      "guid": "7e77d8b4a4284e04a5efb45a99036ed7",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.PerformanceResource",
+      "guid": "e51c1fa4497a4ddb8247f6166ea61e4f",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.CourageRecipient",
+      "guid": "83d24b19bb3c484ebc73ba2858dfac26",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.CourageArea",
+      "guid": "701968d979874b10b30b95dba38cdd1d",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.CourageCarrier",
+      "guid": "3df160dcb7994686aa0aa837bc1eed27",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.Courage",
+      "guid": "9f3332786539408e81fc8a6d6293c3a9",
+      "plannedType": "BlueprintActivatableAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.HealAi",
+      "guid": "6cd1d5d867324a9380a2034d4c5553fb",
+      "plannedType": "BlueprintAiCastSpell",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.HealEligibility",
+      "guid": "d2926e40e6d645ed8b5d5ff01a4971d2",
+      "plannedType": "LillendHealingEligibility32",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.CourageAi",
+      "guid": "fe62174a0789402ebe0a91846d6fe9e0",
+      "plannedType": "LillendCourageAi32",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.Brain",
+      "guid": "f44564cd4eb9481eb987aa5580aaa4e3",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier6.LillendAzata.One",
+      "guid": "2f9ac1c5b7f451458bc461d5a92da76e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier7.LillendAzata.OneD3",
+      "guid": "76d2b16894a25c6ca051039c8ede43fc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.LillendAzata.OneD4PlusOne",
+      "guid": "906b498851635f40b08a37ffeb45b3ba",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.LillendAzata.OneD4PlusOne",
+      "guid": "711716a0bf0a5bd19fc7d420993c9e38",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier6.LillendAzata.One",
+      "guid": "67a1f6331cc652afae3533121369799e",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier7.LillendAzata.OneD3",
+      "guid": "839dc4de8df75beb8779bab709155cfc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.LillendAzata.OneD4PlusOne",
+      "guid": "db88cdc788975735a3a3d3864dd82afc",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.LillendAzata.OneD4PlusOne",
+      "guid": "f3819f5e476151248867b4a6b2b6a308",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier6.LillendAzata.One",
+      "guid": "2c4eb6afdddb51eca9a1cd28c2aac96d",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier7.LillendAzata.OneD3",
+      "guid": "4ec8a6334c8d5a4f83eaa07d83d1782c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.LillendAzata.OneD4PlusOne",
+      "guid": "60faa7f123855f1091f88ee65b63ec22",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.LillendAzata.OneD4PlusOne",
+      "guid": "025cb66bacca5765bfc0314130d3af8f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier6.LillendAzata.One",
+      "guid": "a17b8dc7a9ce5e42945b83a6f52965f4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier7.LillendAzata.OneD3",
+      "guid": "254a0ddb4e6e59259a729b08312f7cd5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.LillendAzata.OneD4PlusOne",
+      "guid": "c700dc52c2fd56ef82c92930a44c4665",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.LillendAzata.OneD4PlusOne",
+      "guid": "a05930746ec65ef8bd326b271c3c2076",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

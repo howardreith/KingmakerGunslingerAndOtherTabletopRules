@@ -79,6 +79,7 @@ def suppressed_keys():
 
 DONOR_NAMES = {
     "6114adae73a1338498412b3c63c946f8": "CR4_SatyrShortbowStandard",
+    "86dc43534645e234eb35431131e3b669": "GuardCaptain (retained human rig research only)",
     "afe56099ff6046b40a359b7562c0424e": "MovanicDevaSummoned",
     "da807351572c540478b703957d863e68": "CR5_ManticoreStandard",
     "61dd71e874b16f742a0f783314105553": "CR7_HillGiantStandart",
@@ -879,6 +880,21 @@ def planned():
         ("KMG.Summoning.FeyCelestial.Satyr.FearAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.FeyCelestial.Satyr.FearEligibility", "SatyrControlEligibility"),
         ("KMG.Summoning.FeyCelestial.Satyr.Brain", "BlueprintBrain"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.UnitType", "BlueprintUnitType"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.Traits", "BlueprintFeature"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.SpellList", "BlueprintSpellList"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.Spellbook", "BlueprintSpellbook"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.Longsword", "BlueprintItemWeapon"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.LongswordType", "BlueprintWeaponType"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.PerformanceResource", "BlueprintAbilityResource"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.CourageRecipient", "BlueprintBuff"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.CourageArea", "BlueprintAbilityAreaEffect"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.CourageCarrier", "BlueprintBuff"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.Courage", "BlueprintActivatableAbility"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.HealAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.HealEligibility", "LillendHealingEligibility32"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.CourageAi", "LillendCourageAi32"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.Brain", "BlueprintBrain"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",

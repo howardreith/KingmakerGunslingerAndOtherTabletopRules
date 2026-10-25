@@ -15,6 +15,8 @@ namespace KingmakerGunslinger.DomainTests
             var released = first.Where(value => value.Symbol != "KMG.Summoning.Unit.Griffon" &&
                 !value.Symbol.EndsWith(".Satyr", StringComparison.Ordinal) &&
                 !value.Symbol.Contains(".Satyr.") &&
+                !value.Symbol.EndsWith(".LillendAzata", StringComparison.Ordinal) &&
+                !value.Symbol.Contains(".LillendAzata.") &&
                 !value.Symbol.Contains(".Griffon.") &&
                 !GiantHumanoidRulesPolicy.IsNewIdentity(value.Symbol) &&
                 !value.Symbol.Contains(".Ettin.") &&

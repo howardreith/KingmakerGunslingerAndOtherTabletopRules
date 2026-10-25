@@ -63,7 +63,7 @@ namespace KingmakerGunslinger.DomainTests
             ExpandedSummoningIdentityCatalog.Build();
             var monster = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster);
             var all = monster.Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
-                .Where(value => value.Creature.Key != "satyr").ToArray();
+                .Where(value => value.Creature.Key != "satyr" && value.Creature.Key != "lillend-azata").ToArray();
             var dretch = all.Where(value => value.Creature.Key == "dretch").ToArray();
             var trumpet = all.Where(value => value.Creature.Key == "trumpet-archon").ToArray();
             var hound = all.Where(value => value.Creature.Key == "hound-archon").ToArray();

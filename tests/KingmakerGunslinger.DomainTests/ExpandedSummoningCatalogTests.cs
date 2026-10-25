@@ -6,6 +6,36 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningCatalogTests
     {
+        internal static void LillendHiddenRoutesPreservePublishedSurface()
+        {
+            var lillend = ExpandedSummoningCatalog.All.Single(value => value.Key == "lillend-azata");
+            Assertions.False(lillend.NaturesAllyTier.HasValue, "Lillend has no Nature's Ally placement.");
+            Assertions.False(lillend.MonsterTemplated, "A celestial outsider does not gain animal templates.");
+            var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Where(value => value.Creature.Key == lillend.Key).OrderBy(value => value.ParentTier).ToArray();
+            Assertions.True(routes.Select(value => value.ParentTier).SequenceEqual(new[] { 6, 7, 8, 9 }),
+                "Lillend occupies exactly SM VI through IX.");
+            Assertions.True(routes.Select(value => value.Multiplicity).SequenceEqual(new[] {
+                SummonMultiplicity.One, SummonMultiplicity.OneD3,
+                SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne }),
+                "Lillend quantities propagate from its own tier.");
+            Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)),
+                "Unqualified Lillend routes remain hidden.");
+            SummonVisibilityCatalog.Validate(); SummonChoicePresentationPolicy.Validate();
+            Assertions.Equal("Lillend Azata", SummonChoicePresentationPolicy.For(lillend.Key).Label,
+                "The hidden creature has its deliberate identity.");
+            var identities = ExpandedSummoningIdentityCatalog.Build().ToDictionary(value => value.Symbol);
+            foreach (var row in new[] {
+                new { Suffix = "Spellbook", Type = "BlueprintSpellbook" },
+                new { Suffix = "SpellList", Type = "BlueprintSpellList" },
+                new { Suffix = "Courage", Type = "BlueprintActivatableAbility" },
+                new { Suffix = "PerformanceResource", Type = "BlueprintAbilityResource" },
+                new { Suffix = "CourageAi", Type = "LillendCourageAi32" },
+                new { Suffix = "HealEligibility", Type = "LillendHealingEligibility32" } })
+                Assertions.Equal(row.Type, identities["KMG.Summoning.FeyCelestial.LillendAzata." + row.Suffix].PlannedType,
+                    "Lillend's private native support dependency retains its declared type.");
+        }
+
         internal static void SatyrHiddenRoutesPreservePublishedSurface()
         {
             var satyr = ExpandedSummoningCatalog.All.Single(value => value.Key == "satyr");
@@ -23,7 +53,7 @@ namespace KingmakerGunslinger.DomainTests
                 "Unqualified Satyr routes must remain hidden.");
             var prior = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly))
-                .Where(value => value.Creature.Key != "satyr").ToArray();
+                .Where(value => value.Creature.Key != "satyr" && value.Creature.Key != "lillend-azata").ToArray();
             Assertions.Equal(1150, prior.Length, "Accepted public route surface must be preserved.");
             Assertions.True(prior.All(SummonVisibilityCatalog.IsPublished), "Existing routes must remain published.");
             SummonVisibilityCatalog.Validate();
