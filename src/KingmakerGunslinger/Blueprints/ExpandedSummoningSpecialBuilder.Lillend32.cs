@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -149,6 +150,7 @@ namespace KingmakerGunslinger.Blueprints
                 "6d6d9e06b76f5204a8b7856c78607d5d", "captured Inspire Courage effect");
             var recipient = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CourageRecipient");
             CopyFields(nativeRecipient, recipient); recipient.name = InternalName(Lillend32Prefix + "CourageRecipient");
+            ClearLillendPerformanceDeathPersistence32(recipient);
             recipient.ComponentsArray = nativeRecipient.ComponentsArray.Where(value => !(value is ContextRankConfig))
                 .Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             foreach (var bonus in recipient.GetComponents<AddContextStatBonus>()) bonus.Value = Simple(2);
@@ -159,6 +161,7 @@ namespace KingmakerGunslinger.Blueprints
             area.GetComponents<AbilityAreaEffectBuff>().Single().Buff = recipient;
             var carrier = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CourageCarrier");
             CopyFields(nativeCarrier, carrier); carrier.name = InternalName(Lillend32Prefix + "CourageCarrier");
+            ClearLillendPerformanceDeathPersistence32(carrier);
             var emanation = ScriptableObject.CreateInstance<AddAreaEffect>(); emanation.AreaEffect = area;
             carrier.ComponentsArray = new BlueprintComponent[] { emanation };
             if (carrier.StayOnDeath) throw new InvalidOperationException("Lillend performance cannot outlive its owner.");
@@ -177,6 +180,20 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(Lillend32Prefix + "Courage.Description",
                     "Start as a move action. Allies gain+2 competence to attacks and weapon damage and+2 morale against charm and fear. Maintaining the native performance spends one owned round each round."), nativeToggle.Icon);
             return toggle;
+        }
+
+        private static void ClearLillendPerformanceDeathPersistence32(BlueprintBuff owned)
+        {
+            // The native bard carrier retains StayOnDeath. Clear only that
+            // flag on these private summon clones; retain every other flag.
+            var field = typeof(BlueprintBuff).GetField("m_Flags",
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (field == null || !field.FieldType.IsEnum)
+                throw new MissingFieldException(typeof(BlueprintBuff).FullName, "m_Flags");
+            int before = Convert.ToInt32(field.GetValue(owned));
+            int death = Convert.ToInt32(Enum.Parse(field.FieldType, "StayOnDeath"));
+            field.SetValue(owned, Enum.ToObject(field.FieldType, before & ~death));
+            if (owned.StayOnDeath) throw new InvalidOperationException("Owned Lillend performance death flag did not clear.");
         }
     }
 }
