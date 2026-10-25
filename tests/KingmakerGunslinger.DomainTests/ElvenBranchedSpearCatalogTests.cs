@@ -68,12 +68,15 @@ namespace KingmakerGunslinger.DomainTests
                 assembly.Contains("AssemblyInformationalVersion(\"" + informational + "\")"),
                 "Release and assembly identity must agree with the active source version.");
             string suffix = informational.Substring(version.Length + 1);
-            Assertions.True(package.Contains("$($info.Id)-$($info.Version)-" + suffix + ".zip") &&
+            Assertions.True(package.Contains("$($info.Id)-$($info.Version)-$suffix.zip") &&
+                package.Contains("$suffix=if($info.Version -eq '" + version + "'){'" + suffix + "'}") &&
                 !package.Contains("expanded-summoning.zip"),
                 "Default package identity must use the active informational-version suffix.");
             Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") &&
                 runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&
-                localBuild.Contains("active version " + version) &&
+                System.Text.RegularExpressions.Regex.Match(localBuild,
+                    @"if \(\$info.Version -notin @\(([^)]+)\)\)").Groups[1].Value
+                    .Split(',').Any(value => value.Trim() == "'" + version + "'") &&
                 localBuild.Contains("artifacts\\local-runtime\\$($info.Version)"),
                 "Build and guarded-runtime version enforcement must follow the active version.");
         }
