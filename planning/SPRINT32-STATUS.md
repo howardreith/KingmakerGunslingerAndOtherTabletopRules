@@ -71,44 +71,36 @@ initially exposed stale current roster/proxy declarations, now corrected. The
 previous553 passing assertions are retained; the affected proxy test rerun PASS.
 No Lillend runtime or final qualification claim follows from these offline checks.
 
-Latest candidate source `7e16bf24b622fe298a060e568dbd1ad151be88e9`, purpose
-`sprint32-lillend-support`, retained0.0.167. Complete wrapper,554/554 related
-domain tests, exact compile and strict417-file package PASS.
-ZIP `KingmakerGunslinger-0.0.167-development-sprint32-lillend-support-7e16bf24b622.zip`,
-SHA256 `ba5c51cdf6242a86aef03bcb2efb6fe75eca9df4cb0afcb2dcabf9e32fb6f4d4`;
-DLL `61671aebfa347a16917ddf205f5cb9cf4d63f91cffc681a90950b28c0d8e7f61`;
-MVID `efe4f719-6c06-44d8-9c3a-b5b99b142f89`.
-Native run `20261025T1653581612149Z-c9ecf18aef4144f5874d86e4e553f23b`
-FAIL at initialization, zero gameplay assertions: general item-enchantment
-array could not bind to the native weapon-enchantment field. Corrected with
-explicit `Cast<BlueprintWeaponEnchantment>()`, which refuses unexpected types.
-Focused production compile/hidden Lillend route PASS; narrow independent review
-checked remaining reflected assignments and Courage component lookup shapes
-against installed/captured types, with no additional concrete startup blocker.
-This correction still requires fresh native execution.
-
-Corrected candidate `8af313222015ce6abd724682b55f0ced573ef73b` passed the complete
-wrapper, selected hidden-Lillend route, exact compile and417-file package.
-ZIP SHA256 `18ce6079a7818698fa0c14b949cb65eff147760b7722067421a4706ee7e85a25`;
-DLL `b90e5ab5f615296a7b9312a461b5091cbb2b9c10687770ae62e03012cbf195b2`;
-MVID `2453ba44-1794-450e-b48f-6200648bdef8`.
-Native `20261025T1706472103348Z-f64399131c6e472c97155d130ec22dfa` also FAILed
-initialization, zero gameplay assertions: the native Courage carrier does have
-StayOnDeath. The prior static review had not established that copied flag.
-Replan after these two startup failures: stop launches, inspect the actual
-native enum/getter and every remaining startup assumption, and reproduce the
-correction directly against the installed managed field before packaging again.
-The private carrier/recipient now clear only StayOnDeath, preserving all other
-flags and leaving native donors untouched. Actual compiled adapter PASS124
-synthetic flag inputs against installed field/getter; this is an offline managed
-contract check, not activation/death/gameplay proof. Production compile and
-selected route PASS. Remaining post-carrier lookups reuse captured/accepted
-native facts and reviewed component shapes. Fresh native proof is still required.
+Current candidate `2e1ffcf25c6d2b2f254dae7e94d03266554f3cc7`, purpose
+`sprint32-lillend-support`, retained0.0.167. Complete wrapper, selected hidden
+route, exact compilation and strict417-file package PASS. Related554-test
+execution on7e16 is reviewed reuse, not fresh execution of2e1.
+ZIP SHA256 `f970c747950ee72aceefa12ca1d124c02ff1bbde65de14931db5fda351d983af`;
+DLL `5a8dc64a07676915a58984a2997aa9a542813d53837153e83c5c44fe55375aab`;
+MVID `aaa0dd1d-5263-432a-950a-e47e3028b391`.
+Native `20261025T1721428986869Z-0964fdd65f634f98bec28cc1eb2b90c1` **FAIL**:
+4/6 assertions pass, including native7CL/slots5/4/2/rounds20 and restoration.
+Courage did run, charge one Move/round20->19, grant ally+2 and exclude enemy;
+this is useful partial product evidence, not a passed activation contract.
+Healing/fallback stages were NOT_RUN after Courage failed.
+Independent review found the product adapter replaced the original AI command:
+native `IsActivateWithSameCommand` recognizes Judgment only, even for the same
+bard toggle. Earlier assumption that queued identity alone prevents replacement
+was wrong. Frame snapshots missed the original command and the replacement lost
+AI provenance. No weakened predicate or reader-only relabeling is accepted.
+Correction: same-instance native compatibility postfix limited to the exact
+private Lillend Traits owner/Courage; every other result unchanged. Review of
+all five native callsites found no free-command-credit/cancellation expansion.
+Fixture now retains native command-start events and requires one original AI
+activation with exact performance identity, action debit and ally effects.
+Fresh execution is required. Original7e/8af startup failures,124-case native
+managed flag check and their exact candidate identities remain in history.
 
 ## Finite acceptance table
 
-Final rows remain incomplete. A3 has the exact early RTWP execution above; all
-other final gameplay/visual/persistence/integration coverage remains NOT_RUN.
+Final rows remain incomplete. A3 has the early RTWP execution above; A4 has
+partial Courage observations with a failed activation contract. Other final
+gameplay/visual/persistence/integration coverage remains NOT_RUN.
 
 | ID | Observable result | Route and evidence | Mode/profile | Invalidated by |
 |---|---|---|---|---|
@@ -181,8 +173,8 @@ before12d dispatch3,311,755,264bytes; required allowance 1.1 GB peak plus 2 GB m
 Recheck before next package/dispatch. A full extra checkout measures 1,019,350,022
 bytes, so do not casually duplicate it; final records-only checkout can be bounded.
 
-Build attempts/validated development packages/native launches:12/6/6.
-Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 +233.46 seconds. Full active-time
+Build attempts/validated development packages/native launches:13/7/7.
+Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 +233.46 +289.04 seconds. Full active-time
 category totals unavailable; retain timestamps, do not infer throughput.
 Repeated blockers were old admission/count assumptions, now exercised through
 actual offline/package checks. The corrected registration assumptions are closed by12d natural gameplay PASS.
@@ -200,11 +192,31 @@ are explicitly outside this first-debit probe and remain final acceptance work.
 Icon catalog30/30 and canonical137-source/export validation PASS; all136 prior
 rows remain identical. Production compile and corrected hidden/proxy test PASS.
 
-Next: commit the inspected private lifetime-flag correction, package once and
-rerun the same bounded
-Lillend native probe. Unchanged554-test evidence is reviewed reuse; exact
-production compile/package and selected hidden-route check run on corrected bytes. No owner decision
-is pending. Full final product/rules/coverage review remains pending.
+Latest raw evidence folder `20261025T1721428206203Z-disposable-expanded-summoning-sprint32-native-review`;
+result SHA256 `edc2f805e06f81476b1c3a4cdff3fdcfb7e9840a73651dbeb029afc6cc30b68b`.
+Original Unity log retained under `artifacts/sprint32-lillend-2e1ffcf2/`, SHA256
+`63f9752df16a23dbddd711b9fdfb29437a75adc0c4f67d80df718affd46915bd`.
+Transaction `compat-20261025T171922Z-3df2d2c516bb` Restored/verified17:24:10UTC;
+protected Compare PASS967mods/118saves/18refs/83settings/0tasks/unchangedSteam.
+No owned live transaction/game remains. Native128.432s, transaction289.04s.
+Six further closed S29 duplicate extractions recovered503,971,440bytes;
+plan SHA256 `d165d9a36f49373d2e0bd808e9d492f1617b07a5f50a58088cf8844eea4d6a48`.
+Exact ZIP/receipts/failures/backups retained, protected Compare PASS; free3,498,569,728.
+
+Pending owner decision: Lillend Darkness has no established native/mod mapping.
+The prior83,023-blueprint native audit contains no Darkness spell; native engine
+lacks mechanical illumination grades and the accepted Shadow Blend adaptation
+is a bounded day/night/Daylight rule. PF1 Darkness needs light-level/vision-aware
+concealment and light interaction, not fog. Asked owner whether to authorize a
+bounded summon-owned darkness subsystem with caster-carried-object adaptation
+(estimated12-30 active hours, substantial uncertainty) or explicitly omit it.
+A1/A4 Darkness remains pending; no implementation or silent omission. Other
+mechanics continue. Countersong/Suggestion decisions remain unchanged.
+
+Next: package the compiled/route-tested command correction once and rerun the
+bounded Lillend support phase. Full final
+product/rules/coverage review remains pending. Current replan produced a concrete
+native-command contract correction, not another unchanged retry.
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all 30 public-route/body/icon,
 standalone final integration, highest-risk combined final integration. Their
 [original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.

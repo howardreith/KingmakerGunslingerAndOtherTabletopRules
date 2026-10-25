@@ -344,3 +344,39 @@ assumptions. Reconciled the exact new private graph and historical scope, retain
 old released-route/identity checks and historical reports, and removed the test
 requirement that current records impersonate the old S30-31 ledger. Packaging
 is covered by the executed positive/negative serializer/strict-validator checks.
+
+## Preserved Lillend startup record before command correction
+
+Latest candidate source `7e16bf24b622fe298a060e568dbd1ad151be88e9`, purpose
+`sprint32-lillend-support`, retained0.0.167. Complete wrapper,554/554 related
+domain tests, exact compile and strict417-file package PASS.
+ZIP `KingmakerGunslinger-0.0.167-development-sprint32-lillend-support-7e16bf24b622.zip`,
+SHA256 `ba5c51cdf6242a86aef03bcb2efb6fe75eca9df4cb0afcb2dcabf9e32fb6f4d4`;
+DLL `61671aebfa347a16917ddf205f5cb9cf4d63f91cffc681a90950b28c0d8e7f61`;
+MVID `efe4f719-6c06-44d8-9c3a-b5b99b142f89`.
+Native run `20261025T1653581612149Z-c9ecf18aef4144f5874d86e4e553f23b`
+FAIL at initialization, zero gameplay assertions: general item-enchantment
+array could not bind to the native weapon-enchantment field. Corrected with
+explicit `Cast<BlueprintWeaponEnchantment>()`, which refuses unexpected types.
+Focused production compile/hidden Lillend route PASS; narrow independent review
+checked remaining reflected assignments and Courage component lookup shapes
+against installed/captured types, with no additional concrete startup blocker.
+This correction still requires fresh native execution.
+
+Corrected candidate `8af313222015ce6abd724682b55f0ced573ef73b` passed the complete
+wrapper, selected hidden-Lillend route, exact compile and417-file package.
+ZIP SHA256 `18ce6079a7818698fa0c14b949cb65eff147760b7722067421a4706ee7e85a25`;
+DLL `b90e5ab5f615296a7b9312a461b5091cbb2b9c10687770ae62e03012cbf195b2`;
+MVID `2453ba44-1794-450e-b48f-6200648bdef8`.
+Native `20261025T1706472103348Z-f64399131c6e472c97155d130ec22dfa` also FAILed
+initialization, zero gameplay assertions: the native Courage carrier does have
+StayOnDeath. The prior static review had not established that copied flag.
+Replan after these two startup failures: stop launches, inspect the actual
+native enum/getter and every remaining startup assumption, and reproduce the
+correction directly against the installed managed field before packaging again.
+The private carrier/recipient now clear only StayOnDeath, preserving all other
+flags and leaving native donors untouched. Actual compiled adapter PASS124
+synthetic flag inputs against installed field/getter; this is an offline managed
+contract check, not activation/death/gameplay proof. Production compile and
+selected route PASS. Remaining post-carrier lookups reuse captured/accepted
+native facts and reviewed component shapes. Fresh native proof is still required.
