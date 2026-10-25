@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 512;
+        internal const int SpecialIdentityCount = 526;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -821,6 +821,20 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.HealEligibility", "LillendHealingEligibility32"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageAi", "LillendCourageAi32"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Dagger", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.DaggerType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Horns", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.HornsType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.CharmPerson", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.CharmPersonAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.CharmPersonEligibility", "SatyrControlEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.Sleep", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.SleepAi", "BlueprintAiCastSpell"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.SleepEligibility", "SatyrControlEligibility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.MeleeAi", "BlueprintAiSwitchWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.MeleeEligibility", "SatyrWeaponChoice32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.RangedAi", "BlueprintAiSwitchWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.RangedEligibility", "SatyrWeaponChoice32"));
             Validate(result);
             return result.AsReadOnly();
         }
