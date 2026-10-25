@@ -1,21 +1,28 @@
-# v0.0.167 rules review and model refinement — IN PROGRESS / PARTIAL
+# v0.0.167 rules review and model refinement — CHECKPOINT FOR OWNER REVIEW
 
 The owner's October 25 review of released v0.0.167 found two source-level
 rules defects and requested a model refinement pass. Branch
 `codex/s30-31-rules-and-model-refinement`, worktree
 `C:/Dev/KingmakerGunslingerLab/worktrees/s30-31-rules-model-refinement`, lab
-machine DATA, base master `48e6fb4abf`. No release is authorized.
+machine DATA, base master `48e6fb4abf`. No release is authorized or prepared.
+Full record: [review follow-up](docs/SPRINT30-31-REVIEW-FOLLOWUP.md).
 
-- **R1 (OPEN):** Trumpet Archon's rebuilt facts omit the native Airborne fact
-  that Astral and Lantern carry.
-- **R2 (OPEN):** Astral Deva's configured Magic Circle control protection
-  reaches 10 feet; its Protective Aura requires 20 feet.
-- **SR=no globe dispatch:** an unverified engine-path question, not a defect.
-- **Models:** Lemure, Dretch and Hound Archon visible surfaces to be rebuilt on
-  the retained rig, identity and runtime contracts.
+- **R1 fixed:** Trumpet grants the native Airborne fact; native
+  defense-consumers PASS 51/51 (KMG-only).
+- **R2 fixed:** the Astral's 20-foot aura carries the configured circle control
+  protection; native shared-circles PASS 20/20 with new reach probes.
+- **Models rebuilt:** Lemure, Dretch, Hound Archon. Native outsider-bodies
+  PASS 12/12, hound-armed 9/9, hound-disarm 12/12; Working-save refinement
+  packets and cleanup PASS for all three.
+- **Classified, retained failures:** the full-stack defense reset (Call of the
+  Wild) and the creature-review motion check (accessory renderer); both
+  reproduce on unchanged master.
+- **Open:** owner aesthetic review; the Hound sword grip (proposed measured
+  offset, not implemented); the Astral globe SR=no question (not
+  investigated); cold-load, public routes, final integration and any release
+  validator/candidate (not run).
 
-v0.0.167's released records below stay as published. Status returns to
-complete only when source, tests, native observations and records agree.
+v0.0.167's released records below stay as published.
 
 # Sprints 30-31 - RELEASED / STOP
 
