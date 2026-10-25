@@ -80,7 +80,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "DevilType", "PoisonImmunity", "ElectricityImmunity",
                     "PetrificationImmunity", "HolyWord", "HolyAura",
                     "BladeBarrier", "LesserGlobe", "GlobeOfInvulnerability",
-                    "Heal", "SpellImmunity", "InvisibilityPurge" };
+                    "Heal", "SpellImmunity", "InvisibilityPurge", "MovanicDeva",
+                    "SubtypeAngel", "ProtectiveToggle" };
                 var graphs = new JArray();
                 foreach (string name in consumers)
                 {

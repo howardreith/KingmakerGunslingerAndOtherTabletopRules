@@ -161,54 +161,113 @@ namespace KingmakerGunslinger.Summoning
     }
 
     /// <summary>The lesser-globe half of one Astral Deva protective aura.
-    /// The recipient buff's context identifies the exact emitter. Spells and
-    /// SLAs of level three or lower that originate outside that emitter's
-    /// twenty-foot aura are immune; an origin inside remains unaffected.</summary>
+    /// The recipient buff's context identifies the exact emitter. A spell or
+    /// SLA of level three or lower whose caster stands outside that emitter's
+    /// twenty-foot aura cannot affect the covered creature, whether or not it
+    /// allows spell resistance: the native dispatch skips its effect and a
+    /// persistent spell area excludes the creature. A caster inside remains
+    /// unaffected. This is a globe, not spell resistance; it never consults
+    /// or changes a spell resistance rule.</summary>
     [Serializable]
-    public sealed class AstralProtectiveGlobe :
-        RuleTargetLogicComponent<RuleSpellResistanceCheck>
+    public sealed class AstralProtectiveGlobe : OwnedGameLogicComponent<UnitDescriptor>
     {
         public BlueprintUnit OwningBlueprint;
         public int MaximumSpellLevel;
         public int RadiusFeet;
-        private static readonly FieldInfo TargetIsImmune =
-            typeof(RuleSpellResistanceCheck).GetField(
-                "<TargetIsImmune>k__BackingField",
-                BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public override void OnEventAboutToTrigger(RuleSpellResistanceCheck evt)
-        { Apply(evt); }
-
-        public override void OnEventDidTrigger(RuleSpellResistanceCheck evt)
-        { Apply(evt); }
-
-        private void Apply(RuleSpellResistanceCheck evt)
+        internal static bool Blocks(UnitEntityData target, MechanicsContext context)
         {
-            UnitEntityData target = Owner == null ? null : Owner.Unit;
+            UnitEntityData source = context == null ? null : context.MaybeCaster;
+            BlueprintAbility ability = context == null ? null : context.SourceAbility;
+            if (target == null || source == null || ability == null ||
+                context.Params == null || ReferenceEquals(source, target))
+                return false;
+            bool spell = ability.Type == AbilityType.Spell;
+            bool spellLike = ability.Type == AbilityType.SpellLike;
+            int level = context.Params.SpellLevel;
+            // Area membership asks for every unit each tick: reject cheaply
+            // before reading the target's buffs.
+            if (!spell && !spellLike || level < 0 ||
+                level > AstralDevaRulesPolicy.LesserGlobeMaximumSpellLevel)
+                return false;
+            foreach (Buff buff in target.Buffs.Enumerable)
+            {
+                foreach (AstralProtectiveGlobe globe in buff.SelectComponents<AstralProtectiveGlobe>())
+                {
+                    if (globe.Covers(level, spell, spellLike, source))
+                        return !IsConstantCircle(context, ability, source);
+                }
+            }
+            return false;
+        }
+
+        private bool Covers(int level, bool spell, bool spellLike, UnitEntityData source)
+        {
             UnitEntityData emitter = Fact == null || Fact.MaybeContext == null ?
                 null : Fact.MaybeContext.MaybeCaster;
-            UnitEntityData source = evt == null || evt.Context == null ?
-                null : evt.Context.MaybeCaster;
-            BlueprintAbility ability = evt == null || evt.Context == null ?
-                null : evt.Context.SourceAbility;
-            if (evt == null || target == null || emitter == null || source == null ||
-                ability == null || Fact == null || !Fact.Active ||
-                OwningBlueprint == null || !ReferenceEquals(emitter.Blueprint, OwningBlueprint) ||
-                MaximumSpellLevel != AstralDevaRulesPolicy.LesserGlobeMaximumSpellLevel ||
-                RadiusFeet != AstralDevaRulesPolicy.AuraRadiusFeet ||
-                evt.Context.Params == null ||
-                !AstralDevaRulesPolicy.BlocksLesserGlobe(
-                    evt.Context.Params.SpellLevel,
-                    ability.Type == AbilityType.Spell,
-                    ability.Type == AbilityType.SpellLike,
+            return emitter != null && Fact.Active && OwningBlueprint != null &&
+                ReferenceEquals(emitter.Blueprint, OwningBlueprint) &&
+                MaximumSpellLevel == AstralDevaRulesPolicy.LesserGlobeMaximumSpellLevel &&
+                RadiusFeet == AstralDevaRulesPolicy.AuraRadiusFeet &&
+                AstralDevaRulesPolicy.BlocksLesserGlobe(level, spell, spellLike,
                     Vector3.Distance(emitter.Position, source.Position),
-                    source.Corpulence))
-                return;
-            if (TargetIsImmune == null || TargetIsImmune.FieldType != typeof(bool) ||
-                TargetIsImmune.IsInitOnly)
-                throw new MissingFieldException(typeof(RuleSpellResistanceCheck).FullName,
-                    "<TargetIsImmune>k__BackingField");
-            TargetIsImmune.SetValue(evt, true);
+                    source.Corpulence);
+        }
+
+        // ArchonConstantMagicCircle gives archons and angels their constant
+        // circles and auras a Magic Circle spell context, but those auras are
+        // supernatural, not cast: no ability fact, spellbook or item.
+        private static bool IsConstantCircle(MechanicsContext context,
+            BlueprintAbility ability, UnitEntityData source)
+        {
+            AbilityData data = context.SourceAbilityContext == null ? null :
+                context.SourceAbilityContext.Ability;
+            if (data == null || data.Fact != null || data.Spellbook != null ||
+                data.SourceItem != null)
+                return false;
+            foreach (Feature feature in source.Descriptor.Progression.Features.Enumerable)
+            {
+                foreach (ArchonConstantMagicCircle grant in
+                    feature.Blueprint.GetComponents<ArchonConstantMagicCircle>())
+                {
+                    if (ReferenceEquals(grant.Spell, ability) &&
+                        ReferenceEquals(grant.OwningBlueprint, source.Blueprint))
+                        return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    // The single native dispatch of an ability effect to one target, for
+    // single-target, burst, line, projectile and touch delivery alike. A
+    // blocked effect is neither applied nor shown on that creature. As with
+    // native spell resistance, a held touch charge is judged on delivery.
+    [HarmonyPatch(typeof(AbilityExecutionProcess), "DoApplyEffect")]
+    internal static class AstralProtectiveGlobeEffectPatch
+    {
+        private static bool Prefix(AbilityExecutionContext context, TargetWrapper target)
+        {
+            UnitEntityData unit = target == null ? null : target.Unit;
+            BlueprintAbility ability = context == null ? null : context.AbilityBlueprint;
+            if (unit == null || ability == null || ability.StickyTouch != null)
+                return true;
+            return !AstralProtectiveGlobe.Blocks(unit, context);
+        }
+    }
+
+    // A persistent spell area excludes a covered creature. The effect is
+    // suppressed, not dispelled: it returns once the creature leaves the
+    // globe or the aura ends.
+    [HarmonyPatch(typeof(AreaEffectEntityData), "ShouldUnitBeInside")]
+    internal static class AstralProtectiveGlobeAreaPatch
+    {
+        private static void Postfix(AreaEffectEntityData __instance,
+            UnitEntityData unit, ref bool __result)
+        {
+            if (__result && __instance != null &&
+                AstralProtectiveGlobe.Blocks(unit, __instance.Context))
+                __result = false;
         }
     }
 

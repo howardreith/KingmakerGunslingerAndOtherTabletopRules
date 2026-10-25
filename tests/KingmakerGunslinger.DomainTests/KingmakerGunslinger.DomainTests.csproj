@@ -350,6 +350,9 @@
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantBodyRulesPolicy.cs"><Link>Summoning\GiantBodyRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantHumanoidRulesPolicy.cs"><Link>Summoning\GiantHumanoidRulesPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\TheropodVisualPolicy.cs"><Link>Summoning\TheropodVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\LemureVisualPolicy.cs"><Link>Summoning\LemureVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\DretchVisualPolicy.cs"><Link>Summoning\DretchVisualPolicy.cs</Link></Compile>
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\HoundArchonVisualPolicy.cs"><Link>Summoning\HoundArchonVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\GiantBodyVisualPolicy.cs"><Link>Summoning\GiantBodyVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\ArmoredDinosaurVisualPolicy.cs"><Link>Summoning\ArmoredDinosaurVisualPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\AnkylosaurusTailImpactPolicy.cs"><Link>Summoning\AnkylosaurusTailImpactPolicy.cs</Link></Compile>

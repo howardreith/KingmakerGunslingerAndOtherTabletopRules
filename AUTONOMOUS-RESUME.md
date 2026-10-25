@@ -1,3 +1,37 @@
+# v0.0.168 Sprints 30-31 follow-up — RELEASE AUTHORIZED
+
+The owner's October 25 reviews of released v0.0.167 found three rules defects
+and asked for model refinement and a fixed Hound sword grip, then authorized
+finalization, merge and release of v0.0.168 without another approval. Branch
+`codex/s30-31-rules-and-model-refinement`, worktree
+`C:/Dev/KingmakerGunslingerLab/worktrees/s30-31-rules-model-refinement`, lab
+machine DATA, base master `48e6fb4abf`. Full record:
+[review follow-up](docs/SPRINT30-31-REVIEW-FOLLOWUP.md); notes:
+[v0.0.168](docs/RELEASE-NOTES-0.0.168.md).
+
+- **R3 fixed:** the Astral aura is a lesser globe through the native effect
+  dispatch and persistent-area membership, not spell resistance; native
+  astral-core PASS 13/13. The native Movanic Deva aura implements no globe.
+- **Grip fixed:** measured in game; hound-armed 9/9, hound-disarm 12/12.
+- **Public surface unchanged:** 1,150 generated placements plus 29 native
+  wrappers make 1,179 visible choices, as released in v0.0.167.
+
+Earlier checkpoint summary (same branch):
+
+- **R1 fixed:** Trumpet grants the native Airborne fact; native
+  defense-consumers PASS 51/51 (KMG-only).
+- **R2 fixed:** the Astral's 20-foot aura carries the configured circle control
+  protection; native shared-circles PASS 20/20 with new reach probes.
+- **Models rebuilt:** Lemure, Dretch, Hound Archon. Native outsider-bodies
+  PASS 12/12, hound-armed 9/9, hound-disarm 12/12; Working-save refinement
+  packets and cleanup PASS for all three.
+- **Classified, retained failures:** the full-stack defense reset (Call of the
+  Wild) and the creature-review motion check (accessory renderer); both
+  reproduce on unchanged master.
+- **Not run for v0.0.168:** cold-load, public routes and final integration.
+
+v0.0.167's released records below stay as published.
+
 # Sprints 30-31 - RELEASED / STOP
 
 Stable [v0.0.167](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.167) is published from tested source `07166abedd17ec1abcf3a4806cd0939ff5c543c9`.
