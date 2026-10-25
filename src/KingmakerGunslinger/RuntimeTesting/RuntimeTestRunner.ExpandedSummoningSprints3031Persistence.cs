@@ -242,6 +242,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Actual saved native item owners, independently spent resources/preparations and finite source-specific victim states survive fresh loading without reseeding.");
         }
 
+        private static int Sprints3031PersistenceAttackAC(UnitEntityData attacker, UnitEntityData target, ItemEntityWeapon weapon)
+        {
+            // Same installed native consumer as CircleAttackAC, with an
+            // explicitly selected real weapon and no damage restoration.
+            var roll = Rulebook.Trigger(new RuleAttackWithWeapon(attacker, target, weapon, 0)).AttackRoll;
+            if (roll == null || roll.ACRule == null)
+                throw new InvalidOperationException("Saved aura native weapon attack produced no AC rule.");
+            return roll.TargetAC;
+        }
+
         private void ObserveSprints3031PersistentAuras(UnitEntityData[] units, bool prepare)
         {
             var circle = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
@@ -278,26 +288,35 @@ namespace KingmakerGunslinger.RuntimeTesting
             var lemure = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "lemure");
             var hound = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "hound-archon");
             // ArmorClassBonusAgainstAlignment listens to RuleAttackWithWeapon,
-            // not standalone RuleCalculateAC. These are owned actors with their
-            // native empty-hand weapons: no manufactured hammer/sword rider.
-            // Keep any real damage; never repair health to manufacture survival.
-            int damageBefore = dretch.Damage;
-            int evilAc = CircleAttackAC(lemure, dretch, false);
-            int damageAfterEvil = dretch.Damage;
-            int goodAc = CircleAttackAC(hound, dretch, false);
-            bool recipientAlive = !dretch.Descriptor.State.IsDead && !dretch.Destroyed && dretch.IsInState;
+            // not standalone RuleCalculateAC. Lemure and Hound deliberately
+            // have no EmptyHandWeapon. Use their actual owned claw and bite,
+            // without switching equipment or adding a fixture weapon. Trumpet
+            // is a durable saved aura recipient; Dretch's exact grants remain
+            // checked above. Keep actual damage, including critical hits.
+            var recipient = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "trumpet-archon");
+            var evilWeapon = lemure.Body.PrimaryHand.MaybeWeapon;
+            var goodWeapon = hound.Body.AdditionalLimbs.Select(slot => slot.MaybeWeapon).Single(value => value != null);
+            if (evilWeapon == null || goodWeapon == null ||
+                !ReferenceEquals(evilWeapon.Wielder?.Unit, lemure) || !ReferenceEquals(goodWeapon.Wielder?.Unit, hound) ||
+                !recipient.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, astralRecipient)))
+                throw new InvalidOperationException("Saved aura attack consumer lacks its actual owned natural weapon or recipient grant.");
+            int damageBefore = recipient.Damage;
+            int evilAc = Sprints3031PersistenceAttackAC(lemure, recipient, evilWeapon);
+            int damageAfterEvil = recipient.Damage;
+            int goodAc = Sprints3031PersistenceAttackAC(hound, recipient, goodWeapon);
+            bool recipientAlive = !recipient.Descriptor.State.IsDead && !recipient.Destroyed && recipient.IsInState;
             var spell = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                 "d7cbd2004ce66a042aeab2e95a3c5c61", "pilot cold circle save consumer");
-            int evilSave = CircleSave(lemure, dretch, spell), goodSave = CircleSave(hound, dretch, spell);
+            int evilSave = CircleSave(lemure, recipient, spell), goodSave = CircleSave(hound, recipient, spell);
             RosterPersistenceCheck("s3031-" + (prepare ? "prepare" : "cold") + "-aura-consumers", recipientAlive && evilAc - goodAc == 4 && evilSave - goodSave == 4,
-                new JObject { ["recipient"] = dretch.UniqueId, ["evilAc"] = evilAc, ["goodAc"] = goodAc,
+                new JObject { ["recipient"] = recipient.UniqueId, ["evilAc"] = evilAc, ["goodAc"] = goodAc,
                     ["evilSave"] = evilSave, ["goodSave"] = goodSave, ["forcedRolls"] = 0,
                     ["phase"] = prepare ? "pre-save-setup" : "fresh-load",
                     ["evilAttacker"] = lemure.UniqueId, ["goodAttacker"] = hound.UniqueId,
-                    ["evilWeapon"] = lemure.Body.EmptyHandWeapon.Blueprint.AssetGuid,
-                    ["goodWeapon"] = hound.Body.EmptyHandWeapon.Blueprint.AssetGuid,
+                    ["evilWeapon"] = evilWeapon.Blueprint.AssetGuid,
+                    ["goodWeapon"] = goodWeapon.Blueprint.AssetGuid,
                     ["damageBefore"] = damageBefore, ["damageAfterEvil"] = damageAfterEvil,
-                    ["damageAfterGood"] = dretch.Damage, ["recipientAlive"] = recipientAlive, ["observerHealing"] = false },
+                    ["damageAfterGood"] = recipient.Damage, ["recipientAlive"] = recipientAlive, ["observerHealing"] = false },
                 prepare ? "Pre-save actual native weapon-attack AC and save consumers show the angel's nonstacking +4 over shared +2 circles; damage remains real." :
                     "After fresh loading, actual native weapon-attack AC and save consumers retain the angel's nonstacking +4 over shared +2 circles; damage remains real.");
         }
