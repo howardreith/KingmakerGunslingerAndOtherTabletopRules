@@ -69,8 +69,8 @@
   "files": {
     "assets/outsider-celestial/dretch-mesh.json": "b8b61e1487cc76aeb1f2ee0dab5c2d7d75f47111ca3c9446bce0a20ffe7d0e8e",
     "assets/outsider-celestial/dretch-albedo.png": "d9d12d2f7077d66b9ecad9de793d7dfed57f30dcf2167bb66c39c847072c6b42",
-    "assets-source/original-models/outsider-celestial/build_dretch.py": "2ac86b79dee754d34ce5a404e164b8a00006472c2cbd99ddf12e37ce541024ca",
-    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "22728990fd6d09dbf9667003666147bef5d41cc26ef17b225e23846f12589cf5",
+    "assets-source/original-models/outsider-celestial/build_dretch.py": "2077ef130b24c9c45830ede72fe401b1609ce0b6c4bd9179c680c512d400eab0",
+    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "2dd16a84e5248361eb3ee700127ab711cd8f01c590815bbeaae1e42f4b85d345",
     "assets-source/original-icons/expanded-summoning/sources/dretch.png": "1e5b158b197a6a5a9099adf85c0c148d1c5bfc59bd37e0202864b4e33fe87527"
   },
   "supersedes": {

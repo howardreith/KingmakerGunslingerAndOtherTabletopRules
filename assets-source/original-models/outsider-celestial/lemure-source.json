@@ -57,8 +57,8 @@
   "files": {
     "assets/outsider-celestial/lemure-mesh.json": "371885aa7cd9b5794dd03b0cfd4e1d3deebdf3364a8bdd8c9b42e1d287edfaaa",
     "assets/outsider-celestial/lemure-albedo.png": "9bfbbf32d0acd6d4efd86376fe07e0024649e2c6b2803d71b8bbfdfc3991c225",
-    "assets-source/original-models/outsider-celestial/build_lemure.py": "1847d4955d15f0a49f74ca5e5e5b1ba0711d7b479b57557b8256b89d67d06086",
-    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "22728990fd6d09dbf9667003666147bef5d41cc26ef17b225e23846f12589cf5",
+    "assets-source/original-models/outsider-celestial/build_lemure.py": "0af7fc669faf02640a9a22bdee17405dab5ce549a158482a4ad6a6a36e77e59e",
+    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "2dd16a84e5248361eb3ee700127ab711cd8f01c590815bbeaae1e42f4b85d345",
     "assets-source/original-icons/expanded-summoning/sources/lemure.png": "b742a9462547674ecde44fac7e52a3b0cbcc6b278fe84c76a678d48cc30faf18"
   },
   "supersedes": {

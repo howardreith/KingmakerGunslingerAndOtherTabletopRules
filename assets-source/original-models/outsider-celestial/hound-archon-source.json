@@ -71,8 +71,8 @@
   "files": {
     "assets/outsider-celestial/hound-archon-mesh.json": "f7cb0529686aee779dd76cd00e7514598d733e01db58f7b57c442c5bbfef482e",
     "assets/outsider-celestial/hound-archon-albedo.png": "5bb8806bbffa8ada24f3107b413863b845124006c14b8c9181f1374005ed8433",
-    "assets-source/original-models/outsider-celestial/build_hound_archon.py": "5b18b4cc8739f576624329e097a6fe0462ebb74eb384aa94e4121fe54df37f0d",
-    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "22728990fd6d09dbf9667003666147bef5d41cc26ef17b225e23846f12589cf5",
+    "assets-source/original-models/outsider-celestial/build_hound_archon.py": "d7f6ac95d6ba231ea36d5db5805cd4dea70fbe423d07e6571f671d6f3d7ea727",
+    "assets-source/original-models/outsider-celestial/sdf_sculpt.py": "2dd16a84e5248361eb3ee700127ab711cd8f01c590815bbeaae1e42f4b85d345",
     "assets-source/original-icons/expanded-summoning/sources/hound-archon.png": "99d63f3aeef8b6c80b9cd871d17eca5158a2d28b7fd07abcfdc3d6498df2c2bd"
   },
   "supersedes": {
