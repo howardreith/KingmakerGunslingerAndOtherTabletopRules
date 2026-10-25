@@ -68,6 +68,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Native spontaneous bard7 slots5/4/2 and20 performance rounds are independent per summon.");
                 if (!mapping) throw new InvalidOperationException("Lillend support mapping failed.");
                 var tail = owner.Body.AdditionalLimbs.Single().MaybeWeapon;
+                var providerField = typeof(UnityModManagerNet.UnityModManager).GetField("modEntries",
+                    System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                var providerList = providerField?.GetValue(null) as System.Collections.IEnumerable;
+                if (providerList == null) throw new InvalidOperationException("Native UMM provider inventory unavailable.");
+                var providers = providerList.Cast<object>().OfType<UnityModManagerNet.UnityModManager.ModEntry>()
+                    .Where(value => value.Info?.Id == Sprint32Suggestion.ModId).ToArray();
+                bool expectedSuggestion = providers.Length != 0;
+                bool providerReady = providers.Length == 0 || providers.Length == 1 && providers[0].Loaded &&
+                    providers[0].Active && !providers[0].ErrorOnLoading && providers[0].Assembly != null;
                 var bookKnown = new JObject(Enumerable.Range(0, 4).Select(level => new JProperty(level.ToString(),
                     new JArray(book.GetKnownSpells(level).Select(value => value.Blueprint.AssetGuid)))));
                 bool adult = owner.Stats.HitPoints.ModifiedValue == 73 && owner.Stats.AC.ModifiedValue == 20 &&
@@ -77,15 +86,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                     tail.IsSecondary && tail.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_Tail" &&
                     book.GetKnownSpells(0).Count() == 1 && book.GetKnownSpells(1).Count() == 3 &&
                     book.GetKnownSpells(2).Count() == (Sprint32Suggestion.Active ? 4 : 3) && book.GetKnownSpells(3).Count() == 2 &&
-                    Sprint32Suggestion.Settled && book.IsKnown(creation.OptionalSuggestion) == Sprint32Suggestion.Active;
+                    providerReady && Sprint32Suggestion.Settled && Sprint32Suggestion.Active == expectedSuggestion &&
+                    book.IsKnown(creation.OptionalSuggestion) == Sprint32Suggestion.Active;
                 Sprint25Check("lillend-adult-spell-mapping", adult, new JObject {
                     ["hp"] = owner.Stats.HitPoints.ModifiedValue, ["ac"] = owner.Stats.AC.ModifiedValue,
                     ["strength"] = owner.Stats.Strength.ModifiedValue, ["dexterity"] = owner.Stats.Dexterity.ModifiedValue,
                     ["constitution"] = owner.Stats.Constitution.ModifiedValue, ["charisma"] = owner.Stats.Charisma.ModifiedValue,
                     ["swordReachFeet"] = owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value,
+                    ["nativeReachStatFeet"] = owner.Stats.Reach.ModifiedValue,
+                    ["nativeReachContributionFeet"] = owner.Stats.ReachRange.Value,
+                    ["swordBlueprintContributionFeet"] = owner.Body.PrimaryHand.MaybeWeapon.Blueprint.AttackRange.Value,
                     ["tailReachFeet"] = tail.AttackRange.Value, ["tailSecondary"] = tail.IsSecondary,
                     ["knownSpells"] = bookKnown, ["suggestionSettled"] = Sprint32Suggestion.Settled,
                     ["suggestionDisposition"] = Sprint32Suggestion.Disposition,
+                    ["providerEntries"] = providers.Length, ["providerReady"] = providerReady,
+                    ["providerVersion"] = providers.Length == 1 ? providers[0].Info.Version : null,
                     ["suggestionKnown"] = book.IsKnown(creation.OptionalSuggestion), ["finalQualification"] = false },
                     "Composed native adult HP/AC/abilities, Large ten-foot sword/tail reach and real known spell families; optional Suggestion matches settled provider state.");
                 if (!adult) throw new InvalidOperationException("Lillend adult/spell composition mismatch.");
