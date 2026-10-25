@@ -1,13 +1,23 @@
-# v0.0.168 Sprints 30-31 follow-up — RELEASE AUTHORIZED
+# v0.0.168 Sprints 30-31 follow-up — RELEASED / STOP
+
+Stable [v0.0.168](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.168)
+is published (2026-10-25T18:36:51Z, Latest) from merged master
+`b306f85b5543fcaf9592e78f223f3e98455173b8` (PR #75), by the ordinary
+`Publish-Release.ps1` route with two deterministic builds. Asset
+`KingmakerGunslinger-0.0.168-expanded-summoning-sprints30-31-followup.zip`,
+SHA-256 `b9cf5e2b8b97877d4d595c71c92cda0040ec10cc4636eea8d86ef66d39e9ace6`,
+contained DLL SHA-256
+`6f7e92fc5cce285d56f60780141eb30772f40388c497b9bd91f71d70f32e3340`, 416 files.
+The downloaded asset, `SHA256SUMS.txt`, release manifest, contained DLL and
+`Info.json` (0.0.168) and the tag's commit were checked after publication.
 
 The owner's October 25 reviews of released v0.0.167 found three rules defects
 and asked for model refinement and a fixed Hound sword grip, then authorized
-finalization, merge and release of v0.0.168 without another approval. Branch
-`codex/s30-31-rules-and-model-refinement`, worktree
-`C:/Dev/KingmakerGunslingerLab/worktrees/s30-31-rules-model-refinement`, lab
-machine DATA, base master `48e6fb4abf`. Full record:
+finalization, merge and release without another approval. Work branch
+`codex/s30-31-rules-and-model-refinement`, lab machine DATA, base master
+`48e6fb4abf`. Full record:
 [review follow-up](docs/SPRINT30-31-REVIEW-FOLLOWUP.md); notes:
-[v0.0.168](docs/RELEASE-NOTES-0.0.168.md).
+[v0.0.168](docs/RELEASE-NOTES-0.0.168.md). No further work is selected.
 
 - **R3 fixed:** the Astral aura is a lesser globe through the native effect
   dispatch and persistent-area membership, not spell resistance; native
