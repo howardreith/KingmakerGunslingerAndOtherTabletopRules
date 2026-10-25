@@ -741,28 +741,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException(
                     "The exact native Mage Armor globe probe is ambiguous: " +
                     mageArmor.Length + ".");
-            BlueprintAbility[] buffSpells = {
-                mageArmor[0],
-                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
-                    BlueprintBootstrap.Library, "03a9630394d10164a9410882d31572f0",
-                    "native Aid globe probe"),
-                BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
-                    BlueprintBootstrap.Library, ShieldOtherBlueprints.ShieldOfFaithAbilityGuid,
-                    "native Shield of Faith globe probe") };
-            BlueprintAbility noSr = buffSpells.FirstOrDefault(value => !value.SpellResistance);
-            BlueprintAbility withSr = buffSpells.FirstOrDefault(value => value.SpellResistance);
+            // Native buff spells carry SpellResistance false. Magic Missile
+            // carries it true; at CL50 it always overcomes the Astral's SR 25,
+            // so against the covered Astral only the globe can stop it.
+            BlueprintAbility noSr = mageArmor[0];
+            BlueprintAbility withSr = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                BlueprintBootstrap.Library, FcbMagicMissileGuid,
+                "native Magic Missile globe probe");
             var mist = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
                 BlueprintBootstrap.Library, "15ba44b3fcf48ce418dc72fadac6408a",
                 "native Obscuring Mist globe area probe");
             var mistSpawn = ExpandedSummoningSpecialBuilder.FindSpawnAreaEffect(mist);
-            if (noSr == null || withSr == null || mist.SpellResistance ||
+            if (noSr.SpellResistance || !withSr.SpellResistance || mist.SpellResistance ||
                 mistSpawn == null || mistSpawn.AreaEffect == null ||
                 mistSpawn.AreaEffect.SpellResistance ||
                 mistSpawn.AreaEffect.Size.Meters < 3.6f)
                 throw new InvalidOperationException(
-                    "Astral globe native spell inputs are unavailable: " + string.Join(";",
-                        buffSpells.Select(value => value.name + ":" + value.SpellResistance)
-                        .ToArray()) + ";mist=" + mist.SpellResistance + "/" +
+                    "Astral globe native spell inputs are unavailable: " +
+                        noSr.name + ":" + noSr.SpellResistance + ";" +
+                        withSr.name + ":" + withSr.SpellResistance +
+                        ";mist=" + mist.SpellResistance + "/" +
                     (mistSpawn?.AreaEffect == null ? "none" :
                         mistSpawn.AreaEffect.SpellResistance + "/" +
                         mistSpawn.AreaEffect.Size.Meters));
@@ -775,11 +773,12 @@ namespace KingmakerGunslinger.RuntimeTesting
 
             PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 12f);
             direct("outsideSpellNoSr", Astral31Dispatch(fixture.Caster, target, noSr, 1, 1, false));
-            direct("outsideSpellWithSr", Astral31Dispatch(fixture.Caster, target, withSr, 1, 1, false));
+            direct("outsideSpellWithSr", Astral31Dispatch(fixture.Caster, owner, withSr, 50, 1, false));
             direct("outsideSla", Astral31Dispatch(fixture.Caster, target, aidSla, 6, 2, false));
             direct("outsideHeightenedLevel4", Astral31Dispatch(fixture.Caster, target, noSr, 7, 4, true));
             PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.right);
             direct("insideSpellNoSr", Astral31Dispatch(fixture.Caster, target, noSr, 1, 1, true));
+            direct("insideSpellWithSr", Astral31Dispatch(fixture.Caster, owner, withSr, 50, 1, true));
             PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 20f);
             direct("uncoveredTarget", Astral31Dispatch(sibling, fixture.Caster, noSr, 1, 1, true));
 
@@ -874,7 +873,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             for (int frame = 0; frame < 3; frame++) yield return 0;
             Astral31RefreshAreas(new[] { ownerAura, siblingAura }, actors);
             Sprint25Check("astral-core-lesser-globe", exact, details,
-                "Through the actual native effect dispatch, level 1 spells with and without spell resistance and a level 2 SLA cast from outside the aura never reach the covered creature, while the same spell heightened to level 4, cast from inside, or aimed at an uncovered creature applies. A real level 1 persistent area without spell resistance excludes the covered creature, includes it once it leaves the globe and excludes it again on return, then ends without residue. A second Astral's constant aura still covers the shared creature.");
+                "Through the actual native effect dispatch, level 1 spells with and without spell resistance (Magic Missile at CL50, which always overcomes the Astral's SR 25) and a level 2 SLA cast from outside the aura never reach the covered creature, while the same spells cast from inside, the buff heightened to level 4, or a cast at an uncovered creature apply. A real level 1 persistent area without spell resistance excludes the covered creature, includes it once it leaves the globe and excludes it again on return, then ends without residue. A second Astral's constant aura still covers the shared creature.");
             if (!exact) throw new InvalidOperationException(
                 "Astral lesser-globe native consumers failed.");
         }
@@ -913,19 +912,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             var wrapper = new TargetWrapper(target);
             var context = Astral31Context(source, ability, casterLevel, spellLevel, wrapper);
             var before = target.Buffs.Enumerable.ToArray();
+            int damageBefore = target.Damage;
             bool blocks = AstralProtectiveGlobe.Blocks(target, context);
             Astral31InvokeDispatch(context, wrapper, ability.GetComponent<AbilityApplyEffect>());
             var added = target.Buffs.Enumerable.Except(before).ToArray();
             var addedGuids = new JArray(added.Select(buff => buff.Blueprint.AssetGuid));
+            int damageDelta = target.Damage - damageBefore;
             foreach (var buff in added) buff.Remove();
-            bool removed = !target.Buffs.Enumerable.Intersect(added).Any();
-            bool applied = added.Length > 0;
+            target.Damage = damageBefore;
+            bool removed = !target.Buffs.Enumerable.Intersect(added).Any() &&
+                target.Damage == damageBefore;
+            bool applied = added.Length > 0 || damageDelta > 0;
             return new JObject { ["source"] = source.UniqueId, ["target"] = target.UniqueId,
                 ["ability"] = ability.AssetGuid, ["name"] = ability.name,
                 ["type"] = ability.Type.ToString(), ["spellResistance"] = ability.SpellResistance,
                 ["casterLevel"] = casterLevel, ["spellLevel"] = spellLevel,
                 ["sourcePosition"] = new JArray(source.Position.x, source.Position.y, source.Position.z),
                 ["globeBlocks"] = blocks, ["applied"] = applied, ["addedBuffs"] = addedGuids,
+                ["damageDelta"] = damageDelta,
                 ["probeBuffsRemoved"] = removed, ["expectedApplied"] = expectApplied,
                 ["exact"] = applied == expectApplied && blocks == !expectApplied && removed };
         }
