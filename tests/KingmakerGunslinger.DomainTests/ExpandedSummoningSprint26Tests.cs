@@ -28,14 +28,14 @@ namespace KingmakerGunslinger.DomainTests
         internal const int RegisteredNatureAllyPlacements = 588;
         internal const int RegisteredLogicalPlacements = RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
         internal const int RegisteredTemplatedPlacements = 319;
-        internal const int PublicSuppressedLogicalPlacements = 10;
+        internal const int PublicSuppressedLogicalPlacements = 0;
         internal const int FinalPublishedLogicalPlacements = RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements;
         internal const int PublicVisibleChoices = FinalPublishedLogicalPlacements + 29;
         internal static int PublishedMonsterPlacements { get { return RegisteredMonsterPlacements - (IsWithheld("gorgon") ? 2 : 0) - (IsWithheld("lillend-azata") ? 4 : 0); } }
         internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0) - (IsWithheld("griffon") ? 6 : 0) - (IsWithheld("hill-giant") ? 4 : 0) - (IsWithheld("stone-giant") ? 4 : 0) - (IsWithheld("fire-giant") ? 3 : 0) - (IsWithheld("ettin") ? 5 : 0) - (IsWithheld("cloud-giant") ? 2 : 0) - (IsWithheld("storm-giant") ? 1 : 0) - (IsWithheld("satyr") ? 6 : 0); } }
         // Seven split-native, four preserved-native, one owned removal action.
         internal const int IconConceptCount = ExpandedSummoningIdentityCatalog.UnitCount + 7 + 4 + 2;
-        internal static readonly string[] WithheldKeys = new[] { "lillend-azata", "satyr" };
+        internal static readonly string[] WithheldKeys = new string[0];
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 

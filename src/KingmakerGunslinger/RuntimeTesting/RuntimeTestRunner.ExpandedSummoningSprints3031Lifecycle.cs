@@ -18,9 +18,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         // One fixed simultaneous fixture, not a programmable case runner.
         // Expiry uses the established owned-buff scheduler boundary. No scene
         // actor, area, victim buff or item is deleted to supply a verdict.
-        private IEnumerable<int> ReviewSprints3031SourceLifecycle(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewSprints3031SourceLifecycle(ExpandedSummoningCorrectionFixture fixture, bool sprint32 = false)
         {
-            string[] keys = { "lemure", "dretch", "hound-archon", "lantern-archon", "astral-deva", "trumpet-archon" };
+            string[] keys = sprint32 ? new[] { "satyr", "lillend-azata" } :
+                new[] { "lemure", "dretch", "hound-archon", "lantern-archon", "astral-deva", "trumpet-archon" };
+            if (sprint32 && (!IsSprint32Review || RuntimeTestRequestParser.Sprint32ReviewPhase(_request) !=
+                ExpandedSummoningNativeProfilePolicy.Sprint32LifecyclePhase))
+                throw new InvalidOperationException("Sprint32 lifecycle requires its exact fixed phase.");
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             var owners = new Dictionary<string, UnitEntityData>();
             var siblings = new Dictionary<string, UnitEntityData>();
@@ -60,6 +64,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     actor.View == null || !EntityFadedIn(actor) || DissolveAmount(actor) > MotionReviewIntactDissolve ||
                     actor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null))
                 { Game.Instance.IsPaused = false; yield return 0; }
+                if (sprint32)
+                {
+                    // Explicit lifecycle precondition, not activation/action/AI
+                    // evidence: request each owned native toggle ON, then allow
+                    // normal controllers to create its carrier/area/recipient.
+                    // Separate the identical emitters so both native sources
+                    // remain observable instead of replacing the same grant.
+                    foreach (var actor in new[] { owners["lillend-azata"], siblings["lillend-azata"] })
+                    {
+                        PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.forward *
+                            (ReferenceEquals(actor, owners["lillend-azata"]) ? -20f : 20f));
+                        var courage = actor.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
+                        actor.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage)).IsOn = true;
+                    }
+                    deadline = DateTime.UtcNow.AddSeconds(8);
+                    while (DateTime.UtcNow < deadline && new[] { owners["lillend-azata"], siblings["lillend-azata"] }
+                        .Any(actor => Sprints3031OwnedAreaCount(actor) == 0 || Sprints3031LiveSourceGrantCount(actor) == 0))
+                    { Game.Instance.IsPaused = false; yield return 0; }
+                }
                 foreach (string key in keys)
                 {
                     var pair = new[] { owners[key], siblings[key] };
@@ -80,14 +103,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ReferenceEquals(buff.Context?.MaybeCaster, fixture.Caster) && !buff.IsPermanent &&
                             buff.TimeLeft > TimeSpan.Zero) == 1 && items[actor].All(item => !item.IsLootable)) &&
                         !resources[pair[0]].Intersect(resources[pair[1]]).Any() &&
-                        (key == "astral-deva" || pair.All(actor => resources[actor].Length > 0));
-                    if (key == "hound-archon" || key == "astral-deva" || key == "trumpet-archon")
+                        (key == "astral-deva" || key == "satyr" || pair.All(actor => resources[actor].Length > 0));
+                    if (key == "hound-archon" || key == "astral-deva" || key == "trumpet-archon" || sprint32)
                         ready &= pair.All(actor => actor.Body.PrimaryHand.MaybeWeapon != null &&
                             ReferenceEquals(actor.Body.PrimaryHand.MaybeWeapon.Owner, actor.Descriptor) &&
                             !actor.Body.PrimaryHand.MaybeWeapon.IsLootable);
-                    if (key == "hound-archon" || key == "lantern-archon" || key == "astral-deva" || key == "trumpet-archon")
+                    if (key == "hound-archon" || key == "lantern-archon" || key == "astral-deva" || key == "trumpet-archon" || key == "lillend-azata")
                         ready &= pair.All(actor => Sprints3031OwnedAreaCount(actor) > 0 && Sprints3031LiveSourceGrantCount(actor) > 0);
                     var row = new JObject { ["creature"] = key, ["owners"] = new JArray(pair.Select(Sprints3031LifecycleState)),
+                        ["performanceSetup"] = key == "lillend-azata" ? "Owned native toggles requested ON as disclosed lifecycle precondition; no activation/action/AI claim." : null,
                         ["privateObjects"] = new JArray(pair.Select(actor => resources[actor].Length)),
                         ["independentPrivateObjects"] = !resources[pair[0]].Intersect(resources[pair[1]]).Any(),
                         ["initialItems"] = new JArray(pair.SelectMany(actor => items[actor].Select(item => new JObject {
@@ -132,7 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["siblingResourcesAlive"] = resources[sibling].All(value => value != null),
                             ["allSiblingAreasRetained"] = siblingAreas.All(area => Game.Instance.State.AreaEffects.All.Contains(area)),
                             ["fixtureDisposalsBeforeAssertion"] = 0 },
-                        "Native scheduled expiry removes only the selected summon, its emitter areas/grants and private view objects; captured equipment cannot escape and all six siblings retain their areas/items/resources.");
+                        "Native scheduled expiry removes only the selected summon, its emitter areas/grants and private view objects; captured equipment cannot escape and all scoped siblings retain their areas/items/resources.");
                     if (!absent || !isolated) throw new InvalidOperationException("Native expiry/isolation failed: " + key);
                 }
                 foreach (var actor in siblings.Values) Kingmaker.Designers.GameHelper.KillUnit(actor, fixture.Caster);
@@ -184,7 +208,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["partyItemsExact"] = partyItems.SequenceEqual(Game.Instance.Player.Inventory.Items),
                     ["partyCountsExact"] = partyCounts.SequenceEqual(partyItems.Select(value => value.Count)),
                     ["nativeProcesses"] = 1, ["fixtureDisposalsBeforeAssertions"] = 0 },
-                    "All twelve native lifecycle paths finish in the same fixed fixture with exact initial areas and party inventory; later cases are not marked passed after a failed precondition.");
+                    "All scoped native lifecycle paths finish in the same fixed fixture with exact initial areas and party inventory; later cases are not marked passed after a failed precondition.");
                 if (!reset) throw new InvalidOperationException("Lifecycle batch reset failed.");
             }
             finally
@@ -198,6 +222,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static UnityEngine.Object[] Sprints3031PrivateResources(UnitEntityData actor, string key)
         {
             if (actor.View == null) return Array.Empty<UnityEngine.Object>();
+            if (key == "lillend-azata")
+            {
+                var attachment = actor.View.GetComponent<LillendHumanVisualAttachment>();
+                return attachment == null ? Array.Empty<UnityEngine.Object>() :
+                    attachment.CaptureOwnedResources().Concat(new UnityEngine.Object[] { attachment }).ToArray();
+            }
             if (key == "lemure" || key == "dretch" || key == "hound-archon")
                 return ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(actor.View);
             if (key == "lantern-archon")

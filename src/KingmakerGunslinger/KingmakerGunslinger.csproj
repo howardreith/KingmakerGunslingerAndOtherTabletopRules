@@ -2079,7 +2079,8 @@
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.LillendSpells32.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Satyr32.cs" />
   </ItemGroup>
-  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Routes.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSuggestion32.cs" />
