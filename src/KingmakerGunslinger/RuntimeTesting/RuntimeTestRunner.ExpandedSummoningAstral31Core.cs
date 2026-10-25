@@ -812,6 +812,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (mistArea == null || spawned.Length != 1)
                     throw new InvalidOperationException(
                         "The native Obscuring Mist probe area did not spawn exactly once.");
+                int attachFrames = 0;
+                while ((mistArea.View == null || !mistArea.IsInState) && attachFrames++ < 120)
+                    yield return 0;
+                areaRow["attachFrames"] = attachFrames;
                 Astral31RefreshAreas(new[] { ownerAura, mistArea }, actors);
                 bool covered = Astral31Covered(target, ownerAura, recipient);
                 bool excluded = covered && !mistArea.UnitsInside.Contains(target) &&
@@ -888,8 +892,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var granted = source.Descriptor.Abilities.GetAbility(ability);
             var data = granted == null ? new AbilityData(ability, source.Descriptor) :
                 new AbilityData(granted);
-            return new AbilityExecutionContext(data, new AbilityParams {
+            // As AbilityExecutionProcess prepares a cast: native SpawnFxs
+            // reads this list for every applied effect.
+            var context = new AbilityExecutionContext(data, new AbilityParams {
                 CasterLevel = casterLevel, SpellLevel = spellLevel }, target, null);
+            context.FxSpawners = ability.GetComponents<AbilitySpawnFx>().ToList();
+            return context;
         }
 
         private static void Astral31InvokeDispatch(AbilityExecutionContext context,
