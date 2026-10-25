@@ -30,6 +30,15 @@ def check_tail(released,current):
     if len(tail)!=TAIL_COUNT or digest!=TAIL_SHA256 or any(x['status']!='active' for x in tail):
         raise AssertionError("Selected private identities changed")
 
+
+def released_asset_unchanged(root, path, baseline=BASELINE):
+    # Compare repository content using the path's declared Git text/binary rules.
+    # Windows CRLF checkout bytes are not a changed released text asset.
+    current = identities.git(root, 'hash-object', '--path='+path, path).stdout.strip()
+    original = identities.git(root, 'rev-parse', baseline+':'+path).stdout.strip()
+    return current == original
+
+
 def validate(root):
     read=lambda p:(root/p).read_text(encoding='utf-8-sig')
     blob=lambda p:common.blob(root,BASELINE,p)
@@ -45,7 +54,7 @@ def validate(root):
     check_scope(rows(blob(catalog).decode('utf-8-sig')),rows(read(catalog)),suppressed_keys())
     # Preserve released art and freeze the already-authored selected additions.
     for p in identities.git(root,'ls-tree','-r','--name-only',BASELINE,'--','assets','assets-source').stdout.splitlines():
-        if p not in ART and (root/p).read_bytes()!=blob(p):raise AssertionError('Unselected asset changed: '+p)
+        if p not in ART and not released_asset_unchanged(root,p):raise AssertionError('Unselected asset changed: '+p)
     changed=set(identities.git(root,'diff','--name-only',BASELINE,'--','assets','assets-source').stdout.splitlines())
     changed.update(identities.git(root,'ls-files','--others','--exclude-standard','--','assets','assets-source').stdout.splitlines())
     if changed!=set(ART):raise AssertionError('Selected asset set differs')
