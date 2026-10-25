@@ -766,6 +766,13 @@
       "subjectPrompt": "Use case: stylized-concept. Asset type: original square fantasy RPG summon portrait, later exported at 128x128. Create one adult Pathfinder satyr: human male face and torso, two clearly curled ram horns, brown goat legs ending in cloven hooves, short dark beard and curly hair. A compact wooden shortbow held at his side, with one free hand raised in a subtle spellcasting gesture. No pipes or flute. Show the entire distinctive goat-legged silhouette in a compact three-quarter pose with ample margin around horns and hooves; one character only. Painterly traditional fantasy realism, broad readable forms, warm brown skin and fur, subdued green forest haze, soft amber rim light. Match a richly painted game creature portrait with tactile brushwork and deep shadows, readable at very small scale. Full-bleed square image, no UI frame, no text, no numbers, no watermark. Anatomy: exactly two arms and two goat legs; not a centaur, not a full goat, not a demon; no wings. This is a new image, not an edit of the inspected style anchors.",
       "generator": "built-in-imagegen",
       "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint32-generation.json"
-    }
-  ]
+    },
+{
+  "key": "lillend-azata",
+  "displayName": "Lillend Azata",
+  "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted fantasy RPG summon portrait, later exported at 128x128. A Pathfinder lillend azata, a celestial bard: an adult elven woman from waist up, with two large soft white feathered wings, seamlessly joined at the waist to one long emerald-green serpentine lower body coiled in a broad readable curve. She wears a modest ivory-and-teal bard's tunic covering her torso; long auburn hair. She plays a small golden harp with her two hands, and a sheathed longsword hangs at her hip. Exactly two human arms, exactly two feathered wings, no human legs, no feet, one snake tail. Compose a single compact full creature within generous margins so both wings and the tail coil remain legible at tiny icon scale. Emphasize the distinctive winged bard and snake silhouette. Rich traditional fantasy oil-paint texture with broad brushwork, soft warm celestial lighting, deep blue-violet atmospheric background. Full-bleed square painting, no circular border, no UI frame, no text, no numbers, no watermark. Recognizably a benign winged serpent-bodied muse, not a mermaid, not a winged human, not a dragon. This is a new project asset; preserve no existing pixels.",
+  "generator": "built-in-imagegen",
+  "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint32-generation.json"
+}
+]
 }

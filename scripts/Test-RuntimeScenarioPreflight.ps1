@@ -1980,6 +1980,11 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
 $s32Args = @{Scenario='disposable-expanded-summoning-sprint32-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='satyr-control'})) 's32-satyr-control-admitted'
 Assert-True (Test-KmgExactSummoningRuntimeBoundary $s32Args.Scenario) 's32-exact-restoration-boundary'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='lillend-support'})) 's32-lillend-support-admitted'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='lillend-support'} } 's32-lillend-no-exit-refused'
+foreach ($bag in @(@{reviewPhase='Lillend-Support'}, @{reviewPhase='lillend-support '}, @{reviewPhase=@('lillend-support')}, @{reviewPhase='lillend-support';extra='x'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters $bag } 's32-lillend-invalid-scope-refused'
+}
 Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='satyr-control'} } 's32-no-exit-refused'
 foreach ($bag in @(@{}, @{reviewPhase='unknown'}, @{reviewPhase='Satyr-Control'}, @{ReviewPhase='satyr-control'}, @{reviewPhase='satyr-control';saveName='KMG_AUTOMATION_WORKING'}, @{reviewPhase=@('satyr-control')})) {
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters $bag } 's32-unselected-scope-refused'

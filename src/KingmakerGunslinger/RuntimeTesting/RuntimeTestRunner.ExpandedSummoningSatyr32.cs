@@ -27,6 +27,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewSprint32(ExpandedSummoningCorrectionFixture fixture)
         {
+            if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendSupportPhase)
+            {
+                foreach (int frame in ReviewLillend32Support(fixture)) yield return frame;
+                yield break;
+            }
             // Two resettable RTWP cases, each with a fresh exact-owner summon.
             // Final mode/profile/persistence qualification remains separate.
             CreateExpandedSummoningCorrectionHostile(fixture);

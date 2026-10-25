@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 101, 568);
+            ValidateFamily(SummonFamily.Monster, 102, 572);
             ValidateFamily(SummonFamily.NaturesAlly, 105, 588);
         }
 
@@ -152,7 +152,8 @@ namespace KingmakerGunslinger.Summoning
                 C("trumpet-archon","Trumpet Archon",9,false,null,"Native deva; body and trumpet presentation pending"),
                 C("astral-deva","Astral Deva",9,false,null,"Native deva"),
                 // Sprint 32 hidden early-native control slice.
-                C("satyr","Satyr",null,false,4,"Satyr")
+                C("satyr","Satyr",null,false,4,"Satyr"),
+                C("lillend-azata","Lillend Azata",6,false,null,"Human rig; original winged serpent body pending")
             };
         }
 

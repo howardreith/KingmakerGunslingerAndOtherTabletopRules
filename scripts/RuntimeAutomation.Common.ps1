@@ -2268,11 +2268,12 @@ function Test-KmgSprint32ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     # The selected C# declaration owns the phase name; no second phase list.
     $catalog = Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs') -Raw
-    $match = [regex]::Match($catalog, 'Sprint32SatyrControlPhase = "([a-z0-9-]+)";')
-    if (-not $match.Success) { throw 'Sprint32 phase declaration is missing.' }
+    $phaseMatches = [regex]::Matches($catalog, 'internal const string Sprint32[A-Za-z]+Phase = "([a-z0-9-]+)";')
+    if ($phaseMatches.Count -eq 0) { throw 'Sprint32 phase declarations are missing.' }
+    $phases = @($phaseMatches | ForEach-Object { $_.Groups[1].Value })
     return $Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review' -and $null -ne $Parameters -and
         $Parameters.Count -eq 1 -and @($Parameters.Keys) -ccontains 'reviewPhase' -and
-        $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -ceq $match.Groups[1].Value
+        $Parameters.reviewPhase -is [string] -and $phases -ccontains $Parameters.reviewPhase
 }
 
 function Test-KmgSprints30And31ReviewPhaseScope {

@@ -176,7 +176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 request.Parameters == null || request.Parameters.Count != 1 ||
                 request.Parameters["reviewPhase"]?.Type != JTokenType.String) return null;
             string phase = (string)request.Parameters["reviewPhase"];
-            return phase == RuntimeTestScenarioCatalog.Sprint32SatyrControlPhase ? phase : null;
+            return ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase) ? phase : null;
         }
         internal static string Sprints30And31ReviewPhase(RuntimeTestRequest request)
         {

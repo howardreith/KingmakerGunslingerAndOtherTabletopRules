@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 136,
+  "count": 137,
   "icons": [
     {
       "key": "air-mephit",
@@ -3888,6 +3888,25 @@
         "KMG.Summoning.Ability.SNA.Tier8.Satyr.OneD4PlusOne",
         "KMG.Summoning.Ability.SNA.Tier9.Satyr.OneD4PlusOne",
         "KMG.Summoning.Unit.Satyr"
+      ]
+    },
+    {
+      "key": "lillend-azata",
+      "displayName": "Lillend Azata",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/lillend-azata.png",
+      "productionFile": "assets/game/icons/expanded-summoning/lillend-azata.png",
+      "sourceSha256": "eaee893fd5018d8e7b6d468ef0224cb8d27eadff811c20583e02d8c115eca05a",
+      "outputSha256": "6ee925bdcf2af82df9992967243e6affc4a79867ded1a935694a1faec10f966e",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier6.LillendAzata.One",
+        "KMG.Summoning.Ability.SM.Tier7.LillendAzata.OneD3",
+        "KMG.Summoning.Ability.SM.Tier8.LillendAzata.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier9.LillendAzata.OneD4PlusOne",
+        "KMG.Summoning.Unit.LillendAzata"
       ]
     }
   ]
