@@ -62,7 +62,10 @@ identity/routes and immutable records; actual package positive/corruption tests
 replace incidental token checks.552/553 then passed; last obsolete package-token
 assertion corrected and its affected case plus production compilation PASS.
 These executions do not qualify changed native bytes; a corrected package/run
-is next. Original failures are retained.
+is next. Original failures are retained. The35f184d0 source gate refused a stale
+derived roster after the visual metadata correction; regenerated its one Satyr
+row with the existing manifest tool. Development source validation PASS; no
+compilation or launch occurred in that attempt.
 
 ## Finite acceptance table
 
@@ -114,7 +117,7 @@ before c43 dispatch 4,002,836,480bytes; required allowance 1.1 GB peak plus 2 GB
 Recheck before next package/dispatch. A full extra checkout measures 1,019,350,022
 bytes, so do not casually duplicate it; final records-only checkout can be bounded.
 
-Build attempts/validated development packages/native launches:7/2/2.
+Build attempts/validated development packages/native launches:8/2/2.
 Observed native setup/execution/restoration 255.68 + 224.24 seconds. Full active-time
 category totals unavailable; retain timestamps, do not infer throughput.
 Repeated blockers were old admission/count assumptions, now exercised through
