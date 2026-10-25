@@ -13,6 +13,8 @@ machine DATA, base master `48e6fb4abf`. Full record:
   dispatch and persistent-area membership, not spell resistance; native
   astral-core PASS 13/13. The native Movanic Deva aura implements no globe.
 - **Grip fixed:** measured in game; hound-armed 9/9, hound-disarm 12/12.
+- **Public surface unchanged:** 1,150 generated placements plus 29 native
+  wrappers make 1,179 visible choices, as released in v0.0.167.
 
 Earlier checkpoint summary (same branch):
 
