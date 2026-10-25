@@ -152,7 +152,7 @@ namespace KingmakerGunslinger.Summoning
                 C("trumpet-archon","Trumpet Archon",9,false,null,"Native deva; body and trumpet presentation pending"),
                 C("astral-deva","Astral Deva",9,false,null,"Native deva"),
                 // Sprint 32 hidden early-native control slice.
-                C("satyr","Satyr",null,false,4,"Native adult Satyr")
+                C("satyr","Satyr",null,false,4,"Satyr")
             };
         }
 

@@ -1,4 +1,4 @@
-# Sprint 32 ? IN PROGRESS
+# Sprint 32 - IN PROGRESS
 
 The sole active record is [planning/SPRINT32-STATUS.md](planning/SPRINT32-STATUS.md).
 Owner mission: 2026-10-25; unattended Satyr/Lillend implementation and validation
