@@ -66,6 +66,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
+            PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
             var target = fixture.Hostile; int ac = target.Stats.AC.BaseValue;
             BlueprintFeature mindImmunity = null;
             LillendHumanVisualAttachment ownerBody = null, siblingBody = null;

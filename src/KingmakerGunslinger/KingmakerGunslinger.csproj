@@ -2081,7 +2081,9 @@
   </ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /></ItemGroup>
-  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSuggestion32.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Summoning\FeyCelestialAdult32.cs" />
   </ItemGroup>

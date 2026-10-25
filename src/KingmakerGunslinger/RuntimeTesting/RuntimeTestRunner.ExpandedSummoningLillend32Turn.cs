@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData owner = null, sibling = null;
-            CreateExpandedSummoningCorrectionHostile(fixture); var target = fixture.Hostile;
+            var target = fixture.Hostile;
             BlueprintFeature immunity = null; bool addedManeuverImmunity = false;
             int oldAc = target.Stats.AC.BaseValue;
             string id = wounded ? "lillend-healing-turn" : "lillend-courage-fallback-turn";

@@ -50,54 +50,58 @@ control and ally-safe Sound Burst eligibility; separate one-use Charm Person SLA
 Ten new roots remain hidden;1150 accepted roots remain published. Remaining
 skills, pending performances, public routes and full acceptance are incomplete.
 
-Current validated development source `892eafcca4d64eef59c696b3cb624d25e826a133`:
-ZIP `1917c869f217c392c2870af91f09d6cdcef9c352cbc4b0edd822a3be1d1f4547`;
-DLL `d2322cdf36b3f7c33e8387af2ea53b9d3840109b2525f0e7d6c888b184496611`;
-MVID `a7bf554c-c8bd-40ab-8690-d129228e6d9a`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/892eafcca4d6/`.
-Offline wrapper,21 selected checks, exact-reference compile, strict419-file ZIP PASS.
+Current validated development source `a8b151da0c754078e254c3d1df996807a3993759`:
+ZIP `3282955822cb5a941733e788d8ef56577649d7bd24297890641bbab831a995df`;
+DLL `13b585f1a25ed9dfe2e7d089cdf6d7149381f1cb7482cbb10b11706340fd4c2b`;
+MVID `d5488ad1-c652-4e37-8edf-9c1d6e13036d`.
+SourceState `a306c5fc2fc47870ad73cd134d72992afaf3259c226e677068dde53d7cadd700`.
+Canonical path `artifacts/development-candidates/sprint32-lillend-support/a8b151da0c75/`.
+Offline wrappers,22 selected checks, exact-reference compile, strict419-file ZIP PASS.
 This is an investigation candidate, not final qualification.
 
-Fresh standalone run `20261025T2043252830276Z-496e5b3f8bc54475bbf31d03f626402a`
-**FAIL9PASS/2FAIL**: both independent original bodies loaded with finite poses and
-borrowed actions preserved; adult/book/reach, Move Courage and Standard healing
-passed. Native sword/sword/tail events occurred, but the attack ended Interrupt,
-Courage stopped at19 rounds, and the success-only fallback assertion failed.
-Tail playback itself completed1/1/1 without a reported failure. Native grab can
-produce CantAct, attack interruption and performance stop; this receipt lacks
-CMB/owned-hold evidence, so the actual cause remains unproved. Original result is
-retained. Body cleanup assertion after the exception was NOT_RUN; world/installation
-restoration passed. Agent inspected rest/tail-event art-camera frames: recognizable
-body, no severe deformation seen; not gameplay-camera/contact qualification.
-Raw folder `20261025T2043251748303Z-disposable-expanded-summoning-sprint32-native-review`;
-local log/intake/inspection `artifacts/sprint32-lillend-892eafcc/`.
+Fresh standalone run `20261025T2116353873942Z-40483acd79b1482bb8c53c7c9b39a76b`
+**FAIL10PASS/1FAIL**: original body binding, adult/book/reach, real Move Courage,
+Standard Cure Serious/own slot and native sword/sword/tail fallback all PASS.
+Fixture-only native maneuver immunity isolated ordinary attacks: native Success,
+Courage retained19 rounds and ally effect, tail1/1/1 with finite poses. Actual grab
+still needs its own observation; this does not retroactively attribute892's failure.
+The post-disposal eight-frame wait ran after the core restored intake turn mode;
+the exact-owner clock refused ambient combat participants. Body-cleanup assertion
+remains NOT_RUN. World/installation restoration PASS. Original log/result retained
+under `artifacts/sprint32-lillend-a8b151da/` and raw folder
+`20261025T2116352978122Z-disposable-expanded-summoning-sprint32-native-review`.
 
-Fresh provider run `20261025T2053487013587Z-620dfd0b3542414cba8e140a497c0cf0`
-**FAIL5PASS/2FAIL**: healthy Cow1.4.5/CotW1.14.4c-2.1, independent bodies and
-books loaded, but Suggestion binding remained refused. The deeper live graph
-identified CotW's positive Infectious Charms wizard-discovery branch appended
-to failed-save actions. Base Suggestion is still the investigated native ApplyBuff.
-Raw folder `20261025T2053486670343Z-disposable-expanded-summoning-sprint32-native-review`;
-local original log/intake/derived graph `artifacts/sprint32-provider-892eafcc/`.
-Original results and exact result/log hashes are appended in history.
+Fresh Satyr-turn run `20261025T2122366772199Z-55fb5f416fb04588926126de4bc183f0`
+**FAIL3PASS/1FAIL**, before ready/gameplay assertions: one uncovered live combat
+participant triggered the same native-clock ownership guard. Its actor type was
+not captured; do not infer a product failure. Raw folder
+`20261025T2122366383276Z-disposable-expanded-summoning-sprint32-native-review`;
+original log/intake under `artifacts/sprint32-satyr-turn-a8b151da/`.
+Two clock-coverage failures triggered a replan, not unchanged retries. Provider
+dispatch on this candidate was withheld to avoid the known cleanup error. Lillend
+turn was never launched because parent review found a target-ownership overwrite.
 
-Current unqualified batch recognizes that exact positive discovery gate, excludes
-its foreign branch from the two private creature copies, and refuses a caster
-unexpectedly granted the excluded wizard discovery. It tightens duration/lifecycle
-checks and supplies an explicit native live-caster-level rank for the provider's
-advertised minutes/level (Cow1.4.5 supplies no rank component; installed native IL
-has no default CL rank). No provider blueprint is changed; no new subsystem.
-The ordinary Lillend fallback fixture now uses explicitly owned native maneuver
-immunity; real grab remains a separate required case. The established bounded
-iterator wrapper observes body cleanup even after retaining an earlier failure.
-New Satyr/Lillend turn phases reuse native enrollment, automatic AI and exact
-turn action costs; no supplied casts/attacks/rolls/debits. These cases are NOT_RUN.
-Production compilation41.9s and22 selected tests4.4s PASS; runtime preflight
-1124 checks PASS. The review found that discovery membership must include Logic
-facts, so the guard now calls the exact native UnitHelper.HasFact surface; its
-final compilation is part of the next candidate gate. The first focused command
-was refused precompile for its incompatible ReferenceBundleDir argument; corrected
-ordinary compile used the existing GamePath.props. Both logs remain preserved.
+Current unqualified fixture batch owns mode until all phase cleanup frames finish,
+retains one hostile across Lillend turn cases, and moves the initial hostile40m
+away before setup ticks. Source comparison with the proven Trumpet fixture exposed
+the initial near-party setup assumption; Satyr's exact actor cause remains unknown.
+The existing coverage description is now included if the preserved guard refuses.
+One fixed optional-Suggestion phase observes both adults' natural casts, normal
+Will/DC/action/slot costs, CL duration and active-effect refusal; declared resource
+pre-spends and target immunities isolate choices. Actual expiry/damage break,
+high SR and cold load remain pending. No new rules subsystem is added.
+Focused production compile23.8s and22 tests4.3s PASS. Runtime preflight1130 checks PASS. Independent
+read-only review of this batch found no additional dispatch blocker. The reviewer
+confirmed the mode/ownership fixes and separate setup-versus-cast evidence; the
+prior missed hostile overwrite is acknowledged. Native execution remains required.
+
+The a8 private Suggestion adapter recognizes only the observed positive Infectious
+Charms discovery gate, excludes its foreign actions from private creature copies,
+and refuses a caster that owns the discovery using native UnitHelper.HasFact.
+Its explicit native caster-level rank repairs the provider's missing rank for its
+advertised minutes/level. No provider blueprint changes. Native binding remains
+unproved. The prior892 provider failure and live graph explain this bounded adapter;
+original FAILs and exact identities remain in history.
 
 Original Lillend body source`cd2c34ec50a04474a239a69a612a5bcf9c38620a` uses the
 accepted human/owned-tail seam and unchanged Salamander gait/playback/settlement.
@@ -138,34 +142,33 @@ P2 findings (nested links/default inclusion) are closed. Full final independent 
 remains pending. Body draft read-only review found no binding/lifecycle blocker;
 corrected exact mesh pin/provenance and deterministic package's two-file count.
 
-Latest transaction `compat-20261025T205121Z-f5b26e0e9599` restored/verified
-20:56:46.0116520UTC. Protected Compare PASS: Mods967/saves118/references18/settings83,
+Latest transaction `compat-20261025T212011Z-5b3399521219` restored/verified
+21:24:30.8378934UTC. Protected Compare PASS: Mods967/saves118/references18/settings83,
 tasks0/one unchanged Steam. No owned live game/task/transaction remains.
 
 Measured combined build/extract/stage/restore peak1.1GB plus2GB practical margin.
-Authorized cleanup20:50:17UTC removed seven complete byte-identical closed S29
-package extractions, retaining ZIPs/evidence/receipts/backups/saves. Recovered
-588,064,472bytes; free3,620,425,728bytes, protected Capture/Compare PASS. Plan SHA
-`f88148495eb89ca3922999d5606f467bcbeaa5e46dfc71718652ca318dd136ca`.
-Selection/script/plan in `artifacts/sprint32-intake/*s29-controls*` and
-`verified-cleanup-20261025T205016Z/`. Post-provider free3,408,973,824bytes.
-Recheck before the next build/native selection; retain the practical margin.
+Latest approved cleanup21:08:44UTC removed13 verified reproducible closed S29 package
+extractions, retaining exact ZIPs/evidence/receipts/backups/saves. Recovered
+1,091,765,064bytes; free4,501,954,560bytes; protected Capture/Compare PASS. Plan SHA
+`093e456ec58d1c00ac8d92fcb5cb639941ed5282ac2495d77bf73e131dfc3fc9`.
+Local selection/script `artifacts/sprint32-intake/*s29-control-margin*`.
+After the two latest native runs free3,921,842,176bytes; recheck before staging.
 
-Build-Local attempts/validated development packages/native launches:24/15/17.
-Latest native setup/execution/restoration wrappers313.88s(standalone),325.75s(provider);
-inside-game137.743s/151.587s. Focused compile41.9s/tests4.4s. Complete active-category
-totals unavailable; timestamped subsets and earlier counts remain in history.
-Two provider failures were not unchanged retries: the second captured the live graph
-and explained the branch; adapter correction is now based on that observation.
+Build-Local attempts/validated development packages/native launches:25/16/19.
+Latest native wrappers278.27s(standalone),260.34s(Satyr-turn); native111.842s/95.012s.
+Current focused compile23.8s/tests4.3s; earlier measured subsets stay in history.
+Approximate current work since21:18UTC is mainly observer repair/review and native
+supervision; overlapping work prevents honest summed category totals. Complete
+active implementation/observer/build/native/owner-wait totals remain unavailable.
 
-Independent read-only review of the coherent adapter/fixture/turn diff and actual
-live graph is complete: discovery-membership finding corrected; no remaining
-concrete dispatch blocker. This is not final sprint review/native qualification.
-Next: build once, then reuse its exact ZIP for corrected
-standalone body/support, provider binding/support, Satyr turn and Lillend turn checks.
-Each is a fresh save-free600-second process,10-15minute target/30minute ceiling,
-guarded intake/restoration. No full presentation, real grab, Suggestion cast/save or
-persistence claim follows merely from binding. Pending owner decisions remain pending.
+Next: build this reviewed batch once and reuse its exact ZIP for optional provider
+Suggestion casts first, corrected standalone body cleanup and the corrected turn
+paths. Provider support is expanded only if a concrete combined seam requires it. Each is a fresh save-free
+600-second process,10-15minute target/30minute ceiling, guarded intake/restoration.
+If turn ownership still fails after the changed setup, retain the precise actor
+receipt and pause that approach while independent authorized work continues.
+Full final independent review and every final acceptance row remain incomplete.
+Pending owner decisions remain pending; no implementation treats silence as assent.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.

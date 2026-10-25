@@ -30,6 +30,25 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private IEnumerable<int> ReviewSprint32(ExpandedSummoningCorrectionFixture fixture)
         {
+            bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
+            try
+            {
+                // Own mode for the whole phase, including post-disposal frames.
+                // Restoring the intake between nested iterators can admit ambient
+                // actors to a turn before the outer native clock is dismantled.
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
+                foreach (int frame in ReviewSprint32Core(fixture)) yield return frame;
+            }
+            finally
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
+        {
             CaptureSprint32ControlGraphs();
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendSupportPhase)
             {
@@ -38,14 +57,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendTurnPhase)
             {
+                CreateExpandedSummoningCorrectionHostile(fixture);
+                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
                 foreach (bool wounded in new[] { false, true })
                     foreach (int frame in ReviewLillend32Turn(fixture, wounded)) yield return frame;
+                yield break;
+            }
+            if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32SuggestionPhase)
+            {
+                CreateExpandedSummoningCorrectionHostile(fixture);
+                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
+                foreach (bool lillend in new[] { false, true })
+                    foreach (int frame in ReviewSuggestion32(fixture, lillend)) yield return frame;
                 yield break;
             }
             bool turnBased = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrTurnPhase;
             // Resettable cases, each with a fresh exact-owner summon.
             // Final mode/profile/persistence qualification remains separate.
             CreateExpandedSummoningCorrectionHostile(fixture);
+            // Keep the fresh hostile away from the fixture party during setup;
+            // only the surveyed lane later establishes the intended encounter.
+            PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
             foreach (bool immune in new[] { false, true })
                 foreach (int frame in ReviewSatyr32Control(fixture, immune, false, turnBased)) yield return frame;
             foreach (int frame in ReviewSatyr32Control(fixture, true, true, turnBased)) yield return frame;

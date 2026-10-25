@@ -1,5 +1,5 @@
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
-`reviewPhase=satyr-control`, `lillend-support`, `satyr-turn` or `lillend-turn`, with automatic exit. The existing save-free first-area
+`reviewPhase=satyr-control`, `lillend-support`, `satyr-turn`, `lillend-turn` or `optional-suggestion`, with automatic exit. The existing save-free first-area
 fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh
 Satyr refusing the reset hostile with explicit native mind-affecting buff immunity and
 using its ordinary bow. It records real commands, action costs, resource debit,
@@ -38,6 +38,18 @@ The turn phases reuse native RTWP enrollment then the real turn controller, with
 zero fixture AI ticks. Satyr uses fresh control, immune bow and close dagger cases.
 Lillend uses fresh healthy Courage/ordinary attack and wounded healing cases, with
 independent sibling pools and exact native turn action debits.
+The phase owns the RTWP setup baseline until all nested cleanup frames finish;
+only explicit turn enrollment enables turn mode. A single hostile is retained
+for phase teardown and starts40m from the party before setup frames advance.
+The optional Suggestion phase requires the settled investigated provider and
+uses one fresh Satyr pair followed by one fresh Lillend pair. The exact target
+has declared low Will, Charm-only descriptor immunity and Sleep/Paralysis/Stun
+condition immunity. Fear/performance and Lillend level1/3 slots are explicitly
+pre-spent to isolate the choice; they are not cast evidence. At most three
+natural Suggestion casts per adult observe real Will saves, normal Standard
+costs, independent bard level2 slot debit, native CL duration and active-effect
+refusal. No rolls, cast commands or effects are supplied. Actual expiry,
+damage break, high SR and cold-load/provider removal remain separate cases.
 All fixed phases retain source/package, empty-world and
 exact restoration guards; no Working-save access is selected here.
 
