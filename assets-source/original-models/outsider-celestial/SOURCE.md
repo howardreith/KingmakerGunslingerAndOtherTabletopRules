@@ -1,55 +1,74 @@
 # Outsider/Celestial original bodies
 
-Lemure is project-authored geometry and a procedurally baked original 1024px
-albedo. `build_lemure.py` uses the established continuous-body exporter and the
-strict Lizardfolk Free Hands census reader. It reads only geometry-free native
-bone interfaces; no game mesh, texture, material, animation or raw private rig
-capture is included. The source record pins the actual available October 14
-capture, not the later October 17 capture used by the refined theropods.
+Lemure, Dretch and Hound Archon are project-authored geometry with procedurally
+baked original 1024px albedos. Each builder reads only geometry-free native bone
+interfaces from the strict Lizardfolk Free Hands census; no game mesh, texture,
+material, animation or raw private rig capture is included. The existing
+project-owned paintings under `assets-source/original-icons/expanded-summoning/sources/`
+are the visual references; their pixels are not copied.
 
-The continuous legless lower body follows the pelvis. Two arms use native
-shoulder/elbow/palm controls, with original fingers/claws. Seventeen measured
-drivers are used; no donor tail, leg surface or accessory remains visible.
-Closed outward component checks and one continuous main body are required by
-the exporter. Native attachment requires exact released unit GUID/name/prefab,
-two measured renderers and original albedo identity, and uses existing per-view
-material-controller adoption, accessory suppression, rollback and teardown.
-Only the owned nested visual record receives the previously qualified expiry
-effect link; the campaign donor is unchanged.
+## October 25 refinement
 
-Regenerate with installed Blender (private outputs stay under ignored artifacts):
+The first exports unioned closed ellipsoids and capsules and read as rounded
+toys at the party camera. The refinement sculpts each visible surface as a
+signed-distance field instead (`sdf_sculpt.py`): primitives placed on the
+measured joints, smooth unions/subtractions with stated blend widths, folds and
+wrinkles by displacement, painted material ids, and an ambient cavity term from
+the same field. OpenVDB (bundled with Blender 4.5) extracts the surface, which
+is put into canonical element order so repeated builds export identical bytes.
+`continuous_body` then relaxes, reduces, weights, unwraps, bakes and exports it
+with the existing closed-outward and one-continuous-body checks.
+
+- **Lemure**: a pear-shaped mound with a few tilted, asymmetric sagging creases,
+  an inset suffering face under a hood of flesh (brow, recessed eyes, sagging
+  nose, open mouth, dripping lower lip) and heavy arms with continuous finger
+  roots and black claws. The pooled base follows the pelvis; low-hanging hands
+  still follow their arms.
+- **Dretch**: a hunched shoulder girdle that swallows the neck, a swollen belly
+  carried by a compressed chest and pelvis (folds and navel), cartilage bat ears
+  grown from the skull, a heavy brow, snub nose and lips over a native-jawed
+  underbite with tusks, and large connected hands and three-toed feet.
+- **Hound Archon**: a mastiff skull (brow, stop, short deep muzzle, flews, lower
+  jaw on the native jaw controls), heavy shoulders and arms, connected fingers
+  and thumbs, digitigrade legs in boots, and real cloth geometry: a sleeveless
+  tunic with neckline, belt, folded split hem and a mantle over the right
+  shoulder. The garment is its own closed shell weighted from the nearest body
+  vertices; the skin under it is inset so it cannot show through in the bind
+  pose. No cloth simulation is used.
+
+Jaw weights are bounded to the jaw volume, so throats, chests and bellies never
+follow the jaw controls. Offline posed checks (stride, attack, bite, turn) are
+authoring checks only, not native animation evidence.
+
+Each builder keeps its exact released unit identity, measured bone set (Lemure
+17, Dretch 29, Hound Archon 29), donor/prefab/renderer contract and loader
+flags. The existing attachment/material controller, accessory suppression,
+expiry-visual link, rollback and teardown are unchanged.
+
+## Rig capture
+
+The released v0.0.167 exports were built from the October 14 census
+(`727645bb…`), which is not on the lab machine. The three released builders,
+rerun unchanged with the October 17 recapture of the same donor
+(`6443b580…`, the capture the refined theropods already use), reproduced the
+released mesh payloads and albedos byte for byte except the `rigSha256` field.
+The refined exports are built from that recapture, and the three visual
+policies pin its hash.
+
+## Regenerate
+
+With installed Blender (private outputs stay outside the repository):
 
 ```
-blender -b --factory-startup --python-exit-code 1 --python build_lemure.py -- --capture <private census.json> --albedo <lemure-albedo.png> --mesh-data <lemure-mesh.json> --report <private generation.json> --blend-out <private source.blend> --preview <private preview.png>
+blender -b --factory-startup --python-exit-code 1 --python build_hound_archon.py -- --capture <private census.json> --albedo <hound-archon-albedo.png> --mesh-data <hound-archon-mesh.json> --report <private generation.json> --blend-out <private source.blend> --preview <private preview.png>
 ```
 
-The offline preview shows the intended amorphous lower mass and two clawed arms.
-It is not native camera-scale or owner aesthetic acceptance. Native lifecycle,
-body presentation and final-package checks remain separately recorded in the
-batch map. Seams, coarse anatomy and texture refinement may remain visual backlog.
+`build_lemure.py` and `build_dretch.py` take the same six parameters. Two
+consecutive builds of each produce identical mesh and albedo bytes. The source
+records pin the generated hashes, the builder and sculpt-module hashes, the
+painting reference, the capture and the superseded v0.0.167 identities.
 
-Dretch uses the same measured donor interfaces and exporter, with an original
-stocky/potbellied body, two legs/arms, large ears, fangs, claws and a two-control
-jaw. The existing project-owned original Dretch painting is its visual reference;
-its pixels are not copied into the procedural albedo. The final export uses29
-drivers,7497 vertices/9636 triangles and a1024px original albedo. The initial
-private preview showed a foot-claw connection gap; one toe-pad correction closed
-it. Both private previews/generation records remain. Native presentation and
-attack/lifecycle checks are separate requirements, not granted by this preview.
-
-`build_dretch.py` uses the same six CLI parameters as the Lemure builder. Each
-body has its own exact unit/bone/anatomy loader contract. The existing common
-attachment/material controller, accessory suppression and teardown remain the
-production path; only the repeated nested expiry-visual copy is shared. Source
-records pin actual generated hashes and the geometry-free private capture.
-
-Hound Archon uses the same established original-asset pipeline and measured
-Free Hands rig: an original canine head with floppy ears, humanoid torso/limbs,
-cloth, and native palm/finger controls for its owned sword. Its mesh has6401
-vertices/8420 triangles,24 closed components and29 measured drivers. The source
-record pins its original painting reference, exporter and actual asset hashes.
-Simple anatomy, seams and cloth detail remain backlog. Native body/held-weapon
-presentation and resolved combat remain distinct observations.
+## Hound sword
 
 The Free Hands donor has no native Character avatar, so the native hand-equipment
 controller cannot render a carried item on it. Hound therefore instantiates its
@@ -57,4 +76,10 @@ existing native greatsword model under the measured right palm on the exact
 private unit only. This runtime instance is presentation only, follows actual
 item ownership/equipped mode, hides when natural/disarmed, and is destroyed on
 rollback/view teardown. The native prefab/material is never modified and no
-weapon asset is redistributed. Combat captures and lifecycle checks are required.
+weapon asset is redistributed.
+
+## Limits
+
+Offline previews are not native camera-scale evidence or owner aesthetic
+acceptance. Native presentation, the held-sword grip with the new hand, attack
+and lifecycle views remain separate observations.

@@ -1,5 +1,35 @@
 # Build, package, and publish
 
+## 0.0.168 Sprints 30-31 follow-up publication authorization
+
+On 2026-10-25 the owner reviewed the follow-up checkpoint (branch
+`codex/s30-31-rules-and-model-refinement`), asked for a true lesser globe and a
+fixed Hound sword grip, and wrote "When you're done here please proceed with
+finalization, merging, pushing, and releasing a new version. You do not need
+another approval from me." That covers the v0.0.168 release validator and
+Sprint-level candidate gate, merging the follow-up PR into master, publishing
+through `Publish-Release.ps1`, and checking the public download. The release is
+0.0.168, one above the published 0.0.167; the publisher checks the tag again.
+
+`tools/validate_expanded_summoning_sprints3031_followup_release168.py` admits,
+relative to released v0.0.167 master `48e6fb4abf`:
+- no identity change;
+- the pinned production files and the version metadata;
+- the released project file, unchanged;
+- the rebuilt Lemure, Dretch and Hound Archon exports and source art, and the
+  added sculpt module, each pinned to its reviewed bytes;
+- its own static record.
+
+The released roster and 1,179-choice census still hold. The historical sprint
+and release validators stay as they were, including the v0.0.167 validator
+that pins the released art. The release follows the v0.0.166 route: one
+Sprint-level release candidate gate, a normal merge, then the ordinary
+exact-reference publisher from clean, pushed `master`. Native evidence comes
+from development candidates of the same product source, listed in
+`docs/SPRINT30-31-REVIEW-FOLLOWUP.md`; the published DLL differs from them in
+version metadata and build stamps. Known limits are listed in
+`docs/RELEASE-NOTES-0.0.168.md`.
+
 ## 0.0.166 Druid rows and giant sizes publication authorization
 
 On 2026-10-24 the owner reviewed the Druid duplicate and giant size fixes

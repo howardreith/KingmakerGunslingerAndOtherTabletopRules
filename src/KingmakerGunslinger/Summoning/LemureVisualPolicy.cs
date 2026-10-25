@@ -9,7 +9,9 @@ namespace KingmakerGunslinger.Summoning
         internal const string Key = "lemure";
         internal const string BlueprintName = "KMG_Summoning_Unit_Lemure";
         internal const string BlueprintGuid = "80fd27e965b943b5b307a8c0a45cfb96";
-        internal const string RigSha256 = "727645bba689fc6623b8a690d524d751c96d9072809d4c8ce22e8ed6191ad7a4";
+        // The October 17 recapture of the same donor; rebuilding the released
+        // v0.0.167 export from it changed only this field (see source record).
+        internal const string RigSha256 = "6443b580c8019d2a32de616ef610df3c2aa851c7c998044b56e0c29b4494e65d";
         internal static readonly string[] Bones = {
             "Head", "L_Arm_Lower", "L_Arm_Upper", "L_Bfinger2", "L_Palm",
             "L_finger1", "L_finger2", "R_Arm_Lower", "R_Arm_Upper",
