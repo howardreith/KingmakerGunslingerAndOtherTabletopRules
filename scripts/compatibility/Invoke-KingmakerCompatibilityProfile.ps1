@@ -320,7 +320,7 @@ if ($moduleScenario) {
             $Parameters.reviewPhase -cnotin @('rtwp-foundation','pounce-rtwp','pounce-turn-based','turn-based-abort','turn-based-target-loss','rtwp-ai','charge-boundaries','visual-lifecycle','routes','outdoor-locomotion','shared-controls','expiry-boundary','qualification-combat','qualification-presentation')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint28-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint29-native-review' -and $Parameters.reviewPhase -cnotin @('profiles','modes','commands','turns','cloud-magic','storm-magic','ai','ai-turns','items','disarm','awesome','awesome-turn','catch','cleave','vital','vital-turn','routes')) -or
-        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $Parameters.reviewPhase -cnotin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn','hound-disarm','shared-circles','archon-boundaries')) -or
+        ($Scenario[0] -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $Parameters.reviewPhase -cnotin @('bootstrap','lemure-core','lemure-full','lemure-ai','dretch-cloud','dretch-ai','dretch-ai-ally','archon-core','archon-hound','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','trumpet-book','trumpet-book-turn','trumpet-caster','outsider-bodies','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn','hound-disarm','shared-circles','archon-boundaries','public-routes','final-integration','boundary-lemure','boundary-dretch','boundary-hound-archon','boundary-lantern-archon','boundary-astral-deva','boundary-trumpet-archon','celestial-cleave')) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and
             -not (Test-KmgCleanup2ReviewPhaseScope -Scenario $Scenario[0] -Parameters $Parameters)) -or
         ($Scenario[0] -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
@@ -797,5 +797,14 @@ if ($developmentCandidate) {
     $profileReceipt.releaseQualification = $false
     $profileReceipt.developmentPurpose = $DevelopmentPurpose
     $profileReceipt.packageSha256 = $profileCandidate.packageSha256
+}
+if (-not $developmentCandidate -and [IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+    # Actual validated final artifact bound to this restored profile and its
+    # immutable runtime hashes. This is execution attribution, not qualification.
+    $profileReceipt.candidateKind = 'release'
+    $profileReceipt.commit = $profileCandidate.commit
+    $profileReceipt.packageSha256 = $profileCandidate.packageSha256
+    $profileReceipt.dllSha256 = $profileCandidate.dllSha256
+    $profileReceipt.dllMvid = $profileCandidate.dllMvid
 }
 [pscustomobject]$profileReceipt

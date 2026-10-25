@@ -200,7 +200,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private void ObserveSprints3031PersistentUnit(UnitEntityData unit, string key, JObject profile,
-            UnitEntityData[] units, ItemEntity[] partyItems, int[] partyCounts)
+            UnitEntityData[] units, ItemEntity[] partyItems, int[] partyCounts, bool prepare)
         {
             var state = (JObject)profile["sprints3031"];
             var resources = (JObject)state["resources"];
@@ -238,10 +238,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["slotsExact"] = slotsExact, ["itemsExact"] = itemsExact, ["effectsExact"] = effectsExact,
                     ["partyInventoryExact"] = Sprint28PartyInventoryExact(partyItems, partyCounts),
                     ["fixtureSetupNotCombatProof"] = true },
-                "Actual saved native item owners, independently spent resources/preparations and finite source-specific victim states survive without reseeding.");
+                prepare ? "Pre-save setup contains the actual item owners, spent resources/preparations and finite source-specific victim states; no cold-load claim." :
+                    "Actual saved native item owners, independently spent resources/preparations and finite source-specific victim states survive fresh loading without reseeding.");
         }
 
-        private void ObserveSprints3031PersistentAuras(UnitEntityData[] units)
+        private void ObserveSprints3031PersistentAuras(UnitEntityData[] units, bool prepare)
         {
             var circle = BlueprintBootstrap.MagicCircles.Single(value => value.Alignment == "Evil");
             var astralRecipient = (BlueprintBuff)ExpandedSummoningBlueprints.Registered.BySymbol[
@@ -271,19 +272,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["blueprint"] = area.Blueprint.AssetGuid, ["source"] = area.Context?.MaybeCaster?.UniqueId,
                             ["cl"] = area.Context?.Params.CasterLevel })),
                         ["recipient"] = dretch.UniqueId, ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning },
-                    "Cold native aura owners and recipient grants reconstruct once with each source's own caster level; observation does not refresh or recreate them.");
+                    prepare ? "Pre-save native aura owners and recipient grants have each source's own caster level; no cold-load claim." :
+                        "Cold native aura owners and recipient grants reconstruct once with each source's own caster level; observation does not refresh or recreate them.");
             }
             var lemure = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "lemure");
             var hound = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "hound-archon");
-            int evilAc = Rulebook.Trigger(new RuleCalculateAC(lemure, dretch, AttackType.Melee)).TargetAC;
-            int goodAc = Rulebook.Trigger(new RuleCalculateAC(hound, dretch, AttackType.Melee)).TargetAC;
+            // ArmorClassBonusAgainstAlignment listens to RuleAttackWithWeapon,
+            // not standalone RuleCalculateAC. These are owned actors with their
+            // native empty-hand weapons: no manufactured hammer/sword rider.
+            // Keep any real damage; never repair health to manufacture survival.
+            int damageBefore = dretch.Damage;
+            int evilAc = CircleAttackAC(lemure, dretch, false);
+            int damageAfterEvil = dretch.Damage;
+            int goodAc = CircleAttackAC(hound, dretch, false);
+            bool recipientAlive = !dretch.Descriptor.State.IsDead && !dretch.Destroyed && dretch.IsInState;
             var spell = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(BlueprintBootstrap.Library,
                 "d7cbd2004ce66a042aeab2e95a3c5c61", "pilot cold circle save consumer");
             int evilSave = CircleSave(lemure, dretch, spell), goodSave = CircleSave(hound, dretch, spell);
-            RosterPersistenceCheck("s3031-cold-aura-consumers", evilAc - goodAc == 4 && evilSave - goodSave == 4,
+            RosterPersistenceCheck("s3031-" + (prepare ? "prepare" : "cold") + "-aura-consumers", recipientAlive && evilAc - goodAc == 4 && evilSave - goodSave == 4,
                 new JObject { ["recipient"] = dretch.UniqueId, ["evilAc"] = evilAc, ["goodAc"] = goodAc,
-                    ["evilSave"] = evilSave, ["goodSave"] = goodSave, ["forcedRolls"] = 0 },
-                "Actual native AC/save consumers retain the angel's nonstacking +4 against evil over the shared +2 circles after hydration.");
+                    ["evilSave"] = evilSave, ["goodSave"] = goodSave, ["forcedRolls"] = 0,
+                    ["phase"] = prepare ? "pre-save-setup" : "fresh-load",
+                    ["evilAttacker"] = lemure.UniqueId, ["goodAttacker"] = hound.UniqueId,
+                    ["evilWeapon"] = lemure.Body.EmptyHandWeapon.Blueprint.AssetGuid,
+                    ["goodWeapon"] = hound.Body.EmptyHandWeapon.Blueprint.AssetGuid,
+                    ["damageBefore"] = damageBefore, ["damageAfterEvil"] = damageAfterEvil,
+                    ["damageAfterGood"] = dretch.Damage, ["recipientAlive"] = recipientAlive, ["observerHealing"] = false },
+                prepare ? "Pre-save actual native weapon-attack AC and save consumers show the angel's nonstacking +4 over shared +2 circles; damage remains real." :
+                    "After fresh loading, actual native weapon-attack AC and save consumers retain the angel's nonstacking +4 over shared +2 circles; damage remains real.");
         }
     }
 }

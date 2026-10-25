@@ -262,6 +262,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return ExpandedSummoningNativeProfilePolicy.ArchonBoundariesPhase; } }
         internal static string Sprints30And31HoundDisarmPhase
         { get { return ExpandedSummoningNativeProfilePolicy.HoundDisarmPhase; } }
+        internal static string Sprints30And31PublicRoutesPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.PublicRoutesPhase; } }
         internal static string Sprints30And31SharedCirclesPhase
         { get { return ExpandedSummoningNativeProfilePolicy.SharedCirclesPhase; } }
         internal static string Sprints30And31HoundSinglePhase

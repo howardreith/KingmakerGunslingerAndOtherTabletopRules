@@ -1,10 +1,10 @@
 Set-StrictMode -Version Latest
 
 function Assert-KmgQualifiedCandidateInvocationMode {
-    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Publish,
+    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Sprints3031,[switch]$Publish,
         [switch]$ConfirmReleaseReady,[string]$MergedReleaseCommit,[string]$ExpectedBaseCommit)
     if($PreflightOnly) {
-        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
+        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants,$Sprints3031 | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
             $ExpectedBaseCommit -cnotmatch '^[0-9a-f]{40}$') {
             throw 'PreflightOnly requires one supported sprint and its pinned base, and forbids publication, confirmation or a claimed merge.'
         }
@@ -162,17 +162,27 @@ function Assert-KmgReportingLineage {
 }
 
 function Assert-KmgClosureProofFiles {
-    param([Parameter(Mandatory=$true)]$Ledger)
-    foreach ($proof in @($Ledger.coverage | ForEach-Object { $_.proofs })) {
-        if ([string]$proof.sha256 -cnotmatch '^[0-9a-f]{64}$' -or
-            -not (Test-Path -LiteralPath $proof.path -PathType Leaf) -or
-            (Get-FileHash -LiteralPath $proof.path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $proof.sha256) {
-            throw 'Closure evidence is missing or changed after qualification.'
+    param([Parameter(Mandatory=$true)]$Ledger,[switch]$Sprints3031,$Candidate)
+    if($Sprints3031 -and ($Ledger.mission -cne 'Sprints3031OutsiderCelestialPilot' -or $null -eq $Candidate)) {
+        throw 'Named S30-31 context and actual final candidate are required.'
+    }
+    foreach($row in $Ledger.coverage) {
+        if($Sprints3031 -and $row.result -ceq 'REUSED_PASS') {
+            Assert-KmgSprints3031ReusedMechanics -Row $row -Candidate $Candidate
         }
-        # Deployment records, runtime evidence and profile receipts produced
-        # under a development candidate say so; none of them qualifies a release.
-        if ([IO.File]::ReadAllText($proof.path) -match '"candidateKind"\s*:\s*"development"') {
-            throw 'Development-candidate evidence cannot qualify a release.'
+        foreach ($proof in $row.proofs) {
+            if ([string]$proof.sha256 -cnotmatch '^[0-9a-f]{64}$' -or
+                -not (Test-Path -LiteralPath $proof.path -PathType Leaf) -or
+                (Get-FileHash -LiteralPath $proof.path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $proof.sha256) {
+                throw 'Closure evidence is missing or changed after qualification.'
+            }
+            # Only this owner-reviewed batch may accept original, complete
+            # development mechanics as REUSED_PASS. Every other sprint and all
+            # fresh final evidence retain the original development refusal.
+            if ([IO.File]::ReadAllText($proof.path) -match '"candidateKind"\s*:\s*"development"' -and
+                -not ($Sprints3031 -and $row.result -ceq 'REUSED_PASS' -and $row.kind -ceq 'mechanics')) {
+                throw 'Development-candidate evidence cannot qualify a release.'
+            }
         }
     }
 }

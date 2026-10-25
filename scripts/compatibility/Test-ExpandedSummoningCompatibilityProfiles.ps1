@@ -208,7 +208,7 @@ Write-Host "PASS actual Sprint28 profile dispatch: $sprint28DispatchChecks candi
 # deliberately incompatible fixture stops accepted requests before any profile.
 $dispatchScenario = 'disposable-expanded-summoning-sprints30-31-native-review'
 $bodyDispatchChecks = 0
-foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn','hound-disarm','shared-circles','archon-boundaries')) {
+foreach ($phase in @('bootstrap','lemure-core','outsider-bodies','hound-armed','hound-natural','lantern-rays','lantern-body','astral-core','astral-hammer','astral-blade','astral-support','astral-atwill','astral-smite','astral-dispel','trumpet-dispel','trumpet-blast','trumpet-blast-ai','trumpet-blast-ai-safe','source-lifecycle','defense-consumers','dretch-melee','dretch-melee-ai','hound-single','hound-ai','hound-turn','hound-disarm','shared-circles','archon-boundaries','public-routes','final-integration','boundary-lemure','boundary-dretch','boundary-hound-archon','boundary-lantern-archon','boundary-astral-deva','boundary-trumpet-archon','celestial-cleave')) {
     $caught = $null
     try { & $invokePath -ProfileId gunslinger-only -Scenario $dispatchScenario -Parameters @{reviewPhase=$phase} -ReuseInstalledArtifact -PackagePath $dispatchPackage -WhatIf -Confirm:$false }
     catch { $caught = $_.Exception.Message }

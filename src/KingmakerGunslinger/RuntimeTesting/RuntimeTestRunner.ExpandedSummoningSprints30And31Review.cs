@@ -14,12 +14,59 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        // Fixed order of existing resettable, save-free fixtures. Controller-
+        // sensitive negative cases retain their isolated boundary processes.
+        private IEnumerable<int> ReviewSprints3031FinalIntegration(ExpandedSummoningCorrectionFixture fixture)
+        {
+            var inventory = Kingmaker.Game.Instance.Player.Inventory.Items.ToArray();
+            var counts = inventory.Select(value => value.Count).ToArray();
+            var areas = Kingmaker.Game.Instance.State.AreaEffects.All.ToArray();
+            var residue = CastExpandedSummoningOwnTier(fixture, "lemure");
+            bool detected = fixture.Created.Any(value => value != null && !value.Destroyed && value.IsInState);
+            Sprint25Check("final-integration-live-residue-negative", detected, new JObject {
+                ["ownedResidue"] = residue.UniqueId, ["inState"] = residue.IsInState, ["destroyed"] = residue.Destroyed,
+                ["resetGuardRejectsLiveOwnedActor"] = detected },
+                "The sequence reset predicate detects an intentionally live disposable summon; no cleanup-return value substitutes for this observation.");
+            DisposeExpandedSummoningUnits(fixture.Created, new[] { residue });
+            for (int frame = 0; frame < 16; frame++) yield return 0;
+            if (!detected || !residue.Destroyed || residue.IsInState)
+                throw new InvalidOperationException("Integration residue negative/reset failed.");
+            var cases = new[] { "shared-circles", "source-lifecycle", "celestial-cleave" };
+            foreach (string id in cases)
+            {
+                IEnumerable<int> run = id == "shared-circles" ? ReviewSprints3031Circles(fixture) :
+                    id == "source-lifecycle" ? ReviewSprints3031SourceLifecycle(fixture) : ReviewSprint28Cleave(fixture, true, true);
+                foreach (int frame in run) yield return frame;
+                var live = fixture.Created.Where(value => value != null && !value.Destroyed && value.IsInState).ToArray();
+                bool clean = live.Length == 0 && !Kingmaker.Game.Instance.State.AreaEffects.All.Except(areas).Any() &&
+                    Sprint28PartyInventoryExact(inventory, counts) &&
+                    !fixture.Hostile.Commands.Raw.Any(value => value != null && !value.IsFinished) &&
+                    !TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+                Sprint25Check("final-integration-reset-" + id, clean, new JObject {
+                    ["subcase"] = id, ["remainingOwnedUnits"] = new JArray(live.Select(value => value.UniqueId)),
+                    ["areasExact"] = !Kingmaker.Game.Instance.State.AreaEffects.All.Except(areas).Any(),
+                    ["partyInventoryExact"] = Sprint28PartyInventoryExact(inventory, counts),
+                    ["turnBasedActive"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
+                    ["targetQueueEmpty"] = !fixture.Hostile.Commands.Raw.Any(value => value != null && !value.IsFinished) },
+                    "Each existing native fixture must restore owned units, areas, queues, inventory and RTWP before the next fixed subcase; a failure stops later cases.");
+                if (!clean) throw new InvalidOperationException("Final integration isolation failed after " + id);
+            }
+        }
+
         private bool IsSprints30And31Review { get { return _request.Scenario ==
             RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview; } }
 
         private IEnumerable<int> ReviewSprints30And31(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprints30And31ReviewPhase(_request);
+            if (phase == "final-integration")
+            { foreach (int frame in ReviewSprints3031FinalIntegration(fixture)) yield return frame; yield break; }
+            if (phase == "celestial-cleave")
+            { foreach (int frame in ReviewSprint28Cleave(fixture, true)) yield return frame; yield break; }
+            if (new[] { "boundary-lemure", "boundary-dretch", "boundary-hound-archon", "boundary-lantern-archon", "boundary-astral-deva", "boundary-trumpet-archon" }.Contains(phase))
+            { foreach (int frame in ReviewSprints3031ActionBoundary(fixture, phase.Substring("boundary-".Length))) yield return frame; yield break; }
+            if (phase == RuntimeTestScenarioCatalog.Sprints30And31PublicRoutesPhase)
+            { foreach (int frame in ReviewSprints30And31PublicRoutes(fixture)) yield return frame; yield break; }
             if (phase == RuntimeTestScenarioCatalog.Sprints30And31DefenseConsumersPhase)
             {
                 foreach (int frame in ReviewSprints3031Defenses(fixture)) yield return frame;
@@ -239,5 +286,110 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (!claws) throw new InvalidOperationException(
                 "Native first-slice claw plan failed; stop dependent expansion.");
         }
+        private IEnumerable<int> ReviewSprints30And31PublicRoutes(ExpandedSummoningCorrectionFixture fixture)
+        {
+            var tiers = new Dictionary<string, int>(StringComparer.Ordinal) {
+                { "lemure", 2 }, { "dretch", 3 }, { "hound-archon", 4 },
+                { "lantern-archon", 3 }, { "astral-deva", 9 }, { "trumpet-archon", 9 } };
+            var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                .Where(value => tiers.ContainsKey(value.Creature.Key))
+                .OrderBy(value => value.Creature.Key, StringComparer.Ordinal)
+                .ThenBy(value => value.ParentTier).ToArray();
+            int expected = tiers.Sum(value => 10 - value.Value);
+            bool exact = routes.Length == expected && tiers.All(pair => routes
+                    .Where(value => value.Creature.Key == pair.Key).Select(value => value.ParentTier)
+                    .SequenceEqual(Enumerable.Range(pair.Value, 10 - pair.Value))) &&
+                !ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)
+                    .Any(value => tiers.ContainsKey(value.Creature.Key)) &&
+                routes.All(value => !value.Creature.MonsterTemplated && SummonVisibilityCatalog.IsPublished(value) &&
+                    value.Multiplicity == (value.ParentTier == tiers[value.Creature.Key] ? SummonMultiplicity.One :
+                        value.ParentTier == tiers[value.Creature.Key] + 1 ? SummonMultiplicity.OneD3 : SummonMultiplicity.OneD4PlusOne));
+            Sprint25Check("public-affected-route-census", exact, new JObject {
+                ["routes"] = new JArray(routes.Select(value => value.StableKey)),
+                ["derivedExpected"] = expected,
+                ["newRoutes"] = routes.Count(value => value.Creature.Key != "lantern-archon"),
+                ["preservedChangedLanternRoutes"] = routes.Count(value => value.Creature.Key == "lantern-archon"),
+                ["published"] = routes.Count(SummonVisibilityCatalog.IsPublished),
+                ["registeredRoots"] = SummonVisibilityCatalog.RegisteredLogicalPlacementCount,
+                ["publishedRoots"] = SummonVisibilityCatalog.PublishedLogicalPlacementCount,
+                ["suppressedRoots"] = SummonVisibilityCatalog.SuppressedLogicalPlacementCount },
+                "Exactly the six chartered untemplated Monster route families are public at their actual one/1d3/1d4+1 tiers; no Nature route is added. Released identity/order comparisons retain their separate bindings.");
+            if (!exact) throw new InvalidOperationException("Combined public route preconditions are incomplete.");
+            // The final S29 fixture already supports untemplated Monster and
+            // Nature parents. It observes each actual selected parent/variant,
+            // native Wizard20 slot, command/cast/spawn, quantity, CL20 duration
+            // and exact actor cleanup. No new route/caster framework is needed.
+            Sprint24PlayerRoutes(fixture, routes, Sprint25Check, false);
+            int published;
+            bool inventoryExact = ExpandedSummoningPublisher.RequiredBasePublicationIsExact(
+                BlueprintBootstrap.Library, true, out published);
+            Sprint25Check("public-inventory-integration", inventoryExact,
+                new JObject { ["published"] = published, ["affectedRoutes"] = routes.Length },
+                "The combined artifact's native parent/variant inventory matches its actual published catalog.");
+            if (!inventoryExact) throw new InvalidOperationException("Public inventory differs.");
+            foreach (string key in tiers.Keys.OrderBy(value => value, StringComparer.Ordinal)) {
+                var areasBeforeBody = Kingmaker.Game.Instance.State.AreaEffects.All.ToArray();
+                var actor = CastExpandedSummoningOwnTier(fixture, key);
+                var privateResources = Array.Empty<UnityEngine.Object>();
+                bool pause = Kingmaker.Game.Instance.IsPaused;
+                bool waiting = _sprint25WaitingForUnityAppearance;
+                try {
+                    Sprint28SetBrainActivePreservingActions(actor, false);
+                    actor.Commands.InterruptAll(true); actor.Commands.RemoveFinishedAndUpdateQueue();
+                    var deadline = DateTime.UtcNow.AddSeconds(12);
+                    while (DateTime.UtcNow < deadline && (actor.View == null || !EntityFadedIn(actor) ||
+                        DissolveAmount(actor) > MotionReviewIntactDissolve || !actor.Descriptor.State.CanAct)) {
+                        _sprint25WaitingForUnityAppearance = EntityFadedIn(actor);
+                        Kingmaker.Game.Instance.IsPaused = false; yield return 0;
+                    }
+                    if (actor.View == null) throw new InvalidOperationException("Public body view absent: " + key);
+                    privateResources = Sprints3031PrivateResources(actor, key);
+                    var renderers = actor.View.GetComponentsInChildren<UnityEngine.Renderer>(true);
+                    bool visible = renderers.Any(value => value.enabled && value.gameObject.activeInHierarchy &&
+                        Astral31Finite(value.bounds.center) && Astral31Finite(value.bounds.size) && value.bounds.size.sqrMagnitude > .01f);
+                    if (key == "lantern-archon") {
+                        var orb = actor.View.GetComponent<LanternArchonOrbView>();
+                        visible = orb != null && orb.OrbRenderer != null && orb.OrbRenderer.enabled &&
+                            orb.OrbRenderer.gameObject.activeInHierarchy;
+                    }
+                    string renderer = key == "lemure" || key == "dretch" || key == "hound-archon" ?
+                        TheropodVisualPolicy.BodyRendererName : null;
+                    string frame = WriteExpandedSummoningPartyCameraCapture(actor, _request.EvidenceDirectory,
+                        "s3031-public-" + key + ".png", renderer);
+                    var selection = Sprint22SelectionSurface(actor);
+                    var own = routes.Single(value => value.Creature.Key == key && value.ParentTier == tiers[key]);
+                    var ability = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[
+                        ExpandedSummoningIdentityCatalog.AbilitySymbol(own)];
+                    bool icon = ability.Icon != null && ability.Icon.texture != null &&
+                        ability.Icon.texture.width == 128 && ability.Icon.texture.height == 128;
+                    bool bodyExact = visible && EntityFadedIn(actor) && DissolveAmount(actor) <= MotionReviewIntactDissolve &&
+                        (bool)selection["selectionSurface"] && frame.Contains("inFrame=true") && frame.Contains("screenLit=true") && icon &&
+                        (key == "lantern-archon" || frame.Contains("rendererEnabled=true"));
+                    Sprint25Check("public-body-icon-" + key, bodyExact, new JObject {
+                        ["creature"] = key, ["owner"] = actor.UniqueId, ["route"] = ability.AssetGuid,
+                        ["visible"] = visible, ["selection"] = selection, ["partyCamera"] = frame,
+                        ["iconWidth"] = ability.Icon?.texture?.width, ["iconHeight"] = ability.Icon?.texture?.height,
+                        ["privateResources"] = privateResources.Length },
+                        "The final public artifact resolves the real icon and a visible selectable owned body at native party-camera scale; rough anatomy and texture polish remain accepted backlog.");
+                    if (!bodyExact) throw new InvalidOperationException("Public body/icon integration failed: " + key);
+                } finally {
+                    _sprint25WaitingForUnityAppearance = waiting;
+                    actor.Commands.InterruptAll(true); actor.Commands.RemoveFinishedAndUpdateQueue();
+                    if (actor.IsInCombat) actor.LeaveCombat();
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { actor });
+                    Kingmaker.Game.Instance.IsPaused = pause;
+                }
+                for (int frame = 0; frame < 16; frame++) yield return 0;
+                bool gone = actor.Destroyed && !actor.IsInState && privateResources.All(value => value == null) &&
+                    !Kingmaker.Game.Instance.State.AreaEffects.All.Except(areasBeforeBody).Any();
+                Sprint25Check("public-body-reset-" + key, gone,
+                    new JObject { ["ownerGone"] = actor.Destroyed && !actor.IsInState,
+                        ["privateResourcesGone"] = privateResources.All(value => value == null) },
+                    "The exact disposable body and its private resources are absent before the next presentation case.");
+                if (!gone) throw new InvalidOperationException("Public body reset failed: " + key);
+            }
+
+        }
+
     }
 }

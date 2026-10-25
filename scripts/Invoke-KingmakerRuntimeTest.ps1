@@ -398,6 +398,13 @@ try {
     [void](Write-KmgOrchestrationEvidence -EvidenceDirectory $evidence `
         -Record $orchestration)
     Write-Host 'Stage: steam-launch-requested'
+    # One named owner-bounded lab, immediately before native dispatch. The
+    # ordinary lease, package, save and restoration guards remain in force.
+    if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+        . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
+        [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
+            -Action Game -Stage ($Scenario + ':' + $request.runId) -MinimumRemainingMinutes 15)
+    }
     $launchOutput = @(Start-KmgSteamKingmaker -SteamPath $SteamPath `
         -AppId $SteamAppId -RequestPath $requestPath `
         -PreLaunchProcesses @($preLaunchProcesses) `

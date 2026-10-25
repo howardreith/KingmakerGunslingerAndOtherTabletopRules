@@ -440,7 +440,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Reach fixture failed to retain the world clock or clean its projectile.");
         }
 
-        private static int CircleAttackAC(UnitEntityData attacker, UnitEntityData target)
+        private static int CircleAttackAC(UnitEntityData attacker, UnitEntityData target, bool restoreProbeDamage = true)
         {
             int damage = target.Damage;
             try {
@@ -448,7 +448,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (roll == null || roll.ACRule == null) throw new InvalidOperationException("Native attack did not calculate AC.");
                 return roll.TargetAC;
             }
-            finally { target.Damage = damage; }
+            finally { if (restoreProbeDamage) target.Damage = damage; }
         }
 
         private static int CircleSave(UnitEntityData source, UnitEntityData target, BlueprintAbility ability)
