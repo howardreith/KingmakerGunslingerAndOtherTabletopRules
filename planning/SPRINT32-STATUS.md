@@ -42,13 +42,13 @@ have an early natural RTWP PASS, including frightened-immune refusal. Lillend's
 hidden outsider7/native bard7 slice adds independent spontaneous healing slots,
 20 native performance rounds, Inspire Courage+2 and normal melee fallback.
 Ten new roots remain hidden; all1,150 accepted generated roots stay published.
-Full adult attacks/feats/spell families, optional Suggestion, original bodies,
+Full adult attacks/feats/spell families, optional Suggestion, original Lillend body,
 public routes and final qualification remain incomplete. Both original128px
 icons are exported with provenance; agent-inspected Lillend icon is recognizable.
 Native presentation remains NOT_RUN; the human Lillend carrier is investigation
 only, not an owner-approved final proxy.
 
-Latest validated source `12d0bcfc8964dbc5aac0f13efb701c5631fd9787`.
+Satyr early PASS artifact: source `12d0bcfc8964dbc5aac0f13efb701c5631fd9787`.
 Development purpose `sprint32-satyr-control`, retained version0.0.167; not release.
 ZIP `KingmakerGunslinger-0.0.167-development-sprint32-satyr-control-12d0bcfc8964.zip`
 SHA256 `093d29864e528e8ff05c46c3c42e885eff414c5079bc98a25db5f6fda0259d74`;
@@ -70,6 +70,22 @@ native gameplay failures. Current Lillend compile PASS; related domain554 tests
 initially exposed stale current roster/proxy declarations, now corrected. The
 previous553 passing assertions are retained; the affected proxy test rerun PASS.
 No Lillend runtime or final qualification claim follows from these offline checks.
+
+Latest candidate source `7e16bf24b622fe298a060e568dbd1ad151be88e9`, purpose
+`sprint32-lillend-support`, retained0.0.167. Complete wrapper,554/554 related
+domain tests, exact compile and strict417-file package PASS.
+ZIP `KingmakerGunslinger-0.0.167-development-sprint32-lillend-support-7e16bf24b622.zip`,
+SHA256 `ba5c51cdf6242a86aef03bcb2efb6fe75eca9df4cb0afcb2dcabf9e32fb6f4d4`;
+DLL `61671aebfa347a16917ddf205f5cb9cf4d63f91cffc681a90950b28c0d8e7f61`;
+MVID `efe4f719-6c06-44d8-9c3a-b5b99b142f89`.
+Native run `20261025T1653581612149Z-c9ecf18aef4144f5874d86e4e553f23b`
+FAIL at initialization, zero gameplay assertions: general item-enchantment
+array could not bind to the native weapon-enchantment field. Corrected with
+explicit `Cast<BlueprintWeaponEnchantment>()`, which refuses unexpected types.
+Focused production compile/hidden Lillend route PASS; narrow independent review
+checked remaining reflected assignments and Courage component lookup shapes
+against installed/captured types, with no additional concrete startup blocker.
+This correction still requires fresh native execution.
 
 ## Finite acceptance table
 
@@ -106,7 +122,7 @@ replanning, not a quota or a new approval ledger.
 
 [Historical workflow/early evidence](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md)
 retains all original results, exact artifact/cleanup identities and limitations.
-Local logs: `artifacts/sprint32-intake/`; latest completed native wrapper/intake:
+Local logs: `artifacts/sprint32-intake/`; Satyr native wrapper/intake:
 `artifacts/sprint32-control-12d0bcfc/`. Raw runtime-evidence directory:
 `20261025T1620421820687Z-disposable-expanded-summoning-sprint32-native-review`.
 Result SHA256 `a3b1a24765b4523597264ee8b2f61b43a01fa35cda48455182fd98fcab1ce3f4`.
@@ -117,6 +133,14 @@ Original986 failure log remains in `artifacts/sprint32-control-986b8de9/` with
 SHA256 `0e05a7365a12c41991f82841f94d0bb8f550ebf1555bfa5f90735a84ce63061f`.
 Metadata-only native audit is reviewed input evidence, not mechanics.
 
+Latest Lillend wrapper/intake `artifacts/sprint32-lillend-7e16bf24/`; evidence folder
+`20261025T1653581258798Z-disposable-expanded-summoning-sprint32-native-review`.
+Result SHA256 `f0eb2387002aeb7f5f2d498641097a0a787055558b3c18c0132f3e51e4407cb9`;
+original Unity failure log `4ae34ecef9fa7e23a4b55664118be259555b453cb1a606cb58b4fa3a606bc52b`.
+Transaction `compat-20261025T165106Z-edd4bc213ad9` Restored/verified16:55:35UTC;
+full protected Compare PASS967mods/118saves/18refs/83settings/0tasks/unchangedSteam.
+No owned live transaction/game remains. Native70.778s; full transaction270.60s.
+
 Independent read-only reviews completed for workflow, early Satyr fixture and
 packaging corrections; concrete early fixture findings repaired. Final coherent
 product/rules/coverage/evidence review remains pending. Provider 1.4.5 public ZIP
@@ -124,14 +148,16 @@ retained for research; no provider installation/integration yet.
 
 Storage: verified closed duplicate cleanup recovered 3,511,693,023 plus
 1,344,249,872 plus504,093,702bytes; unique packages/raw evidence/backups/saves retained.
-Latest cleanup retained six exact ZIP-verified closed S29 extraction inventories
-and all receipts; protected Compare PASS. Free after cleanup3,650,048,000bytes. Free space
+Additional four closed Sprint32 extraction duplicates recovered393,168,768bytes;
+all exact packages/failure logs/receipts retained. Cleanup plan SHA256
+`0839095c060c231715170b7d0b41123f564b7ec0d97c3e0b92224fd64f1962ab`;
+protected Compare PASS. Free after cleanup3,690,156,032bytes. Free space
 before12d dispatch3,311,755,264bytes; required allowance 1.1 GB peak plus 2 GB margin.
 Recheck before next package/dispatch. A full extra checkout measures 1,019,350,022
 bytes, so do not casually duplicate it; final records-only checkout can be bounded.
 
-Build attempts/validated development packages/native launches:10/4/4.
-Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 seconds (last native106.083seconds). Full active-time
+Build attempts/validated development packages/native launches:11/5/5.
+Observed native setup/execution/restoration255.68 +224.24 +238.49 +270.34 +270.60 seconds. Full active-time
 category totals unavailable; retain timestamps, do not infer throughput.
 Repeated blockers were old admission/count assumptions, now exercised through
 actual offline/package checks. The corrected registration assumptions are closed by12d natural gameplay PASS.
@@ -149,8 +175,9 @@ are explicitly outside this first-debit probe and remain final acceptance work.
 Icon catalog30/30 and canonical137-source/export validation PASS; all136 prior
 rows remain identical. Production compile and corrected hidden/proxy test PASS.
 
-Next: commit the coherent hidden support candidate, package it once with all554
-related summoning checks and run the declared early Lillend native probe. No owner decision
+Next: commit the corrected enchantment binding, package once and rerun the same bounded
+Lillend native probe. Unchanged554-test evidence is reviewed reuse; exact
+production compile/package and selected hidden-route check run on corrected bytes. No owner decision
 is pending. Full final product/rules/coverage review remains pending.
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all 30 public-route/body/icon,
 standalone final integration, highest-risk combined final integration. Their
