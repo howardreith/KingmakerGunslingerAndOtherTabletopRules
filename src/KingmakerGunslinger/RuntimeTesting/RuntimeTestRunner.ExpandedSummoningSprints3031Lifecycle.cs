@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Commands;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -70,9 +72,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 { Game.Instance.IsPaused = false; yield return 0; }
                 if (sprint32)
                 {
-                    // Explicit lifecycle precondition, not activation/action/AI
-                    // evidence: request each owned native toggle ON, then allow
-                    // normal controllers to create its carrier/area/recipient.
+                    // Explicit lifecycle precondition, not AI selection evidence:
+                    // use the proven owned combat/native command path, allowing
+                    // normal controllers to create the carrier/area/recipient.
                     // The recipient is the persistent request-owned caster,
                     // which survives every source removal. Only one identical
                     // emitter is ON at a time: no stacking replacement can hide
@@ -80,11 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var actor = owners["lillend-azata"];
                     PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
                     PlaceExpandedSummoningUnit(siblings["lillend-azata"], fixture.Caster.Position + Vector3.forward * 40f);
-                    var courage = actor.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
-                    actor.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage)).IsOn = true;
-                    deadline = DateTime.UtcNow.AddSeconds(8);
-                    while (DateTime.UtcNow < deadline && (Sprints3031OwnedAreaCount(actor) == 0 || courageRecipients(actor).Length != 1))
-                    { Game.Instance.IsPaused = false; yield return 0; }
+                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipients, "expiry")) yield return frame;
                     var recipients = courageRecipients(actor);
                     if (recipients.Length != 1) throw new InvalidOperationException("Lifecycle requires the exact Courage recipient on the surviving owned caster.");
                     capturedCourageRecipients.Add(actor, recipients.Single());
@@ -121,7 +119,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             boundGrants[pair[0]].Contains(capturedCourageRecipients[pair[0]]) &&
                             Sprints3031OwnedAreaCount(pair[1]) == 0 && fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead;
                     var row = new JObject { ["creature"] = key, ["owners"] = new JArray(pair.Select(Sprints3031LifecycleState)),
-                        ["performanceSetup"] = key == "lillend-azata" ? "One owned native toggle ON; exact CourageRecipient captured on surviving fixture caster. Sibling remains OFF until the death case. No activation/action/AI claim." : null,
+                        ["performanceSetup"] = key == "lillend-azata" ? "One owned native activation command in an isolated combat; exact CourageRecipient captured on surviving fixture caster. Sibling remains OFF until the death case. No AI selection claim." : null,
                         ["externalRecipient"] = key == "lillend-azata" ? fixture.Caster.UniqueId : null,
                         ["privateObjects"] = new JArray(pair.Select(actor => resources[actor].Length)),
                         ["independentPrivateObjects"] = !resources[pair[0]].Intersect(resources[pair[1]]).Any(),
@@ -178,11 +176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     var actor = siblings["lillend-azata"];
                     PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
-                    var courage = actor.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
-                    actor.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage)).IsOn = true;
-                    deadline = DateTime.UtcNow.AddSeconds(8);
-                    while (DateTime.UtcNow < deadline && (Sprints3031OwnedAreaCount(actor) == 0 || courageRecipients(actor).Length != 1))
-                    { Game.Instance.IsPaused = false; yield return 0; }
+                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipients, "death")) yield return frame;
                     var recipients = courageRecipients(actor);
                     boundAreas[actor] = Game.Instance.State.AreaEffects.All.Where(area => area != null && ReferenceEquals(area.Context?.MaybeCaster, actor)).ToArray();
                     boundGrants[actor] = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed)
@@ -258,6 +252,58 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        private IEnumerable<int> PrepareLillend32LifecycleCourage(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData actor, Func<UnitEntityData, Buff[]> recipients, string stage)
+        {
+            // Bounded setup for source removal, not a substitute for natural AI
+            // evidence. Keep the owned encounter alive while each source expires
+            // or dies, so combat-end cancellation cannot pre-empt the tested cause.
+            var target = fixture.Hostile;
+            if (target == null || fixture.OwnedHostileFaction == null)
+                throw new InvalidOperationException("Lifecycle combat requires its isolated owned hostile.");
+            PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 8f);
+            foreach (var unit in new[] { actor, fixture.Caster, target })
+            {
+                unit.Wake(0f);
+                if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+                unit.Memory.Add(ReferenceEquals(unit, target) ? fixture.Caster : target);
+                unit.SightCache.ClearIfNeeded(); unit.JoinCombat();
+            }
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            Game.Instance.Player.UpdateIsInCombat();
+            new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+            var courage = actor.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
+            var performance = actor.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage));
+            var resource = fixture.Blueprints.OfType<Kingmaker.Blueprints.BlueprintAbilityResource>().Single(value =>
+                value.name == "KMG_Summoning_FeyCelestial_LillendAzata_PerformanceResource");
+            var command = new UnitActivateAbility(performance);
+            bool admitted = actor.Descriptor.State.CanAct && actor.IsInCombat && fixture.Caster.IsInCombat &&
+                !actor.IsEnemy(fixture.Caster) && actor.HasLOS(fixture.Caster) && performance.IsAvailable &&
+                !performance.IsOn && !performance.IsRunning;
+            if (admitted) actor.Commands.Run(command);
+            var deadline = DateTime.UtcNow.AddSeconds(12);
+            while (admitted && DateTime.UtcNow < deadline &&
+                (Sprints3031OwnedAreaCount(actor) == 0 || recipients(actor).Length != 1))
+            { Game.Instance.IsPaused = false; yield return 0; }
+            bool ready = admitted && performance.IsOn && performance.IsRunning &&
+                Sprints3031OwnedAreaCount(actor) > 0 && recipients(actor).Length == 1;
+            Sprint25Check("lifecycle-lillend-" + stage + "-activation-ready", ready, new JObject {
+                ["source"] = actor.UniqueId, ["recipient"] = fixture.Caster.UniqueId,
+                ["admitted"] = admitted, ["canAct"] = actor.Descriptor.State.CanAct,
+                ["awake"] = Game.Instance.State.AwakeUnits.Contains(actor), ["inCombat"] = actor.IsInCombat,
+                ["recipientInCombat"] = fixture.Caster.IsInCombat, ["hostileInCombat"] = target.IsInCombat,
+                ["allyLos"] = actor.HasLOS(fixture.Caster), ["distanceMeters"] = actor.DistanceTo(fixture.Caster),
+                ["isOn"] = performance.IsOn, ["isRunning"] = performance.IsRunning, ["available"] = performance.IsAvailable,
+                ["rounds"] = actor.Descriptor.Resources.GetResourceAmount(resource),
+                ["command"] = new JObject { ["started"] = command.IsStarted, ["acted"] = command.IsActed,
+                    ["finished"] = command.IsFinished, ["result"] = command.Result.ToString() },
+                ["areas"] = Sprints3031OwnedAreaCount(actor),
+                ["exactExternalRecipients"] = recipients(actor).Length,
+                ["sourceState"] = Sprints3031LifecycleState(actor), ["suppliedEffectsOrCosts"] = false },
+                "A fixture-issued native activation in the owned encounter establishes the exact external recipient before source removal; state is retained on failure.");
+            if (!ready) throw new InvalidOperationException("Lifecycle Courage activation prerequisite failed: " + stage);
         }
 
         private static UnityEngine.Object[] Sprints3031PrivateResources(UnitEntityData actor, string key)

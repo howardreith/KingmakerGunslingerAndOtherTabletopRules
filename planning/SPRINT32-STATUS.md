@@ -153,11 +153,12 @@ Latest transaction `compat-20261025T233432Z-3cd9044ba52e` restored/verified
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam. No owned live
 transaction/game/task remains. Original Unity logs copied before later launches.
 
-Working disk floor is measured1.1GB peak plus2GB margin. Before the third native
-transaction free3,414,593,536bytes; remeasure and use the approved exact duplicate
-extraction cleanup route before another package/staging batch. Prior cleanup,
-plan SHA and protected comparisons remain in history; unique ZIPs/raw failures/
-receipts/backups/saves are retained.
+Working disk floor is measured1.1GB peak plus2GB margin. Verified closed S29
+duplicate cleanup23:55UTC recovered1,341,815,888bytes; free4,561,539,072bytes.
+All files in16 explicit extraction directories matched retained validated ZIPs.
+PlanSHA `1e23bf148b3129a28f9c7bce99925132cfe65e400841080ddec92c6ed4fcc10d`.
+Protected Compare PASS Mods967/saves118/references18/settings83/tasks0/Steam1.
+Unique ZIPs/raw failures/receipts/backups/saves remain. No active transaction.
 
 Build-Local attempts/validated development packages/native launches:31/21/28.
 Latest full build log elapsed254.175s; preceding unused c6 package259.899s.
@@ -173,11 +174,20 @@ predicate is corrected to refuse self/carrier-only proof; its new prerequisite
 failed, so removal coverage remains pending. No other concrete batch-review
 blocker; full final product/rules/coverage review remains required.
 
-Next: preserve this exact checkpoint and draft PR evidence, restore comfortable
-headroom through the approved duplicate-only route, then batch the bounded
-lifecycle setup repair with the remaining natural public-source/presentation and
-persistence observations over existing fixtures. No provisional pending subsystem
-work. Each ordinary selection retains10-15minute target/30minute ceiling and fresh
+Current bounded correction reuses the proven private hostile/wake/combat/native
+activation path for lifecycle setup and records state before failure. Quiet-toggle
+392 failure remains immutable. Focused compilation25.1s and5 selected checks1.1s
+PASS; initial wrong resource namespace compile failure is retained separately.
+Independent read-only fixture review found no concrete blocker: private ownership, native activation, exact surviving recipient, retained references and outer teardown are sound. Native retry remains required; no gameplay rule changed.
+
+Next selection: one standalone `support-lifecycle` process against the corrected
+candidate, after review/build and verified duplicate cleanup. Target10-15minutes,
+ceiling30minutes including orchestration but never interrupting restoration.
+Required observations: exact external Courage recipient before each source removal,
+native expiry/death, sibling isolation, owned resources/items/effects absent, exact
+fixture reset. If setup fails again, use its captured state to narrow the fault;
+do not repeat unchanged. Remaining natural casting/presentation/persistence work
+continues afterward; no provisional pending subsystem work. Each ordinary selection retains10-15minute target/30minute ceiling and fresh
 process/restoration boundaries. Final qualification uses one frozen complete-gate
 candidate and a separate records worktree; every final acceptance row is incomplete.
 

@@ -52,6 +52,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32LifecyclePhase)
             {
+                CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewSprints3031SourceLifecycle(fixture, true)) yield return frame;
                 yield break;
             }
