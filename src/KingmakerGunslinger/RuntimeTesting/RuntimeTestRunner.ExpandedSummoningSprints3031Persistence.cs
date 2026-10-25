@@ -290,16 +290,18 @@ namespace KingmakerGunslinger.RuntimeTesting
             // ArmorClassBonusAgainstAlignment listens to RuleAttackWithWeapon,
             // not standalone RuleCalculateAC. Lemure and Hound deliberately
             // have no EmptyHandWeapon. Use their actual owned claw and bite,
-            // without switching equipment or adding a fixture weapon. Trumpet
-            // is a durable saved aura recipient; Dretch's exact grants remain
-            // checked above. Keep actual damage, including critical hits.
-            var recipient = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "trumpet-archon");
+            // without switching equipment or adding a fixture weapon. Astral
+            // is durable and is not one of Lemure's saved Menace sources: a hit
+            // must not legitimately clear the very penalty being persisted.
+            // Dretch's exact grants remain checked above. Keep actual damage.
+            var recipient = units.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "astral-deva");
             var evilWeapon = lemure.Body.PrimaryHand.MaybeWeapon;
             var goodWeapon = hound.Body.AdditionalLimbs.Select(slot => slot.MaybeWeapon).Single(value => value != null);
             if (evilWeapon == null || goodWeapon == null ||
                 !ReferenceEquals(evilWeapon.Wielder?.Unit, lemure) || !ReferenceEquals(goodWeapon.Wielder?.Unit, hound) ||
-                !recipient.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, astralRecipient)))
-                throw new InvalidOperationException("Saved aura attack consumer lacks its actual owned natural weapon or recipient grant.");
+                !recipient.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, astralRecipient)) ||
+                Sprints3031SavedEffects(lemure).Any(buff => ReferenceEquals(buff.Context?.MaybeCaster, recipient)))
+                throw new InvalidOperationException("Saved aura attack consumer lacks its owned weapon/grant or would consume a saved Menace source.");
             int damageBefore = recipient.Damage;
             int evilAc = Sprints3031PersistenceAttackAC(lemure, recipient, evilWeapon);
             int damageAfterEvil = recipient.Damage;
