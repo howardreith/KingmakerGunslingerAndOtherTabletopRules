@@ -86,7 +86,7 @@ namespace KingmakerGunslinger.Blueprints
                 Size.Large, 2, DiceType.D6, 0);
             var nativeSword = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library,
                 "03d706655c07d804cb9d5a5583f9aec5", "captured native +1 longsword");
-            SetField(sword, "m_Enchantments", nativeSword.Enchantments.ToArray());
+            SetField(sword, "m_Enchantments", nativeSword.Enchantments.Cast<BlueprintWeaponEnchantment>().ToArray());
             unit.Body = new BlueprintUnit.UnitBody { PrimaryHand = sword,
                 AdditionalLimbs = Array.Empty<BlueprintItemWeapon>(), AdditionalSecondaryLimbs = Array.Empty<BlueprintItemWeapon>(),
                 QuickSlots = Array.Empty<Kingmaker.Blueprints.Items.Equipment.BlueprintItemEquipmentUsable>() };
