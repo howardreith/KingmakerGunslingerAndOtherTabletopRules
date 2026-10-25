@@ -1,16 +1,34 @@
-# Sprints 30–31 — Outsider/Celestial release-batch pilot
+# Sprints 30-31 - RELEASED / STOP
 
-## Current controlling status — exact cache observation repair
+Stable [v0.0.167](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.167) is published and its actual public ZIP, manifest,
+checksums, DLL/MVID and tag lineage are verified. Product [PR #66](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/66)
+merged as `272b729f4094ce7bb5fa1ea9495c00d66f7d2a1d`. Tested source remains `07166abedd17ec1abcf3a4806cd0939ff5c543c9`; publication reused its
+exact validated artifact without a new build or game launch.
 
-Unattended authority remains cumulative600 charged minutes /30 launches, with builds counted without a numerical cap. Readiness/integration remain closed. Twelve candidate admissions and21 launches are consumed; the cumulative deadline remains2026-10-25T11:01:57.5642509Z. Nine final processes remain mandatory and fit the nine remaining launch admissions only if they pass. No merge/release or final qualification is claimed.
+Release acceptance is **OWNER_ACCEPTED_WITH_DEFERRED_FINAL_CHECKS**. The owner
+directed finalization and release after the final controller-separation stop,
+accepting follow-up issues in the next run. This is not a claim of full final
+qualification and does not change the original verdicts.
 
-Source a3b1d0e9262e33dcceb964eaa954f4daa46b5fb8 passed its complete gate:2747 tests, strict package/reference checks. ZIP ecb44c8b3256e659f5869f719ac61f7b12c8b33d045239ad5f7bde8fb0e58c83; DLL d2ec86619c111d09d3881b2e8e95717a432a4ba72ba265075c5c4b445b33acc1; MVID76f0aaf0-f1e8-48f4-a6f5-3f1925bc07a5. Frozen bytes and failed receipts remain preserved. Its build outer comparison initially lacked a copied intake reference; the exact original snapshot checked immediately before the no-deployment build was verified again and its provenance retained, without a rebuild or new baseline.
+- Completed: full 2,747/2,747 source/build/package gate; six fresh mixed ON/OFF
+  persistence processes /149 assertions with exact original-save restoration;
+  39 scoped reused complete mechanics cases, including H1-H9, at original identities.
+- Deferred /NOT_RUN on this artifact: grouped thirty public routes/body/icons;
+  standalone final integration; highest-risk combined final integration.
+- Five additions and the in-place Lantern upgrade: 23 new routes and seven
+  preserved Lantern routes. The source-derived public catalog is 1,150 roots
+  plus 29 wrappers, 1,179 choices. Source existence is not fresh route proof.
+- Actual human intake and original Working bytes/metadata are exact. No owned
+  game, task, lease, staging or permanent development installation remains.
 
-ON prepare passed35 assertions and wrote one save. Fresh ON cleanup RunId20261025T0926181326698Z-c7e46f84fd5345b594dcef41a001489c established the repaired behavior: all six cold profiles/items/resources/effects passed, each aura reconstructed once, native AC/save consumers passed, and every captured owner/area/grant/private resource cleaned up. The aggregate remains FAIL: the general resource observer did not query the three dedicated Lemure/Dretch/Hound static albedo caches and classified them UNRESOLVED despite pre-load/before/after counts1/1/1. No cleanup save or absence stage ran. Original Working SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850, metadata and full intake restored at2026-10-25T09:30:47.0265661Z.
+See [coverage and release decision](../docs/SPRINT30-31-COVERAGE.md) and
+[release evidence](SPRINT30-31-RELEASE-EVIDENCE.json). The public manifest retains
+full original reused tuples and the six fresh persistence RunIds.
 
-The focused read-only review distinguished this exact-cache omission from the preceding private-resource registration omission. The three production TryGet*Visual getters return existing static Unity objects without loading/creating them; the observer now adds those exact references to its existing immutable-cache map. It still requires identical pre-load/before/after counts and retains unknown-resource refusal. The existing private owner label is corrected to the actual TrumpetArchonInstrumentView type. No product, native lifetime, aura mechanics, assets, ordinary attacks, slots or resources change. New compilation and a complete final candidate gate precede fresh persistence; the failed aggregate is not reclassified. All six current resource producers were reviewed together.
-
-The39 accepted scoped mechanics proofs remain under original tuples, includingH1–H9; their save-free paths do not call this persistence-only observer. Prior cold aura successes are supplemental facts inside the retained FAIL, not a new complete PASS. One unchanged new final artifact must complete ON prepare/cleanup/absence, all30 public routes/body/icon checks, OFF prepare/cleanup/ON absence and the two selected integration profiles. Each Working envelope restores before source work or stopping. No additional launch ceiling, omission, aesthetics, creature, general framework or Sprint32 is authorized. If qualification completes too late for verified publication, preserve exact qualified bytes without rebuilding for records.
+**STOP.** No Sprint 32, new creature, automatic replay of deferred checks, or
+further implementation is selected. Accepted rules choices, Magic Circle
+adaptation and functional-first visual debt remain closed. Any later fixes
+belong to the owner's next run.
 
 ## Dated history â€” superseded action instructions
 

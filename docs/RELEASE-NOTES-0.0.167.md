@@ -36,3 +36,19 @@ backlog. No personal aesthetic approval is claimed.
 The release evidence distinguishes final-artifact routes, persistence and
 integration from accepted scoped development mechanics under their original
 source/package/DLL/MVID/RunId identities. Original failed results are retained.
+
+
+## Release acceptance and validation
+
+Published at the owner's direction with three final executions deferred: the grouped thirty-route/body/icon check, standalone final integration, and highest-risk combined final integration. These checks are NOT_RUN, not PASS; this release does not claim complete final-artifact qualification.
+
+Completed evidence: the full 2,747-check source/build/package gate; six fresh mixed ON/OFF persistence processes with 149 passing assertions and exact original-save restoration; and 39 explicitly reused complete mechanics cases under their original source, package, DLL/MVID, RunId and reviewed dependency identities. Earlier failures remain recorded. The previous final-route transaction was refused before game launch and supplies no gameplay observation.
+
+The release promotes the existing validated 0.0.167 ZIP unchanged. The normal fully-qualified publisher contract is not claimed satisfied; this is the owner's subsequent release acceptance with the listed validation gaps. No product, observer, asset, or rule changes were made for publication.
+
+Tested source: 07166abedd17ec1abcf3a4806cd0939ff5c543c9
+ZIP SHA-256: ce071cf753dbbe57eea5c0535702c790c62b9a8e14c1270298b3fee506c62094
+DLL SHA-256: 1a1d8715efe4a156c7dfbf2a8dbf29e4a363d1b1eacf508c37a9643c3fc096ef
+DLL MVID: 628b90a5-f69d-434d-939a-47a9dd82694f
+
+Product merge: 272b729f4094ce7bb5fa1ea9495c00d66f7d2a1d
