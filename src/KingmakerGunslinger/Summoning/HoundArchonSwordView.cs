@@ -19,11 +19,13 @@ namespace KingmakerGunslinger.Summoning
         // along -X and curl toward +Y with the thumb on +Z; the native
         // WP_GreatswordBarbarian blade runs along model +Y with its hilt below
         // the origin. The grip lies across the fist and leaves on the thumb
-        // side, tipped 15 degrees toward the fingers, flat facing the palm;
-        // the origin sits 7 cm past the fist centre so the guard clears it.
-        internal static readonly Vector3 GripPosition = new Vector3(-0.2631f, 0.075f, 0.0976f);
+        // side, tipped 5 degrees toward the wrist, flat facing the palm; the
+        // blade is level in the measured combat stance and angles down without
+        // reaching the floor at idle. The origin sits 7 cm past the fist
+        // centre so the guard clears it.
+        internal static readonly Vector3 GripPosition = new Vector3(-0.2389f, 0.075f, 0.0997f);
         internal static readonly Quaternion GripRotation =
-            new Quaternion(0.430459f, 0.430459f, 0.560986f, 0.560986f);
+            new Quaternion(0.521334f, 0.521334f, 0.477714f, 0.477714f);
         private UnitEntityView _view;
         private UnitEntityData _owner;
         private GameObject _model;
