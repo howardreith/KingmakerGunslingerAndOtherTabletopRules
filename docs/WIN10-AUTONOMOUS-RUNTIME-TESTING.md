@@ -107,6 +107,13 @@ not prove elapsed full-duration, dismissal or command cancellation. No actor,
 area, item or recipient grant is directly deleted to supply a verdict. The
 original six-creature lifecycle selection remains unchanged by default.
 
+The Sprint32 input observer binds every modeled conditional spawn leaf and every
+actual summon to the independently registered creature. Graph leaves are possible
+branches; only native cast/spawn events establish execution cardinality. Hidden
+spawns are refused, and exact slot/action/quantity/base-plus-bonus duration checks
+remain mandatory. Original failed aggregate receipts are never retroactively passed
+when their missing conjunct values were not captured.
+
 Sprint32 `druid-input`, `wizard-input` and `sorcerer-input` are three fixed,
 fresh, save-free native desktop input selections. They reuse the existing exact
 Default-mode lease, manual-clock suspension, visible native spell popup/scroll,

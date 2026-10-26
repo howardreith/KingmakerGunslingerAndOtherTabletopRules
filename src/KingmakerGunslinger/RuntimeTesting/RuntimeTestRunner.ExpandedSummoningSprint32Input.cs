@@ -318,7 +318,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 var units = ExpandedSummoningRuleCapture.Where(value => value != null && ExpandedSummoningPlayerPathUnitExact(value, fixture.Caster)).Distinct().ToArray();
                 foreach (var unit in units) if (!fixture.Created.Contains(unit)) fixture.Created.Add(unit);
-                var expected = SummonSignatureReader.Read(child.Blueprint).Spawns().ToArray();
+                var signature = SummonSignatureReader.Read(child.Blueprint);
+                var expected = signature.Spawns().ToArray();
+                var registered = ExpandedSummoningUnit(fixture.Blueprints, spec);
+                // Spawns enumerates possible conditional branches, not executed actions.
+                // Bind every modeled leaf and actual summon to the registered identity.
+                bool exactGraph = registered != null && signature.HiddenSpawns == 0 && expected.Length > 0 &&
+                    expected.All(value => value.Unit == registered.AssetGuid);
                 int min = spec.Multiplicity == SummonMultiplicity.OneD4PlusOne ? 2 : 1;
                 int max = spec.Multiplicity == SummonMultiplicity.One ? 1 : spec.Multiplicity == SummonMultiplicity.OneD3 ? 3 : 5;
                 var durations = ExpandedSummoningRuleDurationCapture.ToArray();
@@ -328,7 +334,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool exact = issued && withinRange && command.IsFinished && command.Result.ToString() == "Success" && fixture.Caster.Commands.Empty &&
                     Cleanup2DruidCastRules.Count == 1 && Cleanup2DruidCastRules[0].Success && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child) &&
                     _expandedSummoningPlayerPathRuleCastCount == 1 && _expandedSummoningPlayerPathSpawnActionCount == 1 &&
-                    expected.Length == 1 && units.Length >= min && units.Length <= max && units.All(unit => unit.Blueprint.AssetGuid == expected[0].Unit) &&
+                    exactGraph && units.Length >= min && units.Length <= max && units.All(unit => unit.Blueprint.AssetGuid == registered.AssetGuid) &&
                     ExpandedSummoningRuleCapture.Distinct().Count() == units.Length && durations.Length == units.Length &&
                     durations.All(value => Math.Abs(value.BaseDuration.TotalSeconds - 120d) <= .001 && value.BonusDuration.TotalSeconds == 0) &&
                     chain() && spent && economy.InCombat(command) && economy.Exact(command, false) && economy.ForcedCount(command) == 0 &&
@@ -338,8 +344,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["nativeCommand"] = command == null ? null : Sprint27AiCommand(command), ["withinCastRange"] = withinRange,
                     ["targetDistance"] = Vector3.Distance(fixture.Caster.Position, point), ["sourceChainExact"] = chain(),
                     ["quantity"] = units.Length, ["minimum"] = min, ["maximum"] = max,
+                    ["registeredUnit"] = registered == null ? null : registered.AssetGuid,
+                    ["modeledSpawnLeaves"] = new JArray(expected.Select(value => value.Unit)),
+                    ["hiddenSpawns"] = signature.HiddenSpawns, ["modeledIdentityExact"] = exactGraph,
+                    ["castRuleCount"] = Cleanup2DruidCastRules.Count,
+                    ["castRuleSuccessAndChildExact"] = Cleanup2DruidCastRules.Count == 1 && Cleanup2DruidCastRules[0].Success && ReferenceEquals(Cleanup2DruidCastRules[0].Spell, child),
+                    ["castCount"] = _expandedSummoningPlayerPathRuleCastCount, ["spawnActionCount"] = _expandedSummoningPlayerPathSpawnActionCount,
+                    ["rawDistinctSummons"] = ExpandedSummoningRuleCapture.Distinct().Count(),
                     ["units"] = new JArray(units.Select(unit => new JObject { ["id"] = unit.UniqueId, ["blueprint"] = unit.Blueprint.AssetGuid })),
                     ["baseDurations"] = new JArray(durations.Select(value => value.BaseDuration.TotalSeconds)),
+                    ["bonusDurations"] = new JArray(durations.Select(value => value.BonusDuration.TotalSeconds)),
                     ["costs"] = costs, ["expectedAction"] = child.RuntimeActionType.ToString(), ["expectedFullRound"] = child.RequireFullRoundAction,
                     ["nativeCostDeltaExact"] = command != null && economy.Exact(command, false),
                     ["combatAtCost"] = command != null && economy.InCombat(command),
