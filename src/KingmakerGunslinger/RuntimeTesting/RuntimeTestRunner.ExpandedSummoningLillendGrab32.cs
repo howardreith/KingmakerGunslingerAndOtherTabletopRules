@@ -369,7 +369,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 chunks.Count(value => (string)value["energy"] == "Fire" && (string)value["dice"] == "1d6" && (int)value["bonus"] == 0) == 1 &&
                 chunks.Count(value => (string)value["type"] == "Physical" && (string)value["dice"] == "2d6" &&
                     (int)value["bonus"] == strength + Math.Max(0, strength) / 2) == 1 :
-                row["damage"]["weapon"].Type == JTokenType.Null && chunks.Length == 1 &&
+                (string)row["damage"]["weapon"] == null && chunks.Length == 1 &&
                 (string)chunks[0]["type"] == "Physical" && (string)chunks[0]["dice"] == "2d6" && (int)chunks[0]["bonus"] == strength;
         }
         private static bool Grab32TailDamage(JObject row, string weapon, int strength)

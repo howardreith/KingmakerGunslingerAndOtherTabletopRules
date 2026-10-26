@@ -47,11 +47,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             Action<UnitEntityData, string> captureUnit = (subject, name) => {
                 if (mode == null || !mode.Current) throw new InvalidOperationException("Presentation capture lost Default ownership.");
                 lastCapture = Time.frameCount;
+                string bodyName = lillend ? subject.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name : "satyr01";
+                bool bodyIntact = Sprint17BodyIntact(subject.View, bodyName);
                 string frame = WriteExpandedSummoningPartyCameraCapture(subject, _request.EvidenceDirectory,
-                    "s32-" + key + "-" + name + ".png",
-                    lillend ? subject.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name : null);
-                captures.Add(new JObject { ["kind"] = name, ["frame"] = Time.frameCount, ["capture"] = frame });
-                if (!frame.Contains("inFrame=true") || !frame.Contains("screenLit=true") || !frame.Contains("rendererEnabled=true"))
+                    "s32-" + key + "-" + name + ".png", bodyName);
+                captures.Add(new JObject { ["kind"] = name, ["frame"] = Time.frameCount, ["capture"] = frame,
+                    ["exactBody"] = bodyName, ["exactBodyIntact"] = bodyIntact });
+                if (!frame.Contains("inFrame=true") || !frame.Contains("screenLit=true") || !frame.Contains("rendererEnabled=true") ||
+                    name != "death" && !bodyIntact)
                     throw new InvalidOperationException("Gameplay camera capture is not usable: " + frame);
             };
             Action<string> capture = name => captureUnit(owner, name);
@@ -71,7 +74,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false;
                 mode = Cleanup2EnterNativeDefault(fixture, ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase);
                 foreach (int frame in WaitPresentation32(mode, () => new[] { owner, sibling }.All(actor =>
-                    actor.View != null && EntityFadedIn(actor) && actor.Descriptor.State.CanAct && actor.Descriptor.State.CanMove &&
+                    actor.View != null && EntityFadedIn(actor) && Sprint17BodyIntact(actor.View,
+                        lillend ? actor.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name : "satyr01") &&
+                    actor.Descriptor.State.CanAct && actor.Descriptor.State.CanMove &&
                     actor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null), 15)) yield return frame;
                 if (lillend)
                     foreach (var actor in new[] { owner, sibling })
@@ -118,6 +123,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     })) yield return frame;
                     bool moved = move.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
                         Vector3.Distance(start, owner.Position) > 4f && Vector3.Distance(end, owner.Position) < 1.5f && midCaptured;
+                    Sprint25Check(id + "-move-" + selectedMove, moved, new JObject {
+                        ["result"] = move.Result.ToString(), ["start"] = new JArray(start.x, start.y, start.z),
+                        ["goal"] = new JArray(end.x, end.y, end.z),
+                        ["end"] = new JArray(owner.Position.x, owner.Position.y, owner.Position.z),
+                        ["travelMeters"] = Vector3.Distance(start, owner.Position),
+                        ["goalGapMeters"] = Vector3.Distance(end, owner.Position), ["midCaptured"] = midCaptured },
+                        "A successful ordinary native move traverses the surveyed lane and retains its mid-motion camera frame.");
                     if (!moved) throw new InvalidOperationException("Native presentation move did not traverse its connected lane.");
                 }
                 var gait = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>() : null;

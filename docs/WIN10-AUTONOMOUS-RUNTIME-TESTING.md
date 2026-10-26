@@ -1,3 +1,13 @@
+Native91–93 bounded observer corrections: grab damage compares semantic JSON
+null because installed Newtonsoft8 constructs null-string JValue as String.
+Presentation waits for the exact body's native dissolve completion and records
+the same exact-body predicate at each live capture; legacy first-renderer intact
+text is not exact-body proof. Each move records result/start/end/goal/travel/gap
+before its unchanged assertion. Persistence effect-only contexts require absent
+Buff.Data parent; native AsChild only attaches when a parent exists. Terminal
+permanent/fromSpell/dispelable/AsChild flags are retained before dispatch. None
+of these corrections changes creature rules or establishes a native PASS.
+
 Sprint32 fixed `technical-presentation` groups Satyr/Lillend technical loading,
 selection surface, scale, two ordinary8m moves, finite geometry/gait, native
 weapon contacts/costs, actual wound/death and live expiry (expected10min,
