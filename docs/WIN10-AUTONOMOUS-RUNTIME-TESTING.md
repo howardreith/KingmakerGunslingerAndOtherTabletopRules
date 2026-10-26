@@ -1,3 +1,27 @@
+Sprint32 adds only `persistenceScope=fey-celestial` to the existing exact Working
+prepare/verify-cleanup/verify-absent trio and installed-stack transaction. The
+selected development purpose remains `sprint32-lillend-support`. Two Satyrs and
+two Lillends have exact generic source receipts; two registered native default
+humanoids have separate source/caster/run-bound listener receipts, following the
+Sprint22/26 auxiliary-actor seam. No transient blueprint is serialized. Only the
+listeners' per-instance faction/attack set and stats change; native faction
+blueprints and intake actors are untouched. Finite native nav/physical-LOS survey,
+no unintended nonparty hostility, nonparty listener groups, calm Default mode,
+exact target set and actual unforced saves are required before real dispatcher
+activation. Competence requires an empty eligible Fascinate set before/during
+setup. Native Move commands create selections and the frozen Fascinate ledger;
+no synthetic response JSON, supplied roll or command establishes those states.
+Disclosed native budget spends are persistence preconditions, with exact expected
+post-spend values. The first selection requires a settled absent provider;
+provider transitions and other private controls are not covered by it.
+Cold observation precedes deliberate time advances and rechecks live state before
+primary-source removal/sibling isolation. Native visual/effect cleanup uses the
+existing resource receipts; their manual equipment disposal does not prove native
+equipment expiry. ON/OFF use separate processes and the existing outer original-
+Working envelope: expected60-80min for two three-process trios including exact
+restoration. ModuleOFF is admitted only for verify-cleanup. No save is armed after
+a failed mandatory assertion. This paragraph documents selection, not execution.
+
 Sprint32 fixed `lillend-hold` and `lillend-hold-turn` phases use the existing
 save-free Dialog fixture (expected 8 minutes each, runtime 600s). A five-HD
 humanoid, low Will and healthy nearby sibling establish eligible Hold and
