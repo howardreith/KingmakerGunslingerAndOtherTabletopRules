@@ -153,7 +153,7 @@ namespace KingmakerGunslinger.Summoning
             if (!Owner.Unit.Commands.Raw.Any(value => ReferenceEquals(value, activate)))
                 throw new InvalidOperationException("Lillend performance start has no exact queued native command.");
             if (ReferenceEquals(activate.Ability.Blueprint, Competence) &&
-                !Fact.SelectComponents<LillendNoncombat32>().Single().CanStart(activate))
+                !Owner.Unit.Logic.SelectFactComponents<LillendNoncombat32>().Single().CanStart(activate))
             { activate.Interrupt(true); return; }
             activate.Ability.IsOn = true;
         }

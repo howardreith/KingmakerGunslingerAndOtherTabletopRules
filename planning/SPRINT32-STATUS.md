@@ -61,24 +61,21 @@ Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby has focused compilation and native RTWP proof on the candidate below.
 Noncombat performances remain required implementation, not pending permission.
 
-Current validated development candidate is `0d22cf451b81fda21d1b2f1d5658eddef38262bd`:
-ZIP `fa6f9dd1feb0dd850bad2dc12188c7075bb88064381435e993a433aa830edf2e`;
-DLL `97839054fbc0c9382197de72e35454760be63976bec759e63b62b644a17c10a2`;
-MVID `31283a46-90c0-4b74-a607-c6b6df25162c`;
-SourceState `d12aa5a343dbad395c7410dd30ef8fadff377153a3b6ae52783d72b564421530`.
-Path `artifacts/development-candidates/sprint32-lillend-support/0d22cf451b81/`.
+Current validated development candidate is `bad2242157870c9b25a0c1848def9886f17aff25`:
+ZIP `152685c5f7e69c1230ada02176e2147b042990e94d381e2f27e0976797499172`;
+DLL `9e71070343508152d948600c5b8b93d98b962eefb8f14693a06959c09cf4394e`;
+MVID `18cc3938-e257-4ea3-ab80-7672c4e1eb5d`;
+SourceState `cbb2eb3bc8e85d9e32d59f885382d1632b3ce75512c489ec6ad0dcdd77302045`.
+Path `artifacts/development-candidates/sprint32-lillend-support/bad224215787/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification. Native49
-FAIL before gameplay: Competence icon lookup expected an activatable, but the
-captured exact native ID is a BlueprintFeature. Zero gameplay assertions ran.
-The corrected feature lookup and carrier presentation are in the working diff;
-the second Competence selection on this package is NOT_RUN. On8dd2f548, native48
-is FAIL17PASS/2FAIL: all existing support/body and Lullaby checks pass, while
-Daze repeat/refusal and aggregate execution fail. The original47 precondition
-failure and42 unexecuted package remain in history. Lullaby now uses the proven
-owned native Spell/Cantrip fact with live bardCL/Charisma and no slot debit.
-Input evidence stays bound to4b509d67. Current working edits are newer than this
-candidate and are not represented by its execution.
+package PASS. Development version0.0.167; no release qualification. Native50
+Competence FAIL7PASS/4FAIL: exact preparation and brain-disabled refusal passed,
+but no activation occurred; fixture-owned Pause also prevented lease disposal.
+Outer transaction restored exactly. Native51 support FAIL17PASS/2FAIL: existing
+support/body and Lullaby pass; Daze repeat/refusal fails. Original failures stay
+immutable. Independent review found concrete product/fixture causes below.
+Current corrections are newer than this candidate and have no native verdict.
+Input evidence stays bound to4b509d67; no old execution is relabeled fresh.
 
 Current source also corrects the newly identified Daze limitation: private native
 Spell/Cantrip/effect mapping grants60s nondispellable immunity on successful
@@ -88,16 +85,20 @@ printed one-round condition and Will/SR; other native spells are unchanged.
 The test waits for actual native immunity expiry before a second natural cast,
 checks remaining summon lifetime>=80s, and isolates grab with the existing owned
 maneuver-immunity fixture condition. Independent review found no product blocker;
-all9focused tests and corrected production compilation PASS. Native48 observes
-one natural Standard/DC14/SR5 cast,5.96s Dazed and59.96s immunity with natural
-expiry. Cross-source refusal and a second cast are unverified. Review found a
-copied target-checker cache requiring the existing reset helper, plus a fixture
-gate that starved native reconsideration between repeating melee commands.
-Both corrections are in progress; original receipt remains FAIL.
+all9focused tests and corrected production compilation PASS. Native48/51 observe
+one natural Standard/DC14/SR5 cast, initial5.96s Dazed and59.96s marker duration.
+Their old expiry flag is not proof: early removal also passed it after60s.
+Native ContextActionApplyBuff defaults to child ownership, removing the marker
+with the6s condition. Current correction explicitly sets AsChild=false. The
+Dialog fixture also omitted native round ticks, leaving the AI's one-round
+cooldown uncleared. A case-owned adapter now calls the native controller inside
+the existing clock; it never resets cooldowns or changes AI scores. Expiry must
+be bracketed by actual live-marker presence and first absence. Cross-source
+refusal, true expiry and recast remain unverified pending the narrowed case.
 
 | Evidence | Result and dependency limit |
 |---|---|
-| Fresh8dd2f548 Lullaby slice | PASS natural Standard/CL7/DC14/Will/SR,42s tail,-5 Perception,-2 only Will vs Sleep; allied overlap, Sleep immunity and active-effect refusals; owner/sibling budgets unchanged. Target-buff-only original-deadline seam passes with clock restored. Overall native48 remains FAIL for Daze. `artifacts/sprint32-lillend-support-8dd2f548/` |
+| Freshbad22421 Lullaby slice | PASS natural Standard/CL7/DC14/Will/SR,42s tail,-5 Perception,-2 only Will vs Sleep; allied overlap, Sleep immunity and active-effect refusals; owner/sibling budgets unchanged. Target-buff-only original-deadline seam passes with clock restored. Overall native51 remains FAIL for Daze. `artifacts/sprint32-lillend-support-bad22421/` |
 | Reviewed reuse: bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
 | Reviewed reuse:51cf Lillend support | PASS13/13. Natural Courage, selfheal and actual party-ally heal18-to0; independent level3 slots2-to1-to0, Standard cost plus exact free first-round touch delivery; sibling untouched; offensive fallback and owned body cleanup. `artifacts/sprint32-lillend-support-51cf0e58/` |
 | Fresh4b509d67 native input | Wizard16/16, Sorcerer28/28, Druid31/31 PASS. Real visible menu/target input: prepared Lillend; spontaneous Lillend One/d3/d4+1; prepared Satyr plus converted One/d3/d4+1. Exact source slots/actions/legal quantities/120s/zero bonus and subcase reset/UI finalizers. No supplied acts or manual command ticks. `artifacts/sprint32-{wizard,sorcerer,druid}-input-4b509d67/` |
@@ -153,61 +154,54 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T054756Z-6bd74afafe7f` restored/verified
-05:51:45.0228680UTC. Latest protected Compare PASS:
-Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
-No owned live transaction/game/task remains. Original Unity logs retained.
+Latest transaction `compat-20261026T062909Z-4224378020a5` restored/verified
+06:35:30.5309749UTC. Protected Compare PASS: Mods967/saves118/references18/
+settings83/tasks0/one unchanged Steam. No owned live transaction/game/task.
+Original native50/51 Unity logs and raw results are retained.
 
-Build attempts/validated development packages/native launches:44/33/49.
-Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
-native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
-records10min, observer review/repair8min, approved-feature contract research10min,
-build/package4.3min, native setup/execution/restoration14.7min, storage4min;
-activities overlap and are not additive. Earlier complete totals unavailable.
-All owner scope decisions are now answered; no waiting treated as approval.
-Disk minimum remains1.1GB peak plus2GB margin. Verified closed-build duplicate
-cleanup reclaimed1,138,981,599B with protectedComparePASS. The five closed input-proof extraction copies were byte-verified and removed
-03:48:39.5915213UTC, reclaiming496,600,365B; protectedComparePASS.
-Free3,821,506,560B immediately after cleanup;3,921,928,192B at04:05UTC.
-Unique packages/PDBs/raw evidence/receipts/backups/saves remain retained.
-Latest build42 took261.969s and was retained without native dispatch. For04:39-
-04:55, approximate implementation/fixture8min, review/research4min, build/package
-4.4min, storage2min; overlapping, not additive. Six verified closed build copies
-reclaimed127,303,638B at04:53:47.3116800UTC; free3,496,779,776B and protected
-ComparePASS. No owner wait or native launch in this interval.
+Counts:45 Build-Local attempts /34 validated development packages /51 native
+launches. Build45 took255.694s; native50 wrapper282.170s/native125.957s;
+native51 wrapper382.774s/native207.063s. Full inexpensive2753-test final gate
+has not run on these inputs. Earlier complete work-category totals unavailable.
+For06:06-06:52 approximate implementation/fixture12min, independent contract
+review/research12min, build/package4.3min, native setup/execution/restoration11.1min,
+storage5min, records4min. Activities overlap; no additive total/speedup claim.
+Owner waiting0; all required scope decisions are answered.
 
-Latest build43 took322.869s; native48 wrapper410.741s including restoration.
-Closed47 extraction cleanup reclaimed99,387,310B with exact protectedComparePASS;
-prelaunch free3,192,594,432B. Post48 free2,962,231,296B is below the3.1GB working
-minimum: obtain verified duplicate headroom before the next build/staging.
+Disk plan remains1.1GB combined peak plus2GB working margin. Verified closed
+extraction/build duplicates reclaimed502,187,002B before Build45 and99,429,740B
+after native50, with protected Capture/Compare PASS. Build45 began with
+3,288,993,792B free; native51 began with3,111,096,320B. Unique packages, raw
+evidence/failures, receipts, PDBs, saves and protected backups remain retained.
+At07:09UTC,23 fully byte-verified closed extractions reclaimed1,471,067,833B;
+free4,339,953,664B and protectedComparePASS. Never use the emergency floor
+as the working target. Exact cleanup identities remain in history/local receipts.
 
-Build44 took269.557s;557selected/2753/exactcompile/packagePASS. Native49 wrapper
-230.344s/native66.773s failed product registration, not Daze or performance.
-Two verified cleanup batches recovered184,386,692B with exactComparePASS.
-Build began with3,138,617,344B free. Its147,146,529B held outputs were counted once
-against the1.1GB combined allowance before native49;2GB margin remained beyond
-the remaining peak. Post49 free2,783,006,720B: renew safe headroom before another
-package using only verified duplicates. No known-broken-package second launch.
+Current batch corrects the confirmed Competence defects: its sole dispatcher
+moves from unticked progression Features to native unit.Logic; exact handoff
+lookups follow it. Private OnlyInCombat=false is explicit. Visible initial AI
+choice is separate from audible-only maintenance; an already selected blind
+recipient retains the grant. No hearing/deafness state is invented. The fixture
+removes an unnecessary Pause pair and preserves strict lease ownership checks.
+Focused production23.8s/6testsPASS for this correction. Combined Daze/Competence
+production23.4s/6tests4.2sPASS; independent actual-diff review found no further concrete blocker before packaging.
 
-Next: finish the reviewed Daze correction and approved Competence dispatcher,
-compile and review the coherent batch, then run the exact support and new
-performance selections (expected10min each,600s runtime ceilings). The latter
-uses the existing native Default lease and real outside-combat round controller.
-Fascinate feasibility is narrowed to physical90ft sight beyond native acquisition
-range; no combat-delay behavior or arbitrary neutral targeting is authorized.
-Competence is implemented in the working diff: production compilation23s and
-6focused tests4.1sPASS. Independent review confirms the pending-command,
-recipient-loss and sight corrections and clears the bounded first native proof.
-Combat-entry cancellation and fresh-process persistence remain required; no
-native Competence result exists yet. For05:14-05:38 approximate implementation/
-fixture18min, read-only review/research8min, compilation2min, records/storage3min;
-activities overlap and are not additive. No owner waiting or new native launch.
-Batch coherent mechanics and existing fixture adaptations. Required remaining
-cases include Satyr Sleep/control, Lillend control/constrict, gameplay presentation,
-cold ON/OFF persistence and directly affected integration. Reuse input evidence
-only after checking actual changed dependencies. Final qualification still needs
-remaining coherent evidence review and one frozen complete-gate candidate, with
-separate records where identity guards require them. Do not start Sprint33.
+Next: review/freeze this coherent correction, then build once and execute
+lillend-performance and the narrower lillend-cantrips selections (expected10min
+each;600s runtime ceiling). The latter reuses existing Lullaby/Daze setup and
+skips unrelated support/body replay. Two failed Daze attempts triggered this
+native-contract replan; no unchanged third broad support retry. Competence
+combat-entry cancellation and fresh-process persistence remain required.
+
+Continue approved Fascinate/bardic Suggestion after the early dispatcher proof.
+Its feasibility uses physical90ft sight beyond acquisition range and native
+player-group engagement rules; no combat-delay or neutral-harassment workaround.
+Remaining finite cases include Satyr Sleep/control, Lillend control/constrict,
+gameplay presentation, cold ON/OFF persistence and directly affected integration.
+Before final qualification: review relevant accepted dependencies, obtain actual
+diff/evidence independent review, freeze source/assets/observers/publication,
+run the complete inexpensive gate once, then use that exact ZIP with separate
+records where guards require. No merge/release or Sprint33.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.

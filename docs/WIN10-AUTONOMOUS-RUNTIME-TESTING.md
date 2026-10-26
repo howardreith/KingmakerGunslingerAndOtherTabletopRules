@@ -1,3 +1,15 @@
+Sprint32's fixed `lillend-cantrips` phase reuses the Lullaby/Daze portion of the
+existing support fixture, skipping unrelated healing/body replay. It retains
+the exact save-free phase/automatic-exit guards and gains no Default/input
+admission. Expected10min/runtime600s. Only during the Daze case, the existing
+manual clock's life callback also invokes native UnitTicksController.TickOnUnit
+on that exact owned Lillend, once per frame using the same native delta. This
+supplies the round controller absent in Dialog; the receipt must observe the
+unchanged native AI cooldown1-to0. No direct OnNewRound, cooldown reset, cast or
+roll supplies a verdict. The binding clears in finally. The immunity deadline
+must be bracketed by actual live presence and first absence; early child-buff
+removal cannot count as natural expiry.
+
 Sprint32's fixed `lillend-performance` phase uses the existing save-free Oleg
 preset and exact native Default lease. It is not a player-input phase. Only the
 already-proven disposable profile anchor's idle brain is temporarily suspended.
@@ -7,7 +19,10 @@ seconds of real game time with the owner's brain disabled must produce no
 command or performance cost. Enabling its native brain permits the product's
 outside-combat round dispatcher to select and execute one normal Move activation,
 with real native upkeep, +3Perception on the exact recipient, and unchanged
-sibling pools/books. Exploration's unchanged native cooldown is recorded; no
+sibling pools/books. An already selected recipient temporarily blinded by the
+owned fixture must retain the same grant through another native upkeep:
+Competence is audible-only, and the supported engine has no separate deafness
+state. The condition is removed in finally. Exploration's unchanged native cooldown is recorded; no
 combat debit is fabricated. Moving only the disposable recipient beyond30ft must
 end that exact performance and grant. No direct dispatcher round, supplied
 activation/effect, memory edit or forced combat suppression supplies this proof.
