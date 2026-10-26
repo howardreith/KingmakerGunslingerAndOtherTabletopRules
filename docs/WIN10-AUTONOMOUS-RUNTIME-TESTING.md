@@ -13,7 +13,20 @@ then a disclosed target Dazed-immunity fixture must induce natural Competence
 fallback. No action/effect/roll/round is supplied. Positions, party, conditions,
 stats, owned units and the exact Default lease are restored in finalizers. This
 does not prove the three-target cap,24h resistance, threats, bardic Suggestion or
-cold persistence; those remain finite required cases. The proposed bardic memory
+cold persistence; those remain finite required cases. The subsequent bounded
+extension disposes the first two sources and summons fresh Lillends, then uses
+four explicitly owned private-faction hostiles. It groups cap/frozen selection,
+native successful-save24h deadline/source refusal, source-granted touch Shake
+Free, a second normal activation, actual UnitMoveTo approach and a visible
+self-targeted bard spell threat. A sibling must make its own save and retain its
+own effects when the original source is removed. Exact instances are captured
+before disposal so a cleared caster reference cannot hide an orphaned buff.
+No native effects/rounds, forced paths, RNG seeds or resource refills are supplied.
+High/low fixture Will values are disclosed; real outcomes remain evidence.
+The original early assertions are retained; the extended observations are not
+executed merely because that earlier subset passed. The phase remains bounded
+at expected10min/runtime600s; it claims a24h deadline, not actual24h expiry.
+Fresh-process persistence remains separate. The proposed bardic memory
 exception is awaiting owner decision and is not part of this phase.
 
 Sprint32's fixed `lillend-cantrips` phase reuses the Lullaby/Daze portion of the

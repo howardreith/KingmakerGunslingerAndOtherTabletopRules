@@ -200,8 +200,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["competenceRunning"] = competence.IsRunning, ["allyPerception"] = fixture.Caster.Stats.SkillPerception.ModifiedValue },
                         "With the owned hostile now explicitly Dazed-immune, natural dispatch refuses control and uses ordinary Competence on the party ally.");
                     if (!refused) throw new InvalidOperationException("Fascinate immune refusal/support fallback failed.");
-                    complete = true;
                 }
+                // Fresh sources keep the boundary cases independent of the
+                // preceding performance pool and original summon deadline.
+                target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Dazed); immunityAdded = false;
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling });
+                foreach (int frame in ReviewLillendFascinateBoundaries32(fixture, mode, origin, targetPosition)) yield return frame;
+                complete = true;
             }
             finally
             {
