@@ -8,6 +8,7 @@ using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Combat;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.SettingsUI;
@@ -334,14 +335,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["probeKind"] = "native RuleApplyBuff only; no cast, AI, save or action-cost evidence" },
                         "A separate eligible owned recipient holds a real exact-sibling native buff without replacement stacking or budget changes.");
                     if (!probeReady) throw new InvalidOperationException("Exact sibling lifecycle probe failed.");
+                    var nativeCharmFaction = sleep ? null : effects.Single().SelectComponents<NeutralToPlayer>().Single().Faction;
+                    Func<bool> originalConditionsClear = () => controlled.All(actor => sleep ?
+                        !actor.Descriptor.State.HasCondition(UnitCondition.Sleeping) : sibling.IsEnemy(actor));
+                    Func<JArray> charmFactions = () => sleep ? new JArray() : new JArray(controlled.Select(actor => new JObject {
+                        ["unit"] = actor.UniqueId, ["nativeCharmFaction"] = nativeCharmFaction?.name,
+                        ["directContainsFaction"] = nativeCharmFaction == null ? (bool?)null : actor.AttackFactions.Contains(nativeCharmFaction),
+                        ["groupContainsFaction"] = nativeCharmFaction == null ? (bool?)null : actor.Group.AttackFactions.Contains(nativeCharmFaction),
+                        ["directAttackFactions"] = new JArray(actor.AttackFactions.Select(value => value.name)),
+                        ["groupAttackFactions"] = new JArray(actor.Group.AttackFactions.Select(value => value.name)),
+                        ["enemyOfSibling"] = sibling.IsEnemy(actor) }));
                     var originalEnds = effects.Select(value => value.EndTime.TotalSeconds).ToArray();
                     var expiry = ExpireSprint16OwnedBuff(owner, owner.Buffs.Enumerable.Single(value =>
                         ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)));
                     deadline = DateTime.UtcNow.AddSeconds(18);
-                    while (DateTime.UtcNow < deadline && (!Sprints3031SourceAbsent(owner) || effects.Any(value => !value.IsDisposed && value.Active)))
-                    { game.IsPaused = false; yield return 0; }
-                    bool conditionsCleared = controlled.All(actor => sleep ?
-                        !actor.Descriptor.State.HasCondition(UnitCondition.Sleeping) : sibling.IsEnemy(actor));
+                    JArray firstRemovedFactions = null; int framesAfterRemoval = 0;
+                    while (DateTime.UtcNow < deadline)
+                    {
+                        bool removed = Sprints3031SourceAbsent(owner) && effects.All(value => value.IsDisposed || !value.Active);
+                        if (removed && firstRemovedFactions == null) firstRemovedFactions = charmFactions();
+                        if (removed && originalConditionsClear()) break;
+                        // Native group caches tick before entity destruction.
+                        // Let normal frames propagate Charm's faction event;
+                        // never assign factions or drive an extra group tick.
+                        game.IsPaused = false; yield return 0;
+                        if (removed) framesAfterRemoval++;
+                    }
+                    bool conditionsCleared = originalConditionsClear();
                     bool probePreserved = probe.Active && !probe.IsDisposed && probeRecipient.Buffs.Enumerable.Contains(probe) &&
                         ReferenceEquals(probe.Context?.MaybeCaster, sibling) && probe.EndTime.TotalSeconds == probeEnd &&
                         probeEnd > game.Player.GameTime.TotalSeconds && probeRecipient.IsInState &&
@@ -358,6 +378,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["disposed"] = value.IsDisposed, ["active"] = value.Active, ["guid"] = value.Blueprint.AssetGuid })),
                         ["siblingAlive"] = sibling.IsInState && !sibling.Destroyed,
                         ["originalConditionsCleared"] = conditionsCleared,
+                        ["firstRemovedFactions"] = firstRemovedFactions, ["finalFactions"] = charmFactions(),
+                        ["normalFramesAfterRemoval"] = framesAfterRemoval,
                         ["siblingEffectPreserved"] = probePreserved, ["siblingEffectEnd"] = probe.EndTime.TotalSeconds,
                         ["subjectsSurvived"] = subjects.All(actor => actor.IsInState && !actor.Destroyed && !actor.Descriptor.State.IsDead),
                         ["fixtureVictimRemovalsBeforeVerdict"] = 0 },
