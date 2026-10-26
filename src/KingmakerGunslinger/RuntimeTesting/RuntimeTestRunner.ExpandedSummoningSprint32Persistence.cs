@@ -169,8 +169,20 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> PrepareSprint32PersistentState(UnitEntityData caster, UnitEntityData[] sources)
         {
             var game = Game.Instance; var party = game.Player.Party.ToArray();
-            if (game.CurrentMode != GameModeType.Default || game.Player.IsInCombat || sources.Length != 4 || Sprint32SavedListeners(caster).Length != 0 ||
-                !Sprint32Suggestion.Settled || Sprint32Suggestion.Disposition != "provider-absent")
+            // The existing roster appearance observer deliberately leaves the
+            // game paused. Admit that native overlay only over Default; the
+            // bounded resume below must finish before any dispatcher is enabled.
+            int listenerCount = Sprint32SavedListeners(caster).Length;
+            bool boundary = (game.CurrentMode == GameModeType.Default || game.CurrentMode == GameModeType.Pause) &&
+                game.IsModeActive(GameModeType.Default) && !game.Player.IsInCombat && sources.Length == 4 && listenerCount == 0 &&
+                Sprint32Suggestion.Settled && Sprint32Suggestion.Disposition == "provider-absent";
+            RosterPersistenceCheck("s32-prepare-boundary", boundary, new JObject {
+                ["mode"] = game.CurrentMode.ToString(), ["paused"] = game.IsPaused,
+                ["defaultActive"] = game.IsModeActive(GameModeType.Default), ["inCombat"] = game.Player.IsInCombat,
+                ["sources"] = sources.Length, ["listeners"] = listenerCount,
+                ["providerSettled"] = Sprint32Suggestion.Settled, ["providerDisposition"] = Sprint32Suggestion.Disposition },
+                "Four exact sources in the calm provider-absent Working scene; only native Pause over Default is admitted before bounded resume.");
+            if (!boundary)
                 throw new InvalidOperationException("Sprint32 persistence requires a calm native Working scene and four exact sources.");
             var lillends = sources.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "lillend-azata").ToArray();
             if (lillends.Length != 2) throw new InvalidOperationException("Two independent Lillends required.");
@@ -200,7 +212,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     LillendFascinateEligibility32.Selectable(support, unit, effect, resistance));
                 if (!LillendNoncombat32.Selectable(support, caster) || !noListener())
                     throw new InvalidOperationException("Working caster is not a visible eligible Competence recipient.");
-                SetExpandedSummoningBrainActive(support, true); game.IsPaused = false;
+                foreach (int frame in ResumeSprint32Working(party, sources)) yield return frame;
+                if (!noListener()) throw new InvalidOperationException("An intake actor became eligible while resuming support setup.");
+                SetExpandedSummoningBrainActive(support, true);
                 var until = DateTime.UtcNow.AddSeconds(22);
                 while (DateTime.UtcNow < until && (!support.Buffs.Enumerable.SelectMany(buff => buff.SelectComponents<LillendCompetenceState32>())
                     .Any(state => party.Any(state.Selected)) || !starts.Commands.OfType<UnitActivateAbility>().Any(command => command.IsFinished)))
@@ -248,7 +262,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             EventBus.Subscribe(saves); EventBus.Subscribe(starts);
             try
             {
-                game.IsPaused = false;
+                foreach (int frame in ResumeSprint32Working(party, sources.Concat(listeners).ToArray())) yield return frame;
                 // Let native appearance and visibility settle with all owned
                 // brains disabled. No memory, combat or faction blueprint edits.
                 var quietEnd = game.Player.GameTime + TimeSpan.FromSeconds(7); var until = DateTime.UtcNow.AddSeconds(22);
@@ -313,6 +327,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Exact distinct saved budgets after disclosed persistence-only native spends; performance rounds remain actual native expenditure and cold comparison is separate.");
                 if (!spent) throw new InvalidOperationException("Native persistence spends did not establish the declared budgets.");
             }
+        }
+
+        private IEnumerable<int> ResumeSprint32Working(UnitEntityData[] party, UnitEntityData[] owned)
+        {
+            var game = Game.Instance;
+            var limit = DateTime.UtcNow.AddSeconds(3);
+            for (int frame = 0; frame < 30 && DateTime.UtcNow < limit; frame++)
+            {
+                if ((game.CurrentMode != GameModeType.Default && game.CurrentMode != GameModeType.Pause) ||
+                    !game.IsModeActive(GameModeType.Default) || game.Player.IsInCombat ||
+                    !game.Player.Party.SequenceEqual(party) || owned.Any(unit => unit.Destroyed || unit.IsInCombat || unit.Descriptor.State.IsDead))
+                    throw new InvalidOperationException("Sprint32 Working resume encountered an unexpected mode/combat/ownership boundary.");
+                game.IsPaused = false;
+                // Native StartMode/StopMode may queue their transition until
+                // the next frame. Do not force a mode or tick a dispatcher.
+                yield return 0;
+                if (game.CurrentMode == GameModeType.Default && !game.IsPaused)
+                { Sprint32CalmWorking(party, owned); yield break; }
+            }
+            throw new InvalidOperationException("Sprint32 native Working resume did not reach calm Default.");
         }
 
         private static void Sprint32CalmWorking(UnitEntityData[] party, UnitEntityData[] owned)

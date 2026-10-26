@@ -65,41 +65,46 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `5569b1cf412bbb3f59f91f1332d88f20717c1f2b`.
-ZIP `648f901c54716fe714f1691748a6892d753ef65a34658965375fff8c74f09703`;
-DLL `d6a450cc7839e485280a2a37115d4f3007f659db9f0e087df9a18d582e9f7ea7`;
-MVID `d86b6614-4615-454b-829c-d6e74c3171e3`;
-SourceState `1d4782819d4656a1375ed13ab95b9d491bc61c9f52c5968c4adc0b935a2994c9`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/5569b1cf412b/.
-Build61 wrappers/557selected/exactcompile/strictZIP PASS265.557s.
-Native70 Hold RTWP **8PASS/1FAIL**: two natural Standard casts, each L2slot4->3,
-CL7/DC16/42s/paralysis/active-refusal/sibling budgets; exact failed then successful
-automatic repeat saves with zero victim command/action debit PASS. Source-expiry
-probe placement refused before dispatch; cleanup/isolation remains unverified.
-Persistence review found unnamed private components requiring bounded naming
-before cold-load. Current uncommitted batch repairs names and probe placement;
-other candidate61 phases are deferred to that coherent corrected package.
+Latest validated development candidate: `f5756a4ac9c1e3d19543da0953c434a48ad981b2`.
+ZIP `bf93d301ea89fc244735768c5588871a63b49ad91943905780d9c09aeec314c7`;
+DLL `080e8b9a4378a9124364121cf4523496c81958631e24fd0f168a8253541e9918`;
+MVID `af560466-8d61-417c-881e-bf0bf5828b31`;
+SourceState `a91887ef1ebf4bafc06fcb1126b755aa7c91a75c4d237b0a274a21e60b565051`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/f5756a4ac9c1/.
+Build62 wrappers/558selected/exactcompile/strictZIP PASS282.576s; compiled
+parser21 admission/refusal cases PASS. This is a development candidate.
 
-Current correction batch adds deterministic names only to new private S32
-serialized fact components, preserving explicit native names and provider-absent/
-present Presence identity. The source-expiry probe now surveys the established
-lane and gives the separate Hold recipient real five-HD humanoid capability.
-The existing Working trio gains only the fixed `fey-celestial` two-plus-two scope,
-with exact development purpose and unchanged save/candidate/lease protections.
-New fixture state uses the existing auxiliary-actor receipt seam. Actual native
-Competence and Fascinate create saved selections; explicit native spends establish
-separate budgets. Cold comparison precedes deliberate time advances; live state
-is rechecked before primary-source/sibling cleanup. This first persistence pass
-requires provider absence; other private controls/provider transitions remain
-pending. Fixture equipment disposal is not native equipment-expiry evidence.
+Native72 bardic Suggestion **18/18PASS**: natural saved/high-SR/successful
+attempts, same own Fascinate, Standard actions/native upkeep/independent slots,
+other offensive reactions, current-effect refusal; ordinary book negative spends
+L2slot4->3 and causes normal hostile memory/Fascinate interruption. Invisibility
+was a disclosed synchronous reaction fixture, not sustained invisible performance
+or entered-stealth proof. This closes native69's affected negative-probe failure.
 
-Independent read-only review found missing outer/native admission declarations,
-possible Competence diversion, unchecked setup spends, absent cold faction checks,
-provider-profile ambiguity and vacuous cleanup attribution. All are corrected;
-independent resolution review found no remaining concrete blocker. Draft compilation23.0s/558selected PASS; reviewed
-compilation23.2s/focused scope PASS. Compiled parser21 admission/refusal cases and
-outer source-only11 checks PASS. No native persistence result exists yet.
-Older candidate tuples, failures and review receipts remain in append-only history.
+Native71 Hold **8PASS/1FAIL** repeated the separate effect-probe placement
+failure after useful natural cast/repeat-save evidence. Repeated approach paused.
+Independent installed-engine review rejected speculative collider/settle claims:
+point LOS uses cached geometry. The bounded correction reuses the vacated surveyed
+sibling point and native creation Tick, retains walkability/identity/faction/
+CanTarget/availability, and omits LOS/memory only for the labeled effect-only
+lifecycle probe. No second casting claim is made. Source expiry remains unverified.
+
+Native73 Working prepare **15PASS/2FAIL**: native load, four exact new creatures,
+ownership/duration and appearance passed; new helper rejected its scene boundary
+before any save write. Cold cleanup/absence and OFF were NOT_RUN. The existing
+caller deliberately pauses after appearance; native IsPaused uses Pause mode.
+The correction records every predicate, admits only native Pause over Default,
+and waits bounded native resume before enabling the dispatcher. Strict calm,
+party/owner, provider absence and no-save-after-failure guards remain.
+
+Both fixture corrections passed independent read-only resolution review;
+production compilation23.9s and focused persistence-scope1/2755 PASS0.8s.
+No gameplay rule changes. Private deterministic component names, exact fixed
+Working two-plus-two admission and saved-state fixture are present in candidate62.
+Actual saved selections/cold resources/cleanup remain unverified. First persistence
+selection requires provider absence; provider transitions/other controls are separate.
+Fixture equipment disposal does not prove native equipment expiry. Older complete
+tuples, original failures, admission checks and review findings stay in history.
 
 ## Development evidence and reuse limits
 
@@ -109,6 +114,7 @@ No earlier execution below is called fresh on the private-control correction.
 
 | Evidence | Actual result and remaining limit |
 |---|---|
+| f5756a4a/native71–73 | Hold8PASS/1FAIL observer placement; bardic18/18PASS including ordinary-book negative; Working prepare15PASS/2FAIL before save. Details and exact restoration above/history. |
 | 5a1199de/native69 | 15PASS/3FAIL: all positive bardic saved/resisted/successful/current-effect-refusal cases PASS, same Fascinate/actions/budgets and native offensive reactions. Ordinary negative enters Pause; strict lease/finalizer refuse, outer transaction restores exactly. Negative remains unverified. |
 | fa5614e0/native68 | 15PASS/1FAIL: Hold discovery guard, natural saved/high-SR bardic attempts, exact Fascinate/actions/slots/upkeep and global/aggro callbacks PASS. Retention fails after the subsequent invisibility setup; successful effect and remaining checks unverified. |
 | d43a72d8/native67 | 12PASS/1FAIL: provider initialization, exact metadata and natural Fascinate PASS; patch-inventory observer null conversion throws before bardic readiness/casting. Fix reuses proven global-patch enumeration; rerun required. |
@@ -151,46 +157,52 @@ hit/grab/immediate and maintained2d6+liveStr constrict/release with one affected
 Salamander baseline; performance combat-entry/TB boundaries; Suggestion positive
 Will/highSR/break/expiry/provider persistence; new serialized performance/book/
 cantrip state ON/OFF; technical presentation and final integration. Bardic
-Suggestion rows remain pending native validation of the approved exception.
+Suggestion exception has native72 proof; expiry/break/provider-cold rows remain pending.
 Private Hold Person requires real initial Will/SR, automatic repeat-save/action
 observation and source-loss/sibling lifecycle checks under the accepted adaptation.
 No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T155212Z-31cf1adf72f0` restored/verified
-15:58:17.1435528UTC. Protected Compare PASS967Mods/118saves/18references/
-83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native70 raw directory and exact identities are in append-only history;
-local originals/intake: `artifacts/sprint32-hold-5569b1cf/`.
-Original failures remain immutable; no product-stat changes supplied a verdict.
+Latest installed-stack transaction `sprint32-stack-20261026T173037Z-f654a9e91726`
+restored installation/settings17:37:03.6919179UTC; original Working bytes/metadata
+and full protected intake restored17:37:16.2932541UTC. Working SHA
+`650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`.
+Compare PASS967Mods/118saves/18references/83settings/tasks0/unchangedSteam.
+No owned live transaction/game/task. Raw evidence identities are in history;
+local original logs/intake: artifacts/sprint32-working-f5756a4a/.
 
-Counts:61Build-Local attempts /50validated development packages /70native launches.
-Build61 measured4.43min; native70 wrapper6.10min/native176.404s. Whole-mission
-exclusive work-category totals unavailable. Build/native timestamps retained;
-independent control-fixture planning overlapped unattended work. No owner waiting
-or speedup claim. Recent distinct causes: null patch-info conversion67, multi-
-frame invisibility setup68, combat-entry Pause69; no unchanged repeated launch.
-Positive native product evidence advanced in68 and69.
+Counts:62Build-Local attempts /51validated development packages /73native launches.
+Build62 measured4.71min; native72 wrapper6.14min/native185.572s;
+native73 prepare wrapper6.82min/native206.182s, outer restore followed.
+Whole-mission exclusive category totals unavailable. Recent work since17:17UTC:
+approximately12min storage/tooling verification and8min fixture investigation/
+repair; native wall time overlapped investigation. No new build or owner wait.
+Two consecutive Hold probe failures70/71 triggered the finite replan above;
+Working73 is a distinct first scene-precondition failure, not a product verdict.
 
-Disk budget:1.1GBcombined peak +2GBreserve before building. At16:47UTC
-verified closed extractions and candidate60 build duplicates reclaimed310,306,954B;
-free3,130,212,352B. Protected Compare PASS967Mods/118saves/18refs/83settings,
-no KMG task/game. All unique archives/PDBs/raw failures/receipts/saves/backups
-remain. Exact plans and earlier retention history are append-only. No machine-wide
-cleanup or DATA changes.
+Closed extraction duplicates71/72 and superseded build61 reclaimed242,240,859B.
+Nine older closed extraction trees matched a retained original and lossless
+content archive byte-for-byte;752,717,547B reclaimed,56,019,488B archive retained.
+A nonidentical earlier tree was refused and retained. Protected Compare PASS;
+no unique package, raw failure, receipt, protected backup, save or DATA file removed.
+Free space17:29UTC3,503,726,592B. Exact selection/archive/plan hashes are in history.
 
-**Next:** finish resolution review and commit this coherent correction batch;
-build one candidate, then rerun Hold RTWP expiry, Fear RTWP/TB, Hold TB and bardic
-ordinary-book negative against that exact ZIP. Each fixed save-free selection is
-expected8-10min/runtime600s; original failures remain unchanged.
-Then select existing Working ON and OFF three-process envelopes for this fixed
-absent-provider scope (six fresh processes, expected60-80min including protected
-intake/restoration, predeclared longer sequence under the owner mission). Restore
-original Working bytes/metadata after each trio, even on failure. The actual
-current installed stack remains the profile; no provider is added by this route.
-Continue remaining controls/grab/presentation and explicit final integration.
-No full/native final qualification or owner playtest is implied by focused checks.
+Working budget, independently reviewed: measured trio902,906,932B before allowance,
+rounded1.1GB plus2GB reserve =>3.1GB initial admission. Each stage requires550MB
+live peak plus2GB reserve =>2.55GB before task registration. Protected backups
+remain retained. This replaces the inherited1.8GB envelope floor. No build during
+an admitted trio. Measure again before the next candidate/native selection.
+
+**Next:** finish resolution review, compile/test and commit this coherent fixture
+batch; build one candidate. Rerun Hold expiry first, then affected Fear RTWP/TB,
+Hold TB and Working prepare/cold cleanup/fresh absence ON/OFF as admitted by each
+predecessor. Each save-free selection expects8-10min/runtime600s. Two Working
+trios retain the predeclared60-80min ceiling including safe restoration; no
+unchanged retry and no cold stage after failed preparation. First profile remains
+the exact human installed stack with provider absent. Continue remaining
+controls/grab/presentation and explicit final integration. No final qualification
+or owner playtest is implied by focused checks.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: all30public-route/body/icon, standalone
 final integration, highest-risk combined final integration. [Original dispositions](../docs/SPRINT30-31-COVERAGE.md)
