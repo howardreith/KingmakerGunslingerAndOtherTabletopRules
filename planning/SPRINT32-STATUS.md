@@ -52,16 +52,24 @@ published. The ten prepared public-route checks now pass. Distinct natural
 input/spontaneous/conversion paths, pending performances and full acceptance
 remain incomplete.
 
-Current validated development source `32dff6bca5b6f7ea27a5d92ead64b9487bb252dd`:
-ZIP `116dc0bdfcecb864bf550f30e32fe436333b8df473405eb8766028164c62ab64`;
-DLL `a86ddc932e3e64643817af004696a51b150608a533675c57d04fbd4212a2f7db`;
-MVID `4082b64e-05b7-4061-a4d2-5a865e65d359`.
-SourceState `51b0bfb569d441a1536b9d63dd2124dd1407bb91a7758e88edf055cf8a4834d9`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/32dff6bca5b6/`.
+Current validated development source `2d90e886592be426bb3b19921c04b70428872424`:
+ZIP `4b755dd42e8e1815174cc588cd07760df7cd305278f8ae111c85eba6c31c5598`;
+DLL `0f3910ca8b61315e30d3cb1de4138511d617a86b7158aaed6aeb945c96b58451`;
+MVID `57a048c7-4951-4e5b-9ab9-33c840496a45`.
+SourceState `6f7257a818534bf90223a72473fd6f35d167c80275f1f0eaa11ea53d70e0dba6`.
+Canonical path `artifacts/development-candidates/sprint32-lillend-support/2d90e886592b/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
 419-file package PASS. Development candidate only; final gate/qualification pending.
 
-Standalone executions retained from392 (public-route observer unchanged since then; reviewed reuse on32):
+Fresh standalone executions on2d90:
+
+| Case | Native result | Observed scope | Local evidence |
+|---|---|---|---|
+| Courage party support / lifecycle | PASS5/FAIL2 overall FAIL | Exact player +2 and owned allied recipient; in-radius enemy excluded. Lillend pair readiness failed before removal; expiry/death remain unverified | `artifacts/sprint32-support-lifecycle-2d90e886/`; raw `20261026T0024416534905Z-disposable-expanded-summoning-sprint32-native-review` |
+| Lillend RTWP | PASS12/12 | Natural Move Courage,20-to19 upkeep, ally+2/enemy safety; Standard Cure Serious, own level3 slots2-to1/sibling2; useful attack fallback;62 owned body resources gone/158 borrowed retained | `artifacts/sprint32-lillend-support-2d90e886/`; raw `20261026T0030125108104Z-disposable-expanded-summoning-sprint32-native-review` |
+| Lillend turn | PASS10/10 | Natural Move Courage,20-to19-to18 upkeep, three completed sword/sword/tail acts; Standard healing18-to0, own level3 slots2-to1/sibling2; native action costs and Nature isolation | `artifacts/sprint32-lillend-turn-2d90e886/`; raw `20261026T0035409974807Z-disposable-expanded-summoning-sprint32-native-review` |
+
+Standalone executions retained from392 (public-route observer unchanged; reviewed reuse):
 
 | Case | Native result | Observed scope | Local evidence |
 |---|---|---|---|
@@ -105,8 +113,9 @@ attack plans and native Courage upkeep20-to19-to18. Final Success acts precede
 terminal Interrupt; this proves mechanics, not animation completion/caller.
 2d optional-provider Suggestion PASS7/7 and
 standalone Lillend support/body cleanup PASS11/11;0723 Satyr RTWP control/refusal/
-fallback PASS9/9. Since cc, production changed only publication; the new fixture changes do not
-change these combat mechanics. These are reviewed reuse, not fresh392 executions. Suggestion proved
+fallback PASS9/9. The2d90 private Courage filter change supersedes affected old
+performance-recipient evidence with the fresh runs above. Unchanged Satyr,
+Suggestion and Nature evidence remains reviewed reuse on its original bytes. Suggestion proved
 natural Satyr DC17/CL8 and Lillend DC16/CL7 casts, standard costs, native duration,
 active-effect refusal and own level2 slot debit. Positive Will/high SR, elapsed
 expiry, damage break and provider cold load remain NOT_RUN. Lillend body cleanup
@@ -145,8 +154,8 @@ P2 findings (nested links/default inclusion) are closed. Full final independent 
 remains pending. Body draft read-only review found no binding/lifecycle blocker;
 corrected exact mesh pin/provenance and deterministic package's two-file count.
 
-Latest transaction `compat-20261026T000117Z-14495ac6b9ff` restored/verified
-00:05:48.4508648UTC. Every new transaction protected Compare PASS:
+Latest transaction `compat-20261026T003316Z-1d7639ff48cb` restored/verified
+00:37:54.7931842UTC. Every new transaction protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam. No owned live
 transaction/game/task remains. Original Unity logs copied before later launches.
 
@@ -157,10 +166,10 @@ PlanSHA `1e23bf148b3129a28f9c7bce99925132cfe65e400841080ddec92c6ed4fcc10d`.
 Protected Compare PASS Mods967/saves118/references18/settings83/tasks0/Steam1.
 Unique ZIPs/raw failures/receipts/backups/saves remain. No active transaction.
 
-Build-Local attempts/validated development packages/native launches:32/22/29.
-Latest full build256.707s; previous392 build254.175s and unused c6 package259.899s.
-Fresh wrappers265.507s/259.803s/270.071s (total795.381s); native portions
-96.057s/93.497s/103.873s. Focused checks47.569s then correction compile23.5s/tests1s.
+Build-Local attempts/validated development packages/native launches:33/23/32.
+Latest full build250.549s. Fresh wrappers260.061s/278.622s/280.337s;
+native portions98.724s/111.214s/113.976s. Latest intake free3,633,373,184bytes;
+remeasure/verify closed duplicate cleanup before another build/native batch.
 Implementation/observer repair overlapped supervised waiting; complete summed
 active category totals remain unavailable. No speedup inference. Owner decisions
 remain pending; elapsed waiting is not approval.
@@ -177,17 +186,16 @@ activation path for lifecycle setup and records state before failure. Quiet-togg
 PASS; initial wrong resource namespace compile failure is retained separately.
 Independent review approved that bounded correction, but native retry failed on the recipient predicate as recorded above. The second-failure replan replaces the ineligible assumed recipient with a positively allied owned summon. Its focused compilation22.8s/tests0.9s PASS5/2753; independent review found no concrete blocker. No stats or tabletop rule changed; the subsequent private Courage recipient mapping correction is recorded above.
 
-Next selection: three standalone processes on one corrected candidate: `support-lifecycle`,
-`lillend-support` and `lillend-turn`. The private Courage target-filter repair invalidates
-the affected prior performance/recipient results. Review/build once; reuse its exact ZIP.
-Private Courage mapping and regression reviewed independently with no concrete dispatch blocker; focused compile22.2s/tests1s PASS5/2753 before the final explicit enemy guard, which the candidate build will compile/test.
-Expected total15-20minutes,
-ceiling30minutes including orchestration but never interrupting restoration.
-Required observations: exact external Courage recipient on a positively allied surviving Satyr before each source removal,
-native expiry/death, sibling isolation, owned resources/items/effects absent, exact
-fixture reset. If setup fails again, use its captured state to narrow the fault;
-do not repeat unchanged. Remaining natural casting/presentation/persistence work
-continues afterward; no provisional pending subsystem work. Each ordinary selection retains10-15minute target/30minute ceiling and fresh
+The private Courage mapping/regression was independently reviewed with no concrete
+dispatch blocker. The three-case batch is complete: party support and both combat
+modes passed; lifecycle readiness failed before removal. Existing state records do
+not identify its failing conjunct. No product attribution or unchanged retry.
+Next bounded correction keeps the OFF sibling in the visible fixture (the40m park
+is unnecessary) and records each existing readiness predicate, including fade,
+dissolve, finite owner marker, weapon ownership and captured external grant.
+Retain strict predicates and original failure. Continue distinct natural public
+casting/presentation/persistence work; no provisional pending subsystem work.
+Each ordinary selection retains10-15minute target/30minute ceiling and fresh
 process/restoration boundaries. Final qualification uses one frozen complete-gate
 candidate and a separate records worktree; every final acceptance row is incomplete.
 
