@@ -12,10 +12,15 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint32SatyrRoutesPhase = "satyr-routes";
         internal const string Sprint32LillendRoutesPhase = "lillend-routes";
         internal const string Sprint32LifecyclePhase = "support-lifecycle";
+        internal const string Sprint32DruidInputPhase = "druid-input";
+        internal const string Sprint32WizardInputPhase = "wizard-input";
+        internal const string Sprint32SorcererInputPhase = "sorcerer-input";
+        internal static bool Sprint32NativeInputPhase(string phase)
+        { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32Phase(string phase)
         { return phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
             phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
-            phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase; }
+            phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase || Sprint32NativeInputPhase(phase); }
         internal const string OutsiderBodyPhase = "outsider-bodies";
         internal const string SourceLifecyclePhase = "source-lifecycle";
         internal const string DefenseConsumersPhase = "defense-consumers";

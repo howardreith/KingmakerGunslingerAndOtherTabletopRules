@@ -190,11 +190,22 @@ The private Courage mapping/regression was independently reviewed with no concre
 dispatch blocker. The three-case batch is complete: party support and both combat
 modes passed; lifecycle readiness failed before removal. Existing state records do
 not identify its failing conjunct. No product attribution or unchanged retry.
-Next bounded correction keeps the OFF sibling in the visible fixture (the40m park
-is unnecessary) and records each existing readiness predicate, including fade,
-dissolve, finite owner marker, weapon ownership and captured external grant.
-Retain strict predicates and original failure. Continue distinct natural public
-casting/presentation/persistence work; no provisional pending subsystem work.
+The bounded lifecycle correction keeps the OFF sibling in the visible fixture
+and records every existing readiness predicate; strict conditions remain.
+Three fixed native input phases now cover Druid preparation/conversion Satyr,
+Wizard preparation Lillend and Sorcerer known Lillend, including each materially
+different quantity conversion/known path. They reuse native Default/UI/debit
+helpers; no new testing subsystem. Independent review found missing exact UI
+capture admission and insufficient action-cost delta checking; both corrected
+before dispatch. Corrected compile23.2s/tests1s PASS5/2753; source-only admission
+PASS1166. Original compile/elevated-context refusal retained, no native launch.
+Verified closed duplicate cleanup recovered1,091,955,555bytes; free4,529,750,016;
+protected Compare PASS. Exact tuple/history retained.
+Next selection: one coherent development package, then separate fresh processes
+for `support-lifecycle`, `druid-input`, `wizard-input`, `sorcerer-input` against
+that ZIP. Expected aggregate20-30minutes plus build; each ordinary process has
+10-15minute target/30minute ceiling. Inspect failures before further dependent
+cases; preserve restoration. No provisional pending subsystem implementation.
 Each ordinary selection retains10-15minute target/30minute ceiling and fresh
 process/restoration boundaries. Final qualification uses one frozen complete-gate
 candidate and a separate records worktree; every final acceptance row is incomplete.
