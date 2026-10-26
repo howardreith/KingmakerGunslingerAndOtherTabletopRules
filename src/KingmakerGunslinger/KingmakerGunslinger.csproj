@@ -2072,6 +2072,7 @@
   <ItemGroup>
     <Compile Include="Summoning\SatyrControlEligibility.cs" />
     <Compile Include="Summoning\LillendBard32.cs" />
+    <Compile Include="Summoning\FeyControlCasterCleanup32.cs" />
     <Compile Include="Summoning\LillendSpells32.cs" />
     <Compile Include="Summoning\Sprint32Suggestion.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Suggestion32.cs" />

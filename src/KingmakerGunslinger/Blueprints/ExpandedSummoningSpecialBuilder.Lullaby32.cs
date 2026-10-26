@@ -56,7 +56,8 @@ namespace KingmakerGunslinger.Blueprints
             var buffDescriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
             buffDescriptor.Descriptor = SpellDescriptor.MindAffecting | SpellDescriptor.Compulsion;
             buff.ComponentsArray = new BlueprintComponent[] { perception, sleepSave, buffDescriptor,
-                ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>() };
+                ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
+                ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() };
             BlueprintUnitFactAccess.Resolve().Configure(buff,
                 LocalizationService.Create(symbol + ".Buff.Name", "Lullaby"),
                 LocalizationService.Create(symbol + ".Buff.Description",

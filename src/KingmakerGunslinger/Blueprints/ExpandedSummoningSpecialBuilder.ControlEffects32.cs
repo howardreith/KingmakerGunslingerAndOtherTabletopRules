@@ -15,6 +15,7 @@ using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -40,7 +41,8 @@ namespace KingmakerGunslinger.Blueprints
                 var buff = Require<BlueprintBuff>(bySymbol, symbol);
                 CopyFields(native, buff); buff.name = InternalName(symbol);
                 buff.ComponentsArray = native.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
-                    .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>() }).ToArray();
+                    .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
+                        ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() }).ToArray();
                 buff.ResourceAssetIds = Array.Empty<string>();
                 BlueprintUnitFactAccess.Resolve().Configure(buff,
                     LocalizationService.Create(symbol + ".Name", sleep ? "Sleep" : "Charm"),

@@ -290,13 +290,64 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // No victim removal or fixture disposal supplies the verdict.
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                     game.TurnBasedCombatController.Activate();
+                    // A separate native effect-only probe establishes sibling
+                    // isolation. The natural cast/save/cost rows above are
+                    // already captured; this is not another cast or AI proof.
+                    var probeRecipient = sleep ? subjects.First(actor =>
+                        !actor.Buffs.Enumerable.Any(value => effects.Contains(value))) : sentinel;
+                    if (!sleep) probeRecipient.Descriptor.RemoveFact(charmImmunity);
+                    PlaceExpandedSummoningUnit(sibling, owner.Position);
+                    sibling.Wake(0f);
+                    if (!game.State.AwakeUnits.Contains(sibling)) game.State.AwakeUnits.Add(sibling);
+                    sibling.Memory.Add(probeRecipient); probeRecipient.Memory.Add(sibling);
+                    var probeDeadline = DateTime.UtcNow.AddSeconds(8); int probeFrames = 0;
+                    do
+                    {
+                        game.IsPaused = false; yield return 0; probeFrames++;
+                        sibling.SightCache.ClearIfNeeded(); probeRecipient.SightCache.ClearIfNeeded(); memory.Tick();
+                    } while (DateTime.UtcNow < probeDeadline && probeFrames < 480 &&
+                        (probeFrames < 8 || !sibling.HasLOS(probeRecipient) || !sibling.Memory.ContainsVisible(probeRecipient)));
+                    bool probeEligible = policy.Score(new DecisionContext { Unit = sibling,
+                        Target = new TargetInfo { Unit = probeRecipient } }) == 1f &&
+                        !probeRecipient.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, effects[0].Blueprint));
+                    if (!probeEligible) throw new InvalidOperationException("Separate sibling lifecycle-probe recipient is not eligible.");
+                    var cooldown = sibling.CombatState.Cooldown;
+                    var beforeProbeCosts = new[] { cooldown.StandardAction, cooldown.MoveAction, cooldown.SwiftAction };
+                    var probe = ApplySprint12Buff(probeRecipient, effects[0].Blueprint, sibling,
+                        TimeSpan.FromSeconds(expectedDuration), 15).AppliedBuff;
+                    if (probe != null) capturedEffects.Add(probe);
+                    var afterProbeCosts = new[] { cooldown.StandardAction, cooldown.MoveAction, cooldown.SwiftAction };
+                    double probeEnd = probe?.EndTime.TotalSeconds ?? 0;
+                    bool probeReady = probe != null && probe.Active && !probe.IsDisposed &&
+                        probeRecipient.Buffs.Enumerable.Contains(probe) && ReferenceEquals(probe.Context?.MaybeCaster, sibling) &&
+                        probeEnd > game.Player.GameTime.TotalSeconds && beforeProbeCosts.SequenceEqual(afterProbeCosts) &&
+                        sibling.Descriptor.Resources.GetResourceAmount(resource) == 1 &&
+                        sibling.Buffs.Enumerable.Single(value => ReferenceEquals(value.Blueprint,
+                            BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)).EndTime > game.Player.GameTime;
+                    Sprint25Check(id + "-sibling-effect-probe", probeReady, new JObject {
+                        ["source"] = sibling.UniqueId, ["recipient"] = probeRecipient.UniqueId,
+                        ["eligibleBeforeProbe"] = probeEligible, ["buff"] = probe?.Blueprint.AssetGuid,
+                        ["active"] = probe?.Active, ["exactSource"] = ReferenceEquals(probe?.Context?.MaybeCaster, sibling),
+                        ["originalEnd"] = probeEnd, ["costsBefore"] = new JArray(beforeProbeCosts),
+                        ["costsAfter"] = new JArray(afterProbeCosts), ["fear"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
+                        ["fixtureCharmImmunityRemovedAfterCastProof"] = !sleep,
+                        ["probeKind"] = "native RuleApplyBuff only; no cast, AI, save or action-cost evidence" },
+                        "A separate eligible owned recipient holds a real exact-sibling native buff without replacement stacking or budget changes.");
+                    if (!probeReady) throw new InvalidOperationException("Exact sibling lifecycle probe failed.");
                     var originalEnds = effects.Select(value => value.EndTime.TotalSeconds).ToArray();
                     var expiry = ExpireSprint16OwnedBuff(owner, owner.Buffs.Enumerable.Single(value =>
                         ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)));
                     deadline = DateTime.UtcNow.AddSeconds(18);
                     while (DateTime.UtcNow < deadline && (!Sprints3031SourceAbsent(owner) || effects.Any(value => !value.IsDisposed && value.Active)))
                     { game.IsPaused = false; yield return 0; }
+                    bool conditionsCleared = controlled.All(actor => sleep ?
+                        !actor.Descriptor.State.HasCondition(UnitCondition.Sleeping) : sibling.IsEnemy(actor));
+                    bool probePreserved = probe.Active && !probe.IsDisposed && probeRecipient.Buffs.Enumerable.Contains(probe) &&
+                        ReferenceEquals(probe.Context?.MaybeCaster, sibling) && probe.EndTime.TotalSeconds == probeEnd &&
+                        probeEnd > game.Player.GameTime.TotalSeconds && probeRecipient.IsInState &&
+                        !probeRecipient.Destroyed && !probeRecipient.Descriptor.State.IsDead;
                     bool clean = Sprints3031SourceAbsent(owner) && effects.All(value => value.IsDisposed || !value.Active) &&
+                        conditionsCleared && probePreserved &&
                         subjects.All(actor => actor.IsInState && !actor.Destroyed && !actor.Descriptor.State.IsDead) &&
                         originalEnds.All(value => value > game.Player.GameTime.TotalSeconds) &&
                         sibling.IsInState && !sibling.Destroyed && sibling.Descriptor.Resources.GetResourceAmount(resource) == 1;
@@ -306,9 +357,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["capturedEffects"] = new JArray(effects.Select(value => new JObject {
                             ["disposed"] = value.IsDisposed, ["active"] = value.Active, ["guid"] = value.Blueprint.AssetGuid })),
                         ["siblingAlive"] = sibling.IsInState && !sibling.Destroyed,
+                        ["originalConditionsCleared"] = conditionsCleared,
+                        ["siblingEffectPreserved"] = probePreserved, ["siblingEffectEnd"] = probe.EndTime.TotalSeconds,
                         ["subjectsSurvived"] = subjects.All(actor => actor.IsInState && !actor.Destroyed && !actor.Descriptor.State.IsDead),
                         ["fixtureVictimRemovalsBeforeVerdict"] = 0 },
-                        "Native summon expiry must remove the source's captured spell effects before their own deadlines while preserving the later-expiring sibling.");
+                        "Native summon expiry removes the source's captured spell effects and conditions before their deadlines while preserving the sibling's separately probed exact effect.");
                     // A failed row remains FAIL. Finalizers can safely remove
                     // this isolated case and permit the other at-will case.
                 }

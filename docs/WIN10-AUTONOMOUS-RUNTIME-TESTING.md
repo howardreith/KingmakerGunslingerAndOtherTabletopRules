@@ -14,10 +14,21 @@ Normal Standard/non-full-round cost, CL8/DC15, real saves, Sleep's shared four-H
 budget/ally exclusion and unchanged independent resources are observed. Live
 controlled-target refusal is a policy observation, not a second-cast claim.
 Exact terminal buff references and deadlines are captured before native summon
-expiry; removal must precede their own deadlines and preserve the sibling.
+expiry; removal must precede their own deadlines and restore the original
+recipient's condition/faction. After natural cast/refusal evidence is recorded,
+one separate native RuleApplyBuff lifecycle probe places the same private effect
+from the actual sibling on a distinct eligible owned recipient. Sleep uses an
+unaffected2HD subject; Charm uses the sentinel after removing only its disclosed
+fixture Charm immunity. Native visible-memory/eligibility checks precede this
+probe. It must return a real active exact-source buff with a finite deadline and
+unchanged sibling resources/cooldowns. Original-source expiry must preserve that
+same attached sibling buff/source/deadline. This is effect-only destruction
+isolation, not a second cast, AI, save or action-cost result. Exact probe references
+are removed only by the finalizer after the verdict.
 RTWP uses the existing exact-owner brain tick; turn mode uses native admission
-and zero fixture AI ticks. No roll, cast command, effect or victim cleanup
-supplies a passing verdict. Finalizers restore fixture stats/mode and remove
+and zero fixture AI ticks. No supplied roll, cast command or effect contributes
+to natural-cast proof, and no fixture victim cleanup supplies an expiry verdict.
+Finalizers restore fixture stats/mode and remove
 only owned actors/facts after the result, including on failure. Cold persistence
 and presentation remain separate. This does not replay unrelated Fear cases.
 
@@ -49,8 +60,8 @@ High/low fixture Will values are disclosed; real outcomes remain evidence.
 The original early assertions are retained; the extended observations are not
 executed merely because that earlier subset passed. The phase remains bounded
 at expected10min/runtime600s; it claims a24h deadline, not actual24h expiry.
-Fresh-process persistence remains separate. The proposed bardic memory
-exception is awaiting owner decision and is not part of this phase.
+Fresh-process persistence remains separate. The owner-approved bardic memory
+exception is not implemented or validated by this absent-provider phase.
 
 Sprint32's fixed `lillend-cantrips` phase reuses the Lullaby/Daze portion of the
 existing support fixture, skipping unrelated healing/body replay. It retains
