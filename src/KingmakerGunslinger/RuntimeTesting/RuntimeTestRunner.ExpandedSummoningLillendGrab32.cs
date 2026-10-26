@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 game.TurnBasedCombatController.Activate(); game.IsPaused = false;
                 for (int frame = 0; frame < 16; frame++) yield return 0;
-                owner = CastExpandedSummoningOwnTier(fixture, key);
+                owner = CastSprint32IdleFixtureSummon(fixture, key);
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                 var originalActions = owner.Brain.Actions.ToArray();
@@ -89,17 +89,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
                 foreach (var actor in new[] { owner, target })
                 { actor.Wake(0f); if (!game.State.AwakeUnits.Contains(actor)) game.State.AwakeUnits.Add(actor); }
-                anchor = game.Player.MainCharacter.Value;
-                var party = game.Player.Party.ToArray();
-                bool anchorOwned = anchor != null && _summoningProfileActor != null && _summoningProfilePreset != null &&
-                    _summoningProfileOriginal != null && ReferenceEquals(anchor.Blueprint, _summoningProfileActor) &&
-                    ReferenceEquals(_summoningProfilePreset.PlayerCharacter, _summoningProfileActor) &&
-                    !ReferenceEquals(_summoningProfileOriginal.PlayerCharacter, _summoningProfileActor) &&
-                    _summoningProfileActor.name == "KMG_Runtime_Summoning_Profile_Anchor" &&
-                    _summoningProfileSaveGuard != null && _summoningProfileScenes != null &&
-                    party.Length == 1 && ReferenceEquals(party[0], anchor) && anchor.Commands.Empty &&
-                    fixture.Caster.Commands.Empty && !fixture.Caster.IsBrainActive;
-                if (!anchorOwned) { anchor = null; throw new InvalidOperationException("Exact idle profile anchor/caster not proven."); }
+                anchor = Sprint32OwnedQuietAnchor(fixture, id);
                 anchorBrainBefore = anchor.IsBrainActive; anchorBrainCaptured = true;
                 Sprint28SetBrainActivePreservingActions(anchor, false);
                 row["exactIdleOwnedAnchor"] = anchor.UniqueId;
@@ -269,7 +259,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var errors = new List<string>();
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { errors.Add(name + ":" + error); } };
                 restore("observers", () => { if (observer != null) EventBus.Unsubscribe(observer); if (starts != null) EventBus.Unsubscribe(starts); });
-                restore("turn-mode", () => { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false; game.TurnBasedCombatController.Activate(); });
                 foreach (var actor in new[] { owner, target, fixture.Caster, anchor }.Where(value => value != null && !value.Destroyed))
                     restore("owned-combat-" + actor.UniqueId, () => {
                         if (ReferenceEquals(actor, owner) || ReferenceEquals(actor, target))
@@ -287,8 +276,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         foreach (var component in immunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component);
                         UnityEngine.Object.DestroyImmediate(immunity); }
                     ResetExpandedSummoningHostile(fixture); game.Player.UpdateIsInCombat(); });
-                bool nativeRestored = nativeMode == null;
-                restore("native-default", () => { nativeMode?.Dispose(); nativeRestored = true; });
+                restore("native-default", () => { nativeMode?.Dispose();
+                    if (Cleanup2NativeDefaultPending) throw new InvalidOperationException("Native Default restoration remains pending."); });
                 if (anchorBrainCaptured) restore("owned-anchor-brain", () => {
                     if (anchor == null || anchor.Destroyed || !ReferenceEquals(anchor.Blueprint, _summoningProfileActor))
                         throw new InvalidOperationException("Owned anchor identity changed before restoration.");
@@ -296,12 +285,61 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (anchor.IsBrainActive != anchorBrainBefore) throw new InvalidOperationException("Owned anchor brain not restored."); });
                 restore("engagement-pause", () => SettingsRoot.Instance.PauseOnEngagement.CurrentValue = oldEngagementPause);
                 restore("original-mode", () => {
+                    if (Cleanup2NativeDefaultPending) throw new InvalidOperationException("Foreign mode preserved for outer rollback.");
                     SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; game.TurnBasedCombatController.Activate();
-                    if (nativeRestored) game.IsPaused = oldPause; });
+                    game.IsPaused = oldPause; });
                 Sprint25Check(id + "-finalizers", errors.Count == 0, new JObject { ["errors"] = new JArray(errors), ["complete"] = complete },
                     "Independent exact-owned finalizers run after success or refusal; cleanup is not gameplay proof.");
                 if (errors.Count != 0 && complete) throw new InvalidOperationException(string.Join("|", errors.ToArray()));
             }
+        }
+        private UnitEntityData CastSprint32IdleFixtureSummon(ExpandedSummoningCorrectionFixture fixture, string key)
+        {
+            var caster = fixture.Caster;
+            if (caster == null || !ReferenceEquals(caster.Blueprint, fixture.CasterBlueprint) ||
+                !ReferenceEquals(caster.HoldingState, fixture.Scene) || fixture.UnitsBefore.Contains(caster) ||
+                caster.IsBrainActive || !caster.Commands.Empty || caster.Commands.Queue.Count != 0)
+                throw new InvalidOperationException("Exact owned idle setup caster required before summon.");
+            var expected = ResolveExpandedSummoningExecution(fixture.Blueprints,
+                ExpandedSummoningOwnTierVariant(key, SummonMultiplicity.One), null);
+            var unit = CastExpandedSummoningOwnTier(fixture, key);
+            // The synchronous setup helper completes its native command but leaves
+            // the finished entry in UnitCommands. Only retire its proven own entry;
+            // this is fixture setup, never evidence of a natural player cast.
+            var remaining = caster.Commands.Raw.Where(command => command != null).ToArray();
+            bool exact = !caster.IsBrainActive && caster.Commands.Queue.Count == 0 && remaining.All(command => command is UnitUseAbility &&
+                ReferenceEquals(command.Executor, caster) && command.IsFinished &&
+                command.Result == UnitCommand.ResultType.Success &&
+                ReferenceEquals(((UnitUseAbility)command).Spell.Blueprint, expected));
+            Sprint25Check("s32-idle-setup-" + unit.UniqueId, exact,
+                new JObject { ["caster"] = caster.UniqueId, ["summon"] = unit.UniqueId,
+                    ["execution"] = expected.AssetGuid, ["remainingCommands"] = remaining.Length, ["queuedCommands"] = caster.Commands.Queue.Count,
+                    ["allExactFinishedSetupCommands"] = exact }, "Native setup command retirement is confined to the proven owned caster.");
+            if (!exact) throw new InvalidOperationException("Unexpected unfinished/unowned setup command.");
+            caster.Commands.RemoveFinishedAndUpdateQueue();
+            if (!caster.Commands.Empty || caster.Commands.Queue.Count != 0 || caster.IsBrainActive)
+                throw new InvalidOperationException("Native owned setup queue did not retire cleanly.");
+            return unit;
+        }
+        private UnitEntityData Sprint32OwnedQuietAnchor(ExpandedSummoningCorrectionFixture fixture, string id)
+        {
+            var anchor = Game.Instance.Player.MainCharacter.Value;
+            var party = Game.Instance.Player.Party.ToArray();
+            var predicates = new JObject {
+                ["actorPresent"] = anchor != null && _summoningProfileActor != null,
+                ["actorBlueprintExact"] = anchor != null && ReferenceEquals(anchor.Blueprint, _summoningProfileActor),
+                ["presetExact"] = _summoningProfilePreset != null && ReferenceEquals(_summoningProfilePreset.PlayerCharacter, _summoningProfileActor),
+                ["originalDistinct"] = _summoningProfileOriginal != null && !ReferenceEquals(_summoningProfileOriginal.PlayerCharacter, _summoningProfileActor),
+                ["actorNameExact"] = _summoningProfileActor?.name == "KMG_Runtime_Summoning_Profile_Anchor",
+                ["saveGuardOwned"] = _summoningProfileSaveGuard != null, ["scenesOwned"] = _summoningProfileScenes != null,
+                ["onlyPartyAnchor"] = party.Length == 1 && ReferenceEquals(party[0], anchor),
+                ["anchorCommandsEmpty"] = anchor != null && anchor.Commands.Empty && anchor.Commands.Queue.Count == 0,
+                ["casterCommandsEmpty"] = fixture.Caster.Commands.Empty && fixture.Caster.Commands.Queue.Count == 0,
+                ["casterBrainDisabled"] = !fixture.Caster.IsBrainActive };
+            bool exact = predicates.Properties().All(property => (bool)property.Value);
+            Sprint25Check(id + "-quiet-anchor", exact, predicates, "Every exact ownership and idle predicate must hold before native Default admission.");
+            if (!exact) throw new InvalidOperationException("Exact idle profile anchor/caster not proven.");
+            return anchor;
         }
         private static bool PollGrab32Turn(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target, UnitEntityData anchor, Cleanup2NativeDefaultScope nativeMode, JArray passed)
@@ -315,7 +353,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             // Only the isolated profile's idle caster/party anchor can be passed.
             // Neither tested actor is ended, made able to act, or given an action.
             if ((!ReferenceEquals(turn.Unit, fixture.Caster) && !ReferenceEquals(turn.Unit, anchor)) ||
-                turn.Unit.IsBrainActive || !turn.Unit.Commands.Empty)
+                turn.Unit.IsBrainActive || !turn.Unit.Commands.Empty || turn.Unit.Commands.Queue.Count != 0)
                 throw new InvalidOperationException("Unexpected nonparticipant in native grab turn order.");
             if (acting && turn.CanEndTurnAndNoActing())
             {

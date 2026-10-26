@@ -1,3 +1,27 @@
+Sprint32 fixed `technical-presentation` groups Satyr/Lillend technical loading,
+selection surface, scale, two ordinary8m moves, finite geometry/gait, native
+weapon contacts/costs, actual wound/death and live expiry (expected10min,
+runtime600s). Commands are supplied normal native commands, not natural-AI proof.
+Each required weapon has at most three ordinary full-attack attempts to obtain a
+successful contact. Captures bind exact rule/command/frame/animation; the owned
+wound attacker has disclosedSTR30/accuracy100 and verified actual weapon reach.
+No roll/damage override or creature-stat change. Native gameplay-camera frames,
+uncaptured frame times, death/expiry and final empty-screen captures require
+agent inspection; no owner aesthetic approval is claimed. The exact phase grants
+no input/save scope. Strict Default pending ownership gates mode/pause/camera
+restoration, including constructor failure; outer rollback remains mandatory.
+
+Native89 exposed the setup/idle boundary. The synchronous fixture summon helper
+leaves a finished command in Raw. Before retirement, prove exact owned caster,
+empty pending Queue and only finished exact setup execution commands; then use
+native RemoveFinishedAndUpdateQueue and retain every quiet-anchor predicate.
+Native90 refused fixed Neutrals before spawn because intake attacks it. Select
+one existing registered faction from full intake unit/group relations before
+spawning any auxiliary; persist its exact GUID in existing receipts. Cold load
+resolves that identity without selection/substitution and retains all symmetric
+intake, unique-group and control-state checks. No intake group refresh/mutation,
+new faction blueprint or broader save authorization.
+
 Sprint32 fixed `lillend-grab` selects grouped Lillend RTWP/TB and one directly
 affected Salamander RTWP baseline (expected10min/runtime600s). Existing native
 Default scope owns combat, turns, buff rounds and target escapes. Production
@@ -10,12 +34,12 @@ proven disposable initially idle profile anchor/caster can be passed and counted
 Lease refusal preserves foreign mode for outer rollback; independent cleanup
 still restores owned resources/settings. This does not claim movement or visuals.
 
-Working Sprint32 listeners and effect-only controls now use the registered
-SystemMechanics.FactionNeutrals, after refusing any intake attack relation.
+Historical native85–90 selected SystemMechanics.FactionNeutrals after refusing
+any intake attack relation;90 disproved that fixed selection before spawning.
 SwitchFactions can construct stale Player group membership before assigning
 the new faction; only the proven unique one-member owned group receives native
 ResetFactionSet/UpdateAttackFactionsCache. All symmetric hostility refusals
-remain; no intake relation is edited. Native85 remains FAIL before save.
+remain; no intake relation is edited. Native85/90 remain FAIL before save.
 Satyr Fear's effect-only sibling probe retains its original surveyed graph point:
 native Translocate grounds actor Y through physics. Walkability/clamp/separation
 remain mandatory, with a receipt for the exact values. Native86 remains FAIL.

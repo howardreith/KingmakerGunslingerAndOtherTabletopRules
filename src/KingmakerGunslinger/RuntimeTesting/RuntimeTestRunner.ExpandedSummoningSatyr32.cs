@@ -42,14 +42,27 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
-                Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+                // A constructor can retain Default ownership even when its local
+                // scope was never returned. Preserve a foreign mode for outer
+                // transaction rollback instead of changing pause through Activate.
+                if (!Cleanup2NativeDefaultPending)
+                {
+                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                    Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+                }
             }
         }
 
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool lillend in new[] { false, true })
+                    foreach (int frame in ReviewPresentation32(fixture, lillend)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase)
             {
                 CreateSprint32TurnHostile(fixture);

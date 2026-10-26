@@ -70,121 +70,43 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `a1a8ac14e19e7213bd04537905cdcb8bdcf25246`.
-ZIP `58ca3938c138757bcf10fcc8d5f7ff80f33fc6bbcc1fb24a3f01a2bc2967a044`;
-DLL `aaa6730f3679ba312dd910e6061b42a884e0feffe19e61d3f070c79daa771791`;
-MVID `b7372651-f332-4e33-8d3a-0ddba2ad7e1b`;
-SourceState `7a38bc139f37bf14ca4c17eb7ad3c55658d2f1ac9f70d4af74ac225d5da1283a`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/a1a8ac14e19e/.
-Build70: development wrapper/558 selected/exact compile/strict ZIP PASS308.438s.
-Development evidence, not final qualification. Current reviewed fixture batch is
-newer source, compiled with6/2755 focused tests PASS; fresh affected execution is
-required. Initial admission test accidentally included the new phase among
-negative cases; corrected. A compile caught two old string-faction references;
-both corrected. Original logs retained.
+Latest validated development candidate: `214ccd3574bab6c54e747bad0b6e44535faf8905`.
+ZIP `6e5d8eb454d2cf86334ef2abe8a708863c13a6d10aad026144a29bf61259da10`;
+DLL `898c9de328604d95bfb54e2cc373d027440913e0313915edd54290f4c8fe3b9f`;
+MVID `7d63f483-f0ee-4608-8bb7-779fa115d608`;
+SourceState `ad817636e4f7dc2d913e62d3c545da53cf796843fb47c5df7ba3049fe5e07870`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/214ccd3574ba/.
+Build71 wrapper/558of2755/exact compile/strictZIP PASS266.704s. Development
+evidence, not final qualification. Current reviewed fixture source is newer.
 
-Native85 Working prepare **18PASS/3FAIL**: two-point geometry succeeds in28
-candidates. First listener has exact ownership, its unique nonparty group, but
-the unchanged mutual-hostility guard finds1058 intake relations and refuses
-before advancing time or saving. No cold ON/OFF coverage. Independent installed
-contract/save review found stale Player membership in the new group plus14
-genuine intake actors attacking Mobs (13 in game). Correction uses the existing
-registered neutral faction, refuses intake attack relations before spawn,
-refreshes both native caches only after proving a unique one-member owned group,
-and keeps the full mutual-hostility guard. Applies to the two listeners and
-three effect-only controls; cold checks use the same registered identity.
+Native87 Satyr RTWP13/13 and88turn14/14 PASS: natural Fear, immune bow/melee
+fallback, normal actions and exact source/sibling cleanup. Native grounding
+changed probeY by0.41936612m; retained surveyed graph coordinates resolve the
+placement failure. Turn case's expiry helper is separately RTWP.88's original
+outer readerFAIL remains; corrected immutable readerPASS, no fresh replay.
 
-Native86 Satyr RTWP **7PASS/1FAIL**: natural Fear/CL8/DC18/Standard/one-use PASS;
-same vacated-sibling guard refuses. TB/fallback not reached. Stop this repeated
-approach. Installed Translocate/ForcePlaceAboveGround changes actual actor Y
-through physics. The bounded replan retains the exact original surveyed graph
-coordinate for Fear's effect-only probe instead of rediscovering it from the
-later sibling pose, preserving every clamp/separation check and recording its
-individual values. Actual failed subpredicate remains unknown until execution;
-no claim that the original failure is closed.
+Native89 grab4PASS/1FAIL before Default at compound idle caster/anchor guard;
+no grab gameplay. Independent installed-contract review found completed setup
+commands remain in the caster queue. Correction retires only proven exact
+finished commands, with empty pending queue, and records every guard predicate.
+The original raw cannot identify the sole failed conjunct. Native90 Working
+17PASS/2FAIL: fixed Neutrals is attacked by intake; no listener spawned/save
+written. ColdON/OFF remain NOT_RUN. Bounded correction selects an existing
+registered faction from actual full intake unit/group relations and persists
+that exact identity. Cold checks never select anew. All hostility guards remain.
 
-New fixed `lillend-grab` selection groups Lillend RTWP/TB and one Salamander
-RTWP baseline using existing native Default controllers. Actual AI attack,
-tail hit, maneuver, initial/later riders, prospective live Strength and failed
-maintain release are observed; real target escape remains enabled. Only proven
-idle owned profile anchors can be passed; no tested-actor Prepare/EndTurn.
-Independent review corrected mode cost, native conditions, anchor ownership,
-lease/finalizers, exact establishing-command attribution, appearance readiness
-and Salamander physical packets. Final bounded review found no dispatch blocker.
-This source is compiled, not natively executed; no movement/presentation proof.
+The new fixed technical-presentation case groups both creatures' loading,
+selection surface, movement/gait, actual attacks/contact, hit/death/expiry and
+owned/borrowed resources using existing native seams. Independent review found
+and corrected exact command/animation attribution and pending-mode restoration.
+It is compiled development work, not native presentation evidence.
 
-Native81 RTWP controls **9/9PASS** closes native78's healing defect: normal
-CureLight heals12->6, L1slots5->4 and preserves exact Charm. A subsequent normal
-caster attack starts and breaks Charm before acting; this proves threat, not
-hit/damage. Natural CharmMonster CL7/DC17/seven days/Standard/L3slot and refusal
-pass. Natural safe SoundBurst pays one L2slot, both targets take1d8 sonic and
-only the failed Fort save receives6s stun; sibling safe/independent. Native79's
-turn controls7/7 remain source-bound reuse, without the RTWP threat probe.
-
-Native83 Hold TB **6/6PASS**: natural Hold/real Standard/L2slot4->3,
-78 native turn frames and0 fixture AI ticks. The separate expiry/sibling probe
-switches to RTWP as declared; no TB automatic-retry claim. Native74 RTWP9/9
-remains source-bound proof of accepted automatic failed/successful retries and
-exact source expiry/sibling isolation. Native72 bardic Suggestion18/18 remains
-source-bound, including the ordinary-book hostile-memory negative.
-
-Native82 Working prepare **17PASS/3FAIL**, before spawning listeners or saving.
-The five-wide footprint found no geometry in288 candidates:224 horizontal clamp,
-9 acquisition exclusion,55 physical sight. No save writes/stashes. Earlier
-native80 proved a two-point footprint; the candidate70 correction retained that pair
-and chooses three separate effect-only controls from the same finite candidates.
-All five must pass navigation/height/acquisition/separation before spawn; only
-the real performance pair requires LOS/range. No wider survey. Native85 proved the unique GroupId; real
-saved-control contexts and cold ON/OFF remain NOT_RUN.
-
-Native84 Satyr RTWP **7PASS/1FAIL**: natural Fear CL8/DC18/Standard/one use PASS;
-then combined vacated-sibling placement guard refuses before effect cleanup.
-The raw result does not distinguish its failed subpredicate. Source inspection
-shows this caller never surveyed the sibling's spawn point. Correction selects
-one of only two connected, walkable points behind the established Fear lane
-before casting. Exact target/protected-party/expiry guards remain. No TB launch
-or fallback rows after this failure. Independent reviewer found no blocker in
-both placement corrections; compilation24.1s and18/2755 tests PASS1.2s.
-
-Private Charm/Sleep/Hold state coverage remains grouped into the existing Working
-trio. Real effect-only contexts/flags/deadlines and actual precleanup conditions
-must survive cold ON/OFF. Primary source removal must restore Charm hostility
-and clear Hold while preserving sibling Sleep/performance. No speculative native
-Charm faction repair is implemented before observing the concrete cold-load risk.
-
-Owner accepted the native hearing limitation after additional research found
-optional CotW facts and a possible bounded adapter. No hearing adapter code was
-written. The limitation remains explicit; the earlier proposed new hearing state
-is not required or authorized by this disposition.
-Private saved-state selections/budgets and fresh ON/OFF cleanup remain unverified.
-Fixture equipment disposal is not native equipment-expiry proof.
-
-## Development evidence and reuse limits
-
-All executions retain original source/observer/package identities in history.
-A source or compiled observer correction invalidates its affected native case.
-No earlier execution below is called fresh on the private-control correction.
-
-| Evidence | Actual result and remaining limit |
-|---|---|
-| f5756a4a/native71–73 | Hold8PASS/1FAIL observer placement; bardic18/18PASS including ordinary-book negative; Working prepare15PASS/2FAIL before save. Details and exact restoration above/history. |
-| 5a1199de/native69 | 15PASS/3FAIL: all positive bardic saved/resisted/successful/current-effect-refusal cases PASS, same Fascinate/actions/budgets and native offensive reactions. Ordinary negative enters Pause; strict lease/finalizer refuse, outer transaction restores exactly. Negative remains unverified. |
-| fa5614e0/native68 | 15PASS/1FAIL: Hold discovery guard, natural saved/high-SR bardic attempts, exact Fascinate/actions/slots/upkeep and global/aggro callbacks PASS. Retention fails after the subsequent invisibility setup; successful effect and remaining checks unverified. |
-| d43a72d8/native67 | 12PASS/1FAIL: provider initialization, exact metadata and natural Fascinate PASS; patch-inventory observer null conversion throws before bardic readiness/casting. Fix reuses proven global-patch enumeration; rerun required. |
-| fd54cde1/native66 | Bootstrap FAIL before gameplay: CotW Infectious Charms conditional unsupported in private Hold mapping. Exact bounded mapping correction unbuilt; no assertions executed. |
-| 096b045c/native65 | 5PASS/2FAIL: provider binding localization collision before natural bardic cast. Original result retained; shared-description correction unbuilt. |
-| 279de1e3/native63,64 | RTWP13/13 and turn13/13PASS: natural Sleep/Charm, costs/durations/refusal, expiry and exact sibling-effect isolation. Charm group cache restores one ordinary frame after direct faction restoration. |
-| 61ba8681/native62 | 12PASS/1FAIL: both original private effects removed and exact sibling effects preserved. Sleep restored; Charm hostility sampled before verified cache propagation. Observer-only bounded-wait correction pending native proof. |
-| 158147c0/native61 | Natural casts/durations PASS with private effects; both source-expiry rows FAIL. Native component exists on real buffs but misses destruction ordering. Stateless exact-event correction and sibling-effect probe are unbuilt. |
-| ef3307a2/native59 | Natural Satyr Sleep/Charm, costs/eligibility PASS; both source-expiry rows FAIL. Sleep480s, combat Charm60s. Exact effects remained active after caster disappearance while targets/sibling survived. Private duration/lifecycle correction invalidates these affected cases. |
-| 49786548/native57 | Fascinate24/24PASS: natural Move,20-to19-to18, WillDC17/noSR, cap3/frozen targets,24h source marker deadline, ShakeFree, restart refusal, actual0.9409m approach/one save each, visible CureLight threat/slot5-to4, sibling isolation, exact marker/helper/area/command cleanup. No24h expiry/cold/bardic proof. |
-| a333ab3f/native55,56 | Fascinate13/13 and Competence12/12PASS; natural brain refusal/activation, +3recipient, audible maintenance and terminal recipient-loss cleanup. Native54 original11PASS/2FAIL remains; corrected reader waited native carrier retirement. Terminal7.699m is later movement, not continuous out-of-range residence. |
-| 7aed020a/native53 | Cantrips7/7PASS: natural Lullaby modifiers/refusals/original42s deadline; Daze twice with actual60s marker expiry, cross-source refusal and native AI cooldown1-to0. RTWP only. Earlier48/51 expiry flag was insufficient; original failures retained. |
-| bcd41d04;51cf0e58 | Lifecycle15/15 and support13/13PASS: native expiry/death, external Courage/sibling cleanup; natural self/party-ally healing18-to0, ownL3slots2-to1-to0, untouched sibling, Standard and exact free first touch. |
-| 4b509d67 native input | Wizard16/16, Sorcerer28/28, Druid31/31PASS: actual visible-menu/target prepared/spontaneous/conversion paths, legal1/d3/d4+1, real slots/actions,120s, body/icon and exact reset. No supplied casts or manual command ticks. |
-| 2d90 RTWP12/12;turn10/10 | Natural Courage, real ally+2/enemy exclusion, healing, useful fallback, completed sword/sword/tail mechanics, live Nature and sibling isolation. No full animation/contact claim. |
-| Earlier Satyr/optional provider | Fear, immunity refusal and bow/dagger/horns fallback in both modes. Natural provider Suggestion DC17/CL8 Satyr and DC16/CL7 Lillend, normal actions/duration/own book slot/current-effect refusal. Positive Will/highSR, break/expiry/provider cold remain NOT_RUN. |
-| Bodies | Independent Lillend bindings,62owned objects released/158borrowed retained, recognizable rest views. Full gameplay-camera movement/contact/hit/death/despawn/performance still pending. |
+Earlier source-bound evidence remains in history: player input Wizard16/16,
+Sorcerer28/28,Druid31/31; Satyr at-will13/13 each mode; support13/13;
+lifecycle15/15; cantrips7/7; Fascinate24/24; bardic Suggestion18/18 incl ordinary
+negative; controls RTWP9/9 andTB7/7; Hold RTWP9/9 andTB6/6. These are reviewed
+reuse candidates, never labeled fresh on changed bytes. Required final coverage
+and technical presentation remain incomplete. All original failures are retained.
 
 ## Finite acceptance contract
 
@@ -217,46 +139,35 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest native transaction `compat-20261026T210944Z-47e9b23c93d5` restored
-21:14:18.2160718UTC. Full protected ComparePASS967Mods/118saves/18references/
-83settings/tasks0/unchangedSteam. No owned live game/task/transaction. Native85
-original Working SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
-8,550,225B and original timestamps/attributes restored21:08:42.1828065UTC.
+Latest Working envelope restored22:05:03.4181125UTC; protected intake exact
+967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
+650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B and intake timestamps/attributes restored. No owned live transaction.
+OFF was not launched after failedON. Detailed transaction/reader identities in history.
 
-Counts70 Build-Local attempts /56 validated development packages /86 native
-launches. Build70 308.438s; native85/86 207.936/100.866s; wrappers413.583/275.249s,
-plus85 outer restoration. Recent work approximately12min fixture/contracts/review/
-records,1min focused compilation/tests,5.14min package,11.48min native wrappers;
-intervals overlap, exclusive totals unavailable. Storage verification is recorded
-separately in history; owner waiting0. No unchanged replay of85/86.
+Counts71Build-Local attempts/57validated packages/90native launches. Build71
+266.704s; native87/88/89/90 113.919/128.534/91.072/214.476s. Recent active work
+approximately15min fixture/contracts/review and5min tooling, with overlapping
+native supervision; exclusive totals unavailable; owner waiting0. No unchanged
+repeat of failed89/90. Post90 initial compile24.5s/focused tests15/2755 PASS;
+reviewed batch compile25.5s/tests0.9s PASS15/2755.
 
-Working measured trio902,923,316B before allowance:1.1GB rounded peak plus2GB
-reserve requires3.1GB initial; each stage550MB plus2GB requires2.55GB. After84,
-four verified closed extraction duplicates reclaimed398,838,048B; protected
-ComparePASS, free3,037,814,784B. Three superseded build staging/DLL copies then
-reclaimed129,128,809B, free3,165,351,936B20:51:48UTC; protected ComparePASS.
-Exact ZIPs, receipts, original failures, unique artifacts, backups/saves and DATA
-remain. Four further byte-identical closed S25-stack extraction copies reclaimed328,308,916B
-against a reread55,258,222B content archive and untouched reference. Protected
-ComparePASS; free3,438,936,064B20:55:09UTC exceeds the initial3.1GB margin.
-The archive is lossless retained content, not a rebuilt historical candidate.
-No live cleanup or machine-wide deletion.
+Measured Working trio902923316B, rounded1.1GB plus2GB practical reserve requires
+3.1GB initial; each stage550MB plus2GB requires2.55GB. After89 scoped verified
+duplicates reclaimed299214552+43102446+464198406+397884348B; free3719770112B
+21:56:53UTC, protected ComparePASS. After90 free3435790336B observed.
+Retain unique packages/content archives/raws/failures/backups; no DATA/personal
+cleanup. Recheck headroom before the next selected transaction.
 
-After86, two exact closed package extractions and build69 duplicate staging/DLL
-reclaimed199,424,144B +43,097,326B. Four further byte-identical S26 closed
-extractions reclaimed330,868,748B against a reread55,583,936B archive and untouched
-reference. Free3,368,800,256B at21:30:03UTC; protected Compare967/118/18/83/tasks0/
-Steam1 PASS. Unique packages/raw evidence/backups remain. The cleanup caller's
-stale exit-code read and an incomplete retention manifest refused safely;
-corrected metadata/caller completed without weakening protection.
+**Next:** complete the bounded review corrections, focused compile and coherent
+candidate. Run affected grab and technical-presentation selections (each10min,
+runtime600s) and corrected WorkingON/OFF (predeclared60–80min combined including
+restoration). Stop a failed sequence and classify it. Provider persistence and
+final integration remain required. Before final qualification, review relevant
+accepted descendants, freeze source/assets/observers/publication inputs, run
+one explicit complete development gate and qualify its exact ZIP with a
+separate records worktree. No owner playtest, merge/release or Sprint33.
 
-**Next:** package the reviewed fixture batch once. Run grouped grab, corrected
-Working ON/OFF and affected Satyr RTWP/TB against that exact package. Save-free
-selections expect8-10min/runtime600s; Working ON/OFF retain60-80min combined
-ceiling including restoration. Stop a failed sequence and classify it.
-Technical presentation, provider persistence and final integration remain
-required. No owner playtest, release or Sprint33.
-
-Prior v0.0.167 gaps stay **NOT_RUN**: all30public-route/body/icon, standalone
-final integration, highest-risk combined final integration. [Original dispositions](../docs/SPRINT30-31-COVERAGE.md)
-are not a Sprint32 waiver and have not been closed by these focused cases.
+Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30public-route/body/icon,
+standalone final integration, highest-risk combined final integration.
+[Original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.

@@ -2721,3 +2721,117 @@ Four package-only duplicates144044Z-3ec93ffb325a/144657Z-928182925069/
 planSHA774175e36a7643b8fbdfe003b855519800f93d85119c67ebf4270f96d738c90e.
 Full protected Compare967Mods/118saves/18refs/83settings/tasks0/Steam1 PASS.
 No personal data/protected saves/backups/unique artifacts/DATA touched.
+
+
+## Candidate71, native87–90, bounded fixture replan — 2026-10-26
+
+Source214ccd3574bab6c54e747bad0b6e44535faf8905; ZIP
+6e5d8eb454d2cf86334ef2abe8a708863c13a6d10aad026144a29bf61259da10;
+DLL898c9de328604d95bfb54e2cc373d027440913e0313915edd54290f4c8fe3b9f;
+MVID7d63f483-f0ee-4608-8bb7-779fa115d608;
+SourceStatead817636e4f7dc2d913e62d3c545da53cf796843fb47c5df7ba3049fe5e07870.
+Canonical artifacts/development-candidates/sprint32-lillend-support/214ccd3574ba/.
+Build71 development wrapper/558of2755/exact compilation/strictZIP PASS,
+21:31:25.3701521–21:35:52.0744791UTC266.704327s. Free3368116224→3223592960B.
+This is not the complete final gate. Logs build-owned-fixtures-214ccd35.*.
+
+Native87: **13PASS/0FAIL**; raw `20261026T2139081849046Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json`;
+run `20261026T2139082146053Z-710ec35b78b341cda8b9faa7cff93dae`; 2026-10-26T21:39:17.6587496Z–2026-10-26T21:41:11.5781987Z; 113919ms.
+RawSHA256 `9810a61fb6cb2348de894f4b65848133c61e1ecc6c9e7ba2d59547ce6a40d5ca`.
+
+Native88: **14PASS/0FAIL**; raw `20261026T2144047367163Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json`;
+run `20261026T2144047679824Z-6afff907c1c942908c6995455a115518`; 2026-10-26T21:44:14.4577971Z–2026-10-26T21:46:23.0066442Z; 128534ms.
+RawSHA256 `9c1ec4ef5762deaf6f162a3b6b966df18e8366b0d9e9f0abf82030051a1eb643`.
+
+Native89: **4PASS/1FAIL**; raw `20261026T2150233477510Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json`;
+run `20261026T2150233789545Z-1c9e0f1a86cb4f9cbc367c9593541ed4`; 2026-10-26T21:50:32.5530925Z–2026-10-26T21:52:03.6253073Z; 91072ms.
+RawSHA256 `69dfc7044563089b802e414a9a4ea24da432a732db3319b396829cbda517adb0`.
+
+Native90: **17PASS/2FAIL**; raw `20261026T2200460473622Z-working-save-expanded-summoning-prepare/runtime-result.json`;
+run `20261026T2200460786224Z-12a1d846da224036b3f5b89cafedbaf0`; 2026-10-26T22:00:58.9273546Z–2026-10-26T22:04:33.4085113Z; 214476ms.
+RawSHA256 `7137b00195737ff75b5528b0919246a0d2e300b7ce1b55872bd92073dc204f94`.
+
+Native87 RTWP and88 turn-based prove natural Fear CL8/DC18/Standard/one use,
+immune no-repeat/bow and melee fallback.87's queried plan includes horns but
+does not claim an actual RTWP horns hit.88 has106/87/113native frames for
+Fear/bow/melee,0fixtureAI ticks; weapon switching pays Move. Both prove exact
+Fear expiry/sibling isolation in the separately labeled RTWP expiry probe.
+The preserved survey coordinate[30.0080051,2.06000018,11.3008442] versus actual
+sibling[30.0080051,1.64063406,11.3008442] confirms0.41936612m native grounding.
+New point clamp2.697e-6; targetgap9.374m. Prior84/86 remain original failures.
+88 outer reader incorrectly required RTWP row names after14/14nativePASS and
+restoration. Original helper/log/exit remain. Read-Satyr88-Corrected.ps1 pins raw
+hash/run/source/phase, allPASS,9exactTB rows and restoration; corrected reader
+PASS21:47:44.1057170UTC, freshNativeExecution=false. No replay for a reader-only fix.
+
+87 restored compat-20261026T213640Z-849669425fce21:41:21.9491412UTC;
+88 compat-20261026T214142Z-9ebabe7093ba21:46:33.6562711UTC;
+89 compat-20261026T214757Z-e93f133c04dd21:52:14.3049161UTC.
+All protected Compare967Mods/118saves/18refs/83settings/tasks0/Steam1 PASS.
+OriginalUnitySHA87 83c5460b45002aed930b3a7d3b41bd2d6466b39a35ddf34b7e13078c0929aed2;
+88 7997ae6e21d2baa0706bedce08b01c6a630981b24a9f049e5c078ca7519aa55c;
+89 47812a35ed8d9e0e919c9cb77b78f0b30bf3affc5a040b2c1440f43b5c1a6811.
+
+89 fails before Default/grab readiness at compound idle anchor/caster guard.
+No grab gameplay is proven. Read-only independent review found synchronous setup
+finishes UnitUseAbility but leaves its Raw entry; Commands.Empty still rejects
+finished entries. The original raw cannot identify its actual failed conjunct.
+Correction proves the exact idle owned caster/empty queued work before setup,
+only finished exact execution commands afterward, then uses native queue
+retirement and records the complete anchor predicates. No interruption of an
+unproven anchor. Native90 refuses before listener spawn because fixed registered
+Neutrals is attacked by intake; save write0/stash0. ColdON/OFF remain NOT_RUN.
+Its bounded replan selects one existing registered safe faction using actual
+unit/group relations, persists its exact GUID and refuses cold substitution.
+Original symmetric intake guard and unique owned-group cache refresh remain.
+
+90 installed stack sprint32-stack-20261026T215823Z-b2d7a8250b56 restored;
+outer original Working restoration22:05:03.4181125UTC, full protected intake
+exact967/118/18/83/tasks0/Steam1. WorkingSHA
+650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B, creation639208636210035057/write639278868712797783/attributes8224.
+Outer receipt artifacts/sprint32-working-214ccd35/on/restoration.json.
+No owned live transaction remains; OFF not dispatched after failedON.
+
+After89 approved scoped cleanup retained exact canonical ZIPs/content archives,
+raw evidence, failures and all protected backups. Native87–89 duplicate
+extractions299214552B, obsoletebuild70 staging/DLL43102446B, S24groupA seven
+duplicates464198406B, groupB six397884348B. Final free3719770112B21:56:53UTC;
+protected Compare967/118/18/83/tasks0/Steam1 PASS. Plan hashes respectively
+4a411c7a815e31a4e077346ed1697f68bcdb94eb186964b9d2c313342ce2f48b,
+5caa0536e46faa4cbabaec861bffa43d78e2870d5f68d566c0b459748dfc3a26,
+8f0b4b3ef24216d30601ee2ab7f73bebd9b7a82af52b9e66718ccd2116755dff,
+b7b91b160c8a1bf9a39559fe76ea649299b1aef51f42aa749b066a319bf7de8a.
+S24archives retained-closed-identical-s24-a.zip48379022B SHA
+b3bda344ca6caf903c7b30b5eced05e415a3c0d3f9e94a16005bce31f3cba64f;
+b.zip48379028B SHAeb51a35e6f03db84d49181190eef81cf7896d5f127c30a2f0964508d6d66ee12.
+Untouched references sprint24-stack-20261015T184757Z-a0df1acb7b44 and
+sprint24-stack-20261015T180323Z-4619f2d6816b. These are lossless content archives,
+not reconstructed candidate identities. No personal/DATA/protected-save cleanup.
+
+Independent review of new presentation and fixture batch corrected queued-command
+retirement, exact attack animation attribution and pending Default ownership
+restoration. Constructor failure can leave pending scope with a null local;
+turn Activate, pause and camera restoration must preserve that refusal for outer
+rollback. Fixed technical-presentation groups both bodies with existing normal
+move/attack/camera/lifecycle seams; no new product subsystem. Technical native
+execution is pending. First focused compile24.5s/test invocation4.2s PASS15/2755;
+later review corrections require compilation. Evidence post90-focused.log.
+
+Counts71Build-Local attempts/57validated development packages/90native launches.
+Native87–90 durations and original wrappers are retained above/on disk. Active
+work since21:58 approximately15min fixture/contracts/review and5min tooling,
+with overlapping native supervision; exclusive category totals unavailable.
+Owner waiting0. No speed comparison. Next: finish reviewed batch, focused compile,
+one candidate and affected grab/presentation/Working checks; no unchanged replay.
+
+Post90 bounded review closed pending restoration, Queue-empty setup retirement,
+and exact native command-animation contact findings. Reviewed compilation25.5s,
+focused tests15/2755 PASS0.9s (post90-reviewed-focused.log). The new complete
+candidate switch is separately identifiable tooling: DevelopmentCompleteSuite
+requires purpose, excludes a filter, clears/restores inherited filter and proves
+all registered tests from immutable runner evidence. Typed receipt flag, exact
+source/version/package binding and development-only status remain mandatory.
+Actual offline child-boundary/receipt positive-negative fixtures89PASS/0 in6.18s
+(complete-development-gate-receipt-tests.log). Independent read-only reviewer
+found no remaining concrete blocker in this bounded diff; native proof pending.
