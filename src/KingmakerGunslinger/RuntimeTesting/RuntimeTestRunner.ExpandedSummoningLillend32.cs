@@ -12,7 +12,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
-using Kingmaker.RuleSystem.Rules.Abilities;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Parts;
 using Kingmaker.UI.SettingsUI;
@@ -300,7 +300,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         !ReferenceEquals(value, primary) && ReferenceEquals(value.Executor, owner) &&
                                         ReferenceEquals(value.Target?.Unit, healRecipient) &&
                                         ReferenceEquals(value.Spell.Blueprint, sticky?.TouchDeliveryAbility) &&
-                                        ReferenceEquals(value.Spell.StickyTouch, primary.Spell)).ToArray();
+                                        starts.TouchFrom(value, primary.Spell)).ToArray();
                                     if (deliveries.Length == 1) delivery = deliveries[0];
                                     else if (deliveries.Length > 1) throw new InvalidOperationException("Ambiguous natural heal delivery.");
                                 }
@@ -335,7 +335,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 healingCommands.All(value => ReferenceEquals(value, resolved) ||
                                     stage == "ally-healing" && ReferenceEquals(value, delivery));
                             bool healAttributed = !healing || starts.ExactHealing(
-                                resolved as UnitUseAbility, delivery, healRecipient);
+                                resolved as UnitUseAbility, healRecipient);
                             bool deliveryExact = stage != "ally-healing" || delivery != null &&
                                 delivery.AiAction == null && !delivery.Cutscene && starts.FirstRoundTouches.Contains(delivery) &&
                                 economy.Count(delivery) == 1 && economy.Unchanged(delivery) &&
@@ -419,7 +419,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // frame snapshots alone missed the original in the preserved 2e1 run.
         private sealed class Lillend32CommandStarts : IUnitCommandStartHandler,
             IUnitCommandActHandler, IUnitCommandEndHandler, IGlobalRulebookHandler<RuleAttackWithWeapon>,
-            IGlobalRulebookHandler<RuleHealDamage>, IGlobalRulebookHandler<RuleCastSpell>
+            IGlobalRulebookHandler<RuleHealDamage>
         {
             internal UnitEntityData Owner;
             internal readonly HashSet<UnitCommand> Commands = new HashSet<UnitCommand>();
@@ -428,7 +428,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly JArray HealRows = new JArray();
             internal readonly HashSet<UnitUseAbility> FirstRoundTouches = new HashSet<UnitUseAbility>();
             private readonly Dictionary<RuleHealDamage, JObject> heals = new Dictionary<RuleHealDamage, JObject>();
-            private readonly List<RuleCastSpell> casts = new List<RuleCastSpell>();
+            private readonly Dictionary<UnitUseAbility, AbilityData> touchSources = new Dictionary<UnitUseAbility, AbilityData>();
+            private readonly Dictionary<RuleHealDamage, AbilityData> healSources = new Dictionary<RuleHealDamage, AbilityData>();
             private readonly Dictionary<UnitAttack, BlueprintItemWeapon[]> completedPlans = new Dictionary<UnitAttack, BlueprintItemWeapon[]>();
             private readonly Dictionary<UnitAttack, List<BlueprintItemWeapon>> resolvedWeapons = new Dictionary<UnitAttack, List<BlueprintItemWeapon>>();
             private bool ambiguousWeaponAttribution;
@@ -438,6 +439,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Commands.Add(command);
                 var use = command as UnitUseAbility;
                 var touch = Owner.Get<UnitPartTouch>();
+                if (use != null && use.Spell.StickyTouch != null) touchSources[use] = use.Spell.StickyTouch;
                 if (use != null && touch?.IsCastedInThisRound == true &&
                     ReferenceEquals(use.Spell, touch.Ability?.Data)) FirstRoundTouches.Add(use);
                 var row = Sprint27AiCommand(command);
@@ -454,6 +456,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var row = new JObject { ["initiator"] = evt.Initiator.UniqueId, ["target"] = evt.Target.UniqueId,
                     ["damageBefore"] = evt.Target.Damage, ["ability"] = evt.Reason?.Ability?.Blueprint?.AssetGuid,
                     ["contextAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid };
+                // Native Ability.Dispose clears StickyTouch after effect
+                // delivery. Capture the live link at the rule boundary; do
+                // not query a consumed AbilityData after the command ends.
+                healSources.Add(evt, evt.Reason?.Ability?.StickyTouch);
                 heals.Add(evt, row); HealRows.Add(row);
             }
             public void OnEventDidTrigger(RuleHealDamage evt)
@@ -462,30 +468,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!heals.TryGetValue(evt, out row)) return;
                 row["damageAfter"] = evt.Target.Damage; row["value"] = evt.Value;
             }
-            public void OnEventAboutToTrigger(RuleCastSpell evt) { }
-            public void OnEventDidTrigger(RuleCastSpell evt)
-            { if (ReferenceEquals(evt.Initiator, Owner)) casts.Add(evt); }
-            internal bool ExactHealing(UnitUseAbility primary, UnitUseAbility delivery, UnitEntityData recipient)
+            internal bool TouchFrom(UnitUseAbility command, AbilityData primary)
+            {
+                AbilityData source;
+                return touchSources.TryGetValue(command, out source) && ReferenceEquals(source, primary);
+            }
+            internal bool ExactHealing(UnitUseAbility primary, UnitEntityData recipient)
             {
                 if (primary?.ExecutionProcess == null || !primary.ExecutionProcess.IsEnded) return false;
-                var context = delivery?.ExecutionProcess?.Context;
-                if (ReferenceEquals(recipient, Owner))
-                {
-                    // Native self-touch triggers a nested cast directly, with
-                    // a distinct context and no second command. Retain its
-                    // exact source identity rather than accepting ancestors.
-                    var sticky = primary.Spell.Blueprint.GetComponent<AbilityEffectStickyTouch>();
-                    var selfCasts = casts.Where(value => value.Success &&
-                        ReferenceEquals(value.SpellTarget?.Unit, recipient) &&
-                        ReferenceEquals(value.Spell.Blueprint, sticky?.TouchDeliveryAbility) &&
-                        ReferenceEquals(value.Spell.StickyTouch, primary.Spell)).ToArray();
-                    if (selfCasts.Length != 1) return false;
-                    context = selfCasts[0].Context;
-                }
-                if (context == null) return false;
+                var sticky = primary.Spell.Blueprint.GetComponent<AbilityEffectStickyTouch>();
                 var matches = heals.Where(pair => ReferenceEquals(pair.Key.Target, recipient) &&
-                    ReferenceEquals(pair.Key.Reason?.Context, context)).ToArray();
-                foreach (var pair in matches) pair.Value["exactNativeHealingContext"] = true;
+                    ReferenceEquals(healSources[pair.Key], primary.Spell) &&
+                    (string)pair.Value["ability"] == sticky?.TouchDeliveryAbility?.AssetGuid &&
+                    (string)pair.Value["contextAbility"] == sticky?.TouchDeliveryAbility?.AssetGuid).ToArray();
+                foreach (var pair in matches) pair.Value["exactLiveNativeTouchSource"] = true;
                 return matches.Length == 1 && matches[0].Key.Value > 0 &&
                     (int?)matches[0].Value["damageBefore"] - (int?)matches[0].Value["damageAfter"] == matches[0].Key.Value;
             }

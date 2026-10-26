@@ -48,21 +48,31 @@ healing/control and ally-safe Sound Burst eligibility. Ten legal roots are
 published for development;1150 prior roots remain. Product scope and final
 qualification are incomplete, including pending decisions above.
 
-Current validated development candidate is `bcd41d043afb41d977075dab065b6a5951d82617`:
-ZIP `9902bec9e7dc336bac4243007b3e45c21e189ba753321bc5e22578677b84dcc5`;
-DLL `2ad71c2442cb683d56b61e53392d64c9e384f21aa697633df429c1c3ac64bfd9`;
-MVID `3d7d6ef8-fb40-4b74-92da-f6a615e4d7c3`;
-SourceState `86b90bf921e1a3f1642b8a91c9992b9ea2768d41a16b2c8eb9444c06f0f1a4b6`.
-Path `artifacts/development-candidates/sprint32-lillend-support/bcd41d043afb/`.
+Supported-profile limits: native Persuasion/Perception combine printed social/
+Sense Motive skills; Knowledge(nature) uses own Intelligence. No Survival,
+Disguise, Perform or Fly stat is substituted. The accepted ordinary-map airborne
+adaptation has no separate Hover fact or aerial maneuverability consumer.
+Source profiles: [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
+[Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
+Printed utility spell/SLA omissions are undergoing final charter-filter
+reconciliation; do not infer complete printed spell/feat/skill coverage from
+these adult stats. Lullaby and noncombat performances retain pending decisions.
+
+Current validated development candidate is `6faa9ba369808bc6c12f90c3b6bb77109e4ec617`:
+ZIP `236eb0a389f208d88faed0bebb3accb293be0eab95faa5a13832c6122cd23be8`;
+DLL `b68183a6c13be6dddf0f4a739c1ca58144db3a9ac314c484fd7b5ce22d48350d`;
+MVID `c24be662-0898-4235-a959-203682cb902f`;
+SourceState `ac721bda9809c62573eeb9c7b0c7db2e6bfedebd5bfb7a0a7f22a9e5a7a1d908`.
+Path `artifacts/development-candidates/sprint32-lillend-support/6faa9ba36980/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
 419-file package PASS. Development version0.0.167; no release qualification.
 Current observer corrections are newer source, not execution on that package.
 
 | Evidence | Result and dependency limit |
 |---|---|
-| Fresh bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
-| Fresh bcd Lillend support | PASS11/FAIL2 overall FAIL. Natural ally-directed HealAI cast succeeds and spends its own level3 slot; observer stops before the naturally queued touch delivery. Damage unchanged; ally healing not yet proven. `artifacts/sprint32-lillend-support-bcd41d04/` |
-| Fresh bcd Druid input | PASS11/FAIL2 overall FAIL. Oleg/UI/real prepared cast succeeds with one Satyr, correct slot and120s. Exploration actor correctly has zero combat cooldown; strict combat cost expectation is inapplicable. Conversions not reached; Wizard/Sorcerer NOT_RUN. `artifacts/sprint32-druid-input-bcd41d04/` |
+| Reviewed reuse: bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
+| Fresh6faa Lillend support | PASS10/FAIL2 overallFAIL. Actual selfheal18-to0/Standard/own slot2-to1 succeeds; new post-disposal StickyTouch attribution fails because native Ability.Dispose clears that link. Ally case not reached. `artifacts/sprint32-lillend-support-6faa9ba3/` |
+| Fresh6faa Druid input | PASS28/FAIL3 overallFAIL. All4 real casts pass: preparedOne and convertedOne/d3/d4+1; exact combat cost/slot/legal quantity/120s and unit resets. Final UI restoration aggregate fails, while outer installation/save/profile restore passes. Exact failing UI conjunct not recorded; Wizard/Sorcerer held. `artifacts/sprint32-druid-input-6faa9ba3/` |
 | Reviewed reuse:2d90 RTWP12/12 and turn10/10 | Natural Move Courage and actual ally+2/enemy exclusion; Standard self-healing18-to0/own level3 slots2-to1/sibling2; useful fallback; completed sword/sword/tail acts; live Nature and sibling isolation. Player-ally healing remains unverified. |
 | Reviewed reuse:392 public prepared routes | Satyr six SNA tiers and Lillend four SM tiers; legal quantities, one slot per cast,120s duration, body/icon/selection. Helper pumps native commands; no natural-input timing claim. |
 | Reviewed reuse:Satyr control and optional Suggestion | Fear, immunity refusal and bow/dagger/horns fallback in both modes. Provider Suggestion natural DC17/CL8 Satyr and DC16/CL7 Lillend, normal actions/duration/own slot and active-effect refusal. Positive Will/high SR, expiry/damage break and provider cold load NOT_RUN. |
@@ -76,6 +86,11 @@ and functional-first cosmetic policy remain; no owner aesthetic approval claimed
 ## Finite acceptance contract
 
 All final rows remain incomplete. Early slices above do not replace final qualification.
+Concrete review additions within A4/A5: Lillend tail hit/grab, immediate/maintained
+2d6+live-Str constrict and death/expiry release, with one affected prior shared
+consumer; Charm Monster nonhumanoid target, immunity/protection refusal, CL-day
+duration and native break/lifecycle. These address actual new shared opt-in and
+broadened private spell checks, not a whole-roster campaign.
 
 | ID | Observable result | Route and evidence | Mode/profile | Invalidated by |
 |---|---|---|---|---|
@@ -96,39 +111,38 @@ positive/negative admission checks. Concluded-campaign selectors/quotas no longe
 block Sprint32. Prior independent tooling findings were corrected. Final coherent
 product/rules/coverage review is still pending.
 
-Current bounded correction waits for the naturally queued ally healing touch,
-requires exact StickyTouch/source/recipient and native RuleHealDamage attribution,
-normal primary cost, native first-round free delivery and one own slot. Self-heal
-uses the engine's exact nested delivery RuleCastSpell context. No supplied cast,
-queue advancement or heal. Input phases reuse the private isolated hostile to
-establish native combat before input and at the actual cost callback; strict
-cost formulas remain unchanged. Existing exploration facts are retained as such.
-Independent review caught the distinct self-heal context before packaging; fixed.
-Focused self-context compilation23.3s/5selected tests1s PASS. Review also tightened
-the exact started ability set and heal delta; next candidate compiles these final
-assertions. No further dispatch blocker; final coherent review remains pending.
+Current bounded replan captures the live StickyTouch source at existing command
+start and RuleHealDamage events before native disposal clears it. The unnecessary
+nested-cast observer is removed; exact command cardinality, cost, own slot, native
+healing source/recipient/blueprint and damage delta remain mandatory. Input setup
+now proves the existing exact profile-owned, sole idle party anchor and suspends
+only its brain before combat/Default; it restores that state afterward without
+canceling commands or rewriting pins. Existing finalizer conjuncts are recorded.
+Exact previous finalizer cause remains unproven; native combat exposed the anchor
+to its own AI despite a strict original-empty-command requirement. Independent
+review found no further dispatch blocker; focused production23.6s/5tests0.9s PASS.
 
-Latest transaction `compat-20261026T020554Z-7a4649a6bd61` restored/verified
-02:10:45.1538566UTC. All three bcd runs protected Compare PASS:
+Latest transaction `compat-20261026T023647Z-826f6d3084ed` restored/verified
+02:41:48.4177215UTC. Both6faa runs protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build-Local attempts/validated development packages/native launches:36/26/39.
-Latest build256.383s; three wrappers294.648s/277.596s/292.026s,
-native127.032s/106.775s/113.968s. Summed active work categories unavailable;
-observer research/repair and supervision overlapped. No speedup inference.
-Owner subsystem waiting is not approval. Disk minimum remains measured1.1GB
-combined peak plus2GB margin. Latest verified cleanup02:19:30.3107111UTC
-recovered583,233,056B from seven closed exact S27 extraction duplicates;
-free3,798,528,000B. ZIPs, evidence, receipts, unique artifacts, protected backups
-and saves retained; protected Compare PASS967/118/18/83/tasks0/Steam1.
+Build attempts/validated development packages/native launches:37/27/41.
+Latest build261.661s; wrappers266.752s/302.066s, native99.872s/135.474s.
+For this02:16-02:48 continuation, approximate implementation/records18min,
+observer/fixture research/review12min, build4.4min, native setup/execution/
+restoration9.5min; categories overlap and are not additive. Earlier complete
+summed categories unavailable. No speedup inference. Owner waiting not approval.
+Disk minimum remains1.1GB peak plus2GB margin; verified closed-copy cleanup
+completed02:49:03.2818987UTC for three exact duplicates:297,941,275B;
+free3,545,407,488B. ProtectedComparePASS; exact plan receipt in history.
 
-Next selection: one coherent corrected development package, then `lillend-support`,
-`druid-input`, and, after common setup succeeds, `wizard-input`/`sorcerer-input`,
-each fresh guarded process. Expected aggregate20-30minutes plus build; each
-selection retains10-15minute target/30minute ceiling and complete restoration.
-Do not repeat the passed bcd lifecycle merely for unrelated observer changes;
-review its actual dependencies and retain original byte identity when reusing.
+Next: one coherent corrected package, then `lillend-support` and the shorter
+required `wizard-input` to establish common finalizer behavior. If successful,
+`sorcerer-input` and affected `druid-input` follow as fresh guarded processes.
+Expected20-30minutes plus build; each retains10-15minute target/30minute ceiling
+and complete restoration. No unchanged repeated approach. Passed bcd lifecycle
+retains its original byte identity and reviewed dependency limits.
 Continue remaining control/support risks, technical presentation, cold ON/OFF
 persistence and affected integration; pending subsystem rows stay pending.
 Final qualification requires independent coherent review and one frozen complete-

@@ -136,10 +136,16 @@ Lillend support waits for the native queued ally healing delivery linked by exac
 StickyTouch AbilityData, delivery blueprint and recipient. It supplies no delivery
 or execution tick. The primary pays its strict Standard cost/one slot; the native
 first-round held touch is observed at command start and its ignored cooldown at
-the cost callback. RuleHealDamage retains before/after injury and later correlates
-to the exact completed delivery context. Self-healing instead uses the exact nested
-native delivery RuleCastSpell context, which has no second command. A second
-independent HealAI cast or ambiguous attribution fails the case.
+the cost callback. RuleHealDamage retains before/after injury and the exact live StickyTouch source,
+delivery blueprint and recipient. Native Ability.Dispose clears that source after
+effect delivery; command-start and healing-event snapshots must precede disposal.
+Self-healing has a nested delivery with no second command. A second independent
+ability cast or ambiguous attribution fails the case.
+The input fixture also proves the existing exact cloned profile/preset/saveguard
+boundary and sole idle original party anchor before suspending that anchor's brain.
+This prevents its native combat AI from spending original inputs during the case.
+No commands or pins are reset to supply restoration. Brain state restores after
+Default disposal; existing party/selection/group/input/pin predicates are recorded.
 
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
 read-only mod-load audit of Satyr/Lillend candidates and required native control,

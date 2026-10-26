@@ -50,6 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var originalCaster = fixture.Caster;
             object levelController = null; bool added = false, selectedFixture = false, complete = false;
             Cleanup2NativeDefaultScope mode = null; NativeIconScreenEvidence screens = null;
+            UnitEntityData anchor = null; bool anchorBrainBefore = false, anchorBrainCaptured = false;
             var watch = Stopwatch.StartNew();
             try
             {
@@ -104,6 +105,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 book.Rest();
                 if (!player.Party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
+                // The profile-owned player anchor can enter this combat too.
+                // Prove the established exact disposable ownership boundary,
+                // then keep its initially idle brain quiet before Default runs.
+                anchor = player.MainCharacter.Value;
+                bool anchorOwned = anchor != null && _summoningProfileActor != null && _summoningProfilePreset != null &&
+                    _summoningProfileOriginal != null && ReferenceEquals(anchor.Blueprint, _summoningProfileActor) &&
+                    ReferenceEquals(_summoningProfilePreset.PlayerCharacter, _summoningProfileActor) &&
+                    !ReferenceEquals(_summoningProfileOriginal.PlayerCharacter, _summoningProfileActor) &&
+                    _summoningProfileActor.name == "KMG_Runtime_Summoning_Profile_Anchor" &&
+                    _summoningProfileSaveGuard != null && _summoningProfileScenes != null &&
+                    party.Length == 1 && ReferenceEquals(party[0], anchor) && anchor.Commands.Empty;
+                Sprint25Check(phase + "-owned-anchor", anchorOwned, new JObject {
+                    ["anchor"] = anchor?.UniqueId, ["exactProfileOwnedIdleParty"] = anchorOwned,
+                    ["protectedActorEdits"] = 0 },
+                    "Only the exact cloned profile anchor may have its brain suspended; initial commands must already be empty.");
+                if (!anchorOwned) { anchor = null; throw new InvalidOperationException("Exact idle profile anchor not proven."); }
+                anchorBrainBefore = anchor.IsBrainActive; anchorBrainCaptured = true;
+                Sprint28SetBrainActivePreservingActions(anchor, false);
                 mode = Cleanup2EnterNativeDefault(fixture, phase); screens = new NativeIconScreenEvidence(_request);
                 CreateSprint32TurnHostile(fixture);
                 // Native exploration casts intentionally assign no cooldown.
@@ -226,23 +245,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool exact = errors.Count == 0 && player.Party.SequenceEqual(party) && ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected) &&
                         ReferenceEquals(group.GetCurrentCharacter(), selectedGroup) && originalInputs.All(value => value.Unchanged()) && originalBars.All(value => value.IsRestored());
                     Sprint25Check(phase + "-ui-restored", exact, new JObject { ["exact"] = exact, ["casterOwnership"] = casterOwnership,
-                        ["errors"] = new JArray(errors), ["complete"] = complete },
+                        ["errors"] = new JArray(errors), ["complete"] = complete,
+                        ["partyExact"] = player.Party.SequenceEqual(party),
+                        ["selectionExact"] = ui.SelectionManagerPC.SelectedUnits.SequenceEqual(selected),
+                        ["groupExact"] = ReferenceEquals(group.GetCurrentCharacter(), selectedGroup),
+                        ["originalInputs"] = new JArray(originalInputs.Select(value => value.Describe())),
+                        ["originalPinsExact"] = new JArray(originalBars.Select(value => value.IsRestored())),
+                        ["anchorBrainQuiet"] = anchor != null && !anchor.IsBrainActive },
                         "Original party, selection, resources and pins restore exactly. The levelled disposable caster belongs to outer fixture teardown.");
                     if (!exact) errors.Add("Original input restoration not verified.");
                 }
                 finally
                 {
                     restore("owned-combat", () => {
-                        foreach (var unit in new[] { fixture.Caster, fixture.Hostile }.Where(value => value != null && !value.Destroyed))
+                        foreach (var unit in new[] { fixture.Caster, fixture.Hostile, anchor }.Where(value => value != null && !value.Destroyed))
                             if (unit.IsInCombat) unit.LeaveCombat();
                         player.UpdateIsInCombat();
                     });
                     restore("screens", () => screens?.Dispose());
                     restore("native-default", () => mode?.Dispose());
+                    if (anchorBrainCaptured) restore("owned-anchor-brain", () => {
+                        if (anchor == null || anchor.Destroyed || !ReferenceEquals(anchor.Blueprint, _summoningProfileActor))
+                            throw new InvalidOperationException("Owned anchor identity changed before restoration.");
+                        Sprint28SetBrainActivePreservingActions(anchor, anchorBrainBefore);
+                        if (anchor.IsBrainActive != anchorBrainBefore) throw new InvalidOperationException("Owned anchor brain not restored.");
+                    });
                 }
                 Sprint25Check(phase + "-finalizers", errors.Count == 0, new JObject {
                     ["errors"] = new JArray(errors), ["complete"] = complete,
-                    ["originalFailurePreserved"] = !complete },
+                    ["originalFailurePreserved"] = !complete,
+                    ["anchorBrainCaptured"] = anchorBrainCaptured, ["anchorBrainBefore"] = anchorBrainBefore,
+                    ["anchorBrainRestored"] = !anchorBrainCaptured || anchor != null && anchor.IsBrainActive == anchorBrainBefore },
                     "UI and native Default finalizer failures remain separate from the original case failure.");
                 if (errors.Count != 0 && complete) throw new InvalidOperationException(string.Join("|", errors.ToArray()));
             }
