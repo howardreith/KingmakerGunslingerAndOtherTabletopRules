@@ -25,6 +25,7 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintAbility Spell;
         public BlueprintAbility SleepSpell;
         public BlueprintBuff RefusedBuff;
+        public string ControlBuffGuid;
         public LillendSpellChoice32 Choice;
         public int Level;
         public override float Score(DecisionContext context)
@@ -83,8 +84,9 @@ namespace KingmakerGunslinger.Summoning
                 Choice == LillendSpellChoice32.SoundBurst ? UnitCondition.Stunned : (UnitCondition?)null;
             bool charm = Choice == LillendSpellChoice32.CharmPerson || Choice == LillendSpellChoice32.CharmMonster ||
                 Choice == LillendSpellChoice32.CharmPersonSla;
+            if (charm && string.IsNullOrEmpty(ControlBuffGuid)) return 0f;
             if (!SatyrControlEligibility.ControlTargetIsEligible(actor, target, data, hd, condition,
-                charm ? "9dc29118addce3d48ae9b92be953b5b4" :
+                charm ? ControlBuffGuid :
                 Choice == LillendSpellChoice32.Suggestion ? Sprint32Suggestion.OwnedBuffGuid : null)) return 0f;
             if (Choice == LillendSpellChoice32.SoundBurst || Choice == LillendSpellChoice32.Lullaby)
             {

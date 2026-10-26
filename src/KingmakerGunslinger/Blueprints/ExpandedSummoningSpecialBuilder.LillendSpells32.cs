@@ -26,9 +26,9 @@ namespace KingmakerGunslinger.Blueprints
             return new[] {
                 new[] { ConfigureLillendDaze32(library, bySymbol),
                     ConfigureLillendLullaby32(library, bySymbol) },
-                new[] { LillendNativeSpell32(library, "1af9d5995090e5a4185a30decf0959ad", "Charm Person"),
+                new[] { LillendOwnedControlSpell32(library, bySymbol, false),
                     LillendNativeSpell32(library, "5590652e1c2225c4ca30c4a699ab3649", "Cure Light Wounds"),
-                    LillendNativeSpell32(library, "bb7ecad2d3d2c8247a38f44855c99061", "Sleep") },
+                    LillendOwnedControlSpell32(library, bySymbol, true) },
                 new[] { LillendNativeSpell32(library, "c7104f7526c4c524f91474614054547e", "Hold Person"),
                     LillendNativeSpell32(library, "89940cde01689fb46946b2f8cd7b66b7", "Invisibility"),
                     LillendNativeSpell32(library, "c3893092a333b93499fd0a21845aa265", "Sound Burst") },
@@ -71,29 +71,7 @@ namespace KingmakerGunslinger.Blueprints
                 check.CheckedFacts = check.CheckedFacts.Where(fact => !allowedTypes.Contains(fact.AssetGuid)).ToArray();
             }
             if (removed != allowedTypes.Count) throw new InvalidOperationException("Native Charm type contract changed.");
-            var applications = LillendCharmApplications32(ability.GetComponents<AbilityEffectRunAction>().Single().Actions).ToArray();
-            if (applications.Length != 2 || applications.Any(apply => apply.Buff?.AssetGuid !=
-                "9dc29118addce3d48ae9b92be953b5b4"))
-                throw new InvalidOperationException("Native Charm effect contract changed.");
-            foreach (var apply in applications)
-            {
-                apply.Permanent = false; apply.UseDurationSeconds = false;
-                // Caster-level days, including live CL changes; retain normal
-                // native save, SR, charm allegiance, and break conditions.
-                apply.DurationValue = new ContextDurationValue { Rate = DurationRate.Days,
-                    DiceType = Kingmaker.RuleSystem.DiceType.Zero, DiceCountValue = Simple(0),
-                    BonusValue = new ContextValue { ValueType = ContextValueType.Rank,
-                        ValueRank = Kingmaker.Enums.AbilityRankType.Default } };
-            }
-            var rank = ability.GetComponents<Kingmaker.UnitLogic.Mechanics.Components.ContextRankConfig>().SingleOrDefault();
-            if (rank == null)
-            {
-                rank = ScriptableObject.CreateInstance<Kingmaker.UnitLogic.Mechanics.Components.ContextRankConfig>();
-                ability.ComponentsArray = ability.ComponentsArray.Concat(new BlueprintComponent[] { rank }).ToArray();
-            }
-            SetField(rank, "m_BaseValueType", Kingmaker.UnitLogic.Mechanics.Components.ContextRankBaseValueType.CasterLevel);
-            SetField(rank, "m_Progression", Kingmaker.UnitLogic.Mechanics.Components.ContextRankProgression.AsIs);
-            SetField(rank, "m_UseMin", false); SetField(rank, "m_UseMax", false);
+            BindFeyCelestialCharm32(ability, symbol, bySymbol, DurationRate.Days);
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", "Charm Monster"),
                 LocalizationService.Create(symbol + ".Description",
@@ -128,6 +106,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureNamedResource(resource, Lillend32Prefix + "CharmPersonSlaResource", Lillend32Prefix + "CharmPersonSlaResource",
                 "Charm Person", "One innate use for this Lillend, independent of bard spell slots.", 1);
             Sprint29LimitedNativeSpell(library, sla, slaSymbol, "1af9d5995090e5a4185a30decf0959ad", 7, 1, resource, "Charm Person");
+            BindFeyCelestialCharm32(sla, slaSymbol, bySymbol, DurationRate.Hours);
             var traits = Require<Kingmaker.Blueprints.Classes.BlueprintFeature>(bySymbol, Lillend32Prefix + "Traits");
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit; parameters.Abilities = new[] { sla };
@@ -154,6 +133,7 @@ namespace KingmakerGunslinger.Blueprints
                 var eligibility = Require<LillendSpellEligibility32>(bySymbol, key + "Eligibility");
                 eligibility.OwningBlueprint = unit; eligibility.Book = book; eligibility.Spell = selected[i];
                 eligibility.Level = levels[i]; eligibility.Choice = choices[i];
+                eligibility.ControlBuffGuid = Require<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(bySymbol, FeyCharmBuff32).AssetGuid;
                 if (choices[i] == LillendSpellChoice32.Daze)
                     eligibility.RefusedBuff = Require<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(bySymbol,
                         Lillend32Prefix + "DazeImmunity");

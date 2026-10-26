@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Designers.Mechanics.Facts;
+using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.Enums;
@@ -10,6 +11,7 @@ using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
@@ -53,7 +55,8 @@ namespace KingmakerGunslinger.Blueprints
             sleepSave.Value = -2; sleepSave.Bonus = Simple(0); sleepSave.OnlyPositiveValue = false;
             var buffDescriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
             buffDescriptor.Descriptor = SpellDescriptor.MindAffecting | SpellDescriptor.Compulsion;
-            buff.ComponentsArray = new BlueprintComponent[] { perception, sleepSave, buffDescriptor };
+            buff.ComponentsArray = new BlueprintComponent[] { perception, sleepSave, buffDescriptor,
+                ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>() };
             BlueprintUnitFactAccess.Resolve().Configure(buff,
                 LocalizationService.Create(symbol + ".Buff.Name", "Lullaby"),
                 LocalizationService.Create(symbol + ".Buff.Description",
@@ -74,7 +77,8 @@ namespace KingmakerGunslinger.Blueprints
             apply.Buff = buff; apply.IsFromSpell = true; apply.Permanent = false;
             // Owner-approved policy: release concentration immediately after the
             // normal cast. The native finite tail remains one round per live CL.
-            // It is not a child of a performance or of the summon's lifetime.
+            // It is not a child of a performance; native caster disappearance
+            // still terminates the spell through its private terminal component.
             apply.DurationValue = new ContextDurationValue { Rate = DurationRate.Rounds,
                 DiceType = DiceType.Zero, DiceCountValue = Simple(0),
                 BonusValue = new ContextValue { ValueType = ContextValueType.Rank, ValueRank = AbilityRankType.Default } };
