@@ -61,14 +61,18 @@ Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby has focused compilation and native RTWP proof on the candidate below.
 Noncombat performances remain required implementation, not pending permission.
 
-Current validated development candidate is `8dd2f5485874a5674f032b871784b2ba64890210`:
-ZIP `4e5ee41e8a9eff42ffdc3aae1fd7f444950c4044626af746954f43a6ebe8f785`;
-DLL `ef252a55f4f361250448baf7cfb8ec04988b09f120ab6d4dd2fedfb35c2f0791`;
-MVID `1ceb419e-c3e7-4c9c-a162-6c0c07c66e5d`;
-SourceState `47ca82653a2bc3145d3cb4a8a2058ead407633189ece5fed75e12784bb5d4a85`.
-Path `artifacts/development-candidates/sprint32-lillend-support/8dd2f5485874/`.
+Current validated development candidate is `0d22cf451b81fda21d1b2f1d5658eddef38262bd`:
+ZIP `fa6f9dd1feb0dd850bad2dc12188c7075bb88064381435e993a433aa830edf2e`;
+DLL `97839054fbc0c9382197de72e35454760be63976bec759e63b62b644a17c10a2`;
+MVID `31283a46-90c0-4b74-a607-c6b6df25162c`;
+SourceState `d12aa5a343dbad395c7410dd30ef8fadff377153a3b6ae52783d72b564421530`.
+Path `artifacts/development-candidates/sprint32-lillend-support/0d22cf451b81/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification. Native48
+package PASS. Development version0.0.167; no release qualification. Native49
+FAIL before gameplay: Competence icon lookup expected an activatable, but the
+captured exact native ID is a BlueprintFeature. Zero gameplay assertions ran.
+The corrected feature lookup and carrier presentation are in the working diff;
+the second Competence selection on this package is NOT_RUN. On8dd2f548, native48
 is FAIL17PASS/2FAIL: all existing support/body and Lullaby checks pass, while
 Daze repeat/refusal and aggregate execution fail. The original47 precondition
 failure and42 unexecuted package remain in history. Lullaby now uses the proven
@@ -149,12 +153,12 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T050617Z-b03b9a66ba98` restored/verified
-05:13:06.1365956UTC. Latest protected Compare PASS:
+Latest transaction `compat-20261026T054756Z-6bd74afafe7f` restored/verified
+05:51:45.0228680UTC. Latest protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build attempts/validated development packages/native launches:43/32/48.
+Build attempts/validated development packages/native launches:44/33/49.
 Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
 native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
 records10min, observer review/repair8min, approved-feature contract research10min,
@@ -176,6 +180,14 @@ Latest build43 took322.869s; native48 wrapper410.741s including restoration.
 Closed47 extraction cleanup reclaimed99,387,310B with exact protectedComparePASS;
 prelaunch free3,192,594,432B. Post48 free2,962,231,296B is below the3.1GB working
 minimum: obtain verified duplicate headroom before the next build/staging.
+
+Build44 took269.557s;557selected/2753/exactcompile/packagePASS. Native49 wrapper
+230.344s/native66.773s failed product registration, not Daze or performance.
+Two verified cleanup batches recovered184,386,692B with exactComparePASS.
+Build began with3,138,617,344B free. Its147,146,529B held outputs were counted once
+against the1.1GB combined allowance before native49;2GB margin remained beyond
+the remaining peak. Post49 free2,783,006,720B: renew safe headroom before another
+package using only verified duplicates. No known-broken-package second launch.
 
 Next: finish the reviewed Daze correction and approved Competence dispatcher,
 compile and review the coherent batch, then run the exact support and new
