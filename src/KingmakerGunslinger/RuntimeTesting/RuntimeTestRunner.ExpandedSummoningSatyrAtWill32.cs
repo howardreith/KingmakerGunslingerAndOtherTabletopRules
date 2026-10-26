@@ -419,5 +419,110 @@ namespace KingmakerGunslinger.RuntimeTesting
                 game.TurnBasedCombatController.Activate(); game.IsPaused = oldPause;
             }
         }
+        // Same native expiry/effect-only sibling probe used by the at-will
+        // control cases. No supplied spell, save or action proves a cast here.
+        private IEnumerable<int> ReviewFeyControlExpiry32(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData sibling, UnitEntityData target, Buff original,
+            AbilityData siblingData, UnitCondition condition, Func<JObject> siblingBudget, string id, Func<JObject> sourceAttribution = null)
+        {
+            var game = Game.Instance;
+            UnitEntityData probeTarget = null; Buff probe = null;
+            try
+            {
+                if (original == null || !original.Active || original.IsDisposed ||
+                    !ReferenceEquals(original.Context?.MaybeCaster, owner) ||
+                    !target.Descriptor.State.HasCondition(condition) || !fixture.Created.Contains(owner) ||
+                    !fixture.Created.Contains(sibling))
+                    throw new InvalidOperationException("Exact original control/source is not available for expiry proof.");
+                double originalEnd = original.EndTime.TotalSeconds;
+                var budget = siblingBudget();
+                var cooldown = sibling.CombatState.Cooldown;
+                var costsBefore = new[] { cooldown.StandardAction, cooldown.MoveAction, cooldown.SwiftAction };
+                Sprint28SetBrainActivePreservingActions(owner, false);
+                Sprint28SetBrainActivePreservingActions(sibling, false);
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                game.TurnBasedCombatController.Activate(); game.IsPaused = false;
+                PlaceExpandedSummoningUnit(sibling, owner.Position);
+                var direction = (target.Position - sibling.Position).normalized;
+                var side = Vector3.Cross(Vector3.up, direction).normalized;
+                Vector3? place = null;
+                foreach (var candidate in new[] { target.Position + side * 1.2f, target.Position - side * 1.2f,
+                    target.Position - direction * 1.2f })
+                {
+                    var nearest = AstarPath.active.GetNearest(candidate);
+                    if (nearest.node == null || !nearest.node.Walkable || Vector3.Distance(nearest.clampedPosition, candidate) > .3f ||
+                        Vector3.Distance(nearest.clampedPosition, target.Position) < .8f ||
+                        !sibling.HasLOS(nearest.clampedPosition + Kingmaker.Visual.FogOfWar.LineOfSightGeometry.EyeShift, sibling.Position)) continue;
+                    place = nearest.clampedPosition; break;
+                }
+                if (!place.HasValue) throw new InvalidOperationException("Separate control probe has no walkable visible point.");
+                probeTarget = game.EntityCreator.SpawnUnit(fixture.HostileBlueprint, place.Value, Quaternion.identity, fixture.Scene);
+                fixture.Created.Add(probeTarget); Sprint28SetBrainActivePreservingActions(probeTarget, false);
+                probeTarget.Stats.HitPoints.BaseValue = 100000;
+                foreach (var actor in new[] { sibling, probeTarget })
+                { actor.Wake(0f); if (!game.State.AwakeUnits.Contains(actor)) game.State.AwakeUnits.Add(actor); }
+                sibling.Memory.Add(probeTarget); probeTarget.Memory.Add(sibling);
+                var memory = new Kingmaker.Controllers.Units.UnitMemoryController();
+                var readyLimit = DateTime.UtcNow.AddSeconds(8); int frames = 0;
+                do
+                {
+                    game.IsPaused = false; yield return 0; frames++;
+                    sibling.SightCache.ClearIfNeeded(); probeTarget.SightCache.ClearIfNeeded(); memory.Tick();
+                } while (DateTime.UtcNow < readyLimit && (frames < 8 || !sibling.HasLOS(probeTarget) ||
+                    !sibling.Memory.ContainsVisible(probeTarget)));
+                bool eligible = sibling.IsEnemy(probeTarget) && sibling.HasLOS(probeTarget) &&
+                    sibling.Memory.ContainsVisible(probeTarget) && siblingData.IsAvailable &&
+                    siblingData.CanTarget(new TargetWrapper(probeTarget));
+                if (!eligible) throw new InvalidOperationException("Separate native sibling control probe is not eligible.");
+                probe = ApplySprint12Buff(probeTarget, original.Blueprint, sibling,
+                    TimeSpan.FromSeconds(48), original.Context.Params.DC).AppliedBuff;
+                double probeEnd = probe?.EndTime.TotalSeconds ?? 0;
+                bool probeReady = probe != null && probe.Active && !probe.IsDisposed &&
+                    ReferenceEquals(probe.Context?.MaybeCaster, sibling) && probeTarget.Buffs.Enumerable.Contains(probe) &&
+                    probeTarget.Descriptor.State.HasCondition(condition) && JToken.DeepEquals(budget, siblingBudget()) &&
+                    costsBefore.SequenceEqual(new[] { cooldown.StandardAction, cooldown.MoveAction, cooldown.SwiftAction });
+                if (!probeReady) throw new InvalidOperationException("Separate exact-sibling native effect probe failed.");
+                bool originalStillLive = original.Active && !original.IsDisposed &&
+                    target.Buffs.Enumerable.Contains(original) && ReferenceEquals(original.Context?.MaybeCaster, owner) &&
+                    original.EndTime.TotalSeconds == originalEnd && originalEnd > game.Player.GameTime.TotalSeconds &&
+                    target.Descriptor.State.HasCondition(condition);
+                if (!originalStillLive)
+                    throw new InvalidOperationException("Original control ended during sibling setup; source expiry is unverified.");
+                var expiry = ExpireSprint16OwnedBuff(owner, owner.Buffs.Enumerable.Single(value =>
+                    ReferenceEquals(value.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff)));
+                var limit = DateTime.UtcNow.AddSeconds(18);
+                while (DateTime.UtcNow < limit && (!Sprints3031SourceAbsent(owner) || original.Active && !original.IsDisposed ||
+                    target.Descriptor.State.HasCondition(condition)))
+                { game.IsPaused = false; yield return 0; }
+                bool isolated = probe.Active && !probe.IsDisposed && probeTarget.Buffs.Enumerable.Contains(probe) &&
+                    ReferenceEquals(probe.Context?.MaybeCaster, sibling) && probe.EndTime.TotalSeconds == probeEnd &&
+                    probeEnd > game.Player.GameTime.TotalSeconds && probeTarget.Descriptor.State.HasCondition(condition) &&
+                    sibling.IsInState && !sibling.Destroyed && JToken.DeepEquals(budget, siblingBudget());
+                var attribution = sourceAttribution?.Invoke();
+                bool clean = (attribution == null || (bool)attribution["passed"]) &&
+                    Sprints3031SourceAbsent(owner) && (!original.Active || original.IsDisposed) &&
+                    !target.Descriptor.State.HasCondition(condition) && originalEnd > game.Player.GameTime.TotalSeconds &&
+                    target.IsInState && !target.Destroyed && !target.Descriptor.State.IsDead && isolated;
+                Sprint25Check(id + "-source-expiry", clean, new JObject {
+                    ["source"] = owner.UniqueId, ["sourceAbsent"] = Sprints3031SourceAbsent(owner), ["expiry"] = expiry,
+                    ["originalBuff"] = original.Blueprint.AssetGuid, ["originalEnd"] = originalEnd,
+                    ["gameSeconds"] = game.Player.GameTime.TotalSeconds, ["originalActive"] = original.Active,
+                    ["originalDisposed"] = original.IsDisposed, ["conditionCleared"] = !target.Descriptor.State.HasCondition(condition),
+                    ["sibling"] = sibling.UniqueId, ["probeTarget"] = probeTarget.UniqueId,
+                    ["probeEligible"] = eligible, ["siblingEffectPreserved"] = isolated, ["probeEnd"] = probeEnd,
+                    ["sourceRemovalAttribution"] = attribution,
+                    ["siblingBudgetBefore"] = budget, ["siblingBudgetAfter"] = siblingBudget(),
+                    ["probeKind"] = "native RuleApplyBuff effect-only; not a second spell/save/action proof",
+                    ["fixtureVictimRemovalsBeforeVerdict"] = 0 },
+                    "Native source expiry removes its captured control before the original deadline and preserves a separately applied exact-sibling effect and budgets.");
+            }
+            finally
+            {
+                if (original != null && !original.IsDisposed) original.Remove();
+                if (probe != null && !probe.IsDisposed) probe.Remove();
+                if (probeTarget != null && !probeTarget.Destroyed)
+                    DisposeExpandedSummoningUnits(fixture.Created, new[] { probeTarget });
+            }
+        }
     }
 }

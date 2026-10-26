@@ -135,6 +135,41 @@ namespace KingmakerGunslinger.Blueprints
             return spell;
         }
 
+        // Native67/68 captured one saved Shaken and one failed Frightened
+        // terminal. Keep all native save, SR, duration and action behavior;
+        // only this Satyr's terminal blueprints gain proven source cleanup.
+        private static void BindSatyrFearTerminals32(LibraryScriptableObject library,
+            BlueprintAbility ability, IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            var branch = ability.GetComponents<AbilityEffectRunAction>().Single().Actions.Actions
+                .Single() as ContextActionConditionalSaved;
+            if (branch == null) throw new InvalidOperationException("Observed native Fear save graph changed.");
+            foreach (bool saved in new[] { true, false })
+            {
+                string nativeGuid = saved ? "25ec6cb6ab1845c48a95f9c20b034220" : "f08a7239aa961f34c8301518e71d4cdf";
+                string symbol = Satyr32Prefix + (saved ? "FearShakenBuff" : "FearFrightenedBuff");
+                var apply = (saved ? branch.Succeed : branch.Failed).Actions.Single() as ContextActionApplyBuff;
+                if (apply == null || apply.Buff?.AssetGuid != nativeGuid || !apply.IsFromSpell ||
+                    apply.Permanent || apply.UseDurationSeconds || apply.ToCaster)
+                    throw new InvalidOperationException("Observed native Fear terminal changed.");
+                var native = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library, nativeGuid,
+                    "observed Satyr Fear terminal");
+                var buff = Require<BlueprintBuff>(bySymbol, symbol);
+                CopyFields(native, buff); buff.name = InternalName(symbol);
+                buff.ComponentsArray = native.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                    .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
+                        ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() }).ToArray();
+                buff.ResourceAssetIds = Array.Empty<string>();
+                BlueprintUnitFactAccess.Resolve().Configure(buff,
+                    LocalizationService.Create(symbol + ".Name", saved ? "Shaken" : "Frightened"),
+                    LocalizationService.Create(symbol + ".Description",
+                        "This summoned Satyr's Fear effect ends when its source disappears."), native.Icon);
+                apply.Buff = buff;
+            }
+            AlternateSummoningAdapterBuilder.ResetComponentCaches(ability);
+        }
+
+
         private static BlueprintAbility LillendOwnedHoldPerson32(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {

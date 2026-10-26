@@ -12,6 +12,7 @@ using Kingmaker.ElementsSystem;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
+using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
@@ -66,6 +67,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitAggroFilter aggro = null;
             Buff invisible = null;
             bool seeAdded = false;
+            var engagementPause = SettingsRoot.Instance.PauseOnEngagement;
+            bool originalEngagementPause = engagementPause.CurrentValue;
             var ownContext = new AbilityExecutionContext(data, data.CalculateParams(), new TargetWrapper(target), Rulebook.CurrentContext);
             var otherData = new AbilityData(sibling.Descriptor.Abilities.GetAbility(ability));
             var otherContext = new AbilityExecutionContext(otherData, otherData.CalculateParams(), new TargetWrapper(target), Rulebook.CurrentContext);
@@ -288,6 +291,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !LillendBardicMemory32.Qualifies(ordinaryContext, owner, target);
                     if (!ordinaryReady) throw new InvalidOperationException("Ordinary book negative cannot use normal native targeting.");
                     int globals = offensive.Global.Count, aggros = offensive.Aggro.Count, oldSlot = book.GetSpontaneousSlots(2);
+                    // This negative intentionally starts combat. Set the native
+                    // engagement preference before that event; never pop an
+                    // unexpected mode or weaken the strict Default lease.
+                    engagementPause.CurrentValue = false;
+                    if (engagementPause.CurrentValue)
+                        throw new InvalidOperationException("Native negative-case engagement pause setting did not apply.");
                     var negative = new UnitUseAbility(ordinary, new TargetWrapper(target));
                     owner.Commands.Run(negative);
                     var negativeLimit = DateTime.UtcNow.AddSeconds(18);
@@ -307,6 +316,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["slot"] = oldSlot + "->" + book.GetSpontaneousSlots(2),
                         ["reciprocalMemory"] = new JArray(owner.Memory.Contains(target), target.Memory.Contains(owner)),
                         ["fascinateDisposed"] = captured.IsDisposed, ["globalDelta"] = offensive.Global.Count - globals,
+                        ["pauseOnEngagementIntake"] = originalEngagementPause,
+                        ["pauseOnEngagementDuringNegative"] = engagementPause.CurrentValue,
                         ["aggroDelta"] = offensive.Aggro.Count - aggros, ["fixtureOrdinaryCastCommands"] = 1 },
                         "The explicitly supplied normal book cast is a negative integration probe: real cost/slot, ordinary hostile memory and Fascinate interruption. It is not natural bardic AI evidence.");
                     if (!ordinaryPass) throw new InvalidOperationException("Ordinary book offensive behavior was not preserved.");
@@ -314,6 +325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                engagementPause.CurrentValue = originalEngagementPause;
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 if (invisible != null && !invisible.IsDisposed) invisible.Remove();
                 if (seeAdded) target.Descriptor.State.RemoveCondition(UnitCondition.SeeInvisibility);

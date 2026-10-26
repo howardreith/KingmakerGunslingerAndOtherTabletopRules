@@ -77,6 +77,7 @@ namespace KingmakerGunslinger.Blueprints
                 Satyr32Prefix + "FearResource", "Fear", "One use for this Satyr summoning.", 1);
             Sprint29LimitedNativeSpell(library, fear, Satyr32Prefix + "Fear",
                 "d2aeac47450c76347aebbc02e4f463e0", 8, 4, resource, "Fear");
+            BindSatyrFearTerminals32(library, fear, bySymbol);
             var charm = ConfigureSatyrAtWill32(library, bySymbol, "CharmPerson",
                 "1af9d5995090e5a4185a30decf0959ad", "Charm Person");
             var sleep = ConfigureSatyrAtWill32(library, bySymbol, "Sleep",
