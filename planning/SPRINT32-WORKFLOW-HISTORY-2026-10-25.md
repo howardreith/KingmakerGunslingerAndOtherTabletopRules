@@ -1505,3 +1505,66 @@ cleanup2min. Whole-mission exclusive category totals unavailable. No owner waiti
 All priorv167NOT_RUN gaps unchanged. No final/release qualification claimed.
 
 At12:58UTC independent actual-fixture review found two bounded assumptions before dispatch: lawful player-group sight memory must be preserved/recorded, while hostile reciprocal memory stays absent; new commands must be selected by identity, not HashSet enumeration Skip. Both corrected. First native upkeep/completed-Move boundary, shared round accounting, labeled ordinary-book negative and owned finalizers otherwise had no concrete blocker. No native execution on these changes yet.
+
+## 2026-10-26 13:34UTC - native65 binding defect, accepted Hold adaptation, bounded correction
+
+Build56/source096b045c868e99cc7dfe87ca59e0132e5e7484c9,12:59:07.6392818-to13:03:49.1677879UTC,
+281.5285061s, wrappers/557selected/2754registered/exactcompile/strictpackagePASS.
+ZIP36a77525bc2f9466e79531d633cf716f8ccf8f1278b46923f65ddfd6d190daf1;
+DLL624a6ac02fab1574e64a59d793822ffa8def74eb69d2fc6c66886199c684245c;
+MVID94e73e01-d05b-46c5-93fd-159bd80aa313;
+SourceState5459f680daddaf75da28326b57a2a6554e8be99de2b2b0f11c2af64e07d6e91e.
+Generated13:03:47.8559612Z; canonical artifacts/development-candidates/sprint32-lillend-support/096b045c868e/.
+Free3,457,314,816-to3,303,583,744B. Development only.
+
+Native65 FAIL5P/2F before bardic cast. Run20261026T1309411803604Z-454613cb6ac241b28593143dc9a20d21;
+raw20261026T1309411492032Z-disposable-expanded-summoning-sprint32-native-review;
+resultSHAf5b0938fd73c934dac7fe554490c77b5bd440d8f2d700dd9482bd360ad3e1697;
+originalUnitySHA8d296ca4815fe0a26a2ecd9ccd4fbbc43edde260077fc9e7c91751dfc27cc94e.
+COW1.14.4c-2.1/Cow1.4.5 loaded. Product binding rejected different values for
+KMG.Summoning.FeyCelestial.LillendAzata.BardicSuggestion.Description; provider inactive.
+Calm/geometry evidence cannot establish bardic behavior. Shared constant fixes collision
+without weakening localization checks. No unchanged retry.
+Native13:09:59.8660993-to13:12:34.4302639UTC/154563ms;
+wrapper13:06:44.1479398-to13:12:46.9133781/362.765s.
+Transactioncompat-20261026T130645Z-d35e756363c7 Restoredverified13:12:46.6522994UTC;
+ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1. Local originals/intake
+artifacts/sprint32-bardic-096b045c/. Intake file completed13:06:44.7452353 before
+transaction creation13:08:34.3621939 and deployment backup13:09:27. A supervisor call
+was dispatched before capture completion was returned; actual ordering and Compare
+prove intact intake. Future dependent dispatch explicitly waits capture completion.
+
+Owner answered "Accept native automatic repeat saves (Recommended)" for Lillend Hold
+Person. This accepts automatic per-round Will without action debit instead of PF1's
+voluntary full-round retry: https://legacy.aonprd.com/coreRulebook/spells/holdPerson.html.
+Bounded installed-controller review found no proven paralyzed voluntary-action route;
+no new subsystem implemented. Private Hold spell/terminal copies preserve native
+initial Will/SR, targeting, rounds/level and real bard slots, adding existing
+RemoveBuffIfCasterIsMissing/FeyControlCasterCleanup32. Optional private Suggestion
+terminal gains the same cleanup; provider/native originals remain unchanged.
+Two stable identities appended via existing generator; older identities unchanged.
+Next bardic native phase captures Fear/Sound Burst leaves/terminals read-only because
+prior capture truncated them. Metadata is not a gameplay result. Focused compilation
+24.3s/18tests4.4sPASS; artifacts/sprint32-intake/focused-private-hold.log. Review pending.
+
+13:32:31.6994717UTC verified closed compile-extraction cleanup: eleven targets,
+277,865,125B, free3,092,549,632-to3,374,972,928B. Complete file/count/length/SHA match
+against retained compile ZIPs and closed Restored transactions; bin/PDB/archives/
+receipts/logs/raw evidence/backups untouched. PlanSHA06c21db0c455ea9e978f7992a95e13abd9163dd04855a1795845407e015ad37a.
+Local Invoke-VerifiedS32CompileDuplicateCleanup.ps1, compile-duplicates-dryrun/result.json,
+sprint32-compile-storage intake/ComparePASS967/118/18/83/tasks0/Steam1.
+Approx13:15-13:34 contract/implementation/review12min, cleanup5min, focused28.7s;
+exclusive category totals/wait unavailable. Counts56/45/65; no live transaction.
+Priorv167NOT_RUN gaps unchanged; final qualification remains incomplete.
+
+At13:40UTC independent read-only review of the actual correction diff found the
+retained Hold branches depth-truncated, so an exact count was unsupported. Corrected
+mapping requires nonempty applications, every terminal equal to observed11cb2fe4,
+and rebinds all. Same next phase adds only native Hold to the fixed Fear/SoundBurst
+metadata capture. Reviewer confirmed cloned targeting/initial WillSR/duration/slots/
+automatic saves, private-only cleanup, provider-shape preservation and shared
+localization; no further concrete dispatch blocker. Corrected production24.3s/
+18focused0.9sPASS, focused-private-hold-reviewed.log. Original7506 registry entries
+and previous history text verified identical; two identities appended. Native
+Hold casting/retry/source-sibling cleanup, provider cleanup and deeper graph inspection
+remain required; no old execution promoted to new bytes.

@@ -14,6 +14,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Components;
@@ -146,7 +147,9 @@ namespace KingmakerGunslinger.Blueprints
                 stagedBuff.name = InternalName(Sprint32Suggestion.OwnedBuffSymbol);
                 ClearLillendPerformanceDeathPersistence32(stagedBuff);
                 stagedBuff.ComponentsArray = sourceBuff.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
-                    .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<Sprint32SuggestionPresence>() }).ToArray();
+                    .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<Sprint32SuggestionPresence>(),
+                        ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
+                        ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() }).ToArray();
                 foreach (var pair in new[] { new[] { "Satyr", Satyr32Prefix, "Suggestion" },
                     new[] { "LillendAzata", Lillend32Prefix, "Suggestion" },
                     new[] { "LillendAzata", Lillend32Prefix, "BardicSuggestion" } })
@@ -171,7 +174,7 @@ namespace KingmakerGunslinger.Blueprints
                         BlueprintUnitFactAccess.Resolve().Configure(staged,
                             LocalizationService.Create(Lillend32Prefix + "BardicSuggestion.Name", "Bardic Suggestion"),
                             LocalizationService.Create(Lillend32Prefix + "BardicSuggestion.Description",
-                                "Use the provider's avoid-combat Suggestion on one creature fascinated by this lillend. Standard action, Will DC 13 + Charisma, spell resistance; no slot or extra performance round. Does not interrupt this performance."), source.Icon);
+                                LillendBardicSuggestionDescription32), source.Icon);
                     }
                     // Cow1.4.5 declares rank(Default) minutes but supplies no
                     // rank component. Bind the advertised live caster-level

@@ -131,5 +131,44 @@ namespace KingmakerGunslinger.Blueprints
                     "Charm an eligible humanoid using native Charm behavior. Will negates; spell resistance applies. Duration: one hour per caster level, ending when this summon disappears."), spell.Icon);
             return spell;
         }
+
+        private static BlueprintAbility LillendOwnedHoldPerson32(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            const string nativeBuffGuid = "11cb2fe4fe9c44b448cfe1788ae1ab59";
+            string symbol = Lillend32Prefix + "HoldPerson";
+            var spell = Require<BlueprintAbility>(bySymbol, symbol);
+            CloneMephitSpell(library, spell, "c7104f7526c4c524f91474614054547e", "observed native Hold Person");
+            spell.name = InternalName(symbol); spell.Parent = null; spell.Type = AbilityType.Spell;
+            var nativeBuff = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                nativeBuffGuid, "observed native Hold Person terminal");
+            var condition = nativeBuff.GetComponent<BuffStatusCondition>();
+            if (condition == null || condition.Condition != Kingmaker.UnitLogic.UnitCondition.Paralyzed ||
+                !condition.SaveEachRound || condition.SaveType != Kingmaker.EntitySystem.Stats.SavingThrowType.Will)
+                throw new InvalidOperationException("Native Hold Person automatic repeat-save contract changed.");
+            var buff = Require<BlueprintBuff>(bySymbol, symbol + "Buff");
+            CopyFields(nativeBuff, buff); buff.name = InternalName(symbol + "Buff");
+            buff.ComponentsArray = nativeBuff.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
+                    ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() }).ToArray();
+            buff.ResourceAssetIds = Array.Empty<string>();
+            BlueprintUnitFactAccess.Resolve().Configure(buff,
+                LocalizationService.Create(symbol + "Buff.Name", "Hold Person"),
+                LocalizationService.Create(symbol + "Buff.Description",
+                    "Paralyzed, with an automatic Will save each round. Ends when this summon disappears."), nativeBuff.Icon);
+            var applications = LillendCharmApplications32(spell.GetComponents<AbilityEffectRunAction>().Single().Actions).ToArray();
+            if (applications.Length == 0 || applications.Any(apply => apply.Buff?.AssetGuid != nativeBuffGuid))
+                throw new InvalidOperationException("Native Hold Person terminal graph changed.");
+            foreach (var apply in applications) apply.Buff = buff;
+            // Owner adaptation 2026-10-26: keep the native automatic round save
+            // without an action debit. Preserve normal initial Will/SR, humanoid
+            // checks, rounds/level, casting actions and the real bard spell slot.
+            BlueprintUnitFactAccess.Resolve().Configure(spell,
+                LocalizationService.Create(symbol + ".Name", "Hold Person"),
+                LocalizationService.Create(symbol + ".Description",
+                    "Paralyze an eligible humanoid. Will negates; spell resistance applies. An automatic Will save each round ends the effect on success, without using an action. Lasts one round per caster level, ending when this summon disappears."), spell.Icon);
+            AlternateSummoningAdapterBuilder.ResetComponentCaches(spell);
+            return spell;
+        }
     }
 }

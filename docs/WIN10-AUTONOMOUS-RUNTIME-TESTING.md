@@ -18,6 +18,9 @@ natural bardic evidence. The fixture inventories Harmony12 patches on the two
 bypassed native methods and refuses unreviewed patches. Finalizers restore the
 exact fixture components/conditions, native mode, party and owned actors.
 No input/save permission, general observer framework or outcome rewind is added.
+The same phase captures the exact native Fear, Sound Burst and Hold Person
+action leaves/terminal components read-only to resolve earlier depth truncation.
+This metadata is not a gameplay verdict; no extra actor or launch is selected.
 
 Sprint32's fixed `satyr-atwill` and `satyr-atwill-turn` phases extend the existing
 save-free Dialog control fixture, expected10min/runtime600s each. No Default,

@@ -4,8 +4,11 @@ using System.IO;
 using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items.Weapons;
+using Kingmaker.ElementsSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics.Actions;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using Newtonsoft.Json;
@@ -15,6 +18,59 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private static IEnumerable<ContextActionApplyBuff> Sprint32ControlApplications(ActionList list, int depth = 0)
+        {
+            if (depth > 12) throw new InvalidOperationException("Selected native control action depth exceeds the bounded capture.");
+            if (list == null) yield break;
+            foreach (var action in list.Actions ?? Array.Empty<GameAction>())
+            {
+                if (action == null) continue;
+                var apply = action as ContextActionApplyBuff;
+                if (apply != null) yield return apply;
+                foreach (var field in ExpandedSummoningFields(action.GetType()).Where(value =>
+                    !value.IsStatic && value.FieldType == typeof(ActionList)))
+                    foreach (var child in Sprint32ControlApplications((ActionList)field.GetValue(action), depth + 1))
+                        yield return child;
+            }
+        }
+
+        // The original bounded donor capture truncated these exact branches.
+        // Reuse its reader on the applications and referenced terminal roots;
+        // no extra actor, command, save access or separate launch.
+        private void CaptureSprint32RemainingControlLeaves()
+        {
+            var document = new JObject(); bool passed = false;
+            try
+            {
+                var library = BlueprintBootstrap.Library;
+                var rows = new JArray();
+                foreach (string guid in new[] { "d2aeac47450c76347aebbc02e4f463e0",
+                    "c3893092a333b93499fd0a21845aa265", "c7104f7526c4c524f91474614054547e" })
+                {
+                    var ability = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, guid,
+                        "selected remaining Sprint32 control family");
+                    var run = ability.GetComponents<AbilityEffectRunAction>().Single();
+                    var leaves = Sprint32ControlApplications(run.Actions).ToArray();
+                    if (leaves.Length == 0 || leaves.Any(value => value.Buff == null))
+                        throw new InvalidOperationException("Selected control has no complete terminal applications: " + ability.name);
+                    rows.Add(new JObject { ["guid"] = guid, ["name"] = ability.name,
+                        ["save"] = run.SavingThrowType.ToString(),
+                        ["actions"] = DescribeGraph(run.Actions, 0, new HashSet<object>(NativeDonorReferenceComparer.Instance), 20),
+                        ["applications"] = new JArray(leaves.Select(value => DescribeGraph(value, 0,
+                            new HashSet<object>(NativeDonorReferenceComparer.Instance), 12))),
+                        ["terminals"] = new JArray(leaves.Select(value => value.Buff).Distinct().Select(value =>
+                            DescribeGraph(value, 0, new HashSet<object>(NativeDonorReferenceComparer.Instance), 12))) });
+                }
+                document["families"] = rows; passed = rows.Count == 3;
+            }
+            catch (Exception error) { document["exception"] = error.ToString(); }
+            RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
+                "sprint32-remaining-control-terminals.json"), document.ToString(Formatting.Indented));
+            Sprint25Check("remaining-control-terminals", passed, new JObject {
+                ["captured"] = passed, ["exception"] = document["exception"] },
+                "Exact Fear, Sound Burst and Hold Person applications/terminal components captured read-only; not a gameplay or cleanup verdict.");
+        }
+
         // The first input receipt stopped inside nested conditional actions.
         // Capture only these selected existing control graphs more deeply in
         // the next owned native review; no new actor or separate launch.
