@@ -6,6 +6,10 @@ subject. One disclosed Fear pre-spend isolates natural Sleep. A separate five-HD
 humanoid isolates Charm Person; an owned five-HD Charm-immune hostile sentinel
 keeps combat available for cost observation. Native eligibility, sight, surveyed
 positions and mutual faction relations must pass before enabling the owner AI.
+Each extra location also passes native point LOS. After yielding, a bounded
+eight-second native UnitMemoryController refresh establishes actual visible
+memory; Add alone starts Visible=false and the Dialog clock does not refresh it.
+No visibility flag is assigned. Individual actor predicates remain mandatory.
 Normal Standard/non-full-round cost, CL8/DC15, real saves, Sleep's shared four-HD
 budget/ally exclusion and unchanged independent resources are observed. Live
 controlled-target refusal is a policy observation, not a second-cast claim.

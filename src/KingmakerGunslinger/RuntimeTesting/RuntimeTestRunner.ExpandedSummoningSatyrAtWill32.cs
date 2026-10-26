@@ -82,19 +82,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
                 var forward = (far - origin).normalized;
                 var side = Vector3.Cross(Vector3.up, forward).normalized;
+                var placementRows = new JArray();
                 Func<BlueprintUnit, Vector3, int, UnitEntityData> spawn = (blueprint, requested, hitDice) =>
                 {
-                    var point = AstarPath.active.GetNearest(requested);
-                    if (point.node == null || !point.node.Walkable || Vector3.Distance(point.clampedPosition, requested) > .3f)
-                        throw new InvalidOperationException("At-will disposable actor lacks a surveyed point.");
-                    var actor = game.EntityCreator.SpawnUnit(blueprint, point.clampedPosition, Quaternion.identity, fixture.Scene);
+                    // A navmesh point alone need not be visible down this indoor
+                    // lane. Reuse native point LOS before creating an actor;
+                    // the final actor LOS and memory checks still must pass.
+                    var candidates = hitDice == 2 ? new[] { requested,
+                        far - forward * .9f + side * .6f, far - forward * .9f - side * .6f,
+                        far - forward * 1.5f, far + forward * .5f + side * .9f,
+                        far + forward * .5f - side * .9f, far + side * .9f, far - side * .9f } : new[] { requested };
+                    Vector3? selected = null;
+                    foreach (var candidate in candidates)
+                    {
+                        var point = AstarPath.active.GetNearest(candidate);
+                        if (point.node == null || !point.node.Walkable || Vector3.Distance(point.clampedPosition, candidate) > .3f ||
+                            hitDice == 2 && Vector3.Distance(point.clampedPosition, far) > 1.5f ||
+                            subjects.Concat(extra).Any(value => Vector3.Distance(value.Position, point.clampedPosition) < .8f) ||
+                            !owner.HasLOS(point.clampedPosition + Kingmaker.Visual.FogOfWar.LineOfSightGeometry.EyeShift, origin)) continue;
+                        selected = point.clampedPosition; break;
+                    }
+                    if (!selected.HasValue) throw new InvalidOperationException("At-will disposable actor lacks a separated walkable native-LOS point.");
+                    var actor = game.EntityCreator.SpawnUnit(blueprint, selected.Value, Quaternion.identity, fixture.Scene);
                     extra.Add(actor); fixture.Created.Add(actor);
                     SetExpandedSummoningBrainActive(actor, false);
                     ElementalSpellAffinityScenario.Advance(actor.Descriptor, fighter,
                         hitDice - actor.Descriptor.Progression.CharacterLevel);
                     actor.Stats.HitPoints.BaseValue = 100000;
                     actor.Stats.SaveWill.BaseValue = -100; actor.Stats.AC.BaseValue = -100;
-                    PlaceExpandedSummoningUnit(actor, point.clampedPosition);
+                    PlaceExpandedSummoningUnit(actor, selected.Value);
+                    placementRows.Add(new JObject { ["unit"] = actor.UniqueId, ["requested"] = requested.ToString(),
+                        ["selected"] = selected.Value.ToString(), ["pointLos"] = true });
                     return actor;
                 };
                 var descriptor = ScriptableObject.CreateInstance<BuffDescriptorImmunity>();
@@ -115,7 +133,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 // Above-four-HD, Charm-immune enemy preserves actual combat
                 // through the primary's condition/faction change.
-                sentinel = spawn(fixture.HostileBlueprint, origin + forward * 5f + side * 5f, 5);
+                sentinel = spawn(fixture.HostileBlueprint, origin + forward * 4.5f, 5);
                 immune.Add(sentinel);
                 foreach (var actor in immune) actor.Descriptor.AddFact(charmImmunity);
                 int fearBefore = owner.Descriptor.Resources.GetResourceAmount(resource);
@@ -129,10 +147,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (owner.IsEnemy(actor)) { owner.Memory.Add(actor); actor.Memory.Add(owner); }
                     actor.SightCache.ClearIfNeeded();
                 }
-                new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                var memory = new Kingmaker.Controllers.Units.UnitMemoryController();
+                memory.Tick();
                 foreach (var actor in subjects.Concat(new[] { owner, sentinel })) actor.JoinCombat();
                 game.Player.UpdateIsInCombat();
                 new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+                // UnitGroupMemory.Add initializes Visible=false. The Dialog
+                // clock does not run UnitMemoryController; yield for actual
+                // awake-group registration, then refresh native visibility.
+                // No memory-visible, LOS or faction result is supplied.
+                int visibilityFrames = 0;
+                var visibilityDeadline = DateTime.UtcNow.AddSeconds(8);
+                do
+                {
+                    game.IsPaused = false; yield return 0; visibilityFrames++;
+                    owner.SightCache.ClearIfNeeded();
+                    foreach (var actor in allTargets) actor.SightCache.ClearIfNeeded();
+                    memory.Tick();
+                } while (DateTime.UtcNow < visibilityDeadline && visibilityFrames < 480 &&
+                    (visibilityFrames < 8 || subjects.Concat(new[] { sentinel }).Any(actor =>
+                        !owner.HasLOS(actor) || !owner.Memory.ContainsVisible(actor))));
                 var admission = new JObject();
                 if (turnBased)
                 {
@@ -157,9 +191,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     data.RuntimeActionType == UnitCommand.CommandType.Standard && !data.RequireFullRoundAction;
                 Sprint25Check(id + "-ready", ready, new JObject {
                     ["lane"] = lane, ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId,
+                    ["placements"] = placementRows, ["visibilityFrames"] = visibilityFrames,
+                    ["nativeVisionMeters"] = owner.VisionRangeMeters, ["available"] = data.IsAvailable,
                     ["subjects"] = new JArray(subjects.Select(actor => new JObject { ["unit"] = actor.UniqueId,
                         ["hd"] = actor.Descriptor.Progression.CharacterLevel, ["distance"] = owner.DistanceTo(actor),
-                        ["eligibility"] = score(actor), ["willBase"] = actor.Stats.SaveWill.BaseValue })),
+                        ["eligibility"] = score(actor), ["willBase"] = actor.Stats.SaveWill.BaseValue,
+                        ["enemy"] = owner.IsEnemy(actor), ["inState"] = actor.IsInState,
+                        ["dead"] = actor.Descriptor.State.IsDead, ["los"] = owner.HasLOS(actor),
+                        ["visibleMemory"] = owner.Memory.ContainsVisible(actor),
+                        ["canTarget"] = data.CanTarget(new TargetWrapper(actor)) })),
                     ["sentinel"] = sentinel.UniqueId, ["sentinelHd"] = sentinel.Descriptor.Progression.CharacterLevel,
                     ["sentinelEligibility"] = score(sentinel), ["ally"] = ally?.UniqueId,
                     ["turnBased"] = turnBased, ["admission"] = admission,
@@ -250,6 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     while (DateTime.UtcNow < deadline && (!Sprints3031SourceAbsent(owner) || effects.Any(value => !value.IsDisposed && value.Active)))
                     { game.IsPaused = false; yield return 0; }
                     bool clean = Sprints3031SourceAbsent(owner) && effects.All(value => value.IsDisposed || !value.Active) &&
+                        subjects.All(actor => actor.IsInState && !actor.Destroyed && !actor.Descriptor.State.IsDead) &&
                         originalEnds.All(value => value > game.Player.GameTime.TotalSeconds) &&
                         sibling.IsInState && !sibling.Destroyed && sibling.Descriptor.Resources.GetResourceAmount(resource) == 1;
                     Sprint25Check(id + "-source-expiry", clean, new JObject {
@@ -258,6 +299,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["capturedEffects"] = new JArray(effects.Select(value => new JObject {
                             ["disposed"] = value.IsDisposed, ["active"] = value.Active, ["guid"] = value.Blueprint.AssetGuid })),
                         ["siblingAlive"] = sibling.IsInState && !sibling.Destroyed,
+                        ["subjectsSurvived"] = subjects.All(actor => actor.IsInState && !actor.Destroyed && !actor.Descriptor.State.IsDead),
                         ["fixtureVictimRemovalsBeforeVerdict"] = 0 },
                         "Native summon expiry must remove the source's captured spell effects before their own deadlines while preserving the later-expiring sibling.");
                     // A failed row remains FAIL. Finalizers can safely remove
