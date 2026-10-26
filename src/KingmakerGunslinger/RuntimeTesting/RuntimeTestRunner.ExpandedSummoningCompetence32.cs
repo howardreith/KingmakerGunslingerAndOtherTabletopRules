@@ -40,6 +40,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int casterPerception = fixture.Caster.Stats.SkillPerception.ModifiedValue;
             int anchorPerception = anchor.Stats.SkillPerception.ModifiedValue;
             UnitEntityData owner = null, sibling = null; bool partyAdded = false, complete = false;
+            bool recipientBlindnessAdded = false;
             Cleanup2NativeDefaultScope mode = null;
             Lillend32CommandStarts starts = null;
             var cleanup = new List<string>();
@@ -72,8 +73,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var book = owner.Descriptor.GetSpellbook(bookBlueprint); var siblingBook = sibling.Descriptor.GetSpellbook(bookBlueprint);
                 var ownSlots = Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).ToArray();
                 var siblingSlots = Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).ToArray();
-                var eligible = player.Party.Where(value => LillendNoncombat32.Eligible(owner, value)).ToArray();
+                var eligible = player.Party.Where(value => LillendNoncombat32.Selectable(owner, value)).ToArray();
                 bool ready = eligible.Length == 1 && ReferenceEquals(eligible[0], fixture.Caster) &&
+                    owner.Logic.SelectFactComponents<LillendNoncombat32>().Count() == 1 && !toggle.Blueprint.OnlyInCombat &&
+                    !fixture.Caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Blindness) &&
                     !LillendNoncombat32.Eligible(owner, owner) && !LillendNoncombat32.Eligible(owner, sibling) &&
                     owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                     sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
@@ -83,6 +86,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["sibling"] = sibling.UniqueId, ["recipient"] = fixture.Caster.UniqueId,
                     ["distance"] = owner.DistanceTo(fixture.Caster), ["ownSlots"] = new JArray(ownSlots),
                     ["siblingSlots"] = new JArray(siblingSlots), ["selfRefused"] = !LillendNoncombat32.Eligible(owner, owner),
+                    ["roundLogicComponents"] = owner.Logic.SelectFactComponents<LillendNoncombat32>().Count(),
+                    ["onlyInCombat"] = toggle.Blueprint.OnlyInCombat, ["available"] = toggle.IsAvailable,
+                    ["queueEmpty"] = owner.Commands.Empty,
                     ["nonpartyRefused"] = !LillendNoncombat32.Eligible(owner, sibling) },
                     "One conscious visible party recipient in the surveyed30ft range; independent native20-round pools and untouched books.");
                 if (!ready) throw new InvalidOperationException("Competence preconditions failed.");
@@ -111,7 +117,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             throw new InvalidOperationException("Natural noncombat performance boundary changed.");
                         yield return 0;
                     }
-                    game.IsPaused = true; Sprint28SetBrainActivePreservingActions(owner, false);
+                    // Reads below are synchronous on the game thread. A Pause
+                    // mode is unnecessary and would escape the Default lease
+                    // when a failed assertion throws before unpausing.
+                    Sprint28SetBrainActivePreservingActions(owner, false);
                     var commands = starts.Commands.OfType<UnitActivateAbility>().ToArray();
                     var grants = fixture.Caster.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, recipient)).ToArray();
                     bool acted = commands.Length == 1 && ReferenceEquals(commands[0].Ability, toggle) && commands[0].IsActed &&
@@ -133,11 +142,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["running"] = toggle.IsRunning, ["recipientBuffs"] = grants.Length,
                         ["perceptionBefore"] = casterPerception, ["perceptionAfter"] = fixture.Caster.Stats.SkillPerception.ModifiedValue,
                         ["siblingPool"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
+                        ["queue"] = new JArray(owner.Commands.Raw.Where(value => value != null).Select(Sprint27AiCommand)),
+                        ["available"] = toggle.IsAvailable, ["selectedStillEligible"] = LillendNoncombat32.Eligible(owner, fixture.Caster),
+                        ["gameSeconds"] = player.GameTime.TotalSeconds,
                         ["fixtureActivationCommands"] = 0, ["fixtureRoundCalls"] = 0, ["fixtureEffects"] = 0 },
                         "Native Default/round controllers choose and execute one normal Move activation and spend one native round per upkeep. Exploration has no combat cooldown debit; no manual round/cast/effect supplies this result.");
                     if (!acted) throw new InvalidOperationException("Natural Competence performance failed.");
+                    int roundsBeforeBlindness = rounds.Rows.Count;
+                    fixture.Caster.Descriptor.State.AddCondition(Kingmaker.UnitLogic.UnitCondition.Blindness);
+                    recipientBlindnessAdded = true; limit = DateTime.UtcNow.AddSeconds(8);
+                    while (DateTime.UtcNow < limit && rounds.Rows.Count == roundsBeforeBlindness)
+                    {
+                        if (!mode.Current) throw new InvalidOperationException("Audible performance lease changed.");
+                        yield return 0;
+                    }
+                    bool audible = rounds.Rows.Count > roundsBeforeBlindness && rounds.Exact() && toggle.IsRunning &&
+                        fixture.Caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Blindness) &&
+                        fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value, grants[0])) &&
+                        fixture.Caster.Stats.SkillPerception.ModifiedValue == casterPerception + 3;
+                    Sprint25Check("competence-audible-only-maintenance", audible, new JObject {
+                        ["blind"] = fixture.Caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Blindness),
+                        ["sameGrant"] = fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value, grants[0])),
+                        ["running"] = toggle.IsRunning, ["roundsBefore"] = roundsBeforeBlindness,
+                        ["roundsAfter"] = rounds.Rows.Count, ["nativeUpkeepExact"] = rounds.Exact(),
+                        ["perception"] = fixture.Caster.Stats.SkillPerception.ModifiedValue },
+                        "The already selected blind recipient retains the same audible-only Competence grant through a natural upkeep; native hearing/deafness is not separately modeled.");
+                    if (!audible) throw new InvalidOperationException("Audible-only Competence maintenance failed.");
+                    fixture.Caster.Descriptor.State.RemoveCondition(Kingmaker.UnitLogic.UnitCondition.Blindness);
+                    recipientBlindnessAdded = false;
                     PlaceExpandedSummoningUnit(fixture.Caster, owner.Position + (fixture.Caster.Position - owner.Position).normalized * 12f);
-                    game.IsPaused = false; limit = DateTime.UtcNow.AddSeconds(8);
+                    limit = DateTime.UtcNow.AddSeconds(8);
                     while (DateTime.UtcNow < limit && (toggle.IsOn || toggle.IsRunning ||
                         fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, recipient)))) yield return 0;
                     bool stopped = !toggle.IsOn && !toggle.IsRunning &&
@@ -159,6 +193,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { cleanup.Add(name + ":" + error.Message); } };
                 if (starts != null) EventBus.Unsubscribe(starts);
+                restore("recipient-condition", () => { if (recipientBlindnessAdded)
+                    fixture.Caster.Descriptor.State.RemoveCondition(Kingmaker.UnitLogic.UnitCondition.Blindness); });
                 restore("summons", () => DisposeExpandedSummoningUnits(fixture.Created,
                     new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray()));
                 restore("native-mode", () => mode?.Dispose());

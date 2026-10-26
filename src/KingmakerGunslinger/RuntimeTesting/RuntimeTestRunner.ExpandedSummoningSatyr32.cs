@@ -50,6 +50,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32CantripPhase)
+            {
+                CreateExpandedSummoningCorrectionHostile(fixture);
+                foreach (int frame in ReviewLullaby32(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase)
             {
                 foreach (int frame in ReviewLillendCompetence32(fixture)) yield return frame;

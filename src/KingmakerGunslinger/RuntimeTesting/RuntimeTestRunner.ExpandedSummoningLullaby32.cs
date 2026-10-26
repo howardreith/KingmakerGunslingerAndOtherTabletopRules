@@ -28,6 +28,40 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
+        private LillendDazeRoundTicks32 _lillendDazeRoundTicks32;
+        private void Sprint32TickLife(UnitEntityData unit)
+        {
+            Sprint26TickLife(unit);
+            _lillendDazeRoundTicks32?.TickExact(unit);
+        }
+        // The existing Dialog fixture clock lacks the native round controller.
+        // Its life callback already runs inside the exact-owned Pulse with the
+        // real frame delta. Only this selected actor receives the missing tick.
+        private sealed class LillendDazeRoundTicks32 : Kingmaker.Controllers.Units.UnitTicksController
+        {
+            private readonly UnitEntityData _actor;
+            private readonly Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAction _action;
+            private int _frame = -1, _lastCooldown = -1;
+            internal int TickCount { get; private set; }
+            internal readonly JArray Cooldowns = new JArray();
+            internal LillendDazeRoundTicks32(UnitEntityData actor,
+                Kingmaker.Controllers.Brain.Blueprints.BlueprintAiAction action)
+            { _actor = actor; _action = action; }
+            internal void TickExact(UnitEntityData unit)
+            {
+                if (!ReferenceEquals(unit, _actor) || unit.Destroyed || !unit.IsInGame) return;
+                if (_frame == Time.frameCount) throw new InvalidOperationException("Duplicate owned Daze round tick.");
+                _frame = Time.frameCount;
+                if (!base.ShouldTickOnUnit(unit)) return;
+                int before = unit.CombatState.AIData.GetCooldown(_action);
+                base.TickOnUnit(unit); TickCount++;
+                int after = unit.CombatState.AIData.GetCooldown(_action);
+                if (before != _lastCooldown || after != before) Cooldowns.Add(new JObject {
+                    ["before"] = before, ["after"] = after, ["frame"] = Time.frameCount,
+                    ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds });
+                _lastCooldown = after;
+            }
+        }
         // Existing owned target, AI and command observers. Pre-spends establish
         // choices; rule probes establish modifiers, neither is cast-cost proof.
         private IEnumerable<int> ReviewLullaby32(ExpandedSummoningCorrectionFixture fixture)
@@ -290,12 +324,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["cl"] = parameters.CasterLevel, ["dc"] = parameters.DC },
                 "The affected native Daze cantrip remains available with no leveled slots; Lullaby refuses when Sleep is exhausted.");
             if (!ready) throw new InvalidOperationException("Daze cantrip preconditions failed.");
+            if (_lillendDazeRoundTicks32 != null) throw new InvalidOperationException("Daze round ownership already active.");
             var starts = new Lillend32CommandStarts { Owner = owner };
             var events = new Astral31DispelEvents { Owner = owner }; events.Targets.Add(target);
             var commands = new HashSet<UnitCommand>(); var costs = new JArray();
             EventBus.Subscribe(starts); EventBus.Subscribe(events);
             try
             {
+                var ai = owner.Blueprint.Brain.Actions.OfType<Kingmaker.Controllers.Brain.Blueprints.BlueprintAiCastSpell>()
+                    .Single(value => ReferenceEquals(value.Ability, ability));
+                _lillendDazeRoundTicks32 = new LillendDazeRoundTicks32(owner, ai);
                 Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
                 using (var economy = new FirearmReviewCosts(owner, costs))
                 {
@@ -304,6 +342,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool immuneAfterDaze = false, immunityExpired = false, nativeProbeRan = false, nativeProbeBlocked = false, siblingRefused = false;
                     Buff firstEffect = null, firstImmunity = null;
                     double firstEffectSeconds = 0, firstImmunitySeconds = 0;
+                    double immunityEnd = -1, immunityLastPresent = -1, immunityFirstAbsent = -1;
                     var immunities = new HashSet<Buff>();
                     var immunityRows = new JArray();
                     JObject postDazeImmunity = null;
@@ -319,7 +358,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (firstEffect == null && effect != null) { firstEffect = effect; firstEffectSeconds = effect.TimeLeft.TotalSeconds; }
                         if (marker != null && immunities.Add(marker))
                         {
-                            if (firstImmunity == null) { firstImmunity = marker; firstImmunitySeconds = marker.TimeLeft.TotalSeconds; }
+                            if (firstImmunity == null) { firstImmunity = marker; firstImmunitySeconds = marker.TimeLeft.TotalSeconds;
+                                immunityEnd = marker.EndTime.TotalSeconds; }
                             immunityRows.Add(new JObject { ["endGameSeconds"] = marker.EndTime.TotalSeconds,
                                 ["observedGameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                                 ["remainingSeconds"] = marker.TimeLeft.TotalSeconds, ["source"] = marker.Context?.MaybeCaster?.UniqueId });
@@ -348,8 +388,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 if (attempted != null) attempted.Remove();
                             }
                         }
-                        if (firstImmunity != null && !target.Buffs.Enumerable.Contains(firstImmunity) &&
-                            Game.Instance.Player.GameTime >= firstImmunity.EndTime) immunityExpired = true;
+                        if (firstImmunity != null)
+                        {
+                            double now = Game.Instance.Player.GameTime.TotalSeconds;
+                            if (target.Buffs.Enumerable.Contains(firstImmunity)) immunityLastPresent = now;
+                            else if (immunityFirstAbsent < 0) immunityFirstAbsent = now;
+                            // Absence long after an early removal is not expiry
+                            // evidence. Bracket this exact marker's original
+                            // deadline with live presence and its first absence.
+                            immunityExpired = immunityLastPresent >= immunityEnd - 1 && immunityLastPresent < immunityEnd &&
+                                immunityFirstAbsent >= immunityEnd && immunityFirstAbsent <= immunityEnd + 1;
+                        }
                         if (immunities.Count >= 2 && finished >= 2 && target.Descriptor.State.HasCondition(UnitCondition.Dazed) || finished >= 4) break;
                         // Native TickBrain owns NextCommandTime and each
                         // command's CanInterrupt decision. Repeating melee can
@@ -374,6 +423,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             !value.TargetIsImmune && !value.IsSpellResisted) &&
                         target.Descriptor.State.HasCondition(UnitCondition.Dazed) && refusedWhileDazed && eligibility.Score(context) == 0 &&
                         immunities.Count == 2 && immuneAfterDaze && immunityExpired && nativeProbeRan && nativeProbeBlocked && siblingRefused &&
+                        _lillendDazeRoundTicks32.Cooldowns.OfType<JObject>().Any(value => (int)value["before"] == 1 && (int)value["after"] == 0) &&
                         firstEffectSeconds > 4 && firstEffectSeconds <= 6.1 && firstImmunitySeconds > 58 && firstImmunitySeconds <= 60.1 &&
                         Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).SequenceEqual(ownSlots) &&
                         Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).SequenceEqual(siblingSlots) &&
@@ -390,6 +440,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["immunityInstances"] = immunityRows, ["immuneAfterDaze"] = immuneAfterDaze,
                         ["postDazeImmunity"] = postDazeImmunity,
                         ["naturalImmunityExpiry"] = immunityExpired, ["firstDazeSeconds"] = firstEffectSeconds,
+                        ["immunityOriginalEnd"] = immunityEnd, ["immunityLastPresent"] = immunityLastPresent,
+                        ["immunityFirstAbsent"] = immunityFirstAbsent,
+                        ["nativeRoundTicks"] = _lillendDazeRoundTicks32.TickCount,
+                        ["nativeAiCooldowns"] = _lillendDazeRoundTicks32.Cooldowns,
                         ["firstImmunitySeconds"] = firstImmunitySeconds,
                         ["siblingPrivateDazeRefused"] = siblingRefused, ["separateNativeBuffProbeBlocked"] = nativeProbeBlocked,
                         ["nativeBuffApplicationProbes"] = nativeProbeRan ? 1 : 0,
@@ -403,6 +457,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
+                _lillendDazeRoundTicks32 = null;
                 Sprint28SetBrainActivePreservingActions(owner, false);
                 EventBus.Unsubscribe(events); EventBus.Unsubscribe(starts);
             }

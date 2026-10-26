@@ -45,6 +45,9 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + ".Immunity.Description", "Immune to Daze for one minute after being affected."), spell.Icon);
             var immune = ScriptableObject.CreateInstance<ContextActionApplyBuff>();
             immune.Buff = immunity; immune.IsNotDispelable = true; immune.IsFromSpell = false;
+            // Native ContextActionApplyBuff defaults AsChild=true. This marker
+            // must outlive the one-round condition that creates it.
+            immune.AsChild = false;
             immune.DurationValue = new ContextDurationValue { Rate = DurationRate.Minutes, BonusValue = Simple(1),
                 DiceCountValue = Simple(0), DiceType = Kingmaker.RuleSystem.DiceType.Zero };
             var activation = effect.GetComponents<AddFactContextActions>().Single();

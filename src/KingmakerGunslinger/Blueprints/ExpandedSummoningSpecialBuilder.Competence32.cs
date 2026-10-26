@@ -30,7 +30,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(recipient,
                 LocalizationService.Create(Lillend32Prefix + "CompetenceRecipient.Name", "Inspire Competence"),
                 LocalizationService.Create(Lillend32Prefix + "CompetenceRecipient.Description",
-                    "+3 competence to Perception while this ally can see and hear the performing lillend within 30 feet."), icon);
+                    "+3 competence to Perception while this ally can hear the performing lillend within 30 feet."), icon);
             var carrier = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CompetenceCarrier");
             CopyFields(courage.Buff, carrier); carrier.name = InternalName(Lillend32Prefix + "CompetenceCarrier");
             BlueprintUnitFactAccess.Resolve().Configure(carrier,
@@ -49,7 +49,7 @@ namespace KingmakerGunslinger.Blueprints
             carrier.ComponentsArray = new BlueprintComponent[] { state, emanation };
             var toggle = Require<BlueprintActivatableAbility>(bySymbol, Lillend32Prefix + "Competence");
             CopyFields(courage, toggle); toggle.name = InternalName(Lillend32Prefix + "Competence"); toggle.Buff = carrier;
-            toggle.DeactivateIfCombatEnded = false;
+            toggle.OnlyInCombat = false; toggle.DeactivateIfCombatEnded = false;
             toggle.ComponentsArray = courage.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(toggle,
                 LocalizationService.Create(Lillend32Prefix + "Competence.Name", "Inspire Competence"),

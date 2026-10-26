@@ -61,9 +61,14 @@ namespace KingmakerGunslinger.Summoning
                 !target.Descriptor.State.HasCondition(UnitCondition.Sleeping) && !target.IsInCombat &&
                 Game.Instance?.Player != null && Game.Instance.Player.Party.Contains(target) &&
                 !actor.IsEnemy(target) && !target.IsEnemy(actor) &&
-                actor.DistanceTo(target) <= new Kingmaker.Utility.Feet(30).Meters &&
-                LillendPerformanceSight32.Sees(actor, target, 30) && LillendPerformanceSight32.Sees(target, actor, 30);
+                actor.DistanceTo(target) <= new Kingmaker.Utility.Feet(30).Meters;
         }
+        // Visible initial choices are bounded AI policy. Competence itself is
+        // audible only: becoming blind or concealed must not end an already
+        // selected ally's bonus. Use the native performance range mapping;
+        // this engine exposes no separate hearing/deafness state.
+        internal static bool Selectable(UnitEntityData actor, UnitEntityData target) =>
+            Eligible(actor, target) && LillendPerformanceSight32.Sees(actor, target, 30);
         internal bool CanStart(UnitActivateAbility command)
         {
             var actor = Owner?.Unit;
@@ -99,7 +104,7 @@ namespace KingmakerGunslinger.Summoning
             }
             if (!toggle.IsAvailable || !actor.Commands.Empty ||
                 Owner.ActivatableAbilities.Enumerable.Any(value => value.IsOn || value.IsRunning)) return;
-            var target = Game.Instance.Player.Party.Where(value => Eligible(actor, value) &&
+            var target = Game.Instance.Player.Party.Where(value => Selectable(actor, value) &&
                 !value.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, Recipient)))
                 .OrderBy(value => actor.DistanceTo(value)).ThenBy(value => value.UniqueId, StringComparer.Ordinal).FirstOrDefault();
             if (target == null) return;
@@ -128,8 +133,7 @@ namespace KingmakerGunslinger.Summoning
         [NonSerialized] private bool _ready;
         public override void OnFactActivate()
         {
-            var dispatcher = Owner.Progression.Features.Enumerable
-                .SelectMany(value => value.SelectComponents<LillendNoncombat32>()).SingleOrDefault();
+            var dispatcher = Owner.Unit.Logic.SelectFactComponents<LillendNoncombat32>().SingleOrDefault();
             _ready = dispatcher != null && dispatcher.HasPendingSelection;
             _recipientId = dispatcher?.TakeSelection();
         }
