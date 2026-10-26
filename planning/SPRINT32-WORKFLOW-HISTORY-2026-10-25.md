@@ -1689,3 +1689,86 @@ Full retained-ZIP byte matching/path/ownership/idle checks; unique archives/PDBs
 raw failures/receipts/saves/backups retained. Exact protectedComparePASS967/118/18/
 83/tasks0/Steam1 under sprint32-bardic-inventory-storage. Fixed local selectors and
 pre-inventory-builds/native67-cleanup dryrun/result receipts retained.
+
+
+## 2026-10-26 14:57 UTC - candidate59 / native68
+
+Source `fa5614e00eb8ef239d48437134805ad240b5d8c3`, build59 complete
+14:34:52.6033203-14:39:07.5599101UTC (254.9565898s): wrapper checks,
+557selected/2754registered, exact-reference production and strict package PASS.
+Development only; no release reservation or final qualification.
+ZIP `081ce4600edcd7fbd417355f5c00d5ab18c0fec93e1bf923e648474c23dcaec9`;
+DLL `156c476da396dce365d78bea970a33b3c43f5717342de6a774b5b5202ead516f`;
+MVID `87e5dad9-e56d-44bf-a34f-a717472ece67`;
+SourceState `89af6c3eb16e457561b2dd796c917ab9eb36d835f6d7bacb71253ddafdfc6517`.
+Generated14:39:06.1274687Z; free3220811776->3075334144B.
+Package directory `artifacts/development-candidates/sprint32-lillend-support/fa5614e00eb8/`.
+
+Native68 guarded provider phase `lillend-bardic-suggestion`: **15PASS/1FAIL**.
+Run `20261026T1448424930031Z-ca8dece03ad74632865f0685e245aaae`;
+raw `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1448424730682Z-disposable-expanded-summoning-sprint32-native-review`.
+Result SHA `5db079592bbee3c8572175c5adcf38d42adb8136b5f34004aadf0b81e4e2df52`;
+original Unity SHA `1b6c1151e9a5afde7505d1475c12e8d8d37080369a370d34317bb6b9b46113ff`.
+Native14:48:55.7774308-14:51:48.4027124UTC/172621ms;
+wrapper14:46:08.9881210-14:52:01.5902901UTC/352.6021691s.
+Actual native saved bardic cast DC17/CL7 and SR100 refusal each complete one
+ordinary Standard command, retain exact own Fascinate/no hostile acquisition,
+keep L1/L2/L3 slots5/4/2 and sibling20-round pool, spend only observed native
+performance upkeep, and deliver one global event/aggro callback per cast.
+Patch guard reports both native targets unpatched. Sibling private Hold available,
+refuses the exact temporarily granted discovery, recovers after removal.
+After these verdicts, the ordinary Invisibility fixture application loses a
+retention predicate before successful-effect observation. The original exception
+does not identify the failed predicate. Successful effect, invisibility removal,
+active-effect refusal and ordinary-book negative remain unverified. Bounded
+installed stealth-contract investigation/fixture correction required; no unchanged retry.
+No supplied bardic cast, dispatcher round, roll or memory contributes to positives.
+
+Transaction `compat-20261026T144610Z-f589d7a78f86` Restored/verified
+14:52:01.2785138UTC. Capture completed before dispatch. Protected Compare PASS:
+967Mods/118saves/18references/83settings/tasks0/one unchanged Steam.
+Local originals/intake/helper `artifacts/sprint32-bardic-fa5614e0/`.
+No owned live transaction/game/task. Counts59attempts/48validated/68native.
+Prior failures and v167 NOT_RUN gaps unchanged. No owner decision pending.
+
+
+## 2026-10-26 - bounded native68 fixture correction and independent review
+
+Installed IL `artifacts/sprint32-intake/bardic-stealth32-il.txt` confirms ordinary
+Invisibility marks Invisible immediately and subsequently enters native stealth.
+The calm target is deliberately outside acquisition LOS; SeeInvisibility alone
+does not establish spotting there. This strongly explains the failure, but68's
+receipt lacks the failed conjunct and is not retroactively reclassified as PASS.
+Independent reviewer `sprint32_workflow_review` read actual source/native evidence
+and the concrete correction: apply disclosed native Invisibility synchronously
+at only the exact natural bardic effect boundary, checking own Fascinate before/
+after. Void hooks always allow original handling; caught observer errors fail
+qualification without native EventBus swallowing a skipped original handler.
+Retain exact buff and require synchronous native disposal. Observe native stealth
+callback separately, without claiming entered-stealth exit/sustained invisible
+performance. Hook/fact cleanup remains scoped. No product change/new subsystem.
+Reviewer found no dispatch blocker; requested capturedPresent/ownerMemoryAtStart
+in the detailed failed-retention row, added. First compile missing BlueprintAbility
+namespace retained as `focused-bardic-effect-invisibility.log`; corrected focused
+production24.5s/18tests0.9s PASS in `focused-bardic-effect-invisibility-corrected.log`.
+The final diagnostic-field additions will be compiled in the candidate gate.
+
+Storage15:04UTC: existing byte-verifying cleanup route selected seven exact
+v160 builds from prior closed/restored transactions, clean frozen s26 worktree
+HEAD e7876252ddf7dcaba4e7559534c06269d64bb750. First dry run refused historical
+packagePath versus copied-receipt location; no deletion. Corrected selection
+uses the existing legacy adjacent-retained-ZIP convention with all exact hashes,
+compile/source tuples, resolved-path/reparse and closed-transaction guards.
+Fourteen payload/DLL duplicates249,007,902B removed; planSHA
+`96a6afa04936f543e111684e24d7e68b37f35f66f76800bf5777503dfcf974db`.
+Closed native68 package extraction99,588,653B removed after complete file/hash
+comparison to retained candidate; planSHA
+`3985065281ca2cbec4bdf65a2c4aecf740b4b30488ff8ebddc668c4f5fc74b55`.
+Free2,854,514,688->3,207,180,288B; protected Capture/Compare PASS in
+`artifacts/sprint32-bardic-effect-storage/`. Exact selection/scripts/dry runs/
+results under `artifacts/sprint32-intake/*bardic-v160*` and `*native68*`.
+Unique ZIPs/PDBs/raw evidence/receipts/saves/backups and source trees retained.
+No DATA or machine-wide cleanup. The practical1.1GBpeak+2GBreserve is available
+before the next build. Approx14:52-15:05UTC observer/native-contract diagnosis,
+implementation/review~8min; duplicate verification/cleanup~4min; focusedcompile
+24.5s and18tests0.9s, records~1min. Overlap means exclusive totals unavailable.

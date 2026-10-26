@@ -5,18 +5,28 @@ reach, ability availability, independent books/pools and retained lawful player
 visibility memory are required before natural bardic execution. A disclosed
 high Will then SR100 tests a real saved attempt and a repeated resisted attempt;
 low Will permits a subsequent actual effect, with no supplied roll or bardic
-command. A native ordinary Invisibility buff on the source and native
-SeeInvisibility condition on the owned target isolate the retained offensive
-reaction. A read-only global/aggro observer checks notifications; the native
-empty aggro component belongs only to the disposable target blueprint.
-Same exact Fascinate, no reciprocal hostile memory/combat, actual Standard
-commands, native exploration cooldowns and upkeep-only pool debit are required.
-An additional native round checks active-effect refusal. After those verdicts,
-one explicitly supplied ordinary book cast is a negative integration probe:
-normal slots/actions, hostile memory and Fascinate interruption. It is not
-natural bardic evidence. The fixture inventories Harmony12 patches on the two
-bypassed native methods and refuses unreviewed patches. Finalizers restore the
-exact fixture components/conditions, native mode, party and owned actors.
+command. Native ordinary Invisibility is a disclosed
+reaction fixture, applied synchronously by an exact-cast prefix at the natural
+bardic effect boundary, after its original command starts. The target has native
+SeeInvisibility. Before/after application guards require the same live own
+Fascinate and exact source/ability/target. Original offensive handling always
+runs; caught fixture errors fail the observation without skipping that handler.
+The same returned buff must be removed by the native offensive reaction, and
+read-only global/aggro/stealth probes must observe their real callbacks. This
+proves reaction delivery, not sustained invisible performance or an entered-
+stealth exit. Native automatic stealth entry makes the earlier multi-frame setup
+insufficient to isolate this reaction; native68 retains the unresolved failure.
+No spotting, memory, action or roll is supplied. The native empty aggro component
+belongs only to the disposable target blueprint. Same exact Fascinate, no
+reciprocal hostile memory/combat, actual Standard commands, native exploration
+cooldowns and upkeep-only pool debit are required. An additional native round
+checks active-effect refusal. After those verdicts, one explicitly supplied
+ordinary book cast is a negative integration probe: normal slots/actions,
+hostile memory and Fascinate interruption. It is not natural bardic evidence.
+The fixture inventories Harmony12 patches on the two bypassed native methods
+and refuses unreviewed patches. Exact retention failure predicates are recorded
+before cleanup. Finalizers restore scoped hooks, injected buffs, exact fixture
+components/conditions, native mode, party and owned actors.
 The idle sibling also receives a synchronous availability probe: private Hold
 is available, refuses after a temporary exact Infectious Charms fact grant, and
 recovers after finally removes that fact. No yield, spell command or roll occurs
