@@ -227,6 +227,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while (DateTime.UtcNow < deadline && siblings.Values.Any(actor =>
                     !actor.Descriptor.State.IsDead || !grantsGone(actor) || Sprints3031OwnedAreaCount(actor) != 0 || Sprints3031LiveSourceGrantCount(actor) != 0))
                 { Game.Instance.IsPaused = false; yield return 0; }
+                // Both deaths have already occurred. Retain this simultaneous
+                // state before any per-owner assertion stops the iterator;
+                // a new native corpse buff must be identified, not guessed or
+                // silently excluded from the existing strict predicate.
+                var deathBatch = sprint32 ? new JArray(siblings.Select(pair => new JObject {
+                    ["creature"] = pair.Key, ["actor"] = Sprints3031LifecycleState(pair.Value),
+                    ["sourceGrants"] = new JArray(Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed && unit.IsInState)
+                        .SelectMany(unit => unit.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, pair.Value))
+                            .Select(buff => new JObject { ["recipient"] = unit.UniqueId, ["selfRecipient"] = ReferenceEquals(unit, pair.Value),
+                                ["blueprint"] = buff.Blueprint.AssetGuid, ["name"] = buff.Blueprint.name,
+                                ["active"] = buff.Active, ["disposed"] = buff.IsDisposed, ["permanent"] = buff.IsPermanent,
+                                ["stayOnDeath"] = buff.Blueprint.StayOnDeath, ["secondsLeft"] = buff.TimeLeft.TotalSeconds,
+                                ["capturedBeforeDeath"] = boundGrants[pair.Value].Contains(buff) }))) })) : null;
                 foreach (string key in keys)
                 {
                     var actor = siblings[key];
@@ -237,6 +250,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         (capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active);
                     Sprint25Check("lifecycle-" + key + "-native-death", dead,
                         new JObject { ["creature"] = key, ["actor"] = Sprints3031LifecycleState(actor),
+                            ["simultaneousDeathState"] = deathBatch,
                             ["allEquipmentNonlootable"] = items[actor].All(item => !item.IsLootable),
                             ["capturedAreaAndGrantReferencesGone"] = grantsGone(actor),
                             ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead) : null,

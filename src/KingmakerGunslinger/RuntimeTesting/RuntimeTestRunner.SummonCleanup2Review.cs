@@ -2044,8 +2044,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (_summonCleanup2NarrativeStateRunId != _request?.RunId || !absent)
             {
                 row["snapshotReason"] = absent ? "first-closed-observation" : "refusal";
-                if (!IsSummonCleanup2Review || string.IsNullOrEmpty(_request.EvidenceDirectory))
-                    throw new InvalidOperationException("Owned Cleanup 2 evidence directory required for narrative-state admission.");
+                bool sprint32Input = IsSprint32Review && _request.ExitAfterCompletion &&
+                    ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(RuntimeTestRequestParser.Sprint32ReviewPhase(_request));
+                if ((!IsSummonCleanup2Review && !sprint32Input) || string.IsNullOrEmpty(_request.EvidenceDirectory))
+                    throw new InvalidOperationException("Exact owned native input evidence directory required for narrative-state admission.");
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,
                     "summon-cleanup2-narrative-state.json"), row.ToString(Formatting.Indented));
                 _summonCleanup2NarrativeStateRunId = _request.RunId;
