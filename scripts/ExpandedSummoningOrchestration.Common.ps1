@@ -735,3 +735,13 @@ function Compare-KmgCleanup2WorkingSaveRestoration {
         verified=(@($matches.Values | Where-Object {-not $_}).Count -eq 0);
         liveUsePermitted=$false;bytesReadOrWritten=$false;nativeHydrationProven=$false}
 }
+
+# Exact new creature scope over the existing guarded Working-save trio.
+function Test-KmgSprint32DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'fey-celestial' -or $Purpose -cne 'sprint32-lillend-support') {
+        throw 'Sprint32 development persistence permits only exact fey-celestial scope and sprint32-lillend-support purpose.'
+    }
+    return $true
+}
