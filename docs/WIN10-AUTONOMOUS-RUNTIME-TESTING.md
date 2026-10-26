@@ -107,6 +107,24 @@ not prove elapsed full-duration, dismissal or command cancellation. No actor,
 area, item or recipient grant is directly deleted to supply a verdict. The
 original six-creature lifecycle selection remains unchanged by default.
 
+Sprint32 `druid-input`, `wizard-input` and `sorcerer-input` are three fixed,
+fresh, save-free native desktop input selections. They reuse the existing exact
+Default-mode lease, manual-clock suspension, visible native spell popup/scroll,
+source-chain ownership, screenshots and all-book debit observer. Each disposable
+caster receives only its selected native class through the established level20
+helper; legal preparation/known-spell setup and Rest finish before input capture.
+Druid covers prepared single Satyr and converted single/d3/d4+1 Satyr; Wizard
+covers prepared single Lillend; Sorcerer covers known single/d3/d4+1 Lillend.
+The native row click and target handler issue the command; ordinary controllers
+must produce its actual cost delta, exact source slot/use debit, quantity and
+120-second CL20 duration. No manual command tick/Act, roll or debit supplies a
+verdict. An equivalent originally available preparation may be spent; an
+arbitrary raw slot position is not required. Every subcase requires exact unit
+reset before continuing. Original party resources/pins/selection and the exact
+mode stack/controllers restore under the existing ownership guards. Fixture
+disposal does not prove natural expiry or saved-character learning. Other
+Sprint32 phases do not acquire native Default or this UI capture authority.
+
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
 read-only mod-load audit of Satyr/Lillend candidates and required native control,
 bard/performance, spellbook, defense and weapon consumers. Empty parameters;

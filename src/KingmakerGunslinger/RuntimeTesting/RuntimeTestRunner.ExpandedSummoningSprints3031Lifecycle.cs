@@ -85,7 +85,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     courageRecipient.Commands.InterruptAll(true); courageRecipient.Commands.RemoveFinishedAndUpdateQueue();
                     var actor = owners["lillend-azata"];
                     PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
-                    PlaceExpandedSummoningUnit(siblings["lillend-azata"], fixture.Caster.Position + Vector3.forward * 40f);
+                    // OFF already prevents a second emitter. Keep this owned
+                    // sibling within the visible fixture rather than parking
+                    // it beyond fog/activation range before view readiness.
+                    PlaceExpandedSummoningUnit(siblings["lillend-azata"], fixture.Caster.Position + Vector3.left * 4f);
                     PlaceExpandedSummoningUnit(courageRecipient, actor.Position + Vector3.right);
                     foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipient, courageRecipients, "expiry")) yield return frame;
                     var recipients = courageRecipients(actor);
@@ -124,6 +127,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                             boundGrants[pair[0]].Contains(capturedCourageRecipients[pair[0]]) &&
                             Sprints3031OwnedAreaCount(pair[1]) == 0 && courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead;
                     var row = new JObject { ["creature"] = key, ["owners"] = new JArray(pair.Select(Sprints3031LifecycleState)),
+                        ["readiness"] = new JArray(pair.Select(actor => new JObject {
+                            ["owner"] = actor.UniqueId, ["hasView"] = actor.View != null,
+                            ["inState"] = actor.IsInState, ["destroyed"] = actor.Destroyed,
+                            ["fadedIn"] = EntityFadedIn(actor), ["dissolve"] = DissolveAmount(actor),
+                            ["maximumIntactDissolve"] = MotionReviewIntactDissolve,
+                            ["finiteOwnedSummonMarkers"] = actor.Buffs.Enumerable.Count(buff =>
+                                ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
+                                ReferenceEquals(buff.Context?.MaybeCaster, fixture.Caster) && !buff.IsPermanent && buff.TimeLeft > TimeSpan.Zero),
+                            ["allItemsNonlootable"] = items[actor].All(item => !item.IsLootable),
+                            ["primaryWeaponPresent"] = actor.Body.PrimaryHand.MaybeWeapon != null,
+                            ["primaryWeaponOwned"] = ReferenceEquals(actor.Body.PrimaryHand.MaybeWeapon?.Owner, actor.Descriptor),
+                            ["primaryWeaponNonlootable"] = actor.Body.PrimaryHand.MaybeWeapon != null && !actor.Body.PrimaryHand.MaybeWeapon.IsLootable,
+                            ["privateResourceCount"] = resources[actor].Length,
+                            ["ownedAreas"] = Sprints3031OwnedAreaCount(actor),
+                            ["capturedExternalGrantInSourceSet"] = capturedCourageRecipients.ContainsKey(actor) &&
+                                boundGrants[actor].Contains(capturedCourageRecipients[actor]),
+                            ["skinnedRenderers"] = actor.View == null ? new JArray() : new JArray(
+                                actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(value => value != null && value.sharedMesh != null)
+                                .Select(value => new JObject { ["name"] = value.name, ["enabled"] = value.enabled,
+                                    ["active"] = value.gameObject.activeInHierarchy,
+                                    ["dissolve"] = value.sharedMaterial != null && value.sharedMaterial.HasProperty("_Dissolve")
+                                        ? (float?)value.sharedMaterial.GetFloat("_Dissolve") : null })) })),
+                        ["externalRecipientAlive"] = courageRecipient != null && courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead,
                         ["performanceSetup"] = key == "lillend-azata" ? "One owned native activation command in an isolated combat; exact CourageRecipient captured on surviving owned ally. Sibling remains OFF until the death case. No AI selection claim." : null,
                         ["externalRecipient"] = key == "lillend-azata" ? courageRecipient.UniqueId : null,
                         ["privateObjects"] = new JArray(pair.Select(actor => resources[actor].Length)),
