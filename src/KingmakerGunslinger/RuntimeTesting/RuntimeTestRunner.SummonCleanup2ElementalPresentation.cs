@@ -116,7 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["exactReview"]=runner._request.ExitAfterCompletion && (runner.IsSummonCleanup2Review ||
                         (runner.IsSprint32Review && runner._request.Parameters?.Count == 1 &&
                         RuntimeTestRequestParser.Sprint32ReviewPhase(runner._request) == purpose &&
-                        ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(purpose))),
+                        ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase(purpose))),
                     ["ownedFixture"]=fixture?.Caster!=null && fixture.Caster.Blueprint==fixture.CasterBlueprint &&
                         !fixture.UnitsBefore.Any(value=>ReferenceEquals(value,fixture.Caster)),
                     ["saveFree"]=runner._workingSaveSmoke==null || !runner._workingSaveSmoke.WriteObserved,

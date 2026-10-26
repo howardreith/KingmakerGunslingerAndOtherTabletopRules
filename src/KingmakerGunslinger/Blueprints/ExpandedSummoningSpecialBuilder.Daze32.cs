@@ -64,6 +64,9 @@ namespace KingmakerGunslinger.Blueprints
             var refuse = ScriptableObject.CreateInstance<AbilityTargetHasFact>();
             refuse.Inverted = true; refuse.CheckedFacts = new BlueprintUnitFact[] { immunity };
             spell.ComponentsArray = spell.ComponentsArray.Concat(new BlueprintComponent[] { refuse }).ToArray();
+            // CopyFields also copies native target-checker caches. Rebuild
+            // them after adding this private immunity restriction.
+            AlternateSummoningAdapterBuilder.ResetComponentCaches(spell);
             BlueprintUnitFactAccess.Resolve().Configure(spell,
                 LocalizationService.Create(symbol + ".Name", "Daze"),
                 LocalizationService.Create(symbol + ".Description",

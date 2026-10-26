@@ -26,7 +26,7 @@ resources, ownership, cleanup, saved identities and accepted ordinary-map flight
   is the conditional adaptation; unrestricted tabletop instructions are not claimed.
 - **Approved Lullaby:** normal cast with printed10-foot burst, Will/SR,
   -5 Perception and -2 Will against sleep; immediately release concentration,
-  leaving the CL7 seven-round tail. No sustained concentration subsystem. Private spell/AI implemented; native proof pending.
+  leaving the CL7 seven-round tail. No sustained concentration subsystem. Native48 proves the RTWP cast, modifiers, refusals and original deadline; final qualification remains pending.
 - **Approved Lillend-only noncombat dispatcher:** bounded choices before acting
   for Fascinate (up to3 eligible targets), Inspire Competence and dependent bardic
   Suggestion. Preserve normal actions,20-round native performance pool, one
@@ -58,24 +58,23 @@ adaptation has no separate Hover fact or aerial maneuverability consumer.
 Source profiles: [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
 Printed utility omissions above are now explicitly owner-approved. Do not infer
-complete printed spell/feat/skill coverage from these adult stats. Lullaby is implemented with focused compilation PASS and native proof pending.
+complete printed spell/feat/skill coverage from these adult stats. Lullaby has focused compilation and native RTWP proof on the candidate below.
 Noncombat performances remain required implementation, not pending permission.
 
-Current validated development candidate is `01fe81f34e15b6da44599eadf9688dff9521213b`:
-ZIP `24d06206791de201456cf1470588d9637079b8d8abaf6a29276381d0907d3ade`;
-DLL `52f46d4fbf385122298cf3afa315e860457c4e9c42faaf9055d26c7d54f195df`;
-MVID `985b4b16-f7ae-4d85-a770-b15d0736de96`;
-SourceState `a15eedf04faebfe350848eca54caf2a160483c768ba6e3bc9a5d456af5d3df6c`.
-Path `artifacts/development-candidates/sprint32-lillend-support/01fe81f34e15/`.
+Current validated development candidate is `8dd2f5485874a5674f032b871784b2ba64890210`:
+ZIP `4e5ee41e8a9eff42ffdc3aae1fd7f444950c4044626af746954f43a6ebe8f785`;
+DLL `ef252a55f4f361250448baf7cfb8ec04988b09f120ab6d4dd2fedfb35c2f0791`;
+MVID `1ceb419e-c3e7-4c9c-a162-6c0c07c66e5d`;
+SourceState `47ca82653a2bc3145d3cb4a8a2058ead407633189ece5fed75e12784bb5d4a85`.
+Path `artifacts/development-candidates/sprint32-lillend-support/8dd2f5485874/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification. This package
-is NOT_RUN natively: prelaunch review identified the Daze corrections below.
-On the preceding8a02948c package, native47 support/body assertions passed but Lullaby stopped at eligibility0:
-overall13PASS/2FAIL, no Lullaby cast. Native book-backed level-zero availability
-checks finite slots; correction uses the accepted native Spell/Cantrip fact seam
-for both Daze and Lullaby. Independent review confirms exact-owner/live bardCL/
-Charisma adapter and AI fact preference. Corrected source/fixture compilation
-passes; fresh cast proof is pending. Input evidence stays bound to4b509d67.
+package PASS. Development version0.0.167; no release qualification. Native48
+is FAIL17PASS/2FAIL: all existing support/body and Lullaby checks pass, while
+Daze repeat/refusal and aggregate execution fail. The original47 precondition
+failure and42 unexecuted package remain in history. Lullaby now uses the proven
+owned native Spell/Cantrip fact with live bardCL/Charisma and no slot debit.
+Input evidence stays bound to4b509d67. Current working edits are newer than this
+candidate and are not represented by its execution.
 
 Current source also corrects the newly identified Daze limitation: private native
 Spell/Cantrip/effect mapping grants60s nondispellable immunity on successful
@@ -85,10 +84,16 @@ printed one-round condition and Will/SR; other native spells are unchanged.
 The test waits for actual native immunity expiry before a second natural cast,
 checks remaining summon lifetime>=80s, and isolates grab with the existing owned
 maneuver-immunity fixture condition. Independent review found no product blocker;
-all9focused tests and corrected production compilation PASS. Native proof pending.
+all9focused tests and corrected production compilation PASS. Native48 observes
+one natural Standard/DC14/SR5 cast,5.96s Dazed and59.96s immunity with natural
+expiry. Cross-source refusal and a second cast are unverified. Review found a
+copied target-checker cache requiring the existing reset helper, plus a fixture
+gate that starved native reconsideration between repeating melee commands.
+Both corrections are in progress; original receipt remains FAIL.
 
 | Evidence | Result and dependency limit |
 |---|---|
+| Fresh8dd2f548 Lullaby slice | PASS natural Standard/CL7/DC14/Will/SR,42s tail,-5 Perception,-2 only Will vs Sleep; allied overlap, Sleep immunity and active-effect refusals; owner/sibling budgets unchanged. Target-buff-only original-deadline seam passes with clock restored. Overall native48 remains FAIL for Daze. `artifacts/sprint32-lillend-support-8dd2f548/` |
 | Reviewed reuse: bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
 | Reviewed reuse:51cf Lillend support | PASS13/13. Natural Courage, selfheal and actual party-ally heal18-to0; independent level3 slots2-to1-to0, Standard cost plus exact free first-round touch delivery; sibling untouched; offensive fallback and owned body cleanup. `artifacts/sprint32-lillend-support-51cf0e58/` |
 | Fresh4b509d67 native input | Wizard16/16, Sorcerer28/28, Druid31/31 PASS. Real visible menu/target input: prepared Lillend; spontaneous Lillend One/d3/d4+1; prepared Satyr plus converted One/d3/d4+1. Exact source slots/actions/legal quantities/120s/zero bonus and subcase reset/UI finalizers. No supplied acts or manual command ticks. `artifacts/sprint32-{wizard,sorcerer,druid}-input-4b509d67/` |
@@ -144,12 +149,12 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T042024Z-273c3e7938f1` restored/verified
-04:25:06.5746215UTC. Latest protected Compare PASS:
+Latest transaction `compat-20261026T050617Z-b03b9a66ba98` restored/verified
+05:13:06.1365956UTC. Latest protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build attempts/validated development packages/native launches:42/31/47.
+Build attempts/validated development packages/native launches:43/32/48.
 Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
 native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
 records10min, observer review/repair8min, approved-feature contract research10min,
@@ -167,10 +172,24 @@ Latest build42 took261.969s and was retained without native dispatch. For04:39-
 reclaimed127,303,638B at04:53:47.3116800UTC; free3,496,779,776B and protected
 ComparePASS. No owner wait or native launch in this interval.
 
-Next: package the reviewed cantrip correction and run Lullaby/repeated Daze
-within the existing standalone Lillend-support phase (expected10minutes,
-runtime600s ceiling), then implement the
-approved Lillend-only dispatcher and prove its uncertain native seams early.
+Latest build43 took322.869s; native48 wrapper410.741s including restoration.
+Closed47 extraction cleanup reclaimed99,387,310B with exact protectedComparePASS;
+prelaunch free3,192,594,432B. Post48 free2,962,231,296B is below the3.1GB working
+minimum: obtain verified duplicate headroom before the next build/staging.
+
+Next: finish the reviewed Daze correction and approved Competence dispatcher,
+compile and review the coherent batch, then run the exact support and new
+performance selections (expected10min each,600s runtime ceilings). The latter
+uses the existing native Default lease and real outside-combat round controller.
+Fascinate feasibility is narrowed to physical90ft sight beyond native acquisition
+range; no combat-delay behavior or arbitrary neutral targeting is authorized.
+Competence is implemented in the working diff: production compilation23s and
+6focused tests4.1sPASS. Independent review confirms the pending-command,
+recipient-loss and sight corrections and clears the bounded first native proof.
+Combat-entry cancellation and fresh-process persistence remain required; no
+native Competence result exists yet. For05:14-05:38 approximate implementation/
+fixture18min, read-only review/research8min, compilation2min, records/storage3min;
+activities overlap and are not additive. No owner waiting or new native launch.
 Batch coherent mechanics and existing fixture adaptations. Required remaining
 cases include Satyr Sleep/control, Lillend control/constrict, gameplay presentation,
 cold ON/OFF persistence and directly affected integration. Reuse input evidence

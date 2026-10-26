@@ -306,6 +306,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     double firstEffectSeconds = 0, firstImmunitySeconds = 0;
                     var immunities = new HashSet<Buff>();
                     var immunityRows = new JArray();
+                    JObject postDazeImmunity = null;
                     while (DateTime.UtcNow < deadline && frames++ < 10000)
                     {
                         foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
@@ -326,9 +327,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (target.Descriptor.State.HasCondition(UnitCondition.Dazed) && eligibility.Score(context) == 0)
                             refusedWhileDazed = true;
                         if (firstImmunity != null && target.Buffs.Enumerable.Contains(firstImmunity) &&
-                            !target.Descriptor.State.HasCondition(UnitCondition.Dazed) && eligibility.Score(context) == 0 && !data.CanTarget(new TargetWrapper(target)))
+                            !target.Descriptor.State.HasCondition(UnitCondition.Dazed))
                         {
-                            immuneAfterDaze = true;
+                            float immuneScore = eligibility.Score(context);
+                            bool canTarget = data.CanTarget(new TargetWrapper(target));
+                            immuneAfterDaze |= immuneScore == 0 && !canTarget;
+                            if (postDazeImmunity == null) postDazeImmunity = new JObject {
+                                ["markerRemainingSeconds"] = firstImmunity.TimeLeft.TotalSeconds,
+                                ["dazed"] = false, ["score"] = immuneScore, ["canTarget"] = canTarget };
                             if (!nativeProbeRan)
                             {
                                 nativeProbeRan = true;
@@ -345,7 +351,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (firstImmunity != null && !target.Buffs.Enumerable.Contains(firstImmunity) &&
                             Game.Instance.Player.GameTime >= firstImmunity.EndTime) immunityExpired = true;
                         if (immunities.Count >= 2 && finished >= 2 && target.Descriptor.State.HasCondition(UnitCondition.Dazed) || finished >= 4) break;
-                        if (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished))
+                        // Native TickBrain owns NextCommandTime and each
+                        // command's CanInterrupt decision. Repeating melee can
+                        // have an unstarted interruptible command in its queue;
+                        // requiring an empty queue starves lawful reconsideration.
+                        if (frames == 1 || frames % 60 == 0)
                             Sprint24TickExactAi(owner);
                         Game.Instance.IsPaused = false; yield return 0;
                     }
@@ -378,6 +388,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["activeEffectScore"] = eligibility.Score(context),
                         ["refusedWhileDazed"] = refusedWhileDazed,
                         ["immunityInstances"] = immunityRows, ["immuneAfterDaze"] = immuneAfterDaze,
+                        ["postDazeImmunity"] = postDazeImmunity,
                         ["naturalImmunityExpiry"] = immunityExpired, ["firstDazeSeconds"] = firstEffectSeconds,
                         ["firstImmunitySeconds"] = firstImmunitySeconds,
                         ["siblingPrivateDazeRefused"] = siblingRefused, ["separateNativeBuffProbeBlocked"] = nativeProbeBlocked,
