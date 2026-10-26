@@ -222,6 +222,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] GiantHumanoidKeys
         { get { return new[] { GiantHumanoidRulesPolicy.Hill,
             GiantHumanoidRulesPolicy.Stone, GiantHumanoidRulesPolicy.Fire }; } }
+        internal const string FeyCelestialScope = "fey-celestial";
+        // Two of each: identities and receipts remain keyed by actual UnitId.
+        internal static string[] FeyCelestialKeys
+        { get { return new[] { "satyr", "lillend-azata", "satyr", "lillend-azata" }; } }
         internal const string OutsiderCelestialScope = "outsider-celestial";
         internal static string[] OutsiderCelestialKeys
         { get { return new[] { "lemure", "dretch", "hound-archon", "lantern-archon", "astral-deva", "trumpet-archon" }; } }
@@ -265,7 +269,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 case "astral-deva": return 3; // NeutralGood
                 case "lantern-archon":
                 case "bralani-azata":
-                case "ghaele-azata": return 3;
+                case "ghaele-azata":
+                case "lillend-azata": return 3;
                 case "hell-hound":
                 case "erinyes-devil":
                 case "shadow-demon":
@@ -296,6 +301,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantHumanoidsScope ? GiantHumanoidKeys :
                 scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
                 scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
+                scope == FeyCelestialScope ? FeyCelestialKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
             if (!permitted.Contains(key, StringComparer.Ordinal))
@@ -325,6 +331,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantHumanoidsScope ? GiantHumanoidKeys :
                 scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
                 scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
+                scope == FeyCelestialScope ? FeyCelestialKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
@@ -346,7 +353,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
                 scope == GiantBodiesScope || scope == MagicalBeastsScope ||
                 scope == GriffonScope || scope == GiantHumanoidsScope ||
-                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope) &&
+                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

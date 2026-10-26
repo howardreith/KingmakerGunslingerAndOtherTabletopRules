@@ -4,7 +4,7 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
-    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial')]
+    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial','fey-celestial')]
     [string]$PersistenceScope='ankylosaurus',
     [ValidateSet('sprints30-31-dispel-ui')][string]$ReviewCase,
     [string]$DevelopmentPurpose,
@@ -41,6 +41,8 @@ $development=if($fixedDispelUi) {
         [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
         $true
     } else { throw 'Installed-stack fixed UI development requires its exact S30/S31 purpose; no transaction entered.' }
+} elseif($PersistenceScope -ceq 'fey-celestial') {
+    Test-KmgSprint32DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } elseif($PersistenceScope -ceq 'outsider-celestial') {
     Test-KmgSprints3031DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } elseif($PersistenceScope -ceq 'giant-humanoids-ii') {
@@ -62,7 +64,7 @@ if($development) {
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runPrefix=if($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'outsider-celestial'){'sprints30-31-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runPrefix=if($PersistenceScope -ceq 'fey-celestial'){'sprint32-stack'}elseif($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'outsider-celestial'){'sprints30-31-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
 $runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {
