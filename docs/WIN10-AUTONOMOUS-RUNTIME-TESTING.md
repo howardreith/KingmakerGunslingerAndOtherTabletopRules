@@ -1,3 +1,21 @@
+Sprint32's fixed `lillend-fascinate` phase is an absent-provider early proof in
+the existing save-free Oleg/Default fixture, expected10min/runtime600s. It uses
+the proven private player-hostile faction, two summons and only the exact cloned
+profile anchor/caster. The lane survey may use physical performance sight instead
+of acquisition-range LOS; every other caller retains the existing default. The
+owned anchor is placed on a surveyed walkable point to provide natural player
+visibility. Actual vision radii, distances, shared summon/caster group and empty
+reciprocal hostile memory are required. Seven native game seconds must remain
+calm without memory edits or combat suppression. Normal Move Fascinate must spend
+native rounds, produce a real Will/noSR effect and -4Perception, with independent
+books/pools. Explicit cancellation checks immediate owned effect/helper cleanup;
+then a disclosed target Dazed-immunity fixture must induce natural Competence
+fallback. No action/effect/roll/round is supplied. Positions, party, conditions,
+stats, owned units and the exact Default lease are restored in finalizers. This
+does not prove the three-target cap,24h resistance, threats, bardic Suggestion or
+cold persistence; those remain finite required cases. The proposed bardic memory
+exception is awaiting owner decision and is not part of this phase.
+
 Sprint32's fixed `lillend-cantrips` phase reuses the Lullaby/Daze portion of the
 existing support fixture, skipping unrelated healing/body replay. It retains
 the exact save-free phase/automatic-exit guards and gains no Default/input

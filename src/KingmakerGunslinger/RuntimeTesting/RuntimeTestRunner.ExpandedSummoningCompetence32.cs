@@ -176,8 +176,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Descriptor.State.RemoveCondition(Kingmaker.UnitLogic.UnitCondition.Blindness);
                     recipientBlindnessAdded = false;
                     PlaceExpandedSummoningUnit(fixture.Caster, owner.Position + (fixture.Caster.Position - owner.Position).normalized * 12f);
-                    limit = DateTime.UtcNow.AddSeconds(8);
+                    // Native WithUnitCommand Stop(false) retires its carrier at
+                    // TimeToNextRound. The recipient may already have left the
+                    // area; wait for every asserted terminal state, not just it.
+                    limit = DateTime.UtcNow.AddSeconds(16);
                     while (DateTime.UtcNow < limit && (toggle.IsOn || toggle.IsRunning ||
+                        owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, carrier)) ||
                         fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, recipient)))) yield return 0;
                     bool stopped = !toggle.IsOn && !toggle.IsRunning &&
                         !owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, carrier)) &&
@@ -185,7 +189,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture.Caster.Stats.SkillPerception.ModifiedValue == casterPerception &&
                         sibling.Descriptor.Resources.GetResourceAmount(resource) == 20;
                     Sprint25Check("competence-recipient-loss", stopped, new JObject {
-                        ["distance"] = owner.DistanceTo(fixture.Caster), ["running"] = toggle.IsRunning,
+                        ["distance"] = owner.DistanceTo(fixture.Caster), ["on"] = toggle.IsOn, ["running"] = toggle.IsRunning,
+                        ["carriers"] = owner.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, carrier)),
+                        ["recipientBuffs"] = fixture.Caster.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, recipient)),
                         ["perception"] = fixture.Caster.Stats.SkillPerception.ModifiedValue,
                         ["ownPool"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                         ["siblingPool"] = sibling.Descriptor.Resources.GetResourceAmount(resource) },

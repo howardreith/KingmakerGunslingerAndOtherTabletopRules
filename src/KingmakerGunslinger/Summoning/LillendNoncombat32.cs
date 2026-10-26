@@ -48,8 +48,14 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintActivatableAbility Competence;
         public BlueprintBuff Recipient;
+        public BlueprintActivatableAbility Fascinate;
+        public BlueprintBuff Fascinated;
+        public BlueprintBuff Resistance;
+        public BlueprintAbility BardicSuggestion;
         [NonSerialized] private UnitActivateAbility _pending;
         [NonSerialized] private string _selected;
+        [NonSerialized] private string[] _fascinateSelected;
+        [NonSerialized] private UnitUseAbility _suggestion;
 
         internal static LillendNoncombat32 Find(UnitEntityData unit)
         {
@@ -65,6 +71,11 @@ namespace KingmakerGunslinger.Summoning
 
         private ActivatableAbility Toggle => Owner?.ActivatableAbilities.Enumerable.SingleOrDefault(
             value => ReferenceEquals(value.Blueprint, Competence));
+        private ActivatableAbility FascinateToggle => Owner?.ActivatableAbilities.Enumerable.SingleOrDefault(
+            value => ReferenceEquals(value.Blueprint, Fascinate));
+        private LillendFascinateState32 FascinateState => Owner?.Buffs.Enumerable
+            .Where(value => value.Active && ReferenceEquals(value.Blueprint, Fascinate?.Buff))
+            .SelectMany(value => value.SelectComponents<LillendFascinateState32>()).SingleOrDefault();
         internal static bool Eligible(UnitEntityData actor, UnitEntityData target)
         {
             return actor != null && target != null && !ReferenceEquals(actor, target) &&
@@ -84,8 +95,13 @@ namespace KingmakerGunslinger.Summoning
         internal bool CanStart(UnitActivateAbility command)
         {
             var actor = Owner?.Unit;
-            return ReferenceEquals(command, _pending) && actor != null && actor.IsBrainActive &&
-                !actor.IsInCombat && Fact != null && Fact.Active &&
+            if (!ReferenceEquals(command, _pending) || actor == null || !actor.IsBrainActive ||
+                actor.IsInCombat || Fact == null || !Fact.Active) return false;
+            if (ReferenceEquals(command.Ability.Blueprint, Fascinate))
+                return _fascinateSelected != null && _fascinateSelected.Length > 0 && _fascinateSelected.Length <= 3 &&
+                    Game.Instance.State.Units.All.Any(value => _fascinateSelected.Contains(value.UniqueId) &&
+                        LillendFascinateEligibility32.Selectable(actor, value, Fascinated, Resistance));
+            return ReferenceEquals(command.Ability.Blueprint, Competence) &&
                 Game.Instance.Player.Party.Any(value => value.UniqueId == _selected && Eligible(actor, value));
         }
         internal string TakeSelection()
@@ -96,6 +112,13 @@ namespace KingmakerGunslinger.Summoning
             return selected;
         }
         internal bool HasPendingSelection => _pending != null;
+        internal string[] TakeFascinateSelection()
+        {
+            if (_pending == null || !_pending.IsStarted || !ReferenceEquals(_pending.Executor, Owner.Unit) ||
+                !ReferenceEquals(_pending.Ability.Blueprint, Fascinate) || !CanStart(_pending)) return null;
+            var result = _fascinateSelected; _pending = null; _fascinateSelected = null;
+            return result;
+        }
         public void OnNewRound()
         {
             var actor = Owner?.Unit; var toggle = Toggle;
@@ -105,7 +128,45 @@ namespace KingmakerGunslinger.Summoning
             if (_pending != null)
             {
                 if (!_pending.IsFinished) return;
-                _pending = null; _selected = null;
+                _pending = null; _selected = null; _fascinateSelected = null;
+            }
+            if (_suggestion != null && !_suggestion.IsFinished) return;
+            _suggestion = null;
+            var fascination = FascinateToggle;
+            if (fascination != null && (fascination.IsOn || fascination.IsRunning))
+            {
+                var state = FascinateState;
+                if (state == null) return;
+                if (state.ShouldStop) { fascination.IsOn = false; return; }
+                if (!actor.Commands.Empty || !Sprint32Suggestion.Active || BardicSuggestion == null) return;
+                var fact = Owner.Abilities.GetAbility(BardicSuggestion);
+                if (fact == null) return;
+                var ability = new Kingmaker.UnitLogic.Abilities.AbilityData(fact);
+                if (!ability.IsAvailable) return;
+                var suggestionTarget = Game.Instance.State.Units.All.Where(value => state.Owns(value) &&
+                    ability.CanTarget(new Kingmaker.Utility.TargetWrapper(value)) &&
+                    actor.DistanceTo(value) <= ability.GetApproachDistance(value))
+                    .OrderBy(value => actor.DistanceTo(value)).ThenBy(value => value.UniqueId, StringComparer.Ordinal).FirstOrDefault();
+                if (suggestionTarget != null)
+                {
+                    _suggestion = new UnitUseAbility(ability, new Kingmaker.Utility.TargetWrapper(suggestionTarget));
+                    actor.Commands.Run(_suggestion);
+                }
+                return;
+            }
+            // Make a bounded choice before ending an existing performance.
+            // Never interrupt another command or another native toggle here.
+            var targets = fascination == null || !fascination.IsAvailable || !actor.Commands.Empty
+                ? Array.Empty<UnitEntityData>() : Game.Instance.State.Units.All.Where(value =>
+                    LillendFascinateEligibility32.Selectable(actor, value, Fascinated, Resistance))
+                    .OrderBy(value => actor.DistanceTo(value)).ThenBy(value => value.UniqueId, StringComparer.Ordinal).Take(3).ToArray();
+            if (targets.Length > 0 && !Owner.ActivatableAbilities.Enumerable.Any(value =>
+                !ReferenceEquals(value, toggle) && (value.IsOn || value.IsRunning)))
+            {
+                if (toggle.IsOn || toggle.IsRunning) toggle.IsOn = false;
+                _fascinateSelected = targets.Select(value => value.UniqueId).ToArray();
+                _pending = new UnitActivateAbility(fascination);
+                actor.Commands.Run(_pending); return;
             }
             if (toggle.IsOn || toggle.IsRunning)
             {
@@ -130,12 +191,25 @@ namespace KingmakerGunslinger.Summoning
             StopOwned();
         }
         public override void OnTurnOff() { StopOwned(); }
+        public override void OnFactDeactivate()
+        {
+            StopOwned();
+            // Source-specific resistance outlives a performance and ordinary
+            // area deactivation. Remove it only when this owned fact is lost.
+            if (Resistance == null || Game.Instance?.State?.Units == null) return;
+            foreach (var unit in Game.Instance.State.Units.All.ToArray())
+                foreach (var marker in unit.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, Resistance) &&
+                    ReferenceEquals(value.Context?.MaybeCaster, Owner.Unit)).ToArray()) marker.Remove();
+        }
         private void StopOwned()
         {
             if (_pending != null && !_pending.IsFinished) _pending.Interrupt(true);
-            _pending = null; _selected = null;
+            if (_suggestion != null && !_suggestion.IsFinished) _suggestion.Interrupt(true);
+            _pending = null; _selected = null; _fascinateSelected = null; _suggestion = null;
             var toggle = Toggle;
             if (toggle != null && (toggle.IsOn || toggle.IsRunning)) toggle.IsOn = false;
+            var fascination = FascinateToggle;
+            if (fascination != null && (fascination.IsOn || fascination.IsRunning)) fascination.IsOn = false;
         }
         public void HandleUnitLeaveCombat(UnitEntityData unit) { }
     }
@@ -143,10 +217,11 @@ namespace KingmakerGunslinger.Summoning
     // Selection belongs to this exact native performance carrier. Loading
     // restores the same recipient; area reconstruction never makes a choice.
     [Serializable]
-    public sealed class LillendCompetenceState32 : BuffLogic
+    public sealed class LillendCompetenceState32 : BuffLogic, IActivatableAbilityWillStopHandler
     {
         public BlueprintBuff Recipient;
         [JsonProperty] private string _recipientId;
+        [JsonProperty] private bool _ended;
         [NonSerialized] private bool _ready;
         public override void OnFactActivate()
         {
@@ -159,7 +234,7 @@ namespace KingmakerGunslinger.Summoning
             base.PostLoad();
             _ready = true;
         }
-        internal bool Selected(UnitEntityData unit) => _ready && unit != null && unit.UniqueId == _recipientId;
+        internal bool Selected(UnitEntityData unit) => _ready && !_ended && unit != null && unit.UniqueId == _recipientId;
         internal bool ShouldStop => _ready && !Game.Instance.Player.Party.Any(unit =>
             Selected(unit) && LillendNoncombat32.Eligible(Owner.Unit, unit));
         internal void StopIfIneligible()
@@ -179,10 +254,15 @@ namespace KingmakerGunslinger.Summoning
         }
         public override void OnTurnOff()
         {
+            _ended = true;
             if (Game.Instance?.State?.Units == null) return;
             foreach (var unit in Game.Instance.State.Units.All.ToArray())
                 foreach (var grant in unit.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, Recipient) &&
                     ElementalNereidAuraState.IncludesContext(value.Context, Buff.Context)).ToArray()) grant.Remove();
+        }
+        public void HandleActivatableAbilityWillStop(ActivatableAbility ability)
+        {
+            if (ReferenceEquals(ability.Owner, Owner) && ReferenceEquals(ability.Blueprint.Buff, Buff.Blueprint)) OnTurnOff();
         }
     }
 

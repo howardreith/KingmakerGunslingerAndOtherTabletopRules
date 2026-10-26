@@ -147,8 +147,10 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintActivatableAbility Courage;
         public BlueprintActivatableAbility Competence;
+        public BlueprintActivatableAbility Fascinate;
         internal bool Matches(BlueprintActivatableAbility ability)
-        { return ReferenceEquals(ability, Courage) || Competence != null && ReferenceEquals(ability, Competence); }
+        { return ReferenceEquals(ability, Courage) || Competence != null && ReferenceEquals(ability, Competence) ||
+            Fascinate != null && ReferenceEquals(ability, Fascinate); }
         public void HandleUnitCommandDidStart(UnitCommand command)
         {
             var activate = command as UnitActivateAbility;
@@ -160,7 +162,7 @@ namespace KingmakerGunslinger.Summoning
                 !activate.Ability.IsAvailable || Fact == null || !Fact.Active) return;
             if (!Owner.Unit.Commands.Raw.Any(value => ReferenceEquals(value, activate)))
                 throw new InvalidOperationException("Lillend performance start has no exact queued native command.");
-            if (ReferenceEquals(activate.Ability.Blueprint, Competence) &&
+            if ((ReferenceEquals(activate.Ability.Blueprint, Competence) || ReferenceEquals(activate.Ability.Blueprint, Fascinate)) &&
                 LillendNoncombat32.Find(Owner.Unit)?.CanStart(activate) != true)
             { activate.Interrupt(true); return; }
             activate.Ability.IsOn = true;

@@ -2105,6 +2105,10 @@
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Daze32.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Competence32.cs" />
     <Compile Include="Summoning\LillendNoncombat32.cs" />
+    <Compile Include="Summoning\LillendFascination32.cs" />
+    <Compile Include="Summoning\LillendFascinated32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Fascinate32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningFascinate32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCompetence32.cs" />
     <Compile Include="Summoning\LillendLullaby32.cs" />
   </ItemGroup>
