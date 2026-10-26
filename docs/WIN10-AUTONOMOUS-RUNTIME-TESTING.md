@@ -1,3 +1,22 @@
+Sprint32's fixed `satyr-atwill` and `satyr-atwill-turn` phases extend the existing
+save-free Dialog control fixture, expected10min/runtime600s each. No Default,
+input or save admission is added. Native level-up gives three owned humanoid
+subjects two HD each, with Charm-only immunity, and an allied two-HD burst
+subject. One disclosed Fear pre-spend isolates natural Sleep. A separate five-HD
+humanoid isolates Charm Person; an owned five-HD Charm-immune hostile sentinel
+keeps combat available for cost observation. Native eligibility, sight, surveyed
+positions and mutual faction relations must pass before enabling the owner AI.
+Normal Standard/non-full-round cost, CL8/DC15, real saves, Sleep's shared four-HD
+budget/ally exclusion and unchanged independent resources are observed. Live
+controlled-target refusal is a policy observation, not a second-cast claim.
+Exact terminal buff references and deadlines are captured before native summon
+expiry; removal must precede their own deadlines and preserve the sibling.
+RTWP uses the existing exact-owner brain tick; turn mode uses native admission
+and zero fixture AI ticks. No roll, cast command, effect or victim cleanup
+supplies a passing verdict. Finalizers restore fixture stats/mode and remove
+only owned actors/facts after the result, including on failure. Cold persistence
+and presentation remain separate. This does not replay unrelated Fear cases.
+
 Sprint32's fixed `lillend-fascinate` phase is an absent-provider early proof in
 the existing save-free Oleg/Default fixture, expected10min/runtime600s. It uses
 the proven private player-hostile faction, two summons and only the exact cloned
