@@ -61,17 +61,20 @@ Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby is implemented with focused compilation PASS and native proof pending.
 Noncombat performances remain required implementation, not pending permission.
 
-Current validated development candidate is `4b509d67b811ed1b158d7f895920331e42ab1161`:
-ZIP `735aade490711869489642d676dcae24a365130e6cff9ac6c7642211f7c3b2db`;
-DLL `15b30d91b6b2b7e966ac660643356fed2c1bd28460ff9d0977c2a8ac1a9c4fc3`;
-MVID `ce8969d4-b262-4a77-8c49-9bafab41c608`;
-SourceState `551811cbe74d60e3d226e1cbd69b43252268e3daaedd46809db9ce2267f06ba4`.
-Path `artifacts/development-candidates/sprint32-lillend-support/4b509d67b811/`.
+Current validated development candidate is `8a02948cc1141f816db80a543c47cd30aef78880`:
+ZIP `50382bd6302a46a1fd96c0154ddb3512d9b4923af8b6253e5facd2ce445bc7a2`;
+DLL `4866d5eb1732c1c80c6cbd61b901a9f58ae655f8592efd7f3af115fa6a259bb4`;
+MVID `6427efa1-a246-46cb-bb88-e35bae10fda3`;
+SourceState `03ac7acdd44577507a75fea60e2ef6f55a4a669945c54707c53c1ff0e387b2f3`.
+Path `artifacts/development-candidates/sprint32-lillend-support/8a02948cc114/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-419-file package PASS. Development version0.0.167; no release qualification.
-Input observer and Satyr SLA corrections are compiled in that package. Its three
-native input paths passed; the new private Satyr SLA action assertions have not
-yet executed. Prior results retain their exact dependency limits.
+package PASS. Development version0.0.167; no release qualification.
+Native47 support/body assertions passed but Lullaby stopped at eligibility0:
+overall13PASS/2FAIL, no Lullaby cast. Native book-backed level-zero availability
+checks finite slots; correction uses the accepted native Spell/Cantrip fact seam
+for both Daze and Lullaby. Independent review confirms exact-owner/live bardCL/
+Charisma adapter and AI fact preference. Corrected source/fixture compilation
+passes; fresh cast proof is pending. Input evidence stays bound to4b509d67.
 
 | Evidence | Result and dependency limit |
 |---|---|
@@ -130,12 +133,12 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T033944Z-f026c486da9e` restored/verified
-03:44:47.5069045UTC. All three4b509d67 protected Compare PASS:
+Latest transaction `compat-20261026T042024Z-273c3e7938f1` restored/verified
+04:25:06.5746215UTC. Latest protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build attempts/validated development packages/native launches:40/29/46.
+Build attempts/validated development packages/native launches:41/30/47.
 Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
 native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
 records10min, observer review/repair8min, approved-feature contract research10min,
@@ -148,8 +151,9 @@ cleanup reclaimed1,138,981,599B with protectedComparePASS. The five closed input
 Free3,821,506,560B immediately after cleanup;3,921,928,192B at04:05UTC.
 Unique packages/PDBs/raw evidence/receipts/backups/saves remain retained.
 
-Next: run the reviewed Lullaby addition within the existing standalone Lillend-
-support phase (expected10minutes, runtime600s ceiling), then implement the
+Next: package the reviewed cantrip correction and run Lullaby/repeated Daze
+within the existing standalone Lillend-support phase (expected10minutes,
+runtime600s ceiling), then implement the
 approved Lillend-only dispatcher and prove its uncertain native seams early.
 Batch coherent mechanics and existing fixture adaptations. Required remaining
 cases include Satyr Sleep/control, Lillend control/constrict, gameplay presentation,
