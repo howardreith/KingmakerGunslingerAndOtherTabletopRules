@@ -34,6 +34,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             UnitEntityData owner = null, sibling = null;
             BlueprintFeature resistanceFact = null;
+            bool addedManeuverImmunity = false;
             var target = fixture.Hostile;
             int oldWill = target.Stats.SaveWill.BaseValue;
             bool oldPause = Game.Instance.IsPaused;
@@ -77,6 +78,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
                 PlaceExpandedSummoningUnit(sibling, origin + Vector3.right * 2f);
                 target.Stats.SaveWill.BaseValue = -100;
+                // Daze refusal permits the ordinary melee fallback between
+                // cantrip casts. Isolate that legal choice from the separately
+                // required grab/constrict case: a successful grab disables
+                // the holder and would contaminate the repeated-cast probe.
+                if (target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers))
+                    throw new InvalidOperationException("Cantrip target already has maneuver immunity.");
+                target.Descriptor.State.AddCondition(UnitCondition.ImmuneToCombatManeuvers, null);
+                addedManeuverImmunity = true;
                 // A disclosed low native SR ensures the real cast visits the
                 // resistance seam without forcing a check result or a roll.
                 var resistance = ScriptableObject.CreateInstance<AddSpellResistance>();
@@ -125,6 +134,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["bookBackedAvailable"] = bookData.IsAvailable, ["levelZeroSlots"] = book.GetSpontaneousSlots(0),
                     ["ownSlots"] = new JArray(ownSlots), ["siblingSlots"] = new JArray(siblingSlots),
                     ["willBase"] = target.Stats.SaveWill.BaseValue, ["fixtureSpellResistance"] = 5,
+                    ["fixtureManeuverImmune"] = target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers),
                     ["fullRound"] = ability.IsFullRoundAction },
                     "Normal cantrip is useful for available Sleep; AI refuses allied footprint and Sleep immunity before acting.");
                 if (!ready) throw new InvalidOperationException("Lullaby preconditions failed before AI execution.");
@@ -221,6 +231,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Commands.InterruptAll(true);
                 foreach (var buff in target.Buffs.Enumerable.Where(value => owner != null && ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray()) buff.Remove();
                 target.Stats.SaveWill.BaseValue = oldWill;
+                if (addedManeuverImmunity) target.Descriptor.State.RemoveCondition(UnitCondition.ImmuneToCombatManeuvers);
                 if (resistanceFact != null)
                 {
                     target.Descriptor.RemoveFact(resistanceFact);
@@ -241,6 +252,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             var lullaby = fixture.Blueprints.OfType<LillendSpellEligibility32>().Single(value =>
                 value.Choice == LillendSpellChoice32.Lullaby);
             var ability = eligibility.Spell;
+            var effectBlueprint = fixture.Blueprints.OfType<BlueprintBuff>().Single(value =>
+                value.name == "KMG_Summoning_FeyCelestial_LillendAzata_DazeBuff");
+            var nativeDaze = fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.AssetGuid == "55f14bc84d7c85446b07a1b5dd6b2b4c");
+            var nativeDazeBuff = fixture.Blueprints.OfType<BlueprintBuff>().Single(value => value.AssetGuid == "9934fedff1b14994ea90205d189c8759");
             var book = owner.Descriptor.GetSpellbook(eligibility.Book);
             var siblingBook = sibling.Descriptor.GetSpellbook(eligibility.Book);
             int remaining = book.GetSpontaneousSlots(1);
@@ -257,8 +272,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (grant == null) throw new InvalidOperationException("Daze has no native cantrip fact.");
             var data = new AbilityData(grant); var parameters = data.CalculateParams();
             var context = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } };
+            var lifetime = Game.Instance.BlueprintRoot.SystemMechanics.SummonedUnitBuff;
+            double ownerSeconds = owner.Buffs.Enumerable.Single(value => ReferenceEquals(value.Blueprint, lifetime)).TimeLeft.TotalSeconds;
+            double siblingSeconds = sibling.Buffs.Enumerable.Single(value => ReferenceEquals(value.Blueprint, lifetime)).TimeLeft.TotalSeconds;
             float score = eligibility.Score(context);
             bool ready = score > 0 && lullaby.Score(context) == 0 && ownSlots.All(value => value == 0) &&
+                ownerSeconds >= 80 && siblingSeconds >= 80 &&
                 data.IsAvailable && data.CanTarget(new TargetWrapper(target)) && parameters.CasterLevel == 7 &&
                 parameters.DC == 14 && ability.Type == AbilityType.Spell &&
                 ability.GetComponent<Kingmaker.Blueprints.Classes.Spells.CantripComponent>() != null &&
@@ -267,6 +286,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["score"] = score, ["lullabyExhaustedSleepScore"] = lullaby.Score(context),
                 ["fixtureLevelOnePreSpend"] = remaining, ["ownSlots"] = new JArray(ownSlots),
                 ["siblingSlots"] = new JArray(siblingSlots), ["factAvailable"] = data.IsAvailable,
+                ["ownerSummonSeconds"] = ownerSeconds, ["siblingSummonSeconds"] = siblingSeconds,
                 ["cl"] = parameters.CasterLevel, ["dc"] = parameters.DC },
                 "The affected native Daze cantrip remains available with no leveled slots; Lullaby refuses when Sleep is exhausted.");
             if (!ready) throw new InvalidOperationException("Daze cantrip preconditions failed.");
@@ -279,17 +299,52 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
                 using (var economy = new FirearmReviewCosts(owner, costs))
                 {
-                    DateTime deadline = DateTime.UtcNow.AddSeconds(55); int frames = 0;
+                    DateTime deadline = DateTime.UtcNow.AddSeconds(85); int frames = 0;
                     bool refusedWhileDazed = false;
-                    while (DateTime.UtcNow < deadline && frames++ < 5000)
+                    bool immuneAfterDaze = false, immunityExpired = false, nativeProbeRan = false, nativeProbeBlocked = false, siblingRefused = false;
+                    Buff firstEffect = null, firstImmunity = null;
+                    double firstEffectSeconds = 0, firstImmunitySeconds = 0;
+                    var immunities = new HashSet<Buff>();
+                    var immunityRows = new JArray();
+                    while (DateTime.UtcNow < deadline && frames++ < 10000)
                     {
                         foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
                         foreach (var command in starts.Commands) commands.Add(command);
                         int finished = commands.OfType<UnitUseAbility>().Count(value => value.Spell?.Blueprint == ability &&
                             value.IsFinished && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded);
+                        var effect = target.Buffs.Enumerable.SingleOrDefault(value => ReferenceEquals(value.Blueprint, effectBlueprint) &&
+                            ReferenceEquals(value.Context?.MaybeCaster, owner));
+                        var marker = target.Buffs.Enumerable.SingleOrDefault(value => ReferenceEquals(value.Blueprint, eligibility.RefusedBuff));
+                        if (firstEffect == null && effect != null) { firstEffect = effect; firstEffectSeconds = effect.TimeLeft.TotalSeconds; }
+                        if (marker != null && immunities.Add(marker))
+                        {
+                            if (firstImmunity == null) { firstImmunity = marker; firstImmunitySeconds = marker.TimeLeft.TotalSeconds; }
+                            immunityRows.Add(new JObject { ["endGameSeconds"] = marker.EndTime.TotalSeconds,
+                                ["observedGameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                                ["remainingSeconds"] = marker.TimeLeft.TotalSeconds, ["source"] = marker.Context?.MaybeCaster?.UniqueId });
+                        }
                         if (target.Descriptor.State.HasCondition(UnitCondition.Dazed) && eligibility.Score(context) == 0)
                             refusedWhileDazed = true;
-                        if (finished >= 2 && target.Descriptor.State.HasCondition(UnitCondition.Dazed) || finished >= 3) break;
+                        if (firstImmunity != null && target.Buffs.Enumerable.Contains(firstImmunity) &&
+                            !target.Descriptor.State.HasCondition(UnitCondition.Dazed) && eligibility.Score(context) == 0 && !data.CanTarget(new TargetWrapper(target)))
+                        {
+                            immuneAfterDaze = true;
+                            if (!nativeProbeRan)
+                            {
+                                nativeProbeRan = true;
+                                siblingRefused = !new AbilityData(sibling.Descriptor.Abilities.GetAbility(ability)).CanTarget(new TargetWrapper(target));
+                                // Separate native application probe, not a cast:
+                                // the one-minute marker must also block the
+                                // unchanged game's Daze buff from another source.
+                                var nativeContext = new MechanicsContext(sibling, target.Descriptor, nativeDaze, null, new TargetWrapper(target));
+                                var attempted = target.Descriptor.AddBuff(nativeDazeBuff, nativeContext, TimeSpan.FromSeconds(6));
+                                nativeProbeBlocked = attempted == null && !target.Descriptor.State.HasCondition(UnitCondition.Dazed);
+                                if (attempted != null) attempted.Remove();
+                            }
+                        }
+                        if (firstImmunity != null && !target.Buffs.Enumerable.Contains(firstImmunity) &&
+                            Game.Instance.Player.GameTime >= firstImmunity.EndTime) immunityExpired = true;
+                        if (immunities.Count >= 2 && finished >= 2 && target.Descriptor.State.HasCondition(UnitCondition.Dazed) || finished >= 4) break;
                         if (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished))
                             Sprint24TickExactAi(owner);
                         Game.Instance.IsPaused = false; yield return 0;
@@ -301,13 +356,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var saves = events.Saves.Where(value => value.Reason?.Context?.SourceAbility == ability).ToArray();
                     var resistance = events.Resistances.Where(value => value.Context?.SourceAbility == ability &&
                         ReferenceEquals(value.Target, target)).ToArray();
-                    bool exact = casts.Length >= 2 && casts.Length <= 3 && casts.All(value => economy.Count(value) == 1 &&
+                    bool exact = casts.Length >= 2 && casts.Length <= 4 && casts.All(value => economy.Count(value) == 1 &&
                         economy.Exact(value, false) && value.Type == UnitCommand.CommandType.Standard && !value.Cutscene && !value.IsIgnoreCooldown &&
                         ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null) &&
                         saves.Length == casts.Length && saves.All(value => value.DifficultyClass == 14) && saves.Any(value => !value.IsPassed) &&
                         resistance.Length == casts.Length && resistance.All(value => value.SpellResistance == 5 &&
                             !value.TargetIsImmune && !value.IsSpellResisted) &&
                         target.Descriptor.State.HasCondition(UnitCondition.Dazed) && refusedWhileDazed && eligibility.Score(context) == 0 &&
+                        immunities.Count == 2 && immuneAfterDaze && immunityExpired && nativeProbeRan && nativeProbeBlocked && siblingRefused &&
+                        firstEffectSeconds > 4 && firstEffectSeconds <= 6.1 && firstImmunitySeconds > 58 && firstImmunitySeconds <= 60.1 &&
                         Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).SequenceEqual(ownSlots) &&
                         Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).SequenceEqual(siblingSlots) &&
                         resources.Select(value => owner.Descriptor.Resources.GetResourceAmount(value)).SequenceEqual(ownPools) &&
@@ -320,11 +377,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["dazed"] = target.Descriptor.State.HasCondition(UnitCondition.Dazed),
                         ["activeEffectScore"] = eligibility.Score(context),
                         ["refusedWhileDazed"] = refusedWhileDazed,
+                        ["immunityInstances"] = immunityRows, ["immuneAfterDaze"] = immuneAfterDaze,
+                        ["naturalImmunityExpiry"] = immunityExpired, ["firstDazeSeconds"] = firstEffectSeconds,
+                        ["firstImmunitySeconds"] = firstImmunitySeconds,
+                        ["siblingPrivateDazeRefused"] = siblingRefused, ["separateNativeBuffProbeBlocked"] = nativeProbeBlocked,
+                        ["nativeBuffApplicationProbes"] = nativeProbeRan ? 1 : 0,
                         ["exactOwnedCantripFacts"] = casts.All(value => ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null),
                         ["ownSlotsAfter"] = new JArray(Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots)),
                         ["siblingSlotsAfter"] = new JArray(Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots)),
                         ["fixtureCastCommands"] = 0, ["forcedRolls"] = 0 },
-                        "Repeated natural native Daze pays Standard, resolves Will/SR, refuses an already dazed target and leaves both books and independent pools unchanged.");
+                        "Two natural Daze effects separated by native sixty-second immunity; Standard/Will/SR, one-round Dazed, cross-source immunity/refusal and unchanged independent budgets. The native buff application probe is not a second casting-source execution.");
                     if (!exact) throw new InvalidOperationException("Daze natural cantrip failed.");
                 }
             }

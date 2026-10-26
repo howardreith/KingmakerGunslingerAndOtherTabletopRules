@@ -61,20 +61,31 @@ Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby is implemented with focused compilation PASS and native proof pending.
 Noncombat performances remain required implementation, not pending permission.
 
-Current validated development candidate is `8a02948cc1141f816db80a543c47cd30aef78880`:
-ZIP `50382bd6302a46a1fd96c0154ddb3512d9b4923af8b6253e5facd2ce445bc7a2`;
-DLL `4866d5eb1732c1c80c6cbd61b901a9f58ae655f8592efd7f3af115fa6a259bb4`;
-MVID `6427efa1-a246-46cb-bb88-e35bae10fda3`;
-SourceState `03ac7acdd44577507a75fea60e2ef6f55a4a669945c54707c53c1ff0e387b2f3`.
-Path `artifacts/development-candidates/sprint32-lillend-support/8a02948cc114/`.
+Current validated development candidate is `01fe81f34e15b6da44599eadf9688dff9521213b`:
+ZIP `24d06206791de201456cf1470588d9637079b8d8abaf6a29276381d0907d3ade`;
+DLL `52f46d4fbf385122298cf3afa315e860457c4e9c42faaf9055d26c7d54f195df`;
+MVID `985b4b16-f7ae-4d85-a770-b15d0736de96`;
+SourceState `a15eedf04faebfe350848eca54caf2a160483c768ba6e3bc9a5d456af5d3df6c`.
+Path `artifacts/development-candidates/sprint32-lillend-support/01fe81f34e15/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification.
-Native47 support/body assertions passed but Lullaby stopped at eligibility0:
+package PASS. Development version0.0.167; no release qualification. This package
+is NOT_RUN natively: prelaunch review identified the Daze corrections below.
+On the preceding8a02948c package, native47 support/body assertions passed but Lullaby stopped at eligibility0:
 overall13PASS/2FAIL, no Lullaby cast. Native book-backed level-zero availability
 checks finite slots; correction uses the accepted native Spell/Cantrip fact seam
 for both Daze and Lullaby. Independent review confirms exact-owner/live bardCL/
 Charisma adapter and AI fact preference. Corrected source/fixture compilation
 passes; fresh cast proof is pending. Input evidence stays bound to4b509d67.
+
+Current source also corrects the newly identified Daze limitation: private native
+Spell/Cantrip/effect mapping grants60s nondispellable immunity on successful
+affection, blocking private and unchanged native Daze effects. It retains the
+printed one-round condition and Will/SR; other native spells are unchanged.
+[Daze rule](https://www.aonprd.com/SpellDisplay.aspx?ItemName=Daze).
+The test waits for actual native immunity expiry before a second natural cast,
+checks remaining summon lifetime>=80s, and isolates grab with the existing owned
+maneuver-immunity fixture condition. Independent review found no product blocker;
+all9focused tests and corrected production compilation PASS. Native proof pending.
 
 | Evidence | Result and dependency limit |
 |---|---|
@@ -138,7 +149,7 @@ Latest transaction `compat-20261026T042024Z-273c3e7938f1` restored/verified
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build attempts/validated development packages/native launches:41/30/47.
+Build attempts/validated development packages/native launches:42/31/47.
 Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
 native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
 records10min, observer review/repair8min, approved-feature contract research10min,
@@ -150,6 +161,11 @@ cleanup reclaimed1,138,981,599B with protectedComparePASS. The five closed input
 03:48:39.5915213UTC, reclaiming496,600,365B; protectedComparePASS.
 Free3,821,506,560B immediately after cleanup;3,921,928,192B at04:05UTC.
 Unique packages/PDBs/raw evidence/receipts/backups/saves remain retained.
+Latest build42 took261.969s and was retained without native dispatch. For04:39-
+04:55, approximate implementation/fixture8min, review/research4min, build/package
+4.4min, storage2min; overlapping, not additive. Six verified closed build copies
+reclaimed127,303,638B at04:53:47.3116800UTC; free3,496,779,776B and protected
+ComparePASS. No owner wait or native launch in this interval.
 
 Next: package the reviewed cantrip correction and run Lullaby/repeated Daze
 within the existing standalone Lillend-support phase (expected10minutes,
@@ -165,25 +181,3 @@ separate records where identity guards require them. Do not start Sprint33.
 Prior v0.0.167 gaps stay **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.
 [Original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
-
-Lullaby prepackage: private Standard cantrip, living10ft burst, native Will/SR,
-CL-round finite tail, Perception-5 and Will-only Sleep-2; useful-Sleep/ally-safety/
-active-effect AI guards. Independent review found inherited duration tooltip;
-corrected. Production compile24s and5selected tests/4.5s PASS. One prior observer
-compile failed on invented UnitUseAbility.Ability; corrected to installed Spell.
-Original error retained; no native failure. Icon catalog/137prior unchanged
-records PASS; new Lullaby original and32/48/64/128px previews inspected. Native
-mechanics/visual results remain NOT_RUN for these changed bytes.
-
-Independent fixture review found no dispatch blocker. The owned target now has
-disclosed native SR5 and each natural cast must produce an exact nonimmune,
-nonresisted SR5 event; zero events cannot claim SR proof. This final fixture
-addition awaits the candidate build. RTWP proof does not qualify turn-based
-execution or secondary burst recipients.
-
-Build40 at3e4d608e stopped before packaging/native dispatch:553/557selected
-tests passed; four icon tests shared a stale action-concept count (137instead
-of138). One shared declaration now includes the actual Lullaby concept, and
-the existing catalog case checks its identity. Focused production24.2s plus
-all9affected/S32tests5.1s PASS. Failure logs retained; no product rule changed
-to satisfy the observer. Source/art/native fixture review remains applicable.

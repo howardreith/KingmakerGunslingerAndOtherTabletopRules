@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             return new[] {
-                new[] { LillendNativeSpell32(library, "55f14bc84d7c85446b07a1b5dd6b2b4c", "Daze"),
+                new[] { ConfigureLillendDaze32(library, bySymbol),
                     ConfigureLillendLullaby32(library, bySymbol) },
                 new[] { LillendNativeSpell32(library, "1af9d5995090e5a4185a30decf0959ad", "Charm Person"),
                     LillendNativeSpell32(library, "5590652e1c2225c4ca30c4a699ab3649", "Cure Light Wounds"),
@@ -154,6 +154,9 @@ namespace KingmakerGunslinger.Blueprints
                 var eligibility = Require<LillendSpellEligibility32>(bySymbol, key + "Eligibility");
                 eligibility.OwningBlueprint = unit; eligibility.Book = book; eligibility.Spell = selected[i];
                 eligibility.Level = levels[i]; eligibility.Choice = choices[i];
+                if (choices[i] == LillendSpellChoice32.Daze)
+                    eligibility.RefusedBuff = Require<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(bySymbol,
+                        Lillend32Prefix + "DazeImmunity");
                 if (choices[i] == LillendSpellChoice32.Lullaby)
                 {
                     eligibility.RefusedBuff = Require<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(bySymbol,

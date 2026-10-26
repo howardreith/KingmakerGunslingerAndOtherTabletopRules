@@ -166,7 +166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Body.PrimaryHand.MaybeWeapon.AttackRange.Value == 10 && tail.AttackRange.Value == 10 &&
                     tail.IsSecondary && tail.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_Tail" &&
                     book.GetKnownSpells(0).Select(value => value.Blueprint.AssetGuid).OrderBy(value => value)
-                        .SequenceEqual(new[] { "55f14bc84d7c85446b07a1b5dd6b2b4c",
+                        .SequenceEqual(new[] { KingmakerGunslinger.Blueprints.BlueprintManifest.Load(_context.ModEntry.Path).ResolveActive("KMG.Summoning.FeyCelestial.LillendAzata.Daze", typeof(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility)).Id.Value,
                             KingmakerGunslinger.Blueprints.BlueprintManifest.Load(_context.ModEntry.Path).ResolveActive("KMG.Summoning.FeyCelestial.LillendAzata.Lullaby", typeof(Kingmaker.UnitLogic.Abilities.Blueprints.BlueprintAbility)).Id.Value }.OrderBy(value => value)) &&
                     book.GetKnownSpells(1).Count() == 3 &&
                     book.GetKnownSpells(2).Count() == (Sprint32Suggestion.Active ? 4 : 3) && book.GetKnownSpells(3).Count() == 2 &&

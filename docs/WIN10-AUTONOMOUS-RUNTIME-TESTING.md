@@ -12,8 +12,15 @@ The same phase checks the corrected native cantrip-fact route for Lullaby and
 Daze: exact owned ability fact with no spellbook debit, CL7/Charisma DC14,
 normal Standard actions, unchanged L0/leveled slots and independent resources.
 After Lullaby's original-deadline expiry, explicit remaining L1 pre-spends
-isolate Daze. Two natural casts separated by its native effect lifetime observe
-real Will/SR and Dazed, with active-effect refusal. No cast/effect/roll is supplied.
+isolate Daze. The target has disclosed native maneuver immunity so ordinary
+fallback cannot create a grab that disables its caster. Two successful natural
+Daze effects are separated by the new native sixty-second immunity. The85s
+bounded observer checks one-round Dazed, immunity after it ends, original native
+expiry, Will/SR and active-effect refusal, without moving the Daze clock. A
+separate native application probe checks that the immunity also blocks the
+unchanged game's Daze buff from a sibling source; that probe is not a cast or
+action-cost result. No cast or roll is supplied; all preconditions are removed
+in finally. The full selected phase remains expected10min/runtime600s.
 
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
 `reviewPhase=satyr-control`, `lillend-support`, `satyr-turn`, `lillend-turn` or `optional-suggestion`, with automatic exit. The existing save-free first-area
