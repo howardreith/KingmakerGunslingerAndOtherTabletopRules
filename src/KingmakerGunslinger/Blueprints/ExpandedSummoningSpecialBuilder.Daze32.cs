@@ -17,6 +17,7 @@ using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -38,7 +39,8 @@ namespace KingmakerGunslinger.Blueprints
             var effect = Require<BlueprintBuff>(bySymbol, symbol + "Buff");
             CopyFields(nativeEffect, effect); effect.name = InternalName(symbol + "Buff");
             effect.ComponentsArray = nativeEffect.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
-                .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>() }).ToArray();
+                .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
+                    ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() }).ToArray();
             var immunity = Require<BlueprintBuff>(bySymbol, symbol + "Immunity");
             immunity.name = InternalName(symbol + "Immunity"); immunity.Stacking = StackingType.Replace;
             var nativeBlock = ScriptableObject.CreateInstance<SpecificBuffImmunity>(); nativeBlock.Buff = nativeEffect;
