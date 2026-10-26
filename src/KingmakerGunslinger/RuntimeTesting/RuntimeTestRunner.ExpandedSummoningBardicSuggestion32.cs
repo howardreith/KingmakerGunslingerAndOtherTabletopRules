@@ -108,12 +108,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     AccessTools.Method(typeof(UnitMemoryController), "HandleUnitMakeOffensiveAction",
                         new[] { typeof(UnitEntityData), typeof(UnitEntityData) }) })
                 {
-                    var patches = registry.GetPatchInfo(method);
+                    if (method == null) throw new MissingMethodException("Bardic memory inventory target is missing.");
+                    // The installed Harmony12 shim throws while converting a
+                    // null Harmony2 record. Its GetPatchedMethods enumerates
+                    // all owners, as in CotwSpontaneousSlotCompatibility.
+                    bool patchedByAnyOwner = registry.GetPatchedMethods().Contains(method);
+                    var patches = patchedByAnyOwner ? registry.GetPatchInfo(method) : null;
                     var all = patches == null ? Array.Empty<Patch>() :
                         patches.Prefixes.Concat(patches.Postfixes).Concat(patches.Transpilers).ToArray();
                     patchRows.Add(new JObject { ["method"] = method.DeclaringType.FullName + "." + method.Name,
+                        ["patchedByAnyOwner"] = patchedByAnyOwner,
                         ["harmony12Owners"] = new JArray(all.Select(value => value.owner)) });
-                    if (all.Length != 0) throw new InvalidOperationException(
+                    // Refuse even patch kinds not represented by Harmony12's
+                    // owner lists (for example a Harmony2-only finalizer).
+                    if (patchedByAnyOwner) throw new InvalidOperationException(
                         "Bardic memory qualification requires review of another Harmony12 patch: " + method);
                 }
                 bool ready = holdBefore && holdRefused && holdAfter && ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) &&

@@ -65,18 +65,18 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `fd54cde1509f9f8fa90895a4b55cbb4a83d22509`.
-ZIP `f2b7301bb95df8a4d351c94c6bacef6de8a7b2095afdb51cb1a090becc054bca`;
-DLL `f1c741daeb0968dcc3f8d88c80da2f3e2813d4da0944933f99f50e416351da54`;
-MVID `2bbde895-0e6f-4419-b141-1765e31773f3`;
-SourceState `e676b880ffb52daa6213694fd869fc482217ceee97ca57353e6374fa5c71b974`.
-Path `artifacts/development-candidates/sprint32-lillend-support/fd54cde1509f/`.
-Build57: wrappers,557selected/2754registered, exact-reference compilation and
-strict package PASS in259.033s. Native66 **bootstrap FAIL, zero assertions**:
-CotW's Infectious Charms wizard-discovery branch contains a foreign range action
-that the private Hold walker did not recognize. No gameplay proof or final
-qualification. Earlier65 localization failure and66 bootstrap failure remain
-immutable; no repeated unchanged launch.
+Latest validated development candidate: `d43a72d8e46d7d582ecea5ddd430b1ac780e99f4`.
+ZIP `edfc7c3d9c9054f3264259c4e52b2da371b68eb47f0412030a486f6790aed309`;
+DLL `9a116b0989f4bbb9bb963ea55879c4d9de1db756a6beb7e8d5411ca7e8c3eb20`;
+MVID `8c987875-749a-4e71-b433-f0f7fd443b0b`;
+SourceState `ec985ce12ded629e18153e999cfbdf2c63cb1f98d137aded5cc75df00545415c`.
+Path `artifacts/development-candidates/sprint32-lillend-support/d43a72d8e46d/`.
+Build58: wrappers,557selected/2754registered, exact-reference compilation and
+strict package PASS in257.615s. Native67 **12PASS/1FAIL**: initialization and
+provider binding passed, deeper control metadata and natural Fascinate observed.
+Observer Harmony12.GetPatchInfo crashed converting a null unpatched-method
+record before bardic readiness/casting. No bardic or Hold-refusal verdict.
+Original65/66/67 failures remain immutable; no repeated unchanged launch.
 
 Previous source279de1e3/native63RTWP and64turn **13/13PASS each** on their exact ZIP.
 Both modes show natural Satyr Sleep/Charm, actual normal Standard costs,
@@ -103,20 +103,25 @@ Two stable identities append without changing7506 originals. Independent review
 corrected an unsupported Hold branch-count assumption before66; the distinct
 provider branch was then exposed by actual combined-profile initialization.
 
-Current unbuilt correction handles only the exact positive Infectious Charms
-conditional in the private Hold clone. The installed IL and upstream primary
-source establish the branch. An existing native AbilityCasterHasNoFacts check
-keeps it unreachable even if that discovery is later granted; both checks use
-native UnitHelper.HasFact. Native/provider spells and ordinary Hold behavior
-remain unchanged. No new component, subsystem or persisted manager is added.
-Independent review found no blocker. The existing bardic-ready preflight now
-checks an idle sibling's Hold availability before/during/after a temporary exact
-discovery grant, removed in finally without a yield or cast; reviewed separately.
-Production23.7s/18tests0.9s PASS before the probe; corrected final production
-23.1s/18tests0.9s PASS. The first probe compile failure remains in history.
-The same run captures fixed Fear/Sound Burst/Hold leaves and terminals read-only.
-Native control lifecycle, automatic retry, bardic execution and deeper metadata
-remain unverified on this correction.
+Sourced43a72d8 handles only the exact positive Infectious Charms conditional in
+the private Hold clone, with an existing native AbilityCasterHasNoFacts guard.
+Independent review verified identical native UnitHelper.HasFact membership and
+no additional behavior/persistence subsystem. Native67 establishes registration
+with the provider profile; the temporary sibling discovery availability probe
+ran before the observer exception but has no recorded verdict and must rerun.
+
+Current unbuilt change fixes only the compiled patch-inventory observer. The
+installed Harmony12 shim's global GetPatchedMethods list is checked before
+GetPatchInfo, reusing the existing CotwSpontaneousSlotCompatibility pattern.
+Missing methods and any registered patch still refuse, including patch kinds
+not represented by Harmony12 owner lists. Exact installed IL retained. Focused
+production23.2s/18tests0.9s PASS. The affected native phase must rerun.
+Native67 captured Fear's Shaken1round/FrightenedCL-round spell terminals, neither
+with source cleanup; private mappings remain required. Sound Burst's one-round
+Stunned is explicitly IsFromSpell=false and an instantaneous-spell consequence;
+do not add caster-loss removal merely to clear a fixture. Hold's three native
+applications include the main effect and two discovery helpers, now excluded
+privately under the exact caster guard. Metadata is not gameplay evidence.
 
 The private stateless control destruction adapter has actual Satyr removal and
 sibling-isolation proof; retained native area-load handling still needs cold proof.
@@ -131,6 +136,7 @@ No earlier execution below is called fresh on the private-control correction.
 
 | Evidence | Actual result and remaining limit |
 |---|---|
+| d43a72d8/native67 | 12PASS/1FAIL: provider initialization, exact metadata and natural Fascinate PASS; patch-inventory observer null conversion throws before bardic readiness/casting. Fix reuses proven global-patch enumeration; rerun required. |
 | fd54cde1/native66 | Bootstrap FAIL before gameplay: CotW Infectious Charms conditional unsupported in private Hold mapping. Exact bounded mapping correction unbuilt; no assertions executed. |
 | 096b045c/native65 | 5PASS/2FAIL: provider binding localization collision before natural bardic cast. Original result retained; shared-description correction unbuilt. |
 | 279de1e3/native63,64 | RTWP13/13 and turn13/13PASS: natural Sleep/Charm, costs/durations/refusal, expiry and exact sibling-effect isolation. Charm group cache restores one ordinary frame after direct faction restoration. |
@@ -177,18 +183,18 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T134346Z-a4fc330ddaef` restored/verified
-13:48:16.5125513UTC. Protected Compare PASS967Mods/118saves/18references/
+Latest transaction `compat-20261026T141418Z-7622f0a062e4` restored/verified
+14:19:45.6855489UTC. Protected Compare PASS967Mods/118saves/18references/
 83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native66 raw directory and exact identities are in append-only history;
-local originals/intake: `artifacts/sprint32-bardic-fd54cde1/`.
+Native67 raw directory and exact identities are in append-only history;
+local originals/intake: `artifacts/sprint32-bardic-d43a72d8/`.
 Original failures remain immutable; no product-stat changes supplied a verdict.
 
-Counts:57Build-Local attempts /46validated development packages /66native launches.
-Build57 measured4.32min; native66 wrapper4.53min/native102.364s. Whole-mission
-exclusive work-category totals unavailable. Approx13:48-14:03UTC: primary-source/
-installed-contract research, private correction/probe/review~12min; duplicate
-selection/verification~2min; focused compile23.7s/domain0.9s before probe.
+Counts:58Build-Local attempts /47validated development packages /67native launches.
+Build58 measured4.29min; native67 wrapper5.48min/native156.215s. Whole-mission
+exclusive work-category totals unavailable. Approx14:20-14:31UTC: observer/
+installed-contract correction and control-metadata inspection~7min, duplicate
+selection/verification~2min; final focused compile23.2s/domain0.9s.
 No owner waiting or speedup claim.
 
 Disk budget:1.1GBcombined peak +2GBreserve before building. Prior cleanup
@@ -202,9 +208,11 @@ Unique packages/raw evidence/original failures/receipts/PDBs/saves/backups retai
 At14:03UTC eleven verified old duplicate DLLs plus the two restored65/66 package
 extractions reclaimed390,974,359B; free3,393,720,320B, protectedComparePASS.
 Unique archives/PDBs/raw evidence/receipts/saves/backups retained.
+At14:32UTC four verified old build copies and closed67 package extraction
+reclaimed185,276,688B; free3,222,036,480B, protectedComparePASS.
 No machine-wide cleanup or DATA changes.
 
-**Next:** commit the reviewed provider-branch correction and native probe,
+**Next:** commit the bounded patch-inventory observer correction,
 package once, then execute the existing `lillend-bardic-suggestion`
 guarded provider profile (expected10min/runtime600s). Observe natural saved,
 resisted and successful attempts, preserved own Fascinate/slots/upkeep,
@@ -214,7 +222,8 @@ Then continue affected Lillend controls/lifecycle, grab/constrict, cold
 ON/OFF, technical presentation and final integration. Reuse the executed
 S30-31 installed-stack original-Working envelopes for persistence.
 Hold Person cleanup mapping needs native proof; Fear/SoundBurst terminal
-components, plus deeper Hold branches, are selected for that same run. Invisibility is self-only.
+components and deeper Hold branches are captured in67; Fear cleanup remains
+required in the next control batch after the uncertain bardic execution seam. Invisibility is self-only.
 Final frozen candidate qualification remains separate required work.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: all30public-route/body/icon, standalone
