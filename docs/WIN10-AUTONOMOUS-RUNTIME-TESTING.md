@@ -1,3 +1,17 @@
+Sprint32 fixed `lillend-controls` and `lillend-controls-turn` reuse the save-free
+isolated native scene and exact-owned command/AI clock. Each groups actual native
+five-HD Wolf recipients, natural Charm Monster and safe Sound Burst, real
+Standard/slot costs and independent sibling budgets. Sound Burst starts with an
+unsafe allied footprint, then moves only the owned bystander out. Actual saves,
+stun applications and damage are correlated to each completed cast context;
+successful Fort saves must receive damage without stun. The RTWP case also uses
+a disclosed normal Cure Light command as a harmless Charm negative and a normal
+caster attack as its threat-break probe. The TB case claims natural casts/costs,
+not that RTWP threat probe. No forced roll, supplied successful spell or damage
+proves these cases. Existing ownership/refusal/finalizer boundaries remain.
+Ward, unrelated-attacker and additional lifecycle proof remain separate pending
+cases. This is selection documentation, not an execution receipt.
+
 Sprint32 adds only `persistenceScope=fey-celestial` to the existing exact Working
 prepare/verify-cleanup/verify-absent trio and installed-stack transaction. The
 selected development purpose remains `sprint32-lillend-support`. Two Satyrs and
@@ -5,7 +19,8 @@ two Lillends have exact generic source receipts; two registered native default
 humanoids have separate source/caster/run-bound listener receipts, following the
 Sprint22/26 auxiliary-actor seam. No transient blueprint is serialized. Only the
 listeners' per-instance faction/attack set and stats change; native faction
-blueprints and intake actors are untouched. Finite native nav/physical-LOS survey,
+blueprints and intake actors are untouched. Finite four-radius native nav/physical-LOS survey with native EyeShift and one
+rejection-count receipt,
 no unintended nonparty hostility, nonparty listener groups, calm Default mode,
 exact target set and actual unforced saves are required before real dispatcher
 activation. Competence requires an empty eligible Fascinate set before/during

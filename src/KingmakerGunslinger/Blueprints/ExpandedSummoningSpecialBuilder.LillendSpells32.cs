@@ -31,7 +31,7 @@ namespace KingmakerGunslinger.Blueprints
                     LillendOwnedControlSpell32(library, bySymbol, true) },
                 new[] { LillendOwnedHoldPerson32(library, bySymbol),
                     LillendNativeSpell32(library, "89940cde01689fb46946b2f8cd7b66b7", "Invisibility"),
-                    LillendNativeSpell32(library, "c3893092a333b93499fd0a21845aa265", "Sound Burst") },
+                    ConfigureLillendSoundBurst32(library, bySymbol) },
                 new[] { ConfigureLillendCharmMonster32(library, bySymbol),
                     LillendNativeSpell32(library, "3361c5df793b4c8448756146a88026ad", "Cure Serious Wounds") }
             };
@@ -42,6 +42,43 @@ namespace KingmakerGunslinger.Blueprints
             var spell = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(library, guid, "captured Lillend " + title);
             if (spell.Type != AbilityType.Spell) throw new InvalidOperationException(title + " must remain a real spell.");
             return spell;
+        }
+
+        private static BlueprintAbility ConfigureLillendSoundBurst32(LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> bySymbol)
+        {
+            string symbol = Lillend32Prefix + "SoundBurst";
+            var ability = Require<BlueprintAbility>(bySymbol, symbol);
+            CloneMephitSpell(library, ability, "c3893092a333b93499fd0a21845aa265", "native Sound Burst delivery");
+            ability.name = InternalName(symbol);
+            var run = ability.GetComponents<AbilityEffectRunAction>().Single();
+            var saved = run.Actions.Actions.OfType<ContextActionConditionalSaved>().Single();
+            var damage = run.Actions.Actions.OfType<ContextActionDealDamage>().Single();
+            var stun = saved.Failed.Actions.OfType<ContextActionApplyBuff>().Single();
+            // Native67 captured one unconditional1d12 sonic damage leaf and
+            // one failed-Fort one-round stun. Change only this private damage
+            // die to PF1's1d8. Admit only that canonical die or observedD12;
+            // profile attribution ofD12 is unknown. The native spell is untouched.
+            if (ability.Type != AbilityType.Spell || run.SavingThrowType != Kingmaker.EntitySystem.Stats.SavingThrowType.Fortitude ||
+                run.Actions.Actions.Length != 2 || saved.Succeed.Actions.Length != 0 || saved.Failed.Actions.Length != 1 ||
+                damage.DamageType.Type != Kingmaker.RuleSystem.Rules.Damage.DamageType.Energy ||
+                damage.DamageType.Energy != Kingmaker.Enums.Damage.DamageEnergyType.Sonic ||
+                (damage.Value.DiceType != Kingmaker.RuleSystem.DiceType.D12 && damage.Value.DiceType != Kingmaker.RuleSystem.DiceType.D8) ||
+                damage.Value.DiceCountValue.ValueType != ContextValueType.Simple || damage.Value.DiceCountValue.Value != 1 ||
+                damage.Value.BonusValue.ValueType != ContextValueType.Simple || damage.Value.BonusValue.Value != 0 ||
+                damage.Half || damage.HalfIfSaved || damage.AlreadyHalved || !damage.IsAoE ||
+                stun.Buff?.AssetGuid != "09d39b38bb7c6014394b6daced9bacd3" || stun.Permanent || stun.UseDurationSeconds || stun.IsFromSpell ||
+                stun.DurationValue.Rate != DurationRate.Rounds || stun.DurationValue.DiceType != Kingmaker.RuleSystem.DiceType.Zero ||
+                stun.DurationValue.BonusValue.ValueType != ContextValueType.Simple || stun.DurationValue.BonusValue.Value != 1)
+                throw new InvalidOperationException("Observed native Sound Burst damage/save/stun graph changed.");
+            damage.Value.DiceType = Kingmaker.RuleSystem.DiceType.D8;
+            // Instantaneous spell consequences keep their native one-round
+            // duration, including after source loss; no ongoing-control cleanup.
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(symbol + ".Name", "Sound Burst"),
+                LocalizationService.Create(symbol + ".Description",
+                    "Deal 1d8 sonic damage in a 10-foot burst. A failed Fortitude save also stuns for 1 round. Spell resistance applies."), ability.Icon);
+            return ability;
         }
 
         private static BlueprintAbility ConfigureLillendCharmMonster32(LibraryScriptableObject library,

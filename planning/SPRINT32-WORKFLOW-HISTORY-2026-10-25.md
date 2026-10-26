@@ -2127,3 +2127,134 @@ candidate62 ZIP comparison; new protected deployment backup remains. PlanSHA
 8d8ba97fac31ce18e87a78090dca403be2c47dc398637693cf28b608cc07aaf8;
 free3,219,271,680→3,320,061,952B. Coherent batch now ready for one new development
 candidate and affected native scenarios; no unrelated baseline replay selected.
+
+## 2026-10-26 17:46?18:45 UTC ? candidate64, Hold closure and next control batch
+
+Build63 on source c2a1e5913b386107ee12946f35bd1b6233ff1868 was refused by the
+nonadmin Working source-only admission test because the supervisor was elevated.
+No compilation/package/game:17:46:48.1852749?17:47:59.8057973UTC,71.6205224s.
+Original logs artifacts/sprint32-intake/build-observer-c2a1e591.* retained.
+Build64 used ordinary nonadmin execution, same inputs,17:48:50.9966088?
+17:53:18.0220703UTC,267.0254615s. Wrappers,558/2755 selected tests, exact-reference
+production compile and strict package PASS. Package52; development only.
+ZIP ce7a8f1a004201b7758409e7afaa1810e96b04bfa695465b50ea4ce82af5fa6a;
+DLL aaea5870970bf9df5514164381dc26af2461420ddf4a3fff9b7af68beeb754b0;
+MVID4883554c-e9cf-47d3-968d-2dd6794fa694;
+SourceState26b0fc01f55221aaa90553af487f099097fc3aca347337e8d6efcb470f80f259.
+Canonical artifacts/development-candidates/sprint32-lillend-support/c2a1e5913b38/.
+Logs build-observer-c2a1e591-nonadmin.* retain exact timings/free-space.
+
+Native74 Hold9/9PASS,179347ms, raw
+C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1800191200771Z-disposable-expanded-summoning-sprint32-native-review;
+run20261026T1800191529313Z-48fca49ca15b4ac29b6542286beb8bfc.
+ResultSHA6d6d14166e2a67cea8c01935e75ac72b9f685e00254a16f4ae79cadd64e54691;
+originalUnitySHA99b86157ba5bb64690164bcdf6e8d60430ef9c1028d43b1d2630a4b2fab53283.
+Local artifacts/sprint32-hold-c2a1e591/Unity-output-original.txt.
+Wrapper17:57:24.4299164?18:03:50.2933816UTC; transaction
+compat-20261026T175725Z-30fcb8434983 restored exactly, full protected ComparePASS
+967Mods/118saves/18references/83settings/tasks0/Steam1. Natural Hold costs/CL7/DC16/
+42s and accepted automatic retries pass. Source expiry clears exact paralysis at
+43225.797 before original43261.156 deadline, while separate exact-sibling effect
+ends43267.722 and budgets5/4/2+Charm1 stay intact. Native retry at43225.171 failed;
+no successful retry explains removal. Effect-only sibling probe does not prove
+a second cast. Native70/71 original geometry failures remain;74 closes their
+corrected RTWP expiry case. HoldTB remains NOT_RUN. One earlier supervisor
+mistook stale/null LASTEXITCODE after a PowerShell capture for failure; no task,
+game or transaction entered. Original prelaunch-refusal.json retained; corrected
+immediate success check and full Compare preceded74.
+
+Verified cleanup18:15:11.0096413/18:15:14.4434629UTC reclaimed closed74 extraction
+99,662,567B and superseded62 build copies42,999,693B. Plans
+`defe5d0c22057ffcffdfeddf10e557ec213d32a0cd599f24dcf0b82f66426a21` and
+`482d1002b285d454109ecdd80c2b5a2e8b982d37e26f84c5928203be8f77a53d`.
+Every file matched retained validated ZIPs; protected capture/comparePASS.
+Free3,150,073,856B. No unique package/raw evidence/receipt/protected backup/save
+or DATA file deleted. Helpers Invoke-VerifiedS32Native74Cleanup.ps1 and
+Invoke-VerifiedS32Build62Cleanup.ps1 remain local with fixed selections.
+
+Native75 WorkingON prepare17PASS/2FAIL,206840ms, raw
+C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1818380725303Z-working-save-expanded-summoning-prepare;
+run20261026T1818381102845Z-3c8469c231124844bd5e9f6029b5106c.
+ResultSHA4e76b2dbe483c5f641832b29f81317f4f265bd7d4244d65184bcef4c171cc1b8;
+originalUnitySHAe98aed3a2ba773ee2750a2198da5187b86c8b50041066fb518890328ff8b6243.
+Native18:18:50.8067346?18:22:17.6479957; wrapper18:15:47.3605548?
+18:22:36.3179801UTC. Transaction sprint32-stack-20261026T181611Z-116b49bce5ca
+restored18:22:36.2336639; outer original Working and full intake restored
+18:22:51.0126924. WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8,550,225B,creationTicks639208636210035057,writtenTicks639278868712797783,
+attributes8224. Protected ComparePASS967/118/18/83/tasks0/Steam1. No owned live
+transaction. Native Pause/default boundary now passes and dispatcher naturally
+activates Competence via completed Move. Single-ring listener placement refuses
+before listeners/save; exact writes0/stashes0. Cold cleanup/absence/OFF NOT_RUN.
+Original raw does not identify which geometry predicate failed. Review proves
+player vision11.7m versus calm nonplayer8.5m; no claim that a specific predicate
+caused75. Corrected finite10.7/14/18/22m survey drops unrelated player acquisition/
+anchor LOS, uses native EyeShift, preserves sources/party exclusion and actual
+postspawn mutual eligibility/calm gates. Explicit rejection-count JSON avoids
+the previously observed dictionary converter problem. Requires native rerun.
+
+Private control repairs in the next batch: Lillend Sound Burst privately uses
+PF1 1d8 sonic, preserving Fort/SR/native one-round stun. Retained67 provesD12;
+standalone capture truncated the die, so profile attribution is UNKNOWN. Explicit
+D8/D12 input guard admits only canonical/observed contracts. Existing native
+SoundBurst is unchanged. NewGUID2e97990020ee417c92806de625d909eb appended; all7510
+prior entries preserved. Private Charm adds stateless caster/apparent-ally
+threat handlers over command-start, attack rules and unfiltered ability-delivery
+callbacks, preserving helpful effects and unrelated attackers. Native ability
+callback occurs before SR/save. No global suppression/lifecycle registry added.
+Sources: https://legacy.aonprd.com/coreRulebook/spells/soundBurst.html and
+https://legacy.aonprd.com/coreRulebook/spells/charmPerson.html .
+
+Hearing decision: initial research found no native deafness condition/query;
+subsequent optional CotW review found four exact deaf facts and Silence. The
+owner then answered ?Accept native hearing limitation (Recommended)?. Retain
+native hearing behavior and disclose missing deaf-target and deaf-performer
+exceptions, including those optional facts. No proposed hearing state or bounded
+adapter was implemented. This is an owner adaptation, not fabricated native proof.
+
+Independent reviewer read actual product/fixture diffs and native contracts.
+Resolved findings: private clock refusal moved before try/finally; Sound Burst
+save/stun/damage events correlated by exact cast context, caster and ability,
+including no stun on successful Fort; native JSON uses explicit JProperty rows.
+New grouped fixed phases lillend-controls/lillend-controls-turn use real native
+five-HD Wolf targets, natural book casts, real slots/actions and sibling budgets.
+Only RTWP adds a supplied harmless-heal negative and caster-attack threat probe.
+No forced roll/cast/damage establishes natural outcomes. Ward/nonally/ally threats,
+additional lifecycle and deafness exceptions are not claimed. Reviewer resolution:
+no remaining dispatch blocker; native execution remains mandatory.
+
+Focused attempts retained: reference-bundle argument rejected by Focused gate
+before compilation; next compile caught wrong DamageType namespace and missing
+explicit csproj entry; next domain run caught omitted production identity total.
+All corrected. artifacts/sprint32-intake/focused-control-after75-batch.log:
+production23.4s,18/2755 selected tests PASS (domain invocation4.5s). Later real-heal
+addition gets its own final compile/selected run; this earlier PASS is not fresh
+execution of that addition. No new Build-Local package yet. Counts64attempts/
+52validated development packages/75native launches. Remaining final qualification,
+technical visuals, persistence, integration and three prior v167 NOT_RUN gaps
+remain open. No merge/tag/release/Sprint33.
+
+Final affected source/fixture compilation24.7s and18/2755 focused tests PASS1.0s
+(internal test elapsed0.2s); log focused-control-after75-heal.log. Independent
+actual-diff resolution review found no remaining dispatch blocker. Native evidence
+remains required; no broad full qualification selected.
+
+18:50UTC retention/headroom: closed75 extraction99,662,567B removed against
+candidate64 ZIP, planSHA d7c31be36e532c0f82e9ba73c62b0f6d6b7107214d0da6c00a2fe1e4962488ce.
+Seven Oct18 extraction copies were full-path/length/hash identical to two retained
+untouched references. Before removal, two lossless content archives and complete
+per-target metadata were written and reread. These archives are not validated
+historical candidate ZIPs. Five copies410,386,145B and two164,158,844B reclaimed;
+archives55,258,175B/55,259,197B retained. ArchiveSHAs
+860d4177c7b6aeaf41b015c708bab82f3dc38c36cc70257af1c8936ba12f4570 and
+661ddd9fef51925abec5636bcfdfdfcb477cda49e187bea8738047534555e7c9;
+metadataSHAs b4a4dc17a72f32949fd7e60a86b991dc5b703844f36b1a6c053ba324f9145ee1 and
+7acab4ba708ebe27397da452a2109b81d72712922bbb53209872d38e8e4cba84.
+Deletion planSHAs6c6617d479a73ea3b13ddbda3eee1e3a59983090982d1676865ea2059bc93046
+and61f3697eba816a52445ff2824150dba6e7f230efa56ee06b4f5e56763e78c507.
+Free space3,457,798,144B18:50:55.8555692UTC; protected capture/comparePASS.
+Fixed local helpers Archive-S32ClosedIdentical-oct18-{a,b}.py and
+Invoke-VerifiedS32Retained-oct18-{a,b}Cleanup.ps1 retain explicit selections.
+Original references compat-20261018T003220Z-0a1922336aa4 and
+compat-20261018T025808Z-0b38b3ec039f remain. No unique bytes, evidence, receipt,
+protected backup/save, personal data or DATA work deleted.

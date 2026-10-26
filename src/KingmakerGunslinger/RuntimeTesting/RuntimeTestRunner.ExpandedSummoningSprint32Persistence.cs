@@ -355,29 +355,55 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !Game.Instance.Player.Party.SequenceEqual(party) || owned.Any(unit => unit.Destroyed || unit.IsInCombat || unit.Descriptor.State.IsDead))
                 throw new InvalidOperationException("Sprint32 Working calm/mode/ownership boundary changed.");
         }
-        private static Vector3[] Sprint32ListenerPoints(UnitEntityData caster, UnitEntityData[] sources, UnitEntityData[] party)
+        private Vector3[] Sprint32ListenerPoints(UnitEntityData caster, UnitEntityData[] sources, UnitEntityData[] party)
         {
             if (AstarPath.active == null) throw new InvalidOperationException("Native navigation unavailable.");
             var geometry = Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance;
             if (geometry == null) throw new InvalidOperationException("Native physical sight unavailable.");
+            var performers = sources.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "lillend-azata").ToArray();
+            if (performers.Length != 2) throw new InvalidOperationException("Two exact owned Lillends required for listener survey.");
+            var rejected = new Dictionary<string, int> { ["navigation"] = 0, ["clampOrSeparation"] = 0,
+                ["acquisitionExclusion"] = 0, ["performanceRange"] = 0, ["physicalSight"] = 0 };
+            Vector3[] selected = null; int attempts = 0;
+            // A player's acquisition radius is not the performance's sight
+            // contract. Keep the intake still; survey four finite radii using
+            // native navigation, actual eye geometry and the90ft performance.
             foreach (var anchor in party)
-                for (int angle = 0; angle < 24; angle++)
+            {
+                foreach (float distance in new[] { 10.7f, 14f, 18f, 22f })
                 {
-                    var direction = Quaternion.Euler(0, angle * 15, 0) * Vector3.forward;
-                    var side = Vector3.Cross(Vector3.up, direction);
-                    var requested = new[] { anchor.Position + direction * 10.7f, anchor.Position + direction * 10.7f + side * 1.3f };
-                    var points = requested.Select(point => AstarPath.active.GetNearest(point)).ToArray();
-                    if (points.Any(point => point.node == null || !point.node.Walkable)) continue;
-                    var positions = points.Select(point => point.clampedPosition).ToArray();
-                    if (positions.Where((point, index) => Vector3.Distance(point, requested[index]) > .3f).Any() ||
-                        Vector3.Distance(positions[0], positions[1]) < .9f) continue;
-                    if (positions.All(point => party.Concat(sources).All(unit => Vector3.Distance(point, unit.Position) > 9.1f) &&
-                        Vector3.Distance(point, anchor.Position) < anchor.VisionRangeMeters - .3f &&
-                        sources.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "lillend-azata").All(unit =>
-                            Vector3.Distance(point, unit.Position) < 25f && !geometry.HasObstacle(unit.EyePosition, point + Vector3.up, 0)) &&
-                        !geometry.HasObstacle(anchor.EyePosition, point + Vector3.up, 0))) return positions;
+                    for (int angle = 0; angle < 24; angle++)
+                    {
+                        attempts++;
+                        var direction = Quaternion.Euler(0, angle * 15, 0) * Vector3.forward;
+                        var side = Vector3.Cross(Vector3.up, direction);
+                        var requested = new[] { anchor.Position + direction * distance, anchor.Position + direction * distance + side * 1.3f };
+                        var points = requested.Select(point => AstarPath.active.GetNearest(point)).ToArray();
+                        if (points.Any(point => point.node == null || !point.node.Walkable)) { rejected["navigation"]++; continue; }
+                        var positions = points.Select(point => point.clampedPosition).ToArray();
+                        if (positions.Where((point, index) => Vector3.Distance(point, requested[index]) > .3f).Any() ||
+                            Vector3.Distance(positions[0], positions[1]) < .9f) { rejected["clampOrSeparation"]++; continue; }
+                        if (positions.Any(point => party.Concat(sources).Any(unit => Vector3.Distance(point, unit.Position) <= 9.1f)))
+                        { rejected["acquisitionExclusion"]++; continue; }
+                        if (positions.Any(point => performers.Any(unit => Vector3.Distance(point, unit.Position) >= 25f)))
+                        { rejected["performanceRange"]++; continue; }
+                        if (positions.Any(point => performers.Any(unit => geometry.HasObstacle(unit.EyePosition,
+                            point + Kingmaker.Visual.FogOfWar.LineOfSightGeometry.EyeShift, 0))))
+                        { rejected["physicalSight"]++; continue; }
+                        selected = positions; break;
+                    }
+                    if (selected != null) break;
                 }
-            throw new InvalidOperationException("No bounded calm listener geometry without moving the intake party.");
+                if (selected != null) break;
+            }
+            RosterPersistenceCheck("s32-listener-geometry", selected != null, new JObject {
+                ["attempts"] = attempts, ["rejected"] = new JObject(rejected.Select(pair => new JProperty(pair.Key, pair.Value))),
+                ["party"] = new JArray(party.Select(unit => new JObject { ["id"] = unit.UniqueId,
+                    ["playerFaction"] = unit.IsPlayerFaction, ["vision"] = unit.VisionRangeMeters })),
+                ["positions"] = selected == null ? null : new JArray(selected.Select(point => new JArray(point.x, point.y, point.z))) },
+                "Finite native nav/eye-geometry survey excludes acquisition distance from every intake-party and source actor; actual mutual performance eligibility and calm state are checked after spawn.");
+            if (selected == null) throw new InvalidOperationException("No bounded calm listener geometry without moving the intake party.");
+            return selected;
         }
 
         private IEnumerable<int> CleanupSprint32PersistentState(UnitEntityData caster, UnitEntityData[] sources)
