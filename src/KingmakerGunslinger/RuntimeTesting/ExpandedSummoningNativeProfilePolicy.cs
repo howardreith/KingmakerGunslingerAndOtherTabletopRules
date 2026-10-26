@@ -17,10 +17,11 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint32SorcererInputPhase = "sorcerer-input";
         internal const string Sprint32PerformancePhase = "lillend-performance";
         internal const string Sprint32CantripPhase = "lillend-cantrips";
+        internal const string Sprint32FascinatePhase = "lillend-fascinate";
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
-        { return Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase; }
+        { return Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase || phase == Sprint32FascinatePhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)

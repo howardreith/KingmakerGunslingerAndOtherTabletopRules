@@ -147,18 +147,32 @@ namespace KingmakerGunslinger.Blueprints
                 ClearLillendPerformanceDeathPersistence32(stagedBuff);
                 stagedBuff.ComponentsArray = sourceBuff.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
                     .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<Sprint32SuggestionPresence>() }).ToArray();
-                foreach (var pair in new[] { new[] { "Satyr", Satyr32Prefix }, new[] { "LillendAzata", Lillend32Prefix } })
+                foreach (var pair in new[] { new[] { "Satyr", Satyr32Prefix, "Suggestion" },
+                    new[] { "LillendAzata", Lillend32Prefix, "Suggestion" },
+                    new[] { "LillendAzata", Lillend32Prefix, "BardicSuggestion" } })
                 {
                     var unit = Require<BlueprintUnit>(bySymbol, "KMG.Summoning.Unit." + pair[0]);
-                    var owned = Require<BlueprintAbility>(bySymbol, pair[1] + "Suggestion");
+                    var owned = Require<BlueprintAbility>(bySymbol, pair[1] + pair[2]);
                     var staged = ScriptableObject.CreateInstance<BlueprintAbility>();
                     stagedAbilities.Add(new KeyValuePair<BlueprintAbility, BlueprintAbility>(owned, staged));
                     CopyFields(source, staged); staged.PrototypeLink = null; staged.Parent = null;
-                    staged.name = InternalName(pair[1] + "Suggestion"); staged.Hidden = false;
-                    staged.Type = pair[0] == "Satyr" ? AbilityType.SpellLike : AbilityType.Spell;
+                    staged.name = InternalName(pair[1] + pair[2]); staged.Hidden = false;
+                    bool bardic = pair[2] == "BardicSuggestion";
+                    staged.Type = pair[0] == "Satyr" || bardic ? AbilityType.SpellLike : AbilityType.Spell;
                     var guard = ScriptableObject.CreateInstance<Sprint32SuggestionAvailable>(); guard.OwningBlueprint = unit;
                     staged.ComponentsArray = sourceComponents.Select(component => CloneSuggestionCore32(component, ownedBuff))
                         .Concat(new BlueprintComponent[] { guard }).ToArray();
+                    LillendBardicSuggestionTarget32 bardicTarget = null;
+                    if (bardic)
+                    {
+                        bardicTarget = (LillendBardicSuggestionTarget32)ExpandedSummoningAbilityBuilder.DeepCloneComponent(
+                            owned.GetComponents<LillendBardicSuggestionTarget32>().Single());
+                        staged.ComponentsArray = staged.ComponentsArray.Concat(new BlueprintComponent[] { bardicTarget }).ToArray();
+                        BlueprintUnitFactAccess.Resolve().Configure(staged,
+                            LocalizationService.Create(Lillend32Prefix + "BardicSuggestion.Name", "Bardic Suggestion"),
+                            LocalizationService.Create(Lillend32Prefix + "BardicSuggestion.Description",
+                                "Use the provider's avoid-combat Suggestion on one creature fascinated by this lillend. Standard action, Will DC 13 + Charisma, spell resistance; no slot or extra performance round. Does not interrupt this performance."), source.Icon);
+                    }
                     // Cow1.4.5 declares rank(Default) minutes but supplies no
                     // rank component. Bind the advertised live caster-level
                     // duration in our private copies using the proven native seam.
@@ -170,8 +184,9 @@ namespace KingmakerGunslinger.Blueprints
                     SetField(rank, "m_Progression", ContextRankProgression.AsIs);
                     SetField(rank, "m_UseMin", false); SetField(rank, "m_UseMax", false);
                     staged.ComponentsArray = staged.ComponentsArray.Concat(new BlueprintComponent[] { rank }).ToArray();
-                    foreach (var component in staged.ComponentsArray.Where(value => !ReferenceEquals(value, guard)))
+                    foreach (var component in staged.ComponentsArray.Where(value => !ReferenceEquals(value, guard) && !ReferenceEquals(value, bardicTarget)))
                         ValidateSuggestionGraph32(component, ownedBuff, new HashSet<object>(), 0);
+                    AlternateSummoningAdapterBuilder.ResetComponentCaches(staged);
                 }
                 // All cloning, nested checks and guard construction are done.
                 // Every possible old/new component array remains guarded while

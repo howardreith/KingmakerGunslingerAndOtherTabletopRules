@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 569;
+        internal const int SpecialIdentityCount = 577;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -818,6 +818,14 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CompetenceArea", "BlueprintAbilityAreaEffect"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CompetenceRecipient", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.NoncombatDispatcher", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Fascinate", "BlueprintActivatableAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.FascinateCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Fascinated", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.FascinateResistance", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.FascinateAssistance", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.FascinateShakeFree", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.FascinateArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.BardicSuggestion", "BlueprintAbility"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageRecipient", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageArea", "BlueprintAbilityAreaEffect"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.CourageCarrier", "BlueprintBuff"));

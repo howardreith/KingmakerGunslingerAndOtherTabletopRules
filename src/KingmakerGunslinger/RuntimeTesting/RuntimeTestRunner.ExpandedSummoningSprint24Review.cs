@@ -3680,7 +3680,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             float targetAllyExclusionRadius = 0f,
             IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null,
             int originSearchRadiusMeters = 15,
-            float originAllyExclusionRadius = 0f)
+            float originAllyExclusionRadius = 0f,
+            bool sprint32PerformanceSight = false)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3773,8 +3774,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             targetPoint.clampedPosition);
                         owner.SightCache.ClearIfNeeded();
                         targetUnit.SightCache.ClearIfNeeded();
-                        if (!owner.HasLOS(targetUnit) ||
-                            !targetUnit.HasLOS(owner)) continue;
+                        bool visible = sprint32PerformanceSight
+                            ? LillendPerformanceSight32.Sees(owner, targetUnit, 90) &&
+                                LillendPerformanceSight32.Sees(targetUnit, owner, 90)
+                            : owner.HasLOS(targetUnit) && targetUnit.HasLOS(owner);
+                        if (!visible) continue;
                         nativeLosCandidates++;
                         if (targetAllyExclusionRadius > 0f &&
                             Game.Instance.State.Units.All.Any(value =>

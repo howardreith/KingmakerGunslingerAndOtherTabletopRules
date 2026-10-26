@@ -35,6 +35,13 @@ resources, ownership, cleanup, saved identities and accepted ordinary-map flight
 - **Approved omissions:** Light, Dancing Lights, Ghost Sound, Hallucinatory Terrain
   and Detect Magic. Disclose limitations; no illumination, illusion/disbelief or
   aura-sensing subsystem. Countersong/Darkness omissions above remain unchanged.
+- **Pending owner decision:** bardic Suggestion's native pre-resolution offensive
+  notification creates reciprocal hostile memory and starts combat, defeating the
+  printed nonbreaking Fascinate exception. An additional exact-cast context bridge
+  into the memory handler is proposed (3-8 active hours, uncertain native edges),
+  preserving invisibility/stealth/other offensive reactions. No bridge implemented.
+  Narrow alternative: explicitly omit bardic Suggestion only, retaining conditional
+  bard-book Suggestion and Fascinate. Continue independent authorized work.
 - Exact branch addition to sanctioned push wrapper authorized/applied. No release
   number reserved. Development version0.0.167 remains explicitly candidate-bound.
 - Guarded Steam640820 transactions, current protected intake, immutable baseline,
@@ -59,21 +66,24 @@ Source profiles: [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Sat
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
 Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby has focused compilation and native RTWP proof on the candidate below.
-Noncombat performances remain required implementation, not pending permission.
+Noncombat performance source implementation is underway, not pending permission.
 
-Current validated development candidate is `7aed020a82f3214478cffdfc8d7863b8e2c32971`:
-ZIP `3d02f64a71e55d6613a0d7f7614c144052b1cc13cbfd573713ba9bddbe75583c`;
-DLL `d7e6baa08cb585ee7320c710c27c9d75c572514bb0c66b9fb78636b820c6091a`;
-MVID `5fc3dea1-ff5a-48cd-b8e9-37ab3c6f80d9`;
-SourceState `a5039d7ba63373097f6745ebbb588b90b5bdd54d4e67748b14ee13e4519afeef`.
-Path `artifacts/development-candidates/sprint32-lillend-support/7aed020a82f3/`.
+Current validated development candidate is `02043d30e1cd082b50abc8f6762dc25cae7b3386`:
+ZIP `7f9112ae2e1fc1838a3acc5cad5c99becd880fd4d50592a1aa1a92f0b1608ff0`;
+DLL `6550e1cbb14e5ebe3b75771dd1663d78e2387400810fecb5e0490938cafd72ee`;
+MVID `15c02c90-fa5e-453e-9981-a7be79042d5f`;
+SourceState `92003786105a4d65b8f9d4d32047a7733fc372cc5ba3e4e6fc9c3c1d4568701e`.
+Path `artifacts/development-candidates/sprint32-lillend-support/02043d30e1cd/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification. Native52
-Competence FAIL4PASS/2FAIL: its dispatcher was not bound to a live fact, so the
-fixture refused before dispatch. Native53 narrowed cantrips PASS7/7, including
-two natural Daze casts and the actual immunity lifetime. Original failures stay
-immutable. The periodic dispatcher/load-hook correction is newer than this
-candidate and has no native verdict. Input evidence stays bound to4b509d67.
+package PASS. Development version0.0.167; no release qualification. Native54
+demonstrates natural Competence Move activation, native upkeep, exact +3 ally
+bonus, brain-disabled refusal and audible-only maintenance. Aggregate remains
+FAIL11PASS/2FAIL for a demonstrated cleanup-observer timing defect. The observer
+now waits for the exact native carrier's delayed retirement as well as the
+toggle/recipient; rerun pending. Current Fascinate/bardic Suggestion additions
+are newer than this candidate. Native53 cantrips retain their7aed identity;
+input evidence stays bound to4b509d67. No old execution is called fresh.
+
 
 Current source also corrects the newly identified Daze limitation: private native
 Spell/Cantrip/effect mapping grants60s nondispellable immunity on successful
@@ -99,7 +109,8 @@ replenishment, forced rolls or fixture cast commands. Lullaby also passes.
 
 | Evidence | Result and dependency limit |
 |---|---|
-| Fresh7aed cantrips | Native53 PASS7/7: Lullaby natural cast/modifiers/refusals/original-deadline seam; Daze natural twice, actual60s immunity, cross-source refusal, native cooldown and recast. RTWP only; no broad support/persistence claim. `artifacts/sprint32-lillend-cantrips-7aed020a/` |
+| Fresh02043d30 Competence | Native54 useful natural execution/refusal PASS; normal Move command, pool20-to19-to18, one exact ally+3, sibling20/books unchanged; blinded selected recipient retains same grant through third upkeep. Aggregate FAIL for carrier-retirement observer; no cleanup PASS claim. `artifacts/sprint32-lillend-performance-02043d30/` |
+| Reviewed reuse:7aed cantrips | Native53 PASS7/7: Lullaby natural cast/modifiers/refusals/original-deadline seam; Daze natural twice, actual60s immunity, cross-source refusal, native cooldown and recast. RTWP only; no broad support/persistence claim. `artifacts/sprint32-lillend-cantrips-7aed020a/` |
 | Reviewed reuse:bad22421 Lullaby slice | PASS natural Standard/CL7/DC14/Will/SR,42s tail,-5 Perception,-2 only Will vs Sleep; allied overlap, Sleep immunity and active-effect refusals; owner/sibling budgets unchanged. Target-buff-only original-deadline seam passes with clock restored. Overall native51 remains FAIL for Daze. `artifacts/sprint32-lillend-support-bad22421/` |
 | Reviewed reuse: bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
 | Reviewed reuse:51cf Lillend support | PASS13/13. Natural Courage, selfheal and actual party-ally heal18-to0; independent level3 slots2-to1-to0, Standard cost plus exact free first-round touch delivery; sibling untouched; offensive fallback and owned body cleanup. `artifacts/sprint32-lillend-support-51cf0e58/` |
@@ -156,17 +167,17 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T072236Z-4cffc6a90f07` restored/verified
-07:28:12.7557475UTC. Protected Compare PASS: Mods967/saves118/references18/
+Latest transaction `compat-20261026T074443Z-b4ceac37ad31` restored/verified
+07:49:25.4340353UTC. Protected Compare PASS: Mods967/saves118/references18/
 settings83/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Original native52/53 Unity logs and raw results are retained.
+Original native52/53/54 Unity logs and raw results are retained.
 
-Counts:46 Build-Local attempts /35 validated development packages /53 native
-launches. Build46 took256.932s; native52 wrapper250.748s/native88.623s;
-native53 wrapper338.250s/native171.266s. Full inexpensive2753-test final gate
+Counts:47 Build-Local attempts /36 validated development packages /54 native
+launches. Build47 took258.712s; native54 wrapper283.611s/native113.680s.
+Earlier durations remain in history. Full inexpensive2753-test final gate
 has not run on these inputs. Earlier complete work-category totals unavailable.
-For07:11-07:38 approximate implementation/fixture6min, contract review4min,
-build/package4.3min, native setup/execution/restoration9.8min, records3min.
+For07:39-08:10 approximate implementation/fixture14min, contract review5min,
+build/package4.3min, native setup/execution/restoration4.7min, records3min.
 Activities overlap; no additive total/speedup claim. Owner waiting0.
 
 Disk plan remains1.1GB combined peak plus2GB working margin. Verified closed
@@ -178,31 +189,43 @@ At07:09UTC,23 fully byte-verified closed extractions reclaimed1,471,067,833B;
 free4,339,953,664B and protectedComparePASS. Never use the emergency floor
 as the working target. Exact cleanup identities remain in history/local receipts.
 
-Native50/52 disproved two dispatcher attachment assumptions. The repeated
-approach was paused and native lifecycle IL inspected. BlueprintUnit only invokes
-explicit entity-creation callbacks; arbitrary OwnedGameLogic there is not bound
-into unit.Logic. A private hidden periodic Buff now owns the dispatcher, granted
-and tracked by native AddFacts on Traits. Frequency=Rounds uses native buff
-ticks outside combat; no eager dispatch before book/toggle creation. Removal
-cancels only its exact pending command and owned Competence. Exact source handoff
-and brain-disabled/normal-action guards remain. The fixture checks the actual
-bound carrier, native frequency and nonspell/nondispellable flags.
+Native50/52 attachment failures triggered installed-contract review. Native54
+now proves the private periodic Buff/AddFacts dispatcher, normal command and
+brain refusal. Its final range-loss assertion raced native Stop(false): the
+toggle and recipient ended first, while the carrier retires at TimeToNextRound.
+Independent review confirms the bounded observer correction, which now waits
+for all four terminal states and records them. The original aggregate stays FAIL;
+the correction claims no exact deadline and has not run.
 
-The same contract review found ineffective optional-book OnTurnOn/PostLoad hooks.
-Reconciliation now takes the exact unit explicitly after creation, provider
-settling and native AddPostLoadActions (after spellbook load). It never Rest or
-replenishes slots; provider transition/cold proof is still required. Focused
-production26.7s/6tests5.2sPASS before the final creation-reconcile call. Independent
-actual-diff review found no additional dispatch blocker. Icon catalog30/30PASS
-after correcting the current registry hash pin; historical published pin retained.
+Fascinate/bardic Suggestion now have a first compiled private implementation:
+three preselected targets, JArray response hydration, separate24h source markers,
+mutual90ft physical sight, nearby-combat refusal, Will/noSR Fascinate, existing
+native threat/assistance patterns, exact-source cancellation and cleanup. Bardic
+Suggestion is separately Sp/Standard/Will/SR/CL7/DC13+liveCha with no slot or extra
+performance round. The exact command-threat exception is implemented, but native
+offensive memory still breaks the performance pending the decision above.
+Optional provider and protection checks remain. Native Stop callbacks
+remove owned effects/assistance immediately while native carrier retirement
+continues. Existing Nereid gameplay is unchanged. Source-backed rule contract:
+[PF1 Bard](https://www.aonprd.com/ClassDisplay.aspx?ItemName=Bard).
+Corrected product/fixture production23.5s/6tests0.8sPASS; catalog30/30PASS.
+Actual-diff independent review found two concrete issues. Per-target initial
+eligibility is now rechecked after command delay (no new ally/independently Dazed
+target is affected). The native bardic Suggestion offensive-memory conflict needs
+the additional owner decision above. Native Fascinate/bardic proof NOT_RUN.
 
-Next: one coherent development build, then only
-the changed lillend-performance early proof (expected10min;600s runtime ceiling).
-Native53 evidence remains bound to7aed; this unrelated dispatcher correction does
-not relabel it as fresh. Competence combat-entry cancellation and fresh-process
-persistence remain required. No unchanged third dispatcher attachment retry.
+Independent fixture review is closed: the complete eligible set must contain only
+the owned hostile before/after quiet Default time; all actual player groups are
+checked; fallback must finish successfully with normal Move flags and one cost
+observation. This is source-review closure, not native proof.
 
-Continue approved Fascinate/bardic Suggestion after the early dispatcher proof.
+Next: one coherent package for early Fascinate/refusal and
+the affected Competence cleanup rerun (each expected10min/runtime600s). The book
+creation/settle/AddPostLoadActions correction still needs provider/cold proof.
+The memory exception decision is pending; do not implement it provisionally.
+Native54's early useful dispatcher proof permits
+the approved Fascinate work; no broad compatibility campaign is selected.
+
 Its feasibility uses physical90ft sight beyond acquisition range and native
 player-group engagement rules; no combat-delay or neutral-harassment workaround.
 Remaining finite cases include Satyr Sleep/control, Lillend control/constrict,
