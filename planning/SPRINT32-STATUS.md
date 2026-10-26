@@ -135,7 +135,7 @@ Latest transaction `compat-20261026T033944Z-f026c486da9e` restored/verified
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build attempts/validated development packages/native launches:39/29/46.
+Build attempts/validated development packages/native launches:40/29/46.
 Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
 native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
 records10min, observer review/repair8min, approved-feature contract research10min,
@@ -176,3 +176,10 @@ disclosed native SR5 and each natural cast must produce an exact nonimmune,
 nonresisted SR5 event; zero events cannot claim SR proof. This final fixture
 addition awaits the candidate build. RTWP proof does not qualify turn-based
 execution or secondary burst recipients.
+
+Build40 at3e4d608e stopped before packaging/native dispatch:553/557selected
+tests passed; four icon tests shared a stale action-concept count (137instead
+of138). One shared declaration now includes the actual Lullaby concept, and
+the existing catalog case checks its identity. Focused production24.2s plus
+all9affected/S32tests5.1s PASS. Failure logs retained; no product rule changed
+to satisfy the observer. Source/art/native fixture review remains applicable.

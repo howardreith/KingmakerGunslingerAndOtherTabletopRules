@@ -137,6 +137,8 @@ namespace KingmakerGunslinger.DomainTests
                 .DisplayName, "Dire Bat requires its own creature icon identity.");
             Assertions.Equal("Smilodon", SummonIconCatalog.For("dire-tiger")
                 .DisplayName, "Smilodon icon identity changed.");
+            Assertions.Equal("Lullaby", SummonIconCatalog.For("lullaby")
+                .DisplayName, "The private Lullaby spell/effect needs its own icon concept.");
             Assertions.True(new[] { "air-mephit", "earth-mephit",
                     "fire-mephit", "water-mephit", "lantern-archon",
                     "pteranodon", "bralani-azata", "erinyes-devil" }
