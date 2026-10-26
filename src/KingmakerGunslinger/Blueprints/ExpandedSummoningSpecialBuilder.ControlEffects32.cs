@@ -68,11 +68,15 @@ namespace KingmakerGunslinger.Blueprints
                 buff.ComponentsArray = native.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
                     .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>(),
                         ScriptableObject.CreateInstance<FeyControlCasterCleanup32>() }).ToArray();
+                if (!sleep)
+                    buff.ComponentsArray = buff.ComponentsArray.Concat(new BlueprintComponent[] {
+                        ScriptableObject.CreateInstance<FeyCharmThreat32>() }).ToArray();
                 buff.ResourceAssetIds = Array.Empty<string>();
                 BlueprintUnitFactAccess.Resolve().Configure(buff,
                     LocalizationService.Create(symbol + ".Name", sleep ? "Sleep" : "Charm"),
                     LocalizationService.Create(symbol + ".Description",
-                        "This summoned creature's control effect ends when its source disappears."), native.Icon);
+                        sleep ? "This summoned creature's control effect ends when its source disappears." :
+                        "Charm ends when its source disappears or its caster or an apparent ally threatens the subject."), native.Icon);
             }
         }
 

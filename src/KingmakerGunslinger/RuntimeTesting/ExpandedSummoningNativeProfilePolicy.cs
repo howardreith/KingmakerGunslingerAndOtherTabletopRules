@@ -20,6 +20,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal const string Sprint32PerformancePhase = "lillend-performance";
         internal const string Sprint32HoldPhase = "lillend-hold";
         internal const string Sprint32HoldTurnPhase = "lillend-hold-turn";
+        internal const string Sprint32ControlsPhase = "lillend-controls";
+        internal const string Sprint32ControlsTurnPhase = "lillend-controls-turn";
         internal const string Sprint32CantripPhase = "lillend-cantrips";
         internal const string Sprint32FascinatePhase = "lillend-fascinate";
         internal const string Sprint32BardicSuggestionPhase = "lillend-bardic-suggestion";
@@ -35,6 +37,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
             phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
+            phase == Sprint32ControlsPhase || phase == Sprint32ControlsTurnPhase ||
             phase == Sprint32SatyrAtWillPhase ||
             phase == Sprint32SatyrAtWillTurnPhase || Sprint32NativeDefaultPhase(phase); }
         internal const string OutsiderBodyPhase = "outsider-bodies";

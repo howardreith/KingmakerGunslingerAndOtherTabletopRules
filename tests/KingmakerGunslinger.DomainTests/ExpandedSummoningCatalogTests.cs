@@ -30,6 +30,7 @@ namespace KingmakerGunslinger.DomainTests
                 new { Suffix = "SpellList", Type = "BlueprintSpellList" },
                 new { Suffix = "Courage", Type = "BlueprintActivatableAbility" },
                 new { Suffix = "PerformanceResource", Type = "BlueprintAbilityResource" },
+                new { Suffix = "SoundBurst", Type = "BlueprintAbility" },
                 new { Suffix = "CourageAi", Type = "LillendCourageAi32" },
                 new { Suffix = "HealEligibility", Type = "LillendHealingEligibility32" } })
                 Assertions.Equal(row.Type, identities["KMG.Summoning.FeyCelestial.LillendAzata." + row.Suffix].PlannedType,
