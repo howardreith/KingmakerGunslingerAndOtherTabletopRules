@@ -5,6 +5,20 @@
       "id": "gunslinger-cowwithhat-suggestion",
       "description": "Isolated CowWithHat Custom Spells and its Call of the Wild dependency for Sprint32 Suggestion.",
       "requiredGunslingerPackage": "explicit-validated-candidate",
+      "sprint32WorkingOverlayReferences": [
+        {
+          "ummId": "CallOfTheWild",
+          "version": "1.14.4c-2.1",
+          "assemblyName": "CallOfTheWild",
+          "sha256": "4ebf8e1ed3e66ffed72ea33ea325595629423dacd5bffa23e3c9109144b26915"
+        },
+        {
+          "ummId": "CowWithHatsCustomSpellsMod",
+          "version": "1.4.5",
+          "assemblyName": "CowWithHatsCustomSpellsMod",
+          "sha256": "38e19b52d2adb38bdf86044640a9ea92f736e0d0d221ed86c46df21540d82bd9"
+        }
+      ],
       "modKeys": [
         "call-of-the-wild",
         "cowwithhat-custom-spells"

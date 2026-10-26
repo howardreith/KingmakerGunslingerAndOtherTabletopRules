@@ -27,6 +27,15 @@ function Assert-KmgSuggestionProfileSelection {
     if ([string]::IsNullOrWhiteSpace($PackagePath) -or [string]::IsNullOrWhiteSpace($ReferenceRoot)) {
         throw 'Optional Suggestion profile requires explicit candidate and isolated reference root; no profile entered.'
     }
+    Assert-KmgSuggestionReferenceRoot -ReferenceRoot $ReferenceRoot -RepositoryRoot $RepositoryRoot
+}
+
+function Assert-KmgSuggestionReferenceRoot {
+    param([string]$ReferenceRoot,[string]$RepositoryRoot)
+    if([string]::IsNullOrWhiteSpace($ReferenceRoot)){throw 'Optional Suggestion requires an explicit isolated reference root.'}
+    $profiles = Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/profiles.json')
+    $matches = @($profiles.profiles | Where-Object id -ceq 'gunslinger-cowwithhat-suggestion')
+    if($matches.Count -ne 1){throw 'Optional Suggestion reference profile is ambiguous.'}
     $references = [IO.Path]::GetFullPath($ReferenceRoot).TrimEnd('\')
     $isolated = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot 'artifacts')).TrimEnd('\') + '\'
     if (-not $references.StartsWith($isolated, [StringComparison]::OrdinalIgnoreCase)) {
@@ -60,6 +69,61 @@ function Assert-KmgSuggestionProfileSelection {
             }
         }
     }
+}
+
+# Fixed optional overlay on the full current intake. This resolver only reads;
+# existing Enter/Restore-KmgCompatibilityTransaction owns every mutation.
+function Assert-KmgSprint32SuggestionReferenceIdentity {
+    param($Resolution,[string]$RepositoryRoot)
+    $profiles=Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/profiles.json')
+    $profile=@($profiles.profiles|Where-Object id -ceq 'gunslinger-cowwithhat-suggestion')
+    if($profile.Count -ne 1 -or $Resolution.profileId -cne $profile[0].id) {throw 'Sprint32 provider reference profile differs.'}
+    $expected=@($profile[0].sprint32WorkingOverlayReferences)
+    if($expected.Count -ne 2 -or @($Resolution.runtimeMods).Count -ne $expected.Count) {throw 'Sprint32 investigated reference count differs.'}
+    foreach($identity in $expected) {
+        $actual=@($Resolution.runtimeMods|Where-Object ummId -ceq $identity.ummId)
+        if($actual.Count -ne 1 -or $actual[0].version -cne $identity.version -or
+           $actual[0].assembly.assemblyName -cne $identity.assemblyName -or $actual[0].assembly.sha256 -cne $identity.sha256) {
+            throw 'Sprint32 provider/dependency differs from the investigated reference identity; no transaction entered.'
+        }
+    }
+}
+
+function Resolve-KmgSprint32SuggestionOverlay {
+    param([Parameter(Mandatory=$true)]$InstalledRuntimeMods,
+        [Parameter(Mandatory=$true)][string]$SuggestionTransition,
+        [Parameter(Mandatory=$true)][bool]$ProviderPresent,
+        [Parameter(Mandatory=$true)][string]$SuggestionReferenceRoot,
+        [Parameter(Mandatory=$true)][string]$PackagePath,
+        [Parameter(Mandatory=$true)][string]$KingmakerInstallDir,
+        [Parameter(Mandatory=$true)][string]$RepositoryRoot)
+    $mods=Join-Path $KingmakerInstallDir 'Mods'
+    if(@($InstalledRuntimeMods).Count -ne 10 -or @($InstalledRuntimeMods.id | Sort-Object -Unique).Count -ne 10) {
+        throw 'Provider overlay requires the intact identifiable ten other intake mods.'
+    }
+    # Resolve the provider/reference identities read-only; never dispatch the
+    # three-mod save-free profile against Working. Preserve every intake mod.
+    Assert-KmgSuggestionReferenceRoot -ReferenceRoot $SuggestionReferenceRoot -RepositoryRoot $RepositoryRoot
+    $providerProfile=Resolve-KmgCompatibilityProfile -ProfileId 'gunslinger-cowwithhat-suggestion' -ReferenceRoot $SuggestionReferenceRoot -PackagePath $PackagePath -KingmakerInstallDir $KingmakerInstallDir -RepositoryRoot $RepositoryRoot
+    Assert-KmgSprint32SuggestionReferenceIdentity -Resolution $providerProfile -RepositoryRoot $RepositoryRoot
+    $provider=@($providerProfile.runtimeMods | Where-Object ummId -ceq 'CowWithHatsCustomSpellsMod')
+    $dependency=@($providerProfile.runtimeMods | Where-Object ummId -ceq 'CallOfTheWild')
+    $installedDependency=@($installedRuntimeMods | Where-Object id -ceq 'CallOfTheWild')
+    if(-not $providerProfile.runtimeCapable -or $providerProfile.runtimeMods.Count -ne 2 -or $provider.Count -ne 1 -or $dependency.Count -ne 1 -or $installedDependency.Count -ne 1 -or
+       @($installedRuntimeMods | Where-Object { $_.id -ieq 'CowWithHatsCustomSpellsMod' -or $_.destinationName -ieq $provider[0].destinationName }).Count -ne 0 -or
+       $provider[0].assembly.assemblyName -cne 'CowWithHatsCustomSpellsMod' -or $dependency[0].assembly.assemblyName -cne 'CallOfTheWild') {
+        throw 'Optional provider overlay identity or intact installed dependency boundary differs; no transaction entered.'
+    }
+    $providerInfo=Read-KmgCompatibilityJson (Join-Path $provider[0].sourceDirectory 'Info.json')
+    if(@($providerInfo.Requirements).Count -ne 1 -or $providerInfo.Requirements[0] -cne 'CallOfTheWild') { throw 'Provider dependency contract differs; no transaction entered.' }
+    $installedInfo=Read-KmgCompatibilityJson (Join-Path (Join-Path $mods $installedDependency[0].destinationName) 'Info.json')
+    if(-not $installedInfo.PSObject.Properties['Id'] -or $installedInfo.Id -cne 'CallOfTheWild' -or
+       -not $installedInfo.PSObject.Properties['AssemblyName'] -or -not $installedInfo.PSObject.Properties['Version'] -or
+       $installedInfo.AssemblyName -cne $dependency[0].assembly.fileName -or $installedInfo.Version -cne $dependency[0].version -or
+       (Get-KmgCompatibilitySha256 (Join-Path (Join-Path $mods $installedDependency[0].destinationName) $installedInfo.AssemblyName)) -cne $dependency[0].assembly.sha256) {
+        throw 'Installed CotW differs from the investigated provider dependency; no transaction entered.'
+    }
+    return [ordered]@{transition=$SuggestionTransition;present=$ProviderPresent;provider=$provider[0];dependency=$dependency[0].assembly;intakeModsPreserved=$installedRuntimeMods.Count}
 }
 
 function Get-KmgCompatibilityRelativePath([string]$Root, [string]$Path) {

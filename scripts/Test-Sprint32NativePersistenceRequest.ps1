@@ -36,9 +36,12 @@ try {
         FingerprintTimeoutSeconds=180;ExitAfterCompletion=$true;EvidenceDirectory=$missing}
     $rows=@()
     foreach($scenario in @('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent')) {
-        $good=New-KmgRuntimeRequest @base -Scenario $scenario -Parameters @{saveName='KMG_AUTOMATION_WORKING';persistenceScope='fey-celestial'}
+      foreach($transition in @($null,'retained','removed','module-off')) {
+        $parameters=@{saveName='KMG_AUTOMATION_WORKING';persistenceScope='fey-celestial'}
+        if($null -ne $transition){$parameters.suggestionTransition=$transition}
+        $good=New-KmgRuntimeRequest @base -Scenario $scenario -Parameters $parameters
         $json=$good | ConvertTo-Json -Depth 20
-        foreach($case in @('exact-scope','baseline','other-save','no-exit','scope-case','extra-parameter','version')) {
+        foreach($case in @('exact-scope','baseline','other-save','no-exit','scope-case','extra-parameter','version','unknown-transition','transition-case','null-transition','wrong-transition-scope')) {
             $request=[Newtonsoft.Json.JsonConvert]::DeserializeObject($json,$type)
             $expected='evidence-directory-missing'
             switch($case) {
@@ -48,12 +51,17 @@ try {
                 'scope-case' {$request.Parameters['persistenceScope']=[Newtonsoft.Json.Linq.JValue]::new('Fey-celestial');$expected='summoning-persistence-scope-invalid'}
                 'extra-parameter' {$request.Parameters['extra']=[Newtonsoft.Json.Linq.JValue]::new('untrusted');$expected='save-name-required'}
                 'version' {$request.ExpectedModVersion='wrong';$expected='mod-version-mismatch'}
+                'unknown-transition' {$request.Parameters['suggestionTransition']=[Newtonsoft.Json.Linq.JValue]::new('arbitrary');$expected='sprint32-suggestion-transition-invalid'}
+                'transition-case' {$request.Parameters['suggestionTransition']=[Newtonsoft.Json.Linq.JValue]::new('Retained');$expected='sprint32-suggestion-transition-invalid'}
+                'null-transition' {$request.Parameters['suggestionTransition']=[Newtonsoft.Json.Linq.JValue]::CreateNull();$expected='sprint32-suggestion-transition-invalid'}
+                'wrong-transition-scope' {$request.Parameters['suggestionTransition']=[Newtonsoft.Json.Linq.JValue]::new('retained');$request.Parameters['persistenceScope']=[Newtonsoft.Json.Linq.JValue]::new('crocodilians');$expected='sprint32-suggestion-transition-invalid'}
             }
             $actual=$validate.Invoke($null,@($request,$version))
-            $rows+=[pscustomobject]@{scenario=$scenario;case=$case;expected=$expected;actual=$actual;pass=($actual -ceq $expected)}
+            $rows+=[pscustomobject]@{scenario=$scenario;transition=$transition;case=$case;expected=$expected;actual=$actual;pass=($actual -ceq $expected)}
         }
+      }
     }
-    $rows | Format-Table -AutoSize
+    $rows | Where-Object {-not $_.pass} | Format-Table -AutoSize
     if(@($rows | Where-Object {-not $_.pass}).Count){throw 'Compiled Sprint32 persistence request refusal differed.'}
     if(Test-Path -LiteralPath $missing){throw 'Headless validator unexpectedly created evidence.'}
     Write-Host ('PASS compiled parser admission/refusals={0}; DLL={1}; MVID={2}. Exact scopes reach the deliberate missing-evidence refusal; no full request activation/game/save is claimed.' -f $rows.Count,(Get-FileHash -LiteralPath $ModAssemblyPath -Algorithm SHA256).Hash,$mod.ManifestModule.ModuleVersionId)

@@ -618,6 +618,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.FeyCelestialScope &&
                      (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.Scope)))
                     return "summoning-persistence-scope-invalid";
+                bool suggestionTransition = request.Parameters?.Property("suggestionTransition") != null;
+                if (suggestionTransition && (!targetedSummonPersistence ||
+                    (string)request.Parameters["persistenceScope"] != ExpandedSummoningRosterPersistencePolicy.FeyCelestialScope ||
+                    request.Parameters["suggestionTransition"].Type != JTokenType.String ||
+                    !ExpandedSummoningRosterPersistencePolicy.Sprint32SuggestionTransition((string)request.Parameters["suggestionTransition"])))
+                    return "sprint32-suggestion-transition-invalid";
                 // The ordinary native-control case joins the two same-turn
                 // cases here: it is the unquickened Full-Round route, and a
                 // creature too far up the ladder to be quickened has nowhere
@@ -656,7 +662,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (circleBound && (!request.ExitAfterCompletion || request.Parameters?["preparationBinding"]?.Type != JTokenType.String ||
                     !MagicCirclePreparationBinding.Valid((string)request.Parameters["preparationBinding"], request.ExpectedModVersion)))
                     return "magic-circle-preparation-binding-required";
-                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview || dispelUi ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
+                if (request.Parameters == null || request.Parameters.Count != (circleBound ? 2 : suggestionTransition || persistence || fcbPersistence || traitSave || weaponSave ? 3 : nativeActionCase ? 5 : request.Scenario == RuntimeTestScenarioCatalog.WorkingSaveNereidRespec ? 5 : creatorRegression || sceneRoundtrip || visualLifecycle ? 4 : treacherousEffect || crowdReview || dispelUi ? 3 : nereidPersistence || deferredMarkers || targetedSummonPersistence || creatureReview || flightActivation || weaponRoute || representativePlayerPaths ? 2 : 1) ||
                     request.Parameters.Property("saveName") == null ||
                     request.Parameters["saveName"].Type != JTokenType.String)
                     return "save-name-required";

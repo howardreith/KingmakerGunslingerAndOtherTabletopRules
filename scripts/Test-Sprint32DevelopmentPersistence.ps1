@@ -43,9 +43,30 @@ if(Get-Process Kingmaker -ErrorAction SilentlyContinue){throw 'No running game p
 $beforeEvidence=@(Get-ChildItem -LiteralPath $script:KmgRuntimeEvidenceRoot -Directory | ForEach-Object FullName)
 $beforeStage=Test-Path -LiteralPath $stage;$beforeLock=Test-Path -LiteralPath $lock
 foreach($scenario in @('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent')) {
- & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $scenario -ExpectedVersion $version -SaveName KMG_AUTOMATION_WORKING -Parameters @{persistenceScope='fey-celestial'} -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false
+ foreach($transition in @($null,'retained','removed','module-off')) {
+  $parameters=@{persistenceScope='fey-celestial'}
+  if($null -ne $transition){$parameters.suggestionTransition=$transition}
+  & (Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1') -Scenario $scenario -ExpectedVersion $version -SaveName KMG_AUTOMATION_WORKING -Parameters $parameters -ExitAfterCompletion:$true -AllowDirtyGit -WhatIf -Confirm:$false
+  $count++
+ }
+}
+foreach($case in @(
+ @{persistenceScope='fey-celestial';suggestionTransition='Retained'},
+ @{persistenceScope='fey-celestial';suggestionTransition=''},
+ @{persistenceScope='fey-celestial';suggestionTransition=$null},
+ @{persistenceScope='fey-celestial';suggestionTransition=1},
+ @{persistenceScope='whole-roster';suggestionTransition='retained'},
+ @{persistenceScope='fey-celestial';SuggestionTransition='retained'},
+ @{suggestionTransition='retained'}
+)) {
+ $refused=$false
+ try{[void](Test-KmgSprint32SuggestionTransition -TargetedPersistence $true -Parameters $case)}catch{$refused=$true}
+ if(-not $refused){throw 'Malformed fixed provider transition accepted.'}
  $count++
 }
+$refused=$false
+try{[void](Test-KmgSprint32SuggestionTransition -TargetedPersistence $false -Parameters @{persistenceScope='fey-celestial';suggestionTransition='retained'})}catch{$refused=$true}
+if(-not $refused){throw 'Provider transition admitted outside Working trio.'};$count++
 $afterEvidence=@(Get-ChildItem -LiteralPath $script:KmgRuntimeEvidenceRoot -Directory | ForEach-Object FullName)
 if(@(Compare-Object $beforeEvidence $afterEvidence).Count -or (Test-Path -LiteralPath $stage) -ne $beforeStage -or (Test-Path -LiteralPath $lock) -ne $beforeLock -or (Get-Process Kingmaker -ErrorAction SilentlyContinue)) {throw 'Source-only Sprint32 test crossed a runtime boundary.'}
 Write-Host "Sprint32 finite persistence purpose/outer route checks PASS=$count; no game/save/deployment."

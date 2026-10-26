@@ -125,11 +125,15 @@ if ($scenarioMetadata.RequiresSaveName) {
             'working-save-expanded-summoning-verify-cleanup',
             'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')) {
-        if ($Parameters.Count -ne 1 -or $Parameters.persistenceScope -isnot [string] -or
+        $suggestionTransition=Test-KmgSprint32SuggestionTransition -TargetedPersistence $true -Parameters $Parameters
+        $targetedParameterCount=if($suggestionTransition){2}else{1}
+        if ($Parameters.Count -ne $targetedParameterCount -or $Parameters.persistenceScope -isnot [string] -or
             $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial') -or -not $ExitAfterCompletion) {
             throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon, giant-humanoids, giant-humanoids-ii, outsider-celestial or fey-celestial and automatic exit.'
         }
-        $Parameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
+        $targetedParameters = @{ saveName = $SaveName; persistenceScope = $Parameters.persistenceScope }
+        if($suggestionTransition){$targetedParameters.suggestionTransition=$Parameters.suggestionTransition}
+        $Parameters=$targetedParameters
     } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and
             $Parameters.ContainsKey('playerPathScope')) {
         if ($Parameters.Count -ne 1 -or $Parameters.playerPathScope -isnot [string] -or

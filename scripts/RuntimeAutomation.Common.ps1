@@ -2264,6 +2264,21 @@ function Test-KmgSprint28ReviewPhaseScope {
         $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')
 }
 
+function Test-KmgSprint32SuggestionTransition {
+    param([bool]$TargetedPersistence,[hashtable]$Parameters)
+    if($null -eq $Parameters -or -not $Parameters.ContainsKey('suggestionTransition')) { return $false }
+    $policy=Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs') -Raw
+    $matches=[regex]::Matches($policy,'internal const string Sprint32Suggestion[A-Za-z]+ = "([a-z-]+)";')
+    if($matches.Count -eq 0){throw 'Sprint32 Suggestion transition declarations missing.'}
+    $values=@($matches | ForEach-Object {$_.Groups[1].Value})
+    if(-not $TargetedPersistence -or @($Parameters.Keys) -cnotcontains 'suggestionTransition' -or
+        $Parameters.suggestionTransition -isnot [string] -or $Parameters.suggestionTransition -cnotin $values -or
+        @($Parameters.Keys) -cnotcontains 'persistenceScope' -or $Parameters.persistenceScope -cne 'fey-celestial') {
+        throw 'Suggestion transition is restricted to the exact declared Sprint32 Working trio variants.'
+    }
+    return $true
+}
+
 function Test-KmgSprint32ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     # The selected C# declaration owns the phase name; no second phase list.
@@ -2546,7 +2561,8 @@ function Assert-KmgRuntimeScenarioPreflight {
         if ($dispelUi -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters -IncludesSaveName))) {
             throw 'S30/S31 UI requires the exact fixed read-only Working case and automatic exit.'
         }
-        $requiredParameterCount = if ($dispelUi) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $suggestionTransition=Test-KmgSprint32SuggestionTransition -TargetedPersistence $targetedSummonPersistence -Parameters $Parameters
+        $requiredParameterCount = if ($dispelUi -or $suggestionTransition) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -2870,7 +2886,9 @@ function New-KmgRuntimeRequest {
         } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
                 'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
                 $Parameters.ContainsKey('persistenceScope')) {
-            [ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
+            $targetedParameters=[ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
+            if($Parameters.ContainsKey('suggestionTransition')) { $targetedParameters.suggestionTransition=[string]$Parameters.suggestionTransition }
+            $targetedParameters
         } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; playerPathScope = [string]$Parameters.playerPathScope }
         } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
