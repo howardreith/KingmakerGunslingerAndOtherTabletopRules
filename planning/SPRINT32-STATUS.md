@@ -68,20 +68,22 @@ Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby has focused compilation and native RTWP proof on the candidate below.
 Noncombat performance source implementation is underway, not pending permission.
 
-Current validated development candidate is `02043d30e1cd082b50abc8f6762dc25cae7b3386`:
-ZIP `7f9112ae2e1fc1838a3acc5cad5c99becd880fd4d50592a1aa1a92f0b1608ff0`;
-DLL `6550e1cbb14e5ebe3b75771dd1663d78e2387400810fecb5e0490938cafd72ee`;
-MVID `15c02c90-fa5e-453e-9981-a7be79042d5f`;
-SourceState `92003786105a4d65b8f9d4d32047a7733fc372cc5ba3e4e6fc9c3c1d4568701e`.
-Path `artifacts/development-candidates/sprint32-lillend-support/02043d30e1cd/`.
+Current validated development candidate is `a333ab3f72324419c493b8ef4d7064a4d4257039`:
+ZIP `e2b20e91ea371a31ccdcccac755714d3ce57625ca1f116a88339a2f19c322d6b`;
+DLL `cbcd1d21791e3392f0baefcf1df59e7f2aaf5f4ea5de077fa5db22be78cd1932`;
+MVID `946a7f46-5b60-46b4-b461-1aec09766797`;
+SourceState `fdbc665fae7cf5e5ecf6b12ae1635fd7494f630e07e62b72c84c7c0274a4d519`.
+Path `artifacts/development-candidates/sprint32-lillend-support/a333ab3f7232/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification. Native54
-demonstrates natural Competence Move activation, native upkeep, exact +3 ally
-bonus, brain-disabled refusal and audible-only maintenance. Aggregate remains
-FAIL11PASS/2FAIL for a demonstrated cleanup-observer timing defect. The observer
-now waits for the exact native carrier's delayed retirement as well as the
-toggle/recipient; rerun pending. Current Fascinate/bardic Suggestion additions
-are newer than this candidate. Native53 cantrips retain their7aed identity;
+package PASS. Development version0.0.167; no release qualification. Native55
+Fascinate PASS13/13: natural calm boundary and brain refusal, normal Move,
+native20-to19-to18 upkeep, real failedWillDC17/noSR, exact effect/-4Perception,
+cancellation and immune-target natural Competence fallback. Native56 Competence
+PASS12/12, including audible maintenance and complete recipient-loss cleanup.
+Native54's original aggregate FAIL11PASS/2FAIL remains immutable; its reviewed
+carrier-retirement observer correction is now executed. Bardic Suggestion's
+memory exception remains unimplemented pending the decision above.
+Native53 cantrips retain their7aed identity;
 input evidence stays bound to4b509d67. No old execution is called fresh.
 
 
@@ -167,18 +169,22 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T074443Z-b4ceac37ad31` restored/verified
-07:49:25.4340353UTC. Protected Compare PASS: Mods967/saves118/references18/
+Latest transaction `compat-20261026T085601Z-8274b745a4ac` restored/verified
+09:00:44.3958645UTC. Protected Compare PASS: Mods967/saves118/references18/
 settings83/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Original native52/53/54 Unity logs and raw results are retained.
+Original native52-56 Unity logs and raw results are retained.
 
-Counts:47 Build-Local attempts /36 validated development packages /54 native
-launches. Build47 took258.712s; native54 wrapper283.611s/native113.680s.
+Counts:48 Build-Local attempts /37 validated development packages /56 native
+launches. Build48 took261.027s; native55 wrapper277.476s/native113.690s;
+native56 wrapper284.183s/native119.447s.
 Earlier durations remain in history. Full inexpensive2753-test final gate
 has not run on these inputs. Earlier complete work-category totals unavailable.
 For07:39-08:10 approximate implementation/fixture14min, contract review5min,
 build/package4.3min, native setup/execution/restoration4.7min, records3min.
-Activities overlap; no additive total/speedup claim. Owner waiting0.
+Activities overlap; no additive total/speedup claim. Subsequent08:40-09:01:
+build/package4.35min and native setup/execution/restoration9.36min measured;
+approximately6min cleanup investigation/verification,2min records and2min review
+overlap those intervals. Owner decision pending; independent work continued.
 
 Disk plan remains1.1GB combined peak plus2GB working margin. Verified closed
 extraction/build duplicates reclaimed502,187,002B before Build45 and99,429,740B
@@ -187,7 +193,9 @@ after native50, with protected Capture/Compare PASS. Build45 began with
 evidence/failures, receipts, PDBs, saves and protected backups remain retained.
 At07:09UTC,23 fully byte-verified closed extractions reclaimed1,471,067,833B;
 free4,339,953,664B and protectedComparePASS. Never use the emergency floor
-as the working target. Exact cleanup identities remain in history/local receipts.
+as the working target. At08:55UTC, nine fully byte-verified closed v160 extracts
+reclaimed744,523,803B, free3,808,940,032B, protectedComparePASS. After native56,
+free3,598,626,816B. Exact cleanup identities remain in history/local receipts.
 
 Native50/52 attachment failures triggered installed-contract review. Native54
 now proves the private periodic Buff/AddFacts dispatcher, normal command and
@@ -195,7 +203,10 @@ brain refusal. Its final range-loss assertion raced native Stop(false): the
 toggle and recipient ended first, while the carrier retires at TimeToNextRound.
 Independent review confirms the bounded observer correction, which now waits
 for all four terminal states and records them. The original aggregate stays FAIL;
-the correction claims no exact deadline and has not run.
+the correction claims no exact deadline. Native56 now passes all terminal states;
+terminal distance7.699m reflects subsequent native movement, not continuous
+out-of-range residence. This case observes cleanup after the fixture relocation,
+not movement animation or an exact removal deadline.
 
 Fascinate/bardic Suggestion now have a first compiled private implementation:
 three preselected targets, JArray response hydration, separate24h source markers,
@@ -212,15 +223,28 @@ Corrected product/fixture production23.5s/6tests0.8sPASS; catalog30/30PASS.
 Actual-diff independent review found two concrete issues. Per-target initial
 eligibility is now rechecked after command delay (no new ally/independently Dazed
 target is affected). The native bardic Suggestion offensive-memory conflict needs
-the additional owner decision above. Native Fascinate/bardic proof NOT_RUN.
+the additional owner decision above. Early native Fascinate proof now PASS;
+bardic proof and the remaining Fascinate boundaries are NOT_RUN.
 
 Independent fixture review is closed: the complete eligible set must contain only
 the owned hostile before/after quiet Default time; all actual player groups are
 checked; fallback must finish successfully with normal Move flags and one cost
 observation. This is source-review closure, not native proof.
 
-Next: one coherent package for early Fascinate/refusal and
-the affected Competence cleanup rerun (each expected10min/runtime600s). The book
+The current fixture extension is newer than the candidate: two bounded groups
+on fresh sources cover cap/frozen selection/resistance/ShakeFree, then actual
+movement/spell threats and sibling source cleanup. Independent assumption review
+is closed. Its first compile caught only List-versus-array in an existing save
+observer; corrected. Selection now identifies a new command by exact reference,
+not HashSet enumeration order. Native UnitMoveTo deliberately ignores cooldowns;
+the reviewed cue observes successful displacement and per-command saves without
+inventing an action debit. Corrected production23.1s/6tests1sPASS. Nominal sequence
+fits fresh120s summons; unexpected expiry is classified before product changes.
+No new package/native execution is claimed.
+
+Next: one candidate for the reviewed extended phase, expected10min/runtime600s.
+Retain native55/56 as early proof,
+not final qualification. The book
 creation/settle/AddPostLoadActions correction still needs provider/cold proof.
 The memory exception decision is pending; do not implement it provisionally.
 Native54's early useful dispatcher proof permits
