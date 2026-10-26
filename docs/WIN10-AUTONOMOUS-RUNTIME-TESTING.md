@@ -19,8 +19,9 @@ two Lillends have exact generic source receipts; two registered native default
 humanoids have separate source/caster/run-bound listener receipts, following the
 Sprint22/26 auxiliary-actor seam. No transient blueprint is serialized. Only the
 listeners' per-instance faction/attack set and stats change; native faction
-blueprints and intake actors are untouched. Finite four-radius native nav/physical-LOS survey with native EyeShift and one
-rejection-count receipt,
+blueprints and intake actors are untouched. Finite four-radius connected native walking-graph/physical-LOS survey with native
+EyeShift, actual ground anchors, separate horizontal clamp/height bounds and one
+rejection-count receipt (reusing the accepted Cleanup2 walking query),
 no unintended nonparty hostility, nonparty listener groups, calm Default mode,
 exact target set and actual unforced saves are required before real dispatcher
 activation. Competence requires an empty eligible Fascinate set before/during
