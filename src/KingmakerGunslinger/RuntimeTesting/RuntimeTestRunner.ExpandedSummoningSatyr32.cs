@@ -72,6 +72,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendSupportPhase)
             {
                 foreach (int frame in ReviewLillend32Support(fixture)) yield return frame;
+                foreach (int frame in ReviewLullaby32(fixture)) yield return frame;
                 yield break;
             }
             if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendTurnPhase)

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 137,
+  "count": 138,
   "icons": [
     {
       "key": "air-mephit",
@@ -3907,6 +3907,22 @@
         "KMG.Summoning.Ability.SM.Tier8.LillendAzata.OneD4PlusOne",
         "KMG.Summoning.Ability.SM.Tier9.LillendAzata.OneD4PlusOne",
         "KMG.Summoning.Unit.LillendAzata"
+      ]
+    },
+    {
+      "key": "lullaby",
+      "displayName": "Lullaby",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/lullaby.png",
+      "productionFile": "assets/game/icons/expanded-summoning/lullaby.png",
+      "sourceSha256": "3f2975854b250b252413aa7a22951f803035eacd54803f41ee93c2fc7fa63203",
+      "outputSha256": "a9f4bde16feacc904821355d952fc1b2156b3415d07b09ed6fed458d5d7a6d41",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.FeyCelestial.LillendAzata.Lullaby",
+        "KMG.Summoning.FeyCelestial.LillendAzata.LullabyBuff"
       ]
     }
   ]

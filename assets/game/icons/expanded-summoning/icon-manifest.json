@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  137,
+    "count":  138,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1230,6 +1230,15 @@
                       "key":  "lillend-azata",
                       "file":  "lillend-azata.png",
                       "sha256":  "6ee925bdcf2af82df9992967243e6affc4a79867ded1a935694a1faec10f966e",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "lullaby",
+                      "file":  "lullaby.png",
+                      "sha256":  "a9f4bde16feacc904821355d952fc1b2156b3415d07b09ed6fed458d5d7a6d41",
                       "width":  128,
                       "height":  128,
                       "format":  "RGBA PNG",

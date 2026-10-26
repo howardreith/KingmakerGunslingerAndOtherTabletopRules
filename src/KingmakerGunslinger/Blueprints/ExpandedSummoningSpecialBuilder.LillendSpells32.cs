@@ -24,7 +24,8 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             return new[] {
-                new[] { LillendNativeSpell32(library, "55f14bc84d7c85446b07a1b5dd6b2b4c", "Daze") },
+                new[] { LillendNativeSpell32(library, "55f14bc84d7c85446b07a1b5dd6b2b4c", "Daze"),
+                    ConfigureLillendLullaby32(library, bySymbol) },
                 new[] { LillendNativeSpell32(library, "1af9d5995090e5a4185a30decf0959ad", "Charm Person"),
                     LillendNativeSpell32(library, "5590652e1c2225c4ca30c4a699ab3649", "Cure Light Wounds"),
                     LillendNativeSpell32(library, "bb7ecad2d3d2c8247a38f44855c99061", "Sleep") },
@@ -136,11 +137,12 @@ namespace KingmakerGunslinger.Blueprints
             var actions = new List<BlueprintAiAction>();
             var choices = new[] { LillendSpellChoice32.Daze, LillendSpellChoice32.CharmPerson, LillendSpellChoice32.CureLight,
                 LillendSpellChoice32.Sleep, LillendSpellChoice32.HoldPerson, LillendSpellChoice32.Invisibility,
-                LillendSpellChoice32.SoundBurst, LillendSpellChoice32.CharmMonster, LillendSpellChoice32.CharmPersonSla };
+                LillendSpellChoice32.SoundBurst, LillendSpellChoice32.CharmMonster, LillendSpellChoice32.CharmPersonSla,
+                LillendSpellChoice32.Lullaby };
             var selected = new[] { spells[0][0], spells[1][0], spells[1][1], spells[1][2], spells[2][0], spells[2][1],
-                spells[2][2], spells[3][0], sla };
-            int[] levels = { 0, 1, 1, 1, 2, 2, 2, 3, 1 };
-            int[] scores = { 2, 3, 6, 3, 4, 7, 4, 3, 4 };
+                spells[2][2], spells[3][0], sla, spells[0][1] };
+            int[] levels = { 0, 1, 1, 1, 2, 2, 2, 3, 1, 0 };
+            int[] scores = { 2, 3, 6, 3, 4, 7, 4, 3, 4, 4 };
             for (int i = 0; i < choices.Length; i++)
             {
                 string key = Lillend32Prefix + choices[i];
@@ -148,6 +150,12 @@ namespace KingmakerGunslinger.Blueprints
                 var eligibility = Require<LillendSpellEligibility32>(bySymbol, key + "Eligibility");
                 eligibility.OwningBlueprint = unit; eligibility.Book = book; eligibility.Spell = selected[i];
                 eligibility.Level = levels[i]; eligibility.Choice = choices[i];
+                if (choices[i] == LillendSpellChoice32.Lullaby)
+                {
+                    eligibility.RefusedBuff = Require<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(bySymbol,
+                        Lillend32Prefix + "LullabyBuff");
+                    eligibility.SleepSpell = spells[1][2];
+                }
                 ai.BaseScore = scores[i]; ai.TargetConsiderations = new Consideration[] { eligibility };
                 actions.Add(ai);
             }
