@@ -177,10 +177,12 @@ Working SHA `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,
 967Mods/118saves/18references/83settings/tasks0/unchangedSteam. No owned live
 transaction/game/task. Local original evidence: artifacts/sprint32-working-c2a1e591/.
 
-Counts:65Build-Local attempts /52validated development packages /75native launches.
-Build65 refused before compilation/package: the Python manifest plan lacked the
-new private Sound Burst row. The one-row correction passes manifest/development
-source validation (7511identities); no product behavior changed.
+Counts:66Build-Local attempts /52validated development packages /75native launches.
+Build65/66 refused before compilation/package: the Python manifest plan omitted
+the appended Sound Burst row, then the icon catalog registry pin was stale. Both
+metadata corrections now pass the complete source-only repository wrapper,
+including30 icon tests and preserved admission/safety refusals. All7510 earlier
+identity records are unchanged. No product behavior changed in these corrections.
 Build64 measured4.45min; native74 wrapper6.43min/native179.347s; native75
 wrapper6.82min/native206.840s, then outer restoration. Exclusive whole-mission
 category totals remain unavailable. Recent18:04?18:40 work: approximately25min
@@ -200,8 +202,9 @@ Working measured trio902,923,316B before allowance; rounded1.1GB plus2GB reserve
 requires3.1GB initial. Each stage requires550MB plus2GB reserve (2.55GB).
 No build during an admitted trio; measure again before selecting work.
 
-**Next:** commit/push this reviewed coherent batch, then build one development
-candidate. Execute the grouped control proof and corrected Working selection;
+**Next:** commit the corrected catalog pin, then build one development candidate.
+Execute the grouped control proof in gunslinger-only (avoiding optional Suggestion
+competition), then corrected Working selection;
 HoldTB/FearRTWP/TB remain selected affected checks. Each save-free selection
 expects8?10min/runtime600s. Working ON/OFF retain the predeclared60?80min combined
 ceiling including restoration, no cold stage after failed prepare. Provider
