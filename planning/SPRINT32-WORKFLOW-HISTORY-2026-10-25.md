@@ -1632,3 +1632,60 @@ probe does, rather than constructing data. No native launch occurred for this co
 
 Corrected final focused production23.1s/18tests0.9sPASS; log
 artifacts/sprint32-intake/focused-hold-discovery-probe-corrected.log.
+
+## 2026-10-26 14:31UTC - native67 reaches Fascinate; patch-inventory observer defect
+
+Build58/sourced43a72d8e46d7d582ecea5ddd430b1ac780e99f4,
+14:09:21.2247083-to14:13:38.8398915UTC/257.6151832s;
+wrappers/557selected/2754registered/exactcompile/strictpackagePASS.
+ZIPedfc7c3d9c9054f3264259c4e52b2da371b68eb47f0412030a486f6790aed309;
+DLL9a116b0989f4bbb9bb963ea55879c4d9de1db756a6beb7e8d5411ca7e8c3eb20;
+MVID8c987875-749a-4e71-b433-f0f7fd443b0b;
+SourceStateec985ce12ded629e18153e999cfbdf2c63cb1f98d137aded5cc75df00545415c;
+generated14:13:37.5346675Z. Canonical artifacts/development-candidates/sprint32-lillend-support/d43a72d8e46d/.
+Free3,391,995,904-to3,249,106,944B. Development only.
+
+Native67 FAIL12P/1F. Run20261026T1416431791316Z-7385a3649ab54041b261942fb4285879;
+raw20261026T1416431437213Z-disposable-expanded-summoning-sprint32-native-review;
+resultSHA0236746457b426ad51acf1a6e0ac0c7796297f0a9e2c455a8529f1aa421430ff;
+originalUnitySHAbec0cfa0d133509356563eac1c92ca480e4e835bd1532cb091f760d0f65bb912.
+Native14:16:55.8048131-to14:19:32.0200874UTC/156215ms;
+wrapper14:14:17.3688797-to14:19:45.9179168UTC/328.549s.
+Transactioncompat-20261026T141418Z-7622f0a062e4 Restoredverified14:19:45.6855489UTC;
+ComparePASS967/118/18/83/tasks0/Steam1; no live transaction. Local original
+artifacts/sprint32-bardic-d43a72d8/. Actual registration/provider binding, calm
+geometry and natural Fascinate PASS. GetPatchInfo crashed in Harmony12.Converters
+on a null record before bardic readiness/casting. Hold availability probe ran before
+that exception but no readiness verdict/values were emitted; do not infer PASS.
+This is an observer API-contract defect, not a gameplay failure.
+
+Installed IL retained artifacts/sprint32-intake/bardic-patch-inventory32-il.txt:
+Harmony12.GetPatchedMethods delegates to HarmonyLib.Harmony.GetAllPatchedMethods;
+GetPatchInfo passes nullable backend record to a converter that dereferences Prefixes.
+The existing CotwSpontaneousSlotCompatibility helper already handles this boundary.
+Correction checks global method membership first; missing methods and any registered
+patch still refuse. The latter also covers Harmony2-only patch kinds absent from
+Harmony12 owner lists. No foreign patch is silently approved or bypassed. No new
+product source, observer framework or lifecycle state. Focused first24.1s/18tests1s,
+final23.2s/18tests0.9sPASS; focused-bardic-patch-inventory-all-owners.log.
+Affected native phase still required on changed observer bytes.
+
+Actual sprint32-remaining-control-terminals.json captures Fear Shaken25ec6cb6
+(1round) and Frightenedf08a7239(CL rounds), both IsFromSpelltrue and no source cleanup.
+Private Fear mappings remain required. SoundBurst Stunned09d39b38 is1round,
+IsFromSpellfalse; preserve this instantaneous-spell consequence rather than add
+source-loss removal. Hold has three applications: main11cb2fe4 plus two CotW discovery
+helpers, corroborating the bounded private exclusion. Metadata is not a cast verdict.
+Approx14:20-14:31 observer/contract/control inspection7min, duplicate work2min;
+exclusive totals unavailable. Counts58/47/67; priorv167NOT_RUN unchanged.
+
+14:32:24.6996837UTC four verified old build copies reclaimed85,688,035B;
+free3,034,976,256-to3,121,491,968B;
+planSHA4e0b98527be3a2a94ae9ba008fc8eb92edd24eee1dd0f468970df7da8f7399bc.
+14:32:30.0128878UTC restored67 package extraction reclaimed99,588,653B;
+free3,121,319,936-to3,222,036,480B;
+planSHA6ddc9aac0e7d1e3ea6cea4a33bfe97e094708625b58c618690344f434c8c80f6.
+Full retained-ZIP byte matching/path/ownership/idle checks; unique archives/PDBs/
+raw failures/receipts/saves/backups retained. Exact protectedComparePASS967/118/18/
+83/tasks0/Steam1 under sprint32-bardic-inventory-storage. Fixed local selectors and
+pre-inventory-builds/native67-cleanup dryrun/result receipts retained.
