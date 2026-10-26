@@ -70,29 +70,35 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `108742d067db81c9283a9a13e9f3015cd55a157c`.
-ZIP `3c3307887752becd836db18bc1b4b295960f58963b5ada7cb91a433826068e69`;
-DLL `79e3c2ab564205c629fe5830d648d128951fe0cf402bdd00f81a79dc6f4d7205`;
-MVID `7a0d15c3-394f-4a44-b7bd-1cdb76fbccd3`;
-SourceState `78b0bac0c4916fb24cc0f101eba65eef02bcf0abad89d5fc217343c038ee60c4`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/108742d067db/.
-Build72 wrapper/558of2755/exact compile/strictZIP PASS261.861s; development,
-not final qualification. Current bounded observer corrections are newer.
+Latest validated development candidate: `f3a978c14b7d352a75f11d528d25b77fbf57c2fd`.
+ZIP `deaedf205763b0c5f9933a87e82ec7de17ea67df3ca73764c6f6460b9dbe3da6`;
+DLL `cea0bb9e4cfeb76d03410eb6737d8fb4ad1de2078c8a8c2fc44635da4ad9ffcb`;
+MVID `3431a6b4-9f5d-4502-98f1-28ff83b61b14`;
+SourceState `2a40cf2a1a83ff20cca4768d1a6c03c8f8a3b6e595417ffbeeb0446d1ed3248a`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/f3a978c14b7d/.
+Build73 wrapper/558of2755/exact compile/strictZIP PASS270.379s; development,
+not final qualification. Current observer/provider-fixture changes are newer.
 
 Native87 Satyr RTWP13/13 and88turn14/14 PASS retain original source binding;
-88's corrected immutable outer reader is not fresh execution. Native91 grab
-10PASS/2FAIL reached real tail/hold/initial2d6+5; demonstrated live JSON null
-reader defect corrected. Maintenance/release/TB/Salamander remain NOT_RUN.
-Native92 presentation11PASS/1FAIL captured initial dissolve; agent does not
-accept raw restPASS as technical appearance. Exact-body intact wait/capture is
-corrected; movement's failed conjunct remains unknown and gets a concrete receipt.
-Later attacks/wound/death/expiry/Lillend presentation remain NOT_RUN.
-Native93 Working23PASS/3FAIL resolves faction isolation and reaches actual
-Competence/Fascinate state. Charm effect-only baseline refused before saving.
-Native ApplyBuff only attaches AsChild when a parent Buff.Data exists; corrected
-fixture explicitly proves no parent and records all terminal flags. No sole-cause
-claim from incomplete93 flags. ON cold/OFF remain NOT_RUN. Rules unchanged.
-Independent review accepted the bounded corrections; exact-renderer finding fixed.
+88's corrected immutable outer reader is not fresh execution. Native94 grab
+12PASS/2FAIL proves natural establishment and maintained tail/constrict with
+live Strength. Release observer stops before native initiator cleanup settles;
+bounded full-predicate wait added. TB/Salamander remain NOT_RUN.
+Native95 presentation11PASS/2FAIL fixes intact Satyr readiness. Agent inspected
+rest/moving frames; movement traveled6.698m but terminal Interrupt failed the
+precise-arrival assertion. Replan reuses existing technical locomotion contract
+(exact command/velocity/finite moving poses), retaining terminal result honestly.
+Attacks/wound/death/expiry/Lillend remain NOT_RUN; original FAILs unchanged.
+Native96 Working preparation35/35 PASS: actual performances, control effects,
+distinct budgets and native Working write. Fresh native97 cold5PASS/3FAIL refuses
+listener relations before cleanup/save; canonical faction/attack lists survived,
+but omitted conjuncts prevent sole-cause attribution. Independent review rejects
+a blind cache-timing repair; every boundary conjunct/group is now recorded with
+the same refusal. Absence/OFF remain NOT_RUN. All intake restored exactly.
+Bounded optional-provider transition adapter added to the existing installed-stack
+trio; original provider profile stays save-free. Exact researched reference pins,
+native Satyr grant/availability, Lillend book/effect transitions and source cleanup
+are covered by the selected fixture, awaiting actual execution.
 
 Earlier source-bound evidence remains in history: player input Wizard16/16,
 Sorcerer28/28,Druid31/31; Satyr at-will13/13 each mode; support13/13;
@@ -132,29 +138,35 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest Working envelope restored22:45:35.8183213UTC; exact intake
+Latest Working envelope restored23:27:22.3891882UTC; exact intake
 967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
 8550225B and intake metadata restored. No owned live transaction.
 OFF was not launched after failedON; detailed identities/classifications in history.
 
-Counts72Build-Local attempts/58validated packages/93native launches. Build72
-261.861s; native91/92/93 99.974/93.746/223.509s. Latest focused compile24.6s/
-20of2755 tests1s PASS before final exact-renderer observer correction. Resumed
-work approximately15min fixture/contracts/review and records/storage planning;
-exclusive totals unavailable; owner waiting0. No unchanged failed replay.
+Counts73Build-Local attempts/59validated packages/97native launches. Build73
+270.379s; native94/95/96/97 113.114/95.699/241.905/198.674s. Current changes
+passed focused compilation,8domain/132compiled-parser/28scope/14save-free/
+11overlay checks and schema validation. Independent concrete findings addressed;
+no fresh native proof of these changes yet. Approximate
+work categories and overlapping supervision in history; exclusive cumulative
+totals unavailable; owner waiting0. No unchanged failed replay.
 
 Measured Working trio902923316B, rounded1.1GB plus2GB reserve requires3.1GB
-initial; each stage550MB plus2GB requires2.55GB. After92 verified extraction
-cleanup299295448B, free3207528448B/protected ComparePASS; after93 free2933579776B.
-Further fixed duplicate cleanup is being verified before packaging; preserve
+initial; each stage550MB plus2GB requires2.55GB. After95 verified duplicate
+cleanup613062802B, free3212091392B/protected ComparePASS. After97 verified closed
+duplicates1032715416B reclaimed while retaining reference copies/content archives;
+free3643830272B and full protected ComparePASS. Preserve
 unique packages/content archives/raws/failures/backups/DATA/personal data.
 
-**Next:** finish verified headroom recovery and freeze the corrected coherent
-candidate. Run affected grab and technical-presentation selections (each10min,
-runtime600s) and corrected WorkingON/OFF (predeclared60–80min combined including
-restoration). Stop a failed sequence and classify it. Provider persistence and
-final integration remain required. Before final qualification, review relevant
+**Next:** freeze the reviewed observer/provider batch and package once, then run
+affected native selections. Cold listener-boundary cause remains unknown; the next
+bounded reproduction retains complete fields and the same safety refusal.
+Affected grab/presentation each10min/runtime600s. Base WorkingON remains pending;
+provider retained/removed/module-off trios predeclared90–120min including exact
+restoration. Provider module-off covers ordinary OFF assertions too; no redundant
+absent-provider OFF run is selected. Stop a failed sequence and classify it.
+Provider persistence and final integration remain required. Before final qualification, review relevant
 accepted descendants, freeze source/assets/observers/publication inputs, run
 one explicit complete development gate and qualify its exact ZIP with a
 separate records worktree. No owner playtest, merge/release or Sprint33.

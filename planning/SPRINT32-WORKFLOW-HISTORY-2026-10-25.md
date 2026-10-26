@@ -2915,3 +2915,158 @@ archives; complete protected ComparePASS. Plan hashes9c8fd76f2f28520539a5c7bfee0
 16150a7885c386b60638024fb234ea023c9a586f30a2f9af899405b4fd61ac29,
 51b4a7d9db68ae9982b5dc9ce687a69ec195749e410ad2b776f656da5c60d937,
 a3d1276440b3f459ff8e8b7a8a676e468596489a08b4eace80f11502b7c06c25.
+
+
+## 2026-10-26 candidate73 / native94–97 (development, not final qualification)
+
+Source f3a978c14b7d352a75f11d528d25b77fbf57c2fd; ZIP
+deaedf205763b0c5f9933a87e82ec7de17ea67df3ca73764c6f6460b9dbe3da6;
+DLL cea0bb9e4cfeb76d03410eb6737d8fb4ad1de2078c8a8c2fc44635da4ad9ffcb;
+MVID3431a6b4-9f5d-4502-98f1-28ff83b61b14; SourceState
+2a40cf2a1a83ff20cca4768d1a6c03c8f8a3b6e595417ffbeeb0446d1ed3248a.
+Canonical artifacts/development-candidates/sprint32-lillend-support/f3a978c14b7d/.
+Build73 22:53:31.5472665–22:58:01.9267079UTC,270.379s PASS wrapper,
+558/2755 domain16.7s, pinned compile and strict ZIP. Filtered development gate,
+not complete final gate. Local build-observers-f3a978c1 logs/exit retained.
+
+Native94 FAIL 12PASS/2FAIL, 113.114s.
+Raw 20261026T2301065481063Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json;
+run20261026T2301065949840Z-719487c3714f4fc0bcd559015927c9e3; SHA0da2147d0c6a2ed95cad79ca6a51256bc9c67c9bf513c90987f71b3a37879da1.
+Transaction compat-20261026T225839Z-73498b396c8d restored2026-10-26T23:03:19.0749015Z;
+full protected intake exact. UnitySHAc43e7de12e098e9b901bab77cf9f0f307847d67dd70f873e1f43d3090f8cbabd.
+Observer stops at reciprocal link loss before native grapple controller completes owner cleanup. Real establishment/maintain PASS; exact failed cleanup conjunct absent. Retain FAIL. Bounded correction waits normal frames for full existing cleanup predicate, records each field, failed maintain and no-new-rider unchanged.
+
+Native95 FAIL 11PASS/2FAIL, 95.699s.
+Raw 20261026T2306558159275Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json;
+run20261026T2306558491324Z-94b739ed16774b7b84615aec377e5717; SHAebfadc75bb1e99fd7257279c3cb0256a88b1f13713bab9e0951c4adc793c6046.
+Transaction compat-20261026T230421Z-701add80a60e restored2026-10-26T23:08:50.0561621Z;
+full protected intake exact. UnitySHAe9b3e1c68afe86fa7f532db83135f1d2efe1c0ea9f893122af151f92824aee7b.
+Exact-body readiness fixed. Native command Interrupt despite6.697862m travel and1.31090081m goal gap. Native CompleteMovement can interrupt a partial path outside0.5m approach, but callback not observed. Replan to proven Sprint17 technical locomotion contract: exact active command, positive native velocity, finite poses and travel, terminal result retained. No precise arrival claim or retrospective PASS.
+Gameplay camera shows intact recognizable Satyr, body scale relative to human and no obvious severe deformation in the two retained poses. Exact satyr01 intact true; rest dissolve0.017. Partial rest/loading evidence only. No attack/contact, hit/death/expiry or Lillend presentation reached. No owner aesthetic approval claimed.
+s32-satyr-rest.png SHAa63c88a2d512ff225e7d5d9f3194cf854885be8e95fafb121a417648e35f8c6e.
+s32-satyr-move-out.png SHAfb694ea27c24ebe67665e095ea724157fc16378be60535ba6331b170d3ba725a.
+
+Native96 PASS 35PASS/0FAIL,241.905s.
+Raw 20261026T2315325122350Z-working-save-expanded-summoning-prepare/runtime-result.json;
+run20261026T2315325435214Z-d5318dfd61884adebe54a31121914186; SHA24cbcad154ab7c8e2ccc414fe3db82c24e54dab6b9234551fa93b035048680a4.
+UnitySHA7ba59b2b05988df99d0ec3d58de44809424e203aa425d224bc957943211769ac.
+Four owned sources, actual Competence/Fascinate and private control effects,
+independent spent budgets and exact native Working write PASS.
+
+Native97 FAIL 5PASS/3FAIL,198.674s.
+Raw 20261026T2323175744312Z-working-save-expanded-summoning-verify-cleanup/runtime-result.json;
+run20261026T2323176112916Z-632170cdc8974841a0b466d4e48d1413; SHA4d0e51a60db9b8fbf4c6aed959281b8f39ddf8af5760e1368addbbf26dd10b53.
+UnitySHA034d61bbaf3e1264416d7fc74e092bdb46a40ee147ed7f4e8ede6dd4e68caec5.
+Fresh process loaded the save, then refused cold listener relations before
+cleanup/save. Canonical faction/attack lists survived; omitted conjuncts prevent
+a sole-cause claim. Independent read-only native cache/load review selected.
+Absence/OFF not launched; preserve original FAIL.
+
+Working ON envelope23:12:40–23:27:22UTC stopped after cold refusal;
+original Working bytes/metadata and full protected intake restored
+23:27:22.3891882UTC,967Mods/118saves/18refs/83settings/tasks0/Steam1.
+WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B,creation639208636210035057/write639278868712797783/attributes8224.
+No owned live transaction. Outer restoration.json remains at
+artifacts/sprint32-working-f3a978c1/on/restoration.json.
+
+After95 existing guarded cleanup retained one S23 reference extraction and a
+full content archive47,916,174B SHA
+d98e66d539569488e8af8d048ad2c24b91bc2e87a56cd4da9b3129ac20e64e37,
+manifestSHAbe15a81b0ade8a8f21f3a830b2b85fcf4e8bbf71b4fdbc29675fdb80ed41fe92.
+Verified five duplicate extractions327112230B removed; planSHA
+60dfb305326f460d9af08fb69a428754f35b3b596bf74bf829f098265f1eb1a9.
+Superseded validated builds71/72 ZIP-identical extraction/bin duplicates
+86390236B removed; planSHA
+ec87bdb44a18de95e3f83627ce4520a881ff2511fb32d9ef9671a5c6f680a9c1.
+Closed native94/95 package extractions199560336B removed; planSHA
+1121b2513fa31501d54bff81df940af0a400b0946e6d5a83db1e860f36816c7f.
+Cleanup23:11:23–23:11:38UTC, free2592153600→3212091392B;
+protected ComparePASS. Unique/incomplete artifacts, raw failures, ZIPs,
+receipts, backups and DATA untouched. After Working ON free2721177600B.
+
+Counts73Build-Local attempts/59validated packages/97actual native launches.
+This resumed interval approximately20min observer/fixture research, corrections,
+provider adapter drafting and records; latest Working supervision14m42s overlaps.
+Build73/package4m30s, native94/95 wrappers4m42s/4m30s; exclusive cumulative
+category totals unavailable, owner waiting0. No unchanged repeated launch.
+Presentation second failure triggered narrower established Sprint17 locomotion
+contract: exact active command/velocity/travel/finite moving poses, terminal
+result retained without precise-arrival claim. Grab full native cleanup wait
+preserves failed-maintain/no-new-rider assertions. Product rules unchanged.
+
+The bounded provider persistence adapter now in preparation uses existing
+full-installed-stack transaction and three fixed transitions(retained,removed,
+module-off); preserve all intake mods, overlay only validated provider and
+verify unchanged installed CotW identity. Three-mod provider profile stays
+save-free. Fixed parameters and existing fixture receipts, no generic save
+branching/manager. Provider module-off will cover the selected OFF acceptance
+with the same ordinary saved-state assertions; no redundant absent-provider OFF
+sequence is needed. Before dispatch, focused admission/refusal and independent
+review required. Predeclare provider trios90–120min including restoration;
+each individual stage600s, no retry after a failed sequence without classification.
+Prior v167 threeNOT_RUN gaps remain unchanged. Final complete gate/qualification
+and reviewable-ready PR still pending.
+
+### Bounded correction/review before next candidate
+
+Independent review did not attribute97 to cache timing: native group creation
+initializes caches, while later faction updates may defer them. The observer
+now records every original boundary conjunct plus source/listener/caster group
+members, direct/cached factions and mutual relations, preserving no-time/no-save
+refusal and the full unrelated-intake guard. No blind wait or cache repair.
+
+Grab now waits ordinary native frames for the unchanged complete cleanup
+predicate and records first link-loss/final state. Presentation reuses Sprint17
+technical locomotion: exact queued native Move reference, nonzero agent velocity,
+over4m measured travel, three finite moving poses and mid-motion capture. Native
+IsStarted is recorded only: independent IL review showed approach movement
+precedes that boundary. Interrupt remains visible; no precise-arrival claim.
+
+Provider selection preserves ten intake mods and stages only the isolated
+provider through existing transactions. Fixed retained/removed/module-off
+parameters share the C# declaration. Independent review required exact researched
+CotW/provider hash pins, now in the existing profile declaration with its strict
+schema extended; original profile remains save-free. Current installed CotW must
+match that identity. Saved-state preparation uses the existing separately owned
+Hold recipient for an explicitly effect-only private Suggestion precondition.
+Cold comparisons retain exact source/deadline/flags/Dazed; removed/OFF normalize
+only the optional private effect and Lillend known spell, never slots/resources.
+Both exact Satyr grants and native availability are checked; source removal must
+clear actual Dazed while preserving siblings. No new product rules or subsystem.
+
+Focused production compile PASS24.6s and8/2755 domain PASS0.1s; reviewed source
+compiled again after movement/Satyr findings. Compiled native request validator
+132/132 PASS on DLLf9962a016b8b92c6d152df631c7595dd5870b08305cfe27cc090b779dfb943b9,
+MVIDaa828af5-9d8a-4d10-abe4-f0a7c6a2add3. Source-only purpose/WhatIf/refusals28PASS;
+save-free profile/refusals14PASS; overlay resolution/pins/refusals11PASS, current
+Mods manifest unchanged. Draft2020-12 schema PASS using ignored task-isolated
+jsonschema4.23.0 (not a product dependency). No test is native transition proof.
+Original overlay test failures retained: PS5 nested deserialized-array fixture
+shape corrected, then explicit missing/wrong dependency metadata refusal added.
+Initial schema execution lacked the module; isolated install's ACL required the
+same permissions for read-only validation. No automatic approval rejection.
+Local logs provider-cold-observer-focused, provider-reviewed-compilation,
+provider-reviewed-native-parser, provider-transition-admission,
+provider-savefree-preserved and all provider-overlay-resolution attempts retained.
+
+The broad read-only duplicate inventory was stopped after several minutes
+without output; narrower Python inventory of the twelve Sprint27 closed
+transactions found two exact groups. No game/transaction was interrupted.
+Approximately30min resumed observer/tooling/review/storage work by23:49UTC;
+native supervision and checks overlap, exclusive category totals unavailable.
+
+After97 fixed cleanup23:49:37–23:50:11UTC removed1,032,715,416B of verified
+duplicates. Retained two original reference extractions and content archives
+55,829,383B SHAb33bd44a636037be57eea7fce545ed142fc505f8eb530cd4d9c79da43cc96f0f
+and55,833,048B SHAdb3599eb974a3cf827691eac648a6044a68169f04e2215202932b348d41681fb.
+Retention manifests SHAfa886d674ffa271c8fa490b6ef3b881ddb4b736c4d8e725749ae2f73de52deaa
+andbcb4d447d128f675f9b38a877ea5e9d12e500b2171a4ba3ff5ac9e25f9b06248.
+Five duplicate Sprint27 extractions per group416560040/416595040B; two native96/97
+closed exact-ZIP package extractions199560336B. Cleanup plan hashes
+fd6cc298a464388e3944376bee0c308d85e18231ec3ba3826b22f26de66f9696,
+5ff9f37d0d8664f73351b8ddfbed46542b89ac622b4fcd8fe7c408a999a589e5,
+d07e6bceedc7cad3782bd30527d6023357db71800923b42eb0f0340031fb041f.
+Free2600222720→3643830272B after archives. Full protected ComparePASS
+967Mods/118saves/18refs/83settings/tasks0/Steam1. All unique packages/raws/
+failures/receipts/protected backups preserved; no owned live transaction.

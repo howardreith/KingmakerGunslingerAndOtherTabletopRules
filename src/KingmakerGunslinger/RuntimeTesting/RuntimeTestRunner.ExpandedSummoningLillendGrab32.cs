@@ -226,21 +226,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int checksBefore = observer.Checks.Count, ridersBefore = riders.Count;
                     owner.Stats.AdditionalCMB.BaseValue = -100; // prospective low CMB, never an overridden roll
                     deadline = DateTime.UtcNow.AddSeconds(35);
-                    while (ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) && DateTime.UtcNow < deadline)
+                    Func<JObject> releaseState = () => new JObject {
+                        ["reciprocalLinkAbsent"] = !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target),
+                        ["initiatorPartAbsent"] = owner.Get<UnitPartGrappleInitiator>() == null,
+                        ["targetPartAbsent"] = target.Get<UnitPartGrappleTarget>() == null,
+                        ["weaponLinkAbsent"] = SummonGrappleLinks.EstablishingWeapon(owner, target) == null,
+                        ["holdBuffAbsent"] = owner.Buffs.GetBuff(grab.HoldBuff) == null,
+                        ["grappledBuffAbsent"] = target.Buffs.GetBuff(grab.GrappledBuff) == null,
+                        ["ownerCantActAbsent"] = !owner.Descriptor.State.HasCondition(UnitCondition.CantAct),
+                        ["ownerCantMoveAbsent"] = !owner.Descriptor.State.HasCondition(UnitCondition.CantMove),
+                        ["targetEntangledAbsent"] = !target.Descriptor.State.HasCondition(UnitCondition.Entangled),
+                        ["targetCantMoveAbsent"] = !target.Descriptor.State.HasCondition(UnitCondition.CantMove) };
+                    JObject firstLinkLoss = null, settledRelease = null;
+                    int firstLinkLossFrame = -1;
+                    double firstLinkLossSeconds = 0;
+                    // ReleaseLink removes the target part. The native grapple
+                    // controller subsequently retires the initiator/hold buff.
+                    // Observe that same full cleanup predicate across ordinary
+                    // Default frames; never tick the controller or release here.
+                    while (DateTime.UtcNow < deadline)
                     {
                         if (!nativeMode.Current) throw new InvalidOperationException("Grab native Default lease changed.");
+                        settledRelease = releaseState();
+                        if (firstLinkLoss == null && (bool)settledRelease["reciprocalLinkAbsent"])
+                        {
+                            firstLinkLoss = (JObject)settledRelease.DeepClone(); firstLinkLossFrame = Time.frameCount;
+                            firstLinkLossSeconds = game.Player.GameTime.TotalSeconds;
+                        }
+                        if (settledRelease.Properties().All(value => (bool)value.Value)) break;
                         if (turnBased) PollGrab32Turn(fixture, owner, target, anchor, nativeMode, nonparticipantPasses);
                         game.IsPaused = false; yield return 0;
                     }
+                    settledRelease = releaseState();
                     var releaseChecks = observer.Checks.Skip(checksBefore).Where(value => ReferenceEquals(value.Initiator, owner) &&
                         ReferenceEquals(value.Target, target)).ToArray();
                     bool released = releaseChecks.Any(value => !SummonManeuverChecks.Succeeded(value)) &&
-                        owner.Get<UnitPartGrappleInitiator>() == null && target.Get<UnitPartGrappleTarget>() == null &&
-                        SummonGrappleLinks.EstablishingWeapon(owner, target) == null &&
-                        owner.Buffs.GetBuff(grab.HoldBuff) == null && target.Buffs.GetBuff(grab.GrappledBuff) == null &&
-                        !owner.Descriptor.State.HasCondition(UnitCondition.CantAct) && !owner.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
-                        !target.Descriptor.State.HasCondition(UnitCondition.Entangled) && !target.Descriptor.State.HasCondition(UnitCondition.CantMove) &&
-                        riders.Count == ridersBefore;
+                        settledRelease.Properties().All(value => (bool)value.Value) && riders.Count == ridersBefore;
+                    row["firstReciprocalLinkLoss"] = firstLinkLoss; row["settledRelease"] = settledRelease;
+                    row["releaseSettleFrames"] = firstLinkLoss == null ? (int?)null : Time.frameCount - firstLinkLossFrame;
+                    row["releaseSettleGameSeconds"] = firstLinkLoss == null ? (double?)null : game.Player.GameTime.TotalSeconds - firstLinkLossSeconds;
                     row["actualPostChangeManeuvers"] = new JArray(releaseChecks.Select(value => new JObject {
                         ["success"] = SummonManeuverChecks.Succeeded(value), ["target"] = value.Target.UniqueId }));
                     row["releasedBeforeFixtureCleanup"] = released; row["ridersBeforeRelease"] = ridersBefore; row["ridersAfterRelease"] = riders.Count;

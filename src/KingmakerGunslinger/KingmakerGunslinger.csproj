@@ -2030,6 +2030,7 @@
     <Compile Include="RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32SuggestionPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs" />
   </ItemGroup>
   <ItemGroup>
