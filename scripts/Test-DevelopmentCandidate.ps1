@@ -135,6 +135,22 @@ try {
     Assert-That ($message -like '*selected domain-test evidence*') 'changed-test-log-refused'
     [IO.File]::WriteAllBytes($layout.TestLogPath, $originalLog)
 
+    # A complete receipt is still development-only and binds the actual full
+    # runner log. Exercise the consumer, including typed metadata refusals.
+    @('PASS fixture.one','PASS fixture.two','Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') | Set-Content $layout.TestLogPath
+    $fullReceipt = Get-Receipt
+    $fullReceipt.selectedTests = [pscustomobject](Read-KmgDomainTestEvidence -LogPath $layout.TestLogPath -CompleteSuite)
+    Assert-KmgDevelopmentReceipt -Receipt $fullReceipt -PackagePath $layout.PackagePath -RepositoryRoot $repository -Purpose $purpose
+    $checks++
+    foreach ($badFlag in @('true', $false, 1)) {
+        $fullReceipt.selectedTests.completeSuite = $badFlag
+        Assert-That ($null -ne (Get-Refusal { Assert-KmgDevelopmentReceipt -Receipt $fullReceipt -PackagePath $layout.PackagePath -RepositoryRoot $repository -Purpose $purpose })) 'complete-receipt-invalid-flag-refused'
+    }
+    $fullReceipt.selectedTests.completeSuite = $true
+    $fullReceipt.selectedTests.filter = 'all'
+    Assert-That ($null -ne (Get-Refusal { Assert-KmgDevelopmentReceipt -Receipt $fullReceipt -PackagePath $layout.PackagePath -RepositoryRoot $repository -Purpose $purpose })) 'complete-receipt-filter-conflict-refused'
+    [IO.File]::WriteAllBytes($layout.TestLogPath, $originalLog)
+
     $evidenceLog = Join-Path $boundary 'runner.log'
     foreach ($case in @(
         @{ Name = 'zero-selection'; Selected = 0; Registered = 10; Failed = 0 },
@@ -146,6 +162,20 @@ try {
     Write-RunnerLog $evidenceLog 'other-filter' 3 10
     Assert-That ($null -ne (Get-Refusal { Read-KmgDomainTestEvidence -LogPath $evidenceLog -Filter 'alternate-summoning' })) 'runner-other-filter-refused'
     Assert-That ($null -ne (Get-Refusal { Read-KmgDomainTestEvidence -LogPath (Join-Path $boundary 'absent.log') -Filter 'x' })) 'runner-missing-log-refused'
+    @('PASS fixture.one','PASS fixture.two','Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') | Set-Content $evidenceLog
+    $completeEvidence = Read-KmgDomainTestEvidence -LogPath $evidenceLog -CompleteSuite
+    Assert-That ($completeEvidence.completeSuite -eq $true -and $completeEvidence.selected -eq 2 -and
+        $completeEvidence.registered -eq 2 -and [string]::IsNullOrEmpty($completeEvidence.filter)) 'complete-runner-evidence'
+    foreach ($case in @(
+        @{ Name='filtered-masquerade'; Lines=@('KMG_TEST_FILTER=all; selected 2 of 2 registered tests.','PASS a','PASS b','Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') },
+        @{ Name='incomplete'; Lines=@('PASS a','Completed 1 tests; failures=0. Registered 2; elapsed 0.1s.') },
+        @{ Name='zero'; Lines=@('Completed 0 tests; failures=0. Registered 0; elapsed 0.1s.') },
+        @{ Name='duplicates'; Lines=@('PASS a','PASS a','Completed 2 tests; failures=0. Registered 2; elapsed 0.1s.') },
+        @{ Name='failed'; Lines=@('PASS a','FAIL b','Completed 2 tests; failures=1. Registered 2; elapsed 0.1s.') },
+        @{ Name='repeated-completion'; Lines=@('PASS a','Completed 1 tests; failures=0. Registered 1; elapsed 0.1s.','Completed 1 tests; failures=0. Registered 1; elapsed 0.1s.') })) {
+        $case.Lines | Set-Content $evidenceLog
+        Assert-That ($null -ne (Get-Refusal { Read-KmgDomainTestEvidence -LogPath $evidenceLog -CompleteSuite })) "complete-$($case.Name)-refused"
+    }
 
     $git = [pscustomobject]@{ Commit = $commit; Status = @() }
     Assert-KmgDevelopmentSourceBinding -Receipt (Get-Receipt) -Git $git -SourceStateSha256 ('b' * 64) -ExpectedVersion '0.0.156'
@@ -236,6 +266,15 @@ try {
     }
     $developmentPlan = @(& $buildLocal -PlanOnly -DevelopmentPurpose $purpose -DevelopmentTestFilter 'alternate-summoning')
     $releasePlan = @(& $buildLocal -PlanOnly)
+    $completePlan = @(& $buildLocal -PlanOnly -DevelopmentPurpose $purpose -DevelopmentCompleteSuite)
+    Assert-That (($completePlan -join ',') -ceq 'development-repository-wrapper,complete-domain-suite,exact-reference-release-build,package-assembly,strict-package-validation,development-receipt') 'complete-development-plan'
+    foreach ($arguments in @(
+        @{DevelopmentCompleteSuite=$true;PlanOnly=$true},
+        @{DevelopmentPurpose=$purpose;DevelopmentCompleteSuite=$true;DevelopmentTestFilter='x';PlanOnly=$true},
+        @{DevelopmentPurpose=$purpose;DevelopmentCompleteSuite=$true;DevelopmentTestFilter='';PlanOnly=$true},
+        @{DevelopmentPurpose=$purpose;DevelopmentCompleteSuite=$true;SkipDomainTests=$true;PlanOnly=$true})) {
+        Assert-That ($null -ne (Get-Refusal { & $buildLocal @arguments })) 'complete-argument-conflict-refused'
+    }
     Assert-That (($developmentPlan -join ',') -ceq 'development-repository-wrapper,selected-domain-tests,exact-reference-release-build,package-assembly,strict-package-validation,development-receipt') 'development-plan'
     Assert-That (($releasePlan -join ',') -ceq 'repository-wrapper,complete-domain-suite,exact-reference-release-build,package-assembly,strict-package-validation') 'release-plan-unchanged'
 
@@ -277,8 +316,10 @@ param([string]$Configuration, [string]$MSBuildPath, [switch]$Clean, [switch]$Ski
 @{ event = 'test-domain'; configuration = $Configuration; clean = [bool]$Clean; skipWrapper = [bool]$SkipRepositoryValidation
    filter = $env:KMG_TEST_FILTER; runnerLog = $RunnerLogPath } | ConvertTo-Json -Compress | Add-Content $env:KMG_DEVELOPMENT_FIXTURE_TRACE
 $failed = if ($env:KMG_DEVELOPMENT_FIXTURE_FAIL) { 1 } else { 0 }
-@(('KMG_TEST_FILTER=' + $env:KMG_TEST_FILTER + '; selected 2 of 9 registered tests. This is a focused run and is not a gate.'),
-  'PASS fixture.one', 'PASS fixture.two', "Completed 2 tests; failures=$failed. Registered 9; elapsed 0.1s.") | Set-Content $RunnerLogPath
+$registered = if ($env:KMG_TEST_FILTER) { 9 } else { 2 }
+$lines = @('PASS fixture.one', 'PASS fixture.two', "Completed 2 tests; failures=$failed. Registered $registered; elapsed 0.1s.")
+if ($env:KMG_TEST_FILTER) { $lines = @('KMG_TEST_FILTER=' + $env:KMG_TEST_FILTER + '; selected 2 of 9 registered tests. This is a focused run and is not a gate.') + $lines }
+$lines | Set-Content $RunnerLogPath
 '' | Set-Content -NoNewline "$RunnerLogPath.stderr"
 '@ | Set-Content (Join-Path $fixtureScripts 'test-domain.ps1')
     @'
@@ -346,6 +387,19 @@ sys.exit(3)
     $trace = @(Get-Content -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json })
     Assert-That ($message -like '*empty, failed or inconsistent*' -and
         @($trace | Where-Object event -eq 'exact-build').Count -eq 0) 'failed-selection-stops-before-build'
+
+    Remove-Item -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE
+    $buildArguments.Remove('DevelopmentTestFilter')
+    $buildArguments.DevelopmentCompleteSuite = $true
+    $message = Get-Refusal { & $fixtureBuild @buildArguments }
+    $trace = @(Get-Content -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json })
+    $runs = @($trace | Where-Object event -eq 'test-domain')
+    Assert-That ($message -like '*Exact-reference Release build failed with exit code 3*' -and
+        $runs.Count -eq 1 -and [string]::IsNullOrEmpty($runs[0].filter) -and
+        @($trace | Where-Object event -eq 'repository-wrapper').Count -eq 1 -and
+        @($trace | Where-Object event -eq 'exact-build').Count -eq 1 -and $env:KMG_TEST_FILTER -ceq 'prior') 'complete-build-clears-and-restores-filter-once'
+    $buildArguments.Remove('DevelopmentCompleteSuite')
+    $buildArguments.DevelopmentTestFilter = 'selected-behavior'
 
     Remove-Item -LiteralPath $env:KMG_DEVELOPMENT_FIXTURE_TRACE
     'dirty' | Set-Content (Join-Path $fixture 'untracked-change.txt')
