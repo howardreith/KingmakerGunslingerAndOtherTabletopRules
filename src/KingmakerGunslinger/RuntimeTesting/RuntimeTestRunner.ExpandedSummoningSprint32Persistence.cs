@@ -4,15 +4,23 @@ using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.GameModes;
 using Kingmaker.PubSubSystem;
+using Kingmaker.RuleSystem;
+using Kingmaker.RuleSystem.Rules;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
@@ -27,6 +35,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     public sealed class UnitPartSprint32ListenerReceipt : UnitPart
     {
         [JsonProperty] public string Scope, UnitId, CasterId, SourceId, Role, PrepareRunId;
+        [JsonProperty] public string ControlState, OriginalAttackFactions;
     }
     public sealed class UnitPartSprint32SavedReceipt : UnitPart
     {
@@ -42,17 +51,21 @@ namespace KingmakerGunslinger.RuntimeTesting
         private double _sprint32ColdGameSeconds;
         private static T Sprint32SavedBlueprint<T>(string suffix) where T : BlueprintScriptableObject
         { return (T)ExpandedSummoningBlueprints.Registered.BySymbol["KMG.Summoning.FeyCelestial." + suffix]; }
-        private static UnitEntityData[] Sprint32SavedListeners(UnitEntityData caster)
+        private static UnitEntityData[] Sprint32SavedAuxiliaries(UnitEntityData caster)
         {
             return Game.Instance.State.Units.All.Concat(caster.HoldingState.AllEntityData.OfType<UnitEntityData>())
                 .Where(value => value != null && value.Get<UnitPartSprint32ListenerReceipt>() != null).Distinct().ToArray();
         }
+        private static UnitEntityData[] Sprint32SavedListeners(UnitEntityData caster)
+        { return Sprint32SavedAuxiliaries(caster).Where(unit => new[] { "held", "resisted" }.Contains(unit.Get<UnitPartSprint32ListenerReceipt>().Role)).ToArray(); }
+        private static UnitEntityData[] Sprint32SavedControls(UnitEntityData caster)
+        { return Sprint32SavedAuxiliaries(caster).Where(unit => new[] { "charm", "sleep", "hold" }.Contains(unit.Get<UnitPartSprint32ListenerReceipt>().Role)).ToArray(); }
         private static bool Sprint32OwnsListener(UnitEntityData unit, UnitEntityData caster, UnitEntityData[] sources)
         {
             var row = unit?.Get<UnitPartSprint32ListenerReceipt>();
             return row != null && row.Scope == Sprint32ListenerScope && row.UnitId == unit.UniqueId &&
                 row.CasterId == caster.UniqueId && !string.IsNullOrWhiteSpace(row.PrepareRunId) &&
-                (row.Role == "held" || row.Role == "resisted") && sources.Any(source => source.UniqueId == row.SourceId) &&
+                new[] { "held", "resisted", "charm", "sleep", "hold" }.Contains(row.Role) && sources.Any(source => source.UniqueId == row.SourceId) &&
                 ReferenceEquals(unit.Blueprint, BlueprintRoot.Instance.DefaultPlayerCharacter) &&
                 ReferenceEquals(unit.HoldingState, caster.HoldingState) && !Game.Instance.Player.Party.Contains(unit);
         }
@@ -116,7 +129,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Sprint32PersistenceAbsence(UnitEntityData caster, string stage)
         {
-            var listeners = Sprint32SavedListeners(caster);
+            var listeners = Sprint32SavedAuxiliaries(caster);
             var units = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed).ToArray();
             var sources = units.Where(unit => ExpandedSummoningRosterPersistencePolicy.FeyCelestialKeys.Contains(
                 unit.Get<UnitPartRelease143RosterReceipt>()?.Key)).ToArray();
@@ -140,7 +153,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sources.Select(source => source.Get<UnitPartSprint32SavedReceipt>().Ordinal).OrderBy(value => value).SequenceEqual(new[] { 0, 1, 2, 3 }) &&
                 listeners.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().Role).OrderBy(value => value, StringComparer.Ordinal)
                     .SequenceEqual(new[] { "held", "resisted" }) &&
-                listeners.All(unit => unit.Faction.AssetGuid == Sprint32ListenerFaction && !unit.Group.IsPlayerParty &&
+                listeners.All(unit => unit.Faction.AssetGuid == Sprint32ListenerFaction && unit.GroupId == unit.UniqueId && !unit.Group.IsPlayerParty &&
                     unit.AttackFactions.Count() == 1 && ReferenceEquals(unit.AttackFactions.Single(), caster.Faction) &&
                     sources.All(source => unit.IsEnemy(source) && source.IsEnemy(unit)));
             RosterPersistenceCheck("s32-cold-listener-boundary", boundary, new JObject {
@@ -150,6 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["partyGroup"] = unit.Group.IsPlayerParty, ["role"] = unit.Get<UnitPartSprint32ListenerReceipt>().Role })) },
                 "The absent-provider fixture restores exact canonical factions, per-instance attack lists and nonparty listener groups; provider transitions are a separate selection.");
             if (!boundary) throw new InvalidOperationException("Sprint32 cold profile/relation boundary differs.");
+            ObserveSprint32SavedControls(caster, sources, "cold");
             _sprint32ColdGameSeconds = Game.Instance.Player.GameTime.TotalSeconds;
             foreach (var source in sources)
             {
@@ -251,11 +265,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var stat in new[] { target.Stats.Strength, target.Stats.Dexterity, target.Stats.Constitution,
                     target.Stats.Intelligence, target.Stats.Wisdom, target.Stats.Charisma }) stat.BaseValue = 10;
                 target.Stats.HitPoints.BaseValue = 100000; target.Stats.SaveWill.BaseValue = index == 0 ? -100 : 100;
-                SetExpandedSummoningBrainActive(target, false); target.Descriptor.SwitchFactions(mobs, true);
+                SetExpandedSummoningBrainActive(target, false);
+                // DefaultPlayerCharacter may already cache the player group.
+                // SwitchFactions refreshes relations, not group membership.
+                // Detach this owned actor while its old faction is still current.
+                target.GroupId = target.UniqueId;
+                target.Descriptor.SwitchFactions(mobs, true);
                 target.AttackFactions.Match(new[] { caster.Faction }); PlaceExpandedSummoningUnit(target, points[index]);
                 if (!game.State.AwakeUnits.Contains(target)) game.State.AwakeUnits.Add(target);
-                if (!Sprint32OwnsListener(target, caster, sources) || target.Group.IsPlayerParty ||
-                    intake.Any(unit => target.IsEnemy(unit) || unit.IsEnemy(target)))
+                var hostileIntake = intake.Where(unit => target.IsEnemy(unit) || unit.IsEnemy(target)).ToArray();
+                bool owned = Sprint32OwnsListener(target, caster, sources);
+                bool isolated = target.GroupId == target.UniqueId && !target.Group.IsPlayerParty;
+                RosterPersistenceCheck("s32-listener-ownership-" + index, owned && isolated && hostileIntake.Length == 0,
+                    new JObject { ["id"] = target.UniqueId, ["owned"] = owned, ["group"] = target.GroupId,
+                        ["playerGroup"] = target.Group.IsPlayerParty,
+                        ["hostileIntake"] = new JArray(hostileIntake.Select(unit => unit.UniqueId)) },
+                    "Only this newly owned listener has its own native group; no intake nonparty actor is hostile in either direction.");
+                if (!owned || !isolated || hostileIntake.Length != 0)
                     throw new InvalidOperationException("Saved listener relation/ownership reaches an intake nonparty actor; no time advance/save.");
             }
             var saves = new Dretch30CloudSaves(listeners.ToArray()); starts = new Lillend32CommandStarts { Owner = owner };
@@ -299,6 +325,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!actual) throw new InvalidOperationException("Actual Fascinate outcomes did not establish the declared saved state.");
             }
             finally { game.IsPaused = true; SetExpandedSummoningBrainActive(owner, false); EventBus.Unsubscribe(saves); EventBus.Unsubscribe(starts); }
+
+            foreach (var step in PrepareSprint32SavedControls(caster, sources, points.Skip(2).ToArray(), intake)) yield return step;
 
             // Prospective native spends establish distinct saved budgets only.
             // They are not spell/action/AI evidence and never refill a resource.
@@ -405,8 +433,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attempts++;
                         var direction = Quaternion.Euler(0, angle * 15, 0) * Vector3.forward;
                         var side = Vector3.Cross(Vector3.up, direction);
-                        var requested = new[] { ground.clampedPosition + direction * distance,
-                            ground.clampedPosition + direction * distance + side * 1.3f };
+                        // Two natural performance listeners, then three paused
+                        // effect-only recipients for the grouped cold-load case.
+                        var requested = Enumerable.Range(0, 5).Select(index =>
+                            ground.clampedPosition + direction * distance + side * (index * 1.3f)).ToArray();
                         var points = requested.Select(point => AstarPath.active.GetNearest(point, constraint)).ToArray();
                         if (points.Any(point => point.node == null || !point.node.Walkable ||
                             !constraint.Suitable(point.node) || point.node.GraphIndex != ground.node.GraphIndex ||
@@ -417,7 +447,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             point.z - requested[index].z).magnitude > .3f).Any())
                         { rejected["horizontalClamp"]++; continue; }
                         if (positions.Any(point => Mathf.Abs(point.y - ground.clampedPosition.y) > 2f) ||
-                            Vector3.Distance(positions[0], positions[1]) < .9f)
+                            positions.Where((point, index) => positions.Skip(index + 1).Any(other => Vector3.Distance(point, other) < .9f)).Any())
                         { rejected["heightOrSeparation"]++; continue; }
                         if (positions.Any(point => party.Concat(sources).Any(unit => Vector3.Distance(point, unit.Position) <= 9.1f)))
                         { rejected["acquisitionExclusion"]++; continue; }
@@ -443,9 +473,176 @@ namespace KingmakerGunslinger.RuntimeTesting
             return selected;
         }
 
+        private static BlueprintBuff Sprint32SavedControlBuff(string role)
+        { return Sprint32SavedBlueprint<BlueprintBuff>(role == "charm" ? "CharmBuff" : role == "sleep" ? "SleepBuff" : "LillendAzata.HoldPersonBuff"); }
+
+        private static JObject Sprint32ControlState(UnitEntityData unit, UnitEntityData source)
+        {
+            var row = unit.Get<UnitPartSprint32ListenerReceipt>();
+            var blueprint = Sprint32SavedControlBuff(row.Role);
+            var buffs = unit.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, blueprint) &&
+                ReferenceEquals(buff.Context?.MaybeCaster, source)).ToArray();
+            bool active = buffs.Length == 1 && buffs[0].Active && !buffs[0].IsDisposed &&
+                !buffs[0].IsPermanent && buffs[0].EndTime > Game.Instance.Player.GameTime;
+            var neutralFaction = row.Role == "charm" ? blueprint.GetComponent<NeutralToPlayer>().Faction : null;
+            bool condition = row.Role == "charm" ? !unit.AttackFactions.Contains(neutralFaction) && !source.IsEnemy(unit) :
+                unit.Descriptor.State.HasCondition(row.Role == "sleep" ? UnitCondition.Sleeping : UnitCondition.Paralyzed);
+            return new JObject { ["unit"] = unit.UniqueId, ["source"] = source.UniqueId, ["role"] = row.Role,
+                ["blueprint"] = blueprint.AssetGuid, ["group"] = unit.GroupId, ["active"] = active,
+                ["condition"] = condition, ["sleeping"] = unit.Descriptor.State.HasCondition(UnitCondition.Sleeping),
+                ["paralyzed"] = unit.Descriptor.State.HasCondition(UnitCondition.Paralyzed),
+                ["neutralFaction"] = neutralFaction?.AssetGuid,
+                ["sourceAbility"] = buffs.Length == 1 ? buffs[0].Context?.SourceAbility?.AssetGuid : null,
+                ["casterLevel"] = buffs.Length == 1 ? (JToken)new JValue(buffs[0].Context.Params.CasterLevel) : JValue.CreateNull(),
+                ["dc"] = buffs.Length == 1 ? (JToken)new JValue(buffs[0].Context.Params.DC) : JValue.CreateNull(),
+                ["isFromSpell"] = buffs.Length == 1 && buffs[0].IsFromSpell,
+                ["isNotDispelable"] = buffs.Length == 1 && buffs[0].IsNotDispelable,
+                ["endTicks"] = buffs.Length == 1 ? (JToken)new JValue(buffs[0].EndTime.Ticks) : JValue.CreateNull(),
+                ["attackFactions"] = new JArray(unit.AttackFactions.Select(faction => faction.AssetGuid).OrderBy(value => value, StringComparer.Ordinal)) };
+        }
+
+        private IEnumerable<int> PrepareSprint32SavedControls(UnitEntityData caster, UnitEntityData[] sources,
+            Vector3[] points, UnitEntityData[] intake)
+        {
+            if (!Game.Instance.IsPaused || points.Length != 3 || sources.Any(unit => unit.IsBrainActive))
+                throw new InvalidOperationException("Private saved-control setup requires paused exact inactive sources.");
+            var primary = sources[1]; var sibling = sources[0];
+            if (primary.Get<UnitPartRelease143RosterReceipt>().Key != "lillend-azata" ||
+                sibling.Get<UnitPartRelease143RosterReceipt>().Key != "satyr")
+                throw new InvalidOperationException("Private saved-control source ordering differs.");
+            var roles = new[] { "charm", "sleep", "hold" };
+            var controls = new List<UnitEntityData>();
+            var mobs = BlueprintLibraryLookup.RequireExact<BlueprintFaction>(BlueprintBootstrap.Library, Sprint32ListenerFaction, "saved control faction");
+            for (int index = 0; index < roles.Length; index++)
+            {
+                var target = Game.Instance.EntityCreator.SpawnUnit(BlueprintRoot.Instance.DefaultPlayerCharacter,
+                    points[index], Quaternion.identity, caster.HoldingState);
+                Game.Instance.EntityCreator.Tick();
+                var source = index == 1 ? sibling : primary;
+                var receipt = target.Ensure<UnitPartSprint32ListenerReceipt>();
+                receipt.Scope = Sprint32ListenerScope; receipt.UnitId = target.UniqueId; receipt.CasterId = caster.UniqueId;
+                receipt.SourceId = source.UniqueId; receipt.Role = roles[index]; receipt.PrepareRunId = _request.RunId;
+                SetExpandedSummoningBrainActive(target, false); target.GroupId = target.UniqueId;
+                target.Descriptor.SwitchFactions(mobs, true); target.AttackFactions.Match(new[] { caster.Faction });
+                target.Stats.HitPoints.BaseValue = 100000; target.Stats.SaveWill.BaseValue = -100;
+                PlaceExpandedSummoningUnit(target, points[index]);
+                if (!Game.Instance.State.AwakeUnits.Contains(target)) Game.Instance.State.AwakeUnits.Add(target);
+                if (!Sprint32OwnsListener(target, caster, sources) || target.Group.IsPlayerParty ||
+                    intake.Any(unit => target.IsEnemy(unit) || unit.IsEnemy(target)))
+                    throw new InvalidOperationException("Private saved-control fixture reaches unrelated intake; no save.");
+                receipt.OriginalAttackFactions = new JArray(target.AttackFactions.Select(faction => faction.AssetGuid)
+                    .OrderBy(value => value, StringComparer.Ordinal)).ToString(Formatting.None);
+                controls.Add(target);
+            }
+            // Establish actual hostile baseline through normal cache propagation.
+            var party = Game.Instance.Player.Party.ToArray();
+            var owned = sources.Concat(Sprint32SavedAuxiliaries(caster)).ToArray();
+            foreach (var step in ResumeSprint32Working(party, owned)) yield return step;
+            for (int frame = 0; frame < 3; frame++) { Sprint32CalmWorking(party, owned); yield return 0; }
+            Game.Instance.IsPaused = true;
+            foreach (var target in controls)
+            {
+                var receipt = target.Get<UnitPartSprint32ListenerReceipt>();
+                var source = sources.Single(unit => unit.UniqueId == receipt.SourceId);
+                var buff = Sprint32SavedControlBuff(receipt.Role);
+                var ability = Sprint32SavedBlueprint<BlueprintAbility>(receipt.Role == "charm" ? "LillendAzata.CharmMonster" :
+                    receipt.Role == "sleep" ? "Satyr.Sleep" : "LillendAzata.HoldPerson");
+                var book = receipt.Role == "sleep" ? null : source.Descriptor.GetSpellbook(source.Blueprint.GetComponent<LillendBardBook32>().Book);
+                var data = book == null ? new AbilityData(source.Descriptor.Abilities.GetAbility(ability)) :
+                    book.GetKnownSpells(receipt.Role == "charm" ? 3 : 2).Single(value => ReferenceEquals(value.Blueprint, ability));
+                var parameters = data.CalculateParams();
+                var applications = Sprint32ControlApplications(ability.GetComponents<AbilityEffectRunAction>().Single().Actions)
+                    .Where(value => ReferenceEquals(value.Buff, buff)).ToArray();
+                var neutral = receipt.Role == "charm" ? buff.GetComponent<NeutralToPlayer>().Faction : null;
+                bool baseline = target.IsEnemy(caster) && source.IsEnemy(target) &&
+                    (neutral == null || target.AttackFactions.Contains(neutral)) &&
+                    parameters.CasterLevel == (receipt.Role == "sleep" ? 8 : 7) &&
+                    parameters.DC == (receipt.Role == "charm" ? 17 : receipt.Role == "sleep" ? 15 : 16) &&
+                    applications.Length > 0 && applications.All(value => !value.Permanent && !value.AsChild &&
+                        value.IsFromSpell == applications[0].IsFromSpell && value.IsNotDispelable == applications[0].IsNotDispelable);
+                RosterPersistenceCheck("s32-control-baseline-" + receipt.Role, baseline, new JObject {
+                    ["unit"] = target.UniqueId, ["source"] = source.UniqueId, ["ability"] = ability.AssetGuid,
+                    ["cl"] = parameters.CasterLevel, ["dc"] = parameters.DC, ["neutralFaction"] = neutral?.AssetGuid,
+                    ["attackFactions"] = JArray.Parse(receipt.OriginalAttackFactions), ["hostileToCaster"] = target.IsEnemy(caster),
+                    ["sourceHostileToTarget"] = source.IsEnemy(target), ["applicationCount"] = applications.Length },
+                    "The registered effect-only recipient has actual hostile baseline and the real granted/book ability parameters and mapped terminal flags.");
+                if (!baseline) throw new InvalidOperationException("Private saved-control baseline/context is not the declared native shape.");
+                var context = new AbilityExecutionContext(data, parameters, new Kingmaker.Utility.TargetWrapper(target), null);
+                var duration = TimeSpan.FromSeconds(receipt.Role == "charm" ? 604800 : receipt.Role == "sleep" ? 480 : 42);
+                var rule = new RuleApplyBuff(target, buff, context, duration,
+                    (blueprint, parent, time) => target.Descriptor.Buffs.AddBuff(blueprint, parent, time));
+                Rulebook.Trigger(rule);
+                var applied = rule.AppliedBuff;
+                if (applied == null || !applied.Active || applied.IsDisposed || !ReferenceEquals(applied.Context?.MaybeCaster, source))
+                    throw new InvalidOperationException("Native private persistence-only control application failed.");
+                applied.IsFromSpell = applications[0].IsFromSpell;
+                applied.IsNotDispelable = applications[0].IsNotDispelable;
+            }
+            foreach (var step in ResumeSprint32Working(party, owned)) yield return step;
+            for (int frame = 0; frame < 3; frame++) { Sprint32CalmWorking(party, owned); yield return 0; }
+            Game.Instance.IsPaused = true;
+            foreach (var target in controls)
+            {
+                var receipt = target.Get<UnitPartSprint32ListenerReceipt>();
+                var source = sources.Single(unit => unit.UniqueId == receipt.SourceId);
+                var state = Sprint32ControlState(target, source);
+                receipt.ControlState = state.ToString(Formatting.None);
+                bool ready = (bool)state["active"] && (bool)state["condition"];
+                RosterPersistenceCheck("s32-control-prepared-" + receipt.Role, ready, state,
+                    "Native effect-only persistence precondition with production duration and exact source; no casting, initial save, AI or cost claim. Hold automatic saves remain enabled.");
+                if (!ready) throw new InvalidOperationException("Private saved-control precondition did not remain active.");
+            }
+        }
+
+        private void RequireSprint32ControlUnchanged(UnitEntityData unit, UnitEntityData[] sources, string stage)
+        {
+            var receipt = unit.Get<UnitPartSprint32ListenerReceipt>();
+            var source = sources.Single(value => value.UniqueId == receipt.SourceId);
+            var actual = Sprint32ControlState(unit, source);
+            bool exact = (bool)actual["active"] && (bool)actual["condition"] && !unit.Destroyed &&
+                !unit.Descriptor.State.IsDead && receipt.ControlState == actual.ToString(Formatting.None);
+            RosterPersistenceCheck("s32-control-" + stage + "-" + receipt.Role, exact, new JObject {
+                ["saved"] = receipt.ControlState == null ? null : JObject.Parse(receipt.ControlState), ["actual"] = actual },
+                "Exact private buff/source/deadline, actual condition and faction state remain live; earlier Hold save or expiry cannot prove source cleanup.");
+            if (!exact) throw new InvalidOperationException("Private saved-control state differs at " + stage + ": " + receipt.Role);
+        }
+
+        private void ObserveSprint32SavedControls(UnitEntityData caster, UnitEntityData[] sources, string stage)
+        {
+            var controls = Sprint32SavedControls(caster);
+            if (controls.Length != 3 || Sprint32SavedAuxiliaries(caster).Length != 5 ||
+                !controls.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().Role).OrderBy(value => value)
+                    .SequenceEqual(new[] { "charm", "hold", "sleep" }) || controls.Any(unit => !Sprint32OwnsListener(unit, caster, sources) ||
+                    unit.GroupId != unit.UniqueId || unit.Group.IsPlayerParty || unit.Faction.AssetGuid != Sprint32ListenerFaction ||
+                    string.IsNullOrEmpty(unit.Get<UnitPartSprint32ListenerReceipt>().OriginalAttackFactions)))
+                throw new InvalidOperationException("Private saved-control ownership/role boundary differs.");
+            foreach (var unit in controls) RequireSprint32ControlUnchanged(unit, sources, stage);
+        }
+
+        private void ObserveSprint32ControlRemoval(UnitEntityData[] controls, UnitEntityData caster, UnitEntityData source, string stage)
+        {
+            foreach (var unit in controls)
+            {
+                var receipt = unit.Get<UnitPartSprint32ListenerReceipt>();
+                var factions = new JArray(unit.AttackFactions.Select(faction => faction.AssetGuid).OrderBy(value => value, StringComparer.Ordinal));
+                bool clear = !unit.Destroyed && unit.IsInState && !unit.Descriptor.State.IsDead &&
+                    !unit.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, Sprint32SavedControlBuff(receipt.Role))) &&
+                    !unit.Descriptor.State.HasCondition(UnitCondition.Sleeping) && !unit.Descriptor.State.HasCondition(UnitCondition.Paralyzed) &&
+                    receipt.OriginalAttackFactions == factions.ToString(Formatting.None) && unit.IsEnemy(caster);
+                RosterPersistenceCheck("s32-control-removed-" + stage + "-" + receipt.Role, clear,
+                    new JObject { ["unit"] = unit.UniqueId, ["source"] = source.UniqueId, ["attackFactions"] = factions,
+                        ["originalAttackFactions"] = receipt.OriginalAttackFactions, ["alive"] = !unit.Destroyed && !unit.Descriptor.State.IsDead,
+                        ["hostileAgain"] = unit.IsEnemy(caster) },
+                    "Source retirement removes the private effect and actual condition and restores baseline attack factions/hostility while the recipient remains alive.");
+                if (!clear) throw new InvalidOperationException("Private saved-control removal/faction restoration failed: " + receipt.Role);
+            }
+        }
+
         private IEnumerable<int> CleanupSprint32PersistentState(UnitEntityData caster, UnitEntityData[] sources)
         {
             var listeners = Sprint32SavedListeners(caster);
+            var controls = Sprint32SavedControls(caster);
+            ObserveSprint32SavedControls(caster, sources, "precleanup");
             if (listeners.Length != 2 || listeners.Any(unit => !Sprint32OwnsListener(unit, caster, sources)))
                 throw new InvalidOperationException("Sprint32 cleanup listener ownership ambiguous.");
             double elapsed = Game.Instance.Player.GameTime.TotalSeconds - _sprint32ColdGameSeconds;
@@ -478,27 +675,58 @@ namespace KingmakerGunslinger.RuntimeTesting
             var siblingStates = siblings.Select(source => Sprint32SavedState(source, listeners).ToString(Formatting.None)).ToArray();
             var firstGrants = Sprint32SavedEffects(first);
             var firstAreas = areas.Where(area => ReferenceEquals(area.Context?.MaybeCaster, first)).ToArray();
+            var firstControls = controls.Where(unit => unit.Get<UnitPartSprint32ListenerReceipt>().SourceId == first.UniqueId).ToArray();
+            var siblingControls = controls.Except(firstControls).ToArray();
+            double retirementGameSeconds = Game.Instance.Player.GameTime.TotalSeconds;
             // Existing fixture retirement manually detaches/disposes equipment.
             // This proves saved equipment state and private visual/effect teardown,
             // not native equipment expiry. Retain actual grant/area references.
             foreach (var step in ObserveRosterResourceCleanup(new[] { first }, "s32-primary")) yield return step;
+            var party = Game.Instance.Player.Party.ToArray();
+            var survivors = siblings.Concat(listeners).Concat(controls).ToArray();
+            foreach (var step in ResumeSprint32Working(party, survivors)) yield return step;
             for (int frame = 0; frame < 3; frame++)
-            { foreach (var area in firstAreas.Where(value => !value.Destroyed)) area.Tick(); Game.Instance.EntityDestroyer.Tick(); yield return 0; }
+            { Sprint32CalmWorking(party, survivors); yield return 0; }
+            Game.Instance.IsPaused = true;
+            ObserveSprint32ControlRemoval(firstControls, caster, first, "primary");
+            foreach (var unit in siblingControls) RequireSprint32ControlUnchanged(unit, sources, "sibling");
+            // Native group caches do not run in Pause. Normal frames above may
+            // cross an upkeep boundary; only the surviving performance pool may
+            // decrease within actual elapsed rounds, as in precleanup checks.
+            bool siblingStateExact = siblings.Select((source, index) => {
+                var before = JObject.Parse(siblingStates[index]);
+                var current = Sprint32SavedState(source, listeners);
+                bool upkeep = true;
+                if (source.Get<UnitPartRelease143RosterReceipt>().Key == "lillend-azata")
+                {
+                    int oldPool = (int)before["resources"]["PerformanceResource"], newPool = (int)current["resources"]["PerformanceResource"];
+                    upkeep = newPool > 0 && newPool <= oldPool && oldPool - newPool <=
+                        Math.Ceiling((Game.Instance.Player.GameTime.TotalSeconds - retirementGameSeconds) / 6d) + 1;
+                    current["resources"]["PerformanceResource"] = oldPool;
+                }
+                return !source.Destroyed && upkeep && JToken.DeepEquals(before, current);
+            }).All(value => value);
             bool isolated = firstGrants.Length > 0 && firstAreas.Length > 0 &&
                 firstGrants.All(buff => !buff.Owner.Buffs.RawFacts.Contains(buff)) &&
                 firstAreas.All(area => area.Destroyed && !area.IsInState) &&
                 listeners.All(unit => !unit.Descriptor.State.HasCondition(UnitCondition.Dazed)) &&
-                siblingGrants.All(buff => buff.Owner.Buffs.RawFacts.Contains(buff)) &&
-                siblings.Select((source, index) => !source.Destroyed &&
-                    Sprint32SavedState(source, listeners).ToString(Formatting.None) == siblingStates[index]).All(value => value);
+                siblingGrants.All(buff => buff.Owner.Buffs.RawFacts.Contains(buff)) && siblingStateExact;
             RosterPersistenceCheck("s32-cold-sibling-isolation", isolated, new JObject { ["retiredSource"] = first.UniqueId,
                 ["capturedPrimaryGrants"] = firstGrants.Length, ["capturedPrimaryAreas"] = firstAreas.Length,
+                ["retirementGameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds - retirementGameSeconds,
+                ["siblingStateBefore"] = new JArray(siblingStates.Select(value => JObject.Parse(value))),
+                ["siblingStateAfter"] = new JArray(siblings.Select(source => Sprint32SavedState(source, listeners))),
                 ["retainedSiblingGrants"] = siblingGrants.Count(buff => buff.Owner.Buffs.RawFacts.Contains(buff)) },
                 "Exact first-source removal clears its saved Fascinate/assistance/resistance and Dazed while preserving each sibling's same grants, resources and selected recipient.");
             if (!isolated) throw new InvalidOperationException("Sprint32 cold sibling isolation failed; no cleanup save.");
             foreach (var step in ObserveRosterResourceCleanup(siblings, "s32-siblings")) yield return step;
+            survivors = listeners.Concat(controls).ToArray();
+            foreach (var step in ResumeSprint32Working(party, survivors)) yield return step;
             for (int frame = 0; frame < 3; frame++)
-            { foreach (var area in areas.Where(value => !value.Destroyed)) area.Tick(); Game.Instance.EntityDestroyer.Tick(); yield return 0; }
+            { Sprint32CalmWorking(party, survivors); yield return 0; }
+            Game.Instance.IsPaused = true;
+            foreach (var source in siblings)
+                ObserveSprint32ControlRemoval(siblingControls.Where(unit => unit.Get<UnitPartSprint32ListenerReceipt>().SourceId == source.UniqueId).ToArray(), caster, source, "remaining");
             bool clean = grants.All(buff => !buff.Owner.Buffs.RawFacts.Contains(buff)) &&
                 areas.All(area => area.Destroyed && !area.IsInState) &&
                 listeners.All(unit => !unit.Descriptor.State.HasCondition(UnitCondition.Dazed));
@@ -507,7 +735,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["dazedListeners"] = listeners.Count(unit => unit.Descriptor.State.HasCondition(UnitCondition.Dazed)) },
                 "Removing the exact saved sources clears captured private grants/areas and actual listener Dazed state before fixture victims are retired.");
             if (!clean) throw new InvalidOperationException("Sprint32 native cleanup left state; no cleanup save.");
-            foreach (var listener in listeners) listener.Destroy();
+            foreach (var listener in listeners.Concat(controls)) listener.Destroy();
             Game.Instance.EntityDestroyer.Tick(); yield return 0;
         }
     }

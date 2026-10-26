@@ -2390,3 +2390,132 @@ Capture/ComparePASS967/118/18/83/tasks0/Steam1 at artifacts/sprint32-storage-aft
 Measured free3,884,158,976B19:31:15UTC after cleanup, above3.1GB initial need.
 Approximate bounded storage inspection/retention/verification time8min; overlaps
 source review/records, exclusive total unavailable. No owned live transaction.
+
+
+### 2026-10-26 candidate68, native78-80, healing/group correction
+
+Build68 b37da6dad568e309c33b54d8deb780fe30a71032,19:32:12.3842741-
+19:36:30.1023092UTC,257.7180351s: complete development wrapper,558/2755
+domain tests, pinned compilation and strictZIP PASS. Not final qualification.
+ZIP b8547caf94d259d884915d55a9eb4dbbaacaf5d5faf0b29d167a3c6694183723;
+DLL b8de78d95aa75b2f8edbcce0752347e241316833b84cc6438f09d75555e8d381;
+MVID54c48154-c458-4d5d-b9a6-c7b8dd902139;
+SourceState987d3146b8340327ae4af2339f4e2d2f52dd93b9b4672bca9adf01a2f1b6f0fe.
+Free3,883,974,656->3,730,268,160B. Original logs build-fixtures-b37da6da.*.
+
+Native78 RTWP controls5PASS/2FAIL. Raw
+20261026T1939192624903Z-disposable-expanded-summoning-sprint32-native-review;
+run20261026T1939192781173Z-eb61535c8e91406c8478b5c8574cb662;
+native19:39:28.7478196-19:41:14.9199766UTC,106160ms;
+wrapper19:36:51.6999066-19:41:26.4183540UTC.
+ResultSHAfc724c72a8a4a85d94f29fd535c23e774e0cc42f3da568f11b3ea4e166fe95a5;
+original Unity artifacts/sprint32-controls-b37da6da/Unity-output-original.txt,
+SHA000dfc59e35a1a8405985faf83e5a5eeb854d35e04a1c0fc52bdcd005fa5b346.
+Animal five-HD fixture and natural CharmMonster CL7/DC17/604800s/L3slots2->1
+Standard/current-effect refusal PASS. Actual helpful CureLight completes/heals
+12->2/L1slots5->4 but disposes Charm: product defect in threat classification.
+Ally=None/Enemy=Harmful metadata observed. Caster-threat/RTWP burst NOT_REACHED.
+Transaction compat-20261026T193653Z-c71c7eddc79c restored19:41:26.1711010UTC;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native79 turn controls7/7PASS. Raw
+20261026T1946436786393Z-disposable-expanded-summoning-sprint32-native-review;
+run20261026T1946437317498Z-70d29c430b214668af51ac2a44cda139;
+native19:46:53.5284869-19:48:58.4857469UTC,124951ms;
+wrapper19:44:12.6624249-19:49:09.8321992UTC.
+ResultSHA37fd9af385c30a08d8892ce83543f8aa1b9d95c6c0cee1f4a591b91e90db472f;
+Unity artifacts/sprint32-controls-turn-b37da6da/Unity-output-original.txt,
+SHAca5970362e4c99dc343235c4ad1b06fcebd8a266d2b351777a5989664a1cdf14.
+Natural Charm and one SoundBurst pass actual Standard/slots,101nativeTurnFrames/
+0fixtureAiTicks, per-cast DC16lowFort fail/highFort success,1d8Sonic8damage each,
+only failure6sStun, sibling safe/independent. No supplied spell/roll. TB does not
+run helpful-heal/threat probe;78 remains FAIL. Transaction
+compat-20261026T194414Z-cea8ee9c03e6 restored19:49:09.6317872UTC;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native80 Working prepare18PASS/2FAIL. Raw
+20261026T1953291210233Z-working-save-expanded-summoning-prepare;
+run20261026T1953291522165Z-40f0a8f901ca407689d91884c4ff7e09;
+native19:53:42.1812141-19:57:08.2590258UTC,206074ms;
+wrapper19:50:39.8947430-19:57:31.5322071UTC.
+ResultSHA58b937b3dfa49eca99947e937cd7a61c54ee8b7c9aedeccef2fad952cd3f1e84;
+Unity artifacts/sprint32-working-b37da6da/Unity-output-original.txt,
+SHA53df22e5244a0e340ef22255c9f33534231ae96cc9e06c11c23065b24b4effe1.
+Competence and walking survey PASS31attempts (16horizontalClamp/7acquisition/
+7sight rejected). WalkingGraph1/nativeTags-1/connectedArea1; selected two points.
+Next combined listener ownership/player-group/intake-hostility guard refuses.
+Raw cannot identify the failed conjunct. No time advance/save after refusal;
+writes0/stashes0. Cold/OFF NOT_RUN. Exact stack
+sprint32-stack-20261026T195102Z-4c393a9d4998 restored19:57:31.4893446UTC;
+outer original Working+full intake restored19:57:45.0700574UTC. OriginalSHA
+650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8,550,225B,creation639208636210035057/write639278868712797783/attributes8224.
+Full ComparePASS967/118/18/83/tasks0/Steam1. No owned live transaction.
+
+Independent installed-IL review identifies DefaultPlayerCharacter cached player
+GroupId surviving SwitchFactions; that call only refreshes attack relations.
+Fixture sets only new owned listener GroupId=UniqueId before faction switch,
+retaining all ownership/nonparty/intake-neutrality guards and recording their
+predicates. No geometry enlargement/intake changes. This is a demonstrated
+source-contract correction, not retrospective attribution of80's exact conjunct.
+Private Charm healing fix uses BOTH Cure|RestoreHP and native recipient.IsUndead;
+native/CotW negative-energy-affinity seam researched. RestoreHP alone remains
+subject to harmful metadata. Exact native Cure descriptor139586437120 verified
+in retained20261025T1422355423416Z input audit. No optional DLL dependency/state
+or subsystem. Original patch text did not apply due line endings; actual exact
+source patch applied and diff-check clean. Fresh RTWP proof required.
+One noticed profile question resolved read-only against authoritative Lillend
+entry: Fort+7 is base2+Con5; no stat defect/change. Printed source remains
+https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend.
+Counts68attempts/54packages/80launches. Approx15min implementation/review/records,
+4.3min build,16.6min native wrappers overlapping research; exclusive totals
+unavailable, owner-wait0. Prior v167 three NOT_RUN dispositions unchanged.
+
+20:01UTC retention: five exact closed native76-80 package extractions
+(compat-20261026T190606Z-80a29410eee2,
+sprint32-stack-20261026T191213Z-40930335b1ca,
+compat-20261026T193653Z-c71c7eddc79c,
+compat-20261026T194414Z-cea8ee9c03e6,
+sprint32-stack-20261026T195102Z-4c393a9d4998) fully compared against retained
+validated67/68 ZIPs. Existing fixed cleanup helper reused, no new cleanup route.
+Non-elevated preview refused scheduled-task access before mutation; elevated
+preview and execution passed all closed-transaction, identity, path/reparse,
+full-file SHA and protected-intake guards. Removed498,461,544B at20:01:36.3680101Z,
+planSHA3f9863f5a7fb3d4620d59d6920835bb1df97d994c653035a024d5cc468294089;
+free3,079,495,680->3,583,602,688B. Full ComparePASS967/118/18/83/tasks0/Steam1.
+Exact selection artifacts/sprint32-intake/cleanup-selection-s32-native76-80.json;
+protected Capture/Compare artifacts/sprint32-storage-after80. All raw evidence,
+unique packages, receipts, protected backups/saves and DATA retained.
+
+Independent persistence review requires actual cold Charm faction restoration:
+native NeutralToPlayer.m_FactionRemoved lacks JsonProperty while native attack
+factions serialize. This is a concrete risk, not an asserted fresh-load defect.
+One grouped addition uses existing Working/receipt/effect-only seams: two real
+performance listeners then three separate native recipients, primary Lillend
+Charm604800s/Hold42s and sibling Satyr Sleep480s. All pairwise points checked in
+the same finite four-ring/24-angle survey; no added rings/scenario/registry.
+Only owned actors get unique persisted GroupId before faction change. Actual
+conditions/source/deadlines/factions must match cold ON/OFF and immediately before
+removal. Hold automatic saves stay enabled; prior success cannot prove cleanup.
+Primary removal must restore Charm baseline hostility/clear Hold and preserve
+same sibling Sleep/performance; remaining sources clear before recipient removal.
+No product faction repair or new subsystem was implemented speculatively.
+Focused healing/group compilation23.9s and18/2755 tests PASS1.0s; grouped saved-
+control compile24.1s/tests18/2755 PASS1.3s. Logs focused-healing-groups-after80.log
+and focused-saved-controls-after80.log; these are compilation/domain results,
+not native saved-state proof. Source/diff review precedes the next package.
+
+Independent actual-diff review caught paused-cache refresh and incomplete effect
+context/flag assertions before dispatch. Both are corrected: native Default
+frames under calm guards precede strict faction restoration, and only elapsed
+native performance upkeep is allowed in sibling state. Real granted/book
+AbilityData/parameters/AbilityExecutionContext and exact mapped terminal flags
+now establish the native serialized shape. Charm checks bound NeutralToPlayer
+Faction and actual hostile baseline, not the summon's different faction. Reviewer
+resolved all concrete findings; fresh cold/native proof remains required.
+Context compilation initially failed only for missing NeutralToPlayer namespace;
+original focused-saved-context-after80.log retained. Existing native namespace
+imports corrected before the next compile; no candidate or launch from that failure.
+Corrected production compilation24.2s and18/2755 focused tests PASS1.0s;
+log focused-saved-context-import-after80.log. No further concrete blocker in the
+independent resolution review. The next candidate/native execution remains required.

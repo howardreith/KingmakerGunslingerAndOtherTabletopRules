@@ -1,3 +1,25 @@
+Sprint32 Working persistence also groups three private-control recipients with
+the existing two performance listeners. The same finite walking survey checks
+five separated points, without additional rings or angles. Only after the real
+Fascinate ledger exists and source brains are disabled, native effect-only
+applications establish Charm604800s/Hold42s from the first Lillend and Sleep480s
+from its Satyr sibling. These are saved-state preconditions, not spell/save/AI/
+cost evidence. Hold automatic saves remain enabled. Each new actor has a unique
+native GroupId assigned before its faction change; intake actors are untouched.
+Real granted/book AbilityData and native parameters create each saved ability
+context; mapped terminal flags are copied without executing a cast. Charm's
+actual hostile baseline includes the bound NeutralToPlayer player faction.
+Cold ON/OFF and immediate pre-retirement observations compare exact source,
+private buff, original deadline, actual condition and attack factions. Primary
+source removal must clear Charm/Hold and restore Charm's original hostility
+while sibling Sleep/performance remain; all conditions clear before recipients
+are retired. A successful Hold retry before retirement invalidates that assertion.
+Source cleanup resumes only surviving owned actors under the existing calm
+guards for normal relation-cache propagation. Sibling comparison permits only
+native performance upkeep bounded by elapsed rounds; other state remains exact.
+The existing prepare/cleanup/absence sequence and60-80min combined ON/OFF
+selection remain; no additional scenario or generic persistence system is added.
+
 Sprint32 fixed `lillend-controls` and `lillend-controls-turn` reuse the save-free
 isolated native scene and exact-owned command/AI clock. Each groups actual native
 five-HD Wolf recipients, natural Charm Monster and safe Sound Burst, real
