@@ -2636,3 +2636,88 @@ planSHAcb75fff0a2598ee64b5134d4f258ee69915bc91206a8dfb46beac604a684cc45.
 Protected ComparePASS967/118/18/83/tasks0/Steam1. Reference/content archive remain;
 unique DLL variants, packages, raw evidence, failures, receipts and protected
 backups/saves untouched. No historical execution or package identity rewritten.
+
+## 2026-10-26 21:28UTC — candidate70; native85/86 failures, reviewed bounded replan
+
+Candidate70 source a1a8ac14e19e7213bd04537905cdcb8bdcf25246;
+ZIP58ca3938c138757bcf10fcc8d5f7ff80f33fc6bbcc1fb24a3f01a2bc2967a044;
+DLLaaa6730f3679ba312dd910e6061b42a884e0feffe19e61d3f070c79daa771791;
+MVIDb7372651-f332-4e33-8d3a-0ddba2ad7e1b;
+SourceState7a38bc139f37bf14ca4c17eb7ad3c55658d2f1ac9f70d4af74ac225d5da1283a.
+Build-Local -ExpectedVersion0.0.167 -DevelopmentPurpose sprint32-lillend-support
+-DevelopmentTestFilter expanded-summoning with the accepted exact reference bundle:
+20:55:46.8839898–21:00:55.3215836UTC,308.4375938s,558/2755, strict ZIP PASS.
+Free3,438,092,288→3,277,586,432B. Logs artifacts/sprint32-intake/
+build-geometry-a1a8ac14.{stdout.log,stderr.log,exit.json}. Development only.
+
+Native85 raw runtime-evidence/20261026T2104274273283Z-working-save-expanded-summoning-prepare,
+run20261026T2104274607941Z-bdf4ed6e2a8d45129b3a8a2e5c062852:
+18PASS/3FAIL,21:04:40.5885817–21:08:08.5251707UTC207936ms.
+Wrapper21:01:33.5147070–21:08:27.0977650. Geometry28 candidates PASS;
+first listener owned/unique nonparty group but1058 hostileIntake -> unchanged
+guard refusal. No advance/save/stash, subsequent listeners/controls/cold not run.
+ResultSHA0f3c94d52942a8870a3a95edbc9261688810cc9c74844e988b5be75c9d2b5a59.
+Original Unity artifacts/sprint32-working-a1a8ac14/on-prepare-Unity-output-original.txt
+SHA9c07cb502fe0f84267da9e05fcde7b1ffb383dfb86576233d30389396c545e52.
+Transaction sprint32-stack-20261026T210157Z-26cc8cb0c674 restored21:08:27.0130305UTC;
+outer original Working restored21:08:42.1828065, exact SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B, creation639208636210035057/write639278868712797783/attributes8224.
+Full Compare967Mods/118saves/18refs/83settings/tasks0/Steam1 PASS.
+
+Native86 raw runtime-evidence/20261026T2112174486295Z-disposable-expanded-summoning-sprint32-native-review,
+run20261026T2112174864644Z-a9aa55f8563841b9acd853bd377cfc18:
+7PASS/1FAIL,21:12:27.0515570–21:14:07.9305048UTC100866ms.
+Wrapper21:09:43.1990777–21:14:18.4478022. Natural Fear Standard/one use/DC18/CL8 PASS;
+same vacated-sibling-point guard fails. No fallback/TB run.
+ResultSHA59b5af4620a0af95762f615fefeed2e8c049e06b3a2c25df08a1a0bc86c5d891.
+Original Unity artifacts/sprint32-satyr-fear-a1a8ac14/Unity-output-original.txt
+SHA05538769c154d470eb85b1c3f4a0792168a899afac1e9d186fcfbe734d47b7ad.
+Transaction compat-20261026T210944Z-47e9b23c93d5 restored21:14:18.2160718UTC;
+full protected Compare967/118/18/83/tasks0/Steam1 PASS.
+
+Replan, not unchanged replay: independent reviewer actual source/installed
+SwitchFactions/group contracts plus read-only original owned Working identified
+stale Player group membership (1032 matched intake attack Player) and actual
+Mobs hostility (14 matched actors attack Mobs;13 live). Registered native neutral
+root plus precheck and exact-owned one-member cache refresh retains the complete
+guard. No intake actor or faction blueprint edits; no cache-only dispatch.
+Fear now retains its original surveyed coordinate for the effect-only probe:
+installed Translocate calls ForcePlaceAboveGround, which overwrites actor Y.
+Original86 failed subpredicate unknown; new receipt reports exact clamp/separation.
+No source rule or guard relaxation; other callers unchanged.
+
+New lillend-grab fixture uses existing native Default scope, actual Lillend
+RTWP/TB tail/grab/constrict/release plus Salamander RTWP baseline. Independent
+review corrected actual mode cost, native conditions, quiet-anchor ownership,
+appearance readiness, exact initial-roll/command attribution, physical Salamander
+packets, all progression lease checks and independent finalizers. No new
+subsystem. Final read-only review of actual diff found no dispatch blocker.
+Focused first compile PASS then one admission test failed from accidental
+positive-phase inclusion in the negative list. Next compile found two lingering
+string-faction references. Corrected batch compile24s and6/2755 tests PASS0.1s,
+gate test stage4.7s: artifacts/sprint32-intake/focused-batch-after86-corrected.log.
+All original logs retained. Product native/visual/persistence qualification pending.
+Counts70build attempts/56validated packages/86native; owner waiting0.
+
+Storage after86: exact restored native85/86 extraction duplicates199,424,144B
+removed21:26:51.6347065UTC, free2,846,035,968?3,047,723,008B;
+planSHAe809ec2b0f731b45254eceaa923c8c869024dfdacc229eaa2ed3f6edee636dfe.
+Caller then incorrectly read stale LASTEXITCODE after a PowerShell script; actual
+cleanup had succeeded. Separate build69 exact staging/DLL43,097,326B removed
+21:27:41.1739464UTC, free2,991,939,584?3,034,931,200B (archive creation overlaps),
+planSHA8f08ee1b0acf6628928a4eb27a46f2e2642a2124c318d161a57054525283c481.
+Protected ComparePASS. Existing exact ZIPs/receipts/PDBs/raw evidence retained.
+
+S26 fixed five-transaction group verified every file identical. Retained
+reference sprint26-stack-20261018T143431Z-3217431bad4e plus lossless content archive
+artifacts/sprint32-intake/retained-closed-identical-s26-c.zip,55,583,936B,
+SHAc7f9ce8d5314cdd1cdc3908ed1a1b92dd975007dd566384b42dde633bfe8a2d4.
+ManifestSHAef6367407b6a2519e8cef1f80305600104bfc93051e9220fbe200354b710d8b4.
+Initial selection lacked transaction hash/path fields; guard refused before
+any deletion. Original manifest/helper retained; corrected pins reverified.
+Four package-only duplicates144044Z-3ec93ffb325a/144657Z-928182925069/
+145238Z-911d381f9d0f/145851Z-42b640c74ac5 reclaimed330,868,748B
+21:30:03.6834333UTC; free3,033,763,840?3,368,800,256B;
+planSHA774175e36a7643b8fbdfe003b855519800f93d85119c67ebf4270f96d738c90e.
+Full protected Compare967Mods/118saves/18refs/83settings/tasks0/Steam1 PASS.
+No personal data/protected saves/backups/unique artifacts/DATA touched.

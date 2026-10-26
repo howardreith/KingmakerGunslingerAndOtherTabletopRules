@@ -2121,5 +2121,6 @@
     <Compile Include="Summoning\LillendLullaby32.cs" />
     <Compile Include="Summoning\FeyCharmThreat32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillendControls32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillendGrab32.cs" />
   </ItemGroup>
 </Project>

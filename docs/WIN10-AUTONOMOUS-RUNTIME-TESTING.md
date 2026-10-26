@@ -1,3 +1,25 @@
+Sprint32 fixed `lillend-grab` selects grouped Lillend RTWP/TB and one directly
+affected Salamander RTWP baseline (expected10min/runtime600s). Existing native
+Default scope owns combat, turns, buff rounds and target escapes. Production
+attack AI is unchanged; disclosed spent Lillend spell/performance pools and a
+mind-immune, maneuver-eligible Medium target isolate the melee fallback. Actual
+establishing-tail hit/command/cost, initial constrict, later tail plus live-Strength
+constrict and failed-maintain release must pass. No supplied attack, forced roll,
+manual maintain, or tested-actor Prepare/EndTurn supplies a verdict. Only the
+proven disposable initially idle profile anchor/caster can be passed and counted.
+Lease refusal preserves foreign mode for outer rollback; independent cleanup
+still restores owned resources/settings. This does not claim movement or visuals.
+
+Working Sprint32 listeners and effect-only controls now use the registered
+SystemMechanics.FactionNeutrals, after refusing any intake attack relation.
+SwitchFactions can construct stale Player group membership before assigning
+the new faction; only the proven unique one-member owned group receives native
+ResetFactionSet/UpdateAttackFactionsCache. All symmetric hostility refusals
+remain; no intake relation is edited. Native85 remains FAIL before save.
+Satyr Fear's effect-only sibling probe retains its original surveyed graph point:
+native Translocate grounds actor Y through physics. Walkability/clamp/separation
+remain mandatory, with a receipt for the exact values. Native86 remains FAIL.
+
 Satyr Fear RTWP/TB source-isolation setup now surveys one of two connected
 walkable points behind the established owner/target lane for its owned sibling,
 before casting. The shared expiry probe revalidates the actual vacated position,

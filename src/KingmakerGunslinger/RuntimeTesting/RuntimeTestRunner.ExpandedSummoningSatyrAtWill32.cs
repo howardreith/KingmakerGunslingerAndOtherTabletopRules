@@ -424,7 +424,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewFeyControlExpiry32(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData sibling, UnitEntityData target, Buff original,
             AbilityData siblingData, UnitCondition condition, Func<JObject> siblingBudget, string id, Func<JObject> sourceAttribution = null,
-            Action<UnitEntityData> prepareProbe = null)
+            Action<UnitEntityData> prepareProbe = null, Vector3? surveyedProbePoint = null)
         {
             var game = Game.Instance;
             UnitEntityData probeTarget = null; Buff probe = null;
@@ -446,11 +446,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // This is an effect-only source-isolation probe. Reuse the
                 // sibling's surveyed point; no second cast, LOS, acquisition,
                 // approach or action claim is made from the supplied effect.
-                var vacated = sibling.Position;
+                // Native Translocate grounds the actor through ForcePlaceAboveGround,
+                // which can change Y from the walking graph. Fear's caller retains
+                // its exact surveyed point; do not rediscover it from a later pose.
+                var vacated = surveyedProbePoint ?? sibling.Position;
                 var nearest = AstarPath.active.GetNearest(vacated);
-                if (nearest.node == null || !nearest.node.Walkable ||
-                    Vector3.Distance(nearest.clampedPosition, vacated) > .3f ||
-                    Vector3.Distance(nearest.clampedPosition, target.Position) < .8f)
+                bool separate = nearest.node != null && nearest.node.Walkable && Cleanup2Finite(vacated) &&
+                    Cleanup2Finite(nearest.clampedPosition) && Vector3.Distance(nearest.clampedPosition, vacated) <= .3f &&
+                    Vector3.Distance(nearest.clampedPosition, target.Position) >= .8f;
+                Sprint25Check(id + "-effect-probe-point", separate, new JObject {
+                    ["retainedSurvey"] = surveyedProbePoint.HasValue,
+                    ["point"] = new JArray(vacated.x, vacated.y, vacated.z),
+                    ["siblingNow"] = new JArray(sibling.Position.x, sibling.Position.y, sibling.Position.z),
+                    ["walkable"] = nearest.node != null && nearest.node.Walkable,
+                    ["clampMeters"] = Vector3.Distance(nearest.clampedPosition, vacated),
+                    ["targetSeparationMeters"] = Vector3.Distance(nearest.clampedPosition, target.Position) },
+                    "Exact effect-only point remains finite, walkable and separate; no second cast or reach is claimed.");
+                if (!separate)
                     throw new InvalidOperationException("Vacated sibling point is not a separate walkable control-probe position.");
                 PlaceExpandedSummoningUnit(sibling, owner.Position);
                 probeTarget = game.EntityCreator.SpawnUnit(fixture.HostileBlueprint,
