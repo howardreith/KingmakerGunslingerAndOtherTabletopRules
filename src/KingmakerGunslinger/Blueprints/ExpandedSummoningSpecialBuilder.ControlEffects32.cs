@@ -53,9 +53,13 @@ namespace KingmakerGunslinger.Blueprints
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
             var applications = FeySleepApplications32(ability.GetComponents<AbilityEffectRunAction>().Single().Actions).ToArray();
-            if (applications.Length != 1 || applications[0].Buff?.AssetGuid != NativeSleepBuff32)
-                throw new InvalidOperationException("Observed native Sleep terminal graph changed.");
-            applications[0].Buff = Require<BlueprintBuff>(bySymbol, FeySleepBuff32);
+            // The native graph has separate living and gated undead branches.
+            // Preserve both eligibility paths and rebind their identical effect.
+            if (applications.Length != 2 || applications.Any(apply => apply.Buff?.AssetGuid != NativeSleepBuff32))
+                throw new InvalidOperationException("Native Sleep terminals differ from the selected two-branch mapping; count=" +
+                    applications.Length + "; terminals=" + string.Join(",", applications.Select(apply =>
+                        (apply.Buff?.AssetGuid ?? "<missing>") + ":" + (apply.Buff?.name ?? "<missing>"))));
+            foreach (var apply in applications) apply.Buff = Require<BlueprintBuff>(bySymbol, FeySleepBuff32);
             // Preserve native shared HD, target selection, duration and saves.
         }
 

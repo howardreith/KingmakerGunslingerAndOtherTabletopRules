@@ -60,29 +60,32 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `ef3307a2516b501d9bb39cce715f0a8527f3c23c`.
-ZIP `35fdadaeae60c0a0752b9707b687edaca095d4aff2a2ccd36d954e6075382bea`;
-DLL `a6de9affb20fe89c13cb117a16c484d0198a85afae0a22e173951d68f302dd01`;
-MVID `e82722fe-0b04-4c7b-8e97-9a8be19ea8bd`;
-SourceState `8538ef4d841a489ff8b53c9c1d3159ae2aade396ec9028994d420ae6486a105e`.
-Path `artifacts/development-candidates/sprint32-lillend-support/ef3307a2516b/`.
-Build51: wrappers,557selected/2753registered, exact-reference compilation and
-strict package PASS in254.153s. No complete final qualification on these inputs.
-Native59 **FAIL9PASS/2FAIL**: corrected readiness, natural Sleep/Charm,
-normal Standard costs, saves, shared4HD/ally exclusion and controlled-target
-refusal PASS. Both exact effects survive native source expiry: product defects.
-Observed combat Charm lasted60s; no accepted waiver supports this duration.
+Latest validated development candidate: `9da702f6f5b415ab41c56ee4c8c13563ae333295`.
+ZIP `18361fbb063eaacaea60cb59bf94d54905523c5e23c225ef4c648815f1255c64`;
+DLL `5e408797c60516484f3b5735883927b3861b24db4edc6b1f45d1ce991f107c00`;
+MVID `b47b2a9f-d475-4a19-a9ce-1803cd44ed8b`;
+SourceState `60ce5bf48df83fe91abdcbf8ead70199ccb7d2a78b43f16ddf58b19bc2e4ff6a`.
+Path `artifacts/development-candidates/sprint32-lillend-support/9da702f6f5b4/`.
+Build52: wrappers,557selected/2754registered, exact-reference compilation and
+strict package PASS in262.468s. No complete final qualification on these inputs.
+Native60 **FAIL at initialization; zero gameplay assertions**: private Sleep
+mapping incorrectly required one terminal. The retained graph has ordinary and
+conditional-undead save branches. Original native59 lifecycle defects remain open.
 
-Current unbuilt correction: private Sleep/Charm terminal buffs use the proven
-native RemoveBuffIfCasterIsMissing component. Private Charm Person uses hours/CL
-in both native branches; Charm Monster retains days/CL. Direct Lillend book/SLA
-consumers and protection catalog use private identities; native donors unchanged.
-Lullaby/Daze effects gain the same cleanup; Daze's60s aftermath immunity remains.
-All7502 prior registry entries preserved; four private identities appended.
-Production compilation,18focused Sprint32/protection tests and30icon checks PASS.
-An invalid pipe-separated filter correctly rejected zero tests before the corrected
-comma-separated selection. Independent actual-diff review found no blocker; fresh native proof
-remain required. Source expiry observes destruction, not an immediate death hook.
+Current reviewed correction requires two matching native Sleep terminals and
+rebinds both only after validation; all type/HD/caster-fact/save gates remain.
+On a mapping mismatch it reports actual count/GUID/name. Ordinary terminal identity
+was observed in59; deeper undead terminal fields were truncated in retained graphs,
+so strict native admission remains required. Production24.4s/18focused tests0.1sPASS;
+subsequent diagnostic text is compiled by the candidate build. Independent review
+found no blocker. No turn run on knownbad9da702f6.
+
+The preceding private-control fix adds native RemoveBuffIfCasterIsMissing to
+Sleep/Charm/Lullaby/Daze effects, corrects CharmPerson to hours/CL in both branches,
+retains CharmMonster days/CL and binds direct Lillend book/SLA/protection consumers.
+All7502 old identities are unchanged; four private identities appended. Native
+donors are untouched. Daze60s victim immunity deliberately survives the source.
+Fresh lifecycle/duration/Lillend/sibling-effect/cold proof remains required.
 
 ## Development evidence and reuse limits
 
@@ -130,16 +133,16 @@ Suggestion rows remain pending owner decision. No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T104041Z-61678896fbe7` restored/verified
-10:45:37.8501010UTC. Protected Compare PASS967Mods/118saves/18references/
+Latest transaction `compat-20261026T111500Z-657629c53183` restored/verified
+11:18:53.4655638UTC. Protected Compare PASS967Mods/118saves/18references/
 83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native59 raw: `20261026T1043030305545Z-disposable-expanded-summoning-sprint32-native-review`;
-local original log/intake: `artifacts/sprint32-satyr-atwill-ef3307a2/`.
+Native60 raw: `20261026T1117275880953Z-disposable-expanded-summoning-sprint32-native-review`;
+local original log/intake: `artifacts/sprint32-satyr-atwill-9da702f6/`.
 Original native50/52 binding,54 carrier observer and58 readiness failures remain
 immutable. Their corrections use inspected native seams; no product-stat changes.
 
-Counts:51Build-Local attempts /40validated development packages /59native launches.
-Build51 measured4.24min; native59 wrapper4.97min/native135.155s. Earlier exact
+Counts:52Build-Local attempts /41validated development packages /60native launches.
+Build52 measured4.37min; native60 wrapper3.91min/native67.417s. Earlier exact
 measurements/history retained; whole-mission work-category totals unavailable.
 Approximately09:43–10:18 fixture/contract25min, independent review7min and cleanup
 verification7min overlap; focused compilations about1.2min. The visibility
@@ -149,16 +152,19 @@ independent work continues, not exclusive waiting. No speedup inferred.
 
 Disk budget:1.1GBcombined peak +2GBreserve before building. At10:13UTC14fully
 byte-verified closed extractions reclaimed1,157,954,602B; free4,408,549,376B,
-protectedComparePASS. At11:06UTC free3,694,362,624B. Prior cleanup receipts
+protectedComparePASS. At11:23UTC free3,328,430,080B. Prior cleanup receipts
 remain in history. Unique packages/raw evidence/original failures/receipts/PDBs/
 saves/protected backups retained. No machine-wide cleanup or DATA changes.
 
-**Next:** finish independent review of the private control correction, then package
-once and run `satyr-atwill`
+**Next:** package the reviewed Sleep branch correction once and run `satyr-atwill`
 (expected10min/runtime600s), classify the actual result, then run `satyr-atwill-turn`
 on the same unchanged package if its shared fixture is valid. Do not run the
-ef3307a2 turn case with known lifecycle/duration defects. Affected Lillend book/SLA,
-cantrip, sibling-effect isolation and cold cases remain required. Preserve final candidate
+9da702f6 turn case with the known initialization defect. Affected Lillend book/SLA,
+cantrip, sibling-effect isolation and cold cases remain required. Reuse the executed
+S30-31 installed-stack ON/OFF original-Working envelopes for persistence; the
+obsolete Cleanup2 retained-transaction design is unnecessary. Hold Person has a
+concrete outgoing cleanup risk from its captured native components; Fear/SoundBurst
+terminal components still need bounded inspection. Invisibility is self-only. Preserve final candidate
 qualification/review/integration as separate required work; no owner playtest.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: all30public-route/body/icon, standalone
