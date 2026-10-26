@@ -60,34 +60,39 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `2437bae6d78cbd29cb2e628eab08dde0209348d1`.
-ZIP `f1210cfe8b44b2d5efb69454f9f486ec1c6e38efd6691558b2ef5668d790a866`;
-DLL `c2bf2c88ea1ffd52814b1e1657ea9e743e19e769b35708d81a6d48191fff24c2`;
-MVID `78e586c1-a46f-4644-989c-b6d6f0efb1b5`;
-SourceState `4391a9bba534b20968407c22ef3cf4428db39a6a4848a145bad048a3213f4426`.
-Path `artifacts/development-candidates/sprint32-lillend-support/2437bae6d78c/`.
-Build50: wrappers,557selected/2753registered, exact-reference compilation and
-strict package PASS in258.248s. No complete2753 final qualification on these inputs.
-Native58 on this package is **FAIL3PASS/2FAIL before casting**: original2HD
-subject eligible, two newly spawned2HD subjects ineligible; failing conjunct was
-not captured. No Sleep/Charm gameplay result. Original evidence/log retained.
+Latest validated development candidate: `ef3307a2516b501d9bb39cce715f0a8527f3c23c`.
+ZIP `35fdadaeae60c0a0752b9707b687edaca095d4aff2a2ccd36d954e6075382bea`;
+DLL `a6de9affb20fe89c13cb117a16c484d0198a85afae0a22e173951d68f302dd01`;
+MVID `e82722fe-0b04-4c7b-8e97-9a8be19ea8bd`;
+SourceState `8538ef4d841a489ff8b53c9c1d3159ae2aade396ec9028994d420ae6486a105e`.
+Path `artifacts/development-candidates/sprint32-lillend-support/ef3307a2516b/`.
+Build51: wrappers,557selected/2753registered, exact-reference compilation and
+strict package PASS in254.153s. No complete final qualification on these inputs.
+Native59 **FAIL9PASS/2FAIL**: corrected readiness, natural Sleep/Charm,
+normal Standard costs, saves, shared4HD/ally exclusion and controlled-target
+refusal PASS. Both exact effects survive native source expiry: product defects.
+Observed combat Charm lasted60s; no accepted waiver supports this duration.
 
-Current unbuilt correction: native point-LOS survey of each extra location,
-then bounded native memory refresh after yielding for awake-group registration.
-Installed UnitGroupMemory.Add starts Visible=false; Dialog clock has no memory
-refresh. HasLOS is position/range/geometry, not view-loading. No visibility flag
-is assigned. Readiness now records individual predicates; source-expiry requires
-subjects survive. Independent actual-diff review found no correction blocker;
-production23.4s/6focused tests1sPASS. Fresh native execution still required.
+Current unbuilt correction: private Sleep/Charm terminal buffs use the proven
+native RemoveBuffIfCasterIsMissing component. Private Charm Person uses hours/CL
+in both native branches; Charm Monster retains days/CL. Direct Lillend book/SLA
+consumers and protection catalog use private identities; native donors unchanged.
+Lullaby/Daze effects gain the same cleanup; Daze's60s aftermath immunity remains.
+All7502 prior registry entries preserved; four private identities appended.
+Production compilation,18focused Sprint32/protection tests and30icon checks PASS.
+An invalid pipe-separated filter correctly rejected zero tests before the corrected
+comma-separated selection. Independent actual-diff review found no blocker; fresh native proof
+remain required. Source expiry observes destruction, not an immediate death hook.
 
 ## Development evidence and reuse limits
 
 All executions retain original source/observer/package identities in history.
 A source or compiled observer correction invalidates its affected native case.
-No earlier execution below is called fresh on2437bae6 or its correction.
+No earlier execution below is called fresh on the private-control correction.
 
 | Evidence | Actual result and remaining limit |
 |---|---|
+| ef3307a2/native59 | Natural Satyr Sleep/Charm, costs/eligibility PASS; both source-expiry rows FAIL. Sleep480s, combat Charm60s. Exact effects remained active after caster disappearance while targets/sibling survived. Private duration/lifecycle correction invalidates these affected cases. |
 | 49786548/native57 | Fascinate24/24PASS: natural Move,20-to19-to18, WillDC17/noSR, cap3/frozen targets,24h source marker deadline, ShakeFree, restart refusal, actual0.9409m approach/one save each, visible CureLight threat/slot5-to4, sibling isolation, exact marker/helper/area/command cleanup. No24h expiry/cold/bardic proof. |
 | a333ab3f/native55,56 | Fascinate13/13 and Competence12/12PASS; natural brain refusal/activation, +3recipient, audible maintenance and terminal recipient-loss cleanup. Native54 original11PASS/2FAIL remains; corrected reader waited native carrier retirement. Terminal7.699m is later movement, not continuous out-of-range residence. |
 | 7aed020a/native53 | Cantrips7/7PASS: natural Lullaby modifiers/refusals/original42s deadline; Daze twice with actual60s marker expiry, cross-source refusal and native AI cooldown1-to0. RTWP only. Earlier48/51 expiry flag was insufficient; original failures retained. |
@@ -125,16 +130,16 @@ Suggestion rows remain pending owner decision. No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T102115Z-af06622b3c84` restored/verified
-10:25:26.5625387UTC. Protected Compare PASS967Mods/118saves/18references/
+Latest transaction `compat-20261026T104041Z-61678896fbe7` restored/verified
+10:45:37.8501010UTC. Protected Compare PASS967Mods/118saves/18references/
 83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native58 raw: `20261026T1023368715732Z-disposable-expanded-summoning-sprint32-native-review`;
-local original log/intake: `artifacts/sprint32-satyr-atwill-2437bae6/`.
+Native59 raw: `20261026T1043030305545Z-disposable-expanded-summoning-sprint32-native-review`;
+local original log/intake: `artifacts/sprint32-satyr-atwill-ef3307a2/`.
 Original native50/52 binding,54 carrier observer and58 readiness failures remain
 immutable. Their corrections use inspected native seams; no product-stat changes.
 
-Counts:50Build-Local attempts /39validated development packages /58native launches.
-Build50 measured4.30min; native58 wrapper4.21min/native90.097s. Earlier exact
+Counts:51Build-Local attempts /40validated development packages /59native launches.
+Build51 measured4.24min; native59 wrapper4.97min/native135.155s. Earlier exact
 measurements/history retained; whole-mission work-category totals unavailable.
 Approximately09:43–10:18 fixture/contract25min, independent review7min and cleanup
 verification7min overlap; focused compilations about1.2min. The visibility
@@ -144,14 +149,16 @@ independent work continues, not exclusive waiting. No speedup inferred.
 
 Disk budget:1.1GBcombined peak +2GBreserve before building. At10:13UTC14fully
 byte-verified closed extractions reclaimed1,157,954,602B; free4,408,549,376B,
-protectedComparePASS. After Build50 free4,256,452,608B. Prior cleanup receipts
+protectedComparePASS. At11:06UTC free3,694,362,624B. Prior cleanup receipts
 remain in history. Unique packages/raw evidence/original failures/receipts/PDBs/
 saves/protected backups retained. No machine-wide cleanup or DATA changes.
 
-**Next:** package the reviewed visibility correction, run `satyr-atwill`
+**Next:** finish independent review of the private control correction, then package
+once and run `satyr-atwill`
 (expected10min/runtime600s), classify the actual result, then run `satyr-atwill-turn`
 on the same unchanged package if its shared fixture is valid. Do not run the
-2437bae6 turn case with the known readiness omission. Preserve final candidate
+ef3307a2 turn case with known lifecycle/duration defects. Affected Lillend book/SLA,
+cantrip, sibling-effect isolation and cold cases remain required. Preserve final candidate
 qualification/review/integration as separate required work; no owner playtest.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: all30public-route/body/icon, standalone

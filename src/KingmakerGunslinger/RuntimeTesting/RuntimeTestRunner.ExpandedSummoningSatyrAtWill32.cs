@@ -238,6 +238,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     capturedEffects.AddRange(effects);
                     var spellSaves = saves.Rows.Where(value => (string)value["sourceAbility"] == ability.AssetGuid &&
                         (string)value["caster"] == owner.UniqueId).ToArray();
+                    var applications = saves.Applications.Where(value => (string)value["sourceAbility"] == ability.AssetGuid &&
+                        (string)value["caster"] == owner.UniqueId && (bool)value["applied"]).ToArray();
+                    double expectedDuration = sleep ? 8 * 60 : 8 * 60 * 60;
                     bool affected = sleep ? subjects.Count(actor => actor.Descriptor.State.HasCondition(UnitCondition.Sleeping)) > 0 &&
                         subjects.Count(actor => actor.Descriptor.State.HasCondition(UnitCondition.Sleeping)) <= 2 &&
                         spellSaves.Length == 2 && spellSaves.Select(value => (string)value["target"]).Distinct().Count() == 2 &&
@@ -251,11 +254,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ReferenceEquals(cast.Spell.Fact, data.Fact) && (turnBased ? ticks == 0 && nativeTurns > 0 : ticks > 0) &&
                         affected && effects.Length > 0 && effects.All(value => value.Context.Params.CasterLevel == 8 &&
                             value.Context.Params.DC == 15) && spellSaves.All(value => (int)value["dc"] == 15) &&
+                        applications.Length == effects.Length && applications.All(value =>
+                            (double?)value["durationSeconds"] == expectedDuration) &&
                         owner.Descriptor.Resources.GetResourceAmount(resource) == 0 &&
                         sibling.Descriptor.Resources.GetResourceAmount(resource) == 1;
                     Sprint25Check(id + "-natural-cast", exact, new JObject {
                         ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
-                        ["saves"] = saves.Rows, ["aiTicks"] = ticks, ["nativeTurnFrames"] = nativeTurns,
+                        ["saves"] = saves.Rows, ["buffApplications"] = saves.Applications,
+                        ["expectedDurationSeconds"] = expectedDuration,
+                        ["aiTicks"] = ticks, ["nativeTurnFrames"] = nativeTurns,
                         ["subjects"] = new JArray(subjects.Select(actor => new JObject {
                             ["unit"] = actor.UniqueId, ["sleeping"] = actor.Descriptor.State.HasCondition(UnitCondition.Sleeping),
                             ["enemyAfter"] = owner.IsEnemy(actor), ["eligibilityAfter"] = score(actor) })),

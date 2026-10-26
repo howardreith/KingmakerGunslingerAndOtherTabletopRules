@@ -4,11 +4,14 @@ using System.Linq;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
+using Kingmaker.Designers.Mechanics.Buffs;
+using Kingmaker.Designers.Mechanics.Facts;
 using Kingmaker.ElementsSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
 using Kingmaker.UnitLogic.Abilities.Components.TargetCheckers;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics;
@@ -34,7 +37,8 @@ namespace KingmakerGunslinger.Blueprints
                 "9934fedff1b14994ea90205d189c8759", "native Daze condition");
             var effect = Require<BlueprintBuff>(bySymbol, symbol + "Buff");
             CopyFields(nativeEffect, effect); effect.name = InternalName(symbol + "Buff");
-            effect.ComponentsArray = nativeEffect.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
+            effect.ComponentsArray = nativeEffect.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent)
+                .Concat(new BlueprintComponent[] { ScriptableObject.CreateInstance<RemoveBuffIfCasterIsMissing>() }).ToArray();
             var immunity = Require<BlueprintBuff>(bySymbol, symbol + "Immunity");
             immunity.name = InternalName(symbol + "Immunity"); immunity.Stacking = StackingType.Replace;
             var nativeBlock = ScriptableObject.CreateInstance<SpecificBuffImmunity>(); nativeBlock.Buff = nativeEffect;

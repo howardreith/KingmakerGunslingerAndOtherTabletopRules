@@ -14,6 +14,8 @@ using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs.Blueprints;
+using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Summoning;
@@ -120,7 +122,7 @@ namespace KingmakerGunslinger.Blueprints
             ai.TargetConsiderations = new Consideration[] { eligibility }; ai.BaseScore = 5;
             var charmAi = ConfigureSatyrControlAi32(bySymbol, unit, "CharmPerson", charm, 4);
             Require<SatyrControlEligibility>(bySymbol, Satyr32Prefix + "CharmPersonEligibility").ControlBuffGuid =
-                "9dc29118addce3d48ae9b92be953b5b4";
+                Require<BlueprintBuff>(bySymbol, FeyCharmBuff32).AssetGuid;
             var sleepAi = ConfigureSatyrControlAi32(bySymbol, unit, "Sleep", sleep, 4);
             var sleepEligibility = Require<SatyrControlEligibility>(bySymbol, Satyr32Prefix + "SleepEligibility");
             sleepEligibility.MaximumHitDice = 4; sleepEligibility.RejectedCondition = UnitCondition.Sleeping;
@@ -162,6 +164,9 @@ namespace KingmakerGunslinger.Blueprints
             // stated otherwise. Do not inherit the donor spell's full-round flag.
             ability.ActionType = UnitCommand.CommandType.Standard;
             ability.SetIsFullRoundAction(false);
+            if (suffix == "Sleep") BindFeyCelestialSleep32(ability, bySymbol);
+            else if (suffix == "CharmPerson") BindFeyCelestialCharm32(ability, symbol, bySymbol, DurationRate.Hours);
+            else throw new InvalidOperationException("Unexpected Satyr at-will control mapping.");
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description", title + " at will at caster level8."), ability.Icon);

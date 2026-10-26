@@ -94,6 +94,26 @@ namespace KingmakerGunslinger.DomainTests
                 "Registering the private Suggestion must not classify its native Rainbow Pattern donor as control.");
         }
 
+        internal static void Sprint32OwnedCharmPreservesProtectionAndSleepExclusion()
+        {
+            var catalog = MentalControlCatalogDefaults.Create();
+            const string charm = "caeb18d9d99d449a84001ae129cfd82a";
+            const string sleep = "c3ab1d65400c45c5aca0de3273fe6410";
+            var sources = new[] { ProtectionAlignment.Chaos, ProtectionAlignment.Chaos | ProtectionAlignment.Good };
+            foreach (var source in sources)
+                foreach (var protection in new[] { ProtectionAlignment.Chaos, ProtectionAlignment.Good,
+                    ProtectionAlignment.Law, ProtectionAlignment.Evil })
+                {
+                    Assertions.Equal((source & protection) != 0,
+                        Evaluate(catalog, protection, null, charm, true, source).ShouldBlock,
+                        "Private native Charm must retain exact live source alignment protection.");
+                    Assertions.False(Evaluate(catalog, protection, null, sleep, true, source).ShouldBlock,
+                        "Private Sleep remains outside mental-control protection classification.");
+                }
+            Assertions.False(Evaluate(catalog, ProtectionAlignment.Chaos, null, charm, false,
+                ProtectionAlignment.None).ShouldBlock, "Unknown source preserves the accepted fail-open contract.");
+        }
+
         internal static void BroadDescriptorsAndUnrelatedEffectsRemainAllowed()
         {
             MentalControlCatalog catalog = MentalControlCatalogDefaults.Create();
@@ -167,7 +187,7 @@ namespace KingmakerGunslinger.DomainTests
             MentalControlCatalog second = MentalControlCatalogDefaults.Create();
             Assertions.Equal(13, first.AbilityCount,
                 "Mental-control ability inventory changed unexpectedly.");
-            Assertions.Equal(9, first.BuffCount,
+            Assertions.Equal(10, first.BuffCount,
                 "Mental-control terminal-buff inventory changed unexpectedly.");
             Assertions.Equal(first.AbilityCount, second.AbilityCount,
                 "Repeated catalog initialization duplicated abilities.");
@@ -176,7 +196,7 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Equal(12, first.Entries.Count(value => value.ContentSource ==
                 MentalControlContentSource.VanillaKingmaker),
                 "Vanilla mental-control inventory changed unexpectedly.");
-            Assertions.Equal(3, first.Entries.Count(value => value.ContentSource ==
+            Assertions.Equal(4, first.Entries.Count(value => value.ContentSource ==
                 MentalControlContentSource.KingmakerGunslinger),
                 "Gunslinger mental-control inventory changed unexpectedly.");
             Assertions.Equal(7, first.Entries.Count(value => value.ContentSource ==
