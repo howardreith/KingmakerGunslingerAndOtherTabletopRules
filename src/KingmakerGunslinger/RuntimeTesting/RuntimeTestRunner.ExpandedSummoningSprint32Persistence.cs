@@ -668,17 +668,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var applications = Sprint32ControlApplications(ability.GetComponents<AbilityEffectRunAction>().Single().Actions)
                     .Where(value => ReferenceEquals(value.Buff, buff)).ToArray();
                 var neutral = receipt.Role == "charm" ? buff.GetComponent<NeutralToPlayer>().Faction : null;
+                // Native ApplyBuff's AsChild branch stores the result only when
+                // a Buff.Data parent exists. A spell-context-only preparation
+                // has no parent; AsChild=true does not make it a child buff.
+                bool noParent = Kingmaker.ElementsSystem.ElementsContext.GetData<Buff.Data>()?.Buff == null;
                 bool baseline = target.IsEnemy(caster) && source.IsEnemy(target) &&
                     (neutral == null || target.AttackFactions.Contains(neutral)) &&
                     parameters.CasterLevel == (receipt.Role == "sleep" ? 8 : 7) &&
                     parameters.DC == (receipt.Role == "charm" ? 17 : receipt.Role == "sleep" ? 15 : 16) &&
-                    applications.Length > 0 && applications.All(value => !value.Permanent && !value.AsChild &&
+                    noParent && applications.Length > 0 && applications.All(value => !value.Permanent &&
                         value.IsFromSpell == applications[0].IsFromSpell && value.IsNotDispelable == applications[0].IsNotDispelable);
                 RosterPersistenceCheck("s32-control-baseline-" + receipt.Role, baseline, new JObject {
                     ["unit"] = target.UniqueId, ["source"] = source.UniqueId, ["ability"] = ability.AssetGuid,
                     ["cl"] = parameters.CasterLevel, ["dc"] = parameters.DC, ["neutralFaction"] = neutral?.AssetGuid,
                     ["attackFactions"] = JArray.Parse(receipt.OriginalAttackFactions), ["hostileToCaster"] = target.IsEnemy(caster),
-                    ["sourceHostileToTarget"] = source.IsEnemy(target), ["applicationCount"] = applications.Length },
+                    ["sourceHostileToTarget"] = source.IsEnemy(target), ["applicationCount"] = applications.Length,
+                    ["parentBuffAbsent"] = noParent, ["applications"] = new JArray(applications.Select(value => new JObject {
+                        ["permanent"] = value.Permanent, ["asChild"] = value.AsChild,
+                        ["fromSpell"] = value.IsFromSpell, ["notDispelable"] = value.IsNotDispelable })) },
                     "The registered effect-only recipient has actual hostile baseline and the real granted/book ability parameters and mapped terminal flags.");
                 if (!baseline) throw new InvalidOperationException("Private saved-control baseline/context is not the declared native shape.");
                 var context = new AbilityExecutionContext(data, parameters, new Kingmaker.Utility.TargetWrapper(target), null);

@@ -2835,3 +2835,83 @@ source/version/package binding and development-only status remain mandatory.
 Actual offline child-boundary/receipt positive-negative fixtures89PASS/0 in6.18s
 (complete-development-gate-receipt-tests.log). Independent read-only reviewer
 found no remaining concrete blocker in this bounded diff; native proof pending.
+
+## Candidate72 / native91–93 and bounded observer correction
+
+Source `108742d067db81c9283a9a13e9f3015cd55a157c`; ZIP `3c3307887752becd836db18bc1b4b295960f58963b5ada7cb91a433826068e69`; DLL `79e3c2ab564205c629fe5830d648d128951fe0cf402bdd00f81a79dc6f4d7205`; MVID `7a0d15c3-394f-4a44-b7bd-1cdb76fbccd3`; SourceState `78b0bac0c4916fb24cc0f101eba65eef02bcf0abad89d5fc217343c038ee60c4`. Build72/validated58 PASS 261.8610689s, wrapper/558of2755/exact-reference compile/strictZIP; filtered development gate, not final complete qualification. Canonical artifacts/development-candidates/sprint32-lillend-support/108742d067db/. Build log build-presentation-factions-108742d0, 2026-10-26T22:18:35.0387884Z–2026-10-26T22:22:56.8998573Z.
+
+Native91 **FAIL 10PASS/2FAIL**, 2026-10-26T22:26:15.4726452Z–2026-10-26T22:27:55.4550568Z, 99974ms. Raw `20261026T2226059498480Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json`, run `20261026T2226059967753Z-7a5d0457b1dd4a169abfd7182782b875`, SHA `c459979e3593736cd67735af10594b16ce9d10a5dbcd3329003efd30100acfcb`; retained Unity `sprint32-lillend-grab-108742d0/Unity-output-original.txt`, SHA `e64a071448f067e324b3ce5f453c11066ff5cf906eff981c431f2b35b2c2b7c7`. Transaction `compat-20261026T222333Z-2293bb040342` restored `2026-10-26T22:28:05.0014844Z`; complete protected intake967Mods/118saves/18references/83settings/tasks0/Steam1.
+
+Native92 **FAIL 11PASS/1FAIL**, 2026-10-26T22:32:46.8400981Z–2026-10-26T22:34:20.5887253Z, 93746ms. Raw `20261026T2232373127564Z-disposable-expanded-summoning-sprint32-native-review/runtime-result.json`, run `20261026T2232373283850Z-f5dd1669072d449d999d3095a07c4144`, SHA `053296ce994b4581e708c7376dd96fa7bc1d73eb154e1a21ac731018373b700a`; retained Unity `sprint32-technical-presentation-108742d0/Unity-output-original.txt`, SHA `aa80272ac2602fc824b05d00b67566f9ba54788f5a13fbab90a69a0be97f1423`. Transaction `compat-20261026T223010Z-d3a1e62ad80b` restored `2026-10-26T22:34:30.8090918Z`; complete protected intake967Mods/118saves/18references/83settings/tasks0/Steam1.
+
+Native93 **FAIL 23PASS/3FAIL**, 2026-10-26T22:41:17.8343257Z–2026-10-26T22:45:01.3437757Z, 223509ms. Raw `20261026T2241055306327Z-working-save-expanded-summoning-prepare/runtime-result.json`, run `20261026T2241055578818Z-ace8c71c9fbd471db6b1f7a22e992ad5`, SHA `5f283dd37c74d80077191c132aaa5ce714297bf906dac41adea4a44214730fd2`; retained Unity `sprint32-working-108742d0/on-prepare-Unity-output-original.txt`, SHA `999d0a638e4ac355944d519324a0ca763ecc3c6368fef36b208197a81e3df434`. Transaction `sprint32-stack-20261026T223836Z-5f0563723a54` restored `2026-10-26T22:45:20.3255493Z`; complete protected intake967Mods/118saves/18references/83settings/tasks0/Steam1.
+
+Native91 proves exact setup command retirement/quiet anchor/Default boundaries,
+real natural sword/sword/tail hits, reciprocal native hold and initial2d6+5
+constrict. Its establishment composite FAIL includes initialDamageExact=false.
+Installed Newtonsoft8 constructs a null-string JValue with Type.String while
+serializing JSON null (grab91-null-token-contract.json); live reader wrongly
+required Type.Null. Semantic-null comparison fixes that demonstrated defect.
+Other omitted composite values cannot be reconstructed; old row stays FAIL.
+Maintenance/release/TB/Salamander were not reached and remain NOT_RUN.
+
+Native92 rest row is raw PASS but agent technical acceptance is NOT_PROVEN:
+both inspected PNGs show initial summon dissolve and raw says dissolve1/intactfalse.
+Readiness omitted exact-body dissolve. Correction reuses Sprint17BodyIntact for
+satyr01/the actual Lillend body, with independent exact-body capture receipt.
+Generic legacy screenshot intact describes the first renderer and is not trusted
+for this claim. Death may show native dissolve; live poses must be intact.
+Movement failed before a per-move receipt; result/travel/goal gap/midCaptured
+remain underdetermined. Keep requirements and record those exact values before
+failure on the appearance-corrected run; no success inferred from a screenshot.
+No attack/wound/death/expiry or Lillend presentation acceptance was reached.
+
+Native93 resolves the native90 faction selection: full1066-unit/1058-group
+intake yielded74 safe registered candidates, zero AlwaysEnemy attack entries or
+cached caster-faction groups; selected02112ecbc15d79e458704b85113b51e8.
+Actual Competence/Fascinate saved-state preparation and listener geometry/ownership
+passed. Private Charm baseline/context then refused before any save write;
+actualCL7/DC17/hostility/applicationCount2 are retained, individual mapped flags
+were absent. Installed ApplyBuff.RunAction IL00F5–0128 only StoreFact when
+AsChild and an actual Buff.Data parent exists. Correct effect-only setup requires
+no parent, retains finite/equal fromSpell/dispelable checks and records all flags;
+does not require AsChild=false. This is a demonstrated contract mismatch, not a
+claim that93's unretained sole conjunct was identified. Product rules unchanged.
+ON cleanup/absence and OFF were not launched after failed prepare.
+Original Working restored22:45:35.8183213UTC, SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B, creation639208636210035057/write639278868712797783/attributes8224;
+exact full protected intake, no owned live task/process/transaction.
+
+Independent read-only actual-diff/IL review accepted semantic-null and absent-
+parent corrections; its exact-renderer finding was corrected. Focused production
+compile24.6s +20/2755 tests1s PASS (focused-observers-after93.log) preceded that
+last renderer-only observer correction; next exact candidate compiles final bytes.
+The outer invocation emitted a PowerShell quoting error before the gate; the gate
+itself completed and exit0 is retained, not silently retried.
+
+Reviewed Suggestion reuse: ordinary source2d8f6f6e284a5e9524982834da8defb0a48a769e
+raw20261025T2137497461646Z (7/7) and bardic native72 source
+f5756a4ac9c1e3d19543da0953c434a48ad981b2 raw20261026T1713289026891Z (18/18).
+Independent review confirmed all3 wrappers share unchanged CloneSuggestionCore32
+Will/SR/effect path: ordinary nativeCL/DC/action/slot/effect plus native72 actual
+successfulWill/highSR refusal are reviewed shared-path reuse. No fresh ordinary
+highSR/save-success execution is claimed. Actual damagebreak/expiry/source-loss
+and provider cold/removal remain NOT_RUN.
+
+After92 fixed scoped cleanup removed299295448B of exact retainedZIP duplicates,
+planSHA4867a986a7b354455c9b78f50d75c75989ee4be5cc7fdd1ec17cb08e06c4671c,
+22:37:43.7039899UTC, free2904842240→3207528448B; full protected ComparePASS.
+Counts72Build-Local attempts/58validated packages/93native launches. This resumed
+period approximately15min fixture/contracts/review and records/storage planning;
+native93 supervision overlaps, exclusive totals unavailable; owner waiting0.
+All prior failures and priorv167 threeNOT_RUN gaps remain unchanged.
+
+After93 cleanup22:52:12–22:52:36UTC: five verified historical pair duplicates
+and native93 extraction reclaimed480527077B, retaining original reference copies
+and five exact content archives263503091B. Free2666856448→3152322560B after
+archives; complete protected ComparePASS. Plan hashes9c8fd76f2f28520539a5c7bfee028b39e033854d2f9a7ccda96fa352e36bce95,
+7fafb1f1f637dbd9455ad5891e0f4a86895c9894e262f9bdbae5052e0bb4a22b,
+2e02dd43f0845a3878a0594fa2cf76be9e1d9fcf828237d18577b0993369ee47,
+16150a7885c386b60638024fb234ea023c9a586f30a2f9af899405b4fd61ac29,
+51b4a7d9db68ae9982b5dc9ce687a69ec195749e410ad2b776f656da5c60d937,
+a3d1276440b3f459ff8e8b7a8a676e468596489a08b4eace80f11502b7c06c25.
