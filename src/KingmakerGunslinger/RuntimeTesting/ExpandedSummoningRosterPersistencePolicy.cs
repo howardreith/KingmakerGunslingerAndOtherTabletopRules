@@ -223,6 +223,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return new[] { GiantHumanoidRulesPolicy.Hill,
             GiantHumanoidRulesPolicy.Stone, GiantHumanoidRulesPolicy.Fire }; } }
         internal const string FeyCelestialScope = "fey-celestial";
+        // Optional finite variants of the existing Working trio. PowerShell
+        // admission reads these declarations; the save-free profile stays so.
+        internal const string Sprint32SuggestionRetained = "retained";
+        internal const string Sprint32SuggestionRemoved = "removed";
+        internal const string Sprint32SuggestionModuleOff = "module-off";
+        internal static bool Sprint32SuggestionTransition(string value)
+        { return value == Sprint32SuggestionRetained || value == Sprint32SuggestionRemoved || value == Sprint32SuggestionModuleOff; }
         // Two of each: identities and receipts remain keyed by actual UnitId.
         internal static string[] FeyCelestialKeys
         { get { return new[] { "satyr", "lillend-azata", "satyr", "lillend-azata" }; } }
