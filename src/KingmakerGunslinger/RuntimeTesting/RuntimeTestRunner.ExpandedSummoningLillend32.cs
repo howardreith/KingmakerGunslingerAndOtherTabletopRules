@@ -66,6 +66,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             List<UnityEngine.Object> bodyResources, List<UnityEngine.Object> borrowedBodyResources)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
+            int casterDamage = fixture.Caster.Damage;
+            Vector3 casterPosition = fixture.Caster.Position;
             UnitEntityData owner = null, sibling = null;
             CreateExpandedSummoningCorrectionHostile(fixture);
             PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
@@ -217,17 +219,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["fixtureManeuverImmune"] = target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers) },
                     "Exact support actor, nearby ally and visible hostile admit the native self-performance decision.");
                 if (!ready) throw new InvalidOperationException("Lillend support fixture preconditions failed.");
-                foreach (var stage in new[] { "courage", "healing", "fallback" })
+                foreach (var stage in new[] { "courage", "healing", "ally-healing", "fallback" })
                 {
                     Sprint28SetBrainActivePreservingActions(owner, false);
                     owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
+                    bool healing = stage == "healing" || stage == "ally-healing";
+                    var healRecipient = stage == "ally-healing" ? fixture.Caster : owner;
                     if (stage == "healing") owner.Damage = 18;
+                    if (stage == "ally-healing")
+                    {
+                        // The exact disposable caster is player-faction and is
+                        // not native IsAlly to the summon. It must be selected
+                        // by real healing AI, not just score as eligible.
+                        owner.Damage = 0;
+                        PlaceExpandedSummoningUnit(fixture.Caster, owner.Position + Vector3.right * 2f);
+                        fixture.Caster.Damage = 18;
+                        fixture.Caster.Wake(0f);
+                        if (!Game.Instance.State.AwakeUnits.Contains(fixture.Caster)) Game.Instance.State.AwakeUnits.Add(fixture.Caster);
+                        owner.Memory.Add(fixture.Caster);
+                        owner.SightCache.ClearIfNeeded();
+                    }
+                    if (stage == "fallback")
+                    {
+                        fixture.Caster.Damage = casterDamage;
+                        PlaceExpandedSummoningUnit(fixture.Caster, casterPosition);
+                    }
                     if (stage == "fallback") owner.Damage = 0; // new healthy-target fixture state, after retaining the real healing result
                     var controlScores = fixture.Blueprints.OfType<LillendSpellEligibility32>()
                         .Where(value => ReferenceEquals(value.OwningBlueprint, owner.Blueprint))
                         .ToDictionary(value => value.Choice.ToString(), value => value.Score(new DecisionContext {
                             Unit = owner, Target = new TargetInfo { Unit = target } }));
-                    int slotsBefore = book.GetSpontaneousSlots(3), damageBefore = owner.Damage;
+                    int slotsBefore = book.GetSpontaneousSlots(3), damageBefore = healRecipient.Damage;
                     var commands = new HashSet<UnitCommand>(); var costs = new JArray(); var ambient = new HashSet<string>();
                     var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
                     var presentation = new JArray();
@@ -262,7 +284,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 resolved = commands.FirstOrDefault(value => value.IsFinished && value.Result == UnitCommand.ResultType.Success &&
                                     (stage == "courage" ? value is UnitActivateAbility && value.AiAction == performAi &&
                                         ReferenceEquals(((UnitActivateAbility)value).Ability, performance) :
-                                     stage == "healing" ? value is UnitUseAbility && value.AiAction?.name == "KMG_Summoning_FeyCelestial_LillendAzata_HealAi" &&
+                                     healing ? value is UnitUseAbility && value.AiAction?.name == "KMG_Summoning_FeyCelestial_LillendAzata_HealAi" &&
+                                         ReferenceEquals(value.Target.Unit, healRecipient) &&
                                          ((UnitUseAbility)value).ExecutionProcess != null && ((UnitUseAbility)value).ExecutionProcess.IsEnded :
                                      value is UnitAttack && value.AiAction != null));
                                 if (resolved != null && (stage != "courage" ||
@@ -282,7 +305,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 owner.Descriptor.Resources.GetResourceAmount(resource) == 19 &&
                                 ownedEffects.Length == 1 && sibling.Stats.AdditionalAttackBonus.ModifiedValue == allyAttack + 2 && enemySafe &&
                                 book.GetSpontaneousSlots(3) == slotsBefore :
-                                stage == "healing" ? owner.Damage < damageBefore && book.GetSpontaneousSlots(3) == slotsBefore - 1 :
+                                healing ? healRecipient.Damage < damageBefore && book.GetSpontaneousSlots(3) == slotsBefore - 1 &&
+                                    (stage != "ally-healing" || owner.Damage == 0 && fixture.Caster.IsPlayerFaction && !owner.IsEnemy(fixture.Caster)) :
                                 attacks.WeaponAttacks.Count > 0 && controlScores.Values.All(value => value == 0f) && healthyScore == 0f && !performAi.IsAvailable(new DecisionContext { Unit = owner }) &&
                                 book.GetSpontaneousSlots(3) == slotsBefore;
                             bool passed = resolved != null && economy.Count(resolved) == 1 && economy.Exact(resolved, false) &&
@@ -297,7 +321,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["performanceRunning"] = performance.IsRunning, ["performanceRounds"] = owner.Descriptor.Resources.GetResourceAmount(resource),
                                 ["allyAttackBefore"] = allyAttack, ["allyAttackAfter"] = sibling.Stats.AdditionalAttackBonus.ModifiedValue,
                                 ["ownedAllyEffects"] = ownedEffects.Length, ["enemySafe"] = enemySafe,
-                                ["damageBefore"] = damageBefore, ["damageAfter"] = owner.Damage,
+                                ["healingRecipient"] = healing ? healRecipient.UniqueId : null,
+                                ["healingRecipientIsPlayerFaction"] = healing && healRecipient.IsPlayerFaction,
+                                ["healingRecipientNativeIsAlly"] = healing && owner.IsAlly(healRecipient),
+                                ["damageBefore"] = damageBefore, ["damageAfter"] = healRecipient.Damage,
                                 ["level3SlotsBefore"] = slotsBefore, ["level3SlotsAfter"] = book.GetSpontaneousSlots(3),
                                 ["siblingLevel3Slots"] = siblingBook.GetSpontaneousSlots(3), ["siblingPerformanceRounds"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
                                 ["controlEligibility"] = new JObject(controlScores.Select(pair => new JProperty(pair.Key, pair.Value))),
@@ -307,7 +334,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["fixtureCastCommands"] = 0,
                                 ["fixtureAttackCommands"] = 0, ["fixtureSlotDebits"] = 0, ["forcedRolls"] = 0 },
                                 stage == "courage" ? "Native AI starts Inspire Courage with one move action, grants an ally+2 without buffing the enemy and spends one native performance round." :
-                                stage == "healing" ? "Native AI heals meaningful damage with a real bard spell and standard action, spending one own level3 slot." :
+                                healing ? "Native AI selects the exact wounded self or player-faction ally, heals with a real bard spell and standard action, and spends one own level3 slot while the sibling retains both." :
                                 "With performance running and no useful healing target, native AI attacks without repeating either support command; sibling pools remain untouched.");
                             if (!passed) throw new InvalidOperationException("Lillend early support observation failed: " + stage);
                         }
@@ -320,6 +347,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var unit in new[] { owner, sibling }.Where(value => value != null && !value.Destroyed))
                 { Sprint28SetBrainActivePreservingActions(unit, false); unit.Commands.InterruptAll(true); }
                 target.Commands.InterruptAll(true); target.Stats.AC.BaseValue = ac;
+                fixture.Caster.Damage = casterDamage;
+                PlaceExpandedSummoningUnit(fixture.Caster, casterPosition);
                 if (addedManeuverImmunity) target.Descriptor.State.RemoveCondition(UnitCondition.ImmuneToCombatManeuvers);
                 if (mindImmunity != null)
                 {

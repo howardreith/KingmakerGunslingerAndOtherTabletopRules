@@ -40,102 +40,37 @@ resources, ownership, cleanup, saved identities and accepted ordinary-map flight
 
 ## Current implementation and evidence
 
-Satyr: adult Fey8/HP44/CL8; native Fear/Charm Person/Sleep and conditional
-Suggestion; immune/ineligible/active-effect refusal; bow and dagger/secondary
-horns fallback; printed native feats, racial Perception/Stealth and check-specific
-Intimidate. Lillend: adult Outsider7/HP73/AC20; Large +1 longsword/secondary tail,
-10-foot reach, tail-only grab/live constrict on the accepted lifecycle; native
-bard7 book5/4/2, independent20-round Courage pool/Move activation, safe healing,
-control and ally-safe Sound Burst eligibility; separate one-use Charm Person SLA.
-The working candidate exposes all ten legal new roots;1150 prior roots remain
-published. The ten prepared public-route checks now pass. Distinct natural
-input/spontaneous/conversion paths, pending performances and full acceptance
-remain incomplete.
+Satyr has the adult Fey8/HP44/CL8 profile, Fear/Charm Person/Sleep, conditional
+Suggestion, eligibility/refusal policy and bow/dagger/secondary-horns fallback.
+Lillend has adult Outsider7/HP73/AC20, Large +1 sword/secondary tail with accepted
+shared grab/constrict, bard7 book5/4/2, independent20-round Move Courage,
+healing/control and ally-safe Sound Burst eligibility. Ten legal roots are
+published for development;1150 prior roots remain. Product scope and final
+qualification are incomplete, including pending decisions above.
 
-Current validated development source `a41b7559e513185d785a6455cc97c800e990920a`:
-ZIP `382388c830a0701063bd0260c30e598e61983e97a1e938bd51d42b08ec636403`;
-DLL `f57cf34a1d44743fd62767aade101876025fa75eee229d4de3929989075dc223`;
-MVID `f93d90d7-e979-4454-8d25-6d9b8ce498da`.
-SourceState `5c61cb5dc7bdec767833e783a1ec34894f04c4f7bf7279342c9c9bba2decf58d`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/a41b7559e513/`.
+Current validated development candidate is `b8743418c1b3c6e6ca50ff97ca7664648e1311e4`:
+ZIP `57b384dc47668934872d7c1146e4b0cce0b2e39b2e7214e6abb70e20cdf308e8`;
+DLL `10f68f11852872d9f8c1713d22034195c5fedc0656f9bf5f5dde8b15f0b7b63a`;
+MVID `4cd5f211-4200-42ec-bb35-1a5e0f0a5194`;
+SourceState `bb46d9a2cf2b46fd308d1572bd91b7ed168a650234b7da412099c129156b41c6`.
+Path `artifacts/development-candidates/sprint32-lillend-support/b8743418c1b3/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-419-file package PASS. Development candidate only; final gate/qualification pending.
+419-file package PASS. Development version0.0.167; no release qualification.
+Current observer corrections are newer source, not execution on that package.
 
-Fresh standalone executions on a41:
+| Evidence | Result and dependency limit |
+|---|---|
+| Fresh b874 support lifecycle | PASS10/FAIL2 overall FAIL. Both expiries, player+2/enemy safety and isolated siblings pass. Both dead owners have no captured grants/areas, but each retains native self RecentlyDeadBuff with2.326game seconds remaining when the10wall-second observer stops. Later death/expiry assertions not reached. `artifacts/sprint32-support-lifecycle-b8743418/` |
+| Fresh b874 Druid input | FAIL1/cleanup PASS2, before casting: live c0_before interchapter in the inherited mansion scene. Strict UI refusal is correct; fixture selection is wrong. Wizard/Sorcerer NOT_RUN after common failure. `artifacts/sprint32-druid-input-b8743418/` |
+| Reviewed reuse:2d90 RTWP12/12 and turn10/10 | Natural Move Courage and actual ally+2/enemy exclusion; Standard self-healing18-to0/own level3 slots2-to1/sibling2; useful fallback; completed sword/sword/tail acts; live Nature and sibling isolation. Player-ally healing remains unverified. |
+| Reviewed reuse:392 public prepared routes | Satyr six SNA tiers and Lillend four SM tiers; legal quantities, one slot per cast,120s duration, body/icon/selection. Helper pumps native commands; no natural-input timing claim. |
+| Reviewed reuse:Satyr control and optional Suggestion | Fear, immunity refusal and bow/dagger/horns fallback in both modes. Provider Suggestion natural DC17/CL8 Satyr and DC16/CL7 Lillend, normal actions/duration/own slot and active-effect refusal. Positive Will/high SR, expiry/damage break and provider cold load NOT_RUN. |
+| Body evidence | Independent Lillend authored bindings;62 owned objects released/158 borrowed retained; recognizable rest views. Full gameplay camera motion/contact/hit/death/despawn/performance acceptance remains pending. |
 
-| Case | Native result | Observed scope | Local evidence |
-|---|---|---|---|
-| Support lifecycle | PASS10/FAIL2 overall FAIL | Both readiness and both native expiries PASS; Lillend captured external Courage grant gone, sibling isolated. Satyr death is actual/nonloot/areas0/captured grants gone, but one source-attributed buff remains unidentified; later death/expiry rows not reached | `artifacts/sprint32-support-lifecycle-a41b7559/`; raw `20261026T0104212087233Z-disposable-expanded-summoning-sprint32-native-review` |
-| Druid natural input | FAIL1/cleanup PASS2 | Existing narrative-state evidence helper refused Sprint32 before any UI/cast. Observer admission defect; no natural casting evidence | `artifacts/sprint32-druid-input-a41b7559/`; raw `20261026T0110190703402Z-disposable-expanded-summoning-sprint32-native-review` |
-| Wizard/Sorcerer natural input | NOT_RUN | Held after common helper refusal; no unchanged launches | Prepared local wrappers only |
-
-Earlier standalone executions on2d90 (reviewed reuse; product unchanged by a41 observers):
-
-| Case | Native result | Observed scope | Local evidence |
-|---|---|---|---|
-| Courage party support / lifecycle | PASS5/FAIL2 overall FAIL | Exact player +2 and owned allied recipient; in-radius enemy excluded. Lillend pair readiness failed before removal; expiry/death remain unverified | `artifacts/sprint32-support-lifecycle-2d90e886/`; raw `20261026T0024416534905Z-disposable-expanded-summoning-sprint32-native-review` |
-| Lillend RTWP | PASS12/12 | Natural Move Courage,20-to19 upkeep, ally+2/enemy safety; Standard Cure Serious, own level3 slots2-to1/sibling2; useful attack fallback;62 owned body resources gone/158 borrowed retained | `artifacts/sprint32-lillend-support-2d90e886/`; raw `20261026T0030125108104Z-disposable-expanded-summoning-sprint32-native-review` |
-| Lillend turn | PASS10/10 | Natural Move Courage,20-to19-to18 upkeep, three completed sword/sword/tail acts; Standard healing18-to0, own level3 slots2-to1/sibling2; native action costs and Nature isolation | `artifacts/sprint32-lillend-turn-2d90e886/`; raw `20261026T0035409974807Z-disposable-expanded-summoning-sprint32-native-review` |
-
-Standalone executions retained from392 (public-route observer unchanged; reviewed reuse):
-
-| Case | Native result | Observed scope | Local evidence |
-|---|---|---|---|
-| Satyr public prepared routes | PASS12/12 | Druid20 SNA IV-IX; counts1/1/5/2/3/2; one slot each;120s each; native public inventory/body/icon/selection/reset | `artifacts/sprint32-satyr-routes-39272887/`; raw `20261025T2324526063522Z-disposable-expanded-summoning-sprint32-native-review` |
-| Lillend public prepared routes | PASS10/10 | Wizard20 SM VI-IX; counts1/3/2/2; one slot each;120s each; native public inventory/original body/icon/selection/owned-resource reset | `artifacts/sprint32-lillend-routes-39272887/`; raw `20261025T2331344042836Z-disposable-expanded-summoning-sprint32-native-review` |
-| Support lifecycle | FAIL1; cleanup PASS2 | Quiet toggle setup did not establish exact external CourageRecipient; no lifecycle behavior passed | `artifacts/sprint32-support-lifecycle-39272887/`; raw `20261025T2336582876467Z-disposable-expanded-summoning-sprint32-native-review` |
-
-Agent inspected both gameplay-camera captures: recognizable Satyr and visible
-original winged-serpent Lillend. Crowded rest views do not prove motion/contact,
-full deformation/lifecycle/performance or personal aesthetic approval. The
-existing prepared helper synchronously pumps native commands/animations; it
-proves the declared cast/slot/quantity/duration scope, not natural input timing.
-Its positive-route `withinCastRange` diagnostic is an unassigned default, not an
-observed failed range check; actual range remains for natural-input observation.
-
-Satyr's outer reader originally FAILed on an invented `sprint32-phase` assertion.
-Original exit/error/reader remain immutable. Corrected reader verifies immutable
-result hash, actual accepted request phase/RunId, all eleven core requirements
-and every native verdict; reviewed reuse PASS, no new launch. Other two readers
-used the actual request contract before dispatch. Native result itself was PASS12.
-
-Lifecycle392 root cause was unobserved. The32dff6bc retry established native activation Success, running Courage,19 rounds and one area, but no external recipient on the cloned caster. Its prerequisite FAIL remains. Native IL and the accepted Dretch fixture expose the mistaken nonenemy-versus-IsAlly assumption. Replan uses a separate owned Satyr, explicitly requires IsAlly, and keeps it alive through both removal assertions. Subsequent source/native-contract audit confirmed the product Courage filter also excludes player-faction units. The private area now uses the accepted native nonenemy support mapping; regression observation requires player +2, allied summon effect and in-radius enemy exclusion. No unchanged retry.
-
-Knowledge(nature) uses native Lore Nature identification with each owner's live
-Intelligence. Satyr has six ranks plus Fey class skill; Lillend has seven native
-ranks/no class-skill bonus. Live Int+2 gives+1; Wis+2 gives0 to Nature and+1 to
-ordinary Perception; sibling values remain unchanged. Source-backed private
-creation mapping uses the exact native serialized readonly ability reference and
-native dependency links, with no load-time refresh. Cold-load proof remains A6.
-Sources: [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
-[Fey](https://www.aonprd.com/MonsterTypes.aspx?ItemName=Fey),
-[Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
-Unmapped skills remain disclosed, not silently waived: Satyr Disguise/Perform/
-Survival; Lillend Fly/Perform/Survival. Sense Motive shares Lillend's+13 Perception
-mapping, not an independent native check. Survival is not merged into Nature.
-Reconcile these against applicable accepted scope before final completion.
-
-Reviewed reuse on earlier bytes:cc Satyr turn PASS11/11 and Lillend turn PASS10/10
-prove live Nature/sibling isolation, normal control/healing actions, exact completed
-attack plans and native Courage upkeep20-to19-to18. Final Success acts precede
-terminal Interrupt; this proves mechanics, not animation completion/caller.
-2d optional-provider Suggestion PASS7/7 and
-standalone Lillend support/body cleanup PASS11/11;0723 Satyr RTWP control/refusal/
-fallback PASS9/9. The2d90 private Courage filter change supersedes affected old
-performance-recipient evidence with the fresh runs above. Unchanged Satyr,
-Suggestion and Nature evidence remains reviewed reuse on its original bytes. Suggestion proved
-natural Satyr DC17/CL8 and Lillend DC16/CL7 casts, standard costs, native duration,
-active-effect refusal and own level2 slot debit. Positive Will/high SR, elapsed
-expiry, damage break and provider cold load remain NOT_RUN. Lillend body cleanup
-proved62 owned resources gone and158 distinct borrowed resources retained.
-
-Original Lillend geometry/paint use the accepted human/owned-tail seam and
-unchanged Salamander gait/playback/settlement. [Provenance](../assets-source/original-models/sprint32-support/README.md).
-Byte-identical export reproduction and three export checks PASS; full gameplay
-camera/contact/movement/lifecycle technical acceptance remains incomplete.
-
-Exact source/artifact/raw-result/log/restoration tuples, original failures and
-review corrections are retained in [history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md).
+Exact tuples, raw failure paths, reader corrections, original logs and review
+findings are retained in [append-only history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md).
+Original Lillend [provenance](../assets-source/original-models/sprint32-support/README.md)
+and functional-first cosmetic policy remain; no owner aesthetic approval claimed.
 
 ## Finite acceptance contract
 
@@ -148,82 +83,55 @@ All final rows remain incomplete. Early slices above do not replace final qualif
 | A3 | Satyr naturally uses useful control without pipes; rejects immune/ineligible targets and avoids repeats; attacks when control is unavailable | Existing disposable first-area fixture and exact-owner AI/command observers; control/refusal/fallback records | RTWP and turn-based | Satyr rules, targeting, shared AI/action handling |
 | A4 | Lillend naturally supports with safe buffs/performance and healing; resources/slots and actions debit correctly; ordinary offensive fallback remains useful | Same bounded native fixture; native action/effect/resource observations | RTWP and turn-based | Spellbook, performance mapping, support AI, actions |
 | A5 | Expiry, death and dismissal/cancellation leave no owned items/effects/commands; owner/sibling state is isolated | Existing lifecycle/quantity fixture; exact ownership and terminal observations | Standalone; affected modes | Lifecycle, equipment, resources, effects, commands |
-| A6 | Fresh-process save/load preserves required serialized state, safely resets session state, cleans up; module OFF deserializes safely; baseline remains compatible | Working prepare → cold verify/cleanup → fresh absence, ON/OFF, with original bytes/metadata restored | Installed stack required by Working | Serialized state, registration, lifecycle dependencies |
+| A6 | Fresh-process save/load preserves required serialized state, safely resets session state, cleans up; module OFF deserializes safely; baseline remains compatible | Working prepare â†’ cold verify/cleanup â†’ fresh absence, ON/OFF, with original bytes/metadata restored | Installed stack required by Working | Serialized state, registration, lifecycle dependencies |
 | A7 | Loading, selection, scale, movement, attack contact, hit/death/despawn and performance are technically usable at gameplay camera | Existing native creature-review/presentation route, agent-inspected captures plus structured facts | Standalone and relevant combined seam | Assets, renderer, attachment, loading, lifecycle |
 | A8 | Standalone and directly affected high-risk combined integration work; changed shared consumers retain behavior | Selected existing profile transaction and focused baseline/control cases | Standalone; high-risk combined; additional profile only for concrete dependency | Shared AI/registration/serialization or changed integrations |
 
-## Workflow, review, restoration and next selection
+## Current work, restoration and next action
 
-Reusable tooling repair is separately committed: explicit candidate/version binding,
-removed concluded-campaign selectors/quotas, shared scenario declarations, protected
-admission tests. Optional provider profile has14 positive/negative checks including
-nested-junction refusal; default resolution retains its former selection. Two review
-P2 findings (nested links/default inclusion) are closed. Full final independent review
-remains pending. Body draft read-only review found no binding/lifecycle blocker;
-corrected exact mesh pin/provenance and deterministic package's two-file count.
+The separately identifiable reusable workflow repair retains explicit candidate/
+version binding, shared scenario declarations, guarded staging/restoration and
+positive/negative admission checks. Concluded-campaign selectors/quotas no longer
+block Sprint32. Prior independent tooling findings were corrected. Final coherent
+product/rules/coverage review is still pending.
 
-Latest transaction `compat-20261026T010755Z-b21781f2aec8` restored/verified
-01:12:07.5912976UTC. Every new transaction protected Compare PASS:
-Mods967/saves118/references18/settings83/tasks0/one unchanged Steam. No owned live
-transaction/game/task remains. Original Unity logs copied before later launches.
+After two input setup failures, the bounded replan reuses the proven non-DLC Oleg
+scene only for the three fixed input phases. No dialog is dismissed or ignored.
+The lifecycle observer now waits up to30wall seconds for normal game-time expiry,
+with strict zero source grants unchanged and both clocks captured. Lillend's
+existing support case adds exact player-faction ally healing, real action/slot
+cost and sibling isolation; wounded caster position/damage restore in finally.
+Independent read-only review found no concrete dispatch blocker. Focused production
+compile22.8s and5/2753 tests4.3s PASS; original wrong focused-reference invocation
+refusal retained. A subsequent expected-text clarification needs no broader tests;
+selected candidate build compiles it. These corrections need fresh native runs.
 
-Working disk floor is measured1.1GB peak plus2GB margin. Verified closed S29
-duplicate cleanup23:55UTC recovered1,341,815,888bytes; free4,561,539,072bytes.
-All files in16 explicit extraction directories matched retained validated ZIPs.
-PlanSHA `1e23bf148b3129a28f9c7bce99925132cfe65e400841080ddec92c6ed4fcc10d`.
-Protected Compare PASS Mods967/saves118/references18/settings83/tasks0/Steam1.
-Unique ZIPs/raw failures/receipts/backups/saves remain. No active transaction.
+Latest transaction `compat-20261026T013016Z-54db8e796163` restored/verified
+01:34:39.4716972UTC; lifecycle transaction restored01:29:13.3055930UTC.
+Both protected Compare PASS: Mods967/saves118/references18/settings83/tasks0/
+one unchanged Steam. No owned live transaction/game/task remains. Original Unity
+logs are retained before another launch; protected saves and current intake exact.
 
-Build-Local attempts/validated development packages/native launches:34/24/34.
-Latest full build254.893s. Fresh wrappers278.500s/253.730s;
-native portions115.455s/89.378s. Latest restored free3,969,974,272bytes;
-remeasure/verify closed duplicate cleanup before another build/native batch.
-Implementation/observer repair overlapped supervised waiting; complete summed
-active category totals remain unavailable. No speedup inference. Owner decisions
-remain pending; elapsed waiting is not approval.
+Build-Local attempts/validated development packages/native launches:35/25/36.
+Latest build253.122s; latest two wrappers279.332s/264.476s, native113.613s/89.694s.
+Complete summed active work categories remain unavailable; observer research/repair
+and supervision overlapped. No speedup inference. Owner subsystem waiting is not
+approval. Working disk minimum remains measured1.1GB peak plus2GB margin; check
+and recover only verified closed extraction duplicates before the next batch.
+Verified two-transaction cleanup at01:41:28.6623828UTC recovered198,615,570B;
+free3,795,656,704B. Original ZIPs,
+raw evidence, receipts, unique artifacts and protected backups remain; Compare
+PASS967/118/18/83/tasks0/Steam1. Exact plan receipt is in history.
 
-Independent bounded batch review found two P2 fixture issues. Appearance pulse
-readiness is corrected and passes native public loading. External recipient
-predicate is corrected to refuse self/carrier-only proof; its new prerequisite
-failed, so removal coverage remains pending. No other concrete batch-review
-blocker; full final product/rules/coverage review remains required.
-
-Current bounded correction reuses the proven private hostile/wake/combat/native
-activation path for lifecycle setup and records state before failure. Quiet-toggle
-392 failure remains immutable. Focused compilation25.1s and5 selected checks1.1s
-PASS; initial wrong resource namespace compile failure is retained separately.
-Independent review approved that bounded correction, but native retry failed on the recipient predicate as recorded above. The second-failure replan replaces the ineligible assumed recipient with a positively allied owned summon. Its focused compilation22.8s/tests0.9s PASS5/2753; independent review found no concrete blocker. No stats or tabletop rule changed; the subsequent private Courage recipient mapping correction is recorded above.
-
-The private Courage mapping/regression was independently reviewed with no concrete
-dispatch blocker. The three-case batch is complete: party support and both combat
-modes passed; lifecycle readiness failed before removal. Existing state records do
-not identify its failing conjunct. No product attribution or unchanged retry.
-The bounded lifecycle correction keeps the OFF sibling in the visible fixture
-and records every existing readiness predicate; strict conditions remain.
-Three fixed native input phases now cover Druid preparation/conversion Satyr,
-Wizard preparation Lillend and Sorcerer known Lillend, including each materially
-different quantity conversion/known path. They reuse native Default/UI/debit
-helpers; no new testing subsystem. Independent review found missing exact UI
-capture admission and insufficient action-cost delta checking; both corrected
-before dispatch. Corrected compile23.2s/tests1s PASS5/2753; source-only admission
-PASS1166. Original compile/elevated-context refusal retained, no native launch.
-Verified closed duplicate cleanup recovered1,091,955,555bytes; free4,529,750,016;
-protected Compare PASS. Exact tuple/history retained.
-The a41 batch stopped after two processes: lifecycle supplied new expiry proof
-but a later death count failed; Druid stopped at the shared narrative helper.
-No Wizard/Sorcerer launch. Narrow correction admits only the exact three input
-phases to the existing read-only narrative evidence sink. Audit its selected
-child helpers before retry. Death snapshots now identify every remaining
-source-attributed buff and both already-executed death states before a per-owner
-failure stops reporting; no predicate is weakened. Compile23.8s/tests0.9s PASS5.
-Next selection: one corrected package, then separate `support-lifecycle`,
-`druid-input`, `wizard-input`, `sorcerer-input` processes. Expected aggregate
-20-30minutes plus build; stop dependent input cases on common failure. Each
-ordinary process retains10-15minute target/30minute ceiling and safe restoration.
-No provisional pending subsystem implementation.
-Each ordinary selection retains10-15minute target/30minute ceiling and fresh
-process/restoration boundaries. Final qualification uses one frozen complete-gate
-candidate and a separate records worktree; every final acceptance row is incomplete.
+Next selection: one coherent development package, then `support-lifecycle`,
+`lillend-support`, `druid-input`, and, only after common setup succeeds,
+`wizard-input`/`sorcerer-input`, each a fresh guarded process. Expected aggregate
+25-35minutes plus build; each ordinary selection retains10-15minute target/
+30minute ceiling and complete restoration. No unchanged input loop.
+Continue remaining control/support risks, technical presentation, cold ON/OFF
+persistence and affected integration; pending subsystem rows stay pending.
+Final qualification requires independent coherent review and one frozen complete-
+gate candidate, with separate records where identity guards require them.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.

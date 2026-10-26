@@ -825,3 +825,15 @@ write sentinel and transactional installation/settings restoration still apply.
 
 
 Bounded S30-31 closeout adds six exact `boundary-<creature-key>` phases (one controller-sensitive case per process), `celestial-cleave` (existing ordinary-Cleave fixture: Astral, Trumpet, Hill control), and `final-integration` (fixed shared-circles, source-lifecycle, celestial-cleave order with observed reset/refusal after each). No request-supplied sequence or code is accepted. These save-free phases retain the same process, lease, package, restoration and exit guards. The public-routes phase retains all30 individual route observations.
+
+Sprint32 input phases select the already established save-free non-DLC Oleg
+fixture before native entry, exactly as the proven menu adapter cases. The
+opening mansion interchapter is not dismissed, bypassed or treated as idle.
+All exact Default/UI ownership and narrative refusals remain. The Sprint32
+lifecycle death wait allows30wall seconds for normal game-time expiry of the
+native RecentlyDeadBuff; no marker is shortened or excluded from the strict
+zero-source-grant assertion. Both clocks and any remaining marker are retained.
+The existing Lillend support phase additionally wounds only the disposable
+player-faction caster, observes natural ally selection/healing and exact
+Standard/own-slot debit with sibling isolation, then restores that fixture
+caster's damage and position. No supplied cast or heal is accepted.
