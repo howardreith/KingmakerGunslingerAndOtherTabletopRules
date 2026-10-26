@@ -125,6 +125,22 @@ mode stack/controllers restore under the existing ownership guards. Fixture
 disposal does not prove natural expiry or saved-character learning. Other
 Sprint32 phases do not acquire native Default or this UI capture authority.
 
+The three input phases establish native combat against the existing private-faction,
+brain-disabled owned hostile before input. Mutual hostility, LOS/visible memory
+and combat admission are observed; actual cost callbacks must still find the
+caster in combat. Native exploration casts assign no cooldown and are not combat
+cost proof. Only owned actors leave combat in finally; faction/actor destruction
+remains with the existing outer fixture.
+
+Lillend support waits for the native queued ally healing delivery linked by exact
+StickyTouch AbilityData, delivery blueprint and recipient. It supplies no delivery
+or execution tick. The primary pays its strict Standard cost/one slot; the native
+first-round held touch is observed at command start and its ignored cooldown at
+the cost callback. RuleHealDamage retains before/after injury and later correlates
+to the exact completed delivery context. Self-healing instead uses the exact nested
+native delivery RuleCastSpell context, which has no second command. A second
+independent HealAI cast or ambiguous attribution fails the case.
+
 Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
 read-only mod-load audit of Satyr/Lillend candidates and required native control,
 bard/performance, spellbook, defense and weapon consumers. Empty parameters;

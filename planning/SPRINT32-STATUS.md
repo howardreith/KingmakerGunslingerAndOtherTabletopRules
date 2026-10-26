@@ -48,20 +48,21 @@ healing/control and ally-safe Sound Burst eligibility. Ten legal roots are
 published for development;1150 prior roots remain. Product scope and final
 qualification are incomplete, including pending decisions above.
 
-Current validated development candidate is `b8743418c1b3c6e6ca50ff97ca7664648e1311e4`:
-ZIP `57b384dc47668934872d7c1146e4b0cce0b2e39b2e7214e6abb70e20cdf308e8`;
-DLL `10f68f11852872d9f8c1713d22034195c5fedc0656f9bf5f5dde8b15f0b7b63a`;
-MVID `4cd5f211-4200-42ec-bb35-1a5e0f0a5194`;
-SourceState `bb46d9a2cf2b46fd308d1572bd91b7ed168a650234b7da412099c129156b41c6`.
-Path `artifacts/development-candidates/sprint32-lillend-support/b8743418c1b3/`.
+Current validated development candidate is `bcd41d043afb41d977075dab065b6a5951d82617`:
+ZIP `9902bec9e7dc336bac4243007b3e45c21e189ba753321bc5e22578677b84dcc5`;
+DLL `2ad71c2442cb683d56b61e53392d64c9e384f21aa697633df429c1c3ac64bfd9`;
+MVID `3d7d6ef8-fb40-4b74-92da-f6a615e4d7c3`;
+SourceState `86b90bf921e1a3f1642b8a91c9992b9ea2768d41a16b2c8eb9444c06f0f1a4b6`.
+Path `artifacts/development-candidates/sprint32-lillend-support/bcd41d043afb/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
 419-file package PASS. Development version0.0.167; no release qualification.
 Current observer corrections are newer source, not execution on that package.
 
 | Evidence | Result and dependency limit |
 |---|---|
-| Fresh b874 support lifecycle | PASS10/FAIL2 overall FAIL. Both expiries, player+2/enemy safety and isolated siblings pass. Both dead owners have no captured grants/areas, but each retains native self RecentlyDeadBuff with2.326game seconds remaining when the10wall-second observer stops. Later death/expiry assertions not reached. `artifacts/sprint32-support-lifecycle-b8743418/` |
-| Fresh b874 Druid input | FAIL1/cleanup PASS2, before casting: live c0_before interchapter in the inherited mansion scene. Strict UI refusal is correct; fixture selection is wrong. Wizard/Sorcerer NOT_RUN after common failure. `artifacts/sprint32-druid-input-b8743418/` |
+| Fresh bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
+| Fresh bcd Lillend support | PASS11/FAIL2 overall FAIL. Natural ally-directed HealAI cast succeeds and spends its own level3 slot; observer stops before the naturally queued touch delivery. Damage unchanged; ally healing not yet proven. `artifacts/sprint32-lillend-support-bcd41d04/` |
+| Fresh bcd Druid input | PASS11/FAIL2 overall FAIL. Oleg/UI/real prepared cast succeeds with one Satyr, correct slot and120s. Exploration actor correctly has zero combat cooldown; strict combat cost expectation is inapplicable. Conversions not reached; Wizard/Sorcerer NOT_RUN. `artifacts/sprint32-druid-input-bcd41d04/` |
 | Reviewed reuse:2d90 RTWP12/12 and turn10/10 | Natural Move Courage and actual ally+2/enemy exclusion; Standard self-healing18-to0/own level3 slots2-to1/sibling2; useful fallback; completed sword/sword/tail acts; live Nature and sibling isolation. Player-ally healing remains unverified. |
 | Reviewed reuse:392 public prepared routes | Satyr six SNA tiers and Lillend four SM tiers; legal quantities, one slot per cast,120s duration, body/icon/selection. Helper pumps native commands; no natural-input timing claim. |
 | Reviewed reuse:Satyr control and optional Suggestion | Fear, immunity refusal and bow/dagger/horns fallback in both modes. Provider Suggestion natural DC17/CL8 Satyr and DC16/CL7 Lillend, normal actions/duration/own slot and active-effect refusal. Positive Will/high SR, expiry/damage break and provider cold load NOT_RUN. |
@@ -95,39 +96,39 @@ positive/negative admission checks. Concluded-campaign selectors/quotas no longe
 block Sprint32. Prior independent tooling findings were corrected. Final coherent
 product/rules/coverage review is still pending.
 
-After two input setup failures, the bounded replan reuses the proven non-DLC Oleg
-scene only for the three fixed input phases. No dialog is dismissed or ignored.
-The lifecycle observer now waits up to30wall seconds for normal game-time expiry,
-with strict zero source grants unchanged and both clocks captured. Lillend's
-existing support case adds exact player-faction ally healing, real action/slot
-cost and sibling isolation; wounded caster position/damage restore in finally.
-Independent read-only review found no concrete dispatch blocker. Focused production
-compile22.8s and5/2753 tests4.3s PASS; original wrong focused-reference invocation
-refusal retained. A subsequent expected-text clarification needs no broader tests;
-selected candidate build compiles it. These corrections need fresh native runs.
+Current bounded correction waits for the naturally queued ally healing touch,
+requires exact StickyTouch/source/recipient and native RuleHealDamage attribution,
+normal primary cost, native first-round free delivery and one own slot. Self-heal
+uses the engine's exact nested delivery RuleCastSpell context. No supplied cast,
+queue advancement or heal. Input phases reuse the private isolated hostile to
+establish native combat before input and at the actual cost callback; strict
+cost formulas remain unchanged. Existing exploration facts are retained as such.
+Independent review caught the distinct self-heal context before packaging; fixed.
+Focused self-context compilation23.3s/5selected tests1s PASS. Review also tightened
+the exact started ability set and heal delta; next candidate compiles these final
+assertions. No further dispatch blocker; final coherent review remains pending.
 
-Latest transaction `compat-20261026T013016Z-54db8e796163` restored/verified
-01:34:39.4716972UTC; lifecycle transaction restored01:29:13.3055930UTC.
-Both protected Compare PASS: Mods967/saves118/references18/settings83/tasks0/
-one unchanged Steam. No owned live transaction/game/task remains. Original Unity
-logs are retained before another launch; protected saves and current intake exact.
+Latest transaction `compat-20261026T020554Z-7a4649a6bd61` restored/verified
+02:10:45.1538566UTC. All three bcd runs protected Compare PASS:
+Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
+No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build-Local attempts/validated development packages/native launches:35/25/36.
-Latest build253.122s; latest two wrappers279.332s/264.476s, native113.613s/89.694s.
-Complete summed active work categories remain unavailable; observer research/repair
-and supervision overlapped. No speedup inference. Owner subsystem waiting is not
-approval. Working disk minimum remains measured1.1GB peak plus2GB margin; check
-and recover only verified closed extraction duplicates before the next batch.
-Verified two-transaction cleanup at01:41:28.6623828UTC recovered198,615,570B;
-free3,795,656,704B. Original ZIPs,
-raw evidence, receipts, unique artifacts and protected backups remain; Compare
-PASS967/118/18/83/tasks0/Steam1. Exact plan receipt is in history.
+Build-Local attempts/validated development packages/native launches:36/26/39.
+Latest build256.383s; three wrappers294.648s/277.596s/292.026s,
+native127.032s/106.775s/113.968s. Summed active work categories unavailable;
+observer research/repair and supervision overlapped. No speedup inference.
+Owner subsystem waiting is not approval. Disk minimum remains measured1.1GB
+combined peak plus2GB margin. Latest verified cleanup02:19:30.3107111UTC
+recovered583,233,056B from seven closed exact S27 extraction duplicates;
+free3,798,528,000B. ZIPs, evidence, receipts, unique artifacts, protected backups
+and saves retained; protected Compare PASS967/118/18/83/tasks0/Steam1.
 
-Next selection: one coherent development package, then `support-lifecycle`,
-`lillend-support`, `druid-input`, and, only after common setup succeeds,
-`wizard-input`/`sorcerer-input`, each a fresh guarded process. Expected aggregate
-25-35minutes plus build; each ordinary selection retains10-15minute target/
-30minute ceiling and complete restoration. No unchanged input loop.
+Next selection: one coherent corrected development package, then `lillend-support`,
+`druid-input`, and, after common setup succeeds, `wizard-input`/`sorcerer-input`,
+each fresh guarded process. Expected aggregate20-30minutes plus build; each
+selection retains10-15minute target/30minute ceiling and complete restoration.
+Do not repeat the passed bcd lifecycle merely for unrelated observer changes;
+review its actual dependencies and retain original byte identity when reusing.
 Continue remaining control/support risks, technical presentation, cold ON/OFF
 persistence and affected integration; pending subsystem rows stay pending.
 Final qualification requires independent coherent review and one frozen complete-
