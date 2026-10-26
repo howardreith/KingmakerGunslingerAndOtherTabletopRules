@@ -20,9 +20,16 @@ namespace KingmakerGunslinger.DomainTests
             foreach (string phase in new[] { null, "all", "Satyr-Turn", "lillend-turn ", "trumpet-book-turn", "Druid-input", "sorcerer-input ", "menu-adapters" })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase), "Unselected or malformed phase refused.");
             foreach (string phase in new[] { "druid-input", "wizard-input", "sorcerer-input" })
+            {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), "Only selected native input phases can borrow Default.");
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputOutdoor(scenario, phase), "Native menu input uses the established non-narrative outdoor fixture.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, phase), "A different scenario cannot borrow Sprint32 outdoor admission.");
+            }
             foreach (string phase in new[] { null, "satyr-routes", "support-lifecycle", "druid-input ", "all" })
+            {
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), "Other reviews cannot borrow input scope.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputOutdoor(scenario, phase), "Other Sprint32 phases preserve their selected fixture.");
+            }
         }
         internal static void Cleanup2RequiresExactFreshSaveFreePhase()
         {

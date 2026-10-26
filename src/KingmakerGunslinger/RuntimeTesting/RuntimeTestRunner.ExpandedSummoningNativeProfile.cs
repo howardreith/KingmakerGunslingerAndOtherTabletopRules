@@ -108,7 +108,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _summoningProfilePreset = UnityEngine.Object.Instantiate(_summoningProfileOriginal);
                     _summoningProfilePreset.name = "KMG_Runtime_Summoning_Native_Profile";
                     _summoningProfilePreset.MakeAutosave = false;
-                    if (ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(_request.Scenario, nativeReviewPhase) ||
+                    if (ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputOutdoor(_request.Scenario, nativeReviewPhase) ||
+                        ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(_request.Scenario, nativeReviewPhase) ||
                         (IsSprint27Review && RuntimeTestRequestParser.Sprint27ReviewPhase(_request) == "outdoor-locomotion") ||
                         (IsSummonCleanup2Review && (RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "menus" ||
                             RuntimeTestRequestParser.Cleanup2ReviewPhase(_request) == "tooltips" ||
@@ -156,7 +157,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EventBus.Unsubscribe(_summoningProfileMenu); _summoningProfileMenuDetached = true;
                     _summoningProfileEvidence["areaGuid"] = _summoningProfilePreset.Area.AssetGuid;
                     _summoningProfileEvidence["entryGuid"] = _summoningProfilePreset.EnterPoint.AssetGuid;
-                    _summoningProfileEvidence["scope"] = ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(_request.Scenario, nativeReviewPhase)
+                    _summoningProfileEvidence["scope"] = ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputOutdoor(_request.Scenario, nativeReviewPhase) ||
+                        ExpandedSummoningNativeProfilePolicy.Sprints30And31Outdoor(_request.Scenario, nativeReviewPhase)
                         ? "established non-DLC Oleg outdoor scene/navigation; unchanged summon mechanics; request-owned anchor; no saved-world load/write"
                         : "real native first-level scene/navigation; unchanged summon mechanics; no saved-world load/write";
                     _summoningProfileClock = Stopwatch.StartNew();

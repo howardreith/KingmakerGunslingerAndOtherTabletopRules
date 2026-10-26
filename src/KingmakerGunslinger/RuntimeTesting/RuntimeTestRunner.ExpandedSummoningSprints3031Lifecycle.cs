@@ -223,7 +223,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     capturedCourageRecipients.Add(actor, recipients.Single());
                 }
                 foreach (var actor in siblings.Values) Kingmaker.Designers.GameHelper.KillUnit(actor, fixture.Caster);
-                deadline = DateTime.UtcNow.AddSeconds(10);
+                var deathWallStart = DateTime.UtcNow;
+                var deathGameStart = Game.Instance.Player.GameTime;
+                // Native RecentlyDeadBuff has a finite game-time deadline.
+                // Ten wall seconds sampled it with 2.326 game seconds left on
+                // this laptop. Let the same native scheduler finish; retain
+                // the strict zero-grant predicate and never shorten the buff.
+                deadline = deathWallStart.AddSeconds(sprint32 ? 30 : 10);
                 while (DateTime.UtcNow < deadline && siblings.Values.Any(actor =>
                     !actor.Descriptor.State.IsDead || !grantsGone(actor) || Sprints3031OwnedAreaCount(actor) != 0 || Sprints3031LiveSourceGrantCount(actor) != 0))
                 { Game.Instance.IsPaused = false; yield return 0; }
@@ -251,6 +257,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("lifecycle-" + key + "-native-death", dead,
                         new JObject { ["creature"] = key, ["actor"] = Sprints3031LifecycleState(actor),
                             ["simultaneousDeathState"] = deathBatch,
+                            ["deathWallSeconds"] = (DateTime.UtcNow - deathWallStart).TotalSeconds,
+                            ["deathGameSeconds"] = (Game.Instance.Player.GameTime - deathGameStart).TotalSeconds,
                             ["allEquipmentNonlootable"] = items[actor].All(item => !item.IsLootable),
                             ["capturedAreaAndGrantReferencesGone"] = grantsGone(actor),
                             ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead) : null,
