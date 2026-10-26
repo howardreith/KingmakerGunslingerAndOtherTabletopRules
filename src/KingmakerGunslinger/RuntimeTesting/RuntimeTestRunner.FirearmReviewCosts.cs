@@ -31,7 +31,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 internal UnitCommand Command;
                 internal float[] Before, After;
                 internal float Elapsed;
-                internal bool TurnBased, FullRound, ExactTurn;
+                internal bool TurnBased, FullRound, ExactTurn, InCombat, IgnoreCooldown;
             }
             internal FirearmReviewCosts(UnitEntityData actor, JArray rows)
             {
@@ -58,7 +58,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (active == null || !ReferenceEquals(__0.Executor, active.actor)) return;
                 var turn = Game.Instance.TurnBasedCombatController.CurrentTurn;
                 __state = new Charge { Command = __0, Before = Snapshot(active.actor),
-                    Elapsed = __0.TimeSinceStart,
+                    Elapsed = __0.TimeSinceStart, InCombat = active.actor.IsInCombat,
+                    IgnoreCooldown = __0.IsIgnoreCooldown,
                     TurnBased = TurnBased.Controllers.CombatController.IsInTurnBasedCombat(),
                     FullRound = TurnBased.Utility.UnitCommandExtensions.IsFullRoundAction(__0),
                     ExactTurn = turn != null && ReferenceEquals(turn.Unit, active.actor) };
@@ -72,7 +73,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["type"] = __state.Command.Type.ToString(), ["turnBased"] = __state.TurnBased,
                     ["exactActorTurn"] = __state.ExactTurn, ["fullRound"] = __state.FullRound,
                     ["before"] = new JArray(__state.Before), ["after"] = new JArray(__state.After),
-                    ["elapsed"] = __state.Elapsed });
+                    ["elapsed"] = __state.Elapsed, ["inCombat"] = __state.InCombat,
+                    ["ignoreCooldown"] = __state.IgnoreCooldown });
             }
             private static void Forced(UnitCommand __instance)
             {
@@ -85,6 +87,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             internal int ForcedCount(UnitCommand command) { return forced.Count(value => ReferenceEquals(value, command)); }
             internal int Count(UnitCommand command) { return charges.Count(c => ReferenceEquals(c.Command, command)); }
+            internal bool InCombat(UnitCommand command)
+            { return charges.Count(value => ReferenceEquals(value.Command, command) && value.InCombat) == 1; }
+            internal bool IgnoredCooldown(UnitCommand command)
+            { return charges.Count(value => ReferenceEquals(value.Command, command) && value.InCombat && value.IgnoreCooldown) == 1; }
             internal bool Unchanged(UnitCommand command)
             {
                 var matches = charges.Where(value =>

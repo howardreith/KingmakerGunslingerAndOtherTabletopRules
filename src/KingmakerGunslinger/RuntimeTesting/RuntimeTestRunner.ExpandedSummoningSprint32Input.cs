@@ -105,6 +105,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!player.Party.Contains(fixture.Caster))
                 { player.PartyCharacters.Add(fixture.Caster); added = true; player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
                 mode = Cleanup2EnterNativeDefault(fixture, phase); screens = new NativeIconScreenEvidence(_request);
+                CreateSprint32TurnHostile(fixture);
+                // Native exploration casts intentionally assign no cooldown.
+                // Establish owned combat before real input, without changing
+                // native cost rules or any intake actor's faction or memory.
+                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 8f);
+                foreach (var unit in new[] { fixture.Caster, fixture.Hostile })
+                {
+                    unit.Wake(0f);
+                    if (!game.State.AwakeUnits.Contains(unit)) game.State.AwakeUnits.Add(unit);
+                }
+                fixture.Caster.Memory.Add(fixture.Hostile); fixture.Hostile.Memory.Add(fixture.Caster);
+                fixture.Caster.SightCache.ClearIfNeeded(); fixture.Hostile.SightCache.ClearIfNeeded();
+                new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                fixture.Caster.JoinCombat(); fixture.Hostile.JoinCombat(); player.UpdateIsInCombat();
+                new Kingmaker.Controllers.Combat.UnitCombatJoinController().Tick();
+                new Kingmaker.Controllers.Combat.UnitCombatPrepareController().Tick();
+                bool combatReady = fixture.Caster.IsInCombat && fixture.Hostile.IsInCombat &&
+                    fixture.Caster.HasLOS(fixture.Hostile) && fixture.Caster.Memory.ContainsVisible(fixture.Hostile) &&
+                    fixture.Caster.IsEnemy(fixture.Hostile) && fixture.Hostile.IsEnemy(fixture.Caster);
+                Sprint25Check(phase + "-combat-ready", combatReady, new JObject {
+                    ["caster"] = fixture.Caster.UniqueId, ["target"] = fixture.Hostile.UniqueId,
+                    ["casterInCombat"] = fixture.Caster.IsInCombat, ["targetInCombat"] = fixture.Hostile.IsInCombat,
+                    ["lineOfSight"] = fixture.Caster.HasLOS(fixture.Hostile),
+                    ["enemyVisible"] = fixture.Caster.Memory.ContainsVisible(fixture.Hostile) },
+                    "The exact disposable caster enters native combat with an isolated brain-disabled hostile before input/cost observation.");
+                if (!combatReady) throw new InvalidOperationException("Native input combat admission failed.");
                 ui.SelectionManagerPC.SelectUnit(fixture.Caster.View, true, true, false); group.SelectUnit(fixture.Caster); selectedFixture = true;
                 for (int frame = 0; frame < 12; frame++) yield return 0;
                 if (!mode.Current) throw new InvalidOperationException("Native input selection lost Default.");
@@ -206,6 +232,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    restore("owned-combat", () => {
+                        foreach (var unit in new[] { fixture.Caster, fixture.Hostile }.Where(value => value != null && !value.Destroyed))
+                            if (unit.IsInCombat) unit.LeaveCombat();
+                        player.UpdateIsInCombat();
+                    });
                     restore("screens", () => screens?.Dispose());
                     restore("native-default", () => mode?.Dispose());
                 }
@@ -222,7 +253,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Stopwatch phase, Func<bool> chain, Action closePopup, string label)
         {
             if (_expandedSummoningPlayerPathCaptureActive || _cleanup2DruidCastExpected != null || !chain() ||
-                !ReferenceEquals(row.MechanicSlot.GetContentData(), child) || child.TargetAnchor == AbilityTargetAnchor.Owner)
+                !ReferenceEquals(row.MechanicSlot.GetContentData(), child) || child.TargetAnchor == AbilityTargetAnchor.Owner || !fixture.Caster.IsInCombat)
                 throw new InvalidOperationException("Exclusive exact native Sprint32 cast required.");
             var hooks = HarmonyInstance.Create("kmg.sprint32.input." + _request.RunId); UnitUseAbility command = null;
             var costs = new JArray(); var before = SnapshotReferences(fixture.AllUnits);
@@ -267,7 +298,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     expected.Length == 1 && units.Length >= min && units.Length <= max && units.All(unit => unit.Blueprint.AssetGuid == expected[0].Unit) &&
                     ExpandedSummoningRuleCapture.Distinct().Count() == units.Length && durations.Length == units.Length &&
                     durations.All(value => Math.Abs(value.BaseDuration.TotalSeconds - 120d) <= .001 && value.BonusDuration.TotalSeconds == 0) &&
-                    chain() && spent && economy.Exact(command, false) && economy.ForcedCount(command) == 0 &&
+                    chain() && spent && economy.InCombat(command) && economy.Exact(command, false) && economy.ForcedCount(command) == 0 &&
                     costs.Count == 1 && (string)costs[0]["nativeCost"] == "UnitUseAbility" &&
                     (string)costs[0]["type"] == child.RuntimeActionType.ToString() && (bool)costs[0]["fullRound"] == child.RequireFullRoundAction;
                 Sprint25Check(label + "-cast", exact, new JObject { ["source"] = source.Blueprint.AssetGuid, ["child"] = child.Blueprint.AssetGuid,
@@ -278,6 +309,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["baseDurations"] = new JArray(durations.Select(value => value.BaseDuration.TotalSeconds)),
                     ["costs"] = costs, ["expectedAction"] = child.RuntimeActionType.ToString(), ["expectedFullRound"] = child.RequireFullRoundAction,
                     ["nativeCostDeltaExact"] = command != null && economy.Exact(command, false),
+                    ["combatAtCost"] = command != null && economy.InCombat(command),
                     ["nativeForcedFinishes"] = command == null ? 0 : economy.ForcedCount(command),
                     ["debit"] = child.Spellbook.Blueprint.Spontaneous ? debit.DescribeSpontaneous(child.Spellbook, spec.ParentTier) : debit.Describe(debit.Changed.FirstOrDefault()),
                     ["equivalentPreparedSourceOrSpontaneousDebitExact"] = spent, ["nativePathEvents"] = new JArray(ExpandedSummoningPlayerPathEvents),
