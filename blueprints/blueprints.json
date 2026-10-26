@@ -60055,6 +60055,22 @@
       "status": "active",
       "milestone": "Expanded Summoning",
       "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.HoldPerson",
+      "guid": "55179f40237f4e5cb535b388750db215",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.FeyCelestial.LillendAzata.HoldPersonBuff",
+      "guid": "21c3681a649947359d30f909362d945b",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
     }
   ]
 }

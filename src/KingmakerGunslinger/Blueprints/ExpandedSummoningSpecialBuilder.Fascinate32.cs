@@ -20,6 +20,8 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal static partial class ExpandedSummoningSpecialBuilder
     {
+        private const string LillendBardicSuggestionDescription32 =
+            "With active CowWithHat Custom Spells, suggest its avoid-combat instruction to one creature fascinated by this lillend. Standard action, Will DC 13 + Charisma, spell resistance; no slot or extra performance round. This act does not interrupt its own Fascinate.";
         private static BlueprintActivatableAbility ConfigureLillendFascinate32(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintActivatableAbility courage, BlueprintUnit owner)
         {
@@ -99,7 +101,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(bardic,
                 LocalizationService.Create(Lillend32Prefix + "BardicSuggestion.Name", "Bardic Suggestion"),
                 LocalizationService.Create(Lillend32Prefix + "BardicSuggestion.Description",
-                    "With active CowWithHat Custom Spells, suggest its avoid-combat instruction to one creature fascinated by this lillend. Standard action, Will DC 13 + Charisma, spell resistance; no slot or extra performance round. This act does not interrupt its own Fascinate."), icon);
+                    LillendBardicSuggestionDescription32), icon);
             return toggle;
         }
         private static SpellDescriptorComponent FascinateDescriptor32()

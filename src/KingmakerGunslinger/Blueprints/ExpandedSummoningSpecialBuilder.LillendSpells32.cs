@@ -29,7 +29,7 @@ namespace KingmakerGunslinger.Blueprints
                 new[] { LillendOwnedControlSpell32(library, bySymbol, false),
                     LillendNativeSpell32(library, "5590652e1c2225c4ca30c4a699ab3649", "Cure Light Wounds"),
                     LillendOwnedControlSpell32(library, bySymbol, true) },
-                new[] { LillendNativeSpell32(library, "c7104f7526c4c524f91474614054547e", "Hold Person"),
+                new[] { LillendOwnedHoldPerson32(library, bySymbol),
                     LillendNativeSpell32(library, "89940cde01689fb46946b2f8cd7b66b7", "Invisibility"),
                     LillendNativeSpell32(library, "c3893092a333b93499fd0a21845aa265", "Sound Burst") },
                 new[] { ConfigureLillendCharmMonster32(library, bySymbol),

@@ -19,7 +19,7 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprint29FoundationIdentityCount = 3 + 8 + Sprint29PrivateIdentityCount;
         internal const int Sprints30And31PrivateIdentityCount = 112;
         internal const int Sprints30And31FoundationIdentityCount = 5 + 23 + Sprints30And31PrivateIdentityCount;
-        internal const int Sprint32PrivateIdentityCount = 90;
+        internal const int Sprint32PrivateIdentityCount = 92;
         internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount + Sprint29FoundationIdentityCount + Sprints30And31FoundationIdentityCount + 2 + 10 + Sprint32PrivateIdentityCount;
         internal const int RegisteredCreatureCount = 124;
         internal const int RegisteredMonsterCreatureCount = 102;

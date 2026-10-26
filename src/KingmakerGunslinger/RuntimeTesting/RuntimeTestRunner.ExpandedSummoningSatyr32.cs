@@ -62,6 +62,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase ||
                 phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase)
             {
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase)
+                    CaptureSprint32RemainingControlLeaves();
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewLillendFascinate32(fixture)) yield return frame;
                 yield break;
