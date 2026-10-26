@@ -423,7 +423,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         // control cases. No supplied spell, save or action proves a cast here.
         private IEnumerable<int> ReviewFeyControlExpiry32(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData sibling, UnitEntityData target, Buff original,
-            AbilityData siblingData, UnitCondition condition, Func<JObject> siblingBudget, string id, Func<JObject> sourceAttribution = null)
+            AbilityData siblingData, UnitCondition condition, Func<JObject> siblingBudget, string id, Func<JObject> sourceAttribution = null,
+            Action<UnitEntityData> prepareProbe = null)
         {
             var game = Game.Instance;
             UnitEntityData probeTarget = null; Buff probe = null;
@@ -446,8 +447,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var direction = (target.Position - sibling.Position).normalized;
                 var side = Vector3.Cross(Vector3.up, direction).normalized;
                 Vector3? place = null;
-                foreach (var candidate in new[] { target.Position + side * 1.2f, target.Position - side * 1.2f,
-                    target.Position - direction * 1.2f })
+                // The original three offsets can all lie outside this narrow
+                // lane. Reuse its already surveyed direction with a finite set
+                // of closer points; every candidate still needs native nav/LOS.
+                var candidates = new List<Vector3> { target.Position + side * 1.2f,
+                    target.Position - side * 1.2f, target.Position - direction * 1.2f };
+                foreach (float distance in new[] { .9f, 2f, 3f, 4f, 5f })
+                    foreach (float lateral in new[] { 0f, .9f, -.9f })
+                        candidates.Add(target.Position - direction * distance + side * lateral);
+                foreach (var candidate in candidates)
                 {
                     var nearest = AstarPath.active.GetNearest(candidate);
                     if (nearest.node == null || !nearest.node.Walkable || Vector3.Distance(nearest.clampedPosition, candidate) > .3f ||
@@ -458,6 +466,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!place.HasValue) throw new InvalidOperationException("Separate control probe has no walkable visible point.");
                 probeTarget = game.EntityCreator.SpawnUnit(fixture.HostileBlueprint, place.Value, Quaternion.identity, fixture.Scene);
                 fixture.Created.Add(probeTarget); Sprint28SetBrainActivePreservingActions(probeTarget, false);
+                prepareProbe?.Invoke(probeTarget);
                 probeTarget.Stats.HitPoints.BaseValue = 100000;
                 foreach (var actor in new[] { sibling, probeTarget })
                 { actor.Wake(0f); if (!game.State.AwakeUnits.Contains(actor)) game.State.AwakeUnits.Add(actor); }
@@ -509,6 +518,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["gameSeconds"] = game.Player.GameTime.TotalSeconds, ["originalActive"] = original.Active,
                     ["originalDisposed"] = original.IsDisposed, ["conditionCleared"] = !target.Descriptor.State.HasCondition(condition),
                     ["sibling"] = sibling.UniqueId, ["probeTarget"] = probeTarget.UniqueId,
+                    ["probeHd"] = probeTarget.Descriptor.Progression.CharacterLevel,
                     ["probeEligible"] = eligible, ["siblingEffectPreserved"] = isolated, ["probeEnd"] = probeEnd,
                     ["sourceRemovalAttribution"] = attribution,
                     ["siblingBudgetBefore"] = budget, ["siblingBudgetAfter"] = siblingBudget(),

@@ -25,6 +25,28 @@ namespace KingmakerGunslinger.Blueprints
 {
     internal static partial class ExpandedSummoningSpecialBuilder
     {
+        // Native Fact.PostLoad joins saved logic by exact Unity component name.
+        // Finalize only new private S32 facts; preserve explicit/donor names.
+        // Type-local ordinals keep Presence stable when its provider inserts
+        // unrelated components before it. No released or native fact is renamed.
+        private static void NameFeyCelestialFactComponents32(BlueprintUnitFact fact, string symbol)
+        {
+            if (fact == null || symbol == null || !symbol.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) ||
+                fact.name != InternalName(symbol))
+                throw new InvalidOperationException("Only exact private Sprint32 facts may receive component names.");
+            var ordinals = new Dictionary<Type, int>();
+            var names = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var component in fact.ComponentsArray.OfType<GameLogicComponent>())
+            {
+                var type = component.GetType(); int ordinal;
+                ordinals.TryGetValue(type, out ordinal); ordinals[type] = ordinal + 1;
+                if (string.IsNullOrEmpty(component.name))
+                    component.name = "$" + symbol + "." + type.FullName + "." + ordinal;
+                if (!names.Add(component.name))
+                    throw new InvalidOperationException("Duplicate private Sprint32 saved component name: " + symbol + "/" + component.name);
+            }
+        }
+
         private const string FeyCharmBuff32 = "KMG.Summoning.FeyCelestial.CharmBuff";
         private const string FeySleepBuff32 = "KMG.Summoning.FeyCelestial.SleepBuff";
         private const string NativeCharmBuff32 = "9dc29118addce3d48ae9b92be953b5b4";

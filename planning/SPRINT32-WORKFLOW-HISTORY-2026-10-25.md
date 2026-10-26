@@ -1866,3 +1866,126 @@ c491f6d9b75a74ccc10fc6334388dd2873bc170185753e735cf5109769a3e27b.
 Protected Capture/Compare PASS967Mods/118saves/18refs/83settings/tasks0/Steam1,
 `artifacts/sprint32-hold-storage/`. Unique archives/PDBs/raw evidence/failures/
 receipts/saves/backups retained; no DATA or personal data changed. No live run.
+
+### 2026-10-26 15:58UTC - candidate61 / native70 Hold RTWP
+
+Source5569b1cf412bbb3f59f91f1332d88f20717c1f2b, pushed through sanctioned wrapper.
+Build61 15:47:23.1527679-15:51:48.7102191UTC/265.5574512s: wrappers,
+557selected/2754registered, exact production compile, strict package PASS.
+ZIP648f901c54716fe714f1691748a6892d753ef65a34658965375fff8c74f09703;
+DLLd6a450cc7839e485280a2a37115d4f3007f659db9f0e087df9a18d582e9f7ea7;
+MVIDd86b6614-4615-454b-829c-d6e74c3171e3;
+SourceState1d4782819d4656a1375ed13ab95b9d491bc61c9f52c5968c4adc0b935a2994c9.
+Canonical artifacts/development-candidates/sprint32-lillend-support/5569b1cf412b/.
+Free3,207,311,360B before/3,055,026,176B after. No full/final gate claim.
+
+Native70 **8PASS/1FAIL**, provider profile, fixed lillend-hold RTWP.
+Run20261026T1554535951048Z-24566254de234576b68e1a28ea469026;
+raw C:/Dev/KingmakerGunslingerLab/runtime-evidence/
+20261026T1554535348552Z-disposable-expanded-summoning-sprint32-native-review.
+ResultSHAce0446c1cba44dd3279bfcdcb0d3ad89ee99f6035f9e76b334a28e978681871d;
+originalUnitySHA32f82b5f84eabb947c84001c29e93fec29e7e84463bf1010b6a3d82168c1dd6f.
+Native15:55:07.2791450-15:58:03.6956007UTC/176404ms;
+wrapper15:52:11.2080738-15:58:17.3757619UTC/366.1676881s.
+Two fresh sources naturally used Courage Move then Hold Standard/non-full-round,
+actual Will DC16, CL7,42s application, real L2slots4->3 each, active-target score0,
+independent sibling5/4/2+Charm1. First exact effect had actual failed then successful
+automatic Will retries at game43210.603/43216.628, both with no victim commands
+or cooldown debit. Success cleared paralysis before original43246.6 deadline.
+Prospective disclosed Will-100 then100 changed no rolls or prior outcomes.
+
+Expiry case naturally cast successfully, then fixture refused all three candidate
+probe points as lacking walkable native LOS. No source expiry was dispatched;
+source-loss/sibling-isolation remains unverified. This is fixture placement,
+not a failed product cleanup claim. Finalizer restored the fixture. Correct by
+reusing finite closer points along the already surveyed lane; preserve native
+nav/LOS/eligibility guards and explicitly advance the separate Hold probe to
+five-HD humanoid capability. Do not repeat unchanged or alter creature rules.
+
+Transactioncompat-20261026T155212Z-31cf1adf72f0 Restored/verified
+15:58:17.1435528UTC. Protected Compare PASS967Mods/118saves/18refs/83settings/
+tasks0/Steam1. Local intake/originals artifacts/sprint32-hold-5569b1cf/.
+No live game/task/transaction. Counts61attempts/50validated/70native.
+
+Independent persistence review identified unnamed S32 GameLogicComponents:
+native Fact.PreSave stores component.name; PostLoad SingleOrDefault joins by it;
+ComponentsArray setter does not normalize names. Existing Hound30 uses the same
+bounded naming repair. Next batch assigns stable names only to new private S32
+facts/buffs, preserving explicit/native names; type-local ordinal preserves the
+SuggestionPresence name across provider-present/absent component lists. No
+cold-load qualification on candidate61. Defer its other planned phases to the
+corrected coherent candidate, avoiding replay against known incomplete source.
+
+Agent inspected four immutable earlier Lillend rest/attack images from
+20261026T0509046315468Z (original overallFAIL retained). Recognizable winged human/
+serpent body with finite sampled geometry; custom rest framing and overlapping
+actors in attack stills do not prove gameplay-camera scale, selection, movement,
+contact timing, hit/death/despawn or performance. Supporting appearance only;
+technical acceptance remains pending. Hashes/notes: artifacts/sprint32-intake/
+lillend-earlier-frames-agent-inspection.json. No owner aesthetic claim.
+
+
+## 2026-10-26 16:52UTC - bounded persistence correction batch (not native proof)
+
+New private S32 facts receive stable type-local component names. Actual installed
+Fact.PreSave/PostLoad uses exact component.name; this was inspected read-only,
+not inferred from a mock. Existing explicit names and all released identities
+are retained. Provider-presence variations preserve the Presence component name.
+Native70 probe refusal is addressed with a finite established-lane survey and a
+real five-HD humanoid probe; no original gameplay result is relabeled.
+
+The fixed fey-celestial scope selects Satyr/Lillend/Satyr/Lillend through the
+existing guarded Working trio. Exact purpose, candidate/version, automatic exit,
+Working-only save and OFF-cleanup guards remain. Independent reviewer found the
+two remaining admission declarations (outer PS and actual C# parser); corrected.
+Real dispatcher activation/saves create Competence and Fascinate saved identities.
+Explicit native spends are only persistence preparation. Review corrections add
+empty initial Fascinate eligibility, expected spent values, cold native factions/
+per-instance attack lists/nonparty groups, absent-provider boundary, pre-retirement
+live-state checks and primary/sibling isolation. No new product subsystem. Other
+private controls/provider transitions remain pending. Manual fixture equipment
+retirement is not claimed as native expiry. Reviewer inspected actual diff and
+installed contracts; focused test execution was performed by the main agent.
+
+Focused draft gate: production23.0s,558selected/2755registered,15.8s domain runtime
+PASS; artifacts/sprint32-intake/focused-persistence-draft.log and timing JSONL.
+Reviewed gate: production23.2s,exact scope test1/2755 in0.8s gate PASS;
+focused-persistence-reviewed.log/timing JSONL. Original compiled parser harness
+missing RuntimeHarness dot-source failure is retained in native-parser-persistence.log;
+corrected v2 passes21 cases against compiled DLL
+3eca8d06dac604d5d467506d2acd84f430416517ad1661cc2f2f7c725c11ff02,
+MVID9c6d5ea0-a105-4c4d-a5f6-0be0f81b0c87. Exact scopes reach the deliberately
+missing evidence-directory refusal; this is admission proof, not runtime activation.
+Outer WhatIf/purpose11 PASS in persistence-admission-v2.log. Original v1 invocation
+was elevated and correctly refused before runtime entry; no launch/save/deploy.
+No guard was weakened. No native launch or candidate Build-Local in this batch yet.
+
+Headroom cleanup was byte-verified against retained validated ZIPs, with resolved
+paths/reparse checks and closed-restored transaction receipts before each deletion:
+- Two S29 closed extractions167,817,424B; plan
+  77e337f008555c3241b003b717dacadd22545f15546d77852102d6d028f342e3.
+  Transactions20261021T060344Z-05d42edbaabd and20261021T055042Z-c42d8fe3af77;
+  source32f8be8b48586176dc299aa94a9b18bdf3970735 / ZIP
+  ee8884fc5134b32d47a086c1207a49ceb42f2cb80272c2ccdd1640ea2607691c;
+  sourceb896633659d1fb4ab306231b9ae7129b2310ea8a / ZIP
+  69b8bda52b91455409d4e5d7dfc2954e43691b62d9143f17bc03129824a7b230.
+- Restored native70 extraction99,620,583B; plan
+  f17469869b26e1b808998dc646758fd6249c2e980bd5cd87ef05c8884af9592e.
+- Candidate60 package staging/duplicate DLL42,868,947B; plan
+  690be225e5f7d697831691d311f8045b1fa99e936a0e838012346b50449f138e.
+Total310,306,954B; free3,130,212,352B after cleanup at16:47:17UTC. Protected
+Capture/Compare PASS967Mods/118saves/18references/83settings/tasks0/Steam1 in
+artifacts/sprint32-persistence-storage. Unique ZIPs/PDBs/raw failures/receipts/
+backups/saves retained; no DATA or machine-wide cleanup. Counts remain61build
+attempts/50validated development packages/70native launches. Work this interval
+was predominantly fixture/admission implementation and independent review;
+exclusive category totals unavailable, no owner wait or speedup claim.
+
+Independent resolution review verified all listed fixes and primary-first cleanup
+ordering in actual source; no remaining concrete blocker. No native verdict was
+claimed. Reviewed compiled-parser rerun21 PASS on DLL
+72f3c5adbefcade077ab1bbccc6e85600d8bf2b855a7dfb53903f31dc391a65a,
+MVID767963a0-89fd-4679-a5b0-22f521c9823c; outer source-only rerun11 PASS.
+Logs native-parser-persistence-reviewed.log and persistence-admission-reviewed.log.
+Tooling/admission is separately committed as f66348c0; coherent product/fixture
+commit and one candidate build follow. Final qualification remains pending.

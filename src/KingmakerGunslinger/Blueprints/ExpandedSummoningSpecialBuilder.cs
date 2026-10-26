@@ -745,6 +745,9 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureBrachiosaurusOverrun(library, bySymbol);
             ConfigureBrachiosaurusGreaterOverrun(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
+            foreach (var pair in bySymbol.Where(value =>
+                value.Key.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) && value.Value is BlueprintUnitFact))
+                NameFeyCelestialFactComponents32((BlueprintUnitFact)pair.Value, pair.Key);
         }
 
         /// <summary>

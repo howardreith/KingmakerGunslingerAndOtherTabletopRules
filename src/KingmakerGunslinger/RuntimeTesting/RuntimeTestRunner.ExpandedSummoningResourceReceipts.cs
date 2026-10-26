@@ -298,6 +298,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var value in human.BorrowedResources())
                     add(value, "salamander borrowed animation", human.GetType().FullName, false, true, false, null);
             }
+            var lillend = view.GetComponent<LillendHumanVisualAttachment>();
+            if (lillend != null)
+            {
+                foreach (var value in lillend.CaptureOwnedResources().Concat(new UObject[] { lillend }))
+                    add(value, "lillend ownership seam", lillend.GetType().FullName, true, false, true,
+                        () => lillend != null && lillend.CaptureOwnedResources().Any(o => ReferenceEquals(o, value)));
+                foreach (var value in lillend.BorrowedResources())
+                    add(value, "lillend borrowed animation", lillend.GetType().FullName, false, true, false, null);
+            }
             var glow = view.GetComponent<FireBeetleVisualGlow>();
             if (glow != null)
             {

@@ -219,7 +219,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 else foreach (int frame in ReviewFeyControlExpiry32(fixture, owner, sibling, target, effect,
                     new AbilityData(ability, siblingBook), UnitCondition.Paralyzed, siblingBudget, id,
                     () => new JObject { ["passed"] = !repeats.Rows.Any(value => (bool)value["passed"]),
-                        ["automaticSaves"] = repeats.Rows })) yield return frame;
+                        ["automaticSaves"] = repeats.Rows }, actor => {
+                        ElementalSpellAffinityScenario.Advance(actor.Descriptor, fighter,
+                            5 - actor.Descriptor.Progression.CharacterLevel);
+                        actor.Stats.SaveWill.BaseValue = -100;
+                    })) yield return frame;
             }
             finally
             {

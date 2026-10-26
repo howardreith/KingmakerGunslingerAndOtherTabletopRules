@@ -191,6 +191,7 @@ namespace KingmakerGunslinger.Blueprints
                         ValidateSuggestionGraph32(component, ownedBuff, new HashSet<object>(), 0);
                     AlternateSummoningAdapterBuilder.ResetComponentCaches(staged);
                 }
+                NameFeyCelestialFactComponents32(stagedBuff, Sprint32Suggestion.OwnedBuffSymbol);
                 // All cloning, nested checks and guard construction are done.
                 // Every possible old/new component array remains guarded while
                 // Active is false; even a failed field copy cannot expose the
