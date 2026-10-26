@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var resource = fixture.Blueprints.OfType<BlueprintAbilityResource>().Single(value => value.name == prefix + "PerformanceResource");
                 var recipient = fixture.Blueprints.OfType<BlueprintBuff>().Single(value => value.name == prefix + "CompetenceRecipient");
                 var carrier = fixture.Blueprints.OfType<BlueprintBuff>().Single(value => value.name == prefix + "CompetenceCarrier");
+                var dispatcher = fixture.Blueprints.OfType<BlueprintBuff>().Single(value => value.name == prefix + "NoncombatDispatcher");
+                var dispatchFacts = owner.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, dispatcher)).ToArray();
                 var toggle = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint.Buff, carrier));
                 var bookBlueprint = owner.Blueprint.GetComponent<LillendBardBook32>().Book;
                 var book = owner.Descriptor.GetSpellbook(bookBlueprint); var siblingBook = sibling.Descriptor.GetSpellbook(bookBlueprint);
@@ -75,7 +77,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var siblingSlots = Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).ToArray();
                 var eligible = player.Party.Where(value => LillendNoncombat32.Selectable(owner, value)).ToArray();
                 bool ready = eligible.Length == 1 && ReferenceEquals(eligible[0], fixture.Caster) &&
-                    owner.Logic.SelectFactComponents<LillendNoncombat32>().Count() == 1 && !toggle.Blueprint.OnlyInCombat &&
+                    dispatchFacts.Length == 1 && dispatchFacts[0].Active && dispatchFacts[0].IsNotDispelable &&
+                    !dispatchFacts[0].IsFromSpell && LillendNoncombat32.Find(owner) != null &&
+                    dispatcher.Frequency == Kingmaker.UnitLogic.Mechanics.DurationRate.Rounds && !toggle.Blueprint.OnlyInCombat &&
                     !fixture.Caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Blindness) &&
                     !LillendNoncombat32.Eligible(owner, owner) && !LillendNoncombat32.Eligible(owner, sibling) &&
                     owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
@@ -86,7 +90,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["sibling"] = sibling.UniqueId, ["recipient"] = fixture.Caster.UniqueId,
                     ["distance"] = owner.DistanceTo(fixture.Caster), ["ownSlots"] = new JArray(ownSlots),
                     ["siblingSlots"] = new JArray(siblingSlots), ["selfRefused"] = !LillendNoncombat32.Eligible(owner, owner),
-                    ["roundLogicComponents"] = owner.Logic.SelectFactComponents<LillendNoncombat32>().Count(),
+                    ["dispatcherFacts"] = dispatchFacts.Length, ["dispatcherBound"] = LillendNoncombat32.Find(owner) != null,
+                    ["dispatcherFrequency"] = dispatcher.Frequency.ToString(),
                     ["onlyInCombat"] = toggle.Blueprint.OnlyInCombat, ["available"] = toggle.IsAvailable,
                     ["queueEmpty"] = owner.Commands.Empty,
                     ["nonpartyRefused"] = !LillendNoncombat32.Eligible(owner, sibling) },

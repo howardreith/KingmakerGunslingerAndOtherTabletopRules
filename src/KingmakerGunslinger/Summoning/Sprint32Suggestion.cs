@@ -80,8 +80,7 @@ namespace KingmakerGunslinger.Summoning
                     foreach (var unit in Game.Instance.State.Units.All.ToArray())
                     {
                         if (unit == null || unit.Destroyed) continue;
-                        foreach (var bookOwner in unit.Logic.SelectFactComponents<LillendBardBook32>())
-                            bookOwner.ReconcileOptionalSpell();
+                        unit.Blueprint.GetComponent<LillendBardBook32>()?.ReconcileOptionalSpell(unit);
                         if (!Active)
                             foreach (var buff in unit.Descriptor.Buffs.Enumerable.Where(value =>
                                 value.Blueprint.AssetGuid == OwnedBuffGuid).ToArray()) buff.Remove();
