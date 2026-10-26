@@ -2289,3 +2289,104 @@ game, production rebuild or package from this source-only check. Native grouped
 controls will use gunslinger-only to avoid optional Suggestion competing with
 the intended nonhumanoid Charm Monster choice; provider behavior retains its
 separate selected proof. Counts66attempts/52validatedpackages/75nativelaunches.
+
+
+### 2026-10-26 19:01-19:19UTC: candidate67; native76/77 and bounded replan
+
+Build67 source71fc39041a5e0f46b9a2fc34cb77fc1744e65b00 PASS265.4299325s,
+19:01:11.1835483-19:05:36.6134808UTC. Complete development wrapper,558/2755
+selected tests, pinned-reference production compile and strict ZIP pass. ZIP
+SHAde7ad0e381cdea26cc5e426e6de07563b55613c662ce47b7e81f22c49e67ea97;
+DLL415cca34f03d322bb1e60bffd35b17f8c35c826460c12e4d6115ac0f94733e33;
+MVIDf7dafcfd-04e8-4adc-8fe6-990ac88546c7;
+SourceStateade71561b56d9e5ccbfb0123294ade7a1cda4eed107aefd1210e588145439de5.
+Canonical development-candidates/sprint32-lillend-support/71fc39041a5e;
+ZIP63,794,100B/expanded99,691,080B. Buildfree3,442,769,920->3,298,471,936B.
+No release qualification. Source-only wrapper preceding build passed; its
+exclusive timing was not captured. Draft PR74 updated to this candidate.
+
+Native76 standalone lillend-controls:3PASS/1FAIL,90.841s,
+19:08:49.8205550-19:10:20.6618960UTC. Run
+20261026T1908398708324Z-6fa8406d741d43ccbd66ef41d5d553db; raw folder
+20261026T1908398481787Z-disposable-expanded-summoning-sprint32-native-review.
+ResultSHAf8536765cc1b425db7ef7b417048bfd86e3ef1581365d29b2841078331d76d7b;
+original Unity copy artifacts/sprint32-controls-71fc3904/Unity-output-original.txt,
+SHAdeec14395e36cca7cf1e80dac673ba3479854daab4365da6c8cbc45af7528a40.
+Wrapper19:06:05.2227113-19:10:32.2443567UTC. Native Fighter SelectClass refused
+Animal Wolf advancement before casting. Generic helper's exception says Wizard;
+that is stale message wording, not the requested class. Existing native
+Test-GunslingerAnimalCompanionEligibility contract confirms Fighter excludes
+Animal levels, while Animal requires its first level. Independent reviewer
+acknowledged missing this prerequisite earlier and reviewed exact Animal class
+4cd1757a0eea7694ba5c933729a53920, existing-level guard and exact five-HD/result
+checks; no further concrete immediate precondition blocker found. This is a
+fixture correction, no product rules changed, natural controls remain unverified.
+A prepared git patch refused line-ending context without mutation; the reviewed
+change was applied only after normalized exact-source comparison. Native76
+transaction compat-20261026T190606Z-80a29410eee2 restored19:10:31.9750732UTC;
+full ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1.
+
+Native77 WorkingON prepare:17PASS/3FAIL,206.325s,
+19:14:54.7938046-19:18:21.1188405UTC. Run
+20261026T1914413658920Z-d5f64ea72dc64a34a046adc2939a54df; raw folder
+20261026T1914413345644Z-working-save-expanded-summoning-prepare.
+ResultSHA28fd4bc796f1c36f8ea36a488fe2a1c96ad16a4e5b1b2c066686a67123258de0;
+original Unity copy artifacts/sprint32-working-71fc3904/Unity-output-prepare-original.txt,
+SHA8c78714af7b595d5ac36df7f80750c138018e0f23e744a53a3d743f1ff82e206.
+Wrapper19:11:51.7076711-19:18:39.2399201UTC. Current stack/body/publication/
+Pause boundary and actual Competence pass. Four-ring survey288attempts rejects
+130navigation and158clampOrSeparation, zero reaching acquisition/range/sight.
+No listener spawned, save writes0/stashes0. Cold cleanup/absence/OFF NOT_RUN.
+This new evidence narrows77, not75 whose original predicate reason is unknown.
+After two listener-survey failures, stop repeated survey and inspect the native
+geometry/established Working-placement contract before any further launch.
+Transaction sprint32-stack-20261026T191213Z-40930335b1ca restored
+19:18:39.1399408UTC; outer full intake restored19:18:51.3958920UTC.
+Working original SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8,550,225B,creation639208636210035057/write639278868712797783/attributes8224.
+Full protected ComparePASS967/118/18/83/tasks0/Steam1. No owned live transaction.
+Counts67buildattempts/53validatedpackages/77nativelaunches. Approximate recent
+10min fixture/research/records,4.4min build,11.2min native wrappers overlapping
+research; exclusive totals unavailable. Prior v167 threeNOT_RUN remain unchanged.
+
+Bounded77 replan: installed GetNearest(Vector3) uses NNConstraint.None. The
+accepted Cleanup2 walking survey already uses PathNNConstraint, walking graph1
+outside combat, native ConstructTags, connected Area, horizontal clamp and a
+separate ground-height bound. Applied this existing seam to the unchanged four
+radii/24angles per anchor, anchoring on native ground. No new generic mechanism,
+extra search rings, graph/path edits, intake movement or weakened sight/calm/
+ownership contract. Raw77 cannot distinguish the158 combined clamp/separation
+failures or establish which graph won; the correction addresses the demonstrated
+query-contract mismatch, not an invented exact failure attribution. Independent
+actual-diff resolution review found no concrete dispatch blocker. If corrected
+placement still refuses, retain the Working scene placement blocker rather than
+repeating enlarged surveys.
+Focused source compilation23.8s and18/2755 tests PASS1.2s on the Animal/geometry
+batch; log artifacts/sprint32-intake/focused-fixtures-after77-installed.log. Initial
+invocation wrongly supplied private reference bundle as KingmakerInstallDir and
+refused missing Kingmaker_Data/Managed before compilation; its original log
+focused-fixtures-after77.log remains. Corrected invocation uses GamePath.props.
+
+19:30UTC verified retention: sixteen closed Oct17 package extractions fully
+match two untouched reference copies and two newly written/reread lossless
+content archives. References compat-20261017T172601Z-59215df4e794 and
+compat-20261017T185752Z-b7fb9d1f61d6 retained. Fixed selections/inventories:
+artifacts/sprint32-intake/retained-closed-identical-oct17-{a,b}.json and same-name
+ZIPs. Archives49,199,925B/49,203,131B; SHA
+7dc6dd218316e9edcf32a0723d48f7111508c48073332283772f4f3a1ebc2244 and
+353a70425bf4e4f2169abf39c40ff1b95d3090b26d31c451ea815ba1920cde1b;
+metadataSHA57a57cb0647551d0bded0554d024adc4541cc157743e3ba4e0fbceda70da57e7
+and650c2a4a0b3a4fb509f624ad3dcc2f09c567b92743bbdd4e80289b565a6bc998.
+Eight+eight duplicates549,998,936B+550,109,528B removed at
+19:30:05.8748566/19:30:35.0789257UTC. Deletion planSHAs
+eeda4144f546522fb7601852273f355d92e95bed167af911f7817f2f8d04f9c4 and
+be28af0bf25e7a8cc1bea71d5e4700a1ae40742075bceb8fc1aaad6d0e0aace0.
+Reused approved fixed-route guards: closed transaction, full file/hash/length
+identity, archive pins, exact resolved absolute package paths, no reparse points,
+no game/task/lock, native PowerShell LiteralPath removal, then protected Compare.
+These content archives are not validated historical candidate packages. Unique
+artifacts/raw failures/receipts/protected backups/saves/personal data/DATA remain.
+Capture/ComparePASS967/118/18/83/tasks0/Steam1 at artifacts/sprint32-storage-after77.
+Measured free3,884,158,976B19:31:15UTC after cleanup, above3.1GB initial need.
+Approximate bounded storage inspection/retention/verification time8min; overlaps
+source review/records, exclusive total unavailable. No owned live transaction.

@@ -362,14 +362,42 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (geometry == null) throw new InvalidOperationException("Native physical sight unavailable.");
             var performers = sources.Where(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == "lillend-azata").ToArray();
             if (performers.Length != 2) throw new InvalidOperationException("Two exact owned Lillends required for listener survey.");
-            var rejected = new Dictionary<string, int> { ["navigation"] = 0, ["clampOrSeparation"] = 0,
-                ["acquisitionExclusion"] = 0, ["performanceRange"] = 0, ["physicalSight"] = 0 };
+            if (Game.Instance.Player.IsInCombat || TurnBased.Controllers.CombatController.IsInTurnBasedCombat() ||
+                caster.View?.AgentASP == null)
+                throw new InvalidOperationException("Listener survey requires the existing calm native walking graph.");
+            var agent = caster.View.AgentASP;
+            var constructTags = agent.GetType().GetMethod("ConstructTags", Cleanup2Fields);
+            if (constructTags == null) throw new MissingMethodException("Native walking ConstructTags.");
+            int tags = (int)constructTags.Invoke(agent, null);
+            if (tags != -1) throw new InvalidOperationException("Unexpected calm native walking tags.");
+            var rejected = new Dictionary<string, int> { ["anchor"] = 0, ["navigation"] = 0,
+                ["horizontalClamp"] = 0, ["heightOrSeparation"] = 0, ["acquisitionExclusion"] = 0,
+                ["performanceRange"] = 0, ["physicalSight"] = 0 };
+            var anchors = new JArray();
             Vector3[] selected = null; int attempts = 0;
-            // A player's acquisition radius is not the performance's sight
-            // contract. Keep the intake still; survey four finite radii using
-            // native navigation, actual eye geometry and the90ft performance.
+            // Reuse the established Cleanup2 native walking query: graph1
+            // outside combat, actual traversal tags and connected walkable Area.
+            // Full3D clamp is not horizontal placement: native ground can have
+            // a different Y. Keep the same finite rings and actual sight/calm
+            // checks; never move an intake actor or edit graph/path state.
             foreach (var anchor in party)
             {
+                var constraint = new Pathfinding.PathNNConstraint { graphMask = 1,
+                    constrainWalkability = true, walkable = true, constrainArea = false,
+                    constrainTags = true, tags = tags, constrainDistance = true,
+                    distanceXZ = false, distanceXZkeepY = false };
+                var ground = AstarPath.active.GetNearest(anchor.Position, constraint);
+                bool validGround = ground.node != null && ground.node.Walkable &&
+                    constraint.Suitable(ground.node) && Cleanup2Finite(ground.clampedPosition) &&
+                    constraint.SuitableGraph((int)ground.node.GraphIndex, AstarPath.active.graphs[ground.node.GraphIndex]) &&
+                    new Vector2(ground.clampedPosition.x - anchor.Position.x, ground.clampedPosition.z - anchor.Position.z).magnitude <= .3f;
+                anchors.Add(new JObject { ["id"] = anchor.UniqueId, ["valid"] = validGround,
+                    ["origin"] = new JArray(anchor.Position.x, anchor.Position.y, anchor.Position.z),
+                    ["ground"] = new JArray(ground.clampedPosition.x, ground.clampedPosition.y, ground.clampedPosition.z),
+                    ["graph"] = ground.node == null ? (JToken)JValue.CreateNull() : new JValue(ground.node.GraphIndex),
+                    ["area"] = ground.node == null ? (JToken)JValue.CreateNull() : new JValue(ground.node.Area) });
+                if (!validGround) { rejected["anchor"]++; continue; }
+                constraint.SetStart(ground.node); constraint.constrainArea = true;
                 foreach (float distance in new[] { 10.7f, 14f, 18f, 22f })
                 {
                     for (int angle = 0; angle < 24; angle++)
@@ -377,12 +405,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attempts++;
                         var direction = Quaternion.Euler(0, angle * 15, 0) * Vector3.forward;
                         var side = Vector3.Cross(Vector3.up, direction);
-                        var requested = new[] { anchor.Position + direction * distance, anchor.Position + direction * distance + side * 1.3f };
-                        var points = requested.Select(point => AstarPath.active.GetNearest(point)).ToArray();
-                        if (points.Any(point => point.node == null || !point.node.Walkable)) { rejected["navigation"]++; continue; }
+                        var requested = new[] { ground.clampedPosition + direction * distance,
+                            ground.clampedPosition + direction * distance + side * 1.3f };
+                        var points = requested.Select(point => AstarPath.active.GetNearest(point, constraint)).ToArray();
+                        if (points.Any(point => point.node == null || !point.node.Walkable ||
+                            !constraint.Suitable(point.node) || point.node.GraphIndex != ground.node.GraphIndex ||
+                            point.node.Area != ground.node.Area || !Cleanup2Finite(point.clampedPosition)))
+                        { rejected["navigation"]++; continue; }
                         var positions = points.Select(point => point.clampedPosition).ToArray();
-                        if (positions.Where((point, index) => Vector3.Distance(point, requested[index]) > .3f).Any() ||
-                            Vector3.Distance(positions[0], positions[1]) < .9f) { rejected["clampOrSeparation"]++; continue; }
+                        if (positions.Where((point, index) => new Vector2(point.x - requested[index].x,
+                            point.z - requested[index].z).magnitude > .3f).Any())
+                        { rejected["horizontalClamp"]++; continue; }
+                        if (positions.Any(point => Mathf.Abs(point.y - ground.clampedPosition.y) > 2f) ||
+                            Vector3.Distance(positions[0], positions[1]) < .9f)
+                        { rejected["heightOrSeparation"]++; continue; }
                         if (positions.Any(point => party.Concat(sources).Any(unit => Vector3.Distance(point, unit.Position) <= 9.1f)))
                         { rejected["acquisitionExclusion"]++; continue; }
                         if (positions.Any(point => performers.Any(unit => Vector3.Distance(point, unit.Position) >= 25f)))
@@ -397,7 +433,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (selected != null) break;
             }
             RosterPersistenceCheck("s32-listener-geometry", selected != null, new JObject {
-                ["attempts"] = attempts, ["rejected"] = new JObject(rejected.Select(pair => new JProperty(pair.Key, pair.Value))),
+                ["attempts"] = attempts, ["walkingGraphMask"] = 1, ["nativeTraversalTags"] = tags, ["anchors"] = anchors,
+                ["rejected"] = new JObject(rejected.Select(pair => new JProperty(pair.Key, pair.Value))),
                 ["party"] = new JArray(party.Select(unit => new JObject { ["id"] = unit.UniqueId,
                     ["playerFaction"] = unit.IsPlayerFaction, ["vision"] = unit.VisionRangeMeters })),
                 ["positions"] = selected == null ? null : new JArray(selected.Select(point => new JArray(point.x, point.y, point.z))) },

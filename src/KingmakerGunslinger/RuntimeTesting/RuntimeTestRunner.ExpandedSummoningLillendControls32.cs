@@ -53,8 +53,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var actor in actors) Sprint28SetBrainActivePreservingActions(actor, false);
                 var wolf = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(BlueprintBootstrap.Library,
                     "76597216769b0d540aafafa07edf0cec", "native Wolf nonhumanoid control recipient");
-                var fighter = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
-                    "48ac8db94d5de7645906c7d0ad3bcfbd", "native five-HD fixture advancement");
+                var animal = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
+                    "4cd1757a0eea7694ba5c933729a53920", "native Animal racial-HD advancement");
                 Func<UnitEntityData> spawn = () => {
                     var actor = game.EntityCreator.SpawnUnit(wolf, fixture.Caster.Position + Vector3.forward * 40f,
                         Quaternion.identity, fixture.Scene);
@@ -62,9 +62,17 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(actor, false);
                     actor.Descriptor.SwitchFactions(fixture.OwnedHostileFaction, true);
                     actor.AttackFactions.Match(new[] { fixture.Caster.Faction });
-                    int advance = 5 - actor.Descriptor.Progression.CharacterLevel;
-                    if (advance < 0) throw new InvalidOperationException("Native Wolf exceeds the declared fixture HD.");
-                    ElementalSpellAffinityScenario.Advance(actor.Descriptor, fighter, advance);
+                    int beforeHd = actor.Descriptor.Progression.CharacterLevel;
+                    int beforeAnimal = actor.Descriptor.Progression.GetClassLevel(animal);
+                    int advance = 5 - beforeHd;
+                    // Native Fighter refuses Animal levels; use the existing
+                    // Animal progression and its normal prerequisites/mechanics.
+                    if (advance < 0 || beforeAnimal < 1)
+                        throw new InvalidOperationException("Native Wolf lacks the declared Animal advancement contract.");
+                    ElementalSpellAffinityScenario.Advance(actor.Descriptor, animal, advance);
+                    if (actor.Descriptor.Progression.CharacterLevel != 5 ||
+                        actor.Descriptor.Progression.GetClassLevel(animal) != beforeAnimal + advance)
+                        throw new InvalidOperationException("Native Animal advancement did not produce the declared five HD.");
                     actor.Stats.HitPoints.BaseValue = 100000; actor.Stats.SaveWill.BaseValue = -100;
                     return actor;
                 };
