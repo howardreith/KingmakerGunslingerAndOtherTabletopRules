@@ -52,16 +52,24 @@ published. The ten prepared public-route checks now pass. Distinct natural
 input/spontaneous/conversion paths, pending performances and full acceptance
 remain incomplete.
 
-Current validated development source `2d90e886592be426bb3b19921c04b70428872424`:
-ZIP `4b755dd42e8e1815174cc588cd07760df7cd305278f8ae111c85eba6c31c5598`;
-DLL `0f3910ca8b61315e30d3cb1de4138511d617a86b7158aaed6aeb945c96b58451`;
-MVID `57a048c7-4951-4e5b-9ab9-33c840496a45`.
-SourceState `6f7257a818534bf90223a72473fd6f35d167c80275f1f0eaa11ea53d70e0dba6`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/2d90e886592b/`.
+Current validated development source `a41b7559e513185d785a6455cc97c800e990920a`:
+ZIP `382388c830a0701063bd0260c30e598e61983e97a1e938bd51d42b08ec636403`;
+DLL `f57cf34a1d44743fd62767aade101876025fa75eee229d4de3929989075dc223`;
+MVID `f93d90d7-e979-4454-8d25-6d9b8ce498da`.
+SourceState `5c61cb5dc7bdec767833e783a1ec34894f04c4f7bf7279342c9c9bba2decf58d`.
+Canonical path `artifacts/development-candidates/sprint32-lillend-support/a41b7559e513/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
 419-file package PASS. Development candidate only; final gate/qualification pending.
 
-Fresh standalone executions on2d90:
+Fresh standalone executions on a41:
+
+| Case | Native result | Observed scope | Local evidence |
+|---|---|---|---|
+| Support lifecycle | PASS10/FAIL2 overall FAIL | Both readiness and both native expiries PASS; Lillend captured external Courage grant gone, sibling isolated. Satyr death is actual/nonloot/areas0/captured grants gone, but one source-attributed buff remains unidentified; later death/expiry rows not reached | `artifacts/sprint32-support-lifecycle-a41b7559/`; raw `20261026T0104212087233Z-disposable-expanded-summoning-sprint32-native-review` |
+| Druid natural input | FAIL1/cleanup PASS2 | Existing narrative-state evidence helper refused Sprint32 before any UI/cast. Observer admission defect; no natural casting evidence | `artifacts/sprint32-druid-input-a41b7559/`; raw `20261026T0110190703402Z-disposable-expanded-summoning-sprint32-native-review` |
+| Wizard/Sorcerer natural input | NOT_RUN | Held after common helper refusal; no unchanged launches | Prepared local wrappers only |
+
+Earlier standalone executions on2d90 (reviewed reuse; product unchanged by a41 observers):
 
 | Case | Native result | Observed scope | Local evidence |
 |---|---|---|---|
@@ -154,8 +162,8 @@ P2 findings (nested links/default inclusion) are closed. Full final independent 
 remains pending. Body draft read-only review found no binding/lifecycle blocker;
 corrected exact mesh pin/provenance and deterministic package's two-file count.
 
-Latest transaction `compat-20261026T003316Z-1d7639ff48cb` restored/verified
-00:37:54.7931842UTC. Every new transaction protected Compare PASS:
+Latest transaction `compat-20261026T010755Z-b21781f2aec8` restored/verified
+01:12:07.5912976UTC. Every new transaction protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam. No owned live
 transaction/game/task remains. Original Unity logs copied before later launches.
 
@@ -166,9 +174,9 @@ PlanSHA `1e23bf148b3129a28f9c7bce99925132cfe65e400841080ddec92c6ed4fcc10d`.
 Protected Compare PASS Mods967/saves118/references18/settings83/tasks0/Steam1.
 Unique ZIPs/raw failures/receipts/backups/saves remain. No active transaction.
 
-Build-Local attempts/validated development packages/native launches:33/23/32.
-Latest full build250.549s. Fresh wrappers260.061s/278.622s/280.337s;
-native portions98.724s/111.214s/113.976s. Latest intake free3,633,373,184bytes;
+Build-Local attempts/validated development packages/native launches:34/24/34.
+Latest full build254.893s. Fresh wrappers278.500s/253.730s;
+native portions115.455s/89.378s. Latest restored free3,969,974,272bytes;
 remeasure/verify closed duplicate cleanup before another build/native batch.
 Implementation/observer repair overlapped supervised waiting; complete summed
 active category totals remain unavailable. No speedup inference. Owner decisions
@@ -201,11 +209,18 @@ before dispatch. Corrected compile23.2s/tests1s PASS5/2753; source-only admissio
 PASS1166. Original compile/elevated-context refusal retained, no native launch.
 Verified closed duplicate cleanup recovered1,091,955,555bytes; free4,529,750,016;
 protected Compare PASS. Exact tuple/history retained.
-Next selection: one coherent development package, then separate fresh processes
-for `support-lifecycle`, `druid-input`, `wizard-input`, `sorcerer-input` against
-that ZIP. Expected aggregate20-30minutes plus build; each ordinary process has
-10-15minute target/30minute ceiling. Inspect failures before further dependent
-cases; preserve restoration. No provisional pending subsystem implementation.
+The a41 batch stopped after two processes: lifecycle supplied new expiry proof
+but a later death count failed; Druid stopped at the shared narrative helper.
+No Wizard/Sorcerer launch. Narrow correction admits only the exact three input
+phases to the existing read-only narrative evidence sink. Audit its selected
+child helpers before retry. Death snapshots now identify every remaining
+source-attributed buff and both already-executed death states before a per-owner
+failure stops reporting; no predicate is weakened. Compile23.8s/tests0.9s PASS5.
+Next selection: one corrected package, then separate `support-lifecycle`,
+`druid-input`, `wizard-input`, `sorcerer-input` processes. Expected aggregate
+20-30minutes plus build; stop dependent input cases on common failure. Each
+ordinary process retains10-15minute target/30minute ceiling and safe restoration.
+No provisional pending subsystem implementation.
 Each ordinary selection retains10-15minute target/30minute ceiling and fresh
 process/restoration boundaries. Final qualification uses one frozen complete-gate
 candidate and a separate records worktree; every final acceptance row is incomplete.
