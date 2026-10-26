@@ -109,8 +109,12 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureNamedResource(resource, Lillend32Prefix + "PerformanceResource", Lillend32Prefix + "PerformanceResource",
                 "Bardic Performance", "Twenty rounds of bardic performance for this summoning.", 20);
             var courage = ConfigureLillendCourage32(library, bySymbol, resource);
+            var competence = ConfigureLillendCompetence32(library, bySymbol, courage);
             var start = ScriptableObject.CreateInstance<LillendPerformanceCommand32>();
-            start.OwningBlueprint = unit; start.Courage = courage;
+            start.OwningBlueprint = unit; start.Courage = courage; start.Competence = competence;
+            var noncombat = ScriptableObject.CreateInstance<LillendNoncombat32>();
+            noncombat.OwningBlueprint = unit; noncombat.Competence = competence;
+            noncombat.Recipient = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CompetenceRecipient");
             var armor = ScriptableObject.CreateInstance<AddStatBonus>();
             armor.Stat = StatType.AC; armor.Descriptor = ModifierDescriptor.NaturalArmor; armor.Value = 8;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();
@@ -120,7 +124,7 @@ namespace KingmakerGunslinger.Blueprints
             proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
             var traits = Require<BlueprintFeature>(bySymbol, Lillend32Prefix + "Traits");
             traits.name = InternalName(Lillend32Prefix + "Traits"); traits.HideInUI = true;
-            traits.ComponentsArray = new BlueprintComponent[] { armor, equipment, proficiency, start, AddResource(resource),
+            traits.ComponentsArray = new BlueprintComponent[] { armor, equipment, proficiency, start, noncombat, AddResource(resource),
                 Energy(DamageEnergyType.Cold, 10), Energy(DamageEnergyType.Fire, 10) }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,
@@ -134,7 +138,7 @@ namespace KingmakerGunslinger.Blueprints
                 Feature(library, "c1b26f97b974aec469613f968439e7bb", "accepted native legless trip immunity"),
                 Feature(library, "06964d468fde1dc4aa71a92ea04d930d", "captured native Combat Casting"),
                 Feature(library, IronWillGuid, "Iron Will"), Feature(library, LightningReflexesGuid, "Lightning Reflexes"),
-                Feature(library, AirborneGuid, "accepted ordinary-map flight adaptation"), traits, courage };
+                Feature(library, AirborneGuid, "accepted ordinary-map flight adaptation"), traits, courage, competence };
             ConfigureGrabber(library, bySymbol, "KMG.Summoning.Unit.LillendAzata",
                 Lillend32Prefix + "GrabTraits", "LillendAzata", "Lillend Grab and Constrict",
                 "Only this lillend's tail grabs a foe no larger than itself. A successful grab and " +

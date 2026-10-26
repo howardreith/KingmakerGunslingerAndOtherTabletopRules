@@ -138,17 +138,23 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintUnit OwningBlueprint;
         public BlueprintActivatableAbility Courage;
+        public BlueprintActivatableAbility Competence;
+        internal bool Matches(BlueprintActivatableAbility ability)
+        { return ReferenceEquals(ability, Courage) || Competence != null && ReferenceEquals(ability, Competence); }
         public void HandleUnitCommandDidStart(UnitCommand command)
         {
             var activate = command as UnitActivateAbility;
             if (activate == null || activate.IsActed || Owner?.Unit == null ||
                 !ReferenceEquals(activate.Executor, Owner.Unit) ||
                 !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
-                !ReferenceEquals(activate.Ability?.Blueprint, Courage) ||
+                !Matches(activate.Ability?.Blueprint) ||
                 activate.Ability.IsOn || activate.Ability.IsRunning ||
                 !activate.Ability.IsAvailable || Fact == null || !Fact.Active) return;
             if (!Owner.Unit.Commands.Raw.Any(value => ReferenceEquals(value, activate)))
                 throw new InvalidOperationException("Lillend performance start has no exact queued native command.");
+            if (ReferenceEquals(activate.Ability.Blueprint, Competence) &&
+                !Fact.SelectComponents<LillendNoncombat32>().Single().CanStart(activate))
+            { activate.Interrupt(true); return; }
             activate.Ability.IsOn = true;
         }
     }
@@ -173,7 +179,7 @@ namespace KingmakerGunslinger.Summoning
                 .SelectMany(value => value.GetComponents<LillendPerformanceCommand32>())
                 .SingleOrDefault();
             if (rule != null && ReferenceEquals(rule.OwningBlueprint, unit.Blueprint) &&
-                ReferenceEquals(rule.Courage, __instance.Blueprint)) __result = true;
+                rule.Matches(__instance.Blueprint)) __result = true;
         }
     }
 }

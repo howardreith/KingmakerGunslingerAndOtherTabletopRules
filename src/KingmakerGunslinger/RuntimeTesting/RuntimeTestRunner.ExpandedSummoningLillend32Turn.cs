@@ -163,11 +163,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal readonly HashSet<int> OwnerRounds = new HashSet<int>();
             private readonly HashSet<int> upkeepRounds = new HashSet<int>();
             private bool exact = true;
+            private readonly bool expectTurn;
             private sealed class Round { internal int Before, Number; internal bool OwnerTurn; }
-            internal Lillend32PerformanceRounds(ActivatableAbility ability, BlueprintAbilityResource resource)
+            internal Lillend32PerformanceRounds(ActivatableAbility ability, BlueprintAbilityResource resource, bool expectTurn = true)
             {
                 if (active != null) throw new InvalidOperationException("Nested performance upkeep observation.");
-                this.ability = ability; this.resource = resource;
+                this.ability = ability; this.resource = resource; this.expectTurn = expectTurn;
                 method = typeof(ActivatableAbility).GetMethod("OnNewRound", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
                 if (method == null) throw new MissingMethodException("Native performance upkeep boundary.");
                 harmony = HarmonyInstance.Create(id);
@@ -200,15 +201,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 if (__state == null) return;
                 int after = active.ability.Owner.Resources.GetResourceAmount(active.resource);
-                active.exact &= __state.OwnerTurn && active.upkeepRounds.Add(__state.Number) &&
+                active.exact &= (!active.expectTurn || __state.OwnerTurn && active.upkeepRounds.Add(__state.Number)) &&
                     __state.Before == 20 - active.Rows.Count && after == __state.Before - 1;
                 active.Rows.Add(new JObject { ["owner"] = active.ability.Owner.Unit.UniqueId,
                     ["nativeRound"] = __state.Number, ["exactOwnerTurn"] = __state.OwnerTurn,
+                    ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
                     ["before"] = __state.Before, ["after"] = after });
             }
             internal bool Exact()
             {
-                return exact && Rows.Count > 0 && upkeepRounds.SetEquals(OwnerRounds) &&
+                return exact && Rows.Count > 0 && (!expectTurn || upkeepRounds.SetEquals(OwnerRounds)) &&
                     ability.Owner.Resources.GetResourceAmount(resource) == 20 - Rows.Count;
             }
             public void Dispose()

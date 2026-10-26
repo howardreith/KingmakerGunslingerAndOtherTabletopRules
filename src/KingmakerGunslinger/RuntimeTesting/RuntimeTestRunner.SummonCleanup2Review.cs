@@ -2045,7 +2045,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 row["snapshotReason"] = absent ? "first-closed-observation" : "refusal";
                 bool sprint32Input = IsSprint32Review && _request.ExitAfterCompletion &&
-                    ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(RuntimeTestRequestParser.Sprint32ReviewPhase(_request));
+                    ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase(RuntimeTestRequestParser.Sprint32ReviewPhase(_request));
                 if ((!IsSummonCleanup2Review && !sprint32Input) || string.IsNullOrEmpty(_request.EvidenceDirectory))
                     throw new InvalidOperationException("Exact owned native input evidence directory required for narrative-state admission.");
                 RuntimeTestResultWriter.WriteAtomic(Path.Combine(_request.EvidenceDirectory,

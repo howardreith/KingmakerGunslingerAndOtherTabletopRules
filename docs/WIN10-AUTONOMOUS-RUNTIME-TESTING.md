@@ -1,3 +1,20 @@
+Sprint32's fixed `lillend-performance` phase uses the existing save-free Oleg
+preset and exact native Default lease. It is not a player-input phase. Only the
+already-proven disposable profile anchor's idle brain is temporarily suspended.
+Two fresh Lillends and the owned caster supply one conscious party recipient;
+native geometry/visibility and the30ft range are checked before dispatch. Seven
+seconds of real game time with the owner's brain disabled must produce no
+command or performance cost. Enabling its native brain permits the product's
+outside-combat round dispatcher to select and execute one normal Move activation,
+with real native upkeep, +3Perception on the exact recipient, and unchanged
+sibling pools/books. Exploration's unchanged native cooldown is recorded; no
+combat debit is fabricated. Moving only the disposable recipient beyond30ft must
+end that exact performance and grant. No direct dispatcher round, supplied
+activation/effect, memory edit or forced combat suppression supplies this proof.
+The existing lease/party/brain/resource finalizers retain original failures.
+Expected10min with600s runtime ceiling; combat-entry race, cold persistence and
+Fascinate remain separately required coverage.
+
 The fixed Sprint32 Lillend-support phase also exercises the owner-approved
 immediate-release Lullaby after the existing support case. Two fresh summons
 reuse the owned low-HD hostile and a surveyed isolated burst. Explicit native
