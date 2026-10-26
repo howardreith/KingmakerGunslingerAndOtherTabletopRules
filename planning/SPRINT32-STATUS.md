@@ -40,7 +40,7 @@ resources, ownership, duration, cleanup, stable GUIDs and save compatibility.
   Will/SR, stealth, invisibility and all other offensive reactions. No general
   memory/AI overhaul or persistence manager is authorized. Estimated3–8active
   hours uncertain. Owner answered "Implement the Lillend-only memory exception";
-  implementation and native qualification remain pending, with no further owner
+  implementation is present; native qualification remains pending, with no further owner
   permission needed inside this exact boundary.
 - Exact branch addition to sanctioned push wrapper authorized/applied. Development
   version0.0.167 remains candidate-bound; no release number reserved.
@@ -61,39 +61,41 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `61ba8681da4cfa29a9fd67e1b803f25c3735695f`.
-ZIP `d91bc04b950efc154bbe34d6b8ec65bc36c0a933e34ffd4834e10c673f1b5cff`;
-DLL `132e791cbb6eccdd11396113a401d47f621579d1b95693fe97a51b86f9bc8d83`;
-MVID `d1bcf0d9-07f6-4bc8-afd9-58fd99faaa3a`;
-SourceState `f03e6ffd5f90db510e69e55f94a3b1acc88af46b0ede31ed10b390aee1d71a5c`.
-Path `artifacts/development-candidates/sprint32-lillend-support/61ba8681da4c/`.
-Build54: wrappers,557selected/2754registered, exact-reference compilation and
-strict package PASS in258.584s. No complete final qualification on these inputs.
-Native62 **FAIL12PASS/1FAIL**: natural casts/durations/costs/refusals and both
-separate sibling-effect probes PASS. Both original private effects disposed after
-source disappearance; exact sibling effects/deadlines preserved. Sleep condition
-clears. Only Charm hostility-restoration assertion fails at the immediate removal
-boundary. Original61/60/59 failures remain immutable.
+Latest validated development candidate: `279de1e3f73ec3c7324bff8aeb03909f67eda482`.
+ZIP `23485d21bf0e741aa8f37779690a66902d1efdabba385406d320532f7ab751b0`;
+DLL `4e4b59099043c58aa34e7fe856a9403e5028847763289a6349b73bd55b248b43`;
+MVID `3ec2260e-4fea-432b-b76b-63b055fe39d4`;
+SourceState `510597c38c862c6810fffa466c9eb8184df0f33401ec7e50c229321251aacd23`.
+Path `artifacts/development-candidates/sprint32-lillend-support/279de1e3f73e/`.
+Build55: wrappers,557selected/2754registered, exact-reference compilation and
+strict package PASS in254.188s. Native63RTWP and64turn **13/13PASS each** on
+that same ZIP. No complete final qualification on these inputs.
 
-Current reviewed observer-only correction includes native hostility restoration
-in the existing18s wait, yielding normal frames. Native NeutralToPlayer restores
-the recipient's attack factions and queues group cache refresh; Dialog normally
-runs UnitGroupsController BEFORE entity destruction, so the old observer could
-sample between removal and the next refresh. Missing an extra fixture controller
-is not itself the cause. Capture exact bound NeutralToPlayer.Faction, direct/group
-faction contents at first removal and final state, and frames after removal. No
-faction assignment, forced cache tick or product change. Production23.2s/18tests0.1s
-PASS; independent actual-diff review found no blocker. Native62 lacks the later
-cache observation and remains FAIL; fresh native execution is required.
+Both modes show natural Satyr Sleep/Charm, actual normal Standard costs,
+CL8/DC15,480s/28800s applications, four-HD Sleep budget/ally exclusion,
+controlled-target refusal and independent resources. Both original effects
+clear on native source expiry before their own deadlines; exact separate
+sibling effects/deadlines survive. Charm's direct attack faction restores
+immediately and its group cache/IsEnemy restores after one ordinary frame.
+This confirms the62 observer-order defect;62/61/60/59 remain historical FAIL.
+Turn mode used native turns and zero fixture AI ticks. The sibling application
+is explicitly effect-only lifecycle isolation, not a second casting proof.
 
-The private stateless destruction-event adapter has actual removal/isolation proof
-on62; native area-load handling is retained. Daze's60s immunity marker is unchanged.
+Current unbuilt change implements the approved Lillend-only bardic memory
+exception using invocation-local actual cast context. Exact native controller,
+provider/ability/own live Fascinate guards; original global then actor-local
+events and the leading aggro-script callback are retained. Nonmatching calls
+delegate unchanged. No ambient flag, persistence or attempted-target immunity
+ledger. Independent product review's subclass boundary finding is corrected;
+native IL hashes validate original engine code, not foreign Harmony patches.
+The fixed grouped provider phase inventories those patches before qualification.
+Production23.7s/18focused tests4.5s PASS; fixture review found lawful player-group visibility and HashSet attribution assumptions; both are corrected before dispatch. Native proof pending.
+The first observer compile's signature/namespace errors remain in its original log.
+
+The private stateless control destruction adapter has actual Satyr removal and
+sibling-isolation proof; retained native area-load handling still needs cold proof.
 Affected Lillend book/SLA/cantrip, death and fresh-load cases remain required.
-The owner-approved bardic memory exception remains unimplemented. Invocation-local
-context transport must preserve native global/actor listener order and the memory
-handler's leading UnitAggroFilter callback, not suppress the whole event. No static
-pending flag or attempted-target immunity ledger is planned; PF1 permits repeated
-bardic attempts during a performance. No other subsystem decision is pending.
+No owner decision is pending.
 
 ## Development evidence and reuse limits
 
@@ -103,6 +105,7 @@ No earlier execution below is called fresh on the private-control correction.
 
 | Evidence | Actual result and remaining limit |
 |---|---|
+| 279de1e3/native63,64 | RTWP13/13 and turn13/13PASS: natural Sleep/Charm, costs/durations/refusal, expiry and exact sibling-effect isolation. Charm group cache restores one ordinary frame after direct faction restoration. |
 | 61ba8681/native62 | 12PASS/1FAIL: both original private effects removed and exact sibling effects preserved. Sleep restored; Charm hostility sampled before verified cache propagation. Observer-only bounded-wait correction pending native proof. |
 | 158147c0/native61 | Natural casts/durations PASS with private effects; both source-expiry rows FAIL. Native component exists on real buffs but misses destruction ordering. Stateless exact-event correction and sibling-effect probe are unbuilt. |
 | ef3307a2/native59 | Natural Satyr Sleep/Charm, costs/eligibility PASS; both source-expiry rows FAIL. Sleep480s, combat Charm60s. Exact effects remained active after caster disappearance while targets/sibling survived. Private duration/lifecycle correction invalidates these affected cases. |
@@ -133,7 +136,7 @@ separate records worktree where identity guards require. Do not rebuild for pros
 | A7 | Technical gameplay-camera loading/selection/scale/movement/contact/hit/death/despawn/performance | Existing presentation captures + structured native facts, agent inspection | Standalone/direct combined seam | Assets/rendering/attachment/loading/lifecycle |
 | A8 | Standalone and directly affected high-risk combined/shared consumers work | Existing profile transaction/focused baseline and integration cases | Standalone/high-risk combined; additional only for concrete risk | Shared AI/registration/serialization/integrations |
 
-Concrete remaining cases: corrected Satyr at-will RTWP/TB; Lillend Charm Monster
+Concrete remaining cases: Lillend Charm Monster
 (nonhumanoid/protection/duration/break/lifecycle), safe Sound Burst, real tail
 hit/grab/immediate and maintained2d6+liveStr constrict/release with one affected
 Salamander baseline; performance combat-entry/TB boundaries; Suggestion positive
@@ -144,41 +147,40 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T120501Z-6acddb8e9c54` restored/verified
-12:09:33.4296161UTC. Protected Compare PASS967Mods/118saves/18references/
+Latest transaction `compat-20261026T123446Z-0a7a0ecd2023` restored/verified
+12:39:25.0147993UTC. Protected Compare PASS967Mods/118saves/18references/
 83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native62 raw: `20261026T1207193690652Z-disposable-expanded-summoning-sprint32-native-review`;
-local original log/intake: `artifacts/sprint32-satyr-atwill-61ba8681/`.
-Original native50/52 binding,54 carrier observer and58 readiness failures remain
-immutable. Their corrections use inspected native seams; no product-stat changes.
+Native63/64 raw directories and exact identities are in append-only history;
+local originals/intakes: `artifacts/sprint32-satyr-atwill-279de1e3/` and
+`artifacts/sprint32-satyr-atwill-turn-279de1e3/`.
+Original failures remain immutable; no product-stat changes supplied a verdict.
 
-Counts:54Build-Local attempts /43validated development packages /62native launches.
-Build54 measured4.31min; native62 wrapper4.55min/native114.049s. Earlier exact
-measurements/history retained; whole-mission work-category totals unavailable.
-Approximately09:43–10:18 fixture/contract25min, independent review7min and cleanup
-verification7min overlap; focused compilations about1.2min. The visibility
-reassessment after58 used inspected contracts and a changed bounded approach;
-no unchanged retry or additional approval quota. The bardic exception was approved
-while independent work continued; no exclusive waiting or speedup is inferred.
+Counts:55Build-Local attempts /44validated development packages /64native launches.
+Build55 measured4.24min; native63 wrapper4.78min/native117.394s; native64
+wrapper4.67min/native118.875s. Whole-mission work-category totals unavailable.
+Approximately12:26-12:52UTC: inspected contracts/drafted adapter and grouped
+observer/review~20min, overlapping the measured native execution/restoration;
+cleanup verification~2min. Focused compilation26.4s then23.7s plus the retained
+failed observer compile. No exclusive owner wait or speedup claim.
 
-Disk budget:1.1GBcombined peak +2GBreserve before building. At10:13UTC14fully
-byte-verified closed extractions reclaimed1,157,954,602B; free4,408,549,376B,
-protectedComparePASS. At11:40UTC10fully verified closed S32 extractions reclaimed994,845,885B;
-free3,977,609,216B, protectedComparePASS. Exact plan and selection are in history. Prior cleanup receipts
-remain in history. Unique packages/raw evidence/original failures/receipts/PDBs/
-saves/protected backups retained. No machine-wide cleanup or DATA changes.
+Disk budget:1.1GBcombined peak +2GBreserve before building. Prior cleanup
+receipts remain in history. At12:42UTC four completely byte-verified closed
+package extractions reclaimed398,214,056B; free3,453,100,032B, protectedComparePASS.
+Unique packages/raw evidence/original failures/receipts/PDBs/saves/backups retained.
+No machine-wide cleanup or DATA changes.
 
-**Next:** package the reviewed bounded faction-restoration wait once
-and run `satyr-atwill`
-(expected10min/runtime600s), classify the actual result, then run `satyr-atwill-turn`
-on the same unchanged package if its shared fixture is valid. Do not run the
-61ba8681 turn case with the premature hostility verdict. Affected Lillend book/SLA,
-cantrip, sibling-effect isolation and cold cases remain required. Reuse the executed
-S30-31 installed-stack ON/OFF original-Working envelopes for persistence; the
-obsolete Cleanup2 retained-transaction design is unnecessary. Hold Person has a
-concrete outgoing cleanup risk from its captured native components; Fear/SoundBurst
-terminal components still need bounded inspection. Invisibility is self-only. Preserve final candidate
-qualification/review/integration as separate required work; no owner playtest.
+**Next:** finish independent review of the grouped `lillend-bardic-suggestion`
+fixture, batch concrete corrections, package once, then execute its existing
+guarded provider profile (expected10min/runtime600s). Observe natural saved,
+resisted and successful attempts, preserved own Fascinate/slots/upkeep,
+ordinary invisibility/aggro reactions, active-effect refusal and a labeled
+ordinary-book negative. No input/save admission or supplied bardic cast.
+Then continue affected Lillend controls/lifecycle, grab/constrict, cold
+ON/OFF, technical presentation and final integration. Reuse the executed
+S30-31 installed-stack original-Working envelopes for persistence.
+Hold Person has a concrete outgoing cleanup risk; Fear/SoundBurst terminal
+components still need bounded inspection. Invisibility is self-only.
+Final frozen candidate qualification remains separate required work.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: all30public-route/body/icon, standalone
 final integration, highest-risk combined final integration. [Original dispositions](../docs/SPRINT30-31-COVERAGE.md)

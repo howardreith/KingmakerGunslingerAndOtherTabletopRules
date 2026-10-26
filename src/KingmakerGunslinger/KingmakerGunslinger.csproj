@@ -2107,10 +2107,12 @@
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.ControlEffects32.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Competence32.cs" />
     <Compile Include="Summoning\LillendNoncombat32.cs" />
+    <Compile Include="Summoning\LillendBardicMemory32.cs" />
     <Compile Include="Summoning\LillendFascination32.cs" />
     <Compile Include="Summoning\LillendFascinated32.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Fascinate32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningFascinate32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningBardicSuggestion32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningFascinateBoundaries32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyrAtWill32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCompetence32.cs" />

@@ -1,3 +1,24 @@
+Sprint32's fixed `lillend-bardic-suggestion` phase extends the existing save-free
+Fascinate/Default fixture with the declared optional-provider profile,
+expected10min/runtime600s. Actual calm geometry, own natural Fascinate, physical
+reach, ability availability, independent books/pools and retained lawful player
+visibility memory are required before natural bardic execution. A disclosed
+high Will then SR100 tests a real saved attempt and a repeated resisted attempt;
+low Will permits a subsequent actual effect, with no supplied roll or bardic
+command. A native ordinary Invisibility buff on the source and native
+SeeInvisibility condition on the owned target isolate the retained offensive
+reaction. A read-only global/aggro observer checks notifications; the native
+empty aggro component belongs only to the disposable target blueprint.
+Same exact Fascinate, no reciprocal hostile memory/combat, actual Standard
+commands, native exploration cooldowns and upkeep-only pool debit are required.
+An additional native round checks active-effect refusal. After those verdicts,
+one explicitly supplied ordinary book cast is a negative integration probe:
+normal slots/actions, hostile memory and Fascinate interruption. It is not
+natural bardic evidence. The fixture inventories Harmony12 patches on the two
+bypassed native methods and refuses unreviewed patches. Finalizers restore the
+exact fixture components/conditions, native mode, party and owned actors.
+No input/save permission, general observer framework or outcome rewind is added.
+
 Sprint32's fixed `satyr-atwill` and `satyr-atwill-turn` phases extend the existing
 save-free Dialog control fixture, expected10min/runtime600s each. No Default,
 input or save admission is added. Native level-up gives three owned humanoid
