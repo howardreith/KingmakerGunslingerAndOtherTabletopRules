@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Designers.EventConditionActionSystem.Actions;
 using Kingmaker.Designers.Mechanics.Buffs;
 using Kingmaker.Designers.Mechanics.Facts;
@@ -10,11 +11,13 @@ using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components;
+using Kingmaker.UnitLogic.Abilities.Components.CasterCheckers;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -156,10 +159,22 @@ namespace KingmakerGunslinger.Blueprints
                 LocalizationService.Create(symbol + "Buff.Name", "Hold Person"),
                 LocalizationService.Create(symbol + "Buff.Description",
                     "Paralyzed, with an automatic Will save each round. Ends when this summon disappears."), nativeBuff.Icon);
-            var applications = LillendCharmApplications32(spell.GetComponents<AbilityEffectRunAction>().Single().Actions).ToArray();
+            var excluded = new HashSet<BlueprintUnitFact>();
+            var applications = LillendHoldApplications32(
+                spell.GetComponents<AbilityEffectRunAction>().Single().Actions, excluded).ToArray();
             if (applications.Length == 0 || applications.Any(apply => apply.Buff?.AssetGuid != nativeBuffGuid))
                 throw new InvalidOperationException("Native Hold Person terminal graph changed.");
             foreach (var apply in applications) apply.Buff = buff;
+            if (excluded.Count > 0)
+            {
+                // CotW inserts Infectious Charms into Hold's failed-save path.
+                // This adult has no wizard discovery. The native caster check
+                // keeps the removed positive branch unreachable even if another
+                // mod later grants the fact; no foreign helper effect is copied.
+                var unavailable = ScriptableObject.CreateInstance<AbilityCasterHasNoFacts>();
+                unavailable.Facts = excluded.ToArray();
+                spell.ComponentsArray = spell.ComponentsArray.Concat(new BlueprintComponent[] { unavailable }).ToArray();
+            }
             // Owner adaptation 2026-10-26: keep the native automatic round save
             // without an action debit. Preserve normal initial Will/SR, humanoid
             // checks, rounds/level, casting actions and the real bard spell slot.
@@ -169,6 +184,39 @@ namespace KingmakerGunslinger.Blueprints
                     "Paralyze an eligible humanoid. Will negates; spell resistance applies. An automatic Will save each round ends the effect on success, without using an action. Lasts one round per caster level, ending when this summon disappears."), spell.Icon);
             AlternateSummoningAdapterBuilder.ResetComponentCaches(spell);
             return spell;
+        }
+
+        private static IEnumerable<ContextActionApplyBuff> LillendHoldApplications32(ActionList list,
+            ISet<BlueprintUnitFact> excluded, int depth = 0)
+        {
+            if (depth > 12) throw new InvalidOperationException("Native Hold action graph exceeds the bounded mapping.");
+            var retained = new List<GameAction>();
+            foreach (var action in list.Actions)
+            {
+                var conditional = action as Conditional;
+                var checker = conditional?.ConditionsChecker;
+                var condition = checker?.Conditions.SingleOrDefault() as ContextConditionCasterHasFact;
+                if (conditional?.GetType() == typeof(Conditional) && checker != null &&
+                    checker.Operation == Operation.And && checker.Conditions.Length == 1 &&
+                    condition?.GetType() == typeof(ContextConditionCasterHasFact) && !condition.Not &&
+                    condition.Fact?.AssetGuid == Sprint32Suggestion.ExcludedWizardDiscoveryGuid &&
+                    condition.Fact.name == "InfectiousCharmsArcaneDiscoveryFeature" && conditional.IfFalse.Actions.Length == 0)
+                {
+                    excluded.Add(condition.Fact);
+                    continue;
+                }
+                retained.Add(action);
+                var apply = action as ContextActionApplyBuff;
+                if (apply != null) { yield return apply; continue; }
+                var save = action as ContextActionSavingThrow;
+                var saved = action as ContextActionConditionalSaved;
+                ActionList[] children = conditional != null ? new[] { conditional.IfTrue, conditional.IfFalse } :
+                    save != null ? new[] { save.Actions } : saved != null ? new[] { saved.Succeed, saved.Failed } : null;
+                if (children == null) throw new InvalidOperationException("Unexpected native Hold action " + action.GetType().FullName);
+                foreach (var child in children)
+                    foreach (var leaf in LillendHoldApplications32(child, excluded, depth + 1)) yield return leaf;
+            }
+            list.Actions = retained.ToArray();
         }
     }
 }

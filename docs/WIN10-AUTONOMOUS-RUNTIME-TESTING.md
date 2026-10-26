@@ -17,6 +17,10 @@ normal slots/actions, hostile memory and Fascinate interruption. It is not
 natural bardic evidence. The fixture inventories Harmony12 patches on the two
 bypassed native methods and refuses unreviewed patches. Finalizers restore the
 exact fixture components/conditions, native mode, party and owned actors.
+The idle sibling also receives a synchronous availability probe: private Hold
+is available, refuses after a temporary exact Infectious Charms fact grant, and
+recovers after finally removes that fact. No yield, spell command or roll occurs
+during this probe; both books/pools must remain unchanged.
 No input/save permission, general observer framework or outcome rewind is added.
 The same phase captures the exact native Fear, Sound Burst and Hold Person
 action leaves/terminal components read-only to resolve earlier depth truncation.
