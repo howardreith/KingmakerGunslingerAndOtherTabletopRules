@@ -2102,6 +2102,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Lullaby32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Daze32.cs" />
     <Compile Include="Summoning\LillendLullaby32.cs" />
   </ItemGroup>
 </Project>

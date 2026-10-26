@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 561;
+        internal const int SpecialIdentityCount = 564;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -870,6 +870,9 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.LullabyBuff", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.LullabyAi", "BlueprintAiCastSpell"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.LullabyEligibility", "LillendSpellEligibility32"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.Daze", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.DazeBuff", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.DazeImmunity", "BlueprintBuff"));
             Validate(result);
             return result.AsReadOnly();
         }
