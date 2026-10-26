@@ -402,7 +402,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["horizontalClamp"] = 0, ["heightOrSeparation"] = 0, ["acquisitionExclusion"] = 0,
                 ["performanceRange"] = 0, ["physicalSight"] = 0 };
             var anchors = new JArray();
-            Vector3[] selected = null; int attempts = 0;
+            Vector3[] selected = null, controlPoints = null; int attempts = 0;
+            var controlCandidates = new List<Vector3>();
+            Func<Vector3[]> selectControls = () => {
+                var chosen = new List<Vector3>();
+                foreach (var point in controlCandidates)
+                {
+                    if (selected.Any(value => Vector3.Distance(value, point) < .9f) ||
+                        chosen.Any(value => Vector3.Distance(value, point) < .9f)) continue;
+                    chosen.Add(point);
+                    if (chosen.Count == 3) return chosen.ToArray();
+                }
+                return null;
+            };
             // Reuse the established Cleanup2 native walking query: graph1
             // outside combat, actual traversal tags and connected walkable Area.
             // Full3D clamp is not horizontal placement: native ground can have
@@ -433,11 +445,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         attempts++;
                         var direction = Quaternion.Euler(0, angle * 15, 0) * Vector3.forward;
                         var side = Vector3.Cross(Vector3.up, direction);
-                        // Two natural performance listeners, then three paused
-                        // effect-only recipients for the grouped cold-load case.
-                        var requested = Enumerable.Range(0, 5).Select(index =>
-                            ground.clampedPosition + direction * distance + side * (index * 1.3f)).ToArray();
+                        // Preserve the proven two-listener footprint. Separate
+                        // effect-only controls need no performance LOS or range.
+                        var requested = new[] { ground.clampedPosition + direction * distance,
+                            ground.clampedPosition + direction * distance + side * 1.3f };
                         var points = requested.Select(point => AstarPath.active.GetNearest(point, constraint)).ToArray();
+                        for (int index = 0; index < points.Length; index++)
+                        {
+                            var point = points[index]; var position = point.clampedPosition;
+                            if (point.node == null || !point.node.Walkable || !constraint.Suitable(point.node) ||
+                                point.node.GraphIndex != ground.node.GraphIndex || point.node.Area != ground.node.Area ||
+                                !Cleanup2Finite(position) || Mathf.Abs(position.y - ground.clampedPosition.y) > 2f ||
+                                new Vector2(position.x - requested[index].x, position.z - requested[index].z).magnitude > .3f ||
+                                party.Concat(sources).Any(unit => Vector3.Distance(position, unit.Position) <= Mathf.Max(9.1f, unit.VisionRangeMeters))) continue;
+                            if (controlCandidates.All(value => Vector3.Distance(value, position) > .01f)) controlCandidates.Add(position);
+                        }
+                        if (selected != null)
+                        {
+                            controlPoints = selectControls();
+                            if (controlPoints != null) break;
+                            continue;
+                        }
                         if (points.Any(point => point.node == null || !point.node.Walkable ||
                             !constraint.Suitable(point.node) || point.node.GraphIndex != ground.node.GraphIndex ||
                             point.node.Area != ground.node.Area || !Cleanup2Finite(point.clampedPosition)))
@@ -456,21 +484,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (positions.Any(point => performers.Any(unit => geometry.HasObstacle(unit.EyePosition,
                             point + Kingmaker.Visual.FogOfWar.LineOfSightGeometry.EyeShift, 0))))
                         { rejected["physicalSight"]++; continue; }
-                        selected = positions; break;
+                        selected = positions; controlPoints = selectControls();
+                        if (controlPoints != null) break;
                     }
-                    if (selected != null) break;
+                    if (selected != null && controlPoints != null) break;
                 }
-                if (selected != null) break;
+                if (selected != null && controlPoints != null) break;
             }
-            RosterPersistenceCheck("s32-listener-geometry", selected != null, new JObject {
+            var allPoints = selected != null && controlPoints != null ? selected.Concat(controlPoints).ToArray() : null;
+            RosterPersistenceCheck("s32-listener-geometry", allPoints != null, new JObject {
                 ["attempts"] = attempts, ["walkingGraphMask"] = 1, ["nativeTraversalTags"] = tags, ["anchors"] = anchors,
                 ["rejected"] = new JObject(rejected.Select(pair => new JProperty(pair.Key, pair.Value))),
                 ["party"] = new JArray(party.Select(unit => new JObject { ["id"] = unit.UniqueId,
                     ["playerFaction"] = unit.IsPlayerFaction, ["vision"] = unit.VisionRangeMeters })),
-                ["positions"] = selected == null ? null : new JArray(selected.Select(point => new JArray(point.x, point.y, point.z))) },
-                "Finite native nav/eye-geometry survey excludes acquisition distance from every intake-party and source actor; actual mutual performance eligibility and calm state are checked after spawn.");
-            if (selected == null) throw new InvalidOperationException("No bounded calm listener geometry without moving the intake party.");
-            return selected;
+                ["performancePositions"] = selected == null ? null : new JArray(selected.Select(point => new JArray(point.x, point.y, point.z))),
+                ["safeControlCandidates"] = controlCandidates.Count,
+                ["positions"] = allPoints == null ? null : new JArray(allPoints.Select(point => new JArray(point.x, point.y, point.z))) },
+                "Same finite walking candidates: two real performance listeners retain LOS/range; three separated effect-only controls retain navigation/height/acquisition safety without a casting or performance claim. All points precede spawning/time advance.");
+            if (allPoints == null) throw new InvalidOperationException("Bounded safe listener/control placement unavailable; no wider survey or intake movement.");
+            return allPoints;
         }
 
         private static BlueprintBuff Sprint32SavedControlBuff(string role)

@@ -1,6 +1,16 @@
+Satyr Fear RTWP/TB source-isolation setup now surveys one of two connected
+walkable points behind the established owner/target lane for its owned sibling,
+before casting. The shared expiry probe revalidates the actual vacated position,
+original live effect and native eligibility. No protected actor moves, new range,
+supplied cast or changed gameplay rule. This corrects the unsurveyed spawn-point
+assumption exposed by84; its exact failed combined subpredicate is unknown.
+
 Sprint32 Working persistence also groups three private-control recipients with
-the existing two performance listeners. The same finite walking survey checks
-five separated points, without additional rings or angles. Only after the real
+the existing two performance listeners. The same finite walking survey retains two performance points and selects three
+separate effect-only control points from those same queries, without additional
+rings or angles. Only the performance pair requires physical LOS/range; all five
+retain native navigation, height, acquisition exclusion and separation. All points
+must be selected before spawning or advancing time; insufficiency fails closed. Only after the real
 Fascinate ledger exists and source brains are disabled, native effect-only
 applications establish Charm604800s/Hold42s from the first Lillend and Sleep480s
 from its Satyr sibling. These are saved-state preconditions, not spell/save/AI/

@@ -2519,3 +2519,120 @@ imports corrected before the next compile; no candidate or launch from that fail
 Corrected production compilation24.2s and18/2755 focused tests PASS1.0s;
 log focused-saved-context-import-after80.log. No further concrete blocker in the
 independent resolution review. The next candidate/native execution remains required.
+
+## 2026-10-26 20:53UTC ? candidate69, native81?84 and bounded placement repairs
+
+Source610df65fc38bf633c9611cf2c18d4ff1903dfb0a;
+ZIP04f9d78d9e1ee5a35abf6c876ec0f4df1a1f63d83cc80a0cab25957246780c79;
+DLL1e2937a483e71e1183a5d793be68bc1eea826f6ccd0891391792d6ba53618849;
+MVID4ad5e42e-bb90-4364-9cbf-0ff9479660eb;
+SourceStatec90379bb5d5751fb0e6732588c0675fa7d6390b658f222fdd83d987b3e9d2a6b.
+Build69 development wrapper/558selected/compile/strictZIP PASS260.9355793s,
+20:15:33.1843695--20:19:54.1199488UTC, free3578769408->3425071104B.
+Original logs build-controlsave-610df65f.*. No final qualification claim.
+
+Native81: 9PASS/0FAIL; run`20261026T2022581663081Z-c92a46b16d7d43a1a5c7d0b20a96286e`;
+raw`20261026T2022581506141Z-disposable-expanded-summoning-sprint32-native-review`;
+native2026-10-26T20:23:07.1488366Z--2026-10-26T20:25:03.3949282Z, 116235ms;
+resultSHA`46b5c4c049122ea7385394dde485a0910323cc14da53fa631e20f04ba6069fa9`;
+Unity original`artifacts/sprint32-controls-610df65f/Unity-output-original.txt`,
+SHA`868f14081ce5adfeec67f12065f38018b83df45f4c752ac8fa5d9d8b41711cd0`.
+Transaction`compat-20261026T202033Z-710b444b2015` Restored/verified2026-10-26T20:25:15.2947205Z;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native82: 17PASS/3FAIL; run`20261026T2028583835779Z-f0732e4172534b90966bbdd22fd13e7d`;
+raw`20261026T2028583553548Z-working-save-expanded-summoning-prepare`;
+native2026-10-26T20:29:11.5810076Z--2026-10-26T20:32:40.7576868Z, 209161ms;
+resultSHA`32bef0aaa0d411d334444f37104f144db645be426c6745ea81ab495aaa2a7412`;
+Unity original`artifacts/sprint32-working-610df65f/Unity-output-original.txt`,
+SHA`681ca644cc435da1048bb16bb30e25a5106342a6d37d92dffa1618489190037f`.
+Transaction`sprint32-stack-20261026T202628Z-012462cf8097` Restored/verified2026-10-26T20:32:59.2755448Z;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native83: 6PASS/0FAIL; run`20261026T2037107203380Z-753f88163bc0442e884d0db4c049612f`;
+raw`20261026T2037106891604Z-disposable-expanded-summoning-sprint32-native-review`;
+native2026-10-26T20:37:23.8037570Z--2026-10-26T20:40:07.5415523Z, 163731ms;
+resultSHA`d1a0ef8813c185d816be0a93b5e6a3860b499d8ab73b315e86e7d6b83e38aa67`;
+Unity original`artifacts/sprint32-hold-turn-610df65f/Unity-output-original.txt`,
+SHA`53229ce3f54c932723a9c84af4a35875687bb8ac82b85b43b7ebcc7ab579bc58`.
+Transaction`compat-20261026T203437Z-a5699aa16e89` Restored/verified2026-10-26T20:40:21.9855854Z;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native84: 7PASS/1FAIL; run`20261026T2044592620031Z-7eb5b97a752843faa3828b9d49d49af1`;
+raw`20261026T2044591529240Z-disposable-expanded-summoning-sprint32-native-review`;
+native2026-10-26T20:45:08.3105267Z--2026-10-26T20:46:48.9088873Z, 100585ms;
+resultSHA`b2b0cd3a6bff905c33e040f2e4a924873f5b36fa4239e9cc57c0ddc979cae3d7`;
+Unity original`artifacts/sprint32-satyr-fear-610df65f/Unity-output-original.txt`,
+SHA`8ea633dbbfca6a9d757226ed7ce5baad46a9278b57f0d273d2ff7def2d0c5f4c`.
+Transaction`compat-20261026T204238Z-6bcbe0e3a02b` Restored/verified2026-10-26T20:46:59.3835886Z;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native81 RTWP controls **9/9PASS** closes native78's healing defect: normal
+CureLight heals12->6, L1slots5->4 and preserves exact Charm. A subsequent normal
+caster attack starts and breaks Charm before acting; this proves threat, not
+hit/damage. Natural CharmMonster CL7/DC17/seven days/Standard/L3slot and refusal
+pass. Natural safe SoundBurst pays one L2slot, both targets take1d8 sonic and
+only the failed Fort save receives6s stun; sibling safe/independent. Native79's
+turn controls7/7 remain source-bound reuse, without the RTWP threat probe.
+
+Native83 Hold TB **6/6PASS**: natural Hold/real Standard/L2slot4->3,
+78 native turn frames and0 fixture AI ticks. The separate expiry/sibling probe
+switches to RTWP as declared; no TB automatic-retry claim. Native74 RTWP9/9
+remains source-bound proof of accepted automatic failed/successful retries and
+exact source expiry/sibling isolation. Native72 bardic Suggestion18/18 remains
+source-bound, including the ordinary-book hostile-memory negative.
+
+Native82 Working prepare **17PASS/3FAIL**, before spawning listeners or saving.
+The five-wide footprint found no geometry in288 candidates:224 horizontal clamp,
+9 acquisition exclusion,55 physical sight. No save writes/stashes. Earlier
+native80 proved a two-point footprint; new reviewed correction retains that pair
+and chooses three separate effect-only controls from the same finite candidates.
+All five must pass navigation/height/acquisition/separation before spawn; only
+the real performance pair requires LOS/range. No wider survey. GroupId and real
+saved-control context corrections remain unverified; cold ON/OFF are NOT_RUN.
+
+Native84 Satyr RTWP **7PASS/1FAIL**: natural Fear CL8/DC18/Standard/one use PASS;
+then combined vacated-sibling placement guard refuses before effect cleanup.
+The raw result does not distinguish its failed subpredicate. Source inspection
+shows this caller never surveyed the sibling's spawn point. Correction selects
+one of only two connected, walkable points behind the established Fear lane
+before casting. Exact target/protected-party/expiry guards remain. No TB launch
+or fallback rows after this failure. Independent reviewer found no blocker in
+both placement corrections; compilation24.1s and18/2755 tests PASS1.2s.
+
+Private Charm/Sleep/Hold state coverage remains grouped into the existing Working
+trio. Real effect-only contexts/flags/deadlines and actual precleanup conditions
+must survive cold ON/OFF. Primary source removal must restore Charm hostility
+and clear Hold while preserving sibling Sleep/performance. No speculative native
+Charm faction repair is implemented before observing the concrete cold-load risk.
+
+
+Native82 outer original Working bytes/timestamps/attributes restored20:33:10.0435499UTC;
+SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B,creation639208636210035057/write639278868712797783/attributes8224.
+No writes/stashes; cold/OFF not dispatched. Native84 batch stops before TB85.
+Counts69attempts/55packages/84launches. Original FAILs remain immutable.
+
+20:48:32.3396688UTC four fully verified closed81?84 extraction duplicates
+reclaimed398838048B, free2634457088->3037814784B;
+planSHAec145691a17c3a14fd50bb26d2a404f09ce5d36aa010e477fd05b0c829bcdfa7.
+20:51:48.6692792UTC superseded build66?68 staging/DLL duplicates reclaimed
+129128809B, free3034968064->3165351936B;
+planSHA09f35836dfb91288743c2d50e28f95854d0d3706affb5313b1dd7f9be23cb496.
+Both full protected ComparePASS. Retained exactZIPs, raw evidence, original
+failures, receipts, PDBs, protected backups/saves and DATA. Existing fixed cleanup
+route only. Native/source claims and current reviewable state are distinct.
+
+20:55UTC margin: initial nine-copy retention check correctly refused differing
+DLL bytes before archive/deletion. Actual hashes identified three content groups;
+only the four identical duplicates of retained sprint25-stack-20261018T015818Z-
+1cf183b742f4 were selected. Original failed selection script retained. Archive
+retained-closed-identical-s25-c.zip is55258222B, SHA
+e2215e9206df20e1308fbb29c70cd28f45f95f7dac14fdee526078494b3b6f76;
+manifestSHA11f8ce849d0a92b8e3d23e3c943eae9cc80532ef76499b70d1e57e540053aae3.
+Full reread/per-file comparisons, pinned closed transactions and native path/reparse
+checks PASS. At20:55:09.1593541UTC reclaimed328308916B, free3106488320->3438936064B;
+planSHAcb75fff0a2598ee64b5134d4f258ee69915bc91206a8dfb46beac604a684cc45.
+Protected ComparePASS967/118/18/83/tasks0/Steam1. Reference/content archive remain;
+unique DLL variants, packages, raw evidence, failures, receipts and protected
+backups/saves untouched. No historical execution or package identity rewritten.
