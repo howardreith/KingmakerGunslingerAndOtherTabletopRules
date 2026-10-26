@@ -242,6 +242,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out far, out lane, out direction,
                     originAllyExclusionRadius: new Feet(30).Meters + 1f);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
+                if (sibling != null)
+                {
+                    // The later effect-only isolation probe vacates this point.
+                    // The summon spawn position was never a surveyed lane point.
+                    var forward = (far - origin).normalized;
+                    var side = Vector3.Cross(Vector3.up, forward).normalized;
+                    var ground = AstarPath.active.GetNearest(origin);
+                    Vector3? siblingPoint = null;
+                    foreach (var requested in new[] { origin - forward * 1.3f + side,
+                        origin - forward * 1.3f - side })
+                    {
+                        var point = AstarPath.active.GetNearest(requested);
+                        if (ground.node == null || point.node == null || !point.node.Walkable ||
+                            point.node.GraphIndex != ground.node.GraphIndex || point.node.Area != ground.node.Area ||
+                            !Cleanup2Finite(point.clampedPosition) || Vector3.Distance(point.clampedPosition, requested) > .3f ||
+                            Vector3.Distance(point.clampedPosition, far) < .8f) continue;
+                        siblingPoint = point.clampedPosition; break;
+                    }
+                    if (!siblingPoint.HasValue)
+                        throw new InvalidOperationException("Satyr sibling has no separate surveyed point behind the Fear lane.");
+                    PlaceExpandedSummoningUnit(sibling, siblingPoint.Value);
+                }
                 bool protectedClear = Game.Instance.Player.Party.Where(value => value != null && value.IsInGame)
                     .All(value => Vector3.Distance(value.Position, origin) > new Feet(30).Meters + value.Corpulence);
                 if (!protectedClear) throw new InvalidOperationException("Satyr cone overlaps protected party footprint.");
