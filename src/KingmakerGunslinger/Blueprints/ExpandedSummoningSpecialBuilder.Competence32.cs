@@ -19,8 +19,8 @@ namespace KingmakerGunslinger.Blueprints
         private static BlueprintActivatableAbility ConfigureLillendCompetence32(
             LibraryScriptableObject library, IDictionary<string, BlueprintScriptableObject> bySymbol, BlueprintActivatableAbility courage)
         {
-            var icon = BlueprintLibraryLookup.RequireExact<BlueprintActivatableAbility>(library,
-                "6d3fcfab6d935754c918eb0e004b5ef7", "native Inspire Competence semantic icon").Icon;
+            var icon = Feature(library, "6d3fcfab6d935754c918eb0e004b5ef7",
+                "native Inspire Competence feature semantic icon").Icon;
             var recipient = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CompetenceRecipient");
             recipient.name = InternalName(Lillend32Prefix + "CompetenceRecipient");
             recipient.Stacking = StackingType.Stack;
@@ -33,6 +33,10 @@ namespace KingmakerGunslinger.Blueprints
                     "+3 competence to Perception while this ally can see and hear the performing lillend within 30 feet."), icon);
             var carrier = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CompetenceCarrier");
             CopyFields(courage.Buff, carrier); carrier.name = InternalName(Lillend32Prefix + "CompetenceCarrier");
+            BlueprintUnitFactAccess.Resolve().Configure(carrier,
+                LocalizationService.Create(Lillend32Prefix + "CompetenceCarrier.Name", "Inspire Competence"),
+                LocalizationService.Create(Lillend32Prefix + "CompetenceCarrier.Description",
+                    "Performing to help one selected ally with Perception."), icon);
             var area = Require<BlueprintAbilityAreaEffect>(bySymbol, Lillend32Prefix + "CompetenceArea");
             CopyFields(Require<BlueprintAbilityAreaEffect>(bySymbol, Lillend32Prefix + "CourageArea"), area);
             area.name = InternalName(Lillend32Prefix + "CompetenceArea"); area.Size = new Kingmaker.Utility.Feet(30);
