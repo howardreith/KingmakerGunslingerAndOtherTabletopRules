@@ -50,6 +50,14 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool turn in new[] { false, true })
+                    foreach (int frame in ReviewLillendGrab32(fixture, false, turn)) yield return frame;
+                foreach (int frame in ReviewLillendGrab32(fixture, true, false)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ControlsPhase ||
                 phase == ExpandedSummoningNativeProfilePolicy.Sprint32ControlsTurnPhase)
             {
@@ -202,6 +210,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var target = fixture.Hostile;
             int will = target.Stats.SaveWill.BaseValue, ac = target.Stats.AC.BaseValue;
             BlueprintFeature mindImmunity = null;
+            Vector3? surveyedSiblingProbe = null;
             string id = melee ? "satyr-melee-fallback" : immune ? "satyr-immune-fallback" : "satyr-control";
             if (turnBased) id += "-turn";
             try
@@ -263,6 +272,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!siblingPoint.HasValue)
                         throw new InvalidOperationException("Satyr sibling has no separate surveyed point behind the Fear lane.");
                     PlaceExpandedSummoningUnit(sibling, siblingPoint.Value);
+                    surveyedSiblingProbe = siblingPoint.Value;
                 }
                 bool protectedClear = Game.Instance.Player.Party.Where(value => value != null && value.IsInGame)
                     .All(value => Vector3.Distance(value.Position, origin) > new Feet(30).Meters + value.Corpulence);
@@ -407,7 +417,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var siblingData = new Kingmaker.UnitLogic.Abilities.AbilityData(sibling.Descriptor.Abilities.GetAbility(fear));
                             foreach (int frame in ReviewFeyControlExpiry32(fixture, owner, sibling, target, effect,
                                 siblingData, UnitCondition.Frightened, () => new JObject {
-                                    ["fear"] = sibling.Descriptor.Resources.GetResourceAmount(resource) }, id)) yield return frame;
+                                    ["fear"] = sibling.Descriptor.Resources.GetResourceAmount(resource) }, id,
+                                surveyedProbePoint: surveyedSiblingProbe)) yield return frame;
                         }
                     }
                 }

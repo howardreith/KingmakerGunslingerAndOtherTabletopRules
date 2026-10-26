@@ -46,7 +46,15 @@ namespace KingmakerGunslinger.RuntimeTesting
     internal sealed partial class RuntimeTestRunner
     {
         private const string Sprint32ListenerScope = "KMG_Sprint32_Listeners_v1";
-        private const string Sprint32ListenerFaction = "0f539babafb47fe4586b719d02aff7c4";
+        private static BlueprintFaction Sprint32ListenerFaction()
+        {
+            var faction = BlueprintRoot.Instance.SystemMechanics.FactionNeutrals;
+            if (faction == null || faction.AlwaysEnemy || faction.IsDirectlyControllable ||
+                !ReferenceEquals(faction, BlueprintLibraryLookup.RequireExact<BlueprintFaction>(BlueprintBootstrap.Library,
+                    faction.AssetGuid, "registered native neutral faction for fixed saved listeners")))
+                throw new InvalidOperationException("Registered neutral listener faction boundary differs.");
+            return faction;
+        }
         private const string Sprint32PrivatePrefix = "KMG_Summoning_FeyCelestial_";
         private double _sprint32ColdGameSeconds;
         private static T Sprint32SavedBlueprint<T>(string suffix) where T : BlueprintScriptableObject
@@ -153,7 +161,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 sources.Select(source => source.Get<UnitPartSprint32SavedReceipt>().Ordinal).OrderBy(value => value).SequenceEqual(new[] { 0, 1, 2, 3 }) &&
                 listeners.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().Role).OrderBy(value => value, StringComparer.Ordinal)
                     .SequenceEqual(new[] { "held", "resisted" }) &&
-                listeners.All(unit => unit.Faction.AssetGuid == Sprint32ListenerFaction && unit.GroupId == unit.UniqueId && !unit.Group.IsPlayerParty &&
+                listeners.All(unit => ReferenceEquals(unit.Faction, Sprint32ListenerFaction()) && unit.GroupId == unit.UniqueId && !unit.Group.IsPlayerParty &&
                     unit.AttackFactions.Count() == 1 && ReferenceEquals(unit.AttackFactions.Single(), caster.Faction) &&
                     sources.All(source => unit.IsEnemy(source) && source.IsEnemy(unit)));
             RosterPersistenceCheck("s32-cold-listener-boundary", boundary, new JObject {
@@ -249,9 +257,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally { game.IsPaused = true; SetExpandedSummoningBrainActive(support, false); EventBus.Unsubscribe(starts); }
 
-            var mobs = BlueprintLibraryLookup.RequireExact<BlueprintFaction>(BlueprintBootstrap.Library,
-                Sprint32ListenerFaction, "registered native Mobs faction for fixed saved listeners");
+            var listenerFaction = Sprint32ListenerFaction();
             var intake = game.State.Units.All.Where(unit => unit != null && !sources.Contains(unit) && !party.Contains(unit)).ToArray();
+            if (ReferenceEquals(listenerFaction, caster.Faction) || intake.Any(unit => unit.AttackFactions.Contains(listenerFaction)))
+                throw new InvalidOperationException("Registered listener faction is attacked by intake; no listener is spawned.");
             var points = Sprint32ListenerPoints(caster, sources, party);
             for (int index = 0; index < 2; index++)
             {
@@ -270,15 +279,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // SwitchFactions refreshes relations, not group membership.
                 // Detach this owned actor while its old faction is still current.
                 target.GroupId = target.UniqueId;
-                target.Descriptor.SwitchFactions(mobs, true);
+                target.Descriptor.SwitchFactions(listenerFaction, true);
                 target.AttackFactions.Match(new[] { caster.Faction }); PlaceExpandedSummoningUnit(target, points[index]);
                 if (!game.State.AwakeUnits.Contains(target)) game.State.AwakeUnits.Add(target);
+                // SwitchFactions raises its first attack-set event before assigning
+                // Faction. That event constructs this group's old Player membership;
+                // later events only queue an attack-cache refresh. Refresh both native
+                // caches synchronously, and only on the proven single owned member.
+                var group = target.Group;
+                if (!Sprint32OwnsListener(target, caster, sources) || target.GroupId != target.UniqueId ||
+                    group.IsPlayerParty || group.Count != 1 || !ReferenceEquals(group[0], target))
+                    throw new InvalidOperationException("Listener group is not exclusively owned; no group refresh.");
+                group.ResetFactionSet(); group.UpdateAttackFactionsCache();
                 var hostileIntake = intake.Where(unit => target.IsEnemy(unit) || unit.IsEnemy(target)).ToArray();
                 bool owned = Sprint32OwnsListener(target, caster, sources);
                 bool isolated = target.GroupId == target.UniqueId && !target.Group.IsPlayerParty;
                 RosterPersistenceCheck("s32-listener-ownership-" + index, owned && isolated && hostileIntake.Length == 0,
                     new JObject { ["id"] = target.UniqueId, ["owned"] = owned, ["group"] = target.GroupId,
                         ["playerGroup"] = target.Group.IsPlayerParty,
+                        ["faction"] = target.Faction.AssetGuid, ["ownedGroupMembers"] = group.Count,
+                        ["groupAttackFactions"] = new JArray(group.AttackFactions.Select(faction => faction.AssetGuid)),
                         ["hostileIntake"] = new JArray(hostileIntake.Select(unit => unit.UniqueId)) },
                     "Only this newly owned listener has its own native group; no intake nonparty actor is hostile in either direction.");
                 if (!owned || !isolated || hostileIntake.Length != 0)
@@ -544,7 +564,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 throw new InvalidOperationException("Private saved-control source ordering differs.");
             var roles = new[] { "charm", "sleep", "hold" };
             var controls = new List<UnitEntityData>();
-            var mobs = BlueprintLibraryLookup.RequireExact<BlueprintFaction>(BlueprintBootstrap.Library, Sprint32ListenerFaction, "saved control faction");
+            var listenerFaction = Sprint32ListenerFaction();
+            if (ReferenceEquals(listenerFaction, caster.Faction) || intake.Any(unit => unit.AttackFactions.Contains(listenerFaction)))
+                throw new InvalidOperationException("Registered control faction is attacked by intake; no control target is spawned.");
             for (int index = 0; index < roles.Length; index++)
             {
                 var target = Game.Instance.EntityCreator.SpawnUnit(BlueprintRoot.Instance.DefaultPlayerCharacter,
@@ -555,10 +577,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 receipt.Scope = Sprint32ListenerScope; receipt.UnitId = target.UniqueId; receipt.CasterId = caster.UniqueId;
                 receipt.SourceId = source.UniqueId; receipt.Role = roles[index]; receipt.PrepareRunId = _request.RunId;
                 SetExpandedSummoningBrainActive(target, false); target.GroupId = target.UniqueId;
-                target.Descriptor.SwitchFactions(mobs, true); target.AttackFactions.Match(new[] { caster.Faction });
+                target.Descriptor.SwitchFactions(listenerFaction, true); target.AttackFactions.Match(new[] { caster.Faction });
                 target.Stats.HitPoints.BaseValue = 100000; target.Stats.SaveWill.BaseValue = -100;
                 PlaceExpandedSummoningUnit(target, points[index]);
                 if (!Game.Instance.State.AwakeUnits.Contains(target)) Game.Instance.State.AwakeUnits.Add(target);
+                var group = target.Group;
+                if (!Sprint32OwnsListener(target, caster, sources) || target.GroupId != target.UniqueId ||
+                    group.IsPlayerParty || group.Count != 1 || !ReferenceEquals(group[0], target))
+                    throw new InvalidOperationException("Control target group is not exclusively owned; no group refresh.");
+                group.ResetFactionSet(); group.UpdateAttackFactionsCache();
                 if (!Sprint32OwnsListener(target, caster, sources) || target.Group.IsPlayerParty ||
                     intake.Any(unit => target.IsEnemy(unit) || unit.IsEnemy(target)))
                     throw new InvalidOperationException("Private saved-control fixture reaches unrelated intake; no save.");
@@ -645,7 +672,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (controls.Length != 3 || Sprint32SavedAuxiliaries(caster).Length != 5 ||
                 !controls.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().Role).OrderBy(value => value)
                     .SequenceEqual(new[] { "charm", "hold", "sleep" }) || controls.Any(unit => !Sprint32OwnsListener(unit, caster, sources) ||
-                    unit.GroupId != unit.UniqueId || unit.Group.IsPlayerParty || unit.Faction.AssetGuid != Sprint32ListenerFaction ||
+                    unit.GroupId != unit.UniqueId || unit.Group.IsPlayerParty || !ReferenceEquals(unit.Faction, Sprint32ListenerFaction()) ||
                     string.IsNullOrEmpty(unit.Get<UnitPartSprint32ListenerReceipt>().OriginalAttackFactions)))
                 throw new InvalidOperationException("Private saved-control ownership/role boundary differs.");
             foreach (var unit in controls) RequireSprint32ControlUnchanged(unit, sources, stage);
