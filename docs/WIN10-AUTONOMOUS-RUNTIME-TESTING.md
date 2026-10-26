@@ -8,6 +8,12 @@ Will-only Sleep modifier. Separate native saving-throw probes are not casting
 or action-cost evidence. A paused clock seam ticks only the owned target's buffs
 on either side of the original expiration and restores time before yielding.
 No save access, forced roll, supplied effect or general test subsystem is added.
+The same phase checks the corrected native cantrip-fact route for Lullaby and
+Daze: exact owned ability fact with no spellbook debit, CL7/Charisma DC14,
+normal Standard actions, unchanged L0/leveled slots and independent resources.
+After Lullaby's original-deadline expiry, explicit remaining L1 pre-spends
+isolate Daze. Two natural casts separated by its native effect lifetime observe
+real Will/SR and Dazed, with active-effect refusal. No cast/effect/roll is supplied.
 
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
 `reviewPhase=satyr-control`, `lillend-support`, `satyr-turn`, `lillend-turn` or `optional-suggestion`, with automatic exit. The existing save-free first-area

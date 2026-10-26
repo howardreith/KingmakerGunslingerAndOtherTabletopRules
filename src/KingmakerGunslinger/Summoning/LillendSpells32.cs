@@ -35,8 +35,12 @@ namespace KingmakerGunslinger.Summoning
                 !actor.HasLOS(target)) return 0f;
             AbilityData data;
             var book = actor.Descriptor.GetSpellbook(Book);
-            if (Choice == LillendSpellChoice32.CharmPersonSla)
+            if (Choice == LillendSpellChoice32.CharmPersonSla || Level == 0)
             {
+                // Native cantrips use their granted Spell/Cantrip fact, as the
+                // AI action does. Book-backed AbilityData checks a finite L0
+                // pool and cannot establish at-will casting.
+                if (Level == 0 && (book == null || book.GetSpellLevel(Spell) != 0)) return 0f;
                 var granted = actor.Descriptor.Abilities.GetAbility(Spell);
                 if (granted == null) return 0f;
                 data = new AbilityData(granted);

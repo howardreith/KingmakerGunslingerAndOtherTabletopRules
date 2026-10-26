@@ -132,8 +132,12 @@ namespace KingmakerGunslinger.Blueprints
             var parameters = ScriptableObject.CreateInstance<Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit; parameters.Abilities = new[] { sla };
             parameters.SpellLevels = new[] { 1 }; parameters.CasterLevel = 7;
-            traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] { AddResource(resource), parameters }).ToArray();
-            unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] { sla }).ToArray();
+            if (spells[0].Any(spell => spell.Type != AbilityType.Spell || spell.GetComponent<CantripComponent>() == null))
+                throw new InvalidOperationException("Lillend level-zero spells must be native Spell/Cantrip facts.");
+            var cantrips = ScriptableObject.CreateInstance<LillendCantripParameters32>();
+            cantrips.OwningBlueprint = unit; cantrips.Book = book; cantrips.Cantrips = spells[0];
+            traits.ComponentsArray = traits.ComponentsArray.Concat(new BlueprintComponent[] { AddResource(resource), parameters, cantrips }).ToArray();
+            unit.AddFacts = unit.AddFacts.Concat(new BlueprintUnitFact[] { sla }).Concat(spells[0]).ToArray();
             var actions = new List<BlueprintAiAction>();
             var choices = new[] { LillendSpellChoice32.Daze, LillendSpellChoice32.CharmPerson, LillendSpellChoice32.CureLight,
                 LillendSpellChoice32.Sleep, LillendSpellChoice32.HoldPerson, LillendSpellChoice32.Invisibility,

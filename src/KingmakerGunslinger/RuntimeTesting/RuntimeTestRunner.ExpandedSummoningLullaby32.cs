@@ -70,6 +70,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var siblingPools = resources.Select(value => sibling.Descriptor.Resources.GetResourceAmount(value)).ToArray();
                 var ownSlots = Enumerable.Range(1, 3).Select(book.GetSpontaneousSlots).ToArray();
                 var siblingSlots = Enumerable.Range(1, 3).Select(siblingBook.GetSpontaneousSlots).ToArray();
+                int ownCantripSlots = book.GetSpontaneousSlots(0), siblingCantripSlots = siblingBook.GetSpontaneousSlots(0);
                 Vector3 far; string lane, direction;
                 var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 8f, out far, out lane, out direction,
                     originAllyExclusionRadius: new Feet(30).Meters + 1f);
@@ -103,7 +104,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.State.AddConditionImmunity(UnitCondition.Sleeping);
                 try { immuneScore = eligibility.Score(choiceContext); }
                 finally { target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Sleeping); }
-                var data = new AbilityData(ability, book); var parameters = data.CalculateParams();
+                var grant = owner.Descriptor.Abilities.GetAbility(ability);
+                if (grant == null) throw new InvalidOperationException("Lullaby has no native cantrip fact.");
+                var data = new AbilityData(grant); var parameters = data.CalculateParams();
+                var bookData = new AbilityData(ability, book);
                 int perception = target.Stats.SkillPerception.ModifiedValue;
                 int[] savesBefore = Lullaby32SaveValues(owner, target, eligibility.SleepSpell, ability);
                 bool ready = ordinaryScore > 0f && overlapScore == 0f && immuneScore == 0f &&
@@ -116,6 +120,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["targetHd"] = target.Descriptor.Progression.CharacterLevel, ["lane"] = lane,
                     ["ordinaryScore"] = ordinaryScore, ["allyOverlapScore"] = overlapScore, ["sleepImmuneScore"] = immuneScore,
                     ["cl"] = parameters.CasterLevel, ["dc"] = parameters.DC, ["fixturePreSpends"] = setup,
+                    ["factAvailable"] = data.IsAvailable, ["factCanTarget"] = data.CanTarget(new TargetWrapper(target)),
+                    ["cantripComponent"] = ability.GetComponent<Kingmaker.Blueprints.Classes.Spells.CantripComponent>() != null,
+                    ["bookBackedAvailable"] = bookData.IsAvailable, ["levelZeroSlots"] = book.GetSpontaneousSlots(0),
                     ["ownSlots"] = new JArray(ownSlots), ["siblingSlots"] = new JArray(siblingSlots),
                     ["willBase"] = target.Stats.SaveWill.BaseValue, ["fixtureSpellResistance"] = 5,
                     ["fullRound"] = ability.IsFullRoundAction },
@@ -153,7 +160,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ReferenceEquals(value.Target, target)).ToArray();
                         int[] savesAfter = Lullaby32SaveValues(owner, target, eligibility.SleepSpell, ability);
                         bool exact = casts.Length > 0 && casts.Length <= 3 && casts.All(value => economy.Count(value) == 1 &&
-                            economy.Exact(value, false) && value.Type == UnitCommand.CommandType.Standard && !value.Cutscene && !value.IsIgnoreCooldown) &&
+                            economy.Exact(value, false) && value.Type == UnitCommand.CommandType.Standard && !value.Cutscene && !value.IsIgnoreCooldown &&
+                            ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null) &&
                             saves.Length == casts.Length && saves.All(value => value.DifficultyClass == 14) && saves.Any(value => !value.IsPassed) &&
                             resistanceChecks.Length == casts.Length && resistanceChecks.All(value => value.SpellResistance == 5 &&
                                 !value.TargetIsImmune && !value.IsSpellResisted) &&
@@ -164,6 +172,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             target.Stats.SaveWill.ModifiedValue == savesBefore[1] &&
                             Enumerable.Range(1, 3).Select(book.GetSpontaneousSlots).SequenceEqual(ownSlots) &&
                             Enumerable.Range(1, 3).Select(siblingBook.GetSpontaneousSlots).SequenceEqual(siblingSlots) &&
+                            book.GetSpontaneousSlots(0) == ownCantripSlots && siblingBook.GetSpontaneousSlots(0) == siblingCantripSlots &&
                             resources.All(value => owner.Descriptor.Resources.GetResourceAmount(value) == 0) &&
                             resources.Select(value => sibling.Descriptor.Resources.GetResourceAmount(value)).SequenceEqual(siblingPools);
                         Sprint25Check("lullaby-natural-cast-and-modifiers", exact, new JObject {
@@ -178,6 +187,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["activeEffectScore"] = eligibility.Score(choiceContext),
                             ["ownSlotsAfter"] = new JArray(Enumerable.Range(1, 3).Select(book.GetSpontaneousSlots)),
                             ["siblingSlotsAfter"] = new JArray(Enumerable.Range(1, 3).Select(siblingBook.GetSpontaneousSlots)),
+                            ["exactOwnedCantripFacts"] = casts.All(value => ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null),
+                            ["levelZeroBeforeAfter"] = new JArray(ownCantripSlots, book.GetSpontaneousSlots(0), siblingCantripSlots, siblingBook.GetSpontaneousSlots(0)),
                             ["fixtureCastCommands"] = 0, ["fixtureBuffApplications"] = 0, ["forcedRolls"] = 0 },
                             "Natural Standard cantrip and native Will/SR; CL7 tail, exact Perception and Will-only Sleep penalties. Separate native rule probes are not cast/action-cost proof.");
                         if (!exact) throw new InvalidOperationException("Lullaby native cast/modifier outcome failed.");
@@ -201,6 +212,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!beforeExpiry || !afterExpiry) throw new InvalidOperationException("Lullaby native expiry failed.");
                 }
                 finally { EventBus.Unsubscribe(events); EventBus.Unsubscribe(starts); }
+                foreach (int wait in ReviewLillendDaze32(fixture, owner, sibling)) yield return wait;
             }
             finally
             {
@@ -217,6 +229,109 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private IEnumerable<int> ReviewLillendDaze32(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData sibling)
+        {
+            var target = fixture.Hostile;
+            var eligibility = fixture.Blueprints.OfType<LillendSpellEligibility32>().Single(value =>
+                value.Choice == LillendSpellChoice32.Daze);
+            var lullaby = fixture.Blueprints.OfType<LillendSpellEligibility32>().Single(value =>
+                value.Choice == LillendSpellChoice32.Lullaby);
+            var ability = eligibility.Spell;
+            var book = owner.Descriptor.GetSpellbook(eligibility.Book);
+            var siblingBook = sibling.Descriptor.GetSpellbook(eligibility.Book);
+            int remaining = book.GetSpontaneousSlots(1);
+            var known = book.GetKnownSpells(1).First();
+            for (int count = 0; count < remaining; count++) known.Spend();
+            var ownSlots = Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).ToArray();
+            var siblingSlots = Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).ToArray();
+            var resources = fixture.Blueprints.OfType<BlueprintAbilityResource>().Where(value =>
+                value.name == "KMG_Summoning_FeyCelestial_LillendAzata_PerformanceResource" ||
+                value.name == "KMG_Summoning_FeyCelestial_LillendAzata_CharmPersonSlaResource").ToArray();
+            var ownPools = resources.Select(value => owner.Descriptor.Resources.GetResourceAmount(value)).ToArray();
+            var siblingPools = resources.Select(value => sibling.Descriptor.Resources.GetResourceAmount(value)).ToArray();
+            var grant = owner.Descriptor.Abilities.GetAbility(ability);
+            if (grant == null) throw new InvalidOperationException("Daze has no native cantrip fact.");
+            var data = new AbilityData(grant); var parameters = data.CalculateParams();
+            var context = new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } };
+            float score = eligibility.Score(context);
+            bool ready = score > 0 && lullaby.Score(context) == 0 && ownSlots.All(value => value == 0) &&
+                data.IsAvailable && data.CanTarget(new TargetWrapper(target)) && parameters.CasterLevel == 7 &&
+                parameters.DC == 14 && ability.Type == AbilityType.Spell &&
+                ability.GetComponent<Kingmaker.Blueprints.Classes.Spells.CantripComponent>() != null &&
+                !target.Descriptor.State.HasCondition(UnitCondition.Dazed);
+            Sprint25Check("lillend-daze-cantrip-ready", ready, new JObject {
+                ["score"] = score, ["lullabyExhaustedSleepScore"] = lullaby.Score(context),
+                ["fixtureLevelOnePreSpend"] = remaining, ["ownSlots"] = new JArray(ownSlots),
+                ["siblingSlots"] = new JArray(siblingSlots), ["factAvailable"] = data.IsAvailable,
+                ["cl"] = parameters.CasterLevel, ["dc"] = parameters.DC },
+                "The affected native Daze cantrip remains available with no leveled slots; Lullaby refuses when Sleep is exhausted.");
+            if (!ready) throw new InvalidOperationException("Daze cantrip preconditions failed.");
+            var starts = new Lillend32CommandStarts { Owner = owner };
+            var events = new Astral31DispelEvents { Owner = owner }; events.Targets.Add(target);
+            var commands = new HashSet<UnitCommand>(); var costs = new JArray();
+            EventBus.Subscribe(starts); EventBus.Subscribe(events);
+            try
+            {
+                Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
+                using (var economy = new FirearmReviewCosts(owner, costs))
+                {
+                    DateTime deadline = DateTime.UtcNow.AddSeconds(55); int frames = 0;
+                    bool refusedWhileDazed = false;
+                    while (DateTime.UtcNow < deadline && frames++ < 5000)
+                    {
+                        foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                        foreach (var command in starts.Commands) commands.Add(command);
+                        int finished = commands.OfType<UnitUseAbility>().Count(value => value.Spell?.Blueprint == ability &&
+                            value.IsFinished && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded);
+                        if (target.Descriptor.State.HasCondition(UnitCondition.Dazed) && eligibility.Score(context) == 0)
+                            refusedWhileDazed = true;
+                        if (finished >= 2 && target.Descriptor.State.HasCondition(UnitCondition.Dazed) || finished >= 3) break;
+                        if (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished))
+                            Sprint24TickExactAi(owner);
+                        Game.Instance.IsPaused = false; yield return 0;
+                    }
+                    Game.Instance.IsPaused = true; Sprint28SetBrainActivePreservingActions(owner, false);
+                    var casts = commands.OfType<UnitUseAbility>().Where(value => value.Spell?.Blueprint == ability &&
+                        value.IsFinished && value.Result == UnitCommand.ResultType.Success &&
+                        value.ExecutionProcess != null && value.ExecutionProcess.IsEnded).ToArray();
+                    var saves = events.Saves.Where(value => value.Reason?.Context?.SourceAbility == ability).ToArray();
+                    var resistance = events.Resistances.Where(value => value.Context?.SourceAbility == ability &&
+                        ReferenceEquals(value.Target, target)).ToArray();
+                    bool exact = casts.Length >= 2 && casts.Length <= 3 && casts.All(value => economy.Count(value) == 1 &&
+                        economy.Exact(value, false) && value.Type == UnitCommand.CommandType.Standard && !value.Cutscene && !value.IsIgnoreCooldown &&
+                        ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null) &&
+                        saves.Length == casts.Length && saves.All(value => value.DifficultyClass == 14) && saves.Any(value => !value.IsPassed) &&
+                        resistance.Length == casts.Length && resistance.All(value => value.SpellResistance == 5 &&
+                            !value.TargetIsImmune && !value.IsSpellResisted) &&
+                        target.Descriptor.State.HasCondition(UnitCondition.Dazed) && refusedWhileDazed && eligibility.Score(context) == 0 &&
+                        Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).SequenceEqual(ownSlots) &&
+                        Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).SequenceEqual(siblingSlots) &&
+                        resources.Select(value => owner.Descriptor.Resources.GetResourceAmount(value)).SequenceEqual(ownPools) &&
+                        resources.Select(value => sibling.Descriptor.Resources.GetResourceAmount(value)).SequenceEqual(siblingPools);
+                    Sprint25Check("lillend-daze-natural-cantrip", exact, new JObject {
+                        ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
+                        ["starts"] = starts.Rows, ["nativeCasts"] = casts.Length,
+                        ["saves"] = new JArray(saves.Select(value => new JObject { ["dc"] = value.DifficultyClass, ["passed"] = value.IsPassed })),
+                        ["resistanceChecks"] = new JArray(resistance.Select(Astral31ResistanceRow)),
+                        ["dazed"] = target.Descriptor.State.HasCondition(UnitCondition.Dazed),
+                        ["activeEffectScore"] = eligibility.Score(context),
+                        ["refusedWhileDazed"] = refusedWhileDazed,
+                        ["exactOwnedCantripFacts"] = casts.All(value => ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null),
+                        ["ownSlotsAfter"] = new JArray(Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots)),
+                        ["siblingSlotsAfter"] = new JArray(Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots)),
+                        ["fixtureCastCommands"] = 0, ["forcedRolls"] = 0 },
+                        "Repeated natural native Daze pays Standard, resolves Will/SR, refuses an already dazed target and leaves both books and independent pools unchanged.");
+                    if (!exact) throw new InvalidOperationException("Daze natural cantrip failed.");
+                }
+            }
+            finally
+            {
+                Sprint28SetBrainActivePreservingActions(owner, false);
+                EventBus.Unsubscribe(events); EventBus.Unsubscribe(starts);
             }
         }
 

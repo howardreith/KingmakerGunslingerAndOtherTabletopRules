@@ -91,7 +91,8 @@ namespace KingmakerGunslinger.Blueprints
             var school = ScriptableObject.CreateInstance<SpellComponent>(); school.School = SpellSchool.Enchantment;
             var descriptor = ScriptableObject.CreateInstance<SpellDescriptorComponent>();
             descriptor.Descriptor = SpellDescriptor.MindAffecting | SpellDescriptor.Compulsion;
-            spell.ComponentsArray = new BlueprintComponent[] { around, run, rank, school, descriptor };
+            spell.ComponentsArray = new BlueprintComponent[] { around, run, rank, school, descriptor,
+                ScriptableObject.CreateInstance<CantripComponent>() };
             BlueprintUnitFactAccess.Resolve().Configure(spell,
                 LocalizationService.Create(symbol + ".Name", "Lullaby"),
                 LocalizationService.Create(symbol + ".Description",
