@@ -177,7 +177,10 @@ Working SHA `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,
 967Mods/118saves/18references/83settings/tasks0/unchangedSteam. No owned live
 transaction/game/task. Local original evidence: artifacts/sprint32-working-c2a1e591/.
 
-Counts:64Build-Local attempts /52validated development packages /75native launches.
+Counts:65Build-Local attempts /52validated development packages /75native launches.
+Build65 refused before compilation/package: the Python manifest plan lacked the
+new private Sound Burst row. The one-row correction passes manifest/development
+source validation (7511identities); no product behavior changed.
 Build64 measured4.45min; native74 wrapper6.43min/native179.347s; native75
 wrapper6.82min/native206.840s, then outer restoration. Exclusive whole-mission
 category totals remain unavailable. Recent18:04?18:40 work: approximately25min

@@ -970,6 +970,7 @@ def planned():
         ("KMG.Summoning.FeyCelestial.LillendAzata.HoldPersonBuff", "BlueprintBuff"),
         ("KMG.Summoning.FeyCelestial.Satyr.FearShakenBuff", "BlueprintBuff"),
         ("KMG.Summoning.FeyCelestial.Satyr.FearFrightenedBuff", "BlueprintBuff"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.SoundBurst", "BlueprintAbility"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",
