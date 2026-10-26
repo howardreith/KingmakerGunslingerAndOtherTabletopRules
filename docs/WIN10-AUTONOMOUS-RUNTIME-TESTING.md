@@ -89,7 +89,10 @@ activation command in the isolated owned combat is a lifecycle precondition;
 normal controllers must
 produce the exact CourageRecipient on a separate surviving owned Satyr. Native
 `IsAlly` must explicitly admit that recipient; nonenemy status is insufficient.
-The cloned pre-character-creation caster is not assumed to be an eligible ally. Only
+The cloned player-faction caster is separately required to receive the actual+2
+and exact recipient buff despite native IsAlly=false. This exercises the accepted
+nonenemy support mapping needed by summoned sources. An owned hostile inside
+the actual native radius must receive no effect. Only
 one Lillend emits at a time: owner expiry is verified before sibling activation
 and fresh area/recipient-reference capture for death. Self/carrier buffs cannot
 substitute for external-recipient cleanup. Activation state, command result,

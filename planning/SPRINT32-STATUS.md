@@ -83,7 +83,7 @@ result hash, actual accepted request phase/RunId, all eleven core requirements
 and every native verdict; reviewed reuse PASS, no new launch. Other two readers
 used the actual request contract before dispatch. Native result itself was PASS12.
 
-Lifecycle392 root cause was unobserved. The32dff6bc retry established native activation Success, running Courage,19 rounds and one area, but no external recipient on the cloned caster. Its prerequisite FAIL remains. Native IL and the accepted Dretch fixture expose the mistaken nonenemy-versus-IsAlly assumption. Replan uses a separate owned Satyr, explicitly requires IsAlly, and keeps it alive through both removal assertions. No product defect is established; no unchanged retry.
+Lifecycle392 root cause was unobserved. The32dff6bc retry established native activation Success, running Courage,19 rounds and one area, but no external recipient on the cloned caster. Its prerequisite FAIL remains. Native IL and the accepted Dretch fixture expose the mistaken nonenemy-versus-IsAlly assumption. Replan uses a separate owned Satyr, explicitly requires IsAlly, and keeps it alive through both removal assertions. Subsequent source/native-contract audit confirmed the product Courage filter also excludes player-faction units. The private area now uses the accepted native nonenemy support mapping; regression observation requires player +2, allied summon effect and in-radius enemy exclusion. No unchanged retry.
 
 Knowledge(nature) uses native Lore Nature identification with each owner's live
 Intelligence. Satyr has six ranks plus Fey class skill; Lillend has seven native
@@ -175,10 +175,13 @@ Current bounded correction reuses the proven private hostile/wake/combat/native
 activation path for lifecycle setup and records state before failure. Quiet-toggle
 392 failure remains immutable. Focused compilation25.1s and5 selected checks1.1s
 PASS; initial wrong resource namespace compile failure is retained separately.
-Independent review approved that bounded correction, but native retry failed on the recipient predicate as recorded above. The second-failure replan replaces the ineligible assumed recipient with a positively allied owned summon. Its focused compilation22.8s/tests0.9s PASS5/2753; independent review found no concrete blocker. No gameplay rule changed.
+Independent review approved that bounded correction, but native retry failed on the recipient predicate as recorded above. The second-failure replan replaces the ineligible assumed recipient with a positively allied owned summon. Its focused compilation22.8s/tests0.9s PASS5/2753; independent review found no concrete blocker. No stats or tabletop rule changed; the subsequent private Courage recipient mapping correction is recorded above.
 
-Next selection: one standalone `support-lifecycle` process against the corrected
-candidate, after review/build and verified duplicate cleanup. Target10-15minutes,
+Next selection: three standalone processes on one corrected candidate: `support-lifecycle`,
+`lillend-support` and `lillend-turn`. The private Courage target-filter repair invalidates
+the affected prior performance/recipient results. Review/build once; reuse its exact ZIP.
+Private Courage mapping and regression reviewed independently with no concrete dispatch blocker; focused compile22.2s/tests1s PASS5/2753 before the final explicit enemy guard, which the candidate build will compile/test.
+Expected total15-20minutes,
 ceiling30minutes including orchestration but never interrupting restoration.
 Required observations: exact external Courage recipient on a positively allied surviving Satyr before each source removal,
 native expiry/death, sibling isolation, owned resources/items/effects absent, exact

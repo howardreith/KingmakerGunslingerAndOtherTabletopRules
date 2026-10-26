@@ -24,6 +24,7 @@ using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.UnitLogic.Mechanics.Conditions;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
 
@@ -185,7 +186,17 @@ namespace KingmakerGunslinger.Blueprints
             var area = Require<BlueprintAbilityAreaEffect>(bySymbol, Lillend32Prefix + "CourageArea");
             CopyFields(nativeArea, area); area.name = InternalName(Lillend32Prefix + "CourageArea");
             area.ComponentsArray = nativeArea.ComponentsArray.Select(ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToArray();
-            area.GetComponents<AbilityAreaEffectBuff>().Single().Buff = recipient;
+            var delivery = area.GetComponents<AbilityAreaEffectBuff>().Single();
+            delivery.Buff = recipient;
+            // Same native mapping as the accepted mephit shelter: Summoned
+            // faction IsAlly excludes player-faction units, even its summoner.
+            // Preserve native area/effect/upkeep; only this private recipient
+            // condition admits the party it supports and still excludes foes.
+            var nonenemy = ScriptableObject.CreateInstance<ContextConditionIsEnemy>();
+            nonenemy.Not = true;
+            delivery.Condition = new Kingmaker.ElementsSystem.ConditionsChecker {
+                Operation = Kingmaker.ElementsSystem.Operation.And,
+                Conditions = new Kingmaker.ElementsSystem.Condition[] { nonenemy } };
             var carrier = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CourageCarrier");
             CopyFields(nativeCarrier, carrier); carrier.name = InternalName(Lillend32Prefix + "CourageCarrier");
             ClearLillendPerformanceDeathPersistence32(carrier);
