@@ -54,7 +54,7 @@ replaces exactly two release steps:
 | Release step | Development replacement |
 | --- | --- |
 | `validate_repository.py` dispatch to the active release validator | `tools/validate_development_candidate.py`: released version metadata unchanged (no bump); the released ledger as an exact prefix (append-only); schema, format and uniqueness of every identity (collisions); released Sprint 24 routes public with their original assets present and packaged; released static record unchanged; `expanded_summoning_manifest.py` validation, which re-derives every adapter identity |
-| complete domain suite | the named `-DevelopmentTestFilter` selection, run once, with the runner's own output kept as evidence |
+| complete domain suite | the named `-DevelopmentTestFilter` selection, or explicit `-DevelopmentCompleteSuite` at an authorized frozen candidate boundary; run once with the runner's own output retained |
 
 Everything else is the release pipeline, unchanged: every corruption fixture and
 offline contract in the repository wrapper (including the active release
@@ -62,8 +62,18 @@ validator's own fixtures), private-reference provenance against the installed
 game, the exact-reference Release build, supply-icon and companion checks,
 deterministic package assembly and strict package validation.
 
-The build refuses a dirty tree, a purpose without a filter or a filter without a
-purpose, a blank or zero-test selection, any failed or inconsistent test
+For an authorized final development candidate, select
+`Build-Local.ps1 -DevelopmentPurpose <purpose> -DevelopmentCompleteSuite`.
+It clears any inherited test filter for the one complete run and restores it
+afterward. The receipt records boolean `completeSuite=true`, no filter, all
+registered tests completed, unique passing names and the exact log hash.
+This preserves `candidateKind=development` and `releaseQualification=false`;
+it does not reserve a version or authorize publication. Ordinary development
+still uses a named focused filter.
+
+The build refuses a dirty tree, a purpose without a selected scope, a scope
+without a purpose, both scope options together, a blank or zero-test selection,
+filtered evidence offered as complete, any failed or inconsistent test
 evidence, runner output on standard error, and a second build over an existing
 receipt for the same commit and purpose.
 

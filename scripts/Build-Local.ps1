@@ -15,11 +15,15 @@ param(
     # Builds a development candidate for this one named purpose instead of a
     # release candidate. See DevelopmentCandidate.Common.ps1: it replaces only
     # the active version's release validator with the development validator
-    # and the complete suite with -DevelopmentTestFilter's named selection,
+    # and normally the complete suite with a named -DevelopmentTestFilter,
+    # or retains the full suite with explicit -DevelopmentCompleteSuite,
     # writes to its own development-only location under its own name, and
     # records a development receipt that no release path accepts.
     [string]$DevelopmentPurpose,
-    [string]$DevelopmentTestFilter
+    [string]$DevelopmentTestFilter,
+    # Explicit frozen development-candidate qualification; never inferred from
+    # a broad filter and never grants release status to its receipt.
+    [switch]$DevelopmentCompleteSuite
 )
 
 Set-StrictMode -Version Latest
@@ -29,17 +33,22 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
 
 $development = -not [string]::IsNullOrEmpty($DevelopmentPurpose) -or
-    -not [string]::IsNullOrEmpty($DevelopmentTestFilter)
+    -not [string]::IsNullOrEmpty($DevelopmentTestFilter) -or $DevelopmentCompleteSuite
 if ($development) {
     if ([string]::IsNullOrEmpty($DevelopmentPurpose) -or
-        [string]::IsNullOrWhiteSpace($DevelopmentTestFilter)) {
-        throw 'A development candidate requires both -DevelopmentPurpose and a named -DevelopmentTestFilter.'
+        (-not $DevelopmentCompleteSuite -and [string]::IsNullOrWhiteSpace($DevelopmentTestFilter))) {
+        throw 'A development candidate requires -DevelopmentPurpose and either a named -DevelopmentTestFilter or explicit -DevelopmentCompleteSuite.'
+    }
+    if ($DevelopmentCompleteSuite -and $PSBoundParameters.ContainsKey('DevelopmentTestFilter')) {
+        throw '-DevelopmentCompleteSuite and -DevelopmentTestFilter are mutually exclusive.'
     }
     if ($SkipDomainTests) {
         throw 'A development candidate records its own selected tests; -SkipDomainTests belongs to release reproducibility.'
     }
     [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
-    $DevelopmentTestFilter = Resolve-KmgGateFilter -Level Focused -Filter $DevelopmentTestFilter
+    if (-not $DevelopmentCompleteSuite) {
+        $DevelopmentTestFilter = Resolve-KmgGateFilter -Level Focused -Filter $DevelopmentTestFilter
+    }
 }
 
 # The plan is descriptive only. Do not require any machine-local reference,
@@ -55,7 +64,7 @@ $script:KmgBuildLocalPlan = @(
 if ($development) {
     $script:KmgBuildLocalPlan = @(
         'development-repository-wrapper'
-        'selected-domain-tests'
+        $(if ($DevelopmentCompleteSuite) { 'complete-domain-suite' } else { 'selected-domain-tests' })
         'exact-reference-release-build'
         'package-assembly'
         'strict-package-validation'
@@ -143,7 +152,7 @@ if ($development) {
 if ($development) {
     # The development wrapper: every fixture and offline contract of the
     # repository wrapper, with the development validator in place of the
-    # active version's release validator. Then the named selection, once.
+    # active version's release validator. Then the selected scope, once.
     & (Join-Path $PSScriptRoot 'validate-repository.ps1') `
         -DevelopmentPurpose $DevelopmentPurpose `
         -DevelopmentSummaryPath $developmentLayout.ValidationSummaryPath
@@ -155,8 +164,11 @@ if ($development) {
     if ((Get-Item -LiteralPath "$($developmentLayout.TestLogPath).stderr").Length -ne 0) {
         throw 'The selected domain-test runner wrote to standard error.'
     }
-    $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath `
-        -Filter $DevelopmentTestFilter
+    if ($DevelopmentCompleteSuite) {
+        $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath -CompleteSuite
+    } else {
+        $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath -Filter $DevelopmentTestFilter
+    }
 } else {
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 # The scenario preflight was reachable only by hand, so the one test that
