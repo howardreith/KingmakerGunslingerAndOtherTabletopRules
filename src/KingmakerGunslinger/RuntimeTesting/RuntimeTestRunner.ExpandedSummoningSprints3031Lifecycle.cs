@@ -38,7 +38,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var partyItems = Game.Instance.Player.Inventory.Items.ToArray();
             var partyCounts = partyItems.Select(value => value.Count).ToArray();
             var captured = new List<UnitEntityData>();
-            Func<UnitEntityData, Buff[]> courageRecipients = actor => fixture.Caster.Buffs.Enumerable.Where(buff =>
+            UnitEntityData courageRecipient = null;
+            Func<UnitEntityData, Buff[]> courageRecipients = actor => courageRecipient.Buffs.Enumerable.Where(buff =>
                 buff.Active && !buff.IsDisposed && buff.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_CourageRecipient" &&
                 ReferenceEquals(buff.Context?.MaybeCaster, actor)).ToArray();
             var capturedCourageRecipients = new Dictionary<UnitEntityData, Buff>();
@@ -75,16 +76,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // Explicit lifecycle precondition, not AI selection evidence:
                     // use the proven owned combat/native command path, allowing
                     // normal controllers to create the carrier/area/recipient.
-                    // The recipient is the persistent request-owned caster,
+                    // The recipient is a separate request-owned allied summon,
                     // which survives every source removal. Only one identical
                     // emitter is ON at a time: no stacking replacement can hide
                     // a stranded external recipient behind source destruction.
+                    courageRecipient = CastExpandedSummoningOwnTier(fixture, "satyr");
+                    Sprint28SetBrainActivePreservingActions(courageRecipient, false);
+                    courageRecipient.Commands.InterruptAll(true); courageRecipient.Commands.RemoveFinishedAndUpdateQueue();
                     var actor = owners["lillend-azata"];
                     PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
                     PlaceExpandedSummoningUnit(siblings["lillend-azata"], fixture.Caster.Position + Vector3.forward * 40f);
-                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipients, "expiry")) yield return frame;
+                    PlaceExpandedSummoningUnit(courageRecipient, actor.Position + Vector3.right);
+                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipient, courageRecipients, "expiry")) yield return frame;
                     var recipients = courageRecipients(actor);
-                    if (recipients.Length != 1) throw new InvalidOperationException("Lifecycle requires the exact Courage recipient on the surviving owned caster.");
+                    if (recipients.Length != 1) throw new InvalidOperationException("Lifecycle requires the exact Courage recipient on the surviving owned ally.");
                     capturedCourageRecipients.Add(actor, recipients.Single());
                 }
                 foreach (string key in keys)
@@ -117,10 +122,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (key == "lillend-azata")
                         ready &= Sprints3031OwnedAreaCount(pair[0]) > 0 && capturedCourageRecipients.ContainsKey(pair[0]) &&
                             boundGrants[pair[0]].Contains(capturedCourageRecipients[pair[0]]) &&
-                            Sprints3031OwnedAreaCount(pair[1]) == 0 && fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead;
+                            Sprints3031OwnedAreaCount(pair[1]) == 0 && courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead;
                     var row = new JObject { ["creature"] = key, ["owners"] = new JArray(pair.Select(Sprints3031LifecycleState)),
-                        ["performanceSetup"] = key == "lillend-azata" ? "One owned native activation command in an isolated combat; exact CourageRecipient captured on surviving fixture caster. Sibling remains OFF until the death case. No AI selection claim." : null,
-                        ["externalRecipient"] = key == "lillend-azata" ? fixture.Caster.UniqueId : null,
+                        ["performanceSetup"] = key == "lillend-azata" ? "One owned native activation command in an isolated combat; exact CourageRecipient captured on surviving owned ally. Sibling remains OFF until the death case. No AI selection claim." : null,
+                        ["externalRecipient"] = key == "lillend-azata" ? courageRecipient.UniqueId : null,
                         ["privateObjects"] = new JArray(pair.Select(actor => resources[actor].Length)),
                         ["independentPrivateObjects"] = !resources[pair[0]].Intersect(resources[pair[1]]).Any(),
                         ["initialItems"] = new JArray(pair.SelectMany(actor => items[actor].Select(item => new JObject {
@@ -152,7 +157,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var itemRows = new JArray(items[actor].Select(item => OutsiderEscapeItemState(item, actor, live)));
                     bool absent = Sprints3031SourceAbsent(actor) && resources[actor].All(value => value == null) &&
                         grantsGone(actor) && itemRows.All(row => (bool)row["safe"]);
-                    if (key == "lillend-azata") absent &= fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead &&
+                    if (key == "lillend-azata") absent &= courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead &&
                         (capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active);
                     bool isolated = sibling.IsInState && !sibling.Destroyed && sibling.View != null &&
                         resources[sibling].All(value => value != null) &&
@@ -164,7 +169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["privateResourcesAbsent"] = resources[actor].All(value => value == null),
                             ["capturedAreaAndGrantReferencesGone"] = grantsGone(actor),
                             ["capturedAreas"] = boundAreas[actor].Length, ["capturedGrants"] = boundGrants[actor].Length,
-                            ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead) : null,
+                            ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead) : null,
                             ["capturedExternalGrantGone"] = key == "lillend-azata" ? (bool?)(capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active) : null,
                             ["siblingResourcesAlive"] = resources[sibling].All(value => value != null),
                             ["allSiblingAreasRetained"] = siblingAreas.All(area => Game.Instance.State.AreaEffects.All.Contains(area)),
@@ -176,17 +181,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     var actor = siblings["lillend-azata"];
                     PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
-                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipients, "death")) yield return frame;
+                    PlaceExpandedSummoningUnit(courageRecipient, actor.Position + Vector3.right);
+                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipient, courageRecipients, "death")) yield return frame;
                     var recipients = courageRecipients(actor);
                     boundAreas[actor] = Game.Instance.State.AreaEffects.All.Where(area => area != null && ReferenceEquals(area.Context?.MaybeCaster, actor)).ToArray();
                     boundGrants[actor] = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed)
                         .SelectMany(unit => unit.Buffs.Enumerable).Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, actor)).ToArray();
                     bool ready = recipients.Length == 1 && boundAreas[actor].Length > 0 && boundGrants[actor].Contains(recipients.SingleOrDefault()) &&
-                        fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead;
+                        courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead;
                     Sprint25Check("lifecycle-lillend-azata-death-recipient-ready", ready, new JObject {
-                        ["source"] = actor.UniqueId, ["recipient"] = fixture.Caster.UniqueId,
+                        ["source"] = actor.UniqueId, ["recipient"] = courageRecipient.UniqueId,
                         ["exactExternalGrants"] = recipients.Length, ["capturedAreas"] = boundAreas[actor].Length },
-                        "The surviving caster receives the sibling's exact native Courage effect after the expired owner's grant is gone; capture references before native death.");
+                        "The surviving allied summon receives the sibling's exact native Courage effect after the expired owner's grant is gone; capture references before native death.");
                     if (!ready) throw new InvalidOperationException("Death lifecycle requires a live exact external Courage recipient.");
                     capturedCourageRecipients.Add(actor, recipients.Single());
                 }
@@ -201,13 +207,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool dead = actor.Descriptor.State.IsDead && Sprints3031OwnedAreaCount(actor) == 0 &&
                         grantsGone(actor) && Sprints3031LiveSourceGrantCount(actor) == 0 && items[actor].All(item => !item.IsLootable &&
                             !Game.Instance.Player.Inventory.Items.Contains(item));
-                    if (key == "lillend-azata") dead &= fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead &&
+                    if (key == "lillend-azata") dead &= courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead &&
                         (capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active);
                     Sprint25Check("lifecycle-" + key + "-native-death", dead,
                         new JObject { ["creature"] = key, ["actor"] = Sprints3031LifecycleState(actor),
                             ["allEquipmentNonlootable"] = items[actor].All(item => !item.IsLootable),
                             ["capturedAreaAndGrantReferencesGone"] = grantsGone(actor),
-                            ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(fixture.Caster.IsInState && !fixture.Caster.Descriptor.State.IsDead) : null,
+                            ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead) : null,
                             ["capturedExternalGrantGone"] = key == "lillend-azata" ? (bool?)(capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active) : null,
                             ["fixtureAreaOrGrantRemoval"] = 0 },
                         "Native KillUnit on the disposable sibling closes emitter-owned areas and recipient grants while its equipment remains nonlootable. No blanket effect deletion supplies the result.");
@@ -248,14 +254,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             finally
             {
-                DisposeExpandedSummoningUnits(fixture.Created, captured);
+                DisposeExpandedSummoningUnits(fixture.Created, captured.Concat(new[] { courageRecipient }).Where(value => value != null));
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
         }
 
         private IEnumerable<int> PrepareLillend32LifecycleCourage(ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData actor, Func<UnitEntityData, Buff[]> recipients, string stage)
+            UnitEntityData actor, UnitEntityData courageRecipient, Func<UnitEntityData, Buff[]> recipients, string stage)
         {
             // Bounded setup for source removal, not a substitute for natural AI
             // evidence. Keep the owned encounter alive while each source expires
@@ -263,8 +269,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var target = fixture.Hostile;
             if (target == null || fixture.OwnedHostileFaction == null)
                 throw new InvalidOperationException("Lifecycle combat requires its isolated owned hostile.");
+            var appearanceDeadline = DateTime.UtcNow.AddSeconds(12);
+            while (DateTime.UtcNow < appearanceDeadline && (!courageRecipient.Descriptor.State.CanAct ||
+                courageRecipient.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null))
+            { Game.Instance.IsPaused = false; yield return 0; }
             PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 8f);
-            foreach (var unit in new[] { actor, fixture.Caster, target })
+            foreach (var unit in new[] { actor, courageRecipient, fixture.Caster, target })
             {
                 unit.Wake(0f);
                 if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
@@ -279,8 +289,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var resource = fixture.Blueprints.OfType<Kingmaker.Blueprints.BlueprintAbilityResource>().Single(value =>
                 value.name == "KMG_Summoning_FeyCelestial_LillendAzata_PerformanceResource");
             var command = new UnitActivateAbility(performance);
-            bool admitted = actor.Descriptor.State.CanAct && actor.IsInCombat && fixture.Caster.IsInCombat &&
-                !actor.IsEnemy(fixture.Caster) && actor.HasLOS(fixture.Caster) && performance.IsAvailable &&
+            bool admitted = actor.Descriptor.State.CanAct && courageRecipient.Descriptor.State.CanAct &&
+                courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead && actor.IsInCombat && fixture.Caster.IsInCombat &&
+                actor.IsAlly(courageRecipient) && actor.HasLOS(courageRecipient) && performance.IsAvailable &&
                 !performance.IsOn && !performance.IsRunning;
             if (admitted) actor.Commands.Run(command);
             var deadline = DateTime.UtcNow.AddSeconds(12);
@@ -290,11 +301,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool ready = admitted && performance.IsOn && performance.IsRunning &&
                 Sprints3031OwnedAreaCount(actor) > 0 && recipients(actor).Length == 1;
             Sprint25Check("lifecycle-lillend-" + stage + "-activation-ready", ready, new JObject {
-                ["source"] = actor.UniqueId, ["recipient"] = fixture.Caster.UniqueId,
+                ["source"] = actor.UniqueId, ["recipient"] = courageRecipient.UniqueId,
                 ["admitted"] = admitted, ["canAct"] = actor.Descriptor.State.CanAct,
+                ["recipientCanAct"] = courageRecipient.Descriptor.State.CanAct,
                 ["awake"] = Game.Instance.State.AwakeUnits.Contains(actor), ["inCombat"] = actor.IsInCombat,
-                ["recipientInCombat"] = fixture.Caster.IsInCombat, ["hostileInCombat"] = target.IsInCombat,
-                ["allyLos"] = actor.HasLOS(fixture.Caster), ["distanceMeters"] = actor.DistanceTo(fixture.Caster),
+                ["recipientInCombat"] = courageRecipient.IsInCombat, ["hostileInCombat"] = target.IsInCombat,
+                ["allyLos"] = actor.HasLOS(courageRecipient), ["distanceMeters"] = actor.DistanceTo(courageRecipient),
+                ["nativeIsAllyRecipient"] = actor.IsAlly(courageRecipient), ["nativeIsAllyCaster"] = actor.IsAlly(fixture.Caster),
                 ["isOn"] = performance.IsOn, ["isRunning"] = performance.IsRunning, ["available"] = performance.IsAvailable,
                 ["rounds"] = actor.Descriptor.Resources.GetResourceAmount(resource),
                 ["command"] = new JObject { ["started"] = command.IsStarted, ["acted"] = command.IsActed,

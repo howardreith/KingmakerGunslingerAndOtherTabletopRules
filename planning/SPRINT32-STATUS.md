@@ -52,16 +52,16 @@ published. The ten prepared public-route checks now pass. Distinct natural
 input/spontaneous/conversion paths, pending performances and full acceptance
 remain incomplete.
 
-Current validated development source `392728874ba2ef5519078dedaaacfc247d0f90d2`:
-ZIP `9ca155b12438c3cc2a91e121ee51545062fd3f447cba745caab1d1eda43b3eb5`;
-DLL `0322f4eebb62119b38c6b91f7482a8b7e1913585f2d769165264ed35d549b29f`;
-MVID `a1c361a2-b3a4-4fe6-929a-89c46e41b064`.
-SourceState `16c944d5335cee94bf315b6fbea6f4177347a79578abb555f6c143abae60bc6d`.
-Canonical path `artifacts/development-candidates/sprint32-lillend-support/392728874ba2/`.
+Current validated development source `32dff6bca5b6f7ea27a5d92ead64b9487bb252dd`:
+ZIP `116dc0bdfcecb864bf550f30e32fe436333b8df473405eb8766028164c62ab64`;
+DLL `a86ddc932e3e64643817af004696a51b150608a533675c57d04fbd4212a2f7db`;
+MVID `4082b64e-05b7-4061-a4d2-5a865e65d359`.
+SourceState `51b0bfb569d441a1536b9d63dd2124dd1407bb91a7758e88edf055cf8a4834d9`.
+Canonical path `artifacts/development-candidates/sprint32-lillend-support/32dff6bca5b6/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
 419-file package PASS. Development candidate only; final gate/qualification pending.
 
-Fresh392 standalone executions:
+Standalone executions retained from392 (public-route observer unchanged since then; reviewed reuse on32):
 
 | Case | Native result | Observed scope | Local evidence |
 |---|---|---|---|
@@ -83,10 +83,7 @@ result hash, actual accepted request phase/RunId, all eleven core requirements
 and every native verdict; reviewed reuse PASS, no new launch. Other two readers
 used the actual request contract before dispatch. Native result itself was PASS12.
 
-Lifecycle root cause remains unobserved; classify as fixture prerequisite not
-established, without assigning a product defect. Next bounded change reuses the
-proven owned combat activation path and records command/resource/recipient state
-before removal; do not repeat unchanged quiet-toggle setup.
+Lifecycle392 root cause was unobserved. The32dff6bc retry established native activation Success, running Courage,19 rounds and one area, but no external recipient on the cloned caster. Its prerequisite FAIL remains. Native IL and the accepted Dretch fixture expose the mistaken nonenemy-versus-IsAlly assumption. Replan uses a separate owned Satyr, explicitly requires IsAlly, and keeps it alive through both removal assertions. No product defect is established; no unchanged retry.
 
 Knowledge(nature) uses native Lore Nature identification with each owner's live
 Intelligence. Satyr has six ranks plus Fey class skill; Lillend has seven native
@@ -148,8 +145,8 @@ P2 findings (nested links/default inclusion) are closed. Full final independent 
 remains pending. Body draft read-only review found no binding/lifecycle blocker;
 corrected exact mesh pin/provenance and deterministic package's two-file count.
 
-Latest transaction `compat-20261025T233432Z-3cd9044ba52e` restored/verified
-23:39:01.1994536UTC. Every new transaction protected Compare PASS:
+Latest transaction `compat-20261026T000117Z-14495ac6b9ff` restored/verified
+00:05:48.4508648UTC. Every new transaction protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam. No owned live
 transaction/game/task remains. Original Unity logs copied before later launches.
 
@@ -160,8 +157,8 @@ PlanSHA `1e23bf148b3129a28f9c7bce99925132cfe65e400841080ddec92c6ed4fcc10d`.
 Protected Compare PASS Mods967/saves118/references18/settings83/tasks0/Steam1.
 Unique ZIPs/raw failures/receipts/backups/saves remain. No active transaction.
 
-Build-Local attempts/validated development packages/native launches:31/21/28.
-Latest full build log elapsed254.175s; preceding unused c6 package259.899s.
+Build-Local attempts/validated development packages/native launches:32/22/29.
+Latest full build256.707s; previous392 build254.175s and unused c6 package259.899s.
 Fresh wrappers265.507s/259.803s/270.071s (total795.381s); native portions
 96.057s/93.497s/103.873s. Focused checks47.569s then correction compile23.5s/tests1s.
 Implementation/observer repair overlapped supervised waiting; complete summed
@@ -178,12 +175,12 @@ Current bounded correction reuses the proven private hostile/wake/combat/native
 activation path for lifecycle setup and records state before failure. Quiet-toggle
 392 failure remains immutable. Focused compilation25.1s and5 selected checks1.1s
 PASS; initial wrong resource namespace compile failure is retained separately.
-Independent read-only fixture review found no concrete blocker: private ownership, native activation, exact surviving recipient, retained references and outer teardown are sound. Native retry remains required; no gameplay rule changed.
+Independent review approved that bounded correction, but native retry failed on the recipient predicate as recorded above. The second-failure replan replaces the ineligible assumed recipient with a positively allied owned summon. Its focused compilation22.8s/tests0.9s PASS5/2753; independent review found no concrete blocker. No gameplay rule changed.
 
 Next selection: one standalone `support-lifecycle` process against the corrected
 candidate, after review/build and verified duplicate cleanup. Target10-15minutes,
 ceiling30minutes including orchestration but never interrupting restoration.
-Required observations: exact external Courage recipient before each source removal,
+Required observations: exact external Courage recipient on a positively allied surviving Satyr before each source removal,
 native expiry/death, sibling isolation, owned resources/items/effects absent, exact
 fixture reset. If setup fails again, use its captured state to narrow the fault;
 do not repeat unchanged. Remaining natural casting/presentation/persistence work
