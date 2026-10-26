@@ -1,3 +1,19 @@
+Sprint32 fixed `lillend-hold` and `lillend-hold-turn` phases use the existing
+save-free Dialog fixture (expected 8 minutes each, runtime 600s). A five-HD
+humanoid, low Will and healthy nearby sibling establish eligible Hold and
+unsafe Sound Burst; only the owner's competing daily Charm SLA is pre-spent.
+Actual natural cast commands, saves, private effects and exact L2 slot debits
+are observed. RTWP reuses the proven exact-actor native round controller for
+caster cooldowns; existing native buff ticks deliver automatic saves. Turn-based uses native game
+controllers without fixture AI/round ticks. After a real failed repeat save,
+a prospective high-Will fixture stat permits a later real successful retry.
+No supplied roll, result, command, refill or rewind establishes either cast.
+A separate fresh caster tests source expiry with a labeled native effect-only
+sibling probe, preserving the original live effect immediately before expiry
+and rejecting source attribution if any exact-effect automatic retry succeeds.
+Finalizers clear exact buff references after verdict, even when caster loss
+has cleared their context. No input/save or Default admission is added.
+
 Sprint32's fixed `lillend-bardic-suggestion` phase extends the existing save-free
 Fascinate/Default fixture with the declared optional-provider profile,
 expected10min/runtime600s. Actual calm geometry, own natural Fascinate, physical
@@ -23,6 +39,9 @@ cooldowns and upkeep-only pool debit are required. An additional native round
 checks active-effect refusal. After those verdicts, one explicitly supplied
 ordinary book cast is a negative integration probe: normal slots/actions,
 hostile memory and Fascinate interruption. It is not natural bardic evidence.
+Only this negative probe temporarily disables PauseOnEngagement, recording
+the intake/current values and restoring the original in finally. The strict
+Default lease still refuses every unexpected mode change.
 The fixture inventories Harmony12 patches on the two bypassed native methods
 and refuses unreviewed patches. Exact retention failure predicates are recorded
 before cleanup. Finalizers restore scoped hooks, injected buffs, exact fixture

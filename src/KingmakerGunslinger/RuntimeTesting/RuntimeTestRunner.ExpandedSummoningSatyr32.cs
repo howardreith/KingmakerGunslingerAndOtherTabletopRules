@@ -68,6 +68,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in ReviewLillendFascinate32(fixture)) yield return frame;
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldTurnPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                bool holdTurn = phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldTurnPhase;
+                if (!holdTurn)
+                    foreach (int frame in ReviewLillendHold32(fixture, false, true)) yield return frame;
+                foreach (int frame in ReviewLillendHold32(fixture, holdTurn, false)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32CantripPhase)
             {
                 CreateExpandedSummoningCorrectionHostile(fixture);
@@ -179,7 +189,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
             bool oldPause = Game.Instance.IsPaused;
-            UnitEntityData owner = null;
+            UnitEntityData owner = null, sibling = null;
             var target = fixture.Hostile;
             int will = target.Stats.SaveWill.BaseValue, ac = target.Stats.AC.BaseValue;
             BlueprintFeature mindImmunity = null;
@@ -207,10 +217,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["action"] = value.RuntimeActionType.ToString(), ["fullRound"] = value.RequireFullRoundAction })) },
                         "The private Satyr at-will SLAs use Standard without the donor spell's full-round flag; mapping receipt, not cast proof.");
                     if (!standard) throw new InvalidOperationException("Satyr private SLA action contract differs.");
-                    var skillSibling = CastExpandedSummoningOwnTier(fixture, "satyr");
-                    Sprint28SetBrainActivePreservingActions(skillSibling, false);
-                    ReadSprint32NatureKnowledge(owner, skillSibling, id + "-nature-knowledge");
-                    DisposeExpandedSummoningUnits(fixture.Created, new[] { skillSibling });
+                    sibling = CastExpandedSummoningOwnTier(fixture, "satyr");
+                    Sprint28SetBrainActivePreservingActions(sibling, false);
+                    ReadSprint32NatureKnowledge(owner, sibling, id + "-nature-knowledge");
                 }
                 for (int frame = 0; frame < 8; frame++) yield return 0;
                 var fear = fixture.Blueprints.OfType<BlueprintAbility>().Single(value =>
@@ -359,6 +368,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             immune ? "Native AI rejects all control against a mind-affecting-immune hostile and fires its real bow without spending Fear; the queried ranged full-attack plan contains no out-of-reach horns." :
                                 "Native AI casts Fear at DC18, spends one owned resource and a normal action, and applies native Frightened.");
                         if (!exact) throw new InvalidOperationException("Satyr native AI observation failed: " + id);
+                        if (!immune)
+                        {
+                            var effect = target.Buffs.Enumerable.Single(value =>
+                                value.Blueprint.name == "KMG_Summoning_FeyCelestial_Satyr_FearFrightenedBuff" &&
+                                ReferenceEquals(value.Context?.MaybeCaster, owner));
+                            var siblingData = new Kingmaker.UnitLogic.Abilities.AbilityData(sibling.Descriptor.Abilities.GetAbility(fear));
+                            foreach (int frame in ReviewFeyControlExpiry32(fixture, owner, sibling, target, effect,
+                                siblingData, UnitCondition.Frightened, () => new JObject {
+                                    ["fear"] = sibling.Descriptor.Resources.GetResourceAmount(resource) }, id)) yield return frame;
+                        }
                     }
                 }
                 finally { EventBus.Unsubscribe(starts); EventBus.Unsubscribe(saves); EventBus.Unsubscribe(attacks); }
@@ -366,7 +385,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally
             {
                 if (turnBased) { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false; Game.Instance.TurnBasedCombatController.Activate(); }
-                if (owner != null) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
+                if (owner != null && !owner.Destroyed) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
                 target.Commands.InterruptAll(true);
                 if (turnBased)
                 {
@@ -383,7 +402,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     UnityEngine.Object.DestroyImmediate(mindImmunity);
                 }
                 target.Stats.SaveWill.BaseValue = will; target.Stats.AC.BaseValue = ac;
-                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }.Where(value => value != null && !value.Destroyed).ToArray());
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray());
                 ResetExpandedSummoningHostile(fixture);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;

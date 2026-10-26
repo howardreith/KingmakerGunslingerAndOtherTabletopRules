@@ -33,6 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             Sprint26TickLife(unit);
             _lillendDazeRoundTicks32?.TickExact(unit);
+            _lillendHoldOwnerTicks32?.TickExact(unit);
         }
         // The existing Dialog fixture clock lacks the native round controller.
         // Its life callback already runs inside the exact-owned Pulse with the

@@ -1772,3 +1772,97 @@ No DATA or machine-wide cleanup. The practical1.1GBpeak+2GBreserve is available
 before the next build. Approx14:52-15:05UTC observer/native-contract diagnosis,
 implementation/review~8min; duplicate verification/cleanup~4min; focusedcompile
 24.5s and18tests0.9s, records~1min. Overlap means exclusive totals unavailable.
+
+
+## 2026-10-26 - candidate60 / native69 positive bardic proof, negative pause
+
+Source `5a1199de6d581f840536336258c5b506a9ae8310`, build60 complete
+15:06:37.2151850-15:10:50.9945779UTC/253.7793929s: wrappers,
+557selected/2754registered, exact-reference compile and strict package PASS.
+ZIP `6d5571e44ad7f6a28acb95a184d5e2d02517f0e26fed61ba35b05f687e8a0420`;
+DLL `709b11028f4eef72323a4e1b7c180deb25838f28c0722c1025e2d673bdf0e127`;
+MVID `5a569287-ec79-465d-bdf4-7679f31dddd9`;
+SourceState `376d55e1d813bb855f243639afa4e313bf203fe45bd3b2156960179e36193094`.
+Generated15:10:49.6832023Z; free3208347648->3056615424B.
+Package `artifacts/development-candidates/sprint32-lillend-support/5a1199de6d58/`.
+Development only, not final qualification. PR74 draft updated at coherent checkpoint.
+
+Native69 **15PASS/3FAIL**. Run
+`20261026T1513509258952Z-8b45bb3e1a1048fcb1892dfe53a838fb`;
+raw `C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1513508945341Z-disposable-expanded-summoning-sprint32-native-review`.
+ResultSHA `7cfe58dae38ee2c8b3fe35a419371fa4aa65d9af330ef6684c32d6b18aa45b99`;
+originalUnitySHA `dbdeac62995fe503c992b2ddb674793a40b7e182c94741e3025ec86775ccd409`.
+Native15:14:03.4649073-15:17:09.5593746UTC/186083ms;
+wrapper15:11:17.7616148-15:17:22.0661832UTC/364.3045684s.
+All positive bardic stages PASS: saved DC17, resisted SR100, real failed Will/
+successful Suggestion CL7/DC17 with419.617s remaining of420s; same exact Fascinate,
+ordinary Standard commands, only native upkeep, L1/L2/L3slots5/4/2 and sibling20.
+One global/aggro/stealth callback per actual attempt. Boundary-injected native
+Invisibility had exact pre/post own-Fascinate admission and was removed by the
+original handler within frame6012. No sustained invisible/entered-stealth claim.
+After another actual native round, completed casts remain3 and active effect
+refuses targeting. No supplied bardic command, roll or dispatcher round.
+
+The subsequent explicitly supplied ordinary-book negative triggers native Pause
+at game43241.384. Strict Default lease refuses continuation and disposal; owned
+fixture finalizer records that failure. Negative cost/slot/memory verdict remains
+unverified; never relabel the lease/finalizer FAIL as restored in-process PASS.
+Outer transaction `compat-20261026T151119Z-587d56ba9095` Restored/verified
+15:17:21.8037457UTC. Protected Compare967Mods/118saves/18refs/83settings/tasks0/
+one unchanged Steam PASS. No owned live game/transaction/task.
+Local original/intake `artifacts/sprint32-bardic-5a1199de/`.
+
+Bounded native contract inspection `bardic-pause32-il.txt` shows
+AutoPauseController.HandlePartyCombatStateChanged consults native
+SettingsRoot.Instance.PauseOnEngagement then pushes Pause. Scope the selected
+negative to that captured setting=false, restore it in finally, retain strict
+foreign-mode refusal. Actual intake setting/value will be recorded by the fixture;
+this is a proposed correction, not a retroactive exact pause-cause observation.
+Batch with private Fear/next Hold fixture instead of continuing a one-correction
+package loop. Positive product evidence in68/69 supports continuing independent
+mechanics. Counts60attempts/49validated/69native; prior gaps unchanged.
+
+### 2026-10-26 15:45UTC - reviewed Fear/Hold/pause batch (not yet native)
+
+Private Satyr Fear Shaken/Frightened terminals preserve the inspected native
+saved/failed branches, durations, save/SR and spell metadata while using the
+existing exact-caster cleanup hooks. Two appended identities; all7508 previous
+entry objects unchanged. No native/provider terminal was mutated.
+
+Focused source gate `expanded-summoning,protection-alignment` final production
+24.3s and570/2754selected tests16.1s PASS (`focused-fear-hold-pause-reviewed.log`).
+Original failures retained: missing runtime identity declarations; mistaken
+historical Sprint3 count94 (corrected back to92); new Hold file missing Bootstrap
+namespace. No package or native execution used those failed intermediate inputs.
+
+Independent actual-diff/installed-contract reviewer sprint32_workflow_review
+found and resolved: historical count change; exact original effect cleanup after
+failed source removal; immediate pre-expiry live-effect recheck; reject Hold
+source attribution after any successful exact-effect automatic save; refuse an
+existing owned clock binding before entering its mutating try. Private Fear
+branches/cardinalities/native metadata and scoped pause-setting restoration
+reviewed. No remaining concrete finding at this boundary.
+
+New fixed Dialog-only lillend-hold/lillend-hold-turn fixtures use real natural
+commands, bard L2 slots, CL7/DC16/42s, five-HD humanoid and nearby healthy sibling
+that excludes unsafe Sound Burst. Only competing Charm SLA is pre-spent. RTWP
+owner cooldowns reuse the proven native unit-round adapter; native buff ticks
+already deliver Hold retries, so no victim adapter was added. Exact RuleReason
+Fact correlates actual repeat saves; low then prospective high Will supports
+failed/successful native outcomes without roll or action replacement. Separate
+fresh source tests native expiry and labeled sibling effect-only isolation;
+TB casting uses zero fixture AI/round ticks. No broader input/save admission.
+Bardic ordinary-book negative now captures/disables/restores only native
+PauseOnEngagement; the strict Default-mode guard remains. All these changed
+scenarios remain pending native execution against a new exact candidate.
+
+At15:46UTC the existing verified cleanup route removed only two closed previous
+S32 build payload/DLL pairs (85,713,318B), two closed S30-31 development package
+extractions (175,417,162B) and closed native69 extraction (99,594,797B), all files
+byte-identical to retained validated ZIPs. Total360,725,277B; free3,208,466,432B.
+Plans6cc85a11c63794d19b02b67cbf5cc2982814d3efe2bb533ca24c84e3d5f6e21a,
+e75cdb77021b571f9e9d03d4c4fa79c73d67ed8d2e2053e99ced8345aecb756b,
+c491f6d9b75a74ccc10fc6334388dd2873bc170185753e735cf5109769a3e27b.
+Protected Capture/Compare PASS967Mods/118saves/18refs/83settings/tasks0/Steam1,
+`artifacts/sprint32-hold-storage/`. Unique archives/PDBs/raw evidence/failures/
+receipts/saves/backups retained; no DATA or personal data changed. No live run.
