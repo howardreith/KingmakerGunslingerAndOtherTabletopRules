@@ -2082,7 +2082,7 @@
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Routes.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Input.cs" /></ItemGroup>
-  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLullaby32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSuggestion32.cs" />
   </ItemGroup>
@@ -2099,5 +2099,9 @@
       <Link>assets\sprint32-support\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Lullaby32.cs" />
+    <Compile Include="Summoning\LillendLullaby32.cs" />
   </ItemGroup>
 </Project>

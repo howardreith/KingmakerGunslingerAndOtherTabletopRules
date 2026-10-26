@@ -1,3 +1,14 @@
+The fixed Sprint32 Lillend-support phase also exercises the owner-approved
+immediate-release Lullaby after the existing support case. Two fresh summons
+reuse the owned low-HD hostile and a surveyed isolated burst. Explicit native
+pre-spends remove competing L2/L3 spells, Courage and Charm SLA; L1 Sleep remains.
+The observer checks ally-overlap/Sleep-immunity refusal, a natural Standard
+cantrip with Will/SR, unchanged independent budgets, -5 Perception and the -2
+Will-only Sleep modifier. Separate native saving-throw probes are not casting
+or action-cost evidence. A paused clock seam ticks only the owned target's buffs
+on either side of the original expiration and restores time before yielding.
+No save access, forced roll, supplied effect or general test subsystem is added.
+
 Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
 `reviewPhase=satyr-control`, `lillend-support`, `satyr-turn`, `lillend-turn` or `optional-suggestion`, with automatic exit. The existing save-free first-area
 fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh

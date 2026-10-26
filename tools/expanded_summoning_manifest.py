@@ -942,6 +942,10 @@ def planned():
         ("KMG.Summoning.FeyCelestial.LillendAzata.Suggestion", "BlueprintAbility"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.SuggestionAi", "BlueprintAiCastSpell"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.SuggestionEligibility", "LillendSpellEligibility32"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.Lullaby", "BlueprintAbility"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.LullabyBuff", "BlueprintBuff"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.LullabyAi", "BlueprintAiCastSpell"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.LullabyEligibility", "LillendSpellEligibility32"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",

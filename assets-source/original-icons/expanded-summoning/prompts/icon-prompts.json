@@ -773,6 +773,13 @@
   "subjectPrompt": "Use case: stylized-concept. Asset type: original square painted fantasy RPG summon portrait, later exported at 128x128. A Pathfinder lillend azata, a celestial bard: an adult elven woman from waist up, with two large soft white feathered wings, seamlessly joined at the waist to one long emerald-green serpentine lower body coiled in a broad readable curve. She wears a modest ivory-and-teal bard's tunic covering her torso; long auburn hair. She plays a small golden harp with her two hands, and a sheathed longsword hangs at her hip. Exactly two human arms, exactly two feathered wings, no human legs, no feet, one snake tail. Compose a single compact full creature within generous margins so both wings and the tail coil remain legible at tiny icon scale. Emphasize the distinctive winged bard and snake silhouette. Rich traditional fantasy oil-paint texture with broad brushwork, soft warm celestial lighting, deep blue-violet atmospheric background. Full-bleed square painting, no circular border, no UI frame, no text, no numbers, no watermark. Recognizably a benign winged serpent-bodied muse, not a mermaid, not a winged human, not a dragon. This is a new project asset; preserve no existing pixels.",
   "generator": "built-in-imagegen",
   "compositionBriefSource": "assets-source/original-icons/expanded-summoning/sprint32-generation.json"
+},
+{
+  "key": "lullaby",
+  "displayName": "Lullaby",
+  "subjectPrompt": "Generate one original square fantasy RPG spell icon for Lullaby, a gentle enchantment that makes creatures drowsy and inattentive, not fully asleep. Painted fantasy illustration with confident broad brushwork, dark indigo background, restrained lavender glow and warm gold highlights, matching a classic isometric RPG spell palette. Single dominant subject: a graceful small gold lyre tilted slightly, its curved upper arms forming a crescent; a soft violet ribbon of sound curling once around it toward one half-closed eye-shaped glow. Strong simple silhouette and ample dark separation, recognizable at 32 pixels. Flat square composition, no UI border or frame, no writing, no letters, no musical notation, no counters, no logos, no tiny ornamental detail, no sleeping character, no violence. The lyre fills about 70% of the image and stays clear of the edges. Original artwork, not copied pixels. Opaque background.",
+  "generator": "built-in-imagegen",
+  "compositionBriefSource": "assets-source/original-icons/expanded-summoning/lullaby-generation.json"
 }
 ]
 }

@@ -14,7 +14,7 @@ using Kingmaker.Utility;
 namespace KingmakerGunslinger.Summoning
 {
     public enum LillendSpellChoice32 { Daze, CharmPerson, Sleep, HoldPerson, SoundBurst,
-        Invisibility, CharmMonster, CureLight, CharmPersonSla, Suggestion }
+        Invisibility, CharmMonster, CureLight, CharmPersonSla, Suggestion, Lullaby }
 
     // Creature-specific choices over the real book/ability, native targeting,
     // and native commands. No spell, slot, save, or effect is supplied by AI.
@@ -23,6 +23,8 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintSpellbook Book;
         public BlueprintAbility Spell;
+        public BlueprintAbility SleepSpell;
+        public BlueprintBuff RefusedBuff;
         public LillendSpellChoice32 Choice;
         public int Level;
         public override float Score(DecisionContext context)
@@ -46,6 +48,15 @@ namespace KingmakerGunslinger.Summoning
                 data = new AbilityData(Spell, book);
             }
             if (!data.IsAvailable || !data.CanTarget(new TargetWrapper(target))) return 0f;
+            if (RefusedBuff != null && target.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, RefusedBuff))) return 0f;
+            if (Choice == LillendSpellChoice32.Lullaby)
+            {
+                // A pre-cast tactical choice, not an HD restriction on Lullaby:
+                // use it to help an available Sleep, never loop on a target that
+                // Sleep cannot affect or spend turns on an exhausted book.
+                if (SleepSpell == null || book == null || book.GetSpontaneousSlots(1) <= 0 ||
+                    !ControlSleepTarget(actor, target, book)) return 0f;
+            }
             if (Choice == LillendSpellChoice32.CureLight)
             {
                 // Reserve the stronger spell for substantial damage while it
@@ -71,16 +82,24 @@ namespace KingmakerGunslinger.Summoning
             if (!SatyrControlEligibility.ControlTargetIsEligible(actor, target, data, hd, condition,
                 charm ? "9dc29118addce3d48ae9b92be953b5b4" :
                 Choice == LillendSpellChoice32.Suggestion ? Sprint32Suggestion.OwnedBuffGuid : null)) return 0f;
-            if (Choice == LillendSpellChoice32.SoundBurst)
+            if (Choice == LillendSpellChoice32.SoundBurst || Choice == LillendSpellChoice32.Lullaby)
             {
                 if (Game.Instance?.State?.Units == null) return 0f;
-                // Preserve the actual all-creature ten-foot blast. Refuse a
+                // Preserve the spell's actual ten-foot footprint. Refuse a
                 // footprint touching any living ally, including the caster.
                 if (Game.Instance.State.Units.All.Any(ally => ally != null && !ally.Destroyed && ally.IsInState &&
                     !ally.Descriptor.State.IsDead && !actor.IsEnemy(ally) &&
                     ally.DistanceTo(target) <= new Feet(10).Meters + Math.Max(0f, ally.Corpulence))) return 0f;
             }
             return 1f;
+        }
+
+        private bool ControlSleepTarget(Kingmaker.EntitySystem.Entities.UnitEntityData actor,
+            Kingmaker.EntitySystem.Entities.UnitEntityData target, Spellbook book)
+        {
+            return book.GetSpellLevel(SleepSpell) == 1 &&
+                SatyrControlEligibility.ControlTargetIsEligible(actor, target,
+                    new AbilityData(SleepSpell, book), 4, UnitCondition.Sleeping, null);
         }
     }
 }

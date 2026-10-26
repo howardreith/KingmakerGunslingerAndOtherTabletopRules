@@ -24,19 +24,17 @@ resources, ownership, cleanup, saved identities and accepted ordinary-map flight
 - Suggestion conditional on active CowWithHat's Custom Spells; omit when absent.
   Its fixed avoid-combat/fascinate-until-harmed behavior, minutes/level, Will/SR
   is the conditional adaptation; unrestricted tabletop instructions are not claimed.
-- **Pending Lullaby decision:** recommended legal cast/immediate concentration
-  release with7-round CL7 tail(2-5active hours), Lillend-only sustained concentration
-  (8-20hours), or explicit omission. No implementation while pending.
-- **Pending noncombat performance decision:** native summon AI selects in combat;
-  Fascinate requires calm conditions. Lillend-only autonomous noncombat dispatcher
-  (6-14active hours with uncertainty), or explicit omission of Fascinate, Inspire
-  Competence and dependent bardic Suggestion. No provisional dispatcher/performance
-  implementation. Conditional spell/SLA Suggestion is independent.
-- **Pending utility decision:** Light, Dancing Lights, Ghost Sound, Hallucinatory
-  Terrain and Detect Magic have no qualified mapping. A summon-owned illumination,
-  illusion/disbelief and aura-sensing subsystem was proposed (24-60 active hours,
-  high uncertainty); recommendation is explicit omission/disclosure. No implementation
-  or omission approval is inferred while the owner decision is pending.
+- **Approved Lullaby:** normal cast with printed10-foot burst, Will/SR,
+  -5 Perception and -2 Will against sleep; immediately release concentration,
+  leaving the CL7 seven-round tail. No sustained concentration subsystem. Private spell/AI implemented; native proof pending.
+- **Approved Lillend-only noncombat dispatcher:** bounded choices before acting
+  for Fascinate (up to3 eligible targets), Inspire Competence and dependent bardic
+  Suggestion. Preserve normal actions,20-round native performance pool, one
+  performance at a time, exact-source ownership, refusal and cleanup. No global
+  AI/control or general performance expansion. Implementation/validation pending.
+- **Approved omissions:** Light, Dancing Lights, Ghost Sound, Hallucinatory Terrain
+  and Detect Magic. Disclose limitations; no illumination, illusion/disbelief or
+  aura-sensing subsystem. Countersong/Darkness omissions above remain unchanged.
 - Exact branch addition to sanctioned push wrapper authorized/applied. No release
   number reserved. Development version0.0.167 remains explicitly candidate-bound.
 - Guarded Steam640820 transactions, current protected intake, immutable baseline,
@@ -51,7 +49,7 @@ Lillend has adult Outsider7/HP73/AC20, Large +1 sword/secondary tail with accept
 shared grab/constrict, bard7 book5/4/2, independent20-round Move Courage,
 healing/control and ally-safe Sound Burst eligibility. Ten legal roots are
 published for development;1150 prior roots remain. Product scope and final
-qualification are incomplete, including pending decisions above.
+qualification are incomplete, including the approved additions above.
 
 Supported-profile limits: native Persuasion/Perception combine printed social/
 Sense Motive skills; Knowledge(nature) uses own Intelligence. No Survival,
@@ -59,27 +57,27 @@ Disguise, Perform or Fly stat is substituted. The accepted ordinary-map airborne
 adaptation has no separate Hover fact or aerial maneuverability consumer.
 Source profiles: [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
-Printed utility spell/SLA omissions are undergoing final charter-filter
-reconciliation; do not infer complete printed spell/feat/skill coverage from
-these adult stats. Lullaby and noncombat performances retain pending decisions.
+Printed utility omissions above are now explicitly owner-approved. Do not infer
+complete printed spell/feat/skill coverage from these adult stats. Lullaby is implemented with focused compilation PASS and native proof pending.
+Noncombat performances remain required implementation, not pending permission.
 
-Current validated development candidate is `51cf0e58443ce568b39e25b624c977e2f5fa9775`:
-ZIP `6f692e3349cf00d9a666b77bff69ccf12633db75811949b96d1a00d25e6606de`;
-DLL `850a381da85923180f16b4acbd1e45630ede655079f2fafd2df50f26e2d8a03a`;
-MVID `f8923dc5-a29f-4401-a2e5-6a67a5a2963f`;
-SourceState `477f52a8423e7fec23998a70b8edeac2c8d25c6660ff37484ba60aeef34dfcdc`.
-Path `artifacts/development-candidates/sprint32-lillend-support/51cf0e58443c/`.
+Current validated development candidate is `4b509d67b811ed1b158d7f895920331e42ab1161`:
+ZIP `735aade490711869489642d676dcae24a365130e6cff9ac6c7642211f7c3b2db`;
+DLL `15b30d91b6b2b7e966ac660643356fed2c1bd28460ff9d0977c2a8ac1a9c4fc3`;
+MVID `ce8969d4-b262-4a77-8c49-9bafab41c608`;
+SourceState `551811cbe74d60e3d226e1cbd69b43252268e3daaedd46809db9ce2267f06ba4`.
+Path `artifacts/development-candidates/sprint32-lillend-support/4b509d67b811/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
 419-file package PASS. Development version0.0.167; no release qualification.
-Current input observer and Satyr SLA corrections are newer source, not execution
-on that package. Prior results retain their exact dependency limits.
+Input observer and Satyr SLA corrections are compiled in that package. Its three
+native input paths passed; the new private Satyr SLA action assertions have not
+yet executed. Prior results retain their exact dependency limits.
 
 | Evidence | Result and dependency limit |
 |---|---|
 | Reviewed reuse: bcd support lifecycle | PASS15/15. Both scheduler expiries, death cleanup after native RecentlyDeadBuff expires, external Courage removal, sibling isolation and exact reset pass. Death waits12.065/12.104wall seconds,12game seconds. `artifacts/sprint32-support-lifecycle-bcd41d04/` |
-| Fresh51cf Lillend support | PASS13/13. Natural Courage, selfheal and actual party-ally heal18-to0; independent level3 slots2-to1-to0, Standard cost plus exact free first-round touch delivery; sibling untouched; offensive fallback and owned body cleanup. `artifacts/sprint32-lillend-support-51cf0e58/` |
-| Reviewed6faa Druid input | PASS28/FAIL3 overallFAIL. All4 real casts pass: preparedOne and convertedOne/d3/d4+1; exact combat cost/slot/legal quantity/120s and unit resets. Final UI restoration aggregate fails, while outer installation/save/profile restore passes. Exact failing UI conjunct not recorded; Wizard/Sorcerer held. `artifacts/sprint32-druid-input-6faa9ba3/` |
-| Fresh51cf Wizard input | PASS14/FAIL2 overallFAIL. Visible native command/slot/cost/quantity/base duration and UI finalizers succeed, but aggregate cast fails. Observer incorrectly treats all possible spawn leaves as executed count; exact unreported failed conjunct cannot be recovered. Corrected against registered identity; required rerun pending. `artifacts/sprint32-wizard-input-51cf0e58/` |
+| Reviewed reuse:51cf Lillend support | PASS13/13. Natural Courage, selfheal and actual party-ally heal18-to0; independent level3 slots2-to1-to0, Standard cost plus exact free first-round touch delivery; sibling untouched; offensive fallback and owned body cleanup. `artifacts/sprint32-lillend-support-51cf0e58/` |
+| Fresh4b509d67 native input | Wizard16/16, Sorcerer28/28, Druid31/31 PASS. Real visible menu/target input: prepared Lillend; spontaneous Lillend One/d3/d4+1; prepared Satyr plus converted One/d3/d4+1. Exact source slots/actions/legal quantities/120s/zero bonus and subcase reset/UI finalizers. No supplied acts or manual command ticks. `artifacts/sprint32-{wizard,sorcerer,druid}-input-4b509d67/` |
 | Reviewed reuse:2d90 RTWP12/12 and turn10/10 | Natural Move Courage and actual ally+2/enemy exclusion; Standard self-healing18-to0/own level3 slots2-to1/sibling2; useful fallback; completed sword/sword/tail acts; live Nature and sibling isolation. Player-ally healing is established separately on51cf. |
 | Reviewed reuse:392 public prepared routes | Satyr six SNA tiers and Lillend four SM tiers; legal quantities, one slot per cast,120s duration, body/icon/selection. Helper pumps native commands; no natural-input timing claim. |
 | Reviewed reuse:Satyr control and optional Suggestion | Fear, immunity refusal and bow/dagger/horns fallback in both modes. Provider Suggestion natural DC17/CL8 Satyr and DC16/CL7 Lillend, normal actions/duration/own slot and active-effect refusal. Positive Will/high SR, expiry/damage break and provider cold load NOT_RUN. |
@@ -118,50 +116,63 @@ positive/negative admission checks. Concluded-campaign selectors/quotas no longe
 block Sprint32. Prior independent tooling findings were corrected. Final coherent
 product/rules/coverage review is still pending.
 
-The live StickyTouch source capture passed self/party-ally healing on51cf. The
-quiet exact-owned anchor and finalizer predicates passed Wizard43. Independent
-review then found a concrete observer error: Spawns enumerates all conditional
-leaves, not executed actions. The corrected assertion binds all modeled leaves
-and actual units to the independently registered creature, forbids hidden spawns,
-and preserves exactly one actual cast/spawn plus quantity, duration, slot and
-cost requirements. Missing old conjunct values remain unknown; original FAIL
-is immutable. Reviewer accepted this correction.
+The live StickyTouch source capture passed self/party-ally healing on51cf.
+The corrected input observer passed all three4b509d67 paths. Wizard/Sorcerer
+actually have two modeled branches, each naming the exact Lillend, but one native
+spawn action; Druid has one modeled leaf. Original aggregate failures remain
+immutable. Independent review accepted the corrected graph/cost/slot contract.
 
-Private Satyr Charm Person/Sleep now explicitly enforce Standard/non-full-round
-SLA action rules; Lillend's actual bard spells are unchanged. Existing evidence
-never recorded native Sleep's flag, so this is a source-contract correction,
-not a proven historical execution failure. Existing Satyr cases now inspect
-runtime action mappings; natural Sleep cost still needs required control coverage.
-[SLA rule](https://www.aonprd.com/UMR.aspx?ItemName=Spell-Like+Abilities).
-The unapproved claim that Dancing Lights/Ghost Sound were charter-filtered was
-removed. Their explicit disposition remains pending.
+Private Satyr at-will SLAs explicitly use Standard/non-full-round; existing
+runtime mapping assertions and natural Sleep cost remain to execute. Lillend's
+bard spells are unchanged. [SLA rule](https://www.aonprd.com/UMR.aspx?ItemName=Spell-Like+Abilities).
+Independent dispatcher review identified native targeted Competence ownership,
+private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
+exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
+performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T030229Z-7b9473123752` restored/verified
-03:07:01.1836699UTC. Both51cf runs protected Compare PASS:
+Latest transaction `compat-20261026T033944Z-f026c486da9e` restored/verified
+03:44:47.5069045UTC. All three4b509d67 protected Compare PASS:
 Mods967/saves118/references18/settings83/tasks0/one unchanged Steam.
 No owned live transaction/game/task remains. Original Unity logs retained.
 
-Build attempts/validated development packages/native launches:38/28/43.
-Latest build259.647s; wrappers289.365s/273.711s, native122.433s/104.740s.
-For02:50-03:21, approximate build/package4.3min, native setup/execution/restoration
-9.4min, observer/source review and repair8min, storage/records8min; overlapping
-categories are not additive. Earlier complete totals unavailable. Owner waiting
-continues, is not approval, and did not block independent work.
+Build attempts/validated development packages/native launches:39/29/46.
+Latest build260.408s; input wrappers278.947s/299.582s/305.221s;
+native106.262s/129.664s/138.045s. For03:07-03:46, approximate implementation/
+records10min, observer review/repair8min, approved-feature contract research10min,
+build/package4.3min, native setup/execution/restoration14.7min, storage4min;
+activities overlap and are not additive. Earlier complete totals unavailable.
+All owner scope decisions are now answered; no waiting treated as approval.
 Disk minimum remains1.1GB peak plus2GB margin. Verified closed-build duplicate
-cleanup03:18:29.2309493UTC reclaimed1,138,981,599B; free4,106,891,264B.
-All54 selected staging folders/DLL copies were byte-identical to retained validated
-ZIPs. Unique PDBs/packages/receipts/logs/raw evidence/backups/saves retained.
-Protected Compare PASS; exact plan receipt and initial preview refusal in history.
+cleanup reclaimed1,138,981,599B with protectedComparePASS. The five closed input-proof extraction copies were byte-verified and removed
+03:48:39.5915213UTC, reclaiming496,600,365B; protectedComparePASS.
+Free3,821,506,560B immediately after cleanup;3,921,928,192B at04:05UTC.
+Unique packages/PDBs/raw evidence/receipts/backups/saves remain retained.
 
-Next: build the coherent input/SLA correction once; run required Wizard, then
-Sorcerer and affected Druid input phases in separate guarded processes. Planned
-20-30minutes plus build; each retains10-15minute target/30minute ceiling and exact
-restoration. No diagnostic-only or unchanged repeat. Continue required Satyr
-control/Sleep, Lillend control/constrict, gameplay presentation, cold ON/OFF
-persistence and affected integration. Pending subsystem rows stay pending.
-Final qualification requires remaining coherent evidence review and one frozen
-complete-gate candidate, with separate records where identity guards require them.
+Next: run the reviewed Lullaby addition within the existing standalone Lillend-
+support phase (expected10minutes, runtime600s ceiling), then implement the
+approved Lillend-only dispatcher and prove its uncertain native seams early.
+Batch coherent mechanics and existing fixture adaptations. Required remaining
+cases include Satyr Sleep/control, Lillend control/constrict, gameplay presentation,
+cold ON/OFF persistence and directly affected integration. Reuse input evidence
+only after checking actual changed dependencies. Final qualification still needs
+remaining coherent evidence review and one frozen complete-gate candidate, with
+separate records where identity guards require them. Do not start Sprint33.
 
 Prior v0.0.167 gaps stay **NOT_RUN**: grouped all30 public-route/body/icon,
 standalone final integration and highest-risk combined final integration.
 [Original dispositions](../docs/SPRINT30-31-COVERAGE.md) are not a Sprint32 waiver.
+
+Lullaby prepackage: private Standard cantrip, living10ft burst, native Will/SR,
+CL-round finite tail, Perception-5 and Will-only Sleep-2; useful-Sleep/ally-safety/
+active-effect AI guards. Independent review found inherited duration tooltip;
+corrected. Production compile24s and5selected tests/4.5s PASS. One prior observer
+compile failed on invented UnitUseAbility.Ability; corrected to installed Spell.
+Original error retained; no native failure. Icon catalog/137prior unchanged
+records PASS; new Lullaby original and32/48/64/128px previews inspected. Native
+mechanics/visual results remain NOT_RUN for these changed bytes.
+
+Independent fixture review found no dispatch blocker. The owned target now has
+disclosed native SR5 and each natural cast must produce an exact nonimmune,
+nonresisted SR5 event; zero events cannot claim SR proof. This final fixture
+addition awaits the candidate build. RTWP proof does not qualify turn-based
+execution or secondary burst recipients.
