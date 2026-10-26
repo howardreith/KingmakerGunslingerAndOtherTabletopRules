@@ -273,7 +273,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             while (DateTime.UtcNow < appearanceDeadline && (!courageRecipient.Descriptor.State.CanAct ||
                 courageRecipient.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null))
             { Game.Instance.IsPaused = false; yield return 0; }
-            PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 8f);
+            PlaceExpandedSummoningUnit(target, actor.Position + Vector3.forward * 2f);
             foreach (var unit in new[] { actor, courageRecipient, fixture.Caster, target })
             {
                 unit.Wake(0f);
@@ -289,17 +289,25 @@ namespace KingmakerGunslinger.RuntimeTesting
             var resource = fixture.Blueprints.OfType<Kingmaker.Blueprints.BlueprintAbilityResource>().Single(value =>
                 value.name == "KMG_Summoning_FeyCelestial_LillendAzata_PerformanceResource");
             var command = new UnitActivateAbility(performance);
+            int playerAttackBefore = fixture.Caster.Stats.AdditionalAttackBonus.ModifiedValue;
+            Func<UnitEntityData, Buff[]> effects = unit => unit.Buffs.Enumerable.Where(buff => buff.Active && !buff.IsDisposed &&
+                buff.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_CourageRecipient" &&
+                ReferenceEquals(buff.Context?.MaybeCaster, actor)).ToArray();
             bool admitted = actor.Descriptor.State.CanAct && courageRecipient.Descriptor.State.CanAct &&
                 courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead && actor.IsInCombat && fixture.Caster.IsInCombat &&
-                actor.IsAlly(courageRecipient) && actor.HasLOS(courageRecipient) && performance.IsAvailable &&
+                actor.IsAlly(courageRecipient) && fixture.Caster.IsPlayerFaction && !actor.IsAlly(fixture.Caster) && !actor.IsEnemy(fixture.Caster) &&
+                actor.IsEnemy(target) && actor.HasLOS(courageRecipient) && actor.HasLOS(fixture.Caster) && performance.IsAvailable &&
                 !performance.IsOn && !performance.IsRunning;
             if (admitted) actor.Commands.Run(command);
             var deadline = DateTime.UtcNow.AddSeconds(12);
             while (admitted && DateTime.UtcNow < deadline &&
-                (Sprints3031OwnedAreaCount(actor) == 0 || recipients(actor).Length != 1))
+                (Sprints3031OwnedAreaCount(actor) == 0 || recipients(actor).Length != 1 || effects(fixture.Caster).Length != 1))
             { Game.Instance.IsPaused = false; yield return 0; }
-            bool ready = admitted && performance.IsOn && performance.IsRunning &&
-                Sprints3031OwnedAreaCount(actor) > 0 && recipients(actor).Length == 1;
+            var areas = Game.Instance.State.AreaEffects.All.Where(area => area != null && ReferenceEquals(area.Context?.MaybeCaster, actor)).ToArray();
+            bool enemyInArea = areas.Length == 1 && actor.DistanceTo(target) < areas[0].Blueprint.Size.Meters;
+            bool ready = admitted && performance.IsOn && performance.IsRunning && enemyInArea &&
+                Sprints3031OwnedAreaCount(actor) > 0 && recipients(actor).Length == 1 && effects(fixture.Caster).Length == 1 &&
+                fixture.Caster.Stats.AdditionalAttackBonus.ModifiedValue == playerAttackBefore + 2 && effects(target).Length == 0;
             Sprint25Check("lifecycle-lillend-" + stage + "-activation-ready", ready, new JObject {
                 ["source"] = actor.UniqueId, ["recipient"] = courageRecipient.UniqueId,
                 ["admitted"] = admitted, ["canAct"] = actor.Descriptor.State.CanAct,
@@ -308,6 +316,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["recipientInCombat"] = courageRecipient.IsInCombat, ["hostileInCombat"] = target.IsInCombat,
                 ["allyLos"] = actor.HasLOS(courageRecipient), ["distanceMeters"] = actor.DistanceTo(courageRecipient),
                 ["nativeIsAllyRecipient"] = actor.IsAlly(courageRecipient), ["nativeIsAllyCaster"] = actor.IsAlly(fixture.Caster),
+                ["casterPlayerFaction"] = fixture.Caster.IsPlayerFaction, ["exactPlayerRecipients"] = effects(fixture.Caster).Length,
+                ["playerAttackBefore"] = playerAttackBefore, ["playerAttackAfter"] = fixture.Caster.Stats.AdditionalAttackBonus.ModifiedValue,
+                ["enemyRecipients"] = effects(target).Length,
+                ["nativeIsEnemyTarget"] = actor.IsEnemy(target),
+                ["enemyInsideRadius"] = enemyInArea, ["enemyDistanceMeters"] = actor.DistanceTo(target),
+                ["nativeAreaRadiiMeters"] = new JArray(areas.Select(area => area.Blueprint.Size.Meters)),
                 ["isOn"] = performance.IsOn, ["isRunning"] = performance.IsRunning, ["available"] = performance.IsAvailable,
                 ["rounds"] = actor.Descriptor.Resources.GetResourceAmount(resource),
                 ["command"] = new JObject { ["started"] = command.IsStarted, ["acted"] = command.IsActed,
@@ -315,7 +329,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["areas"] = Sprints3031OwnedAreaCount(actor),
                 ["exactExternalRecipients"] = recipients(actor).Length,
                 ["sourceState"] = Sprints3031LifecycleState(actor), ["suppliedEffectsOrCosts"] = false },
-                "A fixture-issued native activation in the owned encounter establishes the exact external recipient before source removal; state is retained on failure.");
+                "A fixture-issued native activation supports the owned allied summon and player-faction caster with actual +2, excludes the hostile, and establishes exact external recipients before source removal; state is retained on failure.");
             if (!ready) throw new InvalidOperationException("Lifecycle Courage activation prerequisite failed: " + stage);
         }
 
