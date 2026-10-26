@@ -31,7 +31,8 @@ resources, ownership, cleanup, saved identities and accepted ordinary-map flight
   for Fascinate (up to3 eligible targets), Inspire Competence and dependent bardic
   Suggestion. Preserve normal actions,20-round native performance pool, one
   performance at a time, exact-source ownership, refusal and cleanup. No global
-  AI/control or general performance expansion. Implementation/validation pending.
+  AI/control or general performance expansion. Competence/Fascinate early native
+  proof passes; remaining boundaries, cold state and final qualification are pending.
 - **Approved omissions:** Light, Dancing Lights, Ghost Sound, Hallucinatory Terrain
   and Detect Magic. Disclose limitations; no illumination, illusion/disbelief or
   aura-sensing subsystem. Countersong/Darkness omissions above remain unchanged.
@@ -68,14 +69,19 @@ Printed utility omissions above are now explicitly owner-approved. Do not infer
 complete printed spell/feat/skill coverage from these adult stats. Lullaby has focused compilation and native RTWP proof on the candidate below.
 Noncombat performance source implementation is underway, not pending permission.
 
-Current validated development candidate is `a333ab3f72324419c493b8ef4d7064a4d4257039`:
-ZIP `e2b20e91ea371a31ccdcccac755714d3ce57625ca1f116a88339a2f19c322d6b`;
-DLL `cbcd1d21791e3392f0baefcf1df59e7f2aaf5f4ea5de077fa5db22be78cd1932`;
-MVID `946a7f46-5b60-46b4-b461-1aec09766797`;
-SourceState `fdbc665fae7cf5e5ecf6b12ae1635fd7494f630e07e62b72c84c7c0274a4d519`.
-Path `artifacts/development-candidates/sprint32-lillend-support/a333ab3f7232/`.
+Current validated development candidate is `4978654855f0389bf359b16fe9fc620ebce4bb8b`:
+ZIP `aec7ba9f6ca962c6578d1723b3c508d63a3e580d0a8a1d49b5ed184f3a5c8e10`;
+DLL `b1b23523fb197cf5409ff3c33971eed4076dacb8d7bf7faf03aa38755ae955f4`;
+MVID `ca80b0c6-0fcb-4dfe-9783-b02681858753`;
+SourceState `159abdd91481bad5d92194501a7fe436a581934137aacbd9a8b21b7e8d39d3f1`.
+Path `artifacts/development-candidates/sprint32-lillend-support/4978654855f0/`.
 Wrappers,557 selected/2753 registered checks, exact-reference compile and strict
-package PASS. Development version0.0.167; no release qualification. Native55
+package PASS. Development version0.0.167; no release qualification. Native57
+extended Fascinate PASS24/24: early control/refusal plus cap3, frozen selection,
+real24h source resistance deadline, normal touch Shake Free, new activation
+refusal, actual approach/one save per subject per command, visible bard spell
+threat, sibling isolation and exact marker/helper/area/command cleanup. No actual
+24h expiry or cold persistence claim. Native55
 Fascinate PASS13/13: natural calm boundary and brain refusal, normal Move,
 native20-to19-to18 upkeep, real failedWillDC17/noSR, exact effect/-4Perception,
 cancellation and immune-target natural Competence fallback. Native56 Competence
@@ -169,14 +175,13 @@ private Fascinate cap/source-immunity/threat/-4 Perception corrections, and an
 exact-source bardic Suggestion threat exception/DC17/no-slot adapter. No general
 performance or testing infrastructure is authorized or planned.
 
-Latest transaction `compat-20261026T085601Z-8274b745a4ac` restored/verified
-09:00:44.3958645UTC. Protected Compare PASS: Mods967/saves118/references18/
+Latest transaction `compat-20261026T092856Z-bfba4ca3e4d1` restored/verified
+09:34:31.2354205UTC. Protected Compare PASS: Mods967/saves118/references18/
 settings83/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Original native52-56 Unity logs and raw results are retained.
+Original native52-57 Unity logs and raw results are retained.
 
-Counts:48 Build-Local attempts /37 validated development packages /56 native
-launches. Build48 took261.027s; native55 wrapper277.476s/native113.690s;
-native56 wrapper284.183s/native119.447s.
+Counts:49 Build-Local attempts /38 validated development packages /57 native
+launches. Build49 took255.460s; native57 wrapper336.777s/native173.783s.
 Earlier durations remain in history. Full inexpensive2753-test final gate
 has not run on these inputs. Earlier complete work-category totals unavailable.
 For07:39-08:10 approximate implementation/fixture14min, contract review5min,
@@ -195,7 +200,8 @@ At07:09UTC,23 fully byte-verified closed extractions reclaimed1,471,067,833B;
 free4,339,953,664B and protectedComparePASS. Never use the emergency floor
 as the working target. At08:55UTC, nine fully byte-verified closed v160 extracts
 reclaimed744,523,803B, free3,808,940,032B, protectedComparePASS. After native56,
-free3,598,626,816B. Exact cleanup identities remain in history/local receipts.
+free3,598,626,816B; after native57,3,256,246,272B. Exact cleanup identities
+remain in history/local receipts.
 
 Native50/52 attachment failures triggered installed-contract review. Native54
 now proves the private periodic Buff/AddFacts dispatcher, normal command and
@@ -223,15 +229,15 @@ Corrected product/fixture production23.5s/6tests0.8sPASS; catalog30/30PASS.
 Actual-diff independent review found two concrete issues. Per-target initial
 eligibility is now rechecked after command delay (no new ally/independently Dazed
 target is affected). The native bardic Suggestion offensive-memory conflict needs
-the additional owner decision above. Early native Fascinate proof now PASS;
-bardic proof and the remaining Fascinate boundaries are NOT_RUN.
+the additional owner decision above. Native Fascinate's declared extended
+boundaries now PASS; bardic proof, combat-entry races and cold state remain open.
 
 Independent fixture review is closed: the complete eligible set must contain only
 the owned hostile before/after quiet Default time; all actual player groups are
 checked; fallback must finish successfully with normal Move flags and one cost
 observation. This is source-review closure, not native proof.
 
-The current fixture extension is newer than the candidate: two bounded groups
+The current candidate includes the reviewed fixture extension: two bounded groups
 on fresh sources cover cap/frozen selection/resistance/ShakeFree, then actual
 movement/spell threats and sibling source cleanup. Independent assumption review
 is closed. Its first compile caught only List-versus-array in an existing save
@@ -240,11 +246,30 @@ not HashSet enumeration order. Native UnitMoveTo deliberately ignores cooldowns;
 the reviewed cue observes successful displacement and per-command saves without
 inventing an action debit. Corrected production23.1s/6tests1sPASS. Nominal sequence
 fits fresh120s summons; unexpected expiry is classified before product changes.
-No new package/native execution is claimed.
+Native57 passed all24 observations on this exact package, with actual movement
+0.9409m and native ignored-cooldown semantics; each of three affected subjects
+received exactly one additional failed save. Self CureLight spent level1 slot5-to4,
+healed5-to0 and removed all three effects. Original pool14 stayed unchanged while
+sibling spent20-to19; original marker removal preserved three sibling facts.
+Four helper grants and all owned live areas/effects/commands cleaned up.
 
-Next: one candidate for the reviewed extended phase, expected10min/runtime600s.
-Retain native55/56 as early proof,
-not final qualification. The book
+Next selected checks: `satyr-atwill` then `satyr-atwill-turn`, each expected10min/
+runtime600s, on one unchanged development candidate after independent fixture
+review. The new bounded fixture uses actual native2HD subjects (three enemies
+and one allied burst subject), then a5HD Charm target. One Fear setup debit and
+Charm-only target immunities isolate natural at-will choices; a5HD ineligible
+hostile sentinel preserves combat for real Standard/non-full-round cost.
+Actual saves/CL8/DC15, shared4HD Sleep budget, ally exclusion, current-effect
+refusal, independent pools and exact-source native expiry are grouped in each
+mode. Policy refusal is not a second-cast claim. It adds no Default/input/save
+admission, forced rolls, supplied casts or product rules. Original cleanup FAIL
+rows can remain while a safely reset independent case proceeds. Exact buff
+references prevent cleared caster pointers from hiding or contaminating an
+orphan. First compile caught a namespace/observer-constructor mismatch; corrected
+production23.4s and6 focused tests4.3sPASS. Subsequent review edits require their
+final focused compile. These cases are not yet executed. Retain native55/56/57
+as development proof, not final qualification.
+The book
 creation/settle/AddPostLoadActions correction still needs provider/cold proof.
 The memory exception decision is pending; do not implement it provisionally.
 Native54's early useful dispatcher proof permits
