@@ -14,6 +14,10 @@ no synthetic response JSON, supplied roll or command establishes those states.
 Disclosed native budget spends are persistence preconditions, with exact expected
 post-spend values. The first selection requires a settled absent provider;
 provider transitions and other private controls are not covered by it.
+The generic appearance observer leaves native Pause active. Preparation admits
+only Pause over Default or Default, records each boundary predicate, and waits
+for native unpause (at most30frames/3seconds) before enabling a dispatcher.
+Unexpected modes/combat/ownership refuse without forcing a mode or saving.
 Cold observation precedes deliberate time advances and rechecks live state before
 primary-source removal/sibling isolation. Native visual/effect cleanup uses the
 existing resource receipts; their manual equipment disposal does not prove native
@@ -33,7 +37,10 @@ controllers without fixture AI/round ticks. After a real failed repeat save,
 a prospective high-Will fixture stat permits a later real successful retry.
 No supplied roll, result, command, refill or rewind establishes either cast.
 A separate fresh caster tests source expiry with a labeled native effect-only
-sibling probe, preserving the original live effect immediately before expiry
+sibling probe at the vacated surveyed sibling point. Native creation Tick,
+walkability/separation, living identity, faction, ability availability and CanTarget
+remain mandatory. LOS/memory are not a precondition for this supplied effect and
+no second casting/reach claim is made. Preserve the original live effect immediately before expiry
 and rejecting source attribution if any exact-effect automatic retry succeeds.
 Finalizers clear exact buff references after verdict, even when caster loss
 has cleared their context. No input/save or Default admission is added.

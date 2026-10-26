@@ -443,46 +443,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint28SetBrainActivePreservingActions(sibling, false);
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
                 game.TurnBasedCombatController.Activate(); game.IsPaused = false;
+                // This is an effect-only source-isolation probe. Reuse the
+                // sibling's surveyed point; no second cast, LOS, acquisition,
+                // approach or action claim is made from the supplied effect.
+                var vacated = sibling.Position;
+                var nearest = AstarPath.active.GetNearest(vacated);
+                if (nearest.node == null || !nearest.node.Walkable ||
+                    Vector3.Distance(nearest.clampedPosition, vacated) > .3f ||
+                    Vector3.Distance(nearest.clampedPosition, target.Position) < .8f)
+                    throw new InvalidOperationException("Vacated sibling point is not a separate walkable control-probe position.");
                 PlaceExpandedSummoningUnit(sibling, owner.Position);
-                var direction = (target.Position - sibling.Position).normalized;
-                var side = Vector3.Cross(Vector3.up, direction).normalized;
-                Vector3? place = null;
-                // The original three offsets can all lie outside this narrow
-                // lane. Reuse its already surveyed direction with a finite set
-                // of closer points; every candidate still needs native nav/LOS.
-                var candidates = new List<Vector3> { target.Position + side * 1.2f,
-                    target.Position - side * 1.2f, target.Position - direction * 1.2f };
-                foreach (float distance in new[] { .9f, 2f, 3f, 4f, 5f })
-                    foreach (float lateral in new[] { 0f, .9f, -.9f })
-                        candidates.Add(target.Position - direction * distance + side * lateral);
-                foreach (var candidate in candidates)
-                {
-                    var nearest = AstarPath.active.GetNearest(candidate);
-                    if (nearest.node == null || !nearest.node.Walkable || Vector3.Distance(nearest.clampedPosition, candidate) > .3f ||
-                        Vector3.Distance(nearest.clampedPosition, target.Position) < .8f ||
-                        !sibling.HasLOS(nearest.clampedPosition + Kingmaker.Visual.FogOfWar.LineOfSightGeometry.EyeShift, sibling.Position)) continue;
-                    place = nearest.clampedPosition; break;
-                }
-                if (!place.HasValue) throw new InvalidOperationException("Separate control probe has no walkable visible point.");
-                probeTarget = game.EntityCreator.SpawnUnit(fixture.HostileBlueprint, place.Value, Quaternion.identity, fixture.Scene);
+                probeTarget = game.EntityCreator.SpawnUnit(fixture.HostileBlueprint,
+                    nearest.clampedPosition, Quaternion.identity, fixture.Scene);
                 fixture.Created.Add(probeTarget); Sprint28SetBrainActivePreservingActions(probeTarget, false);
                 prepareProbe?.Invoke(probeTarget);
                 probeTarget.Stats.HitPoints.BaseValue = 100000;
                 foreach (var actor in new[] { sibling, probeTarget })
                 { actor.Wake(0f); if (!game.State.AwakeUnits.Contains(actor)) game.State.AwakeUnits.Add(actor); }
-                sibling.Memory.Add(probeTarget); probeTarget.Memory.Add(sibling);
-                var memory = new Kingmaker.Controllers.Units.UnitMemoryController();
-                var readyLimit = DateTime.UtcNow.AddSeconds(8); int frames = 0;
-                do
-                {
-                    game.IsPaused = false; yield return 0; frames++;
-                    sibling.SightCache.ClearIfNeeded(); probeTarget.SightCache.ClearIfNeeded(); memory.Tick();
-                } while (DateTime.UtcNow < readyLimit && (frames < 8 || !sibling.HasLOS(probeTarget) ||
-                    !sibling.Memory.ContainsVisible(probeTarget)));
-                bool eligible = sibling.IsEnemy(probeTarget) && sibling.HasLOS(probeTarget) &&
-                    sibling.Memory.ContainsVisible(probeTarget) && siblingData.IsAvailable &&
+                // SpawnUnit queues native creation; finish that existing seam before checking live state.
+                game.EntityCreator.Tick();
+                bool eligible = !ReferenceEquals(probeTarget, target) && probeTarget.IsInState &&
+                    !probeTarget.Destroyed && !probeTarget.Descriptor.State.IsDead &&
+                    sibling.IsEnemy(probeTarget) && siblingData.IsAvailable &&
                     siblingData.CanTarget(new TargetWrapper(probeTarget));
-                if (!eligible) throw new InvalidOperationException("Separate native sibling control probe is not eligible.");
+                if (!eligible) throw new InvalidOperationException("Separate native sibling effect probe is not eligible.");
                 probe = ApplySprint12Buff(probeTarget, original.Blueprint, sibling,
                     TimeSpan.FromSeconds(48), original.Context.Params.DC).AppliedBuff;
                 double probeEnd = probe?.EndTime.TotalSeconds ?? 0;
@@ -519,6 +503,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["originalDisposed"] = original.IsDisposed, ["conditionCleared"] = !target.Descriptor.State.HasCondition(condition),
                     ["sibling"] = sibling.UniqueId, ["probeTarget"] = probeTarget.UniqueId,
                     ["probeHd"] = probeTarget.Descriptor.Progression.CharacterLevel,
+                    ["probePointKind"] = "vacated surveyed sibling point; no LOS or casting claim",
                     ["probeEligible"] = eligible, ["siblingEffectPreserved"] = isolated, ["probeEnd"] = probeEnd,
                     ["sourceRemovalAttribution"] = attribution,
                     ["siblingBudgetBefore"] = budget, ["siblingBudgetAfter"] = siblingBudget(),

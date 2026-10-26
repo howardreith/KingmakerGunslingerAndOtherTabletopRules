@@ -1989,3 +1989,141 @@ MVID767963a0-89fd-4679-a5b0-22f521c9823c; outer source-only rerun11 PASS.
 Logs native-parser-persistence-reviewed.log and persistence-admission-reviewed.log.
 Tooling/admission is separately committed as f66348c0; coherent product/fixture
 commit and one candidate build follow. Final qualification remains pending.
+
+## 2026-10-26 candidate62, native71–73 and bounded observer replan
+
+Source f5756a4ac9c1e3d19543da0953c434a48ad981b2 follows separately identifiable
+workflow admission commit f66348c0. Build62 16:56:05.8169916–17:00:48.3926193UTC,
+282.5756277s; development wrappers,558/2755selected, pinned-reference compilation
+and strict ZIP PASS. Free3,126,722,560→2,972,553,216B. ZIP
+bf93d301ea89fc244735768c5588871a63b49ad91943905780d9c09aeec314c7;
+DLL080e8b9a4378a9124364121cf4523496c81958631e24fd0f168a8253541e9918;
+MVIDaf560466-8d61-417c-881e-bf0bf5828b31;
+SourceStatea91887ef1ebf4bafc06fcb1126b755aa7c91a75c4d237b0a274a21e60b565051.
+Exact compiled parser21 admission/refusals PASS. Local build-persistence-f5756a4a
+logs/exit and native-parser-persistence-candidate62.log retained. No final gate.
+
+Native71 Hold RTWP8PASS/1FAIL. Raw
+C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1704363314804Z-disposable-expanded-summoning-sprint32-native-review;
+run20261026T1704363627814Z-cf2c82e55d9d453cac90aef8021d2749;
+resultSHA55430bd6bef24cf46b471dc775c51c1dd01fa5d7cd6229900fd7c9e0beec25de;
+originalUnitySHAc259120ef632a68be78fb7f734bc7de170e7df8066bb81f38e9041d63d489210.
+Native173993ms; wrapper17:02:04.5690947–17:07:57.5091770UTC.
+Two real Lillends each naturally Courage Move→Hold Standard/nonfullround,
+CL7/DC16/42s, actual failed initial saves, L2slot4→3, active-target refusal,
+sibling5/4/2slots+Charm1 preserved. Real failed then successful automatic
+repeat saves/no victim command or action debit PASS. Expiry cast PASS; separate
+probe then refused all walkable-visible points before source expiry. Finalizer
+and outer restoration PASS. Transactioncompat-20261026T170205Z-1f6a233f340d
+restored/verified17:07:57.2345152UTC. ProtectedCompare967Mods/118saves/18refs/
+83settings/tasks0/Steam1 PASS. Original Unity retained under sprint32-hold-f5756a4a.
+No source expiry/isolation claim. Same placement failure as70 after the finite
+point-survey correction triggered replan; Hold-turn/Fear helpers were not launched.
+
+Independent reviewer /root/sprint32_workflow_review read the actual fixture and
+installed native IL. Translocate updates position synchronously; point LOS adds
+the proper eye shift and checks cached2D geometry, not recently synchronized
+Unity colliders. No failing conjunct was recorded, so neither stale-cache nor
+collider explanations are proven. Smallest correction: reuse vacated surveyed
+sibling point for the expressly supplied effect-only recipient, preserve native
+walkability/separation, living identity/faction/availability/CanTarget, omit LOS/
+visible-memory and make no second-cast claim. Review caught queued SpawnUnit
+creation before IsInState; existing native EntityCreator.Tick added. Resolution
+read confirmed that finding fixed; original expiry/live-effect/deadline/sibling
+budget checks and Hold repeat-save attribution remain. This is an observer fix,
+not yet native PASS. Installed IL artifacts hold-probe-native-visibility-71.txt,
+hold-probe-between-points-71.txt and review messages retained.
+
+Native72 bardic Suggestion18/18PASS on the same candidate62. Raw
+C:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1713289026891Z-disposable-expanded-summoning-sprint32-native-review;
+run20261026T1713289309308Z-a4a17efcea494f229df88deda35a1532;
+resultSHA6e533efc6a53fb8640a81e1ef717ca21badb11c2dd98a7d2ad3e9de1d9bee5bb;
+originalUnitySHA6a7c0fef4a63bf0925143ea52e0f0590326c435737532cef200a6c26b8220a9a.
+Native185572ms; wrapper17:10:54.5103530–17:17:03.0613245UTC.
+Natural savedDC17/highSR/successfulCL7/DC17~420s attempts retain exact own Fascinate
+and do not add hostile memory/combat. Real Standard/native exploration cooldowns,
+upkeep-only20→15 pool, slots5/4/2 and sibling20; global/aggro/stealth callbacks PASS.
+Disclosed synchronous native Invisibility reaction fixture removed by original
+handler in frame6104; not sustained invisible Fascinate or entered-stealth proof.
+Extra native round makes no fourth cast against active effect. Explicit ordinary
+book negative has real Standard/L2slot4→3, reciprocal memory, Fascinate disposal,
+global/aggro delta1. Scoped PauseOnEngagement false during that negative restored
+in finally; strict native Default admission retained. Full finalizers PASS.
+Transactioncompat-20261026T171055Z-df4048b9e675 restored exactly; protectedCompare
+967/118/18/83/tasks0/Steam1 PASS. OriginalUnity at sprint32-bardic-f5756a4a.
+This resolves69's affected negative; no old failure record changed.
+
+Storage17:23:15.0740793UTC: native71/72 duplicate extractions199,321,038B removed
+only after complete retained-ZIP byte comparison; planSHA
+03ba17d36d54c8e84f3167bac2c4db4c226c952d3ce1de8e453774c9497a8cb2.
+Build61 completed staging+duplicateDLL42,919,821B similarly removed17:26:13.8804249,
+planSHAfc26b524d340a2f82dc189616b2eb828b82d7acc001a96c1f4ddf8477aa309cc.
+ProtectedComparePASS. Existing local full-file verification/archival cleanup
+route then selected nine fixed restored Oct20 S28 extraction duplicates. All
+files matched untouched referencecompat-20261020T183002Z-c17e43575c02/package
+and a56,019,488B lossless content archive; this archive is retention evidence,
+not a newly validated or reconstructed historical candidate ZIP. ArchiveSHA
+673da47998c47eb23ebe748548e2f3f117af1ae61f86536c925fba1ad6739009;
+retentionmanifestSHA077cd7f3a7ef27a808428c6c0dc221ced3425cf03b1527494778443b06201e45,
+including each original path/length/hash/mtime. Earlier candidate tree
+compat-20261020T173059Z-efc3b9e20392 was nonidentical and refused before archive/
+deletion; it remains. Fixed nine-target dryrun and execution each rechecked every
+archive entry, closed transaction/hash and resolved nonreparse path. Removed
+752,717,547B17:29:36.9210771UTC; planSHA
+daa16930f084abcece90c833b80a3e572f319789740251a76bfa89dd41bcd32b;
+free2,741,903,360→3,503,726,592B; protectedComparePASS. Exact selections/helpers/
+retained archive under artifacts/sprint32-intake; intake comparison under
+artifacts/sprint32-storage-after72. All unique packages, original evidence/failures,
+receipts, protected backups, saves, source reference and DATA remain untouched.
+
+Working envelope budget independently reviewed: candidateexpanded99,660,519B,
+otherMods97,072,555B, stagedstack196,733,074B, each protectedcandidatebackup and
+deploystaging99,660,519B, three extract+backup pairs597,963,114B, Working8,550,225B.
+Total902,906,932B before write/log allowance, rounded1.1GB plus2GBreserve =>3.1GB
+initial. Each live stage504,264,856B before allowance, rounded550MB plus2GBreserve
+=>2.55GB before task registration. Refusal inside protected sequence still restores
+original Working. No build during trio or deletion of protected backups. Reviewed
+local scripts Run-Working-Sequence.ps1/Run-Working-Stage.ps1 at sprint32-working-f5756a4a;
+exact ZIP bound, original safeguards retained; syntaxPASS, not gameplay evidence.
+
+Native73 selected WorkingON prepare on candidate62; native15PASS/2FAIL,206182ms.
+RawC:/Dev/KingmakerGunslingerLab/runtime-evidence/20261026T1733055592380Z-working-save-expanded-summoning-prepare;
+run20261026T1733055819559Z-8d2f2f333f29432e8e96f457460b8275;
+resultSHA3b1da360eb4ca20185eda112f8425ff3c661c5124aa356c12aeda2b49e5ea021;
+originalUnitySHA5728c7555ab169b1daae8e6babdfaa47714ddf348c112a569f71c44e07641721.
+Wrapper17:30:14.4371149–17:37:03.7231607UTC. Native load/1160publication,
+no staleS32state, four correct sources/contexts/durations/native appearance PASS.
+PrepareS32 rejected generic scene precondition before Competence/listeners/save;
+writecount0/stashed0. Cold/OFF NOT_RUN, no save compatibility verdict.
+Installedstacksprint32-stack-20261026T173037Z-f654a9e91726 restored installation/
+settings17:37:03.6919179UTC; outeroriginalWorking/fullintake restored17:37:16.2932541UTC.
+WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8,550,225B,creationticks639208636210035057,writeticks639278868712797783,attrs8224.
+ProtectedCompare967/118/18/83/tasks0/Steam1PASS; no owned live transaction remains.
+OriginalUnity copied before another launch. Exact outer restoration.json retained.
+
+Failure classification: fixture precondition conflicts with caller's deliberate
+IsPaused=true after appearance. Original exception did not identify the failing
+conjunct; do not invent a raw observed mode. Read-only installed native IL confirms
+IsPaused starts/stops native Pause and mode changes may queue. Bounded correction
+records every precondition, admits only Pause over Default or Default, and awaits
+native resume at most30frames/3seconds before enabling dispatchers. Strict calm/
+party/ownership/provider/no-save guards remain. No product-stat or rule changes.
+Actual diff independently reviewed next; next build batches this with probe fix.
+Counts62build attempts/51validatedpackages/73native launches. Since17:17UTC,
+approx12min storage/tooling verification,8min observer investigation/repair;
+7min native wrapper overlapped investigation. Exact whole-mission exclusive
+category totals unavailable. No owner waiting or speedup claim. Priorv167 three
+NOT_RUN gaps unchanged; finalSprint32/nativevisual/persistence/integration pending.
+Resolution review after73: independent reviewer read both actual source diffs and
+installed DoStartMode/DoStopMode. Default remains counted below native Pause;
+resume completes native transitions before enabling dispatch, no forced mode or
+native-command substitute. Probe creation Tick precedes live eligibility; prior
+source/sibling assertions remain. No additional concrete blocker. Focused
+production compile23.9s and persistence-scope1/2755registered tests PASS0.8s,
+logartifacts/sprint32-intake/focused-observer-after73.log. This is not native proof.
+Closed native73 extraction99,660,519B removed17:45:50.6455264UTC only after complete
+candidate62 ZIP comparison; new protected deployment backup remains. PlanSHA
+8d8ba97fac31ce18e87a78090dca403be2c47dc398637693cf28b608cc07aaf8;
+free3,219,271,680→3,320,061,952B. Coherent batch now ready for one new development
+candidate and affected native scenarios; no unrelated baseline replay selected.
