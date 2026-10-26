@@ -165,6 +165,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                 if (!immune)
                 {
+                    var atWill = new[] { "CharmPerson", "Sleep" }.Select(suffix =>
+                        fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.name ==
+                            "KMG_Summoning_FeyCelestial_Satyr_" + suffix)).Select(blueprint =>
+                                new Kingmaker.UnitLogic.Abilities.AbilityData(owner.Descriptor.Abilities.GetAbility(blueprint))).ToArray();
+                    bool standard = atWill.All(value => value.Blueprint.Type == AbilityType.SpellLike &&
+                        value.RuntimeActionType == UnitCommand.CommandType.Standard && !value.RequireFullRoundAction);
+                    Sprint25Check(id + "-at-will-actions", standard, new JObject {
+                        ["abilities"] = new JArray(atWill.Select(value => new JObject {
+                            ["blueprint"] = value.Blueprint.AssetGuid, ["type"] = value.Blueprint.Type.ToString(),
+                            ["action"] = value.RuntimeActionType.ToString(), ["fullRound"] = value.RequireFullRoundAction })) },
+                        "The private Satyr at-will SLAs use Standard without the donor spell's full-round flag; mapping receipt, not cast proof.");
+                    if (!standard) throw new InvalidOperationException("Satyr private SLA action contract differs.");
                     var skillSibling = CastExpandedSummoningOwnTier(fixture, "satyr");
                     Sprint28SetBrainActivePreservingActions(skillSibling, false);
                     ReadSprint32NatureKnowledge(owner, skillSibling, id + "-nature-knowledge");

@@ -14,6 +14,7 @@ using Kingmaker.Enums;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using KingmakerGunslinger.Summoning;
 using UnityEngine;
@@ -100,7 +101,7 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(traits,
                 LocalizationService.Create(Satyr32Prefix + "Traits.Name", "Satyr Traits"),
                 LocalizationService.Create(Satyr32Prefix + "Traits.Description",
-                    "DR5/cold iron. Charm Person and Sleep at will; Fear once per summoning. Caster level8 and Charisma-based DCs. Dagger and secondary horns in melee, with an ordinary shortbow alternative. No pipes or nested summoning; noncombat Dancing Lights and Ghost Sound are filtered."), null);
+                    "DR5/cold iron. Charm Person and Sleep at will; Fear once per summoning. Caster level8 and Charisma-based DCs. Dagger and secondary horns in melee, with an ordinary shortbow alternative. No pipes or nested summoning. Dancing Lights and Ghost Sound are unavailable."), null);
             unit.AddFacts = new BlueprintUnitFact[] {
                 Feature(library, "018af8005220ac94a9a4f47b3e9c2b4e", "fey type"),
                 BlueprintLibraryLookup.RequireExact<BlueprintUnitFact>(library,
@@ -157,6 +158,10 @@ namespace KingmakerGunslinger.Blueprints
             var ability = Require<BlueprintAbility>(bySymbol, symbol);
             CloneMephitSpell(library, ability, nativeGuid, "native Satyr " + title);
             ability.name = InternalName(symbol); ability.Type = AbilityType.SpellLike;
+            // PF1 spell-like abilities use a standard action unless specifically
+            // stated otherwise. Do not inherit the donor spell's full-round flag.
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(false);
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description", title + " at will at caster level8."), ability.Icon);
