@@ -19,9 +19,10 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerable<int> ReviewLillendFascinate32(ExpandedSummoningCorrectionFixture fixture)
         {
-            const string phase = ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase;
+            string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            bool bardic = phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase;
             if (!IsSprint32Review || !_request.ExitAfterCompletion || _request.Parameters?.Count != 1 ||
-                RuntimeTestRequestParser.Sprint32ReviewPhase(_request) != phase)
+                (!bardic && phase != ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase))
                 throw new InvalidOperationException("Exact save-free Fascinate phase required.");
             var game = Game.Instance; var player = game.Player; var party = player.Party.ToArray();
             var anchor = player.MainCharacter.Value; var target = fixture.Hostile;
@@ -90,7 +91,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var siblingSlots = Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).ToArray();
                 var eligible = game.State.Units.All.Where(value =>
                     LillendFascinateEligibility32.Selectable(owner, value, effect, resistance)).ToArray();
-                bool ready = !Sprint32Suggestion.Active && LillendNoncombat32.Find(owner) != null &&
+                bool ready = Sprint32Suggestion.Settled && Sprint32Suggestion.Active == bardic &&
+                    LillendNoncombat32.Find(owner) != null &&
                     eligible.Length == 1 && ReferenceEquals(eligible[0], target) &&
                     target.DistanceTo(owner) > target.VisionRangeMeters && target.DistanceTo(anchor) > target.VisionRangeMeters &&
                     target.DistanceTo(fixture.Caster) > target.VisionRangeMeters && anchor.DistanceTo(target) < anchor.VisionRangeMeters &&
@@ -109,7 +111,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["playerGroups"] = new JArray(owner.Group.IsPlayerParty, fixture.Caster.Group.IsPlayerParty, anchor.Group.IsPlayerParty),
                     ["hostileMemory"] = new JArray(target.Memory.Contains(owner), target.Memory.Contains(anchor), target.Memory.Contains(fixture.Caster)),
                     ["willBase"] = target.Stats.SaveWill.BaseValue, ["providerActive"] = Sprint32Suggestion.Active },
-                    "Natural physical visibility beyond enemy acquisition, shared summoned-owner group, no reciprocal hostile memory, independent resources; absent-provider early Fascinate only.");
+                    "Natural physical visibility beyond enemy acquisition, shared summoned-owner group, no reciprocal hostile memory and independent resources; provider presence must match the fixed phase.");
                 if (!ready) throw new InvalidOperationException("Fascinate calm geometry/capability preconditions failed.");
                 starts = new Lillend32CommandStarts { Owner = owner }; saves = new Dretch30CloudSaves(new[] { target });
                 events = new Astral31DispelEvents { Owner = owner }; events.Targets.Add(target);
@@ -139,7 +141,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     using (var rounds = new Lillend32PerformanceRounds(toggle, resource, false))
                     {
                         Sprint28SetBrainActivePreservingActions(owner, true); limit = DateTime.UtcNow.AddSeconds(30);
-                        while (DateTime.UtcNow < limit && rounds.Rows.Count < 2)
+                        // The provider phase stops after initial activation,
+                        // before the next dispatcher round may cast Suggestion.
+                        int requiredRounds = bardic ? 1 : 2;
+                        while (DateTime.UtcNow < limit && (rounds.Rows.Count < requiredRounds ||
+                            (bardic && !starts.Commands.OfType<UnitActivateAbility>().Any(value =>
+                                ReferenceEquals(value.Ability, toggle) && value.IsFinished))))
                         {
                             if (!mode.Current || player.IsInCombat || owner.IsInCombat || target.IsInCombat)
                                 throw new InvalidOperationException("Fascinate noncombat execution boundary changed.");
@@ -153,7 +160,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             commands[0].IsActed && commands[0].IsFinished && commands[0].Result == UnitCommand.ResultType.Success &&
                             commands[0].Type == UnitCommand.CommandType.Move && !commands[0].Cutscene && !commands[0].IsIgnoreCooldown &&
                             economy.Count(commands[0]) == 1 && economy.Unchanged(commands[0]) &&
-                            rounds.Rows.Count >= 2 && rounds.Exact() && toggle.IsRunning && grants.Length == 1 &&
+                            rounds.Rows.Count >= requiredRounds && rounds.Exact() && toggle.IsRunning && grants.Length == 1 &&
                             target.Descriptor.State.HasCondition(UnitCondition.Dazed) && target.Stats.SkillPerception.ModifiedValue == perception - 4 &&
                             saves.Rows.Count == 1 && (int)saves.Rows[0]["dc"] == 13 + owner.Stats.Charisma.Bonus && !(bool)saves.Rows[0]["passed"] &&
                             events.Resistances.Count == 0 && !LillendFascinateEligibility32.Selectable(owner, target, effect, resistance) &&
@@ -169,6 +176,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["fixtureActivationCommands"] = 0, ["fixtureRoundCalls"] = 0, ["forcedRolls"] = 0 },
                             "One natural Move performance, native rounds, Will/noSR and owned Fascinated/-4 Perception; no supplied action, roll, effect or combat suppression.");
                         if (!natural) throw new InvalidOperationException("Fascinate natural control not established; preserve actual save outcome.");
+                        if (bardic)
+                        {
+                            foreach (int frame in ReviewLillendBardicSuggestion32(fixture, mode, owner, sibling,
+                                toggle, resource, effect, starts, events, economy, costs, rounds)) yield return frame;
+                            complete = true;
+                            yield break;
+                        }
                     }
                     toggle.IsOn = false;
                     bool immediate = !target.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, effect)) &&

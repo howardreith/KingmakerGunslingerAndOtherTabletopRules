@@ -1443,3 +1443,65 @@ Both natural control casts/durations/actions/refusals passed. Both new exact-sib
 Independent installed-contract review corrected a preliminary cache explanation: native Dialog DOES run UnitGroupsController, so omission from the owned pulse alone is insufficient. GameMode registers/runs groups before EntityDestructionController; Charm OnTurnOff restores per-recipient AttackFactions and queues group cache refresh after that frame's group tick. The observer had stopped on source/effect removal, then immediately read cached IsEnemy. Group aggregation is union, so the separate charmed sentinel cannot veto restored hostility. Smallest correction adds strict originalConditionsClear to the same18s wait and yields normal frames, with no forced group tick or faction assignment. It captures actual bound NeutralToPlayer.Faction (public BlueprintFaction field), direct attack factions and public Group.AttackFactions at first removal/final state, plus framesAfterRemoval. Native62 lacks those later/direct observations, remains FAIL and cannot be relabeled by a reader. Product source is unchanged. Production23.2s/18tests0.1sPASS (control-faction-wait-focused.log); independent actual-diff review found no blocker. Approx12:10-12:19 bounded contract/observer work8min with review overlapping; measured build/native categories above, whole-mission totals unavailable.
 
 Read-only design review for the separately approved bardic exception recommends one invocation-local wrapper for the single OffensiveActionsController.RaiseEvents call inside OnTryToApplyAbilityEffect(context,target). Nonmatching casts delegate unchanged. Qualifying exact own-target bardic casts preserve global then actor-specific EventBus order and all nonmemory handlers; preserve the memory handler's leading UnitAggroFilter.OnAggroAction callback while excluding reciprocal hostile-memory/hostility bookkeeping. Independent scripted reactions may still cause combat. No ambient static pending flag or persistent state is needed. Strict native callsite/emitter shape, wrong ability/owner/provider/stale-target negatives, Will/SR, normal costs/pools, retained Fascinate and actual ordinary-invisibility removal need proof. PF1 explicitly permits repeated bardic Suggestion attempts during one performance (https://aonprd.com/ClassDisplay.aspx?ItemName=Bard); no invented save-success immunity ledger. This subsystem remains unimplemented at this checkpoint. All three priorv167NOT_RUN gaps unchanged.
+
+
+### 2026-10-26 12:53UTC — Satyr at-will RTWP/turn closure; approved bardic adapter underway
+
+Build55 source279de1e3f73ec3c7324bff8aeb03909f67eda482, generated12:24:44.4740703Z.
+ZIP23485d21bf0e741aa8f37779690a66902d1efdabba385406d320532f7ab751b0;
+DLL4e4b59099043c58aa34e7fe856a9403e5028847763289a6349b73bd55b248b43;
+MVID3ec2260e-4fea-432b-b76b-63b055fe39d4;
+SourceState510597c38c862c6810fffa466c9eb8184df0f33401ec7e50c229321251aacd23.
+Build12:20:31.7310746-to12:24:45.9186908/254.1876162s, free3,620,290,560-to3,467,300,864B;
+wrappers557/2754focused and exact-reference strict package PASS. Not final qualification.
+
+Native63RTWP PASS13/13; run20261026T1231207009508Z-8b53e1667b3044eab4c3bde432d0a680;
+raw20261026T1231206488154Z-disposable-expanded-summoning-sprint32-native-review;
+resultSHA828949f03d771b5a94a591e4690936fc0338f1b5cb688748d0d5eeee22cf412e;
+originalUnitySHAf09e149ccbaff9ada2932a0e4171b035bb88b3193ea72834e4cdb8878e89d624.
+Native12:31:29.7082062-to12:33:27.1021593/117394ms; wrapper12:28:51.7779279-to12:33:38.6651629.
+Transactioncompat-20261026T122853Z-21f241c86987 restored/verified12:33:38.4971066UTC.
+Native64turn PASS13/13, same exactZIP; run20261026T1237049044674Z-d2765da52ce54c7eb0eca3bf6dd58b09;
+raw20261026T1237048731954Z-disposable-expanded-summoning-sprint32-native-review;
+resultSHAccbbe0f1603b87df1f5e77ab7f8b7e8f49d081c518bd53d0a6934e47f737d436;
+originalUnitySHA95e1b19ef16c2bb5c482845c391ad1a319e8a1b90db2b99485b9aa32fe78cb6a.
+Native12:37:14.1767639-to12:39:13.0581221/118875ms; wrapper12:34:45.1685122-to12:39:25.1993411.
+Transactioncompat-20261026T123446Z-0a7a0ecd2023 restored/verified12:39:25.0147993UTC.
+Both protectedComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1; originals/intakes
+retained in artifacts/sprint32-satyr-atwill-279de1e3 and sprint32-satyr-atwill-turn-279de1e3.
+
+Both modes natural Sleep/Charm, Standard/nonfullround costs, CL8/DC15,480s/28800s,
+real saves, Sleep4HD/ally safety/current-effect refusal and exact independent budgets PASS.
+Native turns cost0-to6Standard, Move0; fixtureAI ticks0. Original controlled effects
+disposed/conditions restored after source expiry; exact sibling-effect-only probes retained.
+Charm first-removal directAttackFactions includesPlayer/groupcache empty/IsEnemyfalse;
+after exactlyone ordinary yieldedframe, groupcachePlayer/IsEnemytrue. No forced tick/faction
+write. This confirms62's observer-order defect without relabeling62's original FAIL.
+The sibling probe remains effect-only isolation, not a second cast/save/action claim.
+
+12:42:25.3712379UTC approved duplicate cleanup: four closed transactions61/62/63/64,
+398,214,056B reclaimed, free3,050,377,216-to3,453,100,032B. Every extraction file matched
+its retained validatedZIP. PlanSHAd775a25c15bc6e2c1952580c6127c427d46bc97811ed6641d628fad0f20a19d0.
+Local Invoke-VerifiedS32BardicMarginCleanup.ps1/cleanup-selection-s32-bardic-margin.json,
+bardic-margin-cleanup-dryrun.json/result.json and sprint32-bardic-storage intake/ComparePASS.
+All unique packages/PDBs/rawresults/originalUnity/receipts/saves/protected backups retained.
+
+Approved memory exception implemented in unbuilt working source. Exact own-target/provider
+bardic context is passed at the single native ability offensive-event call; nonmatching calls
+delegate original. No shared pending flag or persistent state. Exact native memory controller
+only; retain aggro-script callback and global/actor dispatch. Independent actual-product
+review verified installedMVID/hashes and identified subclass matching; corrected to exact
+runtime type. Foreign Harmony patches on bypassed methods remain a concrete integration
+risk; the grouped native phase inventories/refuses them pending actual review.
+Installed IL retained artifacts/sprint32-intake/bardic-memory32-native-il.txt.
+First product compile26.4s/18tests1sPASS. First observer compile failed only namespaces,
+native context constructor/helper name and RemoveCondition signature; original
+focused-bardic-observer-first.log retained. Corrected23.7s/18tests4.5sPASS.
+Outer fixed-phase admission exact+four negative cases PASS, no staging. Actual fixture
+review underway; bardic native NOT_RUN. Counts55/44/64; no live transaction.
+
+Approx12:26-12:52 contract/adapter/fixture/review20min overlapping measurednative;
+cleanup2min. Whole-mission exclusive category totals unavailable. No owner waiting.
+All priorv167NOT_RUN gaps unchanged. No final/release qualification claimed.
+
+At12:58UTC independent actual-fixture review found two bounded assumptions before dispatch: lawful player-group sight memory must be preserved/recorded, while hostile reciprocal memory stays absent; new commands must be selected by identity, not HashSet enumeration Skip. Both corrected. First native upkeep/completed-Move boundary, shared round accounting, labeled ordinary-book negative and owned finalizers otherwise had no concrete blocker. No native execution on these changes yet.

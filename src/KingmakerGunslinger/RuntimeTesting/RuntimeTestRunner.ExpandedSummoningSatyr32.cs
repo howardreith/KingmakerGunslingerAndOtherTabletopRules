@@ -59,7 +59,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrAtWillTurnPhase)) yield return frame;
                 yield break;
             }
-            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase)
             {
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewLillendFascinate32(fixture)) yield return frame;
