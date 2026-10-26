@@ -61,37 +61,39 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `158147c0f82444292bccc3962021a1663b8b8202`.
-ZIP `a103b4be24c4fea8236970b106c7affde551a4bf113b7f98aac015a0a01d1fb5`;
-DLL `84020de19965ea6f1b190b0105130a883984dd3c878510d8b65ae2c4fe3989b8`;
-MVID `1871eb42-5805-4bf4-bc6c-07ecd49d754b`;
-SourceState `d9bd71f6bf4486c58828b1e132af1c40b0d7cb4d1fcd07d3bde883e41d573f08`.
-Path `artifacts/development-candidates/sprint32-lillend-support/158147c0f824/`.
-Build53: wrappers,557selected/2754registered, exact-reference compilation and
-strict package PASS in257.565s. No complete final qualification on these inputs.
-Native61 **FAIL9PASS/2FAIL**: both Sleep branches registered, natural casts,
-normal costs, actual private Sleep480s/Charm28800s, saves/4HD/ally exclusion and
-controlled-target refusal PASS; captured private effects still survive source expiry.
-Native60 initialization failure and native59 original lifecycle failure remain.
+Latest validated development candidate: `61ba8681da4cfa29a9fd67e1b803f25c3735695f`.
+ZIP `d91bc04b950efc154bbe34d6b8ec65bc36c0a933e34ffd4834e10c673f1b5cff`;
+DLL `132e791cbb6eccdd11396113a401d47f621579d1b95693fe97a51b86f9bc8d83`;
+MVID `d1bcf0d9-07f6-4bc8-afd9-58fd99faaa3a`;
+SourceState `f03e6ffd5f90db510e69e55f94a3b1acc88af46b0ede31ed10b390aee1d71a5c`.
+Path `artifacts/development-candidates/sprint32-lillend-support/61ba8681da4c/`.
+Build54: wrappers,557selected/2754registered, exact-reference compilation and
+strict package PASS in258.584s. No complete final qualification on these inputs.
+Native62 **FAIL12PASS/1FAIL**: natural casts/durations/costs/refusals and both
+separate sibling-effect probes PASS. Both original private effects disposed after
+source disappearance; exact sibling effects/deadlines preserved. Sleep condition
+clears. Only Charm hostility-restoration assertion fails at the immediate removal
+boundary. Original61/60/59 failures remain immutable.
 
-Current unbuilt correction follows installed destruction ordering: the caster is
-marked Destroyed, the native IUnitHandler event fires while its pooled lookup
-still resolves, then RemoveEntityData clears it. The native missing-caster handler
-checks only null and misses that event. A separate private stateless BuffLogic
-matches ReferenceEquals(Context.MaybeCaster,eventUnit) at the existing event seam;
-keep native RemoveBuffIfCasterIsMissing for area-load absence. No registry, polling,
-context transport or new serialized state is added. The seam is already used by
-SummonSwallowLifecycleComponent. Native handler methods are final; cross-unit
-child-fact ownership is refused, so neither alternative was implemented.
+Current reviewed observer-only correction includes native hostility restoration
+in the existing18s wait, yielding normal frames. Native NeutralToPlayer restores
+the recipient's attack factions and queues group cache refresh; Dialog normally
+runs UnitGroupsController BEFORE entity destruction, so the old observer could
+sample between removal and the next refresh. Missing an extra fixture controller
+is not itself the cause. Capture exact bound NeutralToPlayer.Faction, direct/group
+faction contents at first removal and final state, and frames after removal. No
+faction assignment, forced cache tick or product change. Production23.2s/18tests0.1s
+PASS; independent actual-diff review found no blocker. Native62 lacks the later
+cache observation and remains FAIL; fresh native execution is required.
 
-The affected fixture now adds a clearly labeled native effect-only sibling probe
-on a separate eligible owned recipient after natural cast/refusal evidence. Source
-expiry must remove original conditions/effects while preserving the exact sibling
-buff/source/deadline. This is not a second cast/save/AI/cost result. Focused production
-and18tests PASS; independent actual-diff review found no dispatch blocker. Fresh
-native proof remains required. Daze's60s
-victim immunity remains unchanged. Affected Lillend book/SLA/cantrip and cold cases
-remain required. Native donors and all7502 prior identity entries remain unchanged.
+The private stateless destruction-event adapter has actual removal/isolation proof
+on62; native area-load handling is retained. Daze's60s immunity marker is unchanged.
+Affected Lillend book/SLA/cantrip, death and fresh-load cases remain required.
+The owner-approved bardic memory exception remains unimplemented. Invocation-local
+context transport must preserve native global/actor listener order and the memory
+handler's leading UnitAggroFilter callback, not suppress the whole event. No static
+pending flag or attempted-target immunity ledger is planned; PF1 permits repeated
+bardic attempts during a performance. No other subsystem decision is pending.
 
 ## Development evidence and reuse limits
 
@@ -101,6 +103,7 @@ No earlier execution below is called fresh on the private-control correction.
 
 | Evidence | Actual result and remaining limit |
 |---|---|
+| 61ba8681/native62 | 12PASS/1FAIL: both original private effects removed and exact sibling effects preserved. Sleep restored; Charm hostility sampled before verified cache propagation. Observer-only bounded-wait correction pending native proof. |
 | 158147c0/native61 | Natural casts/durations PASS with private effects; both source-expiry rows FAIL. Native component exists on real buffs but misses destruction ordering. Stateless exact-event correction and sibling-effect probe are unbuilt. |
 | ef3307a2/native59 | Natural Satyr Sleep/Charm, costs/eligibility PASS; both source-expiry rows FAIL. Sleep480s, combat Charm60s. Exact effects remained active after caster disappearance while targets/sibling survived. Private duration/lifecycle correction invalidates these affected cases. |
 | 49786548/native57 | Fascinate24/24PASS: natural Move,20-to19-to18, WillDC17/noSR, cap3/frozen targets,24h source marker deadline, ShakeFree, restart refusal, actual0.9409m approach/one save each, visible CureLight threat/slot5-to4, sibling isolation, exact marker/helper/area/command cleanup. No24h expiry/cold/bardic proof. |
@@ -141,16 +144,16 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T112946Z-2dad3ecea4b1` restored/verified
-11:34:45.5095248UTC. Protected Compare PASS967Mods/118saves/18references/
+Latest transaction `compat-20261026T120501Z-6acddb8e9c54` restored/verified
+12:09:33.4296161UTC. Protected Compare PASS967Mods/118saves/18references/
 83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native61 raw: `20261026T1132094305129Z-disposable-expanded-summoning-sprint32-native-review`;
-local original log/intake: `artifacts/sprint32-satyr-atwill-158147c0/`.
+Native62 raw: `20261026T1207193690652Z-disposable-expanded-summoning-sprint32-native-review`;
+local original log/intake: `artifacts/sprint32-satyr-atwill-61ba8681/`.
 Original native50/52 binding,54 carrier observer and58 readiness failures remain
 immutable. Their corrections use inspected native seams; no product-stat changes.
 
-Counts:53Build-Local attempts /42validated development packages /61native launches.
-Build53 measured4.29min; native61 wrapper5.00min/native135.466s. Earlier exact
+Counts:54Build-Local attempts /43validated development packages /62native launches.
+Build54 measured4.31min; native62 wrapper4.55min/native114.049s. Earlier exact
 measurements/history retained; whole-mission work-category totals unavailable.
 Approximately09:43–10:18 fixture/contract25min, independent review7min and cleanup
 verification7min overlap; focused compilations about1.2min. The visibility
@@ -165,11 +168,11 @@ free3,977,609,216B, protectedComparePASS. Exact plan and selection are in histor
 remain in history. Unique packages/raw evidence/original failures/receipts/PDBs/
 saves/protected backups retained. No machine-wide cleanup or DATA changes.
 
-**Next:** package the reviewed exact destruction-event adapter/probe once
+**Next:** package the reviewed bounded faction-restoration wait once
 and run `satyr-atwill`
 (expected10min/runtime600s), classify the actual result, then run `satyr-atwill-turn`
 on the same unchanged package if its shared fixture is valid. Do not run the
-158147c0 turn case with the known cleanup defect. Affected Lillend book/SLA,
+61ba8681 turn case with the premature hostility verdict. Affected Lillend book/SLA,
 cantrip, sibling-effect isolation and cold cases remain required. Reuse the executed
 S30-31 installed-stack ON/OFF original-Working envelopes for persistence; the
 obsolete Cleanup2 retained-transaction design is unnecessary. Hold Person has a
