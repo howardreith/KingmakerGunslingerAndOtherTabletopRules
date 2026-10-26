@@ -83,6 +83,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Enumerable.Range(0, 4).Select(otherBook.GetSpontaneousSlots).SequenceEqual(otherSlots);
             try
             {
+                // A bounded availability probe on the idle sibling, not a
+                // spell cast: the private Hold must refuse the exact excluded
+                // discovery and recover when its temporary fact is removed.
+                var holdData = otherBook.GetKnownSpells(2).Single(value =>
+                    value.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_HoldPerson");
+                var discovery = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
+                    Sprint32Suggestion.ExcludedWizardDiscoveryGuid, "installed Infectious Charms discovery");
+                bool holdBefore = holdData.IsAvailable, holdRefused = false;
+                if (UnitHelper.HasFact(sibling.Descriptor, discovery))
+                    throw new InvalidOperationException("Fresh sibling unexpectedly owns the excluded wizard discovery.");
+                try
+                {
+                    sibling.Descriptor.AddFact(discovery);
+                    holdRefused = UnitHelper.HasFact(sibling.Descriptor, discovery) && !holdData.IsAvailable;
+                }
+                finally { sibling.Descriptor.RemoveFact(discovery); }
+                bool holdAfter = holdData.IsAvailable && !UnitHelper.HasFact(sibling.Descriptor, discovery);
                 var registry = HarmonyInstance.Create("KMG.Sprint32.BardicPatchInspection");
                 var patchRows = new JArray();
                 foreach (var method in new[] {
@@ -99,7 +116,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (all.Length != 0) throw new InvalidOperationException(
                         "Bardic memory qualification requires review of another Harmony12 patch: " + method);
                 }
-                bool ready = ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) &&
+                bool ready = holdBefore && holdRefused && holdAfter && ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) &&
                     target.Blueprint.GetComponent<UnitAggroFilter>() == null && retained() && budgets() &&
                     casts().Length == 0 && data.IsAvailable && data.CanTarget(new TargetWrapper(target)) &&
                     owner.DistanceTo(target) <= data.GetApproachDistance(target) &&
@@ -110,6 +127,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["distance"] = owner.DistanceTo(target),
                     ["approachDistance"] = data.GetApproachDistance(target), ["patches"] = patchRows,
                     ["ownerMemoryAtStart"] = ownerMemoryAtStart,
+                    ["holdAvailableBefore"] = holdBefore, ["holdDiscoveryRefused"] = holdRefused,
+                    ["holdAvailableAfterRemoval"] = holdAfter,
                     ["ownSlots"] = new JArray(slots), ["siblingSlots"] = new JArray(otherSlots),
                     ["wrongOwnerRefused"] = !LillendBardicMemory32.Qualifies(otherContext, sibling, target) },
                     "Exact active provider, actual own Fascinate, ordinary ability reach/resources and wrong-owner refusal. Constructed contexts check admission only, not casting.");

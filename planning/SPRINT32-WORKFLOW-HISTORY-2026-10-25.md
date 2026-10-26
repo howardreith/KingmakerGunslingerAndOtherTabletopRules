@@ -1568,3 +1568,67 @@ localization; no further concrete dispatch blocker. Corrected production24.3s/
 and previous history text verified identical; two identities appended. Native
 Hold casting/retry/source-sibling cleanup, provider cleanup and deeper graph inspection
 remain required; no old execution promoted to new bytes.
+
+## 2026-10-26 14:03UTC - native66 provider-branch failure and bounded correction
+
+Build57/sourcefd54cde1509f9f8fa90895a4b55cbb4a83d22509,
+13:38:32.6991310-to13:42:51.7316368UTC/259.0325058s, wrappers/557selected/
+2754registered/exactcompile/strictpackagePASS. Generated13:42:50.2162772Z.
+ZIPf2b7301bb95df8a4d351c94c6bacef6de8a7b2095afdb51cb1a090becc054bca;
+DLLf1c741daeb0968dcc3f8d88c80da2f3e2813d4da0944933f99f50e416351da54;
+MVID2bbde895-0e6f-4419-b141-1765e31773f3;
+SourceStatee676b880ffb52daa6213694fd869fc482217ceee97ca57353e6374fa5c71b974.
+Canonical artifacts/development-candidates/sprint32-lillend-support/fd54cde1509f/;
+free3,365,429,248-to3,213,258,752B. PR74 body refreshed at this checkpoint.
+
+Native66 bootstrapFAIL/zeroassertions. Run20261026T1346100612775Z-a3cb224a9fd44270af1916b68d8fcf29;
+raw20261026T1346100286068Z-disposable-expanded-summoning-sprint32-native-review;
+resultSHA3f53e404cc40c86a7058c1f40ff11c66c672914e65ff8a9c496310ce8628f0c3;
+originalUnitySHAc30b62ab021e8083987bd04e352d0d7c5127cb87a876e451e0cb80d9abbefdb8.
+Native13:46:22.7525383-to13:48:05.1165359UTC/102364ms;
+wrapper13:43:45.0073386-to13:48:16.8132925UTC/271.806s.
+Transactioncompat-20261026T134346Z-a4fc330ddaef Restoredverified13:48:16.5125513UTC.
+ProtectedComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1;
+local original log/intake artifacts/sprint32-bardic-fd54cde1/. No live transaction.
+Product exception: Unexpected native Charm action ApplyActionToTargetsInRange
+inside private Hold traversal; rollback completed. No mechanical, bardic or graph
+capture assertion ran. This differs from65's localization collision. No unchanged retry.
+
+Bounded read-only installed CotW IL identifies WizardDiscoveries.createInfectiousCharms:
+positive ContextConditionCasterHasFact gate, two helper actions including foreign
+ApplyActionToTargetsInRange. Reader/raw artifacts/sprint32-intake/Read-HoldProviderBranch32.ps1
+and hold-provider-branch32-final-il.txt. Primary upstream corroboration:
+https://github.com/Holic75/KingmakerRebalance/blob/1332fb0db844b7863f484ca978bea2349fe49769/CallOfTheWild/Features/WizardDiscoveries.cs.
+Current private Hold walker removes only exact And/single-positive-fact GUID/name/
+empty-false gate; every retained terminal still must match observed native Hold.
+Existing native AbilityCasterHasNoFacts refuses the private spell if the discovery
+is present, making removed branch unreachable even after a dynamic grant. No new
+component/subsystem/persistent state; absent-provider construction gains no foreign
+reference. Independent read-only review verified both gate and guard call the same
+UnitHelper.HasFact, private cloning, unchanged ordinary Hold, no dispatch blocker.
+Focused23.7s/18tests0.9sPASS before the requested bounded native availability probe.
+Probe in existing bardic-ready uses idle sibling, initial absence, temporary grant
+inside try/finally, native IsAvailable refusal, removal/recovery; no yield/cast/roll,
+books/pools remain readiness requirements. Independent probe review found no blocker.
+Final focused compile pending; next native uses corrected bytes. Native66 staysFAIL.
+Approx13:48-14:03 research/correction/probe/review12min, duplicate work2min;
+exclusive categories unavailable. Counts57/46/66; priorv167NOT_RUN unchanged.
+
+14:03:32.0716830UTC eleven verified duplicate exact-build/bin DLLs reclaimed
+191,810,048B; free3,000,877,056-to3,192,705,024B;
+planSHAda802edc09cc4d940a8167819eed8f8ec429ccff285a27c34f49f23178ec2a4e.
+14:03:41.6866683UTC two closed65/66 package extractions reclaimed199,164,311B;
+free3,192,303,616-to3,393,720,320B;
+planSHAe8f2b97b6b5ee697753bb469d0c07d498cd986a17ac026454dd39ef0a311d977.
+All files matched retained exact ZIP entries/lengths/hashes; path/ownership/idle
+checks preserved. Native old failures and all unique archives/PDBs/receipts/saves/
+backups retained. Protected capture/ComparePASS967/118/18/83/tasks0/Steam1 in
+artifacts/sprint32-bardic-branch-storage. Fixed selectors/scripts and dryrun/results
+remain under sprint32-intake (bardic-bin and bardic-65-66).
+Final probe compile failed on missing BlueprintAbility namespace with a secondary
+constructor type error; original focused-hold-discovery-probe.log retained. Corrected
+by selecting the sibling's actual GetKnownSpells(2) entry, as the existing book-negative
+probe does, rather than constructing data. No native launch occurred for this compile.
+
+Corrected final focused production23.1s/18tests0.9sPASS; log
+artifacts/sprint32-intake/focused-hold-discovery-probe-corrected.log.
