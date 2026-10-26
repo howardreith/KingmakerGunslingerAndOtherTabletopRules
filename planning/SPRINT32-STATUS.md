@@ -65,18 +65,22 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `d43a72d8e46d7d582ecea5ddd430b1ac780e99f4`.
-ZIP `edfc7c3d9c9054f3264259c4e52b2da371b68eb47f0412030a486f6790aed309`;
-DLL `9a116b0989f4bbb9bb963ea55879c4d9de1db756a6beb7e8d5411ca7e8c3eb20`;
-MVID `8c987875-749a-4e71-b433-f0f7fd443b0b`;
-SourceState `ec985ce12ded629e18153e999cfbdf2c63cb1f98d137aded5cc75df00545415c`.
-Path `artifacts/development-candidates/sprint32-lillend-support/d43a72d8e46d/`.
-Build58: wrappers,557selected/2754registered, exact-reference compilation and
-strict package PASS in257.615s. Native67 **12PASS/1FAIL**: initialization and
-provider binding passed, deeper control metadata and natural Fascinate observed.
-Observer Harmony12.GetPatchInfo crashed converting a null unpatched-method
-record before bardic readiness/casting. No bardic or Hold-refusal verdict.
-Original65/66/67 failures remain immutable; no repeated unchanged launch.
+Latest validated development candidate: `fa5614e00eb8ef239d48437134805ad240b5d8c3`.
+ZIP `081ce4600edcd7fbd417355f5c00d5ab18c0fec93e1bf923e648474c23dcaec9`;
+DLL `156c476da396dce365d78bea970a33b3c43f5717342de6a774b5b5202ead516f`;
+MVID `87e5dad9-e56d-44bf-a34f-a717472ece67`;
+SourceState `89af6c3eb16e457561b2dd796c917ab9eb36d835f6d7bacb71253ddafdfc6517`.
+Path `artifacts/development-candidates/sprint32-lillend-support/fa5614e00eb8/`.
+Build59: wrappers,557selected/2754registered, exact-reference compilation and
+strict package PASS in254.957s. Native68 **15PASS/1FAIL**: corrected patch inventory
+and Hold discovery refusal/recovery PASS. Two natural bardic casts establish
+successful Will and high-SR refusal while retaining exact Fascinate, normal
+Standard actions, native upkeep only, untouched slots/sibling and global/aggro
+notifications. The subsequent invisibility setup loses retention before a
+successful-effect verdict. Exact failing predicate was not recorded; classify
+using installed stealth contracts and a bounded affected-fixture correction.
+No success-effect/invisibility/refusal/ordinary-negative completion claim.
+Original65-68 failures remain immutable.
 
 Previous source279de1e3/native63RTWP and64turn **13/13PASS each** on their exact ZIP.
 Both modes show natural Satyr Sleep/Charm, actual normal Standard costs,
@@ -110,12 +114,13 @@ no additional behavior/persistence subsystem. Native67 establishes registration
 with the provider profile; the temporary sibling discovery availability probe
 ran before the observer exception but has no recorded verdict and must rerun.
 
-Current unbuilt change fixes only the compiled patch-inventory observer. The
+Sourcefa5614e0 fixes only the compiled patch-inventory observer. The
 installed Harmony12 shim's global GetPatchedMethods list is checked before
 GetPatchInfo, reusing the existing CotwSpontaneousSlotCompatibility pattern.
 Missing methods and any registered patch still refuse, including patch kinds
 not represented by Harmony12 owner lists. Exact installed IL retained. Focused
-production23.2s/18tests0.9s PASS. The affected native phase must rerun.
+production23.2s/18tests0.9s PASS. Native68 confirms this correction; both inspected
+methods have no foreign patches. The later invisibility case remains incomplete.
 Native67 captured Fear's Shaken1round/FrightenedCL-round spell terminals, neither
 with source cleanup; private mappings remain required. Sound Burst's one-round
 Stunned is explicitly IsFromSpell=false and an instantaneous-spell consequence;
@@ -136,6 +141,7 @@ No earlier execution below is called fresh on the private-control correction.
 
 | Evidence | Actual result and remaining limit |
 |---|---|
+| fa5614e0/native68 | 15PASS/1FAIL: Hold discovery guard, natural saved/high-SR bardic attempts, exact Fascinate/actions/slots/upkeep and global/aggro callbacks PASS. Retention fails after the subsequent invisibility setup; successful effect and remaining checks unverified. |
 | d43a72d8/native67 | 12PASS/1FAIL: provider initialization, exact metadata and natural Fascinate PASS; patch-inventory observer null conversion throws before bardic readiness/casting. Fix reuses proven global-patch enumeration; rerun required. |
 | fd54cde1/native66 | Bootstrap FAIL before gameplay: CotW Infectious Charms conditional unsupported in private Hold mapping. Exact bounded mapping correction unbuilt; no assertions executed. |
 | 096b045c/native65 | 5PASS/2FAIL: provider binding localization collision before natural bardic cast. Original result retained; shared-description correction unbuilt. |
@@ -183,18 +189,18 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest transaction `compat-20261026T141418Z-7622f0a062e4` restored/verified
-14:19:45.6855489UTC. Protected Compare PASS967Mods/118saves/18references/
+Latest transaction `compat-20261026T144610Z-f589d7a78f86` restored/verified
+14:52:01.2785138UTC. Protected Compare PASS967Mods/118saves/18references/
 83settings/tasks0/one unchanged Steam. No owned live transaction/game/task.
-Native67 raw directory and exact identities are in append-only history;
-local originals/intake: `artifacts/sprint32-bardic-d43a72d8/`.
+Native68 raw directory and exact identities are in append-only history;
+local originals/intake: `artifacts/sprint32-bardic-fa5614e0/`.
 Original failures remain immutable; no product-stat changes supplied a verdict.
 
-Counts:58Build-Local attempts /47validated development packages /67native launches.
-Build58 measured4.29min; native67 wrapper5.48min/native156.215s. Whole-mission
-exclusive work-category totals unavailable. Approx14:20-14:31UTC: observer/
-installed-contract correction and control-metadata inspection~7min, duplicate
-selection/verification~2min; final focused compile23.2s/domain0.9s.
+Counts:59Build-Local attempts /48validated development packages /68native launches.
+Build59 measured4.25min; native68 wrapper5.88min/native172.621s. Whole-mission
+exclusive work-category totals unavailable. Approx14:39-14:57UTC: intake/native
+setup/execution/restoration~6min, source/installed-contract inspection~8min,
+records/fixture diagnosis~3min; overlap prevents summing exclusive totals.
 No owner waiting or speedup claim.
 
 Disk budget:1.1GBcombined peak +2GBreserve before building. Prior cleanup
@@ -210,14 +216,24 @@ extractions reclaimed390,974,359B; free3,393,720,320B, protectedComparePASS.
 Unique archives/PDBs/raw evidence/receipts/saves/backups retained.
 At14:32UTC four verified old build copies and closed67 package extraction
 reclaimed185,276,688B; free3,222,036,480B, protectedComparePASS.
+At15:04UTC seven already closed v160 build payload/DLL copies and the restored68
+package extraction reclaimed348,596,555B; free3,207,180,288B, protectedComparePASS.
+All retained ZIPs/PDBs/raw failures/receipts/saves/backups remain.
 No machine-wide cleanup or DATA changes.
 
-**Next:** commit the bounded patch-inventory observer correction,
-package once, then execute the existing `lillend-bardic-suggestion`
-guarded provider profile (expected10min/runtime600s). Observe natural saved,
-resisted and successful attempts, preserved own Fascinate/slots/upkeep,
-ordinary invisibility/aggro reactions, active-effect refusal and a labeled
-ordinary-book negative. No input/save admission or supplied bardic cast.
+The bounded observer correction is independently reviewed: native Invisibility
+is applied only at the natural exact bardic effect boundary, with pre/post own-
+Fascinate guards, original handler retained even on caught setup errors, exact
+buff removal and separate native stealth callback receipts. It does not claim
+sustained invisible performance or an entered-stealth exit. Product unchanged.
+Focused production24.5s/18tests0.9s PASS after correcting a missing namespace;
+original compile failure retained. Review requested two diagnostic fields, added.
+
+**Next:** commit this coherent fixture correction and records, package once,
+then rerun the affected `lillend-bardic-suggestion` provider phase
+(expected10min/runtime600s). Retain all positive and failed observations on their
+actual bytes. No memory, spotting, action or roll may be supplied to rescue a verdict.
+
 Then continue affected Lillend controls/lifecycle, grab/constrict, cold
 ON/OFF, technical presentation and final integration. Reuse the executed
 S30-31 installed-stack original-Working envelopes for persistence.

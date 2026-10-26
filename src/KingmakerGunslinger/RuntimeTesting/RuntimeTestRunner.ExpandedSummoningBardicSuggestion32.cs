@@ -14,6 +14,7 @@ using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.ActivatableAbilities;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
@@ -149,13 +150,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 aggro.ActionsOnAggro = new ActionList { Actions = Array.Empty<GameAction>() };
                 aggro.FilterCondition = new ConditionsChecker();
                 target.Blueprint.ComponentsArray = oldComponents.Concat(new BlueprintComponent[] { aggro }).ToArray();
-                using (var offensive = new Bardic32OffensiveEvents(owner, target, aggro))
+                using (var offensive = new Bardic32OffensiveEvents(owner, target, aggro, ability))
                 {
                     foreach (string stage in new[] { "successful-save", "high-sr", "effect-invisibility" })
                     {
                         var before = new HashSet<UnitUseAbility>(casts());
                         int savesBefore = events.Saves.Count, srBefore = events.Resistances.Count;
-                        int globalBefore = offensive.Global.Count, aggroBefore = offensive.Aggro.Count;
+                        int globalBefore = offensive.Global.Count, aggroBefore = offensive.Aggro.Count,
+                            stealthBefore = offensive.Stealth.Count, injectionsBefore = offensive.InvisibilityRows.Count;
                         if (stage == "successful-save") target.Stats.SaveWill.BaseValue = 100;
                         else target.Stats.SaveWill.BaseValue = -100;
                         if (stage == "high-sr")
@@ -177,24 +179,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var blueprint = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                                 "525f980cb29bc2240b93e953974cb325",
                                 "native ordinary Invisibility for bardic reaction proof");
-                            invisible = ApplySprint12Buff(owner, blueprint, owner, TimeSpan.FromMinutes(2), 17).AppliedBuff;
-                            if (invisible == null || !invisible.Active ||
-                                !owner.Descriptor.State.HasCondition(UnitCondition.Invisible) ||
-                                !target.Descriptor.IsSeeInvisibility || !retained() ||
-                                !data.CanTarget(new TargetWrapper(target)))
-                                throw new InvalidOperationException("Ordinary invisibility/own visible performance fixture failed.");
+                            // Native Invisibility enters stealth on a later tick,
+                            // even with this distant subject's SeeInvisibility.
+                            // Apply it only at this natural cast's effect boundary
+                            // to isolate the native offensive reaction. This does
+                            // not prove a sustained invisible performance.
+                            offensive.InvisibilityFixture = () => invisible = ApplySprint12Buff(
+                                owner, blueprint, owner, TimeSpan.FromMinutes(2), 17).AppliedBuff;
                         }
                         Sprint28SetBrainActivePreservingActions(owner, true);
                         var deadline = DateTime.UtcNow.AddSeconds(stage == "effect-invisibility" ? 32 : 22);
                         while (DateTime.UtcNow < deadline)
                         {
-                            if (!retained()) throw new InvalidOperationException("Bardic attempt ended its own Fascinate or created hostile memory.");
+                            if (!retained())
+                            {
+                                Sprint25Check("bardic-" + stage + "-retention", false, new JObject {
+                                    ["mode"] = mode.Current, ["toggleRunning"] = toggle.IsRunning,
+                                    ["sourceActive"] = source.Active, ["response"] = source.Response(target),
+                                    ["owns"] = source.Owns(target), ["capturedActive"] = captured.Active,
+                                    ["capturedDisposed"] = captured.IsDisposed,
+                                    ["capturedPresent"] = target.Buffs.Enumerable.Contains(captured),
+                                    ["ownerMemoryAtStart"] = ownerMemoryAtStart,
+                                    ["combat"] = new JArray(owner.IsInCombat, target.IsInCombat, Game.Instance.Player.IsInCombat),
+                                    ["memory"] = new JArray(owner.Memory.Contains(target), target.Memory.Contains(owner),
+                                        target.Memory.Contains(anchor), target.Memory.Contains(fixture.Caster)),
+                                    ["sight"] = new JArray(LillendPerformanceSight32.Sees(owner, target, 90),
+                                        LillendPerformanceSight32.Sees(target, owner, 90)),
+                                    ["sourceStealthForTarget"] = owner.InStealthFor(target.Group),
+                                    ["invisibilityActive"] = invisible != null && invisible.Active,
+                                    ["commands"] = new JArray(casts().Select(Sprint27AiCommand)),
+                                    ["invisibilityBoundary"] = offensive.InvisibilityRows, ["observerError"] = offensive.Error },
+                                    "Original failed retention predicates; no cleanup or fixture repair has supplied this observation.");
+                                throw new InvalidOperationException("Bardic attempt lost an exact retention predicate.");
+                            }
                             var finished = casts().Where(value => !before.Contains(value) && value.IsFinished &&
                                 value.ExecutionProcess != null && value.ExecutionProcess.IsEnded).ToArray();
                             if (finished.Length > 0 && (stage != "effect-invisibility" || suggestion() != null || finished.Length >= 3)) break;
                             yield return 0;
                         }
                         Sprint28SetBrainActivePreservingActions(owner, false);
+                        offensive.InvisibilityFixture = null;
                         var attempts = casts().Where(value => !before.Contains(value)).ToArray();
                         var saved = events.Saves.Skip(savesBefore).Where(value =>
                             ReferenceEquals(value.Reason?.Context?.SourceAbility, ability)).ToArray();
@@ -206,13 +230,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 value.Type == UnitCommand.CommandType.Standard && !value.Cutscene && !value.IsIgnoreCooldown &&
                                 economy.Count(value) == 1 && economy.Unchanged(value)) &&
                             offensive.Global.Count - globalBefore == attempts.Length &&
-                            offensive.Aggro.Count - aggroBefore == attempts.Length && retained() && budgets();
+                            offensive.Aggro.Count - aggroBefore == attempts.Length &&
+                            offensive.Stealth.Count - stealthBefore == attempts.Length &&
+                            offensive.Error == null && retained() && budgets();
                         bool outcome = stage == "successful-save" ?
                             saved.Length == 1 && saved[0].IsPassed && suggestion() == null :
                             stage == "high-sr" ? resisted.Length == 1 && resisted[0].SpellResistance == 100 &&
                                 resisted[0].IsSpellResisted && saved.Length == 0 && suggestion() == null :
                             saved.Length == attempts.Length && saved.Any(value => !value.IsPassed) && suggestion() != null &&
-                                invisible.IsDisposed && !owner.Descriptor.State.HasCondition(UnitCondition.Invisible) &&
+                                invisible != null && invisible.IsDisposed && !owner.Descriptor.State.HasCondition(UnitCondition.Invisible) &&
+                                offensive.InvisibilityRows.Count - injectionsBefore == attempts.Length &&
+                                offensive.InvisibilityRows.Skip(injectionsBefore).All(row =>
+                                    (bool?)row["applied"] == true && (bool?)row["removedByNativeHandler"] == true &&
+                                    (bool?)row["qualifiesAfterApplication"] == true) &&
                                 suggestion().Context.Params.CasterLevel == 7 &&
                                 suggestion().Context.Params.DC == 13 + owner.Stats.Charisma.Bonus;
                         bool pass = normal && outcome && saved.All(value => value.DifficultyClass == 13 + owner.Stats.Charisma.Bonus);
@@ -221,12 +251,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["dc"] = value.DifficultyClass, ["passed"] = value.IsPassed })),
                             ["sr"] = new JArray(resisted.Select(Astral31ResistanceRow)),
                             ["globalEvents"] = offensive.Global.Count - globalBefore, ["aggroCallbacks"] = offensive.Aggro.Count - aggroBefore,
+                            ["stealthCallbacks"] = offensive.Stealth.Count - stealthBefore,
+                            ["invisibilityBoundary"] = offensive.InvisibilityRows, ["observerError"] = offensive.Error,
                             ["performanceRetained"] = retained(), ["upkeep"] = rounds.Rows,
                             ["slots"] = new JArray(Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots)),
                             ["siblingPool"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
                             ["invisibilityRemoved"] = invisible?.IsDisposed, ["effectSeconds"] = suggestion()?.TimeLeft.TotalSeconds,
                             ["fixtureBardicCasts"] = 0, ["fixtureDispatcherRounds"] = 0, ["forcedRolls"] = 0 },
-                            "Natural ordinary Standard bardic attempt, native Will/SR, same exact Fascinate and no added hostile memory. Pool debit is solely observed native upkeep; exploration cooldowns remain native. Aggro/global notifications and ordinary invisibility reaction are preserved.");
+                            "Natural ordinary Standard bardic attempt, native Will/SR, same exact Fascinate and no added hostile memory. Pool debit is solely observed native upkeep; exploration cooldowns remain native. Aggro/global/stealth notifications are preserved. The disclosed native invisibility application at the natural effect boundary proves its offensive removal, not sustained invisible performance or an entered-stealth exit.");
                         if (!pass) throw new InvalidOperationException("Bardic Suggestion native " + stage + " outcome failed.");
                     }
                     int completed = casts().Length;
@@ -299,18 +331,88 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly UnitEntityData owner, target;
             private readonly UnitAggroFilter filter;
             private readonly HarmonyInstance hooks;
-            private readonly MethodInfo method;
+            private readonly MethodInfo method, effectMethod, stealthMethod;
+            private readonly BlueprintAbility ability;
+            private readonly List<Buff> injected = new List<Buff>();
+            private readonly HashSet<AbilityExecutionContext> injectedContexts = new HashSet<AbilityExecutionContext>();
+            internal Func<Buff> InvisibilityFixture;
+            internal string Error;
+            internal readonly JArray Stealth = new JArray(), InvisibilityRows = new JArray();
+            private sealed class Injection { internal Buff Buff; internal JObject Row; }
             private readonly string id = "KMG.Bardic32OffensiveEvents." + Guid.NewGuid().ToString("N");
             internal readonly JArray Global = new JArray(), Aggro = new JArray();
-            internal Bardic32OffensiveEvents(UnitEntityData owner, UnitEntityData target, UnitAggroFilter filter)
+            internal Bardic32OffensiveEvents(UnitEntityData owner, UnitEntityData target, UnitAggroFilter filter,
+                BlueprintAbility ability)
             {
                 if (active != null) throw new InvalidOperationException("Nested bardic offensive observation.");
-                this.owner = owner; this.target = target; this.filter = filter;
+                this.owner = owner; this.target = target; this.filter = filter; this.ability = ability;
                 method = AccessTools.Method(typeof(UnitAggroFilter), "OnAggroAction",
                     new[] { typeof(UnitEntityData), typeof(UnitEntityData) });
+                effectMethod = AccessTools.Method(typeof(OffensiveActionsController), "OnTryToApplyAbilityEffect",
+                    new[] { typeof(AbilityExecutionContext), typeof(TargetWrapper) });
+                stealthMethod = AccessTools.Method(typeof(UnitStealthController), "HandleUnitMakeOffensiveAction",
+                    new[] { typeof(UnitEntityData), typeof(UnitEntityData) });
+                if (method == null || effectMethod == null || stealthMethod == null)
+                    throw new MissingMethodException("Exact bardic native reaction observation surface.");
                 hooks = HarmonyInstance.Create(id);
-                hooks.Patch(method, new HarmonyMethod(typeof(Bardic32OffensiveEvents), nameof(AggroNotification)));
-                active = this; EventBus.Subscribe(this);
+                try
+                {
+                    hooks.Patch(method, new HarmonyMethod(typeof(Bardic32OffensiveEvents), nameof(AggroNotification)));
+                    hooks.Patch(stealthMethod, new HarmonyMethod(typeof(Bardic32OffensiveEvents), nameof(StealthNotification)));
+                    hooks.Patch(effectMethod,
+                        new HarmonyMethod(typeof(Bardic32OffensiveEvents), nameof(BeforeEffect)),
+                        new HarmonyMethod(typeof(Bardic32OffensiveEvents), nameof(AfterEffect)));
+                    active = this; EventBus.Subscribe(this);
+                }
+                catch { Unpatch(); if (ReferenceEquals(active, this)) active = null; throw; }
+            }
+            // An exact, disclosed setup at the real cast boundary. These void
+            // hooks cannot skip the original. Catch setup/observation failures:
+            // throwing inside this EventBus listener would skip native handling.
+            private static void BeforeEffect(AbilityExecutionContext __0, TargetWrapper __1, out Injection __state)
+            {
+                __state = null;
+                var probe = active;
+                if (probe?.InvisibilityFixture == null || __0 == null || __1 == null ||
+                    !ReferenceEquals(__0.Caster, probe.owner) || !ReferenceEquals(__1.Unit, probe.target) ||
+                    !ReferenceEquals(__0.SourceAbility, probe.ability) ||
+                    !ReferenceEquals(__0.Ability?.Blueprint, probe.ability)) return;
+                try
+                {
+                    var row = new JObject { ["gameSeconds"] = Game.Instance.Player.GameTime.TotalSeconds,
+                        ["frame"] = Time.frameCount, ["qualifiesBefore"] = LillendBardicMemory32.Qualifies(__0, probe.owner, probe.target),
+                        ["sourceStealthBefore"] = probe.owner.InStealthFor(probe.target.Group),
+                        ["fixtureKind"] = "native Invisibility applied synchronously before natural bardic effect; no roll or command supplied" };
+                    probe.InvisibilityRows.Add(row); __state = new Injection { Row = row };
+                    if (!(bool)row["qualifiesBefore"] || !probe.injectedContexts.Add(__0) ||
+                        probe.owner.Descriptor.State.HasCondition(UnitCondition.Invisible) ||
+                        !probe.target.Descriptor.IsSeeInvisibility)
+                        throw new InvalidOperationException("Exact pre-effect invisibility fixture admission failed.");
+                    __state.Buff = probe.InvisibilityFixture();
+                    if (__state.Buff != null) probe.injected.Add(__state.Buff);
+                    row["applied"] = __state.Buff != null && __state.Buff.Active && !__state.Buff.IsDisposed &&
+                        probe.owner.Descriptor.State.HasCondition(UnitCondition.Invisible);
+                    row["qualifiesAfterApplication"] = LillendBardicMemory32.Qualifies(__0, probe.owner, probe.target);
+                    if (!(bool)row["applied"] || !(bool)row["qualifiesAfterApplication"])
+                        throw new InvalidOperationException("Native invisibility did not preserve exact immediate bardic admission.");
+                }
+                catch (Exception error) { probe.Error = error.ToString(); }
+            }
+            private static void AfterEffect(Injection __state)
+            {
+                if (__state == null) return;
+                try
+                {
+                    __state.Row["removedByNativeHandler"] = __state.Buff != null && __state.Buff.IsDisposed &&
+                        !active.owner.Descriptor.State.HasCondition(UnitCondition.Invisible);
+                    __state.Row["frameAfter"] = Time.frameCount;
+                }
+                catch (Exception error) { if (active != null) active.Error = error.ToString(); }
+            }
+            private static void StealthNotification(UnitEntityData __0, UnitEntityData __1)
+            {
+                if (active != null && ReferenceEquals(__0, active.owner) && ReferenceEquals(__1, active.target))
+                    active.Stealth.Add(Game.Instance.Player.GameTime.TotalSeconds);
             }
             private static void AggroNotification(UnitAggroFilter __instance, UnitEntityData __0, UnitEntityData __1)
             {
@@ -325,8 +427,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             public void Dispose()
             {
-                EventBus.Unsubscribe(this); hooks.Unpatch(method, HarmonyPatchType.All, id);
+                InvisibilityFixture = null; EventBus.Unsubscribe(this); Unpatch();
                 if (ReferenceEquals(active, this)) active = null;
+                foreach (var buff in injected.Where(value => !value.IsDisposed)) buff.Remove();
+            }
+            private void Unpatch()
+            {
+                foreach (var targetMethod in new[] { method, effectMethod, stealthMethod })
+                    hooks.Unpatch(targetMethod, HarmonyPatchType.All, id);
             }
         }
     }
