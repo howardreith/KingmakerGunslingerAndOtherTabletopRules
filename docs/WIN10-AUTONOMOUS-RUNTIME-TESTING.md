@@ -87,12 +87,15 @@ Sprint32 fixed `support-lifecycle` selects exactly two Satyrs and two Lillends
 through the existing source-lifecycle fixture. A fixture-issued native Lillend
 activation command in the isolated owned combat is a lifecycle precondition;
 normal controllers must
-produce the exact CourageRecipient on the surviving owned fixture caster. Only
+produce the exact CourageRecipient on a separate surviving owned Satyr. Native
+`IsAlly` must explicitly admit that recipient; nonenemy status is insufficient.
+The cloned pre-character-creation caster is not assumed to be an eligible ally. Only
 one Lillend emits at a time: owner expiry is verified before sibling activation
 and fresh area/recipient-reference capture for death. Self/carrier buffs cannot
 substitute for external-recipient cleanup. Activation state, command result,
 resource and exact recipient are recorded before a failed prerequisite can throw.
-The owned caster/hostile keep combat active through source removal; no effects or
+The owned caster/hostile keep combat active through source removal. The separate
+recipient is kept alive through all removal assertions and disposed only afterward; no effects or
 costs are supplied. This is not natural AI selection evidence. Actual
 native scheduler expiry, independent siblings, native death, subsequent expiry,
 nonloot equipment, body resources, source areas/grants and exact inventory reset
