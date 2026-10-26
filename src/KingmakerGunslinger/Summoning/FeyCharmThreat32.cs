@@ -1,4 +1,5 @@
 using System;
+using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -29,8 +30,15 @@ namespace KingmakerGunslinger.Summoning
                 (!actor.IsEnemy(caster) && !caster.IsEnemy(actor) && actor.IsAlly(caster)));
         }
 
-        private static bool Harmful(BlueprintAbility ability)
+        private static bool Harmful(BlueprintAbility ability, UnitEntityData recipient)
         {
+            if (ability == null) return false;
+            // Native positive healing has no ally metadata. Its actual target
+            // relation is determined by IsUndead, including the installed
+            // negative-energy-affinity seam. RestoreHP alone is not an exemption.
+            var positiveHealing = SpellDescriptor.Cure | SpellDescriptor.RestoreHP;
+            if ((ability.SpellDescriptor & positiveHealing) == positiveHealing)
+                return recipient != null && recipient.Descriptor.IsUndead;
             // Native metadata is relation-sensitive. Helpful ally effects such
             // as healing must not break Charm because their enemy metadata is
             // harmful. Untagged actual damage is handled by its native rule.
@@ -44,7 +52,7 @@ namespace KingmakerGunslinger.Summoning
             var attack = command as UnitAttack;
             var use = command as UnitUseAbility;
             if (attack != null && ReferenceEquals(attack.Target, Owner.Unit) ||
-                use != null && ReferenceEquals(use.Target?.Unit, Owner.Unit) && Harmful(use.Spell?.Blueprint))
+                use != null && ReferenceEquals(use.Target?.Unit, Owner.Unit) && Harmful(use.Spell?.Blueprint, Owner.Unit))
                 Buff.Remove();
         }
 
@@ -53,7 +61,7 @@ namespace KingmakerGunslinger.Summoning
         public void OnTryToApplyAbilityEffect(AbilityExecutionContext context, TargetWrapper target)
         {
             if (ReferenceEquals(target?.Unit, Owner.Unit) && SourceThreatens(context?.MaybeCaster) &&
-                Harmful(context?.AbilityBlueprint)) Buff.Remove();
+                Harmful(context?.AbilityBlueprint, Owner.Unit)) Buff.Remove();
         }
         public void OnAbilityEffectAppliedToTarget(AbilityExecutionContext context, TargetWrapper target) { }
         public void OnAbilityEffectApplied(AbilityExecutionContext context) { }
