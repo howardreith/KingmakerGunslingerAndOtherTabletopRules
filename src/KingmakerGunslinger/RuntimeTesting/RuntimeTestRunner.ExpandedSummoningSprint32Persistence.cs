@@ -35,11 +35,11 @@ namespace KingmakerGunslinger.RuntimeTesting
     public sealed class UnitPartSprint32ListenerReceipt : UnitPart
     {
         [JsonProperty] public string Scope, UnitId, CasterId, SourceId, Role, PrepareRunId;
-        [JsonProperty] public string ControlState, OriginalAttackFactions, ListenerFaction;
+        [JsonProperty] public string ControlState, OriginalAttackFactions, ListenerFaction, SuggestionState;
     }
     public sealed class UnitPartSprint32SavedReceipt : UnitPart
     {
-        [JsonProperty] public string State, PrepareRunId;
+        [JsonProperty] public string State, PrepareRunId, SuggestionTransition;
         [JsonProperty] public int Ordinal;
     }
 
@@ -188,6 +188,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         private void Sprint32PersistenceAbsence(UnitEntityData caster, string stage)
         {
+            if (!Sprint32SavedProviderBoundary(stage)) throw new InvalidOperationException("Sprint32 provider transition boundary differs.");
             var listeners = Sprint32SavedAuxiliaries(caster);
             var units = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed).ToArray();
             var sources = units.Where(unit => ExpandedSummoningRosterPersistencePolicy.FeyCelestialKeys.Contains(
@@ -207,37 +208,69 @@ namespace KingmakerGunslinger.RuntimeTesting
             var listeners = Sprint32SavedListeners(caster);
             if (sources.Length != 4 || listeners.Length != 2 || listeners.Any(unit => !Sprint32OwnsListener(unit, caster, sources)))
                 throw new InvalidOperationException("Sprint32 cold ownership is incomplete or ambiguous.");
-            bool boundary = Sprint32Suggestion.Settled && !Sprint32Suggestion.Active &&
-                sources.All(source => source.Get<UnitPartSprint32SavedReceipt>() != null) &&
-                sources.Select(source => source.Get<UnitPartSprint32SavedReceipt>().Ordinal).OrderBy(value => value).SequenceEqual(new[] { 0, 1, 2, 3 }) &&
-                listeners.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().Role).OrderBy(value => value, StringComparer.Ordinal)
-                    .SequenceEqual(new[] { "held", "resisted" }) &&
-                listeners.All(unit => ReferenceEquals(unit.Faction, Sprint32ListenerFaction(unit)) && unit.GroupId == unit.UniqueId && !unit.Group.IsPlayerParty &&
-                    unit.AttackFactions.Count() == 1 && ReferenceEquals(unit.AttackFactions.Single(), caster.Faction) &&
-                    sources.All(source => unit.IsEnemy(source) && source.IsEnemy(unit)));
+            var checks = new JObject {
+                ["provider"] = Sprint32SavedProviderBoundary("cold"),
+                ["allSavedReceipts"] = sources.All(source => source.Get<UnitPartSprint32SavedReceipt>() != null),
+                ["ordinals"] = sources.Select(source => source.Get<UnitPartSprint32SavedReceipt>()?.Ordinal ?? -1)
+                    .OrderBy(value => value).SequenceEqual(new[] { 0, 1, 2, 3 }),
+                ["listenerRoles"] = listeners.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().Role)
+                    .OrderBy(value => value, StringComparer.Ordinal).SequenceEqual(new[] { "held", "resisted" }),
+                ["canonicalFactions"] = listeners.All(unit => ReferenceEquals(unit.Faction, Sprint32ListenerFaction(unit))),
+                ["ownGroupIds"] = listeners.All(unit => unit.GroupId == unit.UniqueId),
+                ["nonpartyGroups"] = listeners.All(unit => !unit.Group.IsPlayerParty),
+                ["exactAttackLists"] = listeners.All(unit => unit.AttackFactions.Count() == 1 && ReferenceEquals(unit.AttackFactions.Single(), caster.Faction)),
+                ["allMutualEnemies"] = listeners.All(unit => sources.All(source => unit.IsEnemy(source) && source.IsEnemy(unit))) };
+            bool boundary = checks.Properties().All(value => (bool)value.Value);
             RosterPersistenceCheck("s32-cold-listener-boundary", boundary, new JObject {
-                ["providerDisposition"] = Sprint32Suggestion.Disposition,
+                ["providerDisposition"] = Sprint32Suggestion.Disposition, ["checks"] = checks,
+                ["casterGroup"] = Sprint32ColdGroupState(caster),
+                ["sources"] = new JArray(sources.Select(source => new JObject { ["group"] = Sprint32ColdGroupState(source),
+                    ["savedReceipt"] = source.Get<UnitPartSprint32SavedReceipt>() != null,
+                    ["ordinal"] = source.Get<UnitPartSprint32SavedReceipt>()?.Ordinal,
+                    ["prepareRunId"] = source.Get<UnitPartSprint32SavedReceipt>()?.PrepareRunId })),
                 ["listeners"] = new JArray(listeners.Select(unit => new JObject { ["id"] = unit.UniqueId,
                     ["faction"] = unit.Faction.AssetGuid, ["attackFactions"] = new JArray(unit.AttackFactions.Select(faction => faction.AssetGuid)),
-                    ["partyGroup"] = unit.Group.IsPlayerParty, ["role"] = unit.Get<UnitPartSprint32ListenerReceipt>().Role })) },
-                "The absent-provider fixture restores exact canonical factions, per-instance attack lists and nonparty listener groups; provider transitions are a separate selection.");
+                    ["partyGroup"] = unit.Group.IsPlayerParty, ["role"] = unit.Get<UnitPartSprint32ListenerReceipt>().Role,
+                    ["group"] = Sprint32ColdGroupState(unit), ["relations"] = new JArray(sources.Select(source => new JObject {
+                        ["source"] = source.UniqueId, ["listenerEnemyOfSource"] = unit.IsEnemy(source),
+                        ["sourceEnemyOfListener"] = source.IsEnemy(unit) })) })) },
+                "Cold receipts, exact canonical factions, attack lists, owned group IDs and mutual relations must all survive before time advances; complete read-only cache/member rows retain any refusal, with no cache repair.");
             if (!boundary) throw new InvalidOperationException("Sprint32 cold profile/relation boundary differs.");
             RequireSprint32ColdAuxiliaryRelations(caster, sources);
             ObserveSprint32SavedControls(caster, sources, "cold");
+            ObserveSprint32SavedSuggestion(caster, sources, "cold");
             _sprint32ColdGameSeconds = Game.Instance.Player.GameTime.TotalSeconds;
             foreach (var source in sources)
             {
                 var receipt = source.Get<UnitPartSprint32SavedReceipt>();
                 var actual = Sprint32SavedState(source, listeners);
                 bool exact = receipt != null && !string.IsNullOrEmpty(receipt.PrepareRunId) && receipt.PrepareRunId != _request.RunId &&
-                    receipt.State == actual.ToString(Formatting.None) && (bool)actual["nature"]["ownIntelligence"];
+                    JToken.DeepEquals(ExpectedSprint32ColdState(receipt), actual) && (bool)actual["nature"]["ownIntelligence"];
                 RosterPersistenceCheck("s32-cold-state-" + source.UniqueId, exact,
                     new JObject { ["moduleEnabled"] = _context.FeatureModules.Active.ExpandedSummoning,
                         ["providerActive"] = Sprint32Suggestion.Active, ["prepareRunId"] = receipt?.PrepareRunId,
-                        ["saved"] = receipt?.State == null ? null : JObject.Parse(receipt.State), ["loaded"] = actual },
+                        ["saved"] = receipt?.State == null ? null : JObject.Parse(receipt.State),
+                        ["expectedAfterTransition"] = ExpectedSprint32ColdState(receipt), ["loaded"] = actual },
                     "Before deliberate time advances, exact native slots/resources, own Intelligence link, equipment, selected recipient/response ledger and effect deadlines survive cold load without duplication or refill.");
                 if (!exact) throw new InvalidOperationException("Sprint32 cold state mismatch; no cleanup save.");
             }
+        }
+
+        private static JObject Sprint32ColdGroupState(UnitEntityData unit)
+        {
+            var group = unit.Group;
+            var members = Enumerable.Range(0, group.Count).Select(index => group[index]).ToArray();
+            var membership = typeof(Kingmaker.UnitLogic.Groups.UnitGroup).GetField("m_Factions",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var cached = (System.Collections.IEnumerable)membership.GetValue(group);
+            return new JObject { ["unit"] = unit.UniqueId, ["faction"] = unit.Faction.AssetGuid,
+                ["groupId"] = unit.GroupId, ["party"] = group.IsPlayerParty,
+                ["directAttackFactions"] = new JArray(unit.AttackFactions.Select(faction => faction.AssetGuid)),
+                ["cachedFactions"] = new JArray(cached.Cast<BlueprintFaction>().Select(faction => faction.AssetGuid)),
+                ["cachedAttackFactions"] = group.AttackFactions == null ? null : new JArray(group.AttackFactions.Select(faction => faction.AssetGuid)),
+                ["members"] = new JArray(members.Select(member => new JObject { ["unit"] = member.UniqueId,
+                    ["faction"] = member.Faction.AssetGuid, ["groupId"] = member.GroupId,
+                    ["attackFactions"] = new JArray(member.AttackFactions.Select(faction => faction.AssetGuid)) })) };
         }
 
         private IEnumerable<int> PrepareSprint32PersistentState(UnitEntityData caster, UnitEntityData[] sources)
@@ -249,7 +282,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int listenerCount = Sprint32SavedListeners(caster).Length;
             bool boundary = (game.CurrentMode == GameModeType.Default || game.CurrentMode == GameModeType.Pause) &&
                 game.IsModeActive(GameModeType.Default) && !game.Player.IsInCombat && sources.Length == 4 && listenerCount == 0 &&
-                Sprint32Suggestion.Settled && Sprint32Suggestion.Disposition == "provider-absent";
+                Sprint32SavedProviderBoundary("prepare");
             RosterPersistenceCheck("s32-prepare-boundary", boundary, new JObject {
                 ["mode"] = game.CurrentMode.ToString(), ["paused"] = game.IsPaused,
                 ["defaultActive"] = game.IsModeActive(GameModeType.Default), ["inCombat"] = game.Player.IsInCombat,
@@ -398,6 +431,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             finally { game.IsPaused = true; SetExpandedSummoningBrainActive(owner, false); EventBus.Unsubscribe(saves); EventBus.Unsubscribe(starts); }
 
             foreach (var step in PrepareSprint32SavedControls(caster, sources, points.Skip(2).ToArray(), intake)) yield return step;
+            PrepareSprint32SavedSuggestion(caster, sources);
 
             // Prospective native spends establish distinct saved budgets only.
             // They are not spell/action/AI evidence and never refill a resource.
@@ -421,6 +455,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     state["book"]["slots"].Values<int>().SequenceEqual(speciesOrdinal == 0 ? new[] { 4, 3, 1 } : new[] { 4, 2, 0 }) &&
                     (int)state["resources"]["PerformanceResource"] > 0 && (int)state["resources"]["PerformanceResource"] < 20;
                 var receipt = source.Ensure<UnitPartSprint32SavedReceipt>(); receipt.Ordinal = index; receipt.PrepareRunId = _request.RunId;
+                receipt.SuggestionTransition = Sprint32SavedTransition;
                 receipt.State = state.ToString(Formatting.None);
                 RosterPersistenceCheck("s32-prepared-state-" + index, spent, state,
                     "Exact distinct saved budgets after disclosed persistence-only native spends; performance rounds remain actual native expenditure and cold comparison is separate.");
@@ -749,6 +784,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bool clear = !unit.Destroyed && unit.IsInState && !unit.Descriptor.State.IsDead &&
                     !unit.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, Sprint32SavedControlBuff(receipt.Role))) &&
                     !unit.Descriptor.State.HasCondition(UnitCondition.Sleeping) && !unit.Descriptor.State.HasCondition(UnitCondition.Paralyzed) &&
+                    (receipt.SuggestionState == null || !unit.Descriptor.State.HasCondition(UnitCondition.Dazed) &&
+                        !unit.Buffs.Enumerable.Any(buff => buff.Blueprint.AssetGuid == Sprint32Suggestion.OwnedBuffGuid)) &&
                     receipt.OriginalAttackFactions == factions.ToString(Formatting.None) && unit.IsEnemy(caster);
                 RosterPersistenceCheck("s32-control-removed-" + stage + "-" + receipt.Role, clear,
                     new JObject { ["unit"] = unit.UniqueId, ["source"] = source.UniqueId, ["attackFactions"] = factions,
@@ -764,12 +801,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             var listeners = Sprint32SavedListeners(caster);
             var controls = Sprint32SavedControls(caster);
             ObserveSprint32SavedControls(caster, sources, "precleanup");
+            ObserveSprint32SavedSuggestion(caster, sources, "precleanup");
             if (listeners.Length != 2 || listeners.Any(unit => !Sprint32OwnsListener(unit, caster, sources)))
                 throw new InvalidOperationException("Sprint32 cleanup listener ownership ambiguous.");
             double elapsed = Game.Instance.Player.GameTime.TotalSeconds - _sprint32ColdGameSeconds;
             foreach (var source in sources)
             {
-                var saved = JObject.Parse(source.Get<UnitPartSprint32SavedReceipt>().State);
+                var saved = ExpectedSprint32ColdState(source.Get<UnitPartSprint32SavedReceipt>());
                 var current = Sprint32SavedState(source, listeners);
                 var comparable = (JObject)current.DeepClone();
                 bool upkeep = true;

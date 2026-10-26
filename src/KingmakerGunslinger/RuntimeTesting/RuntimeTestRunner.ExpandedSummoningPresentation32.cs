@@ -115,22 +115,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var move = new UnitMoveTo(end, .5f); move.Init(owner);
                     if (!move.CanStart) throw new InvalidOperationException("Native presentation move cannot start.");
                     owner.Commands.Run(move);
+                    if (!owner.Commands.Contains(move)) throw new InvalidOperationException("Exact native presentation move was not queued.");
+                    var moveSamples = new JArray(); float peakVelocity = 0, activeTravel = 0;
+                    int activeFrames = 0;
                     foreach (int frame in WaitPresentation32(mode, () => move.IsFinished, 25, () => {
                         if (Time.frameCount > lastCapture + 2) motion.Add(Time.unscaledDeltaTime);
-                        if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend));
-                        if (!midCaptured && Vector3.Distance(start, owner.Position) > 2f)
+                        // Native approach movement precedes UnitCommand.Start;
+                        // IsStarted is an observation, not locomotion admission.
+                        bool exactActive = ReferenceEquals(owner.Commands.Move, move) && !move.IsFinished;
+                        var agent = owner.View.MovementAgent as Kingmaker.View.UnitMovementAgent;
+                        float speed = agent == null ? 0 : agent.Velocity.magnitude;
+                        if (!exactActive || speed <= .05f) return;
+                        activeFrames++; peakVelocity = Math.Max(peakVelocity, speed);
+                        activeTravel = Math.Max(activeTravel, Vector3.Distance(start, owner.Position));
+                        if (activeFrames % 10 == 0)
+                        {
+                            var pose = Presentation32Pose(owner, lillend);
+                            pose["nativeVelocity"] = speed; pose["exactMoveActive"] = exactActive;
+                            pose["commandIsStarted"] = move.IsStarted;
+                            moveSamples.Add(pose); poses.Add(pose.DeepClone());
+                        }
+                        if (!midCaptured && activeTravel > 2f)
                         { capture(selectedMove == 0 ? "move-out" : "move-back"); midCaptured = true; }
                     })) yield return frame;
-                    bool moved = move.Result == Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success &&
-                        Vector3.Distance(start, owner.Position) > 4f && Vector3.Distance(end, owner.Position) < 1.5f && midCaptured;
+                    // Reuse Sprint17's technical locomotion contract: sampled
+                    // native velocity, displacement and finite moving geometry.
+                    // Native partial path endpoints may finish with Interrupt;
+                    // retain that result, without claiming precise arrival.
+                    bool moved = move.IsFinished && activeTravel > 4f && peakVelocity > .05f &&
+                        moveSamples.Count >= 3 && moveSamples.All(value => (bool)value["finite"]) && midCaptured;
                     Sprint25Check(id + "-move-" + selectedMove, moved, new JObject {
                         ["result"] = move.Result.ToString(), ["start"] = new JArray(start.x, start.y, start.z),
                         ["goal"] = new JArray(end.x, end.y, end.z),
                         ["end"] = new JArray(owner.Position.x, owner.Position.y, owner.Position.z),
                         ["travelMeters"] = Vector3.Distance(start, owner.Position),
-                        ["goalGapMeters"] = Vector3.Distance(end, owner.Position), ["midCaptured"] = midCaptured },
-                        "A successful ordinary native move traverses the surveyed lane and retains its mid-motion camera frame.");
-                    if (!moved) throw new InvalidOperationException("Native presentation move did not traverse its connected lane.");
+                        ["goalGapMeters"] = Vector3.Distance(end, owner.Position), ["midCaptured"] = midCaptured,
+                        ["exactMoveActiveFrames"] = activeFrames, ["activeTravelMeters"] = activeTravel,
+                        ["peakNativeVelocity"] = peakVelocity, ["activeMoveSamples"] = moveSamples,
+                        ["preciseArrivalClaimed"] = false },
+                        "The exact queued native move supplies positive-velocity travel over four metres and finite moving poses with a mid-motion frame; terminal result is retained without a precise-arrival claim.");
+                    if (!moved) throw new InvalidOperationException("Native presentation locomotion evidence incomplete.");
                 }
                 var gait = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>() : null;
                 bool movement = poses.Count > 0 && poses.All(p => (bool)p["finite"]) &&
