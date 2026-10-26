@@ -42,7 +42,7 @@ namespace KingmakerGunslinger.Summoning
     // an ordinary native Move activation; the native toggle owns upkeep,
     // performance exclusivity, effects and resource costs.
     [Serializable]
-    public sealed class LillendNoncombat32 : OwnedGameLogicComponent<UnitDescriptor>,
+    public sealed class LillendNoncombat32 : BuffLogic,
         ITickEachRound, IUnitCombatHandler
     {
         public BlueprintUnit OwningBlueprint;
@@ -50,6 +50,18 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintBuff Recipient;
         [NonSerialized] private UnitActivateAbility _pending;
         [NonSerialized] private string _selected;
+
+        internal static LillendNoncombat32 Find(UnitEntityData unit)
+        {
+            return unit?.Buffs.Enumerable.Where(value => value.Active)
+                .SelectMany(value => value.SelectComponents<LillendNoncombat32>())
+                .Where(value => ReferenceEquals(value.OwningBlueprint, unit.Blueprint)).SingleOrDefault();
+        }
+        public override void OnTurnOn()
+        {
+            Buff.IsNotDispelable = true;
+            Buff.IsFromSpell = false;
+        }
 
         private ActivatableAbility Toggle => Owner?.ActivatableAbilities.Enumerable.SingleOrDefault(
             value => ReferenceEquals(value.Blueprint, Competence));
@@ -115,6 +127,11 @@ namespace KingmakerGunslinger.Summoning
         public void HandleUnitJoinCombat(UnitEntityData unit)
         {
             if (!ReferenceEquals(unit, Owner?.Unit)) return;
+            StopOwned();
+        }
+        public override void OnTurnOff() { StopOwned(); }
+        private void StopOwned()
+        {
             if (_pending != null && !_pending.IsFinished) _pending.Interrupt(true);
             _pending = null; _selected = null;
             var toggle = Toggle;
@@ -133,7 +150,7 @@ namespace KingmakerGunslinger.Summoning
         [NonSerialized] private bool _ready;
         public override void OnFactActivate()
         {
-            var dispatcher = Owner.Unit.Logic.SelectFactComponents<LillendNoncombat32>().SingleOrDefault();
+            var dispatcher = LillendNoncombat32.Find(Owner.Unit);
             _ready = dispatcher != null && dispatcher.HasPendingSelection;
             _recipientId = dispatcher?.TakeSelection();
         }

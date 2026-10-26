@@ -893,6 +893,7 @@ def planned():
         ("KMG.Summoning.FeyCelestial.LillendAzata.CompetenceCarrier", "BlueprintBuff"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.CompetenceArea", "BlueprintAbilityAreaEffect"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.CompetenceRecipient", "BlueprintBuff"),
+        ("KMG.Summoning.FeyCelestial.LillendAzata.NoncombatDispatcher", "BlueprintBuff"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.CourageRecipient", "BlueprintBuff"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.CourageArea", "BlueprintAbilityAreaEffect"),
         ("KMG.Summoning.FeyCelestial.LillendAzata.CourageCarrier", "BlueprintBuff"),

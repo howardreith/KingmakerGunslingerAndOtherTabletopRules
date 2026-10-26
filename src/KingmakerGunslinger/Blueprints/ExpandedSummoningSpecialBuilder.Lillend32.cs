@@ -34,9 +34,8 @@ namespace KingmakerGunslinger.Blueprints
     {
         internal const string Lillend32Prefix = "KMG.Summoning.FeyCelestial.LillendAzata.";
 
-        // Hidden first native support slice. The retained human rig is only
-        // an investigation carrier; final original body, full combat profile,
-        // remaining spells/performances and public acceptance are separate.
+        // Private adult profile and native bard support. Public qualification
+        // is recorded separately from these source mappings.
         private static void ConfigureLillend32(LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> bySymbol)
         {
@@ -85,6 +84,16 @@ namespace KingmakerGunslinger.Blueprints
             // allocation is inferred from the printed total alone.
             nature.OwningBlueprint = unit; nature.TrainedContribution = 7;
             unit.ComponentsArray = new BlueprintComponent[] { levels, racial, caster, nature };
+            var load = unit.GetComponent<AddPostLoadActions>();
+            if (load == null)
+            {
+                load = ScriptableObject.CreateInstance<AddPostLoadActions>();
+                unit.ComponentsArray = unit.ComponentsArray.Concat(new BlueprintComponent[] { load }).ToArray();
+            }
+            load.Actions = new Kingmaker.ElementsSystem.ActionList {
+                Actions = (load.Actions?.Actions ?? Array.Empty<Kingmaker.ElementsSystem.GameAction>())
+                    .Concat(new Kingmaker.ElementsSystem.GameAction[] {
+                        ScriptableObject.CreateInstance<LillendBookPostLoad32>() }).ToArray() };
             unit.Skills = new BlueprintUnit.UnitSkills(); unit.Race = null; unit.Type = type;
             ConfigureUnitCore(unit, "LillendAzata", "Lillend Azata", Alignment.ChaoticGood,
                 Size.Large, 20, 17, 21, 14, 16, 19, 30);
@@ -115,9 +124,22 @@ namespace KingmakerGunslinger.Blueprints
             var noncombat = ScriptableObject.CreateInstance<LillendNoncombat32>();
             noncombat.OwningBlueprint = unit; noncombat.Competence = competence;
             noncombat.Recipient = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "CompetenceRecipient");
-            // Native UnitTicksController visits unit.Logic for ITickEachRound;
-            // progression features are a separate, unticked fact collection.
-            unit.ComponentsArray = unit.ComponentsArray.Concat(new BlueprintComponent[] { noncombat }).ToArray();
+            // Buff.TickMechanics dispatches ITickEachRound at this frequency,
+            // including noncombat. AddFacts owns/removes the exact buff; an
+            // arbitrary component on BlueprintUnit is never a bound fact.
+            var dispatcher = Require<BlueprintBuff>(bySymbol, Lillend32Prefix + "NoncombatDispatcher");
+            dispatcher.name = InternalName(Lillend32Prefix + "NoncombatDispatcher");
+            dispatcher.Frequency = Kingmaker.UnitLogic.Mechanics.DurationRate.Rounds;
+            dispatcher.Stacking = StackingType.Replace;
+            SetBuffFlags(dispatcher, harmful: false, hidden: true);
+            dispatcher.ComponentsArray = new BlueprintComponent[] { noncombat };
+            BlueprintUnitFactAccess.Resolve().Configure(dispatcher,
+                LocalizationService.Create(Lillend32Prefix + "NoncombatDispatcher.Name", "Lillend Noncombat Performances"),
+                LocalizationService.Create(Lillend32Prefix + "NoncombatDispatcher.Description",
+                    "Choose a native performance through this summon’s normal actions."), null);
+            var dispatchGrant = ScriptableObject.CreateInstance<AddFacts>();
+            dispatchGrant.Facts = new BlueprintUnitFact[] { dispatcher };
+            dispatchGrant.DoNotRestoreMissingFacts = false;
             var armor = ScriptableObject.CreateInstance<AddStatBonus>();
             armor.Stat = StatType.AC; armor.Descriptor = ModifierDescriptor.NaturalArmor; armor.Value = 8;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>();
@@ -127,7 +149,7 @@ namespace KingmakerGunslinger.Blueprints
             proficiency.ArmorProficiencies = Array.Empty<ArmorProficiencyGroup>();
             var traits = Require<BlueprintFeature>(bySymbol, Lillend32Prefix + "Traits");
             traits.name = InternalName(Lillend32Prefix + "Traits"); traits.HideInUI = true;
-            traits.ComponentsArray = new BlueprintComponent[] { armor, equipment, proficiency, start, AddResource(resource),
+            traits.ComponentsArray = new BlueprintComponent[] { armor, equipment, proficiency, start, dispatchGrant, AddResource(resource),
                 Energy(DamageEnergyType.Cold, 10), Energy(DamageEnergyType.Fire, 10) }
                 .Concat(ArchonPetrificationImmunities()).ToArray();
             BlueprintUnitFactAccess.Resolve().Configure(traits,

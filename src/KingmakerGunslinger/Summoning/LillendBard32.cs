@@ -28,17 +28,11 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintUnit OwningBlueprint;
         public BlueprintSpellbook Book;
         public BlueprintAbility OptionalSuggestion;
-        public override void PostLoad()
+        internal void ReconcileOptionalSpell(UnitEntityData unit)
         {
-            base.PostLoad();
-            ReconcileOptionalSpell();
-        }
-        public override void OnTurnOn() { ReconcileOptionalSpell(); }
-        internal void ReconcileOptionalSpell()
-        {
-            if (!Sprint32Suggestion.Settled || Owner?.Unit == null || !ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) ||
+            if (!Sprint32Suggestion.Settled || unit == null || !ReferenceEquals(unit.Blueprint, OwningBlueprint) ||
                 OptionalSuggestion == null || Book == null) return;
-            var book = Owner.GetSpellbook(Book);
+            var book = unit.Descriptor.GetSpellbook(Book);
             if (book == null) return;
             if (Sprint32Suggestion.Active)
             { if (!book.IsKnown(OptionalSuggestion)) book.AddKnown(2, OptionalSuggestion, true); }
@@ -70,8 +64,22 @@ namespace KingmakerGunslinger.Summoning
                 }
             }
             book.Rest();
+            ReconcileOptionalSpell(unit);
         }
         public void OnEntityRemoved(UnitEntityData unit) { }
+    }
+
+    // UnitDescriptor.PostLoad runs AddPostLoadActions after loading its books,
+    // with MaybeCaster set to that exact unit. Blueprint components themselves
+    // are creation configuration, not bound facts with OnTurnOn/PostLoad.
+    public sealed class LillendBookPostLoad32 : Kingmaker.UnitLogic.Mechanics.Actions.ContextAction
+    {
+        public override string GetCaption() { return "Reconcile this Lillend's optional known spell"; }
+        public override void RunAction()
+        {
+            var unit = Context?.MaybeCaster;
+            unit?.Blueprint.GetComponent<LillendBardBook32>()?.ReconcileOptionalSpell(unit);
+        }
     }
 
     public sealed class LillendHealingEligibility32 : Consideration
@@ -153,7 +161,7 @@ namespace KingmakerGunslinger.Summoning
             if (!Owner.Unit.Commands.Raw.Any(value => ReferenceEquals(value, activate)))
                 throw new InvalidOperationException("Lillend performance start has no exact queued native command.");
             if (ReferenceEquals(activate.Ability.Blueprint, Competence) &&
-                !Owner.Unit.Logic.SelectFactComponents<LillendNoncombat32>().Single().CanStart(activate))
+                LillendNoncombat32.Find(Owner.Unit)?.CanStart(activate) != true)
             { activate.Interrupt(true); return; }
             activate.Ability.IsOn = true;
         }
