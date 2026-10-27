@@ -54,8 +54,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.IsInCombat || game.Player.IsInCombat || !owner.IsEnemy(target) || !target.IsEnemy(owner) ||
                 idle.Any(unit => unit == null || unit.Destroyed || unit.IsBrainActive || !unit.Commands.Empty || unit.Commands.Queue.Count != 0))
                 throw new InvalidOperationException("Exact live noncombat performance/idle owned transition precondition failed.");
+            var tutorial = turnBased ? Kingmaker.Blueprints.Root.BlueprintRoot.Instance.UITutorials.TBMStarted.Lock : null;
+            bool tutorialLocked = tutorial != null && tutorial.IsLocked;
+            var flagsBefore = game.Player.UnlockableFlags.UnlockedFlags.ToArray();
             try
             {
+                // Reuse the existing save-free FavoredClassTurnModes seam.
+                // Native HandleCombatStart shows TBMStarted before initializing
+                // turn order; acknowledge only that captured fixture flag.
+                if (turnBased)
+                {
+                    if (tutorial == null) throw new InvalidOperationException("Native turn tutorial flag absent.");
+                    tutorial.Unlock();
+                }
                 if (target.Descriptor.State.HasCondition(UnitCondition.ImmuneToCombatManeuvers))
                     throw new InvalidOperationException("Combat trigger has unexpected maneuver immunity.");
                 var charm = ScriptableObject.CreateInstance<BuffDescriptorImmunity>(); charm.Descriptor = SpellDescriptor.Charm;
@@ -164,6 +175,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["enteredRound"] = enteredRound, ["observedRound"] = turnBased ? game.TurnBasedCombatController.RoundNumber : -1,
                     ["nativeTurnState"] = turnBased ? Sprint22TurnState(owner, target) : null,
                     ["nativeControllerInitialized"] = game.TurnBasedCombatController.Initialized,
+                    ["fixtureTutorialInitiallyLocked"] = tutorialLocked,
+                    ["fixtureTutorialSuppressed"] = tutorial != null && !tutorial.IsLocked,
                     ["fixtureCharmOnlyImmunity"] = true, ["fixtureManeuverImmunity"] = maneuverAdded,
                     ["pendingSelectionRemainedAbsent"] = !dispatcher.HasPendingSelection,
                     ["poolBefore"] = poolBefore, ["poolAfter"] = owner.Descriptor.Resources.GetResourceAmount(resource),
@@ -195,11 +208,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     finally
                     {
-                        if (charmImmunity != null)
-                        { foreach (var component in charmImmunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component); UnityEngine.Object.DestroyImmediate(charmImmunity); }
-                        SettingsRoot.Instance.PauseOnEngagement.CurrentValue = oldEngagement;
-                        if (mode.Current)
-                        { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; game.TurnBasedCombatController.Activate(); }
+                        try
+                        {
+                            if (charmImmunity != null)
+                            { foreach (var component in charmImmunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component); UnityEngine.Object.DestroyImmediate(charmImmunity); }
+                            SettingsRoot.Instance.PauseOnEngagement.CurrentValue = oldEngagement;
+                            if (mode.Current)
+                            { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; game.TurnBasedCombatController.Activate(); }
+                        }
+                        finally
+                        {
+                            if (tutorial != null && tutorialLocked) tutorial.Lock();
+                            bool flagsRestored = flagsBefore.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal)
+                                .SequenceEqual(game.Player.UnlockableFlags.UnlockedFlags.OrderBy(value => value.Key.AssetGuid, StringComparer.Ordinal));
+                            Sprint25Check(id + "-tutorial-restored", flagsRestored,
+                                new JObject { ["turnBased"] = turnBased, ["initiallyLocked"] = tutorialLocked,
+                                    ["finallyLocked"] = tutorial != null && tutorial.IsLocked,
+                                    ["exactFlagsRestored"] = flagsRestored },
+                                "Only the existing save-free native turn tutorial flag is temporarily acknowledged; all original unlockable flag keys and values restore exactly.");
+                            if (!flagsRestored) throw new InvalidOperationException("Performance transition tutorial flags did not restore exactly.");
+                        }
                     }
                 }
             }

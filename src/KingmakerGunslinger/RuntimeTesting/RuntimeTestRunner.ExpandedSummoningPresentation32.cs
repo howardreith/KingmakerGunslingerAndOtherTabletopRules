@@ -526,7 +526,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["name"] = clip?.name, ["length"] = clip == null ? (float?)null : clip.length })) };
         }
 
-        private static JArray Presentation32SatyrMappings(WeaponAnimationStyle style)
+        private void CaptureSprint32SatyrAnimationInputs()
+        {
+            var row = new JObject(); bool captured = false;
+            try
+            {
+                row["sources"] = Presentation32SatyrMappings(WeaponAnimationStyle.SlashingOneHanded, true);
+                captured = true;
+            }
+            catch (Exception error) { row["exception"] = error.ToString(); }
+            RuntimeTestResultWriter.WriteAtomic(System.IO.Path.Combine(_request.EvidenceDirectory,
+                "sprint32-satyr-animation-inputs.json"), row.ToString(Newtonsoft.Json.Formatting.Indented));
+            Sprint25Check("satyr-native-animation-inputs", captured,
+                new JObject { ["captured"] = captured, ["exception"] = row["exception"] },
+                "Read-only settings and rig metadata from the two exact native Satyr prefabs; no actor, clip playback, asset mutation or animation-suitability verdict.");
+        }
+
+        private static JArray Presentation32SatyrMappings(WeaponAnimationStyle style, bool includeRig = false)
         {
             // Two exact accepted native adult Satyr references only. Reading
             // prefab settings does not instantiate an NPC or mutate any action.
@@ -542,8 +558,42 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var manager = view?.GetComponentsInChildren<UnitAnimationManager>(true).SingleOrDefault();
                 var action = manager?.AnimationSet?.Actions.OfType<UnitAnimationActionHandAttack>()
                     .SingleOrDefault(value => value.Type == UnitAnimationType.MainHandAttack);
-                result.Add(new JObject { ["blueprint"] = source[0], ["prefab"] = source[1], ["action"] = action?.name,
-                    ["mapping"] = action == null ? null : Presentation32HandMapping(action, style) });
+                var row = new JObject { ["blueprint"] = source[0], ["prefab"] = source[1], ["action"] = action?.name,
+                    ["mapping"] = action == null ? null : Presentation32HandMapping(action, style) };
+                if (includeRig)
+                {
+                    if (view == null || manager?.AnimationSet == null || action == null)
+                        throw new InvalidOperationException("Exact native Satyr animation source absent.");
+                    var field = typeof(UnitAnimationActionHandAttack).GetField("m_Settings", BindingFlags.NonPublic | BindingFlags.Instance);
+                    var settings = field?.GetValue(action) as Array;
+                    if (settings == null || settings.Length > 32)
+                        throw new InvalidOperationException("Exact native Satyr hand settings unavailable or unexpectedly broad.");
+                    var styles = settings.Cast<object>().Where(value => value != null)
+                        .Select(value => (WeaponAnimationStyle)value.GetType().GetField("Style").GetValue(value)).Distinct().ToArray();
+                    var nativeActions = manager.AnimationSet.Actions.ToArray();
+                    var transitions = manager.AnimationSet.Transitions.ToArray();
+                    if (nativeActions.Length > 64 || transitions.Length > 128)
+                        throw new InvalidOperationException("Native Satyr action/transition capture exceeds its bounds.");
+                    row["actions"] = new JArray(nativeActions.Select((value, index) => new JObject {
+                        ["index"] = index, ["name"] = value?.name, ["type"] = value?.GetType().FullName }));
+                    row["startupActionIndex"] = manager.AnimationSet.StartupAction == null ? -1 :
+                        Array.FindIndex(nativeActions, value => ReferenceEquals(value, manager.AnimationSet.StartupAction));
+                    row["startupActionName"] = manager.AnimationSet.StartupAction?.name;
+                    row["transitions"] = new JArray(transitions.Select(value => new JObject {
+                        ["fromActionIndex"] = value.FromAction == null ? -1 : Array.FindIndex(nativeActions, item => ReferenceEquals(item, value.FromAction)),
+                        ["toActionIndex"] = value.ToAction == null ? -1 : Array.FindIndex(nativeActions, item => ReferenceEquals(item, value.ToAction)),
+                        ["fromIsMainHand"] = ReferenceEquals(value.FromAction, action),
+                        ["toIsMainHand"] = ReferenceEquals(value.ToAction, action) }));
+                    row["allHandMappings"] = new JArray(styles.Select(value => Presentation32HandMapping(action, value)));
+                    row["specialActions"] = new JArray(manager.AnimationSet.Actions.OfType<UnitAnimationActionSpecialAttack>()
+                        .Select(value => new JObject { ["name"] = value.name, ["attackType"] = value.AttackType.ToString(),
+                            ["clips"] = new JArray((value.Clips ?? Array.Empty<AnimationClip>()).Select(clip =>
+                                new JObject { ["name"] = clip?.name, ["length"] = clip == null ? (float?)null : clip.length })) }));
+                    var rig = CapturePrimateCensusViewMetadata(view, "sprint32-satyr", unit.AssetGuid, unit.name, unit.Prefab.AssetId);
+                    rig["scope"] = "Sprint32 two exact native Satyr rigs; read-only metadata, no suitability verdict";
+                    row["rig"] = rig;
+                }
+                result.Add(row);
             }
             return result;
         }

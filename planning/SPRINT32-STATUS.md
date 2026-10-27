@@ -16,9 +16,11 @@ as7d2754d25c0cf8cc0c21bb82fb7c0d809d4c7488. No accepted descendant was reset.
 Branch codex/expanded-summoning-sprint32-satyr-lillend. Frozen candidate82 root:
 C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-sprint32-records.
 This worktree is detached/clean atdf424b4e. The review branch now lives in the
-sibling expanded-summoning-sprint32-final-records sparse worktree; records may
+sibling expanded-summoning-sprint32-final-records full worktree; records may
 advance without changing candidate inputs. The original sibling
 expanded-summoning-sprint32 remains detached/clean at424e5f6f with candidate79.
+Its retired source checkout is now sparse; packages, receipts and ignored raw
+evidence remain intact. Future79 dispatch requires rematerializing that source.
 HOWARD-LAPTOP owns mechanics/shared integration. Accepted168 assets are included;
 DATA's active worktree and unaccepted work remain untouched. No shared Satyr or
 Lillend rendering overlap was found in the accepted changes.
@@ -95,7 +97,7 @@ reproduction/neighbors113of2756PASS3.6s, DevelopmentGate13PASS, deterministic
 package testPASS. These corrections do not qualify gameplay or presentation.
 Independent read-only review found no blocking issue in this correction:
 executed naming guards remain bounded, exact mappings match production/provenance,
-and prior167 audit records are preserved. Proceed to complete candidate gate81.
+and prior167 audit records are preserved. Complete gate82 passed as recorded above.
 
 The next coherent source includes reviewed b9a4e783 dagger-only visual-record
 clone/native shortsword animation style and actual Salamander Power Attack
@@ -166,13 +168,50 @@ on candidate78. No full presentation/persistence/integration PASS claim.
 
 ## Restoration, storage, counters and next action
 
+Fresh82 native124:31PASS/3FAIL,195602ms. Ordinary Fascinate/cap/resistance/
+threat/source isolation passed; combat entry lost Default to EscMode before its
+verdict. The strict guard refused to overwrite it. Installed native
+HandleCombatStart shows TBMStarted before initializing turns; this fixture omitted
+the existing save-free tutorial flag snapshot/unlock/exact-restore seam used by
+FavoredClassTurnModes. Bounded correction in the separate active tree passed
+independent review and compilation; native rerun remains required. This is the replan after121/124 transition-orchestration
+failures; no unchanged retry. No creature rule or new subsystem changes.
+Raw124 SHA6e08c3c86780cca812351860e5be2bff0261916ea8085def01c1cf60294417aa;
+frozen artifacts/sprint32-checkpoint/native124.json binds raw/transaction/source.
+compat-20261027T061543Z-5cb7c320e825 restored06:21:52.5432625UTC;
+protected ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1.
+Native125 presentation17PASS/2FAIL,105431ms: archer Satyr lacks the private
+dagger's SlashingOneHanded setting; the exact native melee Satyr has two sword
+clips. No attack was dispatched. Agent-inspected rest/outward/return camera
+frames show intact body and movement; contact/hit/death/expiry and Lillend remain
+NOT_RUN. This is a product presentation gap, not cosmetic debt. After117/125,
+the changed approach is a bounded read-only comparison of those two native
+animation sets/rigs, grouped into the next already-selected support case.
+No animation adapter or new subsystem has been implemented speculatively.
+Raw125 SHA2185a55ae7c6bfc1fc790af0b590c3a77e52593d2113ea19da017cdb5f1e8bae;
+compat-20261027T062402Z-18873b7bdc44 restored06:28:39.8301954UTC, ComparePASS.
+
+Native126 Lillend controls15/15PASS,113698ms: natural Charm Monster/real L3
+slot and Standard cost, Good/Chaos wards, harmless healing/unrelated damage
+retention, apparent-ally threat break, safe Sound Burst. New globe-choice
+probe: calculated level3, outside score0/inside1/removal1, unchanged slots and
+commands, exactly one disclosed setup summon and zero tested casts. It proves
+eligibility, not protected delivery. RawSHAaff53b9c1836ee712e0731496b8d249f5b812f25a34a19cbbe60a0d9c670f61e;
+compat-20261027T063129Z-e99d071d43b8 restoration/feature settings/ComparePASS.
+Frozen artifacts/sprint32-checkpoint/native125.json and native126.json bind
+exact evidence. Native127 grouped Lillend RTWP/TB and Salamander RTWP grab
+passed34/34,146599ms, including corrected actual Power Attack observation.
+RawSHA da807603c79cf7b1c470c7fc375cffc24076d389a9c7991354de3ce794e2ad9d;
+compat-20261027T063921Z-4c5737aed905 restoration/feature settings/ComparePASS.
+Frozen artifacts/sprint32-checkpoint/native127.json binds the receipt.
+
 Last Working sequence restored2026-10-27T05:26:38.5496149Z after123 failure.
 Full protected ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1.
 WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850;
 8550225B; creationTicks639208636210035057/writeTicks639278868712797783/attrs8224.
 That completed transaction left no live ownership. Prepared122 and original
-failures are kept. Candidate82's separate current native transaction is listed
-below; its restoration remains pending while it runs.
+failures are kept. Native127 finished06:44:45.6137260UTC with exact protected
+ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1; no live transaction.
 
 Owner-authorized62 closed ZIPs3943070291B archived to
 E:/KingmakerGunslingerLab/sprint32-closed-development-20261027, completed
@@ -185,8 +224,24 @@ No personal data, drive repair or protected-data migration. C free4139413504B
 after full checkout. Working measured peak902923316B rounded1.1GB+2GB reserve;
 save-free550MB+2GB; build154MB. Remeasure before staging, no concurrent build/native.
 
-Counts82Build-Local attempts/65validated packages/123confirmed native launches;
-next selected Lillend Fascinate/TB combat-entry transaction currently running.
+06:47UTC retired79 sparse checkout recovered1044701184B with exact protected
+ComparePASS; rematerializing the active source and compiling consumed space.
+07:01UTC seven restored package extractions were hash-verified against retained
+validated ZIPs and removed by the existing approved duplicate-cleanup route:
+704600988B, C free3343568896B, protected ComparePASS. Receipts remain in active
+artifacts/sprint32-checkpoint/verified-cleanup-closed79-* and closed82-*;
+closed-package-cleanup-intake records protected comparison. All unique ZIPs,
+raws, original failures, receipts, saves and backups retained. Fresh full checkout
+build output exceeded the earlier154MB estimate; use at least267MB observed
+build growth plus the selected native peak and2GB working reserve.
+
+Counts82Build-Local attempts/65validated packages/127confirmed native launches.
+Pending candidate83 is a focused investigation build: reviewed tutorial fixture
+correction plus read-only two-native-Satyr animation/rig metadata, grouped with
+the existing useful Lillend support case. No animation adapter is implemented.
+Independent review found no concrete blocker; capture does not prove compatibility.
+Focused production compile24.0s and six selected testsPASS4.4s at06:52UTC;
+artifacts/sprint32-checkpoint/after127-timings.jsonl retains dirty-source provenance.
 05:28 onward: cold observer reproduction, accepted dependency integration,
 targeting/fixture correction and independent review; focused builds55.1s total.
 Earlier work categories/history retained; exclusive cumulative totals unavailable.
@@ -196,8 +251,11 @@ Storage waiting03:48-04:39UTC overlapped independent work. No speedup claim.
 launch or active transaction. Fixture provenance/copy receipts remain ignored
 under artifacts/inspection/bodyguard-native/. Exclusive category totals unavailable.
 
-Next: complete selected Lillend Fascinate/TB case and inspect its exact restoration.
-Reuse candidate82's validated ZIP. Fresh affected
+Next: recover verified closed-extraction headroom, commit the reviewed fixture
+batch, then focused candidate83 and Lillend support/animation-input observation.
+Inspect exact rig/action/startup/transition evidence before choosing any Satyr
+animation repair. Reuse the
+validated ZIP for unaffected cases. Fresh affected
 presentation/grab/performance RTWP/TB/globe cases precede Working ON/provider
 retained/removed/moduleOFF trios. Predeclared90-120min combined persistence scope;
 ordinary selections target15min/ceiling30min with full restoration. Final A8

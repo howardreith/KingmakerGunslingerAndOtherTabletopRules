@@ -31,6 +31,9 @@ namespace KingmakerGunslinger.RuntimeTesting
     {
         private IEnumerable<int> ReviewLillend32Support(ExpandedSummoningCorrectionFixture fixture)
         {
+            // Piggyback the bounded read-only mapping investigation on this
+            // already selected support case; no separate actor or game launch.
+            CaptureSprint32SatyrAnimationInputs();
             var bodyResources = new List<UnityEngine.Object>();
             var borrowedBodyResources = new List<UnityEngine.Object>();
             Exception failure = null;
