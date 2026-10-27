@@ -68,12 +68,14 @@ public class GateFixtureRunner {
     # Execute the actual publisher build/package function, without its GitHub
     # publication entry. Private Build-Local is the external compiler boundary.
     @'
-param($ReferenceBundleDir,$MSBuildPath,$KingmakerInstallDir,[switch]$SkipDomainTests)
-@{event='candidate';skipDomainTests=[bool]$SkipDomainTests;filter=$env:KMG_TEST_FILTER} | ConvertTo-Json -Compress | Add-Content $env:KMG_GATE_FIXTURE_TRACE
+param($ReferenceBundleDir,$MSBuildPath,$KingmakerInstallDir,[switch]$SkipDomainTests,[switch]$ReproducibilityBuild)
+if ([bool]$SkipDomainTests -ne [bool]$ReproducibilityBuild) { throw 'Publisher must select explicit reproducibility for the second build.' }
+@{event='candidate';skipDomainTests=[bool]$SkipDomainTests;reproducibility=[bool]$ReproducibilityBuild;filter=$env:KMG_TEST_FILTER} | ConvertTo-Json -Compress | Add-Content $env:KMG_GATE_FIXTURE_TRACE
 $root = Split-Path -Parent $PSScriptRoot
 $output = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
 . (Join-Path $PSScriptRoot 'common.ps1')
-$package = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit ((& git -C $root rev-parse HEAD).Trim()) -Id 'KingmakerGunslinger' -Version '0.0.150').PackagePath
+$package = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit ((& git -C $root rev-parse HEAD).Trim()) -Id 'KingmakerGunslinger' -Version '0.0.150' -Reproducibility:$ReproducibilityBuild).PackagePath
+if ($ReproducibilityBuild -and (Test-Path -LiteralPath $package)) { throw 'Preserve the immutable second output.' }
 New-Item -ItemType Directory -Path $output,(Split-Path $package) -Force | Out-Null
 'fixture DLL' | Set-Content (Join-Path $output 'KingmakerGunslinger.dll')
 'fixture package' | Set-Content $package
@@ -99,6 +101,7 @@ if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.15
     & $publisherPath
     $candidates = @(Get-Content $env:KMG_GATE_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json } | Where-Object event -eq candidate)
     if ($candidates.Count -ne 2 -or $candidates[0].skipDomainTests -or -not $candidates[1].skipDomainTests -or
+        $candidates[0].reproducibility -or -not $candidates[1].reproducibility -or
         @($candidates | Where-Object { -not [string]::IsNullOrEmpty($_.filter) }).Count -or $env:KMG_TEST_FILTER -cne 'prior') { throw 'Publisher repeated domain tests or inherited/leaked a focused filter.' }
     $actualPackage = Join-Path $fixtureScripts 'actual-package.ps1'
     Copy-Item (Join-Path $PSScriptRoot 'package.ps1') $actualPackage

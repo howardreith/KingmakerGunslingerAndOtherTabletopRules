@@ -57,6 +57,9 @@ from the development artifacts. Earlier native execution retains its original
 artifact identity and is **reviewed reuse**, not fresh execution of the published
 DLL. The normal publisher validates the complete release and compares two
 deterministic builds. The published checksums and manifest identify those bytes.
+The publisher preserves separate immutable build outputs and uses a guarded
+common scratch path for deterministic debug metadata. This workflow correction
+does not change gameplay code, observers, assets or native evidence.
 
 The actual human installation and protected saves were restored after native
 testing; `KMG_AUTOMATION_BASELINE` remained immutable. DATA's active/unaccepted
