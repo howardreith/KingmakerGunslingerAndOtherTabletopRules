@@ -201,7 +201,7 @@ namespace KingmakerGunslinger.Summoning
             return false;
         }
 
-        private bool Covers(int level, bool spell, bool spellLike, UnitEntityData source)
+        internal bool Covers(int level, bool spell, bool spellLike, UnitEntityData source)
         {
             UnitEntityData emitter = Fact == null || Fact.MaybeContext == null ?
                 null : Fact.MaybeContext.MaybeCaster;

@@ -146,6 +146,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Actual native five-HD nonhumanoid recipients exclude competing humanoid/HD controls; allied footprint refusal precedes safe natural casting, without changing production choices.");
                 if (!ready) throw new InvalidOperationException("Control case native preconditions failed.");
                 if (!burst && !turnBased)
+                    ObserveSprint32GlobeChoice(fixture, owner, target, data, () => score(policy, target), id);
+                if (!burst && !turnBased)
                 {
                     // Actual supported ward facts are eligibility fixtures, not
                     // claims of a new native ward cast or spell-slot debit.
@@ -423,6 +425,91 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, actors.Where(value => value != null && !value.Destroyed).ToArray());
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode; game.TurnBasedCombatController.Activate(); game.IsPaused = oldPause;
             }
+        }
+
+        // One synchronous eligibility fixture over the actual accepted globe
+        // component. The recipient fact and emitter positioning are explicit
+        // setup, not an aura cast or a successful spell/action claim. Existing
+        // natural cases resume only after the exact temporary fact is removed.
+        private void ObserveSprint32GlobeChoice(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData owner, UnitEntityData target, AbilityData data, Func<float> score,
+            string id, AbilityData levelFour = null, Buff performanceGrant = null, UnitEntityData preparedEmitter = null)
+        {
+            var initialCommands = owner.Commands.Raw.ToArray();
+            var initialSlots = data.Spellbook == null ? null : Enumerable.Range(0, 4).Select(data.Spellbook.GetSpontaneousSlots).ToArray();
+            float before = score();
+            UnitEntityData emitter = null; Buff ward = null;
+            var row = new JObject { ["scoreBefore"] = before, ["ability"] = data.Blueprint.AssetGuid,
+                ["type"] = data.Blueprint.Type.ToString(), ["calculatedLevel"] = data.CalculateParams().SpellLevel };
+            bool exact = false;
+            try
+            {
+                emitter = preparedEmitter ?? CastExpandedSummoningOwnTier(fixture, "astral-deva");
+                if (emitter.Destroyed || !fixture.Created.Contains(emitter))
+                    throw new InvalidOperationException("Globe emitter ownership is absent.");
+                Sprint28SetBrainActivePreservingActions(emitter, false);
+                var recipient = (Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff)
+                    ExpandedSummoningBlueprints.Registered.BySymbol[ExpandedSummoningSpecialBuilder.Astral31Prefix + "ProtectiveRecipient"];
+                var away = target.Position - owner.Position; away.y = 0;
+                if (away.sqrMagnitude < 0.01f) throw new InvalidOperationException("Globe probe requires distinct source/recipient positions.");
+                float radius = new Feet(20).Meters;
+                PlaceExpandedSummoningUnit(emitter, target.Position + away.normalized * (radius - 0.2f));
+                bool outsideGeometry = Vector3.Distance(emitter.Position, target.Position) < radius &&
+                    Vector3.Distance(emitter.Position, owner.Position) - owner.Corpulence > radius;
+                ward = target.Descriptor.AddBuff(recipient, emitter, TimeSpan.FromMinutes(1));
+                var globe = ward?.SelectComponents<AstralProtectiveGlobe>().SingleOrDefault();
+                float outside = score();
+                bool levelFourAllowed = levelFour == null || levelFour.CalculateParams().SpellLevel == 4 &&
+                    !SatyrControlEligibility.GlobeBlocks(target, levelFour);
+                bool performanceAllowed = performanceGrant == null;
+                if (performanceGrant != null)
+                {
+                    var area = Game.Instance.State.AreaEffects.All.Single(value => value.UniqueId == performanceGrant.SourceAreaEffectId);
+                    // Read the installed native membership decision including
+                    // the accepted globe postfix; do not supply a performance
+                    // tick, effect, action, upkeep or restored recipient.
+                    var inside = typeof(Kingmaker.EntitySystem.Entities.AreaEffectEntityData).GetMethod("ShouldUnitBeInside",
+                        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic,
+                        null, new[] { typeof(UnitEntityData) }, null);
+                    if (inside == null) throw new MissingMethodException("Native area membership predicate absent.");
+                    bool admitted = (bool)inside.Invoke(area, new object[] { target });
+                    performanceAllowed = admitted && area.UnitsInside.Contains(target) && performanceGrant.Active &&
+                        !performanceGrant.IsDisposed && ReferenceEquals(performanceGrant.Context?.MaybeCaster, owner) &&
+                        !AstralProtectiveGlobe.Blocks(target, area.Context);
+                    row["performance"] = new JObject { ["sourceAbility"] = area.Context?.SourceAbility?.AssetGuid,
+                        ["abilityType"] = area.Context?.SourceAbility?.Type.ToString(), ["nativeAdmission"] = admitted,
+                        ["member"] = area.UnitsInside.Contains(target), ["sameGrantActive"] = performanceGrant.Active && !performanceGrant.IsDisposed,
+                        ["manualPerformanceTicks"] = 0 };
+                }
+                row["outsideScore"] = outside; row["outsideDistance"] = owner.DistanceTo(emitter);
+                row["outsideGeometry"] = outsideGeometry; row["coveredRecipientDistance"] = target.DistanceTo(emitter);
+                row["levelFourAllowed"] = levelFourAllowed;
+                PlaceExpandedSummoningUnit(emitter, (owner.Position + target.Position) * 0.5f);
+                bool insideGeometry = Vector3.Distance(emitter.Position, target.Position) < radius &&
+                    Vector3.Distance(emitter.Position, owner.Position) < radius;
+                float insideScore = score(); row["insideScore"] = insideScore;
+                row["insideGeometry"] = insideGeometry;
+                exact = before == 1f && ward != null && ward.Active && globe != null &&
+                    ReferenceEquals(globe.OwningBlueprint, emitter.Blueprint) && outside == 0f &&
+                    insideScore == 1f && outsideGeometry && insideGeometry && levelFourAllowed && performanceAllowed;
+            }
+            finally
+            {
+                if (ward != null && !ward.IsDisposed) ward.Remove();
+                if (emitter != null && !emitter.Destroyed) DisposeExpandedSummoningUnits(fixture.Created, new[] { emitter });
+            }
+            float restored = score();
+            bool slotsUnchanged = initialSlots == null || Enumerable.Range(0, 4).Select(data.Spellbook.GetSpontaneousSlots).SequenceEqual(initialSlots);
+            bool commandsUnchanged = owner.Commands.Raw.SequenceEqual(initialCommands);
+            exact &= restored == 1f && slotsUnchanged && commandsUnchanged && ward != null && ward.IsDisposed;
+            row["removedScore"] = restored; row["slotsUnchanged"] = slotsUnchanged;
+            row["commandsUnchanged"] = commandsUnchanged; row["fixtureRecipientFacts"] = 1;
+            row["testedAbilityCommands"] = 0; row["setupSummonCommands"] = 1;
+            row["emitterPreparedBeforePerformance"] = preparedEmitter != null;
+            row["factRemoved"] = ward != null && ward.IsDisposed;
+            Sprint25Check(id + "-globe-choice", exact, row,
+                "Actual accepted globe recipient refuses this low-level action from outside, permits it from inside and recovers after exact fixture-fact removal. Calculated SLA/book levels, untouched slots/commands and any live performance membership are observed; no tested ability execution is supplied.");
+            if (!exact) throw new InvalidOperationException("Sprint32 globe eligibility integration differs: " + id);
         }
 
         private static JObject Sprint32SavedBudgetForControl(UnitEntityData actor, ExpandedSummoningCorrectionFixture fixture)

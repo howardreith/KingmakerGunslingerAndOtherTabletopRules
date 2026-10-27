@@ -209,6 +209,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["action"] = data.RuntimeActionType.ToString(), ["fullRound"] = data.RequireFullRoundAction },
                     "Actual native HD, Charm-only immunity and one disclosed Fear pre-spend isolate unchanged at-will choices; owned awake sentinel preserves combat. Sleep includes an allied two-HD actor inside every subject's burst.");
                 if (!ready) throw new InvalidOperationException("Satyr at-will fixture preconditions failed.");
+                if (!turnBased)
+                {
+                    var fear = fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.name == prefix + "Fear");
+                    ObserveSprint32GlobeChoice(fixture, owner, target, data, () => score(target), id,
+                        new AbilityData(owner.Descriptor.Abilities.GetAbility(fear)));
+                }
                 saves = new Dretch30CloudSaves(allTargets); starts = new Lillend32CommandStarts { Owner = owner };
                 EventBus.Subscribe(saves); EventBus.Subscribe(starts);
                 var commands = new HashSet<UnitCommand>(); var costs = new JArray();

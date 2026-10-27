@@ -42,7 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Cleanup2NativeDefaultScope mode, UnitEntityData owner, UnitEntityData sibling,
             ActivatableAbility toggle, BlueprintAbilityResource resource, BlueprintBuff fascinated,
             Lillend32CommandStarts starts, Astral31DispelEvents events, FirearmReviewCosts economy,
-            JArray costs, Lillend32PerformanceRounds rounds)
+            JArray costs, Lillend32PerformanceRounds rounds, UnitEntityData globeEmitter)
         {
             var target = fixture.Hostile;
             var dispatcher = LillendNoncombat32.Find(owner);
@@ -145,6 +145,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["wrongOwnerRefused"] = !LillendBardicMemory32.Qualifies(otherContext, sibling, target) },
                     "Exact active provider, actual own Fascinate, ordinary ability reach/resources and wrong-owner refusal. Constructed contexts check admission only, not casting.");
                 if (!ready) throw new InvalidOperationException("Bardic Suggestion fixture capability or ownership failed.");
+                ObserveSprint32GlobeChoice(fixture, owner, target, data,
+                    () => data.CanTarget(new TargetWrapper(target)) ? 1f : 0f, "bardic-suggestion", preparedEmitter: globeEmitter);
 
                 // Only the already-owned disposable target gets this native
                 // empty aggro script. The read-only probe observes its real
