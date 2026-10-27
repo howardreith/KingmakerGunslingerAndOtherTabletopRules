@@ -13,11 +13,12 @@ Intake master48e6fb4abfc154f111a4019a806cb79a4184bd1c remains historical.
 At the coherent prequalification checkpoint, accepted master
 2d18ec965d1813ab5f2af11be80167fd5cec14d9 (v0.0.168, PR75/76) was integrated
 as7d2754d25c0cf8cc0c21bb82fb7c0d809d4c7488. No accepted descendant was reset.
-Branch codex/expanded-summoning-sprint32-satyr-lillend. Current source/build root:
+Branch codex/expanded-summoning-sprint32-satyr-lillend. Frozen candidate82 root:
 C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-sprint32-records.
-The original sibling expanded-summoning-sprint32 worktree stays detached/clean
-at424e5f6f, preserving candidate79 and its machine-local evidence. A separate
-small records worktree will hold updates after the next candidate freezes.
+This worktree is detached/clean atdf424b4e. The review branch now lives in the
+sibling expanded-summoning-sprint32-final-records sparse worktree; records may
+advance without changing candidate inputs. The original sibling
+expanded-summoning-sprint32 remains detached/clean at424e5f6f with candidate79.
 HOWARD-LAPTOP owns mechanics/shared integration. Accepted168 assets are included;
 DATA's active worktree and unaccepted work remain untouched. No shared Satyr or
 Lillend rendering overlap was found in the accepted changes.
@@ -59,7 +60,22 @@ safe controls/Sound Burst/Lullaby/Daze60s immunity. Original body provenance:
 
 ## Current candidate and corrections
 
-Latest validated candidate79, source424e5f6ff5689d5be80a86376660ecb6ec7d690b:
+Latest validated candidate82, sourcedf424b4ec3375a9793a9062bb189dabe49ccc54f:
+ZIPe58f48a179afa246c4274d269fb7dd29a19f76a821f29bda58d622beb5972a43;
+DLLf3aec16a9dce16d45f0188898386f09a41fd1ee156c106b2f200ec74b9db1f58;
+MVIDd5e83284-5065-4913-91dd-f2b5bccd4ed9;
+SourceStatec85b34542f8eda8106cdd92bea04c169fd526c269866eaeb1d2189a796a8160b.
+Version0.0.168 development only; no release number or publication authority.
+Frozen artifacts/development-candidates/sprint32-lillend-support/df424b4ec337/
+contains the canonical ZIP and validated receipt. Complete repository/domain/
+exact-reference compile/strict-package gate PASS367.587s,06:08:03.4042010-
+06:14:10.9916551UTC; all2756 testsPASS109.9s. Build81's outer stderr-capture
+failure1.709s is retained; corrected separate stdout/stderr capture produced82.
+No game was launched by either build. Current artifact receipt and helper
+identities: frozen artifacts/sprint32-checkpoint/candidate82.json and
+candidate82-helpers.json. Source/assets/compiled observers/publication inputs frozen.
+
+Historical candidate79, source424e5f6ff5689d5be80a86376660ecb6ec7d690b:
 ZIP8f6a41976afbae2ab56759e9e6be76530a3c1b9345ded57c1fdb63a408ffb9c8;
 DLLd54f20032965c76e0b4a160e671f4a5aa213b8fb28fb8841db381932fff3ec49;
 MVID022eda42-2544-48f0-8273-b9ba8eca2163;
@@ -94,8 +110,8 @@ precedes natural Fascinate, remains exactly owned and receives normal cleanup.
 Setup commands are disclosed separately from tested ability commands.
 
 Focused compile/tests after123:26.7s+1.0s,6of2755PASS. Integrated source before
-final fixture refinement:24.3s+4.1s,6of2756PASS. Final inputs still require the
-complete gate and native reruns. Logs: current artifacts/sprint32-checkpoint/.
+final fixture refinement:24.3s+4.1s,6of2756PASS. Final inputs passed the complete
+gate above; native reruns remain required. Logs: frozen artifacts/sprint32-checkpoint/.
 
 ## Finite acceptance and dependency review
 
@@ -133,7 +149,16 @@ Receipts: original frozen artifacts/sprint32-intake/native119-pending-record.jso
 native120-reader-reassessment.json, native121-pending-record.json,
 native123-pending-record.json, cold123-null-contract.json; raw paths/hashes inside.
 
-Reviewed earlier evidence in history: distinct player routes44-46, Satyr63/64/87/88,
+Independent dependency review verified raw hashes for public routes44/45/46
+(16/28/31PASS), source4b509d67: unchanged actual input fixture, generator,
+conversion, public visibility, debit/cost observers; accepted globe excludes
+these point-target level4+ casts, and memory exception is private bardic only.
+Reuse covers eight real prepared/spontaneous/conversion casts, source/slot debit,
+native full-round cost, legal quantity and120s base duration. It does not qualify
+current facts/books/dispatcher, visuals, persistence, combined profiles or natural
+expiry. Current registration/creation remains in selected fresh native cases.
+
+Other reviewed earlier evidence in history: Satyr63/64/87/88,
 support42, cantrips53, Hold74/83, bardic72, provider terminals116. Reuse only after
 checking actual affected dependencies; changed globe choices and observers get
 fresh cases. Provider116 positive damage/untouched420s deadline proof remains
@@ -145,7 +170,9 @@ Last Working sequence restored2026-10-27T05:26:38.5496149Z after123 failure.
 Full protected ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1.
 WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850;
 8550225B; creationTicks639208636210035057/writeTicks639278868712797783/attrs8224.
-No live owned runtime/storage transaction. Prepared122 and original failures kept.
+That completed transaction left no live ownership. Prepared122 and original
+failures are kept. Candidate82's separate current native transaction is listed
+below; its restoration remains pending while it runs.
 
 Owner-authorized62 closed ZIPs3943070291B archived to
 E:/KingmakerGunslingerLab/sprint32-closed-development-20261027, completed
@@ -158,7 +185,8 @@ No personal data, drive repair or protected-data migration. C free4139413504B
 after full checkout. Working measured peak902923316B rounded1.1GB+2GB reserve;
 save-free550MB+2GB; build154MB. Remeasure before staging, no concurrent build/native.
 
-Counts80Build-Local attempts/64validated packages/123actual native launches.
+Counts82Build-Local attempts/65validated packages/123confirmed native launches;
+next selected Lillend Fascinate/TB combat-entry transaction currently running.
 05:28 onward: cold observer reproduction, accepted dependency integration,
 targeting/fixture correction and independent review; focused builds55.1s total.
 Earlier work categories/history retained; exclusive cumulative totals unavailable.
@@ -168,9 +196,8 @@ Storage waiting03:48-04:39UTC overlapped independent work. No speedup claim.
 launch or active transaction. Fixture provenance/copy receipts remain ignored
 under artifacts/inspection/bodyguard-native/. Exclusive category totals unavailable.
 
-Next: finish independent review of the coherent correction, freeze source/assets/
-compiled observers/publication inputs, and run Build-Local with explicit
-DevelopmentCompleteSuite once. Reuse that exact validated ZIP. Fresh affected
+Next: complete selected Lillend Fascinate/TB case and inspect its exact restoration.
+Reuse candidate82's validated ZIP. Fresh affected
 presentation/grab/performance RTWP/TB/globe cases precede Working ON/provider
 retained/removed/moduleOFF trios. Predeclared90-120min combined persistence scope;
 ordinary selections target15min/ceiling30min with full restoration. Final A8
