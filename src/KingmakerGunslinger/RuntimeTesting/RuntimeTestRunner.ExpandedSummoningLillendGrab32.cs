@@ -18,6 +18,7 @@ using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.FactLogic;
 using Kingmaker.UnitLogic.Parts;
 using KingmakerGunslinger.Summoning;
+using KingmakerGunslinger.Blueprints;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 
@@ -170,6 +171,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["damage"] = rule.MeleeDamage == null ? null : Sprint16DamageEvent(rule.MeleeDamage) });
                 };
                 observer.ObserveRiderContact = rule => {
+                    var powerAttack = salamander ? owner.Descriptor.ActivatableAbilities.Enumerable.Single(value =>
+                        value.Blueprint.AssetGuid == EasternWeaponNamedBlueprints.PowerAttackToggleGuid) : null;
                     var state = SummonHoldComponent.HeldState(owner, target, grab);
                     if (SummonHoldComponent.RoundsHeld(state) == 0 && establishingRoll == null && currentRoll != null &&
                         ReferenceEquals(currentRoll.Weapon, tail) && currentRoll.IsHit &&
@@ -177,6 +180,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     riders.Add(new JObject {
                     ["roundHeld"] = SummonHoldComponent.RoundsHeld(SummonHoldComponent.HeldState(owner, target, grab)),
                     ["strengthBonus"] = owner.Stats.Strength.Bonus, ["weaponAttacks"] = observer.WeaponAttacks,
+                    ["powerAttackToggle"] = powerAttack?.Blueprint.AssetGuid,
+                    ["powerAttackOn"] = powerAttack?.IsOn == true,
+                    ["baseAttackBonus"] = owner.Stats.BaseAttackBonus.ModifiedValue,
                     ["gameSeconds"] = game.Player.GameTime.TotalSeconds, ["damage"] = Sprint16DamageEvent(rule) }); };
                 escapes = new OutsiderEscapeEvents(target);
                 EventBus.Subscribe(observer); EventBus.Subscribe(starts); EventBus.Subscribe(escapes);
@@ -479,10 +485,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private static bool Grab32TailDamage(JObject row, string weapon, int strength, bool salamander = true)
         {
             var chunks = ((JArray)row["damage"]["chunks"]).OfType<JObject>().ToArray();
+            // The tail is a secondary natural weapon. Native Power Attack adds
+            // half its ordinary bonus (BAB8: +3), independently of live Strength.
+            // Observe the actual toggle/BAB at this damage event, without changing
+            // it or triggering a diagnostic rule. Constrict remains separate.
+            int powerBonus = salamander && (bool)row["powerAttackOn"] ?
+                1 + (int)row["baseAttackBonus"] / 4 : 0;
             return (string)row["damage"]["weapon"] == weapon && chunks.Length == (salamander ? 2 : 1) &&
+                (!salamander || (string)row["powerAttackToggle"] == EasternWeaponNamedBlueprints.PowerAttackToggleGuid) &&
                 (!salamander || chunks.Count(value => (string)value["energy"] == "Fire" && (string)value["dice"] == "1d6" && (int)value["bonus"] == 0) == 1) &&
                 chunks.Count(value => (string)value["type"] == "Physical" && (string)value["dice"] == "2d6" &&
-                    (int)value["bonus"] == (strength > 0 ? strength / 2 : strength)) == 1;
+                    (int)value["bonus"] == (strength > 0 ? strength / 2 : strength) + powerBonus) == 1;
         }
     }
 }
