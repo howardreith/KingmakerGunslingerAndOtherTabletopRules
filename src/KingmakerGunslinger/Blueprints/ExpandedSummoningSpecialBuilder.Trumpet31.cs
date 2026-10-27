@@ -161,7 +161,11 @@ namespace KingmakerGunslinger.Blueprints
                 // standalone and combined profiles; never inherit the donor discriminator bug.
                 Require<BlueprintFeature>(bySymbol, GiantCleaveFeature),
                 Feature(library, CombatReflexesGuid, "Combat Reflexes"), Feature(library, ImprovedInitiativeGuid, "Improved Initiative"),
-                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"), extraplanar, traits, virtue, resistance, blast }
+                Feature(library, LightningReflexesGuid, "Lightning Reflexes"), Feature(library, PowerAttackGuid, "Power Attack"), Feature(library, ExtraplanarSubtypeGuid, "native extraplanar spell consumer"),
+                // The same native fact as Astral and Lantern: the ordinary-map
+                // aerial convention, not a vertical-flight system.
+                Feature(library, AirborneGuid, "ordinary-map archon aerial convention"),
+                extraplanar, traits, virtue, resistance, blast }
                 .Concat(ConfigureTrumpet31Feats(library, bySymbol, unit)).ToArray();
         }
         // Actual copies are bounded by native CL14/Wis20 capacities. L1 has

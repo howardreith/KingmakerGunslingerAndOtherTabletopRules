@@ -16,6 +16,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Abilities.Components.Base;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
@@ -263,7 +264,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Variants.Length).Sum();
                 bool hidden = route.ParentTier == 9 &&
                     route.Multiplicity == SummonMultiplicity.One &&
-                    !SummonVisibilityCatalog.IsPublished(route) && publicExact &&
+                    SummonVisibilityCatalog.IsPublished(route) && publicExact &&
                     publicReferences == SummonVisibilityCatalog.PublishedLogicalPlacementCount &&
                     choices == publicReferences +
                         ExpandedSummoningIdentityCatalog.NativeExpandedOptionIdentityCount &&
@@ -276,9 +277,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["publicReferences"] = publicReferences, ["choices"] = choices,
                     ["iconWidth"] = routeAbility.Icon?.texture?.width,
                     ["iconHeight"] = routeAbility.Icon?.texture?.height },
-                    "Exactly one Astral SM IX root remains hidden, all released choices stay exact and the actual route resolves its128px icon.");
+                    "Since v0.0.167 exactly one Astral SM IX root is published, all released choices stay exact and the actual route resolves its 128px icon.");
                 if (!hidden) throw new InvalidOperationException(
-                    "Astral hidden route/public/icon contract failed.");
+                    "Astral released route/public/icon contract failed.");
 
                 ItemEntityWeapon hammer = owner.Body.PrimaryHand.MaybeWeapon;
                 ownedItems.AddRange(owner.Descriptor.Inventory.Items);
@@ -409,38 +410,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Astral protective alignment consumers failed.");
 
                 fixture.Caster.Descriptor.Alignment.Set(Alignment.NeutralGood);
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 12f);
-                RuleSpellResistanceCheck outsideSpell = Astral31Resistance(
-                    fixture.Caster, target, missile, 1, 1);
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.right);
-                RuleSpellResistanceCheck insideSpell = Astral31Resistance(
-                    fixture.Caster, target, missile, 1, 1);
                 var aid = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[
                     "KMG.Summoning.OutsiderCelestial.HoundArchon.Aid"];
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 12f);
-                RuleSpellResistanceCheck outsideSla = Astral31Resistance(
-                    fixture.Caster, target, aid, 6, 2);
                 var heal = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[
                     ExpandedSummoningSpecialBuilder.Astral31Prefix + "Heal"];
-                RuleSpellResistanceCheck highSla = Astral31Resistance(
-                    sibling, target, heal, 13, 6);
-                PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 20f);
-                RuleSpellResistanceCheck unrelated = Astral31Resistance(
-                    sibling, fixture.Caster, missile, 1, 1);
-                bool globe = outsideSpell.TargetIsImmune &&
-                    outsideSla.TargetIsImmune && !insideSpell.TargetIsImmune &&
-                    !highSla.TargetIsImmune && !unrelated.TargetIsImmune;
-                Sprint25Check("astral-core-lesser-globe", globe, new JObject {
-                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
-                    ["outsideSpell"] = Astral31ResistanceRow(outsideSpell),
-                    ["insideSpell"] = Astral31ResistanceRow(insideSpell),
-                    ["outsideSla"] = Astral31ResistanceRow(outsideSla),
-                    ["outsideHighSla"] = Astral31ResistanceRow(highSla),
-                    ["unrelatedTarget"] = Astral31ResistanceRow(unrelated),
-                    ["directRuleChecksNoFiniteUses"] = true },
-                    "Actual native SR checks block an external level1 Spell and level2 SLA, allow the same Spell from inside, allow external level6 Heal and leave an uncovered target unaffected.");
-                if (!globe) throw new InvalidOperationException(
-                    "Astral lesser-globe native rule boundary failed.");
+                foreach (int frame in ReviewAstral31Globe(fixture, owner, sibling,
+                    target, origin, aid, ownerAura, siblingAura,
+                    auraRecipientBlueprint, coveredActors))
+                    yield return frame;
 
                 // The globe probes deliberately move the fixture caster to
                 // distant rule origins. Restore the original walkable party
@@ -740,6 +717,277 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["immune"] = rule.TargetIsImmune,
                 ["sr"] = rule.SpellResistance,
                 ["resisted"] = rule.IsSpellResisted };
+        }
+
+        // The lesser globe through its actual native consumers, never a spell
+        // resistance rule. Each direct case runs a real spell or SLA effect
+        // component through the private AbilityExecutionProcess.DoApplyEffect;
+        // one real persistent spell area runs the native membership update;
+        // a second Astral's constant aura shows that supernatural circles,
+        // which carry a Magic Circle spell context, are not mistaken for casts.
+        private IEnumerable<int> ReviewAstral31Globe(
+            ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
+            UnitEntityData sibling, UnitEntityData target, Vector3 origin,
+            BlueprintAbility aidSla, AreaEffectEntityData ownerAura,
+            AreaEffectEntityData siblingAura, BlueprintBuff recipient,
+            IList<UnitEntityData> actors)
+        {
+            BlueprintAbility[] mageArmor = BlueprintBootstrap.Library
+                .GetAllBlueprints().OfType<BlueprintAbility>()
+                .Where(value => value != null && value.Type == AbilityType.Spell &&
+                    value.Parent == null && string.Equals(value.name, "MageArmor",
+                        StringComparison.Ordinal)).ToArray();
+            if (mageArmor.Length != 1)
+                throw new InvalidOperationException(
+                    "The exact native Mage Armor globe probe is ambiguous: " +
+                    mageArmor.Length + ".");
+            // Native buff spells carry SpellResistance false. Magic Missile
+            // carries it true; at CL50 it always overcomes the Astral's SR 25,
+            // so against the covered Astral only the globe can stop it.
+            BlueprintAbility noSr = mageArmor[0];
+            BlueprintAbility withSr = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                BlueprintBootstrap.Library, FcbMagicMissileGuid,
+                "native Magic Missile globe probe");
+            var mist = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                BlueprintBootstrap.Library, "15ba44b3fcf48ce418dc72fadac6408a",
+                "native Obscuring Mist globe area probe");
+            var mistSpawn = ExpandedSummoningSpecialBuilder.FindSpawnAreaEffect(mist);
+            if (noSr.SpellResistance || !withSr.SpellResistance || mist.SpellResistance ||
+                mistSpawn == null || mistSpawn.AreaEffect == null ||
+                mistSpawn.AreaEffect.SpellResistance ||
+                mistSpawn.AreaEffect.Size.Meters < 3.6f)
+                throw new InvalidOperationException(
+                    "Astral globe native spell inputs are unavailable: " +
+                        noSr.name + ":" + noSr.SpellResistance + ";" +
+                        withSr.name + ":" + withSr.SpellResistance +
+                        ";mist=" + mist.SpellResistance + "/" +
+                    (mistSpawn?.AreaEffect == null ? "none" :
+                        mistSpawn.AreaEffect.SpellResistance + "/" +
+                        mistSpawn.AreaEffect.Size.Meters));
+            var details = new JObject { ["owner"] = owner.UniqueId,
+                ["target"] = target.UniqueId, ["directRuleChecksNoFiniteUses"] = true,
+                ["spellResistanceRulesConsulted"] = false };
+            bool exact = true;
+            Action<string, JObject> direct = (id, row) => {
+                details[id] = row; exact &= (bool)row["exact"]; };
+
+            PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 12f);
+            direct("outsideSpellNoSr", Astral31Dispatch(fixture.Caster, target, noSr, 1, 1, false));
+            direct("outsideSpellWithSr", Astral31Dispatch(fixture.Caster, owner, withSr, 50, 1, false));
+            direct("outsideSla", Astral31Dispatch(fixture.Caster, target, aidSla, 6, 2, false));
+            direct("outsideHeightenedLevel4", Astral31Dispatch(fixture.Caster, target, noSr, 7, 4, true));
+            PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.right);
+            direct("insideSpellNoSr", Astral31Dispatch(fixture.Caster, target, noSr, 1, 1, true));
+            direct("insideSpellWithSr", Astral31Dispatch(fixture.Caster, owner, withSr, 50, 1, true));
+            PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 20f);
+            direct("uncoveredTarget", Astral31Dispatch(sibling, fixture.Caster, noSr, 1, 1, true));
+
+            // One real level-1 persistent area without spell resistance, cast
+            // from outside the aura and centred to reach the covered target.
+            Vector3 targetHome = target.Position;
+            Vector3 siblingHome = sibling.Position;
+            Vector3 coveredSpot = origin + Vector3.back * 3f;
+            Vector3 centre = origin + Vector3.back * 6.25f;
+            PlaceExpandedSummoningUnit(target, coveredSpot);
+            PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.back * 9.5f);
+            for (int frame = 0; frame < 3; frame++) yield return 0;
+            Astral31RefreshAreas(new[] { ownerAura, siblingAura }, actors);
+            var areasBefore = Game.Instance.State.AreaEffects.All.ToArray();
+            var point = new TargetWrapper(centre);
+            Astral31InvokeDispatch(Astral31Context(fixture.Caster, mist, 1, 1, point),
+                point, mist.GetComponent<AbilityApplyEffect>());
+            Game.Instance.EntityCreator.Tick();
+            AreaEffectEntityData[] spawned = Game.Instance.State.AreaEffects.All
+                .Except(areasBefore).ToArray();
+            AreaEffectEntityData mistArea = spawned.SingleOrDefault(value =>
+                ReferenceEquals(value.Blueprint, mistSpawn.AreaEffect));
+            bool areaExact = false;
+            var areaRow = new JObject { ["ability"] = mist.AssetGuid,
+                ["area"] = mistSpawn.AreaEffect.AssetGuid,
+                ["areaSpellResistance"] = mistSpawn.AreaEffect.SpellResistance,
+                ["radiusMeters"] = mistSpawn.AreaEffect.Size.Meters,
+                ["spawned"] = spawned.Length, ["caster"] = fixture.Caster.UniqueId };
+            try
+            {
+                if (mistArea == null || spawned.Length != 1)
+                    throw new InvalidOperationException(
+                        "The native Obscuring Mist probe area did not spawn exactly once.");
+                int attachFrames = 0;
+                while ((mistArea.View == null || !mistArea.IsInState) && attachFrames++ < 120)
+                    yield return 0;
+                areaRow["attachFrames"] = attachFrames;
+                Astral31RefreshAreas(new[] { ownerAura, mistArea }, actors);
+                bool covered = Astral31Covered(target, ownerAura, recipient);
+                bool excluded = covered && !mistArea.UnitsInside.Contains(target) &&
+                    mistArea.UnitsInside.Contains(fixture.Caster);
+                areaRow["coveredExcluded"] = Astral31AreaRow(mistArea, target,
+                    fixture.Caster, covered);
+                PlaceExpandedSummoningUnit(target, origin + Vector3.back * 8f);
+                for (int frame = 0; frame < 3; frame++) yield return 0;
+                Astral31RefreshAreas(new[] { ownerAura, mistArea }, actors);
+                bool leftCovered = Astral31Covered(target, ownerAura, recipient);
+                bool returned = !leftCovered && mistArea.UnitsInside.Contains(target);
+                areaRow["leftGlobeIncluded"] = Astral31AreaRow(mistArea, target,
+                    fixture.Caster, leftCovered);
+                PlaceExpandedSummoningUnit(target, coveredSpot);
+                for (int frame = 0; frame < 3; frame++) yield return 0;
+                Astral31RefreshAreas(new[] { ownerAura, mistArea }, actors);
+                bool coveredAgain = Astral31Covered(target, ownerAura, recipient);
+                bool suppressedAgain = coveredAgain && !mistArea.UnitsInside.Contains(target);
+                areaRow["reenteredExcluded"] = Astral31AreaRow(mistArea, target,
+                    fixture.Caster, coveredAgain);
+                areaExact = excluded && returned && suppressedAgain;
+            }
+            finally
+            {
+                if (mistArea != null && !mistArea.Destroyed) mistArea.ForceEnd();
+            }
+            int endFrames = 0;
+            while (mistArea != null && endFrames++ < 240 &&
+                Game.Instance.State.AreaEffects.All.Contains(mistArea))
+                yield return 0;
+            bool mistGone = mistArea == null ||
+                !Game.Instance.State.AreaEffects.All.Contains(mistArea);
+            var lingering = actors.Where(unit => unit != null && unit.Buffs.Enumerable.Any(buff =>
+                ReferenceEquals(buff.Context?.SourceAbility, mist))).ToArray();
+            areaRow["endFrames"] = endFrames; areaRow["areaEnded"] = mistGone;
+            areaRow["lingeringMistBuffs"] = new JArray(lingering.Select(unit => unit.UniqueId));
+            areaRow["exact"] = areaExact && mistGone && lingering.Length == 0;
+            details["persistentAreaNoSr"] = areaRow;
+            exact &= areaExact && mistGone && lingering.Length == 0;
+
+            // A second Astral outside this aura still extends its own constant
+            // supernatural aura over the shared creature.
+            PlaceExpandedSummoningUnit(sibling, origin + Vector3.back * 11f);
+            PlaceExpandedSummoningUnit(target, origin + Vector3.back * 5.5f);
+            PlaceExpandedSummoningUnit(fixture.Caster, origin + Vector3.right * 12f);
+            for (int frame = 0; frame < 3; frame++) yield return 0;
+            Astral31RefreshAreas(new[] { ownerAura, siblingAura }, actors);
+            bool ownerCovers = Astral31Covered(target, ownerAura, recipient);
+            bool siblingCovers = Astral31Covered(target, siblingAura, recipient);
+            details["constantAuraNotACast"] = new JObject {
+                ["sibling"] = sibling.UniqueId,
+                ["siblingToOwnerMeters"] = Vector3.Distance(sibling.Position, owner.Position),
+                ["ownerCovers"] = ownerCovers, ["siblingCovers"] = siblingCovers,
+                ["exact"] = ownerCovers && siblingCovers };
+            exact &= ownerCovers && siblingCovers;
+
+            PlaceExpandedSummoningUnit(sibling, siblingHome);
+            PlaceExpandedSummoningUnit(target, targetHome);
+            for (int frame = 0; frame < 3; frame++) yield return 0;
+            Astral31RefreshAreas(new[] { ownerAura, siblingAura }, actors);
+            Sprint25Check("astral-core-lesser-globe", exact, details,
+                "Through the actual native effect dispatch, a level 1 spell without spell resistance (Mage Armor), a level 1 spell with it (Magic Missile at CL50) and a level 2 SLA cast from outside the aura never reach the covered creature: no effect and no spell resistance check. Mage Armor cast from inside, heightened to level 4, or cast at an uncovered creature applies, and Magic Missile cast from inside reaches the native spell resistance check, which CL50 overcomes. A real level 1 persistent area without spell resistance excludes the covered creature, includes it once it leaves the globe and excludes it again on return, then ends without residue. A second Astral's constant aura still covers the shared creature.");
+            if (!exact) throw new InvalidOperationException(
+                "Astral lesser-globe native consumers failed.");
+        }
+
+        private static readonly System.Reflection.MethodInfo Astral31DoApplyEffect =
+            typeof(Kingmaker.Controllers.AbilityExecutionProcess).GetMethod("DoApplyEffect",
+                System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+
+        private static AbilityExecutionContext Astral31Context(UnitEntityData source,
+            BlueprintAbility ability, int casterLevel, int spellLevel, TargetWrapper target)
+        {
+            var granted = source.Descriptor.Abilities.GetAbility(ability);
+            var data = granted == null ? new AbilityData(ability, source.Descriptor) :
+                new AbilityData(granted);
+            // As AbilityExecutionProcess prepares a cast: native SpawnFxs
+            // reads this list for every applied effect, and PrepareCast
+            // computes ranks and shared values (damage dice, durations). Its
+            // RecalculateAbilityParams step is skipped so the probe keeps its
+            // explicit caster and spell levels.
+            var context = new AbilityExecutionContext(data, new AbilityParams {
+                CasterLevel = casterLevel, SpellLevel = spellLevel }, target, null);
+            context.FxSpawners = ability.GetComponents<AbilitySpawnFx>().ToList();
+            context.RecalculateRanks();
+            context.RecalculateSharedValues();
+            return context;
+        }
+
+        private static void Astral31InvokeDispatch(AbilityExecutionContext context,
+            TargetWrapper target, AbilityApplyEffect effect)
+        {
+            if (Astral31DoApplyEffect == null)
+                throw new MissingMethodException(
+                    "Kingmaker.Controllers.AbilityExecutionProcess", "DoApplyEffect");
+            if (effect == null || context.AbilityBlueprint.StickyTouch != null)
+                throw new InvalidOperationException(
+                    "Astral globe probe needs one directly applied native effect: " +
+                    context.AbilityBlueprint.name);
+            Astral31DoApplyEffect.Invoke(null, new object[] { context, target, effect });
+        }
+
+        private sealed class Astral31ResistanceObserver :
+            Kingmaker.PubSubSystem.IGlobalRulebookHandler<RuleSpellResistanceCheck>
+        {
+            internal readonly List<RuleSpellResistanceCheck> Checks =
+                new List<RuleSpellResistanceCheck>();
+            public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt) { }
+            public void OnEventDidTrigger(RuleSpellResistanceCheck evt) { Checks.Add(evt); }
+        }
+
+        private static JObject Astral31Dispatch(UnitEntityData source,
+            UnitEntityData target, BlueprintAbility ability, int casterLevel,
+            int spellLevel, bool expectApplied)
+        {
+            var wrapper = new TargetWrapper(target);
+            var context = Astral31Context(source, ability, casterLevel, spellLevel, wrapper);
+            var before = target.Buffs.Enumerable.ToArray();
+            int damageBefore = target.Damage;
+            bool blocks = AstralProtectiveGlobe.Blocks(target, context);
+            var resistance = new Astral31ResistanceObserver();
+            Kingmaker.PubSubSystem.EventBus.Subscribe(resistance);
+            try
+            {
+                Astral31InvokeDispatch(context, wrapper, ability.GetComponent<AbilityApplyEffect>());
+            }
+            finally { Kingmaker.PubSubSystem.EventBus.Unsubscribe(resistance); }
+            var checks = resistance.Checks.Where(value => ReferenceEquals(value.Target, target)).ToArray();
+            var added = target.Buffs.Enumerable.Except(before).ToArray();
+            var addedGuids = new JArray(added.Select(buff => buff.Blueprint.AssetGuid));
+            int damageDelta = target.Damage - damageBefore;
+            foreach (var buff in added) buff.Remove();
+            target.Damage = damageBefore;
+            bool removed = !target.Buffs.Enumerable.Intersect(added).Any() &&
+                target.Damage == damageBefore;
+            bool applied = added.Length > 0 || damageDelta > 0;
+            // A spell that allows spell resistance reaches the target when
+            // the native rule runs; inside it must be overcome at CL50.
+            bool reached = applied || checks.Length > 0;
+            // Native dispatch runs the rule for every unit target, even when
+            // the spell allows no resistance; a blocked cast never reaches it.
+            bool resistanceExact = expectApplied ?
+                checks.Length == 1 && !checks[0].IsSpellResisted : checks.Length == 0;
+            return new JObject { ["source"] = source.UniqueId, ["target"] = target.UniqueId,
+                ["ability"] = ability.AssetGuid, ["name"] = ability.name,
+                ["type"] = ability.Type.ToString(), ["spellResistance"] = ability.SpellResistance,
+                ["casterLevel"] = casterLevel, ["spellLevel"] = spellLevel,
+                ["sourcePosition"] = new JArray(source.Position.x, source.Position.y, source.Position.z),
+                ["globeBlocks"] = blocks, ["applied"] = applied, ["addedBuffs"] = addedGuids,
+                ["damageDelta"] = damageDelta, ["spellResistanceChecks"] = checks.Length,
+                ["spellResisted"] = checks.Any(value => value.IsSpellResisted),
+                ["reached"] = reached,
+                ["probeBuffsRemoved"] = removed, ["expectedApplied"] = expectApplied,
+                ["exact"] = (ability.SpellResistance ? reached : applied) == expectApplied &&
+                    blocks == !expectApplied && removed && resistanceExact };
+        }
+
+        private static bool Astral31Covered(UnitEntityData unit,
+            AreaEffectEntityData aura, BlueprintBuff recipient)
+        {
+            return unit.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, recipient) &&
+                buff.SourceAreaEffectId == aura.UniqueId);
+        }
+
+        private static JObject Astral31AreaRow(AreaEffectEntityData area,
+            UnitEntityData target, UnitEntityData uncovered, bool targetCovered)
+        {
+            return new JObject { ["targetCovered"] = targetCovered,
+                ["targetInside"] = area.UnitsInside.Contains(target),
+                ["uncoveredCasterInside"] = area.UnitsInside.Contains(uncovered),
+                ["targetToCentreMeters"] = Vector3.Distance(target.Position, area.Position),
+                ["inside"] = new JArray(area.UnitsInside.Select(value => value.UniqueId)) };
         }
 
         private IEnumerable<int> ReviewAstral31Heal(

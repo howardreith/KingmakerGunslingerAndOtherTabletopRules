@@ -734,14 +734,26 @@ namespace KingmakerGunslinger.Blueprints
             carrier.ComponentsArray = new BlueprintComponent[] { emanation };
             if (carrier.StayOnDeath)
                 throw new InvalidOperationException("Astral protective aura must end on emitter death.");
-            var access = BlueprintUnitFactAccess.Resolve();
-            var title = LocalizationService.Create(Astral31Prefix + "ProtectiveAura.Name", "Astral Deva Protective Aura");
-            access.Configure(carrier, title,
+            BlueprintUnitFactAccess.Resolve().Configure(carrier, AstralProtectiveAuraTitle(),
                 LocalizationService.Create(Astral31Prefix + "ProtectiveCarrier.Description",
-                    "A20-foot angel aura protects every covered creature against evil sources and outside low-level magic."), null);
-            access.Configure(recipient, title,
+                    "A 20-foot angel aura protects every covered creature against evil sources and outside low-level magic."), null);
+            // The recipient text is registered once by BindArchonMagicCircle,
+            // after the canonical circle's startup configuration is known.
+        }
+
+        private static Kingmaker.Localization.LocalizedString AstralProtectiveAuraTitle()
+        {
+            return LocalizationService.Create(Astral31Prefix + "ProtectiveAura.Name", "Astral Deva Protective Aura");
+        }
+
+        private static void ConfigureAstralProtectiveRecipientText(BlueprintBuff recipient, bool circleControl)
+        {
+            BlueprintUnitFactAccess.Resolve().Configure(recipient, AstralProtectiveAuraTitle(),
                 LocalizationService.Create(Astral31Prefix + "ProtectiveRecipient.Description",
-                    "+4 deflection AC and +4 resistance saves against evil sources. Level0-3 spells and SLAs cast from outside this deva's20-foot aura cannot affect this creature."), null);
+                    "+4 deflection AC and +4 resistance saves against evil sources. " +
+                    (circleControl ? "Like the deva's Magic Circle against Evil, the 20-foot aura prevents new charm, domination, and similar effects that would place a covered creature under the control of an evil creature. " +
+                        Spells.ProtectionFromAlignment.ProtectionFromAlignmentDescriptions.ExistingControlLimitation + " " : "") +
+                    "Like a lesser globe of invulnerability, level 0-3 spells and spell-like abilities cast from outside this deva's 20-foot aura cannot affect this creature, whether or not they allow spell resistance, and their areas exclude it."), null);
         }
     }
 }

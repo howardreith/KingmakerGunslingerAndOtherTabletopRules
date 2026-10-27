@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.167-expanded-summoning-sprints30-31-outsider-celestial",
+  "milestone": "0.0.168-expanded-summoning-sprints30-31-followup",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.167",
+  "version": "0.0.168",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2669,5 +2669,20 @@
     "ownerAestheticApproval": "NOT_PERFORMED_NONBLOCKING",
     "scope": "Five additions and existing Lantern upgrade; 23 new and seven preserved routes. Source boundary only; final native qualification and release remain separate.",
     "stage": "public"
+  },
+  "expandedSummoningSprints3031FollowupRelease168": {
+    "releaseVersion": "0.0.168",
+    "releaseInformationalVersion": "0.0.168-expanded-summoning-sprints30-31-followup",
+    "baseStableVersion": "0.0.167",
+    "change": "The Astral Deva protective aura works as a lesser globe of invulnerability and extends its circle protection to 20 feet, the Trumpet Archon carries the ordinary Airborne fact, the Lemure, Dretch and Hound Archon bodies are rebuilt and the Hound holds its sword in its fist",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "modifiedAssets": 13,
+    "addedAssets": 1,
+    "productionFiles": 14,
+    "addedProjectLines": 0,
+    "visibleChoiceTotal": 1179,
+    "guardedNativeReviewed": true,
+    "ownerVisualReview": "release authorized by the owner on 2026-10-25"
   }
 }
