@@ -587,16 +587,11 @@ namespace KingmakerGunslinger.DomainTests
                 "ForQueuedPlanChange", "RecordUnavailable", "ability.unavailable" })
                 Assertions.True(ability.Contains(token),
                     "reload delivery coherence contract: " + token);
-            string localBuild = File.ReadAllText(Path.Combine(root, "scripts", "Build-Local.ps1"));
             string package = File.ReadAllText(Path.Combine(root, "scripts",
                 "package.ps1"));
-            string packager = File.ReadAllText(Path.Combine(root, "tools",
-                "create_deterministic_package.py"));
-            Assertions.True(localBuild.Contains("'package.ps1') -Configuration Release -PackagePath $packagePath") &&
-                package.Contains("--expected-file-count $expectedPackageFileCount") &&
-                packager.Contains("133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,") &&
-                packager.Contains("args.expected_file_count"),
-                "deterministic package counts preserve released assets, crocodilian models/action icons and four master trait exports");
+            // Executed count/mismatch/nonpositive/determinism cases belong to
+            // tools/test_deterministic_package.py. Historical count whitelist
+            // text cannot prove preservation of this mode's packaged assets.
             Assertions.True(package.Contains("create_deterministic_package.py") &&
                 package.Contains("expectedPackageFileCount") &&
                 !package.Contains("Compress-Archive"),

@@ -49,12 +49,6 @@ namespace KingmakerGunslinger.DomainTests
                 "Directory.Build.props"));
             string assembly = File.ReadAllText(Path.Combine(root, "src",
                 "KingmakerGunslinger", "Properties", "AssemblyInfo.cs"));
-            string package = File.ReadAllText(Path.Combine(root, "scripts",
-                "package.ps1"));
-            string runtime = File.ReadAllText(Path.Combine(root, "scripts",
-                "RuntimeAutomation.Common.ps1"));
-            string localBuild = File.ReadAllText(Path.Combine(root, "scripts",
-                "Build-Local.ps1"));
 
             string version = (string)Newtonsoft.Json.Linq.JObject.Parse(info)["Version"];
             string propertyVersion = System.Text.RegularExpressions.Regex.Match(props,
@@ -67,18 +61,10 @@ namespace KingmakerGunslinger.DomainTests
                 assembly.Contains("AssemblyFileVersion(\"" + version + "\")") &&
                 assembly.Contains("AssemblyInformationalVersion(\"" + informational + "\")"),
                 "Release and assembly identity must agree with the active source version.");
-            string suffix = informational.Substring(version.Length + 1);
-            Assertions.True(package.Contains("$($info.Id)-$($info.Version)-$suffix.zip") &&
-                package.Contains("$suffix=if($info.Version -eq '" + version + "'){'" + suffix + "'}") &&
-                !package.Contains("expanded-summoning.zip"),
-                "Default package identity must use the active informational-version suffix.");
-            Assertions.True(runtime.Contains("if ($ExpectedVersion -cne $activeVersion") &&
-                runtime.Contains("ExpectedVersion must be exactly the active version $activeVersion.") &&
-                System.Text.RegularExpressions.Regex.Match(localBuild,
-                    @"if \(\$info.Version -notin @\(([^)]+)\)\)").Groups[1].Value
-                    .Split(',').Any(value => value.Trim() == "'" + version + "'") &&
-                localBuild.Contains("artifacts\\local-runtime\\$($info.Version)"),
-                "Build and guarded-runtime version enforcement must follow the active version.");
+            // Executed default naming and invalid-version/source/path refusals
+            // live in Test-DevelopmentGate/Test-DevelopmentCandidate. Their
+            // behavior must not depend on a hardcoded version whitelist or
+            // the incidental spelling of the package-name expression here.
         }
 
         internal static void CategoryDisplayNeverLeaksRawIdentity()
