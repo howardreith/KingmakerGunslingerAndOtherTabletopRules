@@ -70,59 +70,63 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate76: `03f48bdcab58bb09df307c82dc9a4754f74d63e3`.
-ZIP `66b808b25e4ad41be14a1e2345f5a765de66751e5455aea09f1aa98e4a0e816d`;
-DLL `c043c96a5aece035a5144a34d9c1664bbe9d3895daea2a436974bfe9854681d0`;
-MVID `4e78071f-990e-4ce5-b2ed-3fcb78072a2c`;
-SourceState `4244a3e7787cd6a7309737bc823c63540fe5068ac013216edc331ebf7e4ea858`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/03f48bdcab58/.
-Build76 wrapper/558of2755/exact compile/strictZIP PASS268.581s. This is filtered
-development evidence, not the complete final gate.
+Latest validated development candidate78: `10700ecc2fccfbe9195e112f552077431cb8a358`.
+ZIP `7396a5cd21e13602fbe5eb182bd885275394d6b6b589ad711978deb255f536ac`;
+DLL `5a0fde65a33d8f02bb26aca7cccbeb4d10fd287676c217143ea88f7f04960047`;
+MVID `c17734c7-c7b3-4959-9610-6d0c6c086975`;
+SourceState `3082be4c98b0a9cb2a8595e61ac09ff0ea47bd2afcaca907a08016148bc1f08b`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/10700ecc2fcc/.
+Build78 wrapper/558of2755/exact compile/strictZIP PASS281.090s. This is filtered
+development evidence, not the complete final gate. Build77 refused elevated
+execution before compilation; unchanged source built normally in78. No deployment
+or native launch resulted from77.
 
-Native106 preparation37/37PASS; native107 cold11PASS/3FAIL. Retaining the
-exact prepared ZIP proved Fascinate was already ended before cold load. Its
-response1 became3 and toggle stopped during save suspension. Installed native IL
-shows SaveManager turns off the area/player before PreSave; UnitDescriptor marks
-IsTurnedOn=false before fact callbacks. Temporary Fact.TurnOff leaves Active
-unchanged and does not invoke native WillStop. The private dispatcher/carrier
-mistook that suspension for actual deactivation. The applied correction preserves
-performances only while the owner is suspended, clears transient commands, and
-retains unconditional actual OnFactDeactivate/native WillStop cleanup. No saved
-state is rewritten. Fresh cold/absence/provider/moduleOFF validation is pending.
+Native111 preparation37/37PASS and retained prepared ZIP prove save suspension
+now preserves the live Fascinate responses, toggle and carrier. Native112 cold
+11PASS/3FAIL preserves those fields, book/items/resources, but loses22 assistance
+effects serialized in separate area files. Exact context-reference ownership
+cannot match those deserialized copies. The reviewed correction uses the existing
+native persisted area ID plus exact caster/carrier, caches that ID only for
+teardown, and defers orphan checks to native area-load completion. No new saved
+field, registry or rules subsystem. Fresh cold/source/sibling/absence/OFF proof
+is pending; original112 remains FAIL.
 
-Native108 presentation16PASS/2FAIL: Satyr rest/moves/native path retirement pass;
-three agent-inspected frames show recognizable intact body/equipment without
-severe sampled deformation. Bow command, full attack completion and actual
-Standard cost pass. The end-of-frame animation compound failed; its individual
-predicate is unknown. The correction captures synchronously at the exact native
-weapon event using the proven capture seam, retains strict frame/command/clip
-predicates, and separately correlates actual projectile damage. Contacts, wounds,
-death/expiry and Lillend presentation remain unqualified.
+Native113 presentation18PASS/2FAIL: five agent-inspected Satyr rest/movement,
+bow-release and horn-contact frames are technically recognizable/intact.
+Actual projectile damage and horn contact pass. Dagger damage occurs, but its
+handle is no longer active at the event; no dagger frame qualifies. Missing
+mapping is not yet proven. The corrected fixture checks dagger first, inventories
+actual native equipment/settings without creating RNG-consuming diagnostic
+attacks, and retains selected clip/lifecycle before the unchanged active/playing
+guard. Only the two exact native Satyr sources are inspected. Wound setup surveys
+actual effective melee reach after the last equipment case. Other presentation
+and lifecycle frames remain unqualified; no aesthetic approval is claimed.
 
-Native109 grab15PASS/2FAIL: full Lillend RTWP acquisition, live-Strength
-maintenance, exact tail/constrict, release and finalizers PASS. TB refuses before
-gameplay because the owned idle anchor has a command; exact producer is unknown.
-Salamander is NOT_RUN. The grouped phase now owns that proven idle anchor's brain
-across cell boundaries, retaining all command/refusal checks and exact restoration.
+Native114 grab17PASS/2FAIL: full Lillend RTWP grab/constrict/release PASS. The
+second cell has a quiet anchor but Default admission refuses Pause before TB
+activation. The grouped fixture now owns engagement-pause settings across cells,
+closing the observed setup window without clearing an unexplained pause or
+weakening admission. Exact triggering callback remains unknown. TB/Salamander
+are pending. Native115 controls9PASS/1FAIL: wards, natural Charm, harmless heal
+and all physical/hostility readiness predicates pass. Attack-plan/reach compound
+then fails before dispatch; exact conjunct is unrecorded. Its fixed-distance/raw
+reach assumption is replaced by actual weapon plus both native body radii,
+measured horizontal distance and individual predicates. No diagnostic attack is
+created. Threat/Sound Burst and affected neighbours remain pending.
 
-Native110 controls8PASS/1FAIL: actual Good/Chaos ward refusals, natural Charm
-Monster and harmless healing PASS. Unrelated-wolf readiness refused before attack;
-the compound predicate is unknown. Native supplied attacks do not require the
-visibility memory cache. The corrected fixture retains physical LOS/reach and all
-ownership/liveness checks, clears the existing sight cache after owned relocation,
-and records each predicate. Exact positive weapon-damage binding remains required.
-Apparent-ally threat and safe Sound Burst were not reached.
+Native116 provider terminals10/10PASS on candidate78: two normal CL7 casts spend
+two L2 slots; first positive18 weapon damage breaks one effect, while the second
+expires untouched at its original deadline. Last-present43629.859,
+deadline43629.862, first-absent43629.875;16ms interval, zero deadline writes or
+manual ticks. Source alive; disclosed native600s fixture outlives the420s effect.
+This proves terminal behaviour, not public duration or natural selection.
 
-One coherent batch also adds the finite Competence RTWP/Fascinate TB combat-entry
-and provider Suggestion real positive-damage break/unshortened expiry cases.
-These use existing native commands, clocks, owned actors and scenario declaration;
-no new generic observer or product subsystem. Suggestion uses a disclosed native
-600s fixture summon to outlive the original CL7 420s effect; select900s runtime.
-All applied changes compile; focused `sprint32;fey-celestial`8/2755 PASS
-(production29.1s/domain4.9s). Initial compile failure was missing two project
-entries and a namespace import, corrected. Five shell admission cases pass,
-including case/whitespace/extra-save/foreign-scenario refusals. These are not native
-qualification. Original failed results remain immutable.
+The current six-file correction batch compiles; focused8/2755PASS, production
+24.5s/domain0.9s. Independent review read actual diff and installed contracts.
+It caught diagnostic RNG consumption, the reordered wound distance and native
+null-variant fallback; all corrected. Five implementation/fixture files match
+reviewed drafts; the sixth records SourceAreaEffectId in existing state rows.
+No remaining concrete review blocker; fresh affected native evidence is pending.
 
 Earlier source-bound evidence remains in history: player input Wizard16/16,
 Sorcerer28/28,Druid31/31; Satyr at-will13/13 each mode; support13/13;
@@ -162,40 +166,46 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest Working envelope restored2026-10-27T01:59:44.8678022Z; native110
-restored02:18:27.1642590Z. Full protected ComparePASS after cleanup:
+Latest Working envelope restored2026-10-27T02:58:22.4172730Z; native116
+restored03:44:39.7779244Z. Full protected ComparePASS after cleanup:
 967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
 8550225B; original times/attributes restored. No owned live transaction.
 
-Counts76Build-Local attempts/62validated packages/110actual native launches.
-Build76 268.581s; native106/107/108/109/110
-246.425/192.489/108.008/124.380/116.438s. Independent review read native save
-contracts and the bounded correction drafts; actual applied diff reviewed. One P2 found: Suggestion terminal fixture must not
-restore anchor AI while Default ownership remains pending. Corrected with the
-same exact-identity/pending guard; candidate compilation follows.
-Approx01:30-02:28UTC overlapping work: build/package4.48min; native setup,
-execution/restoration~29min; implementation/observer/research~30-40min; storage
-~5min; owner waiting0. Exclusive cumulative totals unavailable.
+Counts78Build-Local attempts/63validated packages/116actual native launches.
+Build78 281.090s; native111-116252.709/189.628/120.656/106.651/106.081/579.052s.
+Approx02:28-03:49UTC overlapping work: build/package5.86min including refused77;
+native setup/execution/restoration~44min; implementation/observer/research/review
+~45-60min; storage~8min. Owner storage decision pending from03:48UTC, independent
+work continues. Exclusive cumulative totals unavailable; no speedup claim.
 
-Measured Working peak902923316B rounded1.1GB, build154MB, plus2GB reserve
-requires3.254GB before this next build. After110 verified closed duplicate cleanup
-reclaimed1144920553B from15 extractions, retaining canonical packages, reference
-copies and four verified content archives190453466B. Free3439124480B after full
-protected ComparePASS. Unique packages/raws/failures/receipts/protected backups,
-DATA and personal files remain. Exact selection/results/retention identities are
-in history. Check actual headroom before each admitted transaction.
+After116 verified cleanup removed six duplicate extractions546426677B and
+retained three verified archives166102081B plus all original reference copies.
+Free2806616064B; full protected ComparePASS. Existing curated duplicate groups
+are exhausted. Unique packages/raws/failures/receipts/protected backups remain.
+Measured Working peak902923316B rounded1.1GB plus build154MB and2GB reserve
+requires3.254GB. **Cold-save sequence STORAGE_BLOCKED** at this margin. An exact
+proposal lists62 closed Sprint32 ZIPs3943070291B, excluding candidate78, for
+copy/hash-verify/move to an owner-supplied destination. Separate migration
+authority/destination requested; no migration executed. Only C: is ready.
+Proposal: artifacts/sprint32-intake/proposed-closed-package-storage.json.
 
-**Next:** commit/package the coherent compiled batch once; run the changed base
-Working ON prepare/cold/absence, presentation, grab and controls scenarios, then
-the finite performance/Suggestion cases. No unchanged failed retry. Each ordinary
-selection targets15min and stays below30min including safe restoration. Provider
-retained/removed/moduleOFF trios remain predeclared90-120min combined, with fresh
+**Next:** commit the reviewed correction batch, build it once, and use the
+unchanged package for the narrowed save-free presentation case if its separate
+154MB build+550MB native+2GB reserve (2.704GB) is available. This independent
+selection does not admit the blocked Working sequence. Expected15min, ceiling30min
+including restoration. Keep any missing native mapping as unqualified; do not
+replay the unchanged failed path. Other changed grab/controls/performance cases
+remain pending, with each selection requiring its own measured headroom.
+After storage resolution, run fresh base Working ON/cold/absence and provider
+retained/removed/moduleOFF trios (predeclared90-120min combined), retaining fresh
 processes and original Working restoration. Preserve prepared ZIPs as evidence.
-Integrate relevant accepted dependencies at one coherent checkpoint, obtain the
-independent final review, freeze inputs, run one complete cheap final gate and
-qualify its exact ZIP. Final integration, presentation and persistence remain
-required. No owner playtest, merge, release or Sprint33.
+Final A8 uses selected standalone cases and exactly satyr-turn/lillend-support
+on gunslinger-high-risk-combined; no old S30-31 final-integration campaign.
+Review relevant accepted dependencies at one coherent checkpoint, obtain final
+independent review, freeze inputs and run one complete cheap final gate. Required
+presentation/persistence/integration remain incomplete. No owner playtest,
+merge, release or Sprint33.
 
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30public-route/body/icon,
 standalone final integration, highest-risk combined final integration.

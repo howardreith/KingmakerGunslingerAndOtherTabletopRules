@@ -8,6 +8,7 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes.Spells;
 using Kingmaker.Blueprints.Facts;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.EntitySystem.Persistence;
 using Kingmaker.EntitySystem.Stats;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -95,6 +96,12 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintAbility BardicSuggestion;
         [JsonProperty] private JArray _responses = new JArray();
         [JsonProperty] private bool _ended;
+        // Reuse the native activation identity. This cache survives the native
+        // component clearing its reference during genuine teardown; it creates
+        // no identity and adds no serialized field or registry.
+        private static readonly FieldInfo NativeAreaField = AccessTools.Field(typeof(AddAreaEffect), "m_AreaEffectInstance") ??
+            throw new MissingFieldException(typeof(AddAreaEffect).FullName, "m_AreaEffectInstance");
+        [NonSerialized] private string _knownAreaId;
         [NonSerialized] private bool _ready;
         [NonSerialized] private Dictionary<string, int> _lookup;
         [NonSerialized] private Dictionary<string, Dictionary<string, UnitCommand>> _approaches;
@@ -131,17 +138,46 @@ namespace KingmakerGunslinger.Summoning
         public override void PostLoad()
         {
             base.PostLoad(); _lookup = null;
-            var restored = Responses; _ready = true;
+            var restored = Responses; RememberNativeArea(); _ready = true;
         }
         internal int Response(UnitEntityData target)
         {
             int result;
             return target != null && Responses.TryGetValue(target.UniqueId, out result) ? result : -1;
         }
+        private AreaEffectEntityData RememberNativeArea()
+        {
+            if (NativeAreaField.FieldType != typeof(AreaEffectEntityData))
+                throw new InvalidOperationException("Native Lillend area identity contract changed.");
+            var component = Buff.SelectComponents<AddAreaEffect>().SingleOrDefault();
+            var area = component == null ? null : (AreaEffectEntityData)NativeAreaField.GetValue(component);
+            if (area != null && !string.IsNullOrEmpty(area.UniqueId)) _knownAreaId = area.UniqueId;
+            return area;
+        }
+        private bool MatchesActivation(MechanicsContext context, string areaId)
+        {
+            var caster = context?.MaybeCaster;
+            if (caster == null || Owner?.Unit == null || !ReferenceEquals(caster, Owner.Unit)) return false;
+            var area = RememberNativeArea();
+            if (!string.IsNullOrEmpty(areaId))
+            {
+                if (!string.IsNullOrEmpty(_knownAreaId)) return areaId == _knownAreaId;
+                // A first synchronous native enter can precede assignment of
+                // AddAreaEffect's field. Only the exact live parent context may
+                // bind that native ID; a copied cross-file context cannot.
+                if (area == null && ElementalNereidAuraState.IncludesContext(context, Buff.Context))
+                { _knownAreaId = areaId; return true; }
+                return false;
+            }
+            // AddBuff runs OnTurnOn before its caller assigns SourceAreaEffectId.
+            // This is only the original live-context construction path.
+            return ElementalNereidAuraState.IncludesContext(context, Buff.Context);
+        }
+        private bool OwnsGrant(Buff grant) => grant != null && MatchesActivation(grant.Context, grant.SourceAreaEffectId);
         internal bool Active => _ready && !_ended && Buff.Active;
         internal bool Owns(UnitEntityData target) => Active && Response(target) == 1 &&
             target.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, Fascinated) &&
-                ElementalNereidAuraState.IncludesContext(value.Context, Buff.Context));
+                OwnsGrant(value));
         internal bool ShouldStop => _ready && (_ended || !Game.Instance.State.Units.All.Any(target =>
             (Response(target) == 0 || Response(target) == 1) &&
             LillendFascinateEligibility32.Attentive(Owner.Unit, target)));
@@ -195,16 +231,16 @@ namespace KingmakerGunslinger.Summoning
         {
             if (target == null) return;
             foreach (var effect in target.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, Fascinated) &&
-                ElementalNereidAuraState.IncludesContext(value.Context, Buff.Context)).ToArray()) effect.Remove();
+                OwnsGrant(value)).ToArray()) effect.Remove();
         }
-        internal void RefreshAssistance(MechanicsContext context)
+        internal void RefreshAssistance(MechanicsContext context, AreaEffectEntityData area)
         {
-            if (!Active) return;
+            if (!Active || area == null || area.IsEnded || !MatchesActivation(context, area.UniqueId)) return;
             var affected = Game.Instance.State.Units.All.Where(Owns).ToArray();
             foreach (var helper in Game.Instance.State.Units.All.ToArray())
             {
                 var grants = helper.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, Assistance) &&
-                    ElementalNereidAuraState.IncludesContext(value.Context, Buff.Context)).ToArray();
+                    OwnsGrant(value)).ToArray();
                 bool useful = helper.IsInGame && !helper.Descriptor.State.IsDead && affected.Any(target => !helper.IsEnemy(target));
                 if (!useful) { foreach (var grant in grants) grant.Remove(); continue; }
                 if (grants.Length != 0) continue;
@@ -212,7 +248,7 @@ namespace KingmakerGunslinger.Summoning
                 benign.RemoveSpellDescriptor(SpellDescriptor.MindAffecting);
                 benign.RemoveSpellDescriptor(SpellDescriptor.Compulsion);
                 var added = helper.Descriptor.AddBuff(Assistance, benign, null);
-                if (added != null) { added.IsNotDispelable = true; added.IsFromSpell = false; }
+                if (added != null) { added.SourceAreaEffectId = area.UniqueId; added.IsNotDispelable = true; added.IsFromSpell = false; }
             }
         }
         public void HandleActivatableAbilityWillStop(ActivatableAbility ability)
@@ -226,17 +262,17 @@ namespace KingmakerGunslinger.Summoning
             foreach (var unit in Game.Instance.State.Units.All.ToArray())
                 foreach (var grant in unit.Buffs.Enumerable.Where(value =>
                     (ReferenceEquals(value.Blueprint, Fascinated) || ReferenceEquals(value.Blueprint, Assistance)) &&
-                    ElementalNereidAuraState.IncludesContext(value.Context, Buff.Context)).ToArray()) grant.Remove();
+                    OwnsGrant(value)).ToArray()) grant.Remove();
         }
         // Native save/area suspension turns the owner off before its facts.
         // Keep serialized responses; genuine removal still always ends them.
-        public override void OnTurnOff() { if (Owner != null && Owner.IsTurnedOn) End(); }
+        public override void OnTurnOff() { RememberNativeArea(); if (Owner != null && Owner.IsTurnedOn) End(); }
         public override void OnFactDeactivate() { End(); }
-        internal static LillendFascinateState32 Find(MechanicsContext context, BlueprintBuff carrier)
+        internal static LillendFascinateState32 Find(MechanicsContext context, BlueprintBuff carrier, string areaId = null)
         {
-            return context?.MaybeCaster?.Buffs.Enumerable.Where(value => value.Active && ReferenceEquals(value.Blueprint, carrier) &&
-                ElementalNereidAuraState.IncludesContext(context, value.Context))
-                .SelectMany(value => value.SelectComponents<LillendFascinateState32>()).SingleOrDefault();
+            return context?.MaybeCaster?.Buffs.Enumerable.Where(value => value.Active && ReferenceEquals(value.Blueprint, carrier))
+                .SelectMany(value => value.SelectComponents<LillendFascinateState32>())
+                .SingleOrDefault(value => value.MatchesActivation(context, areaId));
         }
     }
 
@@ -245,10 +281,10 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintBuff Carrier;
         protected override void OnUnitEnter(MechanicsContext context, AreaEffectEntityData area, UnitEntityData unit)
-        { LillendFascinateState32.Find(context, Carrier)?.Enter(unit, context, area); }
+        { LillendFascinateState32.Find(context, Carrier, area.UniqueId)?.Enter(unit, context, area); }
         protected override void OnTick(MechanicsContext context, AreaEffectEntityData area)
         {
-            var state = LillendFascinateState32.Find(context, Carrier);
+            var state = LillendFascinateState32.Find(context, Carrier, area.UniqueId);
             if (state == null || area.IsEnded) return;
             foreach (var unit in area.UnitsInside.ToArray())
             {
@@ -256,7 +292,7 @@ namespace KingmakerGunslinger.Summoning
                 foreach (var logic in unit.Buffs.Enumerable.Where(value => value.SourceAreaEffectId == area.UniqueId)
                     .SelectMany(value => value.SelectComponents<LillendFascinated32>()).ToArray()) logic.ObserveThreats();
             }
-            state.RefreshAssistance(context);
+            state.RefreshAssistance(context, area);
             if (state.ShouldStop)
             {
                 var toggle = context.MaybeCaster.Descriptor.ActivatableAbilities.Enumerable.SingleOrDefault(value =>
@@ -266,18 +302,29 @@ namespace KingmakerGunslinger.Summoning
         }
         protected override void OnUnitExit(MechanicsContext context, AreaEffectEntityData area, UnitEntityData unit)
         {
-            var state = LillendFascinateState32.Find(context, Carrier);
+            var state = LillendFascinateState32.Find(context, Carrier, area.UniqueId);
             state?.Interrupt(unit); state?.RemoveTarget(unit);
         }
     }
 
     [Serializable]
-    public sealed class LillendFascinateAssistance32 : BuffLogic
+    public sealed class LillendFascinateAssistance32 : BuffLogic, ISceneHandler
     {
         public BlueprintBuff Carrier;
         public override void OnTurnOn()
         {
-            if (LillendFascinateState32.Find(Buff.Context, Carrier)?.Active != true) Buff.Remove();
+            // Area recipients can turn on before the party source is hydrated.
+            // Reconcile at the native completed-area boundary, not against a
+            // partially loaded entity pool. Genuine live grants still validate.
+            if (LoadingProcess.Instance != null && LoadingProcess.Instance.IsLoadingInProcess) return;
+            CheckSource();
+        }
+        public void OnAreaBeginUnloading() { }
+        public void OnAreaDidLoad() { CheckSource(); }
+        private void CheckSource()
+        {
+            if (!Buff.IsDisposed && LillendFascinateState32.Find(Buff.Context, Carrier, Buff.SourceAreaEffectId)?.Active != true)
+                Buff.Remove();
         }
     }
 

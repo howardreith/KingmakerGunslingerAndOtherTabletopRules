@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Kingmaker;
+using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Root;
+using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Bootstrap;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
+using Kingmaker.View.Animation;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
@@ -245,20 +250,40 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["activeHandle"] = animation != null && owner.View.AnimationManager.ActiveActions.Contains(animation) };
                             attackRow["capturePredicates"] = guards; attackRow["eventFrame"] = eventFrame;
                             attackRow["captureFrame"] = Time.frameCount;
-                            if (!guards.Properties().All(value => (bool)value.Value))
-                                throw new InvalidOperationException("Synchronous contact capture failed exact native event/frame/animation predicates.");
-                            var tailAction = animation.Action as LillendTailAction;
-                            var active = animation.ActiveAnimation;
+                            var tailAction = animation?.Action as LillendTailAction;
+                            var active = animation?.ActiveAnimation;
                             var clip = active?.GetPlayableClip();
                             bool playing = tailAction != null ? ReferenceEquals(tailAction, owner.View.GetComponent<LillendHumanVisualAttachment>()?.TailAction) &&
                                 tailAction.PlayingOwnedClip && tailAction.LastActFrame == eventFrame :
-                                SerpentineFinalReviewPolicy.PlayedNativeClip(true, animation.IsStarted, clip?.name,
+                                SerpentineFinalReviewPolicy.PlayedNativeClip(true, animation != null && animation.IsStarted, clip?.name,
                                     clip == null ? float.NaN : clip.length, active == null ? double.NaN : active.GetTime(),
                                     active == null ? float.NaN : active.GetWeight());
                             attackRow["clipObservation"] = new JObject { ["playing"] = playing, ["nativeClip"] = clip?.name,
                                 ["nativeTime"] = active == null ? (double?)null : active.GetTime(),
                                 ["nativeWeight"] = active == null ? (float?)null : active.GetWeight(),
                                 ["tailPlayingOwned"] = tailAction?.PlayingOwnedClip, ["tailLastActFrame"] = tailAction?.LastActFrame };
+                            var handAction = animation?.Action as UnitAnimationActionHandAttack;
+                            if (handAction != null)
+                            {
+                                // GetVariant only reads the already selected native
+                                // variant. Do not create an inspection handle.
+                                var select = typeof(UnitAnimationActionHandAttack).GetMethod("GetVariant", BindingFlags.NonPublic | BindingFlags.Instance);
+                                if (select == null) throw new MissingMethodException("Native hand variant lookup changed.");
+                                var selected = select.Invoke(handAction, new object[] { animation }) as AnimationClip;
+                                attackRow["selectedNativeVariant"] = new JObject { ["name"] = selected?.name,
+                                    ["length"] = selected == null ? (float?)null : selected.length };
+                            }
+                            attackRow["actualPlan"] = new JArray(command.AllAttacks.Select(hand => new JObject {
+                                ["weapon"] = hand.Weapon.Blueprint.AssetGuid,
+                                ["contactHandle"] = ReferenceEquals(hand.AnimationHandle, animation),
+                                ["style"] = hand.AnimationHandle?.AttackWeaponStyle.ToString() }));
+                            attackRow["animationLifecycle"] = new JObject {
+                                ["finished"] = animation?.IsFinished, ["interrupted"] = animation?.IsInterrupted,
+                                ["action"] = animation?.Action?.GetType().FullName,
+                                ["style"] = animation?.AttackWeaponStyle.ToString(),
+                                ["handleTime"] = animation == null ? (float?)null : animation.GetTime() };
+                            if (!guards.Properties().All(value => (bool)value.Value))
+                                throw new InvalidOperationException("Synchronous contact capture failed exact native event/frame/animation predicates.");
                             if (!playing) throw new InvalidOperationException("Exact contact animation is not playing.");
                             capture(captureName);
                             captures.Add(new JObject { ["kind"] = "contact-attribution", ["fileStem"] = captureName,
@@ -277,7 +302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 EventBus.Subscribe(attackCompletion);
                 using (var economy = new FirearmReviewCosts(owner, costs))
                 {
-                    foreach (int set in lillend ? new[] { 0 } : new[] { 0, 1 })
+                    foreach (int set in lillend ? new[] { 0 } : new[] { 1, 0 })
                     {
                         if (owner.Body.CurrentHandEquipmentSetIndex != set)
                         {
@@ -290,9 +315,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var here = Sprint24AiCombatLane(fixture.Caster, owner, target, !lillend && set == 0 ? 8f : 1.4f,
                             out near, out attackLane, out attackDirection);
                         PlaceExpandedSummoningUnit(owner, here); PlaceExpandedSummoningUnit(target, near);
-                        var query = new UnitAttack(target) { ForceFullAttack = true }; query.Init(owner);
-                        var requiredWeapons = query.CreateFullAttack().Select(hand => hand.Hand.MaybeWeapon.Blueprint.AssetGuid).Distinct().ToArray();
-                        if (requiredWeapons.Length == 0) throw new InvalidOperationException("Empty native attack plan.");
+                        var primary = owner.Body.PrimaryHand.MaybeWeapon;
+                        if (primary == null) throw new InvalidOperationException("Actual primary weapon absent.");
+                        var requiredWeapons = new[] { primary }.Concat(owner.Body.AdditionalLimbs.Select(limb => limb.MaybeWeapon))
+                            .Where(weapon => weapon != null).Select(weapon => weapon.Blueprint.AssetGuid).Distinct().ToArray();
+                        if (!lillend)
+                        {
+                            // Read only actual equipment and action settings.
+                            // Creating a diagnostic plan/handle would consume
+                            // native RNG before the real attack.
+                            var visual = primary.Blueprint.VisualParameters;
+                            var action = visual.HasSpecialAnimation ? owner.View.AnimationManager.GetAction(visual.SpecialAnimation) :
+                                owner.View.AnimationManager.GetAction(UnitAnimationType.MainHandAttack);
+                            var style = primary.GetAnimationStyle(false);
+                            var mapping = action is UnitAnimationActionHandAttack ?
+                                Presentation32HandMapping((UnitAnimationActionHandAttack)action, style) : null;
+                            bool usable = action != null && mapping != null && (bool)mapping["usable"];
+                            Sprint25Check(id + "-weapon-mapping-" + set, usable, new JObject {
+                                ["set"] = set, ["weapon"] = primary.Blueprint.AssetGuid,
+                                ["style"] = style.ToString(), ["action"] = action?.GetType().FullName,
+                                ["mapping"] = mapping, ["exactNativeSources"] = set == 1 ? Presentation32SatyrMappings(style) : null,
+                                ["diagnosticPlansCreated"] = 0, ["diagnosticHandlesCreated"] = 0 },
+                                "The actual adult primary weapon has an available matching native action and finite nonempty clips before dispatch; inventory creates no attack/handle and changes no source asset.");
+                            if (!usable) throw new InvalidOperationException("Satyr native weapon mapping is missing or unusable; no attack dispatched.");
+                        }
                         for (int attempt = 0; attempt < 3 && requiredWeapons.Any(weapon => !capturedWeapons.Contains(weapon)); attempt++)
                         {
                             int before = strikes.WeaponAttacks;
@@ -339,13 +385,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!weapons) throw new InvalidOperationException("A required actual attack family is missing.");
                 // Wound uses an actual frontal native attack, never supplied damage.
                 target.Stats.AdditionalAttackBonus.BaseValue = 100; target.Stats.Strength.BaseValue = 30;
-                var woundQuery = new UnitAttack(owner); woundQuery.Init(target);
-                var woundPlan = woundQuery.CreateFullAttack();
-                if (woundPlan.Count == 0 || woundPlan.Any(hand => hand.Hand.MaybeWeapon == null) ||
-                    target.DistanceTo(owner) >= woundPlan.Min(hand => hand.Hand.MaybeWeapon.AttackRange.Meters))
-                    throw new InvalidOperationException("Native wound actor has no reachable weapon plan.");
+                var woundWeapon = target.Body.PrimaryHand.MaybeWeapon;
+                if (woundWeapon == null || !woundWeapon.Blueprint.IsMelee)
+                    throw new InvalidOperationException("Native wound actor lacks its actual melee weapon.");
+                float woundReach = woundWeapon.AttackRange.Meters + target.View.Corpulence + owner.View.Corpulence;
+                if (float.IsNaN(woundReach) || float.IsInfinity(woundReach) || woundReach <= .4f)
+                    throw new InvalidOperationException("Native wound reach is invalid.");
+                Vector3 woundNear; string woundLane, woundDirection;
+                var woundOrigin = Sprint24AiCombatLane(fixture.Caster, target, owner, woundReach - .35f,
+                    out woundNear, out woundLane, out woundDirection);
+                PlaceExpandedSummoningUnit(target, woundOrigin); PlaceExpandedSummoningUnit(owner, woundNear);
+                var woundGap = target.Position - owner.Position; woundGap.y = 0;
+                if (woundGap.magnitude > woundReach)
+                    throw new InvalidOperationException("Surveyed wound position exceeds actual native effective reach.");
                 owner.ForceLookAt(target.Position);
-                foreach (int frame in WaitPresentation32(mode, () => (bool)Sprint17NativeHitFacing(owner, target, true)["eligible"], 8)) yield return frame;
+                foreach (int frame in WaitPresentation32(mode, () => {
+                    target.SightCache.ClearIfNeeded(); owner.SightCache.ClearIfNeeded();
+                    return target.HasLOS(owner) && (bool)Sprint17NativeHitFacing(owner, target, true)["eligible"]; }, 8)) yield return frame;
+                Sprint25Check(id + "-wound-reach", true, new JObject { ["weapon"] = woundWeapon.Blueprint.AssetGuid,
+                    ["nativeEffectiveReach"] = woundReach, ["actualHorizontalDistance"] = woundGap.magnitude,
+                    ["survey"] = woundLane, ["nativeLos"] = target.HasLOS(owner), ["diagnosticPlansCreated"] = 0 },
+                    "The exact supplied wound attacker has surveyed actual native reach, LOS and frontal eligibility after the last equipment case; no throwaway attack consumes RNG.");
                 wounds = new Sprint16RuleObserver { Owner = target, Target = owner };
                 bool frontalWound = false, hitCaptured = false;
                 var lifePoses = new JArray();
@@ -449,6 +509,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (complete && errors.Count > 0) throw new InvalidOperationException(string.Join("|", errors.ToArray()));
             }
         }
+        private static JObject Presentation32HandMapping(UnitAnimationActionHandAttack action, WeaponAnimationStyle style)
+        {
+            var field = typeof(UnitAnimationActionHandAttack).GetField("m_Settings", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (field == null) throw new MissingFieldException("Native hand action settings contract changed.");
+            var settings = field.GetValue(action) as Array;
+            if (settings == null || settings.Length > 32) throw new InvalidOperationException("Native hand settings absent or unexpectedly broad.");
+            var matches = settings.Cast<object>().Where(value => value != null &&
+                (WeaponAnimationStyle)value.GetType().GetField("Style").GetValue(value) == style).ToArray();
+            var clips = matches.Length == 1 ? matches[0].GetType().GetField("Variants").GetValue(matches[0]) as AnimationClip[] : null;
+            bool usable = action.HasSetting(style) && matches.Length == 1 && clips != null && clips.Length > 0 && clips.Length <= 32 &&
+                clips[0] != null && clips.All(clip => clip == null ||
+                    !float.IsNaN(clip.length) && !float.IsInfinity(clip.length) && clip.length > 0);
+            return new JObject { ["style"] = style.ToString(), ["hasSetting"] = action.HasSetting(style), ["matches"] = matches.Length,
+                ["usable"] = usable, ["variants"] = clips == null ? null : new JArray(clips.Select(clip => new JObject {
+                    ["name"] = clip?.name, ["length"] = clip == null ? (float?)null : clip.length })) };
+        }
+
+        private static JArray Presentation32SatyrMappings(WeaponAnimationStyle style)
+        {
+            // Two exact accepted native adult Satyr references only. Reading
+            // prefab settings does not instantiate an NPC or mutate any action.
+            var sources = new[] {
+                new[] { "6114adae73a1338498412b3c63c946f8", "22dfc39c941704743a5b3fd9769327a0" },
+                new[] { "a6dceccaf84af1a42843e58412265388", "36a3ffb15f1331c489ac1ab666aa9d26" } };
+            var result = new JArray();
+            foreach (var source in sources)
+            {
+                var unit = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(BlueprintBootstrap.Library, source[0], "captured Satyr presentation reference");
+                if (unit.Prefab?.AssetId != source[1]) throw new InvalidOperationException("Exact native Satyr prefab changed.");
+                var view = unit.Prefab.Load(false);
+                var manager = view?.GetComponentsInChildren<UnitAnimationManager>(true).SingleOrDefault();
+                var action = manager?.AnimationSet?.Actions.OfType<UnitAnimationActionHandAttack>()
+                    .SingleOrDefault(value => value.Type == UnitAnimationType.MainHandAttack);
+                result.Add(new JObject { ["blueprint"] = source[0], ["prefab"] = source[1], ["action"] = action?.name,
+                    ["mapping"] = action == null ? null : Presentation32HandMapping(action, style) });
+            }
+            return result;
+        }
+
         private IEnumerable<int> WaitPresentation32(Cleanup2NativeDefaultScope mode, Func<bool> ready, int seconds, Action observe = null)
         {
             var until = DateTime.UtcNow.AddSeconds(seconds);
