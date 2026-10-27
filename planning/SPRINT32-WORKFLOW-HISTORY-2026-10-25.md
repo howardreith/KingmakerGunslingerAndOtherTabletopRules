@@ -3551,3 +3551,63 @@ decision pending since03:48UTC with independent work continuing; no exclusive
 waiting total. Counts79build attempts/64validated packages/117launches. Prior167
 three NOT_RUN gaps unchanged. Four finite existing Lillend phases selected next
 on exact79 as headroom admits; Working and next build remain storage-blocked.
+
+## 2026-10-27 04:39UTC - Native118 and reviewed source checkpoint
+
+Native118 on `424e5f6ff5689d5be80a86376660ecb6ec7d690b`: {'PASS': 32, 'FAIL': 2}, overall FAIL; 148785ms.
+Raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0416485568776Z-disposable-expanded-summoning-sprint32-native-review\runtime-result.json` SHA `f2adc520dbeac0ce6a57594bc5cbc88d583f2d253e9cf1544bcc77eea7c2b05b`; run `20261027T0416485851568Z-e2d54e9ac77a4484b18ca545d3a0dc15`.
+Transaction `compat-20261027T041423Z-ebe6f0fc68ec` restored `2026-10-27T04:19:36.2534497Z`; Unity SHA `989a0827ff1781ad39bb4124e2922c1d19e80dcdf8e2dc25358966c57fe93cb0`.
+
+Lillend full RTWP/TB grab/live-Strength maintenance/release/finalizers PASS.
+Salamander original maintenance FAIL: observer omitted native Power Attack;
+accepted unchanged profile predicts the observed tail+4/+5 and separate
+constrict+6. Toggle not captured, so attribution is source-supported. Release
+NOT_RUN; no demonstrated S32 regression. Original evidence unchanged.
+
+Source b9a4e783584c314e8e47b6a1d567baca0f800c19 clones the private Satyr dagger
+visual record and changes only native small-blade style; actual rig/contact
+NOT_RUN. The grab observer records actual toggle/BAB and separately expects its
+secondary tail bonus. Independent read-only reviewer found no concrete blocker.
+Production compilation24.9sPASS; domain first build1.4sFAIL missing local
+reference configuration, then existing GamePath.props restored6/2755PASS4.886s
+(runner0.1s). Existing original logs retained; no new package or launch.
+
+After118 closed extraction cleanup99857992B; planSHA
+201d27b5d72ac9a27a2d70c886fc09ab056e285ecff868c4dfe330d36c8c0ae1,
+completed04:29:34.9649511Z. All unique evidence/package/backup material retained.
+Sparse source expansion and compile left2220945408B. Protected Compare again
+PASS04:38UTC:967Mods/118saves/18refs/83settings/tasks0/Steam1, no live runtime.
+
+Owner answered pending62-package migration request: "I found this random
+external hard drive that is now the E drive. Put stuff there." Exact proposal
+SHA6c45ced9f3cecf5a430c39a9b387377440a6df761ef933439518761ffcb027de;
+destination E:/KingmakerGunslingerLab/sprint32-closed-development-20261027.
+All-copy hash verification precedes source removal. Separate execution receipt
+retains the path map; current78/79, raw evidence, receipts and protected data stay
+local. Native selection waits for completed migration/headroom proof.
+
+Counts79build attempts/64validated packages/118launches. 04:14-04:39UTC overlapping
+native5.24min, observer/source/review/records15-20min, compile/tests31.2s, cleanup
+~1min. Storage decision03:48-04:39UTC with independent work continuing; exclusive
+cumulative totals unavailable. Prior167 gaps unchanged NOT_RUN.
+
+## 2026-10-27 04:48UTC - Approved archive migration completed
+
+Exact62 closed ZIPs3943070291B now at
+E:/KingmakerGunslingerLab/sprint32-closed-development-20261027, with source/path
+map and original receipts preserved locally. All62 copied hashes passed before
+any source removal, then each pair reverified immediately before removal.
+Completed04:47:23.0000840Z, C free6157987840B. Local execution receipt
+artifacts/sprint32-intake/approved-closed-package-migration-result.json SHA
+50a2a3005067e3c11a98a9b98fa2b51a8d5fdfda2cb06a9eba44943917f7dfa0,
+also copied to destination. Current78/79, raw evidence, saves and backups remain
+local. Unique ZIPs were migrated only under the owner's explicit E authorization.
+
+First copy attempt began04:40:41.3119815Z and stopped at row8 I/O device error,
+with7 verified copies and zero source removals. Windows recorded E disconnect
+(disk153/NTFS140) and remount/healthy98 at04:41:10UTC. Source8 hash remained exact.
+One bounded changed retry began04:43:53.9463360Z: reverified originals/first7,
+streamed remaining copies with WriteThrough/Flush(true), all hashes passed.
+First failure receipt retained. No disk repair or personal-file operations.
+Migration6.70min elapsed including diagnosis/retry and overlapping records work.
+Guarded controls phase selected next; fresh evidence/restoration still required.

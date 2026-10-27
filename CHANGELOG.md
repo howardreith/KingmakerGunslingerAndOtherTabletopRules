@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased - Sprint 32 development
+
+- Adds Satyr control and weapon fallback, and Lillend Azata bard/support spells,
+  performances, healing and tail grab/constrict on the existing summon routes.
+- Suggestion is conditional on CowWithHat Custom Spells. Owner-approved scope
+  retains native Hold repeat saves and hearing limitations, immediate-release
+  Lullaby, and the bounded Lillend noncombat dispatcher/memory exception.
+  Countersong, Darkness and the five unsupported utility spells are omitted.
+- Repairs candidate-bound build/runtime admission and keeps one active record,
+  preserved evidence identities and guarded restoration. Required native,
+  technical visual, persistence and integration qualification remain incomplete;
+  this entry does not announce a release. See [Sprint 32 status](planning/SPRINT32-STATUS.md).
+
 ## 0.0.166-expanded-summoning-druid-giant-sizes
 
 - A Druid's prepared Summon Nature's Ally I or II lists each creature once
