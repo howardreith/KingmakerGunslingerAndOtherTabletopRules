@@ -26,7 +26,7 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintBuff Aura;
         [NonSerialized] private Dictionary<string, Vector3> _positions;
         [NonSerialized] private Dictionary<string, bool> _drawnWeapons;
-        private LillendFascinateState32 Source { get { return LillendFascinateState32.Find(Buff.Context, Aura); } }
+        private LillendFascinateState32 Source { get { return LillendFascinateState32.Find(Buff.Context, Aura, Buff.SourceAreaEffectId); } }
 
         public override void OnTurnOn()
         {

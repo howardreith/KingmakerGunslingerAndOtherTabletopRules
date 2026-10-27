@@ -32,6 +32,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             UnitEntityData groupedAnchor = null; bool groupedAnchorBrain = false;
+            bool groupedSettingsOwned = false, groupedEngagement = false;
             try
             {
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
@@ -44,6 +45,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     // not re-enable its AI between a restored cell and the next
                     // cell's readiness wait; no existing command is interrupted.
                     groupedAnchor = Sprint32OwnedQuietAnchor(fixture, phase + "-group");
+                    groupedEngagement = SettingsRoot.Instance.PauseOnEngagement.CurrentValue;
+                    SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false; groupedSettingsOwned = true;
                     groupedAnchorBrain = groupedAnchor.IsBrainActive;
                     Sprint28SetBrainActivePreservingActions(groupedAnchor, false);
                 }
@@ -61,6 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // transaction rollback instead of changing pause through Activate.
                 try
                 {
+                    if (groupedSettingsOwned) SettingsRoot.Instance.PauseOnEngagement.CurrentValue = groupedEngagement;
                     if (groupedAnchor != null && !Cleanup2NativeDefaultPending)
                     {
                         if (groupedAnchor.Destroyed || !ReferenceEquals(groupedAnchor.Blueprint, _summoningProfileActor))

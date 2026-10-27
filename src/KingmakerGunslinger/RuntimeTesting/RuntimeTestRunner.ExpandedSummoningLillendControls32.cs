@@ -296,8 +296,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         // An unrelated native attacker may damage the charmed subject
                         // without being misclassified as this caster's apparent ally.
                         second = spawn(); second.Stats.AdditionalAttackBonus.BaseValue = 100;
+                        var unrelatedWeapon = second.Body.PrimaryHand.MaybeWeapon;
+                        if (unrelatedWeapon == null || !unrelatedWeapon.Blueprint.IsMelee || second.View == null || target.View == null)
+                            throw new InvalidOperationException("Exact native wolf lacks its melee weapon/view.");
+                        float rawReach = unrelatedWeapon.AttackRange.Meters;
+                        float effectiveReach = rawReach + second.View.Corpulence + target.View.Corpulence;
+                        if (float.IsNaN(effectiveReach) || float.IsInfinity(effectiveReach) || effectiveReach <= .4f)
+                            throw new InvalidOperationException("Exact wolf native effective reach is invalid.");
                         Vector3 unrelatedNear; string unrelatedLane, unrelatedDirection;
-                        var unrelatedOrigin = Sprint24AiCombatLane(fixture.Caster, second, target, 1.4f,
+                        var unrelatedOrigin = Sprint24AiCombatLane(fixture.Caster, second, target, effectiveReach - .35f,
                             out unrelatedNear, out unrelatedLane, out unrelatedDirection);
                         PlaceExpandedSummoningUnit(second, unrelatedOrigin); PlaceExpandedSummoningUnit(target, unrelatedNear);
                         second.Wake(0f); if (!game.State.AwakeUnits.Contains(second)) game.State.AwakeUnits.Add(second);
@@ -328,18 +335,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["target"] = target.UniqueId, ["caster"] = owner.UniqueId },
                             "Owned supplied melee probe retains physical visibility, settled living capability and caster-hostile/nonally relation; AI memory cache is diagnostic only.");
                         if (!attackerReady) throw new InvalidOperationException("Unrelated attacker native readiness failed; exact predicates retained.");
-                        var unrelatedPlan = new UnitAttack(target); unrelatedPlan.Init(second);
-                        var unrelatedWeapons = unrelatedPlan.CreateFullAttack();
-                        if (unrelatedWeapons.Count == 0 || unrelatedWeapons.Any(hand => hand.Hand.MaybeWeapon == null) ||
-                            second.DistanceTo(target) >= unrelatedWeapons.Min(hand => hand.Hand.MaybeWeapon.AttackRange.Meters) ||
-                            !second.IsEnemy(owner) || !owner.IsEnemy(second) || second.IsAlly(owner))
-                            throw new InvalidOperationException("Unrelated attacker lacks actual reach or hostile relation.");
+                        // Native approach reach includes both bodies. Verify the
+                        // actual surveyed horizontal separation, not its requested
+                        // distance; do not initialize a throwaway attack (RNG).
+                        var horizontal = second.Position - target.Position; horizontal.y = 0;
+                        float measured = horizontal.magnitude;
+                        bool reachable = measured <= effectiveReach && second.HasLOS(target) &&
+                            ReferenceEquals(second.Body.PrimaryHand.MaybeWeapon, unrelatedWeapon);
+                        bool hostile = second.IsEnemy(owner) && owner.IsEnemy(second) && !second.IsAlly(owner);
+                        Sprint25Check(id + "-unrelated-reach", reachable && hostile, new JObject {
+                            ["weapon"] = unrelatedWeapon.Blueprint.AssetGuid, ["rawWeaponReach"] = rawReach,
+                            ["attackerCorpulence"] = second.View.Corpulence, ["recipientCorpulence"] = target.View.Corpulence,
+                            ["effectiveReach"] = effectiveReach, ["actualHorizontalDistance"] = measured,
+                            ["reachable"] = reachable, ["hostileToCaster"] = hostile, ["survey"] = unrelatedLane,
+                            ["diagnosticPlansCreated"] = 0 },
+                            "The exact supplied wolf retains native effective weapon/body reach, actual LOS and caster-hostile ownership before dispatch; no diagnostic attack consumes RNG.");
+                        if (!reachable || !hostile) throw new InvalidOperationException("Exact unrelated native reach or hostility failed; individual observations retained.");
                         var unrelatedEvents = new Sprint16RuleObserver { Owner = second, Target = target };
                         var unrelatedCommands = new List<UnitAttack>();
                         var unrelatedWeaponDamage = new HashSet<RuleDealDamage>();
                         unrelatedEvents.ObserveWeaponContact = rule => {
                             if (ReferenceEquals(rule.Initiator, second) && ReferenceEquals(rule.Target, target) &&
-                                rule.MeleeDamage != null) unrelatedWeaponDamage.Add(rule.MeleeDamage);
+                                ReferenceEquals(rule.Weapon, unrelatedWeapon) && rule.MeleeDamage != null) unrelatedWeaponDamage.Add(rule.MeleeDamage);
                         };
                         Func<RuleDealDamage, bool> exactUnrelatedDamage = value => !value.IsFake && value.Damage > 0 &&
                             ReferenceEquals(value.Initiator, second) && ReferenceEquals(value.Target, target) &&

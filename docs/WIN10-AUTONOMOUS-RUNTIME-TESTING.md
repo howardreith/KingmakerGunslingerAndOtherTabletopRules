@@ -1,3 +1,18 @@
+Sprint32 after116 bounded correction selection: private Fascinate ownership
+uses native persisted area identity plus exact caster/carrier across save files.
+Fresh Working cold/source/sibling/absence proof remains required and currently
+storage-blocked. Grouped engagement pause is owned across existing cells; native
+mode admission remains strict. Supplied melee probes measure native weapon plus
+both body radii and actual horizontal separation. Satyr presentation checks dagger
+first, reads actual settings (including native null-variant fallback), and inspects
+only naturally created attack handles. No diagnostic plan/handle consumes RNG.
+Selected clip/lifecycle is retained before strict same-frame active/playing guards.
+Wound positioning is resurveyed after the last weapon case. One narrowed save-free
+presentation selection targets15min/ceiling30min; its separate peak plus reserve
+does not authorize the larger blocked Working sequence. Native116 terminal PASS
+remains bound10700ecc. No new gameplay/animation subsystem or final PASS follows
+from these observer corrections.
+
 Sprint32 after110 bounded correction selection: actual save suspension must
 preserve private performance state while owner.IsTurnedOn is false; actual fact
 deactivation and native WillStop still retire owned effects. Re-run the existing

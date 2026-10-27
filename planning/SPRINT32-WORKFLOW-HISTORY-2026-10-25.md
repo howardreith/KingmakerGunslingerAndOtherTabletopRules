@@ -3377,3 +3377,138 @@ observer/research30-40min, storage5min, owner waiting0; exclusive totals unavail
 Prior v167 three NOT_RUN gaps unchanged. PR74 remains draft, qualification incomplete.
 
 Independent actual-diff review found one P2 in Suggestion terminal finalization: anchor AI could resume after mode.Dispose refusal. Corrected to require !Cleanup2NativeDefaultPending and exact surviving profile-anchor identity. Candidate compilation still required; no native claim.
+
+## 2026-10-27 03:49UTC — native identity/reach correction checkpoint
+
+Latest validated development candidate78: `10700ecc2fccfbe9195e112f552077431cb8a358`.
+ZIP `7396a5cd21e13602fbe5eb182bd885275394d6b6b589ad711978deb255f536ac`;
+DLL `5a0fde65a33d8f02bb26aca7cccbeb4d10fd287676c217143ea88f7f04960047`;
+MVID `c17734c7-c7b3-4959-9610-6d0c6c086975`;
+SourceState `3082be4c98b0a9cb2a8595e61ac09ff0ea47bd2afcaca907a08016148bc1f08b`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/10700ecc2fcc/.
+Build78 wrapper/558of2755/exact compile/strictZIP PASS281.090s. This is filtered
+development evidence, not the complete final gate. Build77 refused elevated
+execution before compilation; unchanged source built normally in78. No deployment
+or native launch resulted from77.
+
+Native111 preparation37/37PASS and retained prepared ZIP prove save suspension
+now preserves the live Fascinate responses, toggle and carrier. Native112 cold
+11PASS/3FAIL preserves those fields, book/items/resources, but loses22 assistance
+effects serialized in separate area files. Exact context-reference ownership
+cannot match those deserialized copies. The reviewed correction uses the existing
+native persisted area ID plus exact caster/carrier, caches that ID only for
+teardown, and defers orphan checks to native area-load completion. No new saved
+field, registry or rules subsystem. Fresh cold/source/sibling/absence/OFF proof
+is pending; original112 remains FAIL.
+
+Native113 presentation18PASS/2FAIL: five agent-inspected Satyr rest/movement,
+bow-release and horn-contact frames are technically recognizable/intact.
+Actual projectile damage and horn contact pass. Dagger damage occurs, but its
+handle is no longer active at the event; no dagger frame qualifies. Missing
+mapping is not yet proven. The corrected fixture checks dagger first, inventories
+actual native equipment/settings without creating RNG-consuming diagnostic
+attacks, and retains selected clip/lifecycle before the unchanged active/playing
+guard. Only the two exact native Satyr sources are inspected. Wound setup surveys
+actual effective melee reach after the last equipment case. Other presentation
+and lifecycle frames remain unqualified; no aesthetic approval is claimed.
+
+Native114 grab17PASS/2FAIL: full Lillend RTWP grab/constrict/release PASS. The
+second cell has a quiet anchor but Default admission refuses Pause before TB
+activation. The grouped fixture now owns engagement-pause settings across cells,
+closing the observed setup window without clearing an unexplained pause or
+weakening admission. Exact triggering callback remains unknown. TB/Salamander
+are pending. Native115 controls9PASS/1FAIL: wards, natural Charm, harmless heal
+and all physical/hostility readiness predicates pass. Attack-plan/reach compound
+then fails before dispatch; exact conjunct is unrecorded. Its fixed-distance/raw
+reach assumption is replaced by actual weapon plus both native body radii,
+measured horizontal distance and individual predicates. No diagnostic attack is
+created. Threat/Sound Burst and affected neighbours remain pending.
+
+Native116 provider terminals10/10PASS on candidate78: two normal CL7 casts spend
+two L2 slots; first positive18 weapon damage breaks one effect, while the second
+expires untouched at its original deadline. Last-present43629.859,
+deadline43629.862, first-absent43629.875;16ms interval, zero deadline writes or
+manual ticks. Source alive; disclosed native600s fixture outlives the420s effect.
+This proves terminal behaviour, not public duration or natural selection.
+
+The current six-file correction batch compiles; focused8/2755PASS, production
+24.5s/domain0.9s. Independent review read actual diff and installed contracts.
+It caught diagnostic RNG consumption, the reordered wound distance and native
+null-variant fallback; all corrected. Five implementation/fixture files match
+reviewed drafts; the sixth records SourceAreaEffectId in existing state rows.
+No remaining concrete review blocker; fresh affected native evidence is pending.
+
+
+Latest Working envelope restored2026-10-27T02:58:22.4172730Z; native116
+restored03:44:39.7779244Z. Full protected ComparePASS after cleanup:
+967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
+650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B; original times/attributes restored. No owned live transaction.
+
+Counts78Build-Local attempts/63validated packages/116actual native launches.
+Build78 281.090s; native111-116252.709/189.628/120.656/106.651/106.081/579.052s.
+Approx02:28-03:49UTC overlapping work: build/package5.86min including refused77;
+native setup/execution/restoration~44min; implementation/observer/research/review
+~45-60min; storage~8min. Owner storage decision pending from03:48UTC, independent
+work continues. Exclusive cumulative totals unavailable; no speedup claim.
+
+After116 verified cleanup removed six duplicate extractions546426677B and
+retained three verified archives166102081B plus all original reference copies.
+Free2806616064B; full protected ComparePASS. Existing curated duplicate groups
+are exhausted. Unique packages/raws/failures/receipts/protected backups remain.
+Measured Working peak902923316B rounded1.1GB plus build154MB and2GB reserve
+requires3.254GB. **Cold-save sequence STORAGE_BLOCKED** at this margin. An exact
+proposal lists62 closed Sprint32 ZIPs3943070291B, excluding candidate78, for
+copy/hash-verify/move to an owner-supplied destination. Separate migration
+authority/destination requested; no migration executed. Only C: is ready.
+Proposal: artifacts/sprint32-intake/proposed-closed-package-storage.json.
+
+**Next:** commit the reviewed correction batch, build it once, and use the
+unchanged package for the narrowed save-free presentation case if its separate
+154MB build+550MB native+2GB reserve (2.704GB) is available. This independent
+selection does not admit the blocked Working sequence. Expected15min, ceiling30min
+including restoration. Keep any missing native mapping as unqualified; do not
+replay the unchanged failed path. Other changed grab/controls/performance cases
+remain pending, with each selection requiring its own measured headroom.
+After storage resolution, run fresh base Working ON/cold/absence and provider
+retained/removed/moduleOFF trios (predeclared90-120min combined), retaining fresh
+processes and original Working restoration. Preserve prepared ZIPs as evidence.
+Final A8 uses selected standalone cases and exactly satyr-turn/lillend-support
+on gunslinger-high-risk-combined; no old S30-31 final-integration campaign.
+Review relevant accepted dependencies at one coherent checkpoint, obtain final
+independent review, freeze inputs and run one complete cheap final gate. Required
+presentation/persistence/integration remain incomplete. No owner playtest,
+merge, release or Sprint33.
+
+
+Immutable execution identities (raw files stay machine-local):
+
+- Native111: PASS {'PASS': 37}; source `10700ecc2fccfbe9195e112f552077431cb8a358`; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0246236589169Z-working-save-expanded-summoning-prepare\runtime-result.json` SHA `a916b3ebe077b84480106b934fed572f91cbd5460d00360167a70e5d59f65b53`; run `20261027T0246237017328Z-66a1d84b87274a06b6a6a3852fdc52c0`; 252709ms; transaction `sprint32-stack-20261027T024255Z-6ce3e192690c` restored `2026-10-27T02:51:21.1595447Z`; Unity SHA `0c30786e7e7f0844aa972cec01c923fde993851ee589b772be048b9d86934d18`.
+
+- Native112: FAIL {'PASS': 11, 'FAIL': 3}; source `10700ecc2fccfbe9195e112f552077431cb8a358`; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0254291568034Z-working-save-expanded-summoning-verify-cleanup\runtime-result.json` SHA `8e8d3553558cbaafb48206254fa39d05fb0dfc35aed2469393ff39cf881c124f`; run `20261027T0254291943960Z-d8ddd9d023ef472caf00a5fa400fd130`; 189628ms; transaction `sprint32-stack-20261027T025156Z-726f9022a5d0` restored `2026-10-27T02:58:10.3764098Z`; Unity SHA `a446496a750f6efc4310bed2e58d8c2d9b840445146958009f30ef9573cf6000`.
+
+- Native113: FAIL {'PASS': 18, 'FAIL': 2}; source `10700ecc2fccfbe9195e112f552077431cb8a358`; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0302544985553Z-disposable-expanded-summoning-sprint32-native-review\runtime-result.json` SHA `9535bf2fd154fe8ab161ed3fca7c299020439318d5a87ff3d1c86eb67277b74c`; run `20261027T0302545287381Z-60b1240a41c348399659f70bdbe49383`; 120656ms; transaction `compat-20261027T030021Z-e1a1f61da13e` restored `2026-10-27T03:05:14.8232049Z`; Unity SHA `c9e491d15b86b67c753fef9534d3d3306740262b6ed9011c337164d4806e25d2`.
+
+- Native114: FAIL {'PASS': 17, 'FAIL': 2}; source `10700ecc2fccfbe9195e112f552077431cb8a358`; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0314412933190Z-disposable-expanded-summoning-sprint32-native-review\runtime-result.json` SHA `91fc97bca19c3c8862d01954b8ea48bffcd4baec75e8c44a3e8b15a23f0df1ae`; run `20261027T0314413877002Z-6900c4c1fe0047b6bf19cbf4f8373b8f`; 106651ms; transaction `compat-20261027T031207Z-d5daa068364e` restored `2026-10-27T03:16:46.4648903Z`; Unity SHA `38e250b6847c2280b1d71926e57e47ca816e6657cfeb6463e1bdc014b5c70acc`.
+
+- Native115: FAIL {'PASS': 9, 'FAIL': 1}; source `10700ecc2fccfbe9195e112f552077431cb8a358`; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0323103261731Z-disposable-expanded-summoning-sprint32-native-review\runtime-result.json` SHA `fb5142b67b437c707747d02ca1b9022b39cdd0e82f1c79425c1c73d297127afd`; run `20261027T0323103561055Z-8c7149e12f6c4800b558cfda7769d1ae`; 106081ms; transaction `compat-20261027T032036Z-52b316bee406` restored `2026-10-27T03:25:17.6171535Z`; Unity SHA `8897e0c8730bc57a247243f707695a78d326ed11db447c689afea9f04c6a9a3c`.
+
+- Native116: PASS {'PASS': 10}; source `10700ecc2fccfbe9195e112f552077431cb8a358`; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0334330864260Z-disposable-expanded-summoning-sprint32-native-review\runtime-result.json` SHA `a6db596864e59243d7f6504701fff0441f728700fa7ec98a70e635d8072aa4d2`; run `20261027T0334331020859Z-c894312ce75c487f93206ece67a980b1`; 579052ms; transaction `compat-20261027T033152Z-bca99c96579b` restored `2026-10-27T03:44:39.7779244Z`; Unity SHA `9eaed34aed0ddf67f1d498f8197fa8fdd39585fee045ae6f9ef2deb84116327a`.
+
+Native116 provider terminal execution remains source-bound10700ecc; no fresh-on-new-bytes claim.
+
+- sprint32-storage-after113/bin-result.json: 4 duplicate targets/70894592B; planSHA `ffae636e8943f2e69e6d1708883ed8ecbe031cdc1748507925794fa20307d933`; completed `2026-10-27T03:09:54.7650367Z`.
+
+- sprint32-storage-after113/compile-result.json: 4 duplicate targets/102201272B; planSHA `4b0ac36725e176f3d6a79da14df2353382575c248b15a091747c69035a72e07a`; completed `2026-10-27T03:09:51.8651791Z`.
+
+- sprint32-storage-after113/native111-113-result.json: 3 duplicate targets/299549400B; planSHA `3d7244e5a48b7a163546261819c8020ec16c7174925f0c3e55a31310cc8b62f2`; completed `2026-10-27T03:10:08.3089462Z`.
+
+- sprint32-storage-after116/native-result.json: 3 duplicate targets/299549400B; planSHA `899fa985973a408d5b42f5dbabad5391fdfaf94a18fdc681587227a854f2c540`; completed `2026-10-27T03:46:47.9341202Z`.
+
+- sprint32-storage-after116/s25-a-result.json: 1 duplicate targets/82077229B; planSHA `049fa09470b5dab073894a1205072c387dcaac8d8419ce163d02179c69fb48a3`; completed `2026-10-27T03:46:52.7175546Z`.
+
+- sprint32-storage-after116/s25-b-result.json: 1 duplicate targets/82077229B; planSHA `e015eec89df63663b64049a6ea962291f2692a50fed88655b57dd615b292240a`; completed `2026-10-27T03:46:57.2786489Z`.
+
+- sprint32-storage-after116/s26-c-result.json: 1 duplicate targets/82722819B; planSHA `18cb91c624dfece2ad3f20412dc8ff321fba778bca9c0e15ec84e1c3c0090f23`; completed `2026-10-27T03:47:01.6836997Z`.
+
+Local log-retention correction: Working outer supervisor already copied Unity; a duplicate Stage copy made the outer copier refuse after112. Removed only redundant Stage copy, preserving both original raw gameplay FAIL and original Unity. All protected intake restored. First after116 archive preparation confused a curated group key with a DLL hash; refused before archive/removal. Corrected by pinning the actual exact reference DLL, then verified every target byte against reference/retainedZIP. No protection guard changed.
