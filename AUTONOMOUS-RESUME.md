@@ -1,8 +1,9 @@
-# Sprint 32 - IN PROGRESS
+# Sprint 32 - QUALIFIED PR READY / NOT RELEASED
 
 The sole active record is [planning/SPRINT32-STATUS.md](planning/SPRINT32-STATUS.md).
-Owner mission: 2026-10-25; unattended Satyr/Lillend implementation and validation
-through a reviewable PR. No merge/release or Sprint 33 authority.
+Owner mission2026-10-25 is complete through reviewed native qualification and
+PR74 for owner review. Frozen candidate87 sourceefd237d1; records may be later
+documentation-only descendants. No merge/release or Sprint33 authority.
 
 Everything below is historical and does not select current work.
 
