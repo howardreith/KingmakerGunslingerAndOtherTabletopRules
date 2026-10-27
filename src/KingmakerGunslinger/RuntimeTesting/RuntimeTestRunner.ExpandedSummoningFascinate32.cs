@@ -17,8 +17,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        private IEnumerable<int> ReviewLillendFascinate32(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewLillendFascinate32(ExpandedSummoningCorrectionFixture fixture, bool combatTransition = false)
         {
+            Action<string, bool, JObject, string> check = (name, passed, row, expected) =>
+                Sprint25Check(combatTransition ? name + "-combat-case" : name, passed, row, expected);
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
             bool bardic = phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase;
             if (!IsSprint32Review || !_request.ExitAfterCompletion || _request.Parameters?.Count != 1 ||
@@ -34,7 +36,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _summoningProfileActor.name == "KMG_Runtime_Summoning_Profile_Anchor" &&
                 _summoningProfileSaveGuard != null && _summoningProfileScenes != null &&
                 party.Length == 1 && ReferenceEquals(party[0], anchor) && anchor.Commands.Empty;
-            Sprint25Check("fascinate-owned-anchor", anchorOwned, new JObject { ["anchor"] = anchor?.UniqueId },
+            check("fascinate-owned-anchor", anchorOwned, new JObject { ["anchor"] = anchor?.UniqueId },
                 "Only the existing save-free cloned anchor is repositioned/suspended; no intake actor or save is changed.");
             if (!anchorOwned) throw new InvalidOperationException("Fascinate anchor ownership ambiguous.");
             bool anchorBrain = anchor.IsBrainActive, casterBrain = fixture.Caster.IsBrainActive;
@@ -102,7 +104,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !target.Memory.Contains(anchor) && !target.Memory.Contains(fixture.Caster) &&
                     !toggle.Blueprint.OnlyInCombat && owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                     sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 && !player.IsInCombat;
-                Sprint25Check("fascinate-ready", ready, new JObject { ["survey"] = survey, ["direction"] = direction,
+                check("fascinate-ready", ready, new JObject { ["survey"] = survey, ["direction"] = direction,
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["anchor"] = anchor.UniqueId,
                     ["distances"] = new JArray(target.DistanceTo(owner), target.DistanceTo(anchor), target.DistanceTo(fixture.Caster)),
                     ["vision"] = new JArray(owner.VisionRangeMeters, target.VisionRangeMeters, anchor.VisionRangeMeters),
@@ -131,7 +133,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                         eligible.Length == 1 && ReferenceEquals(eligible[0], target) &&
                         owner.Group.IsPlayerParty && fixture.Caster.Group.IsPlayerParty && anchor.Group.IsPlayerParty;
-                    Sprint25Check("fascinate-calm-brain-refusal", calm, new JObject { ["commands"] = starts.Commands.Count,
+                    check("fascinate-calm-brain-refusal", calm, new JObject { ["commands"] = starts.Commands.Count,
                         ["combat"] = player.IsInCombat, ["targetCombat"] = target.IsInCombat,
                         ["eligible"] = new JArray(eligible.Select(value => value.UniqueId)),
                         ["playerGroups"] = new JArray(owner.Group.IsPlayerParty, fixture.Caster.Group.IsPlayerParty, anchor.Group.IsPlayerParty),
@@ -167,7 +169,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                             Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).SequenceEqual(slots) &&
                             Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).SequenceEqual(siblingSlots);
-                        Sprint25Check("fascinate-natural-performance", natural, new JObject { ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
+                        check("fascinate-natural-performance", natural, new JObject { ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
                             ["costs"] = costs, ["upkeep"] = rounds.Rows, ["saves"] = saves.Rows, ["srChecks"] = events.Resistances.Count,
                             ["running"] = toggle.IsRunning, ["ownedEffects"] = grants.Length,
                             ["perception"] = perception + "->" + target.Stats.SkillPerception.ModifiedValue,
@@ -176,6 +178,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["fixtureActivationCommands"] = 0, ["fixtureRoundCalls"] = 0, ["forcedRolls"] = 0 },
                             "One natural Move performance, native rounds, Will/noSR and owned Fascinated/-4 Perception; no supplied action, roll, effect or combat suppression.");
                         if (!natural) throw new InvalidOperationException("Fascinate natural control not established; preserve actual save outcome.");
+                        if (combatTransition)
+                        {
+                            if (bardic) throw new InvalidOperationException("Bardic provider case does not select the combat transition.");
+                            foreach (int frame in ReviewPerformanceCombat32(fixture, mode, owner, sibling,
+                                toggle, effect, starts, economy, costs, true)) yield return frame;
+                            complete = true; yield break;
+                        }
                         if (bardic)
                         {
                             foreach (int frame in ReviewLillendBardicSuggestion32(fixture, mode, owner, sibling,
@@ -188,7 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool immediate = !target.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, effect)) &&
                         !game.State.Units.All.Any(unit => unit.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, assistance) &&
                             ReferenceEquals(value.Context?.MaybeCaster, owner))) && target.Stats.SkillPerception.ModifiedValue == perception;
-                    Sprint25Check("fascinate-cancel-effects", immediate, new JObject { ["running"] = toggle.IsRunning,
+                    check("fascinate-cancel-effects", immediate, new JObject { ["running"] = toggle.IsRunning,
                         ["perception"] = target.Stats.SkillPerception.ModifiedValue },
                         "Explicit cancellation removes exact harmful effects/helpers immediately; native carrier retirement may finish at its next round.");
                     if (!immediate) throw new InvalidOperationException("Fascinate immediate cancellation cleanup failed.");
@@ -208,7 +217,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         economy.Count(fallback[0]) == 1 && economy.Unchanged(fallback[0]) &&
                         fixture.Caster.Stats.SkillPerception.ModifiedValue == allyPerception + 3 &&
                         owner.Descriptor.Resources.GetResourceAmount(resource) < poolBefore && sibling.Descriptor.Resources.GetResourceAmount(resource) == 20;
-                    Sprint25Check("fascinate-immune-support-fallback", refused, new JObject { ["commandsBefore"] = commandsBefore,
+                    check("fascinate-immune-support-fallback", refused, new JObject { ["commandsBefore"] = commandsBefore,
                         ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                         ["pool"] = poolBefore + "->" + owner.Descriptor.Resources.GetResourceAmount(resource),
                         ["competenceRunning"] = competence.IsRunning, ["allyPerception"] = fixture.Caster.Stats.SkillPerception.ModifiedValue },
@@ -234,7 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!player.Party.SequenceEqual(party)) throw new InvalidOperationException("Exact original party differs."); });
                 restore("caster", () => { PlaceExpandedSummoningUnit(fixture.Caster, casterPosition); Sprint28SetBrainActivePreservingActions(fixture.Caster, casterBrain); });
                 restore("anchor", () => { PlaceExpandedSummoningUnit(anchor, anchorPosition); Sprint28SetBrainActivePreservingActions(anchor, anchorBrain); });
-                Sprint25Check("fascinate-finalizers", cleanup.Count == 0, new JObject { ["errors"] = new JArray(cleanup), ["complete"] = complete },
+                check("fascinate-finalizers", cleanup.Count == 0, new JObject { ["errors"] = new JArray(cleanup), ["complete"] = complete },
                     "Owned fixture/Default/party/positions restored; original gameplay failure retained.");
                 if (complete && cleanup.Count != 0) throw new InvalidOperationException(string.Join("|", cleanup.ToArray()));
             }

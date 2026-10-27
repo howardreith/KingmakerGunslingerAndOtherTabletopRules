@@ -1,3 +1,36 @@
+Sprint32 after110 bounded correction selection: actual save suspension must
+preserve private performance state while owner.IsTurnedOn is false; actual fact
+deactivation and native WillStop still retire owned effects. Re-run the existing
+Working ON/cold/absence and provider/OFF cases; no serialization rewriting.
+Grouped grab/presentation/performance/Fascinate phases own only the proven idle
+profile anchor brain across cells, restoring it under the existing exact lease.
+An unexpected preexisting command still refuses. Attack screenshots capture
+synchronously at the exact native event with strict frame/command/animation
+binding; a bow image denotes projectile release. Actual positive projectile
+damage must separately correlate to that same attack roll/weapon/source/target.
+The supplied unrelated-wolf Charm probe uses physical LOS/reach and native sight
+cache refresh after owned relocation; visibility memory is diagnostic, not an
+ordinary supplied-attack precondition. Natural AI tests retain their own gates.
+
+The existing lillend-performance and lillend-fascinate phases additionally group
+Competence RTWP and Fascinate TB combat entry after their ordinary cases. An
+owned hostile trigger must be reachable/visible before natural performance;
+combat stops it, retires exact assistance/recipient state, and permits natural
+Move Courage with real cost/pool and sibling isolation. Only idle owned witnesses
+may pass turns; no tested-source turn is awarded. Pending selection is absent
+at entry and must remain absent; this does not prove in-flight cancellation.
+Exact new reviewPhase=suggestion-terminals uses the same declaration-derived
+scenario admission, active provider, native RTWP clock and normal supplied casts.
+A disclosed native600s Lillend fixture summon outlives the original CL7 420s
+Suggestion. At most two ordinary casts per target use the real four L2 slots;
+the first subsequent damage event must be positive/nonfake and bound to the
+ordinary native attack. A second untouched effect reaches its original deadline
+without clock/deadline manipulation; actual sample gaps and unchanged ownership
+are retained. Runtime900s, expected10-15min including setup/restoration. This
+qualifies provider terminals, not public summon duration or natural spell choice.
+All ordinary guards, profile restoration, save boundaries and automatic exit
+remain. Selection documentation does not establish execution PASS.
+
 Sprint32 native98?101 observer correction batch: grab retains actual maneuver,
 escape-skill/DC and terminal hold state before verdicts. The owned victim's low
 Mobility/Athletics isolate maintenance without disabling native rolls; restore

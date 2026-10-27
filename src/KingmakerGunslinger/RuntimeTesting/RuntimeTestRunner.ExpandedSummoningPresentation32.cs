@@ -7,6 +7,7 @@ using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.PubSubSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
@@ -206,6 +207,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 owner.JoinCombat(); target.JoinCombat(); game.Player.UpdateIsInCombat();
                 strikes = new Sprint16RuleObserver { Owner = owner, Target = target };
                 var attackCommands = new Dictionary<RuleAttackRoll, UnitAttack>();
+                var projectileReleases = new Dictionary<RuleAttackWithWeapon, UnitAttack>();
+                Func<RuleAttackWithWeapon, RuleDealDamage, bool> matchingImpact = (release, damage) =>
+                    !damage.IsFake && damage.Damage > 0 && ReferenceEquals(damage.Initiator, owner) && ReferenceEquals(damage.Target, target) &&
+                    ReferenceEquals(damage.AttackRoll, release.AttackRoll) && ReferenceEquals(damage.DamageBundle.Weapon, release.Weapon);
                 strikes.BeforeAttackRollForFixture = rule => {
                     var active = owner.Commands.Raw.OfType<UnitAttack>().Where(command => command.IsStarted &&
                         !command.IsFinished && ReferenceEquals(command.Target, target)).ToArray();
@@ -214,25 +219,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 strikes.ObserveWeaponContact = rule => {
                     if (!ReferenceEquals(rule.Target, target)) return;
                     string weapon = rule.Weapon.Blueprint.AssetGuid;
-                    attacks.Add(new JObject { ["weapon"] = weapon, ["name"] = rule.Weapon.Blueprint.name,
+                    var attackRow = new JObject { ["weapon"] = weapon, ["name"] = rule.Weapon.Blueprint.name,
                         ["hit"] = rule.AttackRoll?.IsHit == true, ["eventMeaning"] = rule.Weapon.Blueprint.IsMelee ? "melee-contact" : "projectile-launch-not-impact", ["damage"] = rule.MeleeDamage == null ? null : Sprint16DamageEvent(rule.MeleeDamage),
-                        ["pose"] = Presentation32Pose(owner, lillend), ["tail"] = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>()?.TailAction.ActEvents : (int?)null });
+                        ["pose"] = Presentation32Pose(owner, lillend), ["tail"] = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>()?.TailAction.ActEvents : (int?)null };
+                    attacks.Add(attackRow);
                     UnitAttack command;
-                    if (rule.AttackRoll?.IsHit != true || !attackCommands.TryGetValue(rule.AttackRoll, out command) ||
-                        capturedWeapons.Contains(weapon)) return;
-                    string captureName = "contact-" + weapon;
+                    if (rule.AttackRoll?.IsHit != true || !attackCommands.TryGetValue(rule.AttackRoll, out command)) return;
+                    if (!rule.Weapon.Blueprint.IsMelee) projectileReleases.Add(rule, command);
+                    if (capturedWeapons.Contains(weapon)) return;
+                    string captureName = (rule.Weapon.Blueprint.IsMelee ? "contact-" : "projectile-release-") + weapon;
                     int eventFrame = Time.frameCount;
                     var eventOwner = owner; var eventTarget = target;
                     var animation = command.Animation;
                     capturedWeapons.Add(weapon);
-                    pending++;
-                    probe.Capture(() => { try {
-                            if (!mode.Current || !ReferenceEquals(eventOwner, owner) || !ReferenceEquals(eventTarget, target) ||
-                                !ReferenceEquals(command.Executor, owner) || !ReferenceEquals(command.Target, target) ||
-                                Time.frameCount != eventFrame || animation == null || !animation.IsStarted ||
-                                !ReferenceEquals(animation.Manager, owner.View.AnimationManager) ||
-                                !owner.View.AnimationManager.ActiveActions.Contains(animation))
-                                throw new InvalidOperationException("Contact capture lost its exact native event/frame/animation.");
+                    // Same proven synchronous rule-event rendering used by
+                    // Sprint17 contact inspection. End-of-frame command/handle
+                    // membership is not guaranteed after native retirement.
+                    try {
+                            var guards = new JObject {
+                                ["nativeLease"] = mode.Current, ["exactOwner"] = ReferenceEquals(eventOwner, owner),
+                                ["exactTarget"] = ReferenceEquals(eventTarget, target), ["executor"] = ReferenceEquals(command.Executor, owner),
+                                ["commandTarget"] = ReferenceEquals(command.Target, target), ["sameFrame"] = Time.frameCount == eventFrame,
+                                ["animationPresent"] = animation != null, ["animationStarted"] = animation != null && animation.IsStarted,
+                                ["exactManager"] = animation != null && ReferenceEquals(animation.Manager, owner.View.AnimationManager),
+                                ["activeHandle"] = animation != null && owner.View.AnimationManager.ActiveActions.Contains(animation) };
+                            attackRow["capturePredicates"] = guards; attackRow["eventFrame"] = eventFrame;
+                            attackRow["captureFrame"] = Time.frameCount;
+                            if (!guards.Properties().All(value => (bool)value.Value))
+                                throw new InvalidOperationException("Synchronous contact capture failed exact native event/frame/animation predicates.");
                             var tailAction = animation.Action as LillendTailAction;
                             var active = animation.ActiveAnimation;
                             var clip = active?.GetPlayableClip();
@@ -241,6 +255,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 SerpentineFinalReviewPolicy.PlayedNativeClip(true, animation.IsStarted, clip?.name,
                                     clip == null ? float.NaN : clip.length, active == null ? double.NaN : active.GetTime(),
                                     active == null ? float.NaN : active.GetWeight());
+                            attackRow["clipObservation"] = new JObject { ["playing"] = playing, ["nativeClip"] = clip?.name,
+                                ["nativeTime"] = active == null ? (double?)null : active.GetTime(),
+                                ["nativeWeight"] = active == null ? (float?)null : active.GetWeight(),
+                                ["tailPlayingOwned"] = tailAction?.PlayingOwnedClip, ["tailLastActFrame"] = tailAction?.LastActFrame };
                             if (!playing) throw new InvalidOperationException("Exact contact animation is not playing.");
                             capture(captureName);
                             captures.Add(new JObject { ["kind"] = "contact-attribution", ["fileStem"] = captureName,
@@ -252,7 +270,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["clipTime"] = tailAction != null ? tailAction.LastClipTime : active.GetTime(),
                                 ["nativeHandleTime"] = animation.GetTime() });
                         }
-                        catch (Exception error) { captureErrors.Add(error.ToString()); } finally { pending--; } });
+                        catch (Exception error) { captureErrors.Add(error.ToString()); }
                 };
                 EventBus.Subscribe(strikes);
                 attackCompletion = new Lillend32CommandStarts { Owner = owner, ObserveRtwpAttackCompletion = true };
@@ -282,6 +300,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner.Commands.Run(attack);
                             foreach (int frame in WaitPresentation32(mode, () => attack.IsFinished && pending == 0, 25,
                                 () => { if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend)); })) yield return frame;
+                            var releases = projectileReleases.Where(pair => ReferenceEquals(pair.Value, attack)).Select(pair => pair.Key).ToArray();
+                            if (releases.Length != 0)
+                                foreach (int frame in WaitPresentation32(mode, () => releases.All(release => strikes.Damage.Any(damage => matchingImpact(release, damage))), 8, null)) yield return frame;
+                            var impactRows = new JArray(releases.Select(release => new JObject {
+                                ["releaseRule"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(release),
+                                ["attackRoll"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(release.AttackRoll),
+                                ["weapon"] = release.Weapon.Blueprint.AssetGuid,
+                                ["damage"] = new JArray(strikes.Damage.Where(damage => matchingImpact(release, damage)).Select(Sprint16DamageEvent)) }));
                             bool completed = attackCompletion.CompletedAttack(attack, target);
                             bool costExact = economy.Exact(attack, false);
                             bool attemptPassed = completed && strikes.WeaponAttacks > before && costExact && captureErrors.Count == 0;
@@ -290,7 +316,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["attackEvents"] = attackCompletion.AttackRows.DeepClone(), ["weaponEventsBefore"] = before,
                                     ["weaponEventsAfter"] = strikes.WeaponAttacks, ["costExact"] = costExact, ["costs"] = costs.DeepClone(),
                                     ["requiredWeapons"] = new JArray(requiredWeapons), ["capturedWeapons"] = new JArray(capturedWeapons),
-                                    ["actualAttacks"] = attacks.DeepClone(), ["captureErrors"] = new JArray(captureErrors),
+                                    ["actualAttacks"] = attacks.DeepClone(), ["projectileImpacts"] = impactRows, ["captureErrors"] = new JArray(captureErrors),
                                     ["pendingCaptures"] = pending, ["captures"] = captures.DeepClone() },
                                 "Exact native final-act success and complete matching weapon plan establish completion even if native retirement later reports Interrupt; normal cost and same-frame animation capture remain required. Ranged events are projectile launch, not impact.");
                             if (!attemptPassed) throw new InvalidOperationException("Actual full attack, cost or contact capture failed; exact per-attempt predicates retained.");

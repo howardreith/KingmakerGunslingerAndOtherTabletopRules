@@ -16,8 +16,10 @@ namespace KingmakerGunslinger.RuntimeTesting
 {
     internal sealed partial class RuntimeTestRunner
     {
-        private IEnumerable<int> ReviewLillendCompetence32(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewLillendCompetence32(ExpandedSummoningCorrectionFixture fixture, bool combatTransition = false)
         {
+            Action<string, bool, JObject, string> check = (name, passed, row, expected) =>
+                Sprint25Check(combatTransition ? name + "-combat-case" : name, passed, row, expected);
             const string phase = ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase;
             if (!IsSprint32Review || !_request.ExitAfterCompletion || _request.Parameters?.Count != 1 ||
                 RuntimeTestRequestParser.Sprint32ReviewPhase(_request) != phase)
@@ -31,7 +33,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 _summoningProfileActor.name == "KMG_Runtime_Summoning_Profile_Anchor" &&
                 _summoningProfileSaveGuard != null && _summoningProfileScenes != null &&
                 party.Length == 1 && ReferenceEquals(party[0], anchor) && anchor.Commands.Empty;
-            Sprint25Check("performance-owned-anchor", anchorOwned, new JObject {
+            check("performance-owned-anchor", anchorOwned, new JObject {
                 ["anchor"] = anchor?.UniqueId, ["exactIdleProfileAnchor"] = anchorOwned },
                 "Only the existing save-free cloned anchor may have its idle brain suspended.");
             if (!anchorOwned) throw new InvalidOperationException("Performance anchor ownership ambiguous.");
@@ -85,7 +87,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                     sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                     !player.IsInCombat && !owner.IsInCombat && !fixture.Caster.IsInCombat && !sibling.IsInCombat;
-                Sprint25Check("competence-ready", ready, new JObject { ["survey"] = survey, ["direction"] = direction,
+                check("competence-ready", ready, new JObject { ["survey"] = survey, ["direction"] = direction,
                     ["eligible"] = new JArray(eligible.Select(value => value.UniqueId)), ["owner"] = owner.UniqueId,
                     ["sibling"] = sibling.UniqueId, ["recipient"] = fixture.Caster.UniqueId,
                     ["distance"] = owner.DistanceTo(fixture.Caster), ["ownSlots"] = new JArray(ownSlots),
@@ -109,7 +111,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     { if (!mode.Current) throw new InvalidOperationException("Native performance lease changed."); yield return 0; }
                     bool quiet = game.Player.GameTime >= quietEnd && starts.Commands.Count == 0 && !toggle.IsOn &&
                         owner.Descriptor.Resources.GetResourceAmount(resource) == 20 && rounds.Rows.Count == 0;
-                    Sprint25Check("competence-brain-refusal", quiet, new JObject { ["commands"] = starts.Commands.Count,
+                    check("competence-brain-refusal", quiet, new JObject { ["commands"] = starts.Commands.Count,
                         ["brainActive"] = owner.IsBrainActive, ["rounds"] = rounds.Rows.Count,
                         ["performance"] = owner.Descriptor.Resources.GetResourceAmount(resource) },
                         "Real outside-combat time passes with native AI disabled; dispatcher supplies no activation or cost.");
@@ -141,7 +143,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                         Enumerable.Range(0, 4).Select(book.GetSpontaneousSlots).SequenceEqual(ownSlots) &&
                         Enumerable.Range(0, 4).Select(siblingBook.GetSpontaneousSlots).SequenceEqual(siblingSlots);
-                    Sprint25Check("competence-natural-performance", acted, new JObject {
+                    check("competence-natural-performance", acted, new JObject {
                         ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)), ["starts"] = starts.Rows,
                         ["costs"] = costs, ["upkeep"] = rounds.Rows, ["nativeUpkeepExact"] = rounds.Exact(),
                         ["running"] = toggle.IsRunning, ["recipientBuffs"] = grants.Length,
@@ -153,6 +155,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["fixtureActivationCommands"] = 0, ["fixtureRoundCalls"] = 0, ["fixtureEffects"] = 0 },
                         "Native Default/round controllers choose and execute one normal Move activation and spend one native round per upkeep. Exploration has no combat cooldown debit; no manual round/cast/effect supplies this result.");
                     if (!acted) throw new InvalidOperationException("Natural Competence performance failed.");
+                    if (combatTransition)
+                    {
+                        foreach (int frame in ReviewPerformanceCombat32(fixture, mode, owner, sibling,
+                            toggle, recipient, starts, economy, costs, false)) yield return frame;
+                        complete = true; yield break;
+                    }
                     int roundsBeforeBlindness = rounds.Rows.Count;
                     fixture.Caster.Descriptor.State.AddCondition(Kingmaker.UnitLogic.UnitCondition.Blindness);
                     recipientBlindnessAdded = true; limit = DateTime.UtcNow.AddSeconds(8);
@@ -165,7 +173,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         fixture.Caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Blindness) &&
                         fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value, grants[0])) &&
                         fixture.Caster.Stats.SkillPerception.ModifiedValue == casterPerception + 3;
-                    Sprint25Check("competence-audible-only-maintenance", audible, new JObject {
+                    check("competence-audible-only-maintenance", audible, new JObject {
                         ["blind"] = fixture.Caster.Descriptor.State.HasCondition(Kingmaker.UnitLogic.UnitCondition.Blindness),
                         ["sameGrant"] = fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value, grants[0])),
                         ["running"] = toggle.IsRunning, ["roundsBefore"] = roundsBeforeBlindness,
@@ -188,7 +196,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !fixture.Caster.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, recipient)) &&
                         fixture.Caster.Stats.SkillPerception.ModifiedValue == casterPerception &&
                         sibling.Descriptor.Resources.GetResourceAmount(resource) == 20;
-                    Sprint25Check("competence-recipient-loss", stopped, new JObject {
+                    check("competence-recipient-loss", stopped, new JObject {
                         ["distance"] = owner.DistanceTo(fixture.Caster), ["on"] = toggle.IsOn, ["running"] = toggle.IsRunning,
                         ["carriers"] = owner.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, carrier)),
                         ["recipientBuffs"] = fixture.Caster.Buffs.Enumerable.Count(value => ReferenceEquals(value.Blueprint, recipient)),
@@ -217,7 +225,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restore("anchor", () => { if (anchor.Destroyed || !ReferenceEquals(anchor.Blueprint, _summoningProfileActor))
                     throw new InvalidOperationException("Owned anchor changed.");
                     Sprint28SetBrainActivePreservingActions(anchor, anchorBrain); });
-                Sprint25Check("competence-finalizers", cleanup.Count == 0, new JObject {
+                check("competence-finalizers", cleanup.Count == 0, new JObject {
                     ["errors"] = new JArray(cleanup), ["complete"] = complete,
                     ["originalFailurePreserved"] = !complete }, "Exact owned fixture and native Default restoration; original gameplay failure is retained.");
                 if (complete && cleanup.Count != 0) throw new InvalidOperationException(string.Join("|", cleanup.ToArray()));

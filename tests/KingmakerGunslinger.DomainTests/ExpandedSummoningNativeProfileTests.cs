@@ -8,7 +8,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void Sprint32RequiresExactFreshSaveFreePhase()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
-            foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion", "satyr-routes", "lillend-routes", "support-lifecycle", "druid-input", "wizard-input", "sorcerer-input", "lillend-performance", "lillend-cantrips", "lillend-fascinate", "lillend-bardic-suggestion", "satyr-atwill", "satyr-atwill-turn", "lillend-hold", "lillend-hold-turn", "lillend-controls", "lillend-controls-turn", "lillend-grab", "technical-presentation" })
+            foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion", "suggestion-terminals", "satyr-routes", "lillend-routes", "support-lifecycle", "druid-input", "wizard-input", "sorcerer-input", "lillend-performance", "lillend-cantrips", "lillend-fascinate", "lillend-bardic-suggestion", "satyr-atwill", "satyr-atwill-turn", "lillend-hold", "lillend-hold-turn", "lillend-controls", "lillend-controls-turn", "lillend-grab", "technical-presentation" })
             {
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact Sprint32 phase admitted.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Automatic exit required.");
@@ -17,7 +17,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, false), "Owned idle menu required.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 2, phase), "Extra scope refused.");
             }
-            foreach (string phase in new[] { null, "all", "Satyr-Turn", "lillend-turn ", "trumpet-book-turn", "Druid-input", "sorcerer-input ", "menu-adapters", "Lillend-cantrips", "lillend-cantrips ", "Satyr-atwill", "satyr-atwill-turn ", "Lillend-hold", "lillend-hold-turn ", "Lillend-controls", "lillend-controls-turn ", "Lillend-grab", "lillend-grab ", "Technical-presentation", "technical-presentation " })
+            foreach (string phase in new[] { null, "all", "Satyr-Turn", "lillend-turn ", "trumpet-book-turn", "Druid-input", "sorcerer-input ", "menu-adapters", "Lillend-cantrips", "lillend-cantrips ", "Satyr-atwill", "satyr-atwill-turn ", "Lillend-hold", "lillend-hold-turn ", "Lillend-controls", "lillend-controls-turn ", "Lillend-grab", "lillend-grab ", "Technical-presentation", "technical-presentation ", "Suggestion-terminals", "suggestion-terminals " })
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase), "Unselected or malformed phase refused.");
             foreach (string phase in new[] { "druid-input", "wizard-input", "sorcerer-input" })
             {
@@ -25,6 +25,9 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase), "Native menu input uses the established non-narrative outdoor fixture.");
                 Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, phase), "A different scenario cannot borrow Sprint32 outdoor admission.");
             }
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "suggestion-terminals"), "Exact terminal case uses real native expiry controllers.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("suggestion-terminals"), "Terminal observation grants no player input.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "suggestion-terminals"), "Other scenario cannot borrow terminal scope.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-performance"), "Exact performance phase uses real noncombat round controllers.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "lillend-performance"), "Performance uses the owned non-narrative fixture.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("lillend-performance"), "Performance is not player-input evidence.");
