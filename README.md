@@ -1,11 +1,11 @@
 # Kingmaker Gunslinger
 
-Sprint 32 development adds Satyr control and Lillend Azata bard/support summons.
-The scoped candidate is **qualified for owner PR review; not released**. Native
-behavior, technical presentation, persistence and integration use fresh evidence
-and reviewed reuse with explicit limits. See the
-[active Sprint 32 record](planning/SPRINT32-STATUS.md) for source-bound results,
-owner-approved adaptations and limitations, and the reviewable PR.
+Version **0.0.169-expanded-summoning-satyr-lillend** adds Satyr control and
+Lillend Azata bard/support summons, with native costs, quantities and cleanup.
+Suggestion is optional through CowWithHat Custom Spells. See the
+[release notes](docs/RELEASE-NOTES-0.0.169.md) for approved adaptations and limits,
+and the [active Sprint32 record](planning/SPRINT32-STATUS.md) for publication status
+and source-bound qualification evidence.
 
 The **0.0.168-expanded-summoning-sprints30-31-followup** release makes the
 Astral Deva's protective aura a true lesser globe of invulnerability, extends

@@ -93,7 +93,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.165.md',
     'docs\RELEASE-NOTES-0.0.166.md',
     'docs\RELEASE-NOTES-0.0.167.md',
-    'docs\RELEASE-NOTES-0.0.168.md')) {
+    'docs\RELEASE-NOTES-0.0.168.md',
+    'docs\RELEASE-NOTES-0.0.169.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -299,12 +300,12 @@ $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Count every declared summon icon, including authorized new creatures. The
-# other 275 paths include the two exact Sprint32 Lillend exports and v168 notes;
+# other 276 paths include the two exact Sprint32 Lillend exports and v169 notes;
 # strict package validation below still requires its exact complete path/hash
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 275 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
+$basePackageFileCount = 276 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

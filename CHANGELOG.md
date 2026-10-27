@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased - Sprint 32 development
+## 0.0.169-expanded-summoning-satyr-lillend
 
 - Adds Satyr control and weapon fallback, and Lillend Azata bard/support spells,
   performances, healing and tail grab/constrict on the existing summon routes.
@@ -11,7 +11,8 @@
 - Repairs candidate-bound build/runtime admission and keeps one active record,
   preserved evidence identities and guarded restoration. Scoped native, technical
   visual, persistence and integration qualification is complete through fresh
-  execution and reviewed reuse; this entry does not announce a release. See [Sprint 32 status](planning/SPRINT32-STATUS.md).
+  execution and reviewed reuse. See [release notes](docs/RELEASE-NOTES-0.0.169.md)
+  and [Sprint32 status](planning/SPRINT32-STATUS.md) for exact limits and publication status.
 
 ## 0.0.168-expanded-summoning-sprints30-31-followup
 

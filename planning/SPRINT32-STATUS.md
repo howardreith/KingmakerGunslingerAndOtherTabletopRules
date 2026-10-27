@@ -1,9 +1,10 @@
-# Sprint 32 - Satyr and Lillend Azata: qualified for owner PR review
+# Sprint 32 - Satyr and Lillend Azata: release authorized / in progress
 
 Owner Howie Reith; mission2026-10-25. Sole active operational record.
 Finite Sprint32 acceptance is complete through fresh execution and reviewed reuse.
 [PR74](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/74)
-is the review candidate. No merge, tag, release, Sprint33 or owner playtest.
+is the reviewed product. Howie now authorizes merge and release (2026-10-27:
+"Merge and release it thank you"). No Sprint33 or owner playtest.
 [Policy](../docs/VALIDATION-POLICY.md) |
 [Immutable verdicts and history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md).
 
@@ -17,7 +18,7 @@ Charter v1.0 sections3/4/7 and32, dependencies5/29-31. Adult sources:
 [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
 
-Branch codex/expanded-summoning-sprint32-satyr-lillend is in sparse active
+Branch codex/expanded-summoning-sprint32-satyr-lillend is in full active
 .worktrees/expanded-summoning-sprint32-owner-review. Frozen87 remains clean/full/
 detached atefd237d1cf12338d8d5eea50403af203785c3dc0 in
 .worktrees/expanded-summoning-sprint32-final-qualification-records.
@@ -165,9 +166,27 @@ implementation/observer/build/native/wait summaries remain in history; exclusive
 cumulative active category totals are unavailable. No speedup is inferred.
 No blocking owner wait in the final interval; optional unused E approval was pending.
 
+The development qualification below remains complete. Release169 source pin and
+metadata validation PASS;12 positive/refusal cases and24 real dispatch checks PASS.
+Independent actual-diff review found no blocker. Only the three AssemblyInfo
+version attributes differ in production; all1760 compile items remain pinned.
+The two roster qualification descriptions were regenerated using the existing
+manifest route after its stale-text refusal; no product change or native failure.
+Normal PR merge and publisher remain in progress. The older master worktree is
+preserved; publication uses an isolated checkout of exact accepted master.
+Predeclared release sequence20-40min: bounded adapter review/checks; ordinary
+publisher full gate and two deterministic builds; public download verification.
+Native evidence is reviewed reuse because every production/project/asset/ledger
+input remains exact87 except three version attributes; release bytes will have
+new version/build stamps and are not called freshly native-tested. No additional
+game launch is selected. Current disk6.07GB; measured267MB build growth plus
+~300MB retained reproducibility/extraction copies and2GB reserve leave substantial
+working margin. No live transaction/game/task exists at release intake.
+
 No required Sprint32 acceptance row remains blocked or NOT_RUN under the exact
 owner-approved scope. Prior v167 NOT_RUN stays: grouped all30 public-route/body/icon,
 standalone final and highest-risk combined final. Accepted168 cold/public-route/
 final integration gaps also stay NOT_RUN as disclosed; this focused sprint does
-not close them. Next action: owner review PR74. Merge/release requires a separate
-instruction covering this candidate. Stop before Sprint33.
+not close them. Next: finish reviewed169 release preparation, merge PR74, run the sanctioned
+publisher, verify public assets and record final identities. Owner authorization
+now covers these actions. Stop before Sprint33.

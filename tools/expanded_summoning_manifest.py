@@ -34,8 +34,8 @@ SUPPRESSED = re.compile(
 # line. A creature that is withheld never appears here: what it is waiting for
 # is decided by the visibility catalog, not by this table.
 QUALIFICATION_NOTES = {
-    "satyr": "Sprint32 public development candidate, not released; scoped control/refusal/fallback observed on recorded artifacts; public-route, final visual/lifecycle/persistence/integration qualification pending. Current authority: planning/SPRINT32-STATUS.md",
-    "lillend-azata": "Sprint32 public development candidate, not released; scoped support/action/fallback observed on recorded artifacts; pending owner scope decisions and public-route/final visual/lifecycle/persistence/integration qualification. Current authority: planning/SPRINT32-STATUS.md",
+    "satyr": "Sprint32 scoped public-route, control/support, technical presentation, lifecycle, persistence and integration qualification complete through source-bound native evidence and reviewed reuse; v169 publication authorized by Howie. Exact adaptations, evidence limits and current status: planning/SPRINT32-STATUS.md",
+    "lillend-azata": "Sprint32 scoped public-route, control/support, technical presentation, lifecycle, persistence and integration qualification complete through source-bound native evidence and reviewed reuse; v169 publication authorized by Howie. Exact adaptations, evidence limits and current status: planning/SPRINT32-STATUS.md",
     "ettin": "Public candidate; scoped hidden native combat, ownership, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
     "cloud-giant": "Public candidate; scoped hidden native combat, fog, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
     "storm-giant": "Public candidate; scoped hidden native combat, lightning, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
