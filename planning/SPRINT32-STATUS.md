@@ -71,8 +71,8 @@ Complete wrapper/2756of2756/exact-reference compile/strictZIP PASS401.418s,
 | A2 | Real player action/slot, quantity,120s base duration, usable body/icon; prepared/spontaneous/Druid conversion | Reviewed44/45/46 eight real casts;139 both bodies/contacts PASS | Publication/cost/quantity/duration/adapters |
 | A3 | Satyr useful control, eligibility/no-repeat, ordinary fallback; RTWP/TB | Reviewed controls;132 natural Sleep/Charm/globe;137 combined TB Fear/bow/melee/action/source-expiry PASS | Satyr/shared AI/actions |
 | A4 | Safe support/control/performance, own slots/pools/actions; RTWP/TB |126 controls/127 grab/128 support/129 Fascinate+TB/130 RTWP PASS;138 support PASS but Daze completion observer FAIL;136 bardic boundary FAIL | Book/AI/dispatcher/effects |
-| A5 | Expiry/death/dismissal/cancellation, sibling isolation, no orphan state |139 both death/expiry/view/resource retirement PASS; reviewed exact-source/sibling cleanup; loaded cleanup remains pending | Lifecycle/equipment/view ownership |
-| A6 | Fresh cold state, slots/deadlines, moduleOFF/provider transitions |134 prepare37PASS;135 four cold states/controls/views PASS but precleanup observer FAIL. ON cleanup/absence, OFF/provider trios pending | Serialization/registration/lifecycle/views |
+| A5 | Expiry/death/dismissal/cancellation, sibling isolation, no orphan state |139 both death/expiry/view/resource retirement PASS;141 loaded source/sibling cleanup PASS,142 fresh absence PASS; other reviewed lifecycle evidence retains scope | Lifecycle/equipment/view ownership |
+| A6 | Fresh cold state, slots/deadlines, moduleOFF/provider transitions |140 prepare37PASS/141 cold cleanup41PASS/142 fresh absence8PASS on86. OFF/provider trios pending | Serialization/registration/lifecycle/views |
 | A7 | Gameplay-camera loading/selection/scale/movement/contact/hit/death/despawn/performance |139 complete grouped technical path46PASS,21 images agent-inspected; independent tail/lifecycle review confirms bounded qualification | Assets/rendering/attachments |
 | A8 | Standalone plus directly affected shared/combined seams | Standalone focused cases;137 combined Satyr14PASS.138 combined19PASS2FAIL at Daze; bardic globe not reached136 | Shared hooks/AI/registration |
 
@@ -140,15 +140,28 @@ Rest/motion medians: Satyr19.086/17.572ms (58/254 samples), Lillend18.511/20.038
 (58/260); motion maxima48.149/61.003ms, capture frames excluded, fixture-only.
 Other affected native cases remain pending; no PASS follows from compilation.
 
+Fresh140/141/142 Working ON trio passes37/41/8 assertions respectively; exact86
+receipts artifacts/sprint32-checkpoint/native140.json through native142.json.
+Raw hashes:140=86caf3d993e131e2baefa9b77f79591c53a8e2b9bcfa12d66a6b0b3d955c0526,
+141=e17969e5754c5ffe04e9f28f905b308ef39e2beff615b04c6f6bd764b1471caf,
+142=c8aed6f39a62023da46e34a8654e0bef212e47d20d9b0ca55e4da89c21600dff.
+Native251746/258489/194985ms; outer09:50:20.298-10:13:35.006UTC including stages,
+protection comparisons and final original-save restoration. Independent review
+confirms primary grants34->35 only through the exact admitted sibling assistance;
+all35 enter source-retirement capture. Three sibling snapshots remain identical,
+including Lillend Charm1/Performance17, book/items/responses/toggles/four own effects.
+Final cleanup captures40 grants with zero residue/Dazed listeners; fresh process
+sees zero receipts/listeners/sources/effects/areas and ordinary1160 publication.
+Original135 remains FAIL. This qualifies ON persistence, not OFF/provider transitions.
+
 Earlier131/133/138 image inspections retain their original scope;139 now closes
 the selected tail/lifecycle presentation observations on exact candidate86.
 
 ## Restoration, storage and next action
 
-Latest completed139 outer09:43:35.200-09:49:28.775UTC,353.575s; exact Compare967Mods/
-118saves/18refs/83settings/tasks0/Steam1 PASS. The fresh Working ON sequence is now
-active with its captured original-save backup; do not disturb its owned transaction.
-Last Working outer restored08:50:57.246884UTC: SHA
+Latest ON outer restored10:13:35.006158UTC, exact967Mods/118saves/18refs/83settings/
+tasks0/Steam1 PASS. No owned live transaction remains at this checkpoint.
+Original Working restored with SHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
 8550225B, creationTicks639208636210035057/writeTicks639278868712797783/attrs8224.
 Current human installation, BASELINE, other saves/references/sound/settings intact.
@@ -170,9 +183,15 @@ build/native. Frozen85 tracked source retired to sparse09:38:37.705UTC, package/
 evidence retained, protected intake exact, free4374401024B; frozen86 receipt
 artifacts/sprint32-checkpoint/candidate85-retirement/result.json. Current candidate
 and original evidence are not cleanup targets.
+Closed139-142 verified extraction cleanup recovered405147844B10:15:24.563UTC;
+free3585527808B, full protected Compare PASS. Exact current ZIP retained; receipt
+frozen86 artifacts/sprint32-checkpoint/verified-cleanup-closed139to142-20261027T101524Z/result.json.
 
-Counts86Build-Local attempts/69validated packages/140actual native launches;
-140 is the active Working ON preparation. Increment only on actual game discovery.
+Counts86Build-Local attempts/69validated packages/142actual native launches.
+Increment only on actual game discovery. Unused bardic86 helper folder suffix
+corrected before selection; original scripts/hashes retained under frozen86
+artifacts/sprint32-checkpoint/bardic86-helper-path-correction. No native failure,
+launch or product rebuild for this correction; package/reference/ownership guards unchanged.
 The provider reference isolation refusal entered no game/transaction; fixed by
 copying269 verified reference files under the selected worktree, preserving the
 guard and original refusal. No unchanged failing replay. Native134-138 envelopes
@@ -181,10 +200,9 @@ overlapping those envelopes, storage/setup roughly10minutes. Product implementat
 unchanged in this batch. Build86 adds401.418s. Exclusive totals unavailable;
 earlier categories in history.
 
-Next: reuse frozen86 exact validated ZIP. Complete active corrected coldON,
-then bardic and affected combined
-Daze/support; continue OFF and provider retained/removed/moduleOFF trios. Use
-separate active records preserve frozen identity. Persistence scope90-120min remains declared;
+Next: reuse frozen86 exact validated ZIP for bardic and affected combined
+Daze/support; continue OFF and provider retained/removed/moduleOFF trios.
+Separate active records preserve frozen identity. Persistence scope90-120min remains declared;
 ordinary selections target15min/ceiling30min and always finish safe restoration.
 Review relevant accepted dependency changes at this coherent freeze checkpoint.
 
