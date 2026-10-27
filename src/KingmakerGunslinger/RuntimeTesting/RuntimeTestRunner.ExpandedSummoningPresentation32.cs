@@ -42,6 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var costs = new JArray(); var captureErrors = new List<string>();
             int pending = 0, lastCapture = -100;
             Sprint16RuleObserver strikes = null, wounds = null;
+            Lillend32CommandStarts attackCompletion = null;
             Sprint17SnakeContactFrameProbe probe = null;
             var capturedWeapons = new HashSet<string>();
             Action<UnitEntityData, string> captureUnit = (subject, name) => {
@@ -214,7 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (!ReferenceEquals(rule.Target, target)) return;
                     string weapon = rule.Weapon.Blueprint.AssetGuid;
                     attacks.Add(new JObject { ["weapon"] = weapon, ["name"] = rule.Weapon.Blueprint.name,
-                        ["hit"] = rule.AttackRoll?.IsHit == true, ["damage"] = rule.MeleeDamage == null ? null : Sprint16DamageEvent(rule.MeleeDamage),
+                        ["hit"] = rule.AttackRoll?.IsHit == true, ["eventMeaning"] = rule.Weapon.Blueprint.IsMelee ? "melee-contact" : "projectile-launch-not-impact", ["damage"] = rule.MeleeDamage == null ? null : Sprint16DamageEvent(rule.MeleeDamage),
                         ["pose"] = Presentation32Pose(owner, lillend), ["tail"] = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>()?.TailAction.ActEvents : (int?)null });
                     UnitAttack command;
                     if (rule.AttackRoll?.IsHit != true || !attackCommands.TryGetValue(rule.AttackRoll, out command) ||
@@ -246,7 +247,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["eventFrame"] = eventFrame, ["captureFrame"] = Time.frameCount,
                                 ["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command),
                                 ["ruleReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(rule),
-                                ["weapon"] = weapon, ["hit"] = true, ["animation"] = animation.Action.name,
+                                ["weapon"] = weapon, ["hit"] = true, ["eventMeaning"] = rule.Weapon.Blueprint.IsMelee ? "melee-contact" : "projectile-launch-not-impact", ["animation"] = animation.Action.name,
                                 ["clip"] = tailAction != null ? tailAction.Clips.Single().name : clip.name,
                                 ["clipTime"] = tailAction != null ? tailAction.LastClipTime : active.GetTime(),
                                 ["nativeHandleTime"] = animation.GetTime() });
@@ -254,6 +255,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         catch (Exception error) { captureErrors.Add(error.ToString()); } finally { pending--; } });
                 };
                 EventBus.Subscribe(strikes);
+                attackCompletion = new Lillend32CommandStarts { Owner = owner, ObserveRtwpAttackCompletion = true };
+                EventBus.Subscribe(attackCompletion);
                 using (var economy = new FirearmReviewCosts(owner, costs))
                 {
                     foreach (int set in lillend ? new[] { 0 } : new[] { 0, 1 })
@@ -279,9 +282,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner.Commands.Run(attack);
                             foreach (int frame in WaitPresentation32(mode, () => attack.IsFinished && pending == 0, 25,
                                 () => { if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend)); })) yield return frame;
-                            if (attack.Result != Kingmaker.UnitLogic.Commands.Base.UnitCommand.ResultType.Success ||
-                                strikes.WeaponAttacks <= before || !economy.Exact(attack, false) || captureErrors.Count != 0)
-                                throw new InvalidOperationException("Actual full attack, cost or contact capture failed.");
+                            bool completed = attackCompletion.CompletedAttack(attack, target);
+                            bool costExact = economy.Exact(attack, false);
+                            bool attemptPassed = completed && strikes.WeaponAttacks > before && costExact && captureErrors.Count == 0;
+                            Sprint25Check(id + "-attack-set-" + set + "-attempt-" + attempt, attemptPassed,
+                                new JObject { ["command"] = Sprint27AiCommand(attack), ["nativeCompletion"] = completed,
+                                    ["attackEvents"] = attackCompletion.AttackRows.DeepClone(), ["weaponEventsBefore"] = before,
+                                    ["weaponEventsAfter"] = strikes.WeaponAttacks, ["costExact"] = costExact, ["costs"] = costs.DeepClone(),
+                                    ["requiredWeapons"] = new JArray(requiredWeapons), ["capturedWeapons"] = new JArray(capturedWeapons),
+                                    ["actualAttacks"] = attacks.DeepClone(), ["captureErrors"] = new JArray(captureErrors),
+                                    ["pendingCaptures"] = pending, ["captures"] = captures.DeepClone() },
+                                "Exact native final-act success and complete matching weapon plan establish completion even if native retirement later reports Interrupt; normal cost and same-frame animation capture remain required. Ranged events are projectile launch, not impact.");
+                            if (!attemptPassed) throw new InvalidOperationException("Actual full attack, cost or contact capture failed; exact per-attempt predicates retained.");
                         }
                         if (requiredWeapons.Any(weapon => !capturedWeapons.Contains(weapon)))
                             throw new InvalidOperationException("No successful native contact within three normal full attacks.");
@@ -380,7 +392,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var errors = new List<string>();
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { errors.Add(name + ":" + error); } };
-                restore("observers", () => { if (strikes != null) EventBus.Unsubscribe(strikes); if (wounds != null) EventBus.Unsubscribe(wounds); if (probe != null) UnityEngine.Object.Destroy(probe); });
+                restore("observers", () => { if (strikes != null) EventBus.Unsubscribe(strikes); if (attackCompletion != null) EventBus.Unsubscribe(attackCompletion); if (wounds != null) EventBus.Unsubscribe(wounds); if (probe != null) UnityEngine.Object.Destroy(probe); });
                 restore("owned-combat", () => {
                     foreach (var actor in new[] { owner, sibling, target, fixture.Caster, anchor }.Where(actor => actor != null && !actor.Destroyed))
                     { if (actor != anchor) actor.Commands.InterruptAll(true); if (actor.IsInCombat) actor.LeaveCombat(); }

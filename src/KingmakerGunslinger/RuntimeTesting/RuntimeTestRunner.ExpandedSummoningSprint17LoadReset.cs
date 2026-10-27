@@ -28,7 +28,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 !ExpandedSummoningRosterPersistencePolicy.ObserveLoad(_request.Scenario,
                     (string)_request.Parameters?["persistenceScope"])) return;
             CaptureRosterResourceBaseline();
-            try { StartSprint26StateTrace(); _snakeLoadResetTrace = new Sprint17LoadResetTrace(_context.Harmony); }
+            try { StartSprint26StateTrace(); _snakeLoadResetTrace = new Sprint17LoadResetTrace(_context.Harmony,
+                (string)_request.Parameters?["persistenceScope"] == "fey-celestial"); }
             catch (Exception exception) { _snakeLoadResetTraceInstallError = exception.ToString(); }
         }
 
@@ -48,6 +49,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                     _snakeLoadResetTrace.Rows.ToString(Formatting.Indented));
                 if (result.EvidenceFiles == null) result.EvidenceFiles = new List<string>();
                 result.EvidenceFiles.Add(path);
+                if (_snakeLoadResetTrace.FeyArmed)
+                {
+                    string feyPath = Path.Combine(_request.EvidenceDirectory, "sprint32-fascinate-load-transitions.json");
+                    RuntimeTestResultWriter.WriteAtomic(feyPath, _snakeLoadResetTrace.FeyRows.ToString(Formatting.Indented));
+                    result.EvidenceFiles.Add(feyPath);
+                }
                 if (_snakeLoadResetTrace.Errors != 0)
                     throw new InvalidOperationException("Load-reset observation has " +
                         _snakeLoadResetTrace.Errors + " read/overflow errors; inspect its trace.");
@@ -68,6 +75,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             private readonly List<KeyValuePair<MethodInfo, MethodInfo>> _patches =
                 new List<KeyValuePair<MethodInfo, MethodInfo>>();
             internal readonly JArray Rows = new JArray();
+            internal readonly JArray FeyRows = new JArray();
+            internal readonly bool FeyArmed;
             private readonly SerpentineLoadBoundaryReadiness _boundary = new SerpentineLoadBoundaryReadiness();
             internal bool NativeLoadReady
             {
@@ -78,16 +87,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             internal int Errors;
             private bool _disposed;
 
-            internal Sprint17LoadResetTrace(HarmonyInstance harmony)
+            internal Sprint17LoadResetTrace(HarmonyInstance harmony, bool observeFey = false)
             {
                 if (_active != null) throw new InvalidOperationException("A load-reset trace already owns the hooks.");
-                _harmony = harmony;
+                _harmony = harmony; FeyArmed = observeFey;
                 _active = this;
                 try
                 {
                     Patch("OnAreaScenesLoaded", "ScenesPrefix", null);
                     Patch("OnAreaLoadingComplete", "CompletePrefix", "CompletePostfix");
                     Patch("ResetLoadedGrapples", "ResetPrefix", "ResetPostfix");
+                    if (FeyArmed)
+                    {
+                        foreach (string name in new[] { "PostLoad", "Interrupt", "End" })
+                            PatchFey(typeof(LillendFascinateState32), name);
+                        PatchFey(typeof(LillendFascinateArea32), "OnUnitExit");
+                    }
                     Application.logMessageReceived += OnLog;
                     Capture("observer-armed", null);
                 }
@@ -107,6 +122,75 @@ namespace KingmakerGunslinger.RuntimeTesting
                     after == null ? null : new HarmonyMethod(after), null);
                 if (before != null) _patches.Add(new KeyValuePair<MethodInfo, MethodInfo>(original, before));
                 if (after != null) _patches.Add(new KeyValuePair<MethodInfo, MethodInfo>(original, after));
+            }
+
+            // Native105 lost a saved Fascinate activation before its first
+            // cold comparison. Reuse this request-owned trace for four exact
+            // callbacks, without invoking hydration/eligibility getters or
+            // changing any event, return value, state, timer or command.
+            private void PatchFey(Type type, string name)
+            {
+                const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+                var original = type.GetMethod(name, flags);
+                var before = typeof(Sprint17LoadResetTrace).GetMethod("FeyBefore", flags);
+                var after = typeof(Sprint17LoadResetTrace).GetMethod("FeyAfter", flags);
+                if (original == null || before == null || after == null) throw new MissingMethodException("Exact Fascinate load observation: " + name);
+                _harmony.Patch(original, new HarmonyMethod(before), new HarmonyMethod(after), null);
+                _patches.Add(new KeyValuePair<MethodInfo, MethodInfo>(original, before));
+                _patches.Add(new KeyValuePair<MethodInfo, MethodInfo>(original, after));
+            }
+            private static void FeyBefore(MethodBase __originalMethod, object __instance, object[] __args)
+            { _active?.CaptureFey(__originalMethod, __instance, __args, "before"); }
+            private static void FeyAfter(MethodBase __originalMethod, object __instance, object[] __args)
+            { _active?.CaptureFey(__originalMethod, __instance, __args, "after"); }
+            private void CaptureFey(MethodBase method, object instance, object[] args, string edge)
+            {
+                if (!FeyArmed) return;
+                try
+                {
+                    var target = (args ?? new object[0]).OfType<UnitEntityData>().FirstOrDefault();
+                    var area = (args ?? new object[0]).OfType<AreaEffectEntityData>().FirstOrDefault();
+                    var state = instance as LillendFascinateState32;
+                    if (state == null)
+                    {
+                        var context = (args ?? new object[0]).OfType<Kingmaker.UnitLogic.Mechanics.MechanicsContext>().FirstOrDefault();
+                        var actor = context?.MaybeCaster;
+                        state = actor?.Buffs.Enumerable.Where(value => value.Blueprint.AssetGuid == "4db5777cafb94c17a0f5e9d380b95498")
+                            .SelectMany(value => value.SelectComponents<LillendFascinateState32>()).SingleOrDefault();
+                    }
+                    if (state == null || state.Buff?.Blueprint.AssetGuid != "4db5777cafb94c17a0f5e9d380b95498") return;
+                    if (target != null && target.Get<UnitPartSprint32ListenerReceipt>()?.Scope != Sprint32ListenerScope) return;
+                    if (FeyRows.Count >= 64) { Errors++; return; }
+                    const BindingFlags flags = BindingFlags.NonPublic | BindingFlags.Instance;
+                    var type = typeof(LillendFascinateState32);
+                    var stored = (JArray)type.GetField("_responses", flags).GetValue(state);
+                    var lookup = (Dictionary<string, int>)type.GetField("_lookup", flags).GetValue(state);
+                    var owner = state.Owner?.Unit;
+                    var loading = Kingmaker.EntitySystem.Persistence.LoadingProcess.Instance;
+                    var row = new JObject { ["callback"] = method.DeclaringType.Name + "." + method.Name,
+                        ["edge"] = edge, ["frame"] = Time.frameCount, ["gameSeconds"] = Game.Instance?.Player?.GameTime.TotalSeconds,
+                        ["owner"] = owner?.UniqueId, ["target"] = target?.UniqueId,
+                        ["loadingInProcess"] = loading?.IsLoadingInProcess, ["loadingScreen"] = loading?.IsLoadingScreenActive,
+                        ["manualLoadingScreen"] = loading?.IsManualLoadingScreenActive,
+                        ["storedResponses"] = stored?.DeepClone(),
+                        ["existingLookup"] = lookup == null ? null : new JObject(lookup.OrderBy(pair => pair.Key).Select(pair => new JProperty(pair.Key, pair.Value))),
+                        ["ready"] = (bool)type.GetField("_ready", flags).GetValue(state),
+                        ["ended"] = (bool)type.GetField("_ended", flags).GetValue(state),
+                        ["carrierActive"] = state.Buff.Active, ["carrierTurnedOn"] = state.Buff.IsTurnedOn,
+                        ["carrierDisposed"] = state.Buff.IsDisposed, ["carrierPermanent"] = state.Buff.IsPermanent,
+                        ["carrierEndTicks"] = state.Buff.EndTime.Ticks, ["ownerTurnedOn"] = state.Owner?.IsTurnedOn,
+                        ["ownerInGame"] = owner?.IsInGame, ["ownerInCombat"] = owner?.IsInCombat,
+                        ["ownerViewPresent"] = owner?.View != null, ["targetInCombat"] = target?.IsInCombat,
+                        ["targetViewPresent"] = target?.View != null, ["areaEnded"] = area?.IsEnded };
+                    if (edge == "before" && (method.Name == "Interrupt" || method.Name == "End" || method.Name == "OnUnitExit"))
+                        row["stack"] = new System.Diagnostics.StackTrace(2, false).ToString();
+                    FeyRows.Add(row);
+                }
+                catch (Exception error)
+                {
+                    Errors++;
+                    if (FeyRows.Count < 64) FeyRows.Add(new JObject { ["observationError"] = error.ToString() });
+                }
             }
 
             private static void ScenesPrefix() { _active?.Capture("scenes-loaded", null); }

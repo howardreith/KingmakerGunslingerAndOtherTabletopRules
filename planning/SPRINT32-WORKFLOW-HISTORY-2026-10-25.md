@@ -3182,3 +3182,99 @@ Prepare-StorageAfter101.py and exact selection/helpers/results are local only.
 The three natural grab attempts now share one90s acquisition/maintenance window
 per cell, preserving the existing35s failed-maintain release window and600s
 whole native request. This is a bounded fixture selection, not a campaign quota.
+
+
+## Candidate75 and native102?105 ? restored, qualification incomplete
+
+Latest validated development candidate75: `f5a40e2030ef9ff5279eb12b0e15cc35bbaa6055`.
+ZIP `05cd5eac5a67607bb07db821ccfdfb3759913d416cdda2063063cc1e38fdeda9`;
+DLL `bcbc5e0ffc9b9e0d1cbbf0e1510170ce298a918c215c6753f49fdaa72f4de23e`;
+MVID `f1ef748b-74ac-4c48-baf9-c2d177f99d91`;
+SourceState `627cda9cfba5b16f96da73a2a379ef3c7f4e1fb2f852fb8f45509a36f84e8a9e`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/f5a40e2030ef/.
+Build75 wrapper/558of2755/exact compile/strictZIP PASS272.131s; development,
+not the complete final gate. New reviewed observer edits are unbuilt.
+
+Native102 grab12PASS/2FAIL. Natural acquisition and live-Strength maintenance
+pass. The release observer incorrectly expected no damage after its CMB change:
+actual native CMB23/CMD-1 allowed three legitimate successes before a natural1.
+Immutable rows show exact tail/constrict pairs for those three rounds, none for
+the failed round, unchanged3weapon attacks and all10 cleanup predicates true
+one frame/.021s after link loss. Independent read-only review supports narrow
+**reviewed-reuse RTWP release PASS**, retaining original aggregateFAIL.
+The compiled correction restores the fixture attack boost before lowCMB, checks
+each intervening successful rider pair and mandatory positive tail damage.
+TB/Salamander remain NOT_RUN.
+Native103 presentation16PASS/1FAIL. Both Satyr moves and natural command/path
+retirement pass; agent inspected all3 rest/movement frames, recognizable/intact
+without severe sampled deformation. A later attack/cost/contact compound throws
+before its values were serialized: exact culprit UNKNOWN. Installed native IL
+supports reusing the existing final-act/complete-plan observer in RTWP rather
+than requiring terminalSuccess. New per-attempt evidence retains costs, contacts
+and errors; strict animation checks remain. Bow evidence is launch, not impact.
+Native104 Working preparation37/37PASS. Native105 cold11PASS/3FAIL passes the
+corrected exact listener boundary and saved Charm/Sleep/Hold controls. The first
+Lillend's saved Fascinate response1 becomes3, running toggle becomes off, and
+27 assistance grants plus its fascinated effect disappear. Budgets/books/items
+remain unchanged. Cold lifecycle change is unresolved; no weakened comparison
+or PASS. Native unloading invokes area-exit, and load-time area callbacks can
+execute at zero game delta; narrow read-only contract review is active.
+Absence/provider-transition stages remain NOT_RUN. All original failures remain
+immutable; both save-free transactions and the entire Working envelope restored.
+
+
+Native102: `20261027T0048081499742Z-disposable-expanded-summoning-sprint32-native-review`; run `20261027T0048081968118Z-9a8200b92f504f1392c46a51881c977e`; 2026-10-27T00:48:17.6218525Z?2026-10-27T00:50:25.9638980Z; 128342ms; 12PASS/2FAIL. RawSHA `020cf09c263511add32f86e59fd01bbd89d82ae3ad5de87b3d4bd70f9d8cc974`; UnitySHA `6dfeb7598dd4c0ad2dad21d7adad7282e64bdb4669d12a41ac3d7f3bb842562a`.
+
+Native103: `20261027T0055188328112Z-disposable-expanded-summoning-sprint32-native-review`; run `20261027T0055188559658Z-fd26ba81b6ee42f2b7bd13f4473a9b39`; 2026-10-27T00:55:28.3554718Z?2026-10-27T00:57:16.9040075Z; 108533ms; 16PASS/1FAIL. RawSHA `411f452e6c7387d5c92b7dfae7b28d96978ce68be5c380241bf802fbe4c3ed2d`; UnitySHA `a6d1a3731a1fafeb535fd1b5c075c86f7cc8c3585a16f36444f94fd55002b248`.
+
+Native104: `20261027T0104174481810Z-working-save-expanded-summoning-prepare`; run `20261027T0104174860158Z-7edd2c7f238d4664ada20b1d2d828bf3`; 2026-10-27T01:04:30.9477934Z?2026-10-27T01:08:34.9360614Z; 243987ms; 37PASS/0FAIL. RawSHA `933369604cf9d43b554819e9ca85e87818047d9ea9188c03909040392723c316`; UnitySHA `e6fffd77ac3859723f42e3c9a8a7b2a3c913ca713eeb1a9de4ea4a241cb18c83`.
+
+Native105: `20261027T0112021210461Z-working-save-expanded-summoning-verify-cleanup`; run `20261027T0112021533731Z-001a8aa532394aa89430378dc743dadc`; 2026-10-27T01:12:15.6997886Z?2026-10-27T01:15:27.4519479Z; 191751ms; 11PASS/3FAIL. RawSHA `29f53d9044ae4678d3b0671f5b41f95c8989b1a6884ad1ac442443adf3655107`; UnitySHA `91a8632457589495ba6e4ddc375dcbc26a0e91f05a6690fd6119c9cb7c039bad`.
+
+Native102 reviewed-reuse release receipt:
+`artifacts/sprint32-intake/native102-release-reader-correction.json`; original
+FAIL remains unchanged; reviewer `/root/sprint32_workflow_review` read exact
+immutable rows and actual production rule. Native103 frame inspection:
+`artifacts/sprint32-intake/native103-agent-visual-inspection.json`; partial only.
+Native102 transaction compat-20261027T004538Z-ef4df784bb55 restored00:50:35.5909606Z;
+native103 compat-20261027T005250Z-92891686a4a6 restored00:57:26.1753931Z.
+Working104/105 wrappers01:01:18.1005979?01:08:52.9864995 and
+01:09:05.9186261?01:15:45.6685530UTC. Envelope restored01:15:55.9386711Z;
+original WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B, creation639208636210035057/write639278868712797783/attributes8224.
+All protected comparisons967Mods/118saves/18refs/83settings/tasks0/Steam1 PASS.
+No owned live transaction; no absence run after105FAIL.
+After103 exact closed-package duplicate cleanup199601296B, planSHA
+c4e3bc62bc107223e4441f1caa829ccfc61c961192bf454e5824ce5b08feadcc,
+completed01:00:53.2772923Z, free3017478144?3219337216B; full protectedComparePASS.
+Exact ZIPs, raw evidence, failure records, receipts, original backups retained.
+After105 free2713686016B; no further cleanup yet.
+Counts75Build-Local/61validated packages/105actual native launches. No new build
+in this interval. Approximate overlapping observer/review/research20min and
+native supervision/restoration17min; owner waiting0; exclusive totals unavailable.
+Prior v167 all30 routes/body/icons, standalone final integration, highest-risk
+combined final integration remain NOT_RUN, not inherited waivers.
+
+2026-10-27 after105 bounded correction checkpoint:
+- Independent reviewer sprint32_workflow_review inspected exact native contracts,
+  applied grab/presentation/64-row read-only cold trace and controls. Controls P2
+  (target-only damage observer could accept another initiator) resolved: same
+  positive nonfake RuleDealDamage must match exact second wolf/target and its
+  native weapon event; loop/verdict/receipt share the predicate and retain commands.
+- Focused Invoke-KmgGate.ps1 -Filter 'sprint32;fey-celestial': production28.6s,
+  domain1s,8/2755 PASS. No native PASS from this compilation. Final gate pending.
+- Cleanup of15 exact closed duplicate package extractions reclaimed1039415973B.
+  All file inventories rechecked against retained ZIP/content archives. Reference
+  copies, unique packages, original failures/raws/receipts/protected backups retained.
+  artifacts/sprint32-storage-after105/{native104-105,s22-b,s22-c,s22-d}-result.json:
+  2/199601296B plan35719923766908496c9c02a7b1d23f533066728cc86b3298dec4f4d9080cd5f9;
+  5/323005645B planece9360a578b3fdf5c86aac18262626b5b662e8a9f158b202bad3fb9be08addb;
+  4/258404516B plan5a935d254a0689b6e8f71d90f239e9ea8415649ec8e29151a6679f2e0101a406;
+  4/258404516B planccf03600c4d6fa501e76cf39208074442c02a8255c3131ae88a4d778952b165a.
+  Completed01:37:50.1215410–01:38:33.3871588Z; free3661586432B;
+  full protected ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1.
+  Two added retained content ZIPs total94872801B are included in observed headroom.
+- Next cold run retains its exact prepared disposable ZIP after protected comparison,
+  separate from original Working restoration authority. It will observe first
+  PostLoad/Interrupt/End/OnUnitExit callbacks without changing state or verdicts.
+  No live owned transaction at this checkpoint. Native counts remain105.

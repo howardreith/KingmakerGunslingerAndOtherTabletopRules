@@ -83,6 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owner.Descriptor.Resources.Spend(resource, amount); spent[suffix] = amount;
                     }
                 }
+                int originalAttackBonus = owner.Stats.AdditionalAttackBonus.BaseValue;
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100; owner.Stats.AdditionalCMB.BaseValue = 100;
                 owner.Stats.HitPoints.BaseValue = 100000; target.Stats.HitPoints.BaseValue = 100000; target.Stats.AC.BaseValue = -100;
                 target.Stats.AdditionalCMB.BaseValue = -100;
@@ -238,7 +239,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(owner, target), tail) &&
                             (salamander ? later.Count(value => Grab32Damage(value, true, liveStrength)) == 1 &&
                                 later.Count(value => Grab32TailDamage(value, tail.Blueprint.AssetGuid, liveStrength)) == 1 :
-                                later.Count(value => (string)value["damage"]["weapon"] == tail.Blueprint.AssetGuid) == 1 &&
+                                later.Count(value => Grab32TailDamage(value, tail.Blueprint.AssetGuid, liveStrength, false)) == 1 &&
                                 later.Count(value => Grab32Damage(value, false, liveStrength)) == 1);
                         row["strengthBefore"] = strengthBefore; row["prospectiveStrengthBase"] = owner.Stats.Strength.BaseValue;
                         row["liveStrengthBonus"] = liveStrength; row["establishedWeaponAttacks"] = establishedAttacks;
@@ -266,6 +267,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         "A later native buff round supplies establishing-tail damage plus one constrict with live Strength and no extra weapon attack. Up to three sequential natural holds retain every genuine natural-one refusal; Salamander preserves both fire bundles.");
                     if (!maintained) throw new InvalidOperationException("Natural later hold rider failed; complete maneuver/escape/terminal evidence retained.");
                     int checksBefore = observer.Checks.Count, ridersBefore = riders.Count;
+                    int attacksBeforeRelease = observer.WeaponAttacks;
+                    int heldRoundBeforeRelease = SummonHoldComponent.RoundsHeld(SummonHoldComponent.HeldState(owner, target, grab));
+                    // The fixture's attack bonus also contributes to native CMB.
+                    // Restore it prospectively before the low-CMB stage. Native
+                    // natural twenties remain legitimate successes with riders.
+                    owner.Stats.AdditionalAttackBonus.BaseValue = originalAttackBonus;
                     owner.Stats.AdditionalCMB.BaseValue = -100; // prospective low CMB, never an overridden roll
                     deadline = DateTime.UtcNow.AddSeconds(35);
                     Func<JObject> releaseState = () => Grab32HoldState(owner, target, grab);
@@ -292,8 +299,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                     settledRelease = releaseState();
                     var releaseChecks = observer.Checks.Skip(checksBefore).Where(value => ReferenceEquals(value.Initiator, owner) &&
                         ReferenceEquals(value.Target, target)).ToArray();
-                    bool released = releaseChecks.Any(value => !SummonManeuverChecks.Succeeded(value)) &&
-                        settledRelease.Properties().All(value => (bool)value.Value) && riders.Count == ridersBefore;
+                    var successfulReleaseChecks = releaseChecks.TakeWhile(SummonManeuverChecks.Succeeded).ToArray();
+                    var releaseRiders = riders.Skip(ridersBefore).OfType<JObject>().ToArray();
+                    var releaseRounds = releaseRiders.GroupBy(value => (int)value["roundHeld"]).OrderBy(group => group.Key).ToArray();
+                    int releaseStrength = owner.Stats.Strength.Bonus;
+                    bool exactReleaseRiders = releaseRounds.Length == successfulReleaseChecks.Length &&
+                        releaseRounds.Select(group => group.Key).SequenceEqual(Enumerable.Range(heldRoundBeforeRelease + 1, successfulReleaseChecks.Length)) &&
+                        releaseRounds.All(group => group.Count() == 2 &&
+                            group.Count(value => Grab32Damage(value, salamander, releaseStrength)) == 1 &&
+                            group.Count(value => Grab32TailDamage(value, tail.Blueprint.AssetGuid, releaseStrength, salamander)) == 1) &&
+                        releaseRiders.All(value => (int)value["weaponAttacks"] == attacksBeforeRelease) &&
+                        observer.WeaponAttacks == attacksBeforeRelease;
+                    bool failedLast = releaseChecks.Length == successfulReleaseChecks.Length + 1 &&
+                        !SummonManeuverChecks.Succeeded(releaseChecks.Last());
+                    bool released = failedLast && exactReleaseRiders && settledRelease.Properties().All(value => (bool)value.Value);
+                    row["releaseSuccessfulChecks"] = successfulReleaseChecks.Length;
+                    row["releaseFinalCheckFailed"] = failedLast; row["releaseRidersExact"] = exactReleaseRiders;
+                    row["releaseWeaponAttacksBefore"] = attacksBeforeRelease; row["releaseWeaponAttacksAfter"] = observer.WeaponAttacks;
+                    row["releaseOriginalAttackBonus"] = originalAttackBonus;
+                    row["releaseHeldRoundBefore"] = heldRoundBeforeRelease;
                     row["firstReciprocalLinkLoss"] = firstLinkLoss; row["settledRelease"] = settledRelease;
                     row["releaseSettleFrames"] = firstLinkLoss == null ? (int?)null : Time.frameCount - firstLinkLossFrame;
                     row["releaseSettleGameSeconds"] = firstLinkLoss == null ? (double?)null : game.Player.GameTime.TotalSeconds - firstLinkLossSeconds;
@@ -301,7 +325,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["releaseEscapeSkills"] = new JArray(escapes.Skills.Select(OutsiderEscapeSkill));
                     row["releasedBeforeFixtureCleanup"] = released; row["ridersBeforeRelease"] = ridersBefore; row["ridersAfterRelease"] = riders.Count;
                     Sprint25Check(id + "-released", released, row,
-                        "Actual failed native maintain releases both parts, buffs, blocked actions and exact weapon link without another rider; no fixture release establishes this verdict.");
+                        "Each intervening successful native maintain supplies exactly one tail/constrict pair; the final failed check supplies none and releases both parts, buffs, blocked actions and exact weapon link without another weapon attack. No fixture release establishes this verdict.");
                     if (!released) throw new InvalidOperationException("Natural failed-maintain release failed.");
                     Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true);
                     // Restore only the owned fixture's prospective stat change.
@@ -452,11 +476,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (string)row["damage"]["weapon"] == null && chunks.Length == 1 &&
                 (string)chunks[0]["type"] == "Physical" && (string)chunks[0]["dice"] == "2d6" && (int)chunks[0]["bonus"] == strength;
         }
-        private static bool Grab32TailDamage(JObject row, string weapon, int strength)
+        private static bool Grab32TailDamage(JObject row, string weapon, int strength, bool salamander = true)
         {
             var chunks = ((JArray)row["damage"]["chunks"]).OfType<JObject>().ToArray();
-            return (string)row["damage"]["weapon"] == weapon && chunks.Length == 2 &&
-                chunks.Count(value => (string)value["energy"] == "Fire" && (string)value["dice"] == "1d6" && (int)value["bonus"] == 0) == 1 &&
+            return (string)row["damage"]["weapon"] == weapon && chunks.Length == (salamander ? 2 : 1) &&
+                (!salamander || chunks.Count(value => (string)value["energy"] == "Fire" && (string)value["dice"] == "1d6" && (int)value["bonus"] == 0) == 1) &&
                 chunks.Count(value => (string)value["type"] == "Physical" && (string)value["dice"] == "2d6" &&
                     (int)value["bonus"] == (strength > 0 ? strength / 2 : strength)) == 1;
         }
