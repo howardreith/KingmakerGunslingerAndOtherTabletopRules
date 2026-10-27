@@ -100,7 +100,8 @@ namespace KingmakerGunslinger.Summoning
             if (book == null || book.GetSpontaneousSlots(Level) <= 0 ||
                 book.GetSpellLevel(Spell) != Level) return 0f;
             var data = new AbilityData(Spell, book);
-            return data.IsAvailable && data.CanTarget(new TargetWrapper(target)) ? 1f : 0f;
+            return data.IsAvailable && data.CanTarget(new TargetWrapper(target)) &&
+                !SatyrControlEligibility.GlobeBlocks(target, data) ? 1f : 0f;
         }
     }
 

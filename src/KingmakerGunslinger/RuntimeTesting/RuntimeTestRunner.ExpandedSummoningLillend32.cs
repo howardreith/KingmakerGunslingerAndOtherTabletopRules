@@ -376,6 +376,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 healing ? "Native AI selects the exact wounded self or player-faction ally, heals with a real bard spell and standard action, and spends one own level3 slot while the sibling retains both." :
                                 "With performance running and no useful healing target, native AI attacks without repeating either support command; sibling pools remain untouched.");
                             if (!passed) throw new InvalidOperationException("Lillend early support observation failed: " + stage);
+                            if (stage == "courage")
+                            {
+                                int siblingDamage = sibling.Damage;
+                                try
+                                {
+                                    sibling.Damage = 18;
+                                    ObserveSprint32GlobeChoice(fixture, owner, sibling, new AbilityData(heal.Spell, book),
+                                        () => heal.Score(new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = sibling } }),
+                                        "lillend-healing-performance", performanceGrant: ownedEffects.Single());
+                                }
+                                finally { sibling.Damage = siblingDamage; }
+                            }
                         }
                     }
                     finally { EventBus.Unsubscribe(starts); EventBus.Unsubscribe(attacks); }

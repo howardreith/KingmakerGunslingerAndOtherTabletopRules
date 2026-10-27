@@ -87,7 +87,7 @@ namespace KingmakerGunslinger.Summoning
                 target.Descriptor.State.HasCondition(UnitCondition.Sleeping) ||
                 rejectedCondition.HasValue && (target.Descriptor.State.HasCondition(rejectedCondition.Value) ||
                     target.Descriptor.State.HasConditionImmunity(rejectedCondition.Value)) ||
-                !data.IsAvailable || !data.CanTarget(new TargetWrapper(target))) return false;
+                !data.IsAvailable || !data.CanTarget(new TargetWrapper(target)) || GlobeBlocks(target, data)) return false;
             var effect = new MechanicsContext(actor, actor.Descriptor, data.Blueprint,
                 null, new TargetWrapper(target));
             var immunity = target.Get<UnitPartSpellResistance>();
@@ -114,6 +114,23 @@ namespace KingmakerGunslinger.Summoning
                 }
             }
             return true;
+        }
+
+        // These private spells/SLAs are never constant-circle grants. Reuse the
+        // accepted globe's actual range/type/level decision before choosing an
+        // action, including a healing touch's intended recipient. Calculate
+        // parameters only for a covered target: native owned SLA/cantrip rules
+        // supply the real level without a save, effect, command or debit.
+        internal static bool GlobeBlocks(UnitEntityData target, AbilityData data)
+        {
+            var source = data?.Caster?.Unit; var ability = data?.Blueprint;
+            if (target == null || source == null || ability == null || ReferenceEquals(source, target) ||
+                ability.Type != AbilityType.Spell && ability.Type != AbilityType.SpellLike) return false;
+            var globes = target.Buffs.Enumerable.SelectMany(buff => buff.SelectComponents<AstralProtectiveGlobe>()).ToArray();
+            if (globes.Length == 0) return false;
+            int level = data.CalculateParams().SpellLevel;
+            return globes.Any(globe => globe.Covers(level, ability.Type == AbilityType.Spell,
+                ability.Type == AbilityType.SpellLike, source));
         }
 
     }

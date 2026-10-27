@@ -347,6 +347,9 @@ namespace KingmakerGunslinger.Summoning
             var state = caster.Buffs.Enumerable.Where(value => value.Active && ReferenceEquals(value.Blueprint, Carrier))
                 .SelectMany(value => value.SelectComponents<LillendFascinateState32>()).SingleOrDefault();
             if (state == null || !state.Owns(unit)) return false;
+            var granted = caster.Descriptor.Abilities.GetAbility(Ability);
+            if (granted == null || SatyrControlEligibility.GlobeBlocks(unit,
+                new Kingmaker.UnitLogic.Abilities.AbilityData(granted))) return false;
             var context = new MechanicsContext(caster, caster.Descriptor, Ability, null, target);
             var immunity = unit.Get<Kingmaker.UnitLogic.Parts.UnitPartSpellResistance>();
             if (immunity != null && immunity.IsImmune(context)) return false;

@@ -43,7 +43,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var anchorPosition = anchor.Position; var casterPosition = fixture.Caster.Position;
             int will = target.Stats.SaveWill.BaseValue, perception = target.Stats.SkillPerception.ModifiedValue;
             int allyPerception = fixture.Caster.Stats.SkillPerception.ModifiedValue;
-            UnitEntityData owner = null, sibling = null;
+            UnitEntityData owner = null, sibling = null, globeEmitter = null;
             bool partyAdded = false, immunityAdded = false, complete = false;
             Cleanup2NativeDefaultScope mode = null;
             Lillend32CommandStarts starts = null; Dretch30CloudSaves saves = null; Astral31DispelEvents events = null;
@@ -53,6 +53,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var unit in new[] { anchor, fixture.Caster, target }) Sprint28SetBrainActivePreservingActions(unit, false);
                 owner = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
                 sibling = CastExpandedSummoningOwnTier(fixture, "lillend-azata");
+                if (bardic)
+                {
+                    // A summoning setup command is itself a perceived spell
+                    // threat. Finish it before natural Fascinate begins.
+                    globeEmitter = CastExpandedSummoningOwnTier(fixture, "astral-deva");
+                    Sprint28SetBrainActivePreservingActions(globeEmitter, false);
+                    PlaceExpandedSummoningUnit(globeEmitter, fixture.Caster.Position + Vector3.forward * 80f);
+                }
                 foreach (var unit in new[] { owner, sibling, fixture.Caster, target })
                 {
                     Sprint28SetBrainActivePreservingActions(unit, false);
@@ -64,6 +72,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out targetPosition, out survey, out direction, targetAllyExclusionRadius: 9f,
                     targetAllyExclusionExceptions: new[] { anchor, fixture.Caster, sibling }, sprint32PerformanceSight: true);
                 var away = (origin - targetPosition).normalized;
+                if (globeEmitter != null) PlaceExpandedSummoningUnit(globeEmitter, origin + away * 40f);
                 var side = Vector3.Cross(Vector3.up, away).normalized;
                 var requestedAnchor = targetPosition + side * 10f;
                 var anchorPoint = AstarPath.active.GetNearest(requestedAnchor);
@@ -188,7 +197,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (bardic)
                         {
                             foreach (int frame in ReviewLillendBardicSuggestion32(fixture, mode, owner, sibling,
-                                toggle, resource, effect, starts, events, economy, costs, rounds)) yield return frame;
+                                toggle, resource, effect, starts, events, economy, costs, rounds, globeEmitter)) yield return frame;
                             complete = true;
                             yield break;
                         }
@@ -237,7 +246,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (starts != null) EventBus.Unsubscribe(starts); if (saves != null) EventBus.Unsubscribe(saves); if (events != null) EventBus.Unsubscribe(events);
                 restore("target", () => { target.Stats.SaveWill.BaseValue = will;
                     if (immunityAdded) target.Descriptor.State.RemoveConditionImmunity(UnitCondition.Dazed); });
-                restore("summons", () => DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray()));
+                restore("summons", () => DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling, globeEmitter }.Where(value => value != null && !value.Destroyed).ToArray()));
                 restore("native-mode", () => mode?.Dispose());
                 restore("party", () => { if (partyAdded) { player.PartyCharacters.Remove(fixture.Caster); player.InvalidateCharacterLists(); player.UpdateCharacterLists(); }
                     if (!player.Party.SequenceEqual(party)) throw new InvalidOperationException("Exact original party differs."); });

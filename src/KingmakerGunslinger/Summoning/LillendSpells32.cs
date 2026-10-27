@@ -67,6 +67,7 @@ namespace KingmakerGunslinger.Summoning
                 // Reserve the stronger spell for substantial damage while it
                 // remains available; this is a choice, not a slot restriction.
                 return !actor.IsEnemy(target) && !target.Descriptor.IsUndead && target.Damage >= 6 &&
+                    !SatyrControlEligibility.GlobeBlocks(target, data) &&
                     (target.Damage < 18 || book.GetSpontaneousSlots(3) == 0) ? 1f : 0f;
             }
             if (Choice == LillendSpellChoice32.Invisibility)
