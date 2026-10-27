@@ -3512,3 +3512,42 @@ Native116 provider terminal execution remains source-bound10700ecc; no fresh-on-
 - sprint32-storage-after116/s26-c-result.json: 1 duplicate targets/82722819B; planSHA `18cb91c624dfece2ad3f20412dc8ff321fba778bca9c0e15ec84e1c3c0090f23`; completed `2026-10-27T03:47:01.6836997Z`.
 
 Local log-retention correction: Working outer supervisor already copied Unity; a duplicate Stage copy made the outer copier refuse after112. Removed only redundant Stage copy, preserving both original raw gameplay FAIL and original Unity. All protected intake restored. First after116 archive preparation confused a curated group key with a DLL hash; refused before archive/removal. Corrected by pinning the actual exact reference DLL, then verified every target byte against reference/retainedZIP. No protection guard changed.
+
+## 2026-10-27 04:14UTC — Frozen candidate79 and native117
+
+Source `424e5f6ff5689d5be80a86376660ecb6ec7d690b`; ZIP `8f6a41976afbae2ab56759e9e6be76530a3c1b9345ded57c1fdb63a408ffb9c8`;
+DLL `d54f20032965c76e0b4a160e671f4a5aa213b8fb28fb8841db381932fff3ec49`; MVID `022eda42-2544-48f0-8273-b9ba8eca2163`;
+SourceState `04265312e70655116f084b18f969f2907b9c349762a2f578a6f08a0286477b23`. Build79 passed278.1648292s,
+03:51:53.5586704-03:56:31.7234996UTC,558/2755 selected tests plus wrapper,
+exact compilation/strict package. Not the complete final gate.
+Native117 {'PASS': 17, 'FAIL': 2} FAIL107081ms; raw `C:\Dev\KingmakerGunslingerLab\runtime-evidence\20261027T0359554321114Z-disposable-expanded-summoning-sprint32-native-review\runtime-result.json`
+SHA `3ca1420e6a68fd82016ad464ab645f273b2ac8c0b051b9612627b842d659446f`; run `20261027T0359554602514Z-87601604442442f9aad4cbb65753107a`;
+transaction `compat-20261027T035728Z-73c0928428e5` restored `2026-10-27T04:02:02.2151114Z`;
+Unity SHA `8ed907711bfdf6aa0f527624ef2e28252e4549980743fdb6462f676939175350`. Exact Dagger mapping absent in live and both
+captured native sources; preflight stops before attack. This is a functional
+presentation defect, not cosmetic debt. Three PNGs inspected; their exact hashes
+remain in artifacts/sprint32-intake/native117-agent-visual-inspection.json.
+No dagger/contact/hit/death/expiry/Lillend completion is claimed.
+
+Candidate original path detached at exact424e5f6f. Existing reader revalidated
+unchanged package/source fingerprint; branch provenance left intact. Existing
+allowed review branch now checks out in sibling expanded-summoning-sprint32-records,
+with only12 selected files/894147B instead of1024065393B full checkout. Initial
+no-checkout index was empty; initialized only that new sparse worktree through
+native read-tree, then both worktrees clean. No other worktree or history changed.
+Old78 compile/bin and closed117 extraction removed only by existing verified
+duplicate routes; canonical ZIPs, raw results, source references, receipts and
+protected backups remain. Cleanup result identities follow.
+
+bin-result.json: 1 targets/17775616B; planSHA `d26f84a9b015b59c32db5cc440fae30bbe039d5ca4637341b2ae0fee01556580`; completed `2026-10-27T04:10:04.0180646Z`.
+
+compile-result.json: 1 targets/25602286B; planSHA `18011fab5907ba215f8adace3e48bc87319d2606af3b37d14d24afd601c92f03`; completed `2026-10-27T04:10:02.8257686Z`.
+
+native-result.json: 1 targets/99857992B; planSHA `d8699fc87256a00fa4cab85c2c04a16b226cd53a56b4625983a4fdd9ea857e35`; completed `2026-10-27T04:10:01.1185319Z`.
+
+Approx03:49-04:14UTC overlapping: build4.64min, native setup/execution/restoration
+4.59min, observer/reference/review/records10-18min, cleanup/worktree3min. Storage
+decision pending since03:48UTC with independent work continuing; no exclusive
+waiting total. Counts79build attempts/64validated packages/117launches. Prior167
+three NOT_RUN gaps unchanged. Four finite existing Lillend phases selected next
+on exact79 as headroom admits; Working and next build remain storage-blocked.
