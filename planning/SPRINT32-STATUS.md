@@ -10,8 +10,14 @@ Sprint33, unapproved subsystem or owner playtest dependency.
 ## Scope, baseline and ownership
 
 Accepted intake master `48e6fb4abfc154f111a4019a806cb79a4184bd1c`.
-Branch `codex/expanded-summoning-sprint32-satyr-lillend`; worktree
-`C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-sprint32`.
+Branch `codex/expanded-summoning-sprint32-satyr-lillend`; active records worktree
+`C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.worktrees/expanded-summoning-sprint32-records`.
+Candidate79 remains detached at424e5f6f in the original
+`.../.worktrees/expanded-summoning-sprint32` path. Its source/docs are immutable
+artifact provenance; this branch's active record remains operational authority.
+The records checkout is sparse (894147 tracked/file bytes), not a build root.
+Existing candidate reader/source fingerprint revalidated after detachment; no
+receipt branch or source binding changed and no rebuild was performed.
 HOWARD-LAPTOP owns mechanics/shared gameplay integration. DATA's released-creature
 art/worktrees remain untouched. Review relevant accepted dependency changes at
 one coherent checkpoint before freezing final source.
@@ -70,17 +76,28 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate78: `10700ecc2fccfbe9195e112f552077431cb8a358`.
-ZIP `7396a5cd21e13602fbe5eb182bd885275394d6b6b589ad711978deb255f536ac`;
-DLL `5a0fde65a33d8f02bb26aca7cccbeb4d10fd287676c217143ea88f7f04960047`;
-MVID `c17734c7-c7b3-4959-9610-6d0c6c086975`;
-SourceState `3082be4c98b0a9cb2a8595e61ac09ff0ea47bd2afcaca907a08016148bc1f08b`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/10700ecc2fcc/.
-Build78 wrapper/558of2755/exact compile/strictZIP PASS281.090s. This is filtered
-development evidence, not the complete final gate. Build77 refused elevated
-execution before compilation; unchanged source built normally in78. No deployment
-or native launch resulted from77.
+Latest validated development candidate79: `424e5f6ff5689d5be80a86376660ecb6ec7d690b`.
+ZIP `8f6a41976afbae2ab56759e9e6be76530a3c1b9345ded57c1fdb63a408ffb9c8`;
+DLL `d54f20032965c76e0b4a160e671f4a5aa213b8fb28fb8841db381932fff3ec49`;
+MVID `022eda42-2544-48f0-8273-b9ba8eca2163`;
+SourceState `04265312e70655116f084b18f969f2907b9c349762a2f578a6f08a0286477b23`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/424e5f6ff568/
+in the frozen original worktree. Build79 wrapper/558of2755/exact compile/strictZIP
+PASS278.165s. This is filtered development evidence, not the complete final gate.
 
+Native117 presentation17PASS/2FAIL identifies a **product presentation defect**:
+actual Dagger style has no setting in the live archer MainHand action or either
+exact native Satyr source. No attack was dispatched. Three agent-inspected
+rest/movement frames show an intact recognizable body without severe sampled
+deformation; they do not qualify dagger/contact/wound/death/expiry or Lillend.
+The proven private WeaponVisualParameters clone seam could map another existing
+native style without changing dagger rules/model. The native shortsword style
+and its availability on the actual archer remain unobserved; no speculative
+mapping has been implemented. Any adapter must clone the shallow-aliased visual
+object, preserve Prototype/models/attachments/audio, and change only local style.
+
+The following native111-116 executions remain bound to candidate78/source10700ecc;
+they are not fresh results on candidate79. Original failures are retained.
 Native111 preparation37/37PASS and retained prepared ZIP prove save suspension
 now preserves the live Fascinate responses, toggle and carrier. Native112 cold
 11PASS/3FAIL preserves those fields, book/items/resources, but loses22 assistance
@@ -166,14 +183,14 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest Working envelope restored2026-10-27T02:58:22.4172730Z; native116
-restored03:44:39.7779244Z. Full protected ComparePASS after cleanup:
+Latest Working envelope restored2026-10-27T02:58:22.4172730Z; native117
+restored04:02:02.2151114Z. Full protected ComparePASS after cleanup:
 967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
 8550225B; original times/attributes restored. No owned live transaction.
 
-Counts78Build-Local attempts/63validated packages/116actual native launches.
-Build78 281.090s; native111-116252.709/189.628/120.656/106.651/106.081/579.052s.
+Counts79Build-Local attempts/64validated packages/117actual native launches.
+Build79 278.165s; native117107.081s. Prior build78/native111-116 timings remain in history.
 Approx02:28-03:49UTC overlapping work: build/package5.86min including refused77;
 native setup/execution/restoration~44min; implementation/observer/research/review
 ~45-60min; storage~8min. Owner storage decision pending from03:48UTC, independent
@@ -190,13 +207,23 @@ copy/hash-verify/move to an owner-supplied destination. Separate migration
 authority/destination requested; no migration executed. Only C: is ready.
 Proposal: artifacts/sprint32-intake/proposed-closed-package-storage.json.
 
-**Next:** commit the reviewed correction batch, build it once, and use the
-unchanged package for the narrowed save-free presentation case if its separate
-154MB build+550MB native+2GB reserve (2.704GB) is available. This independent
-selection does not admit the blocked Working sequence. Expected15min, ceiling30min
-including restoration. Keep any missing native mapping as unqualified; do not
-replay the unchanged failed path. Other changed grab/controls/performance cases
-remain pending, with each selection requiring its own measured headroom.
+After117 removed its closed extraction plus old78 compile/bin duplicate copies,
+retaining all ZIPs/receipts/raws/protected backups. Free2660941824B after protected
+ComparePASS, before the894147B sparse records checkout/index. No new build fits
+the declared build+native margin; candidate79's separate550MB+2GB save-free
+selection can continue while its per-transaction check passes. Native storage
+decisions remain pending; no files have been migrated.
+
+
+**Next finite selection:** reuse frozen candidate79 for existing lillend-grab
+(RTWP/TB plus one Salamander baseline), lillend-controls (RTWP),
+lillend-performance (Competence and RTWP combat entry), and lillend-fascinate
+(base behaviour and TB combat entry). Expected30-50min combined; each ordinary
+selection targets15min/ceiling30min with its existing fresh-process isolation and
+safe restoration. Check550MB peak+2GB reserve before each, reclaim only verified
+closed duplicates afterward, and stop dispatch when that margin is unavailable.
+No changed build, repeated presentation failure, old final-integration campaign,
+or admission of the blocked Working sequence follows from this selection.
 After storage resolution, run fresh base Working ON/cold/absence and provider
 retained/removed/moduleOFF trios (predeclared90-120min combined), retaining fresh
 processes and original Working restoration. Preserve prepared ZIPs as evidence.
