@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Owner 2026-10-27 authorizes Sprint32 merge and release after qualified PR74. Release169 in progress; sole active record planning/SPRINT32-STATUS.md. No Sprint33.",
+    "activeTask": "Sprint32 released as stable Latest v0.0.169; public assets and protected intake verified. Owner waived remaining release reproducibility. Sole active record planning/SPRINT32-STATUS.md. STOP; no Sprint33.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },
@@ -1707,7 +1707,7 @@
     "authority": "Owner 2026-10-25 unattended workflow repair and Sprint 32 mission",
     "activeSprint": 32,
     "record": "planning/SPRINT32-STATUS.md",
-    "status": "RELEASE_AUTHORIZED_IN_PROGRESS",
-    "nextAction": "Complete authorized PR74 merge, release169 publication and public verification. No Sprint33."
+    "status": "RELEASED_OWNER_ACCEPTED_WITH_WAIVED_RELEASE_REPRODUCIBILITY",
+    "nextAction": "STOP. Sprint32 v0.0.169 released and publicly verified with owner waiver of remaining release procedures. No pending owner decision or Sprint33."
   }
 }

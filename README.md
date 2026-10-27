@@ -1,6 +1,6 @@
 # Kingmaker Gunslinger
 
-Version **0.0.169-expanded-summoning-satyr-lillend** adds Satyr control and
+Stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) adds Satyr control and
 Lillend Azata bard/support summons, with native costs, quantities and cleanup.
 Suggestion is optional through CowWithHat Custom Spells. See the
 [release notes](docs/RELEASE-NOTES-0.0.169.md) for approved adaptations and limits,

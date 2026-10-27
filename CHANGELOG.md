@@ -2,6 +2,9 @@
 
 ## 0.0.169-expanded-summoning-satyr-lillend
 
+Published2026-10-27; [stable release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169), public assets verified.
+Remaining release reproducibility was explicitly waived by the owner.
+
 - Adds Satyr control and weapon fallback, and Lillend Azata bard/support spells,
   performances, healing and tail grab/constrict on the existing summon routes.
 - Suggestion is conditional on CowWithHat Custom Spells. Owner-approved scope
