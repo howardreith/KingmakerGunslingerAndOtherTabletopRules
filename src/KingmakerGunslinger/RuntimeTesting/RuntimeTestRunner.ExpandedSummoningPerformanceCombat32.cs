@@ -91,8 +91,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // Ordinary native combat entry is a disclosed fixture trigger.
                 // StopOwned, carrier retirement and Courage remain production work.
                 owner.Memory.Add(target); target.Memory.Add(owner);
-                owner.JoinCombat(); target.JoinCombat(); game.Player.UpdateIsInCombat();
+                owner.JoinCombat(); target.JoinCombat();
+                // The native join controller owns the false-to-true party edge.
+                // Player.UpdateIsInCombat only assigns the flag; calling it here
+                // consumes that edge before the controller can emit the event
+                // that initializes turn order and the native combat clock.
                 double entered = game.Player.GameTime.TotalSeconds;
+                double previousClock = entered, maximumClockRewind = 0;
                 int enteredRound = turnBased ? game.TurnBasedCombatController.RoundNumber : -1;
                 Sprint28SetBrainActivePreservingActions(owner, true);
                 var deadline = DateTime.UtcNow.AddSeconds(60);
@@ -100,6 +105,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 while (DateTime.UtcNow < deadline)
                 {
                     if (!mode.Current) throw new InvalidOperationException("Combat transition lost native Default ownership.");
+                    double clock = game.Player.GameTime.TotalSeconds;
+                    maximumClockRewind = Math.Max(maximumClockRewind, previousClock - clock);
+                    previousClock = clock;
                     if (turnBased)
                     {
                         var turn = game.TurnBasedCombatController.CurrentTurn;
@@ -130,9 +138,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var noncombatCommands = starts.Commands.OfType<UnitActivateAbility>().Where(value => !priorCommands.Contains(value) &&
                     (ReferenceEquals(value.Ability.Blueprint, dispatcher.Competence) ||
                      ReferenceEquals(value.Ability.Blueprint, dispatcher.Fascinate))).ToArray();
-                bool clean = !noncombat.IsOn && !noncombat.IsRunning &&
-                    !owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, noncombat.Blueprint.Buff)) &&
-                    facts.All(value => value.IsDisposed || !value.Owner.Buffs.Enumerable.Contains(value)) &&
+                bool carrierPresent = owner.Buffs.Enumerable.Any(value => ReferenceEquals(value.Blueprint, noncombat.Blueprint.Buff));
+                var remainingFacts = facts.Where(value => !value.IsDisposed && value.Owner.Buffs.Enumerable.Contains(value)).ToArray();
+                bool clean = !noncombat.IsOn && !noncombat.IsRunning && !carrierPresent && remainingFacts.Length == 0 &&
                     LillendNoncombat32.Find(owner)?.HasPendingSelection == false && noncombatCommands.Length == 0;
                 bool paid = activation != null && activation.IsActed && activation.IsFinished &&
                     activation.Result == UnitCommand.ResultType.Success && activation.Type == UnitCommand.CommandType.Move &&
@@ -144,10 +152,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint25Check(id, exact, new JObject { ["owner"] = owner.UniqueId, ["target"] = target.UniqueId,
                     ["noncombatOn"] = noncombat.IsOn, ["noncombatRunning"] = noncombat.IsRunning,
                     ["capturedRecipientFacts"] = facts.Length, ["retired"] = clean, ["paidCourage"] = paid,
+                    ["carrierPresent"] = carrierPresent,
+                    ["remainingCapturedFacts"] = new JArray(remainingFacts.Select(value => new JObject {
+                        ["blueprint"] = value.Blueprint.AssetGuid, ["recipient"] = value.Owner.Unit.UniqueId,
+                        ["source"] = value.Context?.MaybeCaster?.UniqueId, ["area"] = value.SourceAreaEffectId,
+                        ["active"] = value.Active })),
                     ["courageRunning"] = courage.IsRunning, ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
                     ["costs"] = costs.DeepClone(), ["noncombatRestarts"] = noncombatCommands.Length,
                     ["enteredGameSeconds"] = entered, ["observedGameSeconds"] = game.Player.GameTime.TotalSeconds,
+                    ["maximumObservedClockRewindSeconds"] = maximumClockRewind,
                     ["enteredRound"] = enteredRound, ["observedRound"] = turnBased ? game.TurnBasedCombatController.RoundNumber : -1,
+                    ["nativeTurnState"] = turnBased ? Sprint22TurnState(owner, target) : null,
+                    ["nativeControllerInitialized"] = game.TurnBasedCombatController.Initialized,
                     ["fixtureCharmOnlyImmunity"] = true, ["fixtureManeuverImmunity"] = maneuverAdded,
                     ["pendingSelectionRemainedAbsent"] = !dispatcher.HasPendingSelection,
                     ["poolBefore"] = poolBefore, ["poolAfter"] = owner.Descriptor.Resources.GetResourceAmount(resource),

@@ -103,6 +103,51 @@ Logs: active artifacts/sprint32-checkpoint/focused*; original failure retained.
 Independent reviewer read the actual two-file diff and found no concrete blocker;
 both affected native cases still require fresh execution. No candidate80 exists.
 
+Native121 on candidate79:33PASS/2FAIL254.621s. Ordinary Fascinate and bounded
+cap/frozen selection/resistance/Shake Free/threat/source/sibling cleanup pass.
+TB combat entry fails: round0, clock43302.821->0, no paid Courage, aggregate
+retirement false. Independent native IL review confirms a fixture defect:
+Player.UpdateIsInCombat assigns the flag without the event; the fixture consumes
+the edge before UnitCombatJoinController can initialize native turns. The active
+observer correction removes that direct update and records initialization/turn,
+clock rollback and separate carrier/remaining facts. No manual event/tick/turn or
+product change. Reviewed and focused compilation passed; fresh RTWP/TB reruns remain pending.
+Native121 remains FAIL; its retirement/Courage outcomes are not inferred as PASS.
+Receipt: frozen artifacts/sprint32-intake/native121-pending-record.json.
+
+Native122 preparation37/37PASS254.438s; native123 cold10PASS/3FAIL189.467s.
+The first Satyr snapshot has equal saved/loaded JSON, but installed Newtonsoft8
+compares its live String/null sourceAreaId unequal to parsed Null. A bounded
+installed-library reproduction confirms that exact defect; explicit JSON null
+restores equality while a changed resource still refuses. The observer fix is
+independently reviewed and focused compile26.7s/domain6of2755 PASS1.0s. No rule or
+comparison requirement changed. Other source comparisons, cleanup save and fresh
+absence were not reached. Original123 remains FAIL; new-candidate sequence pending.
+Receipts: frozen artifacts/sprint32-intake/native123-pending-record.json and
+cold123-null-contract.json. Original Working and protected intake restored exactly
+2026-10-27T05:26:38.5496149Z; no owned live transaction.
+
+Native120 on candidate79: native23/23PASS148.396s. Ordinary Competence uses a
+normal Move,20->19->18 upkeep,+3 Perception and sibling20; recipient-loss cleanup
+passes. RTWP combat entry retires Competence, pays Move Courage, pool18->17 with
+sibling20 unchanged and no noncombat restart. The outer reader originally FAILED
+because it expected one each of three mode boundaries; the declared ordinary and
+combat cells legitimately produce two. Original exit/logs remain immutable.
+Independent raw review and a hash-bound corrected reader support a separate PASS;
+missing/extra boundaries and failed-combat negative cases refuse. No rerun.
+Receipt: frozen artifacts/sprint32-intake/native120-reader-reassessment.json.
+Fascinate's pending reader received the same narrow two-scope correction before
+dispatch, preserving its original version and strengthening distinct combat rows.
+
+Native119 on candidate79: controls14/14PASS113.872s. Natural Charm Monster with
+real Standard/slot costs and sibling isolation; Good/Chaos ward refusal; harmless
+healing and unrelated exact-weapon positive damage preserve Charm; apparent-ally
+threat ends it. Actual wolf reach1.9096m exceeds measured1.55960274m, with zero
+diagnostic plans. Natural safe Sound Burst spends one L2 slot; both recipients
+take6 sonic damage, only failed Fort saves receive the6s stun; sibling damage0.
+No forced rolls or supplied successful spell commands. Original115FAIL remains.
+Receipt: frozen artifacts/sprint32-intake/native119-pending-record.json.
+
 Native118 on candidate79: full Lillend RTWP and TB readiness, natural tail grab,
 live-Strength maintenance/constrict, release and finalizers PASS. The grouped
 pause correction is observed. Overall32PASS/2FAIL because the Salamander baseline
@@ -124,7 +169,8 @@ area contexts. Candidate79's reviewed native persisted-area-ID ownership fix
 requires fresh cold/source/sibling/absence/OFF execution. Native115 controls
 9PASS/1FAIL stopped at a flawed attack reach/plan precondition; corrected79 uses
 the actual weapon, body radii and horizontal separation without diagnostic plans.
-Controls, Competence/combat-entry and Fascinate/TB-entry phases remain pending.
+Controls are now observed in119; Competence/combat-entry in120 with a corrected
+reader verdict; ordinary Fascinate in121, with TB-entry still failed/pending.
 
 Native116 provider terminals10/10PASS on candidate78: two normal CL7 casts spend
 two L2 slots; positive18 weapon damage breaks one effect, while the other expires
@@ -171,15 +217,14 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest Working envelope restored2026-10-27T02:58:22.4172730Z; native118
-restored04:19:36.2534497Z. Full protected ComparePASS again04:38UTC:
-967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
-650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
-8550225B; original times/attributes restored. The next controls phase is now
-dispatched through its guarded supervisor; do not overlap another runtime task.
-No result is claimed until its execution and restoration complete.
+Latest Working envelope restored2026-10-27T05:26:38.5496149Z after123 failure.
+Full protected ComparePASS:967Mods/118saves/18refs/83settings/tasks0/Steam1.
+Original WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B, creationTicks639208636210035057, writeTicks639278868712797783,
+attributes8224 all restored. No live owned runtime or storage transaction.
+Prepared122 ZIP and original failures remain local; absence was NOT_RUN.
 
-Counts79Build-Local attempts/64validated packages/118actual native launches.
+Counts79Build-Local attempts/64validated packages/123actual native launches.
 Build79 278.165s; native118148.785s, wrapper/setup/restoration314.664s.
 04:14-04:39UTC overlapping work: native5.24min; observer/reference/review/source
 and records~15-20min; focused compile/tests31.2s including failed domain attempt;
@@ -210,25 +255,25 @@ One bounded retry reverified the first7 copies and used WriteThrough/Flush(true)
 all remaining copies and final hashes passed. Original failure receipt retained.
 No drive repair, personal-file cleanup or protected-data migration occurred.
 
-**Current finite selection:** with restored headroom, reuse frozen79 for
-lillend-controls RTWP, lillend-performance (Competence and RTWP
-combat entry), and lillend-fascinate (base behaviour and TB combat entry).
-Expected25-40min combined; each ordinary selection targets15min/ceiling30min,
-with existing fresh processes, current-intake guards and exact restoration.
-Each save-free selection requires550MB peak+2GB reserve. No unchanged presentation
-or Salamander replay: batch additional concrete corrections before a new package.
-Then fresh79 Working ON/cold/absence plus provider retained/removed/moduleOFF
-trios, predeclared90-120min combined, with original Working restoration and
-retained prepared ZIPs. Measured Working peak902923316B rounded1.1GB plus2GB
-reserve requires3.1GB; concurrent build peak154MB raises that to3.254GB.
-No concurrent build/native transaction is selected.
+**Current next action:** commit the reviewed observer batch, integrate accepted
+master2d18ec965d1813ab5f2af11be80167fd5cec14d9 (v0.0.168) at this coherent
+checkpoint, and review the actual shared-effect/area integration. No DATA active
+worktree or unaccepted asset is touched. Preserve the accepted released version
+without reserving a new one; existing candidate79 remains immutable.
+Then build the coherent candidate and run changed presentation, Salamander
+observer and performance RTWP/TB cases; fresh Working ON/cold/absence and provider
+retained/removed/moduleOFF trios. The predeclared long sequence is90-120min
+combined, ordinary selections target15min/ceiling30min. Each fresh process and
+transaction retains intake/restoration. Save-free margin550MB+2GB; measured
+Working peak902923316B rounded1.1GB+2GB reserve, plus154MB if building.
+No concurrent build/native transaction selected. Free5051748352B at05:34UTC
+before full checkout expansion; remeasure before staging.
 
-At a coherent checkpoint review accepted dependency changes, batch source fixes,
-obtain final independent review, freeze inputs and run the complete cheap final
-gate once. Final A8 uses selected standalone cases and exactly satyr-turn and
-lillend-support on gunslinger-high-risk-combined. No old S30-31 campaign.
-Required presentation/persistence/integration remain incomplete. No owner
-playtest, merge, release or Sprint33.
+Final A8 uses selected standalone cases and exactly satyr-turn/lillend-support
+on gunslinger-high-risk-combined, plus any concrete accepted dependency seam
+identified by review. No old S30-31 campaign. Final complete cheap gate runs once
+on frozen inputs; its unchanged ZIP is reused. Required presentation/persistence/
+integration remain incomplete. No owner playtest, merge, release or Sprint33.
 
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30public-route/body/icon,
 standalone final integration, highest-risk combined final integration.
