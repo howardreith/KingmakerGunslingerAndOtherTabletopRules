@@ -42,7 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Cleanup2NativeDefaultScope mode, UnitEntityData owner, UnitEntityData sibling,
             ActivatableAbility toggle, BlueprintAbilityResource resource, BlueprintBuff fascinated,
             Lillend32CommandStarts starts, Astral31DispelEvents events, FirearmReviewCosts economy,
-            JArray costs, Lillend32PerformanceRounds rounds, UnitEntityData globeEmitter)
+            JArray costs, Lillend32PerformanceRounds rounds)
         {
             var target = fixture.Hostile;
             var dispatcher = LillendNoncombat32.Find(owner);
@@ -146,7 +146,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Exact active provider, actual own Fascinate, ordinary ability reach/resources and wrong-owner refusal. Constructed contexts check admission only, not casting.");
                 if (!ready) throw new InvalidOperationException("Bardic Suggestion fixture capability or ownership failed.");
                 ObserveSprint32GlobeChoice(fixture, owner, target, data,
-                    () => data.CanTarget(new TargetWrapper(target)) ? 1f : 0f, "bardic-suggestion", preparedEmitter: globeEmitter);
+                    () => data.CanTarget(new TargetWrapper(target)) ? 1f : 0f, "bardic-suggestion",
+                    performanceGrant: captured, nativeProbeEmitter: true);
+                bool globeRetained = retained() && budgets() && casts().Length == 0;
+                Sprint25Check("bardic-globe-retained", globeRetained, new JObject {
+                    ["retainedFascinate"] = retained(), ["budgetsExact"] = budgets(), ["testedCasts"] = casts().Length },
+                    "The synchronous recipient-fact probe leaves exact own Fascinate, calm state, budgets and ordinary casting opportunity unchanged.");
+                if (!globeRetained) throw new InvalidOperationException("Bardic globe probe changed performance or calm state.");
 
                 // Only the already-owned disposable target gets this native
                 // empty aggro script. The read-only probe observes its real
