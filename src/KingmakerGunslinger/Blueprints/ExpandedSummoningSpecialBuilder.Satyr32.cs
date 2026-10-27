@@ -26,6 +26,29 @@ namespace KingmakerGunslinger.Blueprints
     internal static partial class ExpandedSummoningSpecialBuilder
     {
         internal const string Satyr32Prefix = "KMG.Summoning.FeyCelestial.Satyr.";
+        private static void ConfigureSatyrDaggerPresentation32(LibraryScriptableObject library,
+            BlueprintItemWeapon dagger)
+        {
+            var source = dagger.VisualParameters;
+            var shortsword = BlueprintLibraryLookup.RequireExact<BlueprintItemWeapon>(library,
+                "455c6750aac8fa94f8ab19f385c73ae7", "native masterwork shortsword presentation");
+            if (source == null || shortsword.VisualParameters == null)
+                throw new InvalidOperationException("Satyr private dagger presentation source is absent.");
+            // Sprint29Weapon shallow-copies the donor. Never mutate that shared
+            // visual record. Retain the dagger model, prototype, attachments and
+            // audio; borrow only the native small-blade animation style.
+            var visual = new WeaponVisualParameters();
+            foreach (var field in Fields(typeof(WeaponVisualParameters)))
+                if (!field.IsStatic && !field.IsInitOnly)
+                    field.SetValue(visual, field.GetValue(source));
+            SetField(visual, "m_WeaponAnimationStyle", shortsword.VisualParameters.AnimStyle);
+            SetField(dagger, "m_VisualParameters", visual);
+            if (ReferenceEquals(source, dagger.VisualParameters) ||
+                dagger.VisualParameters.AnimStyle != shortsword.VisualParameters.AnimStyle ||
+                !ReferenceEquals(dagger.VisualParameters.Model, source.Model))
+                throw new InvalidOperationException("Satyr private dagger visual mapping did not round-trip.");
+        }
+
         // Hidden adult profile. Native spell resolution and normal equipment
         // commands remain responsible for saves, costs and melee/ranged actions.
         private static void ConfigureSatyr32(LibraryScriptableObject library,
@@ -61,6 +84,7 @@ namespace KingmakerGunslinger.Blueprints
             var dagger = Sprint29Weapon(library, bySymbol, Satyr32Prefix + "Dagger",
                 Satyr32Prefix + "DaggerType", "aa514dbf4c3d61f4e9c0738bd4d373cb",
                 Size.Medium, 1, DiceType.D4, 0);
+            ConfigureSatyrDaggerPresentation32(library, dagger);
             var horns = Sprint29Weapon(library, bySymbol, Satyr32Prefix + "Horns",
                 Satyr32Prefix + "HornsType", "73ed4e955295e62469fe471f1d49d9ef",
                 Size.Medium, 1, DiceType.D6, 0);
