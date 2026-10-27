@@ -249,7 +249,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             nativeSword = swordView != null && swordView.isActiveAndEnabled && swordView.LateUpdates > 0 &&
                                 swordView.ObservedEquipmentSet == owner.Body.CurrentHandEquipmentSetIndex &&
                                 swordView.ObservedWeaponGuid == main.Blueprint.AssetGuid && swordView.Model != null &&
-                                swordView.Model.activeSelf == !natural && swordView.Model.GetComponentsInChildren<Renderer>(true).Any();
+                                swordView.Model.activeSelf == !natural && swordView.Model.GetComponentsInChildren<Renderer>(true).Any() &&
+                                (swordView.Model.transform.localPosition - HoundArchonSwordView.GripPosition).sqrMagnitude < 1e-8f &&
+                                Quaternion.Angle(swordView.Model.transform.localRotation, HoundArchonSwordView.GripRotation) < 0.01f;
                             if (nativeSword) break;
                             // This observer's native clock can process the switch within
                             // one Unity Update. Observe the actual per-view LateUpdate;
@@ -268,8 +270,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                         ["active"] = swordView?.Model?.activeSelf, ["expectedArmed"] = !natural,
                         ["parent"] = swordView?.Model?.transform.parent?.name,
-                        ["nativeCharacterAvatarPresent"] = owner.View.GetComponent<Kingmaker.Visual.CharacterSystem.Character>() != null },
-                        "The exact owned native sword model follows the measured palm only while that weapon is equipped; natural mode hides it.");
+                        ["nativeCharacterAvatarPresent"] = owner.View.GetComponent<Kingmaker.Visual.CharacterSystem.Character>() != null,
+                        ["grip"] = Hound30GripObservation(owner.View.transform, swordView) },
+                        "The exact owned native sword model follows the measured palm grip only while that weapon is equipped; natural mode hides it.");
                     if (!nativeSword) throw new InvalidOperationException("Hound owned weapon model/mode mismatch.");
                     privateResources = ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(owner.View);
                     var observer = new Sprint24AttackObserver { Owner = owner, Target = target };
@@ -448,6 +451,80 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
+        }
+
+        // Presentation measurement only: the palm-local hand frame and the
+        // owned sword clone's mesh profile, so the grip transform is measured
+        // rather than guessed. It never moves or reconfigures the model.
+        private static JObject Hound30GripObservation(Transform view, HoundArchonSwordView sword)
+        {
+            GameObject model = sword == null ? null : sword.Model;
+            Transform palm = model == null ? null : model.transform.parent;
+            if (palm == null || view == null) return null;
+            Func<Vector3, JArray> v = value => new JArray(value.x, value.y, value.z);
+            Func<Quaternion, JArray> q = value => new JArray(value.x, value.y, value.z, value.w);
+            var bones = new JObject();
+            foreach (Transform child in palm.GetComponentsInChildren<Transform>(true))
+            {
+                if (child == palm || child.IsChildOf(model.transform)) continue;
+                bones[child.name] = new JObject { ["parent"] = child.parent.name,
+                    ["palmLocal"] = v(palm.InverseTransformPoint(child.position)),
+                    ["viewLocal"] = v(view.InverseTransformPoint(child.position)) };
+            }
+            var renderers = new JArray();
+            foreach (Renderer renderer in model.GetComponentsInChildren<Renderer>(true))
+            {
+                var skinned = renderer as SkinnedMeshRenderer;
+                var filter = renderer.GetComponent<MeshFilter>();
+                Mesh mesh = skinned != null ? skinned.sharedMesh : filter == null ? null : filter.sharedMesh;
+                var row = new JObject { ["name"] = renderer.name, ["type"] = renderer.GetType().Name,
+                    ["enabled"] = renderer.enabled, ["mesh"] = mesh == null ? null : mesh.name,
+                    ["toModelPosition"] = v(model.transform.InverseTransformPoint(renderer.transform.position)),
+                    ["toModelRotation"] = q(Quaternion.Inverse(model.transform.rotation) * renderer.transform.rotation),
+                    ["lossyScale"] = v(renderer.transform.lossyScale) };
+                if (mesh != null)
+                {
+                    row["meshBoundsCenter"] = v(mesh.bounds.center);
+                    row["meshBoundsSize"] = v(mesh.bounds.size);
+                    row["readable"] = mesh.isReadable;
+                    Vector3 min = Vector3.positiveInfinity, max = Vector3.negativeInfinity;
+                    for (int corner = 0; corner < 8; corner++)
+                    {
+                        Vector3 local = mesh.bounds.center + Vector3.Scale(mesh.bounds.extents, new Vector3(
+                            (corner & 1) == 0 ? -1 : 1, (corner & 2) == 0 ? -1 : 1, (corner & 4) == 0 ? -1 : 1));
+                        Vector3 point = model.transform.InverseTransformPoint(renderer.transform.TransformPoint(local));
+                        min = Vector3.Min(min, point); max = Vector3.Max(max, point);
+                    }
+                    row["modelLocalBoundsMin"] = v(min); row["modelLocalBoundsMax"] = v(max);
+                    if (mesh.isReadable)
+                    {
+                        Vector3[] points = mesh.vertices.Select(value =>
+                            model.transform.InverseTransformPoint(renderer.transform.TransformPoint(value))).ToArray();
+                        Vector3 size = max - min;
+                        int axis = size.x >= size.y && size.x >= size.z ? 0 : size.y >= size.z ? 1 : 2;
+                        var profile = new JArray();
+                        for (int bin = 0; bin < 24; bin++)
+                        {
+                            float from = min[axis] + size[axis] * bin / 24f, to = min[axis] + size[axis] * (bin + 1) / 24f;
+                            Vector3[] slice = points.Where(value => value[axis] >= from && value[axis] <= to).ToArray();
+                            if (slice.Length == 0) { profile.Add(new JObject { ["bin"] = bin, ["count"] = 0 }); continue; }
+                            profile.Add(new JObject { ["bin"] = bin, ["count"] = slice.Length,
+                                ["min"] = v(slice.Aggregate(Vector3.Min)), ["max"] = v(slice.Aggregate(Vector3.Max)) });
+                        }
+                        row["vertexCount"] = points.Length; row["longAxis"] = axis; row["profile"] = profile;
+                    }
+                }
+                renderers.Add(row);
+            }
+            return new JObject {
+                ["palm"] = palm.name, ["palmLossyScale"] = v(palm.lossyScale),
+                ["palmViewLocalPosition"] = v(view.InverseTransformPoint(palm.position)),
+                ["palmViewLocalRotation"] = q(Quaternion.Inverse(view.rotation) * palm.rotation),
+                ["viewLossyScale"] = v(view.lossyScale),
+                ["modelLocalPosition"] = v(model.transform.localPosition),
+                ["modelLocalRotation"] = q(model.transform.localRotation),
+                ["modelViewLocalRotation"] = q(Quaternion.Inverse(view.rotation) * model.transform.rotation),
+                ["palmChildren"] = bones, ["renderers"] = renderers };
         }
     }
 }

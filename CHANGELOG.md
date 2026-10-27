@@ -13,6 +13,25 @@
   technical visual, persistence and integration qualification remain incomplete;
   this entry does not announce a release. See [Sprint 32 status](planning/SPRINT32-STATUS.md).
 
+## 0.0.168-expanded-summoning-sprints30-31-followup
+
+- The Astral Deva's protective aura works as a lesser globe of
+  invulnerability: level 0-3 spells and spell-like abilities cast from outside
+  its 20-foot aura cannot affect a covered creature, whether or not they allow
+  spell resistance, and persistent spell areas exclude it.
+- The aura's Magic Circle protection against new control by evil creatures
+  covers its full 20 feet.
+- The Trumpet Archon carries the ordinary Airborne fact.
+- Rebuilds the Lemure, Dretch and Hound Archon bodies and puts the Hound's
+  greatsword in its fist. No route or saved identity changes. See the
+  [v0.0.168 release notes](docs/RELEASE-NOTES-0.0.168.md).
+
+## 0.0.167-expanded-summoning-sprints30-31-outsider-celestial
+
+- Adds the Lemure, Dretch, Hound Archon, Astral Deva and Trumpet Archon
+  summons (23 routes) and upgrades the Lantern Archon in place. See the
+  [v0.0.167 release notes](docs/RELEASE-NOTES-0.0.167.md).
+
 ## 0.0.166-expanded-summoning-druid-giant-sizes
 
 - A Druid's prepared Summon Nature's Ally I or II lists each creature once

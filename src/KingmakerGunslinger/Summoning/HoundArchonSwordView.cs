@@ -15,6 +15,17 @@ namespace KingmakerGunslinger.Summoning
     public sealed class HoundArchonSwordView : MonoBehaviour
     {
         internal const string SwordGuid = "99fa49115f9c48228e13ca9f2879e6e0";
+        // Measured in game (hound-armed grip observation): R_Palm's fingers run
+        // along -X and curl toward +Y with the thumb on +Z; the native
+        // WP_GreatswordBarbarian blade runs along model +Y with its hilt below
+        // the origin. The grip lies across the fist and leaves on the thumb
+        // side, tipped 5 degrees toward the wrist, flat facing the palm; the
+        // blade is level in the measured combat stance and angles down without
+        // reaching the floor at idle. The origin sits 7 cm past the fist
+        // centre so the guard clears it.
+        internal static readonly Vector3 GripPosition = new Vector3(-0.2389f, 0.075f, 0.0997f);
+        internal static readonly Quaternion GripRotation =
+            new Quaternion(0.521334f, 0.521334f, 0.477714f, 0.477714f);
         private UnitEntityView _view;
         private UnitEntityData _owner;
         private GameObject _model;
@@ -44,8 +55,8 @@ namespace KingmakerGunslinger.Summoning
             if (_model == null) throw new InvalidOperationException("Owned Hound native sword model did not instantiate.");
             _model.name = "KMG_HoundOwnedSword";
             _model.transform.SetParent(palm, false);
-            _model.transform.localPosition = Vector3.zero;
-            _model.transform.localRotation = Quaternion.identity;
+            _model.transform.localPosition = GripPosition;
+            _model.transform.localRotation = GripRotation;
             _model.transform.localScale = Vector3.one;
             // Only this clone's optional legacy snap can write its transform.
             foreach (var snap in _model.GetComponentsInChildren<WeaponSnap>(true)) snap.enabled = false;
