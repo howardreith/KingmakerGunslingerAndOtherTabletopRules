@@ -9,6 +9,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Parts;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -44,6 +45,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             int will = target.Stats.SaveWill.BaseValue, perception = target.Stats.SkillPerception.ModifiedValue;
             int allyPerception = fixture.Caster.Stats.SkillPerception.ModifiedValue;
             UnitEntityData owner = null, sibling = null, globeEmitter = null;
+            Vector3? globeParking = null;
             bool partyAdded = false, immunityAdded = false, complete = false;
             Cleanup2NativeDefaultScope mode = null;
             Lillend32CommandStarts starts = null; Dretch30CloudSaves saves = null; Astral31DispelEvents events = null;
@@ -61,7 +63,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(globeEmitter, false);
                     PlaceExpandedSummoningUnit(globeEmitter, fixture.Caster.Position + Vector3.forward * 80f);
                 }
-                foreach (var unit in new[] { owner, sibling, fixture.Caster, target })
+                foreach (var unit in new[] { owner, sibling, fixture.Caster, target, globeEmitter }.Where(value => value != null))
                 {
                     Sprint28SetBrainActivePreservingActions(unit, false);
                     unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue();
@@ -72,7 +74,6 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out targetPosition, out survey, out direction, targetAllyExclusionRadius: 9f,
                     targetAllyExclusionExceptions: new[] { anchor, fixture.Caster, sibling }, sprint32PerformanceSight: true);
                 var away = (origin - targetPosition).normalized;
-                if (globeEmitter != null) PlaceExpandedSummoningUnit(globeEmitter, origin + away * 40f);
                 var side = Vector3.Cross(Vector3.up, away).normalized;
                 var requestedAnchor = targetPosition + side * 10f;
                 var anchorPoint = AstarPath.active.GetNearest(requestedAnchor);
@@ -82,6 +83,49 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PlaceExpandedSummoningUnit(anchor, anchorPoint.clampedPosition);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, targetPosition);
                 PlaceExpandedSummoningUnit(fixture.Caster, origin + away); PlaceExpandedSummoningUnit(sibling, origin + away * 2f);
+                if (globeEmitter != null)
+                {
+                    // Brain suspension does not disable native summon follow.
+                    // Keep this owned probe within its idle caster's11.7m
+                    // follow threshold, outside both tested actors' globe area.
+                    var originNode = AstarPath.active.GetNearest(origin).node;
+                    float radius = new Kingmaker.Utility.Feet(20).Meters;
+                    foreach (float distance in new[] { 8f, 9f, 10f })
+                    {
+                        var requested = origin + away * distance;
+                        var point = AstarPath.active.GetNearest(requested);
+                        if (point.node == null || originNode == null || !point.node.Walkable ||
+                            point.node.Area != originNode.Area || Vector3.Distance(requested, point.clampedPosition) > .6f ||
+                            Vector3.Distance(fixture.Caster.Position, point.clampedPosition) >= 10f ||
+                            Vector3.Distance(owner.Position, point.clampedPosition) - owner.Corpulence <= radius ||
+                            Vector3.Distance(target.Position, point.clampedPosition) - target.Corpulence <= radius ||
+                            Vector3.Distance(target.Position, point.clampedPosition) <= target.VisionRangeMeters + 2f ||
+                            Vector3.Distance(sibling.Position, point.clampedPosition) <= sibling.Corpulence + globeEmitter.Corpulence + .25f) continue;
+                        PlaceExpandedSummoningUnit(globeEmitter, point.clampedPosition);
+                        globeParking = globeEmitter.Position; break;
+                    }
+                    if (!globeParking.HasValue) throw new InvalidOperationException("No bounded idle globe parking point.");
+                }
+                Func<bool> globeParked = () => globeEmitter == null || (globeParking.HasValue &&
+                    !globeEmitter.Destroyed && !globeEmitter.IsInCombat && !globeEmitter.IsBrainActive &&
+                    ReferenceEquals(globeEmitter.Get<UnitPartSummonedMonster>()?.Summoner, fixture.Caster) &&
+                    Equals(globeEmitter.GroupId, fixture.Caster.GroupId) && globeEmitter.Commands.Empty && globeEmitter.Commands.Queue.Count == 0 &&
+                    (globeEmitter.Get<UnitPartSummonedMonster>().MoveTo == null || globeEmitter.Get<UnitPartSummonedMonster>().MoveTo.IsFinished) &&
+                    Vector3.Distance(globeEmitter.Position, globeParking.Value) < .1f &&
+                    Vector3.Distance(globeEmitter.Position, fixture.Caster.Position) < 10f &&
+                    globeEmitter.DistanceTo(target) > target.VisionRangeMeters && !target.Memory.Contains(globeEmitter));
+                Func<JObject> globeState = () => globeEmitter == null ? null : new JObject {
+                    ["unit"] = globeEmitter.UniqueId, ["position"] = new JArray(globeEmitter.Position.x, globeEmitter.Position.y, globeEmitter.Position.z),
+                    ["summoner"] = globeEmitter.Get<UnitPartSummonedMonster>()?.Summoner?.UniqueId,
+                    ["sameCasterGroup"] = Equals(globeEmitter.GroupId, fixture.Caster.GroupId),
+                    ["casterDistance"] = Vector3.Distance(globeEmitter.Position, fixture.Caster.Position),
+                    ["targetDistance"] = globeEmitter.DistanceTo(target), ["combat"] = globeEmitter.IsInCombat,
+                    ["brain"] = globeEmitter.IsBrainActive, ["targetRemembersEmitter"] = target.Memory.Contains(globeEmitter),
+                    ["emitterRemembersTarget"] = globeEmitter.Memory.Contains(target),
+                    ["commands"] = new JArray(globeEmitter.Commands.Raw.Select(Sprint27AiCommand)),
+                    ["nativeFollow"] = globeEmitter.Get<UnitPartSummonedMonster>()?.MoveTo == null ? null :
+                        Sprint27AiCommand(globeEmitter.Get<UnitPartSummonedMonster>().MoveTo),
+                    ["queueCount"] = globeEmitter.Commands.Queue.Count, ["parked"] = globeParked() };
                 if (player.Party.Contains(fixture.Caster)) throw new InvalidOperationException("Caster unexpectedly in intake party.");
                 player.PartyCharacters.Add(fixture.Caster); partyAdded = true;
                 player.InvalidateCharacterLists(); player.UpdateCharacterLists();
@@ -112,7 +156,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     fixture.Caster.Group.IsPlayerParty && anchor.Group.IsPlayerParty && !target.Memory.Contains(owner) &&
                     !target.Memory.Contains(anchor) && !target.Memory.Contains(fixture.Caster) &&
                     !toggle.Blueprint.OnlyInCombat && owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
-                    sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 && !player.IsInCombat;
+                    sibling.Descriptor.Resources.GetResourceAmount(resource) == 20 && !player.IsInCombat && globeParked();
                 check("fascinate-ready", ready, new JObject { ["survey"] = survey, ["direction"] = direction,
                     ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["anchor"] = anchor.UniqueId,
                     ["distances"] = new JArray(target.DistanceTo(owner), target.DistanceTo(anchor), target.DistanceTo(fixture.Caster)),
@@ -121,7 +165,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["eligible"] = new JArray(eligible.Select(value => value.UniqueId)),
                     ["playerGroups"] = new JArray(owner.Group.IsPlayerParty, fixture.Caster.Group.IsPlayerParty, anchor.Group.IsPlayerParty),
                     ["hostileMemory"] = new JArray(target.Memory.Contains(owner), target.Memory.Contains(anchor), target.Memory.Contains(fixture.Caster)),
-                    ["willBase"] = target.Stats.SaveWill.BaseValue, ["providerActive"] = Sprint32Suggestion.Active },
+                    ["willBase"] = target.Stats.SaveWill.BaseValue, ["providerActive"] = Sprint32Suggestion.Active,
+                    ["globeParking"] = globeState() },
                     "Natural physical visibility beyond enemy acquisition, shared summoned-owner group, no reciprocal hostile memory and independent resources; provider presence must match the fixed phase.");
                 if (!ready) throw new InvalidOperationException("Fascinate calm geometry/capability preconditions failed.");
                 starts = new Lillend32CommandStarts { Owner = owner }; saves = new Dretch30CloudSaves(new[] { target });
@@ -141,13 +186,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !target.Memory.Contains(anchor) && !target.Memory.Contains(fixture.Caster) &&
                         owner.Descriptor.Resources.GetResourceAmount(resource) == 20 &&
                         eligible.Length == 1 && ReferenceEquals(eligible[0], target) &&
-                        owner.Group.IsPlayerParty && fixture.Caster.Group.IsPlayerParty && anchor.Group.IsPlayerParty;
+                        owner.Group.IsPlayerParty && fixture.Caster.Group.IsPlayerParty && anchor.Group.IsPlayerParty && globeParked();
                     check("fascinate-calm-brain-refusal", calm, new JObject { ["commands"] = starts.Commands.Count,
                         ["combat"] = player.IsInCombat, ["targetCombat"] = target.IsInCombat,
                         ["eligible"] = new JArray(eligible.Select(value => value.UniqueId)),
                         ["playerGroups"] = new JArray(owner.Group.IsPlayerParty, fixture.Caster.Group.IsPlayerParty, anchor.Group.IsPlayerParty),
                         ["hostileMemory"] = new JArray(target.Memory.Contains(owner), target.Memory.Contains(anchor), target.Memory.Contains(fixture.Caster)),
-                        ["gameSeconds"] = player.GameTime.TotalSeconds }, "Real Default time preserves calm without memory/combat edits; disabled brain supplies no performance.");
+                        ["gameSeconds"] = player.GameTime.TotalSeconds, ["globeParking"] = globeState() }, "Real Default time preserves calm without memory/combat edits; disabled brain supplies no performance.");
                     if (!calm) throw new InvalidOperationException("Fascinate natural calm boundary failed.");
                     using (var rounds = new Lillend32PerformanceRounds(toggle, resource, false))
                     {
@@ -159,15 +204,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (bardic && !starts.Commands.OfType<UnitActivateAbility>().Any(value =>
                                 ReferenceEquals(value.Ability, toggle) && value.IsFinished))))
                         {
-                            if (!mode.Current || player.IsInCombat || owner.IsInCombat || target.IsInCombat)
+                            if (!mode.Current || player.IsInCombat || owner.IsInCombat || target.IsInCombat || !globeParked())
+                            {
+                                check("fascinate-natural-boundary-refused", false, new JObject {
+                                    ["mode"] = mode.Describe(), ["playerCombat"] = player.IsInCombat,
+                                    ["ownerCombat"] = owner.IsInCombat, ["targetCombat"] = target.IsInCombat,
+                                    ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
+                                    ["commandEvents"] = starts.Rows, ["costs"] = costs, ["upkeep"] = rounds.Rows,
+                                    ["saves"] = saves.Rows, ["globeParking"] = globeState() },
+                                    "Native noncombat ownership and the exact parked globe probe must remain intact; record the failing boundary before teardown.");
                                 throw new InvalidOperationException("Fascinate noncombat execution boundary changed.");
+                            }
                             yield return 0;
                         }
                         Sprint28SetBrainActivePreservingActions(owner, false);
                         var commands = starts.Commands.OfType<UnitActivateAbility>().ToArray();
                         var grants = target.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, effect) &&
                             ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray();
-                        bool natural = commands.Length == 1 && ReferenceEquals(commands[0].Ability, toggle) &&
+                        bool natural = globeParked() && commands.Length == 1 && ReferenceEquals(commands[0].Ability, toggle) &&
                             commands[0].IsActed && commands[0].IsFinished && commands[0].Result == UnitCommand.ResultType.Success &&
                             commands[0].Type == UnitCommand.CommandType.Move && !commands[0].Cutscene && !commands[0].IsIgnoreCooldown &&
                             economy.Count(commands[0]) == 1 && economy.Unchanged(commands[0]) &&
@@ -183,7 +237,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["running"] = toggle.IsRunning, ["ownedEffects"] = grants.Length,
                             ["perception"] = perception + "->" + target.Stats.SkillPerception.ModifiedValue,
                             ["ownSlots"] = new JArray(Enumerable.Range(0,4).Select(book.GetSpontaneousSlots)),
-                            ["siblingPool"] = sibling.Descriptor.Resources.GetResourceAmount(resource),
+                            ["siblingPool"] = sibling.Descriptor.Resources.GetResourceAmount(resource), ["globeParking"] = globeState(),
                             ["fixtureActivationCommands"] = 0, ["fixtureRoundCalls"] = 0, ["forcedRolls"] = 0 },
                             "One natural Move performance, native rounds, Will/noSR and owned Fascinated/-4 Perception; no supplied action, roll, effect or combat suppression.");
                         if (!natural) throw new InvalidOperationException("Fascinate natural control not established; preserve actual save outcome.");

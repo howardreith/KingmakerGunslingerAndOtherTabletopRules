@@ -400,7 +400,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             immunityExpired = immunityLastPresent >= immunityEnd - 1 && immunityLastPresent < immunityEnd &&
                                 immunityFirstAbsent >= immunityEnd && immunityFirstAbsent <= immunityEnd + 1;
                         }
-                        if (immunities.Count >= 2 && finished >= 2 && target.Descriptor.State.HasCondition(UnitCondition.Dazed) || finished >= 4) break;
+                        // A successful Will save is a completed cast too. The
+                        // second actual effect can belong to a third/fourth
+                        // attempt whose command is still naturally finishing.
+                        bool allDazeCommandsEnded = commands.OfType<UnitUseAbility>().Where(value => value.Spell?.Blueprint == ability)
+                            .All(value => value.IsFinished && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded);
+                        if ((immunities.Count >= 2 && finished >= 2 && allDazeCommandsEnded &&
+                            target.Descriptor.State.HasCondition(UnitCondition.Dazed)) || finished >= 4) break;
                         // Native TickBrain owns NextCommandTime and each
                         // command's CanInterrupt decision. Repeating melee can
                         // have an unstarted interruptible command in its queue;
@@ -416,7 +422,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var saves = events.Saves.Where(value => value.Reason?.Context?.SourceAbility == ability).ToArray();
                     var resistance = events.Resistances.Where(value => value.Context?.SourceAbility == ability &&
                         ReferenceEquals(value.Target, target)).ToArray();
-                    bool exact = casts.Length >= 2 && casts.Length <= 4 && casts.All(value => economy.Count(value) == 1 &&
+                    var attempts = commands.OfType<UnitUseAbility>().Where(value => value.Spell?.Blueprint == ability).ToArray();
+                    bool allAttemptsEnded = attempts.All(value => value.IsFinished && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded);
+                    bool exact = allAttemptsEnded && casts.Length >= 2 && casts.Length <= 4 && casts.All(value => economy.Count(value) == 1 &&
                         economy.Exact(value, false) && value.Type == UnitCommand.CommandType.Standard && !value.Cutscene && !value.IsIgnoreCooldown &&
                         ReferenceEquals(value.Spell.Fact, grant) && value.Spell.Spellbook == null) &&
                         saves.Length == casts.Length && saves.All(value => value.DifficultyClass == 14) && saves.Any(value => !value.IsPassed) &&
@@ -433,6 +441,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check("lillend-daze-natural-cantrip", exact, new JObject {
                         ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                         ["starts"] = starts.Rows, ["nativeCasts"] = casts.Length,
+                        ["observedDazeAttempts"] = attempts.Length, ["allDazeAttemptsEnded"] = allAttemptsEnded,
                         ["saves"] = new JArray(saves.Select(value => new JObject { ["dc"] = value.DifficultyClass, ["passed"] = value.IsPassed })),
                         ["resistanceChecks"] = new JArray(resistance.Select(Astral31ResistanceRow)),
                         ["dazed"] = target.Descriptor.State.HasCondition(UnitCondition.Dazed),

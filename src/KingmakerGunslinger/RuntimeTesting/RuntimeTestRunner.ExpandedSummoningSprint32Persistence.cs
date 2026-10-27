@@ -809,6 +809,53 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static bool Sprint32PrecleanupAssistance(UnitEntityData source, UnitEntityData[] sources,
+            UnitEntityData[] listeners, JObject saved, JObject comparable, out JArray additions)
+        {
+            additions = new JArray();
+            var before = (JArray)saved["effects"];
+            var current = (JArray)comparable["effects"];
+            // Cold state above remains exact. Normal native readiness frames may
+            // grant Shake Free to the other owned Lillend. Never admit a missing,
+            // changed or duplicated saved grant, or another new effect/recipient.
+            if (before.Any(row => current.Count(value => JToken.DeepEquals(row, value)) != 1)) return false;
+            var added = current.Where(row => !before.Any(value => JToken.DeepEquals(row, value))).ToArray();
+            if (added.Length == 0) return true;
+            if (source.Get<UnitPartRelease143RosterReceipt>().Key != "lillend-azata" ||
+                source.Get<UnitPartSprint32SavedReceipt>().Ordinal != 1 || added.Length != 1) return false;
+            var sibling = sources.SingleOrDefault(unit => !ReferenceEquals(unit, source) &&
+                unit.Get<UnitPartRelease143RosterReceipt>().Key == "lillend-azata");
+            var assistance = Sprint32SavedBlueprint<BlueprintBuff>("LillendAzata.FascinateAssistance");
+            var carrier = Sprint32SavedBlueprint<BlueprintBuff>("LillendAzata.FascinateCarrier");
+            var state = source.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Blueprint, carrier))
+                .SelectMany(buff => buff.SelectComponents<LillendFascinateState32>()).SingleOrDefault();
+            string areaId = (string)added[0]["sourceAreaId"];
+            var area = Game.Instance.State.AreaEffects.All.SingleOrDefault(value => value.UniqueId == areaId);
+            bool activation = state?.Active == true && ReferenceEquals(state.Assistance, assistance) &&
+                area != null && !area.Destroyed && area.IsInState && !area.IsEnded &&
+                ReferenceEquals(area.Context?.MaybeCaster, source) &&
+                ReferenceEquals(LillendFascinateState32.Find(area.Context, carrier, areaId), state);
+            bool eligible = activation && sibling != null && !sibling.Destroyed && sibling.IsInGame &&
+                !sibling.Descriptor.State.IsDead && ReferenceEquals(sibling.HoldingState, source.HoldingState) &&
+                listeners.Any(target => state.Owns(target) && !sibling.IsEnemy(target));
+            var grants = sibling == null ? new Buff[0] : sibling.Buffs.Enumerable.Where(buff =>
+                ReferenceEquals(buff.Blueprint, assistance) && ReferenceEquals(buff.Context?.MaybeCaster, source) &&
+                buff.SourceAreaEffectId == areaId).ToArray();
+            bool grantExact = grants.Length == 1 && grants[0].Active && !grants[0].IsDisposed &&
+                grants[0].IsPermanent && grants[0].IsNotDispelable && !grants[0].IsFromSpell;
+            var expected = new JObject { ["target"] = sibling?.UniqueId, ["blueprint"] = assistance.AssetGuid,
+                ["source"] = source.UniqueId, ["sourceAreaId"] = areaId, ["permanent"] = true,
+                ["endTicks"] = JValue.CreateNull(),
+                ["components"] = new JArray(assistance.ComponentsArray.Select(component => component.name)) };
+            bool exact = eligible && grantExact && JToken.DeepEquals(expected, added[0]);
+            additions.Add(new JObject { ["grant"] = added[0].DeepClone(), ["sameLiveActivation"] = activation,
+                ["ownedSiblingEligible"] = eligible, ["uniqueLiveGrantFlagsExact"] = grantExact,
+                ["completeEffectRowExact"] = JToken.DeepEquals(expected, added[0]), ["admitted"] = exact });
+            if (!exact) return false;
+            comparable["effects"] = new JArray(current.Where(row => before.Any(value => JToken.DeepEquals(row, value))));
+            return true;
+        }
+
         private IEnumerable<int> CleanupSprint32PersistentState(UnitEntityData caster, UnitEntityData[] sources)
         {
             var listeners = Sprint32SavedListeners(caster);
@@ -830,11 +877,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     upkeep = after > 0 && after <= before && before - after <= Math.Ceiling(elapsed / 6d) + 1;
                     comparable["resources"]["PerformanceResource"] = before;
                 }
-                bool live = elapsed >= 0 && !source.IsBrainActive && upkeep && JToken.DeepEquals(saved, comparable);
+                JArray assistanceAdditions;
+                bool assistance = Sprint32PrecleanupAssistance(source, sources, listeners, saved, comparable, out assistanceAdditions);
+                bool live = elapsed >= 0 && !source.IsBrainActive && upkeep && assistance && JToken.DeepEquals(saved, comparable);
                 RosterPersistenceCheck("s32-precleanup-live-" + source.UniqueId, live, new JObject {
                     ["gameSecondsSinceCold"] = elapsed, ["saved"] = saved, ["beforeRetirement"] = current,
-                    ["nativeUpkeepWithinElapsedRounds"] = upkeep },
-                    "Saved recipient/response identities, actual Dazed state, private grants/deadlines, slots and equipment remain live immediately before source retirement; only bounded native performance upkeep may reduce rounds.");
+                    ["nativeUpkeepWithinElapsedRounds"] = upkeep, ["nativeAssistanceAdditions"] = assistanceAdditions },
+                    "Every saved grant and state remains exact before retirement; bounded native upkeep and one validated same-source/area assistance addition to the owned Lillend sibling are permitted. The added grant remains in the removal assertion.");
                 if (!live) throw new InvalidOperationException("Saved Sprint32 performance/state changed before cleanup; no vacuous removal verdict.");
             }
             var grants = sources.SelectMany(Sprint32SavedEffects).ToArray();
