@@ -68,12 +68,12 @@ Complete wrapper/2756of2756/exact-reference compile/strictZIP PASS401.418s,
 | ID | Expected observable / route and mode | Evidence and remaining work | Invalidated by |
 |---|---|---|---|
 | A1 | Adult profiles, legal tiers/quantities, preserved routes; domain/native composition | Complete86 gate;128 standalone/138 combined adult/book composition PASS | Builders/catalog/registration |
-| A2 | Real player action/slot, quantity,120s base duration, usable body/icon; prepared/spontaneous/Druid conversion | Reviewed44/45/46 eight real casts;131 Satyr body/contact PASS; complete Lillend presentation pending | Publication/cost/quantity/duration/adapters |
+| A2 | Real player action/slot, quantity,120s base duration, usable body/icon; prepared/spontaneous/Druid conversion | Reviewed44/45/46 eight real casts;139 both bodies/contacts PASS | Publication/cost/quantity/duration/adapters |
 | A3 | Satyr useful control, eligibility/no-repeat, ordinary fallback; RTWP/TB | Reviewed controls;132 natural Sleep/Charm/globe;137 combined TB Fear/bow/melee/action/source-expiry PASS | Satyr/shared AI/actions |
 | A4 | Safe support/control/performance, own slots/pools/actions; RTWP/TB |126 controls/127 grab/128 support/129 Fascinate+TB/130 RTWP PASS;138 support PASS but Daze completion observer FAIL;136 bardic boundary FAIL | Book/AI/dispatcher/effects |
-| A5 | Expiry/death/dismissal/cancellation, sibling isolation, no orphan state |131 Satyr private mapping death/expiry/resources PASS; reviewed exact-source/sibling cleanup; loaded cleanup remains pending | Lifecycle/equipment/view ownership |
+| A5 | Expiry/death/dismissal/cancellation, sibling isolation, no orphan state |139 both death/expiry/view/resource retirement PASS; reviewed exact-source/sibling cleanup; loaded cleanup remains pending | Lifecycle/equipment/view ownership |
 | A6 | Fresh cold state, slots/deadlines, moduleOFF/provider transitions |134 prepare37PASS;135 four cold states/controls/views PASS but precleanup observer FAIL. ON cleanup/absence, OFF/provider trios pending | Serialization/registration/lifecycle/views |
-| A7 | Gameplay-camera loading/selection/scale/movement/contact/hit/death/despawn/performance |131 complete Satyr technical path+images PASS;133 Lillend rest/moves/sword PASS, tail observer FAIL; later lifecycle NOT_RUN | Assets/rendering/attachments |
+| A7 | Gameplay-camera loading/selection/scale/movement/contact/hit/death/despawn/performance |139 complete grouped technical path46PASS,21 images agent-inspected; independent tail/lifecycle review confirms bounded qualification | Assets/rendering/attachments |
 | A8 | Standalone plus directly affected shared/combined seams | Standalone focused cases;137 combined Satyr14PASS.138 combined19PASS2FAIL at Daze; bardic globe not reached136 | Shared hooks/AI/registration |
 
 Reuse review read actual source/raw hashes for44/45/46,63/64,87/88,53,74/83,72,116
@@ -125,18 +125,29 @@ pending follow queue/MoveTo and final parking check. No remaining review finding
 Focused production25.7s plus six selected domain tests4.8s PASS before packaging;
 actual timings: frozen86 artifacts/sprint32-checkpoint/focused86-timings.jsonl.
 Candidate86 contains this coherent batch and passed the complete gate above.
-Its affected native cases remain pending; no new native PASS follows from compilation.
+Fresh139 presentation46PASS/0FAIL,173818ms; frozen86 receipt
+artifacts/sprint32-checkpoint/native139.json plus native139-visual-supplement.json.
+Raw9ef85cff848df0024ca4fa1de65db1338cf32d94f90c7ff502f0fdd94a5b84c7.
+Independent review confirms tail rule/capture frame7007, exact owned active acted
+clip0.6128s, complete sword/sword/tail plan and cost. Both lifecycle checks verify
+source/view/area/grant absence and owned-resource destruction before disposal.
+All21 PNGs inspected; supplementary record corrects the initial partial19-image
+inventory. Both final Lillend absence frames exist and are inspected. Supplied
+commands and disclosed scheduler-triggered expiry do not prove natural AI or
+uninterrupted public duration. Neither native carrier has a Death action; no
+death playback or precise movement-arrival claim. Cosmetic debt remains.
+Rest/motion medians: Satyr19.086/17.572ms (58/254 samples), Lillend18.511/20.038ms
+(58/260); motion maxima48.149/61.003ms, capture frames excluded, fixture-only.
+Other affected native cases remain pending; no PASS follows from compilation.
 
-Agent inspected all131 Satyr phases,133 Lillend rest/moves/sword and138 combined
-rest/fallback2: recognizable intact geometry and credible observed contact,
-cosmetic debt retained. No tail or later Lillend lifecycle PASS yet. Native Satyr
-carrier has no Hit/death animation; no substituted playback claimed.131 uncaptured
-rest/motion medians23.91/22.24ms are fixture measurements, not universal performance.
+Earlier131/133/138 image inspections retain their original scope;139 now closes
+the selected tail/lifecycle presentation observations on exact candidate86.
 
 ## Restoration, storage and next action
 
-Latest138 outer09:12:42.371-09:20:07.539UTC,445.168s; exact Compare967Mods/118saves/
-18refs/83settings/tasks0/Steam1 PASS. No owned live runtime transaction remains.
+Latest completed139 outer09:43:35.200-09:49:28.775UTC,353.575s; exact Compare967Mods/
+118saves/18refs/83settings/tasks0/Steam1 PASS. The fresh Working ON sequence is now
+active with its captured original-save backup; do not disturb its owned transaction.
 Last Working outer restored08:50:57.246884UTC: SHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
 8550225B, creationTicks639208636210035057/writeTicks639278868712797783/attrs8224.
@@ -160,8 +171,8 @@ evidence retained, protected intake exact, free4374401024B; frozen86 receipt
 artifacts/sprint32-checkpoint/candidate85-retirement/result.json. Current candidate
 and original evidence are not cleanup targets.
 
-Counts86Build-Local attempts/69validated packages/138actual native launches before
-candidate86 presentation dispatch; increment only on actual game discovery.
+Counts86Build-Local attempts/69validated packages/140actual native launches;
+140 is the active Working ON preparation. Increment only on actual game discovery.
 The provider reference isolation refusal entered no game/transaction; fixed by
 copying269 verified reference files under the selected worktree, preserving the
 guard and original refusal. No unchanged failing replay. Native134-138 envelopes
@@ -170,8 +181,8 @@ overlapping those envelopes, storage/setup roughly10minutes. Product implementat
 unchanged in this batch. Build86 adds401.418s. Exclusive totals unavailable;
 earlier categories in history.
 
-Next: reuse frozen86 exact validated ZIP. Presentation dispatched after fresh
-intake capture; then corrected coldON, bardic and affected combined
+Next: reuse frozen86 exact validated ZIP. Complete active corrected coldON,
+then bardic and affected combined
 Daze/support; continue OFF and provider retained/removed/moduleOFF trios. Use
 separate active records preserve frozen identity. Persistence scope90-120min remains declared;
 ordinary selections target15min/ceiling30min and always finish safe restoration.
