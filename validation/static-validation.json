@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.168-expanded-summoning-sprints30-31-followup",
+  "milestone": "0.0.169-expanded-summoning-satyr-lillend",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.168",
+  "version": "0.0.169",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2684,5 +2684,17 @@
     "visibleChoiceTotal": 1179,
     "guardedNativeReviewed": true,
     "ownerVisualReview": "release authorized by the owner on 2026-10-25"
+  },
+  "expandedSummoningSprint32Release169": {
+    "releaseVersion": "0.0.169",
+    "releaseInformationalVersion": "0.0.169-expanded-summoning-satyr-lillend",
+    "baseStableVersion": "0.0.168",
+    "qualifiedDevelopmentSource": "efd237d1cf12338d8d5eea50403af203785c3dc0",
+    "appendedIdentities": 139,
+    "releasedIdentityChanges": 0,
+    "visibleChoiceTotal": 1189,
+    "change": "Satyr and Lillend Azata; exact qualified product, project, assets and ledger",
+    "nativeEvidence": "Original qualified development artifacts with reviewed reuse; release DLL changes only version metadata and build stamps",
+    "ownerPublicationAuthority": "Howie Reith, 2026-10-27: Merge and release it thank you."
   }
 }

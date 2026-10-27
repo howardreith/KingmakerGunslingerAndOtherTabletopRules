@@ -1,5 +1,35 @@
 # Build, package, and publish
 
+## 0.0.169 Sprint 32 publication authorization
+
+On 2026-10-27 Howie wrote "Merge and release it thank you" after the qualified
+PR74 handoff. This authorizes Sprint32's merge and next stable release, not
+Sprint33. Version0.0.169 is the next available patch after published168, checked
+again by the publisher. Earlier owner-approved omissions/adaptations remain.
+
+The release validator pins all production code (including observers), project,
+assets/source art and ledger to qualified87 sourceefd237d1. Only the three
+AssemblyInfo version attributes and corresponding Info/props version values may
+change. The released168 ledger remains an exact prefix:7372+139=7511 identities.
+The qualified public census is1189 choices; no historical evidence is rewritten.
+
+Use the existing ordinary exact-reference publisher from clean pushed master,
+with explicit169 notes, after review and focused positive/refusal checks of this
+metadata-only adapter. The product already passed the complete qualified87 gate;
+the publisher runs the complete release gate and two deterministic builds,
+skipping domain tests only on the second reproducibility build. No extra
+pre-merge product rebuild or native campaign is implied by metadata/build stamps.
+Native evidence stays attributed to its original artifacts; release DLL/MVID
+will differ. Public download, checksum, embeddedDLL/Info and tag/commit are verified.
+
+```powershell
+.\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
+  -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.169.md' -Publish -ConfirmReleaseReady
+```
+
+This grants no waiver to prior167/168 NOT_RUN gaps. Keep their disclosures and
+the finite Sprint32 evidence limits in the release notes and active record.
+
 ## 0.0.168 Sprints 30-31 follow-up publication authorization
 
 On 2026-10-25 the owner reviewed the follow-up checkpoint (branch

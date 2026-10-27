@@ -1,9 +1,9 @@
-# Sprint 32 - QUALIFIED PR READY / NOT RELEASED
+# Sprint 32 - RELEASE AUTHORIZED / IN PROGRESS
 
 The sole active record is [planning/SPRINT32-STATUS.md](planning/SPRINT32-STATUS.md).
-Owner mission2026-10-25 is complete through reviewed native qualification and
-PR74 for owner review. Frozen candidate87 sourceefd237d1; records may be later
-documentation-only descendants. No merge/release or Sprint33 authority.
+Howie authorized merge and release on2026-10-27 after qualified PR74. Prepare
+version169 from exact qualified87 product, merge, use the sanctioned publisher
+and verify public assets. Native evidence keeps original identities. No Sprint33.
 
 Everything below is historical and does not select current work.
 
