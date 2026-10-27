@@ -1,11 +1,16 @@
 # Build, package, and publish
 
-## 0.0.169 Sprint 32 publication authorization
+## 0.0.169 Sprint 32 publication (completed)
 
 On 2026-10-27 Howie wrote "Merge and release it thank you" after the qualified
 PR74 handoff. This authorizes Sprint32's merge and next stable release, not
-Sprint33. Version0.0.169 is the next available patch after published168, checked
-again by the publisher. Earlier owner-approved omissions/adaptations remain.
+Sprint33. Stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) is published from
+`d4e1f656971bd2010110c331fa51f65cdf919f7b`. The first full build/package passed. Howie
+then explicitly waived further release procedures: two-build reproducibility is
+NOT_RUN_OWNER_WAIVED. Public assets and exact protected intake are verified.
+PR77 is accepted on master; no new artifact was built after the waiver.
+Earlier approved omissions/adaptations remain. The default procedure below is
+retained for provenance, not an instruction to resume waived testing.
 
 The release validator pins all production code (including observers), project,
 assets/source art and ledger to qualified87 sourceefd237d1. Only the three

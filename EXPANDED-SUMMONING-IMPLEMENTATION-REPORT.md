@@ -1,8 +1,9 @@
-Current Sprint 32 Satyr/Lillend implementation is qualified for owner PR review,
-with exact approved adaptations, fresh/reused evidence and restoration in the
-[sole active record](planning/SPRINT32-STATUS.md). Candidate87 remains frozen;
-Howie authorized PR74 merge and release169 on2026-10-27; publication status is
-in the active record. The dated implementation report below is history.
+Sprint 32 Satyr/Lillend is released as stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169).
+The [sole active record](planning/SPRINT32-STATUS.md) contains approved adaptations,
+original native evidence/reuse, exact public identities, review and restoration.
+The owner waived further release procedures; reproducibility remains explicitly
+NOT_RUN_OWNER_WAIVED. Prior167/168 gaps are unchanged. No owned live transaction
+remains. STOP before Sprint33. The dated report below is history.
 
 # Expanded Summoning implementation report
 

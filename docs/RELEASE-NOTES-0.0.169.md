@@ -55,11 +55,18 @@ assets/source art and blueprint ledger. Release0.0.169 changes only version
 attributes and generated build stamps in the DLL; its package/DLL/MVID differ
 from the development artifacts. Earlier native execution retains its original
 artifact identity and is **reviewed reuse**, not fresh execution of the published
-DLL. The normal publisher validates the complete release and compares two
-deterministic builds. The published checksums and manifest identify those bytes.
-The publisher preserves separate immutable build outputs and uses a guarded
+DLL. The first release build passed source checks, all2,756 domain tests, exact-reference
+compilation and strict package validation. Howie explicitly waived further
+release procedures on2026-10-27. Two-build reproducibility remains
+**NOT_RUN_OWNER_WAIVED**. The already validated first artifact was published;
+finalization dispatched no additional build, test or native run. Downloaded
+assets, checksum, manifest, embedded DLL/Info and tag/source were verified.
+The published manifest identifies those exact bytes and the owner disposition.
+The accepted publisher correction on master preserves separate immutable outputs and uses a guarded
 common scratch path for deterministic debug metadata. This workflow correction
-does not change gameplay code, observers, assets or native evidence.
+does not change gameplay code, observers, assets or native evidence. Its later
+two-build execution was stopped at owner request; this release uses the retained
+first artifact.
 
 The actual human installation and protected saves were restored after native
 testing; `KMG_AUTOMATION_BASELINE` remained immutable. DATA's active/unaccepted
