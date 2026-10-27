@@ -1,16 +1,19 @@
-# Sprint 32 - Satyr and Lillend Azata: release authorized / in progress
+# Sprint 32 - Satyr and Lillend Azata: RELEASED / STOP
 
 Owner Howie Reith; mission2026-10-25. Sole active operational record.
 Finite Sprint32 acceptance is complete through fresh execution and reviewed reuse.
 [PR74](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/74)
-is the reviewed product. Howie now authorizes merge and release (2026-10-27:
-"Merge and release it thank you"). No Sprint33 or owner playtest.
+was merged as `d4e1f656971bd2010110c331fa51f65cdf919f7b`. Stable
+[v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) was published 2026-10-27T17:08:55Z
+and its public assets verified. Howie authorized merge/release, then explicitly
+waived further release procedures on2026-10-27. Product acceptance remains
+qualified; remaining release reproducibility is NOT_RUN_OWNER_WAIVED. No Sprint33.
 [Policy](../docs/VALIDATION-POLICY.md) |
 [Immutable verdicts and history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md).
 
 ## Scope, baseline and ownership
 
-Accepted master2d18ec965d1813ab5f2af11be80167fd5cec14d9, v168/PR75-76,
+Accepted implementation baseline master2d18ec965d1813ab5f2af11be80167fd5cec14d9, v168/PR75-76,
 integrated7d2754d2 and refreshed unchanged at final review. Intake48e6fb4a is history.
 HOWARD-LAPTOP owns Sprint32 mechanics/shared integration. DATA's active worktree
 and unaccepted assets were untouched; accepted168 dependencies were integrated.
@@ -18,11 +21,14 @@ Charter v1.0 sections3/4/7 and32, dependencies5/29-31. Adult sources:
 [Satyr](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Satyr),
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
 
-Branch codex/expanded-summoning-sprint32-satyr-lillend is in full active
-.worktrees/expanded-summoning-sprint32-owner-review. Frozen87 remains clean/full/
+Branch codex/expanded-summoning-sprint32-satyr-lillend holds final records in
+.worktrees/expanded-summoning-sprint32-owner-review (sparse). The full isolated
+publisher clone .worktrees/expanded-summoning-sprint32-publish169 is detached
+at the exact published d4e source. Accepted tooling PR77/mastera4f32ed0 is preserved.
+Frozen87 remains clean/sparse/
 detached atefd237d1cf12338d8d5eea50403af203785c3dc0 in
 .worktrees/expanded-summoning-sprint32-final-qualification-records.
-Both are under C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.
+All are under C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.
 Retired79/82/84/85/86 remain clean detached sparse archives; evidence, retained
 packages and E archive mappings are preserved. Frozen86 is
 .worktrees/expanded-summoning-sprint32-qualification-records. Records-only changes
@@ -59,7 +65,8 @@ intake, lease, staging and restoration protections remained in force.
 
 ## Frozen candidate and acceptance
 
-Development version0.0.168, purpose sprint32-lillend-support; no release reserved.
+Qualified development version0.0.168, purpose sprint32-lillend-support.
+These original identities remain separate from the published169 artifact below.
 Source efd237d1cf12338d8d5eea50403af203785c3dc0
 ZIP SHA256 cfd3b514703f78fdb2966120faab62cf0e46e3bf4731aac2e4843c653f8ad4c6
 DLL SHA256 89a44a8428ff71fc1a65d9e24bc663ab4b801638cefd53e76b009601c5e821b2
@@ -153,7 +160,7 @@ storage decision blocks this PR. Working target6.8GB covered measured1.1GB trio
 peak,2GB reserve and observed~3GB unexplained fluctuation; save-free peak550MB,
 build growth267MB. Before final native6.15GB; after~5.97GB. Safety floors unchanged.
 
-Final counts:87 Build-Local attempts,70 validated packages,157 actual native
+Development qualification counts:87 Build-Local attempts,70 validated packages,157 actual native
 launches. Prelaunch refusals/generator failures are not launches. Original failures
 and replan causes remain visible: idle summon follow/parking, action/animation
 sampling, valid native assistance grants, Daze completion and reader scalar-array
@@ -166,41 +173,79 @@ implementation/observer/build/native/wait summaries remain in history; exclusive
 cumulative active category totals are unavailable. No speedup is inferred.
 No blocking owner wait in the final interval; optional unused E approval was pending.
 
-The development qualification below remains complete. Release169 source pin and
-metadata validation PASS;12 positive/refusal cases and24 real dispatch checks PASS.
-Independent actual-diff review found no blocker. Only the three AssemblyInfo
-version attributes differ in production; all1760 compile items remain pinned.
-The two roster qualification descriptions were regenerated using the existing
-manifest route after its stale-text refusal; no product change or native failure.
-Normal PR merge and publisher remain in progress. The older master worktree is
-preserved; publication uses an isolated checkout of exact accepted master.
-PR74 is merged asd4e1f656971bd2010110c331fa51f65cdf919f7b. Its first release
-build passed2756/2756 tests and strict package validation (ZIP12d88b25bef1aeaa,
-DLLd9a59a464a8f5189); these bytes remain unpublished historical evidence. The
-second build correctly refused the same immutable output before compilation.
-The bounded publisher correction now selects a distinct immutable sibling,
-requires the exact full-suite first receipt/references, preserves the first
-archive and uses a common guarded scratch compiler/PDB path. Focused27 candidate
-safety,13 actual publisher-orchestration and89 development-contract checks PASS.
-No product/native source changed; no new native launch. Review and one fresh
-coherent release pair remain. Allow an additional20-35min for this demonstrated
-tooling correction, full first gate, second reproducibility build and download
-verification; this is the same owner-authorized release, not a native campaign.
-The earlier Git-ref and elevation refusals remain in local logs. All attempts
-ended with exact protected Compare967Mods/118saves/18refs/83settings/tasks0/Steam1.
-Predeclared release sequence20-40min: bounded adapter review/checks; ordinary
-publisher full gate and two deterministic builds; public download verification.
-Native evidence is reviewed reuse because every production/project/asset/ledger
-input remains exact87 except three version attributes; release bytes will have
-new version/build stamps and are not called freshly native-tested. No additional
-game launch is selected. Current disk6.07GB; measured267MB build growth plus
-~300MB retained reproducibility/extraction copies and2GB reserve leave substantial
-working margin. No live transaction/game/task exists at release intake.
+## Published release and owner disposition
 
-No required Sprint32 acceptance row remains blocked or NOT_RUN under the exact
+Stable Latest [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169), published 2026-10-27T17:08:55Z.
+Product PR74/release source `d4e1f656971bd2010110c331fa51f65cdf919f7b`.
+Asset `KingmakerGunslinger-0.0.169-expanded-summoning-satyr-lillend.zip` (65072029 bytes; 422 files).
+ZIP SHA256 `12d88b25bef1aeaad03d1b26f4269a7222b186494c49b0c738807e475f0ebfcb`
+DLL SHA256 `d9a59a464a8f51890f49817170792c2e695f3eb24092e6beac635dac8eb9aa10`
+DLL MVID `03cecd73-5210-454f-be24-4a2c825ca931`
+SourceState `e4192dac91713e3a8746766968a6598bd8ff2406a4b0a38b892c88e3ef04d30b`
+
+This exact first release build passed the source/wrapper gate,2756/2756 domain
+tests (142.9s), exact-reference compile and strict package validation. Native,
+technical visual, persistence and affected integration results retain the
+fresh/reused identities and limits in A1-A8; none is relabeled as fresh native
+execution on169 bytes. Independent review found no product blocker.
+
+Howie then instructed: "if you're going through some test procedure to do the
+release, you can go ahead and skip it. Just do finalization work, merge, push,
+and cut a release". Additional qualification was stopped safely. Two-build
+reproducibility is NOT_RUN_OWNER_WAIVED, not PASS. The retained validated first
+package was published using the existing publisher's tag/upload steps. Finalization
+dispatched no additional build, test or native run. Public notes and manifest
+disclose the waiver; packaged notes retain their earlier default-procedure text.
+
+Fresh finalization checks downloaded all three public assets and verified exact
+ZIP/checksum/manifest bytes, embedded DLL/Info, stable Latest and peeled tag/source.
+Verification PASS at 2026-10-27T17:09:51.0754762Z (14.595s). This was transfer and
+identity verification, not another qualification procedure. First-build package
+validation is reviewed reuse. Public receipts: publisher artifacts/
+sprint32-release169/public-download/verification.json and owner-finalization.json.
+
+The ordinary publisher's second d4e build had refused to overwrite its immutable
+first output. Separately identifiable tooling commit1a3a684e, merged in
+[PR77](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/77)
+as `a4f32ed0ea69b2a190ea0f5e8a45b7a710d83e31`, fixes this with a distinct immutable
+sibling, exact full-first receipt/source/reference admission, common guarded
+scratch/PDB path and first-output preservation checks. Focused27 candidate,
+13 publisher-orchestration and89 development-contract checks PASS; actual-diff
+independent review found no blocker. No gameplay, observer, asset or compiler
+source change. Its later two-build execution was stopped at owner request;
+the fix remains accepted on master and is not misrepresented as qualified equality.
+
+All attempt evidence remains immutable: original Git-tag conflict (pre-build),
+elevation refusal (before compilation), d4e first PASS/second immutable-output
+refusal, and owner-stopped corrected run. The latter ran 286.316s;
+its supervisor's unsigned termination-code conversion error is retained, while
+finally removed its task and completed exact protected Compare. No gameplay
+failure or cleanup failure is inferred from that reporting error.
+
+Final protected Compare PASS967Mods/118saves/18references/83settings/tasks0/Steam1,
+including sound bank. No game, owned task, live runtime lease or compatibility
+lock remains. Earlier native restoration and Working bytes/metadata remain exact.
+Publication did not update the human installation. DATA work was untouched.
+
+Publication added four real Build-Local attempts, one validated output and zero
+native launches: cumulative91 attempts/71 validated packages/157 native launches.
+The d4e publisher envelope took761.876s; elevated refusal85.279s; setup/refusal
+repair approximately12 elapsed min; later bounded tooling/review approximately
+14min, with focused checks1.4s/2.6s/6.5s and tightened-guard rerun1.0s. No blocking
+owner wait. Exclusive cumulative active category totals remain unavailable.
+No speedup claim. The owner superseded the predeclared further release sequence.
+
+The closed qualified87 source was retired to a clean sparse archive, retaining
+its exact ZIP/raw evidence; qualified87-source-retirement.json records1037086720B
+recovered and unchanged protected intake. Headroom before the cancelled corrected
+run exceeded6.5GB. Rematerialize before future source-dependent reuse. Earlier
+failed publisher checkout/refs and all unique artifacts remain preserved.
+Final records change documentation only; no rebuild or restamp of released bytes.
+
+No required Sprint32 product acceptance row remains blocked or NOT_RUN under the exact
 owner-approved scope. Prior v167 NOT_RUN stays: grouped all30 public-route/body/icon,
 standalone final and highest-risk combined final. Accepted168 cold/public-route/
 final integration gaps also stay NOT_RUN as disclosed; this focused sprint does
-not close them. Next: finish reviewed169 release preparation, merge PR74, run the sanctioned
-publisher, verify public assets and record final identities. Owner authorization
-now covers these actions. Stop before Sprint33.
+not close them. Next action: STOP. Sprint32 is released and publicly verified
+with the explicit remaining-release-check waiver. No pending owner decision;
+do not start Sprint33 or restart waived qualification without a new instruction.

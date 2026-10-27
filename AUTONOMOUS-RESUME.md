@@ -1,9 +1,12 @@
-# Sprint 32 - RELEASE AUTHORIZED / IN PROGRESS
+# Sprint 32 - RELEASED / STOP
 
+Stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) is published and publicly verified from PR74 source
+`d4e1f656971bd2010110c331fa51f65cdf919f7b`. PR77's tooling fix is accepted on master.
+The owner waived further release procedures; two-build reproducibility is
+NOT_RUN_OWNER_WAIVED. Existing product/native qualification retains its identities.
+Protected intake is exact; no owned live transaction remains.
 The sole active record is [planning/SPRINT32-STATUS.md](planning/SPRINT32-STATUS.md).
-Howie authorized merge and release on2026-10-27 after qualified PR74. Prepare
-version169 from exact qualified87 product, merge, use the sanctioned publisher
-and verify public assets. Native evidence keeps original identities. No Sprint33.
+STOP before Sprint33. Do not restart waived testing from historical instructions.
 
 Everything below is historical and does not select current work.
 
