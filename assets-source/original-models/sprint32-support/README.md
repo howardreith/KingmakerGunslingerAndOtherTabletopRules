@@ -49,3 +49,24 @@ byte-for-byte. Offline party-camera/three-quarter rest views were inspected;
 these do not prove native loading, selection, movement, contact or lifecycle.
 Native body qualification remains pending in the [active record](../../../planning/SPRINT32-STATUS.md).
 Local reproducibility/check receipts: `artifacts/sprint32-body-draft/`.
+
+## Native Satyr blade mapping
+
+Satyr retains the native archer body, blueprint
+`6114adae73a1338498412b3c63c946f8`, prefab
+`22dfc39c941704743a5b3fd9769327a0`. Its missing one-handed blade setting is
+borrowed at runtime from the native melee Satyr, blueprint
+`a6dceccaf84af1a42843e58412265388`, prefab
+`36a3ffb15f1331c489ac1ab666aa9d26`. Native128 read-only metadata
+SHA256 `65ecf1b59021dc67049a9ebf8207d83c873b6f06acf68cc3edb8a156abd6f7af`
+found identical mesh/bind metadata: satyr01,4677vertices,55bone frames, no
+startup action or transitions. Runtime guards additionally compare complete
+bone paths and bind matrices before mapping.
+
+Each exact summon owns only its cloned animation set, main-hand action and
+settings/variant arrays. The native `attackWithSword_01`/`02` clips stay borrowed;
+Bow, Gore and every other native action are preserved. No proprietary clips,
+geometry or curves are exported, modified or packaged. This is an adapter over
+the shipped owned-set mechanism, with no rig retargeting or creature-rule change.
+Native playback/contact, sibling isolation and cleanup remain required in the
+active record; matching metadata alone is not visual qualification.
