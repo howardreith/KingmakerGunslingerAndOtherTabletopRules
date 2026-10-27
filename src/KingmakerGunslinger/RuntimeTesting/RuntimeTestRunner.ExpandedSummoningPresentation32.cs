@@ -17,6 +17,7 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Visual.Animation.Kingmaker;
+using Kingmaker.Visual.MaterialEffects;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -80,12 +81,47 @@ namespace KingmakerGunslinger.RuntimeTesting
                 anchorBrain = anchor.IsBrainActive; anchorCaptured = true; Sprint28SetBrainActivePreservingActions(anchor, false);
                 SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false;
                 mode = Cleanup2EnterNativeDefault(fixture, ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase);
-                foreach (int frame in WaitPresentation32(mode, () => new[] { owner, sibling }.All(actor =>
-                    actor.View != null && EntityFadedIn(actor) && Sprint17BodyIntact(actor.View,
-                        lillend ? actor.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name : "satyr01") &&
-                    (lillend || actor.View.GetComponent<SatyrNativeWeaponAnimation32>()?.Live == true) &&
-                    actor.Descriptor.State.CanAct && actor.Descriptor.State.CanMove &&
-                    actor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null), 15)) yield return frame;
+                // An adopted body can read dissolve=0 while a native delayed
+                // summon dissolve is still queued. Observe its actual controller
+                // retirement before motion; never clear FX or force visibility.
+                int appearanceFrames = 0, quietAppearanceFrames = 0;
+                var appearanceChanges = new JArray(); string previousAppearance = null;
+                try
+                {
+                    foreach (int frame in WaitPresentation32(mode, () => {
+                        appearanceFrames++;
+                        var states = new JArray(new[] { owner, sibling }.Select(actor => {
+                            var controller = actor.View?.GetComponentInChildren<StandardMaterialController>(true);
+                            return new JObject { ["unit"] = actor.UniqueId, ["view"] = actor.View != null,
+                                ["fadedIn"] = EntityFadedIn(actor),
+                                ["intact"] = actor.View != null && Sprint17BodyIntact(actor.View,
+                                    lillend ? actor.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name : "satyr01"),
+                                ["dissolve"] = DissolveAmount(actor),
+                                ["nativeDissolveAnimations"] = controller == null ? -1 : controller.GetDissolveAnimationsCount(),
+                                ["binding"] = lillend ? actor.View?.GetComponent<LillendHumanVisualAttachment>()?.Live == true :
+                                    actor.View?.GetComponent<SatyrNativeWeaponAnimation32>()?.Live == true,
+                                ["canAct"] = actor.Descriptor.State.CanAct, ["canMove"] = actor.Descriptor.State.CanMove,
+                                ["appearanceBuffAbsent"] = actor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null };
+                        }));
+                        bool ready = states.OfType<JObject>().All(row => (bool)row["view"] && (bool)row["fadedIn"] &&
+                            (bool)row["intact"] && (int)row["nativeDissolveAnimations"] == 0 && (bool)row["binding"] &&
+                            (bool)row["canAct"] && (bool)row["canMove"] && (bool)row["appearanceBuffAbsent"]);
+                        string signature = new JArray(states.OfType<JObject>().Select(row => new JObject {
+                            ["unit"] = row["unit"], ["intact"] = row["intact"],
+                            ["nativeDissolveAnimations"] = row["nativeDissolveAnimations"], ["binding"] = row["binding"] })).ToString();
+                        if (signature != previousAppearance)
+                        { appearanceChanges.Add(new JObject { ["frame"] = Time.frameCount, ["states"] = states }); previousAppearance = signature; }
+                        quietAppearanceFrames = ready ? quietAppearanceFrames + 1 : 0;
+                        return quietAppearanceFrames >= 3;
+                    }, 15)) yield return frame;
+                }
+                finally
+                {
+                    Sprint25Check(id + "-appearance-settled", quietAppearanceFrames >= 3,
+                        new JObject { ["observedFrames"] = appearanceFrames, ["consecutiveQuietFrames"] = quietAppearanceFrames,
+                            ["changes"] = appearanceChanges, ["nativeFxMutated"] = false },
+                        "Both exact bodies are intact with no queued native dissolve for three ordinary frames before movement; native fade/visibility remains untouched.");
+                }
                 if (lillend)
                     foreach (var actor in new[] { owner, sibling })
                     {
