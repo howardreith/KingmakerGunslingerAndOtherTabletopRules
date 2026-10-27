@@ -305,15 +305,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var tailAction = animation?.Action as LillendTailAction;
                             var active = animation?.ActiveAnimation;
                             var clip = active?.GetPlayableClip();
+                            // Native command Tick polls the animation's acted
+                            // flag independently of the animation update. Reuse
+                            // the shipped Salamander contact predicate; only the
+                            // weapon event and its capture must share a frame.
                             bool playing = tailAction != null ? ReferenceEquals(tailAction, owner.View.GetComponent<LillendHumanVisualAttachment>()?.TailAction) &&
-                                tailAction.PlayingOwnedClip && tailAction.LastActFrame == eventFrame :
+                                animation.IsStarted && animation.IsActed && tailAction.PlayingOwnedClip &&
+                                tailAction.LastClipTime >= LillendTailAnimationPolicy.ActTime :
                                 SerpentineFinalReviewPolicy.PlayedNativeClip(true, animation != null && animation.IsStarted, clip?.name,
                                     clip == null ? float.NaN : clip.length, active == null ? double.NaN : active.GetTime(),
                                     active == null ? float.NaN : active.GetWeight());
                             attackRow["clipObservation"] = new JObject { ["playing"] = playing, ["nativeClip"] = clip?.name,
                                 ["nativeTime"] = active == null ? (double?)null : active.GetTime(),
                                 ["nativeWeight"] = active == null ? (float?)null : active.GetWeight(),
-                                ["tailPlayingOwned"] = tailAction?.PlayingOwnedClip, ["tailLastActFrame"] = tailAction?.LastActFrame };
+                                ["tailPlayingOwned"] = tailAction?.PlayingOwnedClip, ["tailLastActFrame"] = tailAction?.LastActFrame,
+                                ["tailLastClipTime"] = tailAction?.LastClipTime, ["tailLastNativeTime"] = tailAction?.LastNativeTime,
+                                ["nativeHandleActed"] = animation?.IsActed };
                             var handAction = animation?.Action as UnitAnimationActionHandAttack;
                             if (handAction != null)
                             {
