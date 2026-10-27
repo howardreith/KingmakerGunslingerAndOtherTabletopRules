@@ -71,7 +71,8 @@ function Get-KmgLocalCandidateLayout {
         [Parameter(Mandatory = $true)][string]$RepositoryRoot,
         [Parameter(Mandatory = $true)][string]$Commit,
         [Parameter(Mandatory = $true)][string]$Id,
-        [Parameter(Mandatory = $true)][string]$Version
+        [Parameter(Mandatory = $true)][string]$Version,
+        [switch]$Reproducibility
     )
     if ($Commit -cnotmatch '^[0-9a-f]{40}$' -or
         $Id -cne 'KingmakerGunslinger' -or
@@ -79,8 +80,25 @@ function Get-KmgLocalCandidateLayout {
         throw 'Candidate layout requires an exact commit, mod ID and version.'
     }
     $root = Join-Path $RepositoryRoot ("artifacts\local-runtime\$Version\" + $Commit.Substring(0, 12))
+    if ($Reproducibility) { $root += '-reproducibility' }
     return [pscustomobject]@{
         Root = $root
         PackagePath = Join-Path $root "$Id-$Version-local-runtime.zip"
+        # Identical compiler/PDB paths in both builds; each immutable candidate
+        # archives its own copy before the scratch output can be replaced.
+        ScratchRoot = Join-Path $RepositoryRoot ("artifacts\obj\release-exact\$Version\" + $Commit.Substring(0, 12))
+        ArchivedExactRoot = Join-Path $root 'exact-build'
     }
+}
+
+function Get-KmgReleaseOutputRows {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    if (-not (Test-Path -LiteralPath $Path -PathType Container)) { throw 'Primary archive or scratch is missing.' }
+    $prefix = (Resolve-Path -LiteralPath $Path).Path.TrimEnd('\') + '\'
+    @(Get-ChildItem -LiteralPath $Path -Recurse -Force | Sort-Object FullName | ForEach-Object {
+        if ($_.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw 'Release scratch/archive contains a reparse entry.' }
+        $relative = $_.FullName.Substring($prefix.Length)
+        if ($_.PSIsContainer) { 'directory|' + $relative }
+        else { 'file|' + $relative + '|' + $_.Length + '|' + (Get-KmgSha256 -Path $_.FullName) }
+    })
 }

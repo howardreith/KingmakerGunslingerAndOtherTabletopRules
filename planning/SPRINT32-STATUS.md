@@ -174,6 +174,20 @@ The two roster qualification descriptions were regenerated using the existing
 manifest route after its stale-text refusal; no product change or native failure.
 Normal PR merge and publisher remain in progress. The older master worktree is
 preserved; publication uses an isolated checkout of exact accepted master.
+PR74 is merged asd4e1f656971bd2010110c331fa51f65cdf919f7b. Its first release
+build passed2756/2756 tests and strict package validation (ZIP12d88b25bef1aeaa,
+DLLd9a59a464a8f5189); these bytes remain unpublished historical evidence. The
+second build correctly refused the same immutable output before compilation.
+The bounded publisher correction now selects a distinct immutable sibling,
+requires the exact full-suite first receipt/references, preserves the first
+archive and uses a common guarded scratch compiler/PDB path. Focused27 candidate
+safety,13 actual publisher-orchestration and89 development-contract checks PASS.
+No product/native source changed; no new native launch. Review and one fresh
+coherent release pair remain. Allow an additional20-35min for this demonstrated
+tooling correction, full first gate, second reproducibility build and download
+verification; this is the same owner-authorized release, not a native campaign.
+The earlier Git-ref and elevation refusals remain in local logs. All attempts
+ended with exact protected Compare967Mods/118saves/18refs/83settings/tasks0/Steam1.
 Predeclared release sequence20-40min: bounded adapter review/checks; ordinary
 publisher full gate and two deterministic builds; public download verification.
 Native evidence is reviewed reuse because every production/project/asset/ledger
