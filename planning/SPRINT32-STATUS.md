@@ -16,15 +16,17 @@ Accepted168 assets are included; DATA active/unaccepted work remains untouched.
 No accepted Satyr/Lillend renderer overlap was found.
 
 Review branch codex/expanded-summoning-sprint32-satyr-lillend now lives in
-.worktrees/expanded-summoning-sprint32-satyr-animation for active records.
-Frozen candidate84 source4b8e248d7df864829e4f0c71d1476eb40b6ad57b remains
-clean/detached in .worktrees/expanded-summoning-sprint32-final-records.
+.worktrees/expanded-summoning-sprint32-qualification-records for active records.
+Frozen candidate85 source563a87453d5af1dc91006cbaaf534c7f45c10bb6 remains
+clean/detached in .worktrees/expanded-summoning-sprint32-satyr-animation.
+Accepted master was refreshed08:09UTC and remains2d18ec9, no new descendants.
 Both paths are under C:/Dev/KingmakerGunslingerLab/repo/KingmakerGunslinger/.
 The reviewed isolated commitc77f6c54 was normally cherry-picked as4b8e248d;
 its equivalent tree was verified before moving the review branch. No history
 rewrite, PR merge or publication. Documentation may advance independently.
 Retired79 (expanded-summoning-sprint32) and82 (expanded-summoning-sprint32-records)
-are detached clean sparse archives. Their packages/raws remain intact; future
+and84 (expanded-summoning-sprint32-final-records) are detached clean sparse
+archives. Their packages/raws remain intact; future
 native reuse requires rematerialization before ordinary identity guards.
 
 Charter v1.0 sections3/4/7 and32; dependencies5,29-31. Satyr SNA IV-IX,
@@ -61,14 +63,14 @@ shortbow/private dagger/secondary horns. Lillend: Outsider7/HP73/AC20, Large
 safe controls/Sound Burst/Lullaby/Daze60s immunity.
 [Body and native mapping provenance](../assets-source/original-models/sprint32-support/README.md).
 
-The implemented, not-yet-natively-qualified Satyr presentation repair reuses the shipped view-owned AnimationSet
+The native131-qualified Satyr presentation repair reuses the shipped view-owned AnimationSet
 seam: private set/main-hand/settings arrays add the exact native blade clips,
 preserve Bow/Gore/all other actions, and never modify/export native assets.
 Native128 metadataSHA65ecf1b59021dc67049a9ebf8207d83c873b6f06acf68cc3edb8a156abd6f7af
 found identical55-bone mesh/bind frames and no startup/transitions on the two
 exact native peers. Runtime additionally verifies complete bone paths/matrices.
 Independent review agrees this is bounded mapping, not a new subsystem.
-Matching metadata is not playback/contact qualification.
+Native131 supplied ordinary attacks now prove blade/gore/bow playback/contact; metadata alone was never qualification.
 
 Review P2: native set assignment precedes active-handle retirement. Cleanup now
 retains containers after a throwing setter, retries only against the exact owned
@@ -83,27 +85,27 @@ native qualification remains required. Both P2 findings are independently confir
 
 ## Current candidate and finite acceptance
 
-Validated candidate84, source4b8e248d7df864829e4f0c71d1476eb40b6ad57b:
-ZIP92b3bae08e326286ca9d536ed6c8e0c642d84c4bc8e07122edbcb87f3c795598;
-DLL3f85a6de28eaa416395d821e0b8b08e9d39412d1fd08092d5743cd4e8895d4a6;
-MVIDacd51603-abc8-46a8-998e-5f2d7496fd35;
-SourceState9c029b557a810212ab06d05f28ab3ba5024682adfb0d414e7ccd780f1b5188c7.
-Canonical ZIP/receipt: frozen84 artifacts/development-candidates/sprint32-lillend-support/4b8e248d7df8/.
-Complete wrapper/2756of2756/exact-reference compile/strictZIP PASS371.025s,
-07:39:40.610-07:45:51.635UTC; domain runner114.5s. No deployment during gate.
-Frozen84 artifacts/sprint32-checkpoint/candidate84.json, candidate84-helpers.json
-and build84-* preserve exact identities. Source/assets/compiled observers frozen.
-Investigation83 remains distinct older sourcef0d0f245, ZIPbd588c93dd16e82c51bd2b5f14bda5ff6d2a72ea1b2666738a706b899a4a702f,
-DLLcd68b12a0665eab04b5cb37282042203e203809eb092cccc6797495804846950;
-its receipt/native128-130 remain at the same evidence root. Complete82 gate and
-original80/81 failures remain in history/retired82. No old evidence is relabeled84.
+Validated candidate85, source563a87453d5af1dc91006cbaaf534c7f45c10bb6:
+ZIP14ba3a3cda1aa4fb72da1d44b9f09f6f180c28d3d9f84f4af54c3c6c73726ff4;
+DLLab204e3a613c82b8f377fc4673aeef30ab63223565d02d27b2ba28e4d730f4c6;
+MVIDabb95f7b-86ed-4bdc-b05c-e0a04333524f;
+SourceStatefd8ba51ca60583428da7e638f92203556dcf497d6deff66b6fb2fe591dbcb59f.
+Canonical ZIP/receipt: frozen85 artifacts/development-candidates/sprint32-lillend-support/563a87453d5a/.
+Complete wrapper/2756of2756/exact-reference compile/strictZIP PASS398.870s,
+08:11:40.167-08:18:19.037UTC; domain runner134.4s. No deployment during gate.
+Frozen85 artifacts/sprint32-checkpoint/candidate85.json, candidate85-helpers.json
+and build85-* bind exact inputs. Source/assets/compiled observers are frozen.
+Only the presentation readiness observer and records changed since84. Native
+evidence84/83/82 below remains source-bound reviewed reuse, never fresh85 execution.
+Their original packages/receipts,80/81 gate failures and all native failures remain.
+
 Required final rows remain incomplete; reviewed reuse is not fresh changed-byte testing.
 
 | ID | Expected observable / selected route | Current evidence and remaining work | Invalidated by |
 |---|---|---|---|
-| A1 | Adult profiles, legal tiers/quantities, preserved routes; domain/native composition | Complete84 gate; fresh128 adult/book composition; final native composition pending | Builders/catalog/registration |
-| A2 | Actual player action/slot, quantity,120s base duration, usable body/icon; prepared/spontaneous/Druid conversion | Independently reviewed44/45/46 reuse below; current technical body/contact pending | Publication/cost/quantity/duration/adapters |
-| A3 | Satyr useful control, eligible/no-repeat choice and fallback; RTWP/TB | Prior source-bound controls; fresh globe atwill and combined-turn pending | Satyr/shared AI/actions |
+| A1 | Adult profiles, legal tiers/quantities, preserved routes; domain/native composition | Complete85 gate; reviewed128 adult/book composition; combined support composition pending | Builders/catalog/registration |
+| A2 | Actual player action/slot, quantity,120s base duration, usable body/icon; prepared/spontaneous/Druid conversion | Independently reviewed44/45/46 reuse;131 Satyr body/contact PASS, Lillend presentation pending | Publication/cost/quantity/duration/adapters |
+| A3 | Satyr useful control, eligible/no-repeat choice and fallback; RTWP/TB | Reviewed controls and132 natural Sleep/Charm/globe PASS; combined-turn pending | Satyr/shared AI/actions |
 | A4 | Safe useful support/control/performance; independent actions/slots/pools,RTWP/TB | Fresh126 controls,127 grab,128 support,129 Fascinate/TB,130 RTWP neighbor; bardic globe pending | Book/AI/dispatcher/effects |
 | A5 | Expiry/death/dismissal/cancellation, sibling isolation, no orphan effects/items/commands | 131 native Satyr death/expiry and private/borrowed animation resources PASS; reviewed earlier exact-source/sibling cleanup reuse | Lifecycle/equipment/view ownership |
 | A6 | Fresh cold state, own slots/deadlines, moduleOFF/provider transitions |123 original cold observer FAIL retained; explicit JSON null fixed; ON/OFF/provider trios pending, plus new view rebinding/no-allocation check | Serialization/registration/lifecycle/view binding |
@@ -173,7 +175,12 @@ packages/receipts/protected intake. No unique evidence or protected backup delet
 Working measured peak902923316B rounded1.1GB plus2GB reserve; save-free550MB plus2GB;
 new build growth at least267MB. Remeasure before staging; no concurrent build/native.
 
-Counts84Build-Local attempts/67validated packages/132confirmed native launches.
+Counts85Build-Local attempts/68validated packages/132confirmed native launches.
+Candidate85 technical presentation is in guarded setup; count133 only after
+actual process discovery. Its current intake is owned by that wrapper.
+New records checkout initially refused its empty --no-checkout index; verified
+directory contained only.git, then initial sparse read-tree materialized it.
+This prelaunch refusal touched no game/save; original tool result remains.
 Candidate84 native131 completed34PASS/1FAIL,158809ms; Satyr binding/selection/
 movement/dagger+horns/bow/positive wound/death+expiry/resource isolation PASS.
 All11 frames inspected: Satyr recognizable/intact, contact credible, no severe
@@ -204,7 +211,11 @@ review P2 required retaining those transitions on timeout/exception; finally now
 records both outcomes without suppressing the original exception, confirmed
 resolved. Focused affected production25.2s/six tests0.9s PASS.
 Five verified closed128-132 extraction duplicates recovered506342133B08:05UTC;
-free3140202496B and protected Compare PASS. Exact ZIPs, raw evidence and backups retained.
+free3140202496B and protected Compare PASS. Two exact retired84 staging mirrors
+recovered202553442B08:10UTC. Retired84 source sparsified reversibly,85 materialized;
+one immutable native IL hard link avoids104MB duplicate, exact SHA verified.
+Protected Compare PASS; ZIPs/raws/backups retained. Pre-native133 free3216191488B,
+above save-free550MB+2GB reserve. Cold trios still require a fresh3.1GB check.
 This checkpoint: focused repair compile25.2s+tests4.8s plus retained failed compile;
 83 outer build459.931s includes185s after validated receipt waiting on compiler.
 128/129/130 native observation199.371s/209.755s/145.340s; outer setup/execution/restoration
@@ -212,9 +223,8 @@ This checkpoint: focused repair compile25.2s+tests4.8s plus retained failed comp
 capture, observer addition roughly5minutes; category overlap prevents exact
 exclusive totals. Earlier work/wait categories remain in history; no speedup claim.
 
-Next: complete132 and restoration. Review/compile the bounded presentation
-observer correction, package changed observer once and rerun its affected case;
-retain84 evidence for unchanged mechanics. Continue
+Next: inspect133 presentation, transition evidence and exact restoration.
+Candidate85 full gate already passed; reuse its validated ZIP. Continue
 remaining globe/combined cases and Working ON/provider retained/removed/moduleOFF
 trios. Persistence scope predeclared90-120min; ordinary selections target15min/
 ceiling30min and always finish restoration. Retest only actual invalidated cases.
