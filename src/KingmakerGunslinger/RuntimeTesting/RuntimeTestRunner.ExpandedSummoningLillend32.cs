@@ -425,6 +425,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             IGlobalRulebookHandler<RuleHealDamage>
         {
             internal UnitEntityData Owner;
+            internal bool ObserveRtwpAttackCompletion; // Exact technical-presentation instance opt-in only.
             internal readonly HashSet<UnitCommand> Commands = new HashSet<UnitCommand>();
             internal readonly JArray Rows = new JArray();
             internal readonly JArray AttackRows = new JArray();
@@ -492,7 +493,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
-                if (!ReferenceEquals(evt.Initiator, Owner) || !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return;
+                if (!ReferenceEquals(evt.Initiator, Owner) || (!ObserveRtwpAttackCompletion && !TurnBased.Controllers.CombatController.IsInTurnBasedCombat())) return;
                 var candidates = Owner.Commands.Raw.OfType<UnitAttack>().Where(value => value.IsRunning &&
                     !value.IsFinished && Commands.Contains(value) && ReferenceEquals(value.Target, evt.Target)).ToArray();
                 if (candidates.Length != 1)
@@ -514,7 +515,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void HandleUnitCommandDidAct(UnitCommand command)
             {
                 var attack = command as UnitAttack;
-                if (attack == null || !ReferenceEquals(attack.Executor, Owner) || !TurnBased.Controllers.CombatController.IsInTurnBasedCombat()) return;
+                if (attack == null || !ReferenceEquals(attack.Executor, Owner) || (!ObserveRtwpAttackCompletion && !TurnBased.Controllers.CombatController.IsInTurnBasedCombat())) return;
                 var row = AttackSnapshot(attack, "native-command-act");
                 AttackRows.Add(row);
                 var plan = attack.AllAttacks.Select(value => value.Hand.MaybeWeapon.Blueprint).ToArray();
@@ -526,7 +527,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void HandleUnitCommandDidEnd(UnitCommand command)
             {
                 var attack = command as UnitAttack;
-                if (attack != null && ReferenceEquals(attack.Executor, Owner) && TurnBased.Controllers.CombatController.IsInTurnBasedCombat())
+                if (attack != null && ReferenceEquals(attack.Executor, Owner) && (ObserveRtwpAttackCompletion || TurnBased.Controllers.CombatController.IsInTurnBasedCombat()))
                     AttackRows.Add(AttackSnapshot(attack, "native-command-end"));
             }
 
@@ -538,8 +539,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["attackIndex"] = (int)ReadExpandedSummoningOptionalMember(attack, "m_AttackIndex");
                 row["actualPlan"] = new JArray(attack.AllAttacks.Select(value => value.Hand.MaybeWeapon.Blueprint.AssetGuid));
                 row["plannedAbsent"] = attack.PlannedAttack == null;
-                row["nativeRound"] = Game.Instance.TurnBasedCombatController.RoundNumber;
-                row["nativeTurn"] = Sprint22TurnState(attack.Executor, attack.Target);
+                bool turnBased = TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
+                row["turnBased"] = turnBased;
+                if (turnBased)
+                {
+                    row["nativeRound"] = Game.Instance.TurnBasedCombatController.RoundNumber;
+                    row["nativeTurn"] = Sprint22TurnState(attack.Executor, attack.Target);
+                }
                 return row;
             }
 

@@ -145,6 +145,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["siblingBudget"] = siblingBefore, ["second"] = second?.UniqueId },
                     "Actual native five-HD nonhumanoid recipients exclude competing humanoid/HD controls; allied footprint refusal precedes safe natural casting, without changing production choices.");
                 if (!ready) throw new InvalidOperationException("Control case native preconditions failed.");
+                if (!burst && !turnBased)
+                {
+                    // Actual supported ward facts are eligibility fixtures, not
+                    // claims of a new native ward cast or spell-slot debit.
+                    if (!_context.FeatureModules.Active.ProtectionFromAlignmentControlImmunity)
+                        throw new InvalidOperationException("Selected control integration requires the accepted alignment-control module.");
+                    foreach (string wardGuid in new[] { "b19e788487556aa4397080ef3dbb3619", "a4742d7afde0f4f47b380abed025b219" })
+                    {
+                        var wardBlueprint = BlueprintLibraryLookup.RequireExact<Kingmaker.UnitLogic.Buffs.Blueprints.BlueprintBuff>(
+                            BlueprintBootstrap.Library, wardGuid, "native Good/Chaos control ward");
+                        var ward = target.Descriptor.AddBuff(wardBlueprint, target, TimeSpan.FromMinutes(1));
+                        try
+                        {
+                            bool refused = ward != null && ward.Active && !ward.IsDisposed && score(policy, target) == 0;
+                            Sprint25Check(id + "-ward-" + wardGuid, refused, new JObject {
+                                ["ward"] = wardGuid, ["active"] = ward?.Active, ["charmScore"] = score(policy, target),
+                                ["casterAlignment"] = owner.Descriptor.Alignment.Value.ToString(),
+                                ["slots"] = book.GetSpontaneousSlots(level), ["fixtureWardApplications"] = 1 },
+                                "An actual native Protection from Good/Chaos fact makes this CG Lillend's Charm ineligible; applying the ward is disclosed fixture setup, not casting proof.");
+                            if (!refused) throw new InvalidOperationException("Actual native ward did not refuse Charm.");
+                        }
+                        finally { if (ward != null && !ward.IsDisposed) ward.Remove(); }
+                        if (score(policy, target) != 1 || book.GetSpontaneousSlots(level) != initialSlots)
+                            throw new InvalidOperationException("Unwarded eligibility or original slots did not return.");
+                    }
+                }
                 if (!turnBased) _lillendHoldOwnerTicks32 = new LillendDazeRoundTicks32(owner, ai);
                 starts = new Lillend32CommandStarts { Owner = owner };
                 saves = new Dretch30CloudSaves(second == null ? new[] { target } : new[] { target, second });
@@ -267,20 +293,82 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["effectDisposed"] = charmEffect.IsDisposed, ["fixtureHealCommands"] = 1 },
                             "This caster's real helpful spell heals the charmed animal, spends its native slot/action and leaves Charm intact; hostile-metadata fallback does not misclassify healing.");
                         if (!harmless) throw new InvalidOperationException("Harmless healing interrupted Charm or failed its normal cast.");
+                        // An unrelated native attacker may damage the charmed subject
+                        // without being misclassified as this caster's apparent ally.
+                        second = spawn(); second.Stats.AdditionalAttackBonus.BaseValue = 100;
+                        Vector3 unrelatedNear; string unrelatedLane, unrelatedDirection;
+                        var unrelatedOrigin = Sprint24AiCombatLane(fixture.Caster, second, target, 1.4f,
+                            out unrelatedNear, out unrelatedLane, out unrelatedDirection);
+                        PlaceExpandedSummoningUnit(second, unrelatedOrigin); PlaceExpandedSummoningUnit(target, unrelatedNear);
+                        second.Wake(0f); if (!game.State.AwakeUnits.Contains(second)) game.State.AwakeUnits.Add(second);
+                        second.Memory.Add(target); target.Memory.Add(second);
+                        limit = DateTime.UtcNow.AddSeconds(8);
+                        do { game.IsPaused = false; yield return 0; memory.Tick(); }
+                        while (DateTime.UtcNow < limit && (!second.HasLOS(target) || !second.Memory.ContainsVisible(target) ||
+                            second.View == null || !EntityFadedIn(second) || !second.Descriptor.State.CanAct));
+                        if (!second.HasLOS(target) || !second.Memory.ContainsVisible(target) || !second.Descriptor.State.CanAct)
+                            throw new InvalidOperationException("Unrelated attacker is not natively visible, awake and able to act.");
+                        var unrelatedPlan = new UnitAttack(target); unrelatedPlan.Init(second);
+                        var unrelatedWeapons = unrelatedPlan.CreateFullAttack();
+                        if (unrelatedWeapons.Count == 0 || unrelatedWeapons.Any(hand => hand.Hand.MaybeWeapon == null) ||
+                            second.DistanceTo(target) >= unrelatedWeapons.Min(hand => hand.Hand.MaybeWeapon.AttackRange.Meters) ||
+                            !second.IsEnemy(owner) || !owner.IsEnemy(second) || second.IsAlly(owner))
+                            throw new InvalidOperationException("Unrelated attacker lacks actual reach or hostile relation.");
+                        var unrelatedEvents = new Sprint16RuleObserver { Owner = second, Target = target };
+                        var unrelatedCommands = new List<UnitAttack>();
+                        var unrelatedWeaponDamage = new HashSet<RuleDealDamage>();
+                        unrelatedEvents.ObserveWeaponContact = rule => {
+                            if (ReferenceEquals(rule.Initiator, second) && ReferenceEquals(rule.Target, target) &&
+                                rule.MeleeDamage != null) unrelatedWeaponDamage.Add(rule.MeleeDamage);
+                        };
+                        Func<RuleDealDamage, bool> exactUnrelatedDamage = value => !value.IsFake && value.Damage > 0 &&
+                            ReferenceEquals(value.Initiator, second) && ReferenceEquals(value.Target, target) &&
+                            unrelatedWeaponDamage.Contains(value);
+                        EventBus.Subscribe(unrelatedEvents);
+                        try
+                        {
+                            for (int attempt = 0; attempt < 3 && !unrelatedEvents.Damage.Any(exactUnrelatedDamage); attempt++)
+                            {
+                                var unrelatedAttack = new UnitAttack(target); unrelatedCommands.Add(unrelatedAttack); second.Commands.Run(unrelatedAttack);
+                                limit = DateTime.UtcNow.AddSeconds(20);
+                                while (DateTime.UtcNow < limit && !unrelatedAttack.IsFinished) { game.IsPaused = false; yield return 0; }
+                                if (!unrelatedAttack.IsFinished) throw new InvalidOperationException("Unrelated native attack did not finish.");
+                            }
+                            bool retained = unrelatedEvents.Damage.Any(exactUnrelatedDamage) && charmEffect.Active &&
+                                !charmEffect.IsDisposed && !owner.IsEnemy(target) && second.IsEnemy(owner) &&
+                                owner.IsEnemy(second) && !second.IsAlly(owner);
+                            Sprint25Check(id + "-unrelated-damage-retained", retained, new JObject {
+                                ["attacker"] = second.UniqueId, ["caster"] = owner.UniqueId, ["target"] = target.UniqueId,
+                                ["damage"] = new JArray(unrelatedEvents.Damage.Where(exactUnrelatedDamage).Select(Sprint16DamageEvent)),
+                                ["commands"] = new JArray(unrelatedCommands.Select(Sprint27AiCommand)),
+                                ["effectActive"] = charmEffect.Active, ["effectDisposed"] = charmEffect.IsDisposed,
+                                ["attackerIsCasterAlly"] = second.IsAlly(owner), ["fixtureAttackerAccuracy"] = 100 },
+                                "Actual positive native damage from an unrelated mutually hostile actor retains this exact Charm and friendly target relation.");
+                            if (!retained) throw new InvalidOperationException("Unrelated damage wrongly ended Charm or no damage occurred.");
+                        }
+                        finally { EventBus.Unsubscribe(unrelatedEvents); second.Commands.InterruptAll(true); }
+                        // Native81 already covers the caster threat. This case
+                        // covers the private classifier's apparent-ally branch.
+                        Vector3 allyNear; string allyLane, allyDirection;
+                        var allyOrigin = Sprint24AiCombatLane(fixture.Caster, sibling, target, 1.4f,
+                            out allyNear, out allyLane, out allyDirection);
+                        PlaceExpandedSummoningUnit(sibling, allyOrigin); PlaceExpandedSummoningUnit(target, allyNear);
+                        if (!sibling.IsAlly(owner) || sibling.IsEnemy(owner) || owner.IsEnemy(sibling))
+                            throw new InvalidOperationException("Apparent ally fixture relation is not native and mutual.");
                         // The next supplied ordinary command is an RTWP threat probe,
                         // not additional autonomous attack or casting evidence.
                         SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false; game.TurnBasedCombatController.Activate();
                         var attack = new UnitAttack(target); double deadline = charmEffect.EndTime.TotalSeconds;
-                        owner.Commands.Run(attack); limit = DateTime.UtcNow.AddSeconds(24);
+                        sibling.Commands.Run(attack); limit = DateTime.UtcNow.AddSeconds(24);
                         while (DateTime.UtcNow < limit && (!attack.IsStarted || charmEffect.Active && !charmEffect.IsDisposed || !owner.IsEnemy(target)))
                         { game.IsPaused = false; yield return 0; }
                         bool broken = attack.IsStarted && (!charmEffect.Active || charmEffect.IsDisposed) && owner.IsEnemy(target) &&
                             deadline > game.Player.GameTime.TotalSeconds && owner.IsInState && !owner.Destroyed && !target.Descriptor.State.IsDead;
-                        Sprint25Check(id + "-caster-threat", broken, new JObject { ["command"] = Sprint27AiCommand(attack),
+                        Sprint25Check(id + "-apparent-ally-threat", broken, new JObject { ["command"] = Sprint27AiCommand(attack),
                             ["originalEnd"] = deadline, ["gameSeconds"] = game.Player.GameTime.TotalSeconds,
                             ["effectDisposed"] = charmEffect.IsDisposed, ["enemyAgain"] = owner.IsEnemy(target), ["fixtureAttackCommands"] = 1 },
-                            "A normal attack directed by this live caster breaks the exact Charm before its deadline and restores hostility; no direct buff removal establishes the verdict.");
-                        if (!broken) throw new InvalidOperationException("Caster threat did not break private Charm.");
+                            "A normal attack directed by this caster's exact native apparent ally breaks Charm before its deadline and restores hostility; no direct buff removal establishes the verdict.");
+                        if (!broken) throw new InvalidOperationException("Apparent-ally threat did not break private Charm.");
                         }
                     }
                 }

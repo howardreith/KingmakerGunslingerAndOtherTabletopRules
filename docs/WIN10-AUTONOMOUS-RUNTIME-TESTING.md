@@ -109,8 +109,12 @@ a disclosed normal Cure Light command as a harmless Charm negative and a normal
 caster attack as its threat-break probe. The TB case claims natural casts/costs,
 not that RTWP threat probe. No forced roll, supplied successful spell or damage
 proves these cases. Existing ownership/refusal/finalizer boundaries remain.
-Ward, unrelated-attacker and additional lifecycle proof remain separate pending
-cases. This is selection documentation, not an execution receipt.
+The RTWP case additionally checks actual native Good/Chaos ward facts and
+unchanged slots, positive nonfake damage from an exact unrelated hostile wolf
+retaining Charm, then an ordinary apparent-ally threat breaking it. The damage
+must match the same native weapon event and exact source/target; ordinary
+commands are retained. Native81 remains the separate caster-threat evidence.
+This is selection documentation, not an execution receipt.
 
 Sprint32 adds only `persistenceScope=fey-celestial` to the existing exact Working
 prepare/verify-cleanup/verify-absent trio and installed-stack transaction. The
@@ -134,6 +138,14 @@ The generic appearance observer leaves native Pause active. Preparation admits
 only Pause over Default or Default, records each boundary predicate, and waits
 for native unpause (at most30frames/3seconds) before enabling a dispatcher.
 Unexpected modes/combat/ownership refuse without forcing a mode or saving.
+The exact fey-celestial cold request also records at most64 read-only Fascinate
+PostLoad/Interrupt/End/OnUnitExit transitions through the existing load trace.
+It reads raw serialized/cache fields without hydrating response state; hook
+errors or overflow fail the result, and existing disposal removes all hooks.
+Retain the exact prepared disposable ZIP locally after successful preparation
+and protected-intake comparison, before the cold process. Verify its hash against
+the after-prepare save inventory. This is evidence, never restoration authority;
+the separately captured original Working remains the only restoration source.
 Cold observation precedes deliberate time advances and rechecks live state before
 primary-source removal/sibling isolation. Native visual/effect cleanup uses the
 existing resource receipts; their manual equipment disposal does not prove native
