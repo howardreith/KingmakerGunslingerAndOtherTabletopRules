@@ -12,6 +12,7 @@ param(
     # Used only by a second reproducibility compilation of unchanged inputs,
     # after the release publisher has already run the unchanged domain suite.
     [switch]$SkipDomainTests,
+    [switch]$ReproducibilityBuild,
     # Builds a development candidate for this one named purpose instead of a
     # release candidate. See DevelopmentCandidate.Common.ps1: it replaces only
     # the active version's release validator with the development validator
@@ -34,6 +35,9 @@ $ErrorActionPreference = 'Stop'
 
 $development = -not [string]::IsNullOrEmpty($DevelopmentPurpose) -or
     -not [string]::IsNullOrEmpty($DevelopmentTestFilter) -or $DevelopmentCompleteSuite
+if ([bool]$SkipDomainTests -ne [bool]$ReproducibilityBuild -or ($ReproducibilityBuild -and $development)) {
+    throw 'Skipping domain tests requires an explicit non-development reproducibility build.'
+}
 if ($development) {
     if ([string]::IsNullOrEmpty($DevelopmentPurpose) -or
         (-not $DevelopmentCompleteSuite -and [string]::IsNullOrWhiteSpace($DevelopmentTestFilter))) {
@@ -56,7 +60,7 @@ if ($development) {
 # verifies every reference before validation/build/package work can start.
 $script:KmgBuildLocalPlan = @(
     'repository-wrapper'
-    'complete-domain-suite'
+    $(if ($ReproducibilityBuild) { 'reuse-primary-domain-suite' } else { 'complete-domain-suite' })
     'exact-reference-release-build'
     'package-assembly'
     'strict-package-validation'
@@ -106,6 +110,21 @@ if (-not (Test-Path -LiteralPath $ReferenceBundleDir -PathType Container)) {
 $referenceIdentity = @(Assert-KmgReferenceBundleMatchesInstall `
     -ReferenceBundleDir $ReferenceBundleDir `
     -KingmakerInstallDir $KingmakerInstallDir)
+
+if (-not $development) {
+    $releaseLayout = Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $git.Commit `
+        -Id $info.Id -Version $info.Version -Reproducibility:$ReproducibilityBuild
+    $primaryArchive = $null
+    if ($ReproducibilityBuild) {
+        $primaryLayout = Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $git.Commit -Id $info.Id -Version $info.Version
+        $primaryManifest = Read-KmgBuildLocalManifest -PackagePath $primaryLayout.PackagePath -RepositoryRoot $root
+        Assert-KmgReleaseReproducibilityIdentity -Manifest $primaryManifest -Git $git `
+            -SourceStateSha256 $sourceStateSha256 -ExpectedVersion $info.Version -References $referenceIdentity
+        $primaryArchive = $primaryLayout.ArchivedExactRoot
+    }
+    Assert-KmgReleaseScratch -RepositoryRoot $root -Layout $releaseLayout `
+        -PrimaryArchive $primaryArchive -Reproducibility:$ReproducibilityBuild
+}
 
 $python = (Get-Command python -ErrorAction Stop).Source
 $dotnet = (Get-Command dotnet -ErrorAction Stop).Source
@@ -184,8 +203,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Runtime scenario preflight failed.' }
 # again, which is the duplication the 2026-10-02 amendment called out: a
 # tranche gate for one immutable commit must validate the repository once.
 if (-not $SkipDomainTests) {
-    & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
-        -MSBuildPath $msbuild -SkipRepositoryValidation
+    Invoke-KmgWithTestFilter -Filter '' -Body {
+        & (Join-Path $PSScriptRoot 'test-domain.ps1') -Configuration Release -Clean `
+            -MSBuildPath $msbuild -SkipRepositoryValidation
+    }
 }
 }
 
@@ -193,11 +214,13 @@ $localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
 # Each exact candidate retains its own output; preserve earlier packages and
 # evidence-bound paths regardless of the selected release version.
 if (-not $development) {
-    $localRoot = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $git.Commit `
-        -Id $info.Id -Version $info.Version).Root
-    if (Test-Path -LiteralPath $localRoot) { throw 'This exact final candidate output already exists; preserve its bytes.' }
+    $localRoot = $releaseLayout.Root
 }
-$exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { Join-Path $localRoot 'exact-build' }
+$exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { $releaseLayout.ScratchRoot }
+if (-not $development) {
+    Assert-KmgReleaseScratch -RepositoryRoot $root -Layout $releaseLayout `
+        -PrimaryArchive $primaryArchive -Reproducibility:$ReproducibilityBuild
+}
 & $python (Join-Path $root 'tools\build_mod_from_private_references.py') `
     --reference-bundle-dir $ReferenceBundleDir --dotnet $dotnet `
     --csc $csc.FullName --net47-ref-dir $net47 --output-dir $exactRoot `
@@ -212,6 +235,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Focused supply-icon validation failed.' }
     -ManagedDir (Join-Path $ReferenceBundleDir 'Managed') `
     -ModAssemblyPath (Join-Path $exactRoot 'bin\KingmakerGunslinger.dll')
 if ($LASTEXITCODE -ne 0) { throw 'Gunslinger animal-companion eligibility validation failed.' }
+if (-not $development) {
+    New-Item -ItemType Directory -Path $localRoot | Out-Null
+    Copy-Item -LiteralPath $exactRoot -Destination $releaseLayout.ArchivedExactRoot -Recurse
+}
 
 $buildOutput = Join-Path $root 'artifacts\bin\Release\KingmakerGunslinger'
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'blueprints') -Force | Out-Null
@@ -458,6 +485,8 @@ $manifest = [ordered]@{
     firearmManifestSha256 = Get-KmgSha256 -Path $firearmManifestPath
     firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
+    completeDomainSuite = -not [bool]$SkipDomainTests
+    reproducibilityBuild = [bool]$ReproducibilityBuild
 }
 # Every selected candidate records the exact verified reference identity.
 $manifest.references = [ordered]@{

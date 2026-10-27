@@ -166,7 +166,7 @@ function Invoke-QualifiedBuildAndPackage {
     else {
         # The existing provenance-checked builder retains net47/Harmony12
         # without replacing the owner's newer installed UMM dependencies.
-        $exactArguments = @{ ReferenceBundleDir = $ConfiguredReferenceBundleDir; SkipDomainTests = [bool]$SkipDomainTests }
+        $exactArguments = @{ ReferenceBundleDir = $ConfiguredReferenceBundleDir; SkipDomainTests = [bool]$SkipDomainTests; ReproducibilityBuild = [bool]$SkipDomainTests }
         if ($ConfiguredKingmakerInstallDir) {
             $exactArguments.KingmakerInstallDir = $ConfiguredKingmakerInstallDir
         }
@@ -184,7 +184,7 @@ function Invoke-QualifiedBuildAndPackage {
         $packageVersion = $packageInfo.Version
         $candidatePath = (Get-KmgLocalCandidateLayout -RepositoryRoot $RepositoryRoot `
             -Commit ((& git -C $RepositoryRoot rev-parse HEAD).Trim()) `
-            -Id $packageInfo.Id -Version $packageVersion).PackagePath
+            -Id $packageInfo.Id -Version $packageVersion -Reproducibility:$SkipDomainTests).PackagePath
         # Name the public asset after the informational version, as every
         # published ZIP is, using the same verified bytes.
         [xml]$packageProps = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'Directory.Build.props') -Raw
@@ -363,6 +363,10 @@ try {
         "artifacts\release-work\$version\first\$([IO.Path]::GetFileName($first.PackagePath))"
     New-Item -ItemType Directory -Path (Split-Path -Parent $firstPackageCopy) -Force | Out-Null
     Copy-Item -LiteralPath $first.PackagePath -Destination $firstPackageCopy -Force
+    if ($ReferenceBundleDir) {
+        $primaryOutput = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $head -Id $info.Id -Version $version).Root
+        $primaryRows = @(Get-KmgReleaseOutputRows -Path $primaryOutput)
+    }
 
     $second = Invoke-QualifiedBuildAndPackage `
         -RepositoryRoot $root `
@@ -372,6 +376,10 @@ try {
     if ($first.PackageSha256 -cne $second.PackageSha256 -or
         $first.DllSha256 -cne $second.DllSha256) {
         throw "Deterministic release build failed: package $($first.PackageSha256)/$($second.PackageSha256), DLL $($first.DllSha256)/$($second.DllSha256)."
+    }
+    if ($ReferenceBundleDir -and (($primaryRows -join "`n") -cne
+        (@(Get-KmgReleaseOutputRows -Path $primaryOutput) -join "`n"))) {
+        throw 'Reproducibility changed the preserved primary package, receipt or exact-build archive.'
     }
 
     $statusAfterBuild = Get-NativeCommandOutput -FilePath 'git' -Arguments @(
@@ -413,6 +421,7 @@ try {
         publicationRequested = [bool]$Publish
     }
     $releaseManifestPath = Join-Path $releaseDirectory 'release-manifest.json'
+    if ($ReferenceBundleDir) { $releaseManifest.primaryBuildOutputPreserved = $true }
     $releaseManifest | ConvertTo-Json -Depth 5 |
         Set-Content -LiteralPath $releaseManifestPath -Encoding UTF8
 

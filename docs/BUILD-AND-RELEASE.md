@@ -22,6 +22,16 @@ pre-merge product rebuild or native campaign is implied by metadata/build stamps
 Native evidence stays attributed to its original artifacts; release DLL/MVID
 will differ. Public download, checksum, embeddedDLL/Info and tag/commit are verified.
 
+The exact-reference publisher uses a primary immutable candidate and a separate
+`-reproducibility` sibling. Its second Build-Local call explicitly pairs
+`-SkipDomainTests` with `-ReproducibilityBuild`, requiring the first validated
+full-suite receipt, exact source and references. Both compile through one bounded
+scratch path because the DLL embeds its PDB path; each archives its own exact
+output. Existing candidate outputs and incomplete primary scratch still refuse
+overwrite. The publisher verifies that the first package, receipt and complete
+archive remain unchanged after the second build. Run under Limited Interactive
+Howard, as the offline runtime-safety fixtures correctly refuse elevation.
+
 ```powershell
 .\scripts\Publish-Release.ps1 -ReferenceBundleDir '<private build references>' `
   -ReleaseNotesPath 'docs\RELEASE-NOTES-0.0.169.md' -Publish -ConfirmReleaseReady

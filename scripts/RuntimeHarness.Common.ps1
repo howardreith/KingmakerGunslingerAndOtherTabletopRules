@@ -434,6 +434,57 @@ function Assert-KmgExplicitCandidateIdentity {
     }
 }
 
+function Assert-KmgReleaseReproducibilityIdentity {
+    param($Manifest, $Git, [string]$SourceStateSha256, [string]$ExpectedVersion, [object[]]$References)
+    Assert-KmgExplicitCandidateIdentity -Manifest $Manifest -Git $Git `
+        -SourceStateSha256 $SourceStateSha256 -ExpectedVersion $ExpectedVersion
+    if (-not $Manifest.PSObject.Properties['completeDomainSuite'] -or
+        $Manifest.completeDomainSuite -ne $true -or
+        -not $Manifest.PSObject.Properties['reproducibilityBuild'] -or
+        $Manifest.reproducibilityBuild -ne $false) {
+        throw 'Reproducibility requires the original complete-domain primary build receipt.'
+    }
+    $original = @($Manifest.references.files | ForEach-Object { $_.relativePath + '|' + $_.sha256 } | Sort-Object)
+    $current = @($References | ForEach-Object { $_.relativePath + '|' + $_.sha256 } | Sort-Object)
+    if ($original.Count -eq 0 -or ($original -join "`n") -cne ($current -join "`n")) {
+        throw 'Reproducibility reference identities differ from the primary build.'
+    }
+}
+
+function Assert-KmgReleaseScratch {
+    param([string]$RepositoryRoot, $Layout, [string]$PrimaryArchive, [switch]$Reproducibility)
+    [void](Assert-KmgPathWithin -Path $Layout.Root -Root (Join-Path $RepositoryRoot 'artifacts\local-runtime'))
+    [void](Assert-KmgPathWithin -Path $Layout.ScratchRoot -Root (Join-Path $RepositoryRoot 'artifacts\obj\release-exact'))
+    if ($PrimaryArchive) {
+        [void](Assert-KmgPathWithin -Path $PrimaryArchive -Root (Join-Path $RepositoryRoot 'artifacts\local-runtime'))
+    }
+    # The Python compiler replaces its output tree. Check the exact bounded
+    # paths and every existing ancestor before admitting that operation.
+    foreach ($path in @($Layout.Root, $Layout.ScratchRoot, $PrimaryArchive)) {
+        if ([string]::IsNullOrEmpty($path)) { continue }
+        $cursor = Assert-KmgPathWithin -Path $path -Root $RepositoryRoot
+        while ($cursor -and $cursor.TrimEnd('\') -ine $RepositoryRoot.TrimEnd('\')) {
+            if ((Test-Path -LiteralPath $cursor) -and
+                ((Get-Item -LiteralPath $cursor -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) {
+                throw 'Release build output or ancestor is a reparse point.'
+            }
+            $cursor = Split-Path -Parent $cursor
+        }
+    }
+    if (Test-Path -LiteralPath $Layout.Root) {
+        throw 'This exact final candidate output already exists; preserve its bytes.'
+    }
+    if (-not $Reproducibility) {
+        if (Test-Path -LiteralPath $Layout.ScratchRoot) { throw 'Preserve existing primary build scratch from an incomplete attempt.' }
+        return
+    }
+    $scratch = @(Get-KmgReleaseOutputRows $Layout.ScratchRoot)
+    $archived = @(Get-KmgReleaseOutputRows $PrimaryArchive)
+    if ($scratch.Count -eq 0 -or ($scratch -join "`n") -cne ($archived -join "`n")) {
+        throw 'Scratch differs from the preserved primary archive; refuse replacement.'
+    }
+}
+
 function Get-KmgGitState {
     param([Parameter(Mandatory = $true)][string]$RepositoryRoot)
     $commit = (& git -C $RepositoryRoot rev-parse HEAD).Trim()
