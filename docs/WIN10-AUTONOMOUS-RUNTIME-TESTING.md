@@ -1,3 +1,15 @@
+Sprint32 native98?101 observer correction batch: grab retains actual maneuver,
+escape-skill/DC and terminal hold state before verdicts. The owned victim's low
+Mobility/Athletics isolate maintenance without disabling native rolls; restore
+both skill bases afterward. At most three sequential natural holds share90s,
+and only a retained natural-one refusal with no later rider/extra attack admits
+another natural acquisition. Existing35s complete native release remains.
+Presentation waits up to12s for exact command/queue/path/velocity retirement
+across three ordinary frames before reversal, checking the lease after each yield.
+Cold listeners require their shared exact saved Lillend SourceId/preparation run
+and mutual relation, matching preparation; unrelated-intake guards remain exact.
+These corrections require fresh affected native execution, not reader-only reuse.
+
 Native91–93 bounded observer corrections: grab damage compares semantic JSON
 null because installed Newtonsoft8 constructs null-string JValue as String.
 Presentation waits for the exact body's native dissolve completion and records

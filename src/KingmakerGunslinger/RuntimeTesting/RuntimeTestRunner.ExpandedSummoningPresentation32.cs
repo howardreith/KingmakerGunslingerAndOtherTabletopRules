@@ -155,6 +155,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["preciseArrivalClaimed"] = false },
                         "The exact queued native move supplies positive-velocity travel over four metres and finite moving poses with a mid-motion frame; terminal result is retained without a precise-arrival claim.");
                     if (!moved) throw new InvalidOperationException("Native presentation locomotion evidence incomplete.");
+                    // IsFinished is only the command boundary. The installed
+                    // engine can still own the prior movement/path afterward.
+                    // Wait for its normal retirement before a reverse command;
+                    // never force Stop, clear paths, or advance controllers.
+                    Func<JObject> settledState = () => {
+                        var agent = owner.View.MovementAgent as Kingmaker.View.UnitMovementAgent;
+                        return new JObject { ["commandRetired"] = !owner.Commands.Contains(move),
+                            ["moveSlotEmpty"] = owner.Commands.Move == null,
+                            ["commandsEmpty"] = owner.Commands.Empty, ["queueEmpty"] = owner.Commands.Queue.Count == 0,
+                            ["agentPresent"] = agent != null, ["wantsToMove"] = agent != null && agent.WantsToMove,
+                            ["velocity"] = agent == null ? float.NaN : agent.Velocity.magnitude };
+                    };
+                    var settlementBefore = settledState(); JObject settlement = null;
+                    int settledFrames = 0, settlementFrames = 0;
+                    var settlementLimit = DateTime.UtcNow.AddSeconds(12);
+                    while (DateTime.UtcNow < settlementLimit && settledFrames < 3)
+                    {
+                        if (!mode.Current) throw new InvalidOperationException("Presentation Default lease changed during movement retirement.");
+                        game.IsPaused = false; yield return 0; settlementFrames++;
+                        if (!mode.Current) throw new InvalidOperationException("Presentation Default lease changed after movement retirement yield.");
+                        settlement = settledState();
+                        bool quiet = (bool)settlement["commandRetired"] && (bool)settlement["moveSlotEmpty"] &&
+                            (bool)settlement["commandsEmpty"] && (bool)settlement["queueEmpty"] &&
+                            (bool)settlement["agentPresent"] && !(bool)settlement["wantsToMove"] && (float)settlement["velocity"] <= .05f;
+                        settledFrames = quiet ? settledFrames + 1 : 0;
+                    }
+                    Sprint25Check(id + "-move-settled-" + selectedMove, settledFrames >= 3,
+                        new JObject { ["before"] = settlementBefore, ["after"] = settlement,
+                            ["frames"] = settlementFrames, ["consecutiveQuietFrames"] = settledFrames },
+                        "The exact native move slot, queue, agent path/request and velocity retire for three ordinary frames before the next command; no forced movement stop.");
+                    if (settledFrames < 3) throw new InvalidOperationException("Native movement retirement boundary did not settle.");
                 }
                 var gait = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>() : null;
                 bool movement = poses.Count > 0 && poses.All(p => (bool)p["finite"]) &&

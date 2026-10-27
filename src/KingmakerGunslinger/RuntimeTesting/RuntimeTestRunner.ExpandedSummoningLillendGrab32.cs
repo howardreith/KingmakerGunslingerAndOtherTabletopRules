@@ -40,6 +40,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Cleanup2NativeDefaultScope nativeMode = null;
             UnitEntityData anchor = null; bool anchorBrainBefore = false, anchorBrainCaptured = false, complete = false;
             int oldAc = target.Stats.AC.BaseValue, oldTargetCmb = target.Stats.AdditionalCMB.BaseValue;
+            int oldMobility = target.Stats.SkillMobility.BaseValue, oldAthletics = target.Stats.SkillAthletics.BaseValue;
+            OutsiderEscapeEvents escapes = null;
             var nonparticipantPasses = new JArray();
             var row = new JObject(); var strikes = new JArray(); var riders = new JArray(); var costs = new JArray();
             Sprint16RuleObserver observer = null; Lillend32CommandStarts starts = null;
@@ -83,7 +85,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100; owner.Stats.AdditionalCMB.BaseValue = 100;
                 owner.Stats.HitPoints.BaseValue = 100000; target.Stats.HitPoints.BaseValue = 100000; target.Stats.AC.BaseValue = -100;
-                target.Stats.AdditionalCMB.BaseValue = -100; // native target escape rolls remain enabled
+                target.Stats.AdditionalCMB.BaseValue = -100;
+                // Native escape chooses the better of Mobility/Athletics or CMB.
+                // This exact owned victim has prospectively low escape skills;
+                // native rolls remain enabled and are retained below.
+                target.Stats.SkillMobility.BaseValue = -100; target.Stats.SkillAthletics.BaseValue = -100;
                 Vector3 far; string lane, direction;
                 var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 1.4f, out far, out lane, out direction);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
@@ -130,6 +136,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["lane"] = lane; row["admission"] = admission; row["tail"] = tail.Blueprint.AssetGuid;
                 row["distanceMeters"] = owner.DistanceTo(target); row["tailReachMeters"] = tail.AttackRange.Meters;
                 row["fixtureSpentPools"] = spent; row["fixtureAccuracyAndCmb"] = 100;
+                row["fixtureMobility"] = target.Stats.SkillMobility.ModifiedValue;
+                row["fixtureAthletics"] = target.Stats.SkillAthletics.ModifiedValue;
                 row["fixtureMindImmune"] = true; row["fixtureManeuverImmune"] = false;
                 row["strikes"] = strikes; row["riders"] = riders; row["costs"] = costs;
                 Sprint25Check(id + "-ready", ready, row, "Actual tail reach, native mode, visible Medium nonimmune hostile, unmodified AI actions and disclosed spent pools isolate normal melee.");
@@ -169,74 +177,98 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["roundHeld"] = SummonHoldComponent.RoundsHeld(SummonHoldComponent.HeldState(owner, target, grab)),
                     ["strengthBonus"] = owner.Stats.Strength.Bonus, ["weaponAttacks"] = observer.WeaponAttacks,
                     ["gameSeconds"] = game.Player.GameTime.TotalSeconds, ["damage"] = Sprint16DamageEvent(rule) }); };
-                EventBus.Subscribe(observer); EventBus.Subscribe(starts);
+                escapes = new OutsiderEscapeEvents(target);
+                EventBus.Subscribe(observer); EventBus.Subscribe(starts); EventBus.Subscribe(escapes);
                 using (var economy = new FirearmReviewCosts(owner, costs))
                 {
+                    int strengthBefore = owner.Stats.Strength.BaseValue;
+                    DateTime deadline;
+                    bool maintained = false;
+                    var holdAttempts = new JArray(); row["holdAttempts"] = holdAttempts;
+                    var holdWindowEnd = DateTime.UtcNow.AddSeconds(90);
                     Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
-                    DateTime deadline = DateTime.UtcNow.AddSeconds(55); int frames = 0, ticks = 0;
-                    while (DateTime.UtcNow < deadline && !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target))
+                    for (int holdAttempt = 0; holdAttempt < 3 && !maintained && DateTime.UtcNow < holdWindowEnd; holdAttempt++)
                     {
-                        if (!nativeMode.Current) throw new InvalidOperationException("Grab native Default lease changed.");
-                        if (turnBased) PollGrab32Turn(fixture, owner, target, anchor, nativeMode, nonparticipantPasses);
-                        frames++; game.IsPaused = false; yield return 0;
+                        owner.Stats.Strength.BaseValue = strengthBefore;
+                        establishingRoll = null; establishingCommand = null; currentRoll = null;
+                        int riderStart = riders.Count;
+                        deadline = DateTime.UtcNow.AddSeconds(55); int frames = 0, ticks = 0;
+                        if (deadline > holdWindowEnd) deadline = holdWindowEnd;
+                        while (DateTime.UtcNow < deadline && !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target))
+                        {
+                            if (!nativeMode.Current) throw new InvalidOperationException("Grab native Default lease changed.");
+                            if (turnBased) PollGrab32Turn(fixture, owner, target, anchor, nativeMode, nonparticipantPasses);
+                            frames++; game.IsPaused = false; yield return 0;
+                        }
+                        var held = SummonHoldComponent.HeldState(owner, target, grab);
+                        bool linked = ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) && held != null &&
+                            target.Get<UnitPartGrappleTarget>() != null && owner.Get<UnitPartGrappleInitiator>() != null &&
+                            ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(owner, target), tail);
+                        var initial = riders.Skip(riderStart).OfType<JObject>().Where(value => (int)value["roundHeld"] == 0).ToArray();
+                        bool tailHit = establishingRoll != null && successfulTailRolls.Contains(establishingRoll) &&
+                            TurnBased.Controllers.CombatController.IsInTurnBasedCombat() == turnBased;
+                        bool initialDamage = initial.Length == 1 && Grab32Damage(initial[0], salamander, owner.Stats.Strength.Bonus);
+                        bool paid = establishingCommand != null && establishingCommand.AiAction != null &&
+                            economy.Count(establishingCommand) == 1 && economy.Exact(establishingCommand, turnBased);
+                        row["fixtureAiTicks"] = ticks; row["nativeMode"] = nativeMode.Describe(); row["nativeCommandStarts"] = starts.Rows;
+                        row["linked"] = linked; row["initialDamageExact"] = initialDamage; row["paidAttack"] = paid;
+                        row["establishmentTerminal"] = Grab32HoldState(owner, target, grab);
+                        row["actualManeuvers"] = Grab32Maneuvers(observer.Checks);
+                        row["actualEscapeSkills"] = new JArray(escapes.Skills.Select(OutsiderEscapeSkill));
+                        Sprint25Check(id + (holdAttempt == 0 ? "-established" : "-reacquired-" + holdAttempt), linked && tailHit && initialDamage && paid && originalActions.SequenceEqual(owner.Brain.Actions), row,
+                            "Natural exact-tail hit and real grapple roll establish reciprocal native parts and one initial constrict with normal attack cost.");
+                        if (!linked || !tailHit || !initialDamage || !paid) throw new InvalidOperationException("Natural grab establishment failed.");
+                        int establishedAttacks = observer.WeaponAttacks, maintainChecksStart = observer.Checks.Count;
+                        owner.Stats.Strength.BaseValue = strengthBefore + 2; // prospective live-stat fixture change
+                        int liveStrength = owner.Stats.Strength.Bonus;
+                        JObject[] later = null;
+                        deadline = DateTime.UtcNow.AddSeconds(35);
+                        if (deadline > holdWindowEnd) deadline = holdWindowEnd;
+                        while (DateTime.UtcNow < deadline)
+                        {
+                            if (!nativeMode.Current) throw new InvalidOperationException("Grab native Default lease changed.");
+                            later = riders.Skip(riderStart).OfType<JObject>().Where(value => (int)value["roundHeld"] > 0)
+                                .GroupBy(value => (int)value["roundHeld"]).Select(group => group.ToArray()).FirstOrDefault(group => group.Length >= 2);
+                            if (later != null || !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target)) break;
+                            if (turnBased) PollGrab32Turn(fixture, owner, target, anchor, nativeMode, nonparticipantPasses);
+                            game.IsPaused = false; yield return 0;
+                        }
+                        maintained = later != null && later.Length == 2 && observer.WeaponAttacks == establishedAttacks &&
+                            ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) &&
+                            ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(owner, target), tail) &&
+                            (salamander ? later.Count(value => Grab32Damage(value, true, liveStrength)) == 1 &&
+                                later.Count(value => Grab32TailDamage(value, tail.Blueprint.AssetGuid, liveStrength)) == 1 :
+                                later.Count(value => (string)value["damage"]["weapon"] == tail.Blueprint.AssetGuid) == 1 &&
+                                later.Count(value => Grab32Damage(value, false, liveStrength)) == 1);
+                        row["strengthBefore"] = strengthBefore; row["prospectiveStrengthBase"] = owner.Stats.Strength.BaseValue;
+                        row["liveStrengthBonus"] = liveStrength; row["establishedWeaponAttacks"] = establishedAttacks;
+                        row["weaponAttacksAfterMaintain"] = observer.WeaponAttacks; row["laterRound"] = later == null ? null : new JArray(later.Select(value => value.DeepClone()));
+                        row["nonparticipantPasses"] = nonparticipantPasses;
+                        row["maintenanceTerminal"] = Grab32HoldState(owner, target, grab);
+                        row["terminalHeldRounds"] = SummonHoldComponent.RoundsHeld(SummonHoldComponent.HeldState(owner, target, grab));
+                        row["actualManeuvers"] = Grab32Maneuvers(observer.Checks);
+                        row["actualEscapeSkills"] = new JArray(escapes.Skills.Select(OutsiderEscapeSkill));
+                        bool naturalOneRefusal = !maintained && later == null && riders.Count == riderStart + 1 &&
+                            observer.WeaponAttacks == establishedAttacks && !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) &&
+                            observer.Checks.Skip(maintainChecksStart).Any(value => ReferenceEquals(value.Initiator, owner) &&
+                                ReferenceEquals(value.Target, target) && (int)value.InitiatorRoll == 1 &&
+                                !SummonManeuverChecks.Succeeded(value));
+                        var attemptRow = new JObject { ["attempt"] = holdAttempt + 1, ["maintained"] = maintained,
+                            ["naturalOneRefusal"] = naturalOneRefusal, ["terminal"] = row["maintenanceTerminal"].DeepClone(),
+                            ["maneuvers"] = row["actualManeuvers"].DeepClone(), ["escapeSkills"] = row["actualEscapeSkills"].DeepClone(),
+                            ["riders"] = new JArray(riders.Skip(riderStart).Select(value => value.DeepClone())) };
+                        holdAttempts.Add(attemptRow);
+                        if (maintained || !naturalOneRefusal || holdAttempt == 2) break;
+                        Sprint25Check(id + "-natural-refusal-" + (holdAttempt + 1), true, attemptRow,
+                            "The actual natural-one maintain refusal is retained. At most three sequential ordinary holds may supply positive maintenance; no roll, time or state rewind and no supplied reacquisition.");
                     }
-                    var held = SummonHoldComponent.HeldState(owner, target, grab);
-                    bool linked = ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) && held != null &&
-                        target.Get<UnitPartGrappleTarget>() != null && owner.Get<UnitPartGrappleInitiator>() != null &&
-                        ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(owner, target), tail);
-                    var initial = riders.OfType<JObject>().Where(value => (int)value["roundHeld"] == 0).ToArray();
-                    bool tailHit = establishingRoll != null && successfulTailRolls.Contains(establishingRoll) &&
-                        TurnBased.Controllers.CombatController.IsInTurnBasedCombat() == turnBased;
-                    bool initialDamage = initial.Length == 1 && Grab32Damage(initial[0], salamander, owner.Stats.Strength.Bonus);
-                    bool paid = establishingCommand != null && establishingCommand.AiAction != null &&
-                        economy.Count(establishingCommand) == 1 && economy.Exact(establishingCommand, turnBased);
-                    row["fixtureAiTicks"] = ticks; row["nativeMode"] = nativeMode.Describe(); row["nativeCommandStarts"] = starts.Rows;
-                    row["linked"] = linked; row["initialDamageExact"] = initialDamage; row["paidAttack"] = paid;
-                    Sprint25Check(id + "-established", linked && tailHit && initialDamage && paid && originalActions.SequenceEqual(owner.Brain.Actions), row,
-                        "Natural exact-tail hit and real grapple roll establish reciprocal native parts and one initial constrict with normal attack cost.");
-                    if (!linked || !tailHit || !initialDamage || !paid) throw new InvalidOperationException("Natural grab establishment failed.");
-                    int establishedAttacks = observer.WeaponAttacks, strengthBefore = owner.Stats.Strength.BaseValue;
-                    owner.Stats.Strength.BaseValue = strengthBefore + 2; // prospective live-stat fixture change
-                    int liveStrength = owner.Stats.Strength.Bonus;
-                    JObject[] later = null;
-                    deadline = DateTime.UtcNow.AddSeconds(35);
-                    while (DateTime.UtcNow < deadline)
-                    {
-                        if (!nativeMode.Current) throw new InvalidOperationException("Grab native Default lease changed.");
-                        later = riders.OfType<JObject>().Where(value => (int)value["roundHeld"] > 0)
-                            .GroupBy(value => (int)value["roundHeld"]).Select(group => group.ToArray()).FirstOrDefault(group => group.Length >= 2);
-                        if (later != null || !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target)) break;
-                        if (turnBased) PollGrab32Turn(fixture, owner, target, anchor, nativeMode, nonparticipantPasses);
-                        game.IsPaused = false; yield return 0;
-                    }
-                    bool maintained = later != null && later.Length == 2 && observer.WeaponAttacks == establishedAttacks &&
-                        ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target) &&
-                        ReferenceEquals(SummonGrappleLinks.EstablishingWeapon(owner, target), tail) &&
-                        (salamander ? later.Count(value => Grab32Damage(value, true, liveStrength)) == 1 &&
-                            later.Count(value => Grab32TailDamage(value, tail.Blueprint.AssetGuid, liveStrength)) == 1 :
-                            later.Count(value => (string)value["damage"]["weapon"] == tail.Blueprint.AssetGuid) == 1 &&
-                            later.Count(value => Grab32Damage(value, false, liveStrength)) == 1);
-                    row["strengthBefore"] = strengthBefore; row["prospectiveStrengthBase"] = owner.Stats.Strength.BaseValue;
-                    row["liveStrengthBonus"] = liveStrength; row["establishedWeaponAttacks"] = establishedAttacks;
-                    row["weaponAttacksAfterMaintain"] = observer.WeaponAttacks; row["laterRound"] = later == null ? null : new JArray(later.Select(value => value.DeepClone()));
-                    row["nonparticipantPasses"] = nonparticipantPasses;
                     Sprint25Check(id + "-maintained", maintained, row,
-                        "One later native buff round supplies establishing-tail damage plus one constrict, with live Strength and no extra weapon attack; Salamander preserves both one-fire bundles.");
-                    if (!maintained) throw new InvalidOperationException("Natural later hold rider failed.");
+                        "A later native buff round supplies establishing-tail damage plus one constrict with live Strength and no extra weapon attack. Up to three sequential natural holds retain every genuine natural-one refusal; Salamander preserves both fire bundles.");
+                    if (!maintained) throw new InvalidOperationException("Natural later hold rider failed; complete maneuver/escape/terminal evidence retained.");
                     int checksBefore = observer.Checks.Count, ridersBefore = riders.Count;
                     owner.Stats.AdditionalCMB.BaseValue = -100; // prospective low CMB, never an overridden roll
                     deadline = DateTime.UtcNow.AddSeconds(35);
-                    Func<JObject> releaseState = () => new JObject {
-                        ["reciprocalLinkAbsent"] = !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target),
-                        ["initiatorPartAbsent"] = owner.Get<UnitPartGrappleInitiator>() == null,
-                        ["targetPartAbsent"] = target.Get<UnitPartGrappleTarget>() == null,
-                        ["weaponLinkAbsent"] = SummonGrappleLinks.EstablishingWeapon(owner, target) == null,
-                        ["holdBuffAbsent"] = owner.Buffs.GetBuff(grab.HoldBuff) == null,
-                        ["grappledBuffAbsent"] = target.Buffs.GetBuff(grab.GrappledBuff) == null,
-                        ["ownerCantActAbsent"] = !owner.Descriptor.State.HasCondition(UnitCondition.CantAct),
-                        ["ownerCantMoveAbsent"] = !owner.Descriptor.State.HasCondition(UnitCondition.CantMove),
-                        ["targetEntangledAbsent"] = !target.Descriptor.State.HasCondition(UnitCondition.Entangled),
-                        ["targetCantMoveAbsent"] = !target.Descriptor.State.HasCondition(UnitCondition.CantMove) };
+                    Func<JObject> releaseState = () => Grab32HoldState(owner, target, grab);
                     JObject firstLinkLoss = null, settledRelease = null;
                     int firstLinkLossFrame = -1;
                     double firstLinkLossSeconds = 0;
@@ -265,8 +297,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     row["firstReciprocalLinkLoss"] = firstLinkLoss; row["settledRelease"] = settledRelease;
                     row["releaseSettleFrames"] = firstLinkLoss == null ? (int?)null : Time.frameCount - firstLinkLossFrame;
                     row["releaseSettleGameSeconds"] = firstLinkLoss == null ? (double?)null : game.Player.GameTime.TotalSeconds - firstLinkLossSeconds;
-                    row["actualPostChangeManeuvers"] = new JArray(releaseChecks.Select(value => new JObject {
-                        ["success"] = SummonManeuverChecks.Succeeded(value), ["target"] = value.Target.UniqueId }));
+                    row["actualPostChangeManeuvers"] = Grab32Maneuvers(releaseChecks);
+                    row["releaseEscapeSkills"] = new JArray(escapes.Skills.Select(OutsiderEscapeSkill));
                     row["releasedBeforeFixtureCleanup"] = released; row["ridersBeforeRelease"] = ridersBefore; row["ridersAfterRelease"] = riders.Count;
                     Sprint25Check(id + "-released", released, row,
                         "Actual failed native maintain releases both parts, buffs, blocked actions and exact weapon link without another rider; no fixture release establishes this verdict.");
@@ -282,7 +314,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 var errors = new List<string>();
                 Action<string, Action> restore = (name, action) => { try { action(); } catch (Exception error) { errors.Add(name + ":" + error); } };
-                restore("observers", () => { if (observer != null) EventBus.Unsubscribe(observer); if (starts != null) EventBus.Unsubscribe(starts); });
+                restore("observers", () => { if (observer != null) EventBus.Unsubscribe(observer); if (starts != null) EventBus.Unsubscribe(starts); if (escapes != null) EventBus.Unsubscribe(escapes); });
                 foreach (var actor in new[] { owner, target, fixture.Caster, anchor }.Where(value => value != null && !value.Destroyed))
                     restore("owned-combat-" + actor.UniqueId, () => {
                         if (ReferenceEquals(actor, owner) || ReferenceEquals(actor, target))
@@ -295,6 +327,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 restore("owned-summon", () => { if (owner != null && !owner.Destroyed) DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }); });
                 restore("target-state", () => {
                     target.Stats.AC.BaseValue = oldAc; target.Stats.AdditionalCMB.BaseValue = oldTargetCmb;
+                    target.Stats.SkillMobility.BaseValue = oldMobility; target.Stats.SkillAthletics.BaseValue = oldAthletics;
                     if (immunity != null) {
                         target.Descriptor.RemoveFact(immunity);
                         foreach (var component in immunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component);
@@ -316,6 +349,29 @@ namespace KingmakerGunslinger.RuntimeTesting
                     "Independent exact-owned finalizers run after success or refusal; cleanup is not gameplay proof.");
                 if (errors.Count != 0 && complete) throw new InvalidOperationException(string.Join("|", errors.ToArray()));
             }
+        }
+        private static JObject Grab32HoldState(UnitEntityData owner, UnitEntityData target, SummonGrabComponent grab)
+        {
+            return new JObject {
+                ["reciprocalLinkAbsent"] = !ReferenceEquals(SummonHoldComponent.HeldTarget(owner), target),
+                ["initiatorPartAbsent"] = owner.Get<UnitPartGrappleInitiator>() == null,
+                ["targetPartAbsent"] = target.Get<UnitPartGrappleTarget>() == null,
+                ["weaponLinkAbsent"] = SummonGrappleLinks.EstablishingWeapon(owner, target) == null,
+                ["holdBuffAbsent"] = owner.Buffs.GetBuff(grab.HoldBuff) == null,
+                ["grappledBuffAbsent"] = target.Buffs.GetBuff(grab.GrappledBuff) == null,
+                ["ownerCantActAbsent"] = !owner.Descriptor.State.HasCondition(UnitCondition.CantAct),
+                ["ownerCantMoveAbsent"] = !owner.Descriptor.State.HasCondition(UnitCondition.CantMove),
+                ["targetEntangledAbsent"] = !target.Descriptor.State.HasCondition(UnitCondition.Entangled),
+                ["targetCantMoveAbsent"] = !target.Descriptor.State.HasCondition(UnitCondition.CantMove) };
+        }
+        private static JArray Grab32Maneuvers(IEnumerable<RuleCombatManeuver> checks)
+        {
+            return new JArray(checks.Select(value => new JObject {
+                ["initiator"] = value.Initiator?.UniqueId, ["target"] = value.Target?.UniqueId,
+                ["roll"] = (int)value.InitiatorRoll, ["cmb"] = value.InitiatorCMB, ["cmd"] = value.TargetCMD,
+                ["autoFailure"] = value.AutoFailure, ["nativeSuccess"] = value.Success,
+                ["concealmentPassed"] = value.ConcealmentCheck == null ? (bool?)null : value.ConcealmentCheck.Success,
+                ["productSuccess"] = SummonManeuverChecks.Succeeded(value) }));
         }
         private UnitEntityData CastSprint32IdleFixtureSummon(ExpandedSummoningCorrectionFixture fixture, string key)
         {

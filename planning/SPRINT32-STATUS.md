@@ -70,35 +70,36 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate: `f3a978c14b7d352a75f11d528d25b77fbf57c2fd`.
-ZIP `deaedf205763b0c5f9933a87e82ec7de17ea67df3ca73764c6f6460b9dbe3da6`;
-DLL `cea0bb9e4cfeb76d03410eb6737d8fb4ad1de2078c8a8c2fc44635da4ad9ffcb`;
-MVID `3431a6b4-9f5d-4502-98f1-28ff83b61b14`;
-SourceState `2a40cf2a1a83ff20cca4768d1a6c03c8f8a3b6e595417ffbeeb0446d1ed3248a`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/f3a978c14b7d/.
-Build73 wrapper/558of2755/exact compile/strictZIP PASS270.379s; development,
-not final qualification. Current observer/provider-fixture changes are newer.
+Latest validated development candidate74: `b015ef2ad0f25914442b00120ba511d7fbc23917`.
+ZIP `7c22d4b1c24722171a0369f2d6f17bf8bf918192b85fd72501ac3c3c39e0895e`;
+DLL `42042a6471b002f91a3a84822becfb64627d77aafa2aa61491e089247b84a06c`;
+MVID `43ca92f7-3436-4c97-a434-291f7b27dcb6`;
+SourceState `b6ee8c3e161a0effc6b5f529322fdc0d68e9d55dfc55489cd90bd4875bc1490a`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/b015ef2ad0f2/.
+Build74 wrapper/558of2755/exact compile/strictZIP PASS264.446s; development,
+not final qualification. The reviewed observer correction batch is newer/unpackaged.
 
-Native87 Satyr RTWP13/13 and88turn14/14 PASS retain original source binding;
-88's corrected immutable outer reader is not fresh execution. Native94 grab
-12PASS/2FAIL proves natural establishment and maintained tail/constrict with
-live Strength. Release observer stops before native initiator cleanup settles;
-bounded full-predicate wait added. TB/Salamander remain NOT_RUN.
-Native95 presentation11PASS/2FAIL fixes intact Satyr readiness. Agent inspected
-rest/moving frames; movement traveled6.698m but terminal Interrupt failed the
-precise-arrival assertion. Replan reuses existing technical locomotion contract
-(exact command/velocity/finite moving poses), retaining terminal result honestly.
-Attacks/wound/death/expiry/Lillend remain NOT_RUN; original FAILs unchanged.
-Native96 Working preparation35/35 PASS: actual performances, control effects,
-distinct budgets and native Working write. Fresh native97 cold5PASS/3FAIL refuses
-listener relations before cleanup/save; canonical faction/attack lists survived,
-but omitted conjuncts prevent sole-cause attribution. Independent review rejects
-a blind cache-timing repair; every boundary conjunct/group is now recorded with
-the same refusal. Absence/OFF remain NOT_RUN. All intake restored exactly.
-Bounded optional-provider transition adapter added to the existing installed-stack
-trio; original provider profile stays save-free. Exact researched reference pins,
-native Satyr grant/availability, Lillend book/effect transitions and source cleanup
-are covered by the selected fixture, awaiting actual execution.
+Native98 grab11PASS/2FAIL establishes natural tail/grab/initial constrict, then
+loses the hold at its first maintenance boundary. Missing maneuver/escape rows
+prevent attribution; no product defect established. The correction retains those
+native events, prospectively isolates the owned victim's escape skills and permits
+at most three sequential ordinary holds within one90s window, only after an observed natural-one
+refusal, preserving all outcomes. No roll/clock/action restoration or supplied
+reacquisition. Release/TB/Salamander remain unqualified.
+Native99 presentation12PASS/2FAIL: outward Satyr movement6.638m/99active frames
+passes; immediate return Interrupt/0.032m fails. Agent inspected the two intact
+rest/moving frames. Actual interrupt source remains unknown. Installed contracts
+show IsFinished does not prove path/agent retirement; bounded ordinary-frame
+settlement is now required before reversal. Attacks/hit/lifecycle/Lillend pending.
+Native100 Working preparation37/37 PASS. Native101 cold6PASS/3FAIL isolates an
+observer mismatch: both listeners remain mutually hostile to their recorded
+Fascinate owner, but not to the independent Competence source. Preparation never
+required all-four hostility. The corrected guard binds the shared exact Lillend
+SourceId and preparation run, preserving every unrelated-intake safety refusal
+and all four relation diagnostics. Cold saved-state/cleanup/absence still pending.
+All original failures remain immutable; all completed intake restored exactly.
+Provider retained/removed/module-off adapter remains unqualified; it preserves
+the entire installed stack and pins the researched dependency/provider identities.
 
 Earlier source-bound evidence remains in history: player input Wizard16/16,
 Sorcerer28/28,Druid31/31; Satyr at-will13/13 each mode; support13/13;
@@ -138,38 +139,41 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest Working envelope restored23:27:22.3891882UTC; exact intake
+Latest Working envelope restored2026-10-27T00:26:58.9992306Z; exact intake
 967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
-8550225B and intake metadata restored. No owned live transaction.
-OFF was not launched after failedON; detailed identities/classifications in history.
+8550225B and current intake metadata restored. No owned live transaction.
+Absence was not launched after failed cold; detailed identities in history.
 
-Counts73Build-Local attempts/59validated packages/97native launches. Build73
-270.379s; native94/95/96/97 113.114/95.699/241.905/198.674s. Current changes
-passed focused compilation,8domain/132compiled-parser/28scope/14save-free/
-11overlay checks and schema validation. Independent concrete findings addressed;
-no fresh native proof of these changes yet. Approximate
-work categories and overlapping supervision in history; exclusive cumulative
-totals unavailable; owner waiting0. No unchanged failed replay.
+Counts74Build-Local attempts/60validated packages/101native launches.
+Build74 264.446s; native98/99/100/101 105.013/97.382/250.911/188.855s.
+Current batch passed production compile25.7s and8/2755 focused domain tests;
+final source identity guards were tightened afterward and await candidate compile.
+Independent read-only review covered actual diffs/evidence/native contracts.
+Post-yield mode recheck and source identity findings addressed; a mistaken gait
+label interpretation was withdrawn after inspecting its actual implementation.
+No fresh native proof of these corrections yet. Approximate overlapping work
+categories in history; exclusive cumulative totals unavailable; owner waiting0.
 
 Measured Working trio902923316B, rounded1.1GB plus2GB reserve requires3.1GB
-initial; each stage550MB plus2GB requires2.55GB. After95 verified duplicate
-cleanup613062802B, free3212091392B/protected ComparePASS. After97 verified closed
-duplicates1032715416B reclaimed while retaining reference copies/content archives;
-free3643830272B and full protected ComparePASS. Preserve
-unique packages/content archives/raws/failures/backups/DATA/personal data.
+initial; each stage550MB plus2GB requires2.55GB. After97 verified duplicate
+cleanup retained all unique content. After101 verified cleanup reclaimed
+991895080B from twelve exact closed duplicate package extractions, retaining
+reference copies/content archives/validated ZIPs. Free3538485248B and full
+protected ComparePASS; exact receipts are in history.
+Unique packages/raws/failures/receipts/protected backups/DATA/personal data remain.
 
-**Next:** freeze the reviewed observer/provider batch and package once, then run
-affected native selections. Cold listener-boundary cause remains unknown; the next
-bounded reproduction retains complete fields and the same safety refusal.
-Affected grab/presentation each10min/runtime600s. Base WorkingON remains pending;
-provider retained/removed/module-off trios predeclared90–120min including exact
-restoration. Provider module-off covers ordinary OFF assertions too; no redundant
-absent-provider OFF run is selected. Stop a failed sequence and classify it.
-Provider persistence and final integration remain required. Before final qualification, review relevant
-accepted descendants, freeze source/assets/observers/publication inputs, run
-one explicit complete development gate and qualify its exact ZIP with a
-separate records worktree. No owner playtest, merge/release or Sprint33.
+**Next:** package the reviewed grab/presentation/cold-identity correction batch
+once, then run affected native selections. Grab/presentation each10min/runtime600s.
+If the changed movement settlement reproduction still fails, use one matched
+native Satyr carrier comparison; do not repeat the same command loop indefinitely.
+Base WorkingON remains pending. Provider retained/removed/module-off trios are
+predeclared90?120min including restoration; provider module-off also covers the
+ordinary OFF assertions. Stop a failed sequence and classify it. No new permission
+is needed for these authorized corrections. Final complete gate, source-bound
+qualification, relevant dependency review and final integration remain required.
+Keep frozen candidate/records ownership separate at final qualification; no owner
+playtest, merge/release or Sprint33.
 
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30public-route/body/icon,
 standalone final integration, highest-risk combined final integration.
