@@ -3,7 +3,7 @@
     "authority": "owner 2026-10-11",
     "document": "docs/VALIDATION-POLICY.md",
     "default": "Focused development/review",
-    "activeTask": "Owner 2026-10-25: Sprint 32 Satyr and Lillend Azata plus narrow unattended workflow repair. Sole active record: planning/SPRINT32-STATUS.md. Finish at reviewed, validated PR; no merge/release or Sprint 33.",
+    "activeTask": "Owner 2026-10-25 Sprint 32 complete through scoped native qualification and PR74 for owner review. Sole active record: planning/SPRINT32-STATUS.md. No merge/release or Sprint 33.",
     "historicalFields": "All earlier mission/status/next-action fields retain their original dated meaning; they do not select current work.",
     "archive": "docs/history/EXPANDED-SUMMONING-PROGRAM-STATE-before-workflow-reset-2026-10-11.json"
   },
@@ -1707,7 +1707,7 @@
     "authority": "Owner 2026-10-25 unattended workflow repair and Sprint 32 mission",
     "activeSprint": 32,
     "record": "planning/SPRINT32-STATUS.md",
-    "status": "IN_PROGRESS_NOT_QUALIFIED",
-    "nextAction": "Follow the sole active record; no Sprint 33 or publication."
+    "status": "QUALIFIED_PR_READY_NOT_RELEASED",
+    "nextAction": "Owner review PR74; separate authority required for merge/release. No Sprint 33."
   }
 }

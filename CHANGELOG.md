@@ -9,9 +9,9 @@
   Lullaby, and the bounded Lillend noncombat dispatcher/memory exception.
   Countersong, Darkness and the five unsupported utility spells are omitted.
 - Repairs candidate-bound build/runtime admission and keeps one active record,
-  preserved evidence identities and guarded restoration. Required native,
-  technical visual, persistence and integration qualification remain incomplete;
-  this entry does not announce a release. See [Sprint 32 status](planning/SPRINT32-STATUS.md).
+  preserved evidence identities and guarded restoration. Scoped native, technical
+  visual, persistence and integration qualification is complete through fresh
+  execution and reviewed reuse; this entry does not announce a release. See [Sprint 32 status](planning/SPRINT32-STATUS.md).
 
 ## 0.0.168-expanded-summoning-sprints30-31-followup
 

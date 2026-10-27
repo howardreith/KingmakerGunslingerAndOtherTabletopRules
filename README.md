@@ -1,8 +1,9 @@
 # Kingmaker Gunslinger
 
 Sprint 32 development adds Satyr control and Lillend Azata bard/support summons.
-The candidate is **not yet fully qualified or released**; native presentation,
-persistence and integration checks remain open. See the
+The scoped candidate is **qualified for owner PR review; not released**. Native
+behavior, technical presentation, persistence and integration use fresh evidence
+and reviewed reuse with explicit limits. See the
 [active Sprint 32 record](planning/SPRINT32-STATUS.md) for source-bound results,
 owner-approved adaptations and limitations, and the reviewable PR.
 
