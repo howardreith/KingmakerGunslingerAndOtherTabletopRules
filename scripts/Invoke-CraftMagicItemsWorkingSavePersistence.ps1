@@ -1,4 +1,4 @@
-﻿[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
 param(
     [string]$ExpectedVersion = '0.0.126',
     [ValidateSet('KMG_AUTOMATION_WORKING')]
@@ -15,6 +15,7 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'common.ps1')
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $invoke = Join-Path $PSScriptRoot 'Invoke-KingmakerRuntimeTest.ps1'
 $build = Join-Path $PSScriptRoot 'Build-Local.ps1'
@@ -52,8 +53,9 @@ function Wait-ForGuardedKingmakerExit([string]$phase) {
 
 if (-not $ReuseInstalledArtifact) {
     & $build
-    $PackagePath = Join-Path $root (
-        "artifacts\local-runtime\$ExpectedVersion\KingmakerGunslinger-$ExpectedVersion-local-runtime.zip")
+    $PackagePath = (Get-KmgLocalCandidateLayout -RepositoryRoot $root `
+            -Commit ((& git -C $root rev-parse HEAD).Trim()) `
+            -Id 'KingmakerGunslinger' -Version $ExpectedVersion).PackagePath
     if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
         throw "Build-Local did not produce the expected package: $PackagePath"
     }

@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.0.169-expanded-summoning-satyr-lillend
+
+- Adds Satyr control and weapon fallback, and Lillend Azata bard/support spells,
+  performances, healing and tail grab/constrict on the existing summon routes.
+- Suggestion is conditional on CowWithHat Custom Spells. Owner-approved scope
+  retains native Hold repeat saves and hearing limitations, immediate-release
+  Lullaby, and the bounded Lillend noncombat dispatcher/memory exception.
+  Countersong, Darkness and the five unsupported utility spells are omitted.
+- Repairs candidate-bound build/runtime admission and keeps one active record,
+  preserved evidence identities and guarded restoration. Scoped native, technical
+  visual, persistence and integration qualification is complete through fresh
+  execution and reviewed reuse. See [release notes](docs/RELEASE-NOTES-0.0.169.md)
+  and [Sprint32 status](planning/SPRINT32-STATUS.md) for exact limits and publication status.
+
 ## 0.0.168-expanded-summoning-sprints30-31-followup
 
 - The Astral Deva's protective aura works as a lesser globe of

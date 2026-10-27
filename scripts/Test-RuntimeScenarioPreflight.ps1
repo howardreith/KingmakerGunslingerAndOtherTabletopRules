@@ -178,6 +178,7 @@ $expected = @(
     'disposable-expanded-summoning-sprint28-native-review',
     'disposable-expanded-summoning-sprint29-native-review',
     'disposable-expanded-summoning-sprints30-31-native-review',
+    'disposable-expanded-summoning-sprint32-native-review',
     'disposable-expanded-summoning-cleanup2-native-review',
     'observe-expanded-summoning-primate-census',
     'observe-expanded-summoning-arachnid-census',
@@ -189,6 +190,7 @@ $expected = @(
     'observe-expanded-summoning-sprint28-native-inputs',
     'observe-expanded-summoning-sprint29-native-inputs',
     'observe-expanded-summoning-sprints30-31-native-inputs',
+    'observe-expanded-summoning-sprint32-native-inputs',
     'observe-alternate-summoning-sources',
     'observe-alternate-summoning-blocked-family',
     'disposable-alternate-summoning-contracts',
@@ -393,6 +395,15 @@ Assert-True (($csharpNames -join "`n") -ceq ($powershellNames -join "`n")) `
     'csharp-powershell-catalog-sync'
 Assert-True (($expected | Sort-Object) -join "`n" -ceq
     ($powershellNames -join "`n")) 'documented-scenarios-retained'
+. (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
+# Every bounded native-input audit must use exact receipt identity and the
+# independent settings/install restoration boundary. Derive from the existing
+# admitted catalog, so adding an audit cannot silently select the legacy path.
+foreach ($audit in @($powershellNames | Where-Object {
+    $_ -cmatch '^observe-expanded-summoning-sprints?[0-9-]+-native-inputs$'
+})) {
+    Assert-True (Test-KmgExactSummoningRuntimeBoundary $audit) "native-input-exact-restoration-$audit"
+}
 $crocodilianMetadata = Get-KmgRuntimeScenarioMetadata 'disposable-expanded-summoning-crocodilians'
 Assert-True ($crocodilianMetadata.RequiresSaveName -and
     $crocodilianMetadata.PermittedSaveName -ceq 'KMG_AUTOMATION_WORKING' -and
@@ -897,7 +908,6 @@ foreach($invalid in @(@{},@{reviewPhase='Giant-Lineup'},@{reviewPhase='Menus'},@
     Assert-Throws {Assert-KmgRuntimeScenarioPreflight @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters $invalid} 'cleanup2-refuses-missing-case-type-phase-and-extra'
     Assert-Throws {New-KmgRuntimeRequest @cleanup2ReviewArgs -ExitAfterCompletion $true -Parameters $invalid -EvidenceDirectory (Join-Path $script:KmgRuntimeEvidenceRoot 'cleanup2-invalid-request')} 'cleanup2-request-refuses-invalid-parameters'
 }
-. (Join-Path $PSScriptRoot 'ExpandedSummoningOrchestration.Common.ps1')
 Assert-True (Test-KmgExactSummoningRuntimeBoundary $cleanup2ReviewArgs.Scenario) 'cleanup2-keeps-exact-receipt-and-independent-restoration-boundary'
 Assert-True (-not (Test-KmgCleanup2ReviewPhaseScope 'disposable-expanded-summoning-native-profile' @{reviewPhase='menus'})) 'cleanup2-phase-scope-does-not-authorize-another-scenario'
 foreach($phase in @('elementals-off','giants-off','elementals-learning','elementals-console')) {
@@ -1965,6 +1975,26 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
     $s29RequestArgs.Parameters.persistenceScope = 'giant-humanoids-ii'
     $s29RequestArgs.ExitAfterCompletion = $false
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s29RequestArgs } ('s29-save-reject-no-exit-' + $phase)
+}
+
+$s32Args = @{Scenario='disposable-expanded-summoning-sprint32-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='satyr-control'})) 's32-satyr-control-admitted'
+Assert-True (Test-KmgExactSummoningRuntimeBoundary $s32Args.Scenario) 's32-exact-restoration-boundary'
+foreach ($phase in @('satyr-turn','lillend-turn','optional-suggestion','satyr-routes','lillend-routes','support-lifecycle','druid-input','wizard-input','sorcerer-input')) {
+    Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s32-turn-admitted-'+$phase)
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase} } ('s32-turn-no-exit-refused-'+$phase)
+    foreach ($bag in @(@{reviewPhase=$phase.ToUpperInvariant()}, @{reviewPhase=$phase+' '}, @{reviewPhase=@($phase)}, @{reviewPhase=$phase;saveName='KMG_AUTOMATION_WORKING'})) {
+        Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters $bag } ('s32-turn-invalid-scope-refused-'+$phase)
+    }
+}
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='lillend-support'})) 's32-lillend-support-admitted'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='lillend-support'} } 's32-lillend-no-exit-refused'
+foreach ($bag in @(@{reviewPhase='Lillend-Support'}, @{reviewPhase='lillend-support '}, @{reviewPhase=@('lillend-support')}, @{reviewPhase='lillend-support';extra='x'})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters $bag } 's32-lillend-invalid-scope-refused'
+}
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='satyr-control'} } 's32-no-exit-refused'
+foreach ($bag in @(@{}, @{reviewPhase='unknown'}, @{reviewPhase='Satyr-Control'}, @{ReviewPhase='satyr-control'}, @{reviewPhase='satyr-control';saveName='KMG_AUTOMATION_WORKING'}, @{reviewPhase=@('satyr-control')})) {
+    Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters $bag } 's32-unselected-scope-refused'
 }
 
 $s3031Args = @{Scenario='disposable-expanded-summoning-sprints30-31-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}

@@ -1,0 +1,551 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Kingmaker;
+using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Controllers.Brain;
+using Kingmaker.Controllers.Combat;
+using Kingmaker.EntitySystem.Entities;
+using Kingmaker.PubSubSystem;
+using Kingmaker.UI.SettingsUI;
+using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities.Blueprints;
+using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.FactLogic;
+using Kingmaker.Utility;
+using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
+using UnityEngine;
+
+namespace KingmakerGunslinger.RuntimeTesting
+{
+    internal sealed partial class RuntimeTestRunner
+    {
+        private bool IsSprint32Review { get { return _request.Scenario ==
+            RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview; } }
+
+        private IEnumerable<int> ReviewSprint32(ExpandedSummoningCorrectionFixture fixture)
+        {
+            bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
+            UnitEntityData groupedAnchor = null; bool groupedAnchorBrain = false;
+            bool groupedSettingsOwned = false, groupedEngagement = false;
+            try
+            {
+                string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+                {
+                    // One exact disposable anchor owns the grouped cells. Do
+                    // not re-enable its AI between a restored cell and the next
+                    // cell's readiness wait; no existing command is interrupted.
+                    groupedAnchor = Sprint32OwnedQuietAnchor(fixture, phase + "-group");
+                    groupedEngagement = SettingsRoot.Instance.PauseOnEngagement.CurrentValue;
+                    SettingsRoot.Instance.PauseOnEngagement.CurrentValue = false; groupedSettingsOwned = true;
+                    groupedAnchorBrain = groupedAnchor.IsBrainActive;
+                    Sprint28SetBrainActivePreservingActions(groupedAnchor, false);
+                }
+                // Own mode for the whole phase, including post-disposal frames.
+                // Restoring the intake between nested iterators can admit ambient
+                // actors to a turn before the outer native clock is dismantled.
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
+                foreach (int frame in ReviewSprint32Core(fixture)) yield return frame;
+            }
+            finally
+            {
+                // A constructor can retain Default ownership even when its local
+                // scope was never returned. Preserve a foreign mode for outer
+                // transaction rollback instead of changing pause through Activate.
+                try
+                {
+                    if (groupedSettingsOwned) SettingsRoot.Instance.PauseOnEngagement.CurrentValue = groupedEngagement;
+                    if (groupedAnchor != null && !Cleanup2NativeDefaultPending)
+                    {
+                        if (groupedAnchor.Destroyed || !ReferenceEquals(groupedAnchor.Blueprint, _summoningProfileActor))
+                            throw new InvalidOperationException("Grouped disposable anchor identity changed.");
+                        Sprint28SetBrainActivePreservingActions(groupedAnchor, groupedAnchorBrain);
+                    }
+                }
+                finally
+                {
+                    if (!Cleanup2NativeDefaultPending)
+                    {
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                        Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
+        {
+            string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32SuggestionTerminalsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSuggestionTerminals32(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool lillend in new[] { false, true })
+                    foreach (int frame in ReviewPresentation32(fixture, lillend)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool turn in new[] { false, true })
+                    foreach (int frame in ReviewLillendGrab32(fixture, false, turn)) yield return frame;
+                foreach (int frame in ReviewLillendGrab32(fixture, true, false)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ControlsPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32ControlsTurnPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool burst in new[] { false, true })
+                    foreach (int frame in ReviewLillendControls32(fixture, burst,
+                        phase == ExpandedSummoningNativeProfilePolicy.Sprint32ControlsTurnPhase)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrAtWillPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrAtWillTurnPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool sleep in new[] { true, false })
+                    foreach (int frame in ReviewSatyrAtWill32(fixture, sleep,
+                        phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrAtWillTurnPhase)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase)
+            {
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32BardicSuggestionPhase)
+                    CaptureSprint32RemainingControlLeaves();
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewLillendFascinate32(fixture)) yield return frame;
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+                    foreach (int frame in ReviewLillendFascinate32(fixture, true)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldTurnPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                bool holdTurn = phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldTurnPhase;
+                if (!holdTurn)
+                    foreach (int frame in ReviewLillendHold32(fixture, false, true)) yield return frame;
+                foreach (int frame in ReviewLillendHold32(fixture, holdTurn, false)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32CantripPhase)
+            {
+                CreateExpandedSummoningCorrectionHostile(fixture);
+                foreach (int frame in ReviewLullaby32(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase)
+            {
+                foreach (int frame in ReviewLillendCompetence32(fixture)) yield return frame;
+                CreateSprint32TurnHostile(fixture);
+                // Keep the added owned hostile outside printed Fascinate range
+                // until this second case has naturally selected Competence.
+                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 80f);
+                foreach (int frame in ReviewLillendCompetence32(fixture, true)) yield return frame;
+                yield break;
+            }
+            if (ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase))
+            {
+                foreach (int frame in ReviewSprint32NativeInput(fixture, phase)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32LifecyclePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSprints3031SourceLifecycle(fixture, true)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrRoutesPhase ||
+                phase == ExpandedSummoningNativeProfilePolicy.Sprint32LillendRoutesPhase)
+            {
+                foreach (int frame in ReviewSprint32PublicRoutes(fixture,
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrRoutesPhase)) yield return frame;
+                yield break;
+            }
+            CaptureSprint32ControlGraphs();
+            if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendSupportPhase)
+            {
+                foreach (int frame in ReviewLillend32Support(fixture)) yield return frame;
+                foreach (int frame in ReviewLullaby32(fixture)) yield return frame;
+                yield break;
+            }
+            if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32LillendTurnPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (bool wounded in new[] { false, true })
+                    foreach (int frame in ReviewLillend32Turn(fixture, wounded)) yield return frame;
+                yield break;
+            }
+            if (RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32SuggestionPhase)
+            {
+                CreateExpandedSummoningCorrectionHostile(fixture);
+                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
+                foreach (bool lillend in new[] { false, true })
+                    foreach (int frame in ReviewSuggestion32(fixture, lillend)) yield return frame;
+                yield break;
+            }
+            bool turnBased = RuntimeTestRequestParser.Sprint32ReviewPhase(_request) == ExpandedSummoningNativeProfilePolicy.Sprint32SatyrTurnPhase;
+            // Resettable cases, each with a fresh exact-owner summon.
+            // Final mode/profile/persistence qualification remains separate.
+            if (turnBased) CreateSprint32TurnHostile(fixture);
+            else CreateExpandedSummoningCorrectionHostile(fixture);
+            // Keep the fresh hostile away from the fixture party during setup;
+            // only the surveyed lane later establishes the intended encounter.
+            PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 40f);
+            foreach (bool immune in new[] { false, true })
+                foreach (int frame in ReviewSatyr32Control(fixture, immune, false, turnBased)) yield return frame;
+            foreach (int frame in ReviewSatyr32Control(fixture, true, true, turnBased)) yield return frame;
+        }
+
+        private void CreateSprint32TurnHostile(ExpandedSummoningCorrectionFixture fixture)
+        {
+            if (fixture.Hostile != null || fixture.HostileBlueprint != null || fixture.OwnedHostileFaction != null)
+                throw new InvalidOperationException("Sprint32 turn target is already owned.");
+            // The general hostile donor can attack neutral civilians and enroll them
+            // through native group memory. Use the already proven ElementalTraitNativeTurn
+            // private-faction seam; never change an intake actor or widen clock ownership.
+            var faction = UnityEngine.Object.Instantiate(fixture.Caster.Blueprint.Faction);
+            fixture.OwnedHostileFaction = faction;
+            faction.name = "KMG_Runtime_Sprint32Turn_HostileFaction";
+            faction.Peaceful = faction.AlwaysEnemy = faction.Neutral = faction.IsDirectlyControllable = false;
+            faction.Dummy = null;
+            faction.AttackFactions = new[] { fixture.Caster.Blueprint.Faction };
+            var blueprint = UnityEngine.Object.Instantiate(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.DefaultPlayerCharacter);
+            fixture.HostileBlueprint = blueprint;
+            blueprint.name = "KMG_Runtime_Sprint32Turn_HostileTarget";
+            blueprint.IsCheater = true;
+            ExpandedSummoningFields(typeof(BlueprintUnit)).Single(value =>
+                value.Name == "Faction" || value.Name == "m_Faction").SetValue(blueprint, faction);
+            var target = Game.Instance.EntityCreator.SpawnUnit(blueprint,
+                fixture.Caster.Position + Vector3.forward * 40f, Quaternion.identity, fixture.Scene);
+            fixture.Hostile = target;
+            target.Stats.HitPoints.BaseValue = 100000;
+            fixture.HostileSize = target.Descriptor.State.Size;
+            fixture.HostileDamage = target.Descriptor.Damage;
+            SetExpandedSummoningBrainActive(target, false);
+            PlaceExpandedSummoningUnit(target, target.Position);
+            var neutrals = fixture.UnitsBefore.OfType<UnitEntityData>().Where(value => value != null &&
+                !value.Destroyed && value.Blueprint.Faction != fixture.Caster.Blueprint.Faction).ToArray();
+            bool isolated = target.IsEnemy(fixture.Caster) && fixture.Caster.IsEnemy(target) &&
+                neutrals.All(value => !value.IsEnemy(target) && !target.IsEnemy(value));
+            Sprint25Check("sprint32-turn-hostile-faction", isolated, new JObject {
+                ["target"] = target.UniqueId, ["privateFaction"] = faction.name,
+                ["alwaysEnemy"] = faction.AlwaysEnemy, ["attackFaction"] = faction.AttackFactions.Single().name,
+                ["casterIsEnemy"] = fixture.Caster.IsEnemy(target), ["targetIsEnemy"] = target.IsEnemy(fixture.Caster),
+                ["intakeNonPlayerRelations"] = new JArray(neutrals.Select(value => new JObject {
+                    ["unit"] = value.UniqueId, ["blueprint"] = value.Blueprint.name,
+                    ["faction"] = value.Blueprint.Faction.name, ["unitIsEnemy"] = value.IsEnemy(target),
+                    ["targetIsEnemy"] = target.IsEnemy(value) })) },
+                "Private target attacks only the native player faction; unchanged nonplayer intake actors are not enemies. The exact-owner clock guard remains mandatory.");
+            if (!isolated) throw new InvalidOperationException("Sprint32 private hostile faction does not isolate native intake relations.");
+        }
+
+        private IEnumerable<int> ReviewSatyr32Control(ExpandedSummoningCorrectionFixture fixture, bool immune, bool melee = false, bool turnBased = false)
+        {
+            bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue;
+            bool oldPause = Game.Instance.IsPaused;
+            UnitEntityData owner = null, sibling = null;
+            var target = fixture.Hostile;
+            int will = target.Stats.SaveWill.BaseValue, ac = target.Stats.AC.BaseValue;
+            BlueprintFeature mindImmunity = null;
+            Vector3? surveyedSiblingProbe = null;
+            string id = melee ? "satyr-melee-fallback" : immune ? "satyr-immune-fallback" : "satyr-control";
+            if (turnBased) id += "-turn";
+            try
+            {
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false;
+                Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = false;
+                for (int frame = 0; frame < 16; frame++) yield return 0;
+                owner = CastExpandedSummoningOwnTier(fixture, "satyr");
+                Sprint28SetBrainActivePreservingActions(owner, false);
+                owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
+                if (!immune)
+                {
+                    var atWill = new[] { "CharmPerson", "Sleep" }.Select(suffix =>
+                        fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.name ==
+                            "KMG_Summoning_FeyCelestial_Satyr_" + suffix)).Select(blueprint =>
+                                new Kingmaker.UnitLogic.Abilities.AbilityData(owner.Descriptor.Abilities.GetAbility(blueprint))).ToArray();
+                    bool standard = atWill.All(value => value.Blueprint.Type == AbilityType.SpellLike &&
+                        value.RuntimeActionType == UnitCommand.CommandType.Standard && !value.RequireFullRoundAction);
+                    Sprint25Check(id + "-at-will-actions", standard, new JObject {
+                        ["abilities"] = new JArray(atWill.Select(value => new JObject {
+                            ["blueprint"] = value.Blueprint.AssetGuid, ["type"] = value.Blueprint.Type.ToString(),
+                            ["action"] = value.RuntimeActionType.ToString(), ["fullRound"] = value.RequireFullRoundAction })) },
+                        "The private Satyr at-will SLAs use Standard without the donor spell's full-round flag; mapping receipt, not cast proof.");
+                    if (!standard) throw new InvalidOperationException("Satyr private SLA action contract differs.");
+                    sibling = CastExpandedSummoningOwnTier(fixture, "satyr");
+                    Sprint28SetBrainActivePreservingActions(sibling, false);
+                    ReadSprint32NatureKnowledge(owner, sibling, id + "-nature-knowledge");
+                }
+                for (int frame = 0; frame < 8; frame++) yield return 0;
+                var fear = fixture.Blueprints.OfType<BlueprintAbility>().Single(value =>
+                    value.name == "KMG_Summoning_FeyCelestial_Satyr_Fear");
+                var resource = fixture.Blueprints.OfType<BlueprintAbilityResource>().Single(value =>
+                    value.name == "KMG_Summoning_FeyCelestial_Satyr_FearResource");
+                var eligibility = fixture.Blueprints.OfType<SatyrControlEligibility>().Single(value =>
+                    ReferenceEquals(value.OwningBlueprint, owner.Blueprint) && ReferenceEquals(value.Ability, fear));
+                Vector3 far; string lane, direction;
+                var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, melee ? 1.4f : 8f,
+                    out far, out lane, out direction,
+                    originAllyExclusionRadius: new Feet(30).Meters + 1f);
+                PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, far);
+                if (sibling != null)
+                {
+                    // The later effect-only isolation probe vacates this point.
+                    // The summon spawn position was never a surveyed lane point.
+                    var forward = (far - origin).normalized;
+                    var side = Vector3.Cross(Vector3.up, forward).normalized;
+                    var ground = AstarPath.active.GetNearest(origin);
+                    Vector3? siblingPoint = null;
+                    foreach (var requested in new[] { origin - forward * 1.3f + side,
+                        origin - forward * 1.3f - side })
+                    {
+                        var point = AstarPath.active.GetNearest(requested);
+                        if (ground.node == null || point.node == null || !point.node.Walkable ||
+                            point.node.GraphIndex != ground.node.GraphIndex || point.node.Area != ground.node.Area ||
+                            !Cleanup2Finite(point.clampedPosition) || Vector3.Distance(point.clampedPosition, requested) > .3f ||
+                            Vector3.Distance(point.clampedPosition, far) < .8f) continue;
+                        siblingPoint = point.clampedPosition; break;
+                    }
+                    if (!siblingPoint.HasValue)
+                        throw new InvalidOperationException("Satyr sibling has no separate surveyed point behind the Fear lane.");
+                    PlaceExpandedSummoningUnit(sibling, siblingPoint.Value);
+                    surveyedSiblingProbe = siblingPoint.Value;
+                }
+                bool protectedClear = Game.Instance.Player.Party.Where(value => value != null && value.IsInGame)
+                    .All(value => Vector3.Distance(value.Position, origin) > new Feet(30).Meters + value.Corpulence);
+                if (!protectedClear) throw new InvalidOperationException("Satyr cone overlaps protected party footprint.");
+                target.Stats.SaveWill.BaseValue = -100; target.Stats.AC.BaseValue = -100;
+                if (immune)
+                {
+                    var component = ScriptableObject.CreateInstance<BuffDescriptorImmunity>();
+                    component.Descriptor = SpellDescriptor.MindAffecting;
+                    mindImmunity = ScriptableObject.CreateInstance<BlueprintFeature>();
+                    mindImmunity.name = "KMG_Runtime_Satyr32_MindImmunity";
+                    mindImmunity.Ranks = 1; mindImmunity.ComponentsArray = new BlueprintComponent[] { component };
+                    target.Descriptor.AddFact(mindImmunity);
+                }
+                foreach (var unit in new[] { owner, target })
+                {
+                    unit.Wake(0f);
+                    if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+                }
+                owner.Memory.Add(target); target.Memory.Add(owner);
+                owner.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+                owner.JoinCombat(); target.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
+                new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+                var admission = new JObject();
+                if (turnBased)
+                {
+                    foreach (int frame in Sprint22EnrollTurnBasedOwners(new[] { owner }, target, admission)) yield return frame;
+                    DateTime deadline = DateTime.UtcNow.AddSeconds(30); int frames = 0;
+                    while (frames++ < 500 && DateTime.UtcNow < deadline && !Sprint18OwnerIsActing(owner)) yield return 0;
+                    if (!(bool)admission["admitted"] || !owner.IsVisibleForPlayer || !Sprint18OwnerIsActing(owner))
+                        throw new InvalidOperationException("Exact Satyr native turn admission failed: " + admission);
+                }
+                Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
+                float score = eligibility.Score(new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } });
+                var controlScores = fixture.Blueprints.OfType<SatyrControlEligibility>()
+                    .Where(value => ReferenceEquals(value.OwningBlueprint, owner.Blueprint))
+                    .ToDictionary(value => value.Ability.name, value => value.Score(
+                        new DecisionContext { Unit = owner, Target = new TargetInfo { Unit = target } }));
+                var weapon = owner.Body.PrimaryHand.MaybeWeapon;
+                bool ready = protectedClear && owner.IsAIEnabled && owner.Descriptor.State.CanAct &&
+                    owner.IsInCombat && owner.IsEnemy(target) && owner.HasLOS(target) &&
+                    owner.Memory.ContainsVisible(target) && score == (immune ? 0f : 1f) &&
+                    (!immune || controlScores.Values.All(value => value == 0f)) &&
+                    owner.Descriptor.Resources.GetResourceAmount(resource) == 1 &&
+                    weapon?.Blueprint.AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9" &&
+                    owner.DistanceTo(target) <= new Feet(30).Meters;
+                Sprint25Check(id + "-ready", ready, new JObject {
+                    ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["lane"] = lane,
+                    ["visible"] = owner.Memory.ContainsVisible(target), ["los"] = owner.HasLOS(target),
+                    ["canAct"] = owner.Descriptor.State.CanAct, ["aiEnabled"] = owner.IsAIEnabled,
+                    ["turnBased"] = turnBased, ["turnAdmission"] = admission,
+                    ["distanceMeters"] = owner.DistanceTo(target), ["weaponRangeFeet"] = weapon?.AttackRange.Value,
+                    ["eligibility"] = score, ["targetFearImmune"] = target.Descriptor.State.HasConditionImmunity(UnitCondition.Frightened),
+                    // Native JSON defaults encode dictionaries as arrays. Build
+                    // this receipt object explicitly; no default converter.
+                    ["controlEligibility"] = new JObject(controlScores.Select(pair =>
+                        new JProperty(pair.Key, pair.Value))), ["targetMindImmune"] = mindImmunity != null,
+                    ["fearUses"] = owner.Descriptor.Resources.GetResourceAmount(resource),
+                    ["fixtureWillBase"] = -100, ["fixtureAcBase"] = -100,
+                    ["fixtureResourceDebits"] = 0, ["protectedPartyOutside"] = protectedClear },
+                    "Visible exact-owner archer, target inside its native Fear range, real unspent resource, and explicit eligibility before native AI ticks.");
+                if (!ready) throw new InvalidOperationException("Satyr control fixture preconditions unmet: " + id);
+                var commands = new HashSet<UnitCommand>(); var costs = new JArray(); var ambient = new HashSet<string>();
+                var saves = new Dretch30CloudSaves(new[] { target });
+                var attacks = new Sprint24AttackObserver { Owner = owner, Target = target };
+                var starts = new Lillend32CommandStarts { Owner = owner };
+                EventBus.Subscribe(saves); EventBus.Subscribe(attacks); EventBus.Subscribe(starts);
+                try
+                {
+                    using (var economy = new FirearmReviewCosts(owner, costs))
+                    {
+                        DateTime deadline = DateTime.UtcNow.AddSeconds(40); int frames = 0, ticks = 0, nativeTurnFrames = 0;
+                        while (DateTime.UtcNow < deadline && frames++ < 4000)
+                        {
+                            if (!turnBased && (frames == 1 || frames % 60 == 0 && !owner.Commands.Raw.Any(value => value != null && !value.IsFinished)))
+                            {
+                                foreach (var candidate in Sprint24TickExactAi(owner)) if (candidate != owner.UniqueId) ambient.Add(candidate);
+                                ticks++;
+                            }
+                            if (turnBased && Sprint18OwnerIsActing(owner)) nativeTurnFrames++;
+                            foreach (var command in owner.Commands.Raw.Where(value => value != null)) commands.Add(command);
+                            foreach (var command in starts.Commands) commands.Add(command);
+                            if (immune ? attacks.WeaponAttacks.Count > 0 && commands.OfType<UnitAttack>().Any(value => value.IsFinished) :
+                                commands.OfType<UnitUseAbility>().Any(value => value.IsFinished && value.ExecutionProcess != null && value.ExecutionProcess.IsEnded)) break;
+                            Game.Instance.IsPaused = false; yield return 0;
+                        }
+                        var cast = commands.OfType<UnitUseAbility>().FirstOrDefault(value =>
+                            value.AiAction?.name == "KMG_Summoning_FeyCelestial_Satyr_FearAi" &&
+                            value.IsFinished && value.Result == UnitCommand.ResultType.Success);
+                        var attack = commands.OfType<UnitAttack>().FirstOrDefault(value =>
+                            value.AiAction != null && (turnBased ? starts.CompletedAttack(value, target) :
+                                value.IsFinished && value.Result == UnitCommand.ResultType.Success));
+                        var change = commands.OfType<UnitSwitchHandEquipmentSet>().FirstOrDefault(value =>
+                            value.AiAction?.name == "KMG_Summoning_FeyCelestial_Satyr_MeleeAi" &&
+                            value.IsFinished && value.Result == UnitCommand.ResultType.Success);
+                        var planQuery = new UnitAttack(target); planQuery.Init(owner);
+                        var plan = planQuery.CreateFullAttack().Select(value => value.Hand.MaybeWeapon.Blueprint).ToArray();
+                        bool weaponPlan = melee ? plan.Length == 2 &&
+                            plan[0].name == "KMG_Summoning_FeyCelestial_Satyr_Dagger" &&
+                            plan[1].name == "KMG_Summoning_FeyCelestial_Satyr_Horns" :
+                            plan.Length == 1 && plan[0].AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9";
+                        UnitCommand resolved = immune ? (UnitCommand)attack : cast;
+                        bool outcome = immune ? cast == null && attacks.WeaponAttacks.Count > 0 &&
+                            owner.Descriptor.Resources.GetResourceAmount(resource) == 1 && weaponPlan &&
+                            (melee ? change != null && economy.Count(change) == 1 && economy.Exact(change, turnBased) &&
+                                attacks.WeaponAttacks.Any(value => value.Weapon.Blueprint.name == "KMG_Summoning_FeyCelestial_Satyr_Dagger") :
+                                attacks.WeaponAttacks.All(value => value.Weapon.Blueprint.AssetGuid == "6d40d84e239bdf345b349ff52e3c00a9")) :
+                            cast != null && target.Descriptor.State.HasCondition(UnitCondition.Frightened) &&
+                            owner.Descriptor.Resources.GetResourceAmount(resource) == 0 &&
+                            saves.Rows.Any(value => (int)value["dc"] == 18 && (string)value["caster"] == owner.UniqueId &&
+                                (string)value["sourceAbility"] == fear.AssetGuid);
+                        bool exact = (turnBased ? nativeTurnFrames > 0 && ticks == 0 : ticks > 0) && resolved != null && economy.Count(resolved) == 1 &&
+                            economy.Exact(resolved, turnBased) && !resolved.Cutscene && !resolved.IsIgnoreCooldown && outcome;
+                        Sprint25Check(id + "-resolved", exact, new JObject {
+                            ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["frames"] = frames, ["aiTicks"] = ticks,
+                            ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
+                            ["turnBased"] = turnBased, ["nativeTurnFrames"] = nativeTurnFrames,
+                            ["nativeCommandStarts"] = starts.Rows,
+                            ["nativeAttackLifecycle"] = starts.AttackRows,
+                            ["saves"] = saves.Rows, ["weaponAttackEvents"] = attacks.WeaponAttacks.Count,
+                            ["weaponEvents"] = new JArray(attacks.WeaponAttacks.Select(value => value.Weapon.Blueprint.name)),
+                            ["queriedFullAttackPlan"] = new JArray(plan.Select(value => value.name)),
+                            ["planQueryWasNotIssued"] = true,
+                            ["targetFrightened"] = target.Descriptor.State.HasCondition(UnitCondition.Frightened),
+                            ["fearUses"] = owner.Descriptor.Resources.GetResourceAmount(resource),
+                            ["nativeBuffs"] = new JArray(target.Descriptor.Buffs.RawFacts.OfType<Buff>()
+                                .Where(value => ReferenceEquals(value.Context?.MaybeCaster, owner))
+                                .Select(value => new JObject { ["guid"] = value.Blueprint.AssetGuid,
+                                    ["cl"] = value.Context.Params.CasterLevel, ["dc"] = value.Context.Params.DC })),
+                            ["ambientCandidatesNeverTicked"] = new JArray(ambient), ["fixtureCastCommands"] = 0,
+                            ["fixtureAttackCommands"] = 0, ["forcedRolls"] = 0, ["fixtureResourceDebits"] = 0 },
+                            melee ? "Native AI pays for its hand-set switch and attacks with its dagger; the queried melee full-attack plan also contains its secondary horns. This does not alone prove a resolved two-hit full attack." :
+                            immune ? "Native AI rejects all control against a mind-affecting-immune hostile and fires its real bow without spending Fear; the queried ranged full-attack plan contains no out-of-reach horns." :
+                                "Native AI casts Fear at DC18, spends one owned resource and a normal action, and applies native Frightened.");
+                        if (!exact) throw new InvalidOperationException("Satyr native AI observation failed: " + id);
+                        if (!immune)
+                        {
+                            var effect = target.Buffs.Enumerable.Single(value =>
+                                value.Blueprint.name == "KMG_Summoning_FeyCelestial_Satyr_FearFrightenedBuff" &&
+                                ReferenceEquals(value.Context?.MaybeCaster, owner));
+                            var siblingData = new Kingmaker.UnitLogic.Abilities.AbilityData(sibling.Descriptor.Abilities.GetAbility(fear));
+                            foreach (int frame in ReviewFeyControlExpiry32(fixture, owner, sibling, target, effect,
+                                siblingData, UnitCondition.Frightened, () => new JObject {
+                                    ["fear"] = sibling.Descriptor.Resources.GetResourceAmount(resource) }, id,
+                                surveyedProbePoint: surveyedSiblingProbe)) yield return frame;
+                        }
+                    }
+                }
+                finally { EventBus.Unsubscribe(starts); EventBus.Unsubscribe(saves); EventBus.Unsubscribe(attacks); }
+            }
+            finally
+            {
+                if (turnBased) { SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = false; Game.Instance.TurnBasedCombatController.Activate(); }
+                if (owner != null && !owner.Destroyed) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); }
+                target.Commands.InterruptAll(true);
+                if (turnBased)
+                {
+                    foreach (var unit in new[] { owner, target }.Where(value => value != null && !value.Destroyed))
+                        if (unit.IsInCombat) unit.LeaveCombat();
+                    Game.Instance.Player.UpdateIsInCombat();
+                }
+                foreach (var buff in target.Descriptor.Buffs.RawFacts.OfType<Buff>().Where(value =>
+                    owner != null && ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray()) target.Descriptor.Buffs.RemoveFact(buff);
+                if (mindImmunity != null)
+                {
+                    target.Descriptor.RemoveFact(mindImmunity);
+                    foreach (var component in mindImmunity.ComponentsArray) UnityEngine.Object.DestroyImmediate(component);
+                    UnityEngine.Object.DestroyImmediate(mindImmunity);
+                }
+                target.Stats.SaveWill.BaseValue = will; target.Stats.AC.BaseValue = ac;
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { owner, sibling }.Where(value => value != null && !value.Destroyed).ToArray());
+                ResetExpandedSummoningHostile(fixture);
+                SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+            }
+        }
+
+        private void ReadSprint32NatureKnowledge(UnitEntityData owner, UnitEntityData sibling, string predicate)
+        {
+            var profile = owner.Blueprint.GetComponents<FeyCelestialNatureKnowledge32>().Single();
+            var skill = (Kingmaker.EntitySystem.Stats.ModifiableValueSkill)owner.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillLoreNature);
+            var siblingSkill = (Kingmaker.EntitySystem.Stats.ModifiableValueSkill)sibling.Stats.GetStat(Kingmaker.EntitySystem.Stats.StatType.SkillLoreNature);
+            int intelligence = owner.Stats.Intelligence.BaseValue, wisdom = owner.Stats.Wisdom.BaseValue;
+            int before = skill.ModifiedValue, siblingBefore = siblingSkill.ModifiedValue;
+            int perceptionBefore = owner.Stats.SkillPerception.ModifiedValue;
+            int intelligenceDelta = 0, wisdomDelta = 0, perceptionDelta = 0;
+            try
+            {
+                owner.Stats.Intelligence.BaseValue += 2;
+                intelligenceDelta = skill.ModifiedValue - before;
+                int afterIntelligence = skill.ModifiedValue;
+                owner.Stats.Wisdom.BaseValue += 2;
+                wisdomDelta = skill.ModifiedValue - afterIntelligence;
+                perceptionDelta = owner.Stats.SkillPerception.ModifiedValue - perceptionBefore;
+            }
+            finally
+            {
+                owner.Stats.Wisdom.BaseValue = wisdom;
+                owner.Stats.Intelligence.BaseValue = intelligence;
+            }
+            bool exact = before == (profile.FeyClassSkill ? 10 : 9) &&
+                skill.BaseValue == (profile.FeyClassSkill ? 6 : skill.ClassSkill ? 4 : 7) &&
+                (!profile.FeyClassSkill || skill.ClassSkill) &&
+                ReferenceEquals(skill.BaseStat, owner.Stats.Intelligence) &&
+                ReferenceEquals(siblingSkill.BaseStat, sibling.Stats.Intelligence) && !ReferenceEquals(skill, siblingSkill) &&
+                intelligenceDelta == 1 && wisdomDelta == 0 && perceptionDelta == 1 &&
+                skill.ModifiedValue == before && siblingSkill.ModifiedValue == siblingBefore && siblingBefore == before;
+            Sprint25Check(predicate, exact, new JObject {
+                ["owner"] = owner.UniqueId, ["sibling"] = sibling.UniqueId, ["knowledgeNature"] = before,
+                ["nativeRanks"] = skill.BaseValue, ["nativeClassSkill"] = (bool)skill.ClassSkill,
+                ["intelligencePlusTwoDelta"] = intelligenceDelta, ["wisdomPlusTwoDelta"] = wisdomDelta,
+                ["ordinaryPerceptionWisdomDelta"] = perceptionDelta,
+                ["restoredKnowledge"] = skill.ModifiedValue, ["siblingBefore"] = siblingBefore,
+                ["siblingAfter"] = siblingSkill.ModifiedValue, ["coldLoadQualified"] = false },
+                "Printed Knowledge (nature) total uses the exact adult's live Intelligence, preserves ordinary Wisdom dependencies and sibling isolation; both fixture ability probes are restored. Fresh-load preservation remains separate.");
+            if (!exact) throw new InvalidOperationException("Sprint32 native nature-knowledge mapping failed.");
+        }
+    }
+}

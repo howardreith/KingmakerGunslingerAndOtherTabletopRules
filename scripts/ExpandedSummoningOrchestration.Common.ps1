@@ -34,7 +34,8 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'observe-expanded-summoning-sprint27-native-inputs',
         'observe-expanded-summoning-sprint28-native-inputs',
         'observe-expanded-summoning-sprint29-native-inputs',
-    'observe-expanded-summoning-sprints30-31-native-inputs',
+        'observe-expanded-summoning-sprints30-31-native-inputs',
+        'observe-expanded-summoning-sprint32-native-inputs',
         'disposable-expanded-summoning-sprint22-native-review',
         'disposable-expanded-summoning-sprint23-native-review',
         'disposable-expanded-summoning-sprint24-native-review',
@@ -44,6 +45,7 @@ function Test-KmgExactSummoningRuntimeBoundary {
         'disposable-expanded-summoning-sprint28-native-review',
         'disposable-expanded-summoning-sprint29-native-review',
         'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
         'disposable-expanded-summoning-cleanup2-native-review')
 }
 
@@ -732,4 +734,14 @@ function Compare-KmgCleanup2WorkingSaveRestoration {
     return [pscustomobject]@{kind='Cleanup2WorkingScalarComparisonOnly';fields=[pscustomobject]$matches;
         verified=(@($matches.Values | Where-Object {-not $_}).Count -eq 0);
         liveUsePermitted=$false;bytesReadOrWritten=$false;nativeHydrationProven=$false}
+}
+
+# Exact new creature scope over the existing guarded Working-save trio.
+function Test-KmgSprint32DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'fey-celestial' -or $Purpose -cne 'sprint32-lillend-support') {
+        throw 'Sprint32 development persistence permits only exact fey-celestial scope and sprint32-lillend-support purpose.'
+    }
+    return $true
 }

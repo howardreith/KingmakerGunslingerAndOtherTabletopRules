@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param(
     [string]$MSBuildPath,
+    # Optional caller pin; source validation still admits only a registered
+    # release version or development derived from that exact released tag.
+    [string]$ExpectedVersion,
     [string]$ReferenceBundleDir,
     [string]$KingmakerInstallDir = 'C:\Program Files (x86)\Steam\steamapps\common\Pathfinder Kingmaker',
     # Prints a descriptive plan only; it does not prove actual child counts
@@ -12,11 +15,15 @@ param(
     # Builds a development candidate for this one named purpose instead of a
     # release candidate. See DevelopmentCandidate.Common.ps1: it replaces only
     # the active version's release validator with the development validator
-    # and the complete suite with -DevelopmentTestFilter's named selection,
+    # and normally the complete suite with a named -DevelopmentTestFilter,
+    # or retains the full suite with explicit -DevelopmentCompleteSuite,
     # writes to its own development-only location under its own name, and
     # records a development receipt that no release path accepts.
     [string]$DevelopmentPurpose,
-    [string]$DevelopmentTestFilter
+    [string]$DevelopmentTestFilter,
+    # Explicit frozen development-candidate qualification; never inferred from
+    # a broad filter and never grants release status to its receipt.
+    [switch]$DevelopmentCompleteSuite
 )
 
 Set-StrictMode -Version Latest
@@ -26,17 +33,22 @@ $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'KmgGate.Common.ps1')
 
 $development = -not [string]::IsNullOrEmpty($DevelopmentPurpose) -or
-    -not [string]::IsNullOrEmpty($DevelopmentTestFilter)
+    -not [string]::IsNullOrEmpty($DevelopmentTestFilter) -or $DevelopmentCompleteSuite
 if ($development) {
     if ([string]::IsNullOrEmpty($DevelopmentPurpose) -or
-        [string]::IsNullOrWhiteSpace($DevelopmentTestFilter)) {
-        throw 'A development candidate requires both -DevelopmentPurpose and a named -DevelopmentTestFilter.'
+        (-not $DevelopmentCompleteSuite -and [string]::IsNullOrWhiteSpace($DevelopmentTestFilter))) {
+        throw 'A development candidate requires -DevelopmentPurpose and either a named -DevelopmentTestFilter or explicit -DevelopmentCompleteSuite.'
+    }
+    if ($DevelopmentCompleteSuite -and $PSBoundParameters.ContainsKey('DevelopmentTestFilter')) {
+        throw '-DevelopmentCompleteSuite and -DevelopmentTestFilter are mutually exclusive.'
     }
     if ($SkipDomainTests) {
         throw 'A development candidate records its own selected tests; -SkipDomainTests belongs to release reproducibility.'
     }
     [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
-    $DevelopmentTestFilter = Resolve-KmgGateFilter -Level Focused -Filter $DevelopmentTestFilter
+    if (-not $DevelopmentCompleteSuite) {
+        $DevelopmentTestFilter = Resolve-KmgGateFilter -Level Focused -Filter $DevelopmentTestFilter
+    }
 }
 
 # The plan is descriptive only. Do not require any machine-local reference,
@@ -52,7 +64,7 @@ $script:KmgBuildLocalPlan = @(
 if ($development) {
     $script:KmgBuildLocalPlan = @(
         'development-repository-wrapper'
-        'selected-domain-tests'
+        $(if ($DevelopmentCompleteSuite) { 'complete-domain-suite' } else { 'selected-domain-tests' })
         'exact-reference-release-build'
         'package-assembly'
         'strict-package-validation'
@@ -66,7 +78,13 @@ if ($PlanOnly) {
 
 $root = Get-KmgRepositoryRoot -ScriptDirectory $PSScriptRoot
 $info = Get-KmgModInfo -RepositoryRoot $root
-if ($info.Version -notin @('0.0.166','0.0.167','0.0.168')) { throw "Build-Local supports released166 development, the selected167 public candidate or the 0.0.168 follow-up, observed $($info.Version)." }
+if ([string]$info.Version -cnotmatch '^[0-9]+\.[0-9]+\.[0-9]+$' -or
+    ($ExpectedVersion -and $ExpectedVersion -cne $info.Version)) {
+    throw "Candidate version differs: expected '$ExpectedVersion', source '$($info.Version)'."
+}
+# validate-repository below retains the version-specific release dispatcher or
+# the development validator's exact released-tag/version/ancestry contract.
+# Runtime reuse additionally binds ExpectedVersion to the selected receipt.
 $msbuild = Resolve-KmgMsBuild -ExplicitPath $MSBuildPath
 Write-Host "MSBuild: $msbuild"
 $git = Get-KmgGitState -RepositoryRoot $root
@@ -112,21 +130,21 @@ if ($development) {
     }
 }
 
-# All read-only prerequisites and immutable-output refusals precede admission.
-# The bounded S30-31 worktree has persistent cumulative dispatch authority.
-# PlanOnly exits above; compile-only editing uses build.ps1, not this pipeline.
-if ([IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
-    . (Join-Path $PSScriptRoot 'Sprints3031Budget.Common.ps1')
-    [void](Invoke-KmgSprints3031Budget -Path (Join-Path $root 'artifacts/closeout-triage/CLOSEOUT-BUDGET.json') `
-        -Action Build -Stage ('candidate:' + $git.Commit) -MinimumRemainingMinutes 20)
-}
-
 if ($development) {
     if (Test-Path -LiteralPath $developmentLayout.Root) {
-        # An earlier attempt for this exact commit stopped before its receipt.
-        $partial = Assert-KmgPathWithin -Path $developmentLayout.Root `
-            -Root (Join-Path $root $script:KmgDevelopmentCandidateRoot)
-        Remove-Item -LiteralPath $partial -Recurse -Force
+        # Preserve every failed attempt's unique logs and partial outputs. A
+        # completed receipt was refused above; it is never moved or rebuilt.
+        $candidateRoot = Join-Path $root $script:KmgDevelopmentCandidateRoot
+        $partial = Assert-KmgPathWithin -Path (Resolve-Path -LiteralPath $developmentLayout.Root).Path `
+            -Root $candidateRoot
+        if ((Get-Item -LiteralPath $partial -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) {
+            throw 'Development attempt directory is a reparse point.'
+        }
+        $retained = Assert-KmgPathWithin -Path ($partial + '.failed-' +
+            [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssfffffffZ') + '-' +
+            [Guid]::NewGuid().ToString('N').Substring(0, 8)) -Root $candidateRoot
+        Move-Item -LiteralPath $partial -Destination $retained
+        Write-Host "Prior incomplete development attempt retained: $retained"
     }
     New-Item -ItemType Directory -Path $developmentLayout.Root -Force | Out-Null
 }
@@ -134,7 +152,7 @@ if ($development) {
 if ($development) {
     # The development wrapper: every fixture and offline contract of the
     # repository wrapper, with the development validator in place of the
-    # active version's release validator. Then the named selection, once.
+    # active version's release validator. Then the selected scope, once.
     & (Join-Path $PSScriptRoot 'validate-repository.ps1') `
         -DevelopmentPurpose $DevelopmentPurpose `
         -DevelopmentSummaryPath $developmentLayout.ValidationSummaryPath
@@ -146,8 +164,11 @@ if ($development) {
     if ((Get-Item -LiteralPath "$($developmentLayout.TestLogPath).stderr").Length -ne 0) {
         throw 'The selected domain-test runner wrote to standard error.'
     }
-    $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath `
-        -Filter $DevelopmentTestFilter
+    if ($DevelopmentCompleteSuite) {
+        $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath -CompleteSuite
+    } else {
+        $selectedTests = Read-KmgDomainTestEvidence -LogPath $developmentLayout.TestLogPath -Filter $DevelopmentTestFilter
+    }
 } else {
 & (Join-Path $PSScriptRoot 'validate-repository.ps1')
 # The scenario preflight was reachable only by hand, so the one test that
@@ -169,10 +190,11 @@ if (-not $SkipDomainTests) {
 }
 
 $localRoot = Join-Path $root "artifacts\local-runtime\$($info.Version)"
-# The pilot can repair a final observer without overwriting any earlier
-# exact candidate, manifest, compile archive or evidence-bound path.
-if (-not $development -and $info.Version -ceq '0.0.167') {
-    $localRoot = Join-Path $localRoot $git.Commit.Substring(0, 12)
+# Each exact candidate retains its own output; preserve earlier packages and
+# evidence-bound paths regardless of the selected release version.
+if (-not $development) {
+    $localRoot = (Get-KmgLocalCandidateLayout -RepositoryRoot $root -Commit $git.Commit `
+        -Id $info.Id -Version $info.Version).Root
     if (Test-Path -LiteralPath $localRoot) { throw 'This exact final candidate output already exists; preserve its bytes.' }
 }
 $exactRoot = if ($development) { $developmentLayout.ExactBuildRoot } else { Join-Path $localRoot 'exact-build' }
@@ -250,6 +272,10 @@ foreach ($kind in @('viper','constrictor-snake','salamander')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint17-serpents\$kind-albedo.png") -Destination (Join-Path $buildOutput 'assets\sprint17-serpents') -Force
 }
 Copy-Item -LiteralPath (Join-Path $root 'assets\sprint17-serpents\salamander-human-mesh.json') -Destination (Join-Path $buildOutput 'assets\sprint17-serpents') -Force
+New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint32-support') -Force | Out-Null
+foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $root ('assets\sprint32-support\'+$file)) -Destination (Join-Path $buildOutput 'assets\sprint32-support') -Force
+}
 New-Item -ItemType Directory -Path (Join-Path $buildOutput 'assets\sprint18-primates') -Force | Out-Null
 foreach ($kind in @('ape','dire-ape')) {
     Copy-Item -LiteralPath (Join-Path $root "assets\sprint18-primates\$kind-mesh.json") -Destination (Join-Path $buildOutput 'assets\sprint18-primates') -Force
@@ -433,14 +459,11 @@ $manifest = [ordered]@{
     firearmSoundBankSha256 = Get-KmgSha256 -Path $firearmSoundBankPath
     validated = $true
 }
-# The named S30-31 reuse contract compares exact installed reference identities
-# on the final artifact as well as on original development receipts.
-if ($git.Branch -ceq 'codex/expanded-summoning-sprints30-31-outsider-celestial-pilot') {
-    $manifest.references = [ordered]@{
-        bundleDirectory = $ReferenceBundleDir
-        installDirectory = $KingmakerInstallDir
-        files = @($referenceIdentity)
-    }
+# Every selected candidate records the exact verified reference identity.
+$manifest.references = [ordered]@{
+    bundleDirectory = $ReferenceBundleDir
+    installDirectory = $KingmakerInstallDir
+    files = @($referenceIdentity)
 }
 $manifestPath = Get-KmgPackageManifestPath -PackagePath $packagePath
 $manifest | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $manifestPath -Encoding UTF8

@@ -5,6 +5,56 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class ExpandedSummoningNativeProfileTests
     {
+        internal static void Sprint32RequiresExactFreshSaveFreePhase()
+        {
+            string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview;
+            foreach (string phase in new[] { "satyr-control", "lillend-support", "satyr-turn", "lillend-turn", "optional-suggestion", "suggestion-terminals", "satyr-routes", "lillend-routes", "support-lifecycle", "druid-input", "wizard-input", "sorcerer-input", "lillend-performance", "lillend-cantrips", "lillend-fascinate", "lillend-bardic-suggestion", "satyr-atwill", "satyr-atwill-turn", "lillend-hold", "lillend-hold-turn", "lillend-controls", "lillend-controls-turn", "lillend-grab", "technical-presentation" })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Exact Sprint32 phase admitted.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(false, scenario, 1, phase, 0, 0, 0, false, false, false, false, true), "Automatic exit required.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 1, 0, 0, false, false, false, false, true), "Existing world protected.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, true, false, true), "No save imports.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.CanStart(true, scenario, 1, phase, 0, 0, 0, false, false, false, false, false), "Owned idle menu required.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 2, phase), "Extra scope refused.");
+            }
+            foreach (string phase in new[] { null, "all", "Satyr-Turn", "lillend-turn ", "trumpet-book-turn", "Druid-input", "sorcerer-input ", "menu-adapters", "Lillend-cantrips", "lillend-cantrips ", "Satyr-atwill", "satyr-atwill-turn ", "Lillend-hold", "lillend-hold-turn ", "Lillend-controls", "lillend-controls-turn ", "Lillend-grab", "lillend-grab ", "Technical-presentation", "technical-presentation ", "Suggestion-terminals", "suggestion-terminals " })
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.SaveFreeParameterScope(scenario, 1, phase), "Unselected or malformed phase refused.");
+            foreach (string phase in new[] { "druid-input", "wizard-input", "sorcerer-input" })
+            {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), "Only selected native input phases can borrow Default.");
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase), "Native menu input uses the established non-narrative outdoor fixture.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, phase), "A different scenario cannot borrow Sprint32 outdoor admission.");
+            }
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "suggestion-terminals"), "Exact terminal case uses real native expiry controllers.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("suggestion-terminals"), "Terminal observation grants no player input.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "suggestion-terminals"), "Other scenario cannot borrow terminal scope.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-performance"), "Exact performance phase uses real noncombat round controllers.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "lillend-performance"), "Performance uses the owned non-narrative fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("lillend-performance"), "Performance is not player-input evidence.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-performance "), "Malformed performance phase refused.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-fascinate"), "Exact Fascinate phase uses real noncombat controllers.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "lillend-fascinate"), "Fascinate uses the owned outdoor fixture.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("lillend-fascinate"), "Fascinate grants no player-input scope.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-fascinate "), "Malformed Fascinate phase refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "lillend-fascinate"), "Other scenarios cannot borrow Fascinate admission.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "lillend-bardic-suggestion"), "Exact provider bardic phase uses real noncombat controllers.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("lillend-bardic-suggestion"), "Bardic observation grants no player input.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-bardic-suggestion "), "Malformed bardic phase refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "lillend-bardic-suggestion"), "Other scenarios cannot borrow bardic scope.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "lillend-grab"), "Exact owned grapple phase admits native upkeep controllers.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("lillend-grab"), "Grapple observation grants no player input.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("lillend-grab "), "Malformed grapple phase refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "lillend-grab"), "Other scenarios cannot borrow grapple scope.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, "technical-presentation"), "Exact presentation phase admits native movement/lifecycle.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase("technical-presentation"), "Presentation grants no player input.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("technical-presentation "), "Malformed presentation phase refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview, "technical-presentation"), "Other scenario cannot borrow presentation scope.");
+            foreach (string phase in new[] { null, "satyr-routes", "support-lifecycle", "druid-input ", "all", "lillend-cantrips", "satyr-atwill", "satyr-atwill-turn", "lillend-hold", "lillend-hold-turn", "lillend-controls", "lillend-controls-turn" })
+            {
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase), "Other reviews cannot borrow input scope.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultOutdoor(scenario, phase), "Other Sprint32 phases preserve their selected fixture.");
+            }
+        }
         internal static void Cleanup2RequiresExactFreshSaveFreePhase()
         {
             string scenario = RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview;

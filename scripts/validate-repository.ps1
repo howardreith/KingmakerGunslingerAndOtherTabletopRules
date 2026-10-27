@@ -35,6 +35,8 @@ if ($null -eq $python) {
 if ($LASTEXITCODE -ne 0) { throw 'Repository validator regression fixtures failed.' }
 & $python.Source (Join-Path $repositoryRoot 'tools\test_development_candidate_validator.py')
 if ($LASTEXITCODE -ne 0) { throw 'Development-candidate validator corruption fixtures failed.' }
+& $python.Source (Join-Path $repositoryRoot 'tools\test_deterministic_package.py')
+if ($LASTEXITCODE -ne 0) { throw 'Deterministic package count/refusal fixtures failed.' }
 if ([string]::IsNullOrEmpty($DevelopmentPurpose)) {
     if ($DevelopmentSummaryPath) { throw '-DevelopmentSummaryPath requires -DevelopmentPurpose.' }
     & $python.Source $validator --root $repositoryRoot
@@ -77,11 +79,11 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168')) {
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
@@ -108,7 +110,7 @@ if ($activeVersion -eq '0.0.160') {
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 26 corruption fixtures failed.' }
 }
 
-if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168')) {
+if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint27161.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 27 corruption fixtures failed.' }
 }
@@ -141,6 +143,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Native icon screenshot corruption fixtures fai
 # installation, so it belongs in the gate that runs every build rather
 # than in a script nobody executes.
 & (Join-Path $PSScriptRoot 'Test-ExpandedSummoningRuntimeOrchestration.ps1') -ScriptRoot $PSScriptRoot
+& (Join-Path $PSScriptRoot 'compatibility/Test-SuggestionProfileSelection.ps1')
 & (Join-Path $PSScriptRoot 'Test-ExplicitCandidateReuse.ps1')
 & (Join-Path $PSScriptRoot 'Test-DevelopmentCandidate.ps1')
 # Named batch policy is independent of the active released version used for a
@@ -179,9 +182,14 @@ if ($activeVersion -eq '0.0.168') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprints3031_followup_release168.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprints 30-31 follow-up release corruption fixtures failed.' }
 }
+if ($activeVersion -eq '0.0.169') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint32_release169.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint 32 release corruption fixtures failed.' }
+}
 & (Join-Path $PSScriptRoot 'Test-GriffonDevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint28DevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint29DevelopmentPersistence.ps1')
+& (Join-Path $PSScriptRoot 'Test-Sprint32DevelopmentPersistence.ps1')
 & (Join-Path $PSScriptRoot 'Test-Sprint24ReportingLineage.ps1')
 # The push wrapper lives outside this repository and had no behaviour test
 # until the Sprint 25 audit. It reports SKIP when the wrapper is absent, so a

@@ -1345,6 +1345,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint28Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint29Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Inputs.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Inputs.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprints30And31Review.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Core.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningAstral31Hammer.cs" />
@@ -2028,6 +2029,8 @@
     <Compile Include="RuntimeTesting\ExpandedSummoningPlayerPathReviewScope.cs" />
     <Compile Include="RuntimeTesting\ExpandedSummoningInventoryObservationPolicy.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Persistence.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32SuggestionPersistence.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -2067,5 +2070,62 @@
     <Compile Include="RuntimeTesting\ElementalCharacterTraitSaveContract.cs" />
     <Compile Include="RuntimeTesting\ElementalCharacterTraitSavePlan.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ElementalCharacterTraitSave.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Summoning\SatyrControlEligibility.cs" />
+    <Compile Include="Summoning\LillendBard32.cs" />
+    <Compile Include="Summoning\FeyControlCasterCleanup32.cs" />
+    <Compile Include="Summoning\LillendSpells32.cs" />
+    <Compile Include="Summoning\Sprint32Suggestion.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Suggestion32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Lillend32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.LillendSpells32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Satyr32.cs" />
+  </ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Routes.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Input.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLullaby32.cs" /></ItemGroup>
+  <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSuggestion32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSuggestionTerminals32.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Summoning\FeyCelestialAdult32.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Summoning\ExpandedSummoningLillendViewPatch.cs" />
+    <Compile Include="Summoning\SatyrNativeWeaponAnimation32.cs" />
+    <Compile Include="Summoning\LillendHumanBindingPolicy.cs" />
+    <Compile Include="Summoning\LillendHumanVisualAttachment.cs" />
+    <Compile Include="Summoning\LillendTailAction.cs" />
+    <Compile Include="Summoning\LillendTailAnimationPolicy.cs" />
+    <Content Include="..\..\assets\sprint32-support\*">
+      <Link>assets\sprint32-support\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Lullaby32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Daze32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.ControlEffects32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Competence32.cs" />
+    <Compile Include="Summoning\LillendNoncombat32.cs" />
+    <Compile Include="Summoning\LillendBardicMemory32.cs" />
+    <Compile Include="Summoning\LillendFascination32.cs" />
+    <Compile Include="Summoning\LillendFascinated32.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Fascinate32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningFascinate32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningBardicSuggestion32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningFascinateBoundaries32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyrAtWill32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningHold32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningCompetence32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningPerformanceCombat32.cs" />
+    <Compile Include="Summoning\LillendLullaby32.cs" />
+    <Compile Include="Summoning\FeyCharmThreat32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillendControls32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillendGrab32.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningPresentation32.cs" />
   </ItemGroup>
 </Project>

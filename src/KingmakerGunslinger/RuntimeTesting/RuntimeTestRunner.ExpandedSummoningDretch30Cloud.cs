@@ -210,18 +210,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
         }
-        private sealed class Dretch30CloudSaves : IGlobalRulebookHandler<RuleSavingThrow>
+        private sealed class Dretch30CloudSaves : IGlobalRulebookHandler<RuleSavingThrow>, IGlobalRulebookHandler<RuleApplyBuff>
         {
             private readonly UnitEntityData[] _targets;
             internal readonly JArray Rows = new JArray();
+            internal readonly JArray Applications = new JArray();
+            // The grouped S32 control case correlates actual cast contexts.
+            // Keep immutable rows above for existing evidence consumers.
+            internal readonly List<RuleSavingThrow> NativeSaves = new List<RuleSavingThrow>();
+            internal readonly List<RuleApplyBuff> NativeApplications = new List<RuleApplyBuff>();
             internal Dretch30CloudSaves(UnitEntityData[] targets) { _targets = targets; }
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)
             {
-                if (_targets.Contains(evt.Initiator)) Rows.Add(new JObject {
+                if (!_targets.Contains(evt.Initiator)) return;
+                NativeSaves.Add(evt);
+                Rows.Add(new JObject {
                     ["target"] = evt.Initiator.UniqueId, ["dc"] = evt.DifficultyClass, ["passed"] = evt.IsPassed,
                     ["sourceAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid,
                     ["caster"] = evt.Reason?.Context?.MaybeCaster?.UniqueId });
+            }
+            public void OnEventAboutToTrigger(RuleApplyBuff evt) { }
+            public void OnEventDidTrigger(RuleApplyBuff evt)
+            {
+                if (!_targets.Contains(evt.Initiator)) return;
+                NativeApplications.Add(evt);
+                Applications.Add(new JObject {
+                    ["target"] = evt.Initiator.UniqueId, ["buff"] = evt.Blueprint?.AssetGuid,
+                    ["sourceAbility"] = evt.Context?.SourceAbility?.AssetGuid,
+                    ["caster"] = evt.Context?.MaybeCaster?.UniqueId,
+                    ["durationSeconds"] = evt.Duration?.TotalSeconds,
+                    ["applied"] = evt.AppliedBuff != null });
             }
         }
     }

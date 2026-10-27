@@ -112,8 +112,13 @@ function Read-KmgDomainTestEvidence {
        zero, failed, repeated or inconsistent evidence is refused. #>
     param(
         [Parameter(Mandatory = $true)][string]$LogPath,
-        [Parameter(Mandatory = $true)][string]$Filter
+        [string]$Filter,
+        [switch]$CompleteSuite
     )
+    if (($CompleteSuite -and -not [string]::IsNullOrEmpty($Filter)) -or
+        (-not $CompleteSuite -and [string]::IsNullOrWhiteSpace($Filter))) {
+        throw 'Choose one named domain filter or the explicit complete suite.'
+    }
     if (-not (Test-Path -LiteralPath $LogPath -PathType Leaf)) {
         throw "Selected domain-test evidence is missing: $LogPath"
     }
@@ -122,32 +127,36 @@ function Read-KmgDomainTestEvidence {
     $completionPattern = '^Completed (\d+) tests; failures=(\d+)\. Registered (\d+); elapsed'
     $selection = @($lines | Where-Object { $_ -cmatch $selectionPattern })
     $completion = @($lines | Where-Object { $_ -cmatch $completionPattern })
-    if ($selection.Count -ne 1 -or $completion.Count -ne 1) {
-        throw 'Selected domain-test evidence lacks exactly one selection and one completion line.'
+    if ($selection.Count -ne $(if ($CompleteSuite) { 0 } else { 1 }) -or $completion.Count -ne 1) {
+        throw 'Domain-test evidence has an inconsistent selection or completion boundary.'
     }
-    [void]($selection[0] -cmatch $selectionPattern)
-    $observedFilter = $Matches[1]
-    $selected = [int]$Matches[2]
-    $registered = [int]$Matches[3]
+    if (-not $CompleteSuite) {
+        [void]($selection[0] -cmatch $selectionPattern)
+        $observedFilter = $Matches[1]
+        $selected = [int]$Matches[2]
+        $registered = [int]$Matches[3]
+    }
     [void]($completion[0] -cmatch $completionPattern)
     $completed = [int]$Matches[1]
     $failures = [int]$Matches[2]
     $completedRegistered = [int]$Matches[3]
+    if ($CompleteSuite) { $observedFilter = ''; $selected = $completed; $registered = $completedRegistered }
     $passed = [string[]]@($lines | Where-Object { $_ -cmatch '^PASS \S' } |
         ForEach-Object { $_.Substring(5) })
     $failed = @($lines | Where-Object { $_ -cmatch '^FAIL ' })
     $unique = New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::Ordinal)
     foreach ($name in $passed) { [void]$unique.Add($name) }
-    if ($observedFilter -cne $Filter) {
+    if (-not $CompleteSuite -and $observedFilter -cne $Filter) {
         throw "Selected domain-test evidence ran filter '$observedFilter', not '$Filter'."
     }
     if ($selected -lt 1 -or $selected -gt $registered -or $completed -ne $selected -or
         $completedRegistered -ne $registered -or $failures -ne 0 -or $failed.Count -ne 0 -or
-        $passed.Count -ne $selected -or $unique.Count -ne $selected) {
+        $passed.Count -ne $selected -or $unique.Count -ne $selected -or
+        ($CompleteSuite -and $completed -ne $registered)) {
         throw 'Selected domain-test evidence is empty, failed or inconsistent.'
     }
     [Array]::Sort($passed, [StringComparer]::Ordinal)
-    return [ordered]@{
+    $result = [ordered]@{
         filter = $Filter
         selected = $selected
         registered = $registered
@@ -155,6 +164,8 @@ function Read-KmgDomainTestEvidence {
         passedNamesSha256 = Get-KmgUtf8Sha256 ($passed -join "`n")
         logSha256 = Get-KmgSha256 -Path $LogPath
     }
+    if ($CompleteSuite) { $result.completeSuite = $true }
+    return $result
 }
 
 function Assert-KmgDevelopmentReceipt {
@@ -230,7 +241,13 @@ function Assert-KmgDevelopmentReceipt {
         throw 'Development receipt lacks its exact development source validation.'
     }
     $tests = $Receipt.selectedTests
-    if ([string]::IsNullOrWhiteSpace([string](Get-KmgOptionalProperty $tests 'filter')) -or
+    $completeFlag = Get-KmgOptionalProperty $tests 'completeSuite'
+    if ($null -ne $completeFlag -and ($completeFlag -isnot [bool] -or -not $completeFlag)) {
+        throw 'Development complete-suite flag must be exactly boolean true when present.'
+    }
+    $complete = $null -ne $completeFlag
+    if (($complete -and -not [string]::IsNullOrEmpty([string](Get-KmgOptionalProperty $tests 'filter'))) -or
+        (-not $complete -and [string]::IsNullOrWhiteSpace([string](Get-KmgOptionalProperty $tests 'filter'))) -or
         [int](Get-KmgOptionalProperty $tests 'selected') -lt 1 -or
         [int](Get-KmgOptionalProperty $tests 'selected') -gt [int](Get-KmgOptionalProperty $tests 'registered') -or
         [int](Get-KmgOptionalProperty $tests 'failures') -ne 0 -or
@@ -239,7 +256,8 @@ function Assert-KmgDevelopmentReceipt {
         (Get-KmgSha256 -Path $layout.TestLogPath) -cne (Get-KmgOptionalProperty $tests 'logSha256')) {
         throw 'Development receipt lacks passing selected domain-test evidence.'
     }
-    $observedTests = Read-KmgDomainTestEvidence -LogPath $layout.TestLogPath -Filter ([string]$tests.filter)
+    $observedTests = if ($complete) { Read-KmgDomainTestEvidence -LogPath $layout.TestLogPath -CompleteSuite }
+        else { Read-KmgDomainTestEvidence -LogPath $layout.TestLogPath -Filter ([string]$tests.filter) }
     if ($observedTests.selected -ne [int]$tests.selected -or
         $observedTests.registered -ne [int]$tests.registered -or
         $observedTests.passedNamesSha256 -cne [string]$tests.passedNamesSha256) {

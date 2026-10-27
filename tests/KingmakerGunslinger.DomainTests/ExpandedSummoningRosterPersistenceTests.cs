@@ -254,7 +254,7 @@ namespace KingmakerGunslinger.DomainTests
         internal static void FixtureAlignmentRespectsEveryVariantAndNativeBranch()
         {
             var evil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith" };
-            var good = new[] { "astral-deva", "lantern-archon", "bralani-azata", "ghaele-azata" };
+            var good = new[] { "astral-deva", "lantern-archon", "bralani-azata", "ghaele-azata", "lillend-azata" };
             foreach (var variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)))
             {
@@ -295,6 +295,27 @@ namespace KingmakerGunslinger.DomainTests
             }
             good[1] = "native:" + SummonNativeExpansionCatalog.All.First().UnitGuid;
             Assertions.True(owns(good), "A native unit also needs a complete owned receipt;native identity alone is insufficient.");
+        }
+
+        internal static void FeyCelestialPersistenceKeepsTwoIndependentOwners()
+        {
+            const string scope = ExpandedSummoningRosterPersistencePolicy.FeyCelestialScope;
+            var keys = new[] { "lillend-azata", "satyr", "satyr", "lillend-azata" };
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys), "Two of each, independent of enumeration order.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Take(3)), "Missing sibling cannot pass.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Concat(new[] { "satyr" })), "Extra source cannot pass.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { "satyr", "satyr", "lillend-azata", "trumpet-archon" }), "Foreign creature cannot replace a sibling.");
+            foreach (var key in keys.Distinct())
+                Assertions.Equal(key, ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key).Creature.Key, "Exact supported native creature selected.");
+            foreach (string scenario in new[] { RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare,
+                RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup, RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent })
+            {
+                Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(scenario, scope), "Only existing guarded Working trio.");
+                foreach (string invalid in new[] { "Fey-celestial", "fey-celestial ", "fey-celestial-all" })
+                    Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(scenario, invalid), "Aliases cannot enlarge scope.");
+            }
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad("working-save-smoke", scope), "No unrelated save action.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview, scope), "Save-free review cannot inherit save authority.");
         }
 
         internal static void ScopeCannotOpenAnotherSaveOrScenario()

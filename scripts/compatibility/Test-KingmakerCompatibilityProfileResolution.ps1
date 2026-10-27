@@ -1,18 +1,42 @@
 [CmdletBinding()]
-param()
+param(
+    [string[]]$ProfileId,
+    [string]$ReferenceRoot,
+    [string]$PackagePath
+)
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 $profiles = Get-Content -LiteralPath (Join-Path $root 'compatibility\profiles.json') -Raw | ConvertFrom-Json
 $results = @()
-foreach ($profile in $profiles.profiles) {
-    $path = & (Join-Path $PSScriptRoot 'Resolve-KingmakerCompatibilityProfile.ps1') -ProfileId $profile.id | Select-Object -Last 1
+$selected = @($profiles.profiles | Where-Object {
+    if ($ProfileId) { $_.id -cin $ProfileId }
+    else { $_.requiredGunslingerPackage -cne 'explicit-validated-candidate' }
+})
+if (-not $ProfileId) {
+    foreach ($profile in @($profiles.profiles | Where-Object requiredGunslingerPackage -ceq 'explicit-validated-candidate')) {
+        Write-Host ("NOT_RUN: " + $profile.id + ' requires explicit -ProfileId, -ReferenceRoot and -PackagePath.')
+    }
+}
+if ($selected.Count -eq 0 -or ($ProfileId -and @($ProfileId | Where-Object { $_ -cnotin @($selected.id) }).Count)) {
+    throw 'Profile selection is empty or includes an unknown exact ID.'
+}
+foreach ($profile in $selected) {
+    $arguments = @{ ProfileId = $profile.id }
+    if ($ReferenceRoot) { $arguments.ReferenceRoot = $ReferenceRoot }
+    if ($PackagePath) { $arguments.PackagePath = $PackagePath }
+    $path = & (Join-Path $PSScriptRoot 'Resolve-KingmakerCompatibilityProfile.ps1') @arguments | Select-Object -Last 1
     $result = Get-Content -LiteralPath $path -Raw | ConvertFrom-Json
     if ($result.profileId -cne $profile.id) { throw "Dry-run profile mismatch: $($profile.id)" }
     $results += $result
 }
+if ($ProfileId) {
+    Write-Host ('Selected compatibility resolution PASS: ' + (($results | ForEach-Object profileId) -join ', ') + '; no staging or game launch.')
+    return
+}
 $runtime = @($results | Where-Object runtimeCapable)
-if ($runtime.Count -ne 13) { throw "Expected thirteen runtime-capable profiles, observed $($runtime.Count)." }
+$expectedRuntime = @($selected | Where-Object runtimeLoadableRequired)
+if ($runtime.Count -ne $expectedRuntime.Count) { throw 'Declared runtime-capable profiles did not all resolve.' }
 $racesUnleashed = @($results | Where-Object {
     $_.profileId -ceq 'gunslinger-races-unleashed'
 })[0]
@@ -77,4 +101,4 @@ if ($craft.runtimeCapable -or $craft.staticOnlyReferences.Count -ne 1) { throw '
 $all = $results | Where-Object profileId -ceq 'gunslinger-all-loadable-local'
 if (@($all.runtimeMods | Where-Object key -eq 'kaz-asset-references').Count -ne 0) { throw 'KAZ references entered runtime staging.' }
 if (@($all.expectedUmmIds | Where-Object { $_ -like 'KAZ_*' }).Count -ne 0) { throw 'KAZ UMM IDs entered all-loadable profile.' }
-Write-Host 'All fifteen compatibility profile dry-runs passed; thirteen are runtime capable, both exact Races Unleashed graphs and the minimum Tweak or Treat dependency graph resolve, the dedicated CMI authority remains separately staged, and KAZ references remain non-runtime.'
+Write-Host 'All selected compatibility profile dry-runs passed; required dependency graphs resolve, dedicated CMI authority remains separately staged, and KAZ references remain non-runtime.'

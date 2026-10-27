@@ -82,6 +82,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 new ExpandedSummoningMechanicalEvidence();
             internal UnitEntityData Hostile;
             internal BlueprintUnit HostileBlueprint;
+            internal BlueprintFaction OwnedHostileFaction;
             internal Size HostileSize;
             internal int HostileDamage;
         }
@@ -306,6 +307,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     else unit.Dispose();
                 }
                 Game.Instance.EntityDestroyer.Tick();
+                // An optional private fixture faction outlives all of its actors.
+                // Ordinary correction fixtures borrow their faction and leave this null.
+                if (fixture.OwnedHostileFaction != null)
+                    UnityEngine.Object.Destroy(fixture.OwnedHostileFaction);
                 if (fixture.CasterBlueprint != null)
                     UnityEngine.Object.Destroy(fixture.CasterBlueprint);
                 cleaned = cpuReleaseError == null && SameReferences(fixture.UnitsBefore, SnapshotReferences(fixture.AllUnits)) &&
