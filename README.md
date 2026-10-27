@@ -1,5 +1,11 @@
 # Kingmaker Gunslinger
 
+Sprint 32 development adds Satyr control and Lillend Azata bard/support summons.
+The candidate is **not yet fully qualified or released**; native presentation,
+persistence and integration checks remain open. See the
+[active Sprint 32 record](planning/SPRINT32-STATUS.md) for source-bound results,
+owner-approved adaptations and limitations, and the reviewable PR.
+
 The **0.0.166-expanded-summoning-druid-giant-sizes** release lists each
 creature once in a Druid's prepared Summon Nature's Ally menu, keeps the
 summoned giants' family heights in play, and gives the Huge Cloud and Storm
