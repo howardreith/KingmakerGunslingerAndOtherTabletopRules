@@ -1,10 +1,10 @@
-# Sprint 32 — Satyr and Lillend Azata
+# Sprint 32 â€” Satyr and Lillend Azata
 
 Owner Howie Reith; mission2026-10-25. Sole active operational record.
 Finish at an independently reviewed, natively validated PR. No merge, release,
 Sprint33, unapproved subsystem or owner playtest dependency.
-[Validation policy](../docs/VALIDATION-POLICY.md) ·
-[Append-only evidence/history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md) ·
+[Validation policy](../docs/VALIDATION-POLICY.md) Â·
+[Append-only evidence/history](SPRINT32-WORKFLOW-HISTORY-2026-10-25.md) Â·
 [Draft PR74](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/74).
 
 ## Scope, baseline and ownership
@@ -28,9 +28,9 @@ resources, ownership, duration, cleanup, stable GUIDs and save compatibility.
   minutes/level with Will/SR; no unrestricted instruction interface is claimed.
 - Omit/disclose Countersong, Darkness, Light, Dancing Lights, Ghost Sound,
   Hallucinatory Terrain and Detect Magic. No replacement fog or generic subsystem.
-- Approved Lullaby: normal Standard cast,10ft burst, Will/SR,−5Perception/−2Will
+- Approved Lullaby: normal Standard cast,10ft burst, Will/SR,âˆ’5Perception/âˆ’2Will
   versus sleep, immediate concentration release and CL7 seven-round42s tail.
-- Approved Lillend-only noncombat dispatcher: preselected Fascinate≤3,
+- Approved Lillend-only noncombat dispatcher: preselected Fascinateâ‰¤3,
   Inspire Competence and dependent bardic Suggestion, normal actions, native
  20-round pool, exclusivity, exact-source refusal/lifecycle. Competence/Fascinate
   have early native proof; final coverage remains incomplete.
@@ -38,7 +38,7 @@ resources, ownership, duration, cleanup, stable GUIDs and save compatibility.
   Suggestion on this exact Lillend's fascinated target. Bounded exact-cast context
   transport into the hostile-memory handler must preserve normal casting,
   Will/SR, stealth, invisibility and all other offensive reactions. No general
-  memory/AI overhaul or persistence manager is authorized. Estimated3–8active
+  memory/AI overhaul or persistence manager is authorized. Estimated3â€“8active
   hours uncertain. Owner answered "Implement the Lillend-only memory exception";
   implementation is present; native qualification remains pending, with no further owner
   permission needed inside this exact boundary.
@@ -70,44 +70,59 @@ Intelligence drives Knowledge(nature). No substitute Survival, Disguise, Perform
 or Fly stat. Accepted ordinary-map flight has no separate Hover/aerial system.
 [Original body provenance](../assets-source/original-models/sprint32-support/README.md).
 
-Latest validated development candidate75: `f5a40e2030ef9ff5279eb12b0e15cc35bbaa6055`.
-ZIP `05cd5eac5a67607bb07db821ccfdfb3759913d416cdda2063063cc1e38fdeda9`;
-DLL `bcbc5e0ffc9b9e0d1cbbf0e1510170ce298a918c215c6753f49fdaa72f4de23e`;
-MVID `f1ef748b-74ac-4c48-baf9-c2d177f99d91`;
-SourceState `627cda9cfba5b16f96da73a2a379ef3c7f4e1fb2f852fb8f45509a36f84e8a9e`.
-Canonical artifacts/development-candidates/sprint32-lillend-support/f5a40e2030ef/.
-Build75 wrapper/558of2755/exact compile/strictZIP PASS272.131s; development,
-not the complete final gate. New reviewed observer edits compile; the focused
-`sprint32;fey-celestial` gate passed8/2755 (production28.6s/domain1s).
+Latest validated development candidate76: `03f48bdcab58bb09df307c82dc9a4754f74d63e3`.
+ZIP `66b808b25e4ad41be14a1e2345f5a765de66751e5455aea09f1aa98e4a0e816d`;
+DLL `c043c96a5aece035a5144a34d9c1664bbe9d3895daea2a436974bfe9854681d0`;
+MVID `4e78071f-990e-4ce5-b2ed-3fcb78072a2c`;
+SourceState `4244a3e7787cd6a7309737bc823c63540fe5068ac013216edc331ebf7e4ea858`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/03f48bdcab58/.
+Build76 wrapper/558of2755/exact compile/strictZIP PASS268.581s. This is filtered
+development evidence, not the complete final gate.
 
-Native102 grab12PASS/2FAIL. Natural acquisition and live-Strength maintenance
-pass. The release observer incorrectly expected no damage after its CMB change:
-actual native CMB23/CMD-1 allowed three legitimate successes before a natural1.
-Immutable rows show exact tail/constrict pairs for those three rounds, none for
-the failed round, unchanged3weapon attacks and all10 cleanup predicates true
-one frame/.021s after link loss. Independent read-only review supports narrow
-**reviewed-reuse RTWP release PASS**, retaining original aggregateFAIL.
-The compiled correction restores the fixture attack boost before lowCMB, checks
-each intervening successful rider pair and mandatory positive tail damage.
-TB/Salamander remain NOT_RUN.
-Native103 presentation16PASS/1FAIL. Both Satyr moves and natural command/path
-retirement pass; agent inspected all3 rest/movement frames, recognizable/intact
-without severe sampled deformation. A later attack/cost/contact compound throws
-before its values were serialized: exact culprit UNKNOWN. Installed native IL
-supports reusing the existing final-act/complete-plan observer in RTWP rather
-than requiring terminalSuccess. New per-attempt evidence retains costs, contacts
-and errors; strict animation checks remain. Bow evidence is launch, not impact.
-Native104 Working preparation37/37PASS. Native105 cold11PASS/3FAIL passes the
-corrected exact listener boundary and saved Charm/Sleep/Hold controls. The first
-Lillend's saved Fascinate response1 becomes3, running toggle becomes off, and
-27 assistance grants plus its fascinated effect disappear. Budgets/books/items
-remain unchanged. Cold lifecycle change is unresolved; no weakened comparison
-or PASS. Native unloading invokes area-exit, and load-time area callbacks can
-execute at zero game delta. Independent review cleared the bounded read-only
-64-row cold trace. The next changed observation retains the prepared Working
-ZIP and exact lifecycle callbacks; it does not alter product state/comparison.
-Absence/provider-transition stages remain NOT_RUN. All original failures remain
-immutable; both save-free transactions and the entire Working envelope restored.
+Native106 preparation37/37PASS; native107 cold11PASS/3FAIL. Retaining the
+exact prepared ZIP proved Fascinate was already ended before cold load. Its
+response1 became3 and toggle stopped during save suspension. Installed native IL
+shows SaveManager turns off the area/player before PreSave; UnitDescriptor marks
+IsTurnedOn=false before fact callbacks. Temporary Fact.TurnOff leaves Active
+unchanged and does not invoke native WillStop. The private dispatcher/carrier
+mistook that suspension for actual deactivation. The applied correction preserves
+performances only while the owner is suspended, clears transient commands, and
+retains unconditional actual OnFactDeactivate/native WillStop cleanup. No saved
+state is rewritten. Fresh cold/absence/provider/moduleOFF validation is pending.
+
+Native108 presentation16PASS/2FAIL: Satyr rest/moves/native path retirement pass;
+three agent-inspected frames show recognizable intact body/equipment without
+severe sampled deformation. Bow command, full attack completion and actual
+Standard cost pass. The end-of-frame animation compound failed; its individual
+predicate is unknown. The correction captures synchronously at the exact native
+weapon event using the proven capture seam, retains strict frame/command/clip
+predicates, and separately correlates actual projectile damage. Contacts, wounds,
+death/expiry and Lillend presentation remain unqualified.
+
+Native109 grab15PASS/2FAIL: full Lillend RTWP acquisition, live-Strength
+maintenance, exact tail/constrict, release and finalizers PASS. TB refuses before
+gameplay because the owned idle anchor has a command; exact producer is unknown.
+Salamander is NOT_RUN. The grouped phase now owns that proven idle anchor's brain
+across cell boundaries, retaining all command/refusal checks and exact restoration.
+
+Native110 controls8PASS/1FAIL: actual Good/Chaos ward refusals, natural Charm
+Monster and harmless healing PASS. Unrelated-wolf readiness refused before attack;
+the compound predicate is unknown. Native supplied attacks do not require the
+visibility memory cache. The corrected fixture retains physical LOS/reach and all
+ownership/liveness checks, clears the existing sight cache after owned relocation,
+and records each predicate. Exact positive weapon-damage binding remains required.
+Apparent-ally threat and safe Sound Burst were not reached.
+
+One coherent batch also adds the finite Competence RTWP/Fascinate TB combat-entry
+and provider Suggestion real positive-damage break/unshortened expiry cases.
+These use existing native commands, clocks, owned actors and scenario declaration;
+no new generic observer or product subsystem. Suggestion uses a disclosed native
+600s fixture summon to outlive the original CL7 420s effect; select900s runtime.
+All applied changes compile; focused `sprint32;fey-celestial`8/2755 PASS
+(production29.1s/domain4.9s). Initial compile failure was missing two project
+entries and a namespace import, corrected. Five shell admission cases pass,
+including case/whitespace/extra-save/foreign-scenario refusals. These are not native
+qualification. Original failed results remain immutable.
 
 Earlier source-bound evidence remains in history: player input Wizard16/16,
 Sorcerer28/28,Druid31/31; Satyr at-will13/13 each mode; support13/13;
@@ -147,54 +162,40 @@ No whole-roster replay selected.
 
 ## Restoration, headroom, work and next action
 
-Latest Working envelope restored2026-10-27T01:15:55.9386711Z; exact intake
+Latest Working envelope restored2026-10-27T01:59:44.8678022Z; native110
+restored02:18:27.1642590Z. Full protected ComparePASS after cleanup:
 967Mods/118saves/18refs/83settings/tasks0/Steam1. Original WorkingSHA
 650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
-8550225B and current intake metadata restored. No owned live transaction.
-Absence was not launched after failed cold; detailed identities in history.
+8550225B; original times/attributes restored. No owned live transaction.
 
-Counts75Build-Local attempts/61validated packages/105native launches.
-Build75 272.131s; native102/103/104/105 128.342/108.533/243.987/191.751s.
-Independent review covered immutable102 release, actual native completion IL,
-observer diffs and mandatory tail damage; concrete findings addressed in the
-unpackaged correction. Review also cleared exact-initiator/weapon damage binding
-for the added unrelated-wolf Charm check. Approximate overlapping
-work since00:58UTC: observer/review/research~20min, native supervision/restoration
-~17min; no additional build; owner waiting0. Exclusive cumulative totals unavailable.
+Counts76Build-Local attempts/62validated packages/110actual native launches.
+Build76 268.581s; native106/107/108/109/110
+246.425/192.489/108.008/124.380/116.438s. Independent review read native save
+contracts and the bounded correction drafts; actual applied diff reviewed. One P2 found: Suggestion terminal fixture must not
+restore anchor AI while Default ownership remains pending. Corrected with the
+same exact-identity/pending guard; candidate compilation follows.
+Approx01:30-02:28UTC overlapping work: build/package4.48min; native setup,
+execution/restoration~29min; implementation/observer/research~30-40min; storage
+~5min; owner waiting0. Exclusive cumulative totals unavailable.
 
-Measured Working trio902923316B, rounded1.1GB plus2GB reserve requires3.1GB
-initial; each stage550MB plus2GB requires2.55GB. After97 verified duplicate
-cleanup retained all unique content. After101 verified cleanup reclaimed
-991895080B from twelve exact closed duplicate package extractions, retaining
-reference copies/content archives/validated ZIPs. Free3538485248B and full
-protected ComparePASS; exact receipts are in history.
-Unique packages/raws/failures/receipts/protected backups/DATA/personal data remain.
+Measured Working peak902923316B rounded1.1GB, build154MB, plus2GB reserve
+requires3.254GB before this next build. After110 verified closed duplicate cleanup
+reclaimed1144920553B from15 extractions, retaining canonical packages, reference
+copies and four verified content archives190453466B. Free3439124480B after full
+protected ComparePASS. Unique packages/raws/failures/receipts/protected backups,
+DATA and personal files remain. Exact selection/results/retention identities are
+in history. Check actual headroom before each admitted transaction.
 
-After103 cleanup reclaimed199601296B from the two closed exact package
-extractions, retaining ZIP/raws/receipts/backups; free3219337216B and protected
-ComparePASS. After105 cleanup reclaimed1039415973B from15 closed duplicate
-package extractions, retaining canonical ZIPs/reference copies/content archives,
-raws/receipts/backups. Free3661586432B; protected967Mods/118saves/18refs/
-83settings/tasks0/Steam1 ComparePASS. No protected backup, unique package,
-save or personal data was removed. Exact receipts are in history.
-
-**Next:** package the reviewed/compiled grab, presentation, controls and cold-trace
-batch once, then classify cold Fascinate with the changed observation and retained
-prepared ZIP. Finish the remaining finite performance/Suggestion cases alongside
-that native work; their ignored drafts are not implemented/qualified. No unchanged
-cold retry. No product change is justified before the first callback is identified.
-Grab/presentation each10min/runtime600s. BaseWorkingON and provider retained/
-removed/module-off trios remain pending; provider sequence90?120min including
-restoration is predeclared, with module-off also covering ordinary OFF assertions.
-Retain the exact prepared disposable ZIP as local evidence before future cold
-stages; it was not retained by104, so original intake cannot substitute for it.
-The finite reviewed additions are actual Good/Chaos Charm ward refusal,
-unrelated-attacker retention/apparent-ally break, Competence RTWP and FascinateTB
-combat transition, and ordinary Suggestion real damage-break/unshortened expiry.
-Source-loss/shared Will/SR cases may use dependency-reviewed existing evidence.
-Final complete gate, dependency refresh, independent final review, integration
-and exact-candidate qualification remain required. No owner playtest, merge,
-release or Sprint33.
+**Next:** commit/package the coherent compiled batch once; run the changed base
+Working ON prepare/cold/absence, presentation, grab and controls scenarios, then
+the finite performance/Suggestion cases. No unchanged failed retry. Each ordinary
+selection targets15min and stays below30min including safe restoration. Provider
+retained/removed/moduleOFF trios remain predeclared90-120min combined, with fresh
+processes and original Working restoration. Preserve prepared ZIPs as evidence.
+Integrate relevant accepted dependencies at one coherent checkpoint, obtain the
+independent final review, freeze inputs, run one complete cheap final gate and
+qualify its exact ZIP. Final integration, presentation and persistence remain
+required. No owner playtest, merge, release or Sprint33.
 
 Prior v0.0.167 gaps remain **NOT_RUN**: grouped all30public-route/body/icon,
 standalone final integration, highest-risk combined final integration.

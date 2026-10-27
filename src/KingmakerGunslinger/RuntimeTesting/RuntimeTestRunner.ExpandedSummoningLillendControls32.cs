@@ -303,11 +303,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                         second.Wake(0f); if (!game.State.AwakeUnits.Contains(second)) game.State.AwakeUnits.Add(second);
                         second.Memory.Add(target); target.Memory.Add(second);
                         limit = DateTime.UtcNow.AddSeconds(8);
-                        do { game.IsPaused = false; yield return 0; memory.Tick(); }
-                        while (DateTime.UtcNow < limit && (!second.HasLOS(target) || !second.Memory.ContainsVisible(target) ||
+                        // A supplied reachable melee target does not need an
+                        // AI memory-visibility flag. Reuse native sight-cache
+                        // invalidation after relocating only these owned actors.
+                        do {
+                            second.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                            game.IsPaused = false; yield return 0;
+                            second.SightCache.ClearIfNeeded(); target.SightCache.ClearIfNeeded();
+                        }
+                        while (DateTime.UtcNow < limit && (!second.HasLOS(target) ||
                             second.View == null || !EntityFadedIn(second) || !second.Descriptor.State.CanAct));
-                        if (!second.HasLOS(target) || !second.Memory.ContainsVisible(target) || !second.Descriptor.State.CanAct)
-                            throw new InvalidOperationException("Unrelated attacker is not natively visible, awake and able to act.");
+                        var readyPredicates = new JObject {
+                            ["nativeLos"] = second.HasLOS(target), ["viewPresent"] = second.View != null,
+                            ["fadedIn"] = EntityFadedIn(second), ["canAct"] = second.Descriptor.State.CanAct,
+                            ["alive"] = !second.Destroyed && !second.Descriptor.State.IsDead,
+                            ["recipientAlive"] = !target.Destroyed && !target.Descriptor.State.IsDead,
+                            ["hostileToCaster"] = second.IsEnemy(owner), ["casterHostileToAttacker"] = owner.IsEnemy(second),
+                            ["notCasterAlly"] = !second.IsAlly(owner) };
+                        bool attackerReady = readyPredicates.Properties().All(value => (bool)value.Value);
+                        Sprint25Check(id + "-unrelated-attacker-ready", attackerReady, new JObject {
+                            ["predicates"] = readyPredicates, ["memoryVisibleDiagnostic"] = second.Memory.ContainsVisible(target),
+                            ["sameRecipientGroup"] = Equals(second.GroupId, target.GroupId),
+                            ["sameCasterGroup"] = Equals(second.GroupId, owner.GroupId), ["attacker"] = second.UniqueId,
+                            ["target"] = target.UniqueId, ["caster"] = owner.UniqueId },
+                            "Owned supplied melee probe retains physical visibility, settled living capability and caster-hostile/nonally relation; AI memory cache is diagnostic only.");
+                        if (!attackerReady) throw new InvalidOperationException("Unrelated attacker native readiness failed; exact predicates retained.");
                         var unrelatedPlan = new UnitAttack(target); unrelatedPlan.Init(second);
                         var unrelatedWeapons = unrelatedPlan.CreateFullAttack();
                         if (unrelatedWeapons.Count == 0 || unrelatedWeapons.Any(hand => hand.Hand.MaybeWeapon == null) ||

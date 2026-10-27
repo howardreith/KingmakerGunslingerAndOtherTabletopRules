@@ -31,8 +31,22 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32(ExpandedSummoningCorrectionFixture fixture)
         {
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
+            UnitEntityData groupedAnchor = null; bool groupedAnchorBrain = false;
             try
             {
+                string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+                {
+                    // One exact disposable anchor owns the grouped cells. Do
+                    // not re-enable its AI between a restored cell and the next
+                    // cell's readiness wait; no existing command is interrupted.
+                    groupedAnchor = Sprint32OwnedQuietAnchor(fixture, phase + "-group");
+                    groupedAnchorBrain = groupedAnchor.IsBrainActive;
+                    Sprint28SetBrainActivePreservingActions(groupedAnchor, false);
+                }
                 // Own mode for the whole phase, including post-disposal frames.
                 // Restoring the intake between nested iterators can admit ambient
                 // actors to a turn before the outer native clock is dismantled.
@@ -45,10 +59,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 // A constructor can retain Default ownership even when its local
                 // scope was never returned. Preserve a foreign mode for outer
                 // transaction rollback instead of changing pause through Activate.
-                if (!Cleanup2NativeDefaultPending)
+                try
                 {
-                    SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
-                    Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+                    if (groupedAnchor != null && !Cleanup2NativeDefaultPending)
+                    {
+                        if (groupedAnchor.Destroyed || !ReferenceEquals(groupedAnchor.Blueprint, _summoningProfileActor))
+                            throw new InvalidOperationException("Grouped disposable anchor identity changed.");
+                        Sprint28SetBrainActivePreservingActions(groupedAnchor, groupedAnchorBrain);
+                    }
+                }
+                finally
+                {
+                    if (!Cleanup2NativeDefaultPending)
+                    {
+                        SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
+                        Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
+                    }
                 }
             }
         }
@@ -56,6 +82,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32SuggestionTerminalsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewSuggestionTerminals32(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase)
             {
                 CreateSprint32TurnHostile(fixture);
@@ -96,6 +128,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     CaptureSprint32RemainingControlLeaves();
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewLillendFascinate32(fixture)) yield return frame;
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32FascinatePhase)
+                    foreach (int frame in ReviewLillendFascinate32(fixture, true)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32HoldPhase ||
@@ -117,6 +151,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase)
             {
                 foreach (int frame in ReviewLillendCompetence32(fixture)) yield return frame;
+                CreateSprint32TurnHostile(fixture);
+                // Keep the added owned hostile outside printed Fascinate range
+                // until this second case has naturally selected Competence.
+                PlaceExpandedSummoningUnit(fixture.Hostile, fixture.Caster.Position + Vector3.forward * 80f);
+                foreach (int frame in ReviewLillendCompetence32(fixture, true)) yield return frame;
                 yield break;
             }
             if (ExpandedSummoningNativeProfilePolicy.Sprint32NativeInputPhase(phase))

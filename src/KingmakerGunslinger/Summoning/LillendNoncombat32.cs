@@ -190,7 +190,9 @@ namespace KingmakerGunslinger.Summoning
             if (!ReferenceEquals(unit, Owner?.Unit)) return;
             StopOwned();
         }
-        public override void OnTurnOff() { StopOwned(); }
+        // Native SaveRoutine suspends UnitDescriptor before serializing it.
+        // Retire transient commands, preserving the active saved performance.
+        public override void OnTurnOff() { StopOwned(Owner != null && Owner.IsTurnedOn); }
         public override void OnFactDeactivate()
         {
             StopOwned();
@@ -201,11 +203,12 @@ namespace KingmakerGunslinger.Summoning
                 foreach (var marker in unit.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, Resistance) &&
                     ReferenceEquals(value.Context?.MaybeCaster, Owner.Unit)).ToArray()) marker.Remove();
         }
-        private void StopOwned()
+        private void StopOwned(bool stopPerformances = true)
         {
             if (_pending != null && !_pending.IsFinished) _pending.Interrupt(true);
             if (_suggestion != null && !_suggestion.IsFinished) _suggestion.Interrupt(true);
             _pending = null; _selected = null; _fascinateSelected = null; _suggestion = null;
+            if (!stopPerformances) return;
             var toggle = Toggle;
             if (toggle != null && (toggle.IsOn || toggle.IsRunning)) toggle.IsOn = false;
             var fascination = FascinateToggle;
@@ -252,7 +255,11 @@ namespace KingmakerGunslinger.Summoning
                 ElementalNereidAuraState.IncludesContext(context, value.Context))
                 .SelectMany(value => value.SelectComponents<LillendCompetenceState32>()).SingleOrDefault();
         }
-        public override void OnTurnOff()
+        // Whole-owner suspension is not a performance cancellation. Actual
+        // fact removal and explicit native WillStop still retire exact grants.
+        public override void OnTurnOff() { if (Owner != null && Owner.IsTurnedOn) End(); }
+        public override void OnFactDeactivate() { End(); }
+        private void End()
         {
             _ended = true;
             if (Game.Instance?.State?.Units == null) return;
@@ -262,7 +269,7 @@ namespace KingmakerGunslinger.Summoning
         }
         public void HandleActivatableAbilityWillStop(ActivatableAbility ability)
         {
-            if (ReferenceEquals(ability.Owner, Owner) && ReferenceEquals(ability.Blueprint.Buff, Buff.Blueprint)) OnTurnOff();
+            if (ReferenceEquals(ability.Owner, Owner) && ReferenceEquals(ability.Blueprint.Buff, Buff.Blueprint)) End();
         }
     }
 

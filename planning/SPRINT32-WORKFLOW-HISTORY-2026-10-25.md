@@ -3278,3 +3278,102 @@ combined final integration remain NOT_RUN, not inherited waivers.
   separate from original Working restoration authority. It will observe first
   PostLoad/Interrupt/End/OnUnitExit callbacks without changing state or verdicts.
   No live owned transaction at this checkpoint. Native counts remain105.
+
+
+## Candidate76 and native106-110; save defect identified, all restored
+
+Latest validated development candidate76: `03f48bdcab58bb09df307c82dc9a4754f74d63e3`.
+ZIP `66b808b25e4ad41be14a1e2345f5a765de66751e5455aea09f1aa98e4a0e816d`;
+DLL `c043c96a5aece035a5144a34d9c1664bbe9d3895daea2a436974bfe9854681d0`;
+MVID `4e78071f-990e-4ce5-b2ed-3fcb78072a2c`;
+SourceState `4244a3e7787cd6a7309737bc823c63540fe5068ac013216edc331ebf7e4ea858`.
+Canonical artifacts/development-candidates/sprint32-lillend-support/03f48bdcab58/.
+Build76 wrapper/558of2755/exact compile/strictZIP PASS268.581s. This is filtered
+development evidence, not the complete final gate.
+
+Native106 preparation37/37PASS; native107 cold11PASS/3FAIL. Retaining the
+exact prepared ZIP proved Fascinate was already ended before cold load. Its
+response1 became3 and toggle stopped during save suspension. Installed native IL
+shows SaveManager turns off the area/player before PreSave; UnitDescriptor marks
+IsTurnedOn=false before fact callbacks. Temporary Fact.TurnOff leaves Active
+unchanged and does not invoke native WillStop. The private dispatcher/carrier
+mistook that suspension for actual deactivation. The applied correction preserves
+performances only while the owner is suspended, clears transient commands, and
+retains unconditional actual OnFactDeactivate/native WillStop cleanup. No saved
+state is rewritten. Fresh cold/absence/provider/moduleOFF validation is pending.
+
+Native108 presentation16PASS/2FAIL: Satyr rest/moves/native path retirement pass;
+three agent-inspected frames show recognizable intact body/equipment without
+severe sampled deformation. Bow command, full attack completion and actual
+Standard cost pass. The end-of-frame animation compound failed; its individual
+predicate is unknown. The correction captures synchronously at the exact native
+weapon event using the proven capture seam, retains strict frame/command/clip
+predicates, and separately correlates actual projectile damage. Contacts, wounds,
+death/expiry and Lillend presentation remain unqualified.
+
+Native109 grab15PASS/2FAIL: full Lillend RTWP acquisition, live-Strength
+maintenance, exact tail/constrict, release and finalizers PASS. TB refuses before
+gameplay because the owned idle anchor has a command; exact producer is unknown.
+Salamander is NOT_RUN. The grouped phase now owns that proven idle anchor's brain
+across cell boundaries, retaining all command/refusal checks and exact restoration.
+
+Native110 controls8PASS/1FAIL: actual Good/Chaos ward refusals, natural Charm
+Monster and harmless healing PASS. Unrelated-wolf readiness refused before attack;
+the compound predicate is unknown. Native supplied attacks do not require the
+visibility memory cache. The corrected fixture retains physical LOS/reach and all
+ownership/liveness checks, clears the existing sight cache after owned relocation,
+and records each predicate. Exact positive weapon-damage binding remains required.
+Apparent-ally threat and safe Sound Burst were not reached.
+
+One coherent batch also adds the finite Competence RTWP/Fascinate TB combat-entry
+and provider Suggestion real positive-damage break/unshortened expiry cases.
+These use existing native commands, clocks, owned actors and scenario declaration;
+no new generic observer or product subsystem. Suggestion uses a disclosed native
+600s fixture summon to outlive the original CL7 420s effect; select900s runtime.
+All applied changes compile; focused `sprint32;fey-celestial`8/2755 PASS
+(production29.1s/domain4.9s). Initial compile failure was missing two project
+entries and a namespace import, corrected. Five shell admission cases pass,
+including case/whitespace/extra-save/foreign-scenario refusals. These are not native
+qualification. Original failed results remain immutable.
+
+Native106: `20261027T0147578957542Z-working-save-expanded-summoning-prepare`; run `20261027T0147580005615Z-a2d9e38369764397a5d1090f6c4f3d13`; 2026-10-27T01:48:10.9985411Z to 2026-10-27T01:52:17.4274185Z; 246425ms; 37PASS/0FAIL. RawSHA `5b024996f93bd06f8e3f05e1903b0c2a09ec70545e254006a6c3e96cb1b59c85`; UnitySHA `62c5bbc3080e18192109c267e4d527a5ef8aadcc6b45a16f15dc1c831e57847a`. Transaction `sprint32-stack-20261027T014525Z-2ebbf4f021e8`.
+
+Native107: `20261027T0155474810335Z-working-save-expanded-summoning-verify-cleanup`; run `20261027T0155475160392Z-07883a95272d4e7db09d4b4729513aea`; 2026-10-27T01:56:00.4212075Z to 2026-10-27T01:59:12.9128682Z; 192489ms; 11PASS/3FAIL. RawSHA `2ab8463f2adaf48f4d39e46294ed16bf70f272bb9c56a6fbcd3afa2313dd5527`; UnitySHA `59a124a78dcf03c53f82f48b7355b12e4bf0c2b0d8a66e49c31037a9eb613d9f`. Transaction `sprint32-stack-20261027T015314Z-aba016ddc6fc`.
+
+Native108: `20261027T0202583536644Z-disposable-expanded-summoning-sprint32-native-review`; run `20261027T0202583848986Z-f7d6de7c8b3647fd93bfec6da8e10b8b`; 2026-10-27T02:03:07.9428039Z to 2026-10-27T02:04:55.9569312Z; 108008ms; 16PASS/2FAIL. RawSHA `f508355d7b68cb4b9202c62df8d1d6ec1cf307241aa716dca5001838e5a6866f`; UnitySHA `2de241fc091fa8f4a2ed819f682a1e2a0be0dbc97b3e229fb6326c85fb5d6af6`. Transaction `compat-20261027T020029Z-5983971e76de`.
+
+Native109: `20261027T0209349861404Z-disposable-expanded-summoning-sprint32-native-review`; run `20261027T0209350215669Z-4d45750821fd42308a8ee7e21b6cd4e6`; 2026-10-27T02:09:44.0685207Z to 2026-10-27T02:11:48.4571681Z; 124380ms; 15PASS/2FAIL. RawSHA `f237432fa3af0eae73ac9a88bc4bdfd9dac769db1b907d147d592ffbb8b37f66`; UnitySHA `d9034b4f69936144384f9f0bb2876dafc2e79db519f4df8f1f06b7aeee03a9bd`. Transaction `compat-20261027T020701Z-de03e5bb5b2e`.
+
+Native110: `20261027T0216108383462Z-disposable-expanded-summoning-sprint32-native-review`; run `20261027T0216108696299Z-2a31f2e06e014329816a368665fb647e`; 2026-10-27T02:16:19.9118612Z to 2026-10-27T02:18:16.3613018Z; 116438ms; 8PASS/1FAIL. RawSHA `a01d3388eba458759c0bf38b910f2323fdac9c6fd81ad5df62cb07dca2d182f3`; UnitySHA `834e6dda378db03559704a9005200e8331bdb382c33ee6c2ea0fef75c23edb6d`. Transaction `compat-20261027T021347Z-0b8d94c5df06`.
+
+Prepared Working8644337B SHA08a3a04f25baf017173123cb91fa739a515c806e88d92c60e0ce4624d0f43e8d
+at artifacts/sprint32-working-03f48bdc/on/Working-prepared.zks; save-boundary reader
+SHA1d6aec58f92b4cfff885932cca0c0294ff522bb02095204ce08c7d8b4bf8c2e6.
+Cold traceSHAc68cf433b28a6300a5a353f5bb0f6e9abe5fb71a34d70bf5a93bdb2694dd2e74
+shows ended/response3 before PostLoad, then cache hydration only. Save-suspension
+native-IL receiptSHAb9aea36b9cb7f1ee55990e1595436dbda9665b68f70090946de88a1ad26ce175;
+reference Assembly-CSharpSHA3b6450ffec440e296e586f71c711b195aed144b28d53e1cbb29406d18fef5afb.
+Agent visual receipt native108 SHAfa0c36a189cfda282d1079aeb4f8062ce636a90a3496f248bcd99631f9e6f369;
+partial three-frame rest/movement inspection only. No owner aesthetic approval.
+Working envelope restored01:59:44.8678022Z, original8550225B
+SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+creation639208636210035057/write639278868712797783/attributes8224.
+All five transactions and entire Working envelope have full protected ComparePASS.
+
+After110 cleanup results in artifacts/sprint32-storage-after110: fifteen closed
+duplicate extractions1144920553B; retained content archives190453466B, canonical
+ZIPs/reference copies/raws/failures/receipts/protected backups unchanged.
+compat-a-result.json: 3directories/193797243B; planSHA3fd5c5db98ca137b9c7cdaa3c51cdd48cc344f90fa9bec2de4da4911457a5998; completed2026-10-27T02:28:26.9493663Z.
+compat-b-result.json: 4directories/255778492B; planSHA77f8ff34c41bba206fcbba01c6a4d8a1a2b679583ec32bafbc1f828dea8d17c8; completed2026-10-27T02:28:39.6389819Z.
+native106-110-result.json: 5directories/499080040B; planSHAd67b3481826f0fd93eded9d49fcf3f81aa8d9798464135cd5eaf9881ca11c092; completed2026-10-27T02:28:17.2462735Z.
+s23-b-result.json: 2directories/130842844B; planSHAd783ea0a620f97117ca32f629074693e82a57f7f62f52192a0385db17f865056; completed2026-10-27T02:28:46.5876149Z.
+s23-c-result.json: 1directories/65421934B; planSHAb6d3262b707a4b30895b96912682e323c5bdb0c963b792cf5a4939cedf9c361e; completed2026-10-27T02:28:50.3321586Z.
+Free3439124480B after ComparePASS967Mods/118saves/18refs/83settings/tasks0/Steam1.
+No owned live transaction. Focused compilation8/2755PASS plus five admission
+positive/negative cases PASS; no candidate77 build or native run yet.
+Counts76build attempts/62validated packages/110launches. Approx01:30-02:28UTC
+overlapping build4.48min, native setup/execution/restoration29min, implementation/
+observer/research30-40min, storage5min, owner waiting0; exclusive totals unavailable.
+Prior v167 three NOT_RUN gaps unchanged. PR74 remains draft, qualification incomplete.
+
+Independent actual-diff review found one P2 in Suggestion terminal finalization: anchor AI could resume after mode.Dispose refusal. Corrected to require !Cleanup2NativeDefaultPending and exact surviving profile-anchor identity. Candidate compilation still required; no native claim.

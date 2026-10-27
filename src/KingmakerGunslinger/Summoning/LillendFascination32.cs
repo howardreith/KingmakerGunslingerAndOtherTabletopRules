@@ -228,7 +228,10 @@ namespace KingmakerGunslinger.Summoning
                     (ReferenceEquals(value.Blueprint, Fascinated) || ReferenceEquals(value.Blueprint, Assistance)) &&
                     ElementalNereidAuraState.IncludesContext(value.Context, Buff.Context)).ToArray()) grant.Remove();
         }
-        public override void OnTurnOff() { End(); }
+        // Native save/area suspension turns the owner off before its facts.
+        // Keep serialized responses; genuine removal still always ends them.
+        public override void OnTurnOff() { if (Owner != null && Owner.IsTurnedOn) End(); }
+        public override void OnFactDeactivate() { End(); }
         internal static LillendFascinateState32 Find(MechanicsContext context, BlueprintBuff carrier)
         {
             return context?.MaybeCaster?.Buffs.Enumerable.Where(value => value.Active && ReferenceEquals(value.Blueprint, carrier) &&
