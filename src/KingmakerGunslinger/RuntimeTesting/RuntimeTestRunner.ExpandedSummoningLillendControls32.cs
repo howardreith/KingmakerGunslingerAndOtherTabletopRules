@@ -433,18 +433,43 @@ namespace KingmakerGunslinger.RuntimeTesting
         // natural cases resume only after the exact temporary fact is removed.
         private void ObserveSprint32GlobeChoice(ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData owner, UnitEntityData target, AbilityData data, Func<float> score,
-            string id, AbilityData levelFour = null, Buff performanceGrant = null, UnitEntityData preparedEmitter = null)
+            string id, AbilityData levelFour = null, Buff performanceGrant = null, bool nativeProbeEmitter = false)
         {
             var initialCommands = owner.Commands.Raw.ToArray();
             var initialSlots = data.Spellbook == null ? null : Enumerable.Range(0, 4).Select(data.Spellbook.GetSpontaneousSlots).ToArray();
             float before = score();
+            int setupFrame = Time.frameCount;
             UnitEntityData emitter = null; Buff ward = null;
             var row = new JObject { ["scoreBefore"] = before, ["ability"] = data.Blueprint.AssetGuid,
                 ["type"] = data.Blueprint.Type.ToString(), ["calculatedLevel"] = data.CalculateParams().SpellLevel };
             bool exact = false;
             try
             {
-                emitter = preparedEmitter ?? CastExpandedSummoningOwnTier(fixture, "astral-deva");
+                if (nativeProbeEmitter)
+                {
+                    // This synchronous recipient-fact probe needs no summon
+                    // command, AI turn or long-lived follower. Use the proven
+                    // native donor creation seam and retire it before yielding.
+                    if (id != "bardic-suggestion" || performanceGrant == null || !performanceGrant.Active ||
+                        performanceGrant.IsDisposed || !ReferenceEquals(performanceGrant.Context?.MaybeCaster, owner))
+                        throw new InvalidOperationException("Native globe donor requires this exact live bardic probe.");
+                    var blueprint = (BlueprintUnit)ExpandedSummoningBlueprints.Registered.BySymbol[
+                        ExpandedSummoningSpecialBuilder.Astral31Unit];
+                    emitter = Game.Instance.EntityCreator.SpawnUnit(blueprint,
+                        target.Position, Quaternion.identity, fixture.Scene);
+                    if (emitter == null) throw new InvalidOperationException("Native globe donor spawn failed.");
+                    fixture.Created.Add(emitter);
+                    Sprint28SetBrainActivePreservingActions(emitter, false);
+                    Game.Instance.EntityCreator.Tick();
+                    bool donorLive = ReferenceEquals(emitter.Blueprint, blueprint) && emitter.IsInState &&
+                        emitter.View != null && ReferenceEquals(emitter.View.Data, emitter) &&
+                        emitter.Get<Kingmaker.UnitLogic.Parts.UnitPartSummonedMonster>() == null &&
+                        !emitter.IsBrainActive && !emitter.IsInCombat && emitter.Commands.Empty && emitter.Commands.Queue.Count == 0;
+                    row["nativeDonorLive"] = donorLive;
+                    row["nativeDonor"] = emitter.UniqueId;
+                    if (!donorLive) throw new InvalidOperationException("Native globe donor state differs.");
+                }
+                else emitter = CastExpandedSummoningOwnTier(fixture, "astral-deva");
                 if (emitter.Destroyed || !fixture.Created.Contains(emitter))
                     throw new InvalidOperationException("Globe emitter ownership is absent.");
                 Sprint28SetBrainActivePreservingActions(emitter, false);
@@ -504,8 +529,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             exact &= restored == 1f && slotsUnchanged && commandsUnchanged && ward != null && ward.IsDisposed;
             row["removedScore"] = restored; row["slotsUnchanged"] = slotsUnchanged;
             row["commandsUnchanged"] = commandsUnchanged; row["fixtureRecipientFacts"] = 1;
-            row["testedAbilityCommands"] = 0; row["setupSummonCommands"] = 1;
-            row["emitterPreparedBeforePerformance"] = preparedEmitter != null;
+            bool donorRetired = emitter != null && emitter.Destroyed && !emitter.IsInState &&
+                !Game.Instance.State.Units.All.Contains(emitter) && !fixture.Created.Contains(emitter);
+            bool synchronous = Time.frameCount == setupFrame;
+            exact &= !nativeProbeEmitter || donorRetired && synchronous;
+            row["testedAbilityCommands"] = 0; row["setupSummonCommands"] = nativeProbeEmitter ? 0 : 1;
+            row["setupNativeActors"] = nativeProbeEmitter ? 1 : 0;
+            row["nativeDonorRetired"] = donorRetired; row["sameFrame"] = synchronous;
             row["factRemoved"] = ward != null && ward.IsDisposed;
             Sprint25Check(id + "-globe-choice", exact, row,
                 "Actual accepted globe recipient refuses this low-level action from outside, permits it from inside and recovers after exact fixture-fact removal. Calculated SLA/book levels, untouched slots/commands and any live performance membership are observed; no tested ability execution is supplied.");
