@@ -156,7 +156,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["effects"] = new JArray(Sprint32SavedEffects(source).OrderBy(buff => buff.Owner.Unit.UniqueId, StringComparer.Ordinal)
                     .ThenBy(buff => buff.Blueprint.AssetGuid, StringComparer.Ordinal).Select(buff => new JObject {
                         ["target"] = buff.Owner.Unit.UniqueId, ["blueprint"] = buff.Blueprint.AssetGuid,
-                        ["source"] = buff.Context?.MaybeCaster?.UniqueId, ["sourceAreaId"] = buff.SourceAreaEffectId, ["permanent"] = buff.IsPermanent,
+                        ["source"] = buff.Context?.MaybeCaster?.UniqueId,
+                        // Newtonsoft8 preserves a null string's token type as String,
+                        // which differs from the saved JSON Null despite equal values.
+                        ["sourceAreaId"] = buff.SourceAreaEffectId == null ? JValue.CreateNull() : new JValue(buff.SourceAreaEffectId),
+                        ["permanent"] = buff.IsPermanent,
                         ["endTicks"] = buff.IsPermanent ? (JToken)JValue.CreateNull() : new JValue(buff.EndTime.Ticks),
                         ["components"] = new JArray(buff.SelectComponents<GameLogicComponent>().Select(component => component.name)) })) };
             if (key == "lillend-azata")

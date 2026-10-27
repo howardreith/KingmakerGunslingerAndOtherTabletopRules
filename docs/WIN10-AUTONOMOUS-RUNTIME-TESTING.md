@@ -1,3 +1,9 @@
+Current Sprint 32 selection, status, storage and next action are governed solely
+by [the active record](../planning/SPRINT32-STATUS.md). The dated Sprint 32
+selection notes below preserve fixture contracts and historical provenance;
+their attempt chronology and former storage blockers do not select current work.
+All runtime/save protection requirements remain binding.
+
 Sprint32 after116 bounded correction selection: private Fascinate ownership
 uses native persisted area identity plus exact caster/carrier across save files.
 Fresh Working cold/source/sibling/absence proof remains required and currently
