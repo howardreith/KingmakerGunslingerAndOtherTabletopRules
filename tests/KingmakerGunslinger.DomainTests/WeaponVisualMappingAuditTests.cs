@@ -10,6 +10,16 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class WeaponVisualMappingAuditTests
     {
+        private const string Sprint32Prefix = "KMG.Summoning.FeyCelestial.";
+        private static readonly IDictionary<string, string> Sprint32Weapons =
+            new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                { Sprint32Prefix + "Satyr.Dagger", "25698949bdea41d2bcbe13ad8783aa4d|b2ba7766959344fb8536d4a3f7281441" },
+                { Sprint32Prefix + "Satyr.Horns", "fe9b4722730744dfadbf0ae3b10c07f9|261b62148fec4ebf909792ab4976683c" },
+                { Sprint32Prefix + "LillendAzata.Longsword", "f2a606d19b0240abb62255da5e4e1973|7e77d8b4a4284e04a5efb45a99036ed7" },
+                { Sprint32Prefix + "LillendAzata.Tail", "50d93d8a75d34b3787183363f7ec25c9|9afa3017d7794fb1b477e2236dbb0568" }
+            };
+
         internal static void CoversEveryActiveCustomWeaponIdentity()
         {
             JObject manifest = Parse("blueprints", "blueprints.json");
@@ -39,7 +49,8 @@ namespace KingmakerGunslinger.DomainTests
                     Sprint26MagicalBeastRules.AppendedWeaponIdentityCount +
                     GiantHumanoidRulesPolicy.AppendedWeaponIdentityCount + 10,
                 expected.Count(value => !((string)value["symbol"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) &&
-                !((string)value["symbol"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal)),
+                !((string)value["symbol"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal) &&
+                !Sprint32Weapons.ContainsKey((string)value["symbol"])),
                 "The released pre-Griffon custom-weapon baseline changed.");
             Assertions.Equal(ExpandedSummoningSprints30And31Tests.RegisteredWeaponIdentityCount,
                 expected.Count(value => ((string)value["symbol"]).StartsWith(
@@ -56,6 +67,19 @@ namespace KingmakerGunslinger.DomainTests
                 .OrderBy(value => value, StringComparer.Ordinal).ToArray();
             Assertions.True(expectedIdentities.SequenceEqual(actualIdentities),
                 "The machine-readable audit changed or omitted a saved blueprint identity.");
+            string[] sprint32Expected = Sprint32Weapons.Select(pair =>
+                    pair.Key + "|" + pair.Value.Split('|')[0] + "|" +
+                    pair.Key + "Type|" + pair.Value.Split('|')[1] +
+                    "|summoning-only exclusion")
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            string[] sprint32Actual = actual.Where(value =>
+                    ((string)value["symbolicIdentity"]).StartsWith(Sprint32Prefix, StringComparison.Ordinal))
+                .Select(value => (string)value["symbolicIdentity"] + "|" +
+                    (string)value["assetGuid"] + "|" + (string)value["weaponType"] + "|" +
+                    (string)value["weaponTypeAssetGuid"] + "|" + (string)value["mappingScope"])
+                .OrderBy(value => value, StringComparer.Ordinal).ToArray();
+            Assertions.True(sprint32Expected.SequenceEqual(sprint32Actual),
+                "Sprint 32 weapon identities, private types or summoning-only scope changed.");
 
             string markdown = Read("docs", "WEAPON-VISUAL-MAPPING-AUDIT.md");
             foreach (string symbol in expected.Select(value =>
@@ -114,7 +138,8 @@ namespace KingmakerGunslinger.DomainTests
                 audit["items"].Count(value =>
                 (string)value["mappingScope"] == "summoning-only exclusion" &&
                 !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) &&
-                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal)),
+                !((string)value["symbolicIdentity"]).StartsWith("KMG.Summoning.OutsiderCelestial.", StringComparison.Ordinal) &&
+                !Sprint32Weapons.ContainsKey((string)value["symbolicIdentity"])),
                 "Expanded Summoning weapon scope changed.");
             Assertions.True(audit["items"].Where(value =>
                     (string)value["mappingScope"] == "equipped project weapon")

@@ -110,6 +110,28 @@ if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.15
     $reachedOutputValidator = $false
     try { & $actualPackage -PackagePath (Join-Path $boundary 'artifacts\custom.zip') } catch { $reachedOutputValidator = $_.Exception.Message -ceq 'Unexpected broad child: validate-build-output.ps1' }
     if (-not $reachedOutputValidator) { throw 'Valid package path did not retain output validation.' }
+    # Observe the actual default-name calculation at the existing external
+    # output-validator boundary, without building a product package.
+    @'
+@{event='default-package';path=$packagePath} | ConvertTo-Json -Compress | Add-Content $env:KMG_GATE_FIXTURE_TRACE
+throw 'Fixture output validation boundary'
+'@ | Set-Content (Join-Path $fixtureScripts 'validate-build-output.ps1')
+    $reachedOutputValidator = $false
+    try { & $actualPackage } catch { $reachedOutputValidator = $_.Exception.Message -ceq 'Fixture output validation boundary' }
+    $defaults = @(Get-Content $env:KMG_GATE_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json } | Where-Object event -eq default-package)
+    if (-not $reachedOutputValidator -or $defaults.Count -ne 1 -or
+        $defaults[0].path -cne (Join-Path $boundary 'artifacts\packages\KingmakerGunslinger-0.0.150-fixture-patch.zip')) {
+        throw 'Default package name did not follow the declared informational version.'
+    }
+    $propsPath = Join-Path $boundary 'Directory.Build.props'
+    $propsBefore = [IO.File]::ReadAllBytes($propsPath)
+    try {
+        '<Project><PropertyGroup><KmgInformationalVersion>0.0.149-fixture-patch</KmgInformationalVersion></PropertyGroup></Project>' | Set-Content $propsPath
+        $refused = $false
+        try { & $actualPackage } catch { $refused = $_.Exception.Message -ceq 'Package name requires the source version and its declared informational suffix.' }
+        $afterDefaults = @(Get-Content $env:KMG_GATE_FIXTURE_TRACE | ForEach-Object { $_ | ConvertFrom-Json } | Where-Object event -eq default-package)
+        if (-not $refused -or $afterDefaults.Count -ne 1) { throw 'Mismatched informational version reached output validation.' }
+    } finally { [IO.File]::WriteAllBytes($propsPath,$propsBefore) }
     # The isolated Build-Local fixture writes a ZIP but no validated receipt.
     # A full gate must refuse it even when that child returned normally.
     $missingManifestRefused = $false
@@ -132,7 +154,7 @@ if ([IO.Path]::GetFileName($second.PackagePath) -cne 'KingmakerGunslinger-0.0.15
     $staleRefused = $false
     try { & $gate -Level Sprint -MSBuildPath $compiler } catch { $staleRefused = $_.Exception.Message -like '*receipt does not match*' }
     if (-not $staleRefused) { throw 'Full gate accepted a stale candidate receipt.' }
-    Write-Host 'Development gate: PASS=11 FAIL=0; observed production/test children, publisher reuse/filter isolation and package output guards. Offline orchestration only.'
+    Write-Host 'Development gate: PASS=13 FAIL=0; observed production/test children, publisher reuse/filter isolation, default names and package output guards. Offline orchestration only.'
 } finally {
     $env:KMG_GATE_FIXTURE_TRACE = $oldTrace
     $env:KMG_TEST_FILTER = $oldFilter

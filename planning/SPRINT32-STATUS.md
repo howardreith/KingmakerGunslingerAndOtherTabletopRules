@@ -66,7 +66,20 @@ MVID022eda42-2544-48f0-8273-b9ba8eca2163;
 SourceState04265312e70655116f084b18f969f2907b9c349762a2f578a6f08a0286477b23.
 Frozen original artifacts/development-candidates/sprint32-lillend-support/424e5f6ff568/.
 Build79 PASS278.165s, wrapper/558of2755/exact compile/strictZIP. Filtered
-development evidence, not the complete final gate. No candidate80 yet.
+development evidence, not the complete final gate. Build80 on d173f017 failed
+before compilation/package: 2756 tests,26FAIL,321.334s total/134s runner.
+There is no candidate80. Original logs remain in current
+artifacts/sprint32-checkpoint/build80-full.log and build80-exit.json.
+Twenty-three failures were a missing ignored native IL fixture, now copied
+from the existing hash-verified inspection matching the installed assembly.
+Two obsolete packaging-text assertions are replaced by executed default-name
+and version-mismatch checks. The existing weapon audit now records all four
+Sprint32 private weapons; its previous167 records are unchanged. Focused
+reproduction/neighbors113of2756PASS3.6s, DevelopmentGate13PASS, deterministic
+package testPASS. These corrections do not qualify gameplay or presentation.
+Independent read-only review found no blocking issue in this correction:
+executed naming guards remain bounded, exact mappings match production/provenance,
+and prior167 audit records are preserved. Proceed to complete candidate gate81.
 
 The next coherent source includes reviewed b9a4e783 dagger-only visual-record
 clone/native shortsword animation style and actual Salamander Power Attack
@@ -145,11 +158,15 @@ No personal data, drive repair or protected-data migration. C free4139413504B
 after full checkout. Working measured peak902923316B rounded1.1GB+2GB reserve;
 save-free550MB+2GB; build154MB. Remeasure before staging, no concurrent build/native.
 
-Counts79Build-Local attempts/64validated packages/123actual native launches.
+Counts80Build-Local attempts/64validated packages/123actual native launches.
 05:28 onward: cold observer reproduction, accepted dependency integration,
 targeting/fixture correction and independent review; focused builds55.1s total.
 Earlier work categories/history retained; exclusive cumulative totals unavailable.
 Storage waiting03:48-04:39UTC overlapped independent work. No speedup claim.
+
+05:55 onward: gate80 classification and bounded test/audit correction; no native
+launch or active transaction. Fixture provenance/copy receipts remain ignored
+under artifacts/inspection/bodyguard-native/. Exclusive category totals unavailable.
 
 Next: finish independent review of the coherent correction, freeze source/assets/
 compiled observers/publication inputs, and run Build-Local with explicit
