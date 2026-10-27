@@ -1,3 +1,14 @@
+# Sprint 32 - RELEASE AUTHORIZED / IN PROGRESS
+
+The sole active record is [planning/SPRINT32-STATUS.md](planning/SPRINT32-STATUS.md).
+Howie authorized merge and release on2026-10-27 after qualified PR74. Prepare
+version169 from exact qualified87 product, merge, use the sanctioned publisher
+and verify public assets. Native evidence keeps original identities. No Sprint33.
+
+Everything below is historical and does not select current work.
+
+## Historical resume records
+
 # v0.0.168 Sprints 30-31 follow-up — RELEASED / STOP
 
 Stable [v0.0.168](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.168)

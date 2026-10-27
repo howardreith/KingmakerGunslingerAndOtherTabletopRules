@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "tool": "image_gen.imagegen (built-in)",
+  "providerModel": "not exposed by tool; not inferred",
+  "transparentBackground": false,
+  "key": "lullaby",
+  "source": "assets-source/original-icons/expanded-summoning/sources/lullaby.png",
+  "sourceSha256": "3f2975854b250b252413aa7a22951f803035eacd54803f41ee93c2fc7fa63203",
+  "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a17346-8046-79c2-b055-a0272b7c1137/exec-67a0017e-eff4-4b41-8212-1466ceeac623.png",
+  "styleReferences": [
+    "assets-source/original-icons/shield-other/shield-other-generated-source.png"
+  ],
+  "styleReferenceRole": "Inspected locally only; original composition and pixels; no reference file supplied to provider.",
+  "prompt": "Generate one original square fantasy RPG spell icon for Lullaby, a gentle enchantment that makes creatures drowsy and inattentive, not fully asleep. Painted fantasy illustration with confident broad brushwork, dark indigo background, restrained lavender glow and warm gold highlights, matching a classic isometric RPG spell palette. Single dominant subject: a graceful small gold lyre tilted slightly, its curved upper arms forming a crescent; a soft violet ribbon of sound curling once around it toward one half-closed eye-shaped glow. Strong simple silhouette and ample dark separation, recognizable at 32 pixels. Flat square composition, no UI border or frame, no writing, no letters, no musical notation, no counters, no logos, no tiny ornamental detail, no sleeping character, no violence. The lyre fills about 70% of the image and stays clear of the edges. Original artwork, not copied pixels. Opaque background.",
+  "humanReview": "NOT_PERFORMED_NONBLOCKING",
+  "status": "Original and deterministic128px export inspected, including32/48/64/128px thumbnail sheet. Native presentation pending.",
+  "export": "assets/game/icons/expanded-summoning/lullaby.png",
+  "exportSha256": "a9f4bde16feacc904821355d952fc1b2156b3415d07b09ed6fed458d5d7a6d41"
+}

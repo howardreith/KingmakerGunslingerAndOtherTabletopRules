@@ -1,3 +1,558 @@
+Current Sprint 32 selection, status, storage and next action are governed solely
+by [the active record](../planning/SPRINT32-STATUS.md). The dated Sprint 32
+selection notes below preserve fixture contracts and historical provenance;
+their attempt chronology and former storage blockers do not select current work.
+All runtime/save protection requirements remain binding.
+
+Sprint32 after116 bounded correction selection: private Fascinate ownership
+uses native persisted area identity plus exact caster/carrier across save files.
+Fresh Working cold/source/sibling/absence proof remains required and currently
+storage-blocked. Grouped engagement pause is owned across existing cells; native
+mode admission remains strict. Supplied melee probes measure native weapon plus
+both body radii and actual horizontal separation. Satyr presentation checks dagger
+first, reads actual settings (including native null-variant fallback), and inspects
+only naturally created attack handles. No diagnostic plan/handle consumes RNG.
+Selected clip/lifecycle is retained before strict same-frame active/playing guards.
+Wound positioning is resurveyed after the last weapon case. One narrowed save-free
+presentation selection targets15min/ceiling30min; its separate peak plus reserve
+does not authorize the larger blocked Working sequence. Native116 terminal PASS
+remains bound10700ecc. No new gameplay/animation subsystem or final PASS follows
+from these observer corrections.
+
+Sprint32 after110 bounded correction selection: actual save suspension must
+preserve private performance state while owner.IsTurnedOn is false; actual fact
+deactivation and native WillStop still retire owned effects. Re-run the existing
+Working ON/cold/absence and provider/OFF cases; no serialization rewriting.
+Grouped grab/presentation/performance/Fascinate phases own only the proven idle
+profile anchor brain across cells, restoring it under the existing exact lease.
+An unexpected preexisting command still refuses. Attack screenshots capture
+synchronously at the exact native event with strict frame/command/animation
+binding; a bow image denotes projectile release. Actual positive projectile
+damage must separately correlate to that same attack roll/weapon/source/target.
+The supplied unrelated-wolf Charm probe uses physical LOS/reach and native sight
+cache refresh after owned relocation; visibility memory is diagnostic, not an
+ordinary supplied-attack precondition. Natural AI tests retain their own gates.
+
+The existing lillend-performance and lillend-fascinate phases additionally group
+Competence RTWP and Fascinate TB combat entry after their ordinary cases. An
+owned hostile trigger must be reachable/visible before natural performance;
+combat stops it, retires exact assistance/recipient state, and permits natural
+Move Courage with real cost/pool and sibling isolation. Only idle owned witnesses
+may pass turns; no tested-source turn is awarded. Pending selection is absent
+at entry and must remain absent; this does not prove in-flight cancellation.
+Exact new reviewPhase=suggestion-terminals uses the same declaration-derived
+scenario admission, active provider, native RTWP clock and normal supplied casts.
+A disclosed native600s Lillend fixture summon outlives the original CL7 420s
+Suggestion. At most two ordinary casts per target use the real four L2 slots;
+the first subsequent damage event must be positive/nonfake and bound to the
+ordinary native attack. A second untouched effect reaches its original deadline
+without clock/deadline manipulation; actual sample gaps and unchanged ownership
+are retained. Runtime900s, expected10-15min including setup/restoration. This
+qualifies provider terminals, not public summon duration or natural spell choice.
+All ordinary guards, profile restoration, save boundaries and automatic exit
+remain. Selection documentation does not establish execution PASS.
+
+Sprint32 native98?101 observer correction batch: grab retains actual maneuver,
+escape-skill/DC and terminal hold state before verdicts. The owned victim's low
+Mobility/Athletics isolate maintenance without disabling native rolls; restore
+both skill bases afterward. At most three sequential natural holds share90s,
+and only a retained natural-one refusal with no later rider/extra attack admits
+another natural acquisition. Existing35s complete native release remains.
+Presentation waits up to12s for exact command/queue/path/velocity retirement
+across three ordinary frames before reversal, checking the lease after each yield.
+Cold listeners require their shared exact saved Lillend SourceId/preparation run
+and mutual relation, matching preparation; unrelated-intake guards remain exact.
+These corrections require fresh affected native execution, not reader-only reuse.
+
+Native91–93 bounded observer corrections: grab damage compares semantic JSON
+null because installed Newtonsoft8 constructs null-string JValue as String.
+Presentation waits for the exact body's native dissolve completion and records
+the same exact-body predicate at each live capture; legacy first-renderer intact
+text is not exact-body proof. Each move records result/start/end/goal/travel/gap
+before its unchanged assertion. Persistence effect-only contexts require absent
+Buff.Data parent; native AsChild only attaches when a parent exists. Terminal
+permanent/fromSpell/dispelable/AsChild flags are retained before dispatch. None
+of these corrections changes creature rules or establishes a native PASS.
+
+Sprint32 fixed `technical-presentation` groups Satyr/Lillend technical loading,
+selection surface, scale, two ordinary8m moves, finite geometry/gait, native
+weapon contacts/costs, actual wound/death and live expiry (expected10min,
+runtime600s). Commands are supplied normal native commands, not natural-AI proof.
+Each required weapon has at most three ordinary full-attack attempts to obtain a
+successful contact. Captures bind exact rule/command/frame/animation; the owned
+wound attacker has disclosedSTR30/accuracy100 and verified actual weapon reach.
+No roll/damage override or creature-stat change. Native gameplay-camera frames,
+uncaptured frame times, death/expiry and final empty-screen captures require
+agent inspection; no owner aesthetic approval is claimed. The exact phase grants
+no input/save scope. Strict Default pending ownership gates mode/pause/camera
+restoration, including constructor failure; outer rollback remains mandatory.
+
+Native89 exposed the setup/idle boundary. The synchronous fixture summon helper
+leaves a finished command in Raw. Before retirement, prove exact owned caster,
+empty pending Queue and only finished exact setup execution commands; then use
+native RemoveFinishedAndUpdateQueue and retain every quiet-anchor predicate.
+Native90 refused fixed Neutrals before spawn because intake attacks it. Select
+one existing registered faction from full intake unit/group relations before
+spawning any auxiliary; persist its exact GUID in existing receipts. Cold load
+resolves that identity without selection/substitution and retains all symmetric
+intake, unique-group and control-state checks. No intake group refresh/mutation,
+new faction blueprint or broader save authorization.
+
+Sprint32 fixed `lillend-grab` selects grouped Lillend RTWP/TB and one directly
+affected Salamander RTWP baseline (expected10min/runtime600s). Existing native
+Default scope owns combat, turns, buff rounds and target escapes. Production
+attack AI is unchanged; disclosed spent Lillend spell/performance pools and a
+mind-immune, maneuver-eligible Medium target isolate the melee fallback. Actual
+establishing-tail hit/command/cost, initial constrict, later tail plus live-Strength
+constrict and failed-maintain release must pass. No supplied attack, forced roll,
+manual maintain, or tested-actor Prepare/EndTurn supplies a verdict. Only the
+proven disposable initially idle profile anchor/caster can be passed and counted.
+Lease refusal preserves foreign mode for outer rollback; independent cleanup
+still restores owned resources/settings. This does not claim movement or visuals.
+
+Historical native85–90 selected SystemMechanics.FactionNeutrals after refusing
+any intake attack relation;90 disproved that fixed selection before spawning.
+SwitchFactions can construct stale Player group membership before assigning
+the new faction; only the proven unique one-member owned group receives native
+ResetFactionSet/UpdateAttackFactionsCache. All symmetric hostility refusals
+remain; no intake relation is edited. Native85/90 remain FAIL before save.
+Satyr Fear's effect-only sibling probe retains its original surveyed graph point:
+native Translocate grounds actor Y through physics. Walkability/clamp/separation
+remain mandatory, with a receipt for the exact values. Native86 remains FAIL.
+
+Satyr Fear RTWP/TB source-isolation setup now surveys one of two connected
+walkable points behind the established owner/target lane for its owned sibling,
+before casting. The shared expiry probe revalidates the actual vacated position,
+original live effect and native eligibility. No protected actor moves, new range,
+supplied cast or changed gameplay rule. This corrects the unsurveyed spawn-point
+assumption exposed by84; its exact failed combined subpredicate is unknown.
+
+Sprint32 Working persistence also groups three private-control recipients with
+the existing two performance listeners. The same finite walking survey retains two performance points and selects three
+separate effect-only control points from those same queries, without additional
+rings or angles. Only the performance pair requires physical LOS/range; all five
+retain native navigation, height, acquisition exclusion and separation. All points
+must be selected before spawning or advancing time; insufficiency fails closed. Only after the real
+Fascinate ledger exists and source brains are disabled, native effect-only
+applications establish Charm604800s/Hold42s from the first Lillend and Sleep480s
+from its Satyr sibling. These are saved-state preconditions, not spell/save/AI/
+cost evidence. Hold automatic saves remain enabled. Each new actor has a unique
+native GroupId assigned before its faction change; intake actors are untouched.
+Real granted/book AbilityData and native parameters create each saved ability
+context; mapped terminal flags are copied without executing a cast. Charm's
+actual hostile baseline includes the bound NeutralToPlayer player faction.
+Cold ON/OFF and immediate pre-retirement observations compare exact source,
+private buff, original deadline, actual condition and attack factions. Primary
+source removal must clear Charm/Hold and restore Charm's original hostility
+while sibling Sleep/performance remain; all conditions clear before recipients
+are retired. A successful Hold retry before retirement invalidates that assertion.
+Source cleanup resumes only surviving owned actors under the existing calm
+guards for normal relation-cache propagation. Sibling comparison permits only
+native performance upkeep bounded by elapsed rounds; other state remains exact.
+The existing prepare/cleanup/absence sequence and60-80min combined ON/OFF
+selection remain; no additional scenario or generic persistence system is added.
+
+Sprint32 fixed `lillend-controls` and `lillend-controls-turn` reuse the save-free
+isolated native scene and exact-owned command/AI clock. Each groups actual native
+five-HD Wolf recipients, natural Charm Monster and safe Sound Burst, real
+Standard/slot costs and independent sibling budgets. Sound Burst starts with an
+unsafe allied footprint, then moves only the owned bystander out. Actual saves,
+stun applications and damage are correlated to each completed cast context;
+successful Fort saves must receive damage without stun. The RTWP case also uses
+a disclosed normal Cure Light command as a harmless Charm negative and a normal
+caster attack as its threat-break probe. The TB case claims natural casts/costs,
+not that RTWP threat probe. No forced roll, supplied successful spell or damage
+proves these cases. Existing ownership/refusal/finalizer boundaries remain.
+The RTWP case additionally checks actual native Good/Chaos ward facts and
+unchanged slots, positive nonfake damage from an exact unrelated hostile wolf
+retaining Charm, then an ordinary apparent-ally threat breaking it. The damage
+must match the same native weapon event and exact source/target; ordinary
+commands are retained. Native81 remains the separate caster-threat evidence.
+This is selection documentation, not an execution receipt.
+
+Sprint32 adds only `persistenceScope=fey-celestial` to the existing exact Working
+prepare/verify-cleanup/verify-absent trio and installed-stack transaction. The
+selected development purpose remains `sprint32-lillend-support`. Two Satyrs and
+two Lillends have exact generic source receipts; two registered native default
+humanoids have separate source/caster/run-bound listener receipts, following the
+Sprint22/26 auxiliary-actor seam. No transient blueprint is serialized. Only the
+listeners' per-instance faction/attack set and stats change; native faction
+blueprints and intake actors are untouched. Finite four-radius connected native walking-graph/physical-LOS survey with native
+EyeShift, actual ground anchors, separate horizontal clamp/height bounds and one
+rejection-count receipt (reusing the accepted Cleanup2 walking query),
+no unintended nonparty hostility, nonparty listener groups, calm Default mode,
+exact target set and actual unforced saves are required before real dispatcher
+activation. Competence requires an empty eligible Fascinate set before/during
+setup. Native Move commands create selections and the frozen Fascinate ledger;
+no synthetic response JSON, supplied roll or command establishes those states.
+Disclosed native budget spends are persistence preconditions, with exact expected
+post-spend values. The first selection requires a settled absent provider;
+provider transitions and other private controls are not covered by it.
+The generic appearance observer leaves native Pause active. Preparation admits
+only Pause over Default or Default, records each boundary predicate, and waits
+for native unpause (at most30frames/3seconds) before enabling a dispatcher.
+Unexpected modes/combat/ownership refuse without forcing a mode or saving.
+The exact fey-celestial cold request also records at most64 read-only Fascinate
+PostLoad/Interrupt/End/OnUnitExit transitions through the existing load trace.
+It reads raw serialized/cache fields without hydrating response state; hook
+errors or overflow fail the result, and existing disposal removes all hooks.
+Retain the exact prepared disposable ZIP locally after successful preparation
+and protected-intake comparison, before the cold process. Verify its hash against
+the after-prepare save inventory. This is evidence, never restoration authority;
+the separately captured original Working remains the only restoration source.
+Cold observation precedes deliberate time advances and rechecks live state before
+primary-source removal/sibling isolation. Native visual/effect cleanup uses the
+existing resource receipts; their manual equipment disposal does not prove native
+equipment expiry. ON/OFF use separate processes and the existing outer original-
+Working envelope: expected60-80min for two three-process trios including exact
+restoration. ModuleOFF is admitted only for verify-cleanup. No save is armed after
+a failed mandatory assertion. This paragraph documents selection, not execution.
+
+Sprint32 fixed `lillend-hold` and `lillend-hold-turn` phases use the existing
+save-free Dialog fixture (expected 8 minutes each, runtime 600s). A five-HD
+humanoid, low Will and healthy nearby sibling establish eligible Hold and
+unsafe Sound Burst; only the owner's competing daily Charm SLA is pre-spent.
+Actual natural cast commands, saves, private effects and exact L2 slot debits
+are observed. RTWP reuses the proven exact-actor native round controller for
+caster cooldowns; existing native buff ticks deliver automatic saves. Turn-based uses native game
+controllers without fixture AI/round ticks. After a real failed repeat save,
+a prospective high-Will fixture stat permits a later real successful retry.
+No supplied roll, result, command, refill or rewind establishes either cast.
+A separate fresh caster tests source expiry with a labeled native effect-only
+sibling probe at the vacated surveyed sibling point. Native creation Tick,
+walkability/separation, living identity, faction, ability availability and CanTarget
+remain mandatory. LOS/memory are not a precondition for this supplied effect and
+no second casting/reach claim is made. Preserve the original live effect immediately before expiry
+and rejecting source attribution if any exact-effect automatic retry succeeds.
+Finalizers clear exact buff references after verdict, even when caster loss
+has cleared their context. No input/save or Default admission is added.
+
+Sprint32's fixed `lillend-bardic-suggestion` phase extends the existing save-free
+Fascinate/Default fixture with the declared optional-provider profile,
+expected10min/runtime600s. Actual calm geometry, own natural Fascinate, physical
+reach, ability availability, independent books/pools and retained lawful player
+visibility memory are required before natural bardic execution. A disclosed
+high Will then SR100 tests a real saved attempt and a repeated resisted attempt;
+low Will permits a subsequent actual effect, with no supplied roll or bardic
+command. Native ordinary Invisibility is a disclosed
+reaction fixture, applied synchronously by an exact-cast prefix at the natural
+bardic effect boundary, after its original command starts. The target has native
+SeeInvisibility. Before/after application guards require the same live own
+Fascinate and exact source/ability/target. Original offensive handling always
+runs; caught fixture errors fail the observation without skipping that handler.
+The same returned buff must be removed by the native offensive reaction, and
+read-only global/aggro/stealth probes must observe their real callbacks. This
+proves reaction delivery, not sustained invisible performance or an entered-
+stealth exit. Native automatic stealth entry makes the earlier multi-frame setup
+insufficient to isolate this reaction; native68 retains the unresolved failure.
+No spotting, memory, action or roll is supplied. The native empty aggro component
+belongs only to the disposable target blueprint. Same exact Fascinate, no
+reciprocal hostile memory/combat, actual Standard commands, native exploration
+cooldowns and upkeep-only pool debit are required. An additional native round
+checks active-effect refusal. After those verdicts, one explicitly supplied
+ordinary book cast is a negative integration probe: normal slots/actions,
+hostile memory and Fascinate interruption. It is not natural bardic evidence.
+Only this negative probe temporarily disables PauseOnEngagement, recording
+the intake/current values and restoring the original in finally. The strict
+Default lease still refuses every unexpected mode change.
+The fixture inventories Harmony12 patches on the two bypassed native methods
+and refuses unreviewed patches. Exact retention failure predicates are recorded
+before cleanup. Finalizers restore scoped hooks, injected buffs, exact fixture
+components/conditions, native mode, party and owned actors.
+The idle sibling also receives a synchronous availability probe: private Hold
+is available, refuses after a temporary exact Infectious Charms fact grant, and
+recovers after finally removes that fact. No yield, spell command or roll occurs
+during this probe; both books/pools must remain unchanged.
+No input/save permission, general observer framework or outcome rewind is added.
+The same phase captures the exact native Fear, Sound Burst and Hold Person
+action leaves/terminal components read-only to resolve earlier depth truncation.
+This metadata is not a gameplay verdict; no extra actor or launch is selected.
+
+Sprint32's fixed `satyr-atwill` and `satyr-atwill-turn` phases extend the existing
+save-free Dialog control fixture, expected10min/runtime600s each. No Default,
+input or save admission is added. Native level-up gives three owned humanoid
+subjects two HD each, with Charm-only immunity, and an allied two-HD burst
+subject. One disclosed Fear pre-spend isolates natural Sleep. A separate five-HD
+humanoid isolates Charm Person; an owned five-HD Charm-immune hostile sentinel
+keeps combat available for cost observation. Native eligibility, sight, surveyed
+positions and mutual faction relations must pass before enabling the owner AI.
+Each extra location also passes native point LOS. After yielding, a bounded
+eight-second native UnitMemoryController refresh establishes actual visible
+memory; Add alone starts Visible=false and the Dialog clock does not refresh it.
+No visibility flag is assigned. Individual actor predicates remain mandatory.
+Normal Standard/non-full-round cost, CL8/DC15, real saves, Sleep's shared four-HD
+budget/ally exclusion and unchanged independent resources are observed. Live
+controlled-target refusal is a policy observation, not a second-cast claim.
+Exact terminal buff references and deadlines are captured before native summon
+expiry; removal must precede their own deadlines and restore the original
+recipient's condition/faction. After natural cast/refusal evidence is recorded,
+one separate native RuleApplyBuff lifecycle probe places the same private effect
+from the actual sibling on a distinct eligible owned recipient. Sleep uses an
+unaffected2HD subject; Charm uses the sentinel after removing only its disclosed
+fixture Charm immunity. Native visible-memory/eligibility checks precede this
+probe. It must return a real active exact-source buff with a finite deadline and
+unchanged sibling resources/cooldowns. Original-source expiry must preserve that
+same attached sibling buff/source/deadline. This is effect-only destruction
+isolation, not a second cast, AI, save or action-cost result. Exact probe references
+are removed only by the finalizer after the verdict.
+RTWP uses the existing exact-owner brain tick; turn mode uses native admission
+and zero fixture AI ticks. No supplied roll, cast command or effect contributes
+to natural-cast proof, and no fixture victim cleanup supplies an expiry verdict.
+Finalizers restore fixture stats/mode and remove
+only owned actors/facts after the result, including on failure. Cold persistence
+and presentation remain separate. This does not replay unrelated Fear cases.
+
+Sprint32's fixed `lillend-fascinate` phase is an absent-provider early proof in
+the existing save-free Oleg/Default fixture, expected10min/runtime600s. It uses
+the proven private player-hostile faction, two summons and only the exact cloned
+profile anchor/caster. The lane survey may use physical performance sight instead
+of acquisition-range LOS; every other caller retains the existing default. The
+owned anchor is placed on a surveyed walkable point to provide natural player
+visibility. Actual vision radii, distances, shared summon/caster group and empty
+reciprocal hostile memory are required. Seven native game seconds must remain
+calm without memory edits or combat suppression. Normal Move Fascinate must spend
+native rounds, produce a real Will/noSR effect and -4Perception, with independent
+books/pools. Explicit cancellation checks immediate owned effect/helper cleanup;
+then a disclosed target Dazed-immunity fixture must induce natural Competence
+fallback. No action/effect/roll/round is supplied. Positions, party, conditions,
+stats, owned units and the exact Default lease are restored in finalizers. This
+does not prove the three-target cap,24h resistance, threats, bardic Suggestion or
+cold persistence; those remain finite required cases. The subsequent bounded
+extension disposes the first two sources and summons fresh Lillends, then uses
+four explicitly owned private-faction hostiles. It groups cap/frozen selection,
+native successful-save24h deadline/source refusal, source-granted touch Shake
+Free, a second normal activation, actual UnitMoveTo approach and a visible
+self-targeted bard spell threat. A sibling must make its own save and retain its
+own effects when the original source is removed. Exact instances are captured
+before disposal so a cleared caster reference cannot hide an orphaned buff.
+No native effects/rounds, forced paths, RNG seeds or resource refills are supplied.
+High/low fixture Will values are disclosed; real outcomes remain evidence.
+The original early assertions are retained; the extended observations are not
+executed merely because that earlier subset passed. The phase remains bounded
+at expected10min/runtime600s; it claims a24h deadline, not actual24h expiry.
+Fresh-process persistence remains separate. The owner-approved bardic memory
+exception is not implemented or validated by this absent-provider phase.
+
+Sprint32's fixed `lillend-cantrips` phase reuses the Lullaby/Daze portion of the
+existing support fixture, skipping unrelated healing/body replay. It retains
+the exact save-free phase/automatic-exit guards and gains no Default/input
+admission. Expected10min/runtime600s. Only during the Daze case, the existing
+manual clock's life callback also invokes native UnitTicksController.TickOnUnit
+on that exact owned Lillend, once per frame using the same native delta. This
+supplies the round controller absent in Dialog; the receipt must observe the
+unchanged native AI cooldown1-to0. No direct OnNewRound, cooldown reset, cast or
+roll supplies a verdict. The binding clears in finally. The immunity deadline
+must be bracketed by actual live presence and first absence; early child-buff
+removal cannot count as natural expiry.
+
+Sprint32's fixed `lillend-performance` phase uses the existing save-free Oleg
+preset and exact native Default lease. It is not a player-input phase. Only the
+already-proven disposable profile anchor's idle brain is temporarily suspended.
+Two fresh Lillends and the owned caster supply one conscious party recipient;
+native geometry/visibility and the30ft range are checked before dispatch. Seven
+seconds of real game time with the owner's brain disabled must produce no
+command or performance cost. Enabling its native brain permits the product's
+outside-combat round dispatcher to select and execute one normal Move activation,
+with real native upkeep, +3Perception on the exact recipient, and unchanged
+sibling pools/books. An already selected recipient temporarily blinded by the
+owned fixture must retain the same grant through another native upkeep:
+Competence is audible-only, and the supported engine has no separate deafness
+state. The condition is removed in finally. Exploration's unchanged native cooldown is recorded; no
+combat debit is fabricated. Moving only the disposable recipient beyond30ft must
+end that exact performance and grant. No direct dispatcher round, supplied
+activation/effect, memory edit or forced combat suppression supplies this proof.
+The existing lease/party/brain/resource finalizers retain original failures.
+Expected10min with600s runtime ceiling; combat-entry race, cold persistence and
+Fascinate remain separately required coverage.
+
+The fixed Sprint32 Lillend-support phase also exercises the owner-approved
+immediate-release Lullaby after the existing support case. Two fresh summons
+reuse the owned low-HD hostile and a surveyed isolated burst. Explicit native
+pre-spends remove competing L2/L3 spells, Courage and Charm SLA; L1 Sleep remains.
+The observer checks ally-overlap/Sleep-immunity refusal, a natural Standard
+cantrip with Will/SR, unchanged independent budgets, -5 Perception and the -2
+Will-only Sleep modifier. Separate native saving-throw probes are not casting
+or action-cost evidence. A paused clock seam ticks only the owned target's buffs
+on either side of the original expiration and restores time before yielding.
+No save access, forced roll, supplied effect or general test subsystem is added.
+The same phase checks the corrected native cantrip-fact route for Lullaby and
+Daze: exact owned ability fact with no spellbook debit, CL7/Charisma DC14,
+normal Standard actions, unchanged L0/leveled slots and independent resources.
+After Lullaby's original-deadline expiry, explicit remaining L1 pre-spends
+isolate Daze. The target has disclosed native maneuver immunity so ordinary
+fallback cannot create a grab that disables its caster. Two successful natural
+Daze effects are separated by the new native sixty-second immunity. The85s
+bounded observer checks one-round Dazed, immunity after it ends, original native
+expiry, Will/SR and active-effect refusal, without moving the Daze clock. A
+separate native application probe checks that the immunity also blocks the
+unchanged game's Daze buff from a sibling source; that probe is not a cast or
+action-cost result. No cast or roll is supplied; all preconditions are removed
+in finally. The full selected phase remains expected10min/runtime600s.
+
+Sprint 32's `disposable-expanded-summoning-sprint32-native-review` accepts only
+`reviewPhase=satyr-control`, `lillend-support`, `satyr-turn`, `lillend-turn` or `optional-suggestion`, with automatic exit. The existing save-free first-area
+fixture observes a fresh hidden Satyr naturally casting Fear, then a fresh
+Satyr refusing the reset hostile with explicit native mind-affecting buff immunity and
+using its ordinary bow. It records real commands, action costs, resource debit,
+saves and weapon events; no fixture-issued cast/attack or supplied roll. A
+third close immune case observes the native hand-set switch and dagger fallback.
+Queried full-attack plans check dagger/secondary horns and distant bow/horns
+exclusion; those queries do not alone prove resolved full attacks. Selected
+existing Charm/Sleep/Fascinate graphs are captured more deeply in the same run.
+A
+bounded origin-clearance parameter protects party actors from the cone. The
+single owned hostile is reset between cases and retained for exact teardown.
+This RTWP seam probe does not qualify other spells, turn-based play, public
+routes, full presentation or persistence. Exact package and restoration apply.
+The fixed Lillend phase uses two fresh independent hidden bard7 summons and
+one owned hostile: native Move-action Inspire Courage, first native NewRound
+resource debit, owned ally+2/enemy exclusion, Standard-action real Cure Serious
+Wounds/own spontaneous slot debit, then healthy-target/running-performance
+refusal and a natural melee fallback against an owned native mind-immune and
+maneuver-immune target. Maneuver immunity belongs only to this fixture and isolates
+ordinary fallback from the separately required real-grab transition. A successful
+grab can naturally interrupt the attacker and stop performance through CantAct.
+The expanded book is observed by actual known-spell tier, with settled provider
+state; adult HP/AC/abilities and sword/tail native reach are observed. The fallback
+case explicitly starts with a healthy actor after retaining the healing outcome.
+No supplied casts, attacks, rolls or
+resource/slot debits. The existing Dialog activatable controller supplies its
+first-round tick; this is not proof of sustained round expenditure or final
+adult profile/body. The original-body extension in the same Lillend phase requires two independent
+owned body bindings, finite owner/sibling rest poses and preserved native actions.
+Bounded weapon-event frames and tail counters are diagnostic; they do not establish
+contact or full presentation. Native disposal must release captured owned body/tail
+resources while borrowed actions/clips survive, even when an earlier assertion
+fails; the retained original error is rethrown after cleanup observation. Exact
+optional provider roots capture the installed contract; absence remains explicit.
+The turn phases reuse native RTWP enrollment then the real turn controller, with
+zero fixture AI ticks. Satyr uses fresh control, immune bow and close dagger cases.
+Lillend uses fresh healthy Courage/ordinary attack and wounded healing cases, with
+independent sibling pools and exact native turn action debits.
+The phase owns the RTWP setup baseline until all nested cleanup frames finish;
+only explicit turn enrollment enables turn mode. A single hostile is retained
+for phase teardown and starts40m from the party before setup frames advance.
+The two turn phases and support-lifecycle use a private faction, following the established elemental
+native-turn fixture: AttackFactions contains only the native player faction,
+AlwaysEnemy is false, and the target is mutually hostile to the disposable caster.
+All nonplayer intake actors must be mutually nonhostile to it before combat frames
+advance. The private faction is destroyed after its actors. Neutral intake actors,
+their memories and the exact-owner native clock guard remain unchanged.
+Turn attack completion records the exact command's native act/end, actual attack
+plan/index and attributed weapon rules. A later Interrupt is accepted only after
+that same command's final native Success act completed the actual plan with exact
+weapon order/target and normal action debit; arbitrary interruption never passes.
+This proves mechanical completion, not animation completion or the interrupt caller.
+Lillend's Move activation retains its first20-to19/ally+2 proof. Its later fallback
+checks one native OnNewRound debit per observed eligible owner turn, with exact
+remaining20-minus-observed-upkeep and untouched sibling pool; a second legal turn
+is not forced to retain19. These hooks only observe the exact performance instance.
+The existing phases also probe each new adult's native Knowledge(nature) total,
+Intelligence dependency, preserved Wisdom/Perception dependency and sibling isolation.
+Only owned disposable ability bases are changed temporarily and restored; no load
+or persistence result is inferred from these creation-time observations.
+The optional Suggestion phase requires the settled investigated provider and
+uses one fresh Satyr pair followed by one fresh Lillend pair. The exact target
+has declared low Will, Charm-only descriptor immunity and Sleep/Paralysis/Stun
+condition immunity. Fear/performance and Lillend level1/3 slots are explicitly
+pre-spent to isolate the choice; they are not cast evidence. At most three
+natural Suggestion casts per adult observe real Will saves, normal Standard
+costs, independent bard level2 slot debit, native CL duration and active-effect
+refusal. No rolls, cast commands or effects are supplied. Actual expiry,
+damage break, high SR and cold-load/provider removal remain separate cases.
+All fixed phases retain source/package, empty-world and
+exact restoration guards; no Working-save access is selected here.
+
+Sprint32 fixed `satyr-routes` and `lillend-routes` phases each use a fresh
+save-free caster/process and the existing native parent/selected-child helper.
+Satyr uses native Druid20/Wisdom30; Lillend uses Wizard20/Intelligence30. Every
+canonical parent must belong to that class's spell list at the legal tier.
+All six/four public roots retain real native command/cast/spawn, prepared-slot,
+quantity, CL20 duration and exact cleanup assertions. The existing helper pumps
+commands/animation synchronously; natural input timing, spontaneous sources and
+Druid conversion are separate. The same exact published adult is then observed
+at gameplay camera for body/icon/selection and owned-resource disposal.
+This adds no save access or arbitrary caster/case input.
+
+Sprint32 fixed `support-lifecycle` selects exactly two Satyrs and two Lillends
+through the existing source-lifecycle fixture. A fixture-issued native Lillend
+activation command in the isolated owned combat is a lifecycle precondition;
+normal controllers must
+produce the exact CourageRecipient on a separate surviving owned Satyr. Native
+`IsAlly` must explicitly admit that recipient; nonenemy status is insufficient.
+The cloned player-faction caster is separately required to receive the actual+2
+and exact recipient buff despite native IsAlly=false. This exercises the accepted
+nonenemy support mapping needed by summoned sources. An owned hostile inside
+the actual native radius must receive no effect. Only
+one Lillend emits at a time: owner expiry is verified before sibling activation
+and fresh area/recipient-reference capture for death. Self/carrier buffs cannot
+substitute for external-recipient cleanup. Activation state, command result,
+resource and exact recipient are recorded before a failed prerequisite can throw.
+The owned caster/hostile keep combat active through source removal. The separate
+recipient is kept alive through all removal assertions and disposed only afterward; no effects or
+costs are supplied. This is not natural AI selection evidence. Actual
+native scheduler expiry, independent siblings, native death, subsequent expiry,
+nonloot equipment, body resources, source areas/grants and exact inventory reset
+are observed. The established owned-buff deadline helper is disclosed; it does
+not prove elapsed full-duration, dismissal or command cancellation. No actor,
+area, item or recipient grant is directly deleted to supply a verdict. The
+original six-creature lifecycle selection remains unchanged by default.
+
+The Sprint32 input observer binds every modeled conditional spawn leaf and every
+actual summon to the independently registered creature. Graph leaves are possible
+branches; only native cast/spawn events establish execution cardinality. Hidden
+spawns are refused, and exact slot/action/quantity/base-plus-bonus duration checks
+remain mandatory. Original failed aggregate receipts are never retroactively passed
+when their missing conjunct values were not captured.
+
+Sprint32 `druid-input`, `wizard-input` and `sorcerer-input` are three fixed,
+fresh, save-free native desktop input selections. They reuse the existing exact
+Default-mode lease, manual-clock suspension, visible native spell popup/scroll,
+source-chain ownership, screenshots and all-book debit observer. Each disposable
+caster receives only its selected native class through the established level20
+helper; legal preparation/known-spell setup and Rest finish before input capture.
+Druid covers prepared single Satyr and converted single/d3/d4+1 Satyr; Wizard
+covers prepared single Lillend; Sorcerer covers known single/d3/d4+1 Lillend.
+The native row click and target handler issue the command; ordinary controllers
+must produce its actual cost delta, exact source slot/use debit, quantity and
+120-second CL20 duration. No manual command tick/Act, roll or debit supplies a
+verdict. An equivalent originally available preparation may be spent; an
+arbitrary raw slot position is not required. Every subcase requires exact unit
+reset before continuing. Original party resources/pins/selection and the exact
+mode stack/controllers restore under the existing ownership guards. Fixture
+disposal does not prove natural expiry or saved-character learning. Other
+Sprint32 phases do not acquire native Default or this UI capture authority.
+
+The three input phases establish native combat against the existing private-faction,
+brain-disabled owned hostile before input. Mutual hostility, LOS/visible memory
+and combat admission are observed; actual cost callbacks must still find the
+caster in combat. Native exploration casts assign no cooldown and are not combat
+cost proof. Only owned actors leave combat in finally; faction/actor destruction
+remains with the existing outer fixture.
+
+Lillend support waits for the native queued ally healing delivery linked by exact
+StickyTouch AbilityData, delivery blueprint and recipient. It supplies no delivery
+or execution tick. The primary pays its strict Standard cost/one slot; the native
+first-round held touch is observed at command start and its ignored cooldown at
+the cost callback. RuleHealDamage retains before/after injury and the exact live StickyTouch source,
+delivery blueprint and recipient. Native Ability.Dispose clears that source after
+effect delivery; command-start and healing-event snapshots must precede disposal.
+Self-healing has a nested delivery with no second command. A second independent
+ability cast or ambiguous attribution fails the case.
+The input fixture also proves the existing exact cloned profile/preset/saveguard
+boundary and sole idle original party anchor before suspending that anchor's brain.
+This prevents its native combat AI from spending original inputs during the case.
+No commands or pins are reset to supply restoration. Brain state restores after
+Default disposal; existing party/selection/group/input/pin predicates are recorded.
+
+Sprint 32 adds `observe-expanded-summoning-sprint32-native-inputs`: one fixed,
+read-only mod-load audit of Satyr/Lillend candidates and required native control,
+bard/performance, spellbook, defense and weapon consumers. Empty parameters;
+no actor, save selection, input, native mutation or geometry export. It reuses
+the existing bounded graph/prefab metadata reader. Exact package, lease and
+transactional restoration remain required. `sprint32-inputs.json` establishes
+research observations only, never gameplay, visual suitability or qualification.
+
 The fixed S30/S31 persistence scope 'outsider-celestial' selects exactly Lemure, Dretch, Hound Archon, retained Lantern Archon, Astral Deva and Trumpet Archon. Development admission requires exact purpose 'sprints30-31-persistence'; it does not change release identity or Working/baseline guards. One controlled six-owner mix uses the existing prepare, cold verify/cleanup and fresh-absence scenarios and source-bound installed-stack transactions. Native resource/slot spends and Menace/Aid victim buffs are explicitly saved preconditions, not cast/save/AI proof: Dretch cloud0/fear1; Astral Heal0/Blade1/Cure6/See7; one of Trumpet's two Heal slots spent in its native26-preparation CL14 book; Lemure receives two source-specific penalties and one immunity, Dretch a finite Hound Aid buff. All explicitly prepared victim state belongs to those six units; native auras retain their usual recipient rules. Actual cold aura recipients, AC/save consumers, ownership, nonloot items, finite effect deadlines, cleanup and private resource absence remain mandatory. This fixture refuses a preexisting selected aura rather than deleting unrelated effects. Preserve separate processes and restore original Working bytes/metadata before source work or stopping. No persistence pass is claimed by admission tests.
 
 The fixed S30/S31 `public-routes` phase uses the existing player-route helper in one save-free process: Lemure II–IX (8), Dretch III–IX (7), Hound IV–IX (6), existing Lantern III–IX (7), Astral IX (1), Trumpet IX (1). It refuses any hidden/missing/extra affected family or tier before dispatch and retains each native parent/variant, slot, quantity, duration, alignment and exact per-route cleanup observation. No arbitrary subcase ordering is accepted.
@@ -690,3 +1245,15 @@ write sentinel and transactional installation/settings restoration still apply.
 
 
 Bounded S30-31 closeout adds six exact `boundary-<creature-key>` phases (one controller-sensitive case per process), `celestial-cleave` (existing ordinary-Cleave fixture: Astral, Trumpet, Hill control), and `final-integration` (fixed shared-circles, source-lifecycle, celestial-cleave order with observed reset/refusal after each). No request-supplied sequence or code is accepted. These save-free phases retain the same process, lease, package, restoration and exit guards. The public-routes phase retains all30 individual route observations.
+
+Sprint32 input phases select the already established save-free non-DLC Oleg
+fixture before native entry, exactly as the proven menu adapter cases. The
+opening mansion interchapter is not dismissed, bypassed or treated as idle.
+All exact Default/UI ownership and narrative refusals remain. The Sprint32
+lifecycle death wait allows30wall seconds for normal game-time expiry of the
+native RecentlyDeadBuff; no marker is shortened or excluded from the strict
+zero-source-grant assertion. Both clocks and any remaining marker are retained.
+The existing Lillend support phase additionally wounds only the disposable
+player-faction caster, observes natural ally selection/healing and exact
+Standard/own-slot debit with sibling isolation, then restores that fixture
+caster's damage and position. No supplied cast or heal is accepted.

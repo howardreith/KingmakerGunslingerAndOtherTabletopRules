@@ -677,6 +677,10 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSprint29Giants(library, bySymbol, extraplanar);
             ConfigureLemure30(library, bySymbol, extraplanar);
             ConfigureDretch30(library, bySymbol, extraplanar);
+            ConfigureFeyCelestialControlBuffs32(library, bySymbol);
+            ConfigureSatyr32(library, bySymbol);
+            ConfigureLillend32(library, bySymbol);
+            ConfigureSuggestion32(library, bySymbol);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
             ConfigureTrumpet31(library, bySymbol, extraplanar);
             ConfigureAstralDeva31(library, bySymbol, extraplanar);
@@ -741,6 +745,9 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureBrachiosaurusOverrun(library, bySymbol);
             ConfigureBrachiosaurusGreaterOverrun(library, bySymbol);
             ConfigureMephitVariants(library, bySymbol);
+            foreach (var pair in bySymbol.Where(value =>
+                value.Key.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) && value.Value is BlueprintUnitFact))
+                NameFeyCelestialFactComponents32((BlueprintUnitFact)pair.Value, pair.Key);
         }
 
         /// <summary>
@@ -2510,6 +2517,7 @@ namespace KingmakerGunslinger.Blueprints
             internal int ConstrictBonus;
             internal bool LiveSerpentineConstrict;
             internal bool LiveSalamanderConstrict;
+            internal bool LiveLillendConstrict;
             /// <summary>
             /// Sprint 21's Giant Crab: its printed constrict at the claw's own
             /// die plus live Strength, applied to the foe the holding claw is
@@ -3186,6 +3194,7 @@ namespace KingmakerGunslinger.Blueprints
             grab.ConstrictBonus = spec.ConstrictBonus;
             if (spec.LiveSerpentineConstrict) grab.ConstrictProfileOwner = unit;
             if (spec.LiveSalamanderConstrict) grab.SalamanderProfileOwner = unit;
+            if (spec.LiveLillendConstrict) grab.LillendProfileOwner = unit;
             if (spec.LiveCrabConstrict) grab.CrabProfileOwner = unit;
             if (!string.IsNullOrEmpty(spec.DeathRollCreatureKey))
             {

@@ -1,11 +1,129 @@
 Set-StrictMode -Version Latest
 
+. (Join-Path $PSScriptRoot '..\common.ps1')
+
 function Get-KmgCompatibilityRepositoryRoot {
     return (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..\..')).Path
 }
 
 function Get-KmgCompatibilitySha256([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash.ToLowerInvariant()
+}
+
+# The new optional provider is authorized only for its declared save-free
+# scenarios. Read that existing profile declaration rather than copying its
+# scenario list into another admission layer. Other profiles keep their scope.
+function Assert-KmgSuggestionProfileSelection {
+    param([string]$ProfileId, [string[]]$Scenario, [string]$PackagePath,
+        [string]$ReferenceRoot, [string]$RepositoryRoot)
+    if ($ProfileId -cne 'gunslinger-cowwithhat-suggestion') { return }
+    $profiles = Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/profiles.json')
+    $matches = @($profiles.profiles | Where-Object id -ceq $ProfileId)
+    if ($matches.Count -ne 1 -or $matches[0].requiredGunslingerPackage -cne 'explicit-validated-candidate' -or
+        $matches[0].workingSaveSmokePermitted -or @($Scenario).Count -eq 0 -or
+        @($Scenario | Where-Object { $_ -cnotin @($matches[0].scenarios) }).Count -gt 0) {
+        throw 'Optional Suggestion profile requires its declared save-free scenario selection; no profile entered.'
+    }
+    if ([string]::IsNullOrWhiteSpace($PackagePath) -or [string]::IsNullOrWhiteSpace($ReferenceRoot)) {
+        throw 'Optional Suggestion profile requires explicit candidate and isolated reference root; no profile entered.'
+    }
+    Assert-KmgSuggestionReferenceRoot -ReferenceRoot $ReferenceRoot -RepositoryRoot $RepositoryRoot
+}
+
+function Assert-KmgSuggestionReferenceRoot {
+    param([string]$ReferenceRoot,[string]$RepositoryRoot)
+    if([string]::IsNullOrWhiteSpace($ReferenceRoot)){throw 'Optional Suggestion requires an explicit isolated reference root.'}
+    $profiles = Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/profiles.json')
+    $matches = @($profiles.profiles | Where-Object id -ceq 'gunslinger-cowwithhat-suggestion')
+    if($matches.Count -ne 1){throw 'Optional Suggestion reference profile is ambiguous.'}
+    $references = [IO.Path]::GetFullPath($ReferenceRoot).TrimEnd('\')
+    $isolated = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot 'artifacts')).TrimEnd('\') + '\'
+    if (-not $references.StartsWith($isolated, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'Optional Suggestion reference root must be isolated under this worktree artifacts; no profile entered.'
+    }
+    for ($parent = $references; $parent.Length -ge $isolated.TrimEnd('\').Length; $parent = Split-Path -Parent $parent) {
+        if ((Test-Path -LiteralPath $parent) -and
+            ((Get-Item -LiteralPath $parent -Force).Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw 'Optional Suggestion reference root contains a reparse point; no profile entered.'
+        }
+    }
+    $catalog = Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/reference-catalog.json')
+    foreach ($key in $matches[0].modKeys) {
+        $entries = @($catalog.references | Where-Object key -ceq $key)
+        if ($entries.Count -ne 1) { throw 'Optional Suggestion reference key is ambiguous; no profile entered.' }
+        foreach ($alias in $entries[0].folderAliases) {
+            $source = Assert-KmgCompatibilityChildPath (Join-Path $references $alias) $references
+            if (-not (Test-Path -LiteralPath $source)) { continue } # resolver reports missing references
+            $pending = [Collections.Generic.Queue[IO.FileSystemInfo]]::new()
+            $pending.Enqueue((Get-Item -LiteralPath $source -Force))
+            while ($pending.Count -gt 0) {
+                $item = $pending.Dequeue()
+                if (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                    throw 'Optional Suggestion selected reference tree contains a reparse point; no profile entered.'
+                }
+                # Check a directory before descending: never enumerate a
+                # linked tree even when this is only an admission read.
+                if ($item.PSIsContainer) {
+                    foreach ($child in @(Get-ChildItem -LiteralPath $item.FullName -Force)) { $pending.Enqueue($child) }
+                }
+            }
+        }
+    }
+}
+
+# Fixed optional overlay on the full current intake. This resolver only reads;
+# existing Enter/Restore-KmgCompatibilityTransaction owns every mutation.
+function Assert-KmgSprint32SuggestionReferenceIdentity {
+    param($Resolution,[string]$RepositoryRoot)
+    $profiles=Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'compatibility/profiles.json')
+    $profile=@($profiles.profiles|Where-Object id -ceq 'gunslinger-cowwithhat-suggestion')
+    if($profile.Count -ne 1 -or $Resolution.profileId -cne $profile[0].id) {throw 'Sprint32 provider reference profile differs.'}
+    $expected=@($profile[0].sprint32WorkingOverlayReferences)
+    if($expected.Count -ne 2 -or @($Resolution.runtimeMods).Count -ne $expected.Count) {throw 'Sprint32 investigated reference count differs.'}
+    foreach($identity in $expected) {
+        $actual=@($Resolution.runtimeMods|Where-Object ummId -ceq $identity.ummId)
+        if($actual.Count -ne 1 -or $actual[0].version -cne $identity.version -or
+           $actual[0].assembly.assemblyName -cne $identity.assemblyName -or $actual[0].assembly.sha256 -cne $identity.sha256) {
+            throw 'Sprint32 provider/dependency differs from the investigated reference identity; no transaction entered.'
+        }
+    }
+}
+
+function Resolve-KmgSprint32SuggestionOverlay {
+    param([Parameter(Mandatory=$true)]$InstalledRuntimeMods,
+        [Parameter(Mandatory=$true)][string]$SuggestionTransition,
+        [Parameter(Mandatory=$true)][bool]$ProviderPresent,
+        [Parameter(Mandatory=$true)][string]$SuggestionReferenceRoot,
+        [Parameter(Mandatory=$true)][string]$PackagePath,
+        [Parameter(Mandatory=$true)][string]$KingmakerInstallDir,
+        [Parameter(Mandatory=$true)][string]$RepositoryRoot)
+    $mods=Join-Path $KingmakerInstallDir 'Mods'
+    if(@($InstalledRuntimeMods).Count -ne 10 -or @($InstalledRuntimeMods.id | Sort-Object -Unique).Count -ne 10) {
+        throw 'Provider overlay requires the intact identifiable ten other intake mods.'
+    }
+    # Resolve the provider/reference identities read-only; never dispatch the
+    # three-mod save-free profile against Working. Preserve every intake mod.
+    Assert-KmgSuggestionReferenceRoot -ReferenceRoot $SuggestionReferenceRoot -RepositoryRoot $RepositoryRoot
+    $providerProfile=Resolve-KmgCompatibilityProfile -ProfileId 'gunslinger-cowwithhat-suggestion' -ReferenceRoot $SuggestionReferenceRoot -PackagePath $PackagePath -KingmakerInstallDir $KingmakerInstallDir -RepositoryRoot $RepositoryRoot
+    Assert-KmgSprint32SuggestionReferenceIdentity -Resolution $providerProfile -RepositoryRoot $RepositoryRoot
+    $provider=@($providerProfile.runtimeMods | Where-Object ummId -ceq 'CowWithHatsCustomSpellsMod')
+    $dependency=@($providerProfile.runtimeMods | Where-Object ummId -ceq 'CallOfTheWild')
+    $installedDependency=@($installedRuntimeMods | Where-Object id -ceq 'CallOfTheWild')
+    if(-not $providerProfile.runtimeCapable -or $providerProfile.runtimeMods.Count -ne 2 -or $provider.Count -ne 1 -or $dependency.Count -ne 1 -or $installedDependency.Count -ne 1 -or
+       @($installedRuntimeMods | Where-Object { $_.id -ieq 'CowWithHatsCustomSpellsMod' -or $_.destinationName -ieq $provider[0].destinationName }).Count -ne 0 -or
+       $provider[0].assembly.assemblyName -cne 'CowWithHatsCustomSpellsMod' -or $dependency[0].assembly.assemblyName -cne 'CallOfTheWild') {
+        throw 'Optional provider overlay identity or intact installed dependency boundary differs; no transaction entered.'
+    }
+    $providerInfo=Read-KmgCompatibilityJson (Join-Path $provider[0].sourceDirectory 'Info.json')
+    if(@($providerInfo.Requirements).Count -ne 1 -or $providerInfo.Requirements[0] -cne 'CallOfTheWild') { throw 'Provider dependency contract differs; no transaction entered.' }
+    $installedInfo=Read-KmgCompatibilityJson (Join-Path (Join-Path $mods $installedDependency[0].destinationName) 'Info.json')
+    if(-not $installedInfo.PSObject.Properties['Id'] -or $installedInfo.Id -cne 'CallOfTheWild' -or
+       -not $installedInfo.PSObject.Properties['AssemblyName'] -or -not $installedInfo.PSObject.Properties['Version'] -or
+       $installedInfo.AssemblyName -cne $dependency[0].assembly.fileName -or $installedInfo.Version -cne $dependency[0].version -or
+       (Get-KmgCompatibilitySha256 (Join-Path (Join-Path $mods $installedDependency[0].destinationName) $installedInfo.AssemblyName)) -cne $dependency[0].assembly.sha256) {
+        throw 'Installed CotW differs from the investigated provider dependency; no transaction entered.'
+    }
+    return [ordered]@{transition=$SuggestionTransition;present=$ProviderPresent;provider=$provider[0];dependency=$dependency[0].assembly;intakeModsPreserved=$installedRuntimeMods.Count}
 }
 
 function Get-KmgCompatibilityRelativePath([string]$Root, [string]$Path) {
@@ -150,7 +268,9 @@ function Get-KmgCompatibilityPackageVersion([string]$PackagePath) {
 
 function Get-KmgCompatibilityDefaultPackage([string]$RepositoryRoot) {
     $version = [string](Read-KmgCompatibilityJson (Join-Path $RepositoryRoot 'Info.json')).Version
-    return Join-Path $RepositoryRoot ("artifacts\local-runtime\{0}\KingmakerGunslinger-{0}-local-runtime.zip" -f $version)
+    return (Get-KmgLocalCandidateLayout -RepositoryRoot $RepositoryRoot `
+        -Commit ((& git -C $RepositoryRoot rev-parse HEAD).Trim()) `
+        -Id 'KingmakerGunslinger' -Version $version).PackagePath
 }
 
 function Resolve-KmgCompatibilityProfile {

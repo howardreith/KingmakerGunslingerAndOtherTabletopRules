@@ -1062,6 +1062,12 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
+    'disposable-expanded-summoning-sprint32-native-review' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
     'disposable-expanded-summoning-sprints30-31-native-review' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
@@ -1143,6 +1149,13 @@ $script:KmgRuntimeScenarioMetadata = [ordered]@{
         UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
     }
     'observe-expanded-summoning-sprints30-31-native-inputs' = [pscustomobject]@{
+        RequiresSaveName = $false; PermittedSaveName = $null
+        RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
+        TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
+        UsesSelectionTimeouts = $false; UsesWorkingStageTimeouts = $false
+    }
+    # Sprint 32: bounded installed-consumer metadata; no actors or save input.
+    'observe-expanded-summoning-sprint32-native-inputs' = [pscustomobject]@{
         RequiresSaveName = $false; PermittedSaveName = $null
         RequiresManualInteraction = $false; ReadinessBehavior = 'mod-load'
         TimeoutCategory = 'basic'; UsesCatalogTimeout = $false
@@ -2251,6 +2264,33 @@ function Test-KmgSprint28ReviewPhaseScope {
         $Parameters.reviewPhase -is [string] -and $Parameters.reviewPhase -cin @('profiles','modes','commands','turns','ownership','disarm','catch','ai','ai-turns','cleave','routes')
 }
 
+function Test-KmgSprint32SuggestionTransition {
+    param([bool]$TargetedPersistence,[hashtable]$Parameters)
+    if($null -eq $Parameters -or -not $Parameters.ContainsKey('suggestionTransition')) { return $false }
+    $policy=Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningRosterPersistencePolicy.cs') -Raw
+    $matches=[regex]::Matches($policy,'internal const string Sprint32Suggestion[A-Za-z]+ = "([a-z-]+)";')
+    if($matches.Count -eq 0){throw 'Sprint32 Suggestion transition declarations missing.'}
+    $values=@($matches | ForEach-Object {$_.Groups[1].Value})
+    if(-not $TargetedPersistence -or @($Parameters.Keys) -cnotcontains 'suggestionTransition' -or
+        $Parameters.suggestionTransition -isnot [string] -or $Parameters.suggestionTransition -cnotin $values -or
+        @($Parameters.Keys) -cnotcontains 'persistenceScope' -or $Parameters.persistenceScope -cne 'fey-celestial') {
+        throw 'Suggestion transition is restricted to the exact declared Sprint32 Working trio variants.'
+    }
+    return $true
+}
+
+function Test-KmgSprint32ReviewPhaseScope {
+    param([string]$Scenario,[hashtable]$Parameters)
+    # The selected C# declaration owns the phase name; no second phase list.
+    $catalog = Get-Content -LiteralPath (Join-Path (Split-Path -Parent $PSScriptRoot) 'src/KingmakerGunslinger/RuntimeTesting/ExpandedSummoningNativeProfilePolicy.cs') -Raw
+    $phaseMatches = [regex]::Matches($catalog, 'internal const string Sprint32[A-Za-z]+Phase = "([a-z0-9-]+)";')
+    if ($phaseMatches.Count -eq 0) { throw 'Sprint32 phase declarations are missing.' }
+    $phases = @($phaseMatches | ForEach-Object { $_.Groups[1].Value })
+    return $Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review' -and $null -ne $Parameters -and
+        $Parameters.Count -eq 1 -and @($Parameters.Keys) -ccontains 'reviewPhase' -and
+        $Parameters.reviewPhase -is [string] -and $phases -ccontains $Parameters.reviewPhase
+}
+
 function Test-KmgSprints30And31ReviewPhaseScope {
     param([string]$Scenario,[hashtable]$Parameters)
     return $Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and $null -ne $Parameters -and
@@ -2353,6 +2393,7 @@ function Assert-KmgRuntimeScenarioPreflight {
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint27-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint27ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint27 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint28-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint28ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint28 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint29-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint29ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint29 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
+    if ($Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprint32ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprint32 native review requires automatic exit and its exact declared phase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30And31ReviewPhaseScope $Scenario $Parameters))) { throw 'Sprints30-31 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-cleanup2-native-review' -and (-not $ExitAfterCompletion -or -not (Test-KmgCleanup2ReviewPhaseScope $Scenario $Parameters))) { throw 'Cleanup2 native review requires automatic exit and exactly one allowlisted reviewPhase.' }
     if ($Scenario -ceq 'disposable-expanded-summoning-sprint26-native-review' -and
@@ -2513,14 +2554,15 @@ function Assert-KmgRuntimeScenarioPreflight {
             'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
             $Parameters.ContainsKey('persistenceScope')
         if ($targetedSummonPersistence -and ($Parameters.persistenceScope -isnot [string] -or
-            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial') -or -not $ExitAfterCompletion)) {
-            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon, giant-humanoids, giant-humanoids-ii or outsider-celestial and automatic exit.'
+            $Parameters.persistenceScope -cnotin @('crocodilians', 'snakes', 'whole-roster', 'ankylosaurus', 'armored-dinosaurs', 'theropods', 'giant-bodies', 'magical-beasts', 'griffon', 'giant-humanoids', 'giant-humanoids-ii', 'outsider-celestial', 'fey-celestial') -or -not $ExitAfterCompletion)) {
+            throw 'The targeted persistence trio permits only persistenceScope=crocodilians, snakes, whole-roster, ankylosaurus, armored-dinosaurs, theropods, giant-bodies, magical-beasts, griffon, giant-humanoids, giant-humanoids-ii, outsider-celestial or fey-celestial and automatic exit.'
         }
         $dispelUi = $Scenario -ceq 'working-save-expanded-summoning-creature-review' -and $Parameters.ContainsKey('reviewCase')
         if ($dispelUi -and (-not $ExitAfterCompletion -or -not (Test-KmgSprints30DispelUiParameters $Parameters -IncludesSaveName))) {
             throw 'S30/S31 UI requires the exact fixed read-only Working case and automatic exit.'
         }
-        $requiredParameterCount = if ($dispelUi) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
+        $suggestionTransition=Test-KmgSprint32SuggestionTransition -TargetedPersistence $targetedSummonPersistence -Parameters $Parameters
+        $requiredParameterCount = if ($dispelUi -or $suggestionTransition) { 3 } elseif ($circleBound) { 2 } elseif ($persistence -or $fcbPersistence -or $traitSave -or $weaponSave) { 3 } elseif ($Scenario -ceq 'working-save-elemental-nereid-respec') { 5 } elseif ($nativeActionCase) { 5 } elseif ($creatorRegression -or $visualLifecycle -or (Test-KmgCompletionSceneScope $Scenario $Parameters)) { 4 } elseif ((Test-KmgTreacherousEffectScope $Scenario $Parameters) -or $crowdReview) { 3 } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review' -or $flightActivation -or $targetedSummonPersistence -or $weaponRoute -or $representativePlayerPaths) { 2 } elseif ($Scenario -ceq 'working-save-elemental-deferred-markers' -or (Test-KmgNereidPersistenceScope $Scenario $Parameters)) { 2 } else { 1 }
         if ($Parameters.Count -ne $requiredParameterCount -or
             -not $Parameters.ContainsKey('saveName') -or
             $Parameters.saveName -isnot [string] -or
@@ -2690,6 +2732,9 @@ function Assert-KmgRuntimeScenarioPreflight {
     elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint29-native-review') {
         if (-not (Test-KmgSprint29ReviewPhaseScope $Scenario $Parameters)) { throw "$Scenario requires exactly one allowlisted reviewPhase." }
     }
+    elseif ($Scenario -ceq 'disposable-expanded-summoning-sprint32-native-review') {
+        if (-not (Test-KmgSprint32ReviewPhaseScope $Scenario $Parameters)) { throw 'Sprint32 requires its exact declared phase.' }
+    }
     elseif ($Scenario -ceq 'disposable-expanded-summoning-sprints30-31-native-review') {
         if (-not (Test-KmgSprints30And31ReviewPhaseScope $Scenario $Parameters)) { throw "$Scenario requires exactly one allowlisted reviewPhase." }
     }
@@ -2841,7 +2886,9 @@ function New-KmgRuntimeRequest {
         } elseif ($Scenario -cin @('working-save-expanded-summoning-prepare',
                 'working-save-expanded-summoning-verify-cleanup', 'working-save-expanded-summoning-verify-absent') -and
                 $Parameters.ContainsKey('persistenceScope')) {
-            [ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
+            $targetedParameters=[ordered]@{ saveName = [string]$Parameters.saveName; persistenceScope = [string]$Parameters.persistenceScope }
+            if($Parameters.ContainsKey('suggestionTransition')) { $targetedParameters.suggestionTransition=[string]$Parameters.suggestionTransition }
+            $targetedParameters
         } elseif ($Scenario -ceq 'disposable-expanded-summoning-player-path' -and $Parameters.ContainsKey('playerPathScope')) {
             [ordered]@{ saveName = [string]$Parameters.saveName; playerPathScope = [string]$Parameters.playerPathScope }
         } elseif ($Scenario -ceq 'working-save-expanded-summoning-creature-review') {
@@ -2920,6 +2967,7 @@ function New-KmgRuntimeRequest {
             'disposable-expanded-summoning-sprint28-native-review',
             'disposable-expanded-summoning-sprint29-native-review',
             'disposable-expanded-summoning-sprints30-31-native-review',
+            'disposable-expanded-summoning-sprint32-native-review',
             'disposable-expanded-summoning-cleanup2-native-review')) {
             [ordered]@{ reviewPhase = [string]$Parameters.reviewPhase }
         } elseif ($Scenario -ceq

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 135,
+  "count": 138,
   "icons": [
     {
       "key": "air-mephit",
@@ -3867,6 +3867,62 @@
       "blueprintSymbols": [
         "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast",
         "KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed"
+      ]
+    },
+    {
+      "key": "satyr",
+      "displayName": "Satyr",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/satyr.png",
+      "productionFile": "assets/game/icons/expanded-summoning/satyr.png",
+      "sourceSha256": "3d26bd2210712523dabbedcdea3b161b8141905393e7651fc74477328d27908c",
+      "outputSha256": "80cdb1ab07aaf4d6e5486271785f974acfc8cf07d9238f9a6082682f3cc39297",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SNA.Tier4.Satyr.One",
+        "KMG.Summoning.Ability.SNA.Tier5.Satyr.OneD3",
+        "KMG.Summoning.Ability.SNA.Tier6.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Ability.SNA.Tier7.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Ability.SNA.Tier8.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Ability.SNA.Tier9.Satyr.OneD4PlusOne",
+        "KMG.Summoning.Unit.Satyr"
+      ]
+    },
+    {
+      "key": "lillend-azata",
+      "displayName": "Lillend Azata",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/lillend-azata.png",
+      "productionFile": "assets/game/icons/expanded-summoning/lillend-azata.png",
+      "sourceSha256": "eaee893fd5018d8e7b6d468ef0224cb8d27eadff811c20583e02d8c115eca05a",
+      "outputSha256": "6ee925bdcf2af82df9992967243e6affc4a79867ded1a935694a1faec10f966e",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.Ability.SM.Tier6.LillendAzata.One",
+        "KMG.Summoning.Ability.SM.Tier7.LillendAzata.OneD3",
+        "KMG.Summoning.Ability.SM.Tier8.LillendAzata.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier9.LillendAzata.OneD4PlusOne",
+        "KMG.Summoning.Unit.LillendAzata"
+      ]
+    },
+    {
+      "key": "lullaby",
+      "displayName": "Lullaby",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/lullaby.png",
+      "productionFile": "assets/game/icons/expanded-summoning/lullaby.png",
+      "sourceSha256": "3f2975854b250b252413aa7a22951f803035eacd54803f41ee93c2fc7fa63203",
+      "outputSha256": "a9f4bde16feacc904821355d952fc1b2156b3415d07b09ed6fed458d5d7a6d41",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": [
+        "KMG.Summoning.FeyCelestial.LillendAzata.Lullaby",
+        "KMG.Summoning.FeyCelestial.LillendAzata.LullabyBuff"
       ]
     }
   ]

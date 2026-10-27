@@ -72,6 +72,7 @@ try {
         'docs\RELEASE-NOTES-0.0.166.md',
         'docs\RELEASE-NOTES-0.0.167.md',
         'docs\RELEASE-NOTES-0.0.168.md',
+        'docs\RELEASE-NOTES-0.0.169.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -134,6 +135,8 @@ try {
         'assets\sprint17-serpents\salamander-mesh.json',
         'assets\sprint17-serpents\salamander-human-mesh.json',
         'assets\sprint17-serpents\salamander-albedo.png',
+        'assets\sprint32-support\lillend-mesh.json',
+        'assets\sprint32-support\lillend-albedo.png',
         'assets\sprint18-primates\ape-mesh.json',
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
@@ -221,6 +224,15 @@ try {
     }
     }
     Assert-KmgProtectedBodyExports -ModDirectory $modDirectory
+    $lillendExports = @{
+        'lillend-mesh.json'='2734cb0dc2de27e1eb7c6884d8eab598260bed513f170e4573f83a3d3230afec'
+        'lillend-albedo.png'='561609b114d83e8d4ab4c48d66dab920f115c6f2a80eaf8d8d0302f1c8a3b5c4'
+    }
+    foreach ($entry in $lillendExports.GetEnumerator()) {
+        if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint32-support\'+$entry.Key))) -cne $entry.Value) {
+            throw 'Packaged Lillend original export differs from its exact candidate input.'
+        }
+    }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
     if ((Get-KmgSha256 -Path $humanMesh) -cne 'b5524a694cac0657aaf37ce995e3143f1e0a18e8aa98d799d7fe17ed901c0f19') {
         throw 'The separately packaged Salamander human/tail mesh differs from its reviewed original export.'

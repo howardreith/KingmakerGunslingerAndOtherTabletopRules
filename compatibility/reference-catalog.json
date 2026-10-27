@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "references": [
+    {"key": "cowwithhat-custom-spells", "folderAliases": ["CowWithHatsCustomSpellsMod"], "role": "compiled-mod", "runtimeStagingAllowed": true, "availabilityDisposition": "NOT-TESTED", "notes": "Owner-authorized optional Suggestion dependency. Public upstream release1.4.5 researched at commit d26793c14957db6fe947986730f4143b5a84a818; requires CallOfTheWild. Kept in an isolated reference root, not the human installation."},
     { "key": "call-of-the-wild", "folderAliases": ["CallOfTheWild"], "role": "compiled-mod", "runtimeStagingAllowed": true, "availabilityDisposition": "RUNTIME-QUALIFIED-EXACT", "sourceTwinKey": "kingmaker-rebalance-source" },
     { "key": "favored-class", "folderAliases": ["ZFavoredClass"], "role": "compiled-mod", "runtimeStagingAllowed": true, "availabilityDisposition": "RUNTIME-QUALIFIED-EXACT", "sourceTwinKey": "kingmaker-favored-class-source", "notes": "Exact installed Favored Class 1.3.1 reference copied read-only with verified tree fingerprint; enable_traits was qualified both true and false, and every guarded profile restored the complete Mods/settings state exactly." },
     { "key": "tweak-or-treat", "folderAliases": ["TweakOrTreat"], "role": "compiled-mod", "runtimeStagingAllowed": true, "availabilityDisposition": "RUNTIME-QUALIFIED-EXACT", "notes": "Exact installed Tweak or Treat 1.1.0 reference passed its Favored Class and Heirloom integration contract with Call of the Wild and Races Unleashed." },

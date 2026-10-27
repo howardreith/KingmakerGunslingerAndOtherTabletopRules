@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.Blueprints.Root;
+using Kingmaker.Controllers.Combat;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic.Buffs;
+using Kingmaker.UnitLogic.Commands;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -18,9 +20,13 @@ namespace KingmakerGunslinger.RuntimeTesting
         // One fixed simultaneous fixture, not a programmable case runner.
         // Expiry uses the established owned-buff scheduler boundary. No scene
         // actor, area, victim buff or item is deleted to supply a verdict.
-        private IEnumerable<int> ReviewSprints3031SourceLifecycle(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewSprints3031SourceLifecycle(ExpandedSummoningCorrectionFixture fixture, bool sprint32 = false)
         {
-            string[] keys = { "lemure", "dretch", "hound-archon", "lantern-archon", "astral-deva", "trumpet-archon" };
+            string[] keys = sprint32 ? new[] { "satyr", "lillend-azata" } :
+                new[] { "lemure", "dretch", "hound-archon", "lantern-archon", "astral-deva", "trumpet-archon" };
+            if (sprint32 && (!IsSprint32Review || RuntimeTestRequestParser.Sprint32ReviewPhase(_request) !=
+                ExpandedSummoningNativeProfilePolicy.Sprint32LifecyclePhase))
+                throw new InvalidOperationException("Sprint32 lifecycle requires its exact fixed phase.");
             bool oldMode = SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue, oldPause = Game.Instance.IsPaused;
             var owners = new Dictionary<string, UnitEntityData>();
             var siblings = new Dictionary<string, UnitEntityData>();
@@ -32,6 +38,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var partyItems = Game.Instance.Player.Inventory.Items.ToArray();
             var partyCounts = partyItems.Select(value => value.Count).ToArray();
             var captured = new List<UnitEntityData>();
+            UnitEntityData courageRecipient = null;
+            Func<UnitEntityData, Buff[]> courageRecipients = actor => courageRecipient.Buffs.Enumerable.Where(buff =>
+                buff.Active && !buff.IsDisposed && buff.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_CourageRecipient" &&
+                ReferenceEquals(buff.Context?.MaybeCaster, actor)).ToArray();
+            var capturedCourageRecipients = new Dictionary<UnitEntityData, Buff>();
             // Retain object references while the caster is alive: a native
             // UnitReference may stop resolving after removal. A null caster
             // must not make a stranded area or victim grant invisible.
@@ -60,6 +71,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                     actor.View == null || !EntityFadedIn(actor) || DissolveAmount(actor) > MotionReviewIntactDissolve ||
                     actor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null))
                 { Game.Instance.IsPaused = false; yield return 0; }
+                if (sprint32)
+                {
+                    // Explicit lifecycle precondition, not AI selection evidence:
+                    // use the proven owned combat/native command path, allowing
+                    // normal controllers to create the carrier/area/recipient.
+                    // The recipient is a separate request-owned allied summon,
+                    // which survives every source removal. Only one identical
+                    // emitter is ON at a time: no stacking replacement can hide
+                    // a stranded external recipient behind source destruction.
+                    courageRecipient = CastExpandedSummoningOwnTier(fixture, "satyr");
+                    Sprint28SetBrainActivePreservingActions(courageRecipient, false);
+                    courageRecipient.Commands.InterruptAll(true); courageRecipient.Commands.RemoveFinishedAndUpdateQueue();
+                    var actor = owners["lillend-azata"];
+                    PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
+                    // OFF already prevents a second emitter. Keep this owned
+                    // sibling within the visible fixture rather than parking
+                    // it beyond fog/activation range before view readiness.
+                    PlaceExpandedSummoningUnit(siblings["lillend-azata"], fixture.Caster.Position + Vector3.left * 4f);
+                    PlaceExpandedSummoningUnit(courageRecipient, actor.Position + Vector3.right);
+                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipient, courageRecipients, "expiry")) yield return frame;
+                    var recipients = courageRecipients(actor);
+                    if (recipients.Length != 1) throw new InvalidOperationException("Lifecycle requires the exact Courage recipient on the surviving owned ally.");
+                    capturedCourageRecipients.Add(actor, recipients.Single());
+                }
                 foreach (string key in keys)
                 {
                     var pair = new[] { owners[key], siblings[key] };
@@ -80,14 +115,43 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ReferenceEquals(buff.Context?.MaybeCaster, fixture.Caster) && !buff.IsPermanent &&
                             buff.TimeLeft > TimeSpan.Zero) == 1 && items[actor].All(item => !item.IsLootable)) &&
                         !resources[pair[0]].Intersect(resources[pair[1]]).Any() &&
-                        (key == "astral-deva" || pair.All(actor => resources[actor].Length > 0));
-                    if (key == "hound-archon" || key == "astral-deva" || key == "trumpet-archon")
+                        (key == "astral-deva" || key == "satyr" || pair.All(actor => resources[actor].Length > 0));
+                    if (key == "hound-archon" || key == "astral-deva" || key == "trumpet-archon" || sprint32)
                         ready &= pair.All(actor => actor.Body.PrimaryHand.MaybeWeapon != null &&
                             ReferenceEquals(actor.Body.PrimaryHand.MaybeWeapon.Owner, actor.Descriptor) &&
                             !actor.Body.PrimaryHand.MaybeWeapon.IsLootable);
                     if (key == "hound-archon" || key == "lantern-archon" || key == "astral-deva" || key == "trumpet-archon")
                         ready &= pair.All(actor => Sprints3031OwnedAreaCount(actor) > 0 && Sprints3031LiveSourceGrantCount(actor) > 0);
+                    if (key == "lillend-azata")
+                        ready &= Sprints3031OwnedAreaCount(pair[0]) > 0 && capturedCourageRecipients.ContainsKey(pair[0]) &&
+                            boundGrants[pair[0]].Contains(capturedCourageRecipients[pair[0]]) &&
+                            Sprints3031OwnedAreaCount(pair[1]) == 0 && courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead;
                     var row = new JObject { ["creature"] = key, ["owners"] = new JArray(pair.Select(Sprints3031LifecycleState)),
+                        ["readiness"] = new JArray(pair.Select(actor => new JObject {
+                            ["owner"] = actor.UniqueId, ["hasView"] = actor.View != null,
+                            ["inState"] = actor.IsInState, ["destroyed"] = actor.Destroyed,
+                            ["fadedIn"] = EntityFadedIn(actor), ["dissolve"] = DissolveAmount(actor),
+                            ["maximumIntactDissolve"] = MotionReviewIntactDissolve,
+                            ["finiteOwnedSummonMarkers"] = actor.Buffs.Enumerable.Count(buff =>
+                                ReferenceEquals(buff.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff) &&
+                                ReferenceEquals(buff.Context?.MaybeCaster, fixture.Caster) && !buff.IsPermanent && buff.TimeLeft > TimeSpan.Zero),
+                            ["allItemsNonlootable"] = items[actor].All(item => !item.IsLootable),
+                            ["primaryWeaponPresent"] = actor.Body.PrimaryHand.MaybeWeapon != null,
+                            ["primaryWeaponOwned"] = ReferenceEquals(actor.Body.PrimaryHand.MaybeWeapon?.Owner, actor.Descriptor),
+                            ["primaryWeaponNonlootable"] = actor.Body.PrimaryHand.MaybeWeapon != null && !actor.Body.PrimaryHand.MaybeWeapon.IsLootable,
+                            ["privateResourceCount"] = resources[actor].Length,
+                            ["ownedAreas"] = Sprints3031OwnedAreaCount(actor),
+                            ["capturedExternalGrantInSourceSet"] = capturedCourageRecipients.ContainsKey(actor) &&
+                                boundGrants[actor].Contains(capturedCourageRecipients[actor]),
+                            ["skinnedRenderers"] = actor.View == null ? new JArray() : new JArray(
+                                actor.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(value => value != null && value.sharedMesh != null)
+                                .Select(value => new JObject { ["name"] = value.name, ["enabled"] = value.enabled,
+                                    ["active"] = value.gameObject.activeInHierarchy,
+                                    ["dissolve"] = value.sharedMaterial != null && value.sharedMaterial.HasProperty("_Dissolve")
+                                        ? (float?)value.sharedMaterial.GetFloat("_Dissolve") : null })) })),
+                        ["externalRecipientAlive"] = courageRecipient != null && courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead,
+                        ["performanceSetup"] = key == "lillend-azata" ? "One owned native activation command in an isolated combat; exact CourageRecipient captured on surviving owned ally. Sibling remains OFF until the death case. No AI selection claim." : null,
+                        ["externalRecipient"] = key == "lillend-azata" ? courageRecipient.UniqueId : null,
                         ["privateObjects"] = new JArray(pair.Select(actor => resources[actor].Length)),
                         ["independentPrivateObjects"] = !resources[pair[0]].Intersect(resources[pair[1]]).Any(),
                         ["initialItems"] = new JArray(pair.SelectMany(actor => items[actor].Select(item => new JObject {
@@ -119,6 +183,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var itemRows = new JArray(items[actor].Select(item => OutsiderEscapeItemState(item, actor, live)));
                     bool absent = Sprints3031SourceAbsent(actor) && resources[actor].All(value => value == null) &&
                         grantsGone(actor) && itemRows.All(row => (bool)row["safe"]);
+                    if (key == "lillend-azata") absent &= courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead &&
+                        (capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active);
                     bool isolated = sibling.IsInState && !sibling.Destroyed && sibling.View != null &&
                         resources[sibling].All(value => value != null) &&
                         items[sibling].SequenceEqual(sibling.Descriptor.Inventory.Items) &&
@@ -129,27 +195,74 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["privateResourcesAbsent"] = resources[actor].All(value => value == null),
                             ["capturedAreaAndGrantReferencesGone"] = grantsGone(actor),
                             ["capturedAreas"] = boundAreas[actor].Length, ["capturedGrants"] = boundGrants[actor].Length,
+                            ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead) : null,
+                            ["capturedExternalGrantGone"] = key == "lillend-azata" ? (bool?)(capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active) : null,
                             ["siblingResourcesAlive"] = resources[sibling].All(value => value != null),
                             ["allSiblingAreasRetained"] = siblingAreas.All(area => Game.Instance.State.AreaEffects.All.Contains(area)),
                             ["fixtureDisposalsBeforeAssertion"] = 0 },
-                        "Native scheduled expiry removes only the selected summon, its emitter areas/grants and private view objects; captured equipment cannot escape and all six siblings retain their areas/items/resources.");
+                        "Native scheduled expiry removes only the selected summon, its emitter areas/grants and private view objects; captured equipment cannot escape and all scoped siblings retain their areas/items/resources.");
                     if (!absent || !isolated) throw new InvalidOperationException("Native expiry/isolation failed: " + key);
                 }
+                if (sprint32)
+                {
+                    var actor = siblings["lillend-azata"];
+                    PlaceExpandedSummoningUnit(actor, fixture.Caster.Position + Vector3.right * 4f);
+                    PlaceExpandedSummoningUnit(courageRecipient, actor.Position + Vector3.right);
+                    foreach (int frame in PrepareLillend32LifecycleCourage(fixture, actor, courageRecipient, courageRecipients, "death")) yield return frame;
+                    var recipients = courageRecipients(actor);
+                    boundAreas[actor] = Game.Instance.State.AreaEffects.All.Where(area => area != null && ReferenceEquals(area.Context?.MaybeCaster, actor)).ToArray();
+                    boundGrants[actor] = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed)
+                        .SelectMany(unit => unit.Buffs.Enumerable).Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, actor)).ToArray();
+                    bool ready = recipients.Length == 1 && boundAreas[actor].Length > 0 && boundGrants[actor].Contains(recipients.SingleOrDefault()) &&
+                        courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead;
+                    Sprint25Check("lifecycle-lillend-azata-death-recipient-ready", ready, new JObject {
+                        ["source"] = actor.UniqueId, ["recipient"] = courageRecipient.UniqueId,
+                        ["exactExternalGrants"] = recipients.Length, ["capturedAreas"] = boundAreas[actor].Length },
+                        "The surviving allied summon receives the sibling's exact native Courage effect after the expired owner's grant is gone; capture references before native death.");
+                    if (!ready) throw new InvalidOperationException("Death lifecycle requires a live exact external Courage recipient.");
+                    capturedCourageRecipients.Add(actor, recipients.Single());
+                }
                 foreach (var actor in siblings.Values) Kingmaker.Designers.GameHelper.KillUnit(actor, fixture.Caster);
-                deadline = DateTime.UtcNow.AddSeconds(10);
+                var deathWallStart = DateTime.UtcNow;
+                var deathGameStart = Game.Instance.Player.GameTime;
+                // Native RecentlyDeadBuff has a finite game-time deadline.
+                // Ten wall seconds sampled it with 2.326 game seconds left on
+                // this laptop. Let the same native scheduler finish; retain
+                // the strict zero-grant predicate and never shorten the buff.
+                deadline = deathWallStart.AddSeconds(sprint32 ? 30 : 10);
                 while (DateTime.UtcNow < deadline && siblings.Values.Any(actor =>
                     !actor.Descriptor.State.IsDead || !grantsGone(actor) || Sprints3031OwnedAreaCount(actor) != 0 || Sprints3031LiveSourceGrantCount(actor) != 0))
                 { Game.Instance.IsPaused = false; yield return 0; }
+                // Both deaths have already occurred. Retain this simultaneous
+                // state before any per-owner assertion stops the iterator;
+                // a new native corpse buff must be identified, not guessed or
+                // silently excluded from the existing strict predicate.
+                var deathBatch = sprint32 ? new JArray(siblings.Select(pair => new JObject {
+                    ["creature"] = pair.Key, ["actor"] = Sprints3031LifecycleState(pair.Value),
+                    ["sourceGrants"] = new JArray(Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed && unit.IsInState)
+                        .SelectMany(unit => unit.Buffs.Enumerable.Where(buff => ReferenceEquals(buff.Context?.MaybeCaster, pair.Value))
+                            .Select(buff => new JObject { ["recipient"] = unit.UniqueId, ["selfRecipient"] = ReferenceEquals(unit, pair.Value),
+                                ["blueprint"] = buff.Blueprint.AssetGuid, ["name"] = buff.Blueprint.name,
+                                ["active"] = buff.Active, ["disposed"] = buff.IsDisposed, ["permanent"] = buff.IsPermanent,
+                                ["stayOnDeath"] = buff.Blueprint.StayOnDeath, ["secondsLeft"] = buff.TimeLeft.TotalSeconds,
+                                ["capturedBeforeDeath"] = boundGrants[pair.Value].Contains(buff) }))) })) : null;
                 foreach (string key in keys)
                 {
                     var actor = siblings[key];
                     bool dead = actor.Descriptor.State.IsDead && Sprints3031OwnedAreaCount(actor) == 0 &&
                         grantsGone(actor) && Sprints3031LiveSourceGrantCount(actor) == 0 && items[actor].All(item => !item.IsLootable &&
                             !Game.Instance.Player.Inventory.Items.Contains(item));
+                    if (key == "lillend-azata") dead &= courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead &&
+                        (capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active);
                     Sprint25Check("lifecycle-" + key + "-native-death", dead,
                         new JObject { ["creature"] = key, ["actor"] = Sprints3031LifecycleState(actor),
+                            ["simultaneousDeathState"] = deathBatch,
+                            ["deathWallSeconds"] = (DateTime.UtcNow - deathWallStart).TotalSeconds,
+                            ["deathGameSeconds"] = (Game.Instance.Player.GameTime - deathGameStart).TotalSeconds,
                             ["allEquipmentNonlootable"] = items[actor].All(item => !item.IsLootable),
                             ["capturedAreaAndGrantReferencesGone"] = grantsGone(actor),
+                            ["externalRecipientAlive"] = key == "lillend-azata" ? (bool?)(courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead) : null,
+                            ["capturedExternalGrantGone"] = key == "lillend-azata" ? (bool?)(capturedCourageRecipients[actor].IsDisposed || !capturedCourageRecipients[actor].Active) : null,
                             ["fixtureAreaOrGrantRemoval"] = 0 },
                         "Native KillUnit on the disposable sibling closes emitter-owned areas and recipient grants while its equipment remains nonlootable. No blanket effect deletion supplies the result.");
                     if (!dead) throw new InvalidOperationException("Native death aura/item boundary failed: " + key);
@@ -184,20 +297,99 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["partyItemsExact"] = partyItems.SequenceEqual(Game.Instance.Player.Inventory.Items),
                     ["partyCountsExact"] = partyCounts.SequenceEqual(partyItems.Select(value => value.Count)),
                     ["nativeProcesses"] = 1, ["fixtureDisposalsBeforeAssertions"] = 0 },
-                    "All twelve native lifecycle paths finish in the same fixed fixture with exact initial areas and party inventory; later cases are not marked passed after a failed precondition.");
+                    "All scoped native lifecycle paths finish in the same fixed fixture with exact initial areas and party inventory; later cases are not marked passed after a failed precondition.");
                 if (!reset) throw new InvalidOperationException("Lifecycle batch reset failed.");
             }
             finally
             {
-                DisposeExpandedSummoningUnits(fixture.Created, captured);
+                DisposeExpandedSummoningUnits(fixture.Created, captured.Concat(new[] { courageRecipient }).Where(value => value != null));
                 SettingsRoot.Instance.EnableTurnBasedMode.CurrentValue = oldMode;
                 Game.Instance.TurnBasedCombatController.Activate(); Game.Instance.IsPaused = oldPause;
             }
         }
 
+        private IEnumerable<int> PrepareLillend32LifecycleCourage(ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData actor, UnitEntityData courageRecipient, Func<UnitEntityData, Buff[]> recipients, string stage)
+        {
+            // Bounded setup for source removal, not a substitute for natural AI
+            // evidence. Keep the owned encounter alive while each source expires
+            // or dies, so combat-end cancellation cannot pre-empt the tested cause.
+            var target = fixture.Hostile;
+            if (target == null || fixture.OwnedHostileFaction == null)
+                throw new InvalidOperationException("Lifecycle combat requires its isolated owned hostile.");
+            var appearanceDeadline = DateTime.UtcNow.AddSeconds(12);
+            while (DateTime.UtcNow < appearanceDeadline && (!courageRecipient.Descriptor.State.CanAct ||
+                courageRecipient.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) != null))
+            { Game.Instance.IsPaused = false; yield return 0; }
+            PlaceExpandedSummoningUnit(target, actor.Position + Vector3.forward * 2f);
+            foreach (var unit in new[] { actor, courageRecipient, fixture.Caster, target })
+            {
+                unit.Wake(0f);
+                if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
+                unit.Memory.Add(ReferenceEquals(unit, target) ? fixture.Caster : target);
+                unit.SightCache.ClearIfNeeded(); unit.JoinCombat();
+            }
+            new Kingmaker.Controllers.Units.UnitMemoryController().Tick();
+            Game.Instance.Player.UpdateIsInCombat();
+            new UnitCombatJoinController().Tick(); new UnitCombatPrepareController().Tick();
+            var courage = actor.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
+            var performance = actor.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage));
+            var resource = fixture.Blueprints.OfType<Kingmaker.Blueprints.BlueprintAbilityResource>().Single(value =>
+                value.name == "KMG_Summoning_FeyCelestial_LillendAzata_PerformanceResource");
+            var command = new UnitActivateAbility(performance);
+            int playerAttackBefore = fixture.Caster.Stats.AdditionalAttackBonus.ModifiedValue;
+            Func<UnitEntityData, Buff[]> effects = unit => unit.Buffs.Enumerable.Where(buff => buff.Active && !buff.IsDisposed &&
+                buff.Blueprint.name == "KMG_Summoning_FeyCelestial_LillendAzata_CourageRecipient" &&
+                ReferenceEquals(buff.Context?.MaybeCaster, actor)).ToArray();
+            bool admitted = actor.Descriptor.State.CanAct && courageRecipient.Descriptor.State.CanAct &&
+                courageRecipient.IsInState && !courageRecipient.Descriptor.State.IsDead && actor.IsInCombat && fixture.Caster.IsInCombat &&
+                actor.IsAlly(courageRecipient) && fixture.Caster.IsPlayerFaction && !actor.IsAlly(fixture.Caster) && !actor.IsEnemy(fixture.Caster) &&
+                actor.IsEnemy(target) && actor.HasLOS(courageRecipient) && actor.HasLOS(fixture.Caster) && performance.IsAvailable &&
+                !performance.IsOn && !performance.IsRunning;
+            if (admitted) actor.Commands.Run(command);
+            var deadline = DateTime.UtcNow.AddSeconds(12);
+            while (admitted && DateTime.UtcNow < deadline &&
+                (Sprints3031OwnedAreaCount(actor) == 0 || recipients(actor).Length != 1 || effects(fixture.Caster).Length != 1))
+            { Game.Instance.IsPaused = false; yield return 0; }
+            var areas = Game.Instance.State.AreaEffects.All.Where(area => area != null && ReferenceEquals(area.Context?.MaybeCaster, actor)).ToArray();
+            bool enemyInArea = areas.Length == 1 && actor.DistanceTo(target) < areas[0].Blueprint.Size.Meters;
+            bool ready = admitted && performance.IsOn && performance.IsRunning && enemyInArea &&
+                Sprints3031OwnedAreaCount(actor) > 0 && recipients(actor).Length == 1 && effects(fixture.Caster).Length == 1 &&
+                fixture.Caster.Stats.AdditionalAttackBonus.ModifiedValue == playerAttackBefore + 2 && effects(target).Length == 0;
+            Sprint25Check("lifecycle-lillend-" + stage + "-activation-ready", ready, new JObject {
+                ["source"] = actor.UniqueId, ["recipient"] = courageRecipient.UniqueId,
+                ["admitted"] = admitted, ["canAct"] = actor.Descriptor.State.CanAct,
+                ["recipientCanAct"] = courageRecipient.Descriptor.State.CanAct,
+                ["awake"] = Game.Instance.State.AwakeUnits.Contains(actor), ["inCombat"] = actor.IsInCombat,
+                ["recipientInCombat"] = courageRecipient.IsInCombat, ["hostileInCombat"] = target.IsInCombat,
+                ["allyLos"] = actor.HasLOS(courageRecipient), ["distanceMeters"] = actor.DistanceTo(courageRecipient),
+                ["nativeIsAllyRecipient"] = actor.IsAlly(courageRecipient), ["nativeIsAllyCaster"] = actor.IsAlly(fixture.Caster),
+                ["casterPlayerFaction"] = fixture.Caster.IsPlayerFaction, ["exactPlayerRecipients"] = effects(fixture.Caster).Length,
+                ["playerAttackBefore"] = playerAttackBefore, ["playerAttackAfter"] = fixture.Caster.Stats.AdditionalAttackBonus.ModifiedValue,
+                ["enemyRecipients"] = effects(target).Length,
+                ["nativeIsEnemyTarget"] = actor.IsEnemy(target),
+                ["enemyInsideRadius"] = enemyInArea, ["enemyDistanceMeters"] = actor.DistanceTo(target),
+                ["nativeAreaRadiiMeters"] = new JArray(areas.Select(area => area.Blueprint.Size.Meters)),
+                ["isOn"] = performance.IsOn, ["isRunning"] = performance.IsRunning, ["available"] = performance.IsAvailable,
+                ["rounds"] = actor.Descriptor.Resources.GetResourceAmount(resource),
+                ["command"] = new JObject { ["started"] = command.IsStarted, ["acted"] = command.IsActed,
+                    ["finished"] = command.IsFinished, ["result"] = command.Result.ToString() },
+                ["areas"] = Sprints3031OwnedAreaCount(actor),
+                ["exactExternalRecipients"] = recipients(actor).Length,
+                ["sourceState"] = Sprints3031LifecycleState(actor), ["suppliedEffectsOrCosts"] = false },
+                "A fixture-issued native activation supports the owned allied summon and player-faction caster with actual +2, excludes the hostile, and establishes exact external recipients before source removal; state is retained on failure.");
+            if (!ready) throw new InvalidOperationException("Lifecycle Courage activation prerequisite failed: " + stage);
+        }
+
         private static UnityEngine.Object[] Sprints3031PrivateResources(UnitEntityData actor, string key)
         {
             if (actor.View == null) return Array.Empty<UnityEngine.Object>();
+            if (key == "lillend-azata")
+            {
+                var attachment = actor.View.GetComponent<LillendHumanVisualAttachment>();
+                return attachment == null ? Array.Empty<UnityEngine.Object>() :
+                    attachment.CaptureOwnedResources().Concat(new UnityEngine.Object[] { attachment }).ToArray();
+            }
             if (key == "lemure" || key == "dretch" || key == "hound-archon")
                 return ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(actor.View);
             if (key == "lantern-archon")

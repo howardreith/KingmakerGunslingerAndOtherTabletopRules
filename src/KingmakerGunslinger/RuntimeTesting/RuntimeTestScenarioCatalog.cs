@@ -162,6 +162,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             "observe-expanded-summoning-sprint27-native-inputs";
         internal const string ObserveExpandedSummoningSprint28Inputs =
             "observe-expanded-summoning-sprint28-native-inputs";
+        internal const string ObserveExpandedSummoningSprint32Inputs =
+            "observe-expanded-summoning-sprint32-native-inputs";
         internal const string ObserveExpandedSummoningSprints30And31Inputs =
             "observe-expanded-summoning-sprints30-31-native-inputs";
         internal const string ObserveExpandedSummoningSprint29Inputs =
@@ -310,6 +312,10 @@ namespace KingmakerGunslinger.RuntimeTesting
         { get { return ExpandedSummoningNativeProfilePolicy.TrumpetBlastPhase; } }
         internal static string[] Sprints30And31OutsiderBodySequence
         { get { return ExpandedSummoningNativeProfilePolicy.OutsiderBodySequence; } }
+        internal const string DisposableExpandedSummoningSprint32NativeReview =
+            "disposable-expanded-summoning-sprint32-native-review";
+        internal static string Sprint32SatyrControlPhase
+        { get { return ExpandedSummoningNativeProfilePolicy.Sprint32SatyrControlPhase; } }
         internal const string DisposableExpandedSummoningSprints30And31NativeReview =
             "disposable-expanded-summoning-sprints30-31-native-review";
         internal const string DisposableExpandedSummoningSprint29NativeReview =
@@ -332,6 +338,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scenario == DisposableExpandedSummoningSprint27NativeReview ||
                 scenario == DisposableExpandedSummoningSprint28NativeReview ||
                 scenario == DisposableExpandedSummoningSprint29NativeReview ||
+                scenario == DisposableExpandedSummoningSprint32NativeReview ||
                 scenario == DisposableExpandedSummoningSprints30And31NativeReview ||
                 scenario == DisposableExpandedSummoningCleanup2NativeReview;
         }
@@ -943,6 +950,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ObserveExpandedSummoningSprint28Inputs,
                 ObserveExpandedSummoningSprint29Inputs,
                 ObserveExpandedSummoningSprints30And31Inputs,
+                ObserveExpandedSummoningSprint32Inputs,
                 DisposableExpandedSummoningSprint18Review,
                 DisposableExpandedSummoningSprint19Review,
                 DisposableExpandedSummoningSprint20Review,
@@ -963,6 +971,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposableExpandedSummoningSprint27NativeReview,
                 DisposableExpandedSummoningSprint28NativeReview,
                 DisposableExpandedSummoningSprint29NativeReview,
+                DisposableExpandedSummoningSprint32NativeReview,
                 DisposableExpandedSummoningSprints30And31NativeReview,
                 DisposableExpandedSummoningCleanup2NativeReview,
                 DisposableExpandedSummoningPlayerPath,

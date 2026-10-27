@@ -1,3 +1,9 @@
+Current Sprint 32 Satyr/Lillend implementation is qualified for owner PR review,
+with exact approved adaptations, fresh/reused evidence and restoration in the
+[sole active record](planning/SPRINT32-STATUS.md). Candidate87 remains frozen;
+Howie authorized PR74 merge and release169 on2026-10-27; publication status is
+in the active record. The dated implementation report below is history.
+
 # Expanded Summoning implementation report
 
 ## Final immutable-source requalification (2026-08-13)

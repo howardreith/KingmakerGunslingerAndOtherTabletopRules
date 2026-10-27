@@ -46,11 +46,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             row["passed"] = passed;
             row["runId"] = _request.RunId;
             _sprint25Rows.Add(row);
-            _sprint25Assertions.Add(Assertion((IsSprints30And31Review ? "sprints30-31-" : IsSummonCleanup2Review ? "summon-cleanup2-" : IsSprint29Review ? "sprint29-" : IsSprint28Review ? "sprint28-" : IsSprint27Review ? "sprint27-" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-" : "sprint25-") + predicate,
+            _sprint25Assertions.Add(Assertion((IsSprint32Review ? "sprint32-" : IsSprints30And31Review ? "sprints30-31-" : IsSummonCleanup2Review ? "summon-cleanup2-" : IsSprint29Review ? "sprint29-" : IsSprint28Review ? "sprint28-" : IsSprint27Review ? "sprint27-" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-" : "sprint25-") + predicate,
                 expected, row.ToString(Formatting.None), passed,
                 "Exact request-owned summons in the native first-area fixture."));
             RuntimeTestResultWriter.WriteAtomic(Path.Combine(
-                _request.EvidenceDirectory, IsSprints30And31Review ? "sprints30-31-review-progress.json" : IsSummonCleanup2Review ? "summon-cleanup2-review-progress.json" : IsSprint29Review ? "sprint29-review-progress.json" : IsSprint28Review ? "sprint28-review-progress.json" : IsSprint27Review ? "sprint27-review-progress.json" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review-progress.json" : "sprint25-review-progress.json"),
+                _request.EvidenceDirectory, IsSprint32Review ? "sprint32-review-progress.json" : IsSprints30And31Review ? "sprints30-31-review-progress.json" : IsSummonCleanup2Review ? "summon-cleanup2-review-progress.json" : IsSprint29Review ? "sprint29-review-progress.json" : IsSprint28Review ? "sprint28-review-progress.json" : IsSprint27Review ? "sprint27-review-progress.json" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review-progress.json" : "sprint25-review-progress.json"),
                 _sprint25Rows.ToString(Formatting.Indented));
         }
 
@@ -61,12 +61,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_sprint25Steps == null)
                 {
                     _sprint25Fixture = BeginExpandedSummoningCorrectionFixture(
-                        IsSprints30And31Review ? "KMG_Runtime_Sprints30And31_Caster" : IsSummonCleanup2Review ? "KMG_Runtime_Cleanup2_Caster" : IsSprint29Review ? "KMG_Runtime_Sprint29_Caster" : IsSprint28Review ? "KMG_Runtime_Sprint28_Caster" : IsSprint27Review ? "KMG_Runtime_Sprint27_Caster" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "KMG_Runtime_Sprint26_Caster" : "KMG_Runtime_Sprint25_Caster");
+                        IsSprint32Review ? "KMG_Runtime_Sprint32_Caster" : IsSprints30And31Review ? "KMG_Runtime_Sprints30And31_Caster" : IsSummonCleanup2Review ? "KMG_Runtime_Cleanup2_Caster" : IsSprint29Review ? "KMG_Runtime_Sprint29_Caster" : IsSprint28Review ? "KMG_Runtime_Sprint28_Caster" : IsSprint27Review ? "KMG_Runtime_Sprint27_Caster" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "KMG_Runtime_Sprint26_Caster" : "KMG_Runtime_Sprint25_Caster");
                     _sprint25Clock = new Sprint22NativeClock(_sprint25Fixture,
-                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSprints30And31Review || IsSummonCleanup2Review) ? .05f : .25f,
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSprint32Review || IsSprints30And31Review || IsSummonCleanup2Review) ? .05f : .25f,
+                        IsSprint32Review ? (Action<UnitEntityData>)Sprint32TickLife :
                         (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSprints30And31Review || IsSummonCleanup2Review) ? (Action<UnitEntityData>)Sprint26TickLife : null,
-                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSprints30And31Review || IsSummonCleanup2Review));
-                    _sprint25Steps = (IsSprints30And31Review ? ReviewSprints30And31(_sprint25Fixture) : IsSummonCleanup2Review ? ReviewSummonCleanup2(_sprint25Fixture) : IsSprint29Review ? ReviewSprint29(_sprint25Fixture) : IsSprint28Review ? ReviewSprint28(_sprint25Fixture) : IsSprint27Review ? ReviewSprint27(_sprint25Fixture) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
+                        (_request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview || IsSprint27Review || IsSprint28Review || IsSprint29Review || IsSprint32Review || IsSprints30And31Review || IsSummonCleanup2Review));
+                    _sprint25Steps = (IsSprint32Review ? ReviewSprint32(_sprint25Fixture) : IsSprints30And31Review ? ReviewSprints30And31(_sprint25Fixture) : IsSummonCleanup2Review ? ReviewSummonCleanup2(_sprint25Fixture) : IsSprint29Review ? ReviewSprint29(_sprint25Fixture) : IsSprint28Review ? ReviewSprint28(_sprint25Fixture) : IsSprint27Review ? ReviewSprint27(_sprint25Fixture) : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview
                         ? ReviewSprint26(_sprint25Fixture) : ReviewSprint25(_sprint25Fixture)).GetEnumerator();
                 }
                 if (!_sprint25WaitingForUnityAppearance) _sprint25Clock.Pulse();
@@ -75,7 +76,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error)
             {
                 var failure = new JObject { ["exception"] = error.ToString() };
-                if (IsSprint28Review && _sprint25Clock != null &&
+                if ((IsSprint28Review || IsSprint32Review) && _sprint25Clock != null &&
                     error.Message.Contains("native-clock-turn-order-coverage"))
                     failure["turnCoverage"] =
                         _sprint25Clock.DescribeTurnCoverage();
@@ -84,7 +85,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             CleanupSprint25NativeReview();
             string report = Path.Combine(_request.EvidenceDirectory,
-                IsSprints30And31Review ? "sprints30-31-review.json" : IsSummonCleanup2Review ? "summon-cleanup2-review.json" : IsSprint29Review ? "sprint29-review.json" : IsSprint28Review ? "sprint28-review.json" : IsSprint27Review ? "sprint27-review.json" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review.json" : "sprint25-review.json");
+                IsSprint32Review ? "sprint32-review.json" : IsSprints30And31Review ? "sprints30-31-review.json" : IsSummonCleanup2Review ? "summon-cleanup2-review.json" : IsSprint29Review ? "sprint29-review.json" : IsSprint28Review ? "sprint28-review.json" : IsSprint27Review ? "sprint27-review.json" : _request.Scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint26NativeReview ? "sprint26-review.json" : "sprint25-review.json");
             RuntimeTestResultWriter.WriteAtomic(report,
                 _sprint25Rows.ToString(Formatting.Indented));
             _summoningProfileResult = CreateResult(

@@ -4,6 +4,45 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string Sprint32SatyrControlPhase = "satyr-control";
+        internal const string Sprint32LillendSupportPhase = "lillend-support";
+        internal const string Sprint32SatyrTurnPhase = "satyr-turn";
+        internal const string Sprint32SatyrAtWillPhase = "satyr-atwill";
+        internal const string Sprint32SatyrAtWillTurnPhase = "satyr-atwill-turn";
+        internal const string Sprint32LillendTurnPhase = "lillend-turn";
+        internal const string Sprint32SuggestionPhase = "optional-suggestion";
+        internal const string Sprint32SuggestionTerminalsPhase = "suggestion-terminals";
+        internal const string Sprint32SatyrRoutesPhase = "satyr-routes";
+        internal const string Sprint32LillendRoutesPhase = "lillend-routes";
+        internal const string Sprint32LifecyclePhase = "support-lifecycle";
+        internal const string Sprint32DruidInputPhase = "druid-input";
+        internal const string Sprint32WizardInputPhase = "wizard-input";
+        internal const string Sprint32SorcererInputPhase = "sorcerer-input";
+        internal const string Sprint32PerformancePhase = "lillend-performance";
+        internal const string Sprint32HoldPhase = "lillend-hold";
+        internal const string Sprint32HoldTurnPhase = "lillend-hold-turn";
+        internal const string Sprint32ControlsPhase = "lillend-controls";
+        internal const string Sprint32ControlsTurnPhase = "lillend-controls-turn";
+        internal const string Sprint32GrabPhase = "lillend-grab";
+        internal const string Sprint32PresentationPhase = "technical-presentation";
+        internal const string Sprint32CantripPhase = "lillend-cantrips";
+        internal const string Sprint32FascinatePhase = "lillend-fascinate";
+        internal const string Sprint32BardicSuggestionPhase = "lillend-bardic-suggestion";
+        internal static bool Sprint32NativeInputPhase(string phase)
+        { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
+        internal static bool Sprint32NativeDefaultPhase(string phase)
+        { return Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
+            phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
+        internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
+        { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
+        internal static bool Sprint32Phase(string phase)
+        { return phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
+            phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
+            phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
+            phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
+            phase == Sprint32ControlsPhase || phase == Sprint32ControlsTurnPhase ||
+            phase == Sprint32SatyrAtWillPhase ||
+            phase == Sprint32SatyrAtWillTurnPhase || Sprint32NativeDefaultPhase(phase); }
         internal const string OutsiderBodyPhase = "outsider-bodies";
         internal const string SourceLifecyclePhase = "source-lifecycle";
         internal const string DefenseConsumersPhase = "defense-consumers";
@@ -183,6 +222,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 return parameters == 1 && Sprint28Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint29NativeReview)
                 return parameters == 1 && Sprint29Phase(reviewPhase);
+            if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview)
+                return parameters == 1 && Sprint32Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprints30And31NativeReview)
                 return parameters == 1 && Sprints30And31Phase(reviewPhase);
             if (scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningCleanup2NativeReview)

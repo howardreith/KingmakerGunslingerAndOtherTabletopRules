@@ -340,7 +340,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             ExpandedSummoningCorrectionFixture fixture,
             SummonVariantSpec[] routes,
             Action<string, bool, JObject, string> record = null,
-            bool includeFiendish = false)
+            bool includeFiendish = false, bool naturesAllyCaster = false)
         {
             if (record == null) record = Sprint24Check;
             object levelController = null;
@@ -353,12 +353,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "kmg.sprint24.routes." + _request.RunId);
             try
             {
-                fixture.Caster.Descriptor.Stats.Intelligence.BaseValue = 30;
+                if (naturesAllyCaster && routes.Any(value => value.Family != SummonFamily.NaturesAlly))
+                    throw new InvalidOperationException("The Druid route fixture admits Nature's Ally only.");
+                if (naturesAllyCaster) fixture.Caster.Descriptor.Stats.Wisdom.BaseValue = 30;
+                else fixture.Caster.Descriptor.Stats.Intelligence.BaseValue = 30;
                 BlueprintCharacterClass wizard = BlueprintLibraryLookup
                     .RequireExact<BlueprintCharacterClass>(
                         BlueprintBootstrap.Library,
-                        "ba34257984f4c41408ce1dc2004e342e",
-                        "native Wizard targeted spellbook path");
+                        naturesAllyCaster ? "610d836f3a3a9ed42a4349b62f002e96" : "ba34257984f4c41408ce1dc2004e342e",
+                        naturesAllyCaster ? "native Druid targeted spellbook path" : "native Wizard targeted spellbook path");
                 AdvanceDisposableSpellcaster(fixture.Caster.Descriptor,
                     wizard, 20, ref levelController);
                 Spellbook book = fixture.Caster.Descriptor.GetSpellbook(
@@ -384,6 +387,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (bool fiendish in includeFiendish && route.Family == SummonFamily.Monster && route.Creature.MonsterTemplated
                     ? new[] { false, true } : new[] { false })
                 {
+                    if (IsSprint32Review && book.Blueprint.SpellList.GetLevel(parents[
+                            (route.Family == SummonFamily.Monster ? 0 : 9) + route.ParentTier - 1]) != route.ParentTier)
+                        throw new InvalidOperationException("Sprint32 canonical parent is not legal in the selected native class spell list.");
                     object[] before = SnapshotReferences(fixture.AllUnits);
                     var cases = new List<ExpandedSummoningPlayerPathCase>();
                     bool untemplatedMonster = route.Family == SummonFamily.Monster &&
@@ -425,6 +431,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     record("player-route-" + route.StableKey + (fiendish ? "-fiendish" : ""), exact,
                         new JObject {
                             ["unit"] = route.Creature.Key,
+                            ["casterClass"] = wizard.AssetGuid,
+                            ["spellbook"] = book.Blueprint.AssetGuid,
+                            ["casterLevel"] = book.CasterLevel,
+                            ["executionScope"] = "Prepared native parent/selected child, RuleCastSpell and slot debit. Existing fixture pumps command/animation synchronously; natural input timing is not claimed.",
                             ["event"] =
                                 "native-parent-selected-variant-spellbook",
                             ["owner"] = route.StableKey,
@@ -3669,7 +3679,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             out Vector3 target, out string survey, out string direction,
             float targetAllyExclusionRadius = 0f,
             IEnumerable<UnitEntityData> targetAllyExclusionExceptions = null,
-            int originSearchRadiusMeters = 15)
+            int originSearchRadiusMeters = 15,
+            float originAllyExclusionRadius = 0f,
+            bool sprint32PerformanceSight = false)
         {
             if (anchorCaster == null)
                 throw new InvalidOperationException(
@@ -3704,7 +3716,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             int nativeLosCandidates = 0;
             int allyClearCandidates = 0;
             if (originSearchRadiusMeters < 15 || originSearchRadiusMeters > 30 ||
-                originSearchRadiusMeters % 3 != 0)
+                originSearchRadiusMeters % 3 != 0 || float.IsNaN(originAllyExclusionRadius) ||
+                originAllyExclusionRadius < 0f || originAllyExclusionRadius > 30f)
                 throw new InvalidOperationException(
                     "Sprint 24 AI lane search radius is outside its fixed bounds.");
             for (int dx = -originSearchRadiusMeters;
@@ -3747,6 +3760,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 Vector3.Distance(value.Position,
                                     targetPoint.clampedPosition)));
                         if (partyGap < 3.5f) continue;
+                        if (originAllyExclusionRadius > 0f &&
+                            Game.Instance.State.Units.All.Any(value =>
+                                value != null && !value.Destroyed &&
+                                !ReferenceEquals(value, owner) && !ReferenceEquals(value, targetUnit) &&
+                                !owner.IsEnemy(value) && Vector3.Distance(value.Position,
+                                    origin.clampedPosition) <= originAllyExclusionRadius + value.Corpulence))
+                            continue;
                         laneCandidates++;
                         PlaceExpandedSummoningUnit(owner,
                             origin.clampedPosition);
@@ -3754,8 +3774,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             targetPoint.clampedPosition);
                         owner.SightCache.ClearIfNeeded();
                         targetUnit.SightCache.ClearIfNeeded();
-                        if (!owner.HasLOS(targetUnit) ||
-                            !targetUnit.HasLOS(owner)) continue;
+                        bool visible = sprint32PerformanceSight
+                            ? LillendPerformanceSight32.Sees(owner, targetUnit, 90) &&
+                                LillendPerformanceSight32.Sees(targetUnit, owner, 90)
+                            : owner.HasLOS(targetUnit) && targetUnit.HasLOS(owner);
+                        if (!visible) continue;
                         nativeLosCandidates++;
                         if (targetAllyExclusionRadius > 0f &&
                             Game.Instance.State.Units.All.Any(value =>

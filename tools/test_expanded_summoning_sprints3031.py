@@ -28,9 +28,15 @@ class Boundary(unittest.TestCase):
     def test_identities(self):
         root=Path(__file__).resolve().parents[1]
         prior=json.loads(v.common.blob(root,v.BASELINE,'blueprints/blueprints.json'))['entries']
-        current=json.loads((root/'blueprints/blueprints.json').read_text(encoding='utf-8-sig'))['entries']
+        # Exercise the historical release contract against that release's exact
+        # fixture. A later development append has its own admission validator.
+        current=json.loads(v.common.blob(root,'272b729f4094ce7bb5fa1ea9495c00d66f7d2a1d',
+            'blueprints/blueprints.json'))['entries']
         v.check_tail(prior,current)
         for index in (0,len(prior)):
             bad=copy.deepcopy(current);bad[index]['guid']='0'*32
             with self.assertRaises(AssertionError):v.check_tail(prior,bad)
+        with self.assertRaises(AssertionError):v.check_tail(prior,current[:-1])
+        with self.assertRaises(AssertionError):v.check_tail(prior,current+[dict(current[-1],
+            symbol='KMG.Fixture.LaterAppend',guid='f'*32)])
 if __name__=='__main__':unittest.main()

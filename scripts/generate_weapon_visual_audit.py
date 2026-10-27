@@ -405,7 +405,46 @@ def make_record(entry: dict) -> dict:
             "clippingOrientationConcerns": "outside this cleanup; preserve qualified creature donor contract",
             "mappingScope": "summoning-only exclusion",
         })
-        if symbol.startswith("KMG.Summoning.OutsiderCelestial."):
+        if symbol.startswith("KMG.Summoning.FeyCelestial."):
+            species, attack = symbol.split(".")[-2:]
+            donors = {
+                ("Satyr", "Dagger"): "aa514dbf4c3d61f4e9c0738bd4d373cb",
+                ("Satyr", "Horns"): "73ed4e955295e62469fe471f1d49d9ef",
+                ("LillendAzata", "Longsword"): "03d706655c07d804cb9d5a5583f9aec5",
+                ("LillendAzata", "Tail"): "ae822725634c6f0418b8c48bd29df255",
+            }
+            donor = donors[(species, attack)]
+            common.update({
+                "displayedName": ("Lillend Azata" if species == "LillendAzata" else species) + " " + attack.lower(),
+                "familyOrFirearmKind": "Sprint 32 fey/celestial attack",
+                "weaponType": symbol + "Type",
+                "currentItemLevelVisual": "private clone of native weapon " + donor,
+                "currentTypeLevelVisual": "private type cloned from the same native weapon donor",
+                "gripHandednessContract": {
+                    "Dagger": "Medium light manufactured dagger; native hand attachment",
+                    "Horns": "secondary natural horns; native Satyr headbutt",
+                    "Longsword": "Large +1 one-handed longsword; 10-foot reach; native human hand attachment",
+                    "Tail": "Large secondary tail slap; 10-foot reach; body-owned contact",
+                }[attack],
+                "currentManyToOneVisualGroup": "ExpandedSummoning.FeyCelestial." + species,
+                "clippingOrientationConcerns": "Sprint 32 technical presentation and attack contact pending native qualification",
+            })
+            if species == "Satyr":
+                common.update({
+                    "effectiveEquippedPrefab": "native dagger equipment on Satyr prefab 22dfc39c941704743a5b3fd9769327a0" if attack == "Dagger" else "native Satyr body/headbutt; no separate equipment visual",
+                    "animationDonorStyle": "private dagger visual record preserves model/attachments; animation style from native shortsword 455c6750aac8fa94f8ab19f385c73ae7" if attack == "Dagger" else "native Satyr archer 6114adae73a1338498412b3c63c946f8",
+                })
+            else:
+                common.update({
+                    "effectiveEquippedPrefab": "native longsword equipment on human upper-body rig" if attack == "Longsword" else "original Lillend body: assets/sprint32-support/lillend-mesh.json",
+                    "sourceFbx": "native weapon reference only; original procedural creature mesh, no redistributed native geometry",
+                    "sourceBlend": "private generator scene; not packaged",
+                    "deterministicGenerator": "assets-source/original-models/sprint32-support/generate_lillend.py and paint_lillend.py",
+                    "animationDonorStyle": "native human upper-body/sword animation" if attack == "Longsword" else "ten original tail drivers using the existing Salamander 1.4-second sweep and 0.60-second contact event",
+                    "currentMaterial": "native sword material; project lillend-albedo.png on creature body" if attack == "Longsword" else "project lillend-albedo.png on creature body",
+                    "sourceLicenseProvenance": "project-authored mesh/paint; native rig/weapon references only; assets-source/original-models/sprint32-support/README.md",
+                })
+        elif symbol.startswith("KMG.Summoning.OutsiderCelestial."):
             species, attack = symbol.split(".")[-2:]
             weapon_kind = attack.split("1d")[0].split("2d")[0]
             manufactured = weapon_kind in ("Greatsword", "Warhammer")

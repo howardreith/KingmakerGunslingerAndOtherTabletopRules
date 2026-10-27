@@ -13,11 +13,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--expected-file-count", required=True, type=int,
-                        choices=(41, 42, 43, 44, 45, 121, 123, 125, 130, 132,
-                                 133, 135, 222, 224, 225, 227, 229, 231, 233, 234, 235,
-                                 236, 237, 239, 241, 242, 244, 248, 249, 250, 251, 253, 254, 255, 256, 258, 259, 260, 261, 262, 264, 266, 272, 273, 274, 275, 276, 280, 281, 282, 284, 286, 287, 289, 291, 293, 295, 296, 298, 300, 302, 303, 304, 305, 307, 309, 310, 312, 316, 318, 319, 320, 321, 323, 325, 331, 333, 334, 336, 338, 340, 342, 344, 345, 346, 347, 348, 349, 350, 352, 354, 356, 361, 362, 363, 364, 365, 369, 370, 371, 372, 373, 374, 376, 378, 380, 383, 384, 385, 386, 387, 388, 389, 390, 391, 392, 393, 394, 397, 398, 399, 400, 401, 402, 403, 404, 406, 407, 408, 409, 410, 412, 413, 414, 415, 416))
+    parser.add_argument("--expected-file-count", required=True, type=int)
     args = parser.parse_args()
+    if args.expected_file_count < 1:
+        parser.error("--expected-file-count must be positive")
     source = args.source.resolve()
     if not source.is_dir() or source.name != "KingmakerGunslinger":
         raise RuntimeError("Source must be the staged KingmakerGunslinger directory.")

@@ -4,10 +4,12 @@ param(
     [Parameter(Mandatory=$true)][ValidateSet('KMG_AUTOMATION_WORKING')][string]$SaveName,
     [Parameter(Mandatory=$true)][string]$PackagePath,
     [Parameter(Mandatory=$true)][string]$ExpectedVersion,
-    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial')]
+    [ValidateSet('ankylosaurus','armored-dinosaurs','theropods','giant-bodies','magical-beasts','griffon','giant-humanoids','giant-humanoids-ii','outsider-celestial','fey-celestial')]
     [string]$PersistenceScope='ankylosaurus',
     [ValidateSet('sprints30-31-dispel-ui')][string]$ReviewCase,
     [string]$DevelopmentPurpose,
+    [string]$SuggestionTransition,
+    [string]$SuggestionReferenceRoot,
     [switch]$ExpandedSummoningDisabled,
     [ValidateRange(30,900)][int]$TimeoutSeconds=600
 )
@@ -41,6 +43,8 @@ $development=if($fixedDispelUi) {
         [void](Assert-KmgDevelopmentPurpose $DevelopmentPurpose)
         $true
     } else { throw 'Installed-stack fixed UI development requires its exact S30/S31 purpose; no transaction entered.' }
+} elseif($PersistenceScope -ceq 'fey-celestial') {
+    Test-KmgSprint32DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } elseif($PersistenceScope -ceq 'outsider-celestial') {
     Test-KmgSprints3031DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } elseif($PersistenceScope -ceq 'giant-humanoids-ii') {
@@ -49,6 +53,15 @@ $development=if($fixedDispelUi) {
     Test-KmgSprint28DevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
 } else {
     Test-KmgGriffonDevelopmentPersistence -Scope $PersistenceScope -Purpose $DevelopmentPurpose
+}
+$suggestionSelected=$PSBoundParameters.ContainsKey('SuggestionTransition')
+if($suggestionSelected -ne $PSBoundParameters.ContainsKey('SuggestionReferenceRoot')) { throw 'Suggestion transition and isolated reference root must be selected together; no transaction entered.' }
+if($suggestionSelected) {
+    [void](Test-KmgSprint32SuggestionTransition -TargetedPersistence (-not $fixedDispelUi) -Parameters @{persistenceScope=$PersistenceScope;suggestionTransition=$SuggestionTransition})
+    if($DevelopmentPurpose -cne 'sprint32-lillend-support' -or [string]::IsNullOrWhiteSpace($SuggestionReferenceRoot) -or
+       [bool]$ExpandedSummoningDisabled -ne ($SuggestionTransition -ceq 'module-off' -and $Scenario -ceq 'working-save-expanded-summoning-verify-cleanup')) {
+        throw 'Suggestion transition requires the exact Sprint32 development purpose and declared module state; no transaction entered.'
+    }
 }
 Assert-KmgNotRunning
 $candidate=Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $root -DevelopmentPurpose $DevelopmentPurpose
@@ -62,7 +75,7 @@ if($development) {
 $install='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 $mods=Join-Path $install 'Mods'
 $stateRoot='C:/Dev/KingmakerGunslingerLab/compatibility-state'
-$runPrefix=if($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'outsider-celestial'){'sprints30-31-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
+$runPrefix=if($PersistenceScope -ceq 'fey-celestial'){'sprint32-stack'}elseif($fixedDispelUi){'sprints30-31-ui-stack'}elseif($PersistenceScope -ceq 'outsider-celestial'){'sprints30-31-stack'}elseif($PersistenceScope -ceq 'giant-humanoids-ii'){'sprint29-stack'}elseif($PersistenceScope -ceq 'giant-humanoids'){'sprint28-stack'}elseif($PersistenceScope -ceq 'griffon'){'sprint27-stack'}elseif($PersistenceScope -ceq 'magical-beasts'){'sprint26-stack'}elseif($PersistenceScope -ceq 'giant-bodies'){'sprint25-stack'}elseif($PersistenceScope -ceq 'theropods'){'sprint24-stack'}elseif($PersistenceScope -ceq 'armored-dinosaurs'){'sprint23-stack'}else{'sprint22-stack'}
 $runId=$runPrefix+'-'+[DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')+'-'+[Guid]::NewGuid().ToString('N').Substring(0,12)
 $backup=Join-Path $install ("Mods.kmg-compat-$runId.original")
 $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Name -cne 'KingmakerGunslinger'} | ForEach-Object {
@@ -73,7 +86,14 @@ $runtimeMods=@(Get-ChildItem -LiteralPath $mods -Directory | Where-Object {$_.Na
         sourceManifest=@(Get-KmgCompatibilityDirectoryManifest $_.FullName);id=$info.Id;version=$info.Version}
 })
 if($runtimeMods.Count -ne 10 -or @($runtimeMods.id | Sort-Object -Unique).Count -ne 10) { throw 'Sprint22 working fixture requires the exact identifiable eleven-mod installed stack.' }
-$resolution=[pscustomobject]@{profileId=$(if($fixedDispelUi){'gunslinger-current-installed-s30-31-ui'}else{'gunslinger-current-installed-sprint22'});runtimeCapable=$true;
+$installedRuntimeMods=$runtimeMods
+$suggestionOverlay=$null
+if($suggestionSelected) {
+    $present=$Scenario -ceq 'working-save-expanded-summoning-prepare' -or $SuggestionTransition -cne 'removed'
+    $suggestionOverlay=Resolve-KmgSprint32SuggestionOverlay -InstalledRuntimeMods $installedRuntimeMods -SuggestionTransition $SuggestionTransition -ProviderPresent $present -SuggestionReferenceRoot $SuggestionReferenceRoot -PackagePath $candidate.packagePath -KingmakerInstallDir $install -RepositoryRoot $root
+    if($present){$runtimeMods=@($installedRuntimeMods)+@($suggestionOverlay.provider)}
+}
+$resolution=[pscustomobject]@{profileId=$(if($suggestionSelected){'gunslinger-current-installed-sprint32-suggestion'}elseif($fixedDispelUi){'gunslinger-current-installed-s30-31-ui'}else{'gunslinger-current-installed-sprint22'});runtimeCapable=$true;
     gunslinger=[pscustomobject]@{packagePath=$candidate.packagePath};runtimeMods=$runtimeMods}
 $operation=if($fixedDispelUi){'stage the exact current installed stack for one fixed read-only S30/S31 Working UI request and restore exact originals'}else{'stage the current compatible installed stack for one Sprint22 working-save request and restore exact originals'}
 if (-not $PSCmdlet.ShouldProcess($mods,$operation)) { return }
@@ -96,12 +116,14 @@ try {
     $evidenceRoot=Join-Path 'C:/Dev/KingmakerGunslingerLab/runtime-evidence' $runId
     [void][IO.Directory]::CreateDirectory($evidenceRoot)
     $record=[ordered]@{schemaVersion=1;transactionRunId=$runId;scenario=$Scenario;startedUtc=[DateTime]::UtcNow.ToString('o');
-        actualInstalledMods=@($runtimeMods | ForEach-Object { [ordered]@{id=$_.id;version=$_.version;directory=$_.destinationName} });
+        actualInstalledMods=@($installedRuntimeMods | ForEach-Object { [ordered]@{id=$_.id;version=$_.version;directory=$_.destinationName} });
+        suggestionOverlay=$suggestionOverlay;
         candidateKind=$(if($development){'development'}else{'release-candidate'});releaseQualification=(-not $development);developmentPurpose=$DevelopmentPurpose;
         moduleDisabled=[bool]$ExpandedSummoningDisabled;persistenceScope=$(if($fixedDispelUi){$null}else{$PersistenceScope});reviewCase=$ReviewCase;candidate=$candidate;originalManifest=$transaction.originalManifest;gameSettings=$settingsSnapshot;restoration=$null}
     Write-KmgCompatibilityJsonAtomic (Join-Path $evidenceRoot 'installed-stack.json') $record
     $deployment=& (Join-Path $PSScriptRoot 'Deploy-Local.ps1') -PackagePath $candidate.packagePath -DevelopmentPurpose $DevelopmentPurpose -RuntimeLease $lease -PassThru -Confirm:$false
     $requestParameters=if($fixedDispelUi){$uiParameters}else{@{persistenceScope=$PersistenceScope}}
+    if($suggestionSelected){$requestParameters.suggestionTransition=$SuggestionTransition}
     $completionBudget=if($fixedDispelUi){180}else{$TimeoutSeconds}
     $arguments=@{Scenario=$Scenario;ExpectedVersion=$ExpectedVersion;SaveName=$SaveName;
         Parameters=$requestParameters;TimeoutSeconds=$TimeoutSeconds;

@@ -36,6 +36,9 @@ function Convert-KeyToToken([string]$Key) {
 }
 
 function Get-Consumers([string]$Key, [object[]]$Entries) {
+    if ($Key -ceq 'lullaby') {
+        return @('KMG.Summoning.FeyCelestial.LillendAzata.Lullaby', 'KMG.Summoning.FeyCelestial.LillendAzata.LullabyBuff')
+    }
     if ($Key -ceq 'trumpet-blast') {
         return @('KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetBlast', 'KMG.Summoning.OutsiderCelestial.TrumpetArchon.TrumpetParalyzed')
     }

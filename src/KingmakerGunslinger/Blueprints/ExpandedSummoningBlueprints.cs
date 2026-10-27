@@ -146,6 +146,38 @@ namespace KingmakerGunslinger.Blueprints
                         consideration.name = InternalName(identity.Symbol);
                         return consideration;
                     });
+                else if (identity.PlannedType == "LillendHealingEligibility32")
+                    blueprint = registry.Register<LillendHealingEligibility32>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<LillendHealingEligibility32>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "LillendSpellEligibility32")
+                    blueprint = registry.Register<LillendSpellEligibility32>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<LillendSpellEligibility32>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "LillendCourageAi32")
+                    blueprint = registry.Register<LillendCourageAi32>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<LillendCourageAi32>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "BlueprintAiSwitchWeapon")
+                    blueprint = registry.Register<BlueprintAiSwitchWeapon>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<BlueprintAiSwitchWeapon>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "SatyrWeaponChoice32")
+                    blueprint = registry.Register<SatyrWeaponChoice32>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<SatyrWeaponChoice32>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "SatyrControlEligibility")
+                    blueprint = registry.Register<SatyrControlEligibility>(identity.Symbol, () =>
+                    {
+                        var consideration = ScriptableObject.CreateInstance<SatyrControlEligibility>();
+                        consideration.name = InternalName(identity.Symbol);
+                        return consideration;
+                    });
                 else if (identity.PlannedType == "DretchSpellAiEligibility")
                     blueprint = registry.Register<DretchSpellAiEligibility>(identity.Symbol, () =>
                     {

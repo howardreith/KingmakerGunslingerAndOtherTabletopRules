@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "generatedUtcDate": "2026-10-25",
+  "tool": "image_gen.imagegen (built-in)",
+  "providerModel": "not exposed by tool; not inferred",
+  "transparentBackground": false,
+  "sourceImagesSupplied": false,
+  "inspectedLocalStyleAnchors": [
+    "assets/game/icons/expanded-summoning/bralani-azata.png",
+    "assets/game/icons/expanded-summoning/salamander.png",
+    "assets/game/icons/expanded-summoning/astral-deva.png"
+  ],
+  "styleReferenceRole": "Local inspection only; no reference image was sent to the generator. New original compositions and pixels.",
+  "icons": [
+    {
+      "key": "satyr",
+      "source": "assets-source/original-icons/expanded-summoning/sources/satyr.png",
+      "sourceSha256": "3d26bd2210712523dabbedcdea3b161b8141905393e7651fc74477328d27908c",
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a17346-8046-79c2-b055-a0272b7c1137/exec-9b98e1c3-90ac-41df-aec7-fbd6f3f2885e.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square fantasy RPG summon portrait, later exported at 128x128. Create one adult Pathfinder satyr: human male face and torso, two clearly curled ram horns, brown goat legs ending in cloven hooves, short dark beard and curly hair. A compact wooden shortbow held at his side, with one free hand raised in a subtle spellcasting gesture. No pipes or flute. Show the entire distinctive goat-legged silhouette in a compact three-quarter pose with ample margin around horns and hooves; one character only. Painterly traditional fantasy realism, broad readable forms, warm brown skin and fur, subdued green forest haze, soft amber rim light. Match a richly painted game creature portrait with tactile brushwork and deep shadows, readable at very small scale. Full-bleed square image, no UI frame, no text, no numbers, no watermark. Anatomy: exactly two arms and two goat legs; not a centaur, not a full goat, not a demon; no wings. This is a new image, not an edit of the inspected style anchors.",
+      "width": 1254,
+      "height": 1254,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "nativePresentation": "NOT_RUN"
+    },
+    {
+      "key": "lillend-azata",
+      "source": "assets-source/original-icons/expanded-summoning/sources/lillend-azata.png",
+      "sourceSha256": "eaee893fd5018d8e7b6d468ef0224cb8d27eadff811c20583e02d8c115eca05a",
+      "originalToolOutput": "C:/Dev/KingmakerBuffPlannerLab/codex-home/generated_images/01a17346-8046-79c2-b055-a0272b7c1137/exec-a24faf02-6389-4791-95eb-be2752d3c598.png",
+      "prompt": "Use case: stylized-concept. Asset type: original square painted fantasy RPG summon portrait, later exported at 128x128. A Pathfinder lillend azata, a celestial bard: an adult elven woman from waist up, with two large soft white feathered wings, seamlessly joined at the waist to one long emerald-green serpentine lower body coiled in a broad readable curve. She wears a modest ivory-and-teal bard's tunic covering her torso; long auburn hair. She plays a small golden harp with her two hands, and a sheathed longsword hangs at her hip. Exactly two human arms, exactly two feathered wings, no human legs, no feet, one snake tail. Compose a single compact full creature within generous margins so both wings and the tail coil remain legible at tiny icon scale. Emphasize the distinctive winged bard and snake silhouette. Rich traditional fantasy oil-paint texture with broad brushwork, soft warm celestial lighting, deep blue-violet atmospheric background. Full-bleed square painting, no circular border, no UI frame, no text, no numbers, no watermark. Recognizably a benign winged serpent-bodied muse, not a mermaid, not a winged human, not a dragon. This is a new project asset; preserve no existing pixels.",
+      "width": 1254,
+      "height": 1254,
+      "humanReview": "NOT_PERFORMED_NONBLOCKING",
+      "nativePresentation": "NOT_RUN"
+    }
+  ]
+}

@@ -182,8 +182,10 @@ Assert-KmgMachineClean 'before the matrix'
 # Freeze and validate once, before any profile transaction. A supplied candidate
 # is reused only through the existing manifest/package validation path.
 if (-not $ReuseCandidate) {
-    & (Join-Path $PSScriptRoot 'Build-Local.ps1') | Out-Host
-    $PackagePath = Join-Path $repositoryRoot "artifacts\local-runtime\$productVersion\KingmakerGunslinger-$productVersion-local-runtime.zip"
+    & (Join-Path $PSScriptRoot 'Build-Local.ps1') -ExpectedVersion $productVersion | Out-Host
+    $PackagePath = (Get-KmgLocalCandidateLayout -RepositoryRoot $repositoryRoot `
+        -Commit (Get-KmgGitState -RepositoryRoot $repositoryRoot).Commit `
+        -Id 'KingmakerGunslinger' -Version $productVersion).PackagePath
 }
 $candidate = Read-KmgBuildLocalManifest -PackagePath $PackagePath -RepositoryRoot $repositoryRoot
 $candidateGit = Get-KmgGitState -RepositoryRoot $repositoryRoot

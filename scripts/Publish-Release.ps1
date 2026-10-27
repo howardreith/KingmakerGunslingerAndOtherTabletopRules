@@ -6,7 +6,7 @@ param(
 
     [string]$ReferenceBundleDir,
 
-    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.168.md',
+    [string]$ReleaseNotesPath = 'docs\RELEASE-NOTES-0.0.169.md',
 
     [string]$ReleaseBranch = 'master',
 
@@ -182,7 +182,9 @@ function Invoke-QualifiedBuildAndPackage {
         # Build-Local already assembled/validated this exact package.
         $packageInfo = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'Info.json') -Raw | ConvertFrom-Json
         $packageVersion = $packageInfo.Version
-        $candidatePath = Join-Path $RepositoryRoot "artifacts\local-runtime\$packageVersion\KingmakerGunslinger-$packageVersion-local-runtime.zip"
+        $candidatePath = (Get-KmgLocalCandidateLayout -RepositoryRoot $RepositoryRoot `
+            -Commit ((& git -C $RepositoryRoot rev-parse HEAD).Trim()) `
+            -Id $packageInfo.Id -Version $packageVersion).PackagePath
         # Name the public asset after the informational version, as every
         # published ZIP is, using the same verified bytes.
         [xml]$packageProps = Get-Content -LiteralPath (Join-Path $RepositoryRoot 'Directory.Build.props') -Raw
