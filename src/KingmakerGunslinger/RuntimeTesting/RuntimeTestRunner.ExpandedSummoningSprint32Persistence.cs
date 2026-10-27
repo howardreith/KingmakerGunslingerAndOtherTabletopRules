@@ -219,7 +219,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["ownGroupIds"] = listeners.All(unit => unit.GroupId == unit.UniqueId),
                 ["nonpartyGroups"] = listeners.All(unit => !unit.Group.IsPlayerParty),
                 ["exactAttackLists"] = listeners.All(unit => unit.AttackFactions.Count() == 1 && ReferenceEquals(unit.AttackFactions.Single(), caster.Faction)),
-                ["allMutualEnemies"] = listeners.All(unit => sources.All(source => unit.IsEnemy(source) && source.IsEnemy(unit))) };
+                // Preparation establishes hostility to this listener's exact
+                // Fascinate source. The independent Competence source need not
+                // share that relation or native group after load.
+                ["recordedSourceEnemy"] = listeners.Select(unit => unit.Get<UnitPartSprint32ListenerReceipt>().SourceId).Distinct().Count() == 1 && listeners.All(unit => {
+                    var receipt = unit.Get<UnitPartSprint32ListenerReceipt>();
+                    var source = sources.Single(value => value.UniqueId == receipt.SourceId);
+                    return source.Get<UnitPartRelease143RosterReceipt>()?.Key == "lillend-azata" &&
+                        source.Get<UnitPartSprint32SavedReceipt>()?.PrepareRunId == receipt.PrepareRunId &&
+                        unit.IsEnemy(source) && source.IsEnemy(unit);
+                }) };
             bool boundary = checks.Properties().All(value => (bool)value.Value);
             RosterPersistenceCheck("s32-cold-listener-boundary", boundary, new JObject {
                 ["providerDisposition"] = Sprint32Suggestion.Disposition, ["checks"] = checks,
@@ -234,7 +243,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["group"] = Sprint32ColdGroupState(unit), ["relations"] = new JArray(sources.Select(source => new JObject {
                         ["source"] = source.UniqueId, ["listenerEnemyOfSource"] = unit.IsEnemy(source),
                         ["sourceEnemyOfListener"] = source.IsEnemy(unit) })) })) },
-                "Cold receipts, exact canonical factions, attack lists, owned group IDs and mutual relations must all survive before time advances; complete read-only cache/member rows retain any refusal, with no cache repair.");
+                "Cold receipts, exact canonical factions, attack lists, owned group IDs and mutual relations to each recorded Fascinate source must survive before time advances; complete read-only cache/member rows retain any refusal, with no cache repair.");
             if (!boundary) throw new InvalidOperationException("Sprint32 cold profile/relation boundary differs.");
             RequireSprint32ColdAuxiliaryRelations(caster, sources);
             ObserveSprint32SavedControls(caster, sources, "cold");

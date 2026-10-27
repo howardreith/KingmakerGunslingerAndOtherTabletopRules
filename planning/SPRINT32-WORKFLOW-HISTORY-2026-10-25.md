@@ -3070,3 +3070,115 @@ d07e6bceedc7cad3782bd30527d6023357db71800923b42eb0f0340031fb041f.
 Free2600222720→3643830272B after archives. Full protected ComparePASS
 967Mods/118saves/18refs/83settings/tasks0/Steam1. All unique packages/raws/
 failures/receipts/protected backups preserved; no owned live transaction.
+
+
+## 2026-10-27 00:33UTC - candidate74, native98?101 and bounded observer replans
+
+Source b015ef2ad0f25914442b00120ba511d7fbc23917, after reusable provider-admission
+commit490323a6e4441f15d9506efa78adbdace664eb31. Candidate74 Build-Local PASS,
+23:51:21.8557305?23:55:46.3013570UTC/264.4456265s: wrapper,558/2755 selected,
+pinned production compile and strictZIP. ZIP7c22d4b1c24722171a0369f2d6f17bf8bf918192b85fd72501ac3c3c39e0895e;
+DLL42042a6471b002f91a3a84822becfb64627d77aafa2aa61491e089247b84a06c;
+MVID43ca92f7-3436-4c97-a434-291f7b27dcb6;
+SourceStateb6ee8c3e161a0effc6b5f529322fdc0d68e9d55dfc55489cd90bd4875bc1490a.
+Canonical b015ef2ad0f2 candidate folder; build-provider-cold-b015ef2a logs/receipt.
+Free3645415424?3489718272B. Filtered development gate, not final complete gate.
+
+Native98 run20261026T2359223646051Z-eddb052349914a3c8b5da1df4f12e2fa,
+raw20261026T2359223271231Z-disposable-expanded-summoning-sprint32-native-review.
+23:59:31.4690398?00:01:16.4963755UTC/105013ms,11PASS/2FAIL.
+ResultSHA5ae54544d86c7d195537602a5528c85a4da7d23086ca2e17115adc359c60320a;
+originalUnitySHAf6c15c8c4086d43a9c4b11931390f464137c2390699d02b0fd47cd774ab89b01.
+Natural sword/sword/tail, paid attack, reciprocal hold and initial2d6+5constrict
+passed. ProspectiveSTR20?22; hold lost at first six-second boundary before
+maintain/release/TB/Salamander. Existing Checks were not recorded there, so
+natural-one or native escape is not the observed cause. Native94's prior maintain
+PASS remains source-bound. Installed UnitHelper.TryBreakFree uses the better
+native Mobility/Athletics/CMB route; CMB?100 alone does not isolate escape.
+Product natural-one failure remains legitimate despite owner CMB+100.
+Corrected observer retains both-direction maneuvers, escape rolls/DC and terminal
+parts/conditions before verdicts; only owned victim skill bases are prospectively
+lowered/restored. At most three sequential natural holds are allowed only after
+an actually observed natural-one refusal without later riders/extra attacks.
+No roll seeding, forced escape, time rewind, AI-action reset between holds or
+supplied reacquisition. Release still waits for native complete cleanup.
+Transaction compat-20261026T235655Z-414d4901e286 restored00:01:26.7268976UTC;
+full protected ComparePASS967/118/18/83/tasks0/Steam1.
+
+Native99 run20261027T0008503083971Z-43800422a63644beb18e739d0484458a,
+raw20261027T0008502710979Z-disposable-expanded-summoning-sprint32-native-review.
+00:08:59.7558703?00:10:37.1397339UTC/97382ms,12PASS/2FAIL.
+ResultSHAfd731cc9c2827a7e2936d5890720e49aab10fcc1b3038d9470b297b29055c5ca;
+originalUnitySHA2c228c2b9fdc2ce8d131fbf00b8a04fbb5be34c9c6f02ecd7a954544cabe25c6.
+Outward exact move active99frames/6.638235m/peak4.064m/s, total6.702317m,
+terminalInterrupt. Return Interrupt after one active frame/total0.031704m.
+Agent inspected s32-satyr-rest.png and s32-satyr-move-out.png: recognizable intact
+body, no obvious severe deformation in those frames. Partial presentation only;
+contacts/hit/death/expiry/Lillend unrun. No owner aesthetic approval.
+Actual interrupt source unknown. Independent installed-contract review showed
+command IsFinished is not agent/path settlement; a12s bounded wait now requires
+exact Move retirement, empty queue/commands, no WantsToMove and velocity?.05
+for three ordinary frames, with mode lease rechecked after every yield.
+No forced Stop/path clearing. If that changed reproduction fails, one matched
+native Satyr carrier is available (6114adae73a1338498412b3c63c946f8), with actual
+physical-profile equality and safe summon faction; no baseline defect claimed yet.
+Reviewer's initial gait stopped-label finding was withdrawn: implementation uses
+_tail==null&&_tailRest!=null, denoting controller failure, not zero velocity.
+Transaction compat-20261027T000623Z-3cd0be88833e restored00:10:47.1290028UTC;
+full protected ComparePASS, free3152207872B before Working selection.
+
+Native100 run20261027T0015160011146Z-7b3f3c744bb343bdae175668085418ac,
+raw20261027T0015159698083Z-working-save-expanded-summoning-prepare,
+00:15:28.4541099?00:19:39.3727578UTC/250911ms,37/37PASS.
+ResultSHA3efdb7696a00152b8e322fb601d754734a3d303ba71c5e6da7b18ecd50632dae;
+UnitySHA2a5d96679e71ebade99dd788a352f862053d1f249a79fe5a97c2e205bbff26c8.
+Actual performances/control state, distinct budgets and native Working write;
+protected intake unchanged. Transaction sprint32-stack-20261027T001246Z-8e668efce4b8.
+Native101 run20261027T0023055906469Z-4d1e30ee99ad490ba91809f3ce95a564,
+raw20261027T0023055600774Z-working-save-expanded-summoning-verify-cleanup,
+00:23:19.4587415?00:26:28.3143211UTC/188855ms,6PASS/3FAIL.
+ResultSHA91cbfa92366e8446d8e081d0077c131288e8f3ca4e8237f89ec2ff8ad6836734;
+UnitySHA48624f697966a1bc1d1f070740fc4540fc05b6493d99b6052c0d147fc6343d34.
+All cold boundary predicates except allMutualEnemies pass. Both listeners remain
+mutually hostile to recorded Fascinate source ordinal1; only Competence source
+ordinal3 lacks that relation. Its group caches Summoned, not Player; listeners
+attack Player. Preparation required hostility only to the exact Fascinate owner.
+Independent review confirms observer contract mismatch, not cache/product defect.
+Corrected gate uniquely resolves shared Lillend SourceId/preparation run and its
+mutual relation, retaining every original unrelated-intake protection and all four
+relation diagnostics. Later cold state/cleanup/save/absence remain NOT_RUN.
+Transaction sprint32-stack-20261027T002034Z-718f92af426b restored00:26:46.1032592UTC;
+outer original Working restored00:26:58.9992306UTC, full protected ComparePASS.
+WorkingSHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850,
+8550225B, creation639208636210035057/write639278868712797783/attributes8224.
+
+Current repair batch focused gate00:28:50.3425211?00:29:17.5155881UTC PASS:
+production25.7s,8/2755domain0.1s (gate0.9s), loggrab-presentation-cold-after101-focused.log.
+Two final source-identity checks were added after this compilation and await the
+candidate compile. Reviewer read actual drafts/source/native evidence; no product
+rules changed. Counts74build attempts/60validated packages/101actual launches.
+Approx00:06?00:33 work: observer/contract/review15?20min, native setup/execution/
+restoration~20min overlapping, storage research~2min, build/package0 (focused
+compile27s), product implementation0, owner waiting0. Exclusive totals unavailable.
+Original result/Unity sidecars98?101 and partial visual inspection retained locally.
+No owned live transaction; PR74 remains draft. All required remaining Sprint32
+qualification and the three prior v167 NOT_RUN gaps remain explicit.
+
+After101 fixed cleanup00:34:59?00:35:32UTC reclaimed991895080B across twelve
+closed package duplicates: Sprint22four258404516B, Sprint28four334312548B,
+and native98?101four399178016B. Original reference copies remain; archives
+47436502B SHAc1b1db1627495c6c19b6b66ba759983e78ab18578155144a29113151a0f8df1d
+and55995830B SHA1ec20a0e427d039f6933215a1c92822cb456991a9c30fbebbe00cdc0878fb3dc.
+Retention manifestSHAs5e628141d11dc9698721edb6f6054d488d6b6d3b9ed02c50e84eb94d3acc59ae,
+ae2c5de6af129834dbaee2833f9601aba3bb36f85a0c6e8a117a485ea1379363.
+PlanSHAs665b37f47f34284b88e1a5144aa8b2ea099767ca62a3191bf7ba9c2f64f2e416,
+0e8d1001df03b0aa9e961f1daa1d45aa740b30c3193a0659218a6a676f39a473,
+29e3572167733df75451937bf6c76261b50c25fe47e8fa4b3ea524476f5aca24.
+Free2535776256?3538485248B after archive creation, full ComparePASS967/118/18/83/
+tasks0/Steam1. Every target's resolved absolute package path and complete content
+matched its retained archive/validatedZIP; unique artifacts, raw evidence,
+failures, receipts, all protected backups and personal/DATA files retained.
+Prepare-StorageAfter101.py and exact selection/helpers/results are local only.
+The three natural grab attempts now share one90s acquisition/maintenance window
+per cell, preserving the existing35s failed-maintain release window and600s
+whole native request. This is a bounded fixture selection, not a campaign quota.
