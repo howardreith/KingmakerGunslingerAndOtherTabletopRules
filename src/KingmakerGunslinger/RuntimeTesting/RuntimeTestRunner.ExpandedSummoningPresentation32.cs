@@ -83,6 +83,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in WaitPresentation32(mode, () => new[] { owner, sibling }.All(actor =>
                     actor.View != null && EntityFadedIn(actor) && Sprint17BodyIntact(actor.View,
                         lillend ? actor.View.GetComponent<LillendHumanVisualAttachment>()?.Body?.name : "satyr01") &&
+                    (lillend || actor.View.GetComponent<SatyrNativeWeaponAnimation32>()?.Live == true) &&
                     actor.Descriptor.State.CanAct && actor.Descriptor.State.CanMove &&
                     actor.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitAppearBuff) == null), 15)) yield return frame;
                 if (lillend)
@@ -94,6 +95,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         owned.AddRange(attachment.CaptureOwnedResources()); owned.Add(attachment);
                         borrowed.AddRange(attachment.BorrowedResources());
                     }
+                else
+                {
+                    var attachments = new[] { owner, sibling }.Select(actor => actor.View.GetComponent<SatyrNativeWeaponAnimation32>()).ToArray();
+                    bool independent = attachments.All(value => value != null && value.Live) &&
+                        !ReferenceEquals(attachments[0].OwnedSet, attachments[1].OwnedSet) &&
+                        !ReferenceEquals(attachments[0].OwnedHand, attachments[1].OwnedHand);
+                    Sprint25Check(id + "-animation-binding", independent,
+                        new JObject { ["independentOwnedSetsAndHands"] = independent,
+                            ["outcomes"] = new JArray(attachments.Select(value => value?.Outcome)),
+                            ["nativeBowGoreAndOtherActionsPreserved"] = attachments.All(value => value != null && value.Live) },
+                        "Each exact Satyr owns its added native blade mapping, preserves the borrowed bow/gore and other actions, and leaves both native source sets unchanged.");
+                    if (!independent) throw new InvalidOperationException("Satyr private animation binding is missing or shared.");
+                    foreach (var attachment in attachments)
+                    { owned.AddRange(attachment.OwnedResources()); borrowed.AddRange(attachment.BorrowedResources()); }
+                }
                 Vector3 destination; string lane, direction;
                 var origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 8f, out destination, out lane, out direction);
                 PlaceExpandedSummoningUnit(owner, origin);
@@ -383,6 +399,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["targetManeuverImmune"] = true, ["suppliedNormalCommands"] = true, ["naturalAiClaim"] = false },
                     "Actual native weapon events and normal costs cover each attack family; gameplay-camera contact frames require agent inspection for deformation and misleading contact.");
                 if (!weapons) throw new InvalidOperationException("A required actual attack family is missing.");
+                if (!lillend && new[] { owner, sibling }.Any(actor => actor.View.GetComponent<SatyrNativeWeaponAnimation32>()?.Live != true))
+                    throw new InvalidOperationException("Satyr private/source animation mappings changed during real weapon playback.");
                 // Wound uses an actual frontal native attack, never supplied damage.
                 target.Stats.AdditionalAttackBonus.BaseValue = 100; target.Stats.Strength.BaseValue = 30;
                 var woundWeapon = target.Body.PrimaryHand.MaybeWeapon;
