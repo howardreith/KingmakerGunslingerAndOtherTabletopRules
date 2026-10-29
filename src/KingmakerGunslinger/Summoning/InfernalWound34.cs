@@ -35,7 +35,7 @@ namespace KingmakerGunslinger.Summoning
         public override void OnEventDidTrigger(RuleAttackWithWeapon evt)
         {
             var source = Owner?.Unit; var target = evt?.Target;
-            if (source == null || OwningBlueprint == null || Glaive == null || Wound == null ||
+            if (source == null || InfernalMartialProfile34.For(source) == null || OwningBlueprint == null || Glaive == null || Wound == null ||
                 !ReferenceEquals(source.Blueprint, OwningBlueprint) ||
                 !ReferenceEquals(evt.Initiator, source) ||
                 !ReferenceEquals(evt.Weapon?.Blueprint, Glaive) ||

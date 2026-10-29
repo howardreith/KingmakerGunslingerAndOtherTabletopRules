@@ -111,6 +111,24 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(first.Record(new object(), next, next, 1, target, true), "Round boundary forgets the previous claw.");
         }
 
+        internal static void MixedPersistenceOwnsOnlyTheTwoSelectedCreatures()
+        {
+            const string scope = ExpandedSummoningRosterPersistencePolicy.InfernalOutsidersScope;
+            var keys = new[] { "bearded-devil", "kyton-chain-devil" };
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Reverse()), "Mixed ownership is independent of load ordering.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { keys[0], keys[0] }), "Duplicate source cannot replace the other creature.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Concat(new[] { "succubus" })), "Scope cannot adopt another sprint's unit.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope.ToUpperInvariant(), keys), "Scope spelling is exact.");
+            foreach (string key in keys) {
+                var route = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key);
+                Assertions.Equal(SummonMultiplicity.One, route.Multiplicity, "Each saved source is independent and singular.");
+                Assertions.Equal(5, route.ParentTier, "Preparation uses the actual adult entry's own tier.");
+                Assertions.Equal(12, ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(route), "The fixture uses a legal evil caster for each source.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup, scope), "Cold cleanup enters the existing native-load observer.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad("unrelated", scope), "No unrelated scenario receives save access.");
+        }
+
         internal static void PrintedAbilityModifiersStayLive()
         {
             Assertions.Equal(17, InfernalRules34.BeardDiseaseDc(4), "Barbazu baseline Con DC.");

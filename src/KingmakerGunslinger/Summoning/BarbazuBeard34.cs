@@ -85,7 +85,7 @@ namespace KingmakerGunslinger.Summoning
         {
             var owner = Owner?.Unit;
             return evt != null && owner != null && OwningBlueprint != null &&
-                Claw != null && Fact?.Active == true &&
+                Claw != null && Fact?.Active == true && InfernalMartialProfile34.For(owner) != null &&
                 ReferenceEquals(owner.Blueprint, OwningBlueprint) &&
                 ReferenceEquals(evt.Initiator, owner) ? owner : null;
         }

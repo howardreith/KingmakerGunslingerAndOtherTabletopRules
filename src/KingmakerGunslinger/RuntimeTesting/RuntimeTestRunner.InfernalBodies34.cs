@@ -109,6 +109,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["effectiveWeapon"] = set.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid }));
         }
 
+        private static JObject InfernalRenderedGeometry34(UnitEntityData owner, UnitEntityData target)
+        {
+            var body = owner.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                .Single(value => value.name == TheropodVisualPolicy.BodyRendererName);
+            var chain = owner.View.GetComponent<KytonChainVisual34>();
+            var glaive = owner.View.GetComponent<BarbazuGlaiveView34>();
+            var result = new JObject { ["frame"] = Time.frameCount, ["owner"] = SurveyVector(owner.Position),
+                ["target"] = SurveyVector(target.Position), ["targetRadius"] = target.Corpulence,
+                ["rendererBounds"] = body.bounds.ToString(), ["rendererScale"] = SurveyVector(body.transform.lossyScale) };
+            if (chain != null) {
+                var snapshot = new Mesh { name = "KMG_Runtime_S34_ChainBake" };
+                try {
+                    body.BakeMesh(snapshot);
+                    var points = snapshot.vertices.Select(body.transform.TransformPoint).ToArray();
+                    var indices = PteranodonAssetRuntime.KytonChains34()[chain.ContactChain].Vertices;
+                    var nearest = indices.OrderBy(index => Vector3.SqrMagnitude(points[index] - chain.ContactPoint)).First();
+                    result["chain"] = chain.ContactChain; result["chainResting"] = chain.Resting;
+                    result["manualContact"] = SurveyVector(chain.ContactPoint);
+                    result["bakedNearest"] = SurveyVector(points[nearest]);
+                    result["bakeToManualGap"] = Vector3.Distance(points[nearest], chain.ContactPoint);
+                    result["bakedVertexCount"] = points.Length;
+                    result["bakedLocalBounds"] = snapshot.bounds.ToString();
+                } finally { UnityEngine.Object.DestroyImmediate(snapshot); }
+            }
+            if (glaive?.Model != null) result["glaiveMeshes"] = new JArray(glaive.Model.GetComponentsInChildren<MeshFilter>(true)
+                .Where(filter => filter.sharedMesh != null).Select(filter => new JObject {
+                    ["name"] = filter.sharedMesh.name, ["readable"] = filter.sharedMesh.isReadable,
+                    ["localBounds"] = filter.sharedMesh.bounds.ToString(),
+                    ["origin"] = SurveyVector(filter.transform.position), ["scale"] = SurveyVector(filter.transform.lossyScale),
+                    ["right"] = SurveyVector(filter.transform.right), ["up"] = SurveyVector(filter.transform.up),
+                    ["forward"] = SurveyVector(filter.transform.forward),
+                    ["boundsCenter"] = SurveyVector(filter.transform.TransformPoint(filter.sharedMesh.bounds.center)) }));
+            return result;
+        }
+
         private IEnumerable<int> ReviewInfernalMotion34(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
             string key, InfernalEvents34 trace, JObject receipt)
         {
@@ -117,6 +152,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             var observer = new Sprint16RuleObserver { Owner = owner, Target = target };
             var contacts = new JArray(); receipt[key + "-contacts"] = contacts;
             var errors = new JArray(); receipt[key + "-capture-errors"] = errors;
+            int contactFrame = -100, sampledContact = -1;
+            var renderedFrames = new JArray(); receipt[key + "-rendered-contact-frames"] = renderedFrames;
             observer.ObserveWeaponContact = rule => {
                 if (!ReferenceEquals(rule.Target, target)) return;
                 try {
@@ -132,11 +169,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                             owner.Descriptor.ActivatableAbilities.Enumerable.Single(value => value.Blueprint.AssetGuid == "a7b339e4f6ff93a4697df5d7a87ff619")) : null,
                         ["animationStyle"] = rule.Weapon.GetAnimationStyle(false).ToString(), ["rangeFeet"] = rule.Weapon.AttackRange.Value,
                         ["chain"] = chains?.ContactChain, ["chainContacts"] = chains?.Contacts, ["chainContactGap"] = chains?.ContactGap,
+                        ["renderedGeometry"] = InfernalRenderedGeometry34(owner, target),
                         ["glaiveVisible"] = glaive?.Model?.activeInHierarchy,
                         ["glaiveRenderers"] = glaive?.Model == null ? null : new JArray(glaive.Model.GetComponentsInChildren<Renderer>(true)
                             .Select(renderer => new JObject { ["name"] = renderer.name, ["bounds"] = renderer.bounds.ToString(), ["enabled"] = renderer.enabled })),
                         ["capture"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
                             "s34-" + key + "-contact-" + contacts.Count + ".png", TheropodVisualPolicy.BodyRendererName) });
+                    contactFrame = Time.frameCount; sampledContact = contacts.Count - 1;
                 } catch (Exception error) { errors.Add(error.ToString()); }
             };
             EventBus.Subscribe(observer);
@@ -213,7 +252,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var costs = new JArray();
                     using (var cost = new FirearmReviewCosts(owner, costs)) {
                         owner.Commands.Run(attack);
-                        foreach (int frame in WaitPresentation32(mode, () => attack.IsFinished, 35)) yield return frame;
+                        foreach (int frame in WaitPresentation32(mode, () => attack.IsFinished, 35, () => {
+                            int lag = Time.frameCount - contactFrame;
+                            if (sampledContact < 0 || lag < 1 || lag > 3) return;
+                            var rendered = InfernalRenderedGeometry34(owner, target);
+                            rendered["contactIndex"] = sampledContact; rendered["framesAfterContact"] = lag;
+                            rendered["capture"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
+                                "s34-" + key + "-contact-" + sampledContact + "-after-" + lag + ".png", TheropodVisualPolicy.BodyRendererName);
+                            renderedFrames.Add(rendered);
+                        })) yield return frame;
                         var rows = trace.Rows.Skip(start).Where(row => (string)row["event"] == "attack" && (string)row["owner"] == owner.UniqueId).ToArray();
                         var observed = contacts.Skip(contactStart).ToArray();
                         int expected = key == InfernalVisualPolicy34.Kyton ? 4 : 2;
