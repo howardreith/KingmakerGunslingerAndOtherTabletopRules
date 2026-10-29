@@ -7,7 +7,49 @@ function Read-KmgSprint33Proof($Proof) {
        (Get-FileHash -LiteralPath $Proof.path -Algorithm SHA256).Hash.ToLowerInvariant() -cne $Proof.sha256) { throw 'Sprint33 proof missing or changed.' }
     Get-Content -LiteralPath $Proof.path -Raw | ConvertFrom-Json
 }
+# The one OFF-only observer correction does not invalidate the completed ON envelope.
+# Verify the entire product delta, all three original executions and exact restoration.
+function Assert-KmgSprint33OnReuse($Row,$Candidate) {
+    if($Row.id -cne 'mixed-on-persistence' -or $Row.result -cne 'REUSED_PASS' -or
+       [string]::IsNullOrWhiteSpace($Row.reuseJustification)){throw 'Unselected persistence reuse.'}
+    $old=Read-KmgSprint33Proof $Row.originalCandidateProof
+    $sequence=Read-KmgSprint33Proof $Row.sequenceProof
+    if($old.commit -cne '3c03687566b184db07cd778a55c8d78e9d9a1290' -or $old.version -cne $Candidate.version -or
+       $sequence.source -cne $old.commit -or $sequence.sequence -cne 'on' -or $sequence.status -cne 'PASS' -or
+       -not $sequence.restoration.exactIntake -or -not $sequence.restoration.gameExited -or
+       (@($sequence.stages.stage) -join ',') -cne 'prepare,cleanup,absent' -or
+       @($sequence.stages.runId|Sort-Object -Unique).Count -ne 3 -or @($Row.evidenceSources).Count -ne 3){throw 'Completed original ON envelope required.'}
+    $path='src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningRosterPersistence.cs'
+    $changed=@(& git diff --name-only $old.commit $Candidate.commit -- src/KingmakerGunslinger assets assets-source blueprints)
+    if($LASTEXITCODE -or $changed.Count -ne 1 -or $changed[0] -cne $path){throw 'ON dependencies changed beyond the reviewed OFF expectation.'}
+    $before=(& git show ($old.commit+':'+$path)) -join "`n"
+    if($LASTEXITCODE){throw 'Original observer unavailable.'}
+    $after=(& git show ($Candidate.commit+':'+$path)) -join "`n"
+    $needle='Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope) && verify;'
+    if($LASTEXITCODE -or $before -cnotmatch [regex]::Escape($needle) -or
+       $after -cne $before.Replace($needle,$needle.Replace('Sprint32PersistenceScope)','Sprint32PersistenceScope || Sprint33PersistenceScope)'))){throw 'ON observer path changed.'}
+    if((@($old.references.files|ForEach-Object {$_.relativePath+':'+$_.sha256}|Sort-Object) -join '|') -cne
+       (@($Candidate.references.files|ForEach-Object {$_.relativePath+':'+$_.sha256}|Sort-Object) -join '|')){throw 'ON installed references changed.'}
+    foreach($proof in @($Row.originalCandidateProof,$Row.sequenceProof)){
+        if(@($Row.proofs|Where-Object {$_.path -ceq $proof.path -and $_.sha256 -ceq $proof.sha256}).Count -ne 1){throw 'ON provenance omitted.'}
+    }
+    foreach($stage in $sequence.stages){
+        $sources=@($Row.evidenceSources|Where-Object runId -ceq $stage.runId)
+        if($sources.Count -ne 1){throw 'ON stage attribution missing or duplicated.'}
+        $source=$sources[0]
+        foreach($key in @('packageSha256','dllSha256','dllMvid')){if($source.$key -cne $old.$key){throw 'ON original artifact differs.'}}
+        if($source.source -cne $old.commit -or $source.executionKind -cne 'installed-stack'){throw 'ON source differs.'}
+        Assert-KmgSprints3031FreshExecution $source $old $Row
+        $native=Read-KmgSprint33Proof $source.nativeProof
+        if($native.gitCommit -cne $old.commit -or $native.runId -cne $stage.runId -or $native.status -cne 'PASS' -or
+           @($native.assertions|Where-Object status -cne 'PASS').Count -or $stage.rawSha256 -cne $source.nativeProof.sha256 -or
+           @($stage.requiredAssertions).Count -eq 0){throw 'ON native evidence incomplete.'}
+        foreach($name in $stage.requiredAssertions){if(@($native.assertions|Where-Object {$_.name -ceq $name -and $_.status -ceq 'PASS'}).Count -ne 1){throw 'ON required outcome absent.'}}
+        if(@($Row.proofs|Where-Object {$_.path -ceq $source.nativeProof.path -and $_.sha256 -ceq $source.nativeProof.sha256}).Count -ne 1){throw 'ON raw proof omitted.'}
+    }
+}
 function Assert-KmgSprint33Reuse($Row,$Candidate) {
+    if($Row.id -ceq 'mixed-on-persistence'){Assert-KmgSprint33OnReuse $Row $Candidate;return}
     if($Row.result -cne 'REUSED_PASS' -or $Row.id -cnotin @('twelve-preserved-routes','dedicated-models-motion-ownership','natural-invisibility-purge','succubus-preservation-stalker-turn') -or
        [string]::IsNullOrWhiteSpace($Row.reuseJustification)) { throw 'Unselected Sprint33 evidence reuse.' }
     foreach($source in $Row.evidenceSources) {
