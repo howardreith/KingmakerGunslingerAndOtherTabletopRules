@@ -1,14 +1,37 @@
 # Sprint 34 - hidden implementation
 
-Current stage: preparing the first hidden executable candidate in
-`C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
-`codex/expanded-summoning-sprint34-bearded-devil-kyton`.
-Base master: `4b7e3d914883ac695a4146c03de790b2024ea38c`.
-Pushed hidden implementation: `268e89b2a48e3e7181db280b4b0857f92f3da2b0`.
-Candidate: none yet. Native behavior, attachment, persistence and release are
-NOT_RUN. No aesthetic approval claimed. Sprint 33 is closed at v0.0.171;
-its original-source ON REUSED_PASS remains distinct from final-artifact
-OFF/combined observations. Historical deferred checks remain NOT_RUN.
+Current stage: repair the bounded early native fixture after its first retained
+FAIL. Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
+`codex/expanded-summoning-sprint34-bearded-devil-kyton`; reviewed base
+`4b7e3d914883ac695a4146c03de790b2024ea38c`. All ten routes remain hidden.
+No persistence or release campaign has begun. Sprint33 remains closed; its
+original-source ON REUSED_PASS is distinct from final-artifact OFF/combined
+observations. Historical deferred checks remain NOT_RUN.
+
+Last executable development candidate (not a release): source
+`8505d4acd40b22833bf43613f9dadd50150f02d2`, purpose `sprint34-infernal-early`.
+ZIP SHA256 `6e8aa2e2e2f7e7cac2847c7ea39c48dc18c49325f0a40ae6bdc39cedd1ea3a61`;
+DLL SHA256 `7210755a02752d22514229818062600700a947d953ea6b9389f149c3636eff4d`;
+MVID `e723fc74-09f1-4641-9d6a-36fe200070c8`;
+source fingerprint `b0283a7a4795276983e510116b7e7f492be4c376bb35b3cf53ca95bb17ff6491`.
+Build04 passed in272.4s, selected14/2766 tests and strict package validation.
+
+Early native RunId `20261029T2109139961185Z-69ea789acecd4becb12b9300bb1fef21`
+is **FAIL**,450.8s including guarded orchestration/restoration. Its unfiltered raw
+receipt remains local. Native chain control spent one standard action, extended
+10 to25feet and added no attacks; the later command executed exactly four chains.
+Six real cures healed and closed the wound with passing CL checks. The seventh
+parent and held-touch child completed without any heal event; no rejection was
+observed. Touch rolls were absent from the observer, so a natural miss cannot be
+diagnosed from the original receipt. These are development subobservations,
+not a final-package PASS. Both original bodies attached; visibility/contact/motion
+acceptance is still pending. No personal aesthetic approval claimed.
+
+The repaired observer records all native attack rolls and allows at most three
+retries of the exact missed held charge, without extra slots or forced results.
+It also checks two actual wound sources, one native2HP tick and separate source
+retirement. Focused compilation and10/2766 selected tests passed in31.7s.
+The changed observer requires a new candidate and fresh affected native run.
 
 ## Reuse, gap and proof
 
@@ -52,8 +75,8 @@ OFF/combined observations. Historical deferred checks remain NOT_RUN.
 | Group | Current evidence | Remaining |
 |---|---|---|
 | Profiles/defenses/donor isolation | Source/private references inspected | Native grants, totals and isolation |
-| Barbazu modes/Beard/wound/disease | Focused bookkeeping tests, native consumer IL | Real combat/healing/ownership and lifetime |
-| Kyton chains/gaze/armor/regeneration | Native command/consumer implementation | Actual four attacks, costs, saves and bypass |
+| Barbazu modes/Beard/wound/disease | Six development native cures closed real wounds; overall run FAIL | Healing rejection, overlap/ownership; remaining combat/lifetime |
+| Kyton chains/gaze/armor/regeneration | Development control/cost/four-chain subobservations | Final qualification; saves, bypass and other action modes |
 | AI/actions/cleanup | Existing fixture and owned lifetime reuse | RTWP/TB, cancellation, independent items/no loot |
 | Models/icons/ten public routes | Original assets; offline decoder/icon PASS | Native body/contact/UI; all actual public casts |
 | Mixed persistence/integration | No campaign begun | One mixed ON trio and OFF trio, targeted combined |
@@ -77,11 +100,13 @@ passes strict package validation; it has no candidate receipt or native authorit
 Development source validator and canonical icon validator PASS. Ledger prefix
 verification and diff whitespace check PASS. No full milestone gate yet.
 
-Next executable action: commit the exact model packaging correction, build one
-`sprint34-infernal-early` development candidate, then run one guarded save-free
-CotW early mechanics transaction (15-25 minutes including restoration). Inspect
-native candidate metadata in that first useful session; native-body absence is
-not yet established. A stock-profile bleed graph remains unobserved.
+Next executable action: review/commit the observer correction, build one changed
+`sprint34-infernal-early` candidate, then run the corrected guarded save-free
+CotW transaction (15-25min including restoration). No unchanged retry. The finite
+selection remains chain control/routine, real spell rejection/closure, and exact
+two-source wound retirement. The native Apostate candidate resolved to the
+Forefather human-equipment prefab, not a confirmed Barbazu/Kyton body; full body
+acceptance remains open. Stock-profile bleed graph is still unobserved.
 
 Before final freeze: implement the smallest exact Sprint34 publisher selector
 and refusal checks; integrate legitimate upstream once; recheck patch availability.
@@ -97,8 +122,11 @@ Sixteen private build references hash-match the installed2.1.7b runtime.
 Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-tasks/processes/leases. Latest approved read-only Compare PASS. No game/deployment
-or Working envelope has begun; human installation/settings/saves remain untouched.
+tasks/processes/leases. After the native FAIL, transaction
+`compat-20261029T210616Z-78f65d5e5221` reached Restored with restorationVerified=true
+at2026-10-29T21:13:45.9096834Z. Settings restoration and full intake Compare PASS;
+original installation, protected saves, sound bank/references and processes match.
+No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
 each future envelope and before source work resumes.
 
@@ -107,7 +135,7 @@ The exact two push branches are allowlisted. Byte-verified backup:
 Original SHA256 `bcf9021162d39ab78a0aeb83c7d2dfc8ef40f5161257d17898a851d65e40ff04`;
 updated `e2f9feb4a9f7881b61f39472ca9862525431bfe2c8f493abddc56e2d08ccd230`.
 Existing focused acceptance/refusal suite38 PASS; no broader branch permission.
-C: last measured free3,739,910,144 bytes; E:300,206,530,560. Calculate the staged
+C: last measured free2,614,231,040 bytes; E:300,206,530,560. Calculate the staged
 profile/build/extraction reserve before launch. No scratch archive/deletion.
 v0.0.172 was free at intake only; recheck remote tags/releases before freeze.
 No release or completion claim.

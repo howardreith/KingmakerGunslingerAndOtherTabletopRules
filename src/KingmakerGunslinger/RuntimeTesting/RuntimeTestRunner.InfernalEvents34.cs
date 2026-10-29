@@ -21,7 +21,8 @@ namespace KingmakerGunslinger.RuntimeTesting
         // dispatch error. This observer never changes a rule or game state.
         private sealed class InfernalEvents34 : IDisposable, IUnitCommandStartHandler,
             IUnitCommandActHandler, IUnitCommandEndHandler,
-            IGlobalRulebookHandler<RuleAttackWithWeapon>, IGlobalRulebookHandler<RuleDealDamage>,
+            IGlobalRulebookHandler<RuleAttackWithWeapon>, IGlobalRulebookHandler<RuleAttackRoll>,
+            IGlobalRulebookHandler<RuleDealDamage>,
             IGlobalRulebookHandler<RuleHealDamage>, IGlobalRulebookHandler<RuleSavingThrow>,
             IGlobalRulebookHandler<RuleApplyBuff>
         {
@@ -65,6 +66,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void HandleUnitCommandDidStart(UnitCommand command) { Command(command, "command-start"); }
             public void HandleUnitCommandDidAct(UnitCommand command) { Command(command, "command-act"); }
             public void HandleUnitCommandDidEnd(UnitCommand command) { Command(command, "command-end"); }
+            public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
+            public void OnEventDidTrigger(RuleAttackRoll evt)
+            {
+                var row = Row("attack-roll", evt.Initiator, evt.Target);
+                row["attackType"] = evt.AttackType.ToString(); row["hit"] = evt.IsHit;
+                row["d20"] = evt.Roll.Value; row["bonus"] = evt.AttackBonus; row["ac"] = evt.TargetAC;
+                row["autoHit"] = evt.AutoHit; row["ability"] = evt.Reason?.Ability?.Blueprint?.AssetGuid;
+                row["contextAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid;
+            }
             public void OnEventAboutToTrigger(RuleAttackWithWeapon evt) { }
             public void OnEventDidTrigger(RuleAttackWithWeapon evt)
             {
