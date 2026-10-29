@@ -10,11 +10,11 @@ import validate_expanded_summoning_sprint21150 as common
 from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 from validate_expanded_summoning_sprint32_release169 import check_census
 
-PRODUCT = "99defb3b4878e4b72501a84a9d188b2aee898f41"
+PRODUCT = "f32511de6b05717decad3651aa932374f17efde0"
 RELEASED = "43abeedfd223e95dec33a3556cc5606a029e4cd3"
 VERSION = "0.0.171"
 INFORMATIONAL = VERSION + "-expanded-summoning-shadow-outsiders"
-OLD_INFORMATIONAL = "0.0.170-satyr-lillend-presentation-repair"
+OLD_INFORMATIONAL = INFORMATIONAL
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint33Release171"
