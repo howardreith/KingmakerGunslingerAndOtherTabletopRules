@@ -13,14 +13,14 @@ teleportation, campaign scripts, XP or transferable equipment.
 | Field | Bearded Devil | Kyton |
 |---|---|---|
 | Type | LE Medium outsider; devil, evil, extraplanar, lawful | LE Medium outsider; evil, extraplanar, kyton, lawful (not devil) |
-| HD / BAB / HP | 6d10 / 6 / 33 racial + 6×Con modifier = 57 | 8d10 / 8 / 44 racial + 8×Con modifier = 60 |
+| HD / BAB / HP | 6d10 / 6 / 33 racial + 6Ã—Con modifier = 57 | 8d10 / 8 / 44 racial + 8Ã—Con modifier = 60 |
 | Str/Dex/Con/Int/Wis/Cha | 19/15/19/6/12/10 | 15/17/14/11/12/12 |
 | Saves | Fort 5+4=9; Ref 5+2=7; Will 2+1=3 | Fort 6+2=8; Ref 6+3=9; Will 2+1=3 |
 | AC | 10+2 Dex+7 natural=19 | 10+3 Dex+4 armor+4 natural=21 |
 | Defenses | DR 5/good or silver; fire/poison immune; acid/cold resistance 10; SR 16 | DR 5/silver or good; cold immune; SR 17; regeneration 2, bypass good weapons/spells or silver weapons |
 | Movement / reach | 40 ft.; claws 5 ft., glaive 10 ft. | 30 ft.; body 5 ft., chains 10 ft. |
 | Routine | Glaive +11/+6, 1d10+6 OR two claws +10, 1d6+4 | Four chains +11, 2d4+2 |
-| Derivation | BAB6+Str4+glaive Focus1; two-handed damage 1½Str; claws ordinary Str | BAB8+Str2+chain Focus1; damage ordinary Str |
+| Derivation | BAB6+Str4+glaive Focus1; two-handed damage 1Â½Str; claws ordinary Str | BAB8+Str2+chain Focus1; damage ordinary Str |
 | Feats | Improved Initiative, Power Attack, Weapon Focus (glaive) | Alertness, Blind-Fight, Improved Initiative, Weapon Focus (chain) |
 
 Live bonuses must use native signed ability modifiers, buffs, feats and weapon
@@ -59,7 +59,7 @@ Native type signatures are research, never native-dispatch PASS.
 
 ## Approved action and ownership adaptations (2026-10-29)
 
-| Operation | Printed rule / native possibility | Proposed policy — NOT APPROVED |
+| Operation | Printed rule / native possibility | Approved policy |
 |---|---|---|
 | Ordinary routine | Four chains; ordinary native single/full attack commands | Keep one or four attacks, 10ft chain reach, normal costs |
 | Control | Standard action; at most four existing chains in20ft | Control the summon's four already-owned chain items; no attack on activation |
@@ -89,3 +89,13 @@ positive value. A zero modifier alone is therefore insufficient. The retained
 Filth Fever blueprint graph saves on NewRound, so it cannot be cloned unchanged
 for Devil Chills' day-scale onset/frequency. These are implementation findings,
 not native gameplay acceptance.
+
+Installed regeneration IL selects positive final damage and reads alignment
+from every BaseDamage, while silver selection is limited to PhysicalDamage.
+The private regeneration buff uses this native round/death-prevention consumer,
+with good/silver bypass arrays. Native spell attribution remains to be observed.
+CotW's bleed donor uses its shared strongest-bleed selector; its private clone
+keeps that consumer. Source removal reselects remaining live bleed facts because
+the installed selector does not do this itself. Stock bleed uses its actual
+native damage action only when the inspected graph resolves. Both paths still
+need native proof, including another source's unrelated bleed.

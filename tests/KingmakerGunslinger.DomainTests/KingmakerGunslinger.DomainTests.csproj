@@ -35,6 +35,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="InfernalRules34Tests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\InfernalRules34.cs"><Link>Summoning\InfernalRules34.cs</Link></Compile>
     <Compile Include="ExpandedSummoningSprint27Tests.cs" />
     <Compile Include="ExpandedSummoningSprint28Tests.cs" />
     <Compile Include="ExpandedSummoningSprint29Tests.cs" />

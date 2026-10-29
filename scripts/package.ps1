@@ -208,6 +208,13 @@ New-Item -ItemType Directory -Path $lillendDestination -Force | Out-Null
 foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint32-support\'+$file)) -Destination $lillendDestination
 }
+$infernalDestination = Join-Path $modDirectory 'assets\sprint34-infernal-outsiders'
+New-Item -ItemType Directory -Path $infernalDestination -Force | Out-Null
+foreach ($kind in @('bearded-devil','kyton-chain-devil')) {
+    foreach ($suffix in @('mesh.json','albedo.png')) {
+        Copy-Item -LiteralPath (Join-Path $outputDirectory ("assets\sprint34-infernal-outsiders\$kind-$suffix")) -Destination $infernalDestination
+    }
+}
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
 $shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')

@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 124;
-        internal const int LogicalAbilityCount = 1160;
+        internal const int UnitCount = 126;
+        internal const int LogicalAbilityCount = 1170;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 586;
+        internal const int SpecialIdentityCount = 608;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -895,6 +895,28 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearShakenBuff", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.Satyr.FearFrightenedBuff", "BlueprintBuff"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.FeyCelestial.LillendAzata.SoundBurst", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.Glaive", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.GlaiveType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.DevilChills", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.InfernalWound", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BeardedDevil.WeaponModeAi", "BarbazuWeaponModeAi34"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.Chain", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.ChainType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.ControlledChains", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.DancingChains", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.UnnervingGaze", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.Shaken", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.Regeneration", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.ControlAi", "KytonControlAi34"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.GazeAi", "KytonGazeAi34"));
             Validate(result);
             return result.AsReadOnly();
         }

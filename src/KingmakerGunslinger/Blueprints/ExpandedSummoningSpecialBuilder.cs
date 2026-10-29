@@ -681,6 +681,7 @@ namespace KingmakerGunslinger.Blueprints
             ConfigureSatyr32(library, bySymbol);
             ConfigureLillend32(library, bySymbol);
             ConfigureSuggestion32(library, bySymbol);
+            ConfigureInfernal34(library, bySymbol);
             ConfigureHoundArchon30(library, bySymbol, extraplanar);
             ConfigureTrumpet31(library, bySymbol, extraplanar);
             ConfigureAstralDeva31(library, bySymbol, extraplanar);

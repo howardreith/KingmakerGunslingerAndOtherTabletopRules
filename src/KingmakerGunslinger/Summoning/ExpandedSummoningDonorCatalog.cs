@@ -119,7 +119,9 @@ namespace KingmakerGunslinger.Summoning
                 "trumpet-archon|afe56099ff6046b40a359b7562c0424e|1",
                 "astral-deva|afe56099ff6046b40a359b7562c0424e|1",
                 "satyr|6114adae73a1338498412b3c63c946f8|1",
-                "lillend-azata|86dc43534645e234eb35431131e3b669|1"
+                "lillend-azata|86dc43534645e234eb35431131e3b669|1",
+                "bearded-devil|a8cbd4cdb0feaf64eab1452257c3c971|0",
+                "kyton-chain-devil|a8cbd4cdb0feaf64eab1452257c3c971|0"
             });
         }
 

@@ -3936,7 +3936,14 @@
       "height": 128,
       "format": "RGBA PNG",
       "scope": "kmg-catalog",
-      "blueprintSymbols": []
+      "blueprintSymbols": [
+        "KMG.Summoning.Unit.BeardedDevil",
+        "KMG.Summoning.Ability.SM.Tier5.BeardedDevil.One",
+        "KMG.Summoning.Ability.SM.Tier6.BeardedDevil.OneD3",
+        "KMG.Summoning.Ability.SM.Tier7.BeardedDevil.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier8.BeardedDevil.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier9.BeardedDevil.OneD4PlusOne"
+      ]
     },
     {
       "key": "kyton-chain-devil",
@@ -3949,7 +3956,14 @@
       "height": 128,
       "format": "RGBA PNG",
       "scope": "kmg-catalog",
-      "blueprintSymbols": []
+      "blueprintSymbols": [
+        "KMG.Summoning.Unit.KytonChainDevil",
+        "KMG.Summoning.Ability.SM.Tier5.KytonChainDevil.One",
+        "KMG.Summoning.Ability.SM.Tier6.KytonChainDevil.OneD3",
+        "KMG.Summoning.Ability.SM.Tier7.KytonChainDevil.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier8.KytonChainDevil.OneD4PlusOne",
+        "KMG.Summoning.Ability.SM.Tier9.KytonChainDevil.OneD4PlusOne"
+      ]
     }
   ]
 }
