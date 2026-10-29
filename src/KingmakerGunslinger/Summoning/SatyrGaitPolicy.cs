@@ -46,5 +46,10 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private static float Range(float[] values) => values.Max() - values.Min();
+
+        internal static bool RecentRetiredBow(bool observedPlayingClip, bool sameHandle, bool sameSelectedClip,
+            bool finished, bool interrupted, bool acted, int playbackFrame, int releaseFrame) =>
+            observedPlayingClip && sameHandle && sameSelectedClip && finished && !interrupted && acted &&
+            playbackFrame >= 0 && releaseFrame >= playbackFrame && releaseFrame - playbackFrame <= 2;
     }
 }

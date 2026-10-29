@@ -53,6 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Lillend32CommandStarts attackCompletion = null;
             Sprint17SnakeContactFrameProbe probe = null;
             var capturedWeapons = new HashSet<string>();
+            var bowPlayback = new Dictionary<UnitAttack, SatyrBowPlayback32>();
             Action<UnitEntityData, string> captureUnit = (subject, name) => {
                 if (mode == null || !mode.Current) throw new InvalidOperationException("Presentation capture lost Default ownership.");
                 lastCapture = Time.frameCount;
@@ -364,13 +365,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["tailLastClipTime"] = tailAction?.LastClipTime, ["tailLastNativeTime"] = tailAction?.LastNativeTime,
                                 ["nativeHandleActed"] = animation?.IsActed };
                             var handAction = animation?.Action as UnitAnimationActionHandAttack;
+                            AnimationClip selected = null;
                             if (handAction != null)
                             {
                                 // GetVariant only reads the already selected native
                                 // variant. Do not create an inspection handle.
                                 var select = typeof(UnitAnimationActionHandAttack).GetMethod("GetVariant", BindingFlags.NonPublic | BindingFlags.Instance);
                                 if (select == null) throw new MissingMethodException("Native hand variant lookup changed.");
-                                var selected = select.Invoke(handAction, new object[] { animation }) as AnimationClip;
+                                selected = select.Invoke(handAction, new object[] { animation }) as AnimationClip;
                                 attackRow["selectedNativeVariant"] = new JObject { ["name"] = selected?.name,
                                     ["length"] = selected == null ? (float?)null : selected.length };
                             }
@@ -383,17 +385,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["action"] = animation?.Action?.GetType().FullName,
                                 ["style"] = animation?.AttackWeaponStyle.ToString(),
                                 ["handleTime"] = animation == null ? (float?)null : animation.GetTime() };
-                            if (!guards.Properties().All(value => (bool)value.Value))
+                            SatyrBowPlayback32 priorBow;
+                            bowPlayback.TryGetValue(command, out priorBow);
+                            bool retiredBow = !lillend && weapon == "6d40d84e239bdf345b349ff52e3c00a9" &&
+                                animation != null && animation.AttackWeaponStyle == WeaponAnimationStyle.Bow && priorBow != null &&
+                                priorBow.CaptureFrame >= 0 && priorBow.CaptureFrame <= eventFrame &&
+                                SatyrGaitPolicy.RecentRetiredBow(priorBow.Played,
+                                    ReferenceEquals(priorBow.Handle, animation), ReferenceEquals(priorBow.Clip, selected),
+                                    animation.IsFinished, animation.IsInterrupted, animation.IsActed, priorBow.Frame, eventFrame);
+                            attackRow["retiredBowPlayback"] = priorBow == null ? null : new JObject {
+                                ["accepted"] = retiredBow, ["lastActualPlayback"] = priorBow.Row,
+                                ["poseCaptureFrame"] = priorBow.CaptureFrame, ["eventFrame"] = eventFrame };
+                            if (!guards.Properties().Where(value => value.Name != "activeHandle").All(value => (bool)value.Value) ||
+                                !(bool)guards["activeHandle"] && !retiredBow)
                                 throw new InvalidOperationException("Synchronous contact capture failed exact native event/frame/animation predicates.");
-                            if (!playing) throw new InvalidOperationException("Exact contact animation is not playing.");
+                            if (!playing && !retiredBow) throw new InvalidOperationException("Exact contact animation has no live or recently observed native playback.");
                             capture(captureName);
-                            captures.Add(new JObject { ["kind"] = "contact-attribution", ["fileStem"] = captureName,
+                            captures.Add(new JObject { ["kind"] = retiredBow ? "retired-bow-release-attribution" : "contact-attribution", ["fileStem"] = captureName,
                                 ["eventFrame"] = eventFrame, ["captureFrame"] = Time.frameCount,
                                 ["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command),
                                 ["ruleReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(rule),
                                 ["weapon"] = weapon, ["hit"] = true, ["eventMeaning"] = rule.Weapon.Blueprint.IsMelee ? "melee-contact" : "projectile-launch-not-impact", ["animation"] = animation.Action.name,
-                                ["clip"] = tailAction != null ? tailAction.Clips.Single().name : clip.name,
-                                ["clipTime"] = tailAction != null ? tailAction.LastClipTime : active.GetTime(),
+                                ["clip"] = tailAction != null ? tailAction.Clips.Single().name : retiredBow ? priorBow.Clip.name : clip.name,
+                                ["clipTime"] = tailAction != null ? tailAction.LastClipTime : retiredBow ? priorBow.Time : active.GetTime(),
+                                ["clipPlayingAtEvent"] = playing, ["priorPlaybackFrame"] = retiredBow ? (int?)priorBow.Frame : null,
                                 ["nativeHandleTime"] = animation.GetTime() });
                         }
                         catch (Exception error) { captureErrors.Add(error.ToString()); }
@@ -500,7 +515,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var attack = new UnitAttack(target) { ForceFullAttack = true }; attack.Init(owner);
                             owner.Commands.Run(attack);
                             foreach (int frame in WaitPresentation32(mode, () => attack.IsFinished && pending == 0, 25,
-                                () => { if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend)); })) yield return frame;
+                                () => {
+                                    if (!lillend && set == 0)
+                                    {
+                                        var handle = attack.Animation; var activeBow = handle?.ActiveAnimation;
+                                        var liveClip = activeBow?.GetPlayableClip();
+                                        if (handle?.AttackWeaponStyle == WeaponAnimationStyle.Bow &&
+                                            ReferenceEquals(handle.Manager, owner.View.AnimationManager) &&
+                                            owner.View.AnimationManager.ActiveActions.Contains(handle) &&
+                                            SerpentineFinalReviewPolicy.PlayedNativeClip(true, handle.IsStarted,
+                                                liveClip?.name, liveClip == null ? float.NaN : liveClip.length,
+                                                activeBow == null ? double.NaN : activeBow.GetTime(), activeBow == null ? float.NaN : activeBow.GetWeight()))
+                                        {
+                                            SatyrBowPlayback32 sample;
+                                            if (!bowPlayback.TryGetValue(attack, out sample))
+                                            { sample = new SatyrBowPlayback32(); bowPlayback.Add(attack, sample); }
+                                            sample.Handle = handle; sample.Clip = liveClip; sample.Played = true;
+                                            sample.Frame = Time.frameCount; sample.Time = activeBow.GetTime();
+                                            sample.Row = new JObject { ["frame"] = sample.Frame, ["clip"] = liveClip.name,
+                                                ["time"] = sample.Time, ["weight"] = activeBow.GetWeight(), ["activeHandle"] = true,
+                                                ["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack) };
+                                            if (sample.CaptureFrame < 0 && sample.Time >= liveClip.length * .35f)
+                                            { capture("bow-playback-" + attempt); sample.CaptureFrame = Time.frameCount; }
+                                        }
+                                    }
+                                    if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend));
+                                })) yield return frame;
                             var releases = projectileReleases.Where(pair => ReferenceEquals(pair.Value, attack)).Select(pair => pair.Key).ToArray();
                             if (releases.Length != 0)
                                 foreach (int frame in WaitPresentation32(mode, () => releases.All(release => strikes.Damage.Any(damage => matchingImpact(release, damage))), 8, null)) yield return frame;
@@ -519,7 +559,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["requiredWeapons"] = new JArray(requiredWeapons), ["capturedWeapons"] = new JArray(capturedWeapons),
                                     ["actualAttacks"] = attacks.DeepClone(), ["projectileImpacts"] = impactRows, ["captureErrors"] = new JArray(captureErrors),
                                     ["pendingCaptures"] = pending, ["captures"] = captures.DeepClone() },
-                                "Exact native final-act success and complete matching weapon plan establish completion even if native retirement later reports Interrupt; normal cost and same-frame animation capture remain required. Ranged events are projectile launch, not impact.");
+                                "Native command completion, full plan and cost remain required. Melee keeps synchronous active contact; bow also admits the same finished, un-interrupted handle with its actually played selected clip observed within two frames. Ranged launch and impact remain separate.");
                             if (!attemptPassed) throw new InvalidOperationException("Actual full attack, cost or contact capture failed; exact per-attempt predicates retained.");
                         }
                         if (requiredWeapons.Any(weapon => !capturedWeapons.Contains(weapon)))
@@ -791,6 +831,16 @@ namespace KingmakerGunslinger.RuntimeTesting
             return new JObject { ["root"] = root.name, ["locomotion"] = SatyrNativeWeaponAnimation32.DescribeLocomotion(unit.View.AnimationManager),
                 ["bones"] = new JArray(skin.bones.Select(bone => { var point = root.InverseTransformPoint(bone.position);
                     return new JObject { ["name"] = bone.name, ["position"] = new JArray(point.x, point.y, point.z) }; })) };
+        }
+
+        private sealed class SatyrBowPlayback32
+        {
+            internal UnitAnimationActionHandle Handle;
+            internal AnimationClip Clip;
+            internal int Frame, CaptureFrame = -1;
+            internal double Time;
+            internal bool Played;
+            internal JObject Row;
         }
 
         private sealed class Satyr32Stride

@@ -938,6 +938,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint32-lillend-visual-drivers", LillendVisual32Tests.ExportedDriversKeepNativeAndOriginalOwnership),
             Case("expanded-summoning.sprint32-satyr-gait", SatyrGaitTests.RequiresBilateralArticulatedStride),
             Case("expanded-summoning.sprint32-satyr-gait-invalid", SatyrGaitTests.RejectsInvalidAndRetiredEvidence),
+            Case("expanded-summoning.sprint32-satyr-bow-retirement", SatyrGaitTests.RetiredBowRequiresActualRecentPlayback),
             Case("expanded-summoning.quantity-same-kind", ExpandedSummoningCatalogTests.QuantityRulesAreExactAndSameKind),
             Case("expanded-summoning.alignment-policies", ExpandedSummoningCatalogTests.AlignmentPoliciesAreFamilyScoped),
             Case("expanded-summoning.catalog-guards", ExpandedSummoningCatalogTests.CatalogGuardsInvalidSpecs),
