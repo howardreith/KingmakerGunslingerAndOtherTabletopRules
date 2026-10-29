@@ -13,14 +13,14 @@ teleportation, campaign scripts, XP or transferable equipment.
 | Field | Bearded Devil | Kyton |
 |---|---|---|
 | Type | LE Medium outsider; devil, evil, extraplanar, lawful | LE Medium outsider; evil, extraplanar, kyton, lawful (not devil) |
-| HD / BAB / HP | 6d10 / 6 / 33 racial + 6Ã—Con modifier = 57 | 8d10 / 8 / 44 racial + 8Ã—Con modifier = 60 |
+| HD / BAB / HP | 6d10 / 6 / 33 racial + 6 * Con modifier = 57 | 8d10 / 8 / 44 racial + 8 * Con modifier = 60 |
 | Str/Dex/Con/Int/Wis/Cha | 19/15/19/6/12/10 | 15/17/14/11/12/12 |
 | Saves | Fort 5+4=9; Ref 5+2=7; Will 2+1=3 | Fort 6+2=8; Ref 6+3=9; Will 2+1=3 |
 | AC | 10+2 Dex+7 natural=19 | 10+3 Dex+4 armor+4 natural=21 |
 | Defenses | DR 5/good or silver; fire/poison immune; acid/cold resistance 10; SR 16 | DR 5/silver or good; cold immune; SR 17; regeneration 2, bypass good weapons/spells or silver weapons |
 | Movement / reach | 40 ft.; claws 5 ft., glaive 10 ft. | 30 ft.; body 5 ft., chains 10 ft. |
 | Routine | Glaive +11/+6, 1d10+6 OR two claws +10, 1d6+4 | Four chains +11, 2d4+2 |
-| Derivation | BAB6+Str4+glaive Focus1; two-handed damage 1Â½Str; claws ordinary Str | BAB8+Str2+chain Focus1; damage ordinary Str |
+| Derivation | BAB6+Str4+glaive Focus1; two-handed damage 1.5 * positive Str (full negative); claws ordinary Str | BAB8+Str2+chain Focus1; damage ordinary Str |
 | Feats | Improved Initiative, Power Attack, Weapon Focus (glaive) | Alertness, Blind-Fight, Improved Initiative, Weapon Focus (chain) |
 
 Live bonuses must use native signed ability modifiers, buffs, feats and weapon
@@ -28,6 +28,11 @@ mode; never bake final donor totals. Chain Armor is a typed +4 armor bonus,
 without wearable-armor penalties. Preserve named unsupported skills as reference
 values, without reallocating their ranks or granting substitute bonuses.
 Passive/world senses stay within the established scope.
+Named unsupported references: Barbazu Climb +13 and Sense Motive +6; Kyton
+Climb +13, Craft (blacksmithing) +11 and Escape Artist +14. No broad Athletics,
+Persuasion or crafting substitute is granted. Controlled-chain climbing has no
+world-chain consumer under the approved owned-chain policy. Existing Mobility
+handles Kyton Acrobatics +14; Intimidate has its own native check consumer.
 
 Barbazu's both-claw, same-opponent condition causes separate 1d8+2 beard damage.
 Disease exposure follows its injury contract: Fort DC17 (Con-based),

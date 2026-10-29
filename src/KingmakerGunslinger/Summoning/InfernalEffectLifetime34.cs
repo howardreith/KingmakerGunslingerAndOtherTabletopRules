@@ -69,7 +69,10 @@ namespace KingmakerGunslinger.Summoning
         public void HandleBuffDidAdded(Buff buff) { }
         public void HandleBuffDidRemoved(Buff buff)
         {
+            // The installed BuffCollection broadcasts IUnitBuffHandler globally.
+            // Match the removed instance's owner before retiring this source.
             if (Owner?.Unit != null && ReferenceEquals(Owner.Unit.Blueprint, OwningBlueprint) &&
+                ReferenceEquals(buff?.Owner, Owner) &&
                 ReferenceEquals(buff?.Blueprint, BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff))
                 InfernalEffectLifetime34.Retire(Owner.Unit);
         }
