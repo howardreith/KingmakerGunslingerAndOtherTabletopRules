@@ -69,10 +69,15 @@ capture; the second stopped after187.8s in a historical v171 census fixture.
 That fixture now reads both catalog and identity inputs from its recorded
 product commit, preserving its positive/hidden/extra-creature refusal checks.
 All12 focused v171 fixture tests pass; no historical gameplay was rerun.
+The next candidate attempt compiled successfully but stopped after265.2s at
+the strict output allowlist, which lacked the four original S34 model exports.
+The build/package lists, exact export hashes and file-count derivation are now
+extended together. A packaging-only probe of the retained compiled output
+passes strict package validation; it has no candidate receipt or native authority.
 Development source validator and canonical icon validator PASS. Ledger prefix
 verification and diff whitespace check PASS. No full milestone gate yet.
 
-Next executable action: commit the historical-fixture input correction, build one
+Next executable action: commit the exact model packaging correction, build one
 `sprint34-infernal-early` development candidate, then run one guarded save-free
 CotW early mechanics transaction (15-25 minutes including restoration). Inspect
 native candidate metadata in that first useful session; native-body absence is
