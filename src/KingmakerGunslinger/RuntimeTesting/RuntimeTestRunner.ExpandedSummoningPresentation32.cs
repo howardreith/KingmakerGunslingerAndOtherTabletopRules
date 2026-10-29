@@ -15,6 +15,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
+using Kingmaker.Utility;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.MaterialEffects;
@@ -280,6 +281,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     if (settledFrames < 3) throw new InvalidOperationException("Native movement retirement boundary did not settle.");
                     if (!lillend) capture("stopped-" + selectedMove);
                 }
+                if (!lillend && owner.Body.CurrentHandEquipmentSetIndex != 0)
+                {
+                    var restoreBow = new UnitSwitchHandEquipmentSet(0); owner.Commands.Run(restoreBow);
+                    foreach (int frame in WaitPresentation32(mode, () => restoreBow.IsFinished && owner.Commands.Empty, 15)) yield return frame;
+                    if (owner.Body.CurrentHandEquipmentSetIndex != 0)
+                        throw new InvalidOperationException("Native bow restoration before combat failed.");
+                }
                 var gait = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>() : null;
                 bool movement = poses.Count > 0 && poses.All(p => (bool)p["finite"]) &&
                     (lillend ? gait.GaitFrames > gaitBefore && gait.GaitPeakSpeed > 0 && gait.GaitPeakOffset > 0 &&
@@ -408,6 +416,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var here = Sprint24AiCombatLane(fixture.Caster, owner, target, !lillend && set == 0 ? 8f : 1.4f,
                             out near, out attackLane, out attackDirection);
                         PlaceExpandedSummoningUnit(owner, here); PlaceExpandedSummoningUnit(target, near);
+                        if (lillend)
+                        {
+                            Vector3 castingTarget; string castingLane, castingDirection;
+                            var castingOrigin = Sprint24AiCombatLane(fixture.Caster, owner, target, 8f,
+                                out castingTarget, out castingLane, out castingDirection);
+                            PlaceExpandedSummoningUnit(owner, castingOrigin); PlaceExpandedSummoningUnit(target, castingTarget);
+                            var creation = owner.Blueprint.GetComponents<LillendBardBook32>().Single();
+                            var book = owner.Descriptor.GetSpellbook(creation.Book);
+                            var cure = book.GetKnownSpells(1).Single(value => value.Blueprint.AssetGuid == "5590652e1c2225c4ca30c4a699ab3649");
+                            var courage = owner.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
+                            var performance = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage));
+                            int damageBefore = owner.Damage, slotsBefore = book.GetSpontaneousSlots(1);
+                            bool castCaptured = false, performanceCaptured = false;
+                            var castPoses = new JArray();
+                            try
+                            {
+                                // Explicit damage setup on this disposable owner
+                                // only. The actual native cast supplies healing,
+                                // slot expenditure and its upper-body animation.
+                                owner.Damage = 5;
+                                if (!cure.IsAvailable || !cure.CanTarget(new TargetWrapper(owner)))
+                                    throw new InvalidOperationException("Presentation self-cure unavailable.");
+                                var cast = new UnitUseAbility(cure, new TargetWrapper(owner)); owner.Commands.Run(cast);
+                                foreach (int frame in WaitPresentation32(mode, () => cast.IsFinished &&
+                                    cast.ExecutionProcess?.IsEnded == true && owner.Damage < 5 && owner.Commands.Empty, 24, () => {
+                                    var animation = cast.Animation;
+                                    if (castCaptured || animation?.IsStarted != true || animation.ActiveAnimation == null) return;
+                                    var pose = Presentation32Pose(owner, true); castPoses.Add(pose);
+                                    capture("cast"); castCaptured = true;
+                                })) yield return frame;
+                                var activate = new UnitActivateAbility(performance); owner.Commands.Run(activate);
+                                foreach (int frame in WaitPresentation32(mode, () => activate.IsFinished &&
+                                    performance.IsOn && performance.IsRunning && owner.Commands.Empty, 12)) yield return frame;
+                                capture("performance"); performanceCaptured = true;
+                                castPoses.Add(Presentation32Pose(owner, true));
+                                bool posed = castCaptured && performanceCaptured && cast.IsActed &&
+                                    owner.Damage < 5 && book.GetSpontaneousSlots(1) == slotsBefore - 1 &&
+                                    castPoses.All(pose => (bool)pose["finite"]);
+                                Sprint25Check(id + "-cast-performance-poses", posed,
+                                    new JObject { ["cast"] = Sprint27AiCommand(cast), ["activation"] = Sprint27AiCommand(activate),
+                                        ["damageSetup"] = 5, ["damageAfterNativeCast"] = owner.Damage,
+                                        ["slotsBefore"] = slotsBefore, ["slotsAfter"] = book.GetSpontaneousSlots(1),
+                                        ["performanceRunning"] = performance.IsRunning, ["poses"] = castPoses,
+                                        ["castingLane"] = castingLane, ["targetDistanceMeters"] = owner.DistanceTo(target),
+                                        ["manualAnimationTicks"] = 0, ["fullRulesQualificationClaimed"] = false },
+                                    "A real self-cure and native running performance provide finite authored-body poses and gameplay-camera frames for deformation review; this is presentation evidence.");
+                                if (!posed) throw new InvalidOperationException("Lillend cast/performance presentation incomplete.");
+                            }
+                            finally { performance.IsOn = false; owner.Damage = damageBefore; }
+                            foreach (int frame in WaitPresentation32(mode, () => !performance.IsOn && !performance.IsRunning &&
+                                !owner.Buffs.Enumerable.Any(buff => buff.Active && !buff.IsDisposed &&
+                                    ReferenceEquals(buff.Blueprint, courage.Buff)) && owner.Commands.Empty, 12)) yield return frame;
+                            PlaceExpandedSummoningUnit(owner, here); PlaceExpandedSummoningUnit(target, near);
+                        }
                         var primary = owner.Body.PrimaryHand.MaybeWeapon;
                         if (primary == null) throw new InvalidOperationException("Actual primary weapon absent.");
                         var requiredWeapons = new[] { primary }.Concat(owner.Body.AdditionalLimbs.Select(limb => limb.MaybeWeapon))
