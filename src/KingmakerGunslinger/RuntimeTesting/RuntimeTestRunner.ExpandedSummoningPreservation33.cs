@@ -18,6 +18,9 @@ using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.UnitLogic.Mechanics;
+using Kingmaker.UnitLogic.Mechanics.Actions;
+using Kingmaker.UnitLogic.Mechanics.Components;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Bootstrap;
@@ -107,7 +110,7 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // Existing AI/command/cost/saving-throw observers, one normal humanoid,
         // one native protection and one ineligible creature type. No forced rolls.
-        private IEnumerable<int> ReviewSuccubus33(ExpandedSummoningCorrectionFixture fixture)
+        private IEnumerable<int> ReviewSuccubus33(ExpandedSummoningCorrectionFixture fixture, bool onlyDrain = false)
         {
             var target = fixture.Hostile;
             var fighter = BlueprintLibraryLookup.RequireExact<BlueprintCharacterClass>(BlueprintBootstrap.Library,
@@ -120,12 +123,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             var terminal = fixture.Blueprints.OfType<BlueprintBuff>().Single(value => value.AssetGuid == "6e1f6eb3e773451dbda9e0ecd07486d9");
             var outsider = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
                 "9054d3988d491d944ac144e27b6bc318", "native outsider type eligibility witness");
-            foreach (string cell in new[] { "ai-control", "protected", "type-fallback" })
+            foreach (string cell in onlyDrain ? new[] { "type-fallback" } : new[] { "ai-control", "protected", "type-fallback" })
             {
                 UnitEntityData owner = null; Buff protection = null; bool typeAdded = false;
                 var starts = new Lillend32CommandStarts { ObserveRtwpAttackCompletion = true }; var saves = new Dretch30CloudSaves(new[] { target });
                 var attacks = new Sprint16RuleObserver { Target = target }; var drain = new Sprint33Drain { Target = target };
-                var contacts = new JArray();
+                var contacts = new JArray(); var levelChanges = new JArray(); int lastLevels = -1;
                 attacks.ObserveWeaponContact = rule => contacts.Add(new JObject { ["fullAttack"] = rule.IsFullAttack,
                     ["firstAttack"] = rule.IsFirstAttack, ["hit"] = rule.AttackRoll?.IsHit == true,
                     ["natural"] = rule.Weapon.Blueprint.Type.IsNatural });
@@ -164,6 +167,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     bool eligible = data.CanTarget(new TargetWrapper(target));
                     if (eligible == typeAdded) throw new InvalidOperationException("Native humanoid eligibility differs.");
                     EventBus.Subscribe(starts); EventBus.Subscribe(saves); EventBus.Subscribe(attacks); EventBus.Subscribe(drain);
+                    var trait = owner.Buffs.Enumerable.Single(value => value.Blueprint.AssetGuid == "cd51ad31f8764d2797b59eb43da7a9f8");
+                    var trigger = trait.SelectComponents<AddInitiatorAttackWithWeaponTrigger>().Single();
+                    var action = trigger.Action.Actions.OfType<ContextActionDealDamage>().Single();
+                    var liveTrigger = new JObject { ["listening"] = trigger.IsListeningEvents,
+                        ["onlyHit"] = trigger.OnlyHit, ["onlyFull"] = trigger.OnlyOnFullAttack,
+                        ["onlyFirstAttack"] = trigger.OnlyOnFirstAttack, ["onlyFirstHit"] = trigger.OnlyOnFirstHit,
+                        ["naturalOnly"] = trigger.AllNaturalAndUnarmed, ["weaponType"] = trigger.WeaponType?.AssetGuid,
+                        ["actionType"] = typeof(ContextActionDealDamage).GetField("m_Type", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(action).ToString(), ["drainType"] = action.EnergyDrainType.ToString(),
+                        ["durationRounds"] = action.Duration.BonusValue.Value, ["count"] = action.Value.BonusValue.Value };
                     var costs = new JArray();
                     using (var economy = new FirearmReviewCosts(owner, costs))
                     {
@@ -172,6 +184,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (cell != "protected") { Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions(); }
                         while (DateTime.UtcNow < deadline && frames++ < 4000)
                         {
+                            int nativeLevels = target.Get<UnitPartNegativeLevels>()?.Count ?? 0;
+                            if (nativeLevels != lastLevels) { levelChanges.Add(new JObject { ["count"] = nativeLevels, ["gameTime"] = Game.Instance.Player.GameTime.TotalSeconds }); lastLevels = nativeLevels; }
                             var seenApplications = saves.NativeApplications.Where(value => ReferenceEquals(value.Blueprint, terminal) &&
                                 ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray();
                             bool resolved = cell == "ai-control" ? seenApplications.Any(value => value.AppliedBuff != null) :
@@ -202,7 +216,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             drain.Rows.Any(value => (bool)value["sourceMatchesOwner"] && (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
                         Sprint25Check("sprint33-succubus-" + cell, costsExact && outcome, new JObject {
                             ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
-                            ["costs"] = costs, ["weaponContacts"] = contacts,
+                            ["costs"] = costs, ["weaponContacts"] = contacts, ["liveTrigger"] = liveTrigger, ["nativeNegativeLevels"] = levelChanges,
                             ["traitContexts"] = new JArray(owner.Buffs.Enumerable.Where(value => value.Blueprint.AssetGuid == "cd51ad31f8764d2797b59eb43da7a9f8").Select(value => new JObject { ["active"] = value.Active, ["caster"] = value.Context?.MaybeCaster?.UniqueId, ["owner"] = owner.UniqueId })),
                             ["nativeAttackLifecycle"] = starts.AttackRows, ["enemy"] = owner.IsEnemy(target), ["physicalLos"] = owner.HasLOS(target),
                             ["brainActions"] = new JArray(owner.Blueprint.Brain.Actions.Select(value => value.name)), ["saves"] = saves.Rows, ["applications"] = saves.Applications, ["drain"] = drain.Rows,

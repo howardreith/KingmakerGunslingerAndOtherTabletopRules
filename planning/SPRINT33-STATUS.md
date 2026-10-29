@@ -1,82 +1,155 @@
-# Sprint 33 - dedicated shadow outsider models
+# Sprint 33 ? dedicated shadow outsider models
 
-Controlling mission: owner-provided Kingmaker_Sprint33_Dedicated_Models_Revised_Mission.md, Revision 2, 2026-10-28. In progress; no native qualification or release claimed.
+IN PROGRESS, NOT RELEASED. Controlling authority is the owner-provided
+Kingmaker_Sprint33_Dedicated_Models_Revised_Mission.md, Revision2. No Sprint34.
+Product/build/test/promotion root C:/Dev/KingmakerGunslingerLab/wt/s33;
+branch codex/expanded-summoning-sprint33-shadow-outsiders. Intake master
+71ea55cda5799bfd62860bf41d3001684080b755; stable169. Remote170 was free at
+2026-10-29T05:42Z, not reserved. Actual human intake mod0.0.117 is restored,
+not replaced with a release pin. Howard-Laptop only.
 
-Product root: C:/Dev/KingmakerGunslingerLab/wt/s33. Branch: codex/expanded-summoning-sprint33-shadow-outsiders. Intake master: 71ea55cda5799bfd62860bf41d3001684080b755. Latest observed tag v0.0.169; v170 is not reserved. No prior Sprint 33 branch/worktree was found. Host Howard-Laptop. Preserve Succubus, all three icons, stable units and twelve routes. Invisible Stalker requires original humanoid wind-spirit geometry; Shadow Demon requires verified genuine native geometry or an original demonic winged body. Generic proxy fallback never qualifies delivery. No Sprint 34.
+Current: both distinct original bodies have native motion/selection/teardown proof;
+twelve public routes and Natural Invisibility/Purge have attributed PASS evidence.
+Stalker native turn-based Slam now PASS. Succubus Dominate, protection veto,
+exact-source cleanup and ordinary attack fallback are observed. Its temporary
+drain remains unresolved: two runs observed no RuleDrainEnergy, including repeated
+successful full attacks with the correct active trait caster. This is NOT a
+complete preservation PASS. Thirteen native launches completed, all restored.
 
-| Existing implementation/evidence | Actual gap | Smallest selected patch | Selected proof |
+| Existing implementation/evidence | Actual gap | Smallest patch | Selected proof |
 |---|---|---|---|
-| Succubus Nymph donor; bounded 3-round dominate and 1-round attack-trigger drain | Current composed appearance, target eligibility and cleanup need baseline observation | Preserve unless a concrete defect appears | Combined baseline/profile and applicable source-owned cleanup |
-| Stalker Air Elemental donor; native NaturalInvisibilityBuff; two slams | Owner rejects current body; Purge recipient applies unconditional Invisible condition immunity | Original humanoid mesh over an established measured rig; narrow natural-invisibility exception if engine inspection confirms | Offline export/preview; native attack/Purge, grouped routes, animation/selection and mixed persistence |
-| Shadow Demon SoulEaterSummoned donor; native incorporeality | Genuine native availability unverified; proxy is not acceptable | One bounded native check, then installed genuine reference or original winged/clawed demon geometry | Baseline asset/view identity; export/preview if original; grouped route/animation/lifecycle and mixed persistence |
-| Existing original mesh, native fader and ownership helpers | Two new exact-owner attachments need integration | Reuse established loader/export/material/lifecycle machinery | Repeated summons, untouched donor controls, fresh ON/OFF cleanup and absence |
+| Succubus usable Nymph composition,18s Dominate/6s temporary drain | Destruction left control; private brain lacked attack action; drain unresolved | Reuse FeyControlCasterCleanup32 and native DumbBrain attack actions; preserve body/icon/durations | Native AI, protection, source disposal and fallback; read-only live trigger/negative-level observation pending |
+| Stalker Air Elemental source, NaturalInvisibilityBuff, two slams | Required original body; Purge incorrectly suppressed natural invisibility; rig lacks Slam | Original wind humanoid, exact natural-invisibility exception, private native arm clips as Slam | Original mesh RTWP/TB attack, selection, Purge, quantity ownership/teardown PASS; cold loads pending |
+| Shadow Demon Soul Eater source, native incorporeality/attack chassis | Required genuine-native-or-original body | Bounded search found no suitable genuine native body; original winged/clawed demon | Native body/motion/attack/selection and independent owner teardown PASS; cold loads pending |
 
-Qualification plan: combine baseline/native availability; changed mechanics/AI only (RTWP/TB where affected); one grouped twelve-route/model presentation; existing mixed-owner fresh persistence stages; one affected combined-profile neighbor. Roughly 8-12 launches is a planning estimate, not a quota. Record actual executions here. No old v167/v168 campaigns are selected. Reproducibility remains required: v169's waiver does not transfer. Inspect accepted publisher selectors before final candidate packaging; retain native artifact identity separately from any version-only promotion.
+Models: assets-source/original-models/sprint33-shadow-outsiders/SOURCE.md records
+reproducible generator, four payload hashes and native attribution. Original Stalker
+3320 vertices/6568 triangles; original Shadow Demon3776/7416. Both use measured
+Lizardfolk free-hands skeleton/clips (a8cbd4cdb0feaf64eab1452257c3c971,
+prefab d6db6ba3b2c459a48ba0730beef0bac8). Mechanical source donors remain distinct:
+Air676f8b7d0a170674cb6e504e0e30b4f0 and SoulEater1832be68f9814254dbbdab6df7fd5d0b.
+Succubus source0cc7a2526e4557945b1d8eb277d1fb3a/prefabf5e1fc6f049cd55478fd31ace4d35ca1
+is the preserved usable composition, not a claim of genuine native Succubus.
+No proprietary meshes/textures/clips committed. Icons unchanged. Minor seams,
+simple fingers, flat wing transitions and rough texturing deferred; no owner
+personal aesthetic approval asserted.
 
-Intake: AGENTS.md and docs/VALIDATION-POLICY.md read. Read current release instructions and original-body source/lifecycle paths. git fetch origin --tags (0.77s) updated current refs but returned nonzero because older v136-v153 tags conflict; no force or tag replacement performed. origin/master remains the reviewed commit. Dedicated worktree created successfully. C: free 6,643,707,904 bytes; E: free 309,335,990,272 bytes before checkout. Use E: for owned bulk scratch where supported; guarded runtime evidence root remains unchanged. No deletion performed. Subsequent guarded native transaction and exact restoration are recorded below.
+Stable units remain succubus0c908145873f4b67a188397ca5f46da1,
+invisible-stalker3cd7b4f2c65b4d35929dd4d969dfaa41,
+shadow-demon627c1841a5eb4e32b1a94c0f43ec8a60. All twelve VI?IX routes,
+quantities/parents/alignment/order/native caster-duration context are preserved.
+Blueprint ledger remains7511 entries with no append; no new creature/route/template.
+Current totals are source-derived, not added as new unrelated test pins.
 
-Current (updated after launch12): original bodies/RTWP motion/selection/private teardown, twelve routes and Stalker Purge PASS on their attributed development artifacts. Succubus Dominate/protection/source cleanup and ordinary attack fallback are observed; temporary drain remains unresolved, Stalker TB and mixed persistence NOT_RUN. Release NOT_RUN. Native launches12, all restored. Earlier chronological entries below retain their original checkpoint meaning. Fine seams/textures/wing anatomy are deferred polish, not a waiver of either required body.
+## Native evidence map
 
-Observer intake checkpoint: shared bounded native-input reader now has an exact Sprint33 scenario (32-unit ceiling, three native consumer queries, unique prefab metadata; no actors/save/input). Installed-reference Release compilation PASS. Test-RuntimeScenarioPreflight.ps1 PASS1167; Test-ExpandedSummoningRuntimeOrchestration.ps1 PASS261. Native availability and visual suitability remain UNKNOWN until execution. Push wrapper backed up and only the two owner-authorized exact names added. Initial isolated AST SafeGetValue inspection failed on the array statement; corrected inspection reads only string constants. Parser/ordinal positive and suffix/case refusal checks then passed.
+Directory prefix is an evidence-directory identity; exact native request RunId
+must be read from its runtime-result/request JSON (it differs from directory name).
+All entries below are under C:/Dev/KingmakerGunslingerLab/runtime-evidence.
+Full suffix for launches2?13 is -disposable-expanded-summoning-sprint32-native-review.
+Failures stay failures; later corrections do not rewrite their verdicts.
 
-Native availability PASS: RunId 20261029T0336574203591Z-observe-expanded-summoning-sprint33-native-inputs, 75.331s. Only project units matched the bounded Succubus/ShadowDemon unit-name search. Actual composed prefabs: Succubus Nymph f5e1fc6f049cd55478fd31ace4d35ca1; Stalker ElementalAir bb723aa891b618a46b1e9b35888795ed; Shadow Demon SoulEater 17326d2ed9b8e9d4e9ab20fdbb895a06. No suitable genuine native Shadow Demon was identified; original geometry selected. This was library/prefab metadata, NOT spawned visual or gameplay acceptance.
+| # | Directory prefix / source | Actual outcome |
+|---|---|---|
+|1|20261029T0336574203591Z-observe-expanded-summoning-sprint33-native-inputs / cbd9ef49|Bounded32-unit library/view metadata; no suitable genuine Shadow Demon identified; not visual acceptance|
+|2|20261029T0410400426791Z /20d362b9|Structured PASS24,12 native routes, exact mesh instances/cleanup; roof-obscured framing UNKNOWN, later motion run supplies presentation|
+|3|20261029T0432156336554Z /c642bb44|FAIL observer assumed dissolve must stay below1 despite legitimate invisibility; corrected to native fader semantics|
+|4|20261029T0438132223448Z /c642bb44|FAIL missing combat precondition for action-cost probe; native cast/slot worked|
+|5|20261029T0453136518358Z /4b745ef7|FAIL actual Stalker Slam animation absent despite movement/damage; private native Claw-to-Slam binding added|
+|6|20261029T0458325354855Z /4b745ef7|FAIL inherited Heal count in fresh fixture; changed to before/after untouched-slot observation|
+|7|20261029T0514180832814Z /126cdbc7|PASS29: both original bodies, useful movement/attack clips, normal party-camera inspection, repeated owners, untouched donor control, privateRemaining0|
+|8|20261029T0519536488052Z /126cdbc7|PASS: two native Purge sources suppress ordinary invisibility but do not suppress/remove Stalker natural invisibility; native costs/slots/source isolation|
+|9|20261029T0544200281342Z /ca63d6bb|FAIL observer misread eligible actor list as ticked list; exact helper actually ticks only owner|
+|10|20261029T0558267714837Z /e4e9b6f2|Dominate actual AI/18s/source/cost PASS; source-destruction cleanup FAIL; reused existing event cleanup|
+|11|20261029T0616506260798Z /b1a123eb|Dominate/cleanup/protection PASS; no attack fallback; installed UnitBrain/AiBrainController contract proved no implicit attack insertion|
+|12|20261029T0636351746669Z /eb46d785|Native AttackAiAction now completes two-claw attack/cost; no drain observed; combined fallback/drain FAIL|
+|13|20261029T0652027320811Z /fb471636|Stalker native TB Slam PASS; Dominate/cleanup/protection PASS;7 ordinary attack commands with successful full-attack hits but no drain event, so combined fallback/drain FAIL|
 
-Baseline development artifact: cbd9ef4922782353162d6904e1caef4388a08fb4; ZIP f5ba83e604b37efd15382589ba29c600ca3e89cf68e6613819eaf6ddda1ecb60; DLL 01be51f174b43df28bf933e57128374c72f723dcf73b78da520c883bc8b23939. Build-Local -DevelopmentPurpose sprint33-shadow-outsiders -DevelopmentTestFilter expanded-summoning.identities;expanded-summoning.donors-exact -ExpectedVersion 0.0.169: PASS, 257.8585s. Four selected domain tests PASS; wrapper isolated checks PASS32. First attempts failed on missing UniRx in old private bundle and local GamePath configuration; preserved artifacts/sprint33-intake logs. Fresh repository-exported E:/KingmakerGunslingerLab/sprint33-private/references-20261028 bundle matched all16 installed references. No old bundle changed.
+Run13 exact native request RunId20261029T0652027669843Z-5c1b38ede3bc4ac7b1f0bc5474b4c67f.
+Its active trait caster equals the Succubus owner; all observed weapons natural.
+The exact sprint33-drain-observe phase selects only the unresolved fallback/drain cell,
+without replaying control or Stalker. The read-only observer adds trigger/action discriminator and native
+UnitPartNegativeLevels.Count transitions. Acceptance remains unchanged. No speculative
+production drain patch or forced hit/save is selected. Native IL audit verifies
+OnlyOnFirstHit requires full-attack successful hits and DrainEnergy uses effect
+Context.MaybeCaster. Actual current references, not a remembered engine contract.
+Private reflection diagnostics/type-resolution mistakes are retained in
+artifacts/sprint33-intake; no proprietary IL committed. Initial local observer
+compiler errors (variable collision/private discriminator getter) corrected using
+verified m_Type field; production compilation PASS.
 
-Restoration: compatibility transaction compat-20261029T033343Z-d37f204cf69d restorationVerified=true. Protected-save record runtime-evidence/sprint33-baseline-inputs-20261029T033340Z/protected-native.json: RESTORED, allOriginalSavesExact=true, gameExitConfirmed=true. Actual intake mod0.0.117 restored (not replaced with a historical stable pin). No game process/transaction left running. Desktop automation entrypoints failed to initialize; no desktop UI input used.
+## Candidate attribution and checks
 
-Current implementation: two original sources and four runtime exports (exact hashes in assets-source/original-models/sprint33-shadow-outsiders/SOURCE.md); established Lizardfolk skeleton/animation, private renderer/material ownership and native fader lifecycle. Source donor mechanics remain unchanged. Narrow Purge exception checks active exact NaturalInvisibilityBuff and removes only this area's recipient. Succubus and icons untouched. Offline binary/skin/texture validation PASS; compact previews inspected; integrated Release production compilation PASS. No native claim for these new bytes.
+All native execution so far uses development0.0.169 artifacts, NEVER final-release
+qualification. Original receipt names under artifacts/development-candidates/
+sprint33-shadow-outsiders/<source12> retain references, full source and MVID.
 
-Remaining: scoped native mechanics, twelve routes and actual dedicated body presentation/motion, donor and repeated-owner controls, mixed fresh ON/OFF persistence and combined-profile neighbor; final coherent source/build/package gate, reproducibility, conditional PR/merge/release/download verification and exact restoration. Release0.0.170 is not reserved. v167/v168 debt stays NOT_RUN; v169 waiver is not reused.
+| Source12 | ZIP SHA256 | DLL SHA256 |
+|---|---|---|
+|20d362b9abd3|4a605bd8fd9a1bf32d9b20d9ddd716b8b18582099d93bfa70e9fd271654928af|61c5218cf900128bd523ab7b4e2b383aee2e43ea00d819e880c75d13c83033b3|
+|126cdbc7ce39|5a08bbf77eb8b9bd875cf163e3d787318670cbc4e7167ffe75e3872005c5891c|5fab87c0ffa8826694cc40a7ee8b7c31dac53c2e496b936301a17d19ba17bba6|
+|eb46d7854fa8|273642cc293b82be4f5162bbe75ad8ae4cc6671deda742fe770ba369ca182e1d|7cc708b1787de0758d2c63a5092ef9f5aaec8d18c762bf9662db8b1be50db8df|
+|fb471636aa52|9effdf8d3db32356a4295273ab58e78d73dc8376f53b3eeae7e8c58f8ae361ac|b320c7ca23d9f5d498636050fd8798ccb0b695ae49baee73531301b0bda7781e|
 
-Both model mesh/albedo pairs regenerated under Blender4.5.10 on E: with byte-identical SHA256 results. New fixed sprint33-shadow-outsiders phase reuses the existing Sprint32 save-free fixture/clock, shared twelve-route helper, camera and ownership teardown. Its scope is route/body/selection/per-instance teardown only; animation, mechanics and cold persistence remain separately unrun. Integrated observer production compilation PASS.
+Latest build247.556s, MVIDe5b6ca11-acf3-406b-b31e-d8805aeb2344. Command
+Build-Local.ps1 -DevelopmentPurpose sprint33-shadow-outsiders
+-DevelopmentTestFilter 'expanded-summoning.identities;expanded-summoning.donors-exact'
+-ExpectedVersion0.0.169 -ReferenceBundleDir <fresh E bundle>: selected4/2756 PASS,
+production compile/package validation PASS. Prior build timings:126c246.096s,
+eb46241.479s. Early missing reference/package inventory failures preserved in
+artifacts/sprint33-intake; no native launch on failed packages.
 
-3d153cf4 development build (228.448s): compilation and selected4/4 domain tests PASS; packaging FAILED at validate-build-output because its separate required/allowed inventory omitted the four new exports. No native launch. Failure retained in artifacts/sprint33-intake/body-build-20261028T235800 logs. Corrected only those four exact inventory entries; narrow build-output/package validation selected before rebuilding.
+Offline mesh/weights/UV/nondegenerate/export validation and byte-identical Blender
+regeneration PASS. Exact runtime request/preflight/refusal checks already passed;
+new narrow publisher selector:18 synthetic refusal checks PASS, plus affected
+existing lineage18/Sprint29 release30/S3031 publisher31 and isolated admission
+checks PASS (unit fixtures only; no old campaign or live budget resumed).
 
-Narrow packaging correction: build-output inventory PASS, then deterministic package count detected the four-file delta (422 expected/426 actual). Package count now derives the delta from the same closed new-file list. package.ps1 -Configuration Release and strict standalone UMM package validation PASS. This standalone scratch package is not a runtime/release receipt and is not promoted.
+## Restoration and storage
 
-Second native launch: 20261029T0410400426791Z-disposable-expanded-summoning-sprint32-native-review, phase sprint33-shadow-outsiders, 121.649s. Candidate20d362b9abd3dafc7cd5cfd6b787fcb8fab5e190, ZIP4a605bd8fd9a1bf32d9b20d9ddd716b8b18582099d93bfa70e9fd271654928af, DLL61c5218cf900128bd523ab7b4e2b383aee2e43ea00d819e880c75d13c83033b3. Build248.693s PASS. Native structured probe PASS24:12 public routes with native slot/quantity/CL20 duration/alignment, exact new meshes3320/3776 vertices, two independent private mesh/material instances each, borrowed source/cache survival and disposal. Source identities7511, append0. This does not qualify movement/attack or cold loads.
+Every launch used the existing guarded Steam640820 transaction and protected-save
+catalog. Latest transaction compat-20261029T064940Z-2303b1798aa6 is Restored,
+restorationVerified=true; outer sprint33-preservation-drain-context-* record says
+allOriginalSavesExact=true/gameExitConfirmed=true. Run12 transaction
+compat-20261029T063412Z-4b659b87bba9 and outer
+sprint33-preservation-fallback-20261029T063411Z likewise exact.
+Passing model transaction compat-20261029T051147Z-e235c9c927ac / outer
+sprint33-slam-motion-20261029T051146Z; Purge
+compat-20261029T051725Z-115b39614eaf / outer sprint33-purge-slots-*.
+Older transaction identities remain in original launch/deployment/lease records
+and prior versions of this status. No Working-save mutation yet, baseline immutable.
 
-Presentation review FAIL/UNKNOWN despite structured PASS: both new-body captures frame the actors among the mansion roof beams. Succubus capture shows the preserved usable Nymph composition. Current observer proves finite mesh/selection but does not record root/support height or guarantee unoccluded normal gameplay framing. No model delivery acceptance; no owner visual approval. Do not change production offsets from a screenshot. Diagnose native actor placement versus skin transform using existing ground/lane observations; reuse established outdoor presentation fixture for motion and captures. No unchanged relaunch. Offline reflection metadata probe terminated with StackOverflowException while resolving dependencies; no game launch or mutation. Rig bind positions and exported body extents match the established renderer-local frame, so no geometry offset correction is justified yet.
+Fresh16-reference bundle on E:/KingmakerGunslingerLab/sprint33-private/references-20261028
+matches actual installed2.1.7b/Harmony12/UMM. Initial C headroom6.64GB; one guarded
+headroom refusal caused no transaction. Verified redundant owned completed build
+scratch (~858MB) and completed transaction package extractions (~1.023GB) archived
+under E:/KingmakerGunslingerLab/sprint33-private/completed-build-scratch-20261029T0555
+and completed-runtime-package-scratch-20261029T0610. Each archive-map.json retains
+file hashes/source paths; only hash-verified redundant C copies removed after
+absolute-root/reparse checks. ZIPs/receipts/evidence/backups/saves/install preserved.
+C headroom5,770,391,552 bytes at latest check; recheck before expensive dispatch.
 
-Second restoration: compat-20261029T040812Z-3ffacd64b74b restorationVerified=true; feature settings exact; protected-native.json under sprint33-body-routes-20261029T040810Z records allOriginalSavesExact=true and gameExitConfirmed=true. Native launches2 total; no active runtime owner. Presentation/motion, Purge, remaining composed behavior and mixed persistence/release remain pending.
+## Remaining selected work
 
-Next coherent probe change: exact sprint33-shadow-motion phase, admitted through the existing Sprint32 native-Default/outdoor fixture. Uses existing legal-lane and installed ground-support helpers, records spawn/root/fly-height/body bounds, native UnitMoveTo and ordinary UnitAttack with native range and live animation at rule contact. Stalker attack-safe invisibility included. No production transform or animation changes selected from the roof-frame observation.
+Resolve the precise temporary-drain observation/behavior; do not claim attack-trigger
+adaptation implements tabletop kiss/grapple. Preserve18s control/6s temporary drain,
+no profane gift. Mixed three-owner ON/OFF preparation/cold cleanup/fresh absence
+requires six fresh processes; implemented existing helper extension includes an
+exact owned domination witness and original models, but NOT_RUN. Ignored local
+Working envelope requires FINAL-CANDIDATE.json and exact original Working bytes/
+metadata restore. Combined-profile integration with an unchanged native neighbor
+NOT_RUN. No inherited v167/v168 campaign is selected; debt remains NOT_RUN.
 
-The same observer batch adds exact sprint33-stalker-purge by reusing ReviewTrumpet31Purge with one optional exact natural-invisibility witness. Both native emitters, ordinary ally/enemy suppression, source removal and original buff lifetime observations stay intact. New phase admission/refusals and production compilation PASS; these new phases remain NOT_RUN until the next coherent development package.
+Existing publisher has a narrow Sprint33ShadowOutsiders selector, exact wt/s33/root/
+branch, original-proof reuse attribution, fresh persistence/integration and exact
+reproducibility requirements. Its final profile receipt now supports this exact
+root. No new controller/budget framework. Version170 validator/metadata edits remain
+ignored drafts until reviewed product settles. Prepare final inputs, run one full
+source/build/package boundary and supported narrow exact reproducibility, qualify
+those bytes, then conditional PR ready/merge/stable release/public downloads and
+lineage/restoration/final records. No v169 waiver transfer. No PR, merge, tag,
+release, public verification, or final qualification yet. Ordinary pushes use the
+owner wrapper; only the two exact mission branches were allowlisted with backup
+and32 isolated checks. Historical conflicting v136?153 tags remain untouched.
 
-Third/fourth native launches (c642bb44255306aa15fee7622eaa3018df601c4c development candidate): motion RunId20261029T0432156336554Z and Purge RunId20261029T0438132223448Z, both disposable-expanded-summoning-sprint32-native-review. Build251.323s PASS; ZIP861bbe43b8f3ef334b0b312996d1b5fa93513e44e57b5f2a1e24424b346059e4, DLL029e48475a72e88dc356e4e29fc5d8584d29d5ee83a8ab69096097b151dcb28c. Motion FAILED at observer intact-dissolve assertion: original3320-vertex Stalker mesh, native ground support/root agreement, FlyHeight0, finite skin, enabled renderer, selection/fader and outdoor humanoid outline observed; native natural invisibility legitimately has dissolve1. No move/attack or Shadow observation reached. Purge FAILED at action-economy assertion: native spell command succeeded and spent L3 slot but fixture was out of combat, so zero native cooldown. Natural-invisibility/Purge outcome not reached. Correct only observer visibility semantics and fixture combat precondition before retry; no production visibility or action-cost change justified.
-
-Restoration for both failures verified: compat-20261029T042948Z-bb8d01256125 and compat-20261029T043546Z-836b5f76f71a statusRestored/restorationVerified=true. Outer sprint33-motion-20261029T042946Z and sprint33-purge-20261029T043545Z protected-native.json both RESTORED/allOriginalSavesExact=true/gameExitConfirmed=true. Four native launches total; no active runtime transaction. Required final model, mechanics, persistence and release acceptance remains pending.
-
-Fifth/sixth native launches on4b745ef79ca0349459339c04cd9283b0bc65fff1: build245.478s PASS; ZIP73112f629a9c418abd50488b91ac742382e8a89fad4aaba0cd3290edf40152ee; DLLa319599fca8ea13eaf8f58269a1571575c6ba99bfd74f102b6ae639bcd46b09a; MVID574b75dd-3bc7-4d92-84ef-168aa9a80e85. Motion RunId20261029T0453136518358Z: original Stalker body/selection/independent pair and native movement PASS (5.9576m,3.048m/s); two ordinary successful slams caused positive damage, but animation handles were absent, so motion session FAIL and Shadow not reached. Normal-camera captures inspected: distinct humanoid wind body, native invisibility outline, correct grounding. Exact rig capture has Claw/Bite actions but no Slam; installed2.1.7b API confirms SpecialAttack.AttackType setter and private AnimationSet seam. Selected production correction clones the existing arm action privately as Slam; preserves clips/native commands/weapons and releases through existing view ownership. No general animation system.
-
-Purge RunId20261029T0458325354855Z: both native commands/action costs/slot spends PASS; mixed-source assertion FAIL because old helper assumed owner Heal1 after an earlier unrelated cast; fresh owner actually Heal2. Two70ft CL14 areas and two grants per ordinary witness observed, original invisibility buffs retained. Natural-invisibility exemption not reached, so no Purge acceptance. Correct observer compares Heal before/after rather than inheriting previous-phase setup. Failure records preserved.
-
-Both restorations exact: compat-20261029T045045Z-9bcd147dd088 and compat-20261029T045602Z-1cd6c90f5c42 restorationVerified=true; outer sprint33-motion-corrected-20261029T045043Z and sprint33-purge-corrected-20261029T045601Z protected-native records RESTORED, allOriginalSavesExact/gameExitConfirmed=true (exact paths retained locally). No active game/transaction.
-
-Next coherent batch includes private Stalker Slam binding, unchanged-Heal Purge observation, a sanitized fixture actor carrying the untouched native rig/body alongside original owners, and exact shadow-outsiders three-owner selection over the existing Working trio. No campaign donor is spawned. Native body/resource reconstruction, private Slam reconstruction and module-OFF absence use existing receipts. Source-only Working admission/refusal checks and compiled request parser PASS33; production compilation PASS after adding the explicit project Compile entry (initial omitted-entry compilation failure retained in transcript). Native rerun/persistence still NOT_RUN for these changes.
-
-Native model delivery milestone PASS29 on126cdbc7ce390ae03461f3837035b17daf35bbcf (development, not release): RunId20261029T0514180832814Z-disposable-expanded-summoning-sprint32-native-review,126.941s. ZIP5a08bbf77eb8b9bd875cf163e3d787318670cbc4e7167ffe75e3872005c5891c; DLL5fab87c0ffa8826694cc40a7ee8b7c31dac53c2e496b936301a17d19ba17bba6; MVID17c9ec53-f12c-4bfd-aaec-84b64c4f4ad7; build246.096s PASS. Both original meshes attach to two independent owners and move~5.96m on native surveyed ground. Stalker ordinary successful slams play Attack_01_1/2 and retain active natural invisibility. Shadow Demon ordinary successful claws/bite play Attack_01_1/2 and Bite_Attack. Native view control remains original _lizardman001 without private attachment; source-native references unchanged; privateRemaining0 after both owner groups. Party-camera idle/move/contact captures inspected: distinct humanoid wind spirit and original winged/clawed demonic body beside untouched native rig/body. No Air Elemental/Soul Eater/Ankou fallback accepted; no owner aesthetic approval claimed. Minor shoulder seams, simple fingers, flat wing transitions and rough texturing deferred. compat-20261029T051147Z-e235c9c927ac restored exact intake; outer sprint33-slam-motion record confirms saves exact/game exited.
-
-Purge PASS on the same artifact: RunId20261029T0519536488052Z-disposable-expanded-summoning-sprint32-native-review,98.791s. Two real CL14/70ft emitters suppress ordinary ally/enemy invisibility, preserve original buffs/deadlines, spend their own L3 slots, and leave actual Heal counts unchanged. Stalker is inside both native areas with0 suppression grants and remains invisible. Exit/reentry and independent source removal PASS. compat-20261029T051725Z-115b39614eaf restored exact intake; outer sprint33-purge-slots record confirms saves exact/game exited. Eight native launches total; no active runtime owner.
-
-Preservation follow-up selects one compact case over the existing Sprint32 fixture: unchanged Succubus AI control/protection/ineligible-type fallback and source cleanup, plus Stalker native turn-based Slam consumer. Existing native five-HD fixture advancement, command-cost observers and unforced saves/attacks are reused. No Succubus product changes. Initial local-name shadowing compiler error corrected; production compilation PASS. Existing native Succubus protection proof20260921T0609373636050Z at17245f7f is historical support only (dirty historical observer source/environment attribution), not new acceptance. Added source-only exact-phase/refusal checks PASS5. Mixed fresh ON/OFF persistence, highest-risk integration, final full gate/reproducibility and conditional publication remain pending.
-
-Ninth native launch: preservation RunId20261029T0544200281342Z onca63d6bb65f1e552cf1d88ae03d264275dc66ab9, FAIL before behavior verdict. Reused Sprint24TickExactAi returns eligible actor IDs but invokes TickBrain only on expectedOwner. New observer incorrectly rejected other eligible IDs; corrected to record them as not ticked, preserving the helper's exact-owner guard. No production defect demonstrated or behavior changed. Build252.491s PASS33/2756 selected; ZIPaab48cd1843b220da0588f2b24dd970cb47dc8fbe13dbbad1c36cd15a595be3e; DLL090b6cd5de88ce3c71e848ce95c27f9cf13e37b69ab7a78fb82999a5f8ae560d; MVID11174243-4600-454e-8428-4353b7ed24b1. compat-20261029T054149Z-0b4e377cb673 Restored/restorationVerified=true; outer sprint33-preservation-20261029T054148Z allOriginalSavesExact/gameExitConfirmed=true. No active runtime. Remote tag/release lookup confirms170 free at05:42UTC; not reserved.
-
-Tenth native launch: preservation RunId20261029T0558267714837Z on e4e9b6f2b0493956994d0e5f619217f9173c733b. AI Dominate PASS: ordinary native command, own AI action, exact Standard cost, failed unforced DC22 Will, one18s owned terminal. Source cleanup FAIL: terminal remained after exact summoned caster destruction. Installed existing Sprint32 component FeyControlCasterCleanup32 addresses the same native event timing (caster resolves during destruction); reuse on Succubus terminal selected, with native RemoveBuffIfCasterIsMissing retained. No body/icon/duration/drain changes. Protection/fallback/TB not reached. Build250.261s PASS4/2756; ZIPb2b59608784e74d5fc0c4ff7236ef58df5973680c9b7ed88770899ac5c92f09e; DLLa6eddcdddbfe0d113d37f5d8eb1a24e9e3596f05e7fb70d8f34aad87b61dde0e; MVID1c9086e9-adfc-4153-b025-c8f7cc6f5763. compat-20261029T055601Z-bd4818e83c9b restored; outer sprint33-preservation-ai-20261029T055600Z protected saves exact/game exited.
-
-Pre-launch headroom refusal caused no transaction. Completed owned build scratch (~858MB) was copied/hash-verified to E:/KingmakerGunslingerLab/sprint33-private/completed-build-scratch-20261029T0555, then only redundant C copies removed after absolute-root/reparse checks. Candidate ZIPs/receipts, evidence, saves, rollback backups and reference bundle remain intact. archive-map.json retains every file SHA and original/destination. Final summary formatting threw on in-memory dictionaries after copies completed; reread JSON confirmed all ten archives present and original scratch absent. C headroom6,180,438,016 bytes before dispatch.
-
-Next coherent batch: add existing exact-source cleanup component and one effect-only saved domination recipient to the existing mixed shadow-outsiders fixture, reusing UnitPartSprint32ListenerReceipt/native context/RuleApplyBuff. Exact original18s deadline/source/ability and recipient faction are checked cold; source retirement must remove control before recipient retirement. Module OFF allows already-removed control only with original faction; fresh absence includes its exact receipt. No new product state, routes, control framework or protected-actor effect. Initial missing using compiler error corrected; production compilation PASS. Final publication drafts and local Working envelope are prepared but cannot run without qualified source/artifact bindings. Native corrective probe still pending; no active runtime.
-
-Eleventh native launch onb1a123eb9cad07f31f437585c8658eb5bbb9de96: RunId20261029T0616506260798Z. AI Dominate, exact-source destruction cleanup and native Protection from Evil veto PASS. Type fallback FAIL: ineligible target,25 exact-owner AI ticks, zero commands/costs/drain. Stalker TB not reached. Actual installed2.1.7b IL inspected narrowly (UnitBrain constructor/RestoreAvailableActions and AiBrainController.SelectAction): available actions derive only from BlueprintBrain.Actions; no implicit attack fallback is inserted. Current private Succubus brain contained only Dominate. Selected fix reuses native DumbBrain5abc8884c6f15204c8604cb01a2efbab action references alongside unchanged Dominate, matching successful Sprint32 pattern. No new GUID, balance value, body or spell added. Observer reuses Lillend32CommandStarts.CompletedAttack/actual attack-plan evidence for native resolved attack retirement and counts the observed attack/cast action cost rather than unrelated navigation commands. Initial text replacement reached other brain assignments and compiler rejected undefined library references; review restored those unrelated lines before successful compilation. Final diff has only exact Succubus brain change. Native IL stays private at artifacts/sprint33-intake/native-ai-contract.txt; initial resolver/opcode reader errors corrected offline, no additional game launch.
-
-Build257.790s PASS32/2756; ZIP947ca087afba3acc2f80f452bd0c4c38677ebbc94a1d0dbf2e9cdeadcf7f5827; DLLc64d1577d20bf9ada750bebd4d05eaa23bd60a45132d9decd491ea473854b288; MVIDc4fe4a41-8093-41cb-9941-3b8fe1af70fb. compat-20261029T061425Z-ccd99e5de926 Restored/restorationVerified=true; outer sprint33-preservation-cleanup-20261029T061423Z saves exact/game exited. No active transaction.
-
-Additional completed-transaction package scratch only (ten exact Sprint33 Restored transactions,~1.023GB) copied/each-file SHA-verified to E:/KingmakerGunslingerLab/sprint33-private/completed-runtime-package-scratch-20261029T0610 before redundant extracted C copies were removed. archive-map.json binds original paths, immutable transaction digests and each archived file. Candidate ZIPs/receipts, transaction evidence, rollback backups, protected saves and installed assets remain untouched. Headroom6,637,010,944 bytes after archive/build. Local final Working sequence now requires source-control cold/retirement/absence facts alongside native resource cleanup; still NOT_RUN.
-
-Twelfth native launch: RunId20261029T0636351746669Z on eb46d7854fa8b98e20ca2bf50e3d6e8507433be3. Dominate/source cleanup/protection PASS. Native fallback now selects AttackAiAction and completes two-claw UnitAttack Success with exact action cost, but drain observer recorded no events: fallback/drain combined verdict FAIL; TB not reached. Build241.479s PASS4/2756; ZIP273642cc293b82be4f5162bbe75ad8ae4cc6671deda742fe770ba369ca182e1d; DLL7cc708b1787de0758d2c63a5092ef9f5aaec8d18c762bf9662db8b1be50db8df; MVIDa2bd6cab-2246-4b11-9fc7-20c9bcabd6ce. compat-20261029T063412Z-4b659b87bba9 Restored; outer sprint33-preservation-fallback-20261029T063411Z allOriginalSavesExact/gameExitConfirmed=true. No active runtime.
-
-Offline diagnosis of the exact installed trigger and drain action: OnlyOnFirstHit requires native IsFullAttack and successful hit; native drain initiator comes from effect Context.MaybeCaster. Retained DevourerEnergyDrainFeature inventory confirms natural/unarmed gate and no weapon-type restriction. Current observer stopped at first completed damaging command and filtered only assumed owner, so it cannot distinguish absent trigger from wrong attribution. Narrow correction records native full/first/hit flags, exact trait context and target-scoped drain initiator, retaining the exact-owner acceptance requirement and waiting within the existing40s bound for drain. Independent Stalker TB runs first. Production drain unchanged; compilation PASS. Private IL/initial type-resolution failures retained under artifacts/sprint33-intake, no proprietary output committed.
+Additional archive: completed-scratch-20261029T0710 on E contains four hash-verified redundant b1a/eb46 exact-build directories and run12/13 package extractions. All candidates/evidence/backups remain intact; free C6,083,657,728 bytes.
