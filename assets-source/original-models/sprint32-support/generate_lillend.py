@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Original Lillend prototype on a CLOSED human anatomical subset.
+"""Original Lillend surfaces on a CLOSED human anatomical subset.
 
 Native input is the existing private bind-only capture, never geometry,
 pixels or animation curves. Ten extra drivers and their tail sweep are
@@ -17,6 +17,7 @@ import sys
 from mathutils import Matrix, Vector
 
 sys.dont_write_bytecode = True
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "sprint17-serpents"))
 import generate_snakes as common
 
@@ -160,69 +161,9 @@ def measured_rig(path):
     return rig, by_name, hashlib.sha256(raw).hexdigest()
 
 
-def dorsal(point):
-    upright = max(0, min(1, (point.y - .65) / .4))
-    return UP * (1 - upright) - FORWARD * upright
-
-
 def build_body(bm, weights, uvs, rig, kind):
-    if kind != "lillend-azata":
-        raise ValueError("private Lillend body only")
-    at = lambda name: common.shared.head(rig, name)
-    def mass(centre, radii, bone, region="limbs"):
-        common.ellipsoid(bm, weights, uvs, centre, SIDE, UP, FORWARD,
-                         radii, bone, region, 8, 16)
-    # Original continuous serpent coil joins the covered humanoid waist.
-    points = list(reversed([Vector(p) for p in REST])) + [Vector((0, .66, 0)), at("Pelvis")]
-    names = list(reversed(list(TAIL) + [TAIL[-1]])) + ["Pelvis", "Pelvis"]
-    widths = list(reversed([.24,.25,.24,.22,.19,.16,.13,.10,.075,.045,.008])) + [.22,.22]
-    heights = list(reversed([.25,.23,.21,.19,.17,.15,.12,.09,.065,.035,.008])) + [.18,.18]
-    common.sweep(bm, weights, uvs, points, widths, heights, names,
-                 up=FORWARD, forward=UP, uv_dorsal_at=dorsal)
-    torso = [at(n) for n in NATIVE[:5]]
-    common.sweep(bm, weights, uvs, torso, [.23,.18,.235,.25,.09],
-                 [.16,.13,.145,.15,.08], list(NATIVE[:5]), region="beak",
-                 up=FORWARD,forward=UP)
-    # Original elven face, ears, hair and robe; no borrowed face geometry.
-    mass(at("Neck") + UP*.035, (.075,.10,.075), "Neck")
-    head = at("Head")
-    mass(head + UP*.07 + FORWARD*.035, (.105,.15,.10), "Head")
-    mass(head + UP*.035 + FORWARD*.125, (.020,.045,.028), "Head")
-    mass(head + UP*.15 - FORWARD*.035, (.118,.10,.105), "Head", "crest")
-    for side,sign in (("L",-1),("R",1)):
-        ear = head + SIDE*sign*.10 + UP*.09
-        tip = ear + SIDE*sign*.115 + UP*.075 - FORWARD*.035
-        common.tube(bm,weights,uvs,[ear,ear.lerp(tip,.55),tip],[.040,.030,.004],["Head"]*3,"limbs",8)
-        mass(head + SIDE*sign*.047 + UP*.085 + FORWARD*.126,(.016,.010,.010),"Head","crest")
-        common.tube(bm,weights,uvs,[head+SIDE*sign*.10+UP*.16,
-            head+SIDE*sign*.13-UP*.03-FORWARD*.03,
-            at("Spine_3")+SIDE*sign*.15-FORWARD*.13],
-            [.060,.067,.022],["Head","Head","Spine_3"],"crest",12)
-        arm=[side+"_"+p for p in ("Clavicle","Up_arm","ForeArm","Hand")]
-        common.tube(bm,weights,uvs,[at(n) for n in arm],[.065,.075,.054,.040],arm,"limbs",12)
-        palm=at(side+"_Hand")
-        fingers=[at(side+"_Toe_%d_01"%d) for d in (1,2,3)]
-        mass((sum(fingers,Vector())/3+palm)/2,(.048,.052,.043),side+"_Hand")
-        for digit in (1,2,3):
-            first,second=(side+"_Toe_%d_%02d"%(digit,j) for j in (1,2))
-            direction=(at(second)-at(first)).normalized()
-            common.tube(bm,weights,uvs,[palm,at(first),at(second),at(second)+direction*.025],
-                [.018,.018,.013,.004],[side+"_Hand",first,second,second],"limbs",8)
-        # Two feathered wings, folded outward. They follow the native torso;
-        # flight/navigation remains the accepted ordinary-map adaptation.
-        root=at("Spine_3")+SIDE*sign*.15-FORWARD*.15
-        elbow=root+SIDE*sign*.42+UP*.43-FORWARD*.15
-        wrist=root+SIDE*sign*.72+UP*.68-FORWARD*.20
-        common.tube(bm,weights,uvs,[root,elbow,wrist],[.11,.13,.085],["Spine_3"]*3,"membrane",12)
-        for index in range(13):
-            t=index/12
-            base=root.lerp(wrist,t)
-            tip=base+SIDE*sign*(.38+.20*t)-UP*(.50-.12*t)-FORWARD*(.09+.12*t)
-            axis=(tip-base).normalized()
-            normal=FORWARD
-            lateral=axis.cross(normal).normalized()
-            common.ellipsoid(bm,weights,uvs,(base+tip)/2,lateral,axis,normal,
-                (.072,(tip-base).length*.55,.025),"Spine_3","membrane",6,12)
+    from lillend_surfaces import build_body as refined_body
+    refined_body(bm, weights, uvs, rig, kind, common, REST, NATIVE, TAIL)
 
 
 # Reuse the proved triangle operation without changing any released exporter.

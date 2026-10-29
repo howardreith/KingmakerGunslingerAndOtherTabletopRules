@@ -1,3 +1,23 @@
+# Active release: v0.0.170 Satyr locomotion and Lillend presentation
+
+October29: owner approved the art/repair and explicitly authorized merge, push
+and a new release. Prepare v0.0.170 through the ordinary exact-reference publisher
+from clean pushed master, full source/build/package gate and two deterministic
+builds (30-minute planning budget). Affected cold save/reload stays NOT_RUN and
+must remain disclosed. No Sprint33 or new native campaign is selected.
+
+Original October29 reviewable checkpoint: Satyr walking repaired; Lillend surfaces
+rebuilt on the same rig. Native presentation PASS53/53, focused domain9/9,
+Blender export3/3; exact installation/settings/save intake restored. Owner art
+review now approved; affected cold save/reload deferred by the validation ceiling.
+Tested source `44281097448efa9236f20faa2dfd74ee4dd85072`; retain its exact
+package/receipt and original failed observations. Review branch
+`codex/satyr-lillend-presentation-repair`, accepted master `71ea55cda5`.
+See [the active repair record](planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
+Local gallery/packet paths and exact identities are in the repair record.
+The original checkpoint's no-publication boundary is superseded by this approval.
+Do not resume the concluded Sprint32 release or start Sprint33.
+
 # Sprint 32 - RELEASED / STOP
 
 Stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) is published and publicly verified from PR74 source
