@@ -1249,6 +1249,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LillendVisual32Tests.cs" />
+    <Compile Include="SatyrGaitTests.cs" />
+    <Compile Include="..\..\src\KingmakerGunslinger\Summoning\SatyrGaitPolicy.cs"><Link>Summoning\SatyrGaitPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\LillendHumanBindingPolicy.cs"><Link>Summoning\LillendHumanBindingPolicy.cs</Link></Compile>
     <Compile Include="..\..\src\KingmakerGunslinger\Summoning\LillendTailAnimationPolicy.cs"><Link>Summoning\LillendTailAnimationPolicy.cs</Link></Compile>
   </ItemGroup>

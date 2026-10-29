@@ -32,6 +32,8 @@ namespace KingmakerGunslinger.Summoning
             .GetField("m_Settings", BindingFlags.Instance | BindingFlags.NonPublic);
         private static readonly FieldInfo Actions = typeof(AnimationSet)
             .GetField("m_Actions", BindingFlags.Instance | BindingFlags.NonPublic);
+        private static readonly FieldInfo Locomotion = typeof(UnitAnimationManager)
+            .GetField("m_LocoMotionHandle", BindingFlags.Instance | BindingFlags.NonPublic);
         private sealed class WeaponSetting
         {
             internal WeaponAnimationStyle Style;
@@ -48,6 +50,25 @@ namespace KingmakerGunslinger.Summoning
         internal string Outcome { get; private set; } = "waiting-for-native-view";
         internal AnimationSet OwnedSet => _owned;
         internal UnitAnimationActionHandAttack OwnedHand => _hand;
+        internal string LocomotionBeforeBinding { get; private set; }
+        internal string LocomotionAfterBinding { get; private set; }
+
+        internal static string DescribeLocomotion(UnitAnimationManager manager)
+        {
+            if (Locomotion == null) throw new MissingFieldException("Native locomotion handle contract changed.");
+            var handle = Locomotion.GetValue(manager) as UnitAnimationActionHandle;
+            return handle == null ? "absent" : "action=" + handle.Action.name + ";started=" + handle.IsStarted +
+                ";finished=" + handle.IsFinished + ";active=" + manager.ActiveActions.Contains(handle);
+        }
+
+        internal static bool PlayingLocomotion(UnitAnimationManager manager)
+        {
+            if (Locomotion == null) throw new MissingFieldException("Native locomotion handle contract changed.");
+            var handle = Locomotion.GetValue(manager) as UnitAnimationActionHandle;
+            return handle != null && handle.IsStarted && !handle.IsFinished &&
+                ReferenceEquals(handle.Manager, manager) && manager.ActiveActions.Contains(handle) &&
+                manager.AnimationSet.Actions.Contains(handle.Action);
+        }
 
         internal static bool Permits(UnitEntityView view)
         {
@@ -117,7 +138,9 @@ namespace KingmakerGunslinger.Summoning
             _owned = UnityEngine.Object.Instantiate(_native);
             _owned.name = "KMG_Satyr32_PrivateAnimationSet";
             Actions.SetValue(_owned, new List<AnimationActionBase>(_expectedActions));
-            _view.AnimationManager.AnimationSet = _owned;
+            LocomotionBeforeBinding = DescribeLocomotion(_view.AnimationManager);
+            AssignOwnedSet(_owned);
+            LocomotionAfterBinding = DescribeLocomotion(_view.AnimationManager);
             if (!Live) throw new InvalidOperationException("Private Satyr animation binding did not round-trip.");
         }
 
@@ -146,7 +169,7 @@ namespace KingmakerGunslinger.Summoning
                 // If initialization throws, retain our containers and retry even
                 // though that property may already refer to the original set.
                 _restorePending = true;
-                manager.AnimationSet = _native;
+                AssignOwnedSet(_native);
                 _restorePending = false;
             }
             if (manager == null || !_restorePending && (_owned == null || !ReferenceEquals(manager.AnimationSet, _owned)))
@@ -158,6 +181,31 @@ namespace KingmakerGunslinger.Summoning
         }
 
         private void OnDestroy() { try { Release(); } catch (Exception error) { Debug.LogException(error); } }
+
+        private void AssignOwnedSet(AnimationSet replacement)
+        {
+            // Kingmaker 2.1.7b's set setter finishes/clears active handles but
+            // UnitAnimationManager retains its once-created locomotion cache.
+            // Native reproduction 20261029T040637 proves that exact handle is
+            // live before binding, then finished/inactive throughout travel.
+            // Invalidate only this owner's handle retired by this assignment;
+            // the next ordinary native Tick creates/executes locomotion itself.
+            // No tick, action execution, clip, bone or shared set is supplied.
+            var manager = _view.AnimationManager;
+            if (Locomotion == null) throw new MissingFieldException("Native locomotion cache changed.");
+            var previous = Locomotion.GetValue(manager) as UnitAnimationActionHandle;
+            if (previous != null && (!ReferenceEquals(previous.Manager, manager) ||
+                !manager.AnimationSet.Actions.Contains(previous.Action)))
+                throw new InvalidOperationException("Foreign Satyr locomotion handle preserved.");
+            try { manager.AnimationSet = replacement; }
+            finally
+            {
+                if (previous != null && ReferenceEquals(manager.AnimationSet, replacement) &&
+                    ReferenceEquals(Locomotion.GetValue(manager), previous) &&
+                    previous.IsFinished && !manager.ActiveActions.Contains(previous))
+                    Locomotion.SetValue(manager, null);
+            }
+        }
 
         private static UnitEntityView NativeView(string guid, string prefab)
         {

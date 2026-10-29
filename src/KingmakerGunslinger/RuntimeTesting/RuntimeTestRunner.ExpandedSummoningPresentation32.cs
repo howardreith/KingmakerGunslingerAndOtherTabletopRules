@@ -15,6 +15,7 @@ using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.UnitLogic;
+using Kingmaker.Utility;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.Visual.Animation.Kingmaker;
 using Kingmaker.Visual.MaterialEffects;
@@ -52,6 +53,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Lillend32CommandStarts attackCompletion = null;
             Sprint17SnakeContactFrameProbe probe = null;
             var capturedWeapons = new HashSet<string>();
+            var bowPlayback = new Dictionary<UnitAttack, SatyrBowPlayback32>();
             Action<UnitEntityData, string> captureUnit = (subject, name) => {
                 if (mode == null || !mode.Current) throw new InvalidOperationException("Presentation capture lost Default ownership.");
                 lastCapture = Time.frameCount;
@@ -140,6 +142,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check(id + "-animation-binding", independent,
                         new JObject { ["independentOwnedSetsAndHands"] = independent,
                             ["outcomes"] = new JArray(attachments.Select(value => value?.Outcome)),
+                            ["locomotionBeforeBinding"] = new JArray(attachments.Select(value => value?.LocomotionBeforeBinding)),
+                            ["locomotionAfterBinding"] = new JArray(attachments.Select(value => value?.LocomotionAfterBinding)),
                             ["nativeBowGoreAndOtherActionsPreserved"] = attachments.All(value => value != null && value.Live) },
                         "Each exact Satyr owns its added native blade mapping, preserves the borrowed bow/gore and other actions, and leaves both native source sets unchanged.");
                     if (!independent) throw new InvalidOperationException("Satyr private animation binding is missing or shared.");
@@ -159,23 +163,37 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!(bool)selection["selectionSurface"] || !(bool)rest["finite"])
                     throw new InvalidOperationException("Native presentation rest/selection failed.");
                 probe = owner.View.gameObject.AddComponent<Sprint17SnakeContactFrameProbe>();
+                if (!lillend)
+                    foreach (var source in new[] {
+                        new[] { "native-archer", "6114adae73a1338498412b3c63c946f8", "22dfc39c941704743a5b3fd9769327a0" },
+                        new[] { "native-melee", "a6dceccaf84af1a42843e58412265388", "36a3ffb15f1331c489ac1ab666aa9d26" } })
+                        foreach (int frame in ReviewSatyr32NativeWalk(fixture, mode, source, origin, destination, captureUnit)) yield return frame;
                 for (int frame = 0; frame < 60; frame++)
                 {
                     if (!mode.Current) throw new InvalidOperationException("Presentation Default lease changed.");
                     game.IsPaused = false; yield return 0;
                     if (Time.frameCount > lastCapture + 2) baseline.Add(Time.unscaledDeltaTime);
                 }
-                int moveIndex = 0;
+                int moveIndex = 0, satyrSteppingMoves = 0;
                 int gaitBefore = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>().GaitFrames : 0;
                 foreach (var end in new[] { destination, origin })
                 {
                     int selectedMove = moveIndex++;
+                    if (!lillend && owner.Body.CurrentHandEquipmentSetIndex != selectedMove)
+                    {
+                        var change = new UnitSwitchHandEquipmentSet(selectedMove); owner.Commands.Run(change);
+                        foreach (int frame in WaitPresentation32(mode, () => change.IsFinished && owner.Commands.Empty, 15)) yield return frame;
+                        if (owner.Body.CurrentHandEquipmentSetIndex != selectedMove)
+                            throw new InvalidOperationException("Native gait weapon switch did not complete.");
+                    }
                     var start = owner.Position; bool midCaptured = false;
                     var move = new UnitMoveTo(end, .5f); move.Init(owner);
                     if (!move.CanStart) throw new InvalidOperationException("Native presentation move cannot start.");
                     owner.Commands.Run(move);
                     if (!owner.Commands.Contains(move)) throw new InvalidOperationException("Exact native presentation move was not queued.");
                     var moveSamples = new JArray(); float peakVelocity = 0, activeTravel = 0;
+                    var stride = lillend ? null : new Satyr32Stride(owner);
+                    int gaitCaptures = 0; float nextGaitCapture = 0;
                     int activeFrames = 0;
                     foreach (int frame in WaitPresentation32(mode, () => move.IsFinished, 25, () => {
                         if (Time.frameCount > lastCapture + 2) motion.Add(Time.unscaledDeltaTime);
@@ -187,9 +205,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (!exactActive || speed <= .05f) return;
                         activeFrames++; peakVelocity = Math.Max(peakVelocity, speed);
                         activeTravel = Math.Max(activeTravel, Vector3.Distance(start, owner.Position));
+                        stride?.Observe();
+                        if (!lillend && activeTravel > .8f && gaitCaptures < 6 && Time.unscaledTime >= nextGaitCapture)
+                        {
+                            capture("gait-" + selectedMove + "-" + gaitCaptures++);
+                            nextGaitCapture = Time.unscaledTime + .10f;
+                        }
                         if (activeFrames % 10 == 0)
                         {
                             var pose = Presentation32Pose(owner, lillend);
+                            if (!lillend) pose["satyrJoints"] = Presentation32SatyrJoints(owner);
                             pose["nativeVelocity"] = speed; pose["exactMoveActive"] = exactActive;
                             pose["commandIsStarted"] = move.IsStarted;
                             moveSamples.Add(pose); poses.Add(pose.DeepClone());
@@ -214,6 +239,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["preciseArrivalClaimed"] = false },
                         "The exact queued native move supplies positive-velocity travel over four metres and finite moving poses with a mid-motion frame; terminal result is retained without a precise-arrival claim.");
                     if (!moved) throw new InvalidOperationException("Native presentation locomotion evidence incomplete.");
+                    if (!lillend)
+                    {
+                        bool stepping = SatyrGaitPolicy.Stepping(stride.Samples.ToArray()) && gaitCaptures == 6;
+                        Sprint25Check(id + "-stepping-" + selectedMove, stepping,
+                            new JObject { ["weaponSet"] = selectedMove, ["samples"] = stride.Rows,
+                                ["frameStripCount"] = gaitCaptures, ["translationIsGaitEvidence"] = false },
+                            "Both thighs, knees and hooves articulate relative to the pelvis, with alternating fore/aft strides and an active native locomotion handle during real travel.");
+                        if (!stepping) throw new InvalidOperationException("Satyr bilateral gait evidence failed.");
+                        satyrSteppingMoves++;
+                    }
                     // IsFinished is only the command boundary. The installed
                     // engine can still own the prior movement/path afterward.
                     // Wait for its normal retirement before a reverse command;
@@ -245,11 +280,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["frames"] = settlementFrames, ["consecutiveQuietFrames"] = settledFrames },
                         "The exact native move slot, queue, agent path/request and velocity retire for three ordinary frames before the next command; no forced movement stop.");
                     if (settledFrames < 3) throw new InvalidOperationException("Native movement retirement boundary did not settle.");
+                    if (!lillend) capture("stopped-" + selectedMove);
+                }
+                if (!lillend && owner.Body.CurrentHandEquipmentSetIndex != 0)
+                {
+                    var restoreBow = new UnitSwitchHandEquipmentSet(0); owner.Commands.Run(restoreBow);
+                    foreach (int frame in WaitPresentation32(mode, () => restoreBow.IsFinished && owner.Commands.Empty, 15)) yield return frame;
+                    if (owner.Body.CurrentHandEquipmentSetIndex != 0)
+                        throw new InvalidOperationException("Native bow restoration before combat failed.");
                 }
                 var gait = lillend ? owner.View.GetComponent<LillendHumanVisualAttachment>() : null;
                 bool movement = poses.Count > 0 && poses.All(p => (bool)p["finite"]) &&
-                    (!lillend || gait.GaitFrames > gaitBefore && gait.GaitPeakSpeed > 0 && gait.GaitPeakOffset > 0 &&
-                        gait.DescribeGait().EndsWith("stopped=False", StringComparison.Ordinal));
+                    (lillend ? gait.GaitFrames > gaitBefore && gait.GaitPeakSpeed > 0 && gait.GaitPeakOffset > 0 &&
+                        gait.DescribeGait().EndsWith("stopped=False", StringComparison.Ordinal) : satyrSteppingMoves == 2);
                 Sprint25Check(id + "-movement", movement,
                     new JObject { ["poses"] = poses, ["restFrameSeconds"] = new JArray(baseline),
                         ["motionFrameSeconds"] = new JArray(motion), ["captures"] = captures,
@@ -322,13 +365,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["tailLastClipTime"] = tailAction?.LastClipTime, ["tailLastNativeTime"] = tailAction?.LastNativeTime,
                                 ["nativeHandleActed"] = animation?.IsActed };
                             var handAction = animation?.Action as UnitAnimationActionHandAttack;
+                            AnimationClip selected = null;
                             if (handAction != null)
                             {
                                 // GetVariant only reads the already selected native
                                 // variant. Do not create an inspection handle.
                                 var select = typeof(UnitAnimationActionHandAttack).GetMethod("GetVariant", BindingFlags.NonPublic | BindingFlags.Instance);
                                 if (select == null) throw new MissingMethodException("Native hand variant lookup changed.");
-                                var selected = select.Invoke(handAction, new object[] { animation }) as AnimationClip;
+                                selected = select.Invoke(handAction, new object[] { animation }) as AnimationClip;
                                 attackRow["selectedNativeVariant"] = new JObject { ["name"] = selected?.name,
                                     ["length"] = selected == null ? (float?)null : selected.length };
                             }
@@ -341,17 +385,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ["action"] = animation?.Action?.GetType().FullName,
                                 ["style"] = animation?.AttackWeaponStyle.ToString(),
                                 ["handleTime"] = animation == null ? (float?)null : animation.GetTime() };
-                            if (!guards.Properties().All(value => (bool)value.Value))
+                            SatyrBowPlayback32 priorBow;
+                            bowPlayback.TryGetValue(command, out priorBow);
+                            bool retiredBow = !lillend && weapon == "6d40d84e239bdf345b349ff52e3c00a9" &&
+                                animation != null && animation.AttackWeaponStyle == WeaponAnimationStyle.Bow && priorBow != null &&
+                                priorBow.CaptureFrame >= 0 && priorBow.CaptureFrame <= eventFrame &&
+                                SatyrGaitPolicy.RecentRetiredBow(priorBow.Played,
+                                    ReferenceEquals(priorBow.Handle, animation), ReferenceEquals(priorBow.Clip, selected),
+                                    animation.IsFinished, animation.IsInterrupted, animation.IsActed, priorBow.Frame, eventFrame);
+                            attackRow["retiredBowPlayback"] = priorBow == null ? null : new JObject {
+                                ["accepted"] = retiredBow, ["lastActualPlayback"] = priorBow.Row,
+                                ["poseCaptureFrame"] = priorBow.CaptureFrame, ["eventFrame"] = eventFrame };
+                            if (!guards.Properties().Where(value => value.Name != "activeHandle").All(value => (bool)value.Value) ||
+                                !(bool)guards["activeHandle"] && !retiredBow)
                                 throw new InvalidOperationException("Synchronous contact capture failed exact native event/frame/animation predicates.");
-                            if (!playing) throw new InvalidOperationException("Exact contact animation is not playing.");
+                            if (!playing && !retiredBow) throw new InvalidOperationException("Exact contact animation has no live or recently observed native playback.");
                             capture(captureName);
-                            captures.Add(new JObject { ["kind"] = "contact-attribution", ["fileStem"] = captureName,
+                            captures.Add(new JObject { ["kind"] = retiredBow ? "retired-bow-release-attribution" : "contact-attribution", ["fileStem"] = captureName,
                                 ["eventFrame"] = eventFrame, ["captureFrame"] = Time.frameCount,
                                 ["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(command),
                                 ["ruleReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(rule),
                                 ["weapon"] = weapon, ["hit"] = true, ["eventMeaning"] = rule.Weapon.Blueprint.IsMelee ? "melee-contact" : "projectile-launch-not-impact", ["animation"] = animation.Action.name,
-                                ["clip"] = tailAction != null ? tailAction.Clips.Single().name : clip.name,
-                                ["clipTime"] = tailAction != null ? tailAction.LastClipTime : active.GetTime(),
+                                ["clip"] = tailAction != null ? tailAction.Clips.Single().name : retiredBow ? priorBow.Clip.name : clip.name,
+                                ["clipTime"] = tailAction != null ? tailAction.LastClipTime : retiredBow ? priorBow.Time : active.GetTime(),
+                                ["clipPlayingAtEvent"] = playing, ["priorPlaybackFrame"] = retiredBow ? (int?)priorBow.Frame : null,
                                 ["nativeHandleTime"] = animation.GetTime() });
                         }
                         catch (Exception error) { captureErrors.Add(error.ToString()); }
@@ -374,6 +431,60 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var here = Sprint24AiCombatLane(fixture.Caster, owner, target, !lillend && set == 0 ? 8f : 1.4f,
                             out near, out attackLane, out attackDirection);
                         PlaceExpandedSummoningUnit(owner, here); PlaceExpandedSummoningUnit(target, near);
+                        if (lillend)
+                        {
+                            Vector3 castingTarget; string castingLane, castingDirection;
+                            var castingOrigin = Sprint24AiCombatLane(fixture.Caster, owner, target, 8f,
+                                out castingTarget, out castingLane, out castingDirection);
+                            PlaceExpandedSummoningUnit(owner, castingOrigin); PlaceExpandedSummoningUnit(target, castingTarget);
+                            var creation = owner.Blueprint.GetComponents<LillendBardBook32>().Single();
+                            var book = owner.Descriptor.GetSpellbook(creation.Book);
+                            var cure = book.GetKnownSpells(1).Single(value => value.Blueprint.AssetGuid == "5590652e1c2225c4ca30c4a699ab3649");
+                            var courage = owner.Blueprint.Brain.Actions.OfType<LillendCourageAi32>().Single().Courage;
+                            var performance = owner.Descriptor.ActivatableAbilities.Enumerable.Single(value => ReferenceEquals(value.Blueprint, courage));
+                            int damageBefore = owner.Damage, slotsBefore = book.GetSpontaneousSlots(1);
+                            bool castCaptured = false, performanceCaptured = false;
+                            var castPoses = new JArray();
+                            try
+                            {
+                                // Explicit damage setup on this disposable owner
+                                // only. The actual native cast supplies healing,
+                                // slot expenditure and its upper-body animation.
+                                owner.Damage = 5;
+                                if (!cure.IsAvailable || !cure.CanTarget(new TargetWrapper(owner)))
+                                    throw new InvalidOperationException("Presentation self-cure unavailable.");
+                                var cast = new UnitUseAbility(cure, new TargetWrapper(owner)); owner.Commands.Run(cast);
+                                foreach (int frame in WaitPresentation32(mode, () => cast.IsFinished &&
+                                    cast.ExecutionProcess?.IsEnded == true && owner.Damage < 5 && owner.Commands.Empty, 24, () => {
+                                    var animation = cast.Animation;
+                                    if (castCaptured || animation?.IsStarted != true || animation.ActiveAnimation == null) return;
+                                    var pose = Presentation32Pose(owner, true); castPoses.Add(pose);
+                                    capture("cast"); castCaptured = true;
+                                })) yield return frame;
+                                var activate = new UnitActivateAbility(performance); owner.Commands.Run(activate);
+                                foreach (int frame in WaitPresentation32(mode, () => activate.IsFinished &&
+                                    performance.IsOn && performance.IsRunning && owner.Commands.Empty, 12)) yield return frame;
+                                capture("performance"); performanceCaptured = true;
+                                castPoses.Add(Presentation32Pose(owner, true));
+                                bool posed = castCaptured && performanceCaptured && cast.IsActed &&
+                                    owner.Damage < 5 && book.GetSpontaneousSlots(1) == slotsBefore - 1 &&
+                                    castPoses.All(pose => (bool)pose["finite"]);
+                                Sprint25Check(id + "-cast-performance-poses", posed,
+                                    new JObject { ["cast"] = Sprint27AiCommand(cast), ["activation"] = Sprint27AiCommand(activate),
+                                        ["damageSetup"] = 5, ["damageAfterNativeCast"] = owner.Damage,
+                                        ["slotsBefore"] = slotsBefore, ["slotsAfter"] = book.GetSpontaneousSlots(1),
+                                        ["performanceRunning"] = performance.IsRunning, ["poses"] = castPoses,
+                                        ["castingLane"] = castingLane, ["targetDistanceMeters"] = owner.DistanceTo(target),
+                                        ["manualAnimationTicks"] = 0, ["fullRulesQualificationClaimed"] = false },
+                                    "A real self-cure and native running performance provide finite authored-body poses and gameplay-camera frames for deformation review; this is presentation evidence.");
+                                if (!posed) throw new InvalidOperationException("Lillend cast/performance presentation incomplete.");
+                            }
+                            finally { performance.IsOn = false; owner.Damage = damageBefore; }
+                            foreach (int frame in WaitPresentation32(mode, () => !performance.IsOn && !performance.IsRunning &&
+                                !owner.Buffs.Enumerable.Any(buff => buff.Active && !buff.IsDisposed &&
+                                    ReferenceEquals(buff.Blueprint, courage.Buff)) && owner.Commands.Empty, 12)) yield return frame;
+                            PlaceExpandedSummoningUnit(owner, here); PlaceExpandedSummoningUnit(target, near);
+                        }
                         var primary = owner.Body.PrimaryHand.MaybeWeapon;
                         if (primary == null) throw new InvalidOperationException("Actual primary weapon absent.");
                         var requiredWeapons = new[] { primary }.Concat(owner.Body.AdditionalLimbs.Select(limb => limb.MaybeWeapon))
@@ -404,7 +515,32 @@ namespace KingmakerGunslinger.RuntimeTesting
                             var attack = new UnitAttack(target) { ForceFullAttack = true }; attack.Init(owner);
                             owner.Commands.Run(attack);
                             foreach (int frame in WaitPresentation32(mode, () => attack.IsFinished && pending == 0, 25,
-                                () => { if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend)); })) yield return frame;
+                                () => {
+                                    if (!lillend && set == 0)
+                                    {
+                                        var handle = attack.Animation; var activeBow = handle?.ActiveAnimation;
+                                        var liveClip = activeBow?.GetPlayableClip();
+                                        if (handle?.AttackWeaponStyle == WeaponAnimationStyle.Bow &&
+                                            ReferenceEquals(handle.Manager, owner.View.AnimationManager) &&
+                                            owner.View.AnimationManager.ActiveActions.Contains(handle) &&
+                                            SerpentineFinalReviewPolicy.PlayedNativeClip(true, handle.IsStarted,
+                                                liveClip?.name, liveClip == null ? float.NaN : liveClip.length,
+                                                activeBow == null ? double.NaN : activeBow.GetTime(), activeBow == null ? float.NaN : activeBow.GetWeight()))
+                                        {
+                                            SatyrBowPlayback32 sample;
+                                            if (!bowPlayback.TryGetValue(attack, out sample))
+                                            { sample = new SatyrBowPlayback32(); bowPlayback.Add(attack, sample); }
+                                            sample.Handle = handle; sample.Clip = liveClip; sample.Played = true;
+                                            sample.Frame = Time.frameCount; sample.Time = activeBow.GetTime();
+                                            sample.Row = new JObject { ["frame"] = sample.Frame, ["clip"] = liveClip.name,
+                                                ["time"] = sample.Time, ["weight"] = activeBow.GetWeight(), ["activeHandle"] = true,
+                                                ["commandReference"] = System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(attack) };
+                                            if (sample.CaptureFrame < 0 && sample.Time >= liveClip.length * .35f)
+                                            { capture("bow-playback-" + attempt); sample.CaptureFrame = Time.frameCount; }
+                                        }
+                                    }
+                                    if (Time.frameCount % 20 == 0) poses.Add(Presentation32Pose(owner, lillend));
+                                })) yield return frame;
                             var releases = projectileReleases.Where(pair => ReferenceEquals(pair.Value, attack)).Select(pair => pair.Key).ToArray();
                             if (releases.Length != 0)
                                 foreach (int frame in WaitPresentation32(mode, () => releases.All(release => strikes.Damage.Any(damage => matchingImpact(release, damage))), 8, null)) yield return frame;
@@ -423,7 +559,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     ["requiredWeapons"] = new JArray(requiredWeapons), ["capturedWeapons"] = new JArray(capturedWeapons),
                                     ["actualAttacks"] = attacks.DeepClone(), ["projectileImpacts"] = impactRows, ["captureErrors"] = new JArray(captureErrors),
                                     ["pendingCaptures"] = pending, ["captures"] = captures.DeepClone() },
-                                "Exact native final-act success and complete matching weapon plan establish completion even if native retirement later reports Interrupt; normal cost and same-frame animation capture remain required. Ranged events are projectile launch, not impact.");
+                                "Native command completion, full plan and cost remain required. Melee keeps synchronous active contact; bow also admits the same finished, un-interrupted handle with its actually played selected clip observed within two frames. Ranged launch and impact remain separate.");
                             if (!attemptPassed) throw new InvalidOperationException("Actual full attack, cost or contact capture failed; exact per-attempt predicates retained.");
                         }
                         if (requiredWeapons.Any(weapon => !capturedWeapons.Contains(weapon)))
@@ -685,6 +821,125 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["renderers"] = new JArray(renderers.Select(renderer => new JObject { ["name"] = renderer.name,
                     ["width"] = renderer.bounds.size.x, ["height"] = renderer.bounds.size.y, ["depth"] = renderer.bounds.size.z })),
                 ["lillend"] = body };
+        }
+
+        private static JObject Presentation32SatyrJoints(UnitEntityData unit)
+        {
+            var skin = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single(value => value.name == "satyr01");
+            var root = skin.rootBone;
+            if (root == null || !root.IsChildOf(unit.View.transform)) throw new InvalidOperationException("Satyr pelvis absent.");
+            return new JObject { ["root"] = root.name, ["locomotion"] = SatyrNativeWeaponAnimation32.DescribeLocomotion(unit.View.AnimationManager),
+                ["bones"] = new JArray(skin.bones.Select(bone => { var point = root.InverseTransformPoint(bone.position);
+                    return new JObject { ["name"] = bone.name, ["position"] = new JArray(point.x, point.y, point.z) }; })) };
+        }
+
+        private sealed class SatyrBowPlayback32
+        {
+            internal UnitAnimationActionHandle Handle;
+            internal AnimationClip Clip;
+            internal int Frame, CaptureFrame = -1;
+            internal double Time;
+            internal bool Played;
+            internal JObject Row;
+        }
+
+        private sealed class Satyr32Stride
+        {
+            private readonly UnitEntityData _unit;
+            private readonly Transform _pelvis, _leftHoof, _rightHoof, _leftKnee, _rightKnee, _leftThigh, _rightThigh;
+            private readonly Quaternion _leftRest, _rightRest;
+            private float _next;
+            internal readonly List<SatyrGaitSample> Samples = new List<SatyrGaitSample>();
+            internal readonly JArray Rows = new JArray();
+            internal Satyr32Stride(UnitEntityData unit)
+            {
+                _unit = unit;
+                var skin = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single(r => r.name == "satyr01");
+                if (skin.bones.Length != 55 || skin.rootBone?.name != "LowerTorso")
+                    throw new InvalidOperationException("Exact native Satyr gait skeleton changed.");
+                _pelvis = skin.rootBone;
+                _leftHoof = skin.bones.Single(b => b.name == "Foot_L"); _rightHoof = skin.bones.Single(b => b.name == "Foot_R");
+                _leftKnee = skin.bones.Single(b => b.name == "L_Leg0_Lower"); _rightKnee = skin.bones.Single(b => b.name == "R_Leg0_Lower");
+                _leftThigh = skin.bones.Single(b => b.name == "L_Leg0_Upper"); _rightThigh = skin.bones.Single(b => b.name == "R_Leg0_Upper");
+                _leftRest = Relative(_leftThigh); _rightRest = Relative(_rightThigh);
+            }
+            private Quaternion Relative(Transform bone) => Quaternion.Inverse(_pelvis.rotation) * bone.rotation;
+            private Vector3 Point(Transform bone) => _unit.View.transform.InverseTransformVector(bone.position - _pelvis.position);
+            internal void Observe()
+            {
+                if (Time.unscaledTime < _next) return;
+                _next = Time.unscaledTime + .04f;
+                var left = Point(_leftHoof); var right = Point(_rightHoof);
+                var leftKnee = Point(_leftKnee); var rightKnee = Point(_rightKnee);
+                var sample = new SatyrGaitSample { Time = Time.unscaledTime,
+                    LeftForward = left.z, RightForward = right.z, LeftHeight = left.y, RightHeight = right.y,
+                    LeftKneeForward = leftKnee.z, RightKneeForward = rightKnee.z,
+                    LeftThighDegrees = Quaternion.Angle(_leftRest, Relative(_leftThigh)),
+                    RightThighDegrees = Quaternion.Angle(_rightRest, Relative(_rightThigh)),
+                    LiveLocomotion = SatyrNativeWeaponAnimation32.PlayingLocomotion(_unit.View.AnimationManager) };
+                Samples.Add(sample);
+                Rows.Add(new JObject { ["frame"] = Time.frameCount, ["time"] = sample.Time,
+                    ["leftHoof"] = new JArray(left.x, left.y, left.z), ["rightHoof"] = new JArray(right.x, right.y, right.z),
+                    ["leftKnee"] = new JArray(leftKnee.x, leftKnee.y, leftKnee.z), ["rightKnee"] = new JArray(rightKnee.x, rightKnee.y, rightKnee.z),
+                    ["leftThighDegrees"] = sample.LeftThighDegrees, ["rightThighDegrees"] = sample.RightThighDegrees,
+                    ["liveLocomotion"] = sample.LiveLocomotion,
+                    ["locomotion"] = SatyrNativeWeaponAnimation32.DescribeLocomotion(_unit.View.AnimationManager) });
+            }
+        }
+
+        private IEnumerable<int> ReviewSatyr32NativeWalk(ExpandedSummoningCorrectionFixture fixture,
+            Cleanup2NativeDefaultScope mode, string[] source, Vector3 origin, Vector3 destination,
+            Action<UnitEntityData, string> capture)
+        {
+            var blueprint = fixture.Blueprints.OfType<BlueprintUnit>().Single(b => b.AssetGuid == source[1]);
+            if (blueprint.Prefab?.AssetId != source[2]) throw new InvalidOperationException("Exact Satyr control changed.");
+            var control = Game.Instance.EntityCreator.SpawnUnit(blueprint, origin, Quaternion.identity, fixture.Scene);
+            if (control == null) throw new InvalidOperationException("Native Satyr control failed to spawn.");
+            fixture.Created.Add(control);
+            var faction = control.Descriptor.Faction;
+            try
+            {
+                // Only this disposable entity changes faction/brain admission.
+                // Its native blueprint, model, equipment and animation stay intact.
+                control.Descriptor.Faction = fixture.Caster.Descriptor.Faction;
+                Sprint28SetBrainActivePreservingActions(control, false);
+                for (int i = 0; i < 20; i++) { if (!mode.Current) throw new InvalidOperationException("Native control lease lost."); yield return 0; }
+                var set = control.View.AnimationManager.AnimationSet;
+                if (control.View.GetComponent<SatyrNativeWeaponAnimation32>() != null)
+                    throw new InvalidOperationException("Native control received the summon adapter.");
+                int moveIndex = 0;
+                foreach (var end in new[] { destination, origin })
+                {
+                    var stride = new Satyr32Stride(control);
+                    var move = new UnitMoveTo(end, .5f); move.Init(control); control.Commands.Run(move);
+                    int frames = 0, images = 0; float nextImage = 0;
+                    foreach (int frame in WaitPresentation32(mode, () => move.IsFinished, 25, () => {
+                        var agent = control.View.MovementAgent as Kingmaker.View.UnitMovementAgent;
+                        if (!ReferenceEquals(control.Commands.Move, move) || agent == null || agent.Velocity.magnitude <= .05f) return;
+                        stride.Observe(); frames++;
+                        if (frames > 4 && images < 6 && Time.unscaledTime >= nextImage)
+                        { capture(control, source[0] + "-" + moveIndex + "-" + images++); nextImage = Time.unscaledTime + .10f; }
+                    })) yield return frame;
+                    bool passed = SatyrGaitPolicy.Stepping(stride.Samples.ToArray()) && ReferenceEquals(set, control.View.AnimationManager.AnimationSet);
+                    Sprint25Check("satyr-" + source[0] + "-stepping-" + moveIndex++, passed,
+                        new JObject { ["blueprint"] = source[1], ["prefab"] = source[2], ["samples"] = stride.Rows,
+                            ["suppliedAnimationTicks"] = 0, ["factionSetup"] = "exact disposable entity only", ["frameStripCount"] = images },
+                        "Unmodified native Satyr control walks using the same bilateral joint/handle criteria as the summon.");
+                    if (!passed) throw new InvalidOperationException("Native Satyr control gait did not qualify.");
+                    int quiet = 0;
+                    foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 12, () => {
+                        var agent = control.View.MovementAgent as Kingmaker.View.UnitMovementAgent;
+                        quiet = control.Commands.Empty && agent != null && !agent.WantsToMove && agent.Velocity.magnitude <= .05f ? quiet + 1 : 0;
+                    })) yield return frame;
+                }
+            }
+            finally
+            {
+                control.Commands.InterruptAll(true); control.Descriptor.Faction = faction;
+                if (control.IsInCombat) control.LeaveCombat();
+                DisposeExpandedSummoningUnits(fixture.Created, new[] { control });
+                Game.Instance.Player.UpdateIsInCombat();
+            }
         }
         private static JObject Presentation32NativePose(UnitEntityData unit, bool hit)
         {

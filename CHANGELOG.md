@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.170-satyr-lillend-presentation-repair
+
+- Restores Satyr native walking in bow and dagger modes after an owner-local
+  weapon animation set replacement.
+- Rebuilds Lillend anatomy, hair, clothing, wings and serpent surfaces on the
+  existing rig. Rules, routes and saved identities remain unchanged.
+- Owner reviewed the repair and authorized merge/publication on 2026-10-29.
+  Native presentation passed 53 assertions on the development artifact; affected
+  cold save/reload remains NOT_RUN. See [release notes](docs/RELEASE-NOTES-0.0.170.md).
+
 ## 0.0.169-expanded-summoning-satyr-lillend
 
 Published2026-10-27; [stable release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169), public assets verified.

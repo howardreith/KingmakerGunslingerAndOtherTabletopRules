@@ -2096,6 +2096,7 @@
   <ItemGroup>
     <Compile Include="Summoning\ExpandedSummoningLillendViewPatch.cs" />
     <Compile Include="Summoning\SatyrNativeWeaponAnimation32.cs" />
+    <Compile Include="Summoning\SatyrGaitPolicy.cs" />
     <Compile Include="Summoning\LillendHumanBindingPolicy.cs" />
     <Compile Include="Summoning\LillendHumanVisualAttachment.cs" />
     <Compile Include="Summoning\LillendTailAction.cs" />
