@@ -1317,6 +1317,8 @@
     <Compile Include="Assets\PteranodonAssetRuntime.Lemure.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Dretch.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.HoundArchon.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.ShadowOutsiders.cs" />
+    <Compile Include="Summoning\ShadowOutsiderVisualPolicy.cs" />
     <Compile Include="Summoning\HoundArchonVisualPolicy.cs" />
     <Compile Include="Summoning\HoundArchonSwordView.cs" />
     <Compile Include="Summoning\TrumpetArchonInstrumentView.cs" />
@@ -2084,6 +2086,7 @@
   </ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Routes.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningShadowOutsiders33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Input.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLullaby32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />
@@ -2100,6 +2103,10 @@
     <Compile Include="Summoning\LillendHumanVisualAttachment.cs" />
     <Compile Include="Summoning\LillendTailAction.cs" />
     <Compile Include="Summoning\LillendTailAnimationPolicy.cs" />
+    <Content Include="..\..\assets\sprint33-shadow-outsiders\*">
+      <Link>assets\sprint33-shadow-outsiders\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="..\..\assets\sprint32-support\*">
       <Link>assets\sprint32-support\%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

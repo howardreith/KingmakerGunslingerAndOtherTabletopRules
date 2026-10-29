@@ -721,7 +721,7 @@ namespace KingmakerGunslinger.Blueprints
             // them. Elephant does NOT register here: its trample symbol is
             // a reserved name with no allocated blueprint identity, and
             // the append that would allocate one is gated on a bounded
-            // native census of the released creature’s own production
+            // native census of the released creatureâ€™s own production
             // carriers, which has not been run.
             ConfigureUngulateTrample(library, bySymbol,
                 "KMG.Summoning.Unit.Brachiosaurus",
@@ -3583,6 +3583,13 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library, BlueprintUnit unit,
             BlueprintFeature extraplanar)
         {
+            // Borrow only the measured rig/view; all selected rules below remain this species'.
+            var bodyView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                TheropodVisualPolicy.DonorGuid, "Sprint33 original body animation carrier");
+            if (bodyView.Prefab == null || bodyView.Prefab.AssetId != TheropodVisualPolicy.DonorPrefabGuid)
+                throw new InvalidOperationException("Sprint33 animation carrier changed.");
+            unit.Prefab = bodyView.Prefab;
+            ConfigureOutsiderOriginalExpiryVisual(library, unit);
             BlueprintItemWeapon slam = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeAirSlamGuid,
                     "Invisible Stalker 2d6 slam");
@@ -4095,6 +4102,13 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnit unit, BlueprintBuff combatTraits,
             BlueprintFeature extraplanar)
         {
+            // Borrow only the measured rig/view; all selected rules below remain this species'.
+            var bodyView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                TheropodVisualPolicy.DonorGuid, "Sprint33 original body animation carrier");
+            if (bodyView.Prefab == null || bodyView.Prefab.AssetId != TheropodVisualPolicy.DonorPrefabGuid)
+                throw new InvalidOperationException("Sprint33 animation carrier changed.");
+            unit.Prefab = bodyView.Prefab;
+            ConfigureOutsiderOriginalExpiryVisual(library, unit);
             BlueprintItemWeapon claw = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeClawGuid,
                     "Shadow Demon 1d6 claw");

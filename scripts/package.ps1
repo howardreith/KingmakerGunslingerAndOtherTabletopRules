@@ -206,6 +206,11 @@ New-Item -ItemType Directory -Path $lillendDestination -Force | Out-Null
 foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint32-support\'+$file)) -Destination $lillendDestination
 }
+$shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
+New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
+foreach ($file in @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint33-shadow-outsiders\'+$file)) -Destination $shadowOutsiderDestination
+}
 # Closed four-file original Sprint 18 body inventory: one mesh and one
 # painting for each ape. Fail closed on a missing export; no private
 # authoring outputs and no broad folder copy.

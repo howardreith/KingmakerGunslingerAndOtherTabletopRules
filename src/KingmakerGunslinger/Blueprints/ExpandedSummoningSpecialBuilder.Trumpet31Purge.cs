@@ -52,6 +52,8 @@ namespace KingmakerGunslinger.Blueprints
             if (carrier.StayOnDeath) throw new InvalidOperationException("Invisibility Purge must end on its bearer's death.");
             var delivery = ScriptableObject.CreateInstance<TrumpetInvisibilityPurgeArea>();
             delivery.OwningArea = area; delivery.Recipient = recipient;
+            delivery.NaturalInvisibility = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(library,
+                NaturalInvisibilityGuid, "Purge-exempt native natural invisibility");
             area.Shape = AreaEffectShape.Cylinder; area.Size = new Feet(70);
             area.AffectEnemies = true; area.AggroEnemies = false; area.AffectDead = false;
             area.IgnoreSleepingUnits = false; area.SpellResistance = false; area.Fx = new PrefabLink();
