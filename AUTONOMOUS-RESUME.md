@@ -1,4 +1,4 @@
-# Sprint 33 - BLOCKED / NOT RELEASED
+# Sprint 33 - IN PROGRESS / NOT RELEASED
 
 Controlling owner mission: dedicated Stalker and Shadow Demon models, Revision 2.
 Product/build/runtime root: C:/Dev/KingmakerGunslingerLab/wt/s33.
@@ -7,12 +7,47 @@ Active record: [planning/SPRINT33-STATUS.md](planning/SPRINT33-STATUS.md).
 Both original bodies have native motion/selection/cleanup proof; Purge proof passes.
 Stalker native turn-based Slam passes. Succubus temporary drain remains unresolved;
 isolated run14 confirms a listening, correctly configured trigger and owner context,
-but no drain event or negative-level effect after successful full attacks. Native
-launches stopped at the mission's repeated-failure boundary; no speculative rerun.
+but no drain event or negative-level effect after successful full attacks. The owner has authorized targeted causal diagnosis and repair, followed by conditional closeout.
+See the active status for current work.
 Mixed ON/OFF persistence, integration, final qualification/reproducibility and
 conditional release remain. No Sprint 34.
 No release or owner aesthetic approval is claimed. v167/v168 debt remains NOT_RUN;
 v169's waiver does not apply. Historical records below do not select work.
+
+## Historical v170 repair (preserved)
+
+# v0.0.170 RELEASED / STOP
+
+October29: owner approved the art/repair and authorized merge, push and release.
+[Stable v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
+is published and verified as Latest from `43abeedfd223e95dec33a3556cc5606a029e4cd3`
+(PR80 repair and PR81 package-count correction). The full2,759-test gate passed;
+two exact-reference builds produced identical ZIP/DLL hashes and preserved the
+primary archive. Public download, checksums, manifest, embedded Info/DLL/MVID and
+remote tag passed verification at12:37:10.916UTC. Publisher723.177s; public
+verification11.930s. The first392.520s attempt's packaging failure remains FAIL.
+
+ZIP SHA256 `49811ef42e9f3205749f59f7989485f7525000049a15e81f6da71c396f93a723`.
+[Release identities and commands](planning/SATYR-LILLEND-RELEASE170-EVIDENCE.json).
+Native presentation remains reviewed reuse of its original development artifact;
+no release DLL native execution is claimed. Affected cold save/reload stays
+NOT_RUN and prior disclosed gaps remain open. Publication deployed nothing,
+launched no game and wrote no save. No Sprint33 or further campaign is selected.
+
+## Original repair checkpoint
+
+Original October29 reviewable checkpoint: Satyr walking repaired; Lillend surfaces
+rebuilt on the same rig. Native presentation PASS53/53, focused domain9/9,
+Blender export3/3; exact installation/settings/save intake restored. Owner art
+review now approved; affected cold save/reload deferred by the validation ceiling.
+Tested source `44281097448efa9236f20faa2dfd74ee4dd85072`; retain its exact
+package/receipt and original failed observations. Review branch
+`codex/satyr-lillend-presentation-repair`, accepted master `71ea55cda5`.
+See [the active repair record](planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
+Local gallery/packet paths and exact identities are in the repair record.
+The original checkpoint's no-publication boundary is superseded by this approval.
+Do not resume the concluded Sprint32 release or start Sprint33.
+
 
 # Sprint 32 - RELEASED / STOP
 

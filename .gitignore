@@ -24,6 +24,7 @@
 
 # Test and tooling output
 /tools/__pycache__/
+**/__pycache__/
 /TestResults/
 *.trx
 *.log

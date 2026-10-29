@@ -1,5 +1,34 @@
 # Build, package, and publish
 
+## 0.0.170 Satyr/Lillend repair publication (completed)
+
+[Stable v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
+is published from `43abeedfd223e95dec33a3556cc5606a029e4cd3`, after PR80 and PR81.
+The complete2,759-test gate and two deterministic exact-reference builds passed;
+public download/checksum/manifest, embedded Info/DLL/MVID, Latest and remote tag
+were verified. The first attempt's strict file-count failure remains preserved;
+PR81 corrected the declared count for the new release notes without changing
+product code. See [exact release evidence](../planning/SATYR-LILLEND-RELEASE170-EVIDENCE.json).
+The procedure below is retained as provenance; no additional release run is selected.
+
+On 2026-10-29 the owner reviewed the repair gallery and wrote: "Alright, this
+looks good. Please merge, push to remote, and cut a new release." This authorizes
+normal integration and the next stable patch, v0.0.170; it selects no Sprint33.
+The previously disclosed affected cold save/reload remains NOT_RUN, as do older
+release gaps. The v0.0.169 reproducibility waiver is historical and does not
+apply to this new release.
+
+Use the ordinary exact-reference publisher from clean, pushed master, with
+`docs/RELEASE-NOTES-0.0.170.md`. Its full gate and two deterministic builds are
+the selected release campaign (planning budget 30 minutes, excluding necessary
+safe completion). Do not add a redundant pre-merge product rebuild or relabel
+the 53-assertion development native run as execution on release bytes.
+`validate_satyr_lillend_repair_release170.py` pins the owner-reviewed e965cfd885
+product, project, source art and exports, admits only version metadata changes,
+requires the released 7,511-entry ledger unchanged, and preserves historical
+static records. Native-tested product source is 4428109744; e965cfd885 adds
+records only. Verify the public ZIP, checksum, manifest, embedded DLL/Info and tag.
+
 ## 0.0.169 Sprint 32 publication (completed)
 
 On 2026-10-27 Howie wrote "Merge and release it thank you" after the qualified
