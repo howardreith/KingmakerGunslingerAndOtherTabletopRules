@@ -231,6 +231,7 @@ namespace KingmakerGunslinger.Summoning
             internal TheropodAccessorySuppression TheropodSuppression;
             internal HoundArchonSwordView HoundSword;
             internal BarbazuGlaiveView34 BarbazuGlaive;
+            internal KytonChainVisual34 KytonChains;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
@@ -737,6 +738,12 @@ namespace KingmakerGunslinger.Summoning
                     attachment.BarbazuGlaive.Configure(view, donor);
                 }
 
+                if (attachment.VisualKey == InfernalVisualPolicy34.Kyton)
+                {
+                    attachment.KytonChains = view.gameObject.AddComponent<KytonChainVisual34>();
+                    attachment.KytonChains.Configure(view, donor);
+                }
+
                 if (attachment.VisualKey == ShadowOutsiderVisualPolicy.Stalker)
                 {
                     attachment.StalkerSlam = view.gameObject.AddComponent<StalkerSlamAnimation33>();
@@ -1099,6 +1106,12 @@ namespace KingmakerGunslinger.Summoning
                 UnityEngine.Object.DestroyImmediate(attachment.StalkerSlam);
                 attachment.StalkerSlam = null;
             }
+            if (attachment.KytonChains != null)
+            {
+                attachment.KytonChains.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.KytonChains);
+                attachment.KytonChains = null;
+            }
             if (attachment.BarbazuGlaive != null)
             {
                 attachment.BarbazuGlaive.Release();
@@ -1286,7 +1299,8 @@ namespace KingmakerGunslinger.Summoning
                 .Distinct();
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh,
-                    attachment.TheropodSuppression, attachment.HoundSword, attachment.HoundSword?.Model })
+                    attachment.TheropodSuppression, attachment.HoundSword, attachment.HoundSword?.Model,
+                    attachment.BarbazuGlaive, attachment.BarbazuGlaive?.Model, attachment.KytonChains })
                 .Concat(attachment.StalkerSlam == null ? new UnityEngine.Object[0] : attachment.StalkerSlam.OwnedResources())
                 .Where(value => value != null).Distinct().ToArray();
         }
@@ -1362,6 +1376,12 @@ namespace KingmakerGunslinger.Summoning
                 attachment.BeetleGlow.enabled = false;
                 UnityEngine.Object.DestroyImmediate(attachment.BeetleGlow);
                 attachment.BeetleGlow = null;
+            }
+            if (attachment.KytonChains != null)
+            {
+                attachment.KytonChains.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.KytonChains);
+                attachment.KytonChains = null;
             }
             if (attachment.BarbazuGlaive != null)
             {

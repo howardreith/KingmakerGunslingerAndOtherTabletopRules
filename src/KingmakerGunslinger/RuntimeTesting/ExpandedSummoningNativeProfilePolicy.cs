@@ -4,6 +4,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string Sprint32InfernalBodiesPhase = "sprint34-infernal-bodies";
         internal const string Sprint32InfernalEarlyPhase = "sprint34-infernal-early";
         internal const string Sprint32ShadowDrainPhase = "sprint33-drain-observe";
         internal const string Sprint32ShadowPreservationPhase = "sprint33-preservation";
@@ -37,7 +38,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeInputPhase(string phase)
         { return phase == Sprint32DruidInputPhase || phase == Sprint32WizardInputPhase || phase == Sprint32SorcererInputPhase; }
         internal static bool Sprint32NativeDefaultPhase(string phase)
-        { return phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
+        { return phase == Sprint32InfernalBodiesPhase || phase == Sprint32ShadowMotionPhase || Sprint32NativeInputPhase(phase) || phase == Sprint32PerformancePhase ||
             phase == Sprint32FascinatePhase || phase == Sprint32BardicSuggestionPhase || phase == Sprint32GrabPhase || phase == Sprint32PresentationPhase || phase == Sprint32SuggestionTerminalsPhase; }
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }

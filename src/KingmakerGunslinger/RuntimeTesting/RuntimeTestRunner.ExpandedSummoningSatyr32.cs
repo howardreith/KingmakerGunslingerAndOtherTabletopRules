@@ -36,7 +36,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
-                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowMotionPhase ||
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowMotionPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PerformancePhase ||
@@ -87,6 +88,12 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalBodies34(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalEarlyPhase)
             {
                 foreach (int frame in ReviewInfernalEarly34(fixture)) yield return frame;

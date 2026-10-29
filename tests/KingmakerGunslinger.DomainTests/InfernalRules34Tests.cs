@@ -46,8 +46,17 @@ namespace KingmakerGunslinger.DomainTests
                     Assertions.Equal((string)albedo["sha256"], actual, "Runtime albedo agrees with its original mesh.");
                 }
                 var chains = (JArray)payload["chains"];
+                var chainVertices = new System.Collections.Generic.HashSet<int>();
                 foreach (var chain in chains) {
                     var indices = chain["vertices"].Values<int>().ToArray();
+                    int bone = Array.IndexOf(payload["bones"].Values<string>().ToArray(), (string)chain["bone"]);
+                    foreach (int index in indices) {
+                        int offset = vertices * 32 + triangles * 12 + index * 32;
+                        Assertions.True(chainVertices.Add(index), "Chain geometry belongs to one independently driven chain.");
+                        Assertions.Equal(bone, BitConverter.ToInt32(data, offset), "Exported chain vertex follows its declared native palm.");
+                        Assertions.True(Math.Abs(BitConverter.ToSingle(data, offset + 4) - 1f) < .0001f,
+                            "Chain extends in one measured palm frame without mixed-bone drift.");
+                    }
                     Assertions.True(indices.Length > 0 && indices.Distinct().Count() == indices.Length &&
                         indices.All(index => index >= 0 && index < vertices), "Each chain owns valid, unique render vertices.");
                 }
@@ -56,6 +65,9 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void EarlyNativePhaseRetainsClosedAdmission()
         {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies") &&
+                ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("sprint34-infernal-bodies"), "Native rendering phase admitted to the existing owned clock.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies-extra"), "Broader visual phase refused.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-early"), "Selected bounded phase admitted.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("Sprint34-infernal-early"), "Case variation refused.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-early-extra"), "Broader suffix refused.");

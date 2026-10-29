@@ -82,6 +82,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["weapon"] = evt.Weapon?.Blueprint?.AssetGuid; row["itemReference"] = ReferenceId(evt.Weapon);
                 row["hit"] = evt.AttackRoll?.IsHit; row["hpDamage"] = evt.MeleeDamage?.Damage;
                 row["rangeFeet"] = evt.Weapon?.AttackRange.Value;
+                row["weaponDamage"] = evt.AttackRoll?.WeaponStats == null ? null : new JArray(evt.AttackRoll.WeaponStats.DamageDescription.Select(value =>
+                    new JObject { ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus }));
+                row["damagePackets"] = evt.MeleeDamage == null ? null : new JArray(evt.MeleeDamage.DamageBundle.Select(value =>
+                    new JObject { ["type"] = value.GetType().Name, ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus,
+                        ["criticalModifier"] = ReadExpandedSummoningOptionalMember(value, "CriticalModifier")?.ToString() }));
                 row["attackCommand"] = evt.Initiator.Commands.Attack == null ? (int?)null :
                     RuntimeHelpers.GetHashCode(evt.Initiator.Commands.Attack);
             }
