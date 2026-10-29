@@ -566,7 +566,7 @@ namespace KingmakerGunslinger.Blueprints
                 SuccubusCombatTraitsSymbol);
             ConfigureSuccubusDomination(library, domination);
             ConfigureSuccubusDominate(library, dominate, domination);
-            ConfigureSuccubusAi(dominateAi, dominate, succubusBrain);
+            ConfigureSuccubusAi(library, dominateAi, dominate, succubusBrain);
             ConfigureSuccubusCombatTraits(library, succubusTraits);
             ConfigureSuccubus(library, Require<BlueprintUnit>(bySymbol,
                 SuccubusUnitSymbol), dominate, succubusBrain, succubusTraits,
@@ -4582,7 +4582,7 @@ namespace KingmakerGunslinger.Blueprints
                 native.Icon);
         }
 
-        private static void ConfigureSuccubusAi(BlueprintAiCastSpell ai,
+        private static void ConfigureSuccubusAi(LibraryScriptableObject library, BlueprintAiCastSpell ai,
             BlueprintAbility dominate, BlueprintBrain brain)
         {
             ai.name = InternalName(SuccubusDominateAiSymbol);
@@ -4597,7 +4597,9 @@ namespace KingmakerGunslinger.Blueprints
                 .Blueprints.Considerations.Consideration>();
             ai.Locators = Array.Empty<EntityReference>();
             brain.name = InternalName(SuccubusBrainSymbol);
-            brain.Actions = new BlueprintAiAction[] { ai };
+            brain.Actions = (BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
+                DumbBrainGuid, "ordinary native Succubus attack fallback").Actions ?? Array.Empty<BlueprintAiAction>())
+                .Concat(new BlueprintAiAction[] { ai }).ToArray();
         }
 
         private static void ConfigureSuccubusCombatTraits(
