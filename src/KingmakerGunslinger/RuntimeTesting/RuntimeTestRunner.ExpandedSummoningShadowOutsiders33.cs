@@ -61,7 +61,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             DateTime deadline = DateTime.UtcNow.AddSeconds(15);
                             while (DateTime.UtcNow < deadline && (owner.View == null || !EntityFadedIn(owner) ||
-                                DissolveAmount(owner) > MotionReviewIntactDissolve || !owner.Descriptor.State.CanAct))
+                                !ShadowBodyVisible33(owner, key) || !owner.Descriptor.State.CanAct))
                             {
                                 _sprint25WaitingForUnityAppearance = owner.View != null && EntityFadedIn(owner) && owner.Descriptor.State.CanAct;
                                 Game.Instance.IsPaused = false; yield return 0;
@@ -96,7 +96,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             (body.sharedMesh.name == "KMG_" + key + "_Original" && body.sharedMesh != cache &&
                              body.sharedMesh.vertexCount == cache.vertexCount && owned.Count > 0));
                         bool exact = mesh && finite && body.enabled && EntityFadedIn(owner) &&
-                            DissolveAmount(owner) <= MotionReviewIntactDissolve && (bool)selection["selectionSurface"] &&
+                            ShadowBodyVisible33(owner, key) && (bool)selection["selectionSurface"] &&
                             frame.Contains("inFrame=true") && frame.Contains("screenLit=true") && frame.Contains("rendererEnabled=true");
                         Sprint25Check("sprint33-body-" + key + "-" + instance, exact, new JObject {
                             ["unit"] = owner.Blueprint.AssetGuid, ["owner"] = owner.UniqueId,
@@ -139,6 +139,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static bool ShadowBodyVisible33(UnitEntityData owner, string key)
+        {
+            // Native natural invisibility renders the allied original mesh as an outline.
+            // Its dissolve value is not a failed summon appearance.
+            return DissolveAmount(owner) <= MotionReviewIntactDissolve ||
+                (key == ShadowOutsiderVisualPolicy.Stalker && owner.Descriptor.State.HasCondition(UnitCondition.Invisible) &&
+                 owner.Buffs.Enumerable.Any(value => value.Blueprint.AssetGuid == "94b2838e8a492c44ebf89e7fe7a75a62" && value.IsTurnedOn));
+        }
+
         private IEnumerable<int> ReviewStalkerPurge33(ExpandedSummoningCorrectionFixture fixture)
         {
             var owners = new List<UnitEntityData>();
@@ -153,6 +162,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 if (!owners[2].Descriptor.State.HasCondition(UnitCondition.Invisible))
                     throw new InvalidOperationException("Natural invisibility precondition absent.");
+                foreach (var owner in owners) owner.JoinCombat();
+                fixture.Hostile.JoinCombat(); Game.Instance.Player.UpdateIsInCombat();
                 foreach (int frame in ReviewTrumpet31Purge(fixture, owners[0], owners[1], owners[2])) yield return frame;
             }
             finally
