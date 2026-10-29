@@ -185,3 +185,5 @@ Stalker TB and Succubus AI/control checks, allowing one highest-risk profile run
 Native bodies/icons untouched; no new saved drain state. Final release171 was free
 at closeout selection, not reserved. Six-stage mixed persistence/repro/integration
 remain NOT_RUN. Archive751 verified files at E completed-scratch-20261029T1327.
+
+Final boundary review: cac5fe1e candidate passed2759/2759 and exact ZIP/DLL reproducibility, but is superseded before native qualification. Integration ordering put AI fallback's legitimate six-second level immediately before a zero-intake assertion. Reorder the established self-contained drain cells before AI preservation; no product behavior changes. The installed-stack successful receipt omits error, so the existing reader now tests that optional member safely; fixture uses the actual successful shape. Requalify coherent final inputs. Original failed gate (missing local Assembly-CSharp.il prerequisite) remains failed; installed IL provenance and focused105 PASS retained locally.

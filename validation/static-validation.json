@@ -2715,7 +2715,7 @@
     "releaseVersion": "0.0.171",
     "releaseInformationalVersion": "0.0.171-expanded-summoning-shadow-outsiders",
     "baseStableVersion": "0.0.170",
-    "reviewedProductSource": "99defb3b4878e4b72501a84a9d188b2aee898f41",
+    "reviewedProductSource": "f32511de6b05717decad3651aa932374f17efde0",
     "appendedIdentities": 0,
     "releasedIdentityChanges": 0,
     "change": "Succubus body preserved, source cleanup/attack fallback and null duration dice repaired; original Invisible Stalker and Shadow Demon bodies; natural invisibility Purge exception",
