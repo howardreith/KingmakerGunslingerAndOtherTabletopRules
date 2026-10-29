@@ -1,18 +1,21 @@
-# Sprint 33 - IN PROGRESS / NOT RELEASED
+# Sprint 33 ? v0.0.171 RELEASED / STOP
 
-Controlling owner mission: dedicated Stalker and Shadow Demon models, Revision 2.
-Product/build/runtime root: C:/Dev/KingmakerGunslingerLab/wt/s33.
-Branch: codex/expanded-summoning-sprint33-shadow-outsiders.
-Active record: [planning/SPRINT33-STATUS.md](planning/SPRINT33-STATUS.md).
-Both original bodies have attributed native motion/selection/cleanup evidence;
-routes and Purge pass. The targeted drain repair now passes all seven native cells
-at c94a6553: actual acquired/expired levels, same-sequence suppression, independent
-owners/repeat qualification, miss, Death Ward, source removal and TB attack.
-Null ContextDurationValue.DiceCountValue was the concrete defect; initialize zero.
-Current next work: final171 complete gate/reproducibility, mixed ON/OFF cold proof,
-combined integration, then conditional publication. Original v117 intake restored.
-No release or owner aesthetic approval is claimed. Historical records below do
-not select work. No Sprint34. v167/v168 NOT_RUN debt remains; no waiver transfer.
+[Stable release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.171) is published as Latest and its actual public ZIP,
+manifest/checksum, embedded DLL/MVID and remote tag/source lineage are verified.
+Product [PR #79](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/pull/79) merged at `6cfd8a92d5354880dc87f9683816106799c53add`.
+Tested/promoted source: `fb8d2431b3d41558f4689cc2227f39921ad6d0cc` in wt/s33; exact qualified bytes preserved.
+This follow-up changes records only. [Sprint 33 evidence/status](planning/SPRINT33-STATUS.md)
+is the current concise coverage, artifact, restoration and deferred-polish map.
+
+Distinct original Invisible Stalker and Shadow Demon bodies are shipped; Succubus
+body and all three icons preserved. Native temporary drain repaired and proven,
+all twelve existing routes preserved, six fresh-process ON/OFF stages completed
+with explicit original-artifact ON reuse, final combined15/15 and full2759/2759 PASS.
+Exact reproduction and public download verification passed without a waiver.
+Original v117 installation, Working bytes/metadata, protected saves/settings and
+references restored; no game or active lease. No personal owner aesthetic approval
+claimed. Fine cosmetic polish remains deferred; v167/v168 NOT_RUN debt remains.
+**Stop before Sprint34.** Historical text below does not authorize further work.
 
 ## Historical v170 repair (preserved)
 
