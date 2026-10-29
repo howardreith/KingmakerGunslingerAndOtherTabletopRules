@@ -161,6 +161,21 @@ namespace KingmakerGunslinger.Blueprints
                         var value = ScriptableObject.CreateInstance<LillendCourageAi32>();
                         value.name = InternalName(identity.Symbol); return value;
                     });
+                else if (identity.PlannedType == "BarbazuWeaponModeAi34")
+                    blueprint = registry.Register<BarbazuWeaponModeAi34>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<BarbazuWeaponModeAi34>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "KytonControlAi34")
+                    blueprint = registry.Register<KytonControlAi34>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<KytonControlAi34>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
+                else if (identity.PlannedType == "KytonGazeAi34")
+                    blueprint = registry.Register<KytonGazeAi34>(identity.Symbol, () => {
+                        var value = ScriptableObject.CreateInstance<KytonGazeAi34>();
+                        value.name = InternalName(identity.Symbol); return value;
+                    });
                 else if (identity.PlannedType == "BlueprintAiSwitchWeapon")
                     blueprint = registry.Register<BlueprintAiSwitchWeapon>(identity.Symbol, () => {
                         var value = ScriptableObject.CreateInstance<BlueprintAiSwitchWeapon>();

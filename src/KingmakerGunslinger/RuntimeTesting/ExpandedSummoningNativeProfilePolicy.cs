@@ -4,6 +4,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string Sprint32InfernalEarlyPhase = "sprint34-infernal-early";
         internal const string Sprint32ShadowDrainPhase = "sprint33-drain-observe";
         internal const string Sprint32ShadowPreservationPhase = "sprint33-preservation";
         internal const string Sprint32StalkerPurgePhase = "sprint33-stalker-purge";
@@ -41,7 +42,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)
-        { return phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
+        { return phase == Sprint32InfernalEarlyPhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
             phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
             phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
