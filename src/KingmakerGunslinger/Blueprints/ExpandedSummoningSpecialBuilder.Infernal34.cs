@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Kingmaker.View.Animation;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.Classes.Spells;
@@ -129,6 +132,7 @@ namespace KingmakerGunslinger.Blueprints
                 Size.Medium, 19, 15, 19, 6, 12, 10, 40);
             var glaive = Sprint29Weapon(library, symbols, p + "Glaive", p + "GlaiveType",
                 "f83415c0e7ea1994d8a7f3dec8f5a861", Size.Medium, 1, DiceType.D10, 10);
+            BindBarbazuNativeHand34(unit, glaive);
             var claw = Sprint29Weapon(library, symbols, p + "Claw", p + "ClawType",
                 NativeClaw1d4Guid, Size.Medium, 1, DiceType.D6, 9);
             unit.Body = NaturalBody(glaive, new[] { claw }, Array.Empty<BlueprintItemWeapon>());
@@ -173,6 +177,33 @@ namespace KingmakerGunslinger.Blueprints
             change.BaseScore = 8; change.CooldownRounds = 1;
             change.ActorConsiderations = change.TargetConsiderations = Array.Empty<Consideration>();
             unit.Brain = InfernalBrain34(library, symbols, p, change);
+        }
+
+        // Only the private glaive's presentation style changes. The native
+        // free-hand rig supplies its measured main-hand clip and act event;
+        // category, two-hand damage, reach and commands stay with the glaive.
+        private static void BindBarbazuNativeHand34(BlueprintUnit unit, BlueprintItemWeapon glaive)
+        {
+            var view = unit.Prefab.Load(false);
+            var hand = view.GetComponentsInChildren<Kingmaker.Visual.Animation.Kingmaker.UnitAnimationManager>(true)
+                .Single().AnimationSet.Actions.OfType<UnitAnimationActionHandAttack>()
+                .Single(value => value.IsMainHand && value.name == "Lizardfolk_FreeHands_AnimationSet_MainHandAttack");
+            var field = typeof(UnitAnimationActionHandAttack).GetField("m_Settings", BindingFlags.Instance | BindingFlags.NonPublic);
+            var settings = field?.GetValue(hand) as Array;
+            if (settings == null || settings.Length == 0 || settings.Length > 32)
+                throw new InvalidOperationException("Barbazu native hand mapping unavailable.");
+            var setting = settings.Cast<object>().First(value => {
+                var clips = value.GetType().GetField("Variants").GetValue(value) as AnimationClip[];
+                return clips != null && clips.Length > 0 && clips[0] != null &&
+                    clips.Where(clip => clip != null).All(clip => clip.name == "Attack_01_3" &&
+                        clip.events.Any(evt => evt.functionName == "PostCommandActEvent"));
+            });
+            var style = (WeaponAnimationStyle)setting.GetType().GetField("Style").GetValue(setting);
+            var visual = new WeaponVisualParameters(); CopyFields(glaive.VisualParameters, visual);
+            SetField(visual, "m_WeaponAnimationStyle", style);
+            SetField(glaive, "m_VisualParameters", visual);
+            if (glaive.VisualParameters.AnimStyle != style || !hand.HasSetting(style))
+                throw new InvalidOperationException("Barbazu private weapon mapping did not round-trip.");
         }
 
         private static void ConfigureKyton34(LibraryScriptableObject library,

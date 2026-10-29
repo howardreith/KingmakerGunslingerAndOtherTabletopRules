@@ -26,7 +26,11 @@ under ignored local artifacts. The runtime JSON and albedo go under
 `assets/sprint34-infernal-outsiders/`.
 
 Offline decoder, finite vertex/normal/UV data, outward winding, chain indices
-and matching albedo hashes passed. Native attachment was observed in early native03; motion/contact acceptance remains NOT_RUN.
+and matching albedo hashes passed. Native attachment was observed in early native03; body02 observed Barbazu motion.
+Complete animation/contact acceptance remains pending; the status record retains
+the failed run and rejected null-clip sub-verdict. The private glaive presentation
+now selects the retained actual native main-hand clip mapping without changing
+its weapon category, damage, reach, or native action consumer.
 
 Mesh SHA256:
 - bearded-devil: `e636ee491240107f1c1db79c4747934e69ad9b4cda539cc0619b5dc47c664ad5`
