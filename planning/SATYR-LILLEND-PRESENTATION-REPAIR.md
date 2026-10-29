@@ -1,5 +1,19 @@
 # Satyr locomotion and Lillend presentation repair
 
+**REVIEWABLE DEVELOPMENT CHECKPOINT — October 29, 2026.** Satyr walking is
+repaired and native-verified in bow/dagger modes against both native controls.
+Lillend's replacement surfaces are implemented and native presentation is
+verified. Final candidate passes53/53 native assertions,9/9 selected domain
+cases and3/3 Blender export cases. Owner art review is pending. Affected cold
+save/reload remains explicitly deferred by the validation policy; this is not
+full release qualification. Current installation/settings and protected save
+intake are restored exactly. No merge or release was performed.
+
+Local review gallery: `artifacts/repair-packet-0.0.169/review/index.html`;
+portable packet: `artifacts/repair-packet-0.0.169/Satyr-Lillend-Repair-Review.zip`.
+Editable private Blender scene: `artifacts/repair-packet-0.0.169/lillend-authored.blend`.
+[Authored source/export provenance](SATYR-LILLEND-ART-PROVENANCE.json).
+
 Owner packet: `Kingmaker_v0.0.169_Repair_Packet.zip`, received October 28,
 2026; SHA256 `9d3ec37f20a4659b5fdb7b016ce5dd32ee5a7d3492eb11ff359b724020d29daa`.
 Mission text SHA256 `1a0b9af1f0bd0b63e75acdd401dea7d8f0fd82af9545c89c886d53c8c4379491`.
@@ -54,7 +68,7 @@ Profile transaction `compat-20261029T040518Z-1e028af3b038`, 240.290s, exact
 restoration verified. No save was selected or written. The existing bind-only
 observer reproduced the required private capture SHA256 exactly.
 
-## Implemented repair, pending final native execution
+## Implemented repair (final native result below)
 
 Only the exact Satyr adapter invalidates its own cached locomotion handle after
 its set assignment has actually finished/removed that same handle. The next
@@ -68,7 +82,7 @@ hooves relative to the pelvis, requires alternating strides and live native
 locomotion, and records six sequential gameplay frames per move plus stops.
 Eight selected Sprint32 domain cases pass, including rigid sliding, hopping,
 one-leg, nonfinite, sparse and retired-handle refusals. This is offline evidence,
-not yet a native gait PASS.
+the initial offline checkpoint; final native gait acceptance is recorded below.
 
 Lillend keeps all36 drivers and the exact released tail centreline, action
 frames,1.4s duration and0.60s event. Original sculpted skin/face/hands, auburn
@@ -158,6 +172,65 @@ refusals cover missing/stale/future playback, different handle/clip and interrup
 No gameplay or asset changes follow the successful gait checkpoint. The new
 observer requires one affected fresh native run; no unchanged broad campaign,
 cold-save trio, provider matrix or release qualification is selected.
+
+## Final native checkpoint
+
+Tested source `44281097448efa9236f20faa2dfd74ee4dd85072`, version0.0.169,
+development purpose `satyr-lillend-presentation-repair`:
+
+| Identity | SHA256 / value |
+|---|---|
+| Source state | `e28a372acb5080d4712fca7a52a8b10124b4c89abb439d7b8694006f0614224e` |
+| Candidate ZIP | `e2c180632d5a49a133085e1f2107cb1fb40f0a42d3cc6963f558fc012167981d` |
+| DLL | `80446d004a2e83c1224df66e66a9f0ccf5e4b7bba6e7e4cea623bf9c161a3ad5` |
+| MVID | `70656ba0-577f-489c-8035-03d5626d411b` |
+| Native result | `dd311c22447ee1de75a2a6699b24ac4c8ad976342c449af4f8c1ff451ceceff7` |
+| Native progress | `866f9ccf75f51cb1442d66d45c797af0501915003199321f7dca5546735527b0` |
+
+Canonical package/receipt: `artifacts/development-candidates/satyr-lillend-presentation-repair/44281097448e/KingmakerGunslinger-0.0.169-development-satyr-lillend-presentation-repair-44281097448e.zip`
+and its `.development-receipt.json`. One guarded build passed in220.526s:
+repository wrapper,9 selected domain cases, exact installed-reference compilation,
+37 native-contract assertions, strict package validation. This is not a full
+domain or release gate. Narrow pre-build compile10.7s/tests1.6s also passed.
+
+Fresh run `20261029T0459315749870Z-aeb68db8ea80453faced5dbec35565fa`,
+directory `20261029T0459315599875Z-disposable-expanded-summoning-sprint32-native-review`,
+PASS53/53, native168.450s (04:59:38.338–05:02:26.789UTC), full guarded
+transaction249.906s. Six live gait cases passed: native archer39/36 samples,
+native melee37/39, summoned bow29/dagger56. Both weapon switches, native
+dagger/gore/bow events and real action costs passed. The retired bow has actual
+weighted `attackWithBow_b` playback at frame5063/time1.62408/weight0.0654,
+followed by its exact native release at5064; its visible bow pose is captured
+at5030. No event-time active-clip claim replaces that distinction.
+
+Lillend passed independent body bindings, selection, two native moves/turns,
+finite moving geometry, real self-cure and running performance poses, sword
+and tail contacts, actual wound and native expiry. Return-to-rest, pose continuity,
+native before/after views and Satyr motion strips were agent-inspected. No
+obvious split limbs/waist or detached weapon grip was seen at the gameplay
+camera. This is technical inspection, not owner aesthetic approval. Both native
+donors expose no Prone action; death/expiry proof does not claim a played death
+animation. Native scheduled removal retires all6 Satyr and62 Lillend owned
+resources while58/316 borrowed resources survive; fixture disposals before
+those verdicts are0. Final owned-world restoration passes.
+
+Profile `compat-20261029T045822Z-024cebbbd60d` verifies exact restoration at
+05:02:32.333UTC, including current Mods, feature settings and CotW settings.
+No save was selected, loaded or written. Original failure records remain FAIL;
+the success belongs only to the final candidate above.
+
+Command: `scripts/compatibility/Invoke-KingmakerCompatibilityProfile.ps1
+-ProfileId gunslinger-only -Scenario disposable-expanded-summoning-sprint32-native-review
+-Parameters @{reviewPhase='technical-presentation'} -RuntimeTimeoutSeconds 600
+-ReuseInstalledArtifact -PackagePath <canonical ZIP above>
+-DevelopmentPurpose satyr-lillend-presentation-repair -Confirm:$false`.
+Local supervised log: `artifacts/repair-packet-0.0.169/repair-native-bow-observer.log`.
+
+Records-only changes after tested source4428109 do not rebuild, requalify or
+retag those bytes. Future guarded reuse needs that exact clean source commit
+at the package's canonical worktree path; the receipt is not valid on a newer
+records HEAD. Cold reconstruction, full profiles/roster/provider qualification
+and release work are not selected. Stop at owner art review.
 
 Previous translation-only presentation PASS remains bound to its original
 artifact and is not stepping evidence. New results will be recorded below.

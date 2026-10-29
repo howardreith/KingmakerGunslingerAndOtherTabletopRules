@@ -79,3 +79,10 @@ geometry or curves are exported, modified or packaged. This is an adapter over
 the shipped owned-set mechanism, with no rig retargeting or creature-rule change.
 Native playback/contact, sibling isolation and cleanup remain required in the
 active record; matching metadata alone is not visual qualification.
+
+The October29 repair invalidates only this summon's finished locomotion cache
+after its own set assignment. Ordinary native Tick recreates playback; no clip,
+bone, shared set or global manager reset is supplied. The final candidate's
+53-assertion native presentation pass covers both donor controls, bow/dagger
+stepping and the revised Lillend poses/lifecycle. Exact identities and deferred
+cold reconstruction remain in the repair record; art awaits owner review.

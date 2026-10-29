@@ -1,9 +1,14 @@
 # Active follow-up: Satyr locomotion and Lillend presentation
 
-October 28 owner repair packet selects Satyr walking, its actual gait observer,
-and Lillend visible-model revision on the existing rig. Review branch
+October 29 reviewable checkpoint: Satyr walking repaired; Lillend surfaces
+rebuilt on the same rig. Native presentation PASS53/53, focused domain9/9,
+Blender export3/3; exact installation/settings/save intake restored. Owner art
+review pending; affected cold save/reload deferred by the validation ceiling.
+Tested source `44281097448efa9236f20faa2dfd74ee4dd85072`; retain its exact
+package/receipt and original failed observations. Review branch
 `codex/satyr-lillend-presentation-repair`, accepted master `71ea55cda5`.
 See [the active repair record](planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
+Local gallery/packet paths and exact identities are in the repair record.
 Ordinary focused development checkpoint; no merge/release authorization.
 Do not resume the concluded Sprint32 release or start Sprint33.
 
