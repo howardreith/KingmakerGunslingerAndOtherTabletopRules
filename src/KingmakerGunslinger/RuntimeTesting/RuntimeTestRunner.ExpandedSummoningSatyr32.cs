@@ -90,8 +90,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowPreservationPhase)
             {
                 CreateSprint32TurnHostile(fixture);
-                foreach (int frame in ReviewSuccubus33(fixture)) yield return frame;
                 foreach (int frame in ReviewStalkerTurn33(fixture)) yield return frame;
+                foreach (int frame in ReviewSuccubus33(fixture)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32StalkerPurgePhase)

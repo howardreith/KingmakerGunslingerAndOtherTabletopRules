@@ -26,7 +26,14 @@ show geometry and procedural colors, not final native transparency or deformatio
 
 Offline validation: finite vertices/normals/UVs, nondegenerate indexed triangles,
 unit normals, normalized weights (at most two influences), schema size and albedo
-hash binding PASS. Native attachment, motion, selection and persistence NOT_RUN.
+hash binding PASS. Native attachment, idle/locomotion/attack, selection, repeated-owner
+isolation, unchanged donor control and private teardown PASS in RunId
+20261029T0514180832814Z-disposable-expanded-summoning-sprint32-native-review,
+source126cdbc7ce390ae03461f3837035b17daf35bbcf (development artifact).
+Cold-load/module-OFF persistence remains NOT_RUN. This is original-artifact evidence,
+not a claim of final-release execution. The bounded native availability run
+20261029T0336574203591Z-observe-expanded-summoning-sprint33-native-inputs identified
+no suitable genuine Kingmaker Shadow Demon body; this deliverable uses original geometry.
 Fine shoulder seams, simple fingers, flat wing transitions and basic texturing
 remain visual polish; no owner aesthetic approval is asserted.
 
