@@ -54,6 +54,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["ability"] = (command as UnitUseAbility)?.Spell?.Blueprint?.AssetGuid;
                 row["nativeCommandType"] = ReadExpandedSummoningOptionalMember(command, "Type")?.ToString();
                 row["ignoreCooldown"] = command.IsIgnoreCooldown;
+                if (phase == "command-end" && command.Result == UnitCommand.ResultType.Interrupt)
+                    row["interruptionCaller"] = Environment.StackTrace;
                 row["turnBased"] = TurnBased.Controllers.CombatController.IsInTurnBasedCombat();
                 if ((bool)row["turnBased"])
                     row["turn"] = Sprint22TurnState(command.Executor, command.TargetUnit);

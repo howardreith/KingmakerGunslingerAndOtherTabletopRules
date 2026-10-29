@@ -8,7 +8,7 @@ promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 Sprint33 remains closed; its original-source ON REUSED_PASS is distinct from
 final-artifact OFF/combined observations. Historical deferred checks remain NOT_RUN.
 
-Current development candidate (not a release): source
+Early mechanics candidate (not a release): source
 `8b59b45717c84b403991333bd3d4d0fe844983ec`, purpose `sprint34-infernal-early`.
 ZIP SHA256 `b86aef9d5b3984fc34fc98139f19af6d793d882cc6af14c90290f72014c863b2`;
 DLL SHA256 `0aae673463b9dcf10bc27464a2983d432816618232c4ef655d99e1a31ece094f`;
@@ -90,23 +90,27 @@ Retained dated history (2026-10-29; immutable original verdicts):
 | Package/publication/restoration | Source/push safeguards ready | Exact publisher selector, final gate/release/downloads |
 
 Focused development uses named filters and production compilation under the
-ordinary15/30-minute policy. Latest focused gate10: production24.7s plus domain5.6s,
-10/2766 PASS in30.9s. Earlier compiler, historical-census input and package-allowlist
+ordinary15/30-minute policy. Latest focused gate14: production24.4s plus domain5.5s,
+10/2766 PASS in30.5s. Earlier compiler, historical-census input and package-allowlist
 failures remain in local logs. The historical v171 fixture now reads both catalog
 and identity inputs from its recorded source;12 focused positive/refusal checks
 passed without replaying historical gameplay. All four S34 model files are covered
 by strict package membership and hash validation. No full milestone gate yet.
 
-Next executable action: build one `sprint34-infernal-bodies` development candidate
-and execute the grouped native body/movement/contact phase, then extend the exact
-publisher selector/refusal tests. Gate13 production compilation and10 selected
-checks PASS in34.2s; two earlier local-name compiler errors are retained, corrected.
-Chain deformation reads the authored disjoint palm weights, follows actual native
-clip/contact timing, and measures the resulting mesh vertex gap. It changes no
-attacks/reach. Native acceptance remains pending.
-Use the existing native timing/commands and private resource lifecycle. The native
-Apostate candidate resolved to the Forefather human-equipment prefab, not a
-confirmed Barbazu/Kyton body. Stock-profile bleed graph remains unobserved.
+Next executable action: build and observe one changed grouped body candidate.
+The movement-boundary/diagnostic repair and native AoO visual consumer compiled
+and passed the focused gate14; no native PASS is inferred from that check.
+Body01/source10244694 RunId `20261029T2218589057622Z-cc09ace85a7b4102bb588f5d700a1a15`
+FAIL336.2s. Both Barbazu original bodies were visible/selectable with independent
+meshes/materials. The move ended Interrupt before starting after one native frame;
+only0.163m placement correction and zero velocity were recorded. No movement or
+weapon-contact PASS. Retained raw evidence/images remain local. Installed IL
+confirms Translocate calls ForcePlaceAboveGround and AoOs use their separate
+native OnAction path. The observer now waits for the existing quiet relocation
+boundary and records start/goal/end, command states and interruption callers.
+Kyton's private contact visual now also follows the native AoO action, without
+changing attacks or reach. Gate13 before this repair compiled and passed10 checks
+in34.2s; candidate10244694 build passed in266.5s. No unchanged native retry.
 
 Before final freeze: implement the smallest exact Sprint34 publisher selector
 and refusal checks; integrate legitimate upstream once; recheck patch availability.
@@ -122,8 +126,8 @@ Sixteen private build references hash-match the installed2.1.7b runtime.
 Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-tasks/processes/leases. After native03, transaction
-`compat-20261029T214907Z-51df8b5144f1` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
+tasks/processes/leases. After body01, transaction
+`compat-20261029T221624Z-7441f007a6c0` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
 original installation, protected saves, sound bank/references and processes match.
 No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
