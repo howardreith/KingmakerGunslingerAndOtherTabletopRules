@@ -1,3 +1,9 @@
+# 0.0.171 - Summon Monster shadow outsiders
+
+- Deliver original Invisible Stalker and Shadow Demon bodies; preserve Succubus and icons.
+- Repair natural-invisibility Purge handling, private Slam animation, Succubus source cleanup/attack fallback and temporary-drain duration.
+- Preserve all twelve existing routes and saved identities; see docs/RELEASE-NOTES-0.0.171.md for scope and evidence limits.
+
 # Changelog
 
 ## 0.0.170-satyr-lillend-presentation-repair

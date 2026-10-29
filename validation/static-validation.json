@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.170-satyr-lillend-presentation-repair",
+  "milestone": "0.0.171-expanded-summoning-shadow-outsiders",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.170",
+  "version": "0.0.171",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2710,5 +2710,16 @@
     "releasedIdentityChanges": 0,
     "reviewedDevelopmentSource": "e965cfd8858aa523eef2d6b8a6011e18992a0613",
     "visibleChoiceTotal": 1189
+  },
+  "expandedSummoningSprint33Release171": {
+    "releaseVersion": "0.0.171",
+    "releaseInformationalVersion": "0.0.171-expanded-summoning-shadow-outsiders",
+    "baseStableVersion": "0.0.170",
+    "reviewedProductSource": "99defb3b4878e4b72501a84a9d188b2aee898f41",
+    "appendedIdentities": 0,
+    "releasedIdentityChanges": 0,
+    "change": "Succubus body preserved, source cleanup/attack fallback and null duration dice repaired; original Invisible Stalker and Shadow Demon bodies; natural invisibility Purge exception",
+    "nativeEvidence": "Original evidence retains its execution artifact; final package requires scoped fresh persistence/integration and explicit affected-dependency reuse",
+    "ownerPublicationAuthority": "Sprint33 Dedicated Models Revised Mission, Revision2"
   }
 }
