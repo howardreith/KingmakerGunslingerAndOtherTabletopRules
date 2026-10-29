@@ -143,6 +143,10 @@ try {
         'assets\sprint33-shadow-outsiders\invisible-stalker-albedo.png',
         'assets\sprint33-shadow-outsiders\shadow-demon-mesh.json',
         'assets\sprint33-shadow-outsiders\shadow-demon-albedo.png',
+        'assets\sprint34-infernal-outsiders\bearded-devil-mesh.json',
+        'assets\sprint34-infernal-outsiders\bearded-devil-albedo.png',
+        'assets\sprint34-infernal-outsiders\kyton-chain-devil-mesh.json',
+        'assets\sprint34-infernal-outsiders\kyton-chain-devil-albedo.png',
         'assets\sprint18-primates\ape-mesh.json',
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
@@ -248,6 +252,17 @@ try {
     foreach ($entry in $shadowOutsiderExports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint33-shadow-outsiders\'+$entry.Key))) -cne $entry.Value) {
             throw 'Packaged Sprint 33 original export differs from its candidate input.'
+        }
+    }
+    $infernalExports = @{
+        'bearded-devil-mesh.json'='e636ee491240107f1c1db79c4747934e69ad9b4cda539cc0619b5dc47c664ad5'
+        'bearded-devil-albedo.png'='46daca8e0c0a0617fc59d41ed7a1a469b5face79ffa5b6c30baf4cff8cab0701'
+        'kyton-chain-devil-mesh.json'='f76800cef1783dd901839a8df4935556c95dec3cb6b1b72ac76cfa995d8f0428'
+        'kyton-chain-devil-albedo.png'='ce678ab9daa274de2b63a0aa2e90590b7f293500f066e2a718b9ede3f5095882'
+    }
+    foreach ($entry in $infernalExports.GetEnumerator()) {
+        if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint34-infernal-outsiders\'+$entry.Key))) -cne $entry.Value) {
+            throw 'Packaged Sprint 34 original export differs from its exact candidate input.'
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'
