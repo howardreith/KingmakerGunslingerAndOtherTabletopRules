@@ -1,6 +1,6 @@
 # Sprint 34 - hidden implementation
 
-Current stage: repair the bounded early native fixture after its first retained
+Current stage: repair exact-source cleanup after the second retained early native
 FAIL. Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`; reviewed base
 `4b7e3d914883ac695a4146c03de790b2024ea38c`. All ten routes remain hidden.
@@ -9,14 +9,14 @@ original-source ON REUSED_PASS is distinct from final-artifact OFF/combined
 observations. Historical deferred checks remain NOT_RUN.
 
 Last executable development candidate (not a release): source
-`8505d4acd40b22833bf43613f9dadd50150f02d2`, purpose `sprint34-infernal-early`.
-ZIP SHA256 `6e8aa2e2e2f7e7cac2847c7ea39c48dc18c49325f0a40ae6bdc39cedd1ea3a61`;
-DLL SHA256 `7210755a02752d22514229818062600700a947d953ea6b9389f149c3636eff4d`;
-MVID `e723fc74-09f1-4641-9d6a-36fe200070c8`;
-source fingerprint `b0283a7a4795276983e510116b7e7f492be4c376bb35b3cf53ca95bb17ff6491`.
-Build04 passed in272.4s, selected14/2766 tests and strict package validation.
+`52c667177b2dde801ffd836deb091df21b5c4bc5`, purpose `sprint34-infernal-early`.
+ZIP SHA256 `078ca5bd6252644242e0813638687d6afa875e74f54a933748665687413f4c3f`;
+DLL SHA256 `5daa405edc16be5c724e3618fc37f95606a7531a086946054821290775eedac3`;
+MVID `06f537fc-6c74-4459-ba2b-53b0a2234318`;
+source fingerprint `14485f659f6babf08a28f9837ece0a06b564073088aa4004843476f8cb72f39b`.
+Build05 passed in280.9s, selected10/2766 tests and strict package validation.
 
-Early native RunId `20261029T2109139961185Z-69ea789acecd4becb12b9300bb1fef21`
+First native (source8505d4ac) RunId `20261029T2109139961185Z-69ea789acecd4becb12b9300bb1fef21`
 is **FAIL**,450.8s including guarded orchestration/restoration. Its unfiltered raw
 receipt remains local. Native chain control spent one standard action, extended
 10 to25feet and added no attacks; the later command executed exactly four chains.
@@ -27,11 +27,22 @@ diagnosed from the original receipt. These are development subobservations,
 not a final-package PASS. Both original bodies attached; visibility/contact/motion
 acceptance is still pending. No personal aesthetic approval claimed.
 
-The repaired observer records all native attack rolls and allows at most three
-retries of the exact missed held charge, without extra slots or forced results.
-It also checks two actual wound sources, one native2HP tick and separate source
-retirement. Focused compilation and10/2766 selected tests passed in31.7s.
-The changed observer requires a new candidate and fresh affected native run.
+Second native (source52c66717) RunId
+`20261029T2136335444911Z-af0f98356f614c5c966434ebe1161963` is **FAIL**,367.9s.
+Two actual CL7 cure casts rolled13, healed10/17HP and closed the wound. The third
+rolled4, restored0HP, left Damage49 unchanged and retained the wound. Two actual
+glaive sources then produced exactly one2HP native tick. Removing the first
+summon's lifetime buff wrongly removed both wounds. Installed BuffCollection IL
+confirms a global IUnitBuffHandler broadcast; the new source handler lacked the
+buff.Owner equality check already used by OutsiderLifetimeBoundary. The small
+production correction now matches the removed buff's exact owner. Focused
+production compilation and10/2766 selected checks passed in30.9s (gate10).
+
+The observer records all native attack rolls and permits at most three retries
+of an actual missed held charge, without extra slots or forced results. Its
+changed two-source check exposed the production defect above. Both original
+failed receipts remain immutable. Fresh execution of the corrected cleanup is
+required; healing/chain subobservations are not final-package PASS.
 
 ## Reuse, gap and proof
 
@@ -100,9 +111,9 @@ passes strict package validation; it has no candidate receipt or native authorit
 Development source validator and canonical icon validator PASS. Ledger prefix
 verification and diff whitespace check PASS. No full milestone gate yet.
 
-Next executable action: review/commit the observer correction, build one changed
+Next executable action: commit the reviewed exact-owner correction, build one changed
 `sprint34-infernal-early` candidate, then run the corrected guarded save-free
-CotW transaction (15-25min including restoration). No unchanged retry. The finite
+CotW transaction (15-25min including restoration). No unchanged retry or forced outcome. The finite
 selection remains chain control/routine, real spell rejection/closure, and exact
 two-source wound retirement. The native Apostate candidate resolved to the
 Forefather human-equipment prefab, not a confirmed Barbazu/Kyton body; full body
@@ -123,8 +134,8 @@ Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
 tasks/processes/leases. After the native FAIL, transaction
-`compat-20261029T210616Z-78f65d5e5221` reached Restored with restorationVerified=true
-at2026-10-29T21:13:45.9096834Z. Settings restoration and full intake Compare PASS;
+`compat-20261029T213400Z-ffd51288a2a8` reached Restored with restorationVerified=true
+at2026-10-29T21:40:07.9112428Z. Settings restoration and full intake Compare PASS;
 original installation, protected saves, sound bank/references and processes match.
 No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
@@ -135,7 +146,7 @@ The exact two push branches are allowlisted. Byte-verified backup:
 Original SHA256 `bcf9021162d39ab78a0aeb83c7d2dfc8ef40f5161257d17898a851d65e40ff04`;
 updated `e2f9feb4a9f7881b61f39472ca9862525431bfe2c8f493abddc56e2d08ccd230`.
 Existing focused acceptance/refusal suite38 PASS; no broader branch permission.
-C: last measured free2,614,231,040 bytes; E:300,206,530,560. Calculate the staged
+C: last measured free2,218,287,104 bytes; E:300,206,530,560. Calculate the staged
 profile/build/extraction reserve before launch. No scratch archive/deletion.
 v0.0.172 was free at intake only; recheck remote tags/releases before freeze.
 No release or completion claim.
