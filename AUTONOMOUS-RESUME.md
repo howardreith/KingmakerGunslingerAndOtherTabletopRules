@@ -1,10 +1,22 @@
-# Active release: v0.0.170 Satyr locomotion and Lillend presentation
+# v0.0.170 RELEASED / STOP
 
-October29: owner approved the art/repair and explicitly authorized merge, push
-and a new release. Prepare v0.0.170 through the ordinary exact-reference publisher
-from clean pushed master, full source/build/package gate and two deterministic
-builds (30-minute planning budget). Affected cold save/reload stays NOT_RUN and
-must remain disclosed. No Sprint33 or new native campaign is selected.
+October29: owner approved the art/repair and authorized merge, push and release.
+[Stable v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
+is published and verified as Latest from `43abeedfd223e95dec33a3556cc5606a029e4cd3`
+(PR80 repair and PR81 package-count correction). The full2,759-test gate passed;
+two exact-reference builds produced identical ZIP/DLL hashes and preserved the
+primary archive. Public download, checksums, manifest, embedded Info/DLL/MVID and
+remote tag passed verification at12:37:10.916UTC. Publisher723.177s; public
+verification11.930s. The first392.520s attempt's packaging failure remains FAIL.
+
+ZIP SHA256 `49811ef42e9f3205749f59f7989485f7525000049a15e81f6da71c396f93a723`.
+[Release identities and commands](planning/SATYR-LILLEND-RELEASE170-EVIDENCE.json).
+Native presentation remains reviewed reuse of its original development artifact;
+no release DLL native execution is claimed. Affected cold save/reload stays
+NOT_RUN and prior disclosed gaps remain open. Publication deployed nothing,
+launched no game and wrote no save. No Sprint33 or further campaign is selected.
+
+## Original repair checkpoint
 
 Original October29 reviewable checkpoint: Satyr walking repaired; Lillend surfaces
 rebuilt on the same rig. Native presentation PASS53/53, focused domain9/9,
