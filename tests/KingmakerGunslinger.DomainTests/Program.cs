@@ -1142,6 +1142,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint34-beard-miss-duplicate", InfernalRules34Tests.BeardRejectsMissesAndDuplicateEvents),
             Case("expanded-summoning.sprint34-beard-command-owner", InfernalRules34Tests.BeardRejectsStaleCommandsAndSiblingHits),
             Case("expanded-summoning.sprint34-live-ability-modifiers", InfernalRules34Tests.PrintedAbilityModifiersStayLive),
+            Case("expanded-summoning.sprint34-mixed-persistence", InfernalRules34Tests.MixedPersistenceOwnsOnlyTheTwoSelectedCreatures),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
             Case("expanded-summoning.sprint18-registered-and-published", PrimateRulesTests.BothApesAreRegisteredAndPublished),
             Case("expanded-summoning.sprint18-ape-two-slams", PrimateRulesTests.ApeProfileIsTwoPrimarySlams),

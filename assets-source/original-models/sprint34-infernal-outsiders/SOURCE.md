@@ -26,11 +26,14 @@ under ignored local artifacts. The runtime JSON and albedo go under
 `assets/sprint34-infernal-outsiders/`.
 
 Offline decoder, finite vertex/normal/UV data, outward winding, chain indices
-and matching albedo hashes passed. Native attachment was observed in early native03; body02 observed Barbazu motion.
-Complete animation/contact acceptance remains pending; the status record retains
-the failed run and rejected null-clip sub-verdict. The private glaive presentation
-now selects the retained actual native main-hand clip mapping without changing
-its weapon category, damage, reach, or native action consumer.
+and matching albedo hashes passed. Body03/source124c370b observed both live
+bodies, independent resources, native movement and actual attack clips; its raw
+29/29 result remains unchanged. Agent image review leaves attack presentation
+open: chain images do not clearly reach the target despite manual vertex gaps,
+and glaive contact alignment is unproved. Native BakeMesh readback and ordinary
+follow-through frames are selected next. No owner aesthetic approval is claimed.
+The private glaive presentation selects the retained native main-hand mapping
+without changing weapon category, damage, reach or native action consumers.
 
 Mesh SHA256:
 - bearded-devil: `e636ee491240107f1c1db79c4747934e69ad9b4cda539cc0619b5dc47c664ad5`

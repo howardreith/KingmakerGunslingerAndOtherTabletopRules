@@ -1,3 +1,16 @@
+Sprint34 selects only `persistenceScope=infernal-outsiders` in the existing
+Working prepare, cleanup and absence trio: one Bearded Devil and one Kyton.
+One private receipt-owned recipient carries saved Infernal Wound, Devil Chills
+and finite Unnerving Gaze; Kyton retains its own Controlled Chains state. The
+native effect-only preparation is disclosed and never counts as attack/save/cost
+proof. Cold ON compares exact sources, recipient, contexts, deadlines, disease
+clock and private items; OFF requires the private effects and original-body
+resources absent. Source cleanup precedes exact recipient retirement. One ON
+trio and one OFF trio use six fresh processes total, restoring original Working
+bytes/metadata after each envelope and before source work. The exact installed-
+stack scope requires the final frozen candidate; no development alias is added.
+This admission/observer extension does not claim any native persistence PASS.
+
 Current Sprint 32 selection, status, storage and next action are governed solely
 by [the active record](../planning/SPRINT32-STATUS.md). The dated Sprint 32
 selection notes below preserve fixture contracts and historical provenance;

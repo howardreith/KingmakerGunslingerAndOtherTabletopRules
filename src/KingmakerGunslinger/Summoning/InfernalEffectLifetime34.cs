@@ -11,6 +11,7 @@ using Kingmaker.UnitLogic;
 using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Components;
 using Kingmaker.UnitLogic.Parts;
+using KingmakerGunslinger.Bootstrap;
 
 namespace KingmakerGunslinger.Summoning
 {
@@ -23,6 +24,8 @@ namespace KingmakerGunslinger.Summoning
     {
         internal static bool SourceIsLive(UnitEntityData source)
         {
+            ModContext context;
+            if (!ModContext.TryGet(out context) || context.FeatureModules?.Active?.ExpandedSummoning != true) return false;
             var summoner = source?.Get<UnitPartSummonedMonster>()?.Summoner;
             return source != null && !source.Destroyed && source.IsInState &&
                 !source.Descriptor.State.IsDead &&

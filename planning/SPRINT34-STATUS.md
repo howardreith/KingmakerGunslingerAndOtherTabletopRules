@@ -9,13 +9,24 @@ Sprint33 remains closed; its original-source ON REUSED_PASS is distinct from
 final-artifact OFF/combined observations. Historical deferred checks remain NOT_RUN.
 
 Latest executed body candidate (not a release): source
-`30a81e4e3c3194cf5bf608dca67b2dc3ab6bdb0a`, purpose `sprint34-infernal-bodies`.
-ZIP `118c8b6f35f649efc4b643726544ce7f0c69da5212db22bdb552551278628f42`;
-DLL `a1438f9c1b99d93b33fd3838bce9f82dd22a0b241d2fcda293a1f00be883219a`;
-MVID `daeadf7e-5096-4026-bcd5-6e8920d3e173`;
-fingerprint `49619f5bdfb37d28427c2da169385254e985429dc735229f1cdac82bd861690c`.
-Build263.5s PASS; body02 FAIL349.9s, explained below. Current source contains the
-batched slot/clip corrections and exact publisher extension; native proof pending.
+`124c370bcccf9b965020636436aad69e84831819`, purpose `sprint34-infernal-bodies`.
+ZIP `c29af2c8a09fac665792ed07502fec5439c593087a64cf01482af6c8b4eac071`;
+DLL `15c7f36816357d836058b881e553c90ad6fe63a9364bdc67860b31d9e7dd7165`;
+MVID `c615c208-18c0-4870-820e-be59a8e1965e`;
+fingerprint `bee467786df6787720949c163a243053e5cbaeaf9373f1b1a5ea62eabb9042fd`.
+Build03 PASS265.5s; native body03 raw PASS29/29,403.9s including restoration.
+RunId `20261029T2310492875407Z-bc0e5dff17be464a8368ee3d7b68abfe`.
+Actual glaive clips `Attack_01_3`, native slot switch to claw clips
+`Attack_01_1/2`, both claw hits and one separate7HP `1d8+2` Beard packet.
+Kyton moves5.958m and executes four chain attacks at10 and25feet; one natural
+miss remains in the extended routine. All private body resources retire.
+**Presentation acceptance remains open:** images do not clearly show chain
+extension to the target despite manual vertex gaps below0.018m; glaive contact
+alignment is also unproved. Original raw PASS is retained, not promoted to
+visual acceptance. The next observer compares native BakeMesh geometry and
+three ordinary follow-through frames; it never supplies animation or damage.
+The previous progress message's43-assertion count was a transcription error;
+the actual immutable runtime result contains29 assertions.
 
 Early mechanics candidate (not a release): source
 `8b59b45717c84b403991333bd3d4d0fe844983ec`, purpose `sprint34-infernal-early`.
@@ -95,7 +106,7 @@ Retained dated history (2026-10-29; immutable original verdicts):
 | Kyton chains/gaze/armor/regeneration | Development control/cost/four-chain subobservations | Final qualification; saves, bypass and other action modes |
 | AI/actions/cleanup | Existing fixture and owned lifetime reuse | RTWP/TB, cancellation, independent items/no loot |
 | Models/icons/ten public routes | Original assets; offline decoder/icon PASS | Native body/contact/UI; all actual public casts |
-| Mixed persistence/integration | No campaign begun | One mixed ON trio and OFF trio, targeted combined |
+| Mixed persistence/integration | Exact mixed scope/observer implemented; no native campaign begun | One mixed ON trio and OFF trio, targeted combined |
 | Package/publication/restoration | Exact publisher selector and42 refusal/acceptance checks PASS | Final gate/release/downloads |
 
 Focused development uses named filters and production compilation under the
@@ -106,12 +117,24 @@ artifact/run/load/restoration linkage;42 synthetic acceptance/refusal checks PAS
 including complete qualification and premerge policy. The18 affected Sprint33
 publisher checks PASS; no historical gameplay campaign was replayed. All four
 S34 model files remain covered by strict package membership/hash validation.
-No full milestone gate yet.
+Gate17 passed11/2767 focused tests plus production compilation in35.4s.
+The mixed `infernal-outsiders` observer reuses the current native Working trio:
+one Barbazu, one Kyton, one private recipient carrying source-specific wound,
+day-scale disease and finite gaze, plus Kyton-owned chain control. Saved item
+owners/flags/slots and cold effects are compared exactly. Native effect-only
+preparation is explicitly not cast, attack or saving-throw proof. Current source
+adds the exact module gate to the private S34 lifetime/injury consumers; OFF
+native proof remains required. The installed-stack wrapper admits this scope
+only for the final frozen candidate, with existing exact-save/exit protections.
+Gate18 passed the final observer batch and11/2767 tests, then33 compiled
+persistence request admission/refusal cases, in33.2s total. Two installed-stack
+wrapper probes also refused scope case variation and development aliases before
+transaction entry. No full milestone gate yet.
 
-Next executable action: commit/push the coherent batch, build one changed body
-candidate, then run the same grouped body phase. Beard now retains both-claw
-bookkeeping across a round tick while its native command remains active; the
-observer records its separate native damage packet against the actual hit condition.
+Next executable action: commit/push the reviewed mixed-persistence and
+body-readback batch, then build one changed body candidate. Focused/parser
+checks passed and the full storage reserve was recovered by verified archival. Run the same grouped body phase to locate the rendered-contact
+gap before making a visual correction. No Working envelope has begun.
 Before final freeze, integrate legitimate upstream once and recheck patch availability.
 
 Body history (2026-10-29; retain original raw receipts/verdicts):
@@ -145,8 +168,8 @@ Sixteen private build references hash-match the installed2.1.7b runtime.
 Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-tasks/processes/leases. After body02, transaction
-`compat-20261029T223804Z-3e7c8a61859e` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
+tasks/processes/leases. After body03, transaction
+`compat-20261029T230809Z-226bf5f0c2b2` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
 original installation, protected saves, sound bank/references and processes match.
 No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
@@ -168,7 +191,11 @@ A second verified archive retained785,355,409 bytes/2600 files at
 map SHA256 `9a03e9c03b1aa3f585b490f74508df2ede4b4b0c22ff0bc42d7d64ccd94208a6`.
 Only exact redundant staging/build copies and candidate-only backup copies were
 removed from C: after all hashes matched; primary archives and evidence remain.
-C: free after archival1,879,846,912 bytes; full reserve1,230,513,542 bytes.
+A third verified archive retained530,684,972 bytes/1856 files at
+`E:/KingmakerGunslingerLab/sprint34-private/completed-scratch-20261029T232201Z`,
+map SHA256 `a321bca267387d66c95cb7be45213c81b894d177881eec0263d730e6763f0a88`.
+It used the same exact-target, hash-map and byte-comparison procedure. C: free
+1,579,327,488 bytes afterward; full reserve1,230,513,542 bytes. Recheck after build.
 Remote recheck2026-10-29: master still4b7e3d91, latest stablev171 andv172 free.
 Recheck again immediately before freezing/publication.
 No release or completion claim.
