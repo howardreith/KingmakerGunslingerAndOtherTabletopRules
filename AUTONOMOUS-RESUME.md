@@ -1,4 +1,4 @@
-# Sprint 33 - IN PROGRESS
+# Sprint 33 - BLOCKED / NOT RELEASED
 
 Controlling owner mission: dedicated Stalker and Shadow Demon models, Revision 2.
 Product/build/runtime root: C:/Dev/KingmakerGunslingerLab/wt/s33.
@@ -6,7 +6,9 @@ Branch: codex/expanded-summoning-sprint33-shadow-outsiders.
 Active record: [planning/SPRINT33-STATUS.md](planning/SPRINT33-STATUS.md).
 Both original bodies have native motion/selection/cleanup proof; Purge proof passes.
 Stalker native turn-based Slam passes. Succubus temporary drain remains unresolved;
-next bounded observation reads its actual attached trigger/negative-level state.
+isolated run14 confirms a listening, correctly configured trigger and owner context,
+but no drain event or negative-level effect after successful full attacks. Native
+launches stopped at the mission's repeated-failure boundary; no speculative rerun.
 Mixed ON/OFF persistence, integration, final qualification/reproducibility and
 conditional release remain. No Sprint 34.
 No release or owner aesthetic approval is claimed. v167/v168 debt remains NOT_RUN;
