@@ -56,7 +56,7 @@ namespace KingmakerGunslinger.Summoning
         private Transform[] _bones;
         private Matrix4x4[] _bindposes;
         private UnitCommand _command;
-        private double _opportunityImpact = double.NegativeInfinity;
+        private double _nativeImpact = double.NegativeInfinity;
         private int _chain = -1, _impactFrame = -1;
         private bool _deformed;
         internal int Contacts { get; private set; }
@@ -102,12 +102,16 @@ namespace KingmakerGunslinger.Summoning
         }
         private void LateUpdate()
         {
-            // Native AoOs use UnitAttackOfOpportunity.OnAction, not UnitAttack.
-            // Their visual follow-through uses game time and cannot add a rule.
-            if (_command is UnitAttackOfOpportunity && _owner != null && !_owner.Destroyed && _owner.IsInState &&
-                InfernalMartialProfile34.For(_owner)?.Chain != null && _command.TargetUnit?.View != null) {
-                float remaining = 1f - (float)(Game.Instance.TimeController.GameTime.TotalSeconds - _opportunityImpact) / .18f;
-                if (remaining > 0) { Apply(remaining); return; }
+            // UnitAttack.OnAction advances PlannedAttack immediately after its
+            // contact rule. Keep that exact limb through visible follow-through
+            // before binding the next planned limb. AoOs share the same bounded
+            // presentation; neither path can create an attack or change reach.
+            if (_command != null && _owner != null && !_owner.Destroyed && _owner.IsInState &&
+                !_owner.Descriptor.State.IsDead && InfernalMartialProfile34.For(_owner)?.Chain != null &&
+                _command.Result != UnitCommand.ResultType.Interrupt && _command.TargetUnit?.View != null) {
+                float elapsed = (float)(Game.Instance.TimeController.GameTime.TotalSeconds - _nativeImpact);
+                float remaining = 1f - Mathf.Clamp01((elapsed - .08f) / .27f);
+                if (remaining > 0) { Apply(Mathf.SmoothStep(0, 1, remaining)); return; }
             }
             var command = _owner?.Commands.Attack;
             if (command == null || command.IsFinished || _owner.Destroyed || !_owner.IsInState ||
@@ -176,7 +180,7 @@ namespace KingmakerGunslinger.Summoning
                 if (visual == null || __instance.Target == null || __instance.Target.Descriptor.State.IsDead) return;
                 visual.Bind(__instance, __instance.Hand?.MaybeWeapon);
                 if (visual._chain < 0) return;
-                visual._opportunityImpact = Game.Instance.TimeController.GameTime.TotalSeconds;
+                visual._nativeImpact = Game.Instance.TimeController.GameTime.TotalSeconds;
                 visual._impactFrame = Time.frameCount;
                 visual.Apply(1f); visual.ContactChain = visual._chain; visual.Contacts++;
             }
@@ -191,6 +195,7 @@ namespace KingmakerGunslinger.Summoning
                 if (visual == null) return;
                 visual.Bind(__instance, __instance.PlannedAttack?.Hand?.MaybeWeapon);
                 if (visual._chain < 0) return;
+                visual._nativeImpact = Game.Instance.TimeController.GameTime.TotalSeconds;
                 visual._impactFrame = Time.frameCount;
                 visual.Apply(1f); visual.ContactChain = visual._chain; visual.Contacts++;
             }

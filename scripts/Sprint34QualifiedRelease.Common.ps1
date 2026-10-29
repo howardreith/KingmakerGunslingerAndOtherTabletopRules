@@ -34,7 +34,7 @@ for k,v in scope.items():
  for t in range(v,10):
   quantity='One' if t==v else 'OneD3' if t==v+1 else 'OneD4PlusOne'
   symbol=f'KMG.Summoning.Ability.SM.Tier{t}.{m.token(k)}.{quantity}'
-  routes.append(dict(creature=k,tier=t,identity=registry[symbol],assertion='sprint34-player-route-Monster.'+str(t)+'.'+k+'.'+quantity))
+  routes.append(dict(creature=k,tier=t,identity=registry[symbol],assertion='sprint32-sprint34-player-route-Monster.'+str(t)+'.'+k+'.'+quantity))
 print(json.dumps(dict(scopeExact=exact,creatures=sorted(scope),routes=routes,registeredRoots=monster+ally,generatedRoots=monster+ally-suppressed,nativeWrappers=len(m.NATIVE_EXPANDED_OPTIONS),suppressed=suppressed,choices=monster+ally-suppressed+len(m.NATIVE_EXPANDED_OPTIONS))))
 '@
     $out=@(& python -B -c $program $repositoryRoot)

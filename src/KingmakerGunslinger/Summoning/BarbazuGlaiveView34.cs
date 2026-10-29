@@ -15,11 +15,14 @@ namespace KingmakerGunslinger.Summoning
     public sealed class BarbazuGlaiveView34 : MonoBehaviour
     {
         internal const string GlaiveGuid = "804dc1aecc9f43b9bcad0c48547c8b28";
-        // Reused measured palm frame. The glaive's own model grip/contact
-        // still requires the Sprint34 native presentation observation.
+        // Native WP_GlaiveBandits is lengthwise local Y. Body04 measured its
+        // contact basis and the target surface: map that axis into the palm's
+        // thrust direction, retaining the native rig animation and weapon mesh.
         internal static readonly Vector3 GripPosition = new Vector3(-0.2389f, 0.075f, 0.0997f);
         internal static readonly Quaternion GripRotation =
             new Quaternion(0.521334f, 0.521334f, 0.477714f, 0.477714f);
+        private static readonly Quaternion BladeAxisCorrection =
+            Quaternion.FromToRotation(Vector3.up, new Vector3(.317f, -.495f, -.863f).normalized);
         private UnitEntityView _view;
         private UnitEntityData _owner;
         private GameObject _model;
@@ -52,6 +55,9 @@ namespace KingmakerGunslinger.Summoning
             _model.transform.localPosition = GripPosition;
             _model.transform.localRotation = GripRotation;
             _model.transform.localScale = Vector3.one;
+            var blade = _model.GetComponentsInChildren<MeshFilter>(true).Single(value => value.sharedMesh != null);
+            Quaternion meshFrame = Quaternion.Inverse(_model.transform.rotation) * blade.transform.rotation;
+            _model.transform.localRotation = GripRotation * meshFrame * BladeAxisCorrection * Quaternion.Inverse(meshFrame);
             // Only this clone's optional legacy snap can write its transform.
             foreach (var snap in _model.GetComponentsInChildren<WeaponSnap>(true)) snap.enabled = false;
             Status = "native-model:owned-palm";

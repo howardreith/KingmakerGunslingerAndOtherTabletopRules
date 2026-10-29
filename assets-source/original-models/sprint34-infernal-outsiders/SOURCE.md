@@ -30,8 +30,12 @@ and matching albedo hashes passed. Body03/source124c370b observed both live
 bodies, independent resources, native movement and actual attack clips; its raw
 29/29 result remains unchanged. Agent image review leaves attack presentation
 open: chain images do not clearly reach the target despite manual vertex gaps,
-and glaive contact alignment is unproved. Native BakeMesh readback and ordinary
-follow-through frames are selected next. No owner aesthetic approval is claimed.
+and glaive contact alignment is unproved. Body04/source3f5fffa9 native BakeMesh agrees with actual contact vertices,
+but ordinary next frames show the chain reset after UnitAttack advanced its
+planned limb. The correction retains the contacted limb for a0.35s visual
+follow-through. The glaive's measured native localY axis supplies a fixed grip
+correction. Both corrections still require native image/contact proof.
+No owner aesthetic approval is claimed.
 The private glaive presentation selects the retained native main-hand mapping
 without changing weapon category, damage, reach or native action consumers.
 
