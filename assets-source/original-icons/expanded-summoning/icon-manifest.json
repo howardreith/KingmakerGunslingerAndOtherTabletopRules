@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "provenance": "Project-owned original artwork: 77 AI-assisted roster-mission concepts, Phase 1 procedural Blender additions, Phase 2 original creature/action paintings, and Sprint 24 original theropod paintings; no copied game or third-party pixels.",
   "generator": "tools/New-ExpandedSummoningIcons.ps1",
-  "count": 138,
+  "count": 140,
   "icons": [
     {
       "key": "air-mephit",
@@ -3924,6 +3924,32 @@
         "KMG.Summoning.FeyCelestial.LillendAzata.Lullaby",
         "KMG.Summoning.FeyCelestial.LillendAzata.LullabyBuff"
       ]
+    },
+    {
+      "key": "bearded-devil",
+      "displayName": "Bearded Devil",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/bearded-devil.png",
+      "productionFile": "assets/game/icons/expanded-summoning/bearded-devil.png",
+      "sourceSha256": "09d29e086b558cbbe015878912f182567ab15f2d80e7ccfcb6445849c7fe45cf",
+      "outputSha256": "694575f403bf3fff7374f73560304af40dac4683ef2a444077ee007d12a94d79",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": []
+    },
+    {
+      "key": "kyton-chain-devil",
+      "displayName": "Kyton (Chain Devil)",
+      "sourceFile": "assets-source/original-icons/expanded-summoning/sources/kyton-chain-devil.png",
+      "productionFile": "assets/game/icons/expanded-summoning/kyton-chain-devil.png",
+      "sourceSha256": "1d71688609a20089589fcb666b50770531c5a28ae8739e1e7ef5eab1531a0d23",
+      "outputSha256": "b4f980bd5a5763a07c1e962189635841578960f38d338425042b8426c67005ff",
+      "width": 128,
+      "height": 128,
+      "format": "RGBA PNG",
+      "scope": "kmg-catalog",
+      "blueprintSymbols": []
     }
   ]
 }
