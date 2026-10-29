@@ -1,10 +1,18 @@
 # Satyr locomotion and Lillend presentation repair
 
-**REVIEWABLE DEVELOPMENT CHECKPOINT — October 29, 2026.** Satyr walking is
+**OWNER APPROVED; RELEASE 0.0.170 PREPARATION — October 29, 2026.** The owner
+reviewed the repair and wrote: "Alright, this looks good. Please merge, push to
+remote, and cut a new release." Art is accepted and normal integration/publication
+is authorized. The selected publisher runs the full source/build/package gate
+and two deterministic exact-reference builds (30-minute planning budget).
+Affected cold save/reload remains NOT_RUN, with its disclosed limitation retained
+in the public notes. No new native execution or whole-roster campaign is selected.
+
+The original development checkpoint below retains its exact evidence. Satyr walking is
 repaired and native-verified in bow/dagger modes against both native controls.
 Lillend's replacement surfaces are implemented and native presentation is
 verified. Final candidate passes53/53 native assertions,9/9 selected domain
-cases and3/3 Blender export cases. Owner art review is pending. Affected cold
+cases and3/3 Blender export cases. Owner art review is now approved. Affected cold
 save/reload remains explicitly deferred by the validation policy; this is not
 full release qualification. Current installation/settings and protected save
 intake are restored exactly. No merge or release was performed.
@@ -23,8 +31,8 @@ The archive and three original reference images were extracted to ignored
 Accepted baseline: master `71ea55cda5`, including published v0.0.169 source
 `d4e1f656971bd2010110c331fa51f65cdf919f7b` and release records PR78.
 Review branch: `codex/satyr-lillend-presentation-repair`, machine DATA.
-No merge or release is authorized by this follow-up. The Sprint32 release
-and its owner waiver remain historical facts.
+The owner's October29 follow-up authorizes merge and the next stable release.
+The Sprint32 release and its owner waiver remain historical facts.
 
 ## Selected work
 

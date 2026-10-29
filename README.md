@@ -1,11 +1,15 @@
 # Kingmaker Gunslinger
 
-Stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) adds Satyr control and
-Lillend Azata bard/support summons, with native costs, quantities and cleanup.
-Suggestion is optional through CowWithHat Custom Spells. See the
-[release notes](docs/RELEASE-NOTES-0.0.169.md) for approved adaptations and limits,
-and the [active Sprint32 record](planning/SPRINT32-STATUS.md) for publication status
-and source-bound qualification evidence.
+Stable [v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
+repairs Satyr walking and rebuilds Lillend Azata's model and paint on the existing
+rig. Summon rules, routes and saved identities remain unchanged. See the
+[release notes](docs/RELEASE-NOTES-0.0.170.md) and
+[repair record](planning/SATYR-LILLEND-PRESENTATION-REPAIR.md) for evidence and limits.
+
+Version 0.0.169 added Satyr control and Lillend Azata bard/support summons, with
+native costs, quantities and cleanup. Suggestion is optional through CowWithHat
+Custom Spells. Its [release notes](docs/RELEASE-NOTES-0.0.169.md) retain the
+approved gameplay adaptations and limitations.
 
 The **0.0.168-expanded-summoning-sprints30-31-followup** release makes the
 Astral Deva's protective aura a true lesser globe of invulnerability, extends
