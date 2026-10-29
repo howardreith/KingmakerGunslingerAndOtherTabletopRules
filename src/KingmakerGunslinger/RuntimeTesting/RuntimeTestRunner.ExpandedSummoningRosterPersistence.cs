@@ -37,7 +37,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
             Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope ||
             Sprint27PersistenceScope || Sprint28PersistenceScope ||
-            Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope; } }
+            Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope; } }
+        private bool Sprint33PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.ShadowOutsidersScope; } }
         private bool Sprint32PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.FeyCelestialScope; } }
         private bool Sprint27PersistenceScope
@@ -69,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint29PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoKeys :
             Sprints3031PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys :
             Sprint32PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.FeyCelestialKeys :
+            Sprint33PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ShadowOutsiderKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
         private bool? _rosterPersistencePause;
@@ -326,6 +329,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Concat(unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Select(r => r.sharedMesh))
                 .Concat(unit.View.GetComponentsInChildren<MeshFilter>(true).Select(r => r.sharedMesh))
                 .Concat(Sprint17ViewResources(unit))
+                .Concat(unit.View.GetComponent<StalkerSlamAnimation33>()?.OwnedResources() ?? new UnityEngine.Object[0])
                 .Where(o => o != null && o.name.StartsWith("KMG_", StringComparison.Ordinal)).Distinct().ToArray();
         }
 
@@ -822,8 +826,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ExpandedSummoningPteranodonViewPatch
                         .CaptureTheropodOwnedResources(unit.View);
                 bool theropodBodyExact = true;
-                if (Sprint24PersistenceScope &&
-                    TheropodVisualPolicy.Handles(receipt.Key))
+                if ((Sprint24PersistenceScope && TheropodVisualPolicy.Handles(receipt.Key)) ||
+                    (Sprint33PersistenceScope && ShadowOutsiderVisualPolicy.Handles(receipt.Key)))
                     theropodBodyExact = moduleOn
                         ? originalBodyOutcome.StartsWith("visual:attached;",
                             StringComparison.Ordinal) &&
@@ -831,6 +835,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         : ExpandedSummoningRosterPersistencePolicy
                             .ModuleOffArmoredBodyIsClean(originalBodyOutcome,
                                 theropodOwned.Length);
+                if (Sprint33PersistenceScope && ShadowOutsiderVisualPolicy.Handles(receipt.Key) && moduleOn)
+                {
+                    var skin = unit.View?.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .SingleOrDefault(value => value.name == TheropodVisualPolicy.BodyRendererName);
+                    theropodBodyExact &= skin?.sharedMesh?.name == "KMG_" + receipt.Key + "_Original";
+                    if (receipt.Key == ShadowOutsiderVisualPolicy.Stalker)
+                        theropodBodyExact &= unit.View?.GetComponent<StalkerSlamAnimation33>()?.Live == true;
+                }
                 visual &= theropodBodyExact;
                 UnityEngine.Object[] giantOwned = unit.View == null ?
                     new UnityEngine.Object[0] : ExpandedSummoningPteranodonViewPatch.CaptureGiantBodyOwnedResources(unit.View);

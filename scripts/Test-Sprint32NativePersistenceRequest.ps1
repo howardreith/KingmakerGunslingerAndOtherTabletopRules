@@ -3,6 +3,7 @@ request, evidence directory, marker, deployment, game or save is created. #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$ModAssemblyPath,
+    [ValidateSet('fey-celestial','shadow-outsiders')][string]$PersistenceScope='fey-celestial',
     [string]$KingmakerInstallDir='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 )
 $ErrorActionPreference='Stop'
@@ -36,8 +37,8 @@ try {
         FingerprintTimeoutSeconds=180;ExitAfterCompletion=$true;EvidenceDirectory=$missing}
     $rows=@()
     foreach($scenario in @('working-save-expanded-summoning-prepare','working-save-expanded-summoning-verify-cleanup','working-save-expanded-summoning-verify-absent')) {
-      foreach($transition in @($null,'retained','removed','module-off')) {
-        $parameters=@{saveName='KMG_AUTOMATION_WORKING';persistenceScope='fey-celestial'}
+      foreach($transition in $(if($PersistenceScope -ceq 'fey-celestial'){@($null,'retained','removed','module-off')}else{,@($null)})) {
+        $parameters=@{saveName='KMG_AUTOMATION_WORKING';persistenceScope=$PersistenceScope}
         if($null -ne $transition){$parameters.suggestionTransition=$transition}
         $good=New-KmgRuntimeRequest @base -Scenario $scenario -Parameters $parameters
         $json=$good | ConvertTo-Json -Depth 20
@@ -48,7 +49,7 @@ try {
                 'baseline' {$request.Parameters['saveName']=[Newtonsoft.Json.Linq.JValue]::new('KMG_AUTOMATION_BASELINE');$expected='baseline-save-forbidden'}
                 'other-save' {$request.Parameters['saveName']=[Newtonsoft.Json.Linq.JValue]::new('Other');$expected='save-name-not-allowed'}
                 'no-exit' {$request.ExitAfterCompletion=$false;$expected='summoning-persistence-scope-invalid'}
-                'scope-case' {$request.Parameters['persistenceScope']=[Newtonsoft.Json.Linq.JValue]::new('Fey-celestial');$expected='summoning-persistence-scope-invalid'}
+                'scope-case' {$request.Parameters['persistenceScope']=[Newtonsoft.Json.Linq.JValue]::new($PersistenceScope.ToUpperInvariant());$expected='summoning-persistence-scope-invalid'}
                 'extra-parameter' {$request.Parameters['extra']=[Newtonsoft.Json.Linq.JValue]::new('untrusted');$expected='save-name-required'}
                 'version' {$request.ExpectedModVersion='wrong';$expected='mod-version-mismatch'}
                 'unknown-transition' {$request.Parameters['suggestionTransition']=[Newtonsoft.Json.Linq.JValue]::new('arbitrary');$expected='sprint32-suggestion-transition-invalid'}

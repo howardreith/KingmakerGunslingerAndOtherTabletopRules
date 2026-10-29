@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "KMG_Summoning_OutsiderCelestial_TrumpetArchon_PurgeArea");
             var creation = owner.Blueprint.GetComponent<TrumpetPreparedBook>();
             var book = owner.Descriptor.GetSpellbook(creation.Book); var otherBook = sibling.Descriptor.GetSpellbook(creation.Book);
+            int ownerHealBefore = Trumpet31HealSlots(book, creation.Heal), siblingHealBefore = Trumpet31HealSlots(otherBook, creation.Heal);
             var nativeInvisibility = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                 "525f980cb29bc2240b93e953974cb325", "captured native InvisibilityBuff control");
             UnitEntityData ally = null; var original = new List<Buff>();
@@ -115,13 +116,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !unit.Descriptor.State.HasCondition(UnitCondition.Invisible)) &&
                     original.Select((buff, index) => buff.Active && !buff.IsDisposed && buff.EndTime == deadlines[index]).All(value => value) &&
                     Trumpet31PreparedCopies(book, spell, 3) == 0 && Trumpet31PreparedCopies(otherBook, spell, 3) == 0 &&
-                    Trumpet31HealSlots(book, creation.Heal) == 1 && Trumpet31HealSlots(otherBook, creation.Heal) == 2;
+                    Trumpet31HealSlots(book, creation.Heal) == ownerHealBefore && Trumpet31HealSlots(otherBook, creation.Heal) == siblingHealBefore;
                 Sprint25Check("trumpet-purge-mixed-sources", covered, new JObject { ["owner"] = owner.UniqueId,
                     ["sibling"] = sibling.UniqueId, ["allyGrants"] = grants(ally), ["enemyGrants"] = grants(fixture.Hostile),
                     ["areas"] = new JArray(areas.Select(value => new JObject { ["id"] = value.UniqueId,
                         ["caster"] = value.Context.MaybeCaster?.UniqueId, ["cl"] = value.Context.Params.CasterLevel,
                         ["radiusMeters"] = (value.View.Shape as ScriptZoneCylinder)?.Radius })),
                     ["originalInvisibilityPreserved"] = original.All(buff => buff.Active && !buff.IsDisposed),
+                    ["ownerHealBefore"] = ownerHealBefore, ["siblingHealBefore"] = siblingHealBefore,
                     ["ownerHealSlots"] = Trumpet31HealSlots(book, creation.Heal), ["siblingHealSlots"] = Trumpet31HealSlots(otherBook, creation.Heal) },
                     "Two independent native70ft emanations suppress ally and enemy invisibility while preserving the original buff instances/deadlines; each spends one own L3 slot and leaves Heal independent.");
                 if (!covered) throw new InvalidOperationException("Purge source/radius/eligibility consumers failed.");

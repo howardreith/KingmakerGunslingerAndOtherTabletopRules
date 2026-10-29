@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Blueprints;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic;
@@ -49,8 +50,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var nativeRenderers = native == null ? new SkinnedMeshRenderer[0] : native.GetComponentsInChildren<SkinnedMeshRenderer>(true);
                 var nativeMeshes = nativeRenderers.Select(value => value.sharedMesh).ToArray();
                 var nativeMaterials = nativeRenderers.Select(value => value.sharedMaterial).ToArray();
+                UnitEntityData control = null;
+                BlueprintUnit controlBlueprint = null;
+                Mesh controlMesh = null;
                 try
                 {
+                    if (motion)
+                    {
+                        // Safe fixture actor, untouched native rig/body. Never spawn a campaign donor.
+                        controlBlueprint = UnityEngine.Object.Instantiate(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.DefaultPlayerCharacter);
+                        controlBlueprint.name = "KMG_Runtime_Sprint33_NativeViewControl";
+                        var rig = fixture.Blueprints.OfType<BlueprintUnit>().Single(value => value.AssetGuid == TheropodVisualPolicy.DonorGuid);
+                        controlBlueprint.Prefab = rig.Prefab;
+                        control = Game.Instance.EntityCreator.SpawnUnit(controlBlueprint, fixture.Caster.Position, Quaternion.identity, fixture.Scene);
+                        fixture.Created.Add(control); Sprint28SetBrainActivePreservingActions(control, false);
+                        control.Commands.InterruptAll(true);
+                        for (int frame = 0; frame < 60; frame++) yield return 0;
+                        controlMesh = control.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                            .Single(value => value.name == TheropodVisualPolicy.BodyRendererName).sharedMesh;
+                    }
                     for (int instance = 0; instance < (custom ? 2 : 1); instance++)
                     {
                         var owner = CastExpandedSummoningOwnTier(fixture, key); owners.Add(owner);
@@ -61,7 +79,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         {
                             DateTime deadline = DateTime.UtcNow.AddSeconds(15);
                             while (DateTime.UtcNow < deadline && (owner.View == null || !EntityFadedIn(owner) ||
-                                !ShadowBodyVisible33(owner, key) || !owner.Descriptor.State.CanAct))
+                                !ShadowBodyVisible33(owner, key) || !owner.Descriptor.State.CanAct ||
+                                (key == ShadowOutsiderVisualPolicy.Stalker && owner.View.GetComponent<StalkerSlamAnimation33>()?.Live != true)))
                             {
                                 _sprint25WaitingForUnityAppearance = owner.View != null && EntityFadedIn(owner) && owner.Descriptor.State.CanAct;
                                 Game.Instance.IsPaused = false; yield return 0;
@@ -75,6 +94,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             Vector3 spawned = owner.Position;
                             Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, fixture.Hostile, 6f, out end, out lane, out direction);
                             PlaceExpandedSummoningUnit(owner, origin);
+                            if (control != null) PlaceExpandedSummoningUnit(control, origin + Vector3.right * 3f);
                             Vector3 supported; JObject ground;
                             bool support = Cleanup2CreatureNativeGroundRoot(owner, origin, out supported, out ground) &&
                                 Vector3.Distance(owner.Position, supported) < .02f;
@@ -95,13 +115,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool mesh = body != null && body.sharedMesh != null && (!custom ||
                             (body.sharedMesh.name == "KMG_" + key + "_Original" && body.sharedMesh != cache &&
                              body.sharedMesh.vertexCount == cache.vertexCount && owned.Count > 0));
-                        bool exact = mesh && finite && body.enabled && EntityFadedIn(owner) &&
+                        bool slam = key != ShadowOutsiderVisualPolicy.Stalker || owner.View.GetComponent<StalkerSlamAnimation33>()?.Live == true;
+                        bool exact = slam && mesh && finite && body.enabled && EntityFadedIn(owner) &&
                             ShadowBodyVisible33(owner, key) && (bool)selection["selectionSurface"] &&
                             frame.Contains("inFrame=true") && frame.Contains("screenLit=true") && frame.Contains("rendererEnabled=true");
                         Sprint25Check("sprint33-body-" + key + "-" + instance, exact, new JObject {
                             ["unit"] = owner.Blueprint.AssetGuid, ["owner"] = owner.UniqueId,
                             ["prefab"] = owner.Blueprint.Prefab.AssetId, ["mesh"] = body?.sharedMesh?.name,
                             ["vertices"] = vertices.Length, ["finite"] = finite, ["selection"] = selection,
+                            ["slamBinding"] = owner.View.GetComponent<StalkerSlamAnimation33>()?.Outcome,
                             ["root"] = SurveyVector(owner.Position), ["nativeFlyHeight"] = owner.FlyHeight,
                             ["bodyCenter"] = body == null ? null : SurveyVector(body.bounds.center),
                             ["bodySize"] = body == null ? null : SurveyVector(body.bounds.size),
@@ -120,12 +142,26 @@ namespace KingmakerGunslinger.RuntimeTesting
                             "Repeated summoned owners have independent mutable mesh/material instances.");
                         if (!distinct) throw new InvalidOperationException("Shared mutable body resources.");
                         if (motion) foreach (int frame in ReviewShadowMotion33(fixture, owners[0], key)) yield return frame;
+                        if (control != null)
+                        {
+                            bool untouched = control.View.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                                .Single(value => value.name == TheropodVisualPolicy.BodyRendererName).sharedMesh == controlMesh &&
+                                control.View.GetComponent<StalkerSlamAnimation33>() == null &&
+                                ExpandedSummoningPteranodonViewPatch.CaptureTheropodOwnedResources(control.View).Length == 0;
+                            Sprint25Check("sprint33-native-view-control-" + key, untouched, new JObject {
+                                ["prefab"] = control.Blueprint.Prefab.AssetId, ["mesh"] = controlMesh?.name,
+                                ["controlActor"] = "sanitized-default-character-with-untouched-native-view" },
+                                "The native donor view alongside both original owners keeps its original mesh and has no private attachment or Slam action.");
+                            if (!untouched) throw new InvalidOperationException("Native donor control changed.");
+                        }
                     }
                 }
                 finally
                 {
                     foreach (var owner in owners) { owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue(); if (owner.IsInCombat) owner.LeaveCombat(); }
                     DisposeExpandedSummoningUnits(fixture.Created, owners.ToArray());
+                    if (control != null) DisposeExpandedSummoningUnits(fixture.Created, new[] { control });
+                    if (controlBlueprint != null) UnityEngine.Object.Destroy(controlBlueprint);
                 }
                 for (int frame = 0; frame < 16; frame++) yield return 0;
                 bool nativeExact = nativeRenderers.Select(value => value.sharedMesh).SequenceEqual(nativeMeshes) &&
@@ -187,6 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 contacts.Add(new JObject { ["weapon"] = rule.Weapon.Blueprint.AssetGuid,
                     ["hit"] = rule.AttackRoll?.IsHit == true, ["animationPresent"] = command?.Animation != null,
                     ["animationStarted"] = command?.Animation?.IsStarted == true,
+                    ["nativeClip"] = command?.Animation?.ActiveAnimation?.GetPlayableClip()?.name,
                     ["frame"] = Time.frameCount, ["nativeRange"] = command?.IsUnitEnoughClose,
                     ["capture"] = WriteExpandedSummoningPartyCameraCapture(owner, _request.EvidenceDirectory,
                         "s33-" + key + "-contact-" + contacts.Count + ".png", TheropodVisualPolicy.BodyRendererName) });

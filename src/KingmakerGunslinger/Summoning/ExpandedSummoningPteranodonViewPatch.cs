@@ -236,6 +236,7 @@ namespace KingmakerGunslinger.Summoning
             internal FireBeetleVisualGlow BeetleGlow;
             internal SummonAttackGestureVisual OriginalAttackGesture;
             internal Texture2D GorgonParameters;
+            internal StalkerSlamAnimation33 StalkerSlam;
         }
 
         private static readonly ConditionalWeakTable<UnitEntityView, Attachment>
@@ -718,6 +719,12 @@ namespace KingmakerGunslinger.Summoning
                     attachment.HoundSword.Configure(view, donor);
                 }
 
+                if (attachment.VisualKey == ShadowOutsiderVisualPolicy.Stalker)
+                {
+                    attachment.StalkerSlam = view.gameObject.AddComponent<StalkerSlamAnimation33>();
+                    attachment.StalkerSlam.Initialize(view);
+                }
+
                 Action fault = PostSuppressionFaultForTest;
                 if (fault != null) fault();
                 if (attachment.VisualKey == AnkylosaurusRulesPolicy.Key)
@@ -1068,6 +1075,12 @@ namespace KingmakerGunslinger.Summoning
         /// </summary>
         private static void Revert(Attachment attachment)
         {
+            if (attachment.StalkerSlam != null)
+            {
+                attachment.StalkerSlam.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.StalkerSlam);
+                attachment.StalkerSlam = null;
+            }
             if (attachment.HoundSword != null)
             {
                 attachment.HoundSword.Release();
@@ -1249,6 +1262,7 @@ namespace KingmakerGunslinger.Summoning
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh,
                     attachment.TheropodSuppression, attachment.HoundSword, attachment.HoundSword?.Model })
+                .Concat(attachment.StalkerSlam == null ? new UnityEngine.Object[0] : attachment.StalkerSlam.OwnedResources())
                 .Where(value => value != null).Distinct().ToArray();
         }
 
