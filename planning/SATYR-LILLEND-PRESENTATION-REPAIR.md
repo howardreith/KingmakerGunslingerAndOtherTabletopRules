@@ -105,5 +105,20 @@ in force. Narrow `scripts/validate-package.ps1 -PackagePath <that exact ZIP>`
 revalidation passes in9.6s. This reader correction does not create a build
 receipt or retroactively qualify native behavior.
 
+Candidate `198198cab65d79ed235359c481cf270eeb6cf285` then passed the guarded
+build and strict package validation in222.726s, selected8/8 cases and37/37
+native-contract assertions. ZIP `c92b4c0ca2df7b787891f2c098680a4ecde54c615e212b7c40a0ab702c98bf7c`,
+DLL `cdbd2a612a531dc80e34097a214118ce56dd74ed99522dbadfb6b89444863a29`.
+It was not deployed: review identified the packet's required cast/performance
+pose as a missing presentation observation. The same exact phase now supplies
+one ordinary self-cure from the real bard book (disclosed5 damage setup at an8m
+enemy-clear lane), observes native healing/slot expenditure and active casting,
+then captures a normally activated/running Courage performance and stops it
+through its native toggle. No manual animation/controller ticks or spell effect
+are supplied. Satyr returns to bow through a normal command before the unchanged
+combat dagger/bow switch-cost checks. This observer change requires a new binary
+and one fresh presentation run. Its initial compile caught a missing namespace
+import (8.4s); corrected production compilation10.5s and8 selected cases0.4s PASS.
+
 Previous translation-only presentation PASS remains bound to its original
 artifact and is not stepping evidence. New results will be recorded below.
