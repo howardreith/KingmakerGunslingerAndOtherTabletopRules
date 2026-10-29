@@ -63,7 +63,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             private void Patch(MethodInfo method, string before, string after = null)
             {
                 if (method == null) throw new MissingMethodException("Succubus native trace surface");
-                var info = hooks.GetPatchInfo(method);
+                var info = hooks.GetPatchedMethods().Contains(method) ? hooks.GetPatchInfo(method) : null;
                 patches.Add(new JObject { ["method"] = method.DeclaringType.FullName + "." + method,
                     ["owners"] = new JArray(info?.Owners ?? Enumerable.Empty<string>()) });
                 methods.Add(method);
@@ -128,7 +128,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void Dispose()
             {
                 hooks.UnpatchAll(hooks.Id);
-                Evidence["hooksRemoved"] = methods.All(m => !(hooks.GetPatchInfo(m)?.Owners.Contains(hooks.Id) ?? false));
+                Evidence["hooksRemoved"] = methods.All(m => !hooks.GetPatchedMethods().Contains(m) || !hooks.GetPatchInfo(m).Owners.Contains(hooks.Id));
                 if (ReferenceEquals(active, this)) active = null;
             }
         }
