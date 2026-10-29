@@ -1,6 +1,6 @@
 # Sprint 33 ? dedicated shadow outsider models
 
-IN PROGRESS, NOT RELEASED. Controlling authority is the owner-provided
+BLOCKED_NOT_RELEASED. Native launches stopped at the mission's repeated-failure boundary. Controlling authority is the owner-provided
 Kingmaker_Sprint33_Dedicated_Models_Revised_Mission.md, Revision2. No Sprint34.
 Product/build/test/promotion root C:/Dev/KingmakerGunslingerLab/wt/s33;
 branch codex/expanded-summoning-sprint33-shadow-outsiders. Intake master
@@ -14,7 +14,7 @@ Stalker native turn-based Slam now PASS. Succubus Dominate, protection veto,
 exact-source cleanup and ordinary attack fallback are observed. Its temporary
 drain remains unresolved: two runs observed no RuleDrainEnergy, including repeated
 successful full attacks with the correct active trait caster. This is NOT a
-complete preservation PASS. Thirteen native launches completed, all restored.
+complete preservation PASS. Fourteen native launches completed, all restored. No game or transaction remains active.
 
 | Existing implementation/evidence | Actual gap | Smallest patch | Selected proof |
 |---|---|---|---|
@@ -39,7 +39,7 @@ invisible-stalker3cd7b4f2c65b4d35929dd4d969dfaa41,
 shadow-demon627c1841a5eb4e32b1a94c0f43ec8a60. All twelve VI?IX routes,
 quantities/parents/alignment/order/native caster-duration context are preserved.
 Blueprint ledger remains7511 entries with no append; no new creature/route/template.
-Current totals are source-derived, not added as new unrelated test pins.
+Final source-derived totals124 units, Monster102/572, Nature105/588, generated1160 + wrappers29 = choices1189, suppressed0. Not added as new unrelated test pins.
 
 ## Native evidence map
 
@@ -64,12 +64,18 @@ Failures stay failures; later corrections do not rewrite their verdicts.
 |11|20261029T0616506260798Z /b1a123eb|Dominate/cleanup/protection PASS; no attack fallback; installed UnitBrain/AiBrainController contract proved no implicit attack insertion|
 |12|20261029T0636351746669Z /eb46d785|Native AttackAiAction now completes two-claw attack/cost; no drain observed; combined fallback/drain FAIL|
 |13|20261029T0652027320811Z /fb471636|Stalker native TB Slam PASS; Dominate/cleanup/protection PASS;7 ordinary attack commands with successful full-attack hits but no drain event, so combined fallback/drain FAIL|
+|14|20261029T0720251697231Z /8ab29ee1|Isolated drain observation FAIL: correctly configured/listening live trigger and owner context, successful full attacks, native negative levels remain0; no drain event|
 
+Run14 exact request RunId20261029T0720252009266Z-2a9a535b9f594c0fab27ffe06cba53c2, native133.148s.
 Run13 exact native request RunId20261029T0652027669843Z-5c1b38ede3bc4ac7b1f0bc5474b4c67f.
 Its active trait caster equals the Succubus owner; all observed weapons natural.
-The exact sprint33-drain-observe phase selects only the unresolved fallback/drain cell,
-without replaying control or Stalker. The read-only observer adds trigger/action discriminator and native
-UnitPartNegativeLevels.Count transitions. Acceptance remains unchanged. No speculative
+The isolated sprint33-drain-observe phase (run14) confirmed the active attached trigger is
+listening, natural-only, first-full-attack-hit; its action discriminator is EnergyDrain,
+type Temporary, duration1round/count1, and the active buff caster is its exact owner.
+Successful full attacks still produced no RuleDrainEnergy and native negative levels
+remained0 throughout. This is the single unresolved behavior; no speculative production
+patch or unchanged relaunch follows. Next investigation must locate the actual native
+handler-to-action failure and justify a correction before more runtime qualification. No speculative
 production drain patch or forced hit/save is selected. Native IL audit verifies
 OnlyOnFirstHit requires full-attack successful hits and DrainEnergy uses effect
 Context.MaybeCaster. Actual current references, not a remembered engine contract.
@@ -90,8 +96,9 @@ sprint33-shadow-outsiders/<source12> retain references, full source and MVID.
 |126cdbc7ce39|5a08bbf77eb8b9bd875cf163e3d787318670cbc4e7167ffe75e3872005c5891c|5fab87c0ffa8826694cc40a7ee8b7c31dac53c2e496b936301a17d19ba17bba6|
 |eb46d7854fa8|273642cc293b82be4f5162bbe75ad8ae4cc6671deda742fe770ba369ca182e1d|7cc708b1787de0758d2c63a5092ef9f5aaec8d18c762bf9662db8b1be50db8df|
 |fb471636aa52|9effdf8d3db32356a4295273ab58e78d73dc8376f53b3eeae7e8c58f8ae361ac|b320c7ca23d9f5d498636050fd8798ccb0b695ae49baee73531301b0bda7781e|
+|8ab29ee17764|9685dee3abe6aa703cba5d46f7867c96dfb77460aa30efa17b0f287343a12df6|c59a3b295dd70bd7ca2a4106a92cd2dbc0e0ab9b7e8225eca31271a68264ce70|
 
-Latest build247.556s, MVIDe5b6ca11-acf3-406b-b31e-d8805aeb2344. Command
+Latest build245.369s, MVID3c9c8e87-9e46-46fe-a540-69b465d9605d; prior fb47 build247.556s/MVIDe5b6ca11-acf3-406b-b31e-d8805aeb2344. Command
 Build-Local.ps1 -DevelopmentPurpose sprint33-shadow-outsiders
 -DevelopmentTestFilter 'expanded-summoning.identities;expanded-summoning.donors-exact'
 -ExpectedVersion0.0.169 -ReferenceBundleDir <fresh E bundle>: selected4/2756 PASS,
@@ -108,8 +115,8 @@ checks PASS (unit fixtures only; no old campaign or live budget resumed).
 ## Restoration and storage
 
 Every launch used the existing guarded Steam640820 transaction and protected-save
-catalog. Latest transaction compat-20261029T064940Z-2303b1798aa6 is Restored,
-restorationVerified=true; outer sprint33-preservation-drain-context-* record says
+catalog. Latest transaction compat-20261029T071759Z-a140509e4f3a is Restored,
+restorationVerified=true; outer sprint33-drain-observe-drain-context-20261029T071758Z record says
 allOriginalSavesExact=true/gameExitConfirmed=true. Run12 transaction
 compat-20261029T063412Z-4b659b87bba9 and outer
 sprint33-preservation-fallback-20261029T063411Z likewise exact.
@@ -153,3 +160,5 @@ owner wrapper; only the two exact mission branches were allowlisted with backup
 and32 isolated checks. Historical conflicting v136?153 tags remain untouched.
 
 Additional archive: completed-scratch-20261029T0710 on E contains four hash-verified redundant b1a/eb46 exact-build directories and run12/13 package extractions. All candidates/evidence/backups remain intact; free C6,083,657,728 bytes.
+
+Final checkpoint verification: current installed Info0.0.117; last game-settings restoration exact=true/installationVerified=true; no Kingmaker process/compatibility lock. Protected original saves exact, Working never selected or written. Current C free5,717,377,024 bytes. Catalog visual descriptions and existing generated roster now identify the original bodies; only three roster rows changed. Historical native qualifications are distinguished from current unresolved/pending coverage. Metadata-only catalog description production compile PASS; manifest/roster validation PASS and complete blueprint ledger byte-equal to intake master. Initial ignored presentation draft syntax/UTF8-read errors were corrected locally, with no native launch or identity mutation. Final package/full-suite/reproducibility, six-stage persistence, combined profile, product merge/release/download remain NOT_RUN pending the drain boundary; no waiver or release claimed.

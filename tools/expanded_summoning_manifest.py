@@ -34,6 +34,9 @@ SUPPRESSED = re.compile(
 # line. A creature that is withheld never appears here: what it is waiting for
 # is decided by the visibility catalog, not by this table.
 QUALIFICATION_NOTES = {
+    "invisible-stalker": "Sprint33 original body, native RTWP/TB Slam and natural-invisibility/Purge observations recorded on original development artifacts; four routes retained. Current qualification/restoration: planning/SPRINT33-STATUS.md; owner visual approval not claimed",
+    "shadow-demon": "Sprint33 original winged/clawed body, native motion/attack and private teardown recorded on original development artifact; four routes retained. Current qualification/restoration: planning/SPRINT33-STATUS.md; owner visual approval not claimed",
+    "succubus": "Sprint33 preserves usable Nymph presentation and icon; native control/protection/source cleanup and attack fallback observed. Temporary energy drain unresolved; persistence and release pending. Current evidence: planning/SPRINT33-STATUS.md; historical structural labels do not qualify this sprint",
     "satyr": "Sprint32 scoped public-route, control/support, technical presentation, lifecycle, persistence and integration qualification complete through source-bound native evidence and reviewed reuse; v169 publication authorized by Howie. Exact adaptations, evidence limits and current status: planning/SPRINT32-STATUS.md",
     "lillend-azata": "Sprint32 scoped public-route, control/support, technical presentation, lifecycle, persistence and integration qualification complete through source-bound native evidence and reviewed reuse; v169 publication authorized by Howie. Exact adaptations, evidence limits and current status: planning/SPRINT32-STATUS.md",
     "ettin": "Public candidate; scoped hidden native combat, ownership, AI, body and persistence observed on recorded development artifacts; exact public routes and release artifact still require qualification; owner visual review pending",
