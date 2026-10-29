@@ -1,6 +1,32 @@
 # Satyr locomotion and Lillend presentation repair
 
-**OWNER APPROVED; RELEASE 0.0.170 PREPARATION — October 29, 2026.** The owner
+**RELEASED AND PUBLICLY VERIFIED — October 29, 2026.**
+[Stable v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
+is Latest, tagged at `43abeedfd223e95dec33a3556cc5606a029e4cd3` (PR80+81).
+The complete2,759-test gate passed (48.9s), as did1,166 offline runtime preflight
+assertions and37 exact-native-reference eligibility assertions per build.
+Two clean exact-reference builds produced identical package/DLL hashes while
+preserving the primary package, receipt and build archive. The publisher ran
+12:24:45.0515632Z–12:36:48.2471882Z (723.177s); public verification passed at
+12:37:10.9167078Z (11.930s). Downloaded ZIP/checksum/manifest, embedded Info/DLL/MVID,
+stable Latest and remote annotated tag are verified.
+
+- ZIP `49811ef42e9f3205749f59f7989485f7525000049a15e81f6da71c396f93a723`.
+- DLL `b798213c0ade7b53f38435a56e5a4652ec9a1c4463bf2b1813db1b82fe8cb90d`;
+  MVID `b3a72351-9d29-48d8-babb-827b977e314f`.
+- Source state `5215bb44c59231350d548ebc5a674c43b138dde4666827938fea79a96e209bb1`.
+
+[Curated release evidence](SATYR-LILLEND-RELEASE170-EVIDENCE.json) records commands,
+durations, public asset identities and remaining coverage. Raw logs, private
+references, incomplete first-attempt outputs and primary/reproducibility archives
+stay local and immutable. This records-only closeout does not rebuild or move the
+release tag. Publication launched no game, selected/wrote no save and deployed
+nothing. Original native restoration remains exact. Affected cold save/reload
+stays NOT_RUN; older gaps remain open. STOP; no Sprint33 is selected.
+
+### Owner approval and selected release procedure
+
+The owner
 reviewed the repair and wrote: "Alright, this looks good. Please merge, push to
 remote, and cut a new release." Art is accepted and normal integration/publication
 is authorized. The selected publisher runs the full source/build/package gate
@@ -15,7 +41,8 @@ verified. Final candidate passes53/53 native assertions,9/9 selected domain
 cases and3/3 Blender export cases. Owner art review is now approved. Affected cold
 save/reload remains explicitly deferred by the validation policy; this is not
 full release qualification. Current installation/settings and protected save
-intake are restored exactly. No merge or release was performed.
+intake are restored exactly. At that development checkpoint no merge or release
+had been performed; the later owner-authorized publication is recorded above.
 
 ### Release preparation follow-up
 
@@ -260,8 +287,9 @@ Local supervised log: `artifacts/repair-packet-0.0.169/repair-native-bow-observe
 Records-only changes after tested source4428109 do not rebuild, requalify or
 retag those bytes. Future guarded reuse needs that exact clean source commit
 at the package's canonical worktree path; the receipt is not valid on a newer
-records HEAD. Cold reconstruction, full profiles/roster/provider qualification
-and release work are not selected. Stop at owner art review.
+records HEAD. Cold reconstruction and full profiles/roster/provider qualification
+remain unselected. Owner art review and release are now complete as recorded
+above; their earlier development boundary is superseded.
 
 Previous translation-only presentation PASS remains bound to its original
 artifact and is not stepping evidence. New results will be recorded below.

@@ -66,7 +66,7 @@
                    "nativePresentationAssertions":  53,
                    "nativeResultSha256":  "dd311c22447ee1de75a2a6699b24ac4c8ad976342c449af4f8c1ff451ceceff7",
                    "coldReconstruction":  "DEFERRED_BY_VALIDATION_POLICY",
-                   "ownerVisualApproval":  "PENDING"
+                   "ownerVisualApproval":  "APPROVED 2026-10-29: Alright, this looks good. Please merge, push to remote, and cut a new release."
                },
     "dependencies":  [
                          {

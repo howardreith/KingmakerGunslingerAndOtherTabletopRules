@@ -1,6 +1,15 @@
 # Build, package, and publish
 
-## 0.0.170 Satyr/Lillend repair publication authorization
+## 0.0.170 Satyr/Lillend repair publication (completed)
+
+[Stable v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
+is published from `43abeedfd223e95dec33a3556cc5606a029e4cd3`, after PR80 and PR81.
+The complete2,759-test gate and two deterministic exact-reference builds passed;
+public download/checksum/manifest, embedded Info/DLL/MVID, Latest and remote tag
+were verified. The first attempt's strict file-count failure remains preserved;
+PR81 corrected the declared count for the new release notes without changing
+product code. See [exact release evidence](../planning/SATYR-LILLEND-RELEASE170-EVIDENCE.json).
+The procedure below is retained as provenance; no additional release run is selected.
 
 On 2026-10-29 the owner reviewed the repair gallery and wrote: "Alright, this
 looks good. Please merge, push to remote, and cut a new release." This authorizes
