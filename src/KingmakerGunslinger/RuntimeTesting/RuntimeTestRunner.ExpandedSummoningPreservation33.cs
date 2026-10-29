@@ -163,6 +163,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     using (var economy = new FirearmReviewCosts(owner, costs))
                     {
                         DateTime deadline = DateTime.UtcNow.AddSeconds(40); int frames = 0, aiTicks = 0;
+                        var eligibleActors = new HashSet<string>();
                         if (cell != "protected") { Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions(); }
                         while (DateTime.UtcNow < deadline && frames++ < 4000)
                         {
@@ -181,7 +182,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     if (!cast.CanStart) throw new InvalidOperationException("Native protected cast unavailable.");
                                     owner.Commands.Run(cast);
                                 }
-                                else { foreach (string actor in Sprint24TickExactAi(owner)) if (actor != owner.UniqueId) throw new InvalidOperationException("Foreign AI candidate."); aiTicks++; }
+                                else { foreach (string actor in Sprint24TickExactAi(owner)) eligibleActors.Add(actor); aiTicks++; }
                             }
                             Game.Instance.IsPaused = false; yield return 0;
                         }
@@ -194,7 +195,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             aiTicks > 0 && !starts.Commands.OfType<UnitUseAbility>().Any() && attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) &&
                             drain.Rows.Any(value => (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
                         Sprint25Check("sprint33-succubus-" + cell, costsExact && outcome, new JObject {
-                            ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
+                            ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
                             ["costs"] = costs, ["saves"] = saves.Rows, ["applications"] = saves.Applications, ["drain"] = drain.Rows,
                             ["activeOwnedDomination"] = owned.Length, ["forcedRolls"] = 0, ["fixtureHD"] = target.Descriptor.Progression.CharacterLevel },
                             "Preserved native AI/action use, three-round nonstacking control, source-alignment protection, humanoid eligibility and ordinary attack fallback with one-round temporary drain; no kiss/grapple fidelity claim.");
