@@ -5,7 +5,7 @@ using Kingmaker.UnitLogic.Buffs.Components;
 
 namespace KingmakerGunslinger.Summoning
 {
-    // Used only by the private Sprint32 timed control effects. Native destruction
+    // Used by private timed control effects, including Succubus. Native destruction
     // raises IUnitHandler before removing the destroyed caster from the entity
     // pool, so RemoveBuffIfCasterIsMissing can still resolve that caster. Match
     // the exact event identity at this existing boundary; keep the native
