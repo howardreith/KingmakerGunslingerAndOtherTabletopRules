@@ -1,3 +1,12 @@
+# Active follow-up: Satyr locomotion and Lillend presentation
+
+October 28 owner repair packet selects Satyr walking, its actual gait observer,
+and Lillend visible-model revision on the existing rig. Review branch
+`codex/satyr-lillend-presentation-repair`, accepted master `71ea55cda5`.
+See [the active repair record](planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
+Ordinary focused development checkpoint; no merge/release authorization.
+Do not resume the concluded Sprint32 release or start Sprint33.
+
 # Sprint 32 - RELEASED / STOP
 
 Stable [v0.0.169](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.169) is published and publicly verified from PR74 source
