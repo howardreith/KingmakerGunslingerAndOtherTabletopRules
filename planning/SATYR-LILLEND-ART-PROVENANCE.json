@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
     "creature":  "lillend-azata",
-    "status":  "implemented; native presentation PASS; owner visual review pending",
+    "status":  "implemented; native presentation PASS; owner visual review approved 2026-10-29; merge and release authorized",
     "testedSource":  "44281097448efa9236f20faa2dfd74ee4dd85072",
     "ownerPacketSha256":  "9d3ec37f20a4659b5fdb7b016ce5dd32ee5a7d3492eb11ff359b724020d29daa",
     "reference":  {

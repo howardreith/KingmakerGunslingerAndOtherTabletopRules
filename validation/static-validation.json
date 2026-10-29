@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.169-expanded-summoning-satyr-lillend",
+  "milestone": "0.0.170-satyr-lillend-presentation-repair",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.169",
+  "version": "0.0.170",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2696,5 +2696,19 @@
     "change": "Satyr and Lillend Azata; exact qualified product, project, assets and ledger",
     "nativeEvidence": "Original qualified development artifacts with reviewed reuse; release DLL changes only version metadata and build stamps",
     "ownerPublicationAuthority": "Howie Reith, 2026-10-27: Merge and release it thank you."
+  },
+  "satyrLillendPresentationRepairRelease170": {
+    "appendedIdentities": 0,
+    "baseStableVersion": "0.0.169",
+    "change": "Satyr owner-local native locomotion repair and rebuilt Lillend surfaces on the existing rig",
+    "deferredCoverage": "Affected cold save/reload NOT_RUN; prior published qualification gaps remain open",
+    "nativeEvidence": "53/53 assertions on the original development artifact; reviewed reuse, not fresh execution of the version-stamped release DLL",
+    "nativeTestedSource": "44281097448efa9236f20faa2dfd74ee4dd85072",
+    "ownerPublicationAuthority": "Howie Reith, 2026-10-29: Alright, this looks good. Please merge, push to remote, and cut a new release.",
+    "releaseInformationalVersion": "0.0.170-satyr-lillend-presentation-repair",
+    "releaseVersion": "0.0.170",
+    "releasedIdentityChanges": 0,
+    "reviewedDevelopmentSource": "e965cfd8858aa523eef2d6b8a6011e18992a0613",
+    "visibleChoiceTotal": 1189
   }
 }
