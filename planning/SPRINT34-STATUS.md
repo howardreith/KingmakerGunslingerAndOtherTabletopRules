@@ -1,4 +1,4 @@
-# Sprint 34 - hidden implementation
+# Sprint 34 - hidden native qualification
 
 Current stage: early hidden native mechanics PASS; remaining combat/presentation,
 public routes, persistence and release tooling are in progress. Product/build/
@@ -7,6 +7,15 @@ promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `4b7e3d914883ac695a4146c03de790b2024ea38c`. All ten routes remain hidden.
 Sprint33 remains closed; its original-source ON REUSED_PASS is distinct from
 final-artifact OFF/combined observations. Historical deferred checks remain NOT_RUN.
+
+Latest executed body candidate (not a release): source
+`30a81e4e3c3194cf5bf608dca67b2dc3ab6bdb0a`, purpose `sprint34-infernal-bodies`.
+ZIP `118c8b6f35f649efc4b643726544ce7f0c69da5212db22bdb552551278628f42`;
+DLL `a1438f9c1b99d93b33fd3838bce9f82dd22a0b241d2fcda293a1f00be883219a`;
+MVID `daeadf7e-5096-4026-bcd5-6e8920d3e173`;
+fingerprint `49619f5bdfb37d28427c2da169385254e985429dc735229f1cdac82bd861690c`.
+Build263.5s PASS; body02 FAIL349.9s, explained below. Current source contains the
+batched slot/clip corrections and exact publisher extension; native proof pending.
 
 Early mechanics candidate (not a release): source
 `8b59b45717c84b403991333bd3d4d0fe844983ec`, purpose `sprint34-infernal-early`.
@@ -81,39 +90,49 @@ Retained dated history (2026-10-29; immutable original verdicts):
 
 | Group | Current evidence | Remaining |
 |---|---|---|
-| Profiles/defenses/donor isolation | Source/private references inspected | Native grants, totals and isolation |
+| Profiles/defenses/donor isolation | Early native HP/AC/BAB/saves match both baselines | Typed grants, defenses and donor isolation |
 | Barbazu modes/Beard/wound/disease | Early native healing success/rejection, one bleed tick and exact two-source retirement PASS | Remaining modes/Beard/disease/lifetime and final-artifact coverage |
 | Kyton chains/gaze/armor/regeneration | Development control/cost/four-chain subobservations | Final qualification; saves, bypass and other action modes |
 | AI/actions/cleanup | Existing fixture and owned lifetime reuse | RTWP/TB, cancellation, independent items/no loot |
 | Models/icons/ten public routes | Original assets; offline decoder/icon PASS | Native body/contact/UI; all actual public casts |
 | Mixed persistence/integration | No campaign begun | One mixed ON trio and OFF trio, targeted combined |
-| Package/publication/restoration | Source/push safeguards ready | Exact publisher selector, final gate/release/downloads |
+| Package/publication/restoration | Exact publisher selector and42 refusal/acceptance checks PASS | Final gate/release/downloads |
 
 Focused development uses named filters and production compilation under the
-ordinary15/30-minute policy. Latest focused gate14: production24.4s plus domain5.5s,
-10/2766 PASS in30.5s. Earlier compiler, historical-census input and package-allowlist
-failures remain in local logs. The historical v171 fixture now reads both catalog
-and identity inputs from its recorded source;12 focused positive/refusal checks
-passed without replaying historical gameplay. All four S34 model files are covered
-by strict package membership and hash validation. No full milestone gate yet.
+ordinary15/30-minute policy. Focused gate16 compiled production and passed10/2766
+selected tests in29.5s after the same-command Beard boundary repair (gate15 before
+that small addition passed in31.4s). The exact Sprint34 publisher extension reuses the existing
+artifact/run/load/restoration linkage;42 synthetic acceptance/refusal checks PASS,
+including complete qualification and premerge policy. The18 affected Sprint33
+publisher checks PASS; no historical gameplay campaign was replayed. All four
+S34 model files remain covered by strict package membership/hash validation.
+No full milestone gate yet.
 
-Next executable action: build and observe one changed grouped body candidate.
-The movement-boundary/diagnostic repair and native AoO visual consumer compiled
-and passed the focused gate14; no native PASS is inferred from that check.
-Body01/source10244694 RunId `20261029T2218589057622Z-cc09ace85a7b4102bb588f5d700a1a15`
-FAIL336.2s. Both Barbazu original bodies were visible/selectable with independent
-meshes/materials. The move ended Interrupt before starting after one native frame;
-only0.163m placement correction and zero velocity were recorded. No movement or
-weapon-contact PASS. Retained raw evidence/images remain local. Installed IL
-confirms Translocate calls ForcePlaceAboveGround and AoOs use their separate
-native OnAction path. The observer now waits for the existing quiet relocation
-boundary and records start/goal/end, command states and interruption callers.
-Kyton's private contact visual now also follows the native AoO action, without
-changing attacks or reach. Gate13 before this repair compiled and passed10 checks
-in34.2s; candidate10244694 build passed in266.5s. No unchanged native retry.
+Next executable action: commit/push the coherent batch, build one changed body
+candidate, then run the same grouped body phase. Beard now retains both-claw
+bookkeeping across a round tick while its native command remains active; the
+observer records its separate native damage packet against the actual hit condition.
+Before final freeze, integrate legitimate upstream once and recheck patch availability.
 
-Before final freeze: implement the smallest exact Sprint34 publisher selector
-and refusal checks; integrate legitimate upstream once; recheck patch availability.
+Body history (2026-10-29; retain original raw receipts/verdicts):
+- Body01/source10244694, RunId `20261029T2218589057622Z-cc09ace85a7b4102bb588f5d700a1a15`,
+  FAIL336.2s: visible/selectable independent Barbazu bodies; move interrupted after
+  one frame with zero velocity. No movement/contact acceptance from that run.
+- Body02/source30a81e4e, RunId `20261029T2240404051528Z-1e8e7d65260c4264b281c434cdd29dd2`,
+  FAIL349.9s: Barbazu travelled5.763m at observed4.064m/s, then executed two native
+  glaive attacks. The next natural-mode selection failed. Installed WeaponSlot IL
+  returns EmptyHandWeapon for inactive MaybeWeapon; production AI and observer
+  now inspect MaybeItem before the normal equipment-switch command, and retain
+  before/after slots. Native follow-master interruption is traced in this receipt.
+  Reader review rejects its animation sub-PASS: a null-string JValue passed the
+  old token-type check. No valid clip/contact acceptance is claimed. The observer
+  now requires a nonempty clip; the private glaive visual style is bound to the
+  retained actual native main-hand mapping/act event without changing mechanics.
+  Glaive bonuses6 then12 and attack bonuses9/4 match the known non-player native
+  PowerAttackWatcher transition (existing Hound/Astral fixtures); visual commands
+  now settle native ON and record the toggle at each contact. This is not an OFF
+  baseline or live-scaling proof. Kyton motion/contact remains NOT_RUN.
+
 Final selection is one Sprint source/build/package gate, grouped mechanics and
 presentation/routes, six mixed persistence processes (one ON trio, one OFF trio),
 and a targeted highest-risk combined session. Reproducibility only at release.
@@ -126,8 +145,8 @@ Sixteen private build references hash-match the installed2.1.7b runtime.
 Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-tasks/processes/leases. After body01, transaction
-`compat-20261029T221624Z-7441f007a6c0` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
+tasks/processes/leases. After body02, transaction
+`compat-20261029T223804Z-3e7c8a61859e` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
 original installation, protected saves, sound bank/references and processes match.
 No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
@@ -144,5 +163,12 @@ Map SHA256 `82b91566f3bd71b3549592d88ba111e4d4f6bb0dc68ac31b292c4df8c2406933`,
 2445 files. Primary packages/receipts, protected saves/references and current
 candidate output remain. Recalculate full staging/build/restoration reserve
 before the next native transaction.
-v0.0.172 was free at intake only; recheck remote tags/releases before freeze.
+A second verified archive retained785,355,409 bytes/2600 files at
+`E:/KingmakerGunslingerLab/sprint34-private/completed-scratch-20261029T225448Z`,
+map SHA256 `9a03e9c03b1aa3f585b490f74508df2ede4b4b0c22ff0bc42d7d64ccd94208a6`.
+Only exact redundant staging/build copies and candidate-only backup copies were
+removed from C: after all hashes matched; primary archives and evidence remain.
+C: free after archival1,879,846,912 bytes; full reserve1,230,513,542 bytes.
+Remote recheck2026-10-29: master still4b7e3d91, latest stablev171 andv172 free.
+Recheck again immediately before freezing/publication.
 No release or completion claim.

@@ -102,6 +102,11 @@ namespace KingmakerGunslinger.Summoning
 
         public void OnNewRound()
         {
+            // A native full attack can cross the owner's round tick. Its two
+            // claws still belong to one command; only idle/finished state is
+            // retired here. Record already rejects stale or changed commands.
+            var command = Owner?.Unit?.Commands?.Attack;
+            if (command != null && !command.IsFinished) return;
             State state;
             if (Owner?.Unit != null && States.TryGetValue(Owner.Unit, out state))
                 state.Sequence.Reset();

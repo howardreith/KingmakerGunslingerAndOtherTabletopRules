@@ -1,10 +1,10 @@
 Set-StrictMode -Version Latest
 
 function Assert-KmgQualifiedCandidateInvocationMode {
-    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Publish,
+    param([switch]$PreflightOnly,[switch]$Sprint25GiantBodies,[switch]$Sprint26MagicalBeasts,[switch]$Sprint27Griffon,[switch]$Sprint28Giants,[switch]$Sprint29Giants,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Sprint34InfernalOutsiders,[switch]$Publish,
         [switch]$ConfirmReleaseReady,[string]$MergedReleaseCommit,[string]$ExpectedBaseCommit)
     if($PreflightOnly) {
-        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants,$Sprints3031,$Sprint33ShadowOutsiders | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
+        if(@($Sprint25GiantBodies,$Sprint26MagicalBeasts,$Sprint27Griffon,$Sprint28Giants,$Sprint29Giants,$Sprints3031,$Sprint33ShadowOutsiders,$Sprint34InfernalOutsiders | Where-Object {$_}).Count -ne 1 -or $Publish -or $ConfirmReleaseReady -or $MergedReleaseCommit -or
             $ExpectedBaseCommit -cnotmatch '^[0-9a-f]{40}$') {
             throw 'PreflightOnly requires one supported sprint and its pinned base, and forbids publication, confirmation or a claimed merge.'
         }
@@ -162,12 +162,14 @@ function Assert-KmgReportingLineage {
 }
 
 function Assert-KmgClosureProofFiles {
-    param([Parameter(Mandatory=$true)]$Ledger,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,$Candidate)
+    param([Parameter(Mandatory=$true)]$Ledger,[switch]$Sprints3031,[switch]$Sprint33ShadowOutsiders,[switch]$Sprint34InfernalOutsiders,$Candidate)
     if($Sprints3031 -and ($Ledger.mission -cne 'Sprints3031OutsiderCelestialPilot' -or $null -eq $Candidate)) {
         throw 'Named S30-31 context and actual final candidate are required.'
     }
     if($Sprint33ShadowOutsiders -and ($Ledger.mission -cne 'Sprint33DedicatedShadowOutsiders' -or $null -eq $Candidate)){throw 'Named Sprint33 context and final candidate required.'}
+    if($Sprint34InfernalOutsiders -and ($Ledger.mission -cne 'Sprint34InfernalOutsiders' -or $null -eq $Candidate)){throw 'Named Sprint34 context and final candidate required.'}
     foreach($row in $Ledger.coverage) {
+        if($Sprint34InfernalOutsiders -and $row.result -ceq 'REUSED_PASS'){Assert-KmgSprint34Reuse $row $Candidate}
         if($Sprint33ShadowOutsiders -and $row.result -ceq 'REUSED_PASS'){Assert-KmgSprint33Reuse $row $Candidate}
         if($Sprints3031 -and $row.result -ceq 'REUSED_PASS') {
             Assert-KmgSprints3031ReusedMechanics -Row $row -Candidate $Candidate
@@ -182,7 +184,7 @@ function Assert-KmgClosureProofFiles {
             # development evidence as REUSED_PASS. Every other sprint and all
             # fresh final evidence retain the original development refusal.
             if ([IO.File]::ReadAllText($proof.path) -match '"candidateKind"\s*:\s*"development"' -and
-                -not (($Sprints3031 -and $row.result -ceq 'REUSED_PASS' -and $row.kind -ceq 'mechanics') -or ($Sprint33ShadowOutsiders -and $row.result -ceq 'REUSED_PASS'))) {
+                -not (($Sprints3031 -and $row.result -ceq 'REUSED_PASS' -and $row.kind -ceq 'mechanics') -or ($Sprint33ShadowOutsiders -and $row.result -ceq 'REUSED_PASS') -or ($Sprint34InfernalOutsiders -and $row.result -ceq 'REUSED_PASS'))) {
                 throw 'Development-candidate evidence cannot qualify a release.'
             }
         }
@@ -856,5 +858,57 @@ function Assert-KmgSprint27PremergeAuthority {
         $Ledger.publication.expectedBaseCommit -cne $ExpectedBaseCommit -or
         [string]$Ledger.publication.productPr -cne '60') {
         throw 'Sprint 27 premerge proof must truthfully record its pending merge and exact pinned base/PR.'
+    }
+}
+
+# Common hash/run/load/restoration linkage; the sprint callers select the exact
+# root, branch, purposes and admissible behavior groups.
+function Assert-KmgScopedDevelopmentReuse($Row,$Candidate,[string]$RepositoryRoot,[string]$Branch,[string[]]$Purposes) {
+    if(@($Row.evidenceSources).Count -eq 0){throw 'Reused observations are absent.'}
+    foreach($source in $Row.evidenceSources) {
+        $receipt=Read-KmgSprints3031Proof $source.receiptProof
+        $native=Read-KmgSprints3031Proof $source.nativeProof
+        $transaction=Read-KmgSprints3031Proof $source.transactionProof
+        $loaded=Read-KmgSprints3031Proof $source.loadedProof
+        $orchestration=Read-KmgSprints3031Proof $source.orchestrationProof
+        $deployment=Read-KmgSprints3031Proof $source.deploymentProof
+        $protected=Read-KmgSprints3031Proof $source.protectedProof
+        if($receipt.candidateKind -cne 'development' -or $receipt.releaseQualification -ne $false -or
+           $Purposes -cnotcontains $receipt.purpose -or
+           $receipt.repositoryRoot -ine $RepositoryRoot -or
+           $receipt.branch -cne $Branch) { throw 'Original scoped development attribution lost.' }
+        foreach($key in @('packageSha256','dllSha256','dllMvid')) { if($source.$key -cne $receipt.$key){throw 'Reused artifact identity differs.'} }
+        if($source.source -cne $receipt.commit -or $native.gitCommit -cne $receipt.commit -or
+           $native.runId -cne $source.runId -or $native.status -cne 'PASS' -or
+           @($native.assertions|Where-Object status -cne 'PASS').Count -or
+           $deployment.packageSha256 -cne $receipt.packageSha256 -or -not $transaction.restorationVerified) { throw 'Original native proof/restoration differs.' }
+        foreach($key in @('commit','packageSha256','dllSha256','dllMvid')){if($deployment.$key -cne $receipt.$key){throw 'Original deployment differs.'}}
+        if($deployment.developmentReceiptSha256 -cne $source.receiptProof.sha256 -or $loaded.gitCommit -cne $receipt.commit -or
+           $loaded.loadedModuleSha256 -cne $receipt.dllSha256 -or $loaded.moduleVersionId -cne $receipt.dllMvid -or
+           $orchestration.status -cne 'PASS' -or $orchestration.runId -cne $source.runId -or
+           [IO.Path]::GetFullPath($orchestration.resultPath) -ine [IO.Path]::GetFullPath($source.nativeProof.path) -or
+           [IO.Path]::GetFullPath($orchestration.deploymentManifestPath) -ine [IO.Path]::GetFullPath($source.deploymentProof.path) -or
+           $orchestration.kingmakerProcessId -ne $loaded.processId -or $transaction.status -cne 'Restored' -or
+           $transaction.profileId -cne $source.profile -or [DateTime]$transaction.createdAtUtc -gt [DateTime]$orchestration.startedAtUtc -or
+           [DateTime]$transaction.restoredAtUtc -lt [DateTime]$orchestration.completedAtUtc -or
+           $protected.status -cne 'RESTORED' -or -not $protected.restoration.allOriginalSavesExact -or -not $protected.restoration.gameExitConfirmed){throw 'Original launch/load/restoration correlation differs.'}
+        foreach($proof in @($source.receiptProof,$source.nativeProof,$source.transactionProof,$source.loadedProof,$source.orchestrationProof,$source.deploymentProof,$source.protectedProof)) {
+            if(@($Row.proofs|Where-Object {$_.path -ceq $proof.path -and $_.sha256 -ceq $proof.sha256}).Count -ne 1){throw 'Original proof omitted.'}
+        }
+        if(@($source.requiredAssertions).Count -eq 0 -or @($source.dependencies).Count -eq 0 -or
+           [string]::IsNullOrWhiteSpace($source.environmentComparison) -or [string]::IsNullOrWhiteSpace($source.observerMeaning)) { throw 'Reuse comparison absent.' }
+        foreach($name in $source.requiredAssertions) {
+            if(@($native.assertions|Where-Object {$_.name -ceq $name -and $_.status -ceq 'PASS'}).Count -ne 1){throw 'Required reused observation absent.'}
+        }
+        $old=@($receipt.references.files|ForEach-Object {$_.relativePath+':'+$_.sha256}|Sort-Object -CaseSensitive)
+        $new=@($Candidate.references.files|ForEach-Object {$_.relativePath+':'+$_.sha256}|Sort-Object -CaseSensitive)
+        if(($old -join '|') -cne ($new -join '|')){throw 'Installed references changed.'}
+        foreach($dep in $source.dependencies) {
+            $oldBlob=(& git rev-parse ($source.source+':'+$dep.path)).Trim()
+            if($LASTEXITCODE -ne 0){throw 'Original dependency unavailable.'}
+            $newBlob=(& git rev-parse ($Candidate.commit+':'+$dep.path)).Trim()
+            if($LASTEXITCODE -ne 0 -or $oldBlob -cne $dep.originalBlob -or $newBlob -cne $dep.candidateBlob){throw 'Dependency attribution differs.'}
+            if($oldBlob -cne $newBlob -and ($dep.disposition -cne 'REVIEWED_UNCHANGED_OBSERVED_PATH' -or [string]::IsNullOrWhiteSpace($dep.unchangedConsumerReason))){throw 'Changed dependency requires fresh proof or explicit affected-path review.'}
+        }
     }
 }

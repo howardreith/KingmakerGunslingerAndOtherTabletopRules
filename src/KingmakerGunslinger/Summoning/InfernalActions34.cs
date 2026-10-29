@@ -40,8 +40,11 @@ namespace KingmakerGunslinger.Summoning
             bool disarmed = owner.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff) != null;
             var wanted = nearest <= new Feet(5).Meters || disarmed ? profile.Claw : profile.Glaive;
             if (ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon?.Blueprint, wanted)) return -1;
+            // Native MaybeWeapon returns EmptyHandWeapon for an inactive slot.
+            // Inspect the actual held item when choosing a set, then let the
+            // native switch activate it with its ordinary cost.
             for (int index = 0; index < owner.Body.HandsEquipmentSets.Count; index++)
-                if (ReferenceEquals(owner.Body.HandsEquipmentSets[index].PrimaryHand.MaybeWeapon?.Blueprint, wanted)) return index;
+                if (ReferenceEquals(owner.Body.HandsEquipmentSets[index].PrimaryHand.MaybeItem?.Blueprint, wanted)) return index;
             return -1;
         }
         public override bool IsAvailable(DecisionContext context)

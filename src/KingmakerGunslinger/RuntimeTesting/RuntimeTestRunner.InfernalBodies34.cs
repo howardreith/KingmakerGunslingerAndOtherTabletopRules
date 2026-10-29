@@ -101,6 +101,14 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
         }
 
+        private static JArray InfernalEquipment34(UnitEntityData owner)
+        {
+            return new JArray(owner.Body.HandsEquipmentSets.Select((set, index) => new JObject {
+                ["index"] = index, ["active"] = owner.Body.CurrentHandEquipmentSetIndex == index,
+                ["item"] = set.PrimaryHand.MaybeItem?.Blueprint.AssetGuid,
+                ["effectiveWeapon"] = set.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid }));
+        }
+
         private IEnumerable<int> ReviewInfernalMotion34(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,
             string key, InfernalEvents34 trace, JObject receipt)
         {
@@ -119,7 +127,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     contacts.Add(new JObject { ["weapon"] = rule.Weapon.Blueprint.AssetGuid, ["hit"] = rule.AttackRoll?.IsHit,
                         ["owner"] = owner.UniqueId, ["target"] = target.UniqueId, ["nativeClip"] = clip?.name,
                         ["animationStarted"] = command?.Animation?.IsStarted == true,
-                        ["animationTime"] = command?.Animation?.GetTime(), ["rangeFeet"] = rule.Weapon.AttackRange.Value,
+                        ["animationTime"] = command?.Animation?.GetTime(),
+                        ["powerAttack"] = key == InfernalVisualPolicy34.Barbazu ? Sprint22PowerAttackState(owner,
+                            owner.Descriptor.ActivatableAbilities.Enumerable.Single(value => value.Blueprint.AssetGuid == "a7b339e4f6ff93a4697df5d7a87ff619")) : null,
+                        ["animationStyle"] = rule.Weapon.GetAnimationStyle(false).ToString(), ["rangeFeet"] = rule.Weapon.AttackRange.Value,
                         ["chain"] = chains?.ContactChain, ["chainContacts"] = chains?.Contacts, ["chainContactGap"] = chains?.ContactGap,
                         ["glaiveVisible"] = glaive?.Model?.activeInHierarchy,
                         ["glaiveRenderers"] = glaive?.Model == null ? null : new JArray(glaive.Model.GetComponentsInChildren<Renderer>(true)
@@ -171,13 +182,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!moved) throw new InvalidOperationException("Native infernal movement incomplete.");
                 foreach (int frame in WaitPresentation32(mode, () => owner.Commands.Empty && owner.View.MovementAgent.Velocity.sqrMagnitude < .0001f, 12)) yield return frame;
                 var profile = InfernalMartialProfile34.For(owner);
+                // The owned disposable faction uses the native non-player
+                // PowerAttackWatcher, which turns PA on at the first roll.
+                // Settle ON before these visual commands; OFF/live scaling
+                // is a separate mechanics control, not inferred here.
                 foreach (bool alternate in new[] { false, true }) {
                     if (alternate && key == InfernalVisualPolicy34.Barbazu) {
+                        receipt[key + "-sets-before"] = InfernalEquipment34(owner);
                         int index = Enumerable.Range(0, owner.Body.HandsEquipmentSets.Count).Single(value =>
-                            ReferenceEquals(owner.Body.HandsEquipmentSets[value].PrimaryHand.MaybeWeapon?.Blueprint, profile.Claw));
+                            ReferenceEquals(owner.Body.HandsEquipmentSets[value].PrimaryHand.MaybeItem?.Blueprint, profile.Claw));
                         var change = new UnitSwitchHandEquipmentSet(index); owner.Commands.Run(change);
                         foreach (int frame in WaitPresentation32(mode, () => change.IsFinished, 20)) yield return frame;
-                        if (owner.Body.CurrentHandEquipmentSetIndex != index) throw new InvalidOperationException("Natural set switch failed.");
+                        receipt[key + "-sets-after"] = InfernalEquipment34(owner);
+                        if (owner.Body.CurrentHandEquipmentSetIndex != index ||
+                            !ReferenceEquals(owner.Body.PrimaryHand.MaybeWeapon?.Blueprint, profile.Claw)) throw new InvalidOperationException("Natural set switch failed.");
                     }
                     if (alternate && key == InfernalVisualPolicy34.Kyton) {
                         var blueprint = fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.name == "KMG_Summoning_Infernal_KytonChainDevil_DancingChains");
@@ -188,7 +206,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     }
                     InfernalCombatLane34(fixture, owner, target, alternate ? (key == InfernalVisualPolicy34.Kyton ? 20 : 3) : 8);
                     if (key == InfernalVisualPolicy34.Barbazu)
-                        foreach (int frame in Sprint22SetPowerAttack(owner, false)) yield return frame;
+                        foreach (int frame in Sprint22SetPowerAttack(owner, true)) yield return frame;
                     int start = trace.Rows.Count, contactStart = contacts.Count;
                     var attack = new UnitAttack(target) { ForceFullAttack = true, IsSingleAttack = false }; attack.Init(owner);
                     if (!attack.CanStart) throw new InvalidOperationException("Native infernal attack refused.");
@@ -200,7 +218,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var observed = contacts.Skip(contactStart).ToArray();
                         int expected = key == InfernalVisualPolicy34.Kyton ? 4 : 2;
                         bool correct = attack.IsFinished && attack.Result == UnitCommand.ResultType.Success && rows.Length == expected &&
-                            observed.Length == expected && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && row["nativeClip"].Type == JTokenType.String) &&
+                            observed.Length == expected && errors.Count == 0 && observed.All(row => (bool)row["animationStarted"] && !string.IsNullOrEmpty((string)row["nativeClip"])) &&
                             (key != InfernalVisualPolicy34.Kyton || observed.All(row => (float)row["chainContactGap"] < .15f)) &&
                             (key != InfernalVisualPolicy34.Barbazu || observed.All(row => (bool)row["glaiveVisible"] == !alternate));
                         var cell = new JObject { ["owner"] = owner.UniqueId, ["alternate"] = alternate, ["command"] = Sprint27AiCommand(attack),
@@ -208,6 +226,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Sprint25Check("sprint34-native-contact-" + key + "-" + alternate, correct, cell,
                             "One native full attack uses the correct alternative routine with actual animation/contact and no extra attacks.");
                         if (!correct) throw new InvalidOperationException("Infernal routine or live contact mismatch.");
+                        if (alternate && key == InfernalVisualPolicy34.Barbazu) {
+                            bool bothHit = rows.All(row => (bool)row["hit"]);
+                            var beard = trace.Rows.Skip(start).Where(row => (string)row["event"] == "damage" &&
+                                (string)row["owner"] == owner.UniqueId && (string)row["target"] == target.UniqueId &&
+                                !(bool)row["hasAttackRoll"] && ((JArray)row["packets"]).Any(packet => (string)packet["dice"] == "1d8")).ToArray();
+                            bool conditional = beard.Length == (bothHit ? 1 : 0);
+                            Sprint25Check("sprint34-beard-observed-condition", conditional, new JObject {
+                                ["bothNativeClawsHit"] = bothHit, ["beardEvents"] = new JArray(beard),
+                                ["command"] = Sprint27AiCommand(attack) },
+                                "Beard's separate native damage packet occurs exactly when both claws of this command hit the same target; natural misses stay recorded.");
+                            if (!conditional) throw new InvalidOperationException("Observed Beard condition differs.");
+                        }
                     }
                     owner.Commands.InterruptAll(command => true); owner.Commands.RemoveFinishedAndUpdateQueue();
                     foreach (int frame in WaitPresentation32(mode, () => owner.Commands.Empty &&

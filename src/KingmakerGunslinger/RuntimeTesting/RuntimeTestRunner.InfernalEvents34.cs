@@ -102,6 +102,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 JObject row;
                 if (!damage.TryGetValue(evt, out row)) return;
                 row["after"] = evt.Target.Damage; row["actual"] = evt.Damage;
+                row["weapon"] = evt.DamageBundle.Weapon?.Blueprint?.AssetGuid;
+                row["hasAttackRoll"] = evt.AttackRoll != null;
+                row["packets"] = new JArray(evt.DamageBundle.Select(value => new JObject {
+                    ["type"] = value.GetType().Name, ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus }));
                 row["source"] = evt.Reason?.Context?.MaybeCaster?.UniqueId;
                 row["ability"] = evt.Reason?.Context?.SourceAbility?.AssetGuid;
             }
