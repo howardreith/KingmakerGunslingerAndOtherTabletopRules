@@ -140,6 +140,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint25Check(id + "-animation-binding", independent,
                         new JObject { ["independentOwnedSetsAndHands"] = independent,
                             ["outcomes"] = new JArray(attachments.Select(value => value?.Outcome)),
+                            ["locomotionBeforeBinding"] = new JArray(attachments.Select(value => value?.LocomotionBeforeBinding)),
+                            ["locomotionAfterBinding"] = new JArray(attachments.Select(value => value?.LocomotionAfterBinding)),
                             ["nativeBowGoreAndOtherActionsPreserved"] = attachments.All(value => value != null && value.Live) },
                         "Each exact Satyr owns its added native blade mapping, preserves the borrowed bow/gore and other actions, and leaves both native source sets unchanged.");
                     if (!independent) throw new InvalidOperationException("Satyr private animation binding is missing or shared.");
@@ -190,6 +192,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         if (activeFrames % 10 == 0)
                         {
                             var pose = Presentation32Pose(owner, lillend);
+                            if (!lillend) pose["satyrJoints"] = Presentation32SatyrJoints(owner);
                             pose["nativeVelocity"] = speed; pose["exactMoveActive"] = exactActive;
                             pose["commandIsStarted"] = move.IsStarted;
                             moveSamples.Add(pose); poses.Add(pose.DeepClone());
@@ -685,6 +688,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["renderers"] = new JArray(renderers.Select(renderer => new JObject { ["name"] = renderer.name,
                     ["width"] = renderer.bounds.size.x, ["height"] = renderer.bounds.size.y, ["depth"] = renderer.bounds.size.z })),
                 ["lillend"] = body };
+        }
+
+        private static JObject Presentation32SatyrJoints(UnitEntityData unit)
+        {
+            var skin = unit.View.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single(value => value.name == "satyr01");
+            var root = skin.rootBone;
+            if (root == null || !root.IsChildOf(unit.View.transform)) throw new InvalidOperationException("Satyr pelvis absent.");
+            return new JObject { ["root"] = root.name, ["locomotion"] = SatyrNativeWeaponAnimation32.DescribeLocomotion(unit.View.AnimationManager),
+                ["bones"] = new JArray(skin.bones.Select(bone => { var point = root.InverseTransformPoint(bone.position);
+                    return new JObject { ["name"] = bone.name, ["position"] = new JArray(point.x, point.y, point.z) }; })) };
         }
         private static JObject Presentation32NativePose(UnitEntityData unit, bool hit)
         {

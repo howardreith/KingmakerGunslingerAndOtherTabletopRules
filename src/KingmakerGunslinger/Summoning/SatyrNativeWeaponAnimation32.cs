@@ -48,6 +48,17 @@ namespace KingmakerGunslinger.Summoning
         internal string Outcome { get; private set; } = "waiting-for-native-view";
         internal AnimationSet OwnedSet => _owned;
         internal UnitAnimationActionHandAttack OwnedHand => _hand;
+        internal string LocomotionBeforeBinding { get; private set; }
+        internal string LocomotionAfterBinding { get; private set; }
+
+        internal static string DescribeLocomotion(UnitAnimationManager manager)
+        {
+            var field = typeof(UnitAnimationManager).GetField("m_LocoMotionHandle", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (field == null) throw new MissingFieldException("Native locomotion handle contract changed.");
+            var handle = field.GetValue(manager) as UnitAnimationActionHandle;
+            return handle == null ? "absent" : "action=" + handle.Action.name + ";started=" + handle.IsStarted +
+                ";finished=" + handle.IsFinished + ";active=" + manager.ActiveActions.Contains(handle);
+        }
 
         internal static bool Permits(UnitEntityView view)
         {
@@ -117,7 +128,9 @@ namespace KingmakerGunslinger.Summoning
             _owned = UnityEngine.Object.Instantiate(_native);
             _owned.name = "KMG_Satyr32_PrivateAnimationSet";
             Actions.SetValue(_owned, new List<AnimationActionBase>(_expectedActions));
+            LocomotionBeforeBinding = DescribeLocomotion(_view.AnimationManager);
             _view.AnimationManager.AnimationSet = _owned;
+            LocomotionAfterBinding = DescribeLocomotion(_view.AnimationManager);
             if (!Live) throw new InvalidOperationException("Private Satyr animation binding did not round-trip.");
         }
 

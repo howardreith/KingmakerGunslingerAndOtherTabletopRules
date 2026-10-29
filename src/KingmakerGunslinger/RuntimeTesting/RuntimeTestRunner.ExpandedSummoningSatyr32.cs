@@ -94,6 +94,13 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase)
             {
+                // Recover the already authorized private bind-only authoring
+                // input through its existing exact-prefab, read-only observer.
+                var human = fixture.Blueprints.OfType<BlueprintUnit>().Single(value =>
+                    value.AssetGuid == SerpentineRigSurveyPolicy.HumanSpearBlueprint);
+                var humanView = human.Prefab.Load(false);
+                CaptureSprint17HumanBindPalette(human, humanView,
+                    humanView.GetComponentsInChildren<SkinnedMeshRenderer>(true));
                 CreateSprint32TurnHostile(fixture);
                 foreach (bool lillend in new[] { false, true })
                     foreach (int frame in ReviewPresentation32(fixture, lillend)) yield return frame;
