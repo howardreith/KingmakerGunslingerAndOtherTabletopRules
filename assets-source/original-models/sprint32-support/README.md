@@ -1,11 +1,16 @@
 # Original Lillend body
 
-Project-authored geometry and procedural paint, October25,2026. The winged
+Project-authored geometry and procedural paint, revised October29,2026. The winged
 elven upper body and serpent lower body follow the printed
 [Lillend](https://www.aonprd.com/MonsterDisplay.aspx?ItemName=Lillend).
-No third-party mesh, pixels or native animation curves are embedded. This is
-functional-first art; facial detail, robe construction and feather polish remain
-cosmetic review debt. No owner aesthetic approval is claimed.
+No third-party mesh, pixels or native animation curves are embedded. The
+original draft is retained in the v0.0.169 release. The repair replaces its
+visible surfaces with a continuous anatomical sculpt, inset adult face, attached
+five-finger hands, shaped auburn locks, a real teal/ivory garment shell with
+folded hems and gold seams, and layered curved feather vanes. The existing
+`outsider-celestial/sdf_sculpt.py` and `continuous-bodies/continuous_body.py`
+authoring tools are reused; no new runtime art system is introduced.
+No owner aesthetic approval is claimed.
 
 The exact existing human bind-only observation is the private source input:
 SHA256 `eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2`.
@@ -26,10 +31,10 @@ Exact exports:
 
 | File | SHA256 |
 |---|---|
-| `assets/sprint32-support/lillend-mesh.json` | `2734cb0dc2de27e1eb7c6884d8eab598260bed513f170e4573f83a3d3230afec` |
-| `assets/sprint32-support/lillend-albedo.png` | `561609b114d83e8d4ab4c48d66dab920f115c6f2a80eaf8d8d0302f1c8a3b5c4` |
+| `assets/sprint32-support/lillend-mesh.json` | `11ad83a0858d95c72627f63c131a713de26c1e9bc83c3c79a84000b9816a8dd7` |
+| `assets/sprint32-support/lillend-albedo.png` | `5148b79042d0e09010269155936c984613c4992b28302999f6caba7779a962d7` |
 
-Mesh3932vertices/7664triangles;36drivers; maximum2influences per vertex.
+Mesh23116vertices/45408triangles;36drivers; maximum2influences per vertex.
 Paint1024x1024RGB. Native adapter admits only exact Lillend unit, native human
 carrier and owned sword; each summon owns its mesh/material/tail action. The
 accepted Salamander gait/playback/settlement helpers are reused unchanged;
@@ -44,11 +49,15 @@ The generator imports the existing sibling `sprint17-serpents` export primitives
 geometry, normalized legal weights/UVs, closed identity and tail segment lengths.
 No external downloads or personal files are needed for authoring.
 
-Three export checks passed. Final tracked source reproduced both exports
-byte-for-byte. Offline party-camera/three-quarter rest views were inspected;
-these do not prove native loading, selection, movement, contact or lifecycle.
-Native body qualification remains pending in the [active record](../../../planning/SPRINT32-STATUS.md).
-Local reproducibility/check receipts: `artifacts/sprint32-body-draft/`.
+Three focused export checks pass. The released tail rest centreline, all action
+frames and timing remain unchanged; progressively tapered cross-sections open
+the visible coil without moving the tail drivers/contact recipe. Offline front,
+side, three-quarter and party-camera views are authoring evidence. Native
+presentation, exact artifact identities and owner-review status belong to
+[the repair record](../../../planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
+Editable authoring instructions are `generate_lillend.py`, `lillend_surfaces.py`
+and `paint_lillend.py`; the native-frame-containing `.blend` stays ignored in
+`artifacts/repair-packet-0.0.169/lillend-authored.blend`.
 
 ## Native Satyr blade mapping
 
@@ -70,3 +79,10 @@ geometry or curves are exported, modified or packaged. This is an adapter over
 the shipped owned-set mechanism, with no rig retargeting or creature-rule change.
 Native playback/contact, sibling isolation and cleanup remain required in the
 active record; matching metadata alone is not visual qualification.
+
+The October29 repair invalidates only this summon's finished locomotion cache
+after its own set assignment. Ordinary native Tick recreates playback; no clip,
+bone, shared set or global manager reset is supplied. The final candidate's
+53-assertion native presentation pass covers both donor controls, bow/dagger
+stepping and the revised Lillend poses/lifecycle. Exact identities and deferred
+cold reconstruction remain in the repair record; art awaits owner review.

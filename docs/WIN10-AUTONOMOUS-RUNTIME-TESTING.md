@@ -87,6 +87,22 @@ agent inspection; no owner aesthetic approval is claimed. The exact phase grants
 no input/save scope. Strict Default pending ownership gates mode/pause/camera
 restoration, including constructor failure; outer rollback remains mandatory.
 
+The October29 presentation repair strengthens Satyr travel with exact
+pelvis-relative thighs/knees/hooves, alternating bilateral strides and an active
+native locomotion handle. Two unchanged native controls each walk out/back;
+the summon walks in bow/dagger modes through normal switches, with sequential
+gameplay frames and native stops/turns. Exact disposable control entities alone
+receive the fixture's player faction/disabled brain; donor blueprints, rigs,
+sets and clips remain unchanged. The same phase observes one real Lillend
+self-cure (disclosed5 damage setup at an8m hostile-clear lane), a normally
+activated/running Courage performance and their actual body poses. No animation
+or controller ticks are supplied. Native bow release may follow clip retirement:
+only its identical selected clip/handle, actually played and captured during the
+same command within two frames, may supply playback attribution; event-time
+active=false remains recorded. Melee keeps synchronous live contact guards.
+See [the repair checkpoint](../planning/SATYR-LILLEND-PRESENTATION-REPAIR.md)
+for exact final artifacts, retained failures and cold/owner-review limits.
+
 Native89 exposed the setup/idle boundary. The synchronous fixture summon helper
 leaves a finished command in Raw. Before retirement, prove exact owned caster,
 empty pending Queue and only finished exact setup execution commands; then use

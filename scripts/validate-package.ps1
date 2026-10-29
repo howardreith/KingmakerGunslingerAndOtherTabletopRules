@@ -73,6 +73,7 @@ try {
         'docs\RELEASE-NOTES-0.0.167.md',
         'docs\RELEASE-NOTES-0.0.168.md',
         'docs\RELEASE-NOTES-0.0.169.md',
+        'docs\RELEASE-NOTES-0.0.170.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -229,8 +230,8 @@ try {
     }
     Assert-KmgProtectedBodyExports -ModDirectory $modDirectory
     $lillendExports = @{
-        'lillend-mesh.json'='2734cb0dc2de27e1eb7c6884d8eab598260bed513f170e4573f83a3d3230afec'
-        'lillend-albedo.png'='561609b114d83e8d4ab4c48d66dab920f115c6f2a80eaf8d8d0302f1c8a3b5c4'
+        'lillend-mesh.json'='11ad83a0858d95c72627f63c131a713de26c1e9bc83c3c79a84000b9816a8dd7'
+        'lillend-albedo.png'='5148b79042d0e09010269155936c984613c4992b28302999f6caba7779a962d7'
     }
     foreach ($entry in $lillendExports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint32-support\'+$entry.Key))) -cne $entry.Value) {

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "version": "0.0.170",
+  "tag": "v0.0.170",
+  "status": "PUBLISHED_PUBLIC_DOWNLOAD_VERIFIED",
+  "releaseUrl": "https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170",
+  "verifiedUtc": "2026-10-29T12:37:10.9167078Z",
+  "ownerAuthority": "Howie Reith, 2026-10-29: Alright, this looks good. Please merge, push to remote, and cut a new release.",
+  "ownerVisualApproval": "APPROVED",
+  "productPr": 80,
+  "packageCountCorrectionPr": 81,
+  "releaseSource": "43abeedfd223e95dec33a3556cc5606a029e4cd3",
+  "reviewedDevelopmentSource": "e965cfd8858aa523eef2d6b8a6011e18992a0613",
+  "nativeTestedSource": "44281097448efa9236f20faa2dfd74ee4dd85072",
+  "sourceStateSha256": "5215bb44c59231350d548ebc5a674c43b138dde4666827938fea79a96e209bb1",
+  "package": "KingmakerGunslinger-0.0.170-satyr-lillend-presentation-repair.zip",
+  "packageSha256": "49811ef42e9f3205749f59f7989485f7525000049a15e81f6da71c396f93a723",
+  "dllSha256": "b798213c0ade7b53f38435a56e5a4652ec9a1c4463bf2b1813db1b82fe8cb90d",
+  "dllMvid": "b3a72351-9d29-48d8-babb-827b977e314f",
+  "publicAssets": [
+    {
+      "name": "KingmakerGunslinger-0.0.170-satyr-lillend-presentation-repair.zip",
+      "bytes": 65904407,
+      "sha256": "49811ef42e9f3205749f59f7989485f7525000049a15e81f6da71c396f93a723"
+    },
+    {
+      "name": "release-manifest.json",
+      "bytes": 630,
+      "sha256": "49bee16f3e5ba4bebef4b686c9258ad37fa4033e99342948b21c890e6b9b73a1"
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "bytes": 133,
+      "sha256": "828358e3fb16c86595ed2545d385a99f273957947c6a37b56a72773375a3c843"
+    }
+  ],
+  "deterministicBuilds": 2,
+  "primaryBuildOutputPreserved": true,
+  "stableLatest": true,
+  "remoteTagAndEmbeddedInfoDllVerified": true,
+  "sourceAdmission": "Exact owner-reviewed product/project/assets; version metadata only; all7511 identities unchanged;1189 public choices",
+  "domainSuite": {
+    "registered": 2759,
+    "executed": 2759,
+    "failures": 0,
+    "seconds": 48.9
+  },
+  "offlineRuntimePreflightAssertions": 1166,
+  "nativeReferenceEligibilityAssertionsPerBuild": 37,
+  "nativePresentation": {
+    "status": "REVIEWED_REUSE_ORIGINAL_DEVELOPMENT_ARTIFACT",
+    "assertions": 53,
+    "packageSha256": "e2c180632d5a49a133085e1f2107cb1fb40f0a42d3cc6963f558fc012167981d",
+    "dllSha256": "80446d004a2e83c1224df66e66a9f0ccf5e4b7bba6e7e4cea623bf9c161a3ad5",
+    "dllMvid": "70656ba0-577f-489c-8035-03d5626d411b",
+    "freshExecutionOfReleaseDll": false
+  },
+  "commands": [
+    {
+      "command": "python -B tools/test_satyr_lillend_repair_release170.py; python -B tools/validate_repository.py; git diff --check",
+      "seconds": 5.648,
+      "result": "PASS;14 positive/refusal fixtures, source admission and diff whitespace"
+    },
+    {
+      "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/Test-RepositoryValidatorDispatch.ps1",
+      "seconds": 1.016,
+      "result": "PASS27 real-dispatch checks"
+    },
+    {
+      "command": "tools/test_deterministic_package.py; create_deterministic_package.py --expected-file-count423 on retained stage; scripts/validate-package.ps1",
+      "seconds": 7.376,
+      "result": "PASS; focused packaging correction proof only, no release receipt"
+    },
+    {
+      "command": "scripts/Publish-Release.ps1 -ReferenceBundleDir <current exact private references> -ReleaseNotesPath docs/RELEASE-NOTES-0.0.170.md -Publish -ConfirmReleaseReady",
+      "seconds": 723.177,
+      "startedUtc": "2026-10-29T12:24:45.0515632Z",
+      "endedUtc": "2026-10-29T12:36:48.2471882Z",
+      "result": "PASS; two deterministic exact-reference builds, preserved primary archive, full gate, strict package, public stable publication"
+    },
+    {
+      "command": "artifacts/repair-packet-0.0.169/verify-release170.ps1: public download, SHA256SUMS/manifest, strict package, embedded Info/DLL/MVID, primary/reproducibility hashes, Latest and remote tag",
+      "seconds": 11.93,
+      "result": "PASS"
+    }
+  ],
+  "preservedFailure": {
+    "commit": "6ae2eb273353d9adfe765638d61f98626f636ef8",
+    "seconds": 392.52,
+    "result": "FAIL_PACKAGE_FILE_COUNT_422_VS_423",
+    "completeDomainTestsPassed": 2759,
+    "nativeRuntimePreflightPassed": 1166,
+    "published": false,
+    "tagCreated": false,
+    "incompleteArchivePreserved": true
+  },
+  "deferred": [
+    "Affected cold save/reload NOT_RUN",
+    "Earlier v167/v168 disclosed coverage gaps remain open",
+    "No fresh native execution of release DLL",
+    "No whole-roster/all-profile qualification",
+    "No played death-animation claim absent a native donor action"
+  ],
+  "installationAndSaves": "Native repair transaction restored exact intake. Release publication launches no game, loads/writes no save and performs no deployment.",
+  "historical169WaiverReused": false,
+  "followOnSprintSelected": false
+}
