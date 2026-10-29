@@ -2090,6 +2090,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningShadowOutsiders33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningPreservation33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SuccubusDrainTrace33.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.SuccubusDrainProof33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningPersistence33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Input.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLullaby32.cs" /></ItemGroup>
