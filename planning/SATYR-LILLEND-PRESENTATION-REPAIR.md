@@ -17,6 +17,29 @@ save/reload remains explicitly deferred by the validation policy; this is not
 full release qualification. Current installation/settings and protected save
 intake are restored exactly. No merge or release was performed.
 
+### Release preparation follow-up
+
+PR80 merged normally as `6ae2eb273353d9adfe765638d61f98626f636ef8` and master
+was verified through the guarded push wrapper. The first ordinary publisher
+attempt ran from that exact clean source, 2026-10-29T12:14:54.5433641Z through
+12:21:27.0852678Z (392.520 seconds). Repository validation, 1,166 offline runtime
+preflight predicates, all2,759 domain cases (53.7 seconds), exact compilation,
+37 native-reference eligibility assertions, output and SoundBank validation
+passed. Packaging then FAILED: the newly included v170 notes raised the exact
+payload from422 to423 files, but package.ps1 still declared422. No release/tag
+was created. Retain the original transcript, summary and incomplete exact-build
+archive under the original6ae2eb273353 paths; this attempt is not qualified.
+
+The narrow follow-up changes only the declared non-icon count276 to277, preserving
+strict complete path/hash validation. Repacking the retained staged payload with
+the corrected423 count and strict package validation passed, alongside the
+serializer's count/refusal/determinism fixture. This proof ZIP is diagnostic only;
+no receipt or release qualification is fabricated. The ordinary publisher must
+finish on a new clean merged commit because its immutable candidate/source guards
+do not admit the failed attempt's incomplete output as a reusable release build.
+Local records: `release170-publisher.log`, `release170-publisher-summary.json`,
+`release170-package-count-proof.json` under `artifacts/repair-packet-0.0.169/`.
+
 Local review gallery: `artifacts/repair-packet-0.0.169/review/index.html`;
 portable packet: `artifacts/repair-packet-0.0.169/Satyr-Lillend-Repair-Review.zip`.
 Editable private Blender scene: `artifacts/repair-packet-0.0.169/lillend-authored.blend`.
