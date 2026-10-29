@@ -538,7 +538,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (!Sprint24PersistenceScope ||
                         u.Get<UnitPartSprint24StateReceipt>() == null) &&
                     (!Sprint26PersistenceScope || u.Get<UnitPartSprint26StateReceipt>() == null) &&
-                    (!Sprint32PersistenceScope || u.Get<UnitPartSprint32ListenerReceipt>() == null))
+                    (!Sprint32PersistenceScope || u.Get<UnitPartSprint32ListenerReceipt>() == null) &&
+                    (!Sprint33PersistenceScope || !OwnsControl33(u, caster, existing)))
                 .Select(u => new { Unit=u, u.Destroyed, u.HoldingState, u.Blueprint }).ToArray();
             int published;
             bool publication = ExpandedSummoningPublisher.RequiredBasePublicationIsExact(BlueprintBootstrap.Library,
@@ -557,6 +558,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     foreach (int step in Sprint26PersistentStates(caster, existing, false, false)) yield return step;
                 if (Sprints3031PersistenceScope) Sprints3031PersistenceAbsence("fresh");
                 if (Sprint32PersistenceScope) Sprint32PersistenceAbsence(caster, "fresh");
+                if (Sprint33PersistenceScope) ControlAbsence33(caster, "fresh");
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -567,6 +569,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (_rosterPersistenceChecks.Any(a => a.Status != RuntimeTestStatuses.Pass)) throw new InvalidOperationException("Owned stale fixture failed to retire.");
                 if (Sprints3031PersistenceScope) Sprints3031PersistenceAbsence("intake");
                 if (Sprint32PersistenceScope) Sprint32PersistenceAbsence(caster, "intake");
+                if (Sprint33PersistenceScope) ControlAbsence33(caster, "intake");
                 var created = new List<UnitEntityData>();
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
@@ -618,6 +621,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             else foreach (var unit in units) RegisterRosterReadiness(unit, caster, null);
             if (Sprint32PersistenceScope && verify) ObserveSprint32ColdState(caster, units);
+            if (Sprint33PersistenceScope && verify) ObserveControl33(caster, units, "cold");
             bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
                 _context.FeatureModules.Active.ExpandedSummoning;
             // The general save-readiness contract deliberately allows native
@@ -990,8 +994,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var step in PrepareSprint32PersistentState(caster, units)) yield return step;
             if (Sprint32PersistenceScope && verify)
                 foreach (var step in CleanupSprint32PersistentState(caster, units)) yield return step;
+            if (Sprint33PersistenceScope && prepare) foreach (int step in PrepareControl33(caster, units)) yield return step;
             if (verify && !Sprint32PersistenceScope) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             if (Sprint32PersistenceScope && verify) Sprint32PersistenceAbsence(caster, "cleanup");
+            if (Sprint33PersistenceScope && verify) foreach (int step in CleanupControl33(caster)) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");

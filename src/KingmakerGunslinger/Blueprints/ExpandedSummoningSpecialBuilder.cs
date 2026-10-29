@@ -4503,6 +4503,7 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToList();
             components.Add(ScriptableObject.CreateInstance<
                 RemoveBuffIfCasterIsMissing>());
+            components.Add(ScriptableObject.CreateInstance<FeyControlCasterCleanup32>());
             buff.ComponentsArray = components.ToArray();
             buff.ResourceAssetIds = Array.Empty<string>();
             BlueprintUnitFactAccess.Resolve().Configure(buff,
