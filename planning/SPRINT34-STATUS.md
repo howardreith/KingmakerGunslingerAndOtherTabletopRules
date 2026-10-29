@@ -9,24 +9,22 @@ Sprint33 remains closed; its original-source ON REUSED_PASS is distinct from
 final-artifact OFF/combined observations. Historical deferred checks remain NOT_RUN.
 
 Latest executed body candidate (not a release): source
-`124c370bcccf9b965020636436aad69e84831819`, purpose `sprint34-infernal-bodies`.
-ZIP `c29af2c8a09fac665792ed07502fec5439c593087a64cf01482af6c8b4eac071`;
-DLL `15c7f36816357d836058b881e553c90ad6fe63a9364bdc67860b31d9e7dd7165`;
-MVID `c615c208-18c0-4870-820e-be59a8e1965e`;
-fingerprint `bee467786df6787720949c163a243053e5cbaeaf9373f1b1a5ea62eabb9042fd`.
-Build03 PASS265.5s; native body03 raw PASS29/29,403.9s including restoration.
-RunId `20261029T2310492875407Z-bc0e5dff17be464a8368ee3d7b68abfe`.
-Actual glaive clips `Attack_01_3`, native slot switch to claw clips
-`Attack_01_1/2`, both claw hits and one separate7HP `1d8+2` Beard packet.
-Kyton moves5.958m and executes four chain attacks at10 and25feet; one natural
-miss remains in the extended routine. All private body resources retire.
-**Presentation acceptance remains open:** images do not clearly show chain
-extension to the target despite manual vertex gaps below0.018m; glaive contact
-alignment is also unproved. Original raw PASS is retained, not promoted to
-visual acceptance. The next observer compares native BakeMesh geometry and
-three ordinary follow-through frames; it never supplies animation or damage.
-The previous progress message's43-assertion count was a transcription error;
-the actual immutable runtime result contains29 assertions.
+`3f5fffa9d3ed77c8315748c8a59f88781be2f82c`, purpose `sprint34-infernal-bodies`.
+ZIP `ef391ca9aa386f650b9b00314d6a1844bcab40805d6ad555661ada2ef4eb0c65`;
+DLL `a4fdd7a3d9c742174a2298e434e3bca870087a802724ea604f8773b4161f4092`;
+MVID `d9a5333f-cea6-459f-8528-f92da084820f`;
+fingerprint `f6075e28432a22413cde514021490835fb49ee40e1a92901855acdccd471036b`.
+Build04 PASS265.7s; native body04 raw PASS29/29,421.8s including restoration.
+RunId `20261029T2334112439495Z-50b8760a061240419bfd28f5c4bd1ca1`;
+239582ms in-game. Native BakeMesh agrees with contact vertices within0.000006m,
+but every following ordinary frame has reset chains. Installed UnitAttack.OnAction
+increments its planned limb immediately after the hit. The source correction
+retains that exact limb through a bounded0.35s follow-through; it adds no attack.
+The native glaive mesh is lengthwise localY; its measured contact frame now
+supplies a fixed grip-axis correction, respecting the mesh's actual child frame.
+**Presentation acceptance remains open until the changed artifact runs.**
+Distinct bodies, movement, alternative native clips and private teardown were
+observed. The older raw PASS is not visual-contact acceptance or owner approval.
 
 Early mechanics candidate (not a release): source
 `8b59b45717c84b403991333bd3d4d0fe844983ec`, purpose `sprint34-infernal-early`.
@@ -102,7 +100,7 @@ Retained dated history (2026-10-29; immutable original verdicts):
 | Group | Current evidence | Remaining |
 |---|---|---|
 | Profiles/defenses/donor isolation | Early native HP/AC/BAB/saves match both baselines | Typed grants, defenses and donor isolation |
-| Barbazu modes/Beard/wound/disease | Early native healing success/rejection, one bleed tick and exact two-source retirement PASS | Remaining modes/Beard/disease/lifetime and final-artifact coverage |
+| Barbazu modes/Beard/wound/disease | Early healing/tick/owner retirement; body03 real two-claw Beard packet PASS | Charge/AoO/live scaling, disease/lifetime controls and final coverage |
 | Kyton chains/gaze/armor/regeneration | Development control/cost/four-chain subobservations | Final qualification; saves, bypass and other action modes |
 | AI/actions/cleanup | Existing fixture and owned lifetime reuse | RTWP/TB, cancellation, independent items/no loot |
 | Models/icons/ten public routes | Original assets; offline decoder/icon PASS | Native body/contact/UI; all actual public casts |
@@ -126,18 +124,38 @@ preparation is explicitly not cast, attack or saving-throw proof. Current source
 adds the exact module gate to the private S34 lifetime/injury consumers; OFF
 native proof remains required. The installed-stack wrapper admits this scope
 only for the final frozen candidate, with existing exact-save/exit protections.
-Gate18 passed the final observer batch and11/2767 tests, then33 compiled
+Gate18 passed the persistence/body-readback observer batch and11/2767 tests, then33 compiled
 persistence request admission/refusal cases, in33.2s total. Two installed-stack
 wrapper probes also refused scope case variation and development aliases before
 transaction entry. No full milestone gate yet.
 
-Next executable action: commit/push the reviewed mixed-persistence and
-body-readback batch, then build one changed body candidate. Focused/parser
-checks passed and the full storage reserve was recovered by verified archival. Run the same grouped body phase to locate the rendered-contact
-gap before making a visual correction. No Working envelope has begun.
-Before final freeze, integrate legitimate upstream once and recheck patch availability.
+Gate21 compiled the body correction and initial mechanics observer,11/2767
+focused tests PASS35.2s. Gate19/20 failed compilation on observer API usage;
+actual CalculateParams and UnitDescriptor.GetFact contracts corrected together.
+Gate22 compiled the public-route observer and passed the same11 tests plus42
+publisher acceptance/refusal checks in41.1s. The completed gaze sight/immunity
+cells are included in the next candidate build's focused compile/test boundary.
+The public observer reuses native prepared parent/child casts, slot/quantity/
+duration/cleanup; its exact existing `sprint32-sprint34-player-route-*` assertion
+prefix is now also required by the publisher. Ten routes remain hidden.
+
+Next executable action: commit/push this coherent batch and build one
+`sprint34-infernal-mechanics` development candidate. Use it for the bounded
+mechanics phase (profiles/typed defenses, real gaze saves/expiry/sight/immunity,
+native regeneration) and the changed body phase. Estimate4.5min build plus two
+6-8min guarded sessions from retained timings; restore each and diagnose any
+failed boundary before continuing. Actual fatal-injury regeneration proof,
+AI/TB, other combat/lifetime controls, final routes and persistence remain open.
+No Working envelope has begun. Before final freeze, integrate legitimate upstream
+once and recheck patch availability.
 
 Body history (2026-10-29; retain original raw receipts/verdicts):
+- Body03/source124c370b, RunId `20261029T2310492875407Z-bc0e5dff17be464a8368ee3d7b68abfe`,
+  raw PASS29/29,403.9s. Native glaive2/claws2 with separate7HP Beard; Kyton four
+  chains at10/25ft and motion. Images leave contact open. ZIPc29af2c8a09fac665792ed07502fec5439c593087a64cf01482af6c8b4eac071;
+  DLL15c7f36816357d836058b881e553c90ad6fe63a9364bdc67860b31d9e7dd7165;
+  MVIDc615c208-18c0-4870-820e-be59a8e1965e. A prior43-check commentary count
+  was a transcription error; immutable result has29.
 - Body01/source10244694, RunId `20261029T2218589057622Z-cc09ace85a7b4102bb588f5d700a1a15`,
   FAIL336.2s: visible/selectable independent Barbazu bodies; move interrupted after
   one frame with zero velocity. No movement/contact acceptance from that run.
@@ -168,8 +186,8 @@ Sixteen private build references hash-match the installed2.1.7b runtime.
 Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-tasks/processes/leases. After body03, transaction
-`compat-20261029T230809Z-226bf5f0c2b2` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
+tasks/processes/leases. After body04, transaction
+`compat-20261029T233135Z-3ed438f66256` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
 original installation, protected saves, sound bank/references and processes match.
 No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
@@ -196,6 +214,22 @@ A third verified archive retained530,684,972 bytes/1856 files at
 map SHA256 `a321bca267387d66c95cb7be45213c81b894d177881eec0263d730e6763f0a88`.
 It used the same exact-target, hash-map and byte-comparison procedure. C: free
 1,579,327,488 bytes afterward; full reserve1,230,513,542 bytes. Recheck after build.
+Archive04 retained242,380,892 bytes/833 files at
+`E:/KingmakerGunslingerLab/sprint34-private/completed-scratch-20261029T233030Z`,
+mapSHA256 `875e6b5ae9114fddbb413016e4176bc37a3dfd0549348681c4508bbd035ce580`.
+Archive05 retained1,218,885,654 bytes/4650 files at
+`E:/KingmakerGunslingerLab/sprint34-private/completed-scratch-20261029T235218Z`,
+mapSHA256 `c783b6fc4d19bcabf402bb3ffc93f7f747cb4f51d82b8b3dd795b7c0ff24e8da`.
+Automatic review initially refused deletion of transaction extractions without
+redundancy proof; nothing ran. A read-only comparison proved all3038 extracted
+files match the seven retained primaryZIPs exactly (proofSHA256
+`2dbad717b3b34fd51e76f4e76aaa95f7eaf8346faa0ed7172f398f81545c3f9e`).
+The reviewed retry rechecked those hashes, restored transactions and exact paths,
+then archived only redundant extraction/build copies and candidate-only backups.
+A PowerShell5 nested-array guard stopped before mutation; corrected enumeration
+retained every byte/path guard. PrimaryZIPs, receipts, raw evidence, protected
+saves/references and current focused compilation remain. C:free1,962,455,040
+bytes afterward; recheck the full1,230,513,542-byte reserve after the next build.
 Remote recheck2026-10-29: master still4b7e3d91, latest stablev171 andv172 free.
 Recheck again immediately before freezing/publication.
 No release or completion claim.

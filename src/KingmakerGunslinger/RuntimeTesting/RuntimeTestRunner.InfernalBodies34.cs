@@ -140,7 +140,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["origin"] = SurveyVector(filter.transform.position), ["scale"] = SurveyVector(filter.transform.lossyScale),
                     ["right"] = SurveyVector(filter.transform.right), ["up"] = SurveyVector(filter.transform.up),
                     ["forward"] = SurveyVector(filter.transform.forward),
-                    ["boundsCenter"] = SurveyVector(filter.transform.TransformPoint(filter.sharedMesh.bounds.center)) }));
+                    ["boundsCenter"] = SurveyVector(filter.transform.TransformPoint(filter.sharedMesh.bounds.center)),
+                    ["bladeTip"] = SurveyVector(filter.transform.TransformPoint(new Vector3(filter.sharedMesh.bounds.center.x,
+                        filter.sharedMesh.bounds.max.y, filter.sharedMesh.bounds.center.z))),
+                    ["bladeTargetCenterGap"] = Vector3.Distance(filter.transform.TransformPoint(new Vector3(filter.sharedMesh.bounds.center.x,
+                        filter.sharedMesh.bounds.max.y, filter.sharedMesh.bounds.center.z)), target.Position + Vector3.up * .85f) }));
             return result;
         }
 
@@ -273,6 +277,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                         Sprint25Check("sprint34-native-contact-" + key + "-" + alternate, correct, cell,
                             "One native full attack uses the correct alternative routine with actual animation/contact and no extra attacks.");
                         if (!correct) throw new InvalidOperationException("Infernal routine or live contact mismatch.");
+                        if (key == InfernalVisualPolicy34.Kyton) {
+                            var frames = renderedFrames.Where(row => (int)row["contactIndex"] >= contactStart).ToArray();
+                            bool followThrough = frames.Any(row => !(bool)row["chainResting"]);
+                            Sprint25Check("sprint34-chain-rendered-follow-through-" + alternate, followThrough,
+                                new JObject { ["owner"] = owner.UniqueId, ["frames"] = new JArray(frames) },
+                                "Native contact survives into ordinary rendered frames instead of resetting before the next presentation update.");
+                            if (!followThrough) throw new InvalidOperationException("Native chain contact has no rendered follow-through.");
+                        }
+                        if (!alternate && key == InfernalVisualPolicy34.Barbazu) {
+                            bool contact = observed.All(row => ((JArray)row["renderedGeometry"]["glaiveMeshes"]).Any(mesh =>
+                                (float)mesh["bladeTargetCenterGap"] <= target.Corpulence + .65f));
+                            Sprint25Check("sprint34-glaive-measured-contact", contact, new JObject { ["contacts"] = new JArray(observed) },
+                                "The native glaive's measured blade endpoint reaches the target's body during its actual strike; screenshots remain required.");
+                            if (!contact) throw new InvalidOperationException("Native glaive blade misses its visual contact envelope.");
+                        }
                         if (alternate && key == InfernalVisualPolicy34.Barbazu) {
                             bool bothHit = rows.All(row => (bool)row["hit"]);
                             var beard = trace.Rows.Skip(start).Where(row => (string)row["event"] == "damage" &&
