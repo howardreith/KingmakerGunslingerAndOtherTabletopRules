@@ -1,0 +1,105 @@
+{
+    "schemaVersion":  1,
+    "creature":  "lillend-azata",
+    "status":  "implemented; native presentation PASS; owner visual review pending",
+    "testedSource":  "44281097448efa9236f20faa2dfd74ee4dd85072",
+    "ownerPacketSha256":  "9d3ec37f20a4659b5fdb7b016ce5dd32ee5a7d3492eb11ff359b724020d29daa",
+    "reference":  {
+                      "path":  "assets-source/original-icons/expanded-summoning/sources/lillend-azata.png",
+                      "sha256":  "eaee893fd5018d8e7b6d468ef0224cb8d27eadff811c20583e02d8c115eca05a",
+                      "usage":  "identity/palette/anatomy reference; no pixels copied"
+                  },
+    "privateBindCaptureSha256":  "eb0d5eaaf4bec8bf68506d42f299ded5d3d86cb676ff72e53f15d0cfbce9bfd2",
+    "privateCaptureIncluded":  false,
+    "privateSceneIncluded":  false,
+    "nativeGeometryOrCurvesImported":  false,
+    "authoring":  "Blender 4.5.10 LTS; established SDF/OpenVDB/continuous-body and serpent exporters",
+    "sources":  [
+                    {
+                        "path":  "assets-source/original-models/sprint32-support/generate_lillend.py",
+                        "sha256":  "96994751de50378c466f136279828f73696c2babc91057ceadd1b2f8433c644e"
+                    },
+                    {
+                        "path":  "assets-source/original-models/sprint32-support/lillend_surfaces.py",
+                        "sha256":  "a70d7deb006d678e6005da8a132c675f57d5e500d8a7c3182a2f90a8dd557fbf"
+                    },
+                    {
+                        "path":  "assets-source/original-models/sprint32-support/paint_lillend.py",
+                        "sha256":  "694768171c75a7b38b9ecf8a0cc0955d5f6e5f8432848bbb31171eee2ebe99cb"
+                    },
+                    {
+                        "path":  "assets-source/original-models/sprint32-support/render_lillend_review.py",
+                        "sha256":  "2e1a1cbcead3b5ab41167182b26993d943970f5fdc7282735acbd646d3320668"
+                    },
+                    {
+                        "path":  "assets-source/original-models/sprint32-support/test_lillend_export.py",
+                        "sha256":  "092c58ca12539b38663b7b59eae508876e6e10caca8526f50861547b22e7fbaf"
+                    }
+                ],
+    "exports":  [
+                    {
+                        "path":  "assets/sprint32-support/lillend-mesh.json",
+                        "sha256":  "11ad83a0858d95c72627f63c131a713de26c1e9bc83c3c79a84000b9816a8dd7",
+                        "vertices":  23116,
+                        "triangles":  45408,
+                        "nativeDrivers":  26,
+                        "originalTailDrivers":  10,
+                        "maximumWeights":  2
+                    },
+                    {
+                        "path":  "assets/sprint32-support/lillend-albedo.png",
+                        "sha256":  "5148b79042d0e09010269155936c984613c4992b28302999f6caba7779a962d7",
+                        "width":  1024,
+                        "height":  1024,
+                        "format":  "RGB8"
+                    }
+                ],
+    "tail":  {
+                 "releasedRestAndAllFramesUnchanged":  true,
+                 "durationSeconds":  1.4,
+                 "actedSeconds":  0.6
+             },
+    "reproducibility":  "two exports byte-identical; original driver/timing fields identical to released source",
+    "checks":  {
+                   "blenderExportCases":  3,
+                   "selectedDomainCases":  9,
+                   "nativePresentationAssertions":  53,
+                   "nativeResultSha256":  "dd311c22447ee1de75a2a6699b24ac4c8ad976342c449af4f8c1ff451ceceff7",
+                   "coldReconstruction":  "DEFERRED_BY_VALIDATION_POLICY",
+                   "ownerVisualApproval":  "PENDING"
+               },
+    "dependencies":  [
+                         {
+                             "path":  "assets-source/original-models/outsider-celestial/sdf_sculpt.py",
+                             "sha256":  "2dd16a84e5248361eb3ee700127ab711cd8f01c590815bbeaae1e42f4b85d345"
+                         },
+                         {
+                             "path":  "assets-source/original-models/continuous-bodies/continuous_body.py",
+                             "sha256":  "aaec74cb0931b2733e335d1a47794eadb94f7d072832027ba328b0e119336a0e"
+                         },
+                         {
+                             "path":  "assets-source/original-models/sprint17-serpents/generate_snakes.py",
+                             "sha256":  "04b87568ebfa02c527533554f524ba26d8023ea693a4a21038cd19fad1e73c27"
+                         },
+                         {
+                             "path":  "assets-source/original-models/sprint17-serpents/paint_snake_albedo.py",
+                             "sha256":  "30ec81ea2bf29480496cc7bc33c9edfa52f1d57a50857a19cd28804735b580d9"
+                         },
+                         {
+                             "path":  "assets-source/original-models/sprint17-serpents/serpentine_export.py",
+                             "sha256":  "32922f4ea6c66c7c61f7f343d48dbdf1902baa53ab494d4f4bf81d8dccc93338"
+                         },
+                         {
+                             "path":  "assets-source/original-models/pteranodon/generate_pteranodon.py",
+                             "sha256":  "d121604ec9b3505e04092ece0d993db462a97a837bf1ef72bb89044a466fe286"
+                         },
+                         {
+                             "path":  "assets-source/original-models/pteranodon/paint_pteranodon_albedo.py",
+                             "sha256":  "0b7a53defda6f8efa73e3916789be0c16b4bc400a9ba2e5813f828fdb6502e15"
+                         },
+                         {
+                             "path":  "assets-source/original-models/sprint13-creatures/generate_sprint13_creatures.py",
+                             "sha256":  "f7e93e6b51d53f88739cb1d35fa8a3cd609b992a79155f9e4adcdcd661f5a626"
+                         }
+                     ]
+}
