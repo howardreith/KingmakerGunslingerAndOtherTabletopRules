@@ -92,15 +92,16 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
         private sealed class Sprint33Drain : IGlobalRulebookHandler<RuleDrainEnergy>
         {
-            internal UnitEntityData Owner;
+            internal UnitEntityData Owner, Target;
             internal readonly JArray Rows = new JArray();
             public void OnEventAboutToTrigger(RuleDrainEnergy rule) { }
             public void OnEventDidTrigger(RuleDrainEnergy rule)
             {
-                if (!ReferenceEquals(rule.Initiator, Owner)) return;
+                if (!ReferenceEquals(rule.Target, Target)) return;
                 var duration = (TimeSpan?)typeof(RuleDrainEnergy).GetField("m_Duration", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(rule);
                 Rows.Add(new JObject { ["type"] = rule.Type.ToString(), ["count"] = rule.Count,
-                    ["immune"] = rule.TargetIsImmune, ["durationSeconds"] = duration?.TotalSeconds });
+                    ["immune"] = rule.TargetIsImmune, ["durationSeconds"] = duration?.TotalSeconds,
+                    ["initiator"] = rule.Initiator?.UniqueId, ["owner"] = Owner?.UniqueId, ["sourceMatchesOwner"] = ReferenceEquals(rule.Initiator, Owner) });
             }
         }
 
@@ -123,7 +124,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 UnitEntityData owner = null; Buff protection = null; bool typeAdded = false;
                 var starts = new Lillend32CommandStarts { ObserveRtwpAttackCompletion = true }; var saves = new Dretch30CloudSaves(new[] { target });
-                var attacks = new Sprint16RuleObserver { Target = target }; var drain = new Sprint33Drain();
+                var attacks = new Sprint16RuleObserver { Target = target }; var drain = new Sprint33Drain { Target = target };
+                var contacts = new JArray();
+                attacks.ObserveWeaponContact = rule => contacts.Add(new JObject { ["fullAttack"] = rule.IsFullAttack,
+                    ["firstAttack"] = rule.IsFirstAttack, ["hit"] = rule.AttackRoll?.IsHit == true,
+                    ["natural"] = rule.Weapon.Blueprint.Type.IsNatural });
                 try
                 {
                     ResetExpandedSummoningHostile(fixture);
@@ -171,7 +176,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray();
                             bool resolved = cell == "ai-control" ? seenApplications.Any(value => value.AppliedBuff != null) :
                                 cell == "protected" ? seenApplications.Any(value => !value.CanApply && value.AppliedBuff == null) :
-                                attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) && starts.Commands.OfType<UnitAttack>().Any(value => starts.CompletedAttack(value, target));
+                                drain.Rows.Count > 0 && attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) && starts.Commands.OfType<UnitAttack>().Any(value => starts.CompletedAttack(value, target));
                             if (resolved && owner.Commands.Raw.All(value => value == null || value.IsFinished)) break;
                             if (frames == 1 || frames % 60 == 0 && owner.Commands.Raw.All(value => value == null || value.IsFinished))
                             {
@@ -194,10 +199,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                         bool outcome = cell == "ai-control" ? aiTicks > 0 && owned.Length == 1 && applications.Any(value => value.AppliedBuff != null && value.Duration == TimeSpan.FromSeconds(18)) :
                             cell == "protected" ? owned.Length == 0 && applications.Any(value => !value.CanApply && value.AppliedBuff == null) :
                             aiTicks > 0 && !starts.Commands.OfType<UnitUseAbility>().Any() && attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) &&
-                            drain.Rows.Any(value => (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
+                            drain.Rows.Any(value => (bool)value["sourceMatchesOwner"] && (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
                         Sprint25Check("sprint33-succubus-" + cell, costsExact && outcome, new JObject {
                             ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
-                            ["costs"] = costs, ["nativeAttackLifecycle"] = starts.AttackRows, ["enemy"] = owner.IsEnemy(target), ["physicalLos"] = owner.HasLOS(target),
+                            ["costs"] = costs, ["weaponContacts"] = contacts,
+                            ["traitContexts"] = new JArray(owner.Buffs.Enumerable.Where(value => value.Blueprint.AssetGuid == "cd51ad31f8764d2797b59eb43da7a9f8").Select(value => new JObject { ["active"] = value.Active, ["caster"] = value.Context?.MaybeCaster?.UniqueId, ["owner"] = owner.UniqueId })),
+                            ["nativeAttackLifecycle"] = starts.AttackRows, ["enemy"] = owner.IsEnemy(target), ["physicalLos"] = owner.HasLOS(target),
                             ["brainActions"] = new JArray(owner.Blueprint.Brain.Actions.Select(value => value.name)), ["saves"] = saves.Rows, ["applications"] = saves.Applications, ["drain"] = drain.Rows,
                             ["activeOwnedDomination"] = owned.Length, ["forcedRolls"] = 0, ["fixtureHD"] = target.Descriptor.Progression.CharacterLevel },
                             "Preserved native AI/action use, three-round nonstacking control, source-alignment protection, humanoid eligibility and ordinary attack fallback with one-round temporary drain; no kiss/grapple fidelity claim.");
