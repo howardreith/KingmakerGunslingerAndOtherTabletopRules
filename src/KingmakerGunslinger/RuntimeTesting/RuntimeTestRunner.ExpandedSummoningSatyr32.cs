@@ -97,8 +97,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             {
                 CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewStalkerTurn33(fixture)) yield return frame;
+                // Drain cells finish with zero native levels; AI fallback may leave its legitimate finite effect.
+                foreach (int frame in ReviewSuccubus33(fixture, true)) yield return frame;
                 foreach (int frame in ReviewSuccubus33(fixture)) yield return frame;
-                foreach (int frame in ReviewSuccubusDrainProof33(fixture)) yield return frame;
                 yield break;
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32StalkerPurgePhase)
