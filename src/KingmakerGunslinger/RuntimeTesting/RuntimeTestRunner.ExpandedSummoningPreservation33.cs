@@ -67,13 +67,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(owner, true); owner.Brain.RestoreAvailableActions();
                     DateTime deadline = DateTime.UtcNow.AddSeconds(35);
                     while (DateTime.UtcNow < deadline && !(attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) &&
-                        starts.Commands.OfType<UnitAttack>().Any(value => value.IsFinished))) { Game.Instance.IsPaused = false; yield return 0; }
-                    var command = starts.Commands.OfType<UnitAttack>().FirstOrDefault(value => value.IsFinished && value.Result == UnitCommand.ResultType.Success);
+                        starts.Commands.OfType<UnitAttack>().Any(value => starts.CompletedAttack(value, target)))) { Game.Instance.IsPaused = false; yield return 0; }
+                    var command = starts.Commands.OfType<UnitAttack>().FirstOrDefault(value => starts.CompletedAttack(value, target));
                     bool exact = command != null && !command.Cutscene && !command.IsIgnoreCooldown && economy.Count(command) == 1 && economy.Exact(command, true) &&
                         contacts.Any(value => (bool)value["hit"] && (bool)value["nativeTurn"] && (bool)value["animationStarted"]) &&
                         owner.Descriptor.State.HasCondition(UnitCondition.Invisible);
                     Sprint25Check("sprint33-stalker-native-turn-slam", exact, new JObject { ["admission"] = admission,
-                        ["contacts"] = contacts, ["costs"] = costs, ["lane"] = lane, ["forcedRolls"] = 0, ["manualAiTicks"] = 0 },
+                        ["contacts"] = contacts, ["nativeAttackLifecycle"] = starts.AttackRows, ["costs"] = costs, ["lane"] = lane, ["forcedRolls"] = 0, ["manualAiTicks"] = 0 },
                         "The changed private Slam binding also serves an ordinary native turn-based AI attack, with actual action cost and attack-safe invisibility.");
                     if (!exact) throw new InvalidOperationException("Stalker native-turn Slam failed.");
                 }
@@ -122,7 +122,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             foreach (string cell in new[] { "ai-control", "protected", "type-fallback" })
             {
                 UnitEntityData owner = null; Buff protection = null; bool typeAdded = false;
-                var starts = new Lillend32CommandStarts(); var saves = new Dretch30CloudSaves(new[] { target });
+                var starts = new Lillend32CommandStarts { ObserveRtwpAttackCompletion = true }; var saves = new Dretch30CloudSaves(new[] { target });
                 var attacks = new Sprint16RuleObserver { Target = target }; var drain = new Sprint33Drain();
                 try
                 {
@@ -171,7 +171,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray();
                             bool resolved = cell == "ai-control" ? seenApplications.Any(value => value.AppliedBuff != null) :
                                 cell == "protected" ? seenApplications.Any(value => !value.CanApply && value.AppliedBuff == null) :
-                                attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) && starts.Commands.OfType<UnitAttack>().Any(value => value.IsFinished);
+                                attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) && starts.Commands.OfType<UnitAttack>().Any(value => starts.CompletedAttack(value, target));
                             if (resolved && owner.Commands.Raw.All(value => value == null || value.IsFinished)) break;
                             if (frames == 1 || frames % 60 == 0 && owner.Commands.Raw.All(value => value == null || value.IsFinished))
                             {
@@ -188,7 +188,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         }
                         var owned = target.Buffs.Enumerable.Where(value => ReferenceEquals(value.Blueprint, terminal) && ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray();
                         var applications = saves.NativeApplications.Where(value => ReferenceEquals(value.Blueprint, terminal) && ReferenceEquals(value.Context?.MaybeCaster, owner)).ToArray();
-                        var commands = starts.Commands.Where(value => value.IsFinished && value.Result == UnitCommand.ResultType.Success).ToArray();
+                        var commands = starts.Commands.Where(value => value is UnitAttack ? starts.CompletedAttack((UnitAttack)value, target) :
+                            value is UnitUseAbility && value.IsFinished && value.Result == UnitCommand.ResultType.Success).ToArray();
                         bool costsExact = commands.Length > 0 && commands.All(value => !value.Cutscene && !value.IsIgnoreCooldown && economy.Count(value) == 1 && economy.Exact(value, false));
                         bool outcome = cell == "ai-control" ? aiTicks > 0 && owned.Length == 1 && applications.Any(value => value.AppliedBuff != null && value.Duration == TimeSpan.FromSeconds(18)) :
                             cell == "protected" ? owned.Length == 0 && applications.Any(value => !value.CanApply && value.AppliedBuff == null) :
@@ -196,7 +197,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                             drain.Rows.Any(value => (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
                         Sprint25Check("sprint33-succubus-" + cell, costsExact && outcome, new JObject {
                             ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
-                            ["costs"] = costs, ["saves"] = saves.Rows, ["applications"] = saves.Applications, ["drain"] = drain.Rows,
+                            ["costs"] = costs, ["nativeAttackLifecycle"] = starts.AttackRows, ["enemy"] = owner.IsEnemy(target), ["physicalLos"] = owner.HasLOS(target),
+                            ["brainActions"] = new JArray(owner.Blueprint.Brain.Actions.Select(value => value.name)), ["saves"] = saves.Rows, ["applications"] = saves.Applications, ["drain"] = drain.Rows,
                             ["activeOwnedDomination"] = owned.Length, ["forcedRolls"] = 0, ["fixtureHD"] = target.Descriptor.Progression.CharacterLevel },
                             "Preserved native AI/action use, three-round nonstacking control, source-alignment protection, humanoid eligibility and ordinary attack fallback with one-round temporary drain; no kiss/grapple fidelity claim.");
                         if (!costsExact || !outcome) throw new InvalidOperationException("Preserved Succubus consumer failed: " + cell);
