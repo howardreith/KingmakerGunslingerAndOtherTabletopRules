@@ -1,6 +1,6 @@
 # Sprint 33 ? dedicated shadow outsider models
 
-BLOCKED_NOT_RELEASED. Native launches stopped at the mission's repeated-failure boundary. Controlling authority is the owner-provided
+IN_PROGRESS_NOT_RELEASED. Owner continuation Kingmaker_Sprint33_Succubus_Drain_Repair_and_Closeout.md authorizes targeted causal diagnosis/repair and conditional closeout. Prior repeated-failure stop is superseded for this targeted work. Controlling authority is the owner-provided
 Kingmaker_Sprint33_Dedicated_Models_Revised_Mission.md, Revision2. No Sprint34.
 Product/build/test/promotion root C:/Dev/KingmakerGunslingerLab/wt/s33;
 branch codex/expanded-summoning-sprint33-shadow-outsiders. Intake master
@@ -162,3 +162,5 @@ and32 isolated checks. Historical conflicting v136?153 tags remain untouched.
 Additional archive: completed-scratch-20261029T0710 on E contains four hash-verified redundant b1a/eb46 exact-build directories and run12/13 package extractions. All candidates/evidence/backups remain intact; free C6,083,657,728 bytes.
 
 Final checkpoint verification: current installed Info0.0.117; last game-settings restoration exact=true/installationVerified=true; no Kingmaker process/compatibility lock. Protected original saves exact, Working never selected or written. Current C free5,717,377,024 bytes. Catalog visual descriptions and existing generated roster now identify the original bodies; only three roster rows changed. Historical native qualifications are distinguished from current unresolved/pending coverage. Metadata-only catalog description production compile PASS; manifest/roster validation PASS and complete blueprint ledger byte-equal to intake master. Initial ignored presentation draft syntax/UTF8-read errors were corrected locally, with no native launch or identity mutation. Final package/full-suite/reproducibility, six-stage persistence, combined profile, product merge/release/download remain NOT_RUN pending the drain boundary; no waiver or release claimed.
+
+Continuation intake: reporting head c0cbeb9cc557a73af2360d117920131f49e73818; PR79 remains draft. Last diagnostic receipt resolves 8ab29ee1776452fc33a3809aa3983b929d9dd396. Fresh remote master dbbae9f4 contains released v170 Satyr/Lillend repair; preserve it, do not reuse occupied170. Read-only trace covers exact callbacks, complete trigger scalar predicates/state, condition return, exact ActionList/action/context and all causally related drain recipients. Native2.1.7b signatures verified locally; compile PASS19.46s after adding explicit project include. No production drain change or new native run yet. C free5.696GB/E307GB at intake. Existing failed aggregates remain failed.

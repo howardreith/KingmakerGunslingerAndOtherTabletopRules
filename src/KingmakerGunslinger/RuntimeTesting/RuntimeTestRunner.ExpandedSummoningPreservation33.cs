@@ -96,13 +96,17 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class Sprint33Drain : IGlobalRulebookHandler<RuleDrainEnergy>
         {
             internal UnitEntityData Owner, Target;
+            internal UnitEntityData[] Actors = Array.Empty<UnitEntityData>();
             internal readonly JArray Rows = new JArray();
-            public void OnEventAboutToTrigger(RuleDrainEnergy rule) { }
+            public void OnEventAboutToTrigger(RuleDrainEnergy rule) { Record(rule, "before"); }
             public void OnEventDidTrigger(RuleDrainEnergy rule)
+            { Record(rule, "after"); }
+            private void Record(RuleDrainEnergy rule, string stage)
             {
-                if (!ReferenceEquals(rule.Target, Target)) return;
+                if (!ReferenceEquals(rule.Initiator, Owner) && !Actors.Any(a => ReferenceEquals(a, rule.Target))) return;
                 var duration = (TimeSpan?)typeof(RuleDrainEnergy).GetField("m_Duration", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(rule);
-                Rows.Add(new JObject { ["type"] = rule.Type.ToString(), ["count"] = rule.Count,
+                Rows.Add(new JObject { ["stage"] = stage, ["recipient"] = rule.Target?.UniqueId, ["gameTime"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["nativeLevels"] = rule.Target?.Get<UnitPartNegativeLevels>()?.Count ?? 0, ["type"] = rule.Type.ToString(), ["count"] = rule.Count,
                     ["immune"] = rule.TargetIsImmune, ["durationSeconds"] = duration?.TotalSeconds,
                     ["initiator"] = rule.Initiator?.UniqueId, ["owner"] = Owner?.UniqueId, ["sourceMatchesOwner"] = ReferenceEquals(rule.Initiator, Owner) });
             }
@@ -125,6 +129,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "9054d3988d491d944ac144e27b6bc318", "native outsider type eligibility witness");
             foreach (string cell in onlyDrain ? new[] { "type-fallback" } : new[] { "ai-control", "protected", "type-fallback" })
             {
+                SuccubusDrainTrace33 trace = null;
                 UnitEntityData owner = null; Buff protection = null; bool typeAdded = false;
                 var starts = new Lillend32CommandStarts { ObserveRtwpAttackCompletion = true }; var saves = new Dretch30CloudSaves(new[] { target });
                 var attacks = new Sprint16RuleObserver { Target = target }; var drain = new Sprint33Drain { Target = target };
@@ -136,7 +141,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 {
                     ResetExpandedSummoningHostile(fixture);
                     owner = CastExpandedSummoningOwnTier(fixture, "succubus");
-                    starts.Owner = attacks.Owner = drain.Owner = owner;
+                    starts.Owner = attacks.Owner = drain.Owner = owner; drain.Actors = new[] { owner, target, fixture.Caster };
                     Sprint28SetBrainActivePreservingActions(owner, false);
                     owner.Commands.InterruptAll(true); owner.Commands.RemoveFinishedAndUpdateQueue();
                     for (int frame = 0; frame < 16; frame++) yield return 0;
@@ -170,6 +175,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var trait = owner.Buffs.Enumerable.Single(value => value.Blueprint.AssetGuid == "cd51ad31f8764d2797b59eb43da7a9f8");
                     var trigger = trait.SelectComponents<AddInitiatorAttackWithWeaponTrigger>().Single();
                     var action = trigger.Action.Actions.OfType<ContextActionDealDamage>().Single();
+                    trace = new SuccubusDrainTrace33(owner, trait, trigger, action, drain.Actors);
                     var liveTrigger = new JObject { ["listening"] = trigger.IsListeningEvents,
                         ["onlyHit"] = trigger.OnlyHit, ["onlyFull"] = trigger.OnlyOnFullAttack,
                         ["onlyFirstAttack"] = trigger.OnlyOnFirstAttack, ["onlyFirstHit"] = trigger.OnlyOnFirstHit,
@@ -215,7 +221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             aiTicks > 0 && !starts.Commands.OfType<UnitUseAbility>().Any() && attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) &&
                             drain.Rows.Any(value => (bool)value["sourceMatchesOwner"] && (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
                         Sprint25Check("sprint33-succubus-" + cell, costsExact && outcome, new JObject {
-                            ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
+                            ["causalTrace"] = trace.Evidence, ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
                             ["costs"] = costs, ["weaponContacts"] = contacts, ["liveTrigger"] = liveTrigger, ["nativeNegativeLevels"] = levelChanges,
                             ["traitContexts"] = new JArray(owner.Buffs.Enumerable.Where(value => value.Blueprint.AssetGuid == "cd51ad31f8764d2797b59eb43da7a9f8").Select(value => new JObject { ["active"] = value.Active, ["caster"] = value.Context?.MaybeCaster?.UniqueId, ["owner"] = owner.UniqueId })),
                             ["nativeAttackLifecycle"] = starts.AttackRows, ["enemy"] = owner.IsEnemy(target), ["physicalLos"] = owner.HasLOS(target),
@@ -238,6 +244,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 finally
                 {
+                    trace?.Dispose();
                     EventBus.Unsubscribe(starts); EventBus.Unsubscribe(saves); EventBus.Unsubscribe(attacks); EventBus.Unsubscribe(drain);
                     if (owner != null && !owner.Destroyed) { Sprint28SetBrainActivePreservingActions(owner, false); owner.Commands.InterruptAll(true); if (owner.IsInCombat) owner.LeaveCombat(); DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }); }
                     if (protection != null && !protection.IsDisposed) protection.Remove();
