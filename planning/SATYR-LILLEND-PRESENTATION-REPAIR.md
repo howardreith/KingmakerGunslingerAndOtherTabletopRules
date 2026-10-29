@@ -96,5 +96,14 @@ launched. Exact remaining check: fresh prepare/cold verify-cleanup/fresh absence
 for the affected Satyr/Lillend views, with the outer original-Working envelope
 and exact restoration. No new cold-reconstruction claim is made here.
 
+Candidate `0fe6c018caf7` passed the wrapper,8 selected domain cases, exact
+compilation and37 native-contract assertions. Strict packaging correctly refused
+its new Lillend assets against the retained draft pins in `validate-package.ps1`.
+The failed build/package/log remain immutable, with no deployment or game run.
+The two pins are updated to the reviewed exports; all other package guards stay
+in force. Narrow `scripts/validate-package.ps1 -PackagePath <that exact ZIP>`
+revalidation passes in9.6s. This reader correction does not create a build
+receipt or retroactively qualify native behavior.
+
 Previous translation-only presentation PASS remains bound to its original
 artifact and is not stepping evidence. New results will be recorded below.
