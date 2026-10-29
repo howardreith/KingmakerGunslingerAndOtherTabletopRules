@@ -2088,6 +2088,7 @@
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSatyr32.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Routes.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningShadowOutsiders33.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningPreservation33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Input.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLullaby32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />
