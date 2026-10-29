@@ -95,7 +95,8 @@ foreach ($relative in @('docs\WEAPON-FINDABILITY-RECOVERY.md',
     'docs\RELEASE-NOTES-0.0.167.md',
     'docs\RELEASE-NOTES-0.0.168.md',
     'docs\RELEASE-NOTES-0.0.169.md',
-    'docs\RELEASE-NOTES-0.0.170.md')) {
+    'docs\RELEASE-NOTES-0.0.170.md',
+    'docs\RELEASE-NOTES-0.0.171.md')) {
     $source = Join-Path $repositoryRoot $relative
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) { throw "Required acquisition documentation missing: $relative" }
     $destination = Join-Path $modDirectory $relative
@@ -207,6 +208,12 @@ New-Item -ItemType Directory -Path $lillendDestination -Force | Out-Null
 foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint32-support\'+$file)) -Destination $lillendDestination
 }
+$shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
+New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
+$shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')
+foreach ($file in $shadowOutsiderFiles) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint33-shadow-outsiders\'+$file)) -Destination $shadowOutsiderDestination
+}
 # Closed four-file original Sprint 18 body inventory: one mesh and one
 # painting for each ape. Fail closed on a missing export; no private
 # authoring outputs and no broad folder copy.
@@ -301,12 +308,12 @@ $python = (Get-Command python -ErrorAction Stop).Source
 $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
     'assets\soundbanks\KMG_Firearms.bnk') -PathType Leaf
 # Count every declared summon icon, including authorized new creatures. The
-# other 277 paths include the two exact Sprint32 Lillend exports and v170 notes;
+# other 278 paths include the two exact Sprint32 Lillend exports and v170/v171 notes;
 # strict package validation below still requires its exact complete path/hash
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 277 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
+$basePackageFileCount = 278 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

@@ -51,7 +51,7 @@ for($j=0;$j -lt 6;$j++) {
     $raw=Read-KmgSprints3031Proof $source.nativeProof;$raw|Add-Member scenario $scenario
     $source.nativeProof=Proof ('unit-persist-native-'+$j+'.json') $raw
     $source.executionKind='installed-stack'
-    $source.executionProof=Proof ('unit-installed-'+$j+'.json') ([pscustomobject]@{candidateKind='release-candidate';releaseQualification=$true;scenario=$scenario;persistenceScope='outsider-celestial';moduleDisabled=($stage.id -ceq 'off-cleanup-save');restoration=[pscustomobject]@{verified=$true;gameSettingsExact=$true;transactionStatus='Restored'};error=$null;candidate=$candidate;launchReceipt=[pscustomobject]@{runId=$source.runId;evidenceDirectory=$temp}})
+    $source.executionProof=Proof ('unit-installed-'+$j+'.json') ([pscustomobject]@{candidateKind='release-candidate';releaseQualification=$true;scenario=$scenario;persistenceScope='outsider-celestial';moduleDisabled=($stage.id -ceq 'off-cleanup-save');restoration=[pscustomobject]@{verified=$true;gameSettingsExact=$true;transactionStatus='Restored'};candidate=$candidate;launchReceipt=[pscustomobject]@{runId=$source.runId;evidenceDirectory=$temp}})
     # Exact raw filename expected by the installed-stack receipt. Each stage gets its own directory.
     $dir=Join-Path $temp ('persist-'+$j);[void][IO.Directory]::CreateDirectory($dir)
     $rawPath=Join-Path $dir 'runtime-result.json';Copy-Item -LiteralPath $source.nativeProof.path -Destination $rawPath

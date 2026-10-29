@@ -566,7 +566,7 @@ namespace KingmakerGunslinger.Blueprints
                 SuccubusCombatTraitsSymbol);
             ConfigureSuccubusDomination(library, domination);
             ConfigureSuccubusDominate(library, dominate, domination);
-            ConfigureSuccubusAi(dominateAi, dominate, succubusBrain);
+            ConfigureSuccubusAi(library, dominateAi, dominate, succubusBrain);
             ConfigureSuccubusCombatTraits(library, succubusTraits);
             ConfigureSuccubus(library, Require<BlueprintUnit>(bySymbol,
                 SuccubusUnitSymbol), dominate, succubusBrain, succubusTraits,
@@ -721,7 +721,7 @@ namespace KingmakerGunslinger.Blueprints
             // them. Elephant does NOT register here: its trample symbol is
             // a reserved name with no allocated blueprint identity, and
             // the append that would allocate one is gated on a bounded
-            // native census of the released creature’s own production
+            // native census of the released creatureâ€™s own production
             // carriers, which has not been run.
             ConfigureUngulateTrample(library, bySymbol,
                 "KMG.Summoning.Unit.Brachiosaurus",
@@ -3583,6 +3583,13 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library, BlueprintUnit unit,
             BlueprintFeature extraplanar)
         {
+            // Borrow only the measured rig/view; all selected rules below remain this species'.
+            var bodyView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                TheropodVisualPolicy.DonorGuid, "Sprint33 original body animation carrier");
+            if (bodyView.Prefab == null || bodyView.Prefab.AssetId != TheropodVisualPolicy.DonorPrefabGuid)
+                throw new InvalidOperationException("Sprint33 animation carrier changed.");
+            unit.Prefab = bodyView.Prefab;
+            ConfigureOutsiderOriginalExpiryVisual(library, unit);
             BlueprintItemWeapon slam = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeAirSlamGuid,
                     "Invisible Stalker 2d6 slam");
@@ -4095,6 +4102,13 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnit unit, BlueprintBuff combatTraits,
             BlueprintFeature extraplanar)
         {
+            // Borrow only the measured rig/view; all selected rules below remain this species'.
+            var bodyView = BlueprintLibraryLookup.RequireExact<BlueprintUnit>(library,
+                TheropodVisualPolicy.DonorGuid, "Sprint33 original body animation carrier");
+            if (bodyView.Prefab == null || bodyView.Prefab.AssetId != TheropodVisualPolicy.DonorPrefabGuid)
+                throw new InvalidOperationException("Sprint33 animation carrier changed.");
+            unit.Prefab = bodyView.Prefab;
+            ConfigureOutsiderOriginalExpiryVisual(library, unit);
             BlueprintItemWeapon claw = BlueprintLibraryLookup.RequireExact<
                 BlueprintItemWeapon>(library, LargeClawGuid,
                     "Shadow Demon 1d6 claw");
@@ -4489,6 +4503,7 @@ namespace KingmakerGunslinger.Blueprints
                     ExpandedSummoningAbilityBuilder.DeepCloneComponent).ToList();
             components.Add(ScriptableObject.CreateInstance<
                 RemoveBuffIfCasterIsMissing>());
+            components.Add(ScriptableObject.CreateInstance<FeyControlCasterCleanup32>());
             buff.ComponentsArray = components.ToArray();
             buff.ResourceAssetIds = Array.Empty<string>();
             BlueprintUnitFactAccess.Resolve().Configure(buff,
@@ -4567,7 +4582,7 @@ namespace KingmakerGunslinger.Blueprints
                 native.Icon);
         }
 
-        private static void ConfigureSuccubusAi(BlueprintAiCastSpell ai,
+        private static void ConfigureSuccubusAi(LibraryScriptableObject library, BlueprintAiCastSpell ai,
             BlueprintAbility dominate, BlueprintBrain brain)
         {
             ai.name = InternalName(SuccubusDominateAiSymbol);
@@ -4582,7 +4597,9 @@ namespace KingmakerGunslinger.Blueprints
                 .Blueprints.Considerations.Consideration>();
             ai.Locators = Array.Empty<EntityReference>();
             brain.name = InternalName(SuccubusBrainSymbol);
-            brain.Actions = new BlueprintAiAction[] { ai };
+            brain.Actions = (BlueprintLibraryLookup.RequireExact<BlueprintBrain>(library,
+                DumbBrainGuid, "ordinary native Succubus attack fallback").Actions ?? Array.Empty<BlueprintAiAction>())
+                .Concat(new BlueprintAiAction[] { ai }).ToArray();
         }
 
         private static void ConfigureSuccubusCombatTraits(
@@ -4616,6 +4633,9 @@ namespace KingmakerGunslinger.Blueprints
                 new BlueprintComponent[] { drain });
             drainAction.EnergyDrainType = EnergyDrainType.Temporary;
             drainAction.Duration = new ContextDurationValue {
+                // Native CalculateDiceValue dereferences this even for zero dice.
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
                 Rate = DurationRate.Rounds,
                 BonusValue = ExpandedSummoningSpecialProfiles
                     .SuccubusEnergyDrainRounds

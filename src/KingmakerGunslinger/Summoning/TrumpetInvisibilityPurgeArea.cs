@@ -19,6 +19,7 @@ namespace KingmakerGunslinger.Summoning
     {
         public BlueprintAbilityAreaEffect OwningArea;
         public BlueprintBuff Recipient;
+        public BlueprintBuff NaturalInvisibility;
 
         private bool SetRadius(MechanicsContext context, AreaEffectEntityData area)
         {
@@ -34,6 +35,11 @@ namespace KingmakerGunslinger.Summoning
             // Native membership supplies line of effect and target admission.
             // Recheck the per-instance scaled shape for the first entry tick.
             if (area.IsEnded || unit.View == null || !area.View.Shape.Contains(unit.Position, unit.View.Corpulence)) { OnUnitExit(context, area, unit); return; }
+            // Natural invisibility survives this spell. Remove only this area's
+            // recipient, leaving all invisibility sources and other areas untouched.
+            if (NaturalInvisibility != null && unit.Buffs.Enumerable.Any(buff =>
+                ReferenceEquals(buff.Blueprint, NaturalInvisibility) && buff.IsTurnedOn))
+            { OnUnitExit(context, area, unit); return; }
             if (unit.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Blueprint, Recipient) &&
                 buff.SourceAreaEffectId == area.UniqueId)) return;
             var grant = unit.Descriptor.AddBuff(Recipient, context, null);

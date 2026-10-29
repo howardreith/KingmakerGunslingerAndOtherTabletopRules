@@ -630,6 +630,7 @@ namespace KingmakerGunslinger.Assets
             ConfigureLemureVisual(context);
             ConfigureDretchVisual(context);
             ConfigureHoundArchonVisual(context);
+            ConfigureShadowOutsiderVisuals(context);
             ConfigureGiantBodyVisuals(context);
             ConfigureGriffonVisual(context);
         }

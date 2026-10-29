@@ -1,3 +1,21 @@
+# Sprint 33 - IN PROGRESS / NOT RELEASED
+
+Controlling owner mission: dedicated Stalker and Shadow Demon models, Revision 2.
+Product/build/runtime root: C:/Dev/KingmakerGunslingerLab/wt/s33.
+Branch: codex/expanded-summoning-sprint33-shadow-outsiders.
+Active record: [planning/SPRINT33-STATUS.md](planning/SPRINT33-STATUS.md).
+Both original bodies have attributed native motion/selection/cleanup evidence;
+routes and Purge pass. The targeted drain repair now passes all seven native cells
+at c94a6553: actual acquired/expired levels, same-sequence suppression, independent
+owners/repeat qualification, miss, Death Ward, source removal and TB attack.
+Null ContextDurationValue.DiceCountValue was the concrete defect; initialize zero.
+Current next work: final171 complete gate/reproducibility, mixed ON/OFF cold proof,
+combined integration, then conditional publication. Original v117 intake restored.
+No release or owner aesthetic approval is claimed. Historical records below do
+not select work. No Sprint34. v167/v168 NOT_RUN debt remains; no waiver transfer.
+
+## Historical v170 repair (preserved)
+
 # v0.0.170 RELEASED / STOP
 
 October29: owner approved the art/repair and authorized merge, push and release.
@@ -29,6 +47,7 @@ See [the active repair record](planning/SATYR-LILLEND-PRESENTATION-REPAIR.md).
 Local gallery/packet paths and exact identities are in the repair record.
 The original checkpoint's no-publication boundary is superseded by this approval.
 Do not resume the concluded Sprint32 release or start Sprint33.
+
 
 # Sprint 32 - RELEASED / STOP
 

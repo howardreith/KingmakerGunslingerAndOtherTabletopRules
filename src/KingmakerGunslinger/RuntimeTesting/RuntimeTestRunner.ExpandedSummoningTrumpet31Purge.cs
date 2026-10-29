@@ -59,7 +59,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         }
 
         private IEnumerable<int> ReviewTrumpet31Purge(ExpandedSummoningCorrectionFixture fixture,
-            UnitEntityData owner, UnitEntityData sibling)
+            UnitEntityData owner, UnitEntityData sibling, UnitEntityData natural = null)
         {
             var spell = fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.name ==
                 "KMG_Summoning_OutsiderCelestial_TrumpetArchon_InvisibilityPurge");
@@ -71,6 +71,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "KMG_Summoning_OutsiderCelestial_TrumpetArchon_PurgeArea");
             var creation = owner.Blueprint.GetComponent<TrumpetPreparedBook>();
             var book = owner.Descriptor.GetSpellbook(creation.Book); var otherBook = sibling.Descriptor.GetSpellbook(creation.Book);
+            int ownerHealBefore = Trumpet31HealSlots(book, creation.Heal), siblingHealBefore = Trumpet31HealSlots(otherBook, creation.Heal);
             var nativeInvisibility = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(BlueprintBootstrap.Library,
                 "525f980cb29bc2240b93e953974cb325", "captured native InvisibilityBuff control");
             UnitEntityData ally = null; var original = new List<Buff>();
@@ -83,6 +84,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     out far, out lane, out direction, new Feet(20).Meters + 1f);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(sibling, origin + Vector3.right);
                 PlaceExpandedSummoningUnit(fixture.Hostile, far); PlaceExpandedSummoningUnit(ally, far + Vector3.right);
+                if (natural != null) PlaceExpandedSummoningUnit(natural, far - Vector3.right);
                 foreach (var unit in new[] { ally, fixture.Hostile })
                     original.Add(unit.Buffs.AddBuff(nativeInvisibility,
                         new MechanicsContext(fixture.Caster, unit.Descriptor, nativeInvisibility, null, new TargetWrapper(unit)),
@@ -114,16 +116,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                         !unit.Descriptor.State.HasCondition(UnitCondition.Invisible)) &&
                     original.Select((buff, index) => buff.Active && !buff.IsDisposed && buff.EndTime == deadlines[index]).All(value => value) &&
                     Trumpet31PreparedCopies(book, spell, 3) == 0 && Trumpet31PreparedCopies(otherBook, spell, 3) == 0 &&
-                    Trumpet31HealSlots(book, creation.Heal) == 1 && Trumpet31HealSlots(otherBook, creation.Heal) == 2;
+                    Trumpet31HealSlots(book, creation.Heal) == ownerHealBefore && Trumpet31HealSlots(otherBook, creation.Heal) == siblingHealBefore;
                 Sprint25Check("trumpet-purge-mixed-sources", covered, new JObject { ["owner"] = owner.UniqueId,
                     ["sibling"] = sibling.UniqueId, ["allyGrants"] = grants(ally), ["enemyGrants"] = grants(fixture.Hostile),
                     ["areas"] = new JArray(areas.Select(value => new JObject { ["id"] = value.UniqueId,
                         ["caster"] = value.Context.MaybeCaster?.UniqueId, ["cl"] = value.Context.Params.CasterLevel,
                         ["radiusMeters"] = (value.View.Shape as ScriptZoneCylinder)?.Radius })),
                     ["originalInvisibilityPreserved"] = original.All(buff => buff.Active && !buff.IsDisposed),
+                    ["ownerHealBefore"] = ownerHealBefore, ["siblingHealBefore"] = siblingHealBefore,
                     ["ownerHealSlots"] = Trumpet31HealSlots(book, creation.Heal), ["siblingHealSlots"] = Trumpet31HealSlots(otherBook, creation.Heal) },
                     "Two independent native70ft emanations suppress ally and enemy invisibility while preserving the original buff instances/deadlines; each spends one own L3 slot and leaves Heal independent.");
                 if (!covered) throw new InvalidOperationException("Purge source/radius/eligibility consumers failed.");
+                if (natural != null)
+                {
+                    bool exempt = areas.All(value => value.UnitsInside.Contains(natural)) && grants(natural) == 0 &&
+                        natural.Descriptor.State.HasCondition(UnitCondition.Invisible) && natural.Buffs.Enumerable.Any(value =>
+                            value.Blueprint.AssetGuid == "94b2838e8a492c44ebf89e7fe7a75a62" && value.IsTurnedOn);
+                    Sprint25Check("sprint33-natural-invisibility-purge-exemption", exempt, new JObject {
+                        ["owner"] = natural.UniqueId, ["insideBothNativeAreas"] = areas.All(value => value.UnitsInside.Contains(natural)),
+                        ["suppressionGrants"] = grants(natural), ["invisible"] = natural.Descriptor.State.HasCondition(UnitCondition.Invisible) },
+                        "Natural invisibility survives both actual Purge areas while ordinary ally/enemy invisibility is suppressed.");
+                    if (!exempt) throw new InvalidOperationException("Natural invisibility Purge exemption failed.");
+                }
                 PlaceExpandedSummoningUnit(fixture.Hostile, origin + Vector3.forward * new Feet(90).Meters);
                 deadline = DateTime.UtcNow.AddSeconds(10);
                 while (DateTime.UtcNow < deadline && (grants(fixture.Hostile) != 0 ||
@@ -156,6 +170,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["ownerPurgeSlots"] = Trumpet31PreparedCopies(book, spell, 3), ["siblingPurgeSlots"] = Trumpet31PreparedCopies(otherBook, spell, 3) },
                     "Removing one exact emitter preserves the other's suppression; ending the second removes all owned grants/areas and restores still-live foreign invisibility without refreshing any slot.");
                 if (!one || !clear) throw new InvalidOperationException("Purge exact-source cleanup failed.");
+                if (natural != null && (!natural.Descriptor.State.HasCondition(UnitCondition.Invisible) || grants(natural) != 0))
+                    throw new InvalidOperationException("Natural invisibility changed during Purge source cleanup.");
             }
             finally
             {

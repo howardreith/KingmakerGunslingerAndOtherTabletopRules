@@ -137,6 +137,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             PteranodonAssetRuntime.TryGetLemureVisual(out mesh, out bones, out paint, out status); add(mesh, "Lemure.Mesh"); add(paint, "Lemure.Albedo");
             PteranodonAssetRuntime.TryGetDretchVisual(out mesh, out bones, out paint, out status); add(mesh, "Dretch.Mesh"); add(paint, "Dretch.Albedo");
             PteranodonAssetRuntime.TryGetHoundArchonVisual(out mesh, out bones, out paint, out status); add(mesh, "HoundArchon.Mesh"); add(paint, "HoundArchon.Albedo");
+            // Sprint33 exposes exact process-cache references; these getters allocate no Unity assets.
+            foreach (string key in new[] { ShadowOutsiderVisualPolicy.Stalker, ShadowOutsiderVisualPolicy.Demon })
+            {
+                PteranodonAssetRuntime.TryGetShadowOutsiderVisual(key, out mesh, out bones, out paint, out status);
+                add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
+            }
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||
@@ -218,6 +224,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 driven)),
                             () => donor != null && donor.sharedMaterials.Any(m => ReferenceEquals(m, driven)));
             }
+            var stalker = view.GetComponent<StalkerSlamAnimation33>();
+            if (stalker != null)
+                foreach (var value in stalker.OwnedResources())
+                    add(value, "Stalker private animation owner", stalker.GetType().FullName, true, false, true,
+                        () => stalker != null && stalker.OwnedResources().Any(o => ReferenceEquals(o, value)));
             var variant = ResourceOwnership(typeof(ExpandedSummoningVisualVariantPatch), "Ownerships", view) as SummonVisualOwnership;
             if (variant != null)
             {
