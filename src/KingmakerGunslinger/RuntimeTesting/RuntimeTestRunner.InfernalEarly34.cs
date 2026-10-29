@@ -11,6 +11,7 @@ using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
+using Kingmaker.UnitLogic.Parts;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
 using KingmakerGunslinger.Summoning;
@@ -127,8 +128,38 @@ namespace KingmakerGunslinger.RuntimeTesting
                     var command = new UnitUseAbility(cure, new TargetWrapper(target)); var healCosts = new JArray();
                     using (var costs = new FirearmReviewCosts(healer, healCosts)) {
                         healer.Commands.Run(command);
-                        foreach (int frame in WaitInfernalCommand34(command, () => trace.Rows.Skip(start).Any(row =>
-                            (string)row["event"] == "heal" && (string)row["target"] == target.UniqueId), 25)) yield return frame;
+                        var deliveries = new JArray();
+                        UnitUseAbility delivery = command;
+                        int deliveryStart = start;
+                        // A hostile cure may miss its native touch attack. Retain
+                        // that distinction and retry only the actual held charge.
+                        // No new slot, dice override or manufactured healing event.
+                        for (int touchAttempt = 0; touchAttempt < 4; touchAttempt++) {
+                            foreach (int frame in WaitInfernalCommand34(delivery, () =>
+                                !healer.Commands.Raw.Concat(healer.Commands.Queue).OfType<UnitUseAbility>().Any(value => !value.IsFinished) &&
+                                trace.Rows.Skip(deliveryStart).Any(row =>
+                                    (string)row["owner"] == healer.UniqueId && (string)row["target"] == target.UniqueId &&
+                                    ((string)row["event"] == "heal" || (string)row["event"] == "attack-roll")), 25)) yield return frame;
+                            var held = healer.Get<UnitPartTouch>()?.Ability?.Data;
+                            var outcome = trace.Rows.Skip(deliveryStart).Where(row => (string)row["owner"] == healer.UniqueId &&
+                                (string)row["target"] == target.UniqueId &&
+                                ((string)row["event"] == "heal" || (string)row["event"] == "attack-roll")).ToArray();
+                            deliveries.Add(new JObject { ["attempt"] = touchAttempt, ["command"] = Sprint27AiCommand(delivery),
+                                ["held"] = held?.Blueprint?.AssetGuid, ["heldSource"] = held?.StickyTouch?.Blueprint?.AssetGuid,
+                                ["events"] = new JArray(outcome), ["slots"] = book.GetSpontaneousSlots(levelUsed) });
+                            if (outcome.Any(row => (string)row["event"] == "heal")) break;
+                            bool missed = outcome.Any(row => (string)row["event"] == "attack-roll" && (bool?)row["hit"] == false);
+                            if (!missed || held == null || !ReferenceEquals(held.StickyTouch?.Blueprint, cure.Blueprint))
+                                throw new InvalidOperationException("Cure produced no healing without a matching native missed-touch charge.");
+                            if (touchAttempt == 3) {
+                                cells.Add(new JObject { ["attempt"] = attempt, ["classification"] = "NOT_OBSERVED",
+                                    ["reason"] = "Four actual native touch misses", ["deliveries"] = deliveries });
+                                throw new InvalidOperationException("Unobserved precondition: four native cure touches missed; charge retained.");
+                            }
+                            deliveryStart = trace.Rows.Count;
+                            delivery = new UnitUseAbility(held, new TargetWrapper(target));
+                            healer.Commands.Run(delivery);
+                        }
                         var heals = trace.Rows.Skip(start).Where(row => (string)row["event"] == "heal" && (string)row["target"] == target.UniqueId).ToArray();
                         var decision = heals.Select(row => row["woundCheck"]).FirstOrDefault(value => value != null);
                         bool passed = (bool?)decision?["passed"] == true;
@@ -139,7 +170,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         var cell = new JObject { ["attempt"] = attempt, ["owner"] = barbazu.UniqueId, ["patient"] = target.UniqueId,
                             ["healer"] = healer.UniqueId, ["command"] = Sprint27AiCommand(command), ["costs"] = healCosts,
                             ["damageBefore"] = damageBefore, ["damageAfter"] = target.Damage, ["woundRemains"] = wounded(),
-                            ["heals"] = new JArray(heals), ["slotsBefore"] = slots, ["slotsAfter"] = book.GetSpontaneousSlots(levelUsed) };
+                            ["heals"] = new JArray(heals), ["deliveries"] = deliveries,
+                            ["slotsBefore"] = slots, ["slotsAfter"] = book.GetSpontaneousSlots(levelUsed) };
                         cells.Add(cell); Sprint25Check("sprint34-wound-native-heal-" + attempt, eventPass && costPass, cell,
                             "A real cure command spends its slot; native wound CL check either rejects all healing or heals and closes the owned wound.");
                         if (!eventPass || !costPass) throw new InvalidOperationException("Infernal Wound native healing consumer mismatch.");
@@ -150,6 +182,46 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["rejectionObserved"] = rejected, ["cureObserved"] = cured, ["maximumCureAttempts"] = 7, ["forcedRolls"] = 0 },
                     "Bounded real native casts observed both caster-level outcomes; missing natural eligibility is not a forced PASS.");
                 if (!(rejected && cured)) throw new InvalidOperationException("Unobserved precondition: bounded native cures did not produce both CL outcomes.");
+
+                var sibling = CastExpandedSummoningOwnTier(fixture, "bearded-devil"); owners.Add(sibling);
+                Sprint28SetBrainActivePreservingActions(sibling, false);
+                foreach (int frame in Outsider30NativeAppearance(sibling, sibling.Blueprint.name)) yield return frame;
+                foreach (int frame in Sprint22SetPowerAttack(sibling, false)) yield return frame;
+                Func<UnitEntityData, bool> hasWound = source => target.Buffs.Enumerable.Any(buff =>
+                    ReferenceEquals(buff.Blueprint, wound) && ReferenceEquals(buff.Context?.MaybeCaster, source));
+                foreach (var source in new[] { barbazu, sibling }) {
+                    InfernalCombatLane34(fixture, source, target, 8);
+                    for (int attempt = 0; attempt < 4 && !hasWound(source); attempt++) {
+                        var hit = new UnitAttack(target) { IsSingleAttack = true, ForceFullAttack = false };
+                        source.Commands.Run(hit);
+                        foreach (int frame in WaitInfernalCommand34(hit, () => true, 20)) yield return frame;
+                    }
+                    if (!hasWound(source)) throw new InvalidOperationException("Unobserved precondition: no sibling glaive injury in four attempts.");
+                    source.Commands.InterruptAll(true); source.Commands.RemoveFinishedAndUpdateQueue();
+                }
+                var ownedWounds = new JObject { ["patient"] = target.UniqueId, ["firstSource"] = barbazu.UniqueId,
+                    ["secondSource"] = sibling.UniqueId, ["bothPresent"] = hasWound(barbazu) && hasWound(sibling) };
+                int bleedStart = trace.Rows.Count, bleedDamageBefore = target.Damage;
+                double bleedTime = Game.Instance.TimeController.GameTime.TotalSeconds;
+                DateTime bleedDeadline = DateTime.UtcNow.AddSeconds(20);
+                while (DateTime.UtcNow < bleedDeadline && !trace.Rows.Skip(bleedStart).Any(row =>
+                    (string)row["event"] == "damage" && (string)row["target"] == target.UniqueId))
+                { Game.Instance.IsPaused = false; yield return 0; }
+                var ticks = trace.Rows.Skip(bleedStart).Where(row => (string)row["event"] == "damage" &&
+                    (string)row["target"] == target.UniqueId).ToArray();
+                ownedWounds["ticks"] = new JArray(ticks); ownedWounds["damageBefore"] = bleedDamageBefore;
+                ownedWounds["damageAfter"] = target.Damage;
+                ownedWounds["elapsedGameSeconds"] = Game.Instance.TimeController.GameTime.TotalSeconds - bleedTime;
+                bool bleedPass = ticks.Length == 1 && (int?)ticks[0]["actual"] == 2 && target.Damage == bleedDamageBefore + 2;
+                barbazu.Buffs.GetBuff(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff).Remove();
+                ownedWounds["firstAfterRemoval"] = hasWound(barbazu); ownedWounds["secondAfterFirstRemoval"] = hasWound(sibling);
+                bool firstPass = !hasWound(barbazu) && hasWound(sibling);
+                sibling.Buffs.GetBuff(Kingmaker.Blueprints.Root.BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff).Remove();
+                ownedWounds["secondAfterRemoval"] = hasWound(sibling);
+                bool ownershipPass = firstPass && !hasWound(sibling);
+                cells.Add(ownedWounds); Sprint25Check("sprint34-wound-two-source-retirement", bleedPass && ownershipPass,
+                    ownedWounds, "Two real glaive sources produce one two-HP native tick; each summon removal retires only its own wound.");
+                if (!bleedPass || !ownershipPass) throw new InvalidOperationException("Native overlapping wound tick or exact-source retirement mismatch.");
             }
             finally {
                 trace.Dispose();
