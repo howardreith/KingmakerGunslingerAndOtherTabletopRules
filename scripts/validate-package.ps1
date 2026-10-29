@@ -74,6 +74,7 @@ try {
         'docs\RELEASE-NOTES-0.0.168.md',
         'docs\RELEASE-NOTES-0.0.169.md',
         'docs\RELEASE-NOTES-0.0.170.md',
+        'docs\RELEASE-NOTES-0.0.171.md',
         'THIRD-PARTY-ASSETS.md',
         'assets\bundles\kingmakergunslinger.firearms',
         'assets\bundles\kingmakergunslinger.elvenbranchedspear',
@@ -138,6 +139,10 @@ try {
         'assets\sprint17-serpents\salamander-albedo.png',
         'assets\sprint32-support\lillend-mesh.json',
         'assets\sprint32-support\lillend-albedo.png',
+        'assets\sprint33-shadow-outsiders\invisible-stalker-mesh.json',
+        'assets\sprint33-shadow-outsiders\invisible-stalker-albedo.png',
+        'assets\sprint33-shadow-outsiders\shadow-demon-mesh.json',
+        'assets\sprint33-shadow-outsiders\shadow-demon-albedo.png',
         'assets\sprint18-primates\ape-mesh.json',
         'assets\sprint18-primates\ape-albedo.png',
         'assets\sprint18-primates\dire-ape-mesh.json',
@@ -232,6 +237,17 @@ try {
     foreach ($entry in $lillendExports.GetEnumerator()) {
         if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint32-support\'+$entry.Key))) -cne $entry.Value) {
             throw 'Packaged Lillend original export differs from its exact candidate input.'
+        }
+    }
+    $shadowOutsiderExports = @{
+        'invisible-stalker-mesh.json'='778a3943afad71acc94fd76b8ef157caa85e954110f01c1e440d0707254092b3'
+        'invisible-stalker-albedo.png'='d113b4d7a011c04d9741cdf166f73a8456f5c3132b8c5e66393d2fb9184dcd51'
+        'shadow-demon-mesh.json'='6085202d2e50968e57ab43dece08626756f5f44028b0b39cca4a22143704c507'
+        'shadow-demon-albedo.png'='a78f6d42b435e4cd99a1a3ecdf73e2b25cfb77fbbe048258f0a9957303ccbb3c'
+    }
+    foreach ($entry in $shadowOutsiderExports.GetEnumerator()) {
+        if ((Get-KmgSha256 -Path (Join-Path $modDirectory ('assets\sprint33-shadow-outsiders\'+$entry.Key))) -cne $entry.Value) {
+            throw 'Packaged Sprint 33 original export differs from its candidate input.'
         }
     }
     $humanMesh = Join-Path $modDirectory 'assets\sprint17-serpents\salamander-human-mesh.json'

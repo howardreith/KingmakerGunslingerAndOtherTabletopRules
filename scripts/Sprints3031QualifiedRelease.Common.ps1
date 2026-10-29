@@ -135,7 +135,7 @@ function Assert-KmgSprints3031FreshExecution {
     } elseif($Source.executionKind -ceq 'installed-stack') {
         if($execution.candidateKind -cne 'release-candidate' -or -not $execution.releaseQualification -or
             -not $execution.restoration.verified -or -not $execution.restoration.gameSettingsExact -or
-            $execution.restoration.transactionStatus -cne 'Restored' -or $execution.error -or
+            $execution.restoration.transactionStatus -cne 'Restored' -or ($execution.PSObject.Properties['error'] -and $execution.error) -or
             $execution.launchReceipt.runId -cne $Source.runId -or
             [IO.Path]::GetFullPath((Join-Path $execution.launchReceipt.evidenceDirectory 'runtime-result.json')) -ine [IO.Path]::GetFullPath($Source.nativeProof.path)) { throw 'Fresh installed-stack attribution/restoration differs.' }
         $tuple=$execution.candidate

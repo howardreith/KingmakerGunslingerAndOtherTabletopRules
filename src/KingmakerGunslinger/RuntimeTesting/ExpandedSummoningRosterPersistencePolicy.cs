@@ -222,6 +222,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] GiantHumanoidKeys
         { get { return new[] { GiantHumanoidRulesPolicy.Hill,
             GiantHumanoidRulesPolicy.Stone, GiantHumanoidRulesPolicy.Fire }; } }
+        internal const string ShadowOutsidersScope = "shadow-outsiders";
+        internal static string[] ShadowOutsiderKeys
+        { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
         internal const string FeyCelestialScope = "fey-celestial";
         // Optional finite variants of the existing Working trio. PowerShell
         // admission reads these declarations; the save-free profile stays so.
@@ -309,6 +312,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
                 scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
                 scope == FeyCelestialScope ? FeyCelestialKeys :
+                scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
             if (!permitted.Contains(key, StringComparer.Ordinal))
@@ -339,6 +343,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
                 scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
                 scope == FeyCelestialScope ? FeyCelestialKeys :
+                scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
                     StringComparer.Ordinal).SequenceEqual(expected.OrderBy(
@@ -360,7 +365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
                 scope == GiantBodiesScope || scope == MagicalBeastsScope ||
                 scope == GriffonScope || scope == GiantHumanoidsScope ||
-                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope) &&
+                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

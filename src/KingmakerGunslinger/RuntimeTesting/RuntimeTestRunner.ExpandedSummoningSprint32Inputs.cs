@@ -132,21 +132,27 @@ namespace KingmakerGunslinger.RuntimeTesting
 
         // Fixed research scope: no actor, save, input, native mutation or geometry export.
         // Presence/capture is not a gameplay or donor-suitability verdict.
-        private RuntimeTestResult RunExpandedSummoningSprint32Inputs()
+        private RuntimeTestResult RunExpandedSummoningSprint32Inputs(bool shadowOutsiders = false)
         {
+            string sprint = shadowOutsiders ? "sprint33" : "sprint32";
             var checks = new List<RuntimeTestAssertion>();
             var document = new JObject {
                 ["runId"] = _request.RunId,
-                ["scope"] = "Sprint32 fixed installed-consumer audit; research only"
+                ["scope"] = sprint + " fixed installed-consumer audit; research only; native attribution requires standalone profile"
             };
             try
             {
                 BlueprintScriptableObject[] all = BlueprintBootstrap.Library
                     .GetAllBlueprints().Where(value => value != null).ToArray();
-                string[] species = { "Satyr", "Lillend" };
+                string[] species = shadowOutsiders ? new[] { "Succubus", "ShadowDemon" } : new[] { "Satyr", "Lillend" };
                 // Retained native presentation references, research only. No
                 // proxy or visual-suitability acceptance follows from capture.
-                string[] donorGuids = {
+                string[] donorGuids = shadowOutsiders ? new[] {
+                    "0cc7a2526e4557945b1d8eb277d1fb3a", "676f8b7d0a170674cb6e504e0e30b4f0",
+                    "1832be68f9814254dbbdab6df7fd5d0b", "a8cbd4cdb0feaf64eab1452257c3c971",
+                    "0c908145873f4b67a188397ca5f46da1", "3cd7b4f2c65b4d35929dd4d969dfaa41",
+                    "627c1841a5eb4e32b1a94c0f43ec8a60"
+                } : new[] {
                     "afe56099ff6046b40a359b7562c0424e", // native Movanic Deva
                     "e8276e28b2234a745900fed80670bfdb"  // retained humanoid rig
                 };
@@ -154,19 +160,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                     (name ?? string.Empty).Where(char.IsLetterOrDigit).ToArray());
                 BlueprintUnit[] candidates = all.OfType<BlueprintUnit>()
                     .Where(value => value.name != null &&
-                        !value.name.StartsWith("KMG_", StringComparison.Ordinal) &&
+                        (shadowOutsiders || !value.name.StartsWith("KMG_", StringComparison.Ordinal)) &&
                         (species.Any(name => normalized(value.name).IndexOf(name,
                             StringComparison.OrdinalIgnoreCase) >= 0) ||
                          donorGuids.Contains(value.AssetGuid)))
                     .OrderBy(value => value.name, StringComparer.Ordinal).ToArray();
-                if (candidates.Length > 96)
-                    throw new InvalidOperationException("Fixed Sprint32 donor audit exceeded 96 candidates.");
+                if (candidates.Length > (shadowOutsiders ? 32 : 96))
+                    throw new InvalidOperationException("Fixed donor audit exceeded its candidate bound.");
                 var units = new JArray();
                 var loaded = new HashSet<string>(StringComparer.Ordinal);
                 foreach (BlueprintUnit unit in candidates)
                 {
                     var row = new JObject { ["nativeUnit"] = DescribeNativeUnit(unit) };
-                    string exact = donorGuids.Contains(unit.AssetGuid)
+                    string exact = shadowOutsiders ? unit.Prefab?.AssetId : donorGuids.Contains(unit.AssetGuid)
                         ? unit.AssetGuid : species.FirstOrDefault(name => string.Equals(
                             name, normalized(unit.name), StringComparison.OrdinalIgnoreCase));
                     if (exact != null && loaded.Add(exact) && unit.Prefab != null &&
@@ -174,7 +180,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     {
                         var prefab = unit.Prefab.Load(false);
                         row["view"] = prefab == null ? null :
-                            CapturePrimateCensusViewMetadata(prefab, "sprint32-donor",
+                            CapturePrimateCensusViewMetadata(prefab, sprint + "-donor",
                                 unit.AssetGuid, unit.name, unit.Prefab.AssetId);
                         row["graph"] = DescribeGraph(unit, 0,
                             new HashSet<object>(NativeDonorReferenceComparer.Instance), 4);
@@ -185,7 +191,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 document["speciesCounts"] = new JObject(species.Select(name =>
                     new JProperty(name, candidates.Count(value => normalized(value.name).IndexOf(
                         name, StringComparison.OrdinalIgnoreCase) >= 0))));
-                string[] consumers = { "Suggestion", "CharmPerson", "CharmMonster",
+                string[] consumers = shadowOutsiders ? new[] { "NaturalInvisibilityBuff", "Incorporeal", "DominatePerson" } : new[] { "Suggestion", "CharmPerson", "CharmMonster",
                     "Fear", "Sleep", "BardClass", "BardSpellbook", "BardSpellsPerDay",
                     "BardicPerformance", "BardicResource", "InspireCourage",
                     "InspireCompetence", "Fascinate", "Countersong", "CureSeriousWounds",
@@ -209,7 +215,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     });
                 }
                 document["consumers"] = graphs;
-                checks.Add(Assertion("sprint32-native-input-capture",
+                checks.Add(Assertion(sprint + "-native-input-capture",
                     "fixed installed-consumer audit completes",
                     "units=" + units.Count + ";consumerQueries=" + graphs.Count,
                     graphs.Count == consumers.Length,
@@ -218,10 +224,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             catch (Exception error)
             {
                 document["exception"] = DescribeExpandedSummoningCorrectionException(error);
-                checks.Add(Assertion("sprint32-native-input-capture", "bounded audit completes",
+                checks.Add(Assertion(sprint + "-native-input-capture", "bounded audit completes",
                     error.ToString(), false, "Unknown never establishes donor suitability."));
             }
-            string path = Path.Combine(_request.EvidenceDirectory, "sprint32-inputs.json");
+            string path = Path.Combine(_request.EvidenceDirectory, sprint + "-inputs.json");
             RuntimeTestResultWriter.WriteAtomic(path, document.ToString(Formatting.Indented));
             var result = CreateResult(checks.All(value => value.Status == RuntimeTestStatuses.Pass)
                 ? RuntimeTestStatuses.Pass : RuntimeTestStatuses.Fail, checks, null);
