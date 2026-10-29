@@ -40,7 +40,8 @@ LateUpdate. Fresh native reproduction confirmed this cause on both summons:
 before binding, started=True/finished=False/active=True; after binding and
 during travel, started=True/finished=True/active=False. The first candidate
 changed observation only, not playback. The old translation-only contract
-still returned PASS46/46 and therefore demonstrably did not validate walking.
+still returned PASS47/47 overall (46 scenario assertions plus loaded version)
+and therefore demonstrably did not validate walking.
 
 Diagnostic source `2fa836efb56a5ed0677cdc1917caffa0c26d3552`, source state
 `ed452c20f2e6316c65044363ee7342b0f8370c3964ec43d83a809f9bcb0b7baf`;
@@ -119,6 +120,44 @@ are supplied. Satyr returns to bow through a normal command before the unchanged
 combat dagger/bow switch-cost checks. This observer change requires a new binary
 and one fresh presentation run. Its initial compile caught a missing namespace
 import (8.4s); corrected production compilation10.5s and8 selected cases0.4s PASS.
+
+## Native gait checkpoint and narrowed bow-observer correction
+
+Candidate `d1df29674e3f95d10dbe721974269e7b9f372c95` passed the guarded
+build in221.958s,8 selected cases and strict packaging. ZIP
+`9f87dcae7e4c09f8bde06483f427879e56113da01277ca9551552afced3d81e0`;
+DLL `da2488aff974167fddbb1306a918e927687e97f9af8bd8ce3671f3587516fdd3`;
+MVID `69a7b2e1-86f0-4e76-95e3-76186a284870`;
+source state `1267b3ef54c4f593355510e46a4a67b5e0fc2806e20a1c1d270655af05adf5c4`.
+Fresh native run `20261029T0442578794349Z-9b08336f0a7342699c008375c479bf70`
+in `20261029T0442578654360Z-disposable-expanded-summoning-sprint32-native-review`
+proved all six gait rows: native archer37/38 samples, native melee38/38,
+summoned bow29 and dagger52. Actual frame strips were inspected: bilateral
+stepping and ordinary turns are visible. Dagger/gore events and normal costs
+passed. This is fresh gait proof for those exact bytes, not full acceptance.
+
+The scenario then FAILED the bow release image's active-handle predicate.
+Actual bow command completed Success, normal cost, real3 damage/projectile
+impact; exact event/owner/target/manager/frame predicates were true. The native
+handle was finished, un-interrupted and acted at1.70008s after the1.66667s
+`attackWithBow_b` clip. Installed `UnitAnimationActionHandAttack.OnUpdate`
+explicitly marks acted/releases when ActiveAnimation is null after0.1s.
+Therefore this is a confirmed observer timing boundary, not evidence of failed
+weapon mechanics. The failure is retained; Lillend was NOT_RUN after it.
+Native duration110.689s; full transaction190.984s. Exact restoration verified
+for `compat-20261029T044150Z-75bd3cecd076` at04:45:01UTC.
+
+Next coherent correction selects only this failing bow observation and the
+pending Lillend presentation, using the same bounded existing phase. The observer
+now records actual live, weighted native bow playback during that exact command,
+captures its visible pose, and permits a later finished/noninterrupted/acted
+release only for the same handle and selected clip observed within two frames.
+Original active=false facts remain visible; no clip inventory substitutes for
+playback, and melee retains synchronous live-contact requirements. New focused
+refusals cover missing/stale/future playback, different handle/clip and interrupt.
+No gameplay or asset changes follow the successful gait checkpoint. The new
+observer requires one affected fresh native run; no unchanged broad campaign,
+cold-save trio, provider matrix or release qualification is selected.
 
 Previous translation-only presentation PASS remains bound to its original
 artifact and is not stepping evidence. New results will be recorded below.

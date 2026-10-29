@@ -43,5 +43,17 @@ namespace KingmakerGunslinger.DomainTests
             var repeated = Stride(); repeated[20].Time = repeated[19].Time;
             Assertions.False(SatyrGaitPolicy.Stepping(repeated), "Duplicate frame time rejected.");
         }
+
+        internal static void RetiredBowRequiresActualRecentPlayback()
+        {
+            Assertions.True(SatyrGaitPolicy.RecentRetiredBow(true,true,true,true,false,true,12,13), "Native finished bow retains recent actual playback attribution.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(false,true,true,true,false,true,12,13), "Clip inventory alone is not playback.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(true,false,true,true,false,true,12,13), "Different command handle rejected.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(true,true,false,true,false,true,12,13), "Different selected clip rejected.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(true,true,true,true,true,true,12,13), "Interrupted playback rejected.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(true,true,true,true,false,false,12,13), "Unacted command rejected.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(true,true,true,true,false,true,12,15), "Stale playback rejected.");
+            Assertions.False(SatyrGaitPolicy.RecentRetiredBow(true,true,true,true,false,true,14,13), "Future playback rejected.");
+        }
     }
 }
