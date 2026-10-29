@@ -1,5 +1,11 @@
 # Kingmaker Gunslinger
 
+Sprint 33 / v0.0.171 improves the three existing shadow-outsider summons with
+original Invisible Stalker and Shadow Demon bodies and targeted Succubus repairs.
+See [release notes](docs/RELEASE-NOTES-0.0.171.md) and the
+[qualification record](planning/SPRINT33-STATUS.md) for publication status and
+evidence attribution. All twelve existing routes and saved identities are preserved.
+
 Stable [v0.0.170](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.170)
 repairs Satyr walking and rebuilds Lillend Azata's model and paint on the existing
 rig. Summon rules, routes and saved identities remain unchanged. See the

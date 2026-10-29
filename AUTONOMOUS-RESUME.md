@@ -4,15 +4,15 @@ Controlling owner mission: dedicated Stalker and Shadow Demon models, Revision 2
 Product/build/runtime root: C:/Dev/KingmakerGunslingerLab/wt/s33.
 Branch: codex/expanded-summoning-sprint33-shadow-outsiders.
 Active record: [planning/SPRINT33-STATUS.md](planning/SPRINT33-STATUS.md).
-Both original bodies have native motion/selection/cleanup proof; Purge proof passes.
-Stalker native turn-based Slam passes. Succubus temporary drain remains unresolved;
-isolated run14 confirms a listening, correctly configured trigger and owner context,
-but no drain event or negative-level effect after successful full attacks. The owner has authorized targeted causal diagnosis and repair, followed by conditional closeout.
-See the active status for current work.
-Mixed ON/OFF persistence, integration, final qualification/reproducibility and
-conditional release remain. No Sprint 34.
-No release or owner aesthetic approval is claimed. v167/v168 debt remains NOT_RUN;
-v169's waiver does not apply. Historical records below do not select work.
+Both original bodies have attributed native motion/selection/cleanup evidence;
+routes and Purge pass. The targeted drain repair now passes all seven native cells
+at c94a6553: actual acquired/expired levels, same-sequence suppression, independent
+owners/repeat qualification, miss, Death Ward, source removal and TB attack.
+Null ContextDurationValue.DiceCountValue was the concrete defect; initialize zero.
+Current next work: final171 complete gate/reproducibility, mixed ON/OFF cold proof,
+combined integration, then conditional publication. Original v117 intake restored.
+No release or owner aesthetic approval is claimed. Historical records below do
+not select work. No Sprint34. v167/v168 NOT_RUN debt remains; no waiver transfer.
 
 ## Historical v170 repair (preserved)
 
