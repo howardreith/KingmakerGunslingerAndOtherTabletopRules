@@ -208,7 +208,8 @@ foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
 }
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
-foreach ($file in @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')) {
+$shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')
+foreach ($file in $shadowOutsiderFiles) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint33-shadow-outsiders\'+$file)) -Destination $shadowOutsiderDestination
 }
 # Closed four-file original Sprint 18 body inventory: one mesh and one
@@ -310,7 +311,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 276 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count
+$basePackageFileCount = 276 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

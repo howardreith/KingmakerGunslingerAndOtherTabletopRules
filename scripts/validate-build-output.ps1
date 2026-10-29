@@ -78,6 +78,10 @@ $requiredFiles = @(
     'assets\sprint17-serpents\salamander-mesh.json',
     'assets\sprint17-serpents\salamander-human-mesh.json',
     'assets\sprint17-serpents\salamander-albedo.png',
+    'assets\sprint33-shadow-outsiders\invisible-stalker-mesh.json',
+    'assets\sprint33-shadow-outsiders\invisible-stalker-albedo.png',
+    'assets\sprint33-shadow-outsiders\shadow-demon-mesh.json',
+    'assets\sprint33-shadow-outsiders\shadow-demon-albedo.png',
     'assets\sprint32-support\lillend-mesh.json',
     'assets\sprint32-support\lillend-albedo.png',
     'assets\sprint18-primates\ape-mesh.json',
@@ -196,6 +200,10 @@ $allowedRelativePaths = @{
     'assets\sprint17-serpents\salamander-mesh.json' = $true
     'assets\sprint17-serpents\salamander-human-mesh.json' = $true
     'assets\sprint17-serpents\salamander-albedo.png' = $true
+    'assets\sprint33-shadow-outsiders\invisible-stalker-mesh.json' = $true
+    'assets\sprint33-shadow-outsiders\invisible-stalker-albedo.png' = $true
+    'assets\sprint33-shadow-outsiders\shadow-demon-mesh.json' = $true
+    'assets\sprint33-shadow-outsiders\shadow-demon-albedo.png' = $true
     'assets\sprint32-support\lillend-mesh.json' = $true
     'assets\sprint32-support\lillend-albedo.png' = $true
     'assets\sprint18-primates\ape-mesh.json' = $true
