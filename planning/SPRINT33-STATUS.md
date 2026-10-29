@@ -8,17 +8,17 @@ branch codex/expanded-summoning-sprint33-shadow-outsiders. Intake master
 2026-10-29T05:42Z, not reserved. Actual human intake mod0.0.117 is restored,
 not replaced with a release pin. Howard-Laptop only.
 
-Current: both distinct original bodies have native motion/selection/teardown proof;
-twelve public routes and Natural Invisibility/Purge have attributed PASS evidence.
-Stalker native turn-based Slam now PASS. Succubus Dominate, protection veto,
-exact-source cleanup and ordinary attack fallback are observed. Its temporary
-drain remains unresolved: two runs observed no RuleDrainEnergy, including repeated
-successful full attacks with the correct active trait caster. This is NOT a
-complete preservation PASS. Fourteen native launches completed, all restored. No game or transaction remains active.
+Current: drain repair passed all seven focused native cells in run17, including
+acquired-and-expired native levels, source identity, same-sequence suppression,
+sibling/later qualification, miss, Death Ward, source removal and TB attack.
+The defect was the uninitialized duration DiceCountValue, not the native trigger.
+Both original bodies/routes/Purge retain their attributed evidence. Seventeen
+native launches completed, all restored. Final171 inputs/qualification follow;
+v170 is the newer accepted Satyr/Lillend repair, not available to Sprint33.
 
 | Existing implementation/evidence | Actual gap | Smallest patch | Selected proof |
 |---|---|---|---|
-| Succubus usable Nymph composition,18s Dominate/6s temporary drain | Destruction left control; private brain lacked attack action; drain unresolved | Reuse FeyControlCasterCleanup32 and native DumbBrain attack actions; preserve body/icon/durations | Native AI, protection, source disposal and fallback; read-only live trigger/negative-level observation pending |
+| Succubus usable Nymph composition,18s Dominate/6s temporary drain | Destruction left control; private brain lacked attack action; drain duration null dice-count repaired | Reuse FeyControlCasterCleanup32 and native DumbBrain attack actions; preserve body/icon/durations | Native AI, protection, source disposal and fallback; run17 acquired/expired-level proof PASS |
 | Stalker Air Elemental source, NaturalInvisibilityBuff, two slams | Required original body; Purge incorrectly suppressed natural invisibility; rig lacks Slam | Original wind humanoid, exact natural-invisibility exception, private native arm clips as Slam | Original mesh RTWP/TB attack, selection, Purge, quantity ownership/teardown PASS; cold loads pending |
 | Shadow Demon Soul Eater source, native incorporeality/attack chassis | Required genuine-native-or-original body | Bounded search found no suitable genuine native body; original winged/clawed demon | Native body/motion/attack/selection and independent owner teardown PASS; cold loads pending |
 
@@ -168,3 +168,20 @@ Continuation intake: reporting head c0cbeb9cc557a73af2360d117920131f49e73818; PR
 Continuation native15: source8e87d0200092137f3e1d4ac4e50b8dc9cd51b5f7, request20261029T1306579554509Z-6605961bca3b4d8fb2c074554bf83eea FAIL before attack trace: installed Harmony12 shim throws on GetPatchInfo for unpatched method. Corrected using existing GetPatchedMethods membership pattern; no gameplay change. ZIP8122c617928ffa0085f9e05400992a6b5b1cdafa4dc76d5f6b4d03f1265a75dd, DLL508f87f467970a59266adff0b31c5eb7ee9db6906c2f25b219efa6001b90b170, MVID8fd8ee67-121b-4571-9d5a-c82c4a49157b. Protected-save envelope RESTORED/allOriginalSavesExact/gameExitConfirmed true. Build4/2759 PASS; full gate not selected. Prior fb47/8ab exact-build scratch archived with324 SHA-verified files at E:/KingmakerGunslingerLab/sprint33-private/completed-scratch-20261029T1305.
 
 Continuation native16: source8cb76d3900f007ca2663c39cbf90b91161d2946e, exact request20261029T1317041855220Z-c79ce74dac80433da44802108f6073f4 FAIL. Thirteen exact callbacks/checks, seven condition=true/action-list/action-entry/DrainEnergy entries; execution caster and victim exact; no drain rule. No foreign patch on trigger/action/drain methods; existing ActionList per-action demoralize finally wrapper retains normal execution. Native2.1.7b ContextDurationValue.Calculate calls ContextValueHelper.CalculateDiceValue, which unconditionally dereferences DiceCountValue before checking dice type. Existing Succubus construction left this null. Small repair explicitly sets zero dice/count; keeps native first-hit component/filters/state and six-second temporary contract. Native CheckCondition rejects nonfull/miss, blocks later hits when m_HadHit, and resets state on a qualifying first attack; not replaced with once-per-round behavior. New compact proof compiles41.62s; native proof pending. ZIPf0352416819527984b4d31e90588d37ff081e9bd5b1f9d63c574e09cf458ea3b, DLL9b19a89c4b103f14fea959f2123b7c138cdb2b5b5d8aec211037656793a73e7c, MVID5f513826-651b-49b9-bf27-fa2114fa547f. Outer protected saves and compatibility settings/install RESTORED exact; no game remains. No direct control/forced effect needed. Additional four completed scratch trees archived1441 files to E completed-scratch-20261029T1310 with SHA map; no unique package/proof/save removed.
+
+Continuation native17 PASS: c94a65530438d766cf8e19fa7faaf37537b861c0;
+request20261029T1332571688536Z-8b5848920fc74137b689b41e80fdcc35;
+directory20261029T1332570859173Z-disposable-expanded-summoning-sprint32-native-review.
+ZIP2a8572f93a3105e8ad14f095716f6c48d2283563ad00fd4782afde31ce09113d;
+DLL427718877d8b8f6075865e6ae1587361ff48ace7ca3ebdf072d501974e1aad48;
+MVID24ff43a9-ec5d-4e6d-9dfe-8936e052c818. All seven drain cells PASS, exact native
+command/action cost, actual stored count1/Temporary/end=start+6/source, expiry0,
+no wrong-owned-actor effect. Native DeathWardBuff/miss remain effective; exact
+hooks removed. Source-expiry retains finite effect until deadline, then zero.
+Transaction compat-20261029T133029Z-a55e454041c7 and outer sprint33-drain-repair
+report exact installation/settings/all original saves restored, game exited.
+Final combined preservation phase now includes this unchanged proof helper after
+Stalker TB and Succubus AI/control checks, allowing one highest-risk profile run.
+Native bodies/icons untouched; no new saved drain state. Final release171 was free
+at closeout selection, not reserved. Six-stage mixed persistence/repro/integration
+remain NOT_RUN. Archive751 verified files at E completed-scratch-20261029T1327.
