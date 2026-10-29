@@ -10,7 +10,7 @@ import validate_expanded_summoning_sprint21150 as common
 from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 from validate_expanded_summoning_sprint32_release169 import check_census
 
-PRODUCT = "f32511de6b05717decad3651aa932374f17efde0"
+PRODUCT = "78f570ad10197bccc2adb2720f4b0c8301e0c91f"
 RELEASED = "43abeedfd223e95dec33a3556cc5606a029e4cd3"
 VERSION = "0.0.171"
 INFORMATIONAL = VERSION + "-expanded-summoning-shadow-outsiders"

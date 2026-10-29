@@ -12,7 +12,7 @@ Current: drain repair passed all seven focused native cells in run17, including
 acquired-and-expired native levels, source identity, same-sequence suppression,
 sibling/later qualification, miss, Death Ward, source removal and TB attack.
 The defect was the uninitialized duration DiceCountValue, not the native trigger.
-Both original bodies/routes/Purge retain their attributed evidence. Seventeen
+Both original bodies/routes/Purge retain their attributed evidence. Nineteen
 native launches completed, all restored. Final171 inputs/qualification follow;
 v170 is the newer accepted Satyr/Lillend repair, not available to Sprint33.
 
@@ -187,3 +187,11 @@ at closeout selection, not reserved. Six-stage mixed persistence/repro/integrati
 remain NOT_RUN. Archive751 verified files at E completed-scratch-20261029T1327.
 
 Final boundary review: cac5fe1e candidate passed2759/2759 and exact ZIP/DLL reproducibility, but is superseded before native qualification. Integration ordering put AI fallback's legitimate six-second level immediately before a zero-intake assertion. Reorder the established self-contained drain cells before AI preservation; no product behavior changes. The installed-stack successful receipt omits error, so the existing reader now tests that optional member safely; fixture uses the actual successful shape. Requalify coherent final inputs. Original failed gate (missing local Assembly-CSharp.il prerequisite) remains failed; installed IL provenance and focused105 PASS retained locally.
+
+Final persistence boundary (48a31030fdf9ec5176b9bc2f54c92868d3174df2): full gate2759/2759 and exact reproduction PASS; ZIP b08b5eb1d0ee05ade24205c0550e4ffe79bfb4c5bfbc6ce600e3980019e542fe, DLL6c1e87e09521b240a0e310ef7d57b7c936e36553ee6190dd40ef221cbe15f2c6, MVID d5354f4b-bc2b-478a-85b8-626ed122530a. This candidate is superseded by the following observer-only correction, not qualified for release.
+
+18: native ON prepare PASS, request20261029T1430088548295Z-28bc3ded012c43e7ba8a2dcc53bf6f2f; actual prepared Working SHA88e6ba0804d5c5c362067466634e5e12f34bb94a69524125e4d7ffa97d295b2d. Outer local Compare function collided with PowerShell's alias; exact saved/restored fingerprints were subsequently verified, local reader checks corrected, and original failed envelope retained. Original Working SHA650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850 restored with metadata.
+
+19: fresh ON cleanup FAIL, request20261029T1442108673803Z-522fa0d9dd45413181238268b88ba9a5. Supporting facts: all3 cold profiles including both original bodies, saved18s control context, source removal and recipient absence PASS. Units0/private mesh-material survivors0; no cleaned save written. Exact ownership report records two stable process albedos and two destroyed private Stalker animation objects as UNRESOLVED. The reader never queried the existing ShadowOutsiderVisuals cache or StalkerSlamAnimation33.OwnedResources. Add those exact references to the existing observer; no production cleanup or cache destruction change. The aggregate remains FAIL. Fresh corrected candidate and six-stage persistence/integration still required; no release/merge.
+
+Local build failures remain retained: initial missing installed-IL prerequisite; a reproduction attempt whose artifact-directory preflight overlapped verified E-drive archival, before compilation. Subsequent exact reproduction passed, without concurrent mutations. Completed development ZIPs are preserved with paired receipts/hash map on E:; current candidate, raw evidence, original Working backups and C: receipts remain protected.
