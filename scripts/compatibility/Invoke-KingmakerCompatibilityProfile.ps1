@@ -813,7 +813,7 @@ if ($developmentCandidate) {
     $profileReceipt.developmentPurpose = $DevelopmentPurpose
     $profileReceipt.packageSha256 = $profileCandidate.packageSha256
 }
-if (-not $developmentCandidate -and [IO.Path]::GetFullPath($root).TrimEnd('\') -ieq 'C:\Dev\KingmakerGunslingerLab\wt\s30-31') {
+if (-not $developmentCandidate -and [IO.Path]::GetFullPath($root).TrimEnd('\') -iin @('C:\Dev\KingmakerGunslingerLab\wt\s30-31','C:\Dev\KingmakerGunslingerLab\wt\s33')) {
     # Actual validated final artifact bound to this restored profile and its
     # immutable runtime hashes. This is execution attribution, not qualification.
     $profileReceipt.candidateKind = 'release'
