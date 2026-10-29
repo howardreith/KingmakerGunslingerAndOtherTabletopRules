@@ -4,7 +4,7 @@ Current stage: preparing the first hidden executable candidate in
 `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`.
 Base master: `4b7e3d914883ac695a4146c03de790b2024ea38c`.
-Pushed intake/art checkpoint: `c0d125f83c2ac194ac6b5908514bf95d39555c1b`.
+Pushed hidden implementation: `268e89b2a48e3e7181db280b4b0857f92f3da2b0`.
 Candidate: none yet. Native behavior, attachment, persistence and release are
 NOT_RUN. No aesthetic approval claimed. Sprint 33 is closed at v0.0.171;
 its original-source ON REUSED_PASS remains distinct from final-artifact
@@ -60,14 +60,19 @@ OFF/combined observations. Historical deferred checks remain NOT_RUN.
 | Package/publication/restoration | Source/push safeguards ready | Exact publisher selector, final gate/release/downloads |
 
 Focused development uses named filters and production compilation under the
-ordinary 15/30-minute policy. Latest completed gate08: production24.0s and
-selected domain9.0s,9/2765 PASS. Earlier compiler failures (private getter,
+ordinary 15/30-minute policy. Latest focused check: production27.5s and
+selected domain9.1s,14/2766 PASS (test execution4.7s). Earlier compiler failures (private getter,
 local name collision) are retained in local logs and corrected, not PASS.
-The next build includes subsequent cleanup, reach and catalog-review corrections.
+The focused check includes cleanup, live reach and catalog-review corrections.
+The first package attempt stopped before compilation on PowerShell stderr
+capture; the second stopped after187.8s in a historical v171 census fixture.
+That fixture now reads both catalog and identity inputs from its recorded
+product commit, preserving its positive/hidden/extra-creature refusal checks.
+All12 focused v171 fixture tests pass; no historical gameplay was rerun.
 Development source validator and canonical icon validator PASS. Ledger prefix
 verification and diff whitespace check PASS. No full milestone gate yet.
 
-Next executable action: commit the reviewed hidden implementation, build one
+Next executable action: commit the historical-fixture input correction, build one
 `sprint34-infernal-early` development candidate, then run one guarded save-free
 CotW early mechanics transaction (15-25 minutes including restoration). Inspect
 native candidate metadata in that first useful session; native-body absence is
