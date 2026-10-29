@@ -1319,6 +1319,7 @@
     <Compile Include="Assets\PteranodonAssetRuntime.HoundArchon.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.ShadowOutsiders.cs" />
     <Compile Include="Summoning\ShadowOutsiderVisualPolicy.cs" />
+    <Compile Include="Summoning\StalkerSlamAnimation33.cs" />
     <Compile Include="Summoning\HoundArchonVisualPolicy.cs" />
     <Compile Include="Summoning\HoundArchonSwordView.cs" />
     <Compile Include="Summoning\TrumpetArchonInstrumentView.cs" />

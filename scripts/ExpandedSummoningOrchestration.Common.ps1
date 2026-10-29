@@ -746,3 +746,13 @@ function Test-KmgSprint32DevelopmentPersistence {
     }
     return $true
 }
+
+# Exact Sprint33 selection over the existing guarded Working-save trio.
+function Test-KmgSprint33DevelopmentPersistence {
+    param([string]$Scope,[string]$Purpose)
+    if([string]::IsNullOrEmpty($Purpose)){return $false}
+    if($Scope -cne 'shadow-outsiders' -or $Purpose -cne 'sprint33-shadow-outsiders') {
+        throw 'Sprint33 development persistence requires exact shadow-outsiders scope and sprint33-shadow-outsiders purpose.'
+    }
+    return $true
+}
