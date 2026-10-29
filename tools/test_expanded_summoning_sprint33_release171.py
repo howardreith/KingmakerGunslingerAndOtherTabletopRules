@@ -3,6 +3,9 @@ import copy
 import json
 from pathlib import Path
 import unittest
+import tempfile
+from unittest.mock import patch
+import expanded_summoning_manifest as manifest
 import validate_expanded_summoning_sprint33_release171 as release
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -63,8 +66,20 @@ class Release171Tests(unittest.TestCase):
         current['unexpectedHistoricalMutation']=True
         with self.assertRaises(AssertionError):release.check_static(self.static,current)
 
-    def test_current_census_and_hidden_refusal(self):
-        creatures=release.parsed_creatures();release.check_census(creatures,set())
+    def test_qualified_census_and_hidden_refusal(self):
+        # This historical release contract belongs to its recorded product,
+        # not a later development roster that retains the released version.
+        with tempfile.TemporaryDirectory() as directory:
+            fixture=Path(directory)
+            folder=fixture/"src/KingmakerGunslinger/Summoning"
+            folder.mkdir(parents=True)
+            for name in ("ExpandedSummoningCatalog.cs","ExpandedSummoningIdentityCatalog.cs"):
+                (folder/name).write_bytes(release.common.blob(ROOT,release.PRODUCT,
+                    "src/KingmakerGunslinger/Summoning/"+name))
+            with patch.object(manifest,"ROOT",fixture), patch.object(manifest,"CATALOG",folder/"ExpandedSummoningCatalog.cs"):
+                creatures=release.parsed_creatures()
+        release.check_census(creatures,set())
         with self.assertRaises(AssertionError):release.check_census(creatures,{'satyr'})
+        with self.assertRaises(AssertionError):release.check_census(creatures+[dict(creatures[0],key='extra')],set())
 
 if __name__=='__main__':unittest.main()
