@@ -1,48 +1,44 @@
 # Sprint 34 - hidden implementation
 
-Current stage: repair exact-source cleanup after the second retained early native
-FAIL. Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
+Current stage: early hidden native mechanics PASS; remaining combat/presentation,
+public routes, persistence and release tooling are in progress. Product/build/
+promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`; reviewed base
 `4b7e3d914883ac695a4146c03de790b2024ea38c`. All ten routes remain hidden.
-No persistence or release campaign has begun. Sprint33 remains closed; its
-original-source ON REUSED_PASS is distinct from final-artifact OFF/combined
-observations. Historical deferred checks remain NOT_RUN.
+Sprint33 remains closed; its original-source ON REUSED_PASS is distinct from
+final-artifact OFF/combined observations. Historical deferred checks remain NOT_RUN.
 
-Last executable development candidate (not a release): source
-`52c667177b2dde801ffd836deb091df21b5c4bc5`, purpose `sprint34-infernal-early`.
-ZIP SHA256 `078ca5bd6252644242e0813638687d6afa875e74f54a933748665687413f4c3f`;
-DLL SHA256 `5daa405edc16be5c724e3618fc37f95606a7531a086946054821290775eedac3`;
-MVID `06f537fc-6c74-4459-ba2b-53b0a2234318`;
-source fingerprint `14485f659f6babf08a28f9837ece0a06b564073088aa4004843476f8cb72f39b`.
-Build05 passed in280.9s, selected10/2766 tests and strict package validation.
+Current development candidate (not a release): source
+`8b59b45717c84b403991333bd3d4d0fe844983ec`, purpose `sprint34-infernal-early`.
+ZIP SHA256 `b86aef9d5b3984fc34fc98139f19af6d793d882cc6af14c90290f72014c863b2`;
+DLL SHA256 `0aae673463b9dcf10bc27464a2983d432816618232c4ef655d99e1a31ece094f`;
+MVID `19c76e2e-4398-4a60-a5fd-cdd910109d24`;
+source fingerprint `2602f469f4fb378cdd8beb1fbc968892007f04c634c09b714e90d40ac46f6ce3`.
+Build06 passed in262.7s, selected10/2766 tests and strict package validation.
 
-First native (source8505d4ac) RunId `20261029T2109139961185Z-69ea789acecd4becb12b9300bb1fef21`
-is **FAIL**,450.8s including guarded orchestration/restoration. Its unfiltered raw
-receipt remains local. Native chain control spent one standard action, extended
-10 to25feet and added no attacks; the later command executed exactly four chains.
-Six real cures healed and closed the wound with passing CL checks. The seventh
-parent and held-touch child completed without any heal event; no rejection was
-observed. Touch rolls were absent from the observer, so a natural miss cannot be
-diagnosed from the original receipt. These are development subobservations,
-not a final-package PASS. Both original bodies attached; visibility/contact/motion
-acceptance is still pending. No personal aesthetic approval claimed.
+Early native03 RunId `20261029T2151470387493Z-6edde9a480e54454a41135b162c2954a`
+**PASS20/20**,371.9s including guarded orchestration/restoration. Chain control
+spent one standard action, extended10 to25feet and made no attacks; the later
+native full attack executed exactly four private chains. Actual CL7 cures rolled
+19/17 and healed12/13HP with wound closure; roll7 rejected healing, left Damage157
+unchanged and retained the wound. Two real glaive sources caused one2HP tick;
+each summon removal retired only its own wound. Both original bodies attached;
+live visibility, motion and weapon contact still need acceptance. No personal
+owner aesthetic approval. Raw evidence stays under runtime-evidence/
+`20261029T2151469985118Z-disposable-expanded-summoning-sprint32-native-review`.
 
-Second native (source52c66717) RunId
-`20261029T2136335444911Z-af0f98356f614c5c966434ebe1161963` is **FAIL**,367.9s.
-Two actual CL7 cure casts rolled13, healed10/17HP and closed the wound. The third
-rolled4, restored0HP, left Damage49 unchanged and retained the wound. Two actual
-glaive sources then produced exactly one2HP native tick. Removing the first
-summon's lifetime buff wrongly removed both wounds. Installed BuffCollection IL
-confirms a global IUnitBuffHandler broadcast; the new source handler lacked the
-buff.Owner equality check already used by OutsiderLifetimeBoundary. The small
-production correction now matches the removed buff's exact owner. Focused
-production compilation and10/2766 selected checks passed in30.9s (gate10).
-
-The observer records all native attack rolls and permits at most three retries
-of an actual missed held charge, without extra slots or forced results. Its
-changed two-source check exposed the production defect above. Both original
-failed receipts remain immutable. Fresh execution of the corrected cleanup is
-required; healing/chain subobservations are not final-package PASS.
+Retained dated history (2026-10-29; immutable original verdicts):
+- Native01/source8505d4ac, RunId `20261029T2109139961185Z-69ea789acecd4becb12b9300bb1fef21`,
+  FAIL450.8s. Six successful spell cures; seventh parent/held-touch child produced
+  no heal event. Original observer omitted touch rolls, so no retrospective miss
+  claim. Observer now records all recipients/rolls and permits at most three real
+  held-charge retries following an observed miss, without forced outcomes.
+- Native02/source52c66717, RunId `20261029T2136335444911Z-af0f98356f614c5c966434ebe1161963`,
+  FAIL367.9s. Spell success/rejection observed; two sources gave one bleed tick,
+  but removing one summon wrongly removed both wounds. Installed BuffCollection
+  IL confirmed global buff-removal broadcast. Production now checks the removed
+  buff's exact owner, matching the established lifetime consumer. Native03 proves
+  the corrected behavior. Neither earlier failed receipt becomes final-artifact PASS.
 
 ## Reuse, gap and proof
 
@@ -73,7 +69,7 @@ required; healing/chain subobservations are not final-package PASS.
   actual spell CL16 rejection/cure remains required. See [rules](SPRINT34-RULES.md).
 - Both original paintings/exported icons are bound. Two distinct original bodies
   use the measured free-hand rig. Offline decoding/winding/albedos pass; native
-  attachment, glaive grip, chain contacts/extension and motion still need proof.
+  glaive grip, chain contacts/extension and motion still need proof.
   Provenance: `assets-source/original-models/sprint34-infernal-outsiders/SOURCE.md`
   and the original-icons Sprint34 prompt record. Private captures stay local.
 - Early observer records actual command/action costs, all recipients, attacks,
@@ -86,7 +82,7 @@ required; healing/chain subobservations are not final-package PASS.
 | Group | Current evidence | Remaining |
 |---|---|---|
 | Profiles/defenses/donor isolation | Source/private references inspected | Native grants, totals and isolation |
-| Barbazu modes/Beard/wound/disease | Six development native cures closed real wounds; overall run FAIL | Healing rejection, overlap/ownership; remaining combat/lifetime |
+| Barbazu modes/Beard/wound/disease | Early native healing success/rejection, one bleed tick and exact two-source retirement PASS | Remaining modes/Beard/disease/lifetime and final-artifact coverage |
 | Kyton chains/gaze/armor/regeneration | Development control/cost/four-chain subobservations | Final qualification; saves, bypass and other action modes |
 | AI/actions/cleanup | Existing fixture and owned lifetime reuse | RTWP/TB, cancellation, independent items/no loot |
 | Models/icons/ten public routes | Original assets; offline decoder/icon PASS | Native body/contact/UI; all actual public casts |
@@ -94,30 +90,23 @@ required; healing/chain subobservations are not final-package PASS.
 | Package/publication/restoration | Source/push safeguards ready | Exact publisher selector, final gate/release/downloads |
 
 Focused development uses named filters and production compilation under the
-ordinary 15/30-minute policy. Latest focused check: production27.5s and
-selected domain9.1s,14/2766 PASS (test execution4.7s). Earlier compiler failures (private getter,
-local name collision) are retained in local logs and corrected, not PASS.
-The focused check includes cleanup, live reach and catalog-review corrections.
-The first package attempt stopped before compilation on PowerShell stderr
-capture; the second stopped after187.8s in a historical v171 census fixture.
-That fixture now reads both catalog and identity inputs from its recorded
-product commit, preserving its positive/hidden/extra-creature refusal checks.
-All12 focused v171 fixture tests pass; no historical gameplay was rerun.
-The next candidate attempt compiled successfully but stopped after265.2s at
-the strict output allowlist, which lacked the four original S34 model exports.
-The build/package lists, exact export hashes and file-count derivation are now
-extended together. A packaging-only probe of the retained compiled output
-passes strict package validation; it has no candidate receipt or native authority.
-Development source validator and canonical icon validator PASS. Ledger prefix
-verification and diff whitespace check PASS. No full milestone gate yet.
+ordinary15/30-minute policy. Latest focused gate10: production24.7s plus domain5.6s,
+10/2766 PASS in30.9s. Earlier compiler, historical-census input and package-allowlist
+failures remain in local logs. The historical v171 fixture now reads both catalog
+and identity inputs from its recorded source;12 focused positive/refusal checks
+passed without replaying historical gameplay. All four S34 model files are covered
+by strict package membership and hash validation. No full milestone gate yet.
 
-Next executable action: commit the reviewed exact-owner correction, build one changed
-`sprint34-infernal-early` candidate, then run the corrected guarded save-free
-CotW transaction (15-25min including restoration). No unchanged retry or forced outcome. The finite
-selection remains chain control/routine, real spell rejection/closure, and exact
-two-source wound retirement. The native Apostate candidate resolved to the
-Forefather human-equipment prefab, not a confirmed Barbazu/Kyton body; full body
-acceptance remains open. Stock-profile bleed graph is still unobserved.
+Next executable action: build one `sprint34-infernal-bodies` development candidate
+and execute the grouped native body/movement/contact phase, then extend the exact
+publisher selector/refusal tests. Gate13 production compilation and10 selected
+checks PASS in34.2s; two earlier local-name compiler errors are retained, corrected.
+Chain deformation reads the authored disjoint palm weights, follows actual native
+clip/contact timing, and measures the resulting mesh vertex gap. It changes no
+attacks/reach. Native acceptance remains pending.
+Use the existing native timing/commands and private resource lifecycle. The native
+Apostate candidate resolved to the Forefather human-equipment prefab, not a
+confirmed Barbazu/Kyton body. Stock-profile bleed graph remains unobserved.
 
 Before final freeze: implement the smallest exact Sprint34 publisher selector
 and refusal checks; integrate legitimate upstream once; recheck patch availability.
@@ -133,9 +122,8 @@ Sixteen private build references hash-match the installed2.1.7b runtime.
 Intake local `artifacts/sprint34-intake/intake.json`, SHA256
 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`,
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-tasks/processes/leases. After the native FAIL, transaction
-`compat-20261029T213400Z-ffd51288a2a8` reached Restored with restorationVerified=true
-at2026-10-29T21:40:07.9112428Z. Settings restoration and full intake Compare PASS;
+tasks/processes/leases. After native03, transaction
+`compat-20261029T214907Z-51df8b5144f1` reached Restored with restorationVerified=true. Settings restoration and full intake Compare PASS;
 original installation, protected saves, sound bank/references and processes match.
 No Working envelope has begun.
 KMG_AUTOMATION_BASELINE is immutable. Exact original Working is restored after
@@ -146,7 +134,11 @@ The exact two push branches are allowlisted. Byte-verified backup:
 Original SHA256 `bcf9021162d39ab78a0aeb83c7d2dfc8ef40f5161257d17898a851d65e40ff04`;
 updated `e2f9feb4a9f7881b61f39472ca9862525431bfe2c8f493abddc56e2d08ccd230`.
 Existing focused acceptance/refusal suite38 PASS; no broader branch permission.
-C: last measured free2,218,287,104 bytes; E:300,206,530,560. Calculate the staged
-profile/build/extraction reserve before launch. No scratch archive/deletion.
+Verified archival moved711,009,683 bytes of redundant owned scratch to
+`E:/KingmakerGunslingerLab/sprint34-private/completed-scratch-20261029T215827Z`.
+Map SHA256 `82b91566f3bd71b3549592d88ba111e4d4f6bb0dc68ac31b292c4df8c2406933`,
+2445 files. Primary packages/receipts, protected saves/references and current
+candidate output remain. Recalculate full staging/build/restoration reserve
+before the next native transaction.
 v0.0.172 was free at intake only; recheck remote tags/releases before freeze.
 No release or completion claim.

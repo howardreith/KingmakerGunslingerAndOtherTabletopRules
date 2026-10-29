@@ -26,7 +26,7 @@ under ignored local artifacts. The runtime JSON and albedo go under
 `assets/sprint34-infernal-outsiders/`.
 
 Offline decoder, finite vertex/normal/UV data, outward winding, chain indices
-and matching albedo hashes passed. Native motion/attachment remain NOT_RUN.
+and matching albedo hashes passed. Native attachment was observed in early native03; motion/contact acceptance remains NOT_RUN.
 
 Mesh SHA256:
 - bearded-devil: `e636ee491240107f1c1db79c4747934e69ad9b4cda539cc0619b5dc47c664ad5`

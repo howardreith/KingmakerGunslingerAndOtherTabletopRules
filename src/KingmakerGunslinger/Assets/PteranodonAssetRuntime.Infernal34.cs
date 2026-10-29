@@ -9,6 +9,9 @@ namespace KingmakerGunslinger.Assets
 {
     internal static partial class PteranodonAssetRuntime
     {
+        private static KytonChainVisual34.Chain[] _kytonChains34;
+        internal static KytonChainVisual34.Chain[] KytonChains34()
+        { lock (Sync) return _kytonChains34 == null ? null : (KytonChainVisual34.Chain[])_kytonChains34.Clone(); }
         private static readonly System.Collections.Generic.Dictionary<string, Sprint13CreatureVisual> InfernalVisual34s =
             new System.Collections.Generic.Dictionary<string, Sprint13CreatureVisual> {
                 { InfernalVisualPolicy34.Barbazu, new Sprint13CreatureVisual() },
@@ -66,6 +69,8 @@ namespace KingmakerGunslinger.Assets
                 string[] names;
                 AlbedoRequirement requirement;
                 mesh = BuildMesh(json, out names, out requirement, InfernalVisualPolicy34.Bones);
+                var chains = key == InfernalVisualPolicy34.Kyton
+                    ? KytonChainVisual34.Chain.Read(payload["chains"], mesh, names) : null;
                 string reason;
                 albedo = LoadAlbedo(Path.GetDirectoryName(path), requirement, out reason);
                 if (albedo == null) throw new InvalidDataException("albedo:" + reason);
@@ -73,6 +78,7 @@ namespace KingmakerGunslinger.Assets
                 albedo.name = "KMG_" + key + "_Albedo";
                 lock (Sync)
                 {
+                    if (chains != null) _kytonChains34 = chains;
                     visual.Mesh = mesh;
                     visual.Bones = names;
                     visual.Albedo = albedo;
