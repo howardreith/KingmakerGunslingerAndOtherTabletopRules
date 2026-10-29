@@ -102,6 +102,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["hit"] = r?.AttackRoll?.IsHit, ["firstAttack"] = r?.IsFirstAttack, ["fullAttack"] = r?.IsFullAttack,
                         ["critical"] = r?.AttackRoll?.IsCriticalConfirmed, ["sneak"] = r?.AttackRoll?.IsSneakAttack,
                         ["targetHP"] = r?.Target?.HPLeft, ["conditionResult"] = condition,
+                        ["durationDiceCountNull"] = action.Duration.DiceCountValue == null,
                         ["executionCaster"] = context?.MaybeCaster?.UniqueId, ["executionTarget"] = target?.Unit?.UniqueId,
                         ["levels"] = new JArray(actors.Where(a => a != null).Select(a => new JObject {
                             ["unit"] = a.UniqueId, ["count"] = a.Get<UnitPartNegativeLevels>()?.Count ?? 0 })) });

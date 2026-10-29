@@ -4633,6 +4633,9 @@ namespace KingmakerGunslinger.Blueprints
                 new BlueprintComponent[] { drain });
             drainAction.EnergyDrainType = EnergyDrainType.Temporary;
             drainAction.Duration = new ContextDurationValue {
+                // Native CalculateDiceValue dereferences this even for zero dice.
+                DiceType = DiceType.Zero,
+                DiceCountValue = Simple(0),
                 Rate = DurationRate.Rounds,
                 BonusValue = ExpandedSummoningSpecialProfiles
                     .SuccubusEnergyDrainRounds

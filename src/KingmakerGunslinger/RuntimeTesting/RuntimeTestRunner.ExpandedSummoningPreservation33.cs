@@ -106,6 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (!ReferenceEquals(rule.Initiator, Owner) && !Actors.Any(a => ReferenceEquals(a, rule.Target))) return;
                 var duration = (TimeSpan?)typeof(RuleDrainEnergy).GetField("m_Duration", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(rule);
                 Rows.Add(new JObject { ["stage"] = stage, ["recipient"] = rule.Target?.UniqueId, ["gameTime"] = Game.Instance.Player.GameTime.TotalSeconds,
+                    ["nativeGameTime"] = Game.Instance.TimeController.GameTime.TotalSeconds,
+                    ["storedLevels"] = rule.Target == null ? new JArray() : NegativeLevels33(rule.Target),
                     ["nativeLevels"] = rule.Target?.Get<UnitPartNegativeLevels>()?.Count ?? 0, ["type"] = rule.Type.ToString(), ["count"] = rule.Count,
                     ["immune"] = rule.TargetIsImmune, ["durationSeconds"] = duration?.TotalSeconds,
                     ["initiator"] = rule.Initiator?.UniqueId, ["owner"] = Owner?.UniqueId, ["sourceMatchesOwner"] = ReferenceEquals(rule.Initiator, Owner) });
@@ -123,6 +125,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (levels < 0) throw new InvalidOperationException("Control witness exceeds selected HD.");
             ElementalSpellAffinityScenario.Advance(target.Descriptor, fighter, levels);
             target.Stats.HitPoints.BaseValue = 100000;
+            if (onlyDrain) { foreach (int frame in ReviewSuccubusDrainProof33(fixture)) yield return frame; yield break; }
             var ability = fixture.Blueprints.OfType<BlueprintAbility>().Single(value => value.AssetGuid == "1662d63944d94cdeaa62562dc9ac9349");
             var terminal = fixture.Blueprints.OfType<BlueprintBuff>().Single(value => value.AssetGuid == "6e1f6eb3e773451dbda9e0ecd07486d9");
             var outsider = BlueprintLibraryLookup.RequireExact<BlueprintFeature>(BlueprintBootstrap.Library,
@@ -220,6 +223,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                             cell == "protected" ? owned.Length == 0 && applications.Any(value => !value.CanApply && value.AppliedBuff == null) :
                             aiTicks > 0 && !starts.Commands.OfType<UnitUseAbility>().Any() && attacks.Damage.Any(value => !value.IsFake && value.Damage > 0) &&
                             drain.Rows.Any(value => (bool)value["sourceMatchesOwner"] && (string)value["type"] == "Temporary" && (int)value["count"] == 1 && !(bool)value["immune"] && (double)value["durationSeconds"] == 6);
+                        trace.Dispose();
                         Sprint25Check("sprint33-succubus-" + cell, costsExact && outcome, new JObject {
                             ["causalTrace"] = trace.Evidence, ["eligible"] = eligible, ["aiTicks"] = aiTicks, ["eligibleActorsNotTicked"] = new JArray(eligibleActors.Where(value => value != owner.UniqueId)), ["commands"] = new JArray(starts.Commands.Select(Sprint27AiCommand)),
                             ["costs"] = costs, ["weaponContacts"] = contacts, ["liveTrigger"] = liveTrigger, ["nativeNegativeLevels"] = levelChanges,
