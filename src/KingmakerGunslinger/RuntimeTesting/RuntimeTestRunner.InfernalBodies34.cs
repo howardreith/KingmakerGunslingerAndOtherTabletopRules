@@ -133,9 +133,28 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 destination; string lane, direction;
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, owner, target, 6f, out destination, out lane, out direction);
                 PlaceExpandedSummoningUnit(owner, origin); PlaceExpandedSummoningUnit(target, fixture.Caster.Position + Vector3.forward * 40f);
+                // Translocate grounds the view and the native agent settles on a
+                // later frame. Reuse the presentation fixture's quiet boundary;
+                // never count that placement correction as observed locomotion.
+                int quiet = 0; Vector3 previous = owner.Position;
+                foreach (int frame in WaitPresentation32(mode, () => quiet >= 3, 8, () => {
+                    bool stable = owner.Commands.Empty && owner.View.MovementAgent.Velocity.sqrMagnitude < .0001f &&
+                        Vector3.Distance(previous, owner.Position) < .01f && owner.Descriptor.State.CanAct;
+                    quiet = stable ? quiet + 1 : 0; previous = owner.Position;
+                })) yield return frame;
+                origin = owner.Position;
+                Vector3 supported; JObject ground;
+                bool grounded = Cleanup2CreatureNativeGroundRoot(owner, origin, out supported, out ground) &&
+                    Vector3.Distance(supported, origin) < .02f;
+                receipt[key + "-move-ground"] = ground;
+                if (!grounded) throw new InvalidOperationException("Infernal movement starts outside native ground support.");
                 var move = new UnitMoveTo(destination, .5f); move.Init(owner);
                 if (!move.CanStart) throw new InvalidOperationException("Native infernal move refused.");
                 owner.Commands.Run(move); float velocity = 0; bool movingCapture = false;
+                var movement = new JObject { ["start"] = SurveyVector(origin), ["goal"] = SurveyVector(destination),
+                    ["lane"] = lane, ["queued"] = owner.Commands.Contains(move), ["before"] = Sprint27AiCommand(move) };
+                receipt[key + "-move"] = movement;
+                if (!owner.Commands.Contains(move)) throw new InvalidOperationException("Native move was not queued.");
                 foreach (int frame in WaitPresentation32(mode, () => move.IsFinished, 25, () => {
                     velocity = Math.Max(velocity, owner.View.MovementAgent.Velocity.magnitude);
                     if (!movingCapture && Vector3.Distance(origin, owner.Position) > 1f) {
@@ -143,8 +162,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         movingCapture = true;
                     }
                 })) yield return frame;
+                movement["after"] = Sprint27AiCommand(move); movement["end"] = SurveyVector(owner.Position);
+                movement["travel"] = Vector3.Distance(origin, owner.Position); movement["velocity"] = velocity;
+                movement["goalGap"] = Vector3.Distance(destination, owner.Position); movement["movingCapture"] = movingCapture;
                 bool moved = move.IsFinished && Vector3.Distance(origin, owner.Position) > 1f && velocity > .01f && movingCapture;
-                Sprint25Check("sprint34-move-" + key, moved, new JObject { ["travel"] = Vector3.Distance(origin, owner.Position), ["velocity"] = velocity },
+                Sprint25Check("sprint34-move-" + key, moved, movement,
                     "Native movement completes on the surveyed lane with actual motion and a retained frame.");
                 if (!moved) throw new InvalidOperationException("Native infernal movement incomplete.");
                 foreach (int frame in WaitPresentation32(mode, () => owner.Commands.Empty && owner.View.MovementAgent.Velocity.sqrMagnitude < .0001f, 12)) yield return frame;

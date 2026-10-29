@@ -1,9 +1,11 @@
 using System;
 using System.Linq;
 using Harmony12;
+using Kingmaker;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.Items;
 using Kingmaker.UnitLogic.Commands;
+using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.View;
 using KingmakerGunslinger.Assets;
 using Newtonsoft.Json.Linq;
@@ -53,7 +55,8 @@ namespace KingmakerGunslinger.Summoning
         private ItemEntityWeapon[] _weapons;
         private Transform[] _bones;
         private Matrix4x4[] _bindposes;
-        private UnitAttack _command;
+        private UnitCommand _command;
+        private double _opportunityImpact = double.NegativeInfinity;
         private int _chain = -1, _impactFrame = -1;
         private bool _deformed;
         internal int Contacts { get; private set; }
@@ -83,7 +86,7 @@ namespace KingmakerGunslinger.Summoning
                     !ReferenceEquals(weapon.Wielder?.Unit, _owner)))
                 throw new InvalidOperationException("Kyton requires four independent owned chain items.");
         }
-        private static KytonChainVisual34 For(UnitAttack command)
+        private static KytonChainVisual34 For(UnitCommand command)
         {
             var owner = command?.Executor;
             var visual = owner?.View == null ? null : owner.View.GetComponent<KytonChainVisual34>();
@@ -91,19 +94,26 @@ namespace KingmakerGunslinger.Summoning
                 InfernalMartialProfile34.For(owner)?.Chain != null && visual._body != null &&
                 visual._body.sharedMesh == visual._mesh ? visual : null;
         }
-        private void Bind(UnitAttack command)
+        private void Bind(UnitCommand command, ItemEntityWeapon weapon)
         {
-            int chain = Array.IndexOf(_weapons, command.PlannedAttack?.Hand?.MaybeWeapon);
+            int chain = Array.IndexOf(_weapons, weapon);
             if (!ReferenceEquals(_command, command) || _chain != chain) Restore();
             _command = command; _chain = chain;
         }
         private void LateUpdate()
         {
+            // Native AoOs use UnitAttackOfOpportunity.OnAction, not UnitAttack.
+            // Their visual follow-through uses game time and cannot add a rule.
+            if (_command is UnitAttackOfOpportunity && _owner != null && !_owner.Destroyed && _owner.IsInState &&
+                InfernalMartialProfile34.For(_owner)?.Chain != null && _command.TargetUnit?.View != null) {
+                float remaining = 1f - (float)(Game.Instance.TimeController.GameTime.TotalSeconds - _opportunityImpact) / .18f;
+                if (remaining > 0) { Apply(remaining); return; }
+            }
             var command = _owner?.Commands.Attack;
             if (command == null || command.IsFinished || _owner.Destroyed || !_owner.IsInState ||
                 InfernalMartialProfile34.For(_owner)?.Chain == null || command.Target?.View == null)
             { Restore(); _command = null; _chain = -1; return; }
-            Bind(command);
+            Bind(command, command.PlannedAttack?.Hand?.MaybeWeapon);
             var handle = command.Animation;
             var active = handle?.ActiveAnimation;
             var clip = active?.GetPlayableClip();
@@ -119,12 +129,12 @@ namespace KingmakerGunslinger.Summoning
         private void Apply(float weight)
         {
             Restore();
-            if (_chain < 0 || _command?.Target?.View == null || weight <= 0) return;
+            if (_chain < 0 || _command?.TargetUnit?.View == null || weight <= 0) return;
             var chain = _chains[_chain];
             Matrix4x4 skin = _bones[chain.Bone].localToWorldMatrix * _bindposes[chain.Bone];
             Vector3 origin = skin.MultiplyPoint3x4(chain.Origin);
-            Vector3 center = _command.Target.Position + Vector3.up * .85f;
-            Vector3 surface = center + (origin - center).normalized * _command.Target.Corpulence;
+            Vector3 center = _command.TargetUnit.Position + Vector3.up * .85f;
+            Vector3 surface = center + (origin - center).normalized * _command.TargetUnit.Corpulence;
             Vector3 target = skin.inverse.MultiplyPoint3x4(surface);
             Vector3 axis = chain.Tip - chain.Origin;
             Vector3 delta = (target - chain.Tip) * weight;
@@ -157,6 +167,21 @@ namespace KingmakerGunslinger.Summoning
         private void OnDisable() { Restore(); }
         private void OnDestroy() { Restore(); }
 
+        [HarmonyPatch(typeof(UnitAttackOfOpportunity), "OnAction")]
+        private static class NativeOpportunityContact
+        {
+            private static void Prefix(UnitAttackOfOpportunity __instance)
+            {
+                var visual = For(__instance);
+                if (visual == null || __instance.Target == null || __instance.Target.Descriptor.State.IsDead) return;
+                visual.Bind(__instance, __instance.Hand?.MaybeWeapon);
+                if (visual._chain < 0) return;
+                visual._opportunityImpact = Game.Instance.TimeController.GameTime.TotalSeconds;
+                visual._impactFrame = Time.frameCount;
+                visual.Apply(1f); visual.ContactChain = visual._chain; visual.Contacts++;
+            }
+        }
+
         [HarmonyPatch(typeof(UnitAttack), "TriggerAttackRule")]
         private static class NativeContact
         {
@@ -164,7 +189,7 @@ namespace KingmakerGunslinger.Summoning
             {
                 var visual = For(__instance);
                 if (visual == null) return;
-                visual.Bind(__instance);
+                visual.Bind(__instance, __instance.PlannedAttack?.Hand?.MaybeWeapon);
                 if (visual._chain < 0) return;
                 visual._impactFrame = Time.frameCount;
                 visual.Apply(1f); visual.ContactChain = visual._chain; visual.Contacts++;
