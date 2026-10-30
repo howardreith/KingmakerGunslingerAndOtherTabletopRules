@@ -3,19 +3,23 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Kingmaker;
 using Kingmaker.Blueprints;
+using Kingmaker.Blueprints.Facts;
 using Kingmaker.Blueprints.Items.Weapons;
 using Kingmaker.Controllers.Brain;
 using Kingmaker.Controllers.Brain.Blueprints;
 using Kingmaker.EntitySystem.Entities;
 using Kingmaker.EntitySystem.Stats;
+using Kingmaker.Enums;
 using Kingmaker.Enums.Damage;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
 using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic;
+using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Abilities.Components.Base;
+using Kingmaker.UnitLogic.Buffs;
 using Kingmaker.UnitLogic.Buffs.Blueprints;
 using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.UnitLogic.Mechanics.Actions;
@@ -249,6 +253,90 @@ namespace KingmakerGunslinger.Summoning
         }
     }
 
+    /// <summary>
+    /// PF1 Unholy Blight resolution for one creature selected by the
+    /// ability's native 20-foot burst. The ability framework owns range,
+    /// action cost, resource debit, and per-target spell resistance. This
+    /// action owns the alignment-sensitive dice, real Will save, and finite
+    /// independently timed sickened effect.
+    /// </summary>
+    [Serializable]
+    public sealed class ContextActionInfernalUnholyBlight35 : ContextAction
+    {
+        public BlueprintUnit SourceUnit;
+        public BlueprintUnitFact OutsiderType;
+        public BlueprintBuff Sickened;
+
+        public override string GetCaption()
+        { return "Resolve Barbed Devil Unholy Blight against one creature"; }
+
+        public override void RunAction()
+        {
+            UnitEntityData caster = Context == null ? null :
+                Context.MaybeCaster;
+            UnitEntityData target = Target == null ? null : Target.Unit;
+            if (caster == null || target == null || target.Descriptor == null ||
+                target.Destroyed || target.Descriptor.State.IsDead ||
+                SourceUnit == null || OutsiderType == null || Sickened == null ||
+                !ReferenceEquals(caster.Blueprint, SourceUnit)) return;
+
+            Alignment alignment = target.Descriptor.Alignment.Value;
+            bool good = alignment.HasComponent(AlignmentComponent.Good);
+            bool evil = alignment.HasComponent(AlignmentComponent.Evil);
+            if (evil) return;
+            bool goodOutsider = good && target.Descriptor.HasFact(OutsiderType);
+            int dc = InfernalRules35.UnholyBlightWillDc(
+                caster.Stats.Charisma.ModifiedValue);
+            var resolution = new MechanicsContext(caster, target.Descriptor,
+                Context.SourceAbility, Context, new TargetWrapper(target));
+            resolution.Params.CasterLevel =
+                InfernalRules35.SpellLikeCasterLevel;
+            resolution.Params.SpellLevel =
+                InfernalRules35.UnholyBlightSpellLevel;
+            resolution.Params.DC = dc;
+            var saving = new RuleSavingThrow(target, SavingThrowType.Will, dc) {
+                Reason = resolution };
+            resolution.TriggerRule(saving);
+
+            DiceType die = goodOutsider ? DiceType.D6 : DiceType.D8;
+            var roll = new RuleRollDice(caster, new DiceFormula(
+                InfernalRules35.UnholyBlightDiceCount(goodOutsider), die)) {
+                Reason = resolution };
+            int rolled = resolution.TriggerRule(roll).Result;
+            int amount = InfernalRules35.UnholyBlightDamage(rolled, good,
+                evil, saving.IsPassed);
+            var damage = new DirectDamage(
+                new DiceFormula(0, DiceType.Zero), amount);
+            // UnholyBlightDamage already owns every alignment/save fraction.
+            var dealt = new RuleDealDamage(caster, target,
+                new DamageBundle(new BaseDamage[] { damage })) {
+                Reason = resolution,
+                SourceAbility = Context.SourceAbility };
+            resolution.TriggerRule(dealt);
+
+            if (!InfernalRules35.UnholyBlightSickens(good, evil,
+                    saving.IsPassed)) return;
+            var durationRoll = new RuleRollDice(caster,
+                new DiceFormula(1, DiceType.D4)) { Reason = resolution };
+            int rounds = resolution.TriggerRule(durationRoll).Result;
+            var sickenedContext = AstralVictimEffectContext.Create(caster,
+                target, Sickened, new AbilityParams {
+                    CasterLevel = InfernalRules35.SpellLikeCasterLevel,
+                    SpellLevel = InfernalRules35.UnholyBlightSpellLevel,
+                    DC = dc });
+            var apply = new RuleApplyBuff(target, Sickened, sickenedContext,
+                TimeSpan.FromSeconds(GameConsts.RoundDuration * rounds),
+                (buff, source, duration) =>
+                    target.Descriptor.Buffs.AddBuff(buff, source, duration));
+            Rulebook.Trigger(apply);
+            foreach (Buff buff in target.Buffs.Enumerable.Where(value =>
+                ReferenceEquals(value.Blueprint, Sickened) &&
+                ReferenceEquals(value.Context?.ParentContext,
+                    sickenedContext)))
+                buff.IsFromSpell = true;
+        }
+    }
+
     /// <summary>One small exact-owner AI wrapper for the legal SLA buttons.</summary>
     public sealed class InfernalSpellAi35 : BlueprintAiCastSpell
     {
@@ -256,6 +344,8 @@ namespace KingmakerGunslinger.Summoning
         public BlueprintBuff ActiveBuff;
         public bool TargetSelf;
         public bool TargetEnemy = true;
+        public bool AvoidFriendlyArea;
+        public int AreaRadiusFeet;
 
         public override bool IsAvailable(DecisionContext context)
         {
@@ -279,6 +369,21 @@ namespace KingmakerGunslinger.Summoning
             if (owner == null || TargetSelf && target != null &&
                     !ReferenceEquals(owner, target) || TargetEnemy &&
                     (target == null || !owner.IsEnemy(target))) return false;
+            if (AvoidFriendlyArea)
+            {
+                if (target == null || AreaRadiusFeet <= 0 ||
+                    target.Descriptor.Alignment.Value.HasComponent(
+                        AlignmentComponent.Evil) ||
+                    Game.Instance?.State?.Units?.All == null) return false;
+                float radius = new Feet(AreaRadiusFeet).Meters;
+                if (Game.Instance.State.Units.All.Any(unit =>
+                    unit != null && !unit.Destroyed && unit.IsInState &&
+                    !ReferenceEquals(unit, owner) && !owner.IsEnemy(unit) &&
+                    !unit.Descriptor.Alignment.Value.HasComponent(
+                        AlignmentComponent.Evil) &&
+                    (unit.Position - target.Position).magnitude <=
+                        radius + unit.Corpulence)) return false;
+            }
             return base.IsTargetValid(context);
         }
     }

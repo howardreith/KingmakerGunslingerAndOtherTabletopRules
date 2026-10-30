@@ -103,6 +103,46 @@ namespace KingmakerGunslinger.DomainTests
             InfernalRules35.Validate();
         }
 
+        internal static void UnholyBlightKeepsAlignmentAndSaveFractions()
+        {
+            Assertions.Equal(18, InfernalRules35.UnholyBlightWillDc(18),
+                "Baseline Charisma gives the printed Unholy Blight DC.");
+            Assertions.Equal(17, InfernalRules35.UnholyBlightWillDc(16),
+                "The SLA DC follows a live Charisma reduction.");
+            Assertions.Equal(5, InfernalRules35.UnholyBlightDiceCount(false),
+                "Ordinary good and neutral creatures use five dice.");
+            Assertions.Equal(8, InfernalRules35.UnholyBlightDieSides(false),
+                "Ordinary damage uses d8s.");
+            Assertions.Equal(10, InfernalRules35.UnholyBlightDiceCount(true),
+                "Good outsiders use ten dice at CL12, capped by the spell.");
+            Assertions.Equal(6, InfernalRules35.UnholyBlightDieSides(true),
+                "Good outsider damage uses d6s.");
+            Assertions.Equal(40, InfernalRules35.UnholyBlightDamage(40,
+                true, false, false), "A failed good save takes full damage.");
+            Assertions.Equal(20, InfernalRules35.UnholyBlightDamage(40,
+                true, false, true), "A successful good save takes half.");
+            Assertions.Equal(20, InfernalRules35.UnholyBlightDamage(40,
+                false, false, false), "Neutral creatures take half.");
+            Assertions.Equal(10, InfernalRules35.UnholyBlightDamage(40,
+                false, false, true), "A neutral successful save takes quarter.");
+            Assertions.Equal(0, InfernalRules35.UnholyBlightDamage(40,
+                false, true, false), "Evil creatures are unaffected.");
+            Assertions.True(InfernalRules35.UnholyBlightSickens(true,
+                false, false), "Only a failed good save becomes sickened.");
+            Assertions.False(InfernalRules35.UnholyBlightSickens(true,
+                false, true), "A successful good save prevents sickness.");
+            Assertions.False(InfernalRules35.UnholyBlightSickens(false,
+                false, false), "Neutral creatures are never sickened.");
+            Assertions.False(InfernalRules35.UnholyBlightSickens(false,
+                true, false), "Evil creatures are never sickened.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.UnholyBlightDamage(-1, true, false, false),
+                "Negative rolled damage is invalid input.");
+            Assertions.Throws<ArgumentException>(() =>
+                InfernalRules35.UnholyBlightDamage(1, true, true, false),
+                "Contradictory alignment input is rejected.");
+        }
+
         internal static void PoisonRequiresTheWoundingSting()
         {
             Assertions.True(InfernalRules35.PoisonQualifies(true, true, 1),
