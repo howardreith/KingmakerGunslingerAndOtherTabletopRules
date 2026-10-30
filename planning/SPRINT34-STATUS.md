@@ -1,26 +1,58 @@
-# Sprint 34 - cold-hydration repair
+# Sprint 34 - final persistence observer repair
 
-Current stage: one scoped correction after the first final ON cold-load failure.
-The game and transactions ended; original Working bytes/metadata and full human
-intake are EXACTLY RESTORED. No release published. Product/build/promotion root
+Current stage: exact immutable-cache observer correction. The game/transactions
+ended; original Working bytes/metadata and full human intake are EXACTLY
+RESTORED. No release published. Product/build/promotion root
 `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
-`codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed/current remote
-master `4b7e3d914883ac695a4146c03de790b2024ea38c`; v172 was rechecked free on2026-10-30 and must be rechecked before freezing/publication. Sprint33 is CLOSED;
-its original-source ON REUSED_PASS and historical NOT_RUN remain unchanged.
+`codex/expanded-summoning-sprint34-bearded-devil-kyton`. Remote master remained
+`4b7e3d914883ac695a4146c03de790b2024ea38c`; v172 free at the corrected freeze
+on2026-10-30. Recheck before publication. Historical tag fetch conflicts were
+refused; no tags replaced. Sprint33 is CLOSED with original-source ON REUSED_PASS
+and historical NOT_RUN unchanged.
 
-The native Fact.PostLoad predicate matches saved ComponentName to exact Unity
-component.name. Saved disease/regen fields were present, but new unnamed logic
-components collided. Reuse the existing S32 type-local naming algorithm for
-only the exact new S34 private facts, including the AddFacts regeneration grant.
-Existing S32 guard, names, ordinals and explicit/donor names remain unchanged.
-No wound, disease, regeneration, action, visual, route or observer semantics
-changed. Focused41: production compile and8/8 Sprint34 tests PASS33.902s;
-this is not native cold-load proof. Next: freeze reviewed corrected source,
-one complete boundary, then fresh mixed ON/OFF and final integration.
-The exact release validator now anchors reviewed corrected product
-`46e400cf67d08a91f919a1c262b2963a98aabb9d`; it still refuses any unreviewed product/asset change.
-A fetch with tags refused conflicting historical tags; none were replaced.
-The subsequent no-tags master fetch passed and retained the reviewed master.
+The native component-name repair is proved by the fresh cold-load assertion:
+all disease/regeneration state, sources, contexts and deadlines match exactly.
+The next cleanup invariant exposed two UNRESOLVED S34 albedo references because
+RosterImmutableCaches did not query their existing exact cache getter. Both
+textures existed before load and remained count-stable1->1->1. All six private
+mesh/material objects became Unity-null in one frame; three borrowed native
+objects survived with stable counts. No ownership is inferred from names or
+survival: add only the two actual TryGetInfernalVisual34 references to the
+existing observer. Strict unknown/conflicting/private/cache rules are unchanged.
+Focused42 production compile and9/9 Sprint34/resource-refusal checks PASS34.019s.
+Next: freeze this coherent observer correction, one complete boundary, then the
+mixed ON/OFF trios, final bodies/routes and highest-risk healing/chain integration.
+
+Retained corrected candidate `5cef772c450ecfa54422a88e4d217ddcfa954dc6`:
+ZIP `d26850ddc8ee25fafdca2ac690d7cd73bcffeb4d68c85f3175f6f8c94d32d8a0`;
+DLL `3034e9ad7df084300224cf254876abe1962939565b81ca5aa9ba746f29e6905e`;
+MVID `9f6f3863-f2e3-4245-81ba-7b8bb1d711d2`;
+fingerprint `e5731c6da1564791e5ec154de0cfe9bd075320b13e56cf035fa744052f42a4aa`.
+Gate03 PASS2767/2767,439.910s; exact original primary archive/receipt retained.
+- ON prepare PASS18/18,413.235s/222513ms, RunId
+  `20261030T0639445120648Z-6ee0d24c533c4cd98a577f111081cd7c`.
+  Prepared save `7b507a879f21fd89c2d0fbd088915a9a66adbf2b2c289cdf57ea6e5ec2890282`
+  contains distinct stable component names and exact in-progress effects/items.
+- ON cold cleanup aggregate FAIL17 assertions,191684ms, RunId
+  `20261030T0647347016917Z-b7a1f698c8c947da96982bbae6cc5c63`.
+  Cold effects, views, items, source cleanup, effect absence and unrelated
+  preservation PASS; resource classification failed as above. Save was correctly
+  withheld; fresh absence NOT_RUN. The whole failure remains FAIL, never reused
+  as a successful envelope. Full envelope877.842s, restoration and Compare PASS.
+- Four original-source reuse groups passed the actual publisher checks against
+  this candidate; those runs retain their original artifacts. New cold evidence
+  and new observer execution remain mandatory.
+- Local archive output filename erratum recorded without altering raw native or
+  build receipts or unique archive maps. Exact actual outputs were copied to
+  their matching37/38/39 names; subsequent archive outputs use unique names.
+  Between fully restored transactions, only exact redundant candidate copies are
+  byte-verified on E: and removed from C:. Working snapshots/raw evidence remain.
+
+The component naming correction reuses S32's exact type-local algorithm behind
+its unchanged ownership guard. Existing S32 names and explicit/donor names remain
+unchanged. Focused41 compiled and passed8/8 in33.902s. Native Fact.PostLoad joins
+saved ComponentName to exact Unity component.name; missing names caused the
+original disease reroll and regeneration regrant below.
 
 Retained prior final candidate `57957987f4bd13d8663b4c91dc5345746a03bfa7`:
 ZIP `e026eee60442f80f6d72009d34e4301de0c731273b516b462c784f4382f16812`;
