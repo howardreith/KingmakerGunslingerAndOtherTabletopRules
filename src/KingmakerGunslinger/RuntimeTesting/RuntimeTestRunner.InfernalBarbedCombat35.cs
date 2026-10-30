@@ -178,14 +178,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in InfernalEarlyContact35(fixture,
                     attacker, sibling, trace, check, "independent-second", 3,
                     true)) yield return frame;
-                // Retain this already-settled independent pair for the ray
-                // cell. The grapple owner below must be allowed to keep its
-                // proved live hold until normal owned-actor disposal; a test
-                // teardown is not a second gameplay release mechanism.
+                // Retain the already-settled second Barbed for the ray cell.
+                // The grapple owner below must be allowed to keep its proved
+                // live hold until normal owned-actor disposal; a test teardown
+                // is not a second gameplay release mechanism.
+                DisposeExpandedSummoningUnits(fixture.Created,
+                    new[] { attacker });
                 sibling.Commands.InterruptAll(true);
                 sibling.Commands.RemoveFinishedAndUpdateQueue();
-                attacker.Commands.InterruptAll(true);
-                attacker.Commands.RemoveFinishedAndUpdateQueue();
 
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
                 owner.Stats.AdditionalCMB.BaseValue = 100;
@@ -567,11 +567,9 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 InfernalRemoveBarbedFear35(target, owner, frightened);
                 UnitEntityData rayOwner = sibling;
-                UnitEntityData rayTarget = attacker;
+                UnitEntityData rayTarget = target;
                 rayOwner.Commands.InterruptAll(true);
                 rayOwner.Commands.RemoveFinishedAndUpdateQueue();
-                rayTarget.Commands.InterruptAll(true);
-                rayTarget.Commands.RemoveFinishedAndUpdateQueue();
                 rayTarget.Damage = 0;
                 rayTarget.Stats.AC.BaseValue = -100;
                 InfernalCombatLane34(fixture, rayOwner, rayTarget, 3);
@@ -673,7 +671,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.State.Size = oldSize;
                 target.Damage = oldDamage;
                 InfernalRemoveBarbedFear35(target, owner, frightened);
-                UnitEntityData[] cleanupActors = { owner, sibling, attacker };
+                UnitEntityData[] cleanupActors = { owner, sibling };
                 DisposeExpandedSummoningUnits(fixture.Created,
                     cleanupActors);
                 int cleanupFrames = 0;

@@ -618,3 +618,34 @@ Sprint 35 checkpoint; historical records are not current instructions.
   requires a new exact candidate and one affected native rerun. Production
   compilation and the selected Sprint 35/correction group pass 8/8 after the
   isolation repair (26.0 s / 1.4 s).
+- Exact candidate `cfa5319b0c50eae4b211c2ca67070f547a3c4c90`
+  passed development admission, selected 8/8 tests, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `46030a7d0c8fed1fce326cd4619d1db39e738a74f43c2c233a7983b80c93fd7d`;
+  ZIP `5f53cf5954f3991007ed760270aa1fc19f8e584367c8795fceb87db7afd473c6`;
+  DLL `fb9de234993600c119c5cb9ef08e98aeaec550ce4204c3eeb4c4cd83a4d15297`;
+  MVID `bb81de03-83e6-4318-8cfc-9d60e079b9d3`. Its 162-file exact
+  build (86,490,539 bytes) is preserved on `E:` under manifest
+  `6772D7786DABE025C24AFA144F6F5BD6FAA41741369A7FC3438029FECB3AE0FE`.
+  Guarded run `20261030T2325472972946Z-141ce8e0e4e84457a092432c0544c7c8`
+  again closed the grapple/Impale rows, then ran the isolated real Scorching
+  Ray command. Both configured rays made separately attributed native ranged
+  touch attacks (natural 18 hit, natural 1 miss), but the hit correctly dealt
+  no damage because the observer had selected the retained Barbazu as its
+  target and devils are fire-immune. The command, two-projectile delivery,
+  CL12/spell-level-2 parameters and exact standard-action cost were otherwise
+  present. This is an ineligible observer target, not a gameplay defect. The
+  smallest correction disposes the Barbazu after its contact cells, retains
+  the second Barbed as ray owner, and targets the existing non-fire-immune
+  hostile while the independent original Barbed hold remains live. No roll,
+  damage or immunity is forced or removed. The live tree restored to exact
+  intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains and no save was staged. Candidate, snapshots,
+  deployment, raw FAIL and restoration are preserved as 309 verified files
+  on `E:` under manifest
+  `12B1D6EC69D20C3363A196BE3439FF08F965EF244A4039BC8340313B357CD611`.
+  The unchanged bytes will not be relaunched; the observer-only target repair
+  requires a new exact candidate and one affected native rerun. Production
+  compilation and the selected Sprint 35/correction group pass 8/8 after the
+  target repair (26.3 s / 4.9 s).
