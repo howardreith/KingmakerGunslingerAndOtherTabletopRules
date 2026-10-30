@@ -64,6 +64,16 @@ Sprint 35 checkpoint; historical records are not current instructions.
   its package attempt stopped before compilation when the sparse worktree lacked
   hash-pinned catalog inputs. Those exact read-only inputs were materialized,
   and the current registry/delegated-manifest hashes are now bound in the icon
-  catalog. No package has been staged or game process launched yet.
+  catalog. The resulting `a8d9ecd9` development ZIP passed strict package
+  validation (ZIP SHA-256
+  `acba82e56db4710612d2804bf3842663fae02d91edf99b3626f9dfc792f8463f`;
+  DLL SHA-256
+  `3656cc61cca85e7c6b89c378ca6d65e56c6eed30f16bf5ee4c8abb935a4490b3`)
+  but has not been staged. Pre-dispatch review found and repaired two host-only
+  admission gaps: the PowerShell phase parser omitted declared Sprint 35 phases,
+  and the restoration wrapper could not predeploy/reuse an explicit development
+  candidate. The bounded orchestration suite now passes 267 assertions and the
+  focused Sprint 35 domain group remains 4/4. A clean source-bound package for
+  this host repair is required before the first game launch.
 - Mandatory qualification, publication, release, verification, and restoration
   are all pending.
