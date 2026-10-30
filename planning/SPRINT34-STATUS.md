@@ -4,7 +4,8 @@ Current stage: hidden mechanics qualification is complete. Exactly the two
 Sprint34 keys now expose their ten routes for final qualification. No final
 release package or Working envelope has started. Master remains the reviewed
 4b7e3d91; remote tag/release v172 remains free at2026-10-30T05:07Z.
-The public product checkpoint will anchor version-only v172 metadata. The
+Reviewed public product `0ad0f49ed8a6d7faf06bc32e6c202386731f0537`
+anchors version-only v172 metadata. The
 restored-profile receipt admits the exact wt/s34 root alongside the existing
 qualified roots; no broader path or release bypass is added.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
@@ -214,8 +215,13 @@ Focused37 PASS36.260s: public-route production compilation and11/2767 selected t
 Focused35 PASS31.303s: production compilation and11/2767 selected tests.
 Focused34 FAIL21.045s on one observer lambda/local name collision, corrected
 before35. Focused33 PASS36.293s followed the batched native-bleed compile fixes.
-Next: review/commit the public product, bind v172 version-only metadata and
-its exact selector, run focused release refusals, then one final Sprint gate.
+Next: commit the coherent reviewed v172 inputs and execute the selected final
+Sprint source/build/package gate once. Final native/persistence remains NOT_RUN.
+Focused release checks PASS8.043s: exact-product validator,13 corruption tests,
+33 dispatch checks,42 S34/18 affected S33 publisher checks, and default-publisher
+refusal before network/mutation. Initial preparation exposed a UTF-8 decoding
+change to historical JSON and missing172 shared-child selectors; both corrected
+from the exact original Git record before the passing checks. No receipt changed.
 The stock early healing/chain cells and AI03 retain original-artifact evidence;
 no repeated full combat/AI campaign.
 The public-route observer also records real loaded medallion assignments and
