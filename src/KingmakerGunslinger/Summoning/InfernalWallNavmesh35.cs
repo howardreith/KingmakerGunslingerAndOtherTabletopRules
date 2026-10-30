@@ -22,10 +22,13 @@ namespace KingmakerGunslinger.Summoning
         private UnitEntityView _view;
         private UnitEntityData _owner;
         private NavmeshCut _cut;
+        private TileHandlerHelper _tileHandler;
         private bool _released;
 
         internal NavmeshCut Cut { get { return _cut; } }
         internal UnitEntityData Owner { get { return _owner; } }
+        internal string UpdateRoute { get; private set; }
+        internal int RecastApplyRequests { get; private set; }
 
         internal static bool IsExactIdentity(UnitEntityView view)
         {
@@ -58,6 +61,15 @@ namespace KingmakerGunslinger.Summoning
             _cut.updateDistance = .05f;
             _cut.updateRotationDistance = 1f;
             _cut.ForceUpdate();
+            _tileHandler = UnityEngine.Object
+                .FindObjectOfType<TileHandlerHelper>();
+            if (_tileHandler != null && _tileHandler.isActiveAndEnabled)
+            {
+                _tileHandler.ForceUpdate();
+                RecastApplyRequests++;
+                UpdateRoute = "existing-native-tile-handler";
+            }
+            else UpdateRoute = "native-consumer-pending";
         }
 
         internal void Release()
@@ -65,8 +77,16 @@ namespace KingmakerGunslinger.Summoning
             if (_released) return;
             _released = true;
             enabled = false;
-            if (_cut != null) UnityEngine.Object.DestroyImmediate(_cut);
+            if (_cut != null)
+            {
+                UnityEngine.Object.DestroyImmediate(_cut);
+                if (_tileHandler != null &&
+                    _tileHandler.isActiveAndEnabled &&
+                    RecastApplyRequests > 0)
+                    _tileHandler.ForceUpdate();
+            }
             _cut = null;
+            _tileHandler = null;
             _owner = null;
             _view = null;
         }
