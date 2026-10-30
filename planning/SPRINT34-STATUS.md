@@ -5,8 +5,7 @@ The game and transactions ended; original Working bytes/metadata and full human
 intake are EXACTLY RESTORED. No release published. Product/build/promotion root
 `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed/current remote
-master `4b7e3d914883ac695a4146c03de790b2024ea38c`; v172 was free at05:49Z
-2026-10-30 and must be rechecked before freezing/publication. Sprint33 is CLOSED;
+master `4b7e3d914883ac695a4146c03de790b2024ea38c`; v172 was rechecked free on2026-10-30 and must be rechecked before freezing/publication. Sprint33 is CLOSED;
 its original-source ON REUSED_PASS and historical NOT_RUN remain unchanged.
 
 The native Fact.PostLoad predicate matches saved ComponentName to exact Unity
@@ -18,6 +17,10 @@ No wound, disease, regeneration, action, visual, route or observer semantics
 changed. Focused41: production compile and8/8 Sprint34 tests PASS33.902s;
 this is not native cold-load proof. Next: freeze reviewed corrected source,
 one complete boundary, then fresh mixed ON/OFF and final integration.
+The exact release validator now anchors reviewed corrected product
+`46e400cf67d08a91f919a1c262b2963a98aabb9d`; it still refuses any unreviewed product/asset change.
+A fetch with tags refused conflicting historical tags; none were replaced.
+The subsequent no-tags master fetch passed and retained the reviewed master.
 
 Retained prior final candidate `57957987f4bd13d8663b4c91dc5345746a03bfa7`:
 ZIP `e026eee60442f80f6d72009d34e4301de0c731273b516b462c784f4382f16812`;
