@@ -519,3 +519,30 @@ Sprint 35 checkpoint; historical records are not current instructions.
   without gameplay changes. No package, deployment, save or game process was
   selected by this checkpoint. The changed observer and Bone AI require a new
   source-bound package and affected native runs.
+- Exact candidate `f1cd6a13aefccab0ef368d761dbe2559ed2d2fc2`
+  passed repository admission, the selected 8/8 group, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `ff80fd04b358cdc9c9d6ecfb3e54b0817a1954a6e41314822beb0bdae550b0e5`;
+  ZIP `0b8a1f202e8245a8200262c258345ae6c4edbfd6dc3bc561d1024018a1fed08d`;
+  DLL `614f46ebce6d9715535fb9f14d51b62eec0d28d08fa1fdf78b23f834c8e74ff9`;
+  MVID `1e38c8f2-dc20-4913-9d10-e0f63780bfe5`. Its 162-file exact
+  build is preserved on `E:` under manifest
+  `AB141F090C7236C363D32A2A4B64D4B8121BAF4DDDFCA1BD9A3268737A827E1B`.
+  Guarded run `20261030T2220157734150Z-b9ed104766764c1bb4dbafe4de9b0f56`
+  failed its first Barbed mapping cell: the two claws and two-ray SLA were
+  present, but `SummonGrabComponent.Find` returned null. The raw result proves
+  the active Barbed grab was intentionally installed on a hidden
+  `BlueprintFeature`, while the shared lookup searched only buff facts; that
+  also denied later-round maintain/Impale access and is a production defect,
+  not an observer mismatch. The bounded correction preserves the existing
+  buff-first route and then searches active hydrated feature facts. The mapping
+  observer now requires reference identity with that active feature component.
+  The live tree restored to exact intake hash
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains. Candidate, snapshots, deployment, raw FAIL and
+  restoration are preserved as 309 verified files on `E:` under manifest
+  `21049FBCCF1D4AC00F34A64010FEAA9CDD4FEB424854671EB18A26FA54F7A9FD`.
+  The failed bytes will not be relaunched; the exact feature-fact lookup is the
+  only causal production change before the next candidate. Production
+  compilation passed in 29.0 seconds and the selected Sprint 35/correction
+  group passed 8/8 in 5.1 seconds.

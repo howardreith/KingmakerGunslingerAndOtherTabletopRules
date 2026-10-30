@@ -87,6 +87,11 @@ namespace KingmakerGunslinger.RuntimeTesting
 
                 var profile = InfernalMartialProfile35.For(owner);
                 var grab = SummonGrabComponent.Find(owner);
+                var featureGrab = owner.Descriptor.Progression.Features
+                    .Enumerable.Where(value => value != null &&
+                        value.IsTurnedOn).SelectMany(value =>
+                            value.SelectComponents<SummonGrabComponent>())
+                    .SingleOrDefault();
                 string prefix = ExpandedSummoningSpecialBuilder.Barbed35Prefix;
                 frightened = (BlueprintBuff)ExpandedSummoningBlueprints
                     .Registered.BySymbol[prefix + "FearFrightened"];
@@ -113,6 +118,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(fear.Claw, profile.Claw) &&
                     ReferenceEquals(fear.Frightened, frightened) &&
                     grab != null && grab.GrabWithPrimaryHand &&
+                    ReferenceEquals(grab, featureGrab) &&
                     grab.GrabAdditionalLimbCount == 1 &&
                     grab.MaxTargetSizeDelta == 0 &&
                     grab.MaxHeldTargets == 1 &&
@@ -131,6 +137,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .Select(value => value.MaybeWeapon?.Blueprint?
                             .AssetGuid)),
                     ["grabMaxTargetSizeDelta"] = grab?.MaxTargetSizeDelta,
+                    ["activeFeatureGrabMatches"] = ReferenceEquals(grab,
+                        featureGrab),
                     ["impaleOwner"] = grab?.ImpaleProfileOwner?.AssetGuid,
                     ["ray"] = ray.AssetGuid,
                     ["rayProjectiles"] = delivery?.Projectiles?.Length,
