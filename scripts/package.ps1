@@ -325,7 +325,9 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 278 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count + $infernalFiles.Count
+$basePackageFileCount = 278 + @($summonManifest.icons).Count +
+    $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count +
+    $infernalFiles.Count + $infernal35Files.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {
