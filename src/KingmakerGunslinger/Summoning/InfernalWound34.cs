@@ -59,18 +59,32 @@ namespace KingmakerGunslinger.Summoning
     // the first live marker runs the native bleed actions on each victim round.
     [Serializable]
     public sealed class InfernalWound34 : BuffLogic, ITickEachRound,
-        ITargetRulebookHandler<RuleHealDamage>
+        ITargetRulebookHandler<RuleHealDamage>, IUnitBuffHandler
     {
         public ActionList BleedActions;
+        public BlueprintBuff[] StrongerNativeBleeds = Array.Empty<BlueprintBuff>();
         internal const string CotwBleedType = "CallOfTheWild.BleedMechanics.BleedBuff";
         public override void OnFactDeactivate()
         {
             base.OnFactDeactivate();
+            ReselectNativeBleed(Buff);
+        }
+        public void HandleBuffDidAdded(Buff buff) { }
+        public void HandleBuffDidRemoved(Buff buff)
+        {
+            // Removal is globally broadcast. Only this patient's removed native
+            // bleed can reopen its still-owned wound in the installed selector.
+            if (ReferenceEquals(buff?.Owner, Owner) && buff?.Blueprint?.ComponentsArray.Any(
+                component => component.GetType().FullName == CotwBleedType) == true)
+                ReselectNativeBleed(buff);
+        }
+        private void ReselectNativeBleed(Buff retired)
+        {
             if (Owner?.Unit == null) return;
             // The installed selector clears only the selected fact. Restore
             // its own strongest-bleed choice from the remaining live facts.
             foreach (var other in Owner.Unit.Buffs.Enumerable.ToArray()) {
-                if (ReferenceEquals(other, Buff) || !other.IsTurnedOn) continue;
+                if (ReferenceEquals(other, retired) || !other.IsTurnedOn) continue;
                 foreach (var component in other.SelectComponents<BuffLogic>()) {
                     if (component.GetType().FullName != CotwBleedType) continue;
                     component.OnFactActivate();
@@ -98,6 +112,8 @@ namespace KingmakerGunslinger.Summoning
         {
             if (Owner?.Unit == null || BleedActions == null) return;
             if (!ReferenceEquals(Wounds(Owner.Unit).FirstOrDefault(), Buff)) return;
+            if (Owner.Unit.Buffs.Enumerable.Any(other => other.IsTurnedOn &&
+                StrongerNativeBleeds.Contains(other.Blueprint))) return;
             Buff.RunActionInContext(BleedActions, null);
         }
 

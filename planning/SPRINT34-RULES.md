@@ -110,5 +110,10 @@ qualification remain required. Other creatures' regeneration is unchanged.
 CotW's bleed donor uses its shared strongest-bleed selector; its private clone
 keeps that consumer. Source removal reselects remaining live bleed facts because
 the installed selector does not do this itself. Stock bleed uses its actual
-native damage action only when the inspected graph resolves. Both paths still
-need native proof, including another source's unrelated bleed.
+native direct HP action only when the inspected graph resolves. Its donor's
+activation-pruning family identifies stronger ordinary bleeds; the wound keeps
+its own marker/healing gate but yields its tick while one is active. CotW native
+removal reselects remaining facts on that exact patient. Stock03 proved native
+spell rejection/closure and same-type owned ticks, but exposed coexistence
+stacking. Fresh stock/CotW coexistence, resumption and source-isolation proof is
+required for this repair; effects01 did not observe the new coexistence cells.

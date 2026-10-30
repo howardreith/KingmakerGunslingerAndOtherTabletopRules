@@ -24,7 +24,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             IGlobalRulebookHandler<RuleAttackWithWeapon>, IGlobalRulebookHandler<RuleAttackRoll>,
             IGlobalRulebookHandler<RuleDealDamage>, IGlobalRulebookHandler<RuleDealStatDamage>,
             IGlobalRulebookHandler<RuleHealDamage>, IGlobalRulebookHandler<RuleSavingThrow>,
-            IGlobalRulebookHandler<RuleApplyBuff>
+            IGlobalRulebookHandler<RuleApplyBuff>, IGlobalRulebookHandler<RuleSpellResistanceCheck>
         {
             internal readonly JArray Rows = new JArray();
             private readonly Dictionary<RuleHealDamage, JObject> heals = new Dictionary<RuleHealDamage, JObject>();
@@ -68,6 +68,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void HandleUnitCommandDidStart(UnitCommand command) { Command(command, "command-start"); }
             public void HandleUnitCommandDidAct(UnitCommand command) { Command(command, "command-act"); }
             public void HandleUnitCommandDidEnd(UnitCommand command) { Command(command, "command-end"); }
+            public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt) { }
+            public void OnEventDidTrigger(RuleSpellResistanceCheck evt)
+            {
+                var row = Row("spell-resistance", evt.Initiator, evt.Target);
+                row["ability"] = evt.Ability?.AssetGuid; row["contextAbility"] = evt.Context?.SourceAbility?.AssetGuid;
+                row["sr"] = evt.SpellResistance; row["penetration"] = evt.SpellPenetration;
+                row["rollRequired"] = evt.HasResistanceRoll; row["d20"] = evt.HasResistanceRoll ? (JToken)new JValue(evt.Roll.Value) : JValue.CreateNull();
+                row["immune"] = evt.TargetIsImmune; row["resisted"] = evt.IsSpellResisted;
+            }
             public void OnEventAboutToTrigger(RuleAttackRoll evt) { }
             public void OnEventDidTrigger(RuleAttackRoll evt)
             {
