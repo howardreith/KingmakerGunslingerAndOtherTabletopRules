@@ -649,3 +649,41 @@ Sprint 35 checkpoint; historical records are not current instructions.
   requires a new exact candidate and one affected native rerun. Production
   compilation and the selected Sprint 35/correction group pass 8/8 after the
   target repair (26.3 s / 4.9 s).
+- Exact candidate `0734ca9bbe544d1ac1fa3dc2d11dd9397f25657a`
+  passed development admission, selected 8/8 tests, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `4667f7818dd4ba11680f00ddd85c74ac6485c297c997694d5a77ec5129098b72`;
+  ZIP `24fd39271cad718f6a7d27d9d15b459bffa0c08df40063fc39c386317f207aaf`;
+  DLL `ff466db0f02f3d2037ad016ec5a1b759f5cbe366d34e26dccfa34ca12a6901df`;
+  MVID `4e7decd3-4e4e-4ac0-9ace-43d27b907797`. Its 162-file exact
+  build (86,490,489 bytes) is preserved on `E:` under manifest
+  `D2AD920F2156DC8997C878B1F6144049A101F43928C994657C6F0A68B8C9293A`.
+  Guarded run `20261030T2341017982842Z-b7ffcfba3cbf49918ab7d026e6bb2122`
+  again passed mapping, both independent Barbed Defense owners, claw fear,
+  oversize and maneuver-immunity controls, then established the exact native
+  hold. Its later real grapple check rolled a natural 1: production correctly
+  recorded product failure, applied no Impale, replayed no claw or fear, and
+  removed the reciprocal target hold, but the full release predicate remained
+  false after 159 frames. This matches retained Kingmaker 2.1.7b evidence:
+  non-multi release can leave the owner's `UnitPartGrappleInitiator`, hold buff
+  and control conditions after the target side is free, blocking useful later
+  action and reacquisition. The shared hold callback still must not remove its
+  own initiator part re-entrantly. The bounded production correction therefore
+  schedules one main-loop cleanup only for the exact Barbed/Impale owner,
+  exact still-named target and absent reciprocal target link; a different
+  owner, different target or already reacquired reciprocal hold is untouched.
+  The observer now records every release operand. The accepted shared reload
+  reset and all other grapplers remain unchanged. The live tree restored to
+  exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains and no save was staged. Candidate, snapshots,
+  deployment, raw FAIL and restoration are preserved as 309 verified files
+  (130,226,705 bytes) on `E:` under manifest
+  `510BDE561B89D0FB5969107F23DAA27FF88F65DBC1E3953254BC0058F61578A8`.
+  These unchanged bytes will not be relaunched; the exact-owner scheduled
+  cleanup requires a new source-bound candidate and one affected native rerun.
+  The first focused compile stopped only because two new diagnostic fields used
+  null-conditional access on native value-type `UnitReference`; explicit
+  part-null checks corrected that observer-only syntax. Production compilation
+  then passed in 25.5 seconds and the selected Sprint 35/correction group passed
+  8/8 in 5.1 seconds, including the four exact-owner cleanup admission cases.

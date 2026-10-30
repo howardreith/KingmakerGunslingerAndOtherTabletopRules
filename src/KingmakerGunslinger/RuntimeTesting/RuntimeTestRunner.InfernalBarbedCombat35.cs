@@ -542,6 +542,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                                         grab);
                                 attemptRow["releaseSettleFrames"] =
                                     settleFrames;
+                                attemptRow["releaseState"] =
+                                    InfernalBarbedHoldState35(owner, target,
+                                        grab);
                                 attemptRow["releaseSettled"] =
                                     InfernalBarbedHoldClear35(owner, target,
                                         grab);
@@ -925,6 +928,34 @@ namespace KingmakerGunslinger.RuntimeTesting
                 SummonGrappleLinks.EstablishingWeapon(owner, target) == null &&
                 owner.Buffs.GetBuff(grab.HoldBuff) == null &&
                 target.Buffs.GetBuff(grab.GrappledBuff) == null;
+        }
+
+        private static JObject InfernalBarbedHoldState35(UnitEntityData owner,
+            UnitEntityData target, SummonGrabComponent grab)
+        {
+            UnitPartGrappleInitiator initiator = owner == null ? null :
+                owner.Get<UnitPartGrappleInitiator>();
+            UnitPartGrappleTarget held = target == null ? null :
+                target.Get<UnitPartGrappleTarget>();
+            return new JObject {
+                ["heldTarget"] = owner == null ? null :
+                    SummonHoldComponent.HeldTarget(owner)?.UniqueId,
+                ["ownerInitiator"] = initiator != null,
+                ["ownerInitiatorTarget"] = initiator == null ? null :
+                    initiator.Target.Value?.UniqueId,
+                ["targetPart"] = held != null,
+                ["targetPartOwner"] = held == null ? null :
+                    held.Initiator.Value?.UniqueId,
+                ["establishingWeapon"] = owner == null || target == null ?
+                    null : SummonGrappleLinks.EstablishingWeapon(owner,
+                        target)?.Blueprint?.AssetGuid,
+                ["holdBuff"] = owner != null && grab?.HoldBuff != null &&
+                    owner.Buffs.GetBuff(grab.HoldBuff) != null,
+                ["grappledBuff"] = target != null &&
+                    grab?.GrappledBuff != null &&
+                    target.Buffs.GetBuff(grab.GrappledBuff) != null,
+                ["clear"] = InfernalBarbedHoldClear35(owner, target, grab)
+            };
         }
 
         private static JArray InfernalBarbedManeuverRows35(

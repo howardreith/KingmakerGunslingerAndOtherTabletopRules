@@ -1864,12 +1864,15 @@ namespace KingmakerGunslinger.Summoning
         /// <summary>
         /// Ends one link. Single: removes the target's native part (which
         /// removes its grappled buff and condition); the summon's own
-        /// initiator part is left to the game's grapple controller, which
-        /// drops it once the target is no longer grappled, and to the
+        /// initiator part is normally left to the game's grapple controller,
+        /// which drops it once the target is no longer grappled, and to the
         /// summon's own disposal - removing it here would re-enter this
-        /// buff's removal. Multi: removes the target's held-state buff for
-        /// this holder and, when it was the last link, the holder's own
-        /// MultiHold buff.
+        /// buff's removal. The exact Barbed/Impale owner is the measured
+        /// exception: Kingmaker retains its initiator part and hold buff after
+        /// a failed maintain check, so a main-loop callback removes only that
+        /// now-nonreciprocal pair after this buff callback returns. Multi:
+        /// removes the target's held-state buff for this holder and, when it
+        /// was the last link, the holder's own MultiHold buff.
         /// </summary>
         internal static void ReleaseLink(UnitEntityData owner, UnitEntityData target,
             SummonGrabComponent grab, bool dropHoldWhenLast)
@@ -1879,6 +1882,7 @@ namespace KingmakerGunslinger.Summoning
             if (grab == null || !grab.MultiLink)
             {
                 Release(owner, target);
+                ScheduleReleasedImpaleOwnerCleanup(owner, target, grab);
                 return;
             }
             Buff state = HeldState(owner, target, grab);
@@ -1889,6 +1893,49 @@ namespace KingmakerGunslinger.Summoning
                 Buff hold = owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
                 if (hold != null) owner.Descriptor.Buffs.RemoveFact(hold);
             }
+        }
+
+        private static void ScheduleReleasedImpaleOwnerCleanup(
+            UnitEntityData owner, UnitEntityData target,
+            SummonGrabComponent grab)
+        {
+            UnitPartGrappleInitiator initiator = owner == null ? null :
+                owner.Get<UnitPartGrappleInitiator>();
+            UnitPartGrappleTarget held = target == null ? null :
+                target.Get<UnitPartGrappleTarget>();
+            bool exactOwner = owner?.Blueprint != null &&
+                grab?.ImpaleProfileOwner != null &&
+                ReferenceEquals(owner.Blueprint, grab.ImpaleProfileOwner);
+            bool exactTarget = initiator != null &&
+                ReferenceEquals(initiator.Target.Value, target);
+            bool reciprocal = held != null &&
+                ReferenceEquals(held.Initiator.Value, owner);
+            if (!InfernalRules35.ShouldClearReleasedImpaleHold(exactOwner,
+                    exactTarget, reciprocal) || Game.Instance == null) return;
+
+            Game.Instance.ScheduleAction(() =>
+            {
+                if (owner == null || owner.Descriptor == null || target == null)
+                    return;
+                UnitPartGrappleInitiator current =
+                    owner.Get<UnitPartGrappleInitiator>();
+                UnitPartGrappleTarget targetPart =
+                    target.Get<UnitPartGrappleTarget>();
+                bool stillExact = current != null &&
+                    ReferenceEquals(current.Target.Value, target);
+                bool nowReciprocal = targetPart != null &&
+                    ReferenceEquals(targetPart.Initiator.Value, owner);
+                if (!InfernalRules35.ShouldClearReleasedImpaleHold(
+                        ReferenceEquals(owner.Blueprint,
+                            grab.ImpaleProfileOwner), stillExact,
+                        nowReciprocal)) return;
+
+                owner.Remove<UnitPartGrappleInitiator>();
+                Buff hold = grab.HoldBuff == null ? null :
+                    owner.Descriptor.Buffs.GetBuff(grab.HoldBuff);
+                if (hold != null) owner.Descriptor.Buffs.RemoveFact(hold);
+                SummonGrappleLinks.Release(owner, target);
+            });
         }
 
         internal static void Release(UnitEntityData owner, UnitEntityData target)
