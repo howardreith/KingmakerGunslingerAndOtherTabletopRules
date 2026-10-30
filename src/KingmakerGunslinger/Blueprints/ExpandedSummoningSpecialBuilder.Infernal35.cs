@@ -318,7 +318,8 @@ namespace KingmakerGunslinger.Blueprints
             string symbol = Barbed35Prefix + "ScorchingRay";
             var ability = ConfigureOwnedSpell35(library, symbols, symbol,
                 ScorchingRayGuid, "Scorching Ray (Two Rays)", 2,
-                UnitCommand.CommandType.Standard);
+                UnitCommand.CommandType.Standard,
+                "Spell-like ability at caster level 12. This hamatula's listed version fires exactly two rays.");
             var delivery = ability.ComponentsArray.OfType<
                 AbilityDeliverProjectile>().Single();
             if (delivery.Projectiles == null || delivery.Projectiles.Length < 2)
@@ -326,12 +327,6 @@ namespace KingmakerGunslinger.Blueprints
                     "Native Scorching Ray no longer exposes two projectiles.");
             delivery.Projectiles = delivery.Projectiles.Take(2).ToArray();
             delivery.UseMaxProjectilesCount = false;
-            BlueprintUnitFactAccess.Resolve().Configure(ability,
-                LocalizationService.Create(symbol + ".Name",
-                    "Scorching Ray (Two Rays)"),
-                LocalizationService.Create(symbol + ".Description",
-                    "Spell-like ability at caster level 12. This hamatula's listed version fires exactly two rays."),
-                ability.Icon);
             return ability;
         }
 
@@ -541,7 +536,7 @@ namespace KingmakerGunslinger.Blueprints
             LibraryScriptableObject library,
             IDictionary<string, BlueprintScriptableObject> symbols,
             string symbol, string nativeGuid, string title, int spellLevel,
-            UnitCommand.CommandType action)
+            UnitCommand.CommandType action, string description = null)
         {
             var ability = Require<BlueprintAbility>(symbols, symbol);
             CloneMephitSpell(library, ability, nativeGuid,
@@ -565,7 +560,8 @@ namespace KingmakerGunslinger.Blueprints
             BlueprintUnitFactAccess.Resolve().Configure(ability,
                 LocalizationService.Create(symbol + ".Name", title),
                 LocalizationService.Create(symbol + ".Description",
-                    title + " as a spell-like ability at caster level 12."),
+                    description ?? title +
+                        " as a spell-like ability at caster level 12."),
                 ability.Icon);
             return ability;
         }

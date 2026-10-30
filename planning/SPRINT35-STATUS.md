@@ -165,3 +165,23 @@ Sprint 35 checkpoint; historical records are not current instructions.
   while the four declared Sprint 35 exports correctly staged 440. The bounded
   repair adds only `$infernal35Files.Count` to that existing formula. This
   incomplete attempt is not a candidate and will not be deployed or relaunched.
+- Candidate `6d673532` passed the same selected 7/7 group, exact-reference
+  compilation, strict 440-file packaging, and package validation (ZIP
+  `ce92a2574abc62f8f84b2f0b4527c431f0262c45be5a5982ed574d0477e9e58a`;
+  DLL `193ee6b79aca8d0f510bbcaa9ed8b1f7d713b3053d050f47486d38ed6df39959`;
+  MVID `5a9dff4f-a775-4d94-af7b-1121976a4a4e`). Guarded run
+  `20261030T1816329347148Z-90186ea4257e4812baee633cce231997`
+  failed before assertions after registering the Sprint 35 identities:
+  `ConfigureBarbedScorchingRay35` attempted to register the same description
+  localization key a second time with different text. Blueprint rollback
+  removed all 3,007 owned registrations, no save was staged, and the wrapper
+  restored the live mod tree to exact pre-run SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  The candidate is retained on `E:` as 168 hash-matched files with archive
+  manifest SHA-256
+  `ae801332431ed9e252cb5a99d8ed8505f22e8278c65ad14ffbfa43c05bdd7497`.
+  The repair makes the shared owned-spell builder accept the specialized
+  description so each localization key is created exactly once. After
+  reclaiming only reproducible build/staging scratch, production compilation
+  and the selected Sprint 35/correction group pass 7/7. The failed bytes will
+  not be relaunched; a changed source-bound candidate is required.
