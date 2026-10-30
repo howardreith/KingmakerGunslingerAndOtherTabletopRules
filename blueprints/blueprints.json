@@ -60687,6 +60687,590 @@
       "status": "active",
       "milestone": "Expanded Summoning alternate sources",
       "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.BarbedDevil",
+      "guid": "a8ed4e16ec4b48a5bdfdc47f7f1b9cd0",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Unit.BoneDevil",
+      "guid": "74652de839a94feba3c2fb67b536437c",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier7.BoneDevil.One",
+      "guid": "0c7884533db94682a0b07bba7b44ab6a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.BarbedDevil.One",
+      "guid": "55dab2ca78004b98a1b91d6df57bd680",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier8.BoneDevil.OneD3",
+      "guid": "2c103c319955480daad4d43a9aa965e9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.BarbedDevil.OneD3",
+      "guid": "55e494b7f78249dd8536616e71bc7747",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Ability.SM.Tier9.BoneDevil.OneD4PlusOne",
+      "guid": "97c5285b33cb4a508bf55e6ee2922411",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.UnitType",
+      "guid": "6979344dd88a41458b5a785196443969",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.Traits",
+      "guid": "7aebb764530f4d029915496e44e91089",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.Claw",
+      "guid": "c4743cbf5fb7435eb7cedb8f103d6ee5",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.ClawType",
+      "guid": "dd87db14497b41f09f87a1e2427f1fee",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.FearFrightened",
+      "guid": "a33a7c9bc30c48f6acf0694eea603b63",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.HoldPerson",
+      "guid": "1306c86b513248538254bd3635f804bb",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.Pyrotechnics",
+      "guid": "d31c6a33c4b7450cb461491d7bd7a1d9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.PyrotechnicsBlinded",
+      "guid": "ce0c950662514df195ac4235e31c68ef",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.ScorchingRay",
+      "guid": "6894dbc4d5e44c7fb5108475404a10c0",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.OrdersWrath",
+      "guid": "4e978869bd5247e6b1362312fdf336ff",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.OrdersWrathResource",
+      "guid": "28798d627db14cb880c9e602e05cb889",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.UnholyBlight",
+      "guid": "36768b52164b4ab2a57e4c7480cc7011",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.UnholyBlightResource",
+      "guid": "8b4dafb271da49c0a43c3705904fa85d",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.Brain",
+      "guid": "ddd35c7689e344ca96c9e78443e519e0",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.HoldAi",
+      "guid": "2d8f0a45f0d64bed9c31878813ed35ab",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.PyrotechnicsAi",
+      "guid": "6a4d5c947c1c401ebded2a5abe902097",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.ScorchingRayAi",
+      "guid": "f43e84fa3dd04885aced7581ab368c22",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BarbedDevil.AreaAi",
+      "guid": "ef45e81ebcd74295a80dbd825d5f28af",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.UnitType",
+      "guid": "b1ea006b124643afa49c4f56c66f3942",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Traits",
+      "guid": "33c31dc44de741b7a13683373c6bda8e",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Bite",
+      "guid": "a54ab76372484c088cfe028fe7854694",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.BiteType",
+      "guid": "89d4277562a34373882fc8ea2c31922b",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Claw",
+      "guid": "d0f2530de475451a815b1861c618776d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.ClawType",
+      "guid": "b052e61eb9544424a080c139d0ef73f6",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Sting",
+      "guid": "e341953286ac453a8adc1747671e025d",
+      "plannedType": "BlueprintItemWeapon",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.StingType",
+      "guid": "baa74fc8abf643b3b80c8b49c467dfa6",
+      "plannedType": "BlueprintWeaponType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Poison",
+      "guid": "de0fe42f91864d8cbd9886a6ef7a9400",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.FearCarrier",
+      "guid": "33e94fb89b6847b289567791f377fbe7",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.FearArea",
+      "guid": "3225445286cf4ffbbf37f323ace7d113",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.FearFrightened",
+      "guid": "0de161a468544f439279dfea07417935",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.FearImmunity",
+      "guid": "6f390937ee1b4052a8b1f1de065cb632",
+      "plannedType": "BlueprintBuff",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Invisibility",
+      "guid": "9ff0579625314b3087fd9def1ebdfe2a",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibility",
+      "guid": "b3ad42ab1f814ebaae262cf2d704f8f2",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibilityResource",
+      "guid": "cb36f59e45534bd3967889a36dc190e3",
+      "plannedType": "BlueprintAbilityResource",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.DimensionalAnchor",
+      "guid": "fee1b66488064c8cac11ce26323e982c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallOfIce",
+      "guid": "372f02fa0833401786570fb003e45c4f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit",
+      "guid": "cc2c011c696e4d3e846815c60245465a",
+      "plannedType": "BlueprintUnit",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallSectionUnitType",
+      "guid": "34bc1e5a11d74a8783386a2d4c8d96f0",
+      "plannedType": "BlueprintUnitType",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallSectionTraits",
+      "guid": "65571075c1b242709a47feffd94628fe",
+      "plannedType": "BlueprintFeature",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallResidualArea",
+      "guid": "00e5fc1cbde34b0cb2682e9aca5b85c8",
+      "plannedType": "BlueprintAbilityAreaEffect",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallSectionBrain",
+      "guid": "0250c0bfaed7414481ce141327c29676",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.Brain",
+      "guid": "4b7e7a288cfc467d9164ba1ed5da1507",
+      "plannedType": "BlueprintBrain",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.InvisibilityAi",
+      "guid": "86c9018d6ffb4f5f9d67c9c95d552c50",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibilityAi",
+      "guid": "efba904f62c9458cada368ad077c6578",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.DimensionalAnchorAi",
+      "guid": "40139a7ab34243fb8289cf0d0e3aef51",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Infernal.BoneDevil.WallAi",
+      "guid": "f451f9fcfc2a4ee5a35f1d49d15626e2",
+      "plannedType": "InfernalSpellAi35",
+      "status": "active",
+      "milestone": "Expanded Summoning",
+      "notes": "Registered in every feature-module state; live parent publication remains independently gated."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier7.BoneDevil.One",
+      "guid": "934a94406e995764b4e9da757232f754",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.BarbedDevil.One",
+      "guid": "c4997a092145535d903853cacf7be88b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier8.BoneDevil.OneD3",
+      "guid": "86aa0702dd0c57e2aa2d511b429896f9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.BarbedDevil.OneD3",
+      "guid": "f8a28f2ff94f500aa3c34bf70199a8a5",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MonsterTactician.Tier9.BoneDevil.OneD4PlusOne",
+      "guid": "70ada91bd176557ca2680d294c50d9a9",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier7.BoneDevil.One",
+      "guid": "6ba574e2fdf9584ca6c93a7ca99daaba",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.BarbedDevil.One",
+      "guid": "2c037d4ec4845ce4af0d506d545cacec",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier8.BoneDevil.OneD3",
+      "guid": "0df8b9c128e158179272c310da899045",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.BarbedDevil.OneD3",
+      "guid": "93a19749127651c3a5a9e457751032d4",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Summoner.Tier9.BoneDevil.OneD4PlusOne",
+      "guid": "78374d8a353b59d188674ca67cd04a8f",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier7.BoneDevil.One",
+      "guid": "9178a1c0372059c899e556545fbd7e9c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.BarbedDevil.One",
+      "guid": "2620f33d611356968bdeda07a437b112",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier8.BoneDevil.OneD3",
+      "guid": "d868f7fa8b4a5c5485f2c3d4d51fbe10",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.BarbedDevil.OneD3",
+      "guid": "c6ffbc2c4afc5e65b21b5b519e3e893c",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.MasterSummoner.Tier9.BoneDevil.OneD4PlusOne",
+      "guid": "6dcfebf357e55a4697563fd56d972f33",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier7.BoneDevil.One",
+      "guid": "24a494b40daf5dc280ccd60892357cdd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.BarbedDevil.One",
+      "guid": "4538387f2a945c9b9400924abb35b9bd",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier8.BoneDevil.OneD3",
+      "guid": "aa1773b64ba15be68907cf0a3040e21b",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.BarbedDevil.OneD3",
+      "guid": "caf0dfe61a24508f94dbe6009713ec25",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
+    },
+    {
+      "symbol": "KMG.Summoning.Adapter.Occultist.Tier9.BoneDevil.OneD4PlusOne",
+      "guid": "3ad8148f889851dcb5471f97c867d506",
+      "plannedType": "BlueprintAbility",
+      "status": "active",
+      "milestone": "Expanded Summoning alternate sources",
+      "notes": "Caller-specific summon child projected from the central catalog."
     }
   ]
 }

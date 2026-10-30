@@ -48,7 +48,7 @@ namespace KingmakerGunslinger.Summoning
             // unchanged at 95/543, and Elephant's eight existing roots are
             // completed rather than re-registered, so they are already counted
             // in both families above.
-            ValidateFamily(SummonFamily.Monster, 104, 582);
+            ValidateFamily(SummonFamily.Monster, 106, 587);
             ValidateFamily(SummonFamily.NaturesAlly, 105, 588);
         }
 
@@ -155,7 +155,9 @@ namespace KingmakerGunslinger.Summoning
                 C("satyr","Satyr",null,false,4,"Satyr"),
                 C("lillend-azata","Lillend Azata",6,false,null,"Human rig; original winged serpent body pending"),
                 C("bearded-devil","Bearded Devil (Barbazu)",5,false,null,"Original bearded devil; measured Lizardfolk rig"),
-                C("kyton-chain-devil","Kyton (Chain Devil)",5,false,null,"Original chain-wrapped humanoid; measured Lizardfolk rig")
+                C("kyton-chain-devil","Kyton (Chain Devil)",5,false,null,"Original chain-wrapped humanoid; measured Lizardfolk rig"),
+                C("barbed-devil","Barbed Devil (Hamatula)",8,false,null,"Original spined devil; measured Lizardfolk rig"),
+                C("bone-devil","Bone Devil (Osyluth)",7,false,null,"Original skeletal-insectile devil and tail; measured Lizardfolk rig")
             };
         }
 

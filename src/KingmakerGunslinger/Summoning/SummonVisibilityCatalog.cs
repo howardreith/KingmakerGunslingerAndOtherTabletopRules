@@ -105,12 +105,16 @@ namespace KingmakerGunslinger.Summoning
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
         // Sprint34 exposes ten routes after hidden native mechanics qualification.
-        // This source state is not a release or completed acceptance claim.
+        // Sprint35 registers Barbed Devil and Bone Devil with exactly five
+        // Monster routes withheld. Registration still runs so dependency and
+        // native-consumer proof can use the executable candidate without a
+        // temporary public publication.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(new string[0], StringComparer.Ordinal);
+            new HashSet<string>(new[] { "barbed-devil", "bone-devil" },
+                StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1170;
-        internal const int SuppressedLogicalPlacementCount = 0;
+        internal const int RegisteredLogicalPlacementCount = 1175;
+        internal const int SuppressedLogicalPlacementCount = 5;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;
 
@@ -158,7 +162,7 @@ namespace KingmakerGunslinger.Summoning
             if (all.Length != RegisteredLogicalPlacementCount ||
                 suppressed.Length != SuppressedLogicalPlacementCount ||
                 all.Count(IsPublished) != PublishedLogicalPlacementCount ||
-                SuppressedCreatureKeys.Count != 0 ||
+                SuppressedCreatureKeys.Count != 2 ||
                 !sprint29Routes || !giantRoutes ||
                 !giants.All(IsPublished) ||
                 !giants.Select(value => value.Creature.Key).Distinct()

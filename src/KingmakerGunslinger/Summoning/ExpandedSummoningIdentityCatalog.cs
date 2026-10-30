@@ -20,8 +20,8 @@ namespace KingmakerGunslinger.Summoning
 
     internal static class ExpandedSummoningIdentityCatalog
     {
-        internal const int UnitCount = 126;
-        internal const int LogicalAbilityCount = 1170;
+        internal const int UnitCount = 128;
+        internal const int LogicalAbilityCount = 1175;
         internal const int TemplatedPlacementCount = 319;
         internal const int TemplateExecutionAbilityCount = TemplatedPlacementCount * 2;
         internal const int TemplateBuffCount = 8;
@@ -90,7 +90,7 @@ namespace KingmakerGunslinger.Summoning
         // cloned Greater Overrun carrier joined when the printed rider
         // was corrected for that one creature. Elephant's missing high-rank
         // Skill Focus completion appends last without replacing any identity.
-        internal const int SpecialIdentityCount = 608;
+        internal const int SpecialIdentityCount = 654;
         internal const int NativePreservationIdentityCount = 2;
         internal const int AlignmentModeIdentityCount = 3;
         internal const int NativeExpandedOptionIdentityCount = 29;
@@ -917,6 +917,52 @@ namespace KingmakerGunslinger.Summoning
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.Brain", "BlueprintBrain"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.ControlAi", "KytonControlAi34"));
             result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.KytonChainDevil.GazeAi", "KytonGazeAi34"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.FearFrightened", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.HoldPerson", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.Pyrotechnics", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.PyrotechnicsBlinded", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.ScorchingRay", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.OrdersWrath", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.OrdersWrathResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.UnholyBlight", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.UnholyBlightResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.HoldAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.PyrotechnicsAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.ScorchingRayAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BarbedDevil.AreaAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.UnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Traits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Bite", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.BiteType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Claw", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.ClawType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Sting", "BlueprintItemWeapon"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.StingType", "BlueprintWeaponType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Poison", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.FearCarrier", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.FearArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.FearFrightened", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.FearImmunity", "BlueprintBuff"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Invisibility", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibility", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibilityResource", "BlueprintAbilityResource"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.DimensionalAnchor", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallOfIce", "BlueprintAbility"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallSectionUnit", "BlueprintUnit"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallSectionUnitType", "BlueprintUnitType"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallSectionTraits", "BlueprintFeature"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallResidualArea", "BlueprintAbilityAreaEffect"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallSectionBrain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.Brain", "BlueprintBrain"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.InvisibilityAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibilityAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.DimensionalAnchorAi", "InfernalSpellAi35"));
+            result.Add(new SummoningIdentitySpec("KMG.Summoning.Infernal.BoneDevil.WallAi", "InfernalSpellAi35"));
             Validate(result);
             return result.AsReadOnly();
         }

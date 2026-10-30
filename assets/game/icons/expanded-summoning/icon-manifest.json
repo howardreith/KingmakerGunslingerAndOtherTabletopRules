@@ -1,6 +1,6 @@
 {
     "schemaVersion":  1,
-    "count":  140,
+    "count":  142,
     "icons":  [
                   {
                       "key":  "air-mephit",
@@ -1244,23 +1244,41 @@
                       "format":  "RGBA PNG",
                       "scope":  "kmg-catalog"
                   },
-    {
-      "key": "bearded-devil",
-      "file": "bearded-devil.png",
-      "sha256": "694575f403bf3fff7374f73560304af40dac4683ef2a444077ee007d12a94d79",
-      "width": 128,
-      "height": 128,
-      "format": "RGBA PNG",
-      "scope": "kmg-catalog"
-    },
-    {
-      "key": "kyton-chain-devil",
-      "file": "kyton-chain-devil.png",
-      "sha256": "b4f980bd5a5763a07c1e962189635841578960f38d338425042b8426c67005ff",
-      "width": 128,
-      "height": 128,
-      "format": "RGBA PNG",
-      "scope": "kmg-catalog"
-    }
-  ]
+                  {
+                      "key":  "bearded-devil",
+                      "file":  "bearded-devil.png",
+                      "sha256":  "694575f403bf3fff7374f73560304af40dac4683ef2a444077ee007d12a94d79",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "kyton-chain-devil",
+                      "file":  "kyton-chain-devil.png",
+                      "sha256":  "b4f980bd5a5763a07c1e962189635841578960f38d338425042b8426c67005ff",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "barbed-devil",
+                      "file":  "barbed-devil.png",
+                      "sha256":  "15ef2ae55a1037359f63fcf9d9086bd5399d81a3ae0bbe0061bda891be89da34",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  },
+                  {
+                      "key":  "bone-devil",
+                      "file":  "bone-devil.png",
+                      "sha256":  "d542bd9c5ffc52615c786cccafb5b3169ab3b2298599c6a895803e223c01d612",
+                      "width":  128,
+                      "height":  128,
+                      "format":  "RGBA PNG",
+                      "scope":  "kmg-catalog"
+                  }
+              ]
 }
