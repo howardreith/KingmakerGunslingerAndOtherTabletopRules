@@ -81,9 +81,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(actor, false);
                     actor.Commands.InterruptAll(true);
                     actor.Commands.RemoveFinishedAndUpdateQueue();
-                    foreach (int frame in Outsider30NativeAppearance(actor,
-                        actor.Blueprint.name)) yield return frame;
                 }
+                // This phase presents and exercises the new Barbed body. The
+                // Astral Deva, wolf and dretch are mechanics-only alignment/SR
+                // controls, just as in the accepted Holy Smite observer; their
+                // unrelated renderer availability is not a cast precondition.
+                foreach (int frame in Outsider30NativeAppearance(owner,
+                    owner.Blueprint.name)) yield return frame;
 
                 string prefix = ExpandedSummoningSpecialBuilder.Barbed35Prefix;
                 var unholy = (BlueprintAbility)ExpandedSummoningBlueprints
