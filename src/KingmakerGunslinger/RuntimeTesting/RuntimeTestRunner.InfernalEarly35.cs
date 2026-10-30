@@ -184,7 +184,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 receipt["contactOriginalGroup"] = oldGroup;
 
                 foreach (int frame in InfernalEarlyTail35(fixture, bone,
-                    reach, check)) yield return frame;
+                    reach, trace, check)) yield return frame;
 
                 foreach (int frame in InfernalEarlyWall35(fixture, bone,
                     owned, check)) yield return frame;
@@ -211,6 +211,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> InfernalEarlyTail35(
             ExpandedSummoningCorrectionFixture fixture,
             UnitEntityData bone, UnitEntityData target,
+            InfernalEvents34 trace,
             Action<string, bool, JObject, string> check)
         {
             var tail = bone.View.GetComponent<BoneDevilTailVisual35>();
@@ -225,16 +226,44 @@ namespace KingmakerGunslinger.RuntimeTesting
             bone.Commands.Run(command);
             foreach (int frame in WaitInfernalCommand34(command,
                 () => tail.Contacts > before, 30)) yield return frame;
+            int commandReference = System.Runtime.CompilerServices
+                .RuntimeHelpers.GetHashCode(command);
+            var attackRows = trace.Rows.Where(row =>
+                (string)row["event"] == "attack" &&
+                (string)row["owner"] == bone.UniqueId &&
+                (string)row["target"] == target.UniqueId &&
+                (int?)row["attackCommand"] == commandReference).ToArray();
+            var completedAtAct = trace.Rows.Where(row =>
+                (string)row["event"] == "command-act" &&
+                (string)row["owner"] == bone.UniqueId &&
+                (string)row["target"] == target.UniqueId &&
+                (int?)row["commandReference"] == commandReference &&
+                (string)row["native"]?["result"] ==
+                    UnitCommand.ResultType.Success.ToString()).ToArray();
+            var profile = InfernalMartialProfile35.For(bone);
+            bool nativePlanCompleted = command.IsFinished &&
+                completedAtAct.Length == 1 &&
+                attackRows.Length == command.AllAttacks.Count &&
+                attackRows.Count(row => (string)row["weapon"] ==
+                    profile.Sting.AssetGuid) == 1;
             string view = ExpandedSummoningPteranodonViewPatch.DescribeView(
                 bone.View);
             check("bone-sting-tail-contact",
-                command.Result == UnitCommand.ResultType.Success &&
+                nativePlanCompleted &&
                 tail.Contacts > before && tail.ContactGap < .15f &&
                 view.StartsWith("visual:attached;", StringComparison.Ordinal),
                 new JObject {
                     ["owner"] = bone.UniqueId,
                     ["target"] = target.UniqueId,
                     ["command"] = Sprint27AiCommand(command),
+                    ["commandReference"] = commandReference,
+                    ["nativePlanCount"] = command.AllAttacks.Count,
+                    ["attackRows"] = new JArray(attackRows),
+                    ["completedAtAct"] = new JArray(completedAtAct),
+                    ["nativePlanCompleted"] = nativePlanCompleted,
+                    ["finalResultIsPostPlanRetirement"] =
+                        command.Result == UnitCommand.ResultType.Interrupt &&
+                        nativePlanCompleted,
                     ["contactsBefore"] = before,
                     ["contactsAfter"] = tail.Contacts,
                     ["contactGap"] = tail.ContactGap,
