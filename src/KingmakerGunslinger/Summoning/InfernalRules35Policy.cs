@@ -54,6 +54,12 @@ namespace KingmakerGunslinger.Summoning
                 strengthBonus;
         }
 
+        internal static bool ShouldClearReleasedImpaleHold(bool exactOwner,
+            bool exactInitiatorTarget, bool reciprocalTarget)
+        {
+            return exactOwner && exactInitiatorTarget && !reciprocalTarget;
+        }
+
         internal static bool PoisonQualifies(bool exactSting, bool hit,
             int finalDamage)
         {
@@ -117,6 +123,10 @@ namespace KingmakerGunslinger.Summoning
                 FearDc(BoneHitDice, 4, BoneFearRacialDcBonus) != 19 ||
                 ImpaleStrengthBonus(6) != 9 ||
                 ImpaleStrengthBonus(-2) != -2 ||
+                !ShouldClearReleasedImpaleHold(true, true, false) ||
+                ShouldClearReleasedImpaleHold(false, true, false) ||
+                ShouldClearReleasedImpaleHold(true, false, false) ||
+                ShouldClearReleasedImpaleHold(true, true, true) ||
                 PrivateUnitDonorSymbol(WallSectionUnitSymbol) !=
                     BoneUnitSymbol ||
                 QualifiesForBarbedDefense(true, true, true, 10, 5) ||

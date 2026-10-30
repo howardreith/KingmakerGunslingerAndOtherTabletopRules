@@ -100,6 +100,15 @@ namespace KingmakerGunslinger.DomainTests
                 "An absorbed claw does not qualify for fear.");
             Assertions.False(InfernalRules35.QualifiesForClawFear(false, true, 10),
                 "Other damage does not qualify for claw fear.");
+            Assertions.True(InfernalRules35.ShouldClearReleasedImpaleHold(true,
+                true, false),
+                "The exact Impale owner clears its measured one-sided residue.");
+            Assertions.False(InfernalRules35.ShouldClearReleasedImpaleHold(false,
+                true, false), "An unrelated grappler stays on the shared path.");
+            Assertions.False(InfernalRules35.ShouldClearReleasedImpaleHold(true,
+                false, false), "A different owner target is never cleared.");
+            Assertions.False(InfernalRules35.ShouldClearReleasedImpaleHold(true,
+                true, true), "A reciprocal reacquired hold is never cleared.");
         }
 
         internal static void LiveModifiersDerivePrintedContracts()
