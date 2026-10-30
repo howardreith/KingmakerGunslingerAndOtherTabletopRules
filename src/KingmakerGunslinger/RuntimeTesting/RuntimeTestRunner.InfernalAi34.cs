@@ -105,7 +105,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["distance"] = owner.DistanceTo(target), ["initialWeapon"] = owner.Body.PrimaryHand.MaybeWeapon?.Blueprint.AssetGuid,
                     ["disarmed"] = owner.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.DisarmMainHandBuff) != null },
                     "Fresh exact owner and visible private enemy enter native combat; no attack, save, AC or ability score is forced.");
-                var commands = new HashSet<UnitCommand>(); var starts = new Lillend32CommandStarts { Owner = owner };
+                var commands = new HashSet<UnitCommand>(); var starts = new Lillend32CommandStarts { Owner = owner, ObserveRtwpAttackCompletion = true };
                 var costs = new JArray(); var ambient = new HashSet<string>(); int first = trace.Rows.Count;
                 EventBus.Subscribe(starts);
                 try {
@@ -151,6 +151,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["turnBased"] = turnBased, ["nativeTurnFrames"] = nativeFrames, ["aiTicks"] = ticks, ["frames"] = frames,
                             ["commands"] = new JArray(commands.Select(Sprint27AiCommand)), ["costs"] = costs,
                             ["nativeAttackLifecycle"] = starts.AttackRows, ["events"] = new JArray(events),
+                            ["attackCompleted"] = attack != null, ["switchCompleted"] = change != null,
+                            ["controlCompleted"] = control != null, ["gazeCompleted"] = gaze != null,
+                            ["resolvedCostsExact"] = resolved.All(command => economy.Count(command) == 1 && economy.Exact(command, turnBased)),
                             ["idleWitnessTurnsPassed"] = passedTurns, ["ambientCandidatesNeverTicked"] = new JArray(ambient),
                             ["itemsExact"] = Sprint28InventoryExact(owner.Descriptor.Inventory, items, counts),
                             ["fixtureAttackCommands"] = 0, ["fixtureAbilityCommands"] = 0, ["forcedRolls"] = 0 },

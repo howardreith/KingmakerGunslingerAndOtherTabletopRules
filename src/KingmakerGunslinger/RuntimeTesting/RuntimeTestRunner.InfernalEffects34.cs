@@ -38,6 +38,26 @@ namespace KingmakerGunslinger.RuntimeTesting
             return apply.AppliedBuff;
         }
 
+        // The stock profile needs both native wound/healing and unrelated-bleed
+        // consumers. Reuse the existing cells with an observed reset boundary.
+        private IEnumerable<int> ReviewInfernalHealing34(ExpandedSummoningCorrectionFixture fixture)
+        {
+            var before = Game.Instance.State.Units.All.Where(unit => unit != null).ToArray();
+            foreach (int frame in ReviewInfernalEarly34(fixture)) yield return frame;
+            for (int frame = 0; frame < 12; frame++) { Game.Instance.IsPaused = false; yield return 0; }
+            var remaining = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed && unit.IsInState &&
+                !before.Contains(unit) && !ReferenceEquals(unit, fixture.Hostile)).ToArray();
+            bool reset = remaining.Length == 0 && !fixture.Hostile.IsInCombat &&
+                !fixture.Hostile.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
+                !fixture.Hostile.Buffs.Enumerable.Any(buff => buff.SelectComponents<InfernalEffectLifetime34>().Any());
+            Sprint25Check("sprint34-healing-group-reset", reset, new JObject {
+                ["remainingOwnedActors"] = new JArray(remaining.Select(unit => unit.UniqueId)),
+                ["targetCombat"] = fixture.Hostile.IsInCombat },
+                "The early native consumers have retired their owned actors, commands and effects before the independent patient/bleed cells.");
+            if (!reset) throw new InvalidOperationException("Infernal healing group did not reset.");
+            foreach (int frame in ReviewInfernalEffects34(fixture)) yield return frame;
+        }
+
         private IEnumerable<int> ReviewInfernalEffects34(ExpandedSummoningCorrectionFixture fixture)
         {
             var owners = new List<UnitEntityData>(); var trace = new InfernalEvents34(); var cells = new JArray();
