@@ -148,6 +148,24 @@ Sprint 35 checkpoint; historical records are not current instructions.
   restoration are preserved under manifest
   `CBAA98D7F0BC3280D08B952E591C6DCE265A0CE19276B7CBA9DC585A6E9A6379`;
   the live tree again restored to exact intake and no save was selected.
+- Commit `fcbf2922` produced ZIP
+  `1c7485504673a00f39b66e7a1d767aea2f7dbe883f52b0e25d84c4f6b4e815df`
+  (DLL
+  `615884a9c47bd4e99ad430ce181c129e0d030aae58bdea11880f594245d4c524`,
+  MVID `812bd289-6784-4a92-a4f3-8dfff98749a3`, source state
+  `ee588825d092d2f31fd11431c373dfbc440b83ee00b3ef63f170b77d7ca27e20`);
+  its exact build is preserved under manifest
+  `585D3230DF5C52A476570981D413DFF035A9E4852A188EFD1BE3D6629A13C86E`.
+  Guarded run
+  `20261030T2147147935627Z-a492adbf17b34170ac220b3a9fc2820f`
+  passed all ten native assertions and all six Barbed phase cells in 164.780
+  seconds. Two owned aura areas existed immediately after actor disposal and
+  both retired naturally after two Unity frames; the terminal count was zero.
+  The outer wrapper restored the original 136-file live tree to exact SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  Raw PASS evidence, both snapshots, deployment and restoration are preserved
+  under manifest
+  `E047405DAB353C322D48F3D25F4345C99BE0947CA4640133973B2491E9F3BFD7`.
 - The required laptop intake is captured before staging: 968 current Mod-tree
   entries, 118 protected-save entries, 83 registry settings, unchanged Working
   SHA-256 `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,
