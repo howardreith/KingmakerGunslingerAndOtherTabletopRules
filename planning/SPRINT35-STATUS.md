@@ -126,6 +126,28 @@ Sprint 35 checkpoint; historical records are not current instructions.
   The live tree was restored each time to exact SHA-256
   `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`;
   no save, process, lease or compatibility lock remains.
+- Commit `25ba4c56` produced the corrected development ZIP
+  `842e38a6be3b1892a6e2137e4844bd420089ab37b3f18dabd05e21c9dd4bb7e5`
+  (DLL
+  `30af0aac80f53c3765ce3cd0f2bef02575694df58bc3a0d9e8d6cc8209175582`,
+  MVID `ef684007-6e09-4daf-a0c1-e88ba1e87de9`, source state
+  `4236daf2e3c6e36e0f5c549ff1a4b4c68d8c0b95d5f9083abb0a593d3ecd27fa`);
+  its exact build is preserved under manifest
+  `D23629A52827FEF714201BC9948F62FC88E3F8069287A4078B5F31341E0A5C18`.
+  Guarded run
+  `20261030T2136055112917Z-813c475c4c42414d90548720ccd35027`
+  passed the real mapping, isolated footprint, standard-action command,
+  one-to-zero resource debit, per-target SR/save/damage/duration, good ordinary
+  5d8, neutral quarter damage, evil exclusions, native Sickened attribution,
+  shared-parameter isolation, source-loss survival, and natural expiry cells.
+  Cleanup then sampled one source-owned area one frame after all four actors
+  were destroyed. Accepted Astral observers wait for owned-area retirement;
+  this new observer had waited only for actors. The bounded correction now
+  waits up to five seconds for both actors and areas, records immediate/final
+  area counts, and still fails a persistent orphan. The raw FAIL and exact
+  restoration are preserved under manifest
+  `CBAA98D7F0BC3280D08B952E591C6DCE265A0CE19276B7CBA9DC585A6E9A6379`;
+  the live tree again restored to exact intake and no save was selected.
 - The required laptop intake is captured before staging: 968 current Mod-tree
   entries, 118 protected-save entries, 83 registry settings, unchanged Working
   SHA-256 `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,

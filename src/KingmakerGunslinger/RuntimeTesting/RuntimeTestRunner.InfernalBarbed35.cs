@@ -511,13 +511,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.HitPoints.BaseValue = targetHitPoints;
                 string hostileReset = ResetExpandedSummoningHostile(fixture);
                 int cleanupFrames = 0;
+                int ownedAreasImmediatelyAfterDispose = Game.Instance.State
+                    .AreaEffects.All.Count(value => value?.Context != null &&
+                        owned.Any(actor => ReferenceEquals(
+                            value.Context.MaybeCaster, actor)));
                 DateTime cleanupDeadline = DateTime.UtcNow.AddSeconds(5);
                 while (DateTime.UtcNow < cleanupDeadline &&
-                    cleanupFrames++ < 600 && owned.Any(value =>
-                        value != null && !value.Destroyed)) yield return 0;
-                bool noOwnedAreas = !Game.Instance.State.AreaEffects.All.Any(
-                    value => value?.Context != null && owned.Any(actor =>
-                        ReferenceEquals(value.Context.MaybeCaster, actor)));
+                    cleanupFrames++ < 600 && (owned.Any(value =>
+                        value != null && !value.Destroyed) ||
+                    Game.Instance.State.AreaEffects.All.Any(
+                        value => value?.Context != null && owned.Any(actor =>
+                            ReferenceEquals(value.Context.MaybeCaster,
+                                actor))))) yield return 0;
+                int ownedAreasAfterWait = Game.Instance.State.AreaEffects.All
+                    .Count(value => value?.Context != null && owned.Any(
+                        actor => ReferenceEquals(value.Context.MaybeCaster,
+                            actor)));
+                bool noOwnedAreas = ownedAreasAfterWait == 0;
                 bool cleanup = owned.All(value => value.Destroyed &&
                         !value.IsInState) && noOwnedAreas &&
                     target.Descriptor.Alignment.Value == targetAlignment &&
@@ -531,6 +541,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["destroyed"] = value.Destroyed,
                             ["inState"] = value.IsInState })),
                     ["ownedAreasAbsent"] = noOwnedAreas,
+                    ["ownedAreasImmediatelyAfterDispose"] =
+                        ownedAreasImmediatelyAfterDispose,
+                    ["ownedAreasAfterWait"] = ownedAreasAfterWait,
                     ["hostileReset"] = hostileReset,
                     ["hostileAlignmentRestored"] = target.Descriptor.Alignment
                         .Value == targetAlignment,
