@@ -79,11 +79,11 @@ if ($activeVersion -eq '0.0.151') {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint22151.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 22 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169', '0.0.170', '0.0.171')) {
+if ($activeVersion -in @('0.0.152', '0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169', '0.0.170', '0.0.171', '0.0.172')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint23152.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 23 corruption fixtures failed.' }
 }
-if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169', '0.0.170', '0.0.171')) {
+if ($activeVersion -in @('0.0.153', '0.0.154', '0.0.155', '0.0.156', '0.0.157', '0.0.158', '0.0.159', '0.0.160', '0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169', '0.0.170', '0.0.171', '0.0.172')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint24154.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 24 corruption fixtures failed.' }
 }
@@ -110,7 +110,7 @@ if ($activeVersion -eq '0.0.160') {
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 26 corruption fixtures failed.' }
 }
 
-if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169', '0.0.170', '0.0.171')) {
+if ($activeVersion -in @('0.0.161', '0.0.162', '0.0.163', '0.0.164', '0.0.165', '0.0.166', '0.0.167', '0.0.168', '0.0.169', '0.0.170', '0.0.171', '0.0.172')) {
     & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint27161.py')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint 27 corruption fixtures failed.' }
 }
@@ -237,6 +237,10 @@ if ($activeVersion -eq '0.0.171') {
     if ($LASTEXITCODE -ne 0) { throw 'Sprint33 release source corruption fixtures failed.' }
     & (Join-Path $PSScriptRoot 'Test-Sprint33Release.ps1')
     if ($LASTEXITCODE -ne 0) { throw 'Sprint33 publisher tests failed.' }
+}
+if ($activeVersion -eq '0.0.172') {
+    & $python.Source (Join-Path $repositoryRoot 'tools\test_expanded_summoning_sprint34_release172.py')
+    if ($LASTEXITCODE -ne 0) { throw 'Sprint34 release source corruption fixtures failed.' }
 }
 & (Join-Path $PSScriptRoot 'Test-Sprint34Release.ps1')
 if ($LASTEXITCODE -ne 0) { throw 'Sprint34 publisher tests failed.' }

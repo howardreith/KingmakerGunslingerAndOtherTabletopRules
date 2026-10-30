@@ -1,3 +1,9 @@
+# 0.0.172 - Bearded Devil and Kyton
+
+- Adds two distinct summons and ten untemplated SM V-IX routes, preserving existing identities and Nature?s Ally.
+- Delivers alternative Barbazu weapons, conditional Beard, Infernal Wound/healing and day-scale disease; Kyton chains, gaze, armor and regeneration.
+- Includes original bodies/icons and summon-owned cleanup. See docs/RELEASE-NOTES-0.0.172.md for approved adaptations and evidence limits.
+
 # 0.0.171 - Summon Monster shadow outsiders
 
 - Deliver original Invisible Stalker and Shadow Demon bodies; preserve Succubus and icons.

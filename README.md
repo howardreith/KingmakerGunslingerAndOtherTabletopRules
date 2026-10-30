@@ -1,5 +1,11 @@
 # Kingmaker Gunslinger
 
+Sprint34 / v0.0.172 adds Bearded Devil and Kyton with ten untemplated Summon
+Monster V?IX routes, distinct original bodies/icons and source-owned effects.
+See [release notes](docs/RELEASE-NOTES-0.0.172.md) and the
+[qualification record](planning/SPRINT34-STATUS.md) for publication status,
+approved chain/gaze/Heal adaptations and exact evidence attribution.
+
 Sprint 33 / v0.0.171 improves the three existing shadow-outsider summons with
 original Invisible Stalker and Shadow Demon bodies and targeted Succubus repairs.
 See [release notes](docs/RELEASE-NOTES-0.0.171.md) and the
