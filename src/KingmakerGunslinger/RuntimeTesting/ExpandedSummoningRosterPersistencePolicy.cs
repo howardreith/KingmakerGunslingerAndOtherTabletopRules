@@ -222,6 +222,9 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static string[] GiantHumanoidKeys
         { get { return new[] { GiantHumanoidRulesPolicy.Hill,
             GiantHumanoidRulesPolicy.Stone, GiantHumanoidRulesPolicy.Fire }; } }
+        internal const string InfernalOutsidersScope = "infernal-outsiders";
+        internal static string[] InfernalOutsiderKeys
+        { get { return new[] { "bearded-devil", "kyton-chain-devil" }; } }
         internal const string ShadowOutsidersScope = "shadow-outsiders";
         internal static string[] ShadowOutsiderKeys
         { get { return new[] { "succubus", "invisible-stalker", "shadow-demon" }; } }
@@ -281,6 +284,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 case "bralani-azata":
                 case "ghaele-azata":
                 case "lillend-azata": return 3;
+                case "bearded-devil":
+                case "kyton-chain-devil":
                 case "hell-hound":
                 case "erinyes-devil":
                 case "shadow-demon":
@@ -312,6 +317,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
                 scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
                 scope == FeyCelestialScope ? FeyCelestialKeys :
+                scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? ExpandedSummoningCatalog.All.Select(value => value.Key).ToArray() :
                 new string[0];
@@ -343,6 +349,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == GiantHumanoidsTwoScope ? GiantHumanoidsTwoKeys :
                 scope == OutsiderCelestialScope ? OutsiderCelestialKeys :
                 scope == FeyCelestialScope ? FeyCelestialKeys :
+                scope == InfernalOutsidersScope ? InfernalOutsiderKeys :
                 scope == ShadowOutsidersScope ? ShadowOutsiderKeys :
                 scope == Scope ? Keys : new string[0];
             return expected.Length != 0 && observed.OrderBy(value => value,
@@ -365,7 +372,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 scope == ArmoredDinosaursScope || scope == TheropodsScope ||
                 scope == GiantBodiesScope || scope == MagicalBeastsScope ||
                 scope == GriffonScope || scope == GiantHumanoidsScope ||
-                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope) &&
+                scope == GiantHumanoidsTwoScope || scope == OutsiderCelestialScope || scope == FeyCelestialScope || scope == ShadowOutsidersScope || scope == InfernalOutsidersScope) &&
                 (scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningPrepare ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup ||
                 scenario == RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyAbsent);

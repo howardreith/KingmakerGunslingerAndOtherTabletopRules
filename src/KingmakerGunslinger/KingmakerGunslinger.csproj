@@ -40,6 +40,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Summoning\InfernalRules34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalAi34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEffects34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalLifetime34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalRoutes34.cs" />
+    <Compile Include="Summoning\InfernalActions34.cs" />
+    <Compile Include="Summoning\DevilChills34.cs" />
+    <Compile Include="Summoning\InfernalWound34.cs" />
+    <Compile Include="Summoning\InfernalWeapons34.cs" />
+    <Compile Include="Summoning\BarbazuBeard34.cs" />
+    <Compile Include="Summoning\InfernalEffectLifetime34.cs" />
     <Compile Include="Summoning\GiantHumanoidRulesPolicy.cs" />
     <Compile Include="Summoning\SummonGiantCleaveDelivery.cs" />
     <Compile Include="Summoning\GiantHumanoidCombatComponents.cs" />
@@ -302,6 +318,8 @@
     <Compile Include="Summoning\ExpandedSummoningDonorCatalog.cs" />
     <Compile Include="Blueprints\ExpandedSummoningBlueprints.cs" />
     <Compile Include="Blueprints\ExpandedSummoningAlignmentModeBlueprints.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal34.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.InfernalWound34.cs" />
     <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.cs" />
     <Compile Include="Blueprints\ExpandedSummoningNaturalBuilder.Serpentine.cs" />
@@ -1319,6 +1337,11 @@
     <Compile Include="Assets\PteranodonAssetRuntime.HoundArchon.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.ShadowOutsiders.cs" />
     <Compile Include="Summoning\ShadowOutsiderVisualPolicy.cs" />
+    <Compile Include="Summoning\InfernalVisualPolicy34.cs" />
+    <Compile Include="Summoning\BarbazuGlaiveView34.cs" />
+    <Compile Include="Summoning\KytonChainVisual34.cs" />
+    <Compile Include="Summoning\KytonRegeneration34.cs" />
+    <Compile Include="Assets\PteranodonAssetRuntime.Infernal34.cs" />
     <Compile Include="Summoning\StalkerSlamAnimation33.cs" />
     <Compile Include="Summoning\HoundArchonVisualPolicy.cs" />
     <Compile Include="Summoning\HoundArchonSwordView.cs" />
@@ -2092,6 +2115,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SuccubusDrainTrace33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.SuccubusDrainProof33.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningPersistence33.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalPersistence34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningSprint32Input.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32.cs" /><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLullaby32.cs" /></ItemGroup>
   <ItemGroup><Compile Include="RuntimeTesting\RuntimeTestRunner.ExpandedSummoningLillend32Turn.cs" />

@@ -20,19 +20,19 @@ namespace KingmakerGunslinger.DomainTests
         internal const int Sprints30And31PrivateIdentityCount = 112;
         internal const int Sprints30And31FoundationIdentityCount = 5 + 23 + Sprints30And31PrivateIdentityCount;
         internal const int Sprint32PrivateIdentityCount = 95;
-        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount + Sprint29FoundationIdentityCount + Sprints30And31FoundationIdentityCount + 2 + 10 + Sprint32PrivateIdentityCount;
-        internal const int RegisteredCreatureCount = 124;
-        internal const int RegisteredMonsterCreatureCount = 102;
-        internal const int RegisteredNatureAllyCreatureCount = 105;
-        internal const int RegisteredMonsterPlacements = 572;
-        internal const int RegisteredNatureAllyPlacements = 588;
-        internal const int RegisteredLogicalPlacements = RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
+        internal const int AppendedCatalogIdentityCount = Sprint26MagicalBeastRules.AppendedCatalogIdentityCount + ExpandedSummoningSprint27Tests.AppendedCatalogIdentityCount + GiantHumanoidRulesPolicy.AppendedCatalogIdentityCount + Sprint29FoundationIdentityCount + Sprints30And31FoundationIdentityCount + 2 + 10 + Sprint32PrivateIdentityCount + 2 + 10 + 22;
+        internal static int RegisteredCreatureCount => ExpandedSummoningCatalog.All.Count;
+        internal static int RegisteredMonsterCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.MonsterTier.HasValue);
+        internal static int RegisteredNatureAllyCreatureCount => ExpandedSummoningCatalog.All.Count(value => value.NaturesAllyTier.HasValue);
+        internal static int RegisteredMonsterPlacements => ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count;
+        internal static int RegisteredNatureAllyPlacements => ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count;
+        internal static int RegisteredLogicalPlacements => RegisteredMonsterPlacements + RegisteredNatureAllyPlacements;
         internal const int RegisteredTemplatedPlacements = 319;
-        internal const int PublicSuppressedLogicalPlacements = 0;
-        internal const int FinalPublishedLogicalPlacements = RegisteredLogicalPlacements - PublicSuppressedLogicalPlacements;
-        internal const int PublicVisibleChoices = FinalPublishedLogicalPlacements + 29;
-        internal static int PublishedMonsterPlacements { get { return RegisteredMonsterPlacements - (IsWithheld("gorgon") ? 2 : 0) - (IsWithheld("lillend-azata") ? 4 : 0); } }
-        internal static int PublishedNatureAllyPlacements { get { return RegisteredNatureAllyPlacements - (IsWithheld("bulette") ? 4 : 0) - (IsWithheld("griffon") ? 6 : 0) - (IsWithheld("hill-giant") ? 4 : 0) - (IsWithheld("stone-giant") ? 4 : 0) - (IsWithheld("fire-giant") ? 3 : 0) - (IsWithheld("ettin") ? 5 : 0) - (IsWithheld("cloud-giant") ? 2 : 0) - (IsWithheld("storm-giant") ? 1 : 0) - (IsWithheld("satyr") ? 6 : 0); } }
+        internal static int PublicSuppressedLogicalPlacements => RegisteredLogicalPlacements - FinalPublishedLogicalPlacements;
+        internal static int FinalPublishedLogicalPlacements => PublishedMonsterPlacements + PublishedNatureAllyPlacements;
+        internal static int PublicVisibleChoices => FinalPublishedLogicalPlacements + 29;
+        internal static int PublishedMonsterPlacements => ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster).Count(SummonVisibilityCatalog.IsPublished);
+        internal static int PublishedNatureAllyPlacements => ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly).Count(SummonVisibilityCatalog.IsPublished);
         // Seven split-native, four preserved-native, plus Remove Stirge,
         // Trumpet Blast and the approved private Lullaby spell/effect concept.
         internal const int IconConceptCount = ExpandedSummoningIdentityCatalog.UnitCount + 7 + 4 + 3;

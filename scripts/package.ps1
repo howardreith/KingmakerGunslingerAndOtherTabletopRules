@@ -208,6 +208,12 @@ New-Item -ItemType Directory -Path $lillendDestination -Force | Out-Null
 foreach ($file in @('lillend-mesh.json','lillend-albedo.png')) {
     Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint32-support\'+$file)) -Destination $lillendDestination
 }
+$infernalDestination = Join-Path $modDirectory 'assets\sprint34-infernal-outsiders'
+New-Item -ItemType Directory -Path $infernalDestination -Force | Out-Null
+$infernalFiles = @('bearded-devil-mesh.json','bearded-devil-albedo.png','kyton-chain-devil-mesh.json','kyton-chain-devil-albedo.png')
+foreach ($file in $infernalFiles) {
+    Copy-Item -LiteralPath (Join-Path $outputDirectory ('assets\sprint34-infernal-outsiders\'+$file)) -Destination $infernalDestination
+}
 $shadowOutsiderDestination = Join-Path $modDirectory 'assets\sprint33-shadow-outsiders'
 New-Item -ItemType Directory -Path $shadowOutsiderDestination -Force | Out-Null
 $shadowOutsiderFiles = @('invisible-stalker-mesh.json','invisible-stalker-albedo.png','shadow-demon-mesh.json','shadow-demon-albedo.png')
@@ -313,7 +319,7 @@ $hasFirearmSoundBank = Test-Path -LiteralPath (Join-Path $modDirectory `
 # set. The optional soundbank and manifest remain a two-file delta.
 . (Join-Path $PSScriptRoot 'IconCatalog.Common.ps1')
 $summonManifest = Get-KmgSummonIconManifest -RepositoryRoot $repositoryRoot
-$basePackageFileCount = 278 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count
+$basePackageFileCount = 278 + @($summonManifest.icons).Count + $s3031OriginalBodyParts.Count + $shadowOutsiderFiles.Count + $infernalFiles.Count
 $expectedPackageFileCount = if ($hasFirearmSoundBank) {
     $basePackageFileCount + 2
 } else {

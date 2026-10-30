@@ -1,0 +1,153 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
+using KingmakerGunslinger.RuntimeTesting;
+using KingmakerGunslinger.Summoning;
+
+namespace KingmakerGunslinger.DomainTests
+{
+    internal static class InfernalRules34Tests
+    {
+        internal static void PublicRoutesHaveExactScopeAndQuantity()
+        {
+            foreach (string key in new[] { "bearded-devil", "kyton-chain-devil" }) {
+                var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == key);
+                Assertions.False(creature.NaturesAllyTier.HasValue || creature.MonsterTemplated, "Already aligned outsiders have no Nature's Ally or template routes.");
+                var routes = ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
+                    .Where(value => value.Creature.Key == key).OrderBy(value => value.ParentTier).ToArray();
+                Assertions.True(routes.Select(value => value.ParentTier).SequenceEqual(new[] { 5, 6, 7, 8, 9 }), "Exactly SM V through IX.");
+                Assertions.True(routes.Select(value => value.Multiplicity).SequenceEqual(new[] {
+                    SummonMultiplicity.One, SummonMultiplicity.OneD3, SummonMultiplicity.OneD4PlusOne,
+                    SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne }), "Printed quantity propagation.");
+                Assertions.True(routes.All(SummonVisibilityCatalog.IsPublished), "Both qualified creatures expose their five routes.");
+                Assertions.True(!string.IsNullOrEmpty(SummonChoicePresentationPolicy.For(key).Label), "Each registered creature has its own menu identity.");
+            }
+            SummonVisibilityCatalog.Validate(); SummonChoicePresentationPolicy.Validate();
+        }
+
+        internal static void OwnedBodiesDecodeAndHaveMatchingAlbedos()
+        {
+            foreach (string key in new[] { "bearded-devil", "kyton-chain-devil" }) {
+                string path = "assets/sprint34-infernal-outsiders/" + key + "-mesh.json";
+                var payload = JObject.Parse(File.ReadAllText(path));
+                OriginalMeshOrientation.AssertShippedBody(path, key);
+                var data = Convert.FromBase64String((string)payload["data"]);
+                int vertices = (int)payload["vertexCount"], triangles = (int)payload["triangleCount"];
+                Assertions.Equal(vertices * 64 + triangles * 12, data.Length, "Decoder byte layout remains complete.");
+                for (int index = 0; index < vertices * 8; index++) {
+                    float value = BitConverter.ToSingle(data, index * 4);
+                    Assertions.True(!float.IsNaN(value) && !float.IsInfinity(value), "Vertex, normal and UV values are finite.");
+                }
+                var albedo = payload["albedo"];
+                using (var hash = SHA256.Create()) {
+                    string actual = string.Concat(hash.ComputeHash(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(path), (string)albedo["file"]))).Select(value => value.ToString("x2")));
+                    Assertions.Equal((string)albedo["sha256"], actual, "Runtime albedo agrees with its original mesh.");
+                }
+                var chains = (JArray)payload["chains"];
+                var chainVertices = new System.Collections.Generic.HashSet<int>();
+                foreach (var chain in chains) {
+                    var indices = chain["vertices"].Values<int>().ToArray();
+                    int bone = Array.IndexOf(payload["bones"].Values<string>().ToArray(), (string)chain["bone"]);
+                    foreach (int index in indices) {
+                        int offset = vertices * 32 + triangles * 12 + index * 32;
+                        Assertions.True(chainVertices.Add(index), "Chain geometry belongs to one independently driven chain.");
+                        Assertions.Equal(bone, BitConverter.ToInt32(data, offset), "Exported chain vertex follows its declared native palm.");
+                        Assertions.True(Math.Abs(BitConverter.ToSingle(data, offset + 4) - 1f) < .0001f,
+                            "Chain extends in one measured palm frame without mixed-bone drift.");
+                    }
+                    Assertions.True(indices.Length > 0 && indices.Distinct().Count() == indices.Length &&
+                        indices.All(index => index >= 0 && index < vertices), "Each chain owns valid, unique render vertices.");
+                }
+            }
+        }
+
+        internal static void EarlyNativePhaseRetainsClosedAdmission()
+        {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies") &&
+                ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("sprint34-infernal-bodies"), "Native rendering phase admitted to the existing owned clock.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies-extra"), "Broader visual phase refused.");
+            foreach (string phase in new[] { "sprint34-infernal-healing", "sprint34-infernal-ai", "sprint34-infernal-effects", "sprint34-infernal-lifetime" }) {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase), "Exact scoped native phase admitted.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase + "-extra"), "Broader native scope refused.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase.ToUpperInvariant()), "Case variation refused.");
+            }
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-combat"), "Scoped native combat admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-combat-extra"), "Broader combat refused.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-mechanics"), "Scoped native mechanics admitted.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-routes"), "Exact public-route observer admitted; hidden routes still refuse in the observer.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-mechanics-extra"), "Broader mechanics phase refused.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-early"), "Selected bounded phase admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("Sprint34-infernal-early"), "Case variation refused.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-early-extra"), "Broader suffix refused.");
+        }
+
+        internal static void BeardNeedsTwoDistinctClawsAndOneTarget()
+        {
+            var sequence = new BarbazuBeardSequence34();
+            var command = new object(); var target = new object();
+            Assertions.False(sequence.Record(new object(), command, command, 1, target, true), "First claw is not Beard.");
+            Assertions.False(sequence.Record(new object(), command, command, 1, target, true), "Repeating one limb is not two claws.");
+            Assertions.False(sequence.Record(new object(), command, command, 2, new object(), true), "Split targets do not qualify.");
+            Assertions.True(sequence.Record(new object(), command, command, 2, target, true), "Both claws hit this opponent.");
+            Assertions.False(sequence.Record(new object(), command, command, 1, target, true), "Only one Beard per attack sequence.");
+        }
+
+        internal static void BeardRejectsMissesAndDuplicateEvents()
+        {
+            var sequence = new BarbazuBeardSequence34();
+            var command = new object(); var target = new object(); var missed = new object();
+            sequence.Record(new object(), command, command, 1, target, true);
+            Assertions.False(sequence.Record(missed, command, command, 2, target, false), "Miss does not qualify.");
+            Assertions.False(sequence.Record(missed, command, command, 2, target, true), "Replay cannot turn a miss into a hit.");
+            var hit = new object();
+            Assertions.True(sequence.Record(hit, command, command, 2, target, true), "A later genuine second-claw hit qualifies.");
+            sequence.Reset();
+            sequence.Record(new object(), command, command, 1, target, true);
+            Assertions.False(sequence.Record(hit, command, command, 2, target, true), "Reset does not authorize replay of an old notification.");
+        }
+
+        internal static void BeardRejectsStaleCommandsAndSiblingHits()
+        {
+            var first = new BarbazuBeardSequence34(); var sibling = new BarbazuBeardSequence34();
+            var command = new object(); var next = new object(); var target = new object();
+            first.Record(new object(), command, command, 1, target, true);
+            Assertions.False(sibling.Record(new object(), command, command, 2, target, true), "Sibling has no first-claw hit.");
+            Assertions.False(first.Record(new object(), command, next, 2, target, true), "Finished command cannot deliver late Beard.");
+            Assertions.False(first.Record(new object(), next, next, 2, target, true), "New command has no first-claw hit.");
+            Assertions.False(first.Record(new object(), null, null, 1, target, true), "Direct rules without commands never qualify.");
+            first.Reset();
+            Assertions.False(first.Record(new object(), next, next, 1, target, true), "Round boundary forgets the previous claw.");
+        }
+
+        internal static void MixedPersistenceOwnsOnlyTheTwoSelectedCreatures()
+        {
+            const string scope = ExpandedSummoningRosterPersistencePolicy.InfernalOutsidersScope;
+            var keys = new[] { "bearded-devil", "kyton-chain-devil" };
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Reverse()), "Mixed ownership is independent of load ordering.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, new[] { keys[0], keys[0] }), "Duplicate source cannot replace the other creature.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope, keys.Concat(new[] { "succubus" })), "Scope cannot adopt another sprint's unit.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(scope.ToUpperInvariant(), keys), "Scope spelling is exact.");
+            foreach (string key in keys) {
+                var route = ExpandedSummoningRosterPersistencePolicy.SelectCreatureVariant(scope, key);
+                Assertions.Equal(SummonMultiplicity.One, route.Multiplicity, "Each saved source is independent and singular.");
+                Assertions.Equal(5, route.ParentTier, "Preparation uses the actual adult entry's own tier.");
+                Assertions.Equal(12, ExpandedSummoningRosterPersistencePolicy.CasterAlignmentFor(route), "The fixture uses a legal evil caster for each source.");
+            }
+            Assertions.True(ExpandedSummoningRosterPersistencePolicy.ObserveLoad(RuntimeTestScenarioCatalog.WorkingSaveExpandedSummoningVerifyCleanup, scope), "Cold cleanup enters the existing native-load observer.");
+            Assertions.False(ExpandedSummoningRosterPersistencePolicy.ObserveLoad("unrelated", scope), "No unrelated scenario receives save access.");
+        }
+
+        internal static void PrintedAbilityModifiersStayLive()
+        {
+            Assertions.Equal(17, InfernalRules34.BeardDiseaseDc(4), "Barbazu baseline Con DC.");
+            Assertions.Equal(19, InfernalRules34.BeardDiseaseDc(6), "Augmented Constitution affects the disease DC.");
+            Assertions.Equal(15, InfernalRules34.GazeDc(1), "Kyton baseline Cha DC.");
+            Assertions.Equal(12, InfernalRules34.GazeDc(-2), "Negative Charisma affects the gaze DC.");
+            Assertions.Equal(2, InfernalRules34.BeardStrengthBonus(4), "Secondary Beard baseline damage.");
+            Assertions.Equal(3, InfernalRules34.BeardStrengthBonus(7), "Positive half Strength rounds down.");
+            Assertions.Equal(-3, InfernalRules34.BeardStrengthBonus(-3), "A Strength penalty is not halved.");
+        }
+    }
+}

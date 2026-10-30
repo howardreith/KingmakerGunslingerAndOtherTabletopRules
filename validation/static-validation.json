@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.171-expanded-summoning-shadow-outsiders",
+  "milestone": "0.0.172-expanded-summoning-bearded-devil-kyton",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.171",
+  "version": "0.0.172",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2721,5 +2721,16 @@
     "change": "Succubus body preserved, source cleanup/attack fallback and null duration dice repaired; original Invisible Stalker and Shadow Demon bodies; natural invisibility Purge exception",
     "nativeEvidence": "Original evidence retains its execution artifact; final package requires scoped fresh persistence/integration and explicit affected-dependency reuse",
     "ownerPublicationAuthority": "Sprint33 Dedicated Models Revised Mission, Revision2"
+  },
+  "expandedSummoningSprint34Release172": {
+    "releaseVersion": "0.0.172",
+    "releaseInformationalVersion": "0.0.172-expanded-summoning-bearded-devil-kyton",
+    "baseStableVersion": "0.0.171",
+    "reviewedProductSource": "f95adb25fb7cb390d81b6a5039b6157afdd2ed86",
+    "appendedIdentities": 74,
+    "releasedIdentityChanges": 0,
+    "change": "Bearded Devil and Kyton, ten untemplated SM V-IX routes, source-owned mechanics and distinct original bodies/icons",
+    "nativeEvidence": "Original evidence retains its execution artifact; final package requires scoped fresh persistence/integration and explicit affected-dependency reuse",
+    "ownerPublicationAuthority": "Sprint34 Bearded Devil and Kyton Fresh Codex Mission, with approved owned-chain, targeted-gaze and omitted-Heal decisions"
   }
 }

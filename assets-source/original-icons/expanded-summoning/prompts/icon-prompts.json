@@ -780,6 +780,20 @@
   "subjectPrompt": "Generate one original square fantasy RPG spell icon for Lullaby, a gentle enchantment that makes creatures drowsy and inattentive, not fully asleep. Painted fantasy illustration with confident broad brushwork, dark indigo background, restrained lavender glow and warm gold highlights, matching a classic isometric RPG spell palette. Single dominant subject: a graceful small gold lyre tilted slightly, its curved upper arms forming a crescent; a soft violet ribbon of sound curling once around it toward one half-closed eye-shaped glow. Strong simple silhouette and ample dark separation, recognizable at 32 pixels. Flat square composition, no UI border or frame, no writing, no letters, no musical notation, no counters, no logos, no tiny ornamental detail, no sleeping character, no violence. The lyre fills about 70% of the image and stays clear of the edges. Original artwork, not copied pixels. Opaque background.",
   "generator": "built-in-imagegen",
   "compositionBriefSource": "assets-source/original-icons/expanded-summoning/lullaby-generation.json"
-}
-]
+},
+    {
+      "key": "bearded-devil",
+      "displayName": "Bearded Devil",
+      "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for Pathfinder FIRST EDITION Bearded Devil (Barbazu), consistent with the inspected Salamander summon medallion: painterly realistic anatomy, dark antique bronze circular medallion, luminous restrained infernal background, crisp strong subject readable at 128px and 48px. Three-quarter upper body of a lean muscular green-skinned devil with pointed ears, small horns, fierce eyes and a LONG very prominent writhing black bristly beard; its two clawed hands visibly wield a long glaive polearm with a broad single edged steel blade. The beard, face, hands and glaive silhouette should remain clearly separated. Humanoid legs, no snake body, no wings. Center face and beard safely inside the circular rim; glaive blade also inside canvas. Warm smoky red behind cool green body, steel highlights. Use the Salamander only as visual-family guidance; do not copy its species or pixel content. No words, labels, numbers, UI counters, watermark, extra figures or multiple panels. This is original project-owned creature art, not a screenshot.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint34-provenance.json"
+    },
+    {
+      "key": "kyton-chain-devil",
+      "displayName": "Kyton (Chain Devil)",
+      "subjectPrompt": "Use case: stylized-concept. Create ONE original square fantasy RPG summon-choice painting for Pathfinder FIRST EDITION adult Kyton (Chain Devil). Same painted creature-medallion family as the inspected Salamander: dark antique bronze circular medallion, dramatic light, readable large silhouette for 128px and 48px. A lean pale ash-skinned humanoid, bald or with close dark hair, stern eerie humanlike face, subtle old scar lines (no gore), wrapped in thick dark iron chains around torso and arms. FOUR visibly coherent heavy barbed chain lengths curl outward from the figure with distinct gaps and silver-edged links, communicating its four chain attacks; two arms only. Medium humanoid proportions, head through upper legs visible, modest dark cloth at waist. Not a horned devil: no horns, no wings, no beard, no glaive, no orange fire. Cold slate blue shadow background and focused silver-white edge lighting separate pale flesh and dark chains. Center face/body inside antique bronze ring; keep chains and all identifying features inside canvas. No text, numbers, UI overlays, watermark, extra characters or panels. Original project-owned art; references guide painting family only, never copy their pixels.",
+      "generator": "built-in-imagegen",
+      "compositionBriefSource": "assets-source/original-icons/expanded-summoning/prompts/sprint34-provenance.json"
+    }
+  ]
 }

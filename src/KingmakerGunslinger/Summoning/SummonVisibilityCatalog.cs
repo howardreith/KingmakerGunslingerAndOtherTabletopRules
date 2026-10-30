@@ -104,12 +104,12 @@ namespace KingmakerGunslinger.Summoning
         // manifest generator both read this set out of the source text, so a
         // symbol reference could make the offline and native surfaces disagree.
         // Validate below retains the exact three SNA-only Brachiosaurus roots.
-        // Sprint32 exposes ten candidate routes for public-route qualification.
+        // Sprint34 exposes ten routes after hidden native mechanics qualification.
         // This source state is not a release or completed acceptance claim.
         private static readonly HashSet<string> SuppressedCreatureKeys =
-            new HashSet<string>(StringComparer.Ordinal);
+            new HashSet<string>(new string[0], StringComparer.Ordinal);
 
-        internal const int RegisteredLogicalPlacementCount = 1160;
+        internal const int RegisteredLogicalPlacementCount = 1170;
         internal const int SuppressedLogicalPlacementCount = 0;
         internal const int PublishedLogicalPlacementCount =
             RegisteredLogicalPlacementCount - SuppressedLogicalPlacementCount;

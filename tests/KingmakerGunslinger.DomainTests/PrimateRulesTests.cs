@@ -609,7 +609,8 @@ namespace KingmakerGunslinger.DomainTests
                     GiantBodyRulesPolicy.AppendedPrivateIdentityCount + Sprint26MagicalBeastRules.AppendedPrivateIdentityCount + GiantHumanoidRulesPolicy.AppendedPrivateIdentityCount + SummoningCurrentSurface.Sprint29PrivateIdentityCount + SummoningCurrentSurface.Sprints30And31PrivateIdentityCount + SummoningCurrentSurface.Sprint32PrivateIdentityCount,
                 ExpandedSummoningIdentityCatalog.SpecialIdentityCount - identities.Count(value =>
                     value.Symbol.StartsWith("KMG.Summoning.Natural.Griffon.", StringComparison.Ordinal) ||
-                    value.Symbol.StartsWith("KMG.Summoning.Special.Griffon.", StringComparison.Ordinal)),
+                    value.Symbol.StartsWith("KMG.Summoning.Special.Griffon.", StringComparison.Ordinal) ||
+                    value.Symbol.StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal)),
                 "Creature-owned identity count changed.");
             Assertions.Equal(2101 +
                     ExpandedSummoningSprint24Tests.AppendedLedgerIdentities +
