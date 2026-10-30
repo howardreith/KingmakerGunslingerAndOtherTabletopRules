@@ -1146,6 +1146,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-hidden-routes", InfernalRules35Tests.HiddenRoutesHaveExactScopeAndQuantity),
             Case("expanded-summoning.sprint35-contact-predicates", InfernalRules35Tests.ContactPredicatesStayDistinct),
             Case("expanded-summoning.sprint35-live-modifiers", InfernalRules35Tests.LiveModifiersDerivePrintedContracts),
+            Case("expanded-summoning.sprint35-unholy-blight", InfernalRules35Tests.UnholyBlightKeepsAlignmentAndSaveFractions),
             Case("expanded-summoning.sprint35-poison-gate", InfernalRules35Tests.PoisonRequiresTheWoundingSting),
             Case("expanded-summoning.sprint35-private-wall-unit-donor", InfernalRules35Tests.PrivateWallUnitHasBoundedShellDonor),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),

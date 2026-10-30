@@ -28,6 +28,7 @@ using Kingmaker.UnitLogic.Mechanics.Actions;
 using Kingmaker.UnitLogic.Mechanics.Components;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Summoning;
+using Kingmaker.Visual.Animation.Kingmaker.Actions;
 using UnityEngine;
 
 namespace KingmakerGunslinger.Blueprints
@@ -48,6 +49,10 @@ namespace KingmakerGunslinger.Blueprints
             "56ec8788092b6314e8f3c1c502e8433f";
         private const string NativeSpiderPoisonFeature35 =
             "094714bb08f4e1943a8e9d2384ebe573";
+        private const string NativeSickened35 =
+            "4e42460798665fd4cb9173ffa7ada323";
+        private const string NativeProtectionFromGood35 =
+            "2ac7637daeb2aa143a3bae860095b63e";
         private const string ImprovedCriticalClaw35 =
             "76a335b7d69691c4e8376f9379338778";
 
@@ -284,16 +289,27 @@ namespace KingmakerGunslinger.Blueprints
                 "HoldPerson", NativeHoldPerson35, "Hold Person", 3,
                 UnitCommand.CommandType.Standard);
             var scorching = ConfigureBarbedScorchingRay35(library, symbols);
+            var unholyResource = Require<BlueprintAbilityResource>(symbols,
+                p + "UnholyBlightResource");
+            ConfigureNamedResource(unholyResource,
+                p + "UnholyBlightResource", p + "UnholyBlightResource",
+                "Unholy Blight",
+                "One Unholy Blight use for this summoned Barbed Devil.",
+                InfernalRules35.UnholyBlightUses);
+            var unholy = ConfigureBarbedUnholyBlight35(library, symbols,
+                unit, unholyResource);
             var parameters = ScriptableObject.CreateInstance<
                 Sprint29GiantSpellLikeParameters>();
             parameters.OwningBlueprint = unit;
-            parameters.Abilities = new[] { hold, scorching };
-            parameters.SpellLevels = new[] { 3, 2 };
-            parameters.CasterLevel = 12;
-            parts.Add(parameters);
+            parameters.Abilities = new[] { hold, scorching, unholy };
+            parameters.SpellLevels = new[] { 3, 2,
+                InfernalRules35.UnholyBlightSpellLevel };
+            parameters.CasterLevel = InfernalRules35.SpellLikeCasterLevel;
+            parts.AddRange(new BlueprintComponent[] { parameters,
+                AddResource(unholyResource) });
             var traits = Require<BlueprintFeature>(symbols, p + "Traits");
             BindInfernalTraits35(traits, p, "Hamatula",
-                "DR10/good; fire and poison immunity; acid/cold resistance 10; SR22. Two primary claws threaten 19-20. Wounding claws cause fear; incoming non-reach melee hits trigger Barbed Defense; claws grab up to Medium and a later successful maintain check impales.",
+                "DR10/good; fire and poison immunity; acid/cold resistance 10; SR22. Two primary claws threaten 19-20. Wounding claws cause fear; incoming non-reach melee hits trigger Barbed Defense; claws grab up to Medium and a later successful maintain check impales. Hold Person and two-ray Scorching Ray are at will; Unholy Blight is once per summoning. SLAs are CL12.",
                 parts);
             unit.AddFacts = InfernalFacts35(library, traits).Concat(
                 new BlueprintUnitFact[] {
@@ -303,12 +319,17 @@ namespace KingmakerGunslinger.Blueprints
                         "Improved Critical (claw)"),
                     Feature(library, IronWillGuid, "Iron Will"),
                     Feature(library, PowerAttackGuid, "Power Attack"),
-                    hold, scorching }).ToArray();
+                    hold, scorching, unholy }).ToArray();
             var holdAi = ConfigureInfernalAi35(symbols, p + "HoldAi", unit,
                 hold, false, true, 4);
             var rayAi = ConfigureInfernalAi35(symbols,
                 p + "ScorchingRayAi", unit, scorching, false, true, 5);
-            unit.Brain = InfernalBrain35(library, symbols, p, holdAi, rayAi);
+            var areaAi = ConfigureInfernalAi35(symbols, p + "AreaAi", unit,
+                unholy, false, true, 7);
+            areaAi.AvoidFriendlyArea = true;
+            areaAi.AreaRadiusFeet = InfernalRules35.UnholyBlightRadiusFeet;
+            unit.Brain = InfernalBrain35(library, symbols, p, areaAi, holdAi,
+                rayAi);
         }
 
         private static BlueprintAbility ConfigureBarbedScorchingRay35(
@@ -327,6 +348,89 @@ namespace KingmakerGunslinger.Blueprints
                     "Native Scorching Ray no longer exposes two projectiles.");
             delivery.Projectiles = delivery.Projectiles.Take(2).ToArray();
             delivery.UseMaxProjectilesCount = false;
+            return ability;
+        }
+
+        private static BlueprintAbility ConfigureBarbedUnholyBlight35(
+            LibraryScriptableObject library,
+            IDictionary<string, BlueprintScriptableObject> symbols,
+            BlueprintUnit unit, BlueprintAbilityResource resource)
+        {
+            string symbol = Barbed35Prefix + "UnholyBlight";
+            var ability = Require<BlueprintAbility>(symbols, symbol);
+            var around = ScriptableObject.CreateInstance<AbilityTargetsAround>();
+            SetField(around, "m_Radius", new Feet(
+                InfernalRules35.UnholyBlightRadiusFeet));
+            SetField(around, "m_TargetType",
+                Kingmaker.UnitLogic.Abilities.Components.TargetType.Any);
+            SetField(around, "m_IncludeDead", false);
+            SetField(around, "m_Condition", new ConditionsChecker {
+                Operation = Operation.And,
+                Conditions = Array.Empty<Condition>() });
+            SetField(around, "m_SpreadSpeed", new Feet(0));
+            var resolve = ScriptableObject.CreateInstance<
+                ContextActionInfernalUnholyBlight35>();
+            resolve.SourceUnit = unit;
+            resolve.OutsiderType = Feature(library, OutsiderTypeGuid,
+                "native outsider type");
+            resolve.Sickened = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeSickened35,
+                    "native sickened condition");
+            var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
+            run.SavingThrowType = SavingThrowType.Unknown;
+            run.Actions = new ActionList {
+                Actions = new GameAction[] { resolve } };
+            var school = ScriptableObject.CreateInstance<SpellComponent>();
+            school.School = SpellSchool.Evocation;
+            var descriptor = ScriptableObject.CreateInstance<
+                SpellDescriptorComponent>();
+            descriptor.Descriptor = SpellDescriptor.Evil;
+            var parameters = ScriptableObject.CreateInstance<
+                ContextCalculateAbilityParams>();
+            parameters.StatType = StatType.Charisma;
+            parameters.ReplaceCasterLevel = true;
+            parameters.CasterLevel = Simple(
+                InfernalRules35.SpellLikeCasterLevel);
+            parameters.ReplaceSpellLevel = true;
+            parameters.SpellLevel = Simple(
+                InfernalRules35.UnholyBlightSpellLevel);
+            var cost = ScriptableObject.CreateInstance<AbilityResourceLogic>();
+            cost.RequiredResource = resource;
+            cost.IsSpendResource = true;
+            cost.CostIsCustom = false;
+            cost.Amount = 1;
+
+            ability.name = InternalName(symbol);
+            ability.Parent = null;
+            ability.Type = AbilityType.SpellLike;
+            ability.Range = AbilityRange.Medium;
+            ability.CanTargetPoint = true;
+            ability.CanTargetSelf = false;
+            ability.CanTargetFriends = true;
+            ability.CanTargetEnemies = true;
+            ability.SpellResistance = true;
+            ability.NeedEquipWeapons = false;
+            ability.EffectOnEnemy = AbilityEffectOnUnit.Harmful;
+            ability.EffectOnAlly = AbilityEffectOnUnit.Harmful;
+            ability.ActionType = UnitCommand.CommandType.Standard;
+            ability.SetIsFullRoundAction(false);
+            ability.Animation =
+                UnitAnimationActionCastSpell.CastAnimationStyle.Omni;
+            ability.Hidden = false;
+            ability.ActionBarAutoFillIgnored = false;
+            ability.MaterialComponent =
+                new BlueprintAbility.MaterialComponentData();
+            ability.ResourceAssetIds = Array.Empty<string>();
+            ability.ComponentsArray = new BlueprintComponent[] { around, run,
+                school, descriptor, parameters, cost };
+            var icon = BlueprintLibraryLookup.RequireExact<BlueprintAbility>(
+                library, NativeProtectionFromGood35,
+                "native evil alignment-spell presentation").Icon;
+            BlueprintUnitFactAccess.Resolve().Configure(ability,
+                LocalizationService.Create(symbol + ".Name", "Unholy Blight"),
+                LocalizationService.Create(symbol + ".Description",
+                    "Once per summoning at caster level 12, burst unholy power in a 20-foot radius at medium range. Evil creatures are unaffected. Good creatures take 5d8 divine damage and are sickened for 1d4 rounds; good outsiders instead take 10d6. A Will save halves damage and prevents sickness. Neutral creatures take half damage, or one-quarter on a successful save, and are never sickened. Spell resistance applies."),
+                icon);
             return ability;
         }
 
