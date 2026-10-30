@@ -6,7 +6,7 @@ Do not hand-edit either generated output.
 
 ## Coverage and policy
 
-The blueprint manifest contains exactly **171** active
+The blueprint manifest contains exactly **174** active
 `BlueprintItemWeapon` identities and every one is represented below.
 The audit includes equipped player/development weapons, mechanics-only
 Pistol-Whip items, and Expanded Summoning creature weapons. Cosmetic
@@ -23,7 +23,7 @@ identity, character identity, and time are forbidden.
 |---|---:|
 | equipped project weapon | 101 |
 | mechanics-only exclusion | 2 |
-| summoning-only exclusion | 68 |
+| summoning-only exclusion | 71 |
 
 ### Family counts
 
@@ -42,6 +42,7 @@ identity, character identity, and time are forbidden.
 | Sprint 28 giant humanoid attack | 6 |
 | Sprint 29 hidden giant humanoid attack | 10 |
 | Sprint 32 fey/celestial attack | 4 |
+| Sprint 34 outsider attack | 3 |
 | Sprints 30-31 outsider/celestial attack | 9 |
 | Wakizashi | 14 |
 
@@ -220,6 +221,9 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.FeyCelestial.Satyr.Dagger | 25698949bdea41d2bcbe13ad8783aa4d | Satyr dagger | Sprint 32 fey/celestial attack | KMG.Summoning.FeyCelestial.Satyr.DaggerType | b2ba7766959344fb8536d4a3f7281441 | mechanics-only | ExpandedSummoning.FeyCelestial.Satyr | not applicable | summoning-only exclusion |
 | KMG.Summoning.FeyCelestial.Satyr.Horns | fe9b4722730744dfadbf0ae3b10c07f9 | Satyr horns | Sprint 32 fey/celestial attack | KMG.Summoning.FeyCelestial.Satyr.HornsType | 261b62148fec4ebf909792ab4976683c | mechanics-only | ExpandedSummoning.FeyCelestial.Satyr | not applicable | summoning-only exclusion |
 | KMG.Summoning.FeyCelestial.LillendAzata.Tail | 50d93d8a75d34b3787183363f7ec25c9 | Lillend Azata tail | Sprint 32 fey/celestial attack | KMG.Summoning.FeyCelestial.LillendAzata.TailType | 9afa3017d7794fb1b477e2236dbb0568 | mechanics-only | ExpandedSummoning.FeyCelestial.LillendAzata | not applicable | summoning-only exclusion |
+| KMG.Summoning.Infernal.BeardedDevil.Glaive | 804dc1aecc9f43b9bcad0c48547c8b28 | Bearded Devil glaive | Sprint 34 outsider attack | KMG.Summoning.Infernal.BeardedDevil.GlaiveType | bf1d7fd267a84f1bbd364f68037c1e6c | mechanics-only | ExpandedSummoning.Infernal.BeardedDevil | not applicable | summoning-only exclusion |
+| KMG.Summoning.Infernal.BeardedDevil.Claw | 5e14ac33c7d1442ab29285bb3901b66f | Bearded Devil claw | Sprint 34 outsider attack | KMG.Summoning.Infernal.BeardedDevil.ClawType | a916da7d267f483f8b29156094f25de4 | mechanics-only | ExpandedSummoning.Infernal.BeardedDevil | not applicable | summoning-only exclusion |
+| KMG.Summoning.Infernal.KytonChainDevil.Chain | 00d62f48e15e4b8ca19f480fd8dd07b1 | Kyton chain | Sprint 34 outsider attack | KMG.Summoning.Infernal.KytonChainDevil.ChainType | aa856db3834e472db6d8190b0081d38f | mechanics-only | ExpandedSummoning.Infernal.KytonChainDevil | not applicable | summoning-only exclusion |
 
 ## Exact presentation and provenance contracts
 
@@ -396,6 +400,9 @@ identity, character identity, and time are forbidden.
 | KMG.Summoning.FeyCelestial.Satyr.Dagger | private clone of native weapon aa514dbf4c3d61f4e9c0738bd4d373cb | private type cloned from the same native weapon donor | native dagger equipment on Satyr prefab 22dfc39c941704743a5b3fd9769327a0 | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | private dagger visual record preserves model/attachments; animation style from native shortsword 455c6750aac8fa94f8ab19f385c73ae7 | Medium light manufactured dagger; native hand attachment | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | Sprint 32 technical presentation and attack contact pending native qualification |
 | KMG.Summoning.FeyCelestial.Satyr.Horns | private clone of native weapon 73ed4e955295e62469fe471f1d49d9ef | private type cloned from the same native weapon donor | native Satyr body/headbutt; no separate equipment visual | native Kingmaker asset; no redistributed source FBX | none | none; exact native blueprint donor cloning | native Satyr archer 6114adae73a1338498412b3c63c946f8 | secondary natural horns; native Satyr headbutt | native donor material | none | Kingmaker runtime donor reference only; no proprietary asset redistribution | Sprint 32 technical presentation and attack contact pending native qualification |
 | KMG.Summoning.FeyCelestial.LillendAzata.Tail | private clone of native weapon ae822725634c6f0418b8c48bd29df255 | private type cloned from the same native weapon donor | original Lillend body: assets/sprint32-support/lillend-mesh.json | native weapon reference only; original procedural creature mesh, no redistributed native geometry | private generator scene; not packaged | assets-source/original-models/sprint32-support/generate_lillend.py and paint_lillend.py | ten original tail drivers using the existing Salamander 1.4-second sweep and 0.60-second contact event | Large secondary tail slap; 10-foot reach; body-owned contact | project lillend-albedo.png on creature body | none | project-authored mesh/paint; native rig/weapon references only; assets-source/original-models/sprint32-support/README.md | Sprint 32 technical presentation and attack contact pending native qualification |
+| KMG.Summoning.Infernal.BeardedDevil.Glaive | private native glaive clone | private donor type; attack dice and reach configured by Infernal34 builder | native glaive attached to measured right palm | original procedural creature mesh; native polearm referenced only at runtime | none; original mesh JSON generated directly | assets-source/original-models/sprint34-infernal-outsiders/generate_infernal_outsiders.py | measured Lizardfolk Free Hands rig; private glaive mapping to native Attack_01_3 | two-handed glaive, alternative to close claws; native 10-foot reach | native glaive material | none | assets-source/original-models/sprint34-infernal-outsiders/SOURCE.md; original geometry, no redistributed native meshes or clips | simple beard/chain motion, seams and minor clipping remain cosmetic backlog; final native presentation required |
+| KMG.Summoning.Infernal.BeardedDevil.Claw | private native claw mechanics clone; body-owned attack geometry | private donor type; attack dice and reach configured by Infernal34 builder | original creature mesh and weighted chains; no transferable visual | original procedural creature mesh; native polearm referenced only at runtime | none; original mesh JSON generated directly | assets-source/original-models/sprint34-infernal-outsiders/generate_infernal_outsiders.py | measured Lizardfolk Free Hands rig; native attack contact drives owned chain extension | two primary close-range claws, alternative to glaive | project-authored mesh vertex colors and private material | none | assets-source/original-models/sprint34-infernal-outsiders/SOURCE.md; original geometry, no redistributed native meshes or clips | simple beard/chain motion, seams and minor clipping remain cosmetic backlog; final native presentation required |
+| KMG.Summoning.Infernal.KytonChainDevil.Chain | private native claw mechanics clone; body-owned attack geometry | private donor type; attack dice and reach configured by Infernal34 builder | original creature mesh and weighted chains; no transferable visual | original procedural creature mesh; native polearm referenced only at runtime | none; original mesh JSON generated directly | assets-source/original-models/sprint34-infernal-outsiders/generate_infernal_outsiders.py | measured Lizardfolk Free Hands rig; native attack contact drives owned chain extension | four independent nontransferable chains; 10-foot reach, 25 feet after paid control | project-authored mesh vertex colors and private material | none | assets-source/original-models/sprint34-infernal-outsiders/SOURCE.md; original geometry, no redistributed native meshes or clips | simple beard/chain motion, seams and minor clipping remain cosmetic backlog; final native presentation required |
 
 ## Audit conclusion before asset authoring
 

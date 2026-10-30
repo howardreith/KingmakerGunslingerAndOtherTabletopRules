@@ -481,6 +481,14 @@ try {
     }
     else {
     # --- Historical allow-list wrapper fixtures ---
+    foreach ($branch34 in @(
+        'codex/expanded-summoning-sprint34-bearded-devil-kyton',
+        'codex/expanded-summoning-sprint34-release-records')) {
+        Invoke-Case -Name ("sprint34 exact branch " + $branch34) -Scenario @{ branch = $branch34 } -Expect push -ExpectedPushCalls 1
+        Invoke-Case -Name ("sprint34 case variant " + $branch34) -Scenario @{ branch = $branch34.Replace('sprint34', 'Sprint34') } -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Refusing to push non-allowlisted branch'
+        Invoke-Case -Name ("sprint34 suffix refusal " + $branch34) -Scenario @{ branch = $branch34 + '-extra' } -Expect refuse -ExpectedPushCalls 0 -ExpectMessage 'Refusing to push non-allowlisted branch'
+    }
+
     Invoke-Case -Name 'sprint27 product branch in permitted worktree' `
         -Scenario @{ branch = 'codex/expanded-summoning-sprint27-griffon' } -Expect push -ExpectedPushCalls 1
     Invoke-Case -Name 'sprint27 records branch in permitted worktree' `

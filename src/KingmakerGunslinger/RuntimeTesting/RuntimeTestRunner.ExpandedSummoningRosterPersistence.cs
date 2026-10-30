@@ -37,7 +37,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint22PersistenceScope || Sprint23PersistenceScope ||
             Sprint24PersistenceScope || Sprint25PersistenceScope || Sprint26PersistenceScope ||
             Sprint27PersistenceScope || Sprint28PersistenceScope ||
-            Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope; } }
+            Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope || Sprint34PersistenceScope; } }
+        private bool Sprint34PersistenceScope
+        { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.InfernalOutsidersScope; } }
         private bool Sprint33PersistenceScope
         { get { return (string)_request.Parameters?["persistenceScope"] == ExpandedSummoningRosterPersistencePolicy.ShadowOutsidersScope; } }
         private bool Sprint32PersistenceScope
@@ -71,6 +73,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             Sprint29PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.GiantHumanoidsTwoKeys :
             Sprints3031PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.OutsiderCelestialKeys :
             Sprint32PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.FeyCelestialKeys :
+            Sprint34PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.InfernalOutsiderKeys :
             Sprint33PersistenceScope ? ExpandedSummoningRosterPersistencePolicy.ShadowOutsiderKeys :
             ExpandedSummoningRosterPersistencePolicy.Keys; } }
         private IEnumerator<int> _rosterPersistenceSteps;
@@ -266,6 +269,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JValue(catchPart.LastRound);
             }
             string key = unit.Get<UnitPartRelease143RosterReceipt>()?.Key;
+            if (InfernalVisualPolicy34.Handles(key)) profile["sprint34Items"] = InfernalSavedItems34(unit);
             if (key == GiantHumanoidRulesPolicy.Cloud ||
                 key == GiantHumanoidRulesPolicy.Storm)
             {
@@ -519,7 +523,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var party = Game.Instance.Player.Party.Where(u => u != null && u.Descriptor != null).ToArray();
             if (party.Length != WorkingSaveSmokeScenario.ExpectedPartyCount) throw new InvalidOperationException("Working party fingerprint changed.");
             ItemEntity[] giantPartyItems =
-                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope ?
+                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint34PersistenceScope ?
                 Game.Instance.Player.Inventory.Items.ToArray() : null;
             int[] giantPartyCounts = giantPartyItems?.Select(item => item.Count).ToArray();
             var caster = party.First(u => u.HoldingState != null);
@@ -539,7 +543,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         u.Get<UnitPartSprint24StateReceipt>() == null) &&
                     (!Sprint26PersistenceScope || u.Get<UnitPartSprint26StateReceipt>() == null) &&
                     (!Sprint32PersistenceScope || u.Get<UnitPartSprint32ListenerReceipt>() == null) &&
-                    (!Sprint33PersistenceScope || !OwnsControl33(u, caster, existing)))
+                    (!Sprint33PersistenceScope || !OwnsControl33(u, caster, existing)) &&
+                    (!Sprint34PersistenceScope || !OwnsInfernalRecipient34(u, caster, existing)))
                 .Select(u => new { Unit=u, u.Destroyed, u.HoldingState, u.Blueprint }).ToArray();
             int published;
             bool publication = ExpandedSummoningPublisher.RequiredBasePublicationIsExact(BlueprintBootstrap.Library,
@@ -559,6 +564,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprints3031PersistenceScope) Sprints3031PersistenceAbsence("fresh");
                 if (Sprint32PersistenceScope) Sprint32PersistenceAbsence(caster, "fresh");
                 if (Sprint33PersistenceScope) ControlAbsence33(caster, "fresh");
+                if (Sprint34PersistenceScope) InfernalSavedAbsence34(caster, "fresh");
                 CompleteRosterPersistence(RuntimeTestStatuses.Pass, ""); yield break;
             }
             var units = existing;
@@ -570,6 +576,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 if (Sprints3031PersistenceScope) Sprints3031PersistenceAbsence("intake");
                 if (Sprint32PersistenceScope) Sprint32PersistenceAbsence(caster, "intake");
                 if (Sprint33PersistenceScope) ControlAbsence33(caster, "intake");
+                if (Sprint34PersistenceScope) InfernalSavedAbsence34(caster, "intake");
                 var created = new List<UnitEntityData>();
                 var originalAlignment = caster.Descriptor.Alignment.Value;
                 try
@@ -622,6 +629,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             else foreach (var unit in units) RegisterRosterReadiness(unit, caster, null);
             if (Sprint32PersistenceScope && verify) ObserveSprint32ColdState(caster, units);
             if (Sprint33PersistenceScope && verify) ObserveControl33(caster, units, "cold");
+            if (Sprint34PersistenceScope && verify) ObserveInfernalSaved34(caster, units, "cold");
             bool cleanup2Trio = (string)_request.Parameters["persistenceScope"] == "giant-humanoids-ii" &&
                 _context.FeatureModules.Active.ExpandedSummoning;
             // The general save-readiness contract deliberately allows native
@@ -687,7 +695,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool savedTargetedSubset = (Sprint22PersistenceScope ||
                 Sprint23PersistenceScope || Sprint24PersistenceScope || Sprint25PersistenceScope ||
                 Sprint26PersistenceScope || Sprint27PersistenceScope ||
-                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope) && verify;
+                Sprint28PersistenceScope || Sprint29PersistenceScope || Sprints3031PersistenceScope || Sprint32PersistenceScope || Sprint33PersistenceScope || Sprint34PersistenceScope) && verify;
             bool exact = moduleOn || savedTargetedSubset
                 ? ExpandedSummoningRosterPersistencePolicy.ExactSelectedKeys(
                     (string)_request.Parameters["persistenceScope"], keys) &&
@@ -831,7 +839,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .CaptureTheropodOwnedResources(unit.View);
                 bool theropodBodyExact = true;
                 if ((Sprint24PersistenceScope && TheropodVisualPolicy.Handles(receipt.Key)) ||
-                    (Sprint33PersistenceScope && ShadowOutsiderVisualPolicy.Handles(receipt.Key)))
+                    (Sprint33PersistenceScope && ShadowOutsiderVisualPolicy.Handles(receipt.Key)) ||
+                    (Sprint34PersistenceScope && InfernalVisualPolicy34.Handles(receipt.Key)))
                     theropodBodyExact = moduleOn
                         ? originalBodyOutcome.StartsWith("visual:attached;",
                             StringComparison.Ordinal) &&
@@ -846,6 +855,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                     theropodBodyExact &= skin?.sharedMesh?.name == "KMG_" + receipt.Key + "_Original";
                     if (receipt.Key == ShadowOutsiderVisualPolicy.Stalker)
                         theropodBodyExact &= unit.View?.GetComponent<StalkerSlamAnimation33>()?.Live == true;
+                }
+                if (Sprint34PersistenceScope && moduleOn) {
+                    var skin = unit.View?.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .SingleOrDefault(value => value.name == TheropodVisualPolicy.BodyRendererName);
+                    theropodBodyExact &= skin?.sharedMesh?.name == "KMG_" + receipt.Key + "_Original";
+                    if (receipt.Key == InfernalVisualPolicy34.Kyton)
+                        theropodBodyExact &= unit.View?.GetComponent<KytonChainVisual34>() != null;
                 }
                 visual &= theropodBodyExact;
                 UnityEngine.Object[] giantOwned = unit.View == null ?
@@ -995,9 +1011,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (Sprint32PersistenceScope && verify)
                 foreach (var step in CleanupSprint32PersistentState(caster, units)) yield return step;
             if (Sprint33PersistenceScope && prepare) foreach (int step in PrepareControl33(caster, units)) yield return step;
+            if (Sprint34PersistenceScope) ObserveInfernalItems34(units, giantPartyItems, giantPartyCounts);
+            if (Sprint34PersistenceScope && prepare) foreach (int step in PrepareInfernalSaved34(caster, units)) yield return step;
             if (verify && !Sprint32PersistenceScope) foreach (var step in DestroyRosterPersistence(units, "cleanup")) yield return step;
             if (Sprint32PersistenceScope && verify) Sprint32PersistenceAbsence(caster, "cleanup");
             if (Sprint33PersistenceScope && verify) foreach (int step in CleanupControl33(caster)) yield return step;
+            if (Sprint34PersistenceScope && verify) foreach (int step in CleanupInfernalSaved34(caster)) yield return step;
             bool preserved = unrelated.All(x => x.Unit.Destroyed == x.Destroyed && ReferenceEquals(x.Unit.HoldingState,x.HoldingState) && ReferenceEquals(x.Unit.Blueprint,x.Blueprint)) && Game.Instance.Player.Party.SequenceEqual(party);
             RosterPersistenceCheck("unrelated-preserved", preserved,
                 new JObject { ["preexistingUnits"] = unrelated.Length, ["preserved"] = preserved }, "exact unrelated unit references and party membership preserved");

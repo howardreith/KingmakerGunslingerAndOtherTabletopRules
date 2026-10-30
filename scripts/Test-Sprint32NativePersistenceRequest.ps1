@@ -3,7 +3,7 @@ request, evidence directory, marker, deployment, game or save is created. #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory=$true)][string]$ModAssemblyPath,
-    [ValidateSet('fey-celestial','shadow-outsiders')][string]$PersistenceScope='fey-celestial',
+    [ValidateSet('fey-celestial','shadow-outsiders','infernal-outsiders')][string]$PersistenceScope='fey-celestial',
     [string]$KingmakerInstallDir='C:/Program Files (x86)/Steam/steamapps/common/Pathfinder Kingmaker'
 )
 $ErrorActionPreference='Stop'

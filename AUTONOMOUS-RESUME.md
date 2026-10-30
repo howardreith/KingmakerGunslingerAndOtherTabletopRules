@@ -1,4 +1,17 @@
-# Sprint 33 ? v0.0.171 RELEASED / STOP
+# Sprint 34 - in progress
+
+Continue only the authorized Bearded Devil/Kyton mission in
+`C:/Dev/KingmakerGunslingerLab/wt/s34`. The controlling stage, candidate identities,
+finite qualification plan and restoration are in
+[SPRINT34-STATUS](planning/SPRINT34-STATUS.md). Early mechanics passed; body03
+observed native routines and motion, with rendered contact still under review.
+All ten routes remain hidden. No Working persistence envelope or release yet.
+The human installation and protected intake are restored. No Sprint35.
+
+The following closed Sprint33 record is historical; its artifacts, models and
+Succubus drain investigation remain closed.
+
+# Historical Sprint 33 - v0.0.171 RELEASED / STOP
 
 [Stable release](https://github.com/howardreith/KingmakerGunslingerAndOtherTabletopRules/releases/tag/v0.0.171) is published as Latest and its actual public ZIP,
 manifest/checksum, embedded DLL/MVID and remote tag/source lineage are verified.

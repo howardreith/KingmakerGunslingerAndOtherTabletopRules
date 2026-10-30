@@ -253,7 +253,7 @@ namespace KingmakerGunslinger.DomainTests
 
         internal static void FixtureAlignmentRespectsEveryVariantAndNativeBranch()
         {
-            var evil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith" };
+            var evil = new[] { "lemure", "hell-hound", "erinyes-devil", "shadow-demon", "succubus", "salamander", "bebelith", "bearded-devil", "kyton-chain-devil" };
             var good = new[] { "astral-deva", "lantern-archon", "bralani-azata", "ghaele-azata", "lillend-azata" };
             foreach (var variant in ExpandedSummoningCatalog.GenerateVariants(SummonFamily.Monster)
                 .Concat(ExpandedSummoningCatalog.GenerateVariants(SummonFamily.NaturesAlly)))

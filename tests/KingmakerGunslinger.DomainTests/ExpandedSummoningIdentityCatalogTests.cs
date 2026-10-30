@@ -13,6 +13,9 @@ namespace KingmakerGunslinger.DomainTests
             var second = ExpandedSummoningIdentityCatalog.Build();
             // Historical released-type baseline; Sprint 27 checks its own exact manifest separately.
             var released = first.Where(value => value.Symbol != "KMG.Summoning.Unit.Griffon" &&
+                !value.Symbol.StartsWith("KMG.Summoning.Infernal.", StringComparison.Ordinal) &&
+                !value.Symbol.EndsWith(".BeardedDevil", StringComparison.Ordinal) && !value.Symbol.Contains(".BeardedDevil.") &&
+                !value.Symbol.EndsWith(".KytonChainDevil", StringComparison.Ordinal) && !value.Symbol.Contains(".KytonChainDevil.") &&
                 !value.Symbol.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) &&
                 !value.Symbol.EndsWith(".Satyr", StringComparison.Ordinal) &&
                 !value.Symbol.Contains(".Satyr.") &&

@@ -193,7 +193,7 @@ namespace KingmakerGunslinger.Blueprints
             // these six scoped creatures only, including the in-place Lantern
             // upgrade; unrelated released graphs are untouched.
             if (variant.Family == SummonFamily.Monster &&
-                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva"))
+                (variant.Creature.Key == "lemure" || variant.Creature.Key == "dretch" || variant.Creature.Key == "hound-archon" || variant.Creature.Key == "lantern-archon" || variant.Creature.Key == "trumpet-archon" || variant.Creature.Key == "astral-deva" || variant.Creature.Key == "bearded-devil" || variant.Creature.Key == "kyton-chain-devil"))
             {
                 foreach (var spawn in AlternateSummoningGraph.Objects<ContextActionSpawnMonster>(target.ComponentsArray))
                 {
