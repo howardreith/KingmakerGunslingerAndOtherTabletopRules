@@ -97,8 +97,15 @@ not native gameplay acceptance.
 
 Installed regeneration IL selects positive final damage and reads alignment
 from every BaseDamage, while silver selection is limited to PhysicalDamage.
-The private regeneration buff uses this native round/death-prevention consumer,
-with good/silver bypass arrays. Native spell attribution remains to be observed.
+Installed OnNewRound restores regeneration after only3 seconds. It also does
+not read a good spell's source descriptor. The Kyton-only subclass reimplements
+the two actual native callback interfaces, retaining native healing, difficulty
+and death-prevention ownership. Positive good/silver injury suppresses the
+following round; the subsequent callback restores native healing. A good native
+spell/SLA descriptor also qualifies. Serialized suppression survives cold load.
+Compiled interface maps confirm both callbacks dispatch to the subclass; this
+is not gameplay proof. Native following-round, good-spell and fatal-injury
+observations remain required. Other creatures' regeneration is unchanged.
 CotW's bleed donor uses its shared strongest-bleed selector; its private clone
 keeps that consumer. Source removal reselects remaining live bleed facts because
 the installed selector does not do this itself. Stock bleed uses its actual

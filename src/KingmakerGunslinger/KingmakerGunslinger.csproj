@@ -45,6 +45,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalRoutes34.cs" />
     <Compile Include="Summoning\InfernalActions34.cs" />
     <Compile Include="Summoning\DevilChills34.cs" />
@@ -1336,6 +1337,7 @@
     <Compile Include="Summoning\InfernalVisualPolicy34.cs" />
     <Compile Include="Summoning\BarbazuGlaiveView34.cs" />
     <Compile Include="Summoning\KytonChainVisual34.cs" />
+    <Compile Include="Summoning\KytonRegeneration34.cs" />
     <Compile Include="Assets\PteranodonAssetRuntime.Infernal34.cs" />
     <Compile Include="Summoning\StalkerSlamAnimation33.cs" />
     <Compile Include="Summoning\HoundArchonVisualPolicy.cs" />

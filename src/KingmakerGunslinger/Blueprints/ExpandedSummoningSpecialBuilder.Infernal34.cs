@@ -247,7 +247,8 @@ namespace KingmakerGunslinger.Blueprints
             var focus = ScriptableObject.CreateInstance<WeaponFocus>(); focus.WeaponType = chain.Type; focus.AttackBonus = 1;
             var strength = ScriptableObject.CreateInstance<DeinonychusPrimaryTalonStrength>(); strength.OwningBlueprint = unit; strength.Talon = chain;
             var equipment = ScriptableObject.CreateInstance<SummonGiantEquipmentOwnership>(); equipment.OwningBlueprint = unit; equipment.Slam = chain;
-            var regen = ScriptableObject.CreateInstance<AddEffectRegeneration>(); regen.Heal = 2; regen.Unremovable = false;
+            KytonRegeneration34.VerifyContract();
+            var regen = ScriptableObject.CreateInstance<KytonRegeneration34>(); regen.Heal = 2; regen.Unremovable = false;
             regen.CancelByMagicWeapon = false; regen.CancelDamageEnergyTypes = Array.Empty<DamageEnergyType>();
             regen.CancelDamageAlignmentTypes = new[] { DamageAlignment.Good }; regen.CancelDamageMaterials = new[] { PhysicalDamageMaterial.Silver };
             var regeneration = Require<BlueprintBuff>(symbols, p + "Regeneration");

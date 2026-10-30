@@ -15,9 +15,9 @@ Exports contain original vertices/UVs/weights and 27 required bone names.
 
 Barbazu has a green devil body, horns, beard and a separately bound native glaive
 visual. Kyton has a pale chain-wrapped body and four weighted barbed chains.
-These are distinct original meshes. Native attachment/contact, controlled-chain
-extension and motion acceptance are pending; offline appearance is not owner
-approval. Rough seams and simple beard/chain animation are deferred cosmetics.
+These are distinct original meshes. Body05 establishes native attachment,
+contact, controlled-chain extension and motion. Technical and agent image review
+are separate from personal owner aesthetic approval. Rough seams and simple beard/chain animation are deferred cosmetics.
 
 Reproduction uses `blender.exe -b --python generate_infernal_outsiders.py --`
 with `--kind`, the exact private `--capture`, and absolute `--albedo`,
@@ -34,7 +34,14 @@ and glaive contact alignment is unproved. Body04/source3f5fffa9 native BakeMesh 
 but ordinary next frames show the chain reset after UnitAttack advanced its
 planned limb. The correction retains the contacted limb for a0.35s visual
 follow-through. The glaive's measured native localY axis supplies a fixed grip
-correction. Both corrections still require native image/contact proof.
+correction. Body05/source6c20b2f7, RunId
+`20261030T0014352465588Z-d0ed1ae39feb4339919786bd7dc387a6`, passed32/32.
+Actual glaive blade contact and nonresting chain follow-through were observed;
+BakeMesh/manual contact gaps were below0.000006m. Agent-reviewed ordinary frames
+`contact-0-after-1` and Kyton `contact-5-after-1` visibly connect at normal and
+controlled reach. This closes functional presentation on that development
+artifact; final package presentation remains required. Rough seams, simple
+motion and minor clipping remain cosmetic backlog.
 No owner aesthetic approval is claimed.
 The private glaive presentation selects the retained native main-hand mapping
 without changing weapon category, damage, reach or native action consumers.
