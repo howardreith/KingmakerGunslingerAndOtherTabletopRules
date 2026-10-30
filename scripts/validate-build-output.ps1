@@ -86,6 +86,10 @@ $requiredFiles = @(
     'assets\sprint34-infernal-outsiders\bearded-devil-albedo.png',
     'assets\sprint34-infernal-outsiders\kyton-chain-devil-mesh.json',
     'assets\sprint34-infernal-outsiders\kyton-chain-devil-albedo.png',
+    'assets\sprint35-infernal-reach\barbed-devil-mesh.json',
+    'assets\sprint35-infernal-reach\barbed-devil-albedo.png',
+    'assets\sprint35-infernal-reach\bone-devil-mesh.json',
+    'assets\sprint35-infernal-reach\bone-devil-albedo.png',
     'assets\sprint32-support\lillend-mesh.json',
     'assets\sprint32-support\lillend-albedo.png',
     'assets\sprint18-primates\ape-mesh.json',
@@ -212,6 +216,10 @@ $allowedRelativePaths = @{
     'assets\sprint34-infernal-outsiders\bearded-devil-albedo.png' = $true
     'assets\sprint34-infernal-outsiders\kyton-chain-devil-mesh.json' = $true
     'assets\sprint34-infernal-outsiders\kyton-chain-devil-albedo.png' = $true
+    'assets\sprint35-infernal-reach\barbed-devil-mesh.json' = $true
+    'assets\sprint35-infernal-reach\barbed-devil-albedo.png' = $true
+    'assets\sprint35-infernal-reach\bone-devil-mesh.json' = $true
+    'assets\sprint35-infernal-reach\bone-devil-albedo.png' = $true
     'assets\sprint32-support\lillend-mesh.json' = $true
     'assets\sprint32-support\lillend-albedo.png' = $true
     'assets\sprint18-primates\ape-mesh.json' = $true

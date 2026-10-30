@@ -1,7 +1,10 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
+using Newtonsoft.Json.Linq;
 
 namespace KingmakerGunslinger.DomainTests
 {
@@ -132,6 +135,85 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.Throws<ArgumentNullException>(() =>
                 InfernalRules35.PrivateUnitDonorSymbol(null),
                 "A null private-unit identity is invalid input.");
+        }
+
+        internal static void OwnedBodiesDecodeAndTailIsIsolated()
+        {
+            foreach (string key in new[] { InfernalVisualPolicy35.Barbed,
+                InfernalVisualPolicy35.Bone })
+            {
+                string path = "assets/sprint35-infernal-reach/" + key +
+                    "-mesh.json";
+                var payload = JObject.Parse(File.ReadAllText(path));
+                OriginalMeshOrientation.AssertShippedBody(path, key);
+                var data = Convert.FromBase64String((string)payload["data"]);
+                int vertices = (int)payload["vertexCount"];
+                int triangles = (int)payload["triangleCount"];
+                Assertions.Equal(vertices * 64 + triangles * 12,
+                    data.Length, "Sprint 35 decoder layout remains complete.");
+                for (int index = 0; index < vertices * 8; index++)
+                {
+                    float value = BitConverter.ToSingle(data, index * 4);
+                    Assertions.True(!float.IsNaN(value) &&
+                        !float.IsInfinity(value),
+                        "Sprint 35 vertex, normal, and UV values are finite.");
+                }
+                var albedo = payload["albedo"];
+                using (var hash = SHA256.Create())
+                {
+                    string actual = string.Concat(hash.ComputeHash(
+                        File.ReadAllBytes(Path.Combine(
+                            Path.GetDirectoryName(path),
+                            (string)albedo["file"]))).Select(value =>
+                                value.ToString("x2")));
+                    Assertions.Equal((string)albedo["sha256"], actual,
+                        "Runtime albedo agrees with its Sprint 35 mesh.");
+                }
+                Assertions.True(payload["bones"].Values<string>()
+                    .SequenceEqual(InfernalVisualPolicy35.Bones),
+                    "Both bodies retain the exact measured rig order.");
+                if (key == InfernalVisualPolicy35.Barbed)
+                {
+                    Assertions.Equal(20, (int)payload["visibleSpines"],
+                        "Barbed has a materially spined authored body.");
+                    Assertions.True(payload["tail"].Type == JTokenType.Null,
+                        "Barbed does not acquire the Bone tail receipt.");
+                    continue;
+                }
+                Assertions.Equal(2, (int)payload["visibleWings"],
+                    "Bone retains its two authored wing-strut silhouettes.");
+                var tail = payload["tail"];
+                Assertions.Equal(6, (int)tail["segments"],
+                    "Bone has one six-segment stinging tail.");
+                int bone = Array.IndexOf(payload["bones"].Values<string>()
+                    .ToArray(), (string)tail["bone"]);
+                int[] indices = tail["vertices"].Values<int>().ToArray();
+                Assertions.True(indices.Length >= 100 &&
+                    indices.Distinct().Count() == indices.Length &&
+                    indices.All(index => index >= 0 && index < vertices),
+                    "Bone tail owns one valid, unique render region.");
+                foreach (int index in indices)
+                {
+                    int offset = vertices * 32 + triangles * 12 + index * 32;
+                    Assertions.Equal(bone, BitConverter.ToInt32(data, offset),
+                        "Every deformable tail vertex belongs to its declared pelvis bone.");
+                    Assertions.True(Math.Abs(BitConverter.ToSingle(data,
+                        offset + 4) - 1f) < .0001f,
+                        "Tail deformation has no mixed-bone drift.");
+                }
+            }
+            Assertions.True(InfernalVisualPolicy35.IsExactIdentity(
+                InfernalVisualPolicy35.Barbed,
+                "a8ed4e16ec4b48a5bdfdc47f7f1b9cd0",
+                "KMG_Summoning_Unit_BarbedDevil",
+                TheropodVisualPolicy.DonorPrefabGuid),
+                "Only the exact Barbed identity can receive its body.");
+            Assertions.False(InfernalVisualPolicy35.IsExactIdentity(
+                InfernalVisualPolicy35.Barbed,
+                "74652de839a94feba3c2fb67b536437c",
+                "KMG_Summoning_Unit_BoneDevil",
+                TheropodVisualPolicy.DonorPrefabGuid),
+                "Bone cannot cross-bind the Barbed body.");
         }
     }
 }
