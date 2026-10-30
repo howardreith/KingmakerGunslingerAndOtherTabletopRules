@@ -403,6 +403,11 @@ namespace KingmakerGunslinger.RuntimeTesting
             var wallBlueprint = fixture.Blueprints.OfType<BlueprintAbility>()
                 .Single(value => value.name ==
                     "KMG_Summoning_Infernal_BoneDevil_WallOfIce");
+            var wallRun = wallBlueprint.GetComponents<
+                Kingmaker.UnitLogic.Abilities.Components.AbilityEffectRunAction>()
+                .Single();
+            bool formationHasInvalidOuterSave = wallRun.SavingThrowType !=
+                Kingmaker.EntitySystem.Stats.SavingThrowType.Unknown;
             var grant = bone.Descriptor.Abilities.GetAbility(wallBlueprint);
             if (grant == null) throw new InvalidOperationException(
                 "Hidden Bone Devil lacks its registered wall grant.");
@@ -470,6 +475,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             var row = new JObject {
                 ["owner"] = bone.UniqueId,
                 ["ability"] = wallBlueprint.AssetGuid,
+                ["outerFormationSave"] = wallRun.SavingThrowType.ToString(),
+                ["formationHasInvalidOuterSave"] =
+                    formationHasInvalidOuterSave,
                 ["command"] = Sprint27AiCommand(command),
                 ["targetable"] = targetable,
                 ["start"] = Vec(start),
@@ -496,7 +504,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["formationGeometry"] = "single-target-point-section",
                 ["wallBreachResidualImplemented"] = false
             };
-            check("wall-section-viability", targetable &&
+            check("wall-section-viability", !formationHasInvalidOuterSave &&
+                targetable &&
                 command.Result == UnitCommand.ResultType.Success &&
                 section != null && sectionOffset <= .75f &&
                 hadSummonBuff && obstruction && restored, row,
