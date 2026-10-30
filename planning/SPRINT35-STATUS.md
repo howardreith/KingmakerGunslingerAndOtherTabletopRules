@@ -259,3 +259,33 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`;
   restoration record
   `20261030T1920382640955Z-disposable-expanded-summoning-sprint32-native-review.json`.
+- Candidate `0d2e1b7d` passed strict 440-file packaging (ZIP
+  `fee807b1d830b61921737a6f606ac054b51fb274a8f12e3bb72431e349e0ba70`;
+  DLL `3343eb712dc889c725566e0c02f2712eb60c4674f3f16036245782a11aec274b`;
+  MVID `861ccc46-a86a-4746-91f5-bfc6683053f4`; source state
+  `324b7b9912a582dedfd189e5e35d6d8f4999d96eb83e22fc5117296fa77adeef`).
+  Guarded run
+  `20261030T1935260140953Z-0d9ae262e4a841d388c1e61400fb286f`
+  retained the hidden bootstrap/profile/body and Barbed contact PASS controls
+  and closed the Bone RTWP tail cell: the exact four-row native plan contained
+  exactly one sting, reached final-act `Success`, then retired normally after
+  the completed plan. The first real Wall of Ice command was targetable and
+  completed `Success` on a measured six-metre native path, but produced no
+  section; pathing consequently remained unchanged. Installed 2.1.7b IL gives
+  the causal contract: `AbilityEffectRunAction.Apply` (165 bytes) returns at
+  IL `003c` when `HasSavingThrow` is true and `TargetWrapper.Unit` is null;
+  `get_HasSavingThrow` (10 bytes) is true for any enum value greater than
+  `Unknown`. The formation graph incorrectly put a Reflex save on its point
+  target, so its spawn action never ran. The bounded repair uses no outer save
+  for formation and records/rejects a future recurrence in the native row;
+  formation contact save/SR remains a separate unimplemented unit consumer,
+  not something this repair claims. No save was staged; restoration returned
+  the live mod tree to exact SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  The two run-owned live-mod backups are preserved on `E:` as 272 verified
+  files (62,186,054 bytes), manifest SHA-256
+  `50cd8eff20d69a1ffc0b7c65f6be05da85175b5517d7d8815ee729685b4d6774`;
+  only their redundant C: copies were removed. The repair's Focused production
+  compilation passed in 25.6 seconds and the selected Sprint 35/correction
+  group passed 7/7 in 5.6 seconds; candidate packaging and the affected native
+  rerun remain pending on changed source.

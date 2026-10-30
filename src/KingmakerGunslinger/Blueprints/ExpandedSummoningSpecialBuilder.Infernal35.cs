@@ -636,7 +636,13 @@ namespace KingmakerGunslinger.Blueprints
             spawn.AfterSpawn = new ActionList {
                 Actions = Array.Empty<GameAction>() };
             var run = ScriptableObject.CreateInstance<AbilityEffectRunAction>();
-            run.SavingThrowType = SavingThrowType.Reflex;
+            // Installed 2.1.7b AbilityEffectRunAction.Apply returns before
+            // running Actions when a save is configured for a point target:
+            // there is no target Unit on which to roll it. Formation is the
+            // cast point, not a creature save. Any creature intersecting the
+            // completed wall needs its own formation consumer; do not encode
+            // that future unit-specific rule as an outer point-target save.
+            run.SavingThrowType = SavingThrowType.Unknown;
             run.Actions = new ActionList {
                 Actions = new GameAction[] { spawn } };
             var parameters = ScriptableObject.CreateInstance<
