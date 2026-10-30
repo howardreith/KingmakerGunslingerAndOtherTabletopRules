@@ -39,10 +39,15 @@ namespace KingmakerGunslinger.Blueprints
                 components.Add(bleed);
             } else {
                 var rounds = donor.GetComponent<AddFactContextActions>();
-                if (rounds?.NewRound?.Actions == null || rounds.NewRound.Actions.Length != 1 ||
-                    !(rounds.NewRound.Actions[0] is ContextActionDealDamage))
-                    throw new InvalidOperationException("Native bleed graph requires Sprint34 input review.");
-                var damage = (ContextActionDealDamage)ExpandedSummoningAbilityBuilder.DeepCloneComponentObject(rounds.NewRound.Actions[0]);
+                // Clone only the donor's unconditional HP payload. Its other
+                // round actions implement ordinary-bleed timing/cures, which
+                // are not Infernal Wound's printed lifetime/healing contract.
+                var payloads = (rounds?.NewRound?.Actions ?? Array.Empty<GameAction>())
+                    .OfType<ContextActionDealDamage>().ToArray();
+                if (payloads.Length != 1)
+                    throw new InvalidOperationException("Native bleed must have one direct round damage payload; actions=" +
+                        string.Join(",", (rounds?.NewRound?.Actions ?? Array.Empty<GameAction>()).Select(value => value?.GetType().FullName)));
+                var damage = (ContextActionDealDamage)ExpandedSummoningAbilityBuilder.DeepCloneComponentObject(payloads[0]);
                 if (!(bool)typeof(ContextActionDealDamage).GetProperty("IsSimpleDamage",
                     System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(damage, null))
                     throw new InvalidOperationException("Native bleed no longer deals ordinary HP damage.");

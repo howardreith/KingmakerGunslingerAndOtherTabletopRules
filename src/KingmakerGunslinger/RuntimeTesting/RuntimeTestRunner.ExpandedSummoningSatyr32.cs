@@ -99,7 +99,6 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalAiPhase)
             {
-                CreateSprint32TurnHostile(fixture);
                 foreach (int frame in ReviewInfernalAi34(fixture)) yield return frame;
                 yield break;
             }
