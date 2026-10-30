@@ -214,3 +214,48 @@ Sprint 35 checkpoint; historical records are not current instructions.
   measured lane so they cannot supply the claimed obstruction. Production wall
   behavior is unchanged. Production compilation and the selected group pass
   7/7; the changed observer requires a new native run.
+- Commit `5bafcb4c` first reached the exact compile and selected 7/7 test
+  boundary twice, but deterministic package creation failed closed both times
+  when C: exhausted its remaining space. Neither incomplete package was staged.
+  Their complete candidate directories are preserved separately on `E:` under
+  verified manifests
+  `2c950023920d39406af60d4ae186e5bd2fb869ae21aa35c70a7fd908e39b2780`
+  and
+  `0e71dcee059685a8bc3baccf806ba1c1edd497c8e8fe8aaa3ac77e42c8b7d80a`.
+  Ten raw live-mod backups belonging to the preceding Sprint 35 guarded runs
+  were also copied and verified file-for-file on `E:` before their redundant
+  C: copies were removed (1,360 files; manifest SHA-256
+  `9bf9296d4ffc0af7e1625fc0f9a2daad1e7044460a23b68959f3c96c0d216a92`).
+  No historical or unrelated backup was selected. With 886 MB of measured
+  headroom, the same source then passed strict package validation as ZIP
+  `3ada24d636dfb4b3b13d73d0384087c268a1d60f45ce357c0024dbc69d377812`;
+  DLL
+  `ae4f6384600e193feaba4e2675766bd46aed67a9d27be6209116a002826ca017`;
+  MVID `b75e84f1-f461-4e8d-8fb4-54bda6780d72`; source-state SHA-256
+  `8ed8ce2c2b5f7fc7ba904bea5b94e6a25ea93c00346c75cab330a2f3e84e5586`.
+  Its exact-build tree is preserved on `E:` as 162 verified files under
+  manifest
+  `22b03e70582479ef029dd9841808a7739e801f47b0a2342e67422b1169ec79c2`;
+  the runnable package, receipt, selected-test log, and validator remain on C:.
+- Guarded run
+  `20261030T1916306416621Z-ff24788552c9409c9618eac1f8b4b759`
+  retained the hidden bootstrap/profile/body and Barbed ordinary/reach contact
+  PASS rows, then stopped before the wall cast on a chance-sensitive observer
+  verdict. Bone's one real four-attack native plan emitted all four exact
+  weapon events and the exact sting advanced its private authored tail
+  (`contactsAfter=1`, `contactGap=0.001763626`, no forced rolls). The command
+  reported `Success` at its final native act boundary, then retired as
+  `Interrupt` on the following `UnitAttack.OnTick`; the old cell incorrectly
+  required the later mutable result. This is an observer defect, not a sting or
+  body failure. The bounded repair reuses the accepted RTWP completion rule
+  already used by the Lillend fixture: final-act success plus the exact command
+  reference and a complete real attack plan. It additionally requires exactly
+  one sting row before accepting the already-measured tail contact; an
+  incomplete plan remains a failure. The Focused production compilation and
+  selected Sprint 35/correction group pass 7/7 after this change. The failed
+  candidate will not be relaunched. The wrapper staged no save, received its
+  structured FAIL in 214.190 seconds, exited the game, and restored the live
+  mod tree to exact pre-run SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`;
+  restoration record
+  `20261030T1920382640955Z-disposable-expanded-summoning-sprint32-native-review.json`.
