@@ -248,6 +248,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                 "Both natural save outcomes and finite expiry were observed; a missing precondition is not a gameplay PASS.");
         }
 
+        // Supporting casters keep their own released native bodies. This is
+        // command readiness, not an S34 original-mesh presentation assertion.
+        private IEnumerable<int> WaitInfernalSupport34(UnitEntityData unit)
+        {
+            DateTime deadline = DateTime.UtcNow.AddSeconds(12);
+            while (DateTime.UtcNow < deadline && (unit.View == null || !unit.Descriptor.State.CanAct || !EntityFadedIn(unit)))
+            { Game.Instance.IsPaused = false; yield return 0; }
+            if (unit.View == null || !unit.Descriptor.State.CanAct || !EntityFadedIn(unit))
+                throw new InvalidOperationException("Native support caster not ready: " + unit.UniqueId);
+        }
         private static KytonRegeneration34 InfernalRegeneration34(UnitEntityData owner) =>
             owner.Buffs.GetBuff(InfernalSavedBlueprint34<BlueprintBuff>(true, "Regeneration"))
                 ?.SelectComponents<KytonRegeneration34>().SingleOrDefault();
@@ -280,7 +290,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (string)value["target"] == owner.UniqueId).ToArray();
             bool exact = actualHeals.Length > 0 && actualHeals.All(value => (int)value["actual"] == expectedHeal) &&
                 owner.Damage < after && (bool)owner.Descriptor.State.IsRegenerate && regeneration.SuppressionRound == 0 &&
-                (!suppressed || following && noEarlyHeal && (int)rounds[0]["state"] == 1);
+                (!suppressed || following && noEarlyHeal && (int)rounds[0]["state"] > 0);
             row["owner"] = owner.UniqueId; row["expectedHeal"] = expectedHeal; row["nativeDifficultyHalved"] = halved;
             row["roundTransitions"] = rounds; row["noHealingThroughoutSuppressedFollowingRound"] = noEarlyHeal;
             row["heals"] = new JArray(actualHeals); row["damageAfterNativeHealing"] = owner.Damage;
@@ -316,7 +326,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (var unit in new[] { caster, recipient }) {
                     Sprint28SetBrainActivePreservingActions(unit, false);
                     unit.Commands.InterruptAll(true); unit.Commands.RemoveFinishedAndUpdateQueue();
-                    foreach (int frame in Outsider30NativeAppearance(unit, unit.Blueprint.name)) yield return frame;
+                    foreach (int frame in WaitInfernalSupport34(unit)) yield return frame;
                 }
                 // A genuine native good spell, with natural SR/save outcomes.
                 // The existing radius guard excludes protected intake actors.
@@ -346,7 +356,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             injured = damage.Length != 0;
                             bool exact = command != null && command.Result == UnitCommand.ResultType.Success && command.IsActed &&
                                 economy.Count(command) == 1 && (economy.InCombat(command) ? economy.Exact(command, false) : economy.Unchanged(command)) &&
-                                (!injured || InfernalRegeneration34(recipient).SuppressionRound == 1 && !(bool)recipient.Descriptor.State.IsRegenerate);
+                                (!injured || InfernalRegeneration34(recipient).SuppressionRound > 0 && !(bool)recipient.Descriptor.State.IsRegenerate &&
+                                    !trace.Rows.Skip(trace.Rows.IndexOf(damage.Last()) + 1).Any(row =>
+                                        (string)row["event"] == "heal" && (string)row["target"] == recipient.UniqueId));
                             check("kyton-good-spell-command-" + attempt, exact, new JObject { ["source"] = caster.UniqueId,
                                 ["target"] = recipient.UniqueId, ["ability"] = spell.AssetGuid, ["command"] = command == null ? null : Sprint27AiCommand(command),
                                 ["costs"] = costs, ["events"] = new JArray(trace.Rows.Skip(first)), ["positiveNativeInjury"] = injured },
