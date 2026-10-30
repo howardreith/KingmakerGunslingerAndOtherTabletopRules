@@ -1,12 +1,17 @@
 # Sprint 34 - hidden native qualification
 
-Current stage: stock04 passed all28 healing/chain/source/ordinary-bleed checks.
-CotW effects02 stopped before its coexistence cells: the native cure consumed
-one slot but left its real touch delivery queued outside its smaller range.
-Its receipt now proves that cause. The observer repair derives positioning from
-the actual delivery ability/view radii and requires native range/LOS eligibility;
-no gameplay rule, hit, save, healing amount or action cost changed. Both affected
-effects profiles need fresh runs. Grouped AI03 remains PASS44/44.
+Current stage: CotW effects03 passed10/10 on931ba2ff44c8 (361.914s;
+RunId20261030T0436258063072Z-7c3951134c6d4a0da4264b4e75d678c1).
+Stock effects01 stopped at native eligibility before healing dispatch: actual
+separation8.81038m exceeded delivery range3.4288m despite requested2.74304m.
+RunId20261030T0444442534970Z-0b90c6cbd9c44dc2870ff4a5471086fe,
+270.088s orchestration/96222ms game, aggregate FAIL; later cells NOT_RUN.
+Installed Translocate calls ForcePlaceAboveGround. The observer now surveys
+both actual endpoints on the connected native floor using the existing lane
+helper and records requested/actual positions. Actual range/LOS/target guards
+remain. No gameplay, roll or action cost changes. Re-run only affected stock
+and CotW effects cells on one new candidate. Grouped AI03 remains PASS44/44.
+Restored transaction and full intake Compare PASS before this source work.
 All ten routes remain hidden. No final package or Working envelope has started.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
@@ -15,13 +20,13 @@ v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
 and historical NOT_RUN records; no historical campaign is selected.
 
-Latest executed development candidate: `4a81a8f642a84830d704653ebe7886807f27d370`,
+Latest executed development candidate: `931ba2ff44c8d58f53c2d9c9a73fca01e4606b31`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
-ZIP `87e2a6c270977c13894f4bde28513b12613942c4942a50b99604cc1b824156f4`;
-DLL `d527f9775105f77fe675c810e28b3e20ceed4465742d09b59ead9e0a112ba007`;
-MVID `f58b30cd-1264-455f-8aa8-b92fdf5de3f0`;
-fingerprint `496879f4a7dd8340b90924263751e1d4bad4e2e796766be4fa613a0b0092d061`.
-Build08 PASS287.238s;11 focused tests and strict package validation.
+ZIP `86fa382c1e866f4f718ba368254049cd19b763ef7caa35561712bf71477a6d50`;
+DLL `e1d539757203b5368af4f49a63dcd1cdf4673103440ec2d0146a95b2b4963526`;
+MVID `93e445ef-0185-4234-8296-a63d2f004114`;
+fingerprint `7bba7ec287d87ff0e3f2943f4401c4ef54afd0678dde15713c4eee735d56e604`.
+Build09 PASS269.441s;11 focused tests and strict package validation.
 
 - Stock04 PASS28/28,400.052s orchestration/165918ms game, RunId
   `20261030T0411073598660Z-cb5ea163b0de4e3c8697e2fb0f262304`.
@@ -244,6 +249,7 @@ Gate26 PASS31.708s, gate25 PASS31.248s and gate24 PASS34.912s (11/2767 tests).
 Earlier observer API/collection errors were corrected before their subsequent
 focused passes. Publisher42 S34 plus18 affected S33 refusal checks passed;
 33 persistence admission/refusal checks and two wrapper refusals passed.
+Focused36 PASS34.318s: production compilation and11/2767 selected tests.
 No final milestone gate or final qualification has run.
 
 ## Intake and restoration
@@ -252,8 +258,8 @@ HOWARD-LAPTOP; actual human installation0.0.117 observed, not a restoration pin.
 Sixteen private references hash-match installed Kingmaker2.1.7b/Harmony12/UMM.
 IntakeSHA256 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-processes/tasks/leases. Latest transaction `compat-20261030T041637Z-0f44050727a1` reached Restored
-with verified restoration; full intake Compare PASS after effects02. No game/lease/Working envelope active.
+processes/tasks/leases. Latest transaction `compat-20261030T044218Z-c8511553268a` reached Restored
+with verified restoration; full intake Compare PASS after stock effects01. No game/lease/Working envelope active.
 KMG_AUTOMATION_BASELINE is immutable. Original Working remains unchanged.
 
 Only the two authorized push branches were added to the existing wrapper.
@@ -273,6 +279,9 @@ archive24 map
 Earlier exact maps/amounts remain in prior status revisions and immutable local
 records. Archive26 completed for the restored effects02 redundant copies; map
 `efbc71c58baec1820de9ce8ea43e68d2c6a2cd24e5edad962569d91509652d5d`.
+Archive27 map `af3e955b6683a3e4d57825cfe6c9279a9e6103a5101439b049dbdea64133cf66`;
+archive28 map `cfe5b6ddf435c51cf06d1b4f24ae715807fa2dd1feb3948ecabbd745a59ae6bb`.
+Each preserves1302 redundant candidate-copy files on E: after restoration.
 The validator executable/dependencies archived in21 were restored byte-for-byte;
 keep them available. Full reserve is rechecked before each dispatch.
 Archive05's initial automatic-review refusal caused no mutation; explicit

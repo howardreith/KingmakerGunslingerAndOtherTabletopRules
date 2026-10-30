@@ -22,8 +22,11 @@ stock profile. It refuses continuation if newly owned actors, active commands
 or owned effects survive the intervening reset. Stock04 passed this grouped selection on4a81a8f642a8. CotW effects02 subsequently
 exposed an out-of-range queued touch in the unrelated-patient setup; the revised
 fixture derives its position from the actual delivery ability/view radii and
-records native range/LOS before dispatch. Both affected effects-only profiles
-need fresh proof; no cold-process boundary is combined.
+records native range/LOS before dispatch. CotW effects03 passed; stock effects01
+then exposed a grounded-position mismatch before dispatch. Both endpoints now
+use the existing connected-floor survey, with requested/actual positions retained.
+Both affected effects-only profiles need fresh proof; no cold-process boundary
+is combined.
 
 Sprint34 selects only `persistenceScope=infernal-outsiders` in the existing
 Working prepare, cleanup and absence trio: one Bearded Devil and one Kyton.
