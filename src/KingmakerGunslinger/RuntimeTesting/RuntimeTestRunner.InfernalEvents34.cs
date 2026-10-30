@@ -22,7 +22,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         private sealed class InfernalEvents34 : IDisposable, IUnitCommandStartHandler,
             IUnitCommandActHandler, IUnitCommandEndHandler,
             IGlobalRulebookHandler<RuleAttackWithWeapon>, IGlobalRulebookHandler<RuleAttackRoll>,
-            IGlobalRulebookHandler<RuleDealDamage>,
+            IGlobalRulebookHandler<RuleDealDamage>, IGlobalRulebookHandler<RuleDealStatDamage>,
             IGlobalRulebookHandler<RuleHealDamage>, IGlobalRulebookHandler<RuleSavingThrow>,
             IGlobalRulebookHandler<RuleApplyBuff>
         {
@@ -126,6 +126,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var check = InfernalWound34.Observe(evt);
                 if (check != null) row["woundCheck"] = new JObject { ["spell"] = check.Spell,
                     ["casterLevel"] = check.CasterLevel, ["d20"] = check.Roll, ["passed"] = check.Passed };
+            }
+            public void OnEventAboutToTrigger(RuleDealStatDamage evt) { }
+            public void OnEventDidTrigger(RuleDealStatDamage evt)
+            {
+                var row = Row("stat-damage", evt.Initiator, evt.Target);
+                row["stat"] = evt.Stat?.Type.ToString(); row["damage"] = evt.Damage; row["dice"] = evt.Dices.ToString();
+                row["fact"] = evt.Reason?.Fact?.Blueprint?.AssetGuid; row["source"] = evt.Reason?.Caster?.UniqueId;
             }
             public void OnEventAboutToTrigger(RuleSavingThrow evt) { }
             public void OnEventDidTrigger(RuleSavingThrow evt)

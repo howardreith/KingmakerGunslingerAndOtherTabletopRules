@@ -7,9 +7,11 @@ using Kingmaker.Blueprints;
 using Kingmaker.Blueprints.Items;
 using Kingmaker.Blueprints.Root;
 using Kingmaker.EntitySystem.Entities;
+using Kingmaker.Enums.Damage;
 using Kingmaker.Items;
 using Kingmaker.RuleSystem;
 using Kingmaker.RuleSystem.Rules;
+using Kingmaker.RuleSystem.Rules.Damage;
 using Kingmaker.UnitLogic.Abilities;
 using Kingmaker.UnitLogic.Abilities.Blueprints;
 using Kingmaker.UnitLogic.Buffs;
@@ -59,6 +61,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["nextExposure"] = disease == null ? (JToken)JValue.CreateNull() : new JValue(disease.NextExposure.Ticks),
                 ["consecutiveSaves"] = disease == null ? (JToken)JValue.CreateNull() : new JValue(disease.ConsecutiveSaves) };
         }
+        private static JObject InfernalSavedRegeneration34(UnitEntityData kyton) => new JObject {
+            ["owner"] = kyton.UniqueId, ["suppressionRound"] = InfernalRegeneration34(kyton)?.SuppressionRound,
+            ["active"] = (bool)kyton.Descriptor.State.IsRegenerate, ["damage"] = kyton.Damage };
         private IEnumerable<int> PrepareInfernalSaved34(UnitEntityData caster, UnitEntityData[] sources)
         {
             if (!Game.Instance.IsPaused || InfernalSavedRecipients34(caster).Length != 0)
@@ -103,8 +108,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             }
             for (int frame = 0; frame < 3; frame++) yield return 0;
             var effects = target.Buffs.Enumerable.Concat(kyton.Buffs.Enumerable).Where(buff => buffs.Contains(buff.Blueprint)).ToArray();
-            receipt.ControlState = new JArray(effects.OrderBy(buff => buff.Blueprint.AssetGuid, StringComparer.Ordinal)
-                .Select(InfernalSavedEffect34)).ToString(Formatting.None);
+            var injury = new PhysicalDamage(new DiceFormula(0, DiceType.Zero), PhysicalDamageForm.Slashing);
+            injury.AddBonus(10); injury.AddMaterial(PhysicalDamageMaterial.Silver);
+            var damage = Rulebook.Trigger(new RuleDealDamage(barbazu, kyton, new DamageBundle(injury)));
+            if (damage.Damage <= 0 || InfernalRegeneration34(kyton)?.SuppressionRound != 1 || (bool)kyton.Descriptor.State.IsRegenerate)
+                throw new InvalidOperationException("Native saved regeneration suppression precondition missing.");
+            receipt.ControlState = new JObject {
+                ["effects"] = new JArray(effects.OrderBy(buff => buff.Blueprint.AssetGuid, StringComparer.Ordinal).Select(InfernalSavedEffect34)),
+                ["regeneration"] = InfernalSavedRegeneration34(kyton)
+            }.ToString(Formatting.None);
             ObserveInfernalSaved34(caster, sources, "prepared");
         }
         private void ObserveInfernalSaved34(UnitEntityData caster, UnitEntityData[] sources, string phase)
@@ -113,21 +125,24 @@ namespace KingmakerGunslinger.RuntimeTesting
             if (targets.Length != 1 || !OwnsInfernalRecipient34(targets[0], caster, sources))
                 throw new InvalidOperationException("Exact saved Sprint34 recipient absent.");
             var target = targets[0]; var receipt = target.Get<UnitPartSprint32ListenerReceipt>();
-            var saved = JArray.Parse(receipt.ControlState); var blueprints = InfernalSavedBuffs34();
+            var saved = JObject.Parse(receipt.ControlState); var blueprints = InfernalSavedBuffs34();
             var effects = sources.Concat(new[] { target }).SelectMany(unit => unit.Buffs.Enumerable)
                 .Where(buff => blueprints.Contains(buff.Blueprint)).OrderBy(buff => buff.Blueprint.AssetGuid, StringComparer.Ordinal).ToArray();
-            var actual = new JArray(effects.Select(InfernalSavedEffect34));
+            var kyton = sources.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == InfernalVisualPolicy34.Kyton);
+            var actual = new JObject { ["effects"] = new JArray(effects.Select(InfernalSavedEffect34)),
+                ["regeneration"] = InfernalSavedRegeneration34(kyton) };
             bool enabled = _context.FeatureModules.Active.ExpandedSummoning;
             bool exact = enabled ? effects.Length == blueprints.Length && actual.ToString(Formatting.None) == saved.ToString(Formatting.None) &&
                 effects.All(buff => buff.Active && !buff.IsDisposed && sources.Contains(buff.Context?.MaybeCaster) &&
                     (buff.IsPermanent || buff.TimeLeft > TimeSpan.Zero)) &&
                 effects.Single(buff => buff.Blueprint == blueprints[1]).SelectComponents<DevilChills34>().Single().NextExposure > Game.Instance.Player.GameTime &&
-                InfernalMartialProfile34.For(sources.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == InfernalVisualPolicy34.Kyton))
-                    .ControlsOwnChains(sources.Single(unit => unit.Get<UnitPartRelease143RosterReceipt>().Key == InfernalVisualPolicy34.Kyton)) : effects.Length == 0;
+                InfernalMartialProfile34.For(kyton).ControlsOwnChains(kyton) &&
+                InfernalRegeneration34(kyton)?.SuppressionRound == 1 && !(bool)kyton.Descriptor.State.IsRegenerate :
+                effects.Length == 0 && !(bool)kyton.Descriptor.State.IsRegenerate;
             _infernalLoadedEffects34 = effects;
             RosterPersistenceCheck("s34-effects-" + phase, exact, new JObject { ["recipient"] = target.UniqueId,
                 ["moduleEnabled"] = enabled, ["saved"] = saved, ["actual"] = actual, ["effectOnlyFixture"] = true },
-                "Cold native source/recipient contexts, finite gaze deadline, day-scale disease state and owned-chain control are exact ON, safely absent OFF.");
+                "Cold native source/recipient contexts, finite gaze deadline, day-scale disease state, owned-chain control and native regeneration suppression are exact ON, safely disabled OFF.");
             if (!exact) throw new InvalidOperationException("Sprint34 saved effect ownership or state differs.");
         }
         private IEnumerable<int> CleanupInfernalSaved34(UnitEntityData caster)

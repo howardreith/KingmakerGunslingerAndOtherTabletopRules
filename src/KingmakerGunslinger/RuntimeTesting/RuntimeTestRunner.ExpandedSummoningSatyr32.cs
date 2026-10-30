@@ -93,6 +93,12 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ReviewInfernalRoutes34(fixture);
                 yield break;
             }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalCombatPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalCombat34(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalMechanicsPhase)
             {
                 CreateSprint32TurnHostile(fixture);

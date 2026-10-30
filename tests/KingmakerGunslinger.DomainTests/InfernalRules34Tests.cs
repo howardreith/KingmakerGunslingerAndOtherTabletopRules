@@ -68,6 +68,8 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies") &&
                 ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("sprint34-infernal-bodies"), "Native rendering phase admitted to the existing owned clock.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies-extra"), "Broader visual phase refused.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-combat"), "Scoped native combat admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-combat-extra"), "Broader combat refused.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-mechanics"), "Scoped native mechanics admitted.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-routes"), "Exact public-route observer admitted; hidden routes still refuse in the observer.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-mechanics-extra"), "Broader mechanics phase refused.");
