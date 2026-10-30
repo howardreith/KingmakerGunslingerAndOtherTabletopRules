@@ -40,9 +40,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Summoning\InfernalRules35.cs" />
+    <Compile Include="Summoning\InfernalRules35Policy.cs" />
+    <Compile Include="Blueprints\ExpandedSummoningSpecialBuilder.Infernal35.cs" />
     <Compile Include="Summoning\InfernalRules34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
