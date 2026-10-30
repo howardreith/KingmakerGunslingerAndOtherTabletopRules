@@ -221,7 +221,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             var healer = CastExpandedSummoningOwnTier(fixture, "astral-deva");
             try {
                 Sprint28SetBrainActivePreservingActions(healer, false); healer.Commands.InterruptAll(true);
-                foreach (int frame in Outsider30NativeAppearance(healer, "disease-healer")) yield return frame;
+                foreach (int frame in WaitInfernalSupport34(healer)) yield return frame;
                 var spell = (BlueprintAbility)ExpandedSummoningBlueprints.Registered.BySymbol[ExpandedSummoningSpecialBuilder.Astral31Prefix + "RemoveDisease"];
                 PlaceExpandedSummoningUnit(healer, target.Position + Vector3.right * (healer.Corpulence + target.Corpulence + .3f));
                 var attempts = new JArray();

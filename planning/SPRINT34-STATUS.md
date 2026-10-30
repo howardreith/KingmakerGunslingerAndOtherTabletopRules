@@ -10,13 +10,32 @@ Sprint33 is CLOSED. Its original-source ON REUSED_PASS remains distinct from
 final-artifact OFF/combined executions. Historical deferred checks stay NOT_RUN.
 
 Latest executed development candidate: source
-`6c20b2f7e7f0ce47ba9b33b2f68c9361d19a5d88`, purpose `sprint34-infernal-mechanics`.
+`44d965a96fe047c11f3ddd10cba548f1bbfd2b6c`, purpose `sprint34-infernal-mechanics`.
+ZIP `9880660328795730a5b6b8a33572a7ffdd65982635f590567443dd8a2c06d14f`;
+DLL `15319998500c01aa3fde2d243ee1a1aad7b3992764cfa049457c1f770293bead`;
+MVID `b6ed6f43-b093-4ec6-ad4b-05ea5c20ac97`;
+fingerprint `c3b57e04a0fb8a4bd01542754f6bdcf37642fef6d525f745e15586dd8f760b75`.
+Build02 PASS261.4s,11/2767 focused tests and strict package validation.
+Mechanics02 RunId `20261030T0056506795918Z-e4b597256e8c4965a827c07c7353929d`
+FAIL (26PASS/2FAIL),403.5s orchestration/217008ms game. Good and silver injury
+showed states1->2->0, no healing/death-prevention throughout suppression, then
+native2HP healing at12 seconds. The later support caster hit an observer-only
+body assumption: Outsider30NativeAppearance requires the S34 theropod renderer,
+which Astral Deva does not use. CanAct/movement/fade were ready. The changed
+observer now uses native support-caster readiness without changing any model.
+Good-spell/fatal-injury and new combat phase remain NOT_RUN. The failed original
+receipt stays FAIL; its subobservations are not final-package acceptance.
+Transaction `compat-20261030T005416Z-c810a20760b2` restored; full intake Compare
+PASS. No Working envelope started. Correct this known observer boundary before
+another native session. Raw evidence prefix `20261030T0056506524312Z`.
+
+Prior successful development candidate: source
+`6c20b2f7e7f0ce47ba9b33b2f68c9361d19a5d88`, same purpose.
 ZIP `509682bb036c7d6e5a83480872a4fd4e9e3994c43f4dc0e46cf3324992c39fd4`;
 DLL `ac5f8762df5bfb2dd0a75daf511d26772e649cd3475974d766fbb04de6391045`;
 MVID `edda15b0-ce63-48b5-bf87-115c2186febc`;
 fingerprint `09f02cc36ff221fc4054573028abb37d071f25b8b2ca9f8b42e8ade574bbdfbe`.
-Build PASS267.1s,11/2767 focused tests and strict package validation.
-This developmentv171 artifact is not eligible for release.
+Build PASS267.1s. Developmentv171 artifacts are never eligible for release.
 
 - Mechanics01 RunId `20261030T0006062556247Z-80d1d82c96c346b6913ed7d2cc073c44`,
   PASS27/27,378.960s orchestration/192317ms game. Both profiles, typed defenses,
@@ -91,8 +110,8 @@ immutable; development PASS is never relabeled as final-package execution.
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
-Next executable action: review/commit/push this coherent regeneration/combat
-observer batch, then build one `sprint34-infernal-mechanics` candidate. Run its
+Next executable action: commit/push the reviewed support-readiness
+observer correction (gate25 PASS31.2s,11 tests), then build one `sprint34-infernal-mechanics` candidate. Run its
 bounded mechanics phase and the new `sprint34-infernal-combat` phase on that same
 artifact, restoring each. Estimate4.5min build plus two7-10min guarded sessions
 from retained timings; stop/diagnose a contaminated or failed boundary before
@@ -168,3 +187,10 @@ references remain. Recheck full1,230,513,542-byte staging/restoration reserve.
 Archive05's initial automatic-review refusal caused no mutation; explicit
 primary-ZIP redundancy proof resolved it before the reviewed retry. No permission
 boundary is currently blocked. No release/completion claim.
+
+Archive07 retained531,188,268 bytes/1856 files at timestamp20261030T010455Z;
+mapSHA256 `a9a592e45c1961233c1f385b9d6513f7b94d460b5d36b452b4738d1e4cb86b10`.
+Its434-file transaction extraction exactly matched the retained44d965a9 primary
+ZIP (proofSHA256 `07b3a4f52316e62629b9cb5bdb9b01fe5d6a86a0a892d4ab589be84fcf1b099a`).
+Only redundant compilation/staging/extraction/candidate-backup copies removed
+fromC: after full E: byte verification; primary packages and raw evidence remain.
