@@ -1,33 +1,62 @@
-# Sprint 34 - public candidate freeze
+# Sprint 34 - cold-hydration repair
 
-Current stage: final source/build boundary correction. Hidden mechanics
-qualification is complete and exactly the two Sprint34 keys expose their ten
-routes. No final release package or Working envelope has started. Master remains the reviewed
-4b7e3d91; remote tag/release v172 remains free at2026-10-30T05:07Z.
-Reviewed public product `0ad0f49ed8a6d7faf06bc32e6c202386731f0537`
-anchors version-only v172 metadata. The
-restored-profile receipt admits the exact wt/s34 root alongside the existing
-qualified roots; no broader path or release bypass is added.
-Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
-`codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
-`4b7e3d914883ac695a4146c03de790b2024ea38c`; last remote check still that master,
-v171 latest and v172 free. Recheck upstream/version before final freeze.
-Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
-and historical NOT_RUN records; no historical campaign is selected.
+Current stage: one scoped correction after the first final ON cold-load failure.
+The game and transactions ended; original Working bytes/metadata and full human
+intake are EXACTLY RESTORED. No release published. Product/build/promotion root
+`C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
+`codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed/current remote
+master `4b7e3d914883ac695a4146c03de790b2024ea38c`; v172 was free at05:49Z
+2026-10-30 and must be rechecked before freezing/publication. Sprint33 is CLOSED;
+its original-source ON REUSED_PASS and historical NOT_RUN remain unchanged.
 
-Final gate on `10fbecc18ca31eea1c7565ae1dc674782d1e2b23` failed before
-packaging (375.809s; 2767 tests, 27 failures): 23 lacked the local installed-engine
-IL capture, and four retained pre-S34 catalog expectations. Restored the exact
-S33 local capture after verifying its assembly hash against the installed game;
-no reference or proprietary file entered Git. Focused38 passed113/114 and exposed
-the missing three new weapon audit mappings. The existing generator now adds
-only those three entries; all171 older entries are exactly preserved. Focused39
-retained its dependent count failure; focused40 passes6/6 with production compile
-(5.497s). No production, asset, GUID or native observer changes. Full original
-intake Compare PASS; no game launched and original Working untouched. Next:
-rerun the full boundary on this coherent corrected source, then final bodies,
-ten routes/icons, mixed ON/OFF cold envelopes and combined healing/chain effects.
-Original gate and focused failure logs remain immutable in local final-working.
+The native Fact.PostLoad predicate matches saved ComponentName to exact Unity
+component.name. Saved disease/regen fields were present, but new unnamed logic
+components collided. Reuse the existing S32 type-local naming algorithm for
+only the exact new S34 private facts, including the AddFacts regeneration grant.
+Existing S32 guard, names, ordinals and explicit/donor names remain unchanged.
+No wound, disease, regeneration, action, visual, route or observer semantics
+changed. Focused41: production compile and8/8 Sprint34 tests PASS33.902s;
+this is not native cold-load proof. Next: freeze reviewed corrected source,
+one complete boundary, then fresh mixed ON/OFF and final integration.
+
+Retained prior final candidate `57957987f4bd13d8663b4c91dc5345746a03bfa7`:
+ZIP `e026eee60442f80f6d72009d34e4301de0c731273b516b462c784f4382f16812`;
+DLL `388dcde7d846e810f137b113a657d139359b783b2c63fd142b160cee0ace1c5c`;
+MVID `2ce1ea4f-85d9-499f-97cf-07500620007a`;
+fingerprint `68ddac987270a8694f804685d12f0030d84d15f95cbf528adf76b8b4f335367d`.
+Full gate02 PASS2767/2767,447.078s. Its primary archive/receipt remain immutable.
+- Bodies PASS32/32,441.082s/243178ms; RunId
+  `20261030T0543229124634Z-7f16751b0940444f8f628d2c54328ea1`.
+  Both intended bodies, independent instances/motion and actual chain contact
+  follow-through accepted by assistant capture review; no owner aesthetic approval.
+- Ten public routes/icons PASS15/15,340.967s/145722ms; RunId
+  `20261030T0552309779970Z-7bdad32de43e4cb698a47719610348aa`.
+  Actual V-IX quantities, slots,120s duration, eligibility and cleanup; both
+  painted medallions bound as real native128px icons. These remain original-source
+  PASS; the existing publisher requires fresh final presentation/route receipts.
+- ON prepare PASS18/18,410.693s/224537ms; RunId
+  `20261030T0601228382978Z-b0ddaa7f3742453cb3775be0b47663f8`.
+  Two owners/two creatures, seven independent owned items and active wound,
+  disease, gaze, controlled chains and suppressed regeneration were saved.
+- ON cold cleanup FAIL8 assertions,189279ms; RunId
+  `20261030T0608157478563Z-5231b86c03664a199739495bec94dd81`.
+  Disease nextExposure3062292630000->3926292630000 rerolled; regeneration
+  suppressionRound1->0 and activefalse->true. Other captured ownership/context
+  and finite endpoints matched. Cleanup/save did not execute; absence NOT_RUN.
+  Envelope813.867s; original Working SHA
+  `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`
+  and original metadata restored, full intake Compare PASS. Original prepared
+  save/raw failure retained. Archive38 byte-verified only redundant restored
+  candidate copies536391855bytes; map
+  `9c2420d0edd814558ffdac4a610e0556814e01ce7c1b30ab24d921b779700136`.
+
+Earlier gate on10fbecc failed before packaging375.809s,2767tests/27failures:
+23 missing local installed IL capture, four old catalog expectations. Exact
+S33 local capture was restored after installed assembly hash verification.
+Focused38 113/114 and focused39 5/6 retained their audit/count failures;
+focused40 PASS6/6,5.497s fixed exactly three weapon audit rows and affected
+source-derived expectations; all171 older audit rows preserved. No failure
+has been relabelled PASS and no proprietary capture entered Git.
 
 Latest executed development candidate: `76c0788ee0f4acf0e236dc1fe9e0eda56a465b3f`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).

@@ -43,6 +43,17 @@ namespace KingmakerGunslinger.Blueprints
         {
             ConfigureBarbazu34(library, symbols);
             ConfigureKyton34(library, symbols);
+            // Fact.PostLoad restores fields by exact component name. This also
+            // preserves AddFacts' saved grant instead of replacing regeneration.
+            foreach (var pair in symbols.Where(pair => pair.Value is BlueprintUnitFact &&
+                (pair.Key.StartsWith(Barbazu34Prefix, StringComparison.Ordinal) ||
+                 pair.Key.StartsWith(Kyton34Prefix, StringComparison.Ordinal))))
+            {
+                var fact = (BlueprintUnitFact)pair.Value;
+                if (fact.name != InternalName(pair.Key))
+                    throw new InvalidOperationException("Only exact private Sprint34 facts may receive component names.");
+                NamePrivateSummonFactComponents(fact, pair.Key, "Sprint34");
+            }
         }
 
         private static BlueprintUnit InfernalProfile34(LibraryScriptableObject library,

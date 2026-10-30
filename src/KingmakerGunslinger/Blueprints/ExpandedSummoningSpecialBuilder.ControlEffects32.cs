@@ -34,6 +34,11 @@ namespace KingmakerGunslinger.Blueprints
             if (fact == null || symbol == null || !symbol.StartsWith("KMG.Summoning.FeyCelestial.", StringComparison.Ordinal) ||
                 fact.name != InternalName(symbol))
                 throw new InvalidOperationException("Only exact private Sprint32 facts may receive component names.");
+            NamePrivateSummonFactComponents(fact, symbol, "Sprint32");
+        }
+
+        private static void NamePrivateSummonFactComponents(BlueprintUnitFact fact, string symbol, string scope)
+        {
             var ordinals = new Dictionary<Type, int>();
             var names = new HashSet<string>(StringComparer.Ordinal);
             foreach (var component in fact.ComponentsArray.OfType<GameLogicComponent>())
@@ -43,7 +48,7 @@ namespace KingmakerGunslinger.Blueprints
                 if (string.IsNullOrEmpty(component.name))
                     component.name = "$" + symbol + "." + type.FullName + "." + ordinal;
                 if (!names.Add(component.name))
-                    throw new InvalidOperationException("Duplicate private Sprint32 saved component name: " + symbol + "/" + component.name);
+                    throw new InvalidOperationException("Duplicate private " + scope + " saved component name: " + symbol + "/" + component.name);
             }
         }
 
