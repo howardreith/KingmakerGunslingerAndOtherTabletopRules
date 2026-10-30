@@ -71,9 +71,13 @@ namespace KingmakerGunslinger.Blueprints
             {
                 BlueprintScriptableObject blueprint;
                 if (identity.PlannedType == "BlueprintUnit")
+                {
+                    BlueprintUnit unitDonor = UnitDonor(identity.Symbol,
+                        unitDonors);
                     blueprint = registry.Register<BlueprintUnit>(identity.Symbol,
-                        () => CloneUnitShell(unitDonors[identity.Symbol],
+                        () => CloneUnitShell(unitDonor,
                             summonedFactionDonor, identity.Symbol));
+                }
                 else if (identity.PlannedType == "BlueprintAbility")
                     blueprint = registry.Register<BlueprintAbility>(identity.Symbol,
                         () => CreateAbilityShell(identity.Symbol));
@@ -279,6 +283,19 @@ namespace KingmakerGunslinger.Blueprints
             ApplyExtraplanarMarker(registered, extraplanar);
             Registered = result;
             return result;
+        }
+
+        private static BlueprintUnit UnitDonor(string symbol,
+            IDictionary<string, BlueprintUnit> unitDonors)
+        {
+            BlueprintUnit donor;
+            if (unitDonors.TryGetValue(symbol, out donor)) return donor;
+            string donorSymbol = InfernalRules35.PrivateUnitDonorSymbol(symbol);
+            if (donorSymbol != null &&
+                unitDonors.TryGetValue(donorSymbol, out donor))
+                return donor;
+            throw new InvalidOperationException("BlueprintUnit identity '" +
+                symbol + "' has no declared creature or private shell donor.");
         }
 
         private static BlueprintAiCastSpell CreateAiCastSpellShell(string symbol)

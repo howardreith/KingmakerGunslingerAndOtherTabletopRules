@@ -4,6 +4,10 @@ namespace KingmakerGunslinger.Summoning
 {
     internal static class InfernalRules35
     {
+        internal const string BoneUnitSymbol =
+            "KMG.Summoning.Unit.BoneDevil";
+        internal const string WallSectionUnitSymbol =
+            "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit";
         internal const int BarbedHitDice = 12;
         internal const int BarbedFearRacialDcBonus = 0;
         internal const int BoneHitDice = 10;
@@ -45,12 +49,22 @@ namespace KingmakerGunslinger.Summoning
                 finalDamage);
         }
 
+        internal static string PrivateUnitDonorSymbol(string unitSymbol)
+        {
+            if (unitSymbol == null)
+                throw new ArgumentNullException("unitSymbol");
+            return String.Equals(unitSymbol, WallSectionUnitSymbol,
+                StringComparison.Ordinal) ? BoneUnitSymbol : null;
+        }
+
         internal static void Validate()
         {
             if (FearDc(BarbedHitDice, 4, BarbedFearRacialDcBonus) != 20 ||
                 FearDc(BoneHitDice, 4, BoneFearRacialDcBonus) != 19 ||
                 ImpaleStrengthBonus(6) != 9 ||
                 ImpaleStrengthBonus(-2) != -2 ||
+                PrivateUnitDonorSymbol(WallSectionUnitSymbol) !=
+                    BoneUnitSymbol ||
                 QualifiesForBarbedDefense(true, true, true, 10, 5) ||
                 !QualifiesForBarbedDefense(true, true, false, 10, 5) ||
                 QualifiesForClawFear(true, true, 0))

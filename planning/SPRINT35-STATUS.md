@@ -90,5 +90,28 @@ Sprint 35 checkpoint; historical records are not current instructions.
   the four Sprint 35 policy tests, and the existing all-planned-types factory
   regression now pass 5/5. A changed source-bound candidate is required before
   the next native launch; the failed bytes will not be relaunched.
+- Commit `98446fcb` produced the corrected hidden candidate (ZIP
+  `2a0ed7ba7283f82c2894eca0eca463a8b5f3ad15d5d5896abd702814d323105d`;
+  DLL `0bca56e6165d191c0d703ca58b5f8766210991550b4da56adaa405eff5842342`;
+  MVID `e8d35dee-ab2d-43f4-adfb-369dae3262bc`). Guarded run
+  `20261030T1718409168790Z-de58fa3ea0c84d848fa8d15dcb5bfa1a` again failed
+  before assertions, now after the new AI shell was admitted: registration
+  indexed every `BlueprintUnit` through the public creature-root donor map,
+  but the private Wall of Ice section is intentionally not a creature root.
+  The exact `KeyNotFoundException` is retained in the native logs; no save was
+  staged, and restoration again returned the live mod tree to pre-run SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  The bounded repair declares only that private section's shell donor as the
+  Bone Devil donor already loaded by the catalog; unknown private unit shells
+  now fail with an explicit diagnostic. A focused policy regression covers
+  the positive mapping and public/unknown/null negatives. The first focused
+  compile attempt stopped on C-drive headroom before a test verdict; the exact
+  failed 984 candidate was copied to `E:` and verified as 168 files before its
+  C-drive copy and regenerated build intermediates were removed (archive
+  manifest SHA-256
+  `81b9aa5b44bad3b1386043963fee732b68abf04b749ff96f40d724f6ea1b7951`).
+  With verified headroom restored, production compilation and the selected
+  Sprint 35/planned-type regression group pass 6/6. The unchanged failed
+  candidate will not be relaunched; a new source-bound candidate is required.
 - Mandatory qualification, publication, release, verification, and restoration
   are all pending.
