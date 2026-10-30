@@ -579,3 +579,42 @@ Sprint 35 checkpoint; historical records are not current instructions.
   new source-bound candidate and one affected native rerun. Production
   compilation and the selected Sprint 35/correction group pass 8/8 after the
   observer repair (25.2 s / 5.8 s).
+- Exact candidate `ae78425ca04167f351f5a7386cf02d340162d531`
+  passed development admission, selected 8/8 tests, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `f75b483ebc63e8a3baf8a18b89a224343dc6f0da5194195551a3bcbf5db47329`;
+  ZIP `1444fb12f4535f749323d43f0087c1fd4fe224d97cd58a16431b7bfb379ebd77`;
+  DLL `776ce96417001067bdd1e105ac7fe346dca5bfdc48f8aa8543d180d02a836904`;
+  MVID `7b2d0077-102f-4a53-8a77-3504f991d403`. Its 162-file exact
+  build (86,484,925 bytes) is preserved on `E:` under manifest
+  `754A189C779C83533DCA2E9D2A2E8AD3ADCBBBD093477F98F681E3CA4E7DEB95`.
+  The first guarded invocation refused before deployment because the
+  reproducible domain-validator binary had been removed during C: headroom
+  cleanup; the live tree never changed and its exact restoration record was
+  retained. Rebuilding only that dependency-free validator restored the
+  supported preflight without changing the candidate.
+- Guarded run `20261030T2310220358354Z-7010964255a44c228fb863de82b18ab3`
+  closed the prior observer mismatch: the real acted/retired claw established
+  reciprocal hold state, and the later round made exactly one successful
+  grapple check plus one direct `3d8+9` Impale with no replayed claw, fear save
+  or default grapple damage. It then stopped before Scorching Ray because the
+  observer manually called the production link-release helper and demanded
+  every initiator-side native controller object disappear within five seconds.
+  That teardown is not a player command or a missing grapple result: the
+  shared release contract deliberately removes the target side and leaves the
+  initiator side to the native grapple controller or owned-actor disposal.
+  The bounded observer repair retains the already-settled second Barbed and
+  Barbazu from the independent-owner cell, casts the unrelated ray between
+  that clean pair, and lets ordinary owned-actor disposal close the proved
+  hold at final cleanup. It changes no gameplay code and prevents the fixture
+  from acting as a second release mechanic. The native run restored the live
+  tree to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains and no save was staged. Candidate, snapshots,
+  deployment, raw FAIL and restoration are preserved as 309 verified files
+  on `E:` under manifest
+  `E1E9C8B0BC7CDB3EEA53C17323F0C57AEC517EE2C0504AD84F7B09F9A18B11D1`.
+  The unchanged bytes will not be relaunched; the observer-only source change
+  requires a new exact candidate and one affected native rerun. Production
+  compilation and the selected Sprint 35/correction group pass 8/8 after the
+  isolation repair (26.0 s / 1.4 s).

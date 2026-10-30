@@ -178,8 +178,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 foreach (int frame in InfernalEarlyContact35(fixture,
                     attacker, sibling, trace, check, "independent-second", 3,
                     true)) yield return frame;
-                DisposeExpandedSummoningUnits(fixture.Created,
-                    new[] { sibling, attacker });
+                // Retain this already-settled independent pair for the ray
+                // cell. The grapple owner below must be allowed to keep its
+                // proved live hold until normal owned-actor disposal; a test
+                // teardown is not a second gameplay release mechanism.
+                sibling.Commands.InterruptAll(true);
+                sibling.Commands.RemoveFinishedAndUpdateQueue();
+                attacker.Commands.InterruptAll(true);
+                attacker.Commands.RemoveFinishedAndUpdateQueue();
 
                 owner.Stats.AdditionalAttackBonus.BaseValue = 100;
                 owner.Stats.AdditionalCMB.BaseValue = 100;
@@ -559,40 +565,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                     EventBus.Unsubscribe(escapes);
                 }
 
-                if (ReferenceEquals(SummonHoldComponent.HeldTarget(owner),
-                        target))
-                    SummonHoldComponent.ReleaseLink(owner, target, grab,
-                        false);
-                int manualReleaseFrames = 0;
-                DateTime manualReleaseDeadline =
-                    DateTime.UtcNow.AddSeconds(5);
-                while (DateTime.UtcNow < manualReleaseDeadline &&
-                    manualReleaseFrames++ < 600 &&
-                    !InfernalBarbedHoldClear35(owner, target, grab))
-                {
-                    Game.Instance.IsPaused = false;
-                    yield return 0;
-                }
-                if (!InfernalBarbedHoldClear35(owner, target, grab))
-                    throw new InvalidOperationException(
-                        "Barbed hold did not settle before the ray cell.");
                 InfernalRemoveBarbedFear35(target, owner, frightened);
-                owner.Commands.InterruptAll(true);
-                owner.Commands.RemoveFinishedAndUpdateQueue();
-                target.Descriptor.State.Size = oldSize;
-                target.Damage = 0;
-                target.Stats.AC.BaseValue = -100;
-                InfernalCombatLane34(fixture, owner, target, 3);
+                UnitEntityData rayOwner = sibling;
+                UnitEntityData rayTarget = attacker;
+                rayOwner.Commands.InterruptAll(true);
+                rayOwner.Commands.RemoveFinishedAndUpdateQueue();
+                rayTarget.Commands.InterruptAll(true);
+                rayTarget.Commands.RemoveFinishedAndUpdateQueue();
+                rayTarget.Damage = 0;
+                rayTarget.Stats.AC.BaseValue = -100;
+                InfernalCombatLane34(fixture, rayOwner, rayTarget, 3);
                 int rayStart = trace.Rows.Count;
                 var rayCosts = new JArray();
                 UnitUseAbility rayCommand = null;
-                var rayData = new AbilityData(owner.Descriptor.Abilities
+                var rayData = new AbilityData(rayOwner.Descriptor.Abilities
                     .GetAbility(ray));
                 var rayParams = rayData.CalculateParams();
-                using (var economy = new FirearmReviewCosts(owner, rayCosts))
+                using (var economy = new FirearmReviewCosts(rayOwner,
+                    rayCosts))
                 {
-                    foreach (int frame in Sprint26Cast(owner, ray,
-                        new TargetWrapper(target), value =>
+                    foreach (int frame in Sprint26Cast(rayOwner, ray,
+                        new TargetWrapper(rayTarget), value =>
                             rayCommand = value)) yield return frame;
                     DateTime deadline = DateTime.UtcNow.AddSeconds(12);
                     JObject[] rayRolls = Array.Empty<JObject>();
@@ -600,10 +593,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                     while (DateTime.UtcNow < deadline)
                     {
                         rayRolls = InfernalBarbedAbilityRows35(trace,
-                            rayStart, "attack-roll", owner, target, ray)
+                            rayStart, "attack-roll", rayOwner, rayTarget, ray)
                             .ToArray();
                         rayDamage = InfernalBarbedAbilityRows35(trace,
-                            rayStart, "damage", owner, target, ray).ToArray();
+                            rayStart, "damage", rayOwner, rayTarget, ray)
+                            .ToArray();
                         int hits = rayRolls.Count(value =>
                             (bool?)value["hit"] == true);
                         if (rayRolls.Length >= 2 &&
@@ -614,7 +608,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     int hitCount = rayRolls.Count(value =>
                         (bool?)value["hit"] == true);
                     var rayFearSaves = InfernalBarbedRows35(trace,
-                        rayStart, "save", owner, target).Where(value =>
+                        rayStart, "save", rayOwner, rayTarget).Where(value =>
                             (int?)value["dc"] == 20).ToArray();
                     bool exact = rayCommand != null &&
                         rayCommand.IsFinished && rayCommand.Result ==
@@ -638,8 +632,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         economy.Exact(rayCommand, false);
                     check("barbed-scorching-two-rays", exact,
                         new JObject {
-                            ["owner"] = owner.UniqueId,
-                            ["target"] = target.UniqueId,
+                            ["owner"] = rayOwner.UniqueId,
+                            ["target"] = rayTarget.UniqueId,
                             ["ability"] = ray.AssetGuid,
                             ["command"] = Sprint27AiCommand(rayCommand),
                             ["projectilesConfigured"] =
@@ -652,8 +646,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["hits"] = hitCount,
                             ["damage"] = new JArray(rayDamage),
                             ["clawFearSaves"] = new JArray(rayFearSaves),
-                            ["holdReleaseSettleFrames"] =
-                                manualReleaseFrames,
+                            ["impaleOwnerStillHolding"] =
+                                ReferenceEquals(SummonHoldComponent
+                                    .HeldTarget(owner), target),
                             ["costs"] = rayCosts,
                             ["forcedRolls"] = 0
                         }, "One real standard-action SLA command fires exactly two separately attributed native ranged-touch rays; each natural hit produces its own ability-attributed damage event.");
@@ -678,18 +673,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Descriptor.State.Size = oldSize;
                 target.Damage = oldDamage;
                 InfernalRemoveBarbedFear35(target, owner, frightened);
+                UnitEntityData[] cleanupActors = { owner, sibling, attacker };
                 DisposeExpandedSummoningUnits(fixture.Created,
-                    new[] { owner });
+                    cleanupActors);
                 int cleanupFrames = 0;
                 DateTime cleanupDeadline = DateTime.UtcNow.AddSeconds(5);
                 while (DateTime.UtcNow < cleanupDeadline &&
-                    cleanupFrames++ < 600 && (!owner.Destroyed ||
+                    cleanupFrames++ < 600 && (cleanupActors.Any(actor =>
+                        !actor.Destroyed) ||
                     Game.Instance.State.AreaEffects.All.Any(value =>
-                        ReferenceEquals(value?.Context?.MaybeCaster,
-                            owner)))) yield return 0;
-                bool cleanup = owner.Destroyed && !owner.IsInState &&
+                        cleanupActors.Any(actor => ReferenceEquals(
+                            value?.Context?.MaybeCaster, actor)))))
+                    yield return 0;
+                bool cleanup = cleanupActors.All(actor => actor.Destroyed &&
+                        !actor.IsInState) &&
                     !Game.Instance.State.AreaEffects.All.Any(value =>
-                        ReferenceEquals(value?.Context?.MaybeCaster, owner)) &&
+                        cleanupActors.Any(actor => ReferenceEquals(
+                            value?.Context?.MaybeCaster, actor))) &&
+                    InfernalBarbedHoldClear35(owner, target, grab) &&
                     target.Stats.AC.BaseValue == oldAc &&
                     target.Stats.SaveWill.BaseValue == oldWill &&
                     target.Stats.HitPoints.BaseValue == oldHitPoints &&
@@ -701,11 +702,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target.Damage == oldDamage;
                 check("barbed-combat-owned-cleanup", cleanup,
                     new JObject {
-                        ["ownerDestroyed"] = owner.Destroyed,
-                        ["ownerInState"] = owner.IsInState,
+                        ["actors"] = new JArray(cleanupActors.Select(actor =>
+                            new JObject {
+                                ["unit"] = actor.UniqueId,
+                                ["destroyed"] = actor.Destroyed,
+                                ["inState"] = actor.IsInState
+                            })),
                         ["ownedAreas"] = Game.Instance.State.AreaEffects.All
-                            .Count(value => ReferenceEquals(value?.Context?
-                                .MaybeCaster, owner)),
+                            .Count(value => cleanupActors.Any(actor =>
+                                ReferenceEquals(value?.Context?.MaybeCaster,
+                                    actor))),
+                        ["ownerHoldCleared"] =
+                            InfernalBarbedHoldClear35(owner, target, grab),
                         ["hostileAcRestored"] = target.Stats.AC.BaseValue ==
                             oldAc,
                         ["hostileWillRestored"] = target.Stats.SaveWill
