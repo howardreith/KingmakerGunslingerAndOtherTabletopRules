@@ -9,6 +9,8 @@ namespace KingmakerGunslinger.Summoning
         internal const string WallSectionUnitSymbol =
             "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit";
         internal const int BarbedHitDice = 12;
+        internal const int BarbedBaseCriticalThreatMinimum = 20;
+        internal const int BarbedEffectiveCriticalThreatMinimum = 19;
         internal const int BarbedFearRacialDcBonus = 0;
         internal const int BoneHitDice = 10;
         internal const int BoneFearRacialDcBonus = 0;
@@ -60,6 +62,8 @@ namespace KingmakerGunslinger.Summoning
         internal static void Validate()
         {
             if (FearDc(BarbedHitDice, 4, BarbedFearRacialDcBonus) != 20 ||
+                BarbedBaseCriticalThreatMinimum != 20 ||
+                BarbedEffectiveCriticalThreatMinimum != 19 ||
                 FearDc(BoneHitDice, 4, BoneFearRacialDcBonus) != 19 ||
                 ImpaleStrengthBonus(6) != 9 ||
                 ImpaleStrengthBonus(-2) != -2 ||

@@ -235,7 +235,10 @@ namespace KingmakerGunslinger.Blueprints
             var claw = Sprint29Weapon(library, symbols, p + "Claw",
                 p + "ClawType", NativeClaw1d4Guid, Size.Medium, 2,
                 DiceType.D8, 9);
-            SetField(claw, "m_CriticalRollEdge", 19);
+            if (claw.Type.CriticalRollEdge !=
+                InfernalRules35.BarbedBaseCriticalThreatMinimum)
+                throw new InvalidOperationException(
+                    "Barbed claw donor no longer has the expected base critical range.");
             unit.Body = NaturalBody(claw, new[] { claw },
                 Array.Empty<BlueprintItemWeapon>());
             var profile = ScriptableObject.CreateInstance<
