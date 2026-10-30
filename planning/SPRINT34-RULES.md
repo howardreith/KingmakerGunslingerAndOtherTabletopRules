@@ -115,5 +115,6 @@ activation-pruning family identifies stronger ordinary bleeds; the wound keeps
 its own marker/healing gate but yields its tick while one is active. CotW native
 removal reselects remaining facts on that exact patient. Stock03 proved native
 spell rejection/closure and same-type owned ticks, but exposed coexistence
-stacking. Fresh stock/CotW coexistence, resumption and source-isolation proof is
-required for this repair; effects01 did not observe the new coexistence cells.
+stacking. Stock effects02 and CotW effects04 on76c0788ee0f4 subsequently passed native
+coexistence, resumption and source-isolation. Effects01 did not observe these
+cells; its older receipt is not promoted into that proof.

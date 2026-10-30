@@ -1,18 +1,12 @@
-# Sprint 34 - hidden native qualification
+# Sprint 34 - public candidate freeze
 
-Current stage: CotW effects03 passed10/10 on931ba2ff44c8 (361.914s;
-RunId20261030T0436258063072Z-7c3951134c6d4a0da4264b4e75d678c1).
-Stock effects01 stopped at native eligibility before healing dispatch: actual
-separation8.81038m exceeded delivery range3.4288m despite requested2.74304m.
-RunId20261030T0444442534970Z-0b90c6cbd9c44dc2870ff4a5471086fe,
-270.088s orchestration/96222ms game, aggregate FAIL; later cells NOT_RUN.
-Installed Translocate calls ForcePlaceAboveGround. The observer now surveys
-both actual endpoints on the connected native floor using the existing lane
-helper and records requested/actual positions. Actual range/LOS/target guards
-remain. No gameplay, roll or action cost changes. Re-run only affected stock
-and CotW effects cells on one new candidate. Grouped AI03 remains PASS44/44.
-Restored transaction and full intake Compare PASS before this source work.
-All ten routes remain hidden. No final package or Working envelope has started.
+Current stage: hidden mechanics qualification is complete. Exactly the two
+Sprint34 keys now expose their ten routes for final qualification. No final
+release package or Working envelope has started. Master remains the reviewed
+4b7e3d91; remote tag/release v172 remains free at2026-10-30T05:07Z.
+The public product checkpoint will anchor version-only v172 metadata. The
+restored-profile receipt admits the exact wt/s34 root alongside the existing
+qualified roots; no broader path or release bypass is added.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
 `4b7e3d914883ac695a4146c03de790b2024ea38c`; last remote check still that master,
@@ -20,13 +14,28 @@ v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
 and historical NOT_RUN records; no historical campaign is selected.
 
-Latest executed development candidate: `931ba2ff44c8d58f53c2d9c9a73fca01e4606b31`,
+Latest executed development candidate: `76c0788ee0f4acf0e236dc1fe9e0eda56a465b3f`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
-ZIP `86fa382c1e866f4f718ba368254049cd19b763ef7caa35561712bf71477a6d50`;
-DLL `e1d539757203b5368af4f49a63dcd1cdf4673103440ec2d0146a95b2b4963526`;
-MVID `93e445ef-0185-4234-8296-a63d2f004114`;
-fingerprint `7bba7ec287d87ff0e3f2943f4401c4ef54afd0678dde15713c4eee735d56e604`.
-Build09 PASS269.441s;11 focused tests and strict package validation.
+ZIP `ec7b0ea52baa9276d061454bd01d84c2dc0a72f09252dd735997381c372907eb`;
+DLL `48b77dcdc76eb0daa3c7ee5a3934dc0c2aad087e1cde04cb3494fd29675f9f97`;
+MVID `cadfe43e-28d8-409e-9c37-7963519099ea`;
+fingerprint `0a652cfc3b8fa79b1e4048361b07ff19bf24dc29f04cb654ffefaf3096c6c79b`.
+Build10 PASS273.951s;11 selected tests/strict package/reference checks.
+
+- Stock effects02 PASS10/10,301.257s orchestration/119524ms game,
+  RunId `20261030T0502034501321Z-8fe2384251864c398196359cab3e31d7`.
+- CotW effects04 PASS10/10,365.701s/172376ms,
+  RunId `20261030T0508538975508Z-4e5243f8057e470cbaaeae0b9632d7d3`.
+  Both measured native range3.4288m/actual distance2.743042m, real healing and
+  slot cost, strongest ordinary bleed alone, existing wound resumption,
+  exact-source cleanup and the unrelated bleed's subsequent real HP tick.
+  Both transactions restored; full intake Compare passed after each.
+- CotW effects03 on931ba2ff passed10/10 before the floor-survey correction.
+  Stock effects01 on that source remains FAIL270.088s/96222ms:
+  RunId `20261030T0444442534970Z-0b90c6cbd9c44dc2870ff4a5471086fe`.
+  Actual8.81038m separation failed native eligibility before spell dispatch;
+  later cells NOT_RUN. The subsequent two-profile proof above qualifies the
+  connected-floor correction. No retrospective reinterpretation as PASS.
 
 - Stock04 PASS28/28,400.052s orchestration/165918ms game, RunId
   `20261030T0411073598660Z-cb5ea163b0de4e3c8697e2fb0f262304`.
@@ -63,7 +72,8 @@ Draft product PR [84](https://github.com/howardreith/KingmakerGunslingerAndOther
   retired independently. Group reset passed. Unrelated Barbazu healing command
   succeeded without a recorded touch/heal; SR could deny it, but the old trace
   does not establish that cause. Raw coexistence showed ordinary2d6 plus wound2
-  ticks, a production gap addressed by the pending repair, not accepted behavior.
+  ticks, a production gap subsequently repaired and qualified in stock effects02
+  and CotW effects04. The old aggregate remains FAIL.
 - Stock02 preflight FAIL18.556s before staging/launch: an archived package-validator
   executable was missing. Exact verified executable/dependencies restored from
   archive21; unchanged candidate then admitted. No gameplay verdict.
@@ -162,8 +172,8 @@ MVID `edda15b0-ce63-48b5-bf87-115c2186febc`.
 ## Delivered source and explicit decisions
 
 - Exactly `bearded-devil` and `kyton-chain-devil`, SM V, no SNA/templates.
-  Ten hidden V-IX routes. Derived126 creatures, SM104/582, SNA105/588,
-  1170 generated placements plus29 wrappers when public. The7511 released
+  Ten public V-IX candidate routes. Derived126 creatures, SM104/582, SNA105/588,
+  1170 generated placements plus29 wrappers =1199 visible choices. The7511 released
   identity bindings are unchanged;74 appended identities only.
 - Private alternative glaive/claws, conditional Beard, day-scale Devil Chills,
   exact-source wound/healing and summon-safe effect ownership. Kyton retains
@@ -193,23 +203,32 @@ MVID `edda15b0-ce63-48b5-bf87-115c2186febc`.
 | Group | Observed evidence | Remaining |
 |---|---|---|
 | Profiles/defenses/isolation | Mechanics04 PASS, including donor isolation | Final dependency-qualified coverage |
-| Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 routines; combat01 signed stats/Power Attack, single/charge/AoO, actual Beard/infection/day onset/native cure PASS | Fresh stock/CotW stronger-bleed coexistence/resumption and unrelated-patient controls; lifetime01 passed |
+| Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 routines; combat01 signed stats/Power Attack, single/charge/AoO, actual Beard/infection/day onset/native cure PASS | Stock effects02/CotW effects04 PASS; lifetime01 PASS; final combined pending |
 | Kyton chains/gaze/armor/regeneration | Early03 control/four chains; mechanics04 gaze/defenses/following-round/good-spell/fatal injury; combat01 single/charge/AoO/live stats PASS | Final dependency-qualified coverage |
 | AI/actions/cleanup | Lifetime01 PASS; AI03 full RTWP/TB/disarm/reset PASS44/44 | Dependency-qualified final coverage; changed bleed/healing effects controls |
 | Models/icons/ten public routes | Body05 functional presentation, real icons/offline exports | Fresh final presentation and all ten actual public casts/slots/quantity/duration/cleanup |
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
+Focused37 PASS36.260s: public-route production compilation and11/2767 selected tests.
 Focused35 PASS31.303s: production compilation and11/2767 selected tests.
 Focused34 FAIL21.045s on one observer lambda/local name collision, corrected
 before35. Focused33 PASS36.293s followed the batched native-bleed compile fixes.
-Next: commit/push the reviewed native-touch positioning and loaded-icon observer,
-one mechanics build, then CotW and stock effects-only groups on that artifact.
+Next: review/commit the public product, bind v172 version-only metadata and
+its exact selector, run focused release refusals, then one final Sprint gate.
 The stock early healing/chain cells and AI03 retain original-artifact evidence;
-no repeated full combat/AI campaign. Allocate about5min build and6-8min per
-native phase from actual timings; restore/compare each transaction.
+no repeated full combat/AI campaign.
 The public-route observer also records real loaded medallion assignments and
 sprite pixels via the existing capture helper. No native icon PASS yet.
+
+Finite final selection: one Sprint gate (~7min), fresh bodies and ten routes/icons
+(~6min each), one mixed ON trio and one mixed OFF trio (~7min/process), highest-
+risk combined healing/chain/effects (~6min), supported reproduction and normal
+publication/public verification (~10min). Planning total70-80min, not a quota.
+Original mechanics/combat/AI/lifetime proof is reused only for unchanged observed
+dependencies. Explicit reader-derived restoration records bind original intake
+and retained later Compare logs; they are not original protected-handle receipts.
+Final native wrappers use the established protected-save catalog and full Compare.
 
 Final selection remains one coherent Sprint source/build/package gate (no
 redundant Tranche), grouped final behavior/presentation/routes, the two mixed
@@ -258,8 +277,8 @@ HOWARD-LAPTOP; actual human installation0.0.117 observed, not a restoration pin.
 Sixteen private references hash-match installed Kingmaker2.1.7b/Harmony12/UMM.
 IntakeSHA256 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-processes/tasks/leases. Latest transaction `compat-20261030T044218Z-c8511553268a` reached Restored
-with verified restoration; full intake Compare PASS after stock effects01. No game/lease/Working envelope active.
+processes/tasks/leases. Latest transaction `compat-20261030T050615Z-89a69f499382` reached Restored
+with verified restoration; full intake Compare PASS after CotW effects04. No game/lease/Working envelope active.
 KMG_AUTOMATION_BASELINE is immutable. Original Working remains unchanged.
 
 Only the two authorized push branches were added to the existing wrapper.
@@ -287,3 +306,6 @@ keep them available. Full reserve is rechecked before each dispatch.
 Archive05's initial automatic-review refusal caused no mutation; explicit
 primary-ZIP redundancy proof resolved it before the reviewed retry. No active
 permission refusal. No release/completion claim.
+
+Archives29-31 preserve redundant completed build/runtime copies with local and E: hash maps.
+Archive31 map `ea6a820a882ff5169a37d189b8aa4a4983da15e4a9e1e14d3d8bb7d46406c650`.

@@ -1135,7 +1135,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint17-one-native-action-copy", ExpandedSummoningSprint17Tests.NativeSpearActionCopyPreservesAllOtherReferences),
             Case("expanded-summoning.sprint17-native-spear-bounds-uncertainty", ExpandedSummoningSprint17Tests.NativeSpearBoundsRetainConservativeUncertainty),
             Case("expanded-summoning.sprint17-two-palm-spear-mount", ExpandedSummoningSprint17Tests.TwoPalmSpearMountFitsExistingShaftWithoutRescaling),
-            Case("expanded-summoning.sprint34-hidden-routes", InfernalRules34Tests.HiddenRoutesHaveExactScopeAndQuantity),
+            Case("expanded-summoning.sprint34-public-routes", InfernalRules34Tests.PublicRoutesHaveExactScopeAndQuantity),
             Case("expanded-summoning.sprint34-original-models", InfernalRules34Tests.OwnedBodiesDecodeAndHaveMatchingAlbedos),
             Case("expanded-summoning.sprint34-native-admission", InfernalRules34Tests.EarlyNativePhaseRetainsClosedAdmission),
             Case("expanded-summoning.sprint34-beard-same-target", InfernalRules34Tests.BeardNeedsTwoDistinctClawsAndOneTarget),

@@ -36,7 +36,7 @@ namespace KingmakerGunslinger.DomainTests
         // Seven split-native, four preserved-native, plus Remove Stirge,
         // Trumpet Blast and the approved private Lullaby spell/effect concept.
         internal const int IconConceptCount = ExpandedSummoningIdentityCatalog.UnitCount + 7 + 4 + 3;
-        internal static readonly string[] WithheldKeys = { "bearded-devil", "kyton-chain-devil" };
+        internal static readonly string[] WithheldKeys = new string[0];
         internal static bool IsWithheld(string key) { return Array.IndexOf(WithheldKeys, key) >= 0; }
     }
 
