@@ -11,7 +11,7 @@ from expanded_summoning_manifest import parsed_creatures, suppressed_keys
 import validate_development_candidate as identities
 import expanded_summoning_manifest as manifest
 
-PRODUCT = "46e400cf67d08a91f919a1c262b2963a98aabb9d"
+PRODUCT = "f95adb25fb7cb390d81b6a5039b6157afdd2ed86"
 RELEASED = "6cfd8a92d5354880dc87f9683816106799c53add"
 VERSION = "0.0.172"
 INFORMATIONAL = VERSION + "-expanded-summoning-bearded-devil-kyton"
