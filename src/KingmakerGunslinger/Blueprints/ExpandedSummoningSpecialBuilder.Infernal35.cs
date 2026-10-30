@@ -43,6 +43,8 @@ namespace KingmakerGunslinger.Blueprints
             "f08a7239aa961f34c8301518e71d4cdf";
         private const string NativeInvisibility35 =
             "89940cde01689fb46946b2f8cd7b66b7";
+        private const string NativeInvisibilityBuff35 =
+            "525f980cb29bc2240b93e953974cb325";
         private const string NativeHoldPerson35 =
             "c7104f7526c4c524f91474614054547e";
         private const string NativeSpiderPoisonBuff35 =
@@ -576,6 +578,11 @@ namespace KingmakerGunslinger.Blueprints
                 p + "InvisibilityAi", unit, invisibility, true, false, 2);
             var quickAi = ConfigureInfernalAi35(symbols,
                 p + "QuickenedInvisibilityAi", unit, quick, true, false, 6);
+            var invisibilityBuff = BlueprintLibraryLookup.RequireExact<
+                BlueprintBuff>(library, NativeInvisibilityBuff35,
+                    "native ordinary attack-breaking invisibility effect");
+            invisAi.ActiveBuff = invisibilityBuff;
+            quickAi.ActiveBuff = invisibilityBuff;
             unit.Brain = InfernalBrain35(library, symbols, p, quickAi, invisAi);
         }
 

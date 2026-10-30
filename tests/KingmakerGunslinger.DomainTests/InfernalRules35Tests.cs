@@ -34,6 +34,17 @@ namespace KingmakerGunslinger.DomainTests
                     .DisposableExpandedSummoningSprint32NativeReview, 1,
                     "sprint35-infernal-barbed-extra"),
                 "A broader Barbed observer suffix was admitted.");
+            Assertions.True(ExpandedSummoningNativeProfilePolicy
+                .SaveFreeParameterScope(RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint32NativeReview, 1,
+                    ExpandedSummoningNativeProfilePolicy
+                        .Sprint35InfernalBarbedCombatPhase),
+                "The bounded Barbed combat observer is admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy
+                .SaveFreeParameterScope(RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint32NativeReview, 1,
+                    "sprint35-infernal-barbed-combat-extra"),
+                "A broader Barbed combat suffix was admitted.");
             var barbed = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "barbed-devil");
             var bone = ExpandedSummoningCatalog.All.Single(value =>
