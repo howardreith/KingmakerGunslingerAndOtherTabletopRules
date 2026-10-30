@@ -99,7 +99,33 @@ Sprint 35 checkpoint; historical records are not current instructions.
   and snapshots the shared parameter sentinel before casting. Production
   compilation and the selected 8/8 group pass; exact phase admission/refusal
   passes the 269-assertion orchestration suite and 1,170-check runtime
-  preflight suite. This is observer readiness, not native gameplay proof.
+  preflight suite. Commit `975b0827` produced the immutable development ZIP
+  `eda7c8d10abdcb549ef801d0656dee3dcedeedb3a689ce6e128d0081b219b2d9`
+  (DLL
+  `d4af5b8132b1b41ccd67ddfa7763ac7009a6ab32c5c9055fa515ad78cdac974a`,
+  MVID `d8b79a5b-43e1-4699-88dd-3efe71c61dd0`, source state
+  `b6eea1e534c087bdd6c1edca4c32c4c601903a4f46847c28d3c775d2eef6d5a7`).
+  Its 162-file exact build is preserved on `E:` under manifest
+  `69D7AE654F927BBC761279416843A0BC3BEB0B7A724382CBEDFED96377DF42FE`.
+  One preflight correctly stopped before deployment because reclaimed build
+  scratch included the package manifest validator; the selected validator was
+  rebuilt without changing the package. A second attempt deployed and restored
+  without launch because the phase name was passed as the scenario rather than
+  as the already-supported Sprint32 `reviewPhase`; its no-launch record is
+  preserved under manifest
+  `3C74E85B16A02003393BC621222BB7DDB8ADC4C17141FB3610F04E6716684DB3`.
+  Correctly dispatched run
+  `20261030T2122272270728Z-c1bd26453e3b4009b6caac22905ecc01`
+  proved the Barbed body itself settled, then failed before casting because the
+  observer also required its mechanics-only Astral Deva SR control to have a
+  renderer. The accepted Holy Smite observer does not make control rendering a
+  spell precondition. The bounded correction retains native appearance for the
+  new Barbed owner only; production gameplay is unchanged. Raw FAIL, both
+  snapshots, deployment and exact restoration are preserved under manifest
+  `46CA2987A54DF82FF3F2EAF5FC572FEB11E875036587DD7AEAF2DC53BC79C807`.
+  The live tree was restored each time to exact SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`;
+  no save, process, lease or compatibility lock remains.
 - The required laptop intake is captured before staging: 968 current Mod-tree
   entries, 118 protected-save entries, 83 registry settings, unchanged Working
   SHA-256 `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,
