@@ -472,6 +472,22 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool? cutRotation = cutPresent ? (bool?)cut.useRotation : null;
             bool? cutAddedGeometry = cutPresent ?
                 (bool?)cut.cutsAddedGeom : null;
+            string productionUpdateRoute = bindingPresent ?
+                binding.UpdateRoute : null;
+            int productionRecastApplyRequests = bindingPresent ?
+                binding.RecastApplyRequests : 0;
+            Bounds? cutBounds = cutPresent ? (Bounds?)cut.GetBounds() : null;
+            bool cutRegistered = cutPresent &&
+                Pathfinding.NavmeshCut.GetAll().Contains(cut);
+            bool recastUpdatePending = cutPresent && cut.RequiresUpdate();
+            var tileHandlers = UnityEngine.Object.FindObjectsOfType<
+                Pathfinding.TileHandlerHelper>();
+            var startNode = AstarPath.active.GetNearest(start);
+            int graphIndex = startNode.node == null ? -1 :
+                (int)startNode.node.GraphIndex;
+            string graphType = graphIndex < 0 || graphIndex >=
+                AstarPath.active.graphs.Length ? null :
+                AstarPath.active.graphs[graphIndex]?.GetType().FullName;
 
             bool hadSummonBuff = false;
             if (section != null)
@@ -538,6 +554,30 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["navmeshCutHeight"] = cutHeight,
                 ["navmeshCutRotation"] = cutRotation,
                 ["navmeshCutAddedGeometry"] = cutAddedGeometry,
+                ["navmeshCutBounds"] = cutBounds == null ? null :
+                    new JObject {
+                        ["center"] = Vec(cutBounds.Value.center),
+                        ["size"] = Vec(cutBounds.Value.size)
+                    },
+                ["navmeshCutRegistered"] = cutRegistered,
+                ["recastUpdatePending"] = recastUpdatePending,
+                ["productionUpdateRoute"] = productionUpdateRoute,
+                ["productionRecastApplyRequests"] =
+                    productionRecastApplyRequests,
+                ["pathGraphIndex"] = graphIndex,
+                ["pathGraphType"] = graphType,
+                ["activeGraphs"] = new JArray(AstarPath.active.graphs
+                    .Select((value, index) => new JObject {
+                        ["index"] = index,
+                        ["type"] = value?.GetType().FullName
+                    })),
+                ["tileHandlers"] = new JArray(tileHandlers.Select(value =>
+                    new JObject {
+                        ["name"] = value.name,
+                        ["enabled"] = value.enabled,
+                        ["active"] = value.gameObject.activeInHierarchy,
+                        ["updateInterval"] = value.updateInterval
+                    })),
                 ["pathBefore"] = before,
                 ["pathWithWall"] = withWall,
                 ["pathAfter"] = after,
@@ -559,6 +599,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 hadSummonBuff && bindingPresent && cutPresent &&
                 cutExactOwner && cutType ==
                     Pathfinding.NavmeshCut.MeshType.Rectangle.ToString() &&
+                cutRegistered &&
                 obstruction && restored, row,
                 "A real hidden cast places one temporary attackable section on a measured lane, changes native navmesh pathing, retires through native lifetime ownership, and restores navigation; targeting/LoS is recorded separately.");
         }

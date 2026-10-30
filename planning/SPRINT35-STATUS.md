@@ -21,7 +21,7 @@ Sprint 35 checkpoint; historical records are not current instructions.
 | Bone sting poison is injury-gated and independently timed | Existing native-backed injury poison graph and wound gate support exact weapon, positive final damage, finite exposures, stat damage, and cure saves | No sting carrier with Fortitude DC 20, 1d3 Strength, once/round for 6 rounds, cure 2 consecutive saves | Clone the proven graph deeply for the exact sting and initialize all dice/context operands; do not attach summon-source cleanup to inflicted poison or erase ability damage | Miss/nonwound/other-limb negatives; sting wound positive; native DC, cadence, Strength damage, finite course, two-save cure, source expiry, dispel distinction, save/load |
 | Bone fear is a 5-foot aura with native eligibility and source memory | Existing source-attributed fear terminal buffs and area membership/lifetime helpers; Kyton gaze is explicitly inapplicable | No continuous aura consumer or repeat-save contract for Bone | Build a source-owned 5-foot aura applying native frightened for 1d6 rounds on failed DC 19 Will save with source-specific repeat handling; preserve native immunity/eligibility and do not make the area enemy-only | Actual membership enter/stay/leave, immunity, success/failure and no frame-by-frame retries, two-source isolation, source cleanup, both combat modes |
 | Bone regular and quickened self-invisibility stay distinct | Existing native ordinary attack-breaking invisibility, self targeting, resource, and action builders | No standard at-will action and no separate swift-action three-use resource; toggle/load-reset risks unproved | Create two self-only commands sharing the ordinary invisibility effect: standard at-will and swift 3/summoning; suppress recast while active in AI only | Native action economy, attack breaks effect, active-effect AI negative, standard/quickened distinction, 3-to-0 spend, no reset by mode/toggle/load |
-| Bone offensive control includes Dimensional Anchor and faithful Wall of Ice | Native spell cloning and source-owned area lifetimes exist. Installed 2.1.7b reflection shows dynamic `Pathfinding.NavmeshCut`, `AreaEffectView.m_NavmeshCut`, and `ObstaclePathfinder`; candidate `7b3caea8` proved a private section can spawn, own 36 HP/lifetime, and retire, but a standing unit alone changes neither navigation nor LoS | No native proof yet for a production-owned cut, selectable wall geometry, formation save/SR, attackable breach/residual cold, or restored navigation; finding visual ice or spawning a unit is insufficient | Attach one rectangle `NavmeshCut` only to the exact private section view while the section remains saved HP/lifetime authority; let native update/destruction apply and remove it. Expand geometry/breach only after the bounded viability run proves obstruction and restoration | One hidden native cast before AI expansion: exact owned cut, movement change, native removal/restoration and separately recorded LoS; then legal placement, formation save/SR, section damage/breach, residual damage, and source expiry |
+| Bone offensive control includes Dimensional Anchor and faithful Wall of Ice | Native spell cloning and source-owned area lifetimes exist. Installed 2.1.7b has dynamic `NavmeshCut`; `7b3caea8` proved section HP/lifetime but no unit obstruction, and `4961ff41` proved the exact view-owned cut can exist yet remains inert without its installed graph consumer | No PASS yet for movement obstruction/restoration, selectable geometry, formation save/SR, breach/residual cold, or LoS/targeting; a configured cut alone is insufficient | Keep the exact section as saved HP/lifetime authority. Ask only an already-present native `TileHandlerHelper` to reload the cut and its queued destroyed bounds; never create a helper or write graph objects. If this bounded installed path is absent/inert, stop wall implementation and surface the measured adaptation decision | One hidden native cast records graph/helper/cut bounds and production update route, real movement change and restored navigation; only after PASS expand legal placement, formation save/SR, breach/residual damage and source expiry |
 | Two recognizable creature-specific bodies and two real icons | Sprint 34 measured rig, mesh/albedo loader, receipts, and icon exporter are reusable; original Sprint 34 bodies remain protected. Sprint 35 now has hashed original Barbed and Bone exports plus two existing real icons | Native attachment, movement, selection, sting contact, fallback, and cleanup are not yet observed on the new bodies | Reuse the accepted per-view swap/receipt path under exact Sprint 35 identities; Bone alone receives a tail-region deformation driven by its exact native sting event | Export/hash validation passes; the early native observer now records distinct caches/views and real sting contact. Final selection/movement/visibility/fallback captures and owned-resource cleanup remain required |
 | Ownership, cleanup, disabled-mode safety, and persistence | `InfernalEffectLifetime34`, `InfernalSourceLifetime34`, `OutsiderLifetimeBoundary`, source-specific helpers, owned-item policies, and accepted grapple reload reset | New aura/wall/resources/markers/private view objects have no identities or termination policy | Give every active grant/area/wall/private object an exact owner and idempotent cleanup. Keep poison and applied ability damage independently timed. Register identities while disabled without allocating views/resources or starting mechanics | Source death/expiry/disable, destroyed-actor cleanup, no orphan wall/aura/grapple, disabled-module load, mixed ON and OFF fresh-process persistence envelopes (six processes total) |
 | Useful native AI without changing player-visible rules | Existing exact-owner AI/range/action/resource observers and established admission/scoring patterns | No creature actions or wall placement scoring | Add small creature-specific actions; wall admission requires legal useful placement, a viable allied route, and no redundant wall; do not change collision/victim rules or add an arbitrary wall limit | RTWP and turn-based substantive outcomes, unsafe/futile/redundant negatives, fallback to attacks, exact owner attribution |
@@ -329,3 +329,47 @@ Sprint 35 checkpoint; historical records are not current instructions.
   the selected Sprint 35/correction group passed 7/7 in 5.0 seconds. A new
   source-bound package and one changed wall viability run are required; the
   unchanged `7b3caea8` failure will not be relaunched.
+- The first exact `4961ff41` package attempt passed its exact-reference compile
+  and stopped at deterministic ZIP creation with `No space left on device`; no
+  package was completed or staged. Its 166-file failed candidate is preserved
+  on `E:` under manifest
+  `67E62089116E1B4797E1A20504978302D77D6054099AEFB22461D970035E62B2`.
+  After removing only that verified duplicate plus reproducible bin/obj/staging,
+  measured C: headroom was 949 MB. The unchanged retry passed repository
+  validation, the selected 7/7 group, exact-reference compilation, strict
+  440-file packaging and package validation: commit
+  `4961ff41a3021064234f9f62fd04ff82a7ed4677`; source state
+  `1e319711de9c28a91dd2d554203f98a853b0d2e826c27e43b92d0c04ba581cdf`;
+  ZIP `fbc7568ab7dc72f7ba32a1a6579dda903bd40abb5e22dce018505ae9e4782664`;
+  DLL `7b3e042f124253a27059a41e1cfcacf1e39dc1ac05eeed2076d25f7e70a31041`;
+  MVID `e2bb9280-711e-4f62-b5e1-a166d9a40ee5`. Its exact build is preserved as
+  162 verified files under manifest
+  `463D1FFAA29B717A1D3A040718FC4601BA832FE452A7C9898218896EE18D5898`.
+- Guarded run
+  `20261030T2026107412038Z-226813357ab640ad97927348ec12f50e` proved the
+  exact section owns one registered rectangle cut (`3.05 x 0.75`, height
+  `3.05`), but every sample from frame 5,616 through 5,766 retained the exact
+  two-point 6.0080795-metre `PathClear` route. The section again retired through
+  its native summon buff; LoS did not change and navigation was only vacuously
+  identical afterward. This is a real production failure, not a missing cut or
+  observer race. Transaction `compat-20261030T202336Z-4aa56b421609` is
+  `Restored` with `restorationVerified=true`; its original/staged temporary
+  trees and lock are absent, no Kingmaker process remains, and no save was
+  staged. The exact package plus 440-file run backup are preserved on `E:`
+  under manifest
+  `204FCAFAB2F1A6009FAC01B1132E4AA40C0F9EB0666782746748419F45FD0A05`;
+  only verified C: duplicates were removed.
+- Installed 2.1.7b IL now narrows the missing consumer. `NavmeshCut` only
+  registers geometry. `TileHandlerHelper.Update` calls its public `ForceUpdate`
+  to reload changed recast tiles; the separate `CombatController` grid path
+  calls `GetUpdateObjectForGrid`, but only inside active, unpaused turn-based
+  combat. The next bounded candidate therefore asks an already-present native
+  `TileHandlerHelper` to apply the exact cut once, and after cut destruction
+  queues its old bounds, asks the same helper to restore once. It neither
+  creates a helper nor directly creates/applies graph update objects. The
+  observer adds graph type, helper inventory, cut bounds/registration and the
+  production update route. If this installed consumer is absent or still
+  inert, the wall path will stop for an explicit gameplay-adaptation decision;
+  it will not grow into a general navmesh subsystem. Production compilation
+  passed in 25.9 seconds and the selected Sprint 35/correction group passed
+  7/7 in 4.8 seconds; the changed source requires a new exact candidate.
