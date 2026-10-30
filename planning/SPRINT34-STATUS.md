@@ -5,11 +5,31 @@ correction and remaining combat observers prepared. All ten routes remain hidden
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
 `4b7e3d914883ac695a4146c03de790b2024ea38c`; last remote check still that master,
-v171 latest andv172 free. Recheck upstream/version before final freeze.
+v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Its original-source ON REUSED_PASS remains distinct from
 final-artifact OFF/combined executions. Historical deferred checks stay NOT_RUN.
 
 Latest executed development candidate: source
+`e4b7249f4f98381f02960be6956f772a649aae65`, purpose `sprint34-infernal-mechanics`.
+ZIP `f70c3259bcd6f11bdbb931b0a662aeedd6de076afe75ee2a0db16af19789645d`;
+DLL `27bf20bf1a60687df435082cf3fe60f77db7c9b8bd6ed15d0a7fffe7de36ee69`;
+MVID `f4bdacf1-e9ed-415c-b653-3b94918abeaa`;
+fingerprint `5fdadc194e88b918282cc65d48ce8d3845cac357ad1abb89fd19ed041b36d509`.
+Build03 PASS264.1s,11 focused tests and strict package validation.
+Mechanics03 RunId `20261030T0116405420915Z-c260bee0619f4fd786431fe43325b15e`
+FAIL380.0s/200381ms game. Support readiness fixed; good/silver following-round
+suppression/recovery again passed. Before Holy Smite, the footprint guard refused
+an actor outside fixture.Created. Source tracing establishes that this fixture
+tracks its exact private hostile separately (Hostile/HostileBlueprint/owned
+faction), while the existing lane selector permits enemies in the burst.
+The correction proves that private hostile identity and absence at intake before
+admitting it, records every footprint actor/role, and still excludes every real
+intake actor. No spell was cast across the rejected guard. Good-spell/fatal and
+combat proof remain open. Original raw FAIL remains unchanged; evidence prefix
+`20261030T0116405044292Z`. Transaction `compat-20261030T011413Z-0cfa6a3efe77`
+Restored; full intake Compare PASS. No Working envelope started.
+
+Previous failed development candidate: source
 `44d965a96fe047c11f3ddd10cba548f1bbfd2b6c`, purpose `sprint34-infernal-mechanics`.
 ZIP `9880660328795730a5b6b8a33572a7ffdd65982635f590567443dd8a2c06d14f`;
 DLL `15319998500c01aa3fde2d243ee1a1aad7b3992764cfa049457c1f770293bead`;
@@ -26,8 +46,7 @@ observer now uses native support-caster readiness without changing any model.
 Good-spell/fatal-injury and new combat phase remain NOT_RUN. The failed original
 receipt stays FAIL; its subobservations are not final-package acceptance.
 Transaction `compat-20261030T005416Z-c810a20760b2` restored; full intake Compare
-PASS. No Working envelope started. Correct this known observer boundary before
-another native session. Raw evidence prefix `20261030T0056506524312Z`.
+PASS. No Working envelope started. The support-readiness correction was executed in mechanics03. Raw evidence prefix `20261030T0056506524312Z`.
 
 Prior successful development candidate: source
 `6c20b2f7e7f0ce47ba9b33b2f68c9361d19a5d88`, same purpose.
@@ -110,8 +129,8 @@ immutable; development PASS is never relabeled as final-package execution.
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
-Next executable action: commit/push the reviewed support-readiness
-observer correction (gate25 PASS31.2s,11 tests), then build one `sprint34-infernal-mechanics` candidate. Run its
+Next executable action: build the reviewed, focused-compiled private-hostile
+footprint correction as one `sprint34-infernal-mechanics` candidate. Run its
 bounded mechanics phase and the new `sprint34-infernal-combat` phase on that same
 artifact, restoring each. Estimate4.5min build plus two7-10min guarded sessions
 from retained timings; stop/diagnose a contaminated or failed boundary before
@@ -146,7 +165,9 @@ MVID `19c76e2e-4398-4a60-a5fd-cdd910109d24`, fingerprint
 Retain raw loaded identities/receipts for every other historical candidate;
 reuse requires exact dependency/source/observer/profile linkage.
 
-Focused gate24 PASS34.9s, production compilation and11/2767 selected tests.
+Focused gate26 PASS31.7s, production compilation and11/2767 selected tests;
+private-hostile footprint and explicit damage-source observer correction.
+Gate25 PASS31.2s for support readiness. Gate24 PASS34.9s with11/2767 tests.
 Gate23 failed compilation on one observer collection argument; fixed. Gate19/20
 had observer API errors, corrected before gate21 PASS35.2s and gate22 PASS41.1s.
 Gate17/18 passed11 focused tests;33 compiled persistence admission/refusal checks
@@ -162,10 +183,8 @@ HOWARD-LAPTOP; actual human installation0.0.117 observed, not a restoration pin.
 Sixteen private references hash-match installed Kingmaker2.1.7b/Harmony12/UMM.
 IntakeSHA256 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-processes/tasks/leases. Latest transactions
-`compat-20261030T000333Z-e4653589528a` and
-`compat-20261030T001203Z-7290e07c17e2` reached Restored with verified restoration;
-full intake Compare PASS after body05. No game/lease/Working envelope active.
+processes/tasks/leases. Latest transaction `compat-20261030T011413Z-0cfa6a3efe77` reached Restored
+with verified restoration; full intake Compare PASS after mechanics03. No game/lease/Working envelope active.
 KMG_AUTOMATION_BASELINE is immutable. Original Working remains unchanged.
 
 Only the two authorized push branches were added to the existing wrapper.
@@ -194,3 +213,9 @@ Its434-file transaction extraction exactly matched the retained44d965a9 primary
 ZIP (proofSHA256 `07b3a4f52316e62629b9cb5bdb9b01fe5d6a86a0a892d4ab589be84fcf1b099a`).
 Only redundant compilation/staging/extraction/candidate-backup copies removed
 fromC: after full E: byte verification; primary packages and raw evidence remain.
+
+Archive08 retained531,183,148 bytes/1856 files at timestamp20261030T012459Z;
+mapSHA256 `8311e65ddf0204ca73d187d0e86a1bca813de75f50126f70dfba1d1a19f7939c`.
+Its434-file extraction matched the retained e4b7249f primary ZIP
+(proofSHA256 `6ac20f250da798c1a1ab739a0448aa2a753333ace5068501ae6037031a1d6955`).
+Only verified redundant owned scratch was removed after E: archival.

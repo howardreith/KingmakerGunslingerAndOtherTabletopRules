@@ -336,9 +336,25 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Vector3 origin = Sprint24AiCombatLane(fixture.Caster, caster, recipient, 4f, out far, out lane, out direction,
                     new Feet(20).Meters + 2f, new[] { owner }, 30);
                 PlaceExpandedSummoningUnit(caster, origin); PlaceExpandedSummoningUnit(recipient, far);
-                if (Game.Instance.State.Units.All.Any(unit => unit != null && unit.IsInGame &&
-                    !fixture.Created.Contains(unit) && Vector3.Distance(unit.Position, far) <= new Feet(20).Meters + 1f + unit.Corpulence))
-                    throw new InvalidOperationException("Good-spell burst reaches protected intake.");
+                // This fixture tracks its privately spawned hostile separately
+                // from Created. Prove that exact ownership before admitting it;
+                // every actor present at intake remains protected.
+                bool hostileOwned = fixture.Hostile != null &&
+                    ReferenceEquals(fixture.Hostile.Blueprint, fixture.HostileBlueprint) &&
+                    ReferenceEquals(fixture.Hostile.Faction, fixture.OwnedHostileFaction) &&
+                    !fixture.UnitsBefore.Any(unit => ReferenceEquals(unit, fixture.Hostile));
+                var footprint = Game.Instance.State.Units.All.Where(unit => unit != null && unit.IsInGame &&
+                    Vector3.Distance(unit.Position, far) <= new Feet(20).Meters + 1f + unit.Corpulence).ToArray();
+                bool protectedClear = hostileOwned && footprint.Contains(recipient) && footprint.All(unit =>
+                    (fixture.Created.Contains(unit) || ReferenceEquals(unit, fixture.Hostile)) &&
+                    !fixture.UnitsBefore.Any(value => ReferenceEquals(value, unit)));
+                check("kyton-good-spell-owned-burst", protectedClear, new JObject { ["source"] = caster.UniqueId,
+                    ["target"] = recipient.UniqueId, ["point"] = SurveyVector(far), ["lane"] = lane,
+                    ["privateHostileOwned"] = hostileOwned, ["footprint"] = new JArray(footprint.Select(unit => new JObject {
+                        ["unit"] = unit.UniqueId, ["blueprint"] = unit.Blueprint.AssetGuid,
+                        ["createdSummon"] = fixture.Created.Contains(unit), ["privateHostile"] = ReferenceEquals(unit, fixture.Hostile),
+                        ["wasAtIntake"] = fixture.UnitsBefore.Any(value => ReferenceEquals(value, unit)) })) },
+                    "The native burst footprint contains only request-owned summons and the separately tracked exact private hostile; every intake actor remains excluded.");
                 foreach (var unit in new[] { caster, recipient }) {
                     unit.Wake(0f); if (!Game.Instance.State.AwakeUnits.Contains(unit)) Game.Instance.State.AwakeUnits.Add(unit);
                     unit.SightCache.ClearIfNeeded();
@@ -352,7 +368,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                         using (var economy = new FirearmReviewCosts(caster, costs)) {
                             foreach (int frame in Sprint26Cast(caster, spell, new TargetWrapper(far), value => command = value)) yield return frame;
                             var damage = trace.Rows.Skip(first).Where(row => (string)row["event"] == "damage" &&
-                                (string)row["target"] == recipient.UniqueId && (int?)row["actual"] > 0).ToArray();
+                                (string)row["target"] == recipient.UniqueId && (string)row["owner"] == caster.UniqueId &&
+                                (string)row["ability"] == spell.AssetGuid && (int?)row["actual"] > 0).ToArray();
                             injured = damage.Length != 0;
                             bool exact = command != null && command.Result == UnitCommand.ResultType.Success && command.IsActed &&
                                 economy.Count(command) == 1 && (economy.InCombat(command) ? economy.Exact(command, false) : economy.Unchanged(command)) &&
