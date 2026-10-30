@@ -104,8 +104,9 @@ and death-prevention ownership. Positive good/silver injury suppresses the
 following round; the subsequent callback restores native healing. A good native
 spell/SLA descriptor also qualifies. Serialized suppression survives cold load.
 Compiled interface maps confirm both callbacks dispatch to the subclass; this
-is not gameplay proof. Native following-round, good-spell and fatal-injury
-observations remain required. Other creatures' regeneration is unchanged.
+is not gameplay proof. Development mechanics04 subsequently observed native
+following-round, good-spell and fatal-injury behavior. Cold hydration and final
+qualification remain required. Other creatures' regeneration is unchanged.
 CotW's bleed donor uses its shared strongest-bleed selector; its private clone
 keeps that consumer. Source removal reselects remaining live bleed facts because
 the installed selector does not do this itself. Stock bleed uses its actual

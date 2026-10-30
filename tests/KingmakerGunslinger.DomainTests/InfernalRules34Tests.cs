@@ -68,6 +68,11 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies") &&
                 ExpandedSummoningNativeProfilePolicy.Sprint32NativeDefaultPhase("sprint34-infernal-bodies"), "Native rendering phase admitted to the existing owned clock.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-bodies-extra"), "Broader visual phase refused.");
+            foreach (string phase in new[] { "sprint34-infernal-ai", "sprint34-infernal-effects", "sprint34-infernal-lifetime" }) {
+                Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase), "Exact scoped native phase admitted.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase + "-extra"), "Broader native scope refused.");
+                Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase(phase.ToUpperInvariant()), "Case variation refused.");
+            }
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-combat"), "Scoped native combat admitted.");
             Assertions.False(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-combat-extra"), "Broader combat refused.");
             Assertions.True(ExpandedSummoningNativeProfilePolicy.Sprint32Phase("sprint34-infernal-mechanics"), "Scoped native mechanics admitted.");

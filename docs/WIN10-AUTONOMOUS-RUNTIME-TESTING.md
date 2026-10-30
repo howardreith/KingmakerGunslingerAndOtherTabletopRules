@@ -1,3 +1,18 @@
+Sprint34 adds three exact save-free review phases on the existing disposable
+Sprint32 fixture: `sprint34-infernal-ai` (native RTWP/TB decisions and costs,
+close/disarmed claw fallback, owned-chain control, enemy gaze and attacks),
+`sprint34-infernal-effects` (real healing of an unrelated injured patient and
+native unrelated bleed after exact source expiry), and `sprint34-infernal-lifetime`
+(native queued cancellation, summon expiry/death, separately owned summoner loss
+and actual leave-area subscribers). Lifecycle effects and the unrelated bleed
+are disclosed native effect-only preconditions, never attack/save/cost proof.
+The disarm consumer uses an unmodified released Storm Giant and natural rolls,
+not altered attack scores. Area subscriber dispatch does not claim a UI scene
+transition. Exact effects/items/resources are captured before source removal;
+failed reset stops the group. Only proven idle owned witnesses may pass TB turns;
+the tested owner receives its normal native turns. No save access is admitted.
+These observers are NOT_RUN until their exact candidate receipts exist.
+
 Sprint34 selects only `persistenceScope=infernal-outsiders` in the existing
 Working prepare, cleanup and absence trio: one Bearded Devil and one Kyton.
 One private receipt-owned recipient carries saved Infernal Wound, Devil Chills
