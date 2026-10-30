@@ -1,8 +1,10 @@
 # Sprint 34 - hidden native qualification
 
-Current stage: mechanics/combat/body, unrelated-effect and lifetime development
-proof passed. AI01 exposed a missing observer RTWP opt-in; the scoped correction
-and grouped stock healing observer passed focused validation before one rebuild.
+Current stage: development mechanics/combat/body, unrelated-effect and lifetime
+proof passed. AI02 passed both real-time action cells, then refused a contaminated
+private-hostile reset. Stock01 stopped at a too-strict native bleed graph guard.
+The next coherent repair selects only the native direct damage payload and
+retires each private target after proving source cleanup. Both failures remain FAIL.
 All ten routes remain hidden. No final package or Working envelope has started.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
@@ -11,13 +13,34 @@ v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
 and historical NOT_RUN records; no historical campaign is selected.
 
-Latest executed development candidate: `14a87b917c12d7e4101e5424ccf804b6ce12dd47`,
+Latest executed development candidate: `5d3c2da02bb3360efdc77b61039ebbf998e9418e`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
+ZIP `813fca9d851a37d7e9d35512b66ba051c9779d418f0696e482bf168348fc5587`;
+DLL `68543722e3dc4c0319d176c63769c61a47ce9e18faec1a9d80e11548eded7cde`;
+MVID `7d8781e7-2e59-4666-87c1-bd2811653a75`;
+fingerprint `d8efc97b5127aed31c073f6971228e54a11c49247c5dcea08dc7721370028f02`.
+Build06 PASS264.730s,11 focused tests and strict package validation.
+
+- AI02 FAIL369.729s orchestration/180974ms game, RunId
+  `20261030T0305283772641Z-088a4a15b5a74cbbb7c92a897383784d`.
+  Both RTWP cells passed real AI commands and separate native costs. Kyton's
+  reset retained combat memory; source and captured effects were already absent.
+  Installed LeaveCombat does not clear shared UnitGroupMemory; TickUnit can
+  immediately re-enroll it. TB/disarm remained NOT_RUN.
+- Stock01 FAIL241.310s/66509ms, RunId
+  `20261030T0313586585292Z-a0603aac7eaa4c4696f683a082be7abc`.
+  Bootstrap rolled back at the one-action bleed donor assumption; no native
+  scenario assertions executed. Original UMM log retained with SHA256
+  `accf25e82c4f44b2ba86f6bd2ce81b7c73d9495274630512b3fc3c02ea35ca96`.
+  No claim that stock healing has passed. The repair clones only one validated
+  unconditional native HP payload, leaving printed wound timing/cures owned.
+
+Previous effects/lifetime/AI01 candidate `14a87b917c12d7e4101e5424ccf804b6ce12dd47`:
 ZIP `b7684ebf7a2260bc376ef21119cfe75697532e838b079b7be158f5185e5b6e3d`;
 DLL `b0620e1ea6d27d720f83fcf5935342514a4eabcc132081f55529ea3d711200c0`;
 MVID `ebac7be1-644b-445f-8d01-75c533e7f4bf`;
 fingerprint `29a0b6346067baabe18c6f608b10a16a9e858dd189dbb5117469d0d914f557e3`.
-Build05 PASS264.542s,11 focused tests and strict package validation.
+Build05 PASS264.542s.
 
 - Effects01 PASS8/8,344.342s orchestration/160655ms game, RunId
   `20261030T0239058321483Z-95ca47b12d7041918edeca739b89d3fd`.
@@ -123,16 +146,15 @@ MVID `edda15b0-ce63-48b5-bf87-115c2186febc`.
 | Profiles/defenses/isolation | Mechanics04 PASS, including donor isolation | Final dependency-qualified coverage |
 | Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 routines; combat01 signed stats/Power Attack, single/charge/AoO, actual Beard/infection/day onset/native cure PASS | Stock-profile healing/bleed control; CotW effects01 and lifetime01 passed |
 | Kyton chains/gaze/armor/regeneration | Early03 control/four chains; mechanics04 gaze/defenses/following-round/good-spell/fatal injury; combat01 single/charge/AoO/live stats PASS | Final dependency-qualified coverage |
-| AI/actions/cleanup | Effects01 and lifetime01 PASS; AI01 raw FAIL isolated to observer setup | Corrected RTWP/TB/disarm AI and grouped stock healing NOT_RUN |
+| AI/actions/cleanup | Effects01 and lifetime01 PASS; AI02 RTWP action cells passed, aggregate reset FAIL | Fresh grouped AI reset/TB/disarm; stock healing bootstrap repair and actual consumers |
 | Models/icons/ten public routes | Body05 functional presentation, real icons/offline exports | Fresh final presentation and all ten actual public casts/slots/quantity/duration/cleanup |
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
-Next executable action: commit/push this reviewed observer-only batch, then one
-mechanics-purpose build. Select corrected AI
-(both modes, disarm fallback) and `sprint34-infernal-healing` on `gunslinger-only`.
-The latter composes existing early native wound/healing/chains and unrelated-
-patient/bleed cells, with an explicit observed actor/command/effect reset boundary.
+Focused31 PASS32.303s: production compilation and11 selected tests.
+Next executable action: commit/push the reviewed native-payload and
+owned-recipient reset repairs, then one mechanics-purpose build.
+Run stock healing first, then grouped RTWP/TB/disarm AI on the same package.
 Retained timings allocate about4.5min build and6-8min per phase; estimates only.
 Restore/compare after each; diagnose failed boundaries before continuing.
 
@@ -182,8 +204,8 @@ HOWARD-LAPTOP; actual human installation0.0.117 observed, not a restoration pin.
 Sixteen private references hash-match installed Kingmaker2.1.7b/Harmony12/UMM.
 IntakeSHA256 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-processes/tasks/leases. Latest transaction `compat-20261030T014714Z-c16da1a85ce5` reached Restored
-with verified restoration; full intake Compare PASS after combat01. No game/lease/Working envelope active.
+processes/tasks/leases. Latest transaction `compat-20261030T031130Z-da86c4b05628` reached Restored
+with verified restoration; full intake Compare PASS after stock01. No game/lease/Working envelope active.
 KMG_AUTOMATION_BASELINE is immutable. Original Working remains unchanged.
 
 Only the two authorized push branches were added to the existing wrapper.
@@ -245,3 +267,12 @@ and `2821892a1975a1d3689c4e5395aeeb3c152f698f43da5a44d657403b12c3468d`.
 Archive16 retained1736 files/429052324bytes, including ZIP-matching staging and
 restored lifetime copies; map `cc83cc74edb3d2469c05b4a64c186b45122d01478d4aeab4df9bb18775c4e8e9`.
 Primary ZIPs, receipts and raw evidence remain retained; no protected saves touched.
+
+Archives17-20 retain only byte-proven redundant build/transaction copies on E:;
+local proof/map/result files remain under artifacts/sprint34-intake. Maps:
+17 `22bf3605c81cf2aacb5750e4d8017e7186f9bbc26e51330973ccc7bf34695cfe`;
+18 `2e15a9c0deb28ef56b1a5e1eca5617cd0d0d29f2e8fa5423813c6950b50386e1`;
+19 `978f4e09acee86f82485868d5e550ce0d68c565b9a6d3a77e2dec86b9a715f35`;
+20 `fe1169900ea951a87ce049e462f57993cb92e6b6a9bc870670079909651e0cb1`.
+Archive20 retained1302 files/321801531bytes after exact434-file primary-ZIP proof
+`a4ca9933f743f0c6a9694cf78bac59f169f69506899d6824dd5455e8ea8ad2e3`.

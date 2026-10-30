@@ -64,6 +64,7 @@ namespace KingmakerGunslinger.RuntimeTesting
             bool disarm, InfernalEvents34 trace, Action<string, bool, JObject, string> check)
         {
             string id = "ai-" + key + (turnBased ? "-turn" : "-rtwp") + (disarm ? "-disarmed" : "");
+            CreateSprint32TurnHostile(fixture);
             UnitEntityData owner = null; var target = fixture.Hostile; Buff[] capturedEffects = Array.Empty<Buff>();
             var party = Game.Instance.Player.Inventory.Items.ToArray(); var partyCounts = party.Select(item => item.Count).ToArray();
             var anchor = Sprint32OwnedQuietAnchor(fixture, id);
@@ -173,11 +174,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, new[] { owner }.Where(value => value != null));
                 ResetExpandedSummoningHostile(fixture);
             }
+            // Prove source cleanup while the recipient still exists. Destroying
+            // the recipient must never masquerade as source-owned retirement.
+            check(id + "-source-cleanup", target.IsInState && !target.Destroyed && Sprints3031SourceAbsent(owner) && capturedEffects.All(buff => buff.IsDisposed) &&
+                !target.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Context?.MaybeCaster, owner)),
+                new JObject { ["sourceAbsent"] = Sprints3031SourceAbsent(owner), ["capturedEffectsDisposed"] = capturedEffects.All(buff => buff.IsDisposed),
+                    ["recipientStillPresent"] = target.IsInState && !target.Destroyed },
+                "The summon and its exact effects retire before the private recipient is removed.");
+            var retirement = RetireInfernalHostile34(fixture);
             for (int frame = 0; frame < 12; frame++) { Game.Instance.IsPaused = false; yield return 0; }
-            check(id + "-reset", Sprints3031SourceAbsent(owner) && capturedEffects.All(buff => buff.IsDisposed) && !target.IsInCombat && !target.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
-                !target.Buffs.Enumerable.Any(buff => ReferenceEquals(buff.Context?.MaybeCaster, owner)) && Sprint28PartyInventoryExact(party, partyCounts),
-                new JObject { ["sourceAbsent"] = Sprints3031SourceAbsent(owner), ["capturedEffectsDisposed"] = capturedEffects.All(buff => buff.IsDisposed), ["targetCombat"] = target.IsInCombat },
-                "Owned commands, combat and source effects retire before the next grouped AI case; party inventory remains exact.");
+            retirement["targetAbsent"] = Sprints3031SourceAbsent(target);
+            retirement["partyInventoryExact"] = Sprint28PartyInventoryExact(party, partyCounts);
+            check(id + "-reset", Sprints3031SourceAbsent(target) && !fixture.Caster.IsInCombat && !anchor.IsInCombat &&
+                Sprint28PartyInventoryExact(party, partyCounts), retirement,
+                "The private hostile and exact combat-memory references retire before a fresh target is created for the next case.");
         }
 
         private IEnumerable<int> InfernalDisarm34(ExpandedSummoningCorrectionFixture fixture, UnitEntityData owner,

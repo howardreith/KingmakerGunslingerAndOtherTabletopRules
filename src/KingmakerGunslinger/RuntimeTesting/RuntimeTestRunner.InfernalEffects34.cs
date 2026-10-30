@@ -44,18 +44,55 @@ namespace KingmakerGunslinger.RuntimeTesting
         {
             var before = Game.Instance.State.Units.All.Where(unit => unit != null).ToArray();
             foreach (int frame in ReviewInfernalEarly34(fixture)) yield return frame;
+            var target = fixture.Hostile;
+            var retirement = RetireInfernalHostile34(fixture);
             for (int frame = 0; frame < 12; frame++) { Game.Instance.IsPaused = false; yield return 0; }
             var remaining = Game.Instance.State.Units.All.Where(unit => unit != null && !unit.Destroyed && unit.IsInState &&
-                !before.Contains(unit) && !ReferenceEquals(unit, fixture.Hostile)).ToArray();
-            bool reset = remaining.Length == 0 && !fixture.Hostile.IsInCombat &&
-                !fixture.Hostile.Commands.Raw.Any(command => command != null && !command.IsFinished) &&
-                !fixture.Hostile.Buffs.Enumerable.Any(buff => buff.SelectComponents<InfernalEffectLifetime34>().Any());
+                !before.Contains(unit)).ToArray();
+            bool reset = remaining.Length == 0 && Sprints3031SourceAbsent(target) && !fixture.Caster.IsInCombat;
             Sprint25Check("sprint34-healing-group-reset", reset, new JObject {
                 ["remainingOwnedActors"] = new JArray(remaining.Select(unit => unit.UniqueId)),
-                ["targetCombat"] = fixture.Hostile.IsInCombat },
+                ["targetRetirement"] = retirement },
                 "The early native consumers have retired their owned actors, commands and effects before the independent patient/bleed cells.");
             if (!reset) throw new InvalidOperationException("Infernal healing group did not reset.");
+            CreateSprint32TurnHostile(fixture);
             foreach (int frame in ReviewInfernalEffects34(fixture)) yield return frame;
+        }
+
+        private JObject RetireInfernalHostile34(ExpandedSummoningCorrectionFixture fixture)
+        {
+            var target = fixture.Hostile;
+            if (target == null || fixture.HostileBlueprint == null || fixture.OwnedHostileFaction == null ||
+                !ReferenceEquals(target.Blueprint, fixture.HostileBlueprint) ||
+                !ReferenceEquals(target.Faction, fixture.OwnedHostileFaction) ||
+                fixture.UnitsBefore.Any(value => ReferenceEquals(value, target)) ||
+                fixture.PartyBefore.Any(value => ReferenceEquals(value, target)))
+                throw new InvalidOperationException("Infernal reset refuses a non-owned hostile.");
+            // LeaveCombat clears commands/engagements, not shared group memory.
+            // Remove only links to this request-created target; never clear a
+            // shared memory wholesale. Match the qualified Astral31 cleanup.
+            var anchor = Sprint32OwnedQuietAnchor(fixture, "infernal-reset");
+            var actors = fixture.Created.Concat(new[] { fixture.Caster, anchor }).Where(value => value != null).Distinct().ToArray();
+            var links = new JArray();
+            foreach (var actor in actors) {
+                links.Add(new JObject { ["unit"] = actor.UniqueId, ["remembersTarget"] = actor.Memory.Contains(target),
+                    ["targetRemembers"] = target.Memory.Contains(actor) });
+                actor.Memory.Remove(target); target.Memory.Remove(actor);
+            }
+            foreach (var actor in new[] { target, fixture.Caster, anchor }.Where(value => !value.Destroyed)) {
+                actor.Commands.InterruptAll(command => true);
+                if (actor.IsInCombat) actor.LeaveCombat();
+                // Leaving combat may itself enqueue return movement.
+                actor.Commands.InterruptAll(command => true); actor.Commands.RemoveFinishedAndUpdateQueue();
+            }
+            bool effectsGone = !target.Buffs.Enumerable.Any(buff => buff.SelectComponents<InfernalEffectLifetime34>().Any());
+            if (!effectsGone) throw new InvalidOperationException("Owned effects survived source cleanup before recipient retirement.");
+            if (!target.Destroyed) target.Destroy(); Game.Instance.EntityDestroyer.Tick();
+            UnityEngine.Object.Destroy(fixture.HostileBlueprint); UnityEngine.Object.Destroy(fixture.OwnedHostileFaction);
+            fixture.Hostile = null; fixture.HostileBlueprint = null; fixture.OwnedHostileFaction = null;
+            Game.Instance.Player.UpdateIsInCombat();
+            return new JObject { ["target"] = target.UniqueId, ["memoryLinksBefore"] = links,
+                ["ownedEffectsGoneBeforeRecipientRemoval"] = effectsGone };
         }
 
         private IEnumerable<int> ReviewInfernalEffects34(ExpandedSummoningCorrectionFixture fixture)
