@@ -1,7 +1,8 @@
 # Sprint 34 - hidden native qualification
 
-Current stage: mechanics/combat/body development proof passed. New AI, unrelated-
-effect and lifetime observers passed focused compilation/review; native proof is next.
+Current stage: mechanics/combat/body, unrelated-effect and lifetime development
+proof passed. AI01 exposed a missing observer RTWP opt-in; the scoped correction
+and grouped stock healing observer passed focused validation before one rebuild.
 All ten routes remain hidden. No final package or Working envelope has started.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
@@ -10,13 +11,38 @@ v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
 and historical NOT_RUN records; no historical campaign is selected.
 
-Latest executed development candidate: `22005fd292c363bf90f60e0604c3e7aefab8c4d9`,
+Latest executed development candidate: `14a87b917c12d7e4101e5424ccf804b6ce12dd47`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
+ZIP `b7684ebf7a2260bc376ef21119cfe75697532e838b079b7be158f5185e5b6e3d`;
+DLL `b0620e1ea6d27d720f83fcf5935342514a4eabcc132081f55529ea3d711200c0`;
+MVID `ebac7be1-644b-445f-8d01-75c533e7f4bf`;
+fingerprint `29a0b6346067baabe18c6f608b10a16a9e858dd189dbb5117469d0d914f557e3`.
+Build05 PASS264.542s,11 focused tests and strict package validation.
+
+- Effects01 PASS8/8,344.342s orchestration/160655ms game, RunId
+  `20261030T0239058321483Z-95ca47b12d7041918edeca739b89d3fd`.
+  Real unrelated-patient cure healed13HP with one slot; source expiry removed
+  exact wound/disease while another source's native2d6 bleed remained and dealt5HP.
+- Lifetime01 PASS25/25,351.298s/162581ms, RunId
+  `20261030T0246584972238Z-540cf6e3b49f4e06b3fd41bea4f9d527`.
+  Queued cancellation, expiry/death, sibling effects/items/resources, summoner
+  loss and actual area subscribers passed. Area probe is not a UI scene transition.
+- AI01 FAIL401.664s/217339ms, RunId
+  `20261030T0229090148714Z-15a9cbd6d9b2474ca617af13b8efc8d6`.
+  Actual paid switch and21 claw attacks occurred; completion rows were empty
+  because the reused observer requires explicit `ObserveRtwpAttackCompletion`.
+  Correction is observer-only; no retrospective aggregate PASS. Later cells NOT_RUN.
+
+Those three transactions are Restored/verified, with full intake Compare PASS
+and no Working mutation. Their evidence prefixes are respectively
+`20261030T0239057985341Z`, `20261030T0246584600251Z`, `20261030T0229089826890Z`.
+
+Previous mechanics/combat source `22005fd292c363bf90f60e0604c3e7aefab8c4d9`:
 ZIP `d2d3d9b808ff220a5fdf8fbf356fe3fc49012c4c8aa473ee180481b191c2c0c3`;
 DLL `7ff07ad93654a636c1bc2f511a62a6fdd9e3e5ed485b07493bc592e4440e0555`;
 MVID `7c471153-228f-446c-aecd-5a6e6dee35a9`;
 fingerprint `ec696304f0e9c25fdedb3754b5060270c944cb59df914c9401ddb251e0805edd`.
-Build04 PASS266.923s,11 focused tests and strict package validation.
+Build04 PASS266.923s.
 
 - Mechanics04 PASS33/33,399.311s orchestration/216797ms game, RunId
   `20261030T0140496707227Z-d5a38731b04b4cc8910d4ac1816357b4`.
@@ -95,20 +121,20 @@ MVID `edda15b0-ce63-48b5-bf87-115c2186febc`.
 | Group | Observed evidence | Remaining |
 |---|---|---|
 | Profiles/defenses/isolation | Mechanics04 PASS, including donor isolation | Final dependency-qualified coverage |
-| Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 routines; combat01 signed stats/Power Attack, single/charge/AoO, actual Beard/infection/day onset/native cure PASS | Unrelated bleed/patient and lifetime controls |
+| Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 routines; combat01 signed stats/Power Attack, single/charge/AoO, actual Beard/infection/day onset/native cure PASS | Stock-profile healing/bleed control; CotW effects01 and lifetime01 passed |
 | Kyton chains/gaze/armor/regeneration | Early03 control/four chains; mechanics04 gaze/defenses/following-round/good-spell/fatal injury; combat01 single/charge/AoO/live stats PASS | Final dependency-qualified coverage |
-| AI/actions/cleanup | Scoped observers implemented on existing exact-owner fixtures | Native AI/effects/lifetime phases NOT_RUN |
+| AI/actions/cleanup | Effects01 and lifetime01 PASS; AI01 raw FAIL isolated to observer setup | Corrected RTWP/TB/disarm AI and grouped stock healing NOT_RUN |
 | Models/icons/ten public routes | Body05 functional presentation, real icons/offline exports | Fresh final presentation and all ten actual public casts/slots/quantity/duration/cleanup |
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
-Next executable action: commit/push the reviewed AI/effects/lifetime observer
-batch, then build one mechanics-purpose candidate. Select three guarded save-free phases on that artifact: AI (both
-modes, disarm fallback), unrelated patient/bleed, and lifecycle (cancellation,
-expiry/death, summoner and area consumers). Retained timings allocate about
-4.5min build and 7-8min each phase; these are estimates, not a new quota.
-Restore/compare after each; diagnose any failed boundary before continuing.
-The stock bleed branch also needs a focused standalone control before release.
+Next executable action: commit/push this reviewed observer-only batch, then one
+mechanics-purpose build. Select corrected AI
+(both modes, disarm fallback) and `sprint34-infernal-healing` on `gunslinger-only`.
+The latter composes existing early native wound/healing/chains and unrelated-
+patient/bleed cells, with an explicit observed actor/command/effect reset boundary.
+Retained timings allocate about4.5min build and6-8min per phase; estimates only.
+Restore/compare after each; diagnose failed boundaries before continuing.
 
 Final selection remains one coherent Sprint source/build/package gate (no
 redundant Tranche), grouped final behavior/presentation/routes, the two mixed
@@ -140,6 +166,7 @@ Retain raw loaded identities/receipts for every other historical candidate;
 reuse requires exact dependency/source/observer/profile linkage.
 
 
+Gate30 PASS35.577s, production compilation and11/2767 focused tests.
 Gate29 PASS31.444s after exact private-group disarm guard review;11/2767 tests.
 Gate28 PASS34.707s, production compilation and11/2767 focused tests.
 Gate27 FAIL20.359s on two observer lambda-name collisions; corrected together.
@@ -209,3 +236,12 @@ Archive12 (20261030T021420Z) retained74,174,718 bytes/155 redundant old build
 files; map `640b83c2209800e32afaaf49cfe4ddb89882ab4d0d1aa2ea8d4951961203cafd`,
 proof `b450d5c3a84fc0cfa264df8d73821f1d3f6207e7c44349f614fba2db80822cbe`.
 Every removed file also remains in the primary ZIP or archive09.
+
+Archive13 retained552 duplicate build files/161563889bytes on E:, map
+`01b08f6a0ddecbf53a549738251f543061e92aa3f98ee308e4165b4c73d4b281`.
+Archive14/15 each retained1302 files/321789243bytes from restored AI/effects
+transactions; maps `f04a39081b934176af641008bfd1b85f353473385e9c0eb5bb50f27b5001e7c4`
+and `2821892a1975a1d3689c4e5395aeeb3c152f698f43da5a44d657403b12c3468d`.
+Archive16 retained1736 files/429052324bytes, including ZIP-matching staging and
+restored lifetime copies; map `cc83cc74edb3d2469c05b4a64c186b45122d01478d4aeab4df9bb18775c4e8e9`.
+Primary ZIPs, receipts and raw evidence remain retained; no protected saves touched.

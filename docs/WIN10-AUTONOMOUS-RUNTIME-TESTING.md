@@ -11,7 +11,13 @@ not altered attack scores. Area subscriber dispatch does not claim a UI scene
 transition. Exact effects/items/resources are captured before source removal;
 failed reset stops the group. Only proven idle owned witnesses may pass TB turns;
 the tested owner receives its normal native turns. No save access is admitted.
-These observers are NOT_RUN until their exact candidate receipts exist.
+Effects and lifetime passed on development source14a87b917c12, retaining exact
+raw receipts in the Sprint34 status. AI01 remains FAIL because its completion
+observer omitted the existing RTWP opt-in; the correction needs a fresh run.
+`sprint34-infernal-healing` composes the existing early and effects cells for the
+stock profile. It refuses continuation if newly owned actors, active commands
+or owned effects survive the intervening reset. This grouping is NOT_RUN until
+its exact candidate receipt exists; no cold-process boundary is combined.
 
 Sprint34 selects only `persistenceScope=infernal-outsiders` in the existing
 Working prepare, cleanup and absence trio: one Bearded Devil and one Kyton.

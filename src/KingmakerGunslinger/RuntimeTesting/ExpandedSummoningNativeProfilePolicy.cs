@@ -4,6 +4,7 @@ namespace KingmakerGunslinger.RuntimeTesting
     // campaign, import a save or leave its game process open.
     public static class ExpandedSummoningNativeProfilePolicy
     {
+        internal const string Sprint32InfernalHealingPhase = "sprint34-infernal-healing";
         internal const string Sprint32InfernalAiPhase = "sprint34-infernal-ai";
         internal const string Sprint32InfernalEffectsPhase = "sprint34-infernal-effects";
         internal const string Sprint32InfernalLifetimePhase = "sprint34-infernal-lifetime";
@@ -49,7 +50,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         internal static bool Sprint32NativeDefaultOutdoor(string scenario, string phase)
         { return scenario == RuntimeTestScenarioCatalog.DisposableExpandedSummoningSprint32NativeReview && Sprint32NativeDefaultPhase(phase); }
         internal static bool Sprint32Phase(string phase)
-        { return phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
+        { return phase == Sprint32InfernalHealingPhase || phase == Sprint32InfernalAiPhase || phase == Sprint32InfernalEffectsPhase || phase == Sprint32InfernalLifetimePhase || phase == Sprint32InfernalCombatPhase || phase == Sprint32InfernalRoutesPhase || phase == Sprint32InfernalMechanicsPhase || phase == Sprint32InfernalEarlyPhase || phase == Sprint32ShadowDrainPhase || phase == Sprint32ShadowPreservationPhase || phase == Sprint32StalkerPurgePhase || phase == Sprint32ShadowOutsidersPhase || phase == Sprint32SatyrControlPhase || phase == Sprint32LillendSupportPhase ||
             phase == Sprint32SatyrTurnPhase || phase == Sprint32LillendTurnPhase || phase == Sprint32SuggestionPhase ||
             phase == Sprint32SatyrRoutesPhase || phase == Sprint32LillendRoutesPhase || phase == Sprint32LifecyclePhase ||
             phase == Sprint32CantripPhase || phase == Sprint32HoldPhase || phase == Sprint32HoldTurnPhase ||
