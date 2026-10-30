@@ -73,7 +73,22 @@ Sprint 35 checkpoint; historical records are not current instructions.
   admission gaps: the PowerShell phase parser omitted declared Sprint 35 phases,
   and the restoration wrapper could not predeploy/reuse an explicit development
   candidate. The bounded orchestration suite now passes 267 assertions and the
-  focused Sprint 35 domain group remains 4/4. A clean source-bound package for
-  this host repair is required before the first game launch.
+  focused Sprint 35 domain group remains 4/4.
+- Commit `dc2785da` produced the first source-bound native candidate (ZIP
+  `f308bf9de78abb234794d30a395e31621c88936de57581b384bf7efd2cec9033`,
+  DLL `48396a276a7465531f12251dbd0305d66c6b718789dc391813960dff6a576df6`,
+  MVID `20e722ee-ec32-4fa8-bd63-8c2ae1a98f84`). The guarded early run
+  `20261030T1629300029849Z-36d380d435214b86bcabdef80f9ad7b5` failed before
+  assertions because registration rejected the one new planned shell type,
+  `InfernalSpellAi35`. It staged no save, exited normally, and restoration
+  returned the live mod tree to its exact pre-run SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  The failed candidate is retained byte-for-byte on `E:` with verified archive
+  manifest SHA-256
+  `0d0dba0f8ef60bc6da94dec16362cc980adaf597543d2a2cec693e9ca7dcc0db`.
+  The smallest repair adds that exact shell factory; production compilation,
+  the four Sprint 35 policy tests, and the existing all-planned-types factory
+  regression now pass 5/5. A changed source-bound candidate is required before
+  the next native launch; the failed bytes will not be relaunched.
 - Mandatory qualification, publication, release, verification, and restoration
   are all pending.
