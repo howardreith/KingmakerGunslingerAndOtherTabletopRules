@@ -158,3 +158,10 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `c2c4af68f121909156d3091b905f8320b4f0240aacde1c83f95004bd3d4cb5e4`.
 - Mandatory qualification, publication, release, verification, and restoration
   are all pending.
+- Development build `8958f247` passed repository validation, the selected 7/7
+  domain group, exact-reference compilation, and build-output validation, then
+  failed closed before a package was produced: its deterministic package
+  inventory still counted the closed Sprint 34 set and expected 436 files,
+  while the four declared Sprint 35 exports correctly staged 440. The bounded
+  repair adds only `$infernal35Files.Count` to that existing formula. This
+  incomplete attempt is not a candidate and will not be deployed or relaunched.
