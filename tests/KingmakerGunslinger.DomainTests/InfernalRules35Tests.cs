@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using KingmakerGunslinger.RuntimeTesting;
 using KingmakerGunslinger.Summoning;
 
 namespace KingmakerGunslinger.DomainTests
@@ -8,6 +9,17 @@ namespace KingmakerGunslinger.DomainTests
     {
         internal static void HiddenRoutesHaveExactScopeAndQuantity()
         {
+            Assertions.True(ExpandedSummoningNativeProfilePolicy
+                .SaveFreeParameterScope(RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint32NativeReview, 1,
+                    ExpandedSummoningNativeProfilePolicy
+                        .Sprint35InfernalEarlyPhase),
+                "The bounded Sprint 35 early observer is admitted.");
+            Assertions.False(ExpandedSummoningNativeProfilePolicy
+                .SaveFreeParameterScope(RuntimeTestScenarioCatalog
+                    .DisposableExpandedSummoningSprint32NativeReview, 1,
+                    "sprint35-infernal-early-extra"),
+                "A broader Sprint 35 observer suffix was admitted.");
             var barbed = ExpandedSummoningCatalog.All.Single(value =>
                 value.Key == "barbed-devil");
             var bone = ExpandedSummoningCatalog.All.Single(value =>
