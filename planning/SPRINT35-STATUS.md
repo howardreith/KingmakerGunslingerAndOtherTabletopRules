@@ -59,7 +59,11 @@ Sprint 35 checkpoint; historical records are not current instructions.
   and was not substituted silently. A fresh private 2.1.7b bundle on `E:`
   contains all 16 required files and matches every installed assembly; the old
   bundle is untouched. The first strict development-package attempt correctly
-  refused the dirty source before compilation or staging, so this checkpoint
-  must be committed before the source-bound package can be built.
+  refused dirty source. Commit `ca21defc` then passed the Sprint 35 development
+  validator, the selected Python groups, and both protected legacy-icon gates;
+  its package attempt stopped before compilation when the sparse worktree lacked
+  hash-pinned catalog inputs. Those exact read-only inputs were materialized,
+  and the current registry/delegated-manifest hashes are now bound in the icon
+  catalog. No package has been staged or game process launched yet.
 - Mandatory qualification, publication, release, verification, and restoration
   are all pending.
