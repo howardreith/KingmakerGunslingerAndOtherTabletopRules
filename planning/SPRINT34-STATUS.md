@@ -1,13 +1,12 @@
 # Sprint 34 - hidden native qualification
 
-Current stage: grouped AI03 passed all44 checks, including RTWP/TB, disarm,
-normal action costs and clean resets. Stock03 passed early healing and chain
-controls but its effects group timed out on a separate patient's spell dispatch;
-raw damage also exposed ordinary bleed stacking. The reviewed repair preserves
-both facts while yielding to stronger native bleed, and reselects the remaining
-CotW wound after that native bleed ends. The unrelated-patient control now uses
-a released non-SR Hill Giant and records spell-resistance/dispatch outcomes.
-These changed consumers still require fresh stock and CotW proof.
+Current stage: stock04 passed all28 healing/chain/source/ordinary-bleed checks.
+CotW effects02 stopped before its coexistence cells: the native cure consumed
+one slot but left its real touch delivery queued outside its smaller range.
+Its receipt now proves that cause. The observer repair derives positioning from
+the actual delivery ability/view radii and requires native range/LOS eligibility;
+no gameplay rule, hit, save, healing amount or action cost changed. Both affected
+effects profiles need fresh runs. Grouped AI03 remains PASS44/44.
 All ten routes remain hidden. No final package or Working envelope has started.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
@@ -16,7 +15,29 @@ v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
 and historical NOT_RUN records; no historical campaign is selected.
 
-Latest executed development candidate: `a98f8d2eeb13cf9cbf6812580aab540f1f83fdd1`,
+Latest executed development candidate: `4a81a8f642a84830d704653ebe7886807f27d370`,
+purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
+ZIP `87e2a6c270977c13894f4bde28513b12613942c4942a50b99604cc1b824156f4`;
+DLL `d527f9775105f77fe675c810e28b3e20ceed4465742d09b59ead9e0a112ba007`;
+MVID `f58b30cd-1264-455f-8aa8-b92fdf5de3f0`;
+fingerprint `496879f4a7dd8340b90924263751e1d4bad4e2e796766be4fa613a0b0092d061`.
+Build08 PASS287.238s;11 focused tests and strict package validation.
+
+- Stock04 PASS28/28,400.052s orchestration/165918ms game, RunId
+  `20261030T0411073598660Z-cb5ea163b0de4e3c8697e2fb0f262304`.
+  Actual CL rejection/closure, two sources/one tick, chain actions and reset
+  passed. Other patient healed11HP/one slot. Stronger native bleed alone dealt7HP;
+  removal resumed the existing2HP wound; source expiry preserved native bleed,
+  which subsequently dealt5HP. No forced rolls or HP writes.
+- CotW effects02 FAIL372.046s/177457ms, RunId
+  `20261030T0419188591591Z-45d1114213184cb3ad8c41fe9292b74b`.
+  Native cure command succeeded/one slot, no heal; exact held touch remained
+  queued, not started, needs approach, radius3.4288m versus initial cast9.144m.
+  Installed Init uses movement range for the first sticky cast; delivery uses
+  AbilityData.GetApproachDistance and view radii. Coexistence/resumption NOT_RUN.
+  The fresh trace resolves the boundary without claiming a production defect.
+
+Previous AI03/stock03 candidate: `a98f8d2eeb13cf9cbf6812580aab540f1f83fdd1`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
 ZIP `8ee515f59d8db5801ab7ebc9453a237f710a339b5483ea71407f6b27ac2568d2`;
 DLL `6a93fd973bc3a5d39866b1cbb9d08f3353f097c7c27809cce5f6d7101ec43a75`;
@@ -174,14 +195,16 @@ MVID `edda15b0-ce63-48b5-bf87-115c2186febc`.
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
-Focused33 PASS36.293s: production compilation and11/2767 selected tests.
-Focused32 FAIL22.077s on damage namespace and nonnullable RollEntry access;
-both fixed together before focused33. Next executable action: commit/push the
-reviewed bleed coexistence and diagnostic repair, one mechanics-purpose build,
-then stock grouped healing and CotW effects on that package. AI03 is retained
-original-artifact evidence; no repeated AI campaign is selected for this patch.
-Allocate about4.5min build and6-8min per native phase from retained timings.
-Restore/compare after each; diagnose failed boundaries before continuing.
+Focused35 PASS31.303s: production compilation and11/2767 selected tests.
+Focused34 FAIL21.045s on one observer lambda/local name collision, corrected
+before35. Focused33 PASS36.293s followed the batched native-bleed compile fixes.
+Next: commit/push the reviewed native-touch positioning and loaded-icon observer,
+one mechanics build, then CotW and stock effects-only groups on that artifact.
+The stock early healing/chain cells and AI03 retain original-artifact evidence;
+no repeated full combat/AI campaign. Allocate about5min build and6-8min per
+native phase from actual timings; restore/compare each transaction.
+The public-route observer also records real loaded medallion assignments and
+sprite pixels via the existing capture helper. No native icon PASS yet.
 
 Final selection remains one coherent Sprint source/build/package gate (no
 redundant Tranche), grouped final behavior/presentation/routes, the two mixed
@@ -229,8 +252,8 @@ HOWARD-LAPTOP; actual human installation0.0.117 observed, not a restoration pin.
 Sixteen private references hash-match installed Kingmaker2.1.7b/Harmony12/UMM.
 IntakeSHA256 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-processes/tasks/leases. Latest transaction `compat-20261030T034336Z-605ca22dea80` reached Restored
-with verified restoration; full intake Compare PASS after AI03. No game/lease/Working envelope active.
+processes/tasks/leases. Latest transaction `compat-20261030T041637Z-0f44050727a1` reached Restored
+with verified restoration; full intake Compare PASS after effects02. No game/lease/Working envelope active.
 KMG_AUTOMATION_BASELINE is immutable. Original Working remains unchanged.
 
 Only the two authorized push branches were added to the existing wrapper.
@@ -239,81 +262,19 @@ originalSHA256 `bcf9021162d39ab78a0aeb83c7d2dfc8ef40f5161257d17898a851d65e40ff04
 updated `e2f9feb4a9f7881b61f39472ca9862525431bfe2c8f493abddc56e2d08ccd230`.
 Existing focused acceptance/refusal suite38 PASS; all pushes use that wrapper.
 
-Verified redundant-scratch archives1-6 live under
-`E:/KingmakerGunslingerLab/sprint34-private/completed-scratch-*`, with exact
-hash maps/results retained locally under `artifacts/sprint34-intake/`.
-Archive06 retained609,895,179 bytes/2325 files at timestamp20261030T003722Z;
-mapSHA256 `ccf741478852bd7ae454b2108788f7c3ec80dc01c9cd882a4f2bbaf8794efa86`.
-Both transaction extractions first matched all868 files in the retained primary
-ZIP (proofSHA256 `519ed47f955705538e8e8f7d3a60aa68ebe6511ad749f10e984fbb772105c22e`).
-Only redundant exact build/extraction/candidate-backup copies were removed fromC:
-after E: byte verification. Original saves, primary packages, evidence and
-references remain. Recheck full1,230,513,542-byte staging/restoration reserve.
+Verified redundant-scratch archives1-23 and25 retain byte/hash maps locally
+under `artifacts/sprint34-intake/` and original copies on E:. Archive24 preserves
+nine superseded development primary ZIPs with unchanged receipts; active and
+selected reuse packages remain on C:. No original saves, references or evidence
+were removed. Archive25 map
+`712a8f2dcd2f1801ebb5fb17850f5b726509834823ae1c5e4ba5cb7522900b9a`;
+archive24 map
+`eb5a51d5bf0968d1ad0f5ae1f57061b6cc34fd7d5cccaa660891841ddf1b0d06`.
+Earlier exact maps/amounts remain in prior status revisions and immutable local
+records. Archive26 completed for the restored effects02 redundant copies; map
+`efbc71c58baec1820de9ce8ea43e68d2c6a2cd24e5edad962569d91509652d5d`.
+The validator executable/dependencies archived in21 were restored byte-for-byte;
+keep them available. Full reserve is rechecked before each dispatch.
 Archive05's initial automatic-review refusal caused no mutation; explicit
-primary-ZIP redundancy proof resolved it before the reviewed retry. No permission
-boundary is currently blocked. No release/completion claim.
-
-Archive07 retained531,188,268 bytes/1856 files at timestamp20261030T010455Z;
-mapSHA256 `a9a592e45c1961233c1f385b9d6513f7b94d460b5d36b452b4738d1e4cb86b10`.
-Its434-file transaction extraction exactly matched the retained44d965a9 primary
-ZIP (proofSHA256 `07b3a4f52316e62629b9cb5bdb9b01fe5d6a86a0a892d4ab589be84fcf1b099a`).
-Only redundant compilation/staging/extraction/candidate-backup copies removed
-fromC: after full E: byte verification; primary packages and raw evidence remain.
-
-Archive08 retained531,183,148 bytes/1856 files at timestamp20261030T012459Z;
-mapSHA256 `8311e65ddf0204ca73d187d0e86a1bca813de75f50126f70dfba1d1a19f7939c`.
-Its434-file extraction matched the retained e4b7249f primary ZIP
-(proofSHA256 `6ac20f250da798c1a1ab739a0448aa2a753333ace5068501ae6037031a1d6955`).
-Only verified redundant owned scratch was removed after E: archival.
-
-Archive09 (20261030T013740Z) retained135,388,659 bytes/399 redundant compilation
-files; map `bee16c9c75dd282265581b1b98eaa2871cf0501c3fb23ba69e7815000f76f9be`,
-proof `dd845ec9e8c0e4c269782b3be69c16180debd4dedfb57159ceaa1e33b3e089bc`.
-Archive10 (20261030T014554Z) retained321,640,251 bytes/1302 files;
-map `412698d956f43dc11cebe63b71205b4c14ab590e8d8e825e302e7842121c7fc5`,
-primary-ZIP proof `ba655c6e35e512648852d035ff2f68e369874db63586901d61246538ec6feed6`.
-Archive11 (20261030T015650Z) retained321,640,251 bytes/1302 files;
-map `4a71091d5ba65b5641ad1572af5493ca02b3250d2e567d4cbd79d27c49a7c250`,
-proof `edf2a8671e3fa948f8cf3340269d73182d464d790594289d1301348b74ada6c6`.
-All are byte-verified E: archives of redundant owned scratch; primary packages,
-original saves, references and raw evidence remain retained. No active game or
-lease. No release/completion claim.
-
-Archive12 (20261030T021420Z) retained74,174,718 bytes/155 redundant old build
-files; map `640b83c2209800e32afaaf49cfe4ddb89882ab4d0d1aa2ea8d4951961203cafd`,
-proof `b450d5c3a84fc0cfa264df8d73821f1d3f6207e7c44349f614fba2db80822cbe`.
-Every removed file also remains in the primary ZIP or archive09.
-
-Archive13 retained552 duplicate build files/161563889bytes on E:, map
-`01b08f6a0ddecbf53a549738251f543061e92aa3f98ee308e4165b4c73d4b281`.
-Archive14/15 each retained1302 files/321789243bytes from restored AI/effects
-transactions; maps `f04a39081b934176af641008bfd1b85f353473385e9c0eb5bb50f27b5001e7c4`
-and `2821892a1975a1d3689c4e5395aeeb3c152f698f43da5a44d657403b12c3468d`.
-Archive16 retained1736 files/429052324bytes, including ZIP-matching staging and
-restored lifetime copies; map `cc83cc74edb3d2469c05b4a64c186b45122d01478d4aeab4df9bb18775c4e8e9`.
-Primary ZIPs, receipts and raw evidence remain retained; no protected saves touched.
-
-Archives17-20 retain only byte-proven redundant build/transaction copies on E:;
-local proof/map/result files remain under artifacts/sprint34-intake. Maps:
-17 `22bf3605c81cf2aacb5750e4d8017e7186f9bbc26e51330973ccc7bf34695cfe`;
-18 `2e15a9c0deb28ef56b1a5e1eca5617cd0d0d29f2e8fa5423813c6950b50386e1`;
-19 `978f4e09acee86f82485868d5e550ce0d68c565b9a6d3a77e2dec86b9a715f35`;
-20 `fe1169900ea951a87ce049e462f57993cb92e6b6a9bc870670079909651e0cb1`.
-Archive20 retained1302 files/321801531bytes after exact434-file primary-ZIP proof
-`a4ca9933f743f0c6a9694cf78bac59f169f69506899d6824dd5455e8ea8ad2e3`.
-
-Archives21-23 retain verified redundant build/staging/restored transaction
-copies on E:; original primary ZIPs, raw receipts and protected saves remain.
-Maps21 `53a6c89e2194763e8f983f0e3264446e7fda08c00c0838ca726b53d7aa3781d3`,
-22 `8d4f18f2b5e05193d750af6eeebe4b34b936202ae40f3e028b429dd8e132797f`,
-23 `fa4c64b0ae948c70cefe460dfec7f1aff889805da5fdb40baeda7ae281ebd943`.
-The validator executable/dependencies removed in21 were restored byte-for-byte;
-only its unneeded PDB remains archived. Never omit that runtime prerequisite.
-
-Archive24 preserved nine older, superseded development primary ZIPs and copies
-of their unchanged receipts on E: before removing redundant C: copies. Exact
-map `eb5a51d5bf0968d1ad0f5ae1f57061b6cc34fd7d5cccaa660891841ddf1b0d06`,
-604374659 bytes; preservation proof
-`b0f3a7a1b0a62d44ff79ea65b75dacb13816a8384c7377c05ae34f46bb956cf7`.
-Selected reuse packages and the active candidate remain on C:; no unique data
-was lost and original receipts were not rewritten.
+primary-ZIP redundancy proof resolved it before the reviewed retry. No active
+permission refusal. No release/completion claim.

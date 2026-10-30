@@ -132,7 +132,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var book = healer.Descriptor.GetSpellbook(healer.Blueprint.GetComponent<LillendBardBook32>().Book);
                 var cure = Enumerable.Range(1, 3).Where(level => book.GetSpontaneousSlots(level) > 0).SelectMany(level => book.GetKnownSpells(level))
                     .First(value => value.Blueprint.AssetGuid == "5590652e1c2225c4ca30c4a699ab3649" || value.Blueprint.AssetGuid == "3361c5df793b4c8448756146a88026ad");
-                PlaceExpandedSummoningUnit(healer, patient.Position + UnityEngine.Vector3.right * (healer.Corpulence + patient.Corpulence + .3f));
+                // Sticky-touch casting can start outside the delivery range.
+                // Derive the setup from the real delivery ability, whose native
+                // range uses view corpulence rather than inherited unit radii.
+                var deliveryBlueprint = cure.Blueprint.GetComponent<Kingmaker.UnitLogic.Abilities.Components.AbilityEffectStickyTouch>()?.TouchDeliveryAbility;
+                if (deliveryBlueprint == null) throw new InvalidOperationException("Selected cure has no native touch delivery.");
+                var touch = new Kingmaker.UnitLogic.Abilities.AbilityData(cure, deliveryBlueprint);
+                float touchRange = touch.GetApproachDistance(patient);
+                if (float.IsNaN(touchRange) || float.IsInfinity(touchRange) || touchRange <= 0)
+                    throw new InvalidOperationException("Native touch range is invalid.");
+                PlaceExpandedSummoningUnit(healer, patient.Position + UnityEngine.Vector3.right * (touchRange * .8f));
+                healer.SightCache.ClearIfNeeded(); patient.SightCache.ClearIfNeeded();
+                var rangeProbe = new UnitUseAbility(touch, new Kingmaker.Utility.TargetWrapper(patient)); rangeProbe.Init(healer);
+                var lane = new JObject { ["owner"] = healer.UniqueId, ["target"] = patient.UniqueId,
+                    ["touchAbility"] = deliveryBlueprint.AssetGuid, ["nativeRange"] = touchRange,
+                    ["probe"] = Sprint27AiCommand(rangeProbe), ["distance"] = healer.DistanceTo(patient),
+                    ["ownerUnitRadius"] = healer.Corpulence, ["targetUnitRadius"] = patient.Corpulence,
+                    ["ownerViewRadius"] = healer.View.Corpulence, ["targetViewRadius"] = patient.View.Corpulence,
+                    ["hasLos"] = healer.HasLOS(patient) };
+                receipt["unrelatedHealLane"] = lane;
+                if (!rangeProbe.IsUnitEnoughClose || !healer.HasLOS(patient) || !cure.CanTarget(new Kingmaker.Utility.TargetWrapper(patient)))
+                    throw new InvalidOperationException("Unrelated patient's native touch range/LOS eligibility is absent.");
                 int first = trace.Rows.Count, before = patient.Damage, levelUsed = book.GetSpellLevel(cure.Blueprint), slots = book.GetSpontaneousSlots(book.GetSpellLevel(cure.Blueprint));
                 var command = new UnitUseAbility(cure, new Kingmaker.Utility.TargetWrapper(patient)); var costs = new JArray();
                 using (var economy = new FirearmReviewCosts(healer, costs)) {
@@ -146,6 +166,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     } finally {
                         dispatch["command"] = Sprint27AiCommand(command); dispatch["costs"] = costs;
                         dispatch["damageAfter"] = patient.Damage; dispatch["slotsAfter"] = book.GetSpontaneousSlots(levelUsed);
+                        dispatch["distanceAfter"] = healer.DistanceTo(patient); dispatch["rangeProbeAfter"] = Sprint27AiCommand(rangeProbe);
                         dispatch["events"] = new JArray(trace.Rows.Skip(first));
                         dispatch["heldTouch"] = healer.Get<Kingmaker.UnitLogic.Parts.UnitPartTouch>()?.Ability?.Data?.Blueprint?.AssetGuid;
                         dispatch["commands"] = new JArray(healer.Commands.Raw.Concat(healer.Commands.Queue)
