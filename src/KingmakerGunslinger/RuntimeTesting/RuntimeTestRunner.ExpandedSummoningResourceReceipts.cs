@@ -143,6 +143,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 PteranodonAssetRuntime.TryGetShadowOutsiderVisual(key, out mesh, out bones, out paint, out status);
                 add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
             }
+            // Read the two exact S34 process-cache references; no asset loading
+            // or ownership inference from a KMG name or a surviving texture.
+            foreach (string key in new[] { InfernalVisualPolicy34.Barbazu, InfernalVisualPolicy34.Kyton })
+            {
+                PteranodonAssetRuntime.TryGetInfernalVisual34(key, out mesh, out bones, out paint, out status);
+                add(mesh, key + ".Mesh"); add(paint, key + ".Albedo");
+            }
             foreach (string key in ExpandedSummoningCatalog.All.Select(c => c.Key))
             {
                 if (PteranodonAssetRuntime.TryGetUngulateVisual(key, out mesh, out bones, out paint, out status) ||
