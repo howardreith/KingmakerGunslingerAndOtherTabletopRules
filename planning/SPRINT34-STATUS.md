@@ -1,8 +1,8 @@
 # Sprint 34 - public candidate freeze
 
-Current stage: hidden mechanics qualification is complete. Exactly the two
-Sprint34 keys now expose their ten routes for final qualification. No final
-release package or Working envelope has started. Master remains the reviewed
+Current stage: final source/build boundary correction. Hidden mechanics
+qualification is complete and exactly the two Sprint34 keys expose their ten
+routes. No final release package or Working envelope has started. Master remains the reviewed
 4b7e3d91; remote tag/release v172 remains free at2026-10-30T05:07Z.
 Reviewed public product `0ad0f49ed8a6d7faf06bc32e6c202386731f0537`
 anchors version-only v172 metadata. The
@@ -14,6 +14,20 @@ Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 v171 latest and v172 free. Recheck upstream/version before final freeze.
 Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
 and historical NOT_RUN records; no historical campaign is selected.
+
+Final gate on `10fbecc18ca31eea1c7565ae1dc674782d1e2b23` failed before
+packaging (375.809s; 2767 tests, 27 failures): 23 lacked the local installed-engine
+IL capture, and four retained pre-S34 catalog expectations. Restored the exact
+S33 local capture after verifying its assembly hash against the installed game;
+no reference or proprietary file entered Git. Focused38 passed113/114 and exposed
+the missing three new weapon audit mappings. The existing generator now adds
+only those three entries; all171 older entries are exactly preserved. Focused39
+retained its dependent count failure; focused40 passes6/6 with production compile
+(5.497s). No production, asset, GUID or native observer changes. Full original
+intake Compare PASS; no game launched and original Working untouched. Next:
+rerun the full boundary on this coherent corrected source, then final bodies,
+ten routes/icons, mixed ON/OFF cold envelopes and combined healing/chain effects.
+Original gate and focused failure logs remain immutable in local final-working.
 
 Latest executed development candidate: `76c0788ee0f4acf0e236dc1fe9e0eda56a465b3f`,
 purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).

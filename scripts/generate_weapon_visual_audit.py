@@ -405,7 +405,26 @@ def make_record(entry: dict) -> dict:
             "clippingOrientationConcerns": "outside this cleanup; preserve qualified creature donor contract",
             "mappingScope": "summoning-only exclusion",
         })
-        if symbol.startswith("KMG.Summoning.FeyCelestial."):
+        if symbol.startswith("KMG.Summoning.Infernal."):
+            species, attack = symbol.split(".")[-2:]
+            common.update({
+                "displayedName": ("Bearded Devil" if species == "BeardedDevil" else "Kyton") + " " + attack.lower(),
+                "familyOrFirearmKind": "Sprint 34 outsider attack",
+                "weaponType": symbol + "Type",
+                "currentItemLevelVisual": "private native glaive clone" if attack == "Glaive" else "private native claw mechanics clone; body-owned attack geometry",
+                "currentTypeLevelVisual": "private donor type; attack dice and reach configured by Infernal34 builder",
+                "effectiveEquippedPrefab": "native glaive attached to measured right palm" if attack == "Glaive" else "original creature mesh and weighted chains; no transferable visual",
+                "sourceFbx": "original procedural creature mesh; native polearm referenced only at runtime",
+                "sourceBlend": "none; original mesh JSON generated directly",
+                "deterministicGenerator": "assets-source/original-models/sprint34-infernal-outsiders/generate_infernal_outsiders.py",
+                "animationDonorStyle": "measured Lizardfolk Free Hands rig; private glaive mapping to native Attack_01_3" if attack == "Glaive" else "measured Lizardfolk Free Hands rig; native attack contact drives owned chain extension",
+                "gripHandednessContract": {"Glaive": "two-handed glaive, alternative to close claws; native 10-foot reach", "Claw": "two primary close-range claws, alternative to glaive", "Chain": "four independent nontransferable chains; 10-foot reach, 25 feet after paid control"}[attack],
+                "currentMaterial": "native glaive material" if attack == "Glaive" else "project-authored mesh vertex colors and private material",
+                "sourceLicenseProvenance": "assets-source/original-models/sprint34-infernal-outsiders/SOURCE.md; original geometry, no redistributed native meshes or clips",
+                "currentManyToOneVisualGroup": "ExpandedSummoning.Infernal." + species,
+                "clippingOrientationConcerns": "simple beard/chain motion, seams and minor clipping remain cosmetic backlog; final native presentation required",
+            })
+        elif symbol.startswith("KMG.Summoning.FeyCelestial."):
             species, attack = symbol.split(".")[-2:]
             donors = {
                 ("Satyr", "Dagger"): "aa514dbf4c3d61f4e9c0738bd4d373cb",
