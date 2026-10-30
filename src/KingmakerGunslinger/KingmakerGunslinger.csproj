@@ -51,6 +51,7 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEvents34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEarly35.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBarbed35.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
