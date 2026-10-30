@@ -8,6 +8,10 @@ namespace KingmakerGunslinger.Summoning
             "KMG.Summoning.Unit.BoneDevil";
         internal const string WallSectionUnitSymbol =
             "KMG.Summoning.Infernal.BoneDevil.WallSectionUnit";
+        internal const string WallSectionUnitGuid =
+            "cc2c011c696e4d3e846815c60245465a";
+        internal const string WallSectionUnitName =
+            "KMG_Summoning_Infernal_BoneDevil_WallSectionUnit";
         internal const int BarbedHitDice = 12;
         internal const int BarbedBaseCriticalThreatMinimum = 20;
         internal const int BarbedEffectiveCriticalThreatMinimum = 19;

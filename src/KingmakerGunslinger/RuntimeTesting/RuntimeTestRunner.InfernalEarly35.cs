@@ -434,19 +434,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                     !prior.Contains(value.UniqueId));
             }
             if (section != null) owned.Add(section);
+            var wallSamples = new JArray();
             var withWall = InfernalEarlyPath35(fixture.Caster, destination);
+            bool obstruction = false;
+            deadline = DateTime.UtcNow.AddSeconds(15);
+            int nextSampleFrame = Time.frameCount;
+            while (section != null && DateTime.UtcNow < deadline &&
+                !obstruction)
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+                if (Time.frameCount < nextSampleFrame) continue;
+                nextSampleFrame = Time.frameCount + 10;
+                withWall = InfernalEarlyPath35(fixture.Caster, destination);
+                obstruction = InfernalEarlyWallObstructs35(before, withWall);
+                if (wallSamples.Count < 16) wallSamples.Add(new JObject {
+                    ["frame"] = Time.frameCount,
+                    ["path"] = withWall
+                });
+            }
             bool losWith = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
                 .Instance.HasObstacle(start, destination, 0);
             float sectionOffset = section == null ? float.PositiveInfinity :
                 InfernalEarlyDistanceToSegment35(section.Position, start,
                     destination);
-            bool obstruction = section != null &&
-                ((bool?)withWall["available"] == false ||
-                 (double?)withWall["length"] >
-                    (double?)before["length"] + .15 ||
-                 (int?)withWall["points"] > (int?)before["points"] ||
-                 (string)withWall["standingObstacleResult"] !=
-                    (string)before["standingObstacleResult"]);
+            var binding = section?.View == null ? null :
+                section.View.GetComponent<InfernalWallNavmesh35>();
+            var cut = binding?.Cut;
+            bool bindingPresent = binding != null;
+            bool cutExactOwner = bindingPresent &&
+                ReferenceEquals(binding.Owner, section);
+            bool cutPresent = cut != null;
+            string cutType = cutPresent ? cut.type.ToString() : null;
+            JArray cutRectangle = cutPresent ? new JArray(
+                cut.rectangleSize.x, cut.rectangleSize.y) : null;
+            float? cutHeight = cutPresent ? (float?)cut.height : null;
+            bool? cutRotation = cutPresent ? (bool?)cut.useRotation : null;
+            bool? cutAddedGeometry = cutPresent ?
+                (bool?)cut.cutsAddedGeom : null;
 
             bool hadSummonBuff = false;
             if (section != null)
@@ -464,14 +489,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
             }
             var after = InfernalEarlyPath35(fixture.Caster, destination);
+            var restorationSamples = new JArray();
+            bool restored = InfernalEarlyWallRestored35(before, after);
+            deadline = DateTime.UtcNow.AddSeconds(15);
+            nextSampleFrame = Time.frameCount;
+            while (section != null && DateTime.UtcNow < deadline &&
+                !restored)
+            {
+                Game.Instance.IsPaused = false;
+                yield return 0;
+                if (Time.frameCount < nextSampleFrame) continue;
+                nextSampleFrame = Time.frameCount + 10;
+                after = InfernalEarlyPath35(fixture.Caster, destination);
+                restored = InfernalEarlyWallRestored35(before, after);
+                if (restorationSamples.Count < 16)
+                    restorationSamples.Add(new JObject {
+                        ["frame"] = Time.frameCount,
+                        ["path"] = after
+                    });
+            }
             bool losAfter = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
                 .Instance.HasObstacle(start, destination, 0);
-            bool restored = (bool?)before["available"] == true &&
-                (bool?)after["available"] == true &&
-                Math.Abs((double)after["length"] -
-                    (double)before["length"]) <= .15 &&
-                (string)after["standingObstacleResult"] ==
-                    (string)before["standingObstacleResult"];
             var row = new JObject {
                 ["owner"] = bone.UniqueId,
                 ["ability"] = wallBlueprint.AssetGuid,
@@ -492,9 +530,19 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["summonedLifetimeBuff"] = hadSummonBuff,
                 ["sectionRetired"] = section != null &&
                     (section.Destroyed || !section.IsInGame),
+                ["navmeshCutBinding"] = bindingPresent,
+                ["navmeshCutExactOwner"] = cutExactOwner,
+                ["navmeshCutPresent"] = cutPresent,
+                ["navmeshCutType"] = cutType,
+                ["navmeshCutRectangle"] = cutRectangle,
+                ["navmeshCutHeight"] = cutHeight,
+                ["navmeshCutRotation"] = cutRotation,
+                ["navmeshCutAddedGeometry"] = cutAddedGeometry,
                 ["pathBefore"] = before,
                 ["pathWithWall"] = withWall,
                 ["pathAfter"] = after,
+                ["wallPathSamples"] = wallSamples,
+                ["restorationPathSamples"] = restorationSamples,
                 ["movementObstructionObserved"] = obstruction,
                 ["navigationRestored"] = restored,
                 ["lineOfSightObstacleBefore"] = losBefore,
@@ -508,8 +556,33 @@ namespace KingmakerGunslinger.RuntimeTesting
                 targetable &&
                 command.Result == UnitCommand.ResultType.Success &&
                 section != null && sectionOffset <= .75f &&
-                hadSummonBuff && obstruction && restored, row,
-                "A real hidden cast places one temporary attackable section on a measured lane, changes native standing-obstacle pathing, retires through native lifetime ownership, and restores navigation; targeting/LoS is recorded separately.");
+                hadSummonBuff && bindingPresent && cutPresent &&
+                cutExactOwner && cutType ==
+                    Pathfinding.NavmeshCut.MeshType.Rectangle.ToString() &&
+                obstruction && restored, row,
+                "A real hidden cast places one temporary attackable section on a measured lane, changes native navmesh pathing, retires through native lifetime ownership, and restores navigation; targeting/LoS is recorded separately.");
+        }
+
+        private static bool InfernalEarlyWallObstructs35(JObject before,
+            JObject candidate)
+        {
+            return (bool?)candidate["available"] == false ||
+                (double?)candidate["length"] >
+                    (double?)before["length"] + .15 ||
+                (int?)candidate["points"] > (int?)before["points"] ||
+                (string)candidate["standingObstacleResult"] !=
+                    (string)before["standingObstacleResult"];
+        }
+
+        private static bool InfernalEarlyWallRestored35(JObject before,
+            JObject candidate)
+        {
+            return (bool?)before["available"] == true &&
+                (bool?)candidate["available"] == true &&
+                Math.Abs((double)candidate["length"] -
+                    (double)before["length"]) <= .15 &&
+                (string)candidate["standingObstacleResult"] ==
+                    (string)before["standingObstacleResult"];
         }
 
         private bool InfernalEarlyWallLane35(
