@@ -141,7 +141,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                 float touchRange = touch.GetApproachDistance(patient);
                 if (float.IsNaN(touchRange) || float.IsInfinity(touchRange) || touchRange <= 0)
                     throw new InvalidOperationException("Native touch range is invalid.");
-                PlaceExpandedSummoningUnit(healer, patient.Position + UnityEngine.Vector3.right * (touchRange * .8f));
+                // Survey both endpoints on the connected native floor. An
+                // offset from a summon spawn point can be grounded to another
+                // height by Translocate/ForcePlaceAboveGround.
+                UnityEngine.Vector3 patientPoint; string floorSurvey, direction;
+                var healerPoint = Sprint24AiCombatLane(fixture.Caster, healer, patient,
+                    touchRange * .8f, out patientPoint, out floorSurvey, out direction);
+                PlaceExpandedSummoningUnit(healer, healerPoint);
+                PlaceExpandedSummoningUnit(patient, patientPoint);
                 healer.SightCache.ClearIfNeeded(); patient.SightCache.ClearIfNeeded();
                 var rangeProbe = new UnitUseAbility(touch, new Kingmaker.Utility.TargetWrapper(patient)); rangeProbe.Init(healer);
                 var lane = new JObject { ["owner"] = healer.UniqueId, ["target"] = patient.UniqueId,
@@ -149,7 +156,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["probe"] = Sprint27AiCommand(rangeProbe), ["distance"] = healer.DistanceTo(patient),
                     ["ownerUnitRadius"] = healer.Corpulence, ["targetUnitRadius"] = patient.Corpulence,
                     ["ownerViewRadius"] = healer.View.Corpulence, ["targetViewRadius"] = patient.View.Corpulence,
-                    ["hasLos"] = healer.HasLOS(patient) };
+                    ["hasLos"] = healer.HasLOS(patient), ["canTarget"] = cure.CanTarget(new Kingmaker.Utility.TargetWrapper(patient)),
+                    ["floorSurvey"] = floorSurvey, ["requestedOwner"] = healerPoint.ToString(),
+                    ["requestedTarget"] = patientPoint.ToString(), ["actualOwner"] = healer.Position.ToString(),
+                    ["actualTarget"] = patient.Position.ToString() };
                 receipt["unrelatedHealLane"] = lane;
                 if (!rangeProbe.IsUnitEnoughClose || !healer.HasLOS(patient) || !cure.CanTarget(new Kingmaker.Utility.TargetWrapper(patient)))
                     throw new InvalidOperationException("Unrelated patient's native touch range/LOS eligibility is absent.");
