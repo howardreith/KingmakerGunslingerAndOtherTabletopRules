@@ -328,8 +328,18 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     initialEscapeManeuvers);
                             Buff held = SummonHoldComponent.HeldState(owner,
                                 target, grab);
-                            bool established = command.Result ==
-                                    UnitCommand.ResultType.Success &&
+                            bool commandResolvedAttack = command.IsActed &&
+                                (command.Result ==
+                                    UnitCommand.ResultType.Success ||
+                                 command.Result ==
+                                    UnitCommand.ResultType.Interrupt);
+                            bool ownerPart = owner.Get<
+                                UnitPartGrappleInitiator>() != null;
+                            bool targetPart = target.Get<
+                                UnitPartGrappleTarget>() != null;
+                            bool paid = economy.Count(command) == 1 &&
+                                economy.Exact(command, false);
+                            bool established = commandResolvedAttack &&
                                 attacks.Length == 1 &&
                                 (bool?)attacks[0]["hit"] == true &&
                                 (int?)attacks[0]["hpDamage"] > 0 &&
@@ -338,12 +348,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     initialManeuvers[0]) &&
                                 ReferenceEquals(SummonHoldComponent
                                     .HeldTarget(owner), target) &&
-                                held != null &&
+                                held != null && ownerPart && targetPart &&
                                 ReferenceEquals(SummonGrappleLinks
                                     .EstablishingWeapon(owner, target),
                                     owner.Body.PrimaryHand.MaybeWeapon) &&
-                                economy.Count(command) == 1 &&
-                                economy.Exact(command, false) &&
+                                paid &&
                                 !InfernalBarbedImpaleRows35(trace,
                                     eventStart, owner, target).Any();
                             var attemptRow = new JObject {
@@ -363,6 +372,20 @@ namespace KingmakerGunslinger.RuntimeTesting
                                     InfernalBarbedManeuverRows35(
                                         initialEscapeManeuvers),
                                 ["established"] = established,
+                                ["commandActed"] = command.IsActed,
+                                ["commandResultAccepted"] =
+                                    commandResolvedAttack,
+                                ["heldTarget"] = SummonHoldComponent
+                                    .HeldTarget(owner)?.UniqueId,
+                                ["holdBuffPresent"] = held != null,
+                                ["ownerInitiatorPart"] = ownerPart,
+                                ["targetGrapplePart"] = targetPart,
+                                ["grappledBuffPresent"] = target.Buffs
+                                    .GetBuff(grab.GrappledBuff) != null,
+                                ["establishingWeapon"] =
+                                    SummonGrappleLinks.EstablishingWeapon(
+                                        owner, target)?.Blueprint?.AssetGuid,
+                                ["attackCostExact"] = paid,
                                 ["heldRound"] = SummonHoldComponent
                                     .RoundsHeld(held),
                                 ["costs"] = costs
