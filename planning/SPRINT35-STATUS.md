@@ -21,7 +21,7 @@ Sprint 35 checkpoint; historical records are not current instructions.
 | Bone sting poison is injury-gated and independently timed | Existing native-backed injury poison graph and wound gate support exact weapon, positive final damage, finite exposures, stat damage, and cure saves | No sting carrier with Fortitude DC 20, 1d3 Strength, once/round for 6 rounds, cure 2 consecutive saves | Clone the proven graph deeply for the exact sting and initialize all dice/context operands; do not attach summon-source cleanup to inflicted poison or erase ability damage | Miss/nonwound/other-limb negatives; sting wound positive; native DC, cadence, Strength damage, finite course, two-save cure, source expiry, dispel distinction, save/load |
 | Bone fear is a 5-foot aura with native eligibility and source memory | Existing source-attributed fear terminal buffs and area membership/lifetime helpers; Kyton gaze is explicitly inapplicable | No continuous aura consumer or repeat-save contract for Bone | Build a source-owned 5-foot aura applying native frightened for 1d6 rounds on failed DC 19 Will save with source-specific repeat handling; preserve native immunity/eligibility and do not make the area enemy-only | Actual membership enter/stay/leave, immunity, success/failure and no frame-by-frame retries, two-source isolation, source cleanup, both combat modes |
 | Bone regular and quickened self-invisibility stay distinct | Existing native ordinary attack-breaking invisibility, self targeting, resource, and action builders | No standard at-will action and no separate swift-action three-use resource; toggle/load-reset risks unproved | Create two self-only commands sharing the ordinary invisibility effect: standard at-will and swift 3/summoning; suppress recast while active in AI only | Native action economy, attack breaks effect, active-effect AI negative, standard/quickened distinction, 3-to-0 spend, no reset by mode/toggle/load |
-| Bone offensive control includes Dimensional Anchor and faithful Wall of Ice | Native spell cloning and source-owned area lifetimes exist. Installed 2.1.7b has dynamic `NavmeshCut`; `7b3caea8` proved section HP/lifetime but no unit obstruction, and `4961ff41` proved the exact view-owned cut can exist yet remains inert without its installed graph consumer | No PASS yet for movement obstruction/restoration, selectable geometry, formation save/SR, breach/residual cold, or LoS/targeting; a configured cut alone is insufficient | Keep the exact section as saved HP/lifetime authority. Ask only an already-present native `TileHandlerHelper` to reload the cut and its queued destroyed bounds; never create a helper or write graph objects. If this bounded installed path is absent/inert, stop wall implementation and surface the measured adaptation decision | One hidden native cast records graph/helper/cut bounds and production update route, real movement change and restored navigation; only after PASS expand legal placement, formation save/SR, breach/residual damage and source expiry |
+| Bone offensive control includes Dimensional Anchor and faithful Wall of Ice | Native spell cloning and source-owned area lifetimes exist. Installed 2.1.7b has dynamic `NavmeshCut`; `5623824c` proved the exact cut is registered and reloaded by the active installed `TileHandlerHelper` | The helper updates `RecastGraph`, but the actual six-metre movement path uses the separate `GridGraph`; 16 post-update samples remained the identical two-point `PathClear` route. No bounded existing consumer supplies real obstruction, and selectable geometry, formation save/SR, breach/residual cold, and LoS/targeting also remain open | Owner decision required: authorize one wall-specific GridGraph update/restore driver; approve a precisely bounded player-visible command/path-admission adaptation; or block/defer Wall of Ice and therefore Sprint 35. Do not create a general navigation/terrain framework or silently ship a visual/cold strip | After a decision, first prove one hidden native cast changes actual movement and removal restores it; only then expand legal placement, formation save/SR, breach/residual damage, source expiry, AI, and persistence |
 | Two recognizable creature-specific bodies and two real icons | Sprint 34 measured rig, mesh/albedo loader, receipts, and icon exporter are reusable; original Sprint 34 bodies remain protected. Sprint 35 now has hashed original Barbed and Bone exports plus two existing real icons | Native attachment, movement, selection, sting contact, fallback, and cleanup are not yet observed on the new bodies | Reuse the accepted per-view swap/receipt path under exact Sprint 35 identities; Bone alone receives a tail-region deformation driven by its exact native sting event | Export/hash validation passes; the early native observer now records distinct caches/views and real sting contact. Final selection/movement/visibility/fallback captures and owned-resource cleanup remain required |
 | Ownership, cleanup, disabled-mode safety, and persistence | `InfernalEffectLifetime34`, `InfernalSourceLifetime34`, `OutsiderLifetimeBoundary`, source-specific helpers, owned-item policies, and accepted grapple reload reset | New aura/wall/resources/markers/private view objects have no identities or termination policy | Give every active grant/area/wall/private object an exact owner and idempotent cleanup. Keep poison and applied ability damage independently timed. Register identities while disabled without allocating views/resources or starting mechanics | Source death/expiry/disable, destroyed-actor cleanup, no orphan wall/aura/grapple, disabled-module load, mixed ON and OFF fresh-process persistence envelopes (six processes total) |
 | Useful native AI without changing player-visible rules | Existing exact-owner AI/range/action/resource observers and established admission/scoring patterns | No creature actions or wall placement scoring | Add small creature-specific actions; wall admission requires legal useful placement, a viable allied route, and no redundant wall; do not change collision/victim rules or add an arbitrary wall limit | RTWP and turn-based substantive outcomes, unsafe/futile/redundant negatives, fallback to attacks, exact owner attribution |
@@ -72,9 +72,12 @@ Sprint 35 checkpoint; historical records are not current instructions.
   predicate separation, live modifiers, exact sting injury admission, the
   private wall donor, and original-body/tail export contracts. Native behavior
   is not inferred from this.
-- Wall of Ice has a measured installed candidate path, not yet a PASS. The first
-  native viability run will instantiate the hidden unit directly (without menu
-  publication) and is the admission gate for expanding its AI/persistence.
+- Wall of Ice is stopped at a measured gameplay-adaptation decision. Hidden
+  native runs instantiated the unit directly without menu publication, proved
+  the section/cut/lifetime path, and then proved that the installed dynamic-cut
+  consumer cannot obstruct the graph actually used by unit movement. No AI or
+  persistence expansion is admitted until the owner selects the bounded route
+  recorded in the requirement map.
 - The required laptop intake is captured before staging: 968 current Mod-tree
   entries, 118 protected-save entries, 83 registry settings, unchanged Working
   SHA-256 `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,
@@ -373,3 +376,32 @@ Sprint 35 checkpoint; historical records are not current instructions.
   it will not grow into a general navmesh subsystem. Production compilation
   passed in 25.9 seconds and the selected Sprint 35/correction group passed
   7/7 in 4.8 seconds; the changed source requires a new exact candidate.
+- Commit `5623824ce7cac04fbb218cfaf5c1dc15ba035c5e` passed the selected 7/7
+  group, exact-reference production compilation, strict 440-file packaging,
+  and package validation: source state
+  `d6506846ca7ec11d0c4628a03aca5f295662fc3a1acbb7855bb615ad386a696d`;
+  ZIP `e132a26f783a3760760e26c432d501a0ca31dc5ca5a99e7ac20b6d0f69051286`;
+  DLL `bfba38ca7c564cdab4e22a97059463b1f318a81dc17985954d1ee5f5bdc488d8`;
+  MVID `cc953185-2724-4e23-82f8-0391691d244c`. Its 162-file exact build is
+  preserved on `E:` under manifest
+  `64DC030C2E58832F4B189653295C5A7061EE15E24B1D85A80AF2638CEC208500`.
+  Guarded run `20261030T2047515415213Z-cbaf2e5307a84d509afd225da2334914`
+  found the active installed helper (`NavMesh`, enabled/active, 0.1-second
+  interval), registered the exact `3.05 x 0.75 x 3.05` rectangle cut, and made
+  one production recast-apply request. `recastUpdatePending` became false, so
+  the native consumer processed the cut. The actual path nevertheless used
+  `Pathfinding.GridGraph` index 1 while the cut/helper operated on the separate
+  `Pathfinding.RecastGraph` index 0; all 16 samples retained the exact two-point
+  6.0080795-metre `PathClear` route. LoS was unchanged. The section retired and
+  the world fixture restored, but navigation restoration was only vacuous
+  because obstruction never occurred. This is the final bounded supported-path
+  feasibility attempt, not an observer race or an absent-helper failure.
+  Transaction `compat-20261030T204518Z-46bf1673be4c` is `Restored` with
+  `restorationVerified=true` at `2026-10-30T20:51:05.8499527Z`; temporary
+  original/staged trees and the compatibility lock are absent, no Kingmaker
+  process remains, and no save was staged. The exact live-mod backup and
+  transaction package are preserved on `E:` under manifest
+  `8243FBB53A4BFB3E9507C440FDBA4D6F9015580778A2CDC35ABBD535DBC4694D`;
+  only their hash-verified redundant C: copies were removed. Wall work now
+  requires the explicit bounded gameplay decision above; these bytes will not
+  be relaunched unchanged.
