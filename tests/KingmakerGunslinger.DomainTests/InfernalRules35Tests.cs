@@ -108,5 +108,24 @@ namespace KingmakerGunslinger.DomainTests
                 InfernalRules35.PoisonQualifies(true, true, -1),
                 "Negative final damage is invalid input.");
         }
+
+        internal static void PrivateWallUnitHasBoundedShellDonor()
+        {
+            Assertions.Equal(InfernalRules35.BoneUnitSymbol,
+                InfernalRules35.PrivateUnitDonorSymbol(
+                    InfernalRules35.WallSectionUnitSymbol),
+                "The private wall section alone reuses the Bone unit donor shell.");
+            Assertions.Equal(null,
+                InfernalRules35.PrivateUnitDonorSymbol(
+                    InfernalRules35.BoneUnitSymbol),
+                "A public creature root remains in the normal donor catalog.");
+            Assertions.Equal(null,
+                InfernalRules35.PrivateUnitDonorSymbol(
+                    "KMG.Summoning.Infernal.Unknown.PrivateUnit"),
+                "An undeclared private unit cannot acquire a silent fallback.");
+            Assertions.Throws<ArgumentNullException>(() =>
+                InfernalRules35.PrivateUnitDonorSymbol(null),
+                "A null private-unit identity is invalid input.");
+        }
     }
 }
