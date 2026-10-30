@@ -106,7 +106,8 @@ namespace KingmakerGunslinger.RuntimeTesting
             Buff unrelated = null;
             try {
                 var source = CastExpandedSummoningOwnTier(fixture, InfernalVisualPolicy34.Barbazu); owners.Add(source);
-                var patient = CastExpandedSummoningOwnTier(fixture, InfernalVisualPolicy34.Barbazu); owners.Add(patient);
+                // A released Hill Giant is a real injured ally without spell resistance.
+                var patient = CastExpandedSummoningOwnTier(fixture, "hill-giant"); owners.Add(patient);
                 var healer = CastExpandedSummoningOwnTier(fixture, "lillend-azata"); owners.Add(healer);
                 foreach (var actor in owners) {
                     Sprint28SetBrainActivePreservingActions(actor, false); actor.Commands.InterruptAll(pending => true);
@@ -135,9 +136,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 int first = trace.Rows.Count, before = patient.Damage, levelUsed = book.GetSpellLevel(cure.Blueprint), slots = book.GetSpontaneousSlots(book.GetSpellLevel(cure.Blueprint));
                 var command = new UnitUseAbility(cure, new Kingmaker.Utility.TargetWrapper(patient)); var costs = new JArray();
                 using (var economy = new FirearmReviewCosts(healer, costs)) {
-                    healer.Commands.Run(command);
-                    foreach (int frame in WaitInfernalCommand34(command, () => trace.Rows.Skip(first).Any(row =>
-                        (string)row["event"] == "heal" && (string)row["target"] == patient.UniqueId), 25)) yield return frame;
+                    var dispatch = new JObject { ["patient"] = patient.UniqueId, ["patientBlueprint"] = patient.Blueprint.AssetGuid,
+                        ["healer"] = healer.UniqueId, ["damageBefore"] = before, ["slotsBefore"] = slots };
+                    receipt["unrelatedHealDispatch"] = dispatch;
+                    try {
+                        healer.Commands.Run(command);
+                        foreach (int frame in WaitInfernalCommand34(command, () => trace.Rows.Skip(first).Any(row =>
+                            (string)row["event"] == "heal" && (string)row["target"] == patient.UniqueId), 25)) yield return frame;
+                    } finally {
+                        dispatch["command"] = Sprint27AiCommand(command); dispatch["costs"] = costs;
+                        dispatch["damageAfter"] = patient.Damage; dispatch["slotsAfter"] = book.GetSpontaneousSlots(levelUsed);
+                        dispatch["events"] = new JArray(trace.Rows.Skip(first));
+                        dispatch["heldTouch"] = healer.Get<Kingmaker.UnitLogic.Parts.UnitPartTouch>()?.Ability?.Data?.Blueprint?.AssetGuid;
+                        dispatch["commands"] = new JArray(healer.Commands.Raw.Concat(healer.Commands.Queue)
+                            .Where(value => value != null).Select(Sprint27AiCommand));
+                    }
                     var heals = trace.Rows.Skip(first).Where(row => (string)row["event"] == "heal").ToArray();
                     check("wound-unrelated-patient", command.Result == UnitCommand.ResultType.Success && economy.Count(command) == 1 &&
                         (economy.InCombat(command) ? economy.Exact(command, false) : economy.Unchanged(command)) &&
@@ -148,6 +161,31 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["damageBefore"] = before, ["damageAfter"] = patient.Damage, ["slotsBefore"] = slots, ["slotsAfter"] = book.GetSpontaneousSlots(levelUsed) },
                         "A real healing spell on another injured patient uses its normal slot/cost and restores HP without an Infernal Wound check or removing the first patient's effects.");
                 }
+                // Observe the effective tick while both owned and ordinary
+                // states exist, then remove only the effect-only ordinary fact.
+                first = trace.Rows.Count; before = target.Damage;
+                double mixedUntil = Game.Instance.TimeController.GameTime.TotalSeconds + 6.1;
+                DateTime mixedDeadline = DateTime.UtcNow.AddSeconds(15);
+                while (DateTime.UtcNow < mixedDeadline && Game.Instance.TimeController.GameTime.TotalSeconds < mixedUntil)
+                { Game.Instance.IsPaused = false; yield return 0; }
+                var mixed = trace.Rows.Skip(first).Where(row => (string)row["event"] == "damage" && (string)row["target"] == target.UniqueId).ToArray();
+                check("wound-yields-to-native-bleed", mixed.Length > 0 && mixed.All(row => (string)row["owner"] == healer.UniqueId &&
+                    ((JArray)row["packets"]).Any(packet => (string)packet["dice"] == "2d6")) &&
+                    target.Damage - before == mixed.Sum(row => (int)row["actual"]) && !wound.IsDisposed && !unrelated.IsDisposed,
+                    new JObject { ["source"] = source.UniqueId, ["ordinarySource"] = healer.UniqueId, ["patient"] = target.UniqueId,
+                        ["damageBefore"] = before, ["damageAfter"] = target.Damage, ["ticks"] = new JArray(mixed) },
+                    "Only the stronger ordinary native HP bleed ticks; both source-owned wound and unrelated native fact remain live.");
+                unrelated.Remove(); first = trace.Rows.Count; before = target.Damage;
+                mixedDeadline = DateTime.UtcNow.AddSeconds(15);
+                while (DateTime.UtcNow < mixedDeadline && !trace.Rows.Skip(first).Any(row => (string)row["event"] == "damage" &&
+                    (string)row["target"] == target.UniqueId)) { Game.Instance.IsPaused = false; yield return 0; }
+                var resumed = trace.Rows.Skip(first).Where(row => (string)row["event"] == "damage" && (string)row["target"] == target.UniqueId).ToArray();
+                check("wound-resumes-after-native-bleed", unrelated.IsDisposed && !wound.IsDisposed && resumed.Length == 1 &&
+                    (string)resumed[0]["owner"] == source.UniqueId && (int?)resumed[0]["actual"] == 2 && target.Damage == before + 2,
+                    new JObject { ["source"] = source.UniqueId, ["patient"] = target.UniqueId, ["ticks"] = new JArray(resumed),
+                        ["ordinaryEffectOnlyRemoval"] = true, ["damageBefore"] = before, ["damageAfter"] = target.Damage },
+                    "Removing only the stronger native fact permits the existing wound's next real two-HP tick without reapplying its injury.");
+                unrelated = InfernalOwnedEffect34(healer, target, ordinary);
                 var disease = InfernalOwnedEffect34(source, target, InfernalSavedBlueprint34<BlueprintBuff>(false, "DevilChills"));
                 var exactOrdinary = InfernalSavedEffect34(unrelated);
                 var expiry = ExpireSprint16OwnedBuff(source, source.Buffs.GetBuff(BlueprintRoot.Instance.SystemMechanics.SummonedUnitBuff));
