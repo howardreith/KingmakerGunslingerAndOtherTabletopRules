@@ -15,6 +15,7 @@ using Kingmaker.UnitLogic.Mechanics;
 using Kingmaker.Utility;
 using Kingmaker.View;
 using KingmakerGunslinger.Blueprints;
+using KingmakerGunslinger.Assets;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -130,6 +131,41 @@ namespace KingmakerGunslinger.RuntimeTesting
                     new JObject { ["profiles"] = profiles },
                     "The two hidden roots instantiate their exact production martial profiles and granted actions.");
 
+                Mesh barbedMesh, boneMesh;
+                string[] barbedBones, boneBones;
+                Texture2D barbedPaint, bonePaint;
+                string barbedStatus, boneStatus;
+                string barbedView = ExpandedSummoningPteranodonViewPatch
+                    .DescribeView(barbed.View);
+                string boneView = ExpandedSummoningPteranodonViewPatch
+                    .DescribeView(bone.View);
+                var tail = bone.View.GetComponent<BoneDevilTailVisual35>();
+                bool barbedCache = PteranodonAssetRuntime
+                    .TryGetInfernalVisual35(InfernalVisualPolicy35.Barbed,
+                        out barbedMesh, out barbedBones, out barbedPaint,
+                        out barbedStatus);
+                bool boneCache = PteranodonAssetRuntime
+                    .TryGetInfernalVisual35(InfernalVisualPolicy35.Bone,
+                        out boneMesh, out boneBones, out bonePaint,
+                        out boneStatus);
+                check("original-body-attachment", barbedCache && boneCache &&
+                    barbedMesh != null && boneMesh != null &&
+                    !ReferenceEquals(barbedMesh, boneMesh) &&
+                    barbedView.StartsWith("visual:attached;",
+                        StringComparison.Ordinal) &&
+                    boneView.StartsWith("visual:attached;",
+                        StringComparison.Ordinal) && tail != null,
+                    new JObject {
+                        ["barbedView"] = barbedView,
+                        ["boneView"] = boneView,
+                        ["barbedCache"] = barbedStatus,
+                        ["boneCache"] = boneStatus,
+                        ["barbedVertices"] = barbedMesh?.vertexCount,
+                        ["boneVertices"] = boneMesh?.vertexCount,
+                        ["tailAttached"] = tail != null
+                    },
+                    "Both exact hidden roots wear distinct original bodies; Bone alone owns the private stinging-tail view.");
+
                 var oldGroup = reach.GroupId;
                 reach.GroupId = "KMG_S35_Early_Reach_" + reach.UniqueId;
                 reach.Descriptor.SwitchFactions(fixture.Hostile.Faction, true);
@@ -146,6 +182,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     barbed, trace, check, "reach-glaive", 8, false))
                     yield return frame;
                 receipt["contactOriginalGroup"] = oldGroup;
+
+                foreach (int frame in InfernalEarlyTail35(fixture, bone,
+                    reach, check)) yield return frame;
 
                 foreach (int frame in InfernalEarlyWall35(fixture, bone,
                     owned, check)) yield return frame;
@@ -167,6 +206,44 @@ namespace KingmakerGunslinger.RuntimeTesting
                 DisposeExpandedSummoningUnits(fixture.Created, owned);
                 ResetExpandedSummoningHostile(fixture);
             }
+        }
+
+        private IEnumerable<int> InfernalEarlyTail35(
+            ExpandedSummoningCorrectionFixture fixture,
+            UnitEntityData bone, UnitEntityData target,
+            Action<string, bool, JObject, string> check)
+        {
+            var tail = bone.View.GetComponent<BoneDevilTailVisual35>();
+            if (tail == null) throw new InvalidOperationException(
+                "Bone Devil original body has no private tail consumer.");
+            bone.Commands.InterruptAll(true);
+            bone.Commands.RemoveFinishedAndUpdateQueue();
+            InfernalCombatLane34(fixture, bone, target, 3);
+            int before = tail.Contacts;
+            var command = new UnitAttack(target) {
+                IsSingleAttack = false, ForceFullAttack = true };
+            bone.Commands.Run(command);
+            foreach (int frame in WaitInfernalCommand34(command,
+                () => tail.Contacts > before, 30)) yield return frame;
+            string view = ExpandedSummoningPteranodonViewPatch.DescribeView(
+                bone.View);
+            check("bone-sting-tail-contact",
+                command.Result == UnitCommand.ResultType.Success &&
+                tail.Contacts > before && tail.ContactGap < .15f &&
+                view.StartsWith("visual:attached;", StringComparison.Ordinal),
+                new JObject {
+                    ["owner"] = bone.UniqueId,
+                    ["target"] = target.UniqueId,
+                    ["command"] = Sprint27AiCommand(command),
+                    ["contactsBefore"] = before,
+                    ["contactsAfter"] = tail.Contacts,
+                    ["contactGap"] = tail.ContactGap,
+                    ["contactPoint"] = Vec(tail.ContactPoint),
+                    ["restingAfterCommand"] = tail.Resting,
+                    ["view"] = view,
+                    ["forcedRolls"] = 0
+                },
+                "The exact native full attack advances Bone's owned sting, and only its private authored tail reaches the real target contact path.");
         }
 
         private static JArray InfernalNativeSpellCensus35(

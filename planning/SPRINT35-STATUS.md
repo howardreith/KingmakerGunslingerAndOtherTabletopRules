@@ -22,7 +22,7 @@ Sprint 35 checkpoint; historical records are not current instructions.
 | Bone fear is a 5-foot aura with native eligibility and source memory | Existing source-attributed fear terminal buffs and area membership/lifetime helpers; Kyton gaze is explicitly inapplicable | No continuous aura consumer or repeat-save contract for Bone | Build a source-owned 5-foot aura applying native frightened for 1d6 rounds on failed DC 19 Will save with source-specific repeat handling; preserve native immunity/eligibility and do not make the area enemy-only | Actual membership enter/stay/leave, immunity, success/failure and no frame-by-frame retries, two-source isolation, source cleanup, both combat modes |
 | Bone regular and quickened self-invisibility stay distinct | Existing native ordinary attack-breaking invisibility, self targeting, resource, and action builders | No standard at-will action and no separate swift-action three-use resource; toggle/load-reset risks unproved | Create two self-only commands sharing the ordinary invisibility effect: standard at-will and swift 3/summoning; suppress recast while active in AI only | Native action economy, attack breaks effect, active-effect AI negative, standard/quickened distinction, 3-to-0 spend, no reset by mode/toggle/load |
 | Bone offensive control includes Dimensional Anchor and faithful Wall of Ice | Native spell cloning and source-owned area lifetimes exist. Installed 2.1.7b reflection shows `AreaEffectsController.Spawn`, `AreaEffectView.m_NavmeshCut`, standing-unit corpulence obstacles, and `ObstaclePathfinder`; Assembly-CSharp SHA-256 is `3B6450FFEC440E296E586F71C711B195AED144B28D53E1CBB29406D18FEF5AFB` | No retained production graph proves selectable wall geometry, temporary navigation obstruction, attackable HP/breach, residual cold, or restored navigation; finding visual ice alone is insufficient | First prototype a private, source-owned planar wall from temporary sections: area views carry real Navmesh cuts; paired attackable section entities carry HP/destruction and spawn residual cold on breach. Reject this route if the early native run does not prove real obstruction and restoration | One hidden native cast before AI expansion: legal placement, formation save/SR case, movement/targeting interaction distinguished, section damage/breach, plane residual damage, source expiry/removal, and restored navigation |
-| Two recognizable creature-specific bodies and two real icons | Sprint 34 measured rig, mesh/albedo loader, receipts, and icon exporter are reusable; original Sprint 34 bodies remain protected | No Barbed/Bone assets exist | Add new original paintings/provenance and new Sprint 35 geometry: a spiny Barbed silhouette and a skeletal/insectile Bone silhouette with a visible segmented stinging tail; reuse rig/clips without retaining an unrelated visible body | Export/hash validation; native selection/movement/attack/contact/visibility/fallback captures inspected; exact private objects separated from immutable caches |
+| Two recognizable creature-specific bodies and two real icons | Sprint 34 measured rig, mesh/albedo loader, receipts, and icon exporter are reusable; original Sprint 34 bodies remain protected. Sprint 35 now has hashed original Barbed and Bone exports plus two existing real icons | Native attachment, movement, selection, sting contact, fallback, and cleanup are not yet observed on the new bodies | Reuse the accepted per-view swap/receipt path under exact Sprint 35 identities; Bone alone receives a tail-region deformation driven by its exact native sting event | Export/hash validation passes; the early native observer now records distinct caches/views and real sting contact. Final selection/movement/visibility/fallback captures and owned-resource cleanup remain required |
 | Ownership, cleanup, disabled-mode safety, and persistence | `InfernalEffectLifetime34`, `InfernalSourceLifetime34`, `OutsiderLifetimeBoundary`, source-specific helpers, owned-item policies, and accepted grapple reload reset | New aura/wall/resources/markers/private view objects have no identities or termination policy | Give every active grant/area/wall/private object an exact owner and idempotent cleanup. Keep poison and applied ability damage independently timed. Register identities while disabled without allocating views/resources or starting mechanics | Source death/expiry/disable, destroyed-actor cleanup, no orphan wall/aura/grapple, disabled-module load, mixed ON and OFF fresh-process persistence envelopes (six processes total) |
 | Useful native AI without changing player-visible rules | Existing exact-owner AI/range/action/resource observers and established admission/scoring patterns | No creature actions or wall placement scoring | Add small creature-specific actions; wall admission requires legal useful placement, a viable allied route, and no redundant wall; do not change collision/victim rules or add an arbitrary wall limit | RTWP and turn-based substantive outcomes, unsafe/futile/redundant negatives, fallback to attacks, exact owner attribution |
 | One coherent final candidate, release, public verification, and exact restoration | Current validation policy and Sprint34 qualified release tooling define focused gates, exact candidate identity, promotion, refusal, and rollback | No Sprint 35 selector/reports or release inputs; v0.0.173 availability must be rechecked at integration | Add the smallest Sprint 35 selector/validator and exact two-branch publisher allowlist entries only if required; do not copy a release system | Focused development gates, independent review, one final source/build/package boundary, grouped mandatory native proof, product PR/merge, next-free stable release from exact ZIP, public download/manifest/hash/MVID lineage, intake restoration, separate records PR/merge |
@@ -43,10 +43,35 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `d542bd9c5ffc52615c786cccafb5b3169ab3b2298599c6a895803e223c01d612`
   (Bone). The sparse-safe exporter refreshed both post-allocation consumer
   receipts and retained strict full-export verification.
+- Two original model families are now authored without changing the closed
+  Sprint 34 assets. Barbed's broad red horned body has twenty authored rigid
+  thorns (mesh SHA-256
+  `890456e59f973eb0383197a9eed4ee50628b5314114f315acb15321326e63a28`);
+  Bone's narrow jointed body has two wing-strut silhouettes and one isolated
+  six-segment stinging tail (mesh SHA-256
+  `b94c51a20680a5f4d747f3c8acc16e417a96278cee8b01c3398e5225792a4c40`).
+  Their albedos are `2614201dd25653c2b86f719ce48bab479ecf8151103a068ae468335ef3a3ac8d`
+  and `98cea77b72fa5540df7127f29444110dded90233d951fd04b6d66ac28f053c77`.
+  Agent inspection finds the static previews distinct and recognizable; it is
+  not native presentation proof or owner aesthetic approval. The accepted
+  measured-rig loader now has exact Sprint 35 identities, disabled-module
+  refusal, per-view resources, rollback, and release cleanup. Bone alone adds
+  a visual-only native-sting tail deformation; it cannot create a command,
+  reach, hit, or damage. The early observer records both distinct attached
+  sources and the actual sting contact gap before admitting presentation.
+  The generated weapon/provenance audit and closed build/package inventories
+  include the four exact new exports. Offline body decoding, albedo hashes,
+  winding, tail vertex isolation, exact identities, production compilation,
+  and the selected Sprint 35/correction group pass 7/7. Two preceding Focused
+  attempts stopped before a test verdict on the legacy production and test
+  project source lists respectively; each exact missing include was repaired.
+  A changed source-bound native candidate is still required.
 - The hidden production candidate compiles against the installed Kingmaker
   2.1.7b references. The focused `expanded-summoning.sprint35-*` domain group
-  passes 4/4, covering route suppression, predicate separation, live modifiers,
-  and exact sting injury admission. Native behavior is not inferred from this.
+  plus the selected correction control passes 7/7, covering route suppression,
+  predicate separation, live modifiers, exact sting injury admission, the
+  private wall donor, and original-body/tail export contracts. Native behavior
+  is not inferred from this.
 - Wall of Ice has a measured installed candidate path, not yet a PASS. The first
   native viability run will instantiate the hidden unit directly (without menu
   publication) and is the admission gate for expanding its AI/persistence.

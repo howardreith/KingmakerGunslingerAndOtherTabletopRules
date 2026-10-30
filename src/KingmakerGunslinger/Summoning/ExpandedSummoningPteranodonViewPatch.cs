@@ -151,7 +151,9 @@ namespace KingmakerGunslinger.Summoning
                 { "KMG_Summoning_Unit_InvisibleStalker", ShadowOutsiderVisualPolicy.Stalker },
                 { "KMG_Summoning_Unit_ShadowDemon", ShadowOutsiderVisualPolicy.Demon },
                 { "KMG_Summoning_Unit_BeardedDevil", InfernalVisualPolicy34.Barbazu },
-                { "KMG_Summoning_Unit_KytonChainDevil", InfernalVisualPolicy34.Kyton }
+                { "KMG_Summoning_Unit_KytonChainDevil", InfernalVisualPolicy34.Kyton },
+                { "KMG_Summoning_Unit_BarbedDevil", InfernalVisualPolicy35.Barbed },
+                { "KMG_Summoning_Unit_BoneDevil", InfernalVisualPolicy35.Bone }
             };
         private static readonly HashSet<string> UngulateKeys =
             new HashSet<string>(StringComparer.Ordinal)
@@ -232,6 +234,7 @@ namespace KingmakerGunslinger.Summoning
             internal HoundArchonSwordView HoundSword;
             internal BarbazuGlaiveView34 BarbazuGlaive;
             internal KytonChainVisual34 KytonChains;
+            internal BoneDevilTailVisual35 BoneTail;
             internal EagleAttackVisualLunge EagleLunge;
             internal GiantWaspVisualSting WaspSting;
             internal CrocodilianAttackVisualPose CrocodilianPose;
@@ -353,6 +356,10 @@ namespace KingmakerGunslinger.Summoning
             if (InfernalVisualPolicy34.Handles(visualKey) &&
                 !InfernalVisualPolicy34.IsExactIdentity(visualKey, __instance.EntityData.Blueprint.AssetGuid,
                     blueprintName, __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
+            if (InfernalVisualPolicy35.Handles(visualKey) &&
+                !InfernalVisualPolicy35.IsExactIdentity(visualKey,
+                    __instance.EntityData.Blueprint.AssetGuid, blueprintName,
+                    __instance.EntityData.Blueprint.Prefab?.AssetId)) return;
             if (ShadowOutsiderVisualPolicy.Handles(visualKey) &&
                 !ShadowOutsiderVisualPolicy.IsExactIdentity(visualKey, __instance.EntityData.Blueprint.AssetGuid,
                     blueprintName, __instance.EntityData.Blueprint.Prefab == null ? null :
@@ -414,7 +421,14 @@ namespace KingmakerGunslinger.Summoning
             Mesh source;
             string[] boneNames;
             Texture2D albedo;
-            if (InfernalVisualPolicy34.Handles(attachment.VisualKey))
+            if (InfernalVisualPolicy35.Handles(attachment.VisualKey))
+            {
+                string status;
+                if (!PteranodonAssetRuntime.TryGetInfernalVisual35(
+                    attachment.VisualKey, out source, out boneNames,
+                    out albedo, out status)) return Fallback(status);
+            }
+            else if (InfernalVisualPolicy34.Handles(attachment.VisualKey))
             {
                 string status;
                 if (!PteranodonAssetRuntime.TryGetInfernalVisual34(attachment.VisualKey,
@@ -562,7 +576,9 @@ namespace KingmakerGunslinger.Summoning
             if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
                 attachment.VisualKey == LemureVisualPolicy.Key ||
                 attachment.VisualKey == DretchVisualPolicy.Key ||
-                (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) || InfernalVisualPolicy34.Handles(attachment.VisualKey)) ||
+                (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
+                 InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
+                 InfernalVisualPolicy35.Handles(attachment.VisualKey)) ||
                 attachment.VisualKey == HoundArchonVisualPolicy.Key)
             {
                 if (!TheropodVisualPolicy.IsExactRendererSet(
@@ -660,7 +676,9 @@ namespace KingmakerGunslinger.Summoning
                                         attachment.VisualKey) ||
                                     attachment.VisualKey == LemureVisualPolicy.Key ||
                                     attachment.VisualKey == DretchVisualPolicy.Key ||
-                                    (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) || InfernalVisualPolicy34.Handles(attachment.VisualKey)) ||
+                                    (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
+                                     InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
+                                     InfernalVisualPolicy35.Handles(attachment.VisualKey)) ||
                                     attachment.VisualKey == HoundArchonVisualPolicy.Key ||
                                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))
                                     ? "KMG_" + attachment.VisualKey + "_Original"
@@ -716,7 +734,9 @@ namespace KingmakerGunslinger.Summoning
                 if (TheropodVisualPolicy.Handles(attachment.VisualKey) ||
                     attachment.VisualKey == LemureVisualPolicy.Key ||
                     attachment.VisualKey == DretchVisualPolicy.Key ||
-                    (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) || InfernalVisualPolicy34.Handles(attachment.VisualKey)) ||
+                    (ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) ||
+                     InfernalVisualPolicy34.Handles(attachment.VisualKey) ||
+                     InfernalVisualPolicy35.Handles(attachment.VisualKey)) ||
                     attachment.VisualKey == HoundArchonVisualPolicy.Key)
                 {
                     // The same measured two-renderer donor needs the same per-view suppression.
@@ -742,6 +762,13 @@ namespace KingmakerGunslinger.Summoning
                 {
                     attachment.KytonChains = view.gameObject.AddComponent<KytonChainVisual34>();
                     attachment.KytonChains.Configure(view, donor);
+                }
+
+                if (attachment.VisualKey == InfernalVisualPolicy35.Bone)
+                {
+                    attachment.BoneTail = view.gameObject
+                        .AddComponent<BoneDevilTailVisual35>();
+                    attachment.BoneTail.Configure(view, donor);
                 }
 
                 if (attachment.VisualKey == ShadowOutsiderVisualPolicy.Stalker)
@@ -815,6 +842,12 @@ namespace KingmakerGunslinger.Summoning
                     UnityEngine.Object.Destroy(attachment.WaspSting);
                     attachment.WaspSting = null;
                 }
+                if (attachment.BoneTail != null)
+                {
+                    attachment.BoneTail.Release();
+                    UnityEngine.Object.Destroy(attachment.BoneTail);
+                    attachment.BoneTail = null;
+                }
                 if (attachment.CrocodilianPose != null)
                 {
                     attachment.CrocodilianPose.enabled = false;
@@ -841,6 +874,7 @@ namespace KingmakerGunslinger.Summoning
                 if (material != null) rollbackMaterials.Add(material);
                 if (swapped && (attachment.VisualKey == "gorgon" || IsCrocodilian(attachment.VisualKey) ||
                     TheropodVisualPolicy.Handles(attachment.VisualKey) ||
+                    InfernalVisualPolicy35.Handles(attachment.VisualKey) ||
                     (GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key)))
                 {
                     string ownedName = "KMG_" + attachment.VisualKey + "_Original";
@@ -1277,6 +1311,7 @@ namespace KingmakerGunslinger.Summoning
                  attachment.VisualKey != DretchVisualPolicy.Key &&
                  !ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) &&
                  !InfernalVisualPolicy34.Handles(attachment.VisualKey) &&
+                 !InfernalVisualPolicy35.Handles(attachment.VisualKey) &&
                  attachment.VisualKey != HoundArchonVisualPolicy.Key))
                 return new UnityEngine.Object[0];
             Material[] installed = attachment.Donor == null
@@ -1300,7 +1335,8 @@ namespace KingmakerGunslinger.Summoning
             return privateMaterials.Cast<UnityEngine.Object>()
                 .Concat(new UnityEngine.Object[] { attachment.Mesh,
                     attachment.TheropodSuppression, attachment.HoundSword, attachment.HoundSword?.Model,
-                    attachment.BarbazuGlaive, attachment.BarbazuGlaive?.Model, attachment.KytonChains })
+                    attachment.BarbazuGlaive, attachment.BarbazuGlaive?.Model,
+                    attachment.KytonChains, attachment.BoneTail })
                 .Concat(attachment.StalkerSlam == null ? new UnityEngine.Object[0] : attachment.StalkerSlam.OwnedResources())
                 .Where(value => value != null).Distinct().ToArray();
         }
@@ -1352,6 +1388,7 @@ namespace KingmakerGunslinger.Summoning
                  attachment.VisualKey != DretchVisualPolicy.Key &&
                  !ShadowOutsiderVisualPolicy.Handles(attachment.VisualKey) &&
                  !InfernalVisualPolicy34.Handles(attachment.VisualKey) &&
+                 !InfernalVisualPolicy35.Handles(attachment.VisualKey) &&
                  attachment.VisualKey != HoundArchonVisualPolicy.Key &&
                  !(GiantBodyVisualPolicy.Handles(attachment.VisualKey) || attachment.VisualKey == GriffonVisualPolicy.Key))) return;
             string visualName = attachment.VisualKey == "stirge"
@@ -1382,6 +1419,12 @@ namespace KingmakerGunslinger.Summoning
                 attachment.KytonChains.Release();
                 UnityEngine.Object.DestroyImmediate(attachment.KytonChains);
                 attachment.KytonChains = null;
+            }
+            if (attachment.BoneTail != null)
+            {
+                attachment.BoneTail.Release();
+                UnityEngine.Object.DestroyImmediate(attachment.BoneTail);
+                attachment.BoneTail = null;
             }
             if (attachment.BarbazuGlaive != null)
             {
