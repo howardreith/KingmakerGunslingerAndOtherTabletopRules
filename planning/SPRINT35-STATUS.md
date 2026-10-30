@@ -113,5 +113,23 @@ Sprint 35 checkpoint; historical records are not current instructions.
   With verified headroom restored, production compilation and the selected
   Sprint 35/planned-type regression group pass 6/6. The unchanged failed
   candidate will not be relaunched; a new source-bound candidate is required.
+- Candidate `fca44a54` passed strict packaging (ZIP
+  `842374e4270f3172e41a919ee7bef12163f1b7a81cc23967d6544bdd63f7c750`;
+  DLL `cc86261c49ad279df4667acfde7d3b0aa8b8b495c3dd2cd9dbdec92c25e08ef7`;
+  MVID `e4608d19-a585-4f5e-919c-522c4320f40f`). An initial wrapper invocation
+  refused before deployment because its generated manifest-validator binary
+  had been removed with build intermediates; it created and exactly restored
+  only the outer snapshot. After rebuilding that selected validator, guarded
+  run `20261030T1743495604303Z-4232af98f3484ef18a9d9517225b3dd4`
+  registered all Sprint 35 identities, including the private wall section,
+  then failed before assertions on `BlueprintItemWeapon.m_CriticalRollEdge`,
+  a field that does not exist on that installed type. Rollback removed 3,007
+  owned registrations and the wrapper restored live SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  The incorrect mutation also duplicated Improved Critical: the private claw
+  type must keep its native base edge 20 while the granted feat supplies the
+  printed live 19-20 range. The failed candidate is preserved on `E:` as 168
+  verified files; archive manifest SHA-256
+  `c2c4af68f121909156d3091b905f8320b4f0240aacde1c83f95004bd3d4cb5e4`.
 - Mandatory qualification, publication, release, verification, and restoration
   are all pending.

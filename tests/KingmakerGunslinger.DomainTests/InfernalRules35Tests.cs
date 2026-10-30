@@ -81,6 +81,12 @@ namespace KingmakerGunslinger.DomainTests
         {
             Assertions.Equal(20, InfernalRules35.FearDc(12, 4, 0),
                 "Barbed baseline fear DC.");
+            Assertions.Equal(20,
+                InfernalRules35.BarbedBaseCriticalThreatMinimum,
+                "The private claw type retains its native 20 threat edge.");
+            Assertions.Equal(19,
+                InfernalRules35.BarbedEffectiveCriticalThreatMinimum,
+                "Improved Critical supplies the printed live 19-20 range.");
             Assertions.Equal(19, InfernalRules35.FearDc(10, 4, 0),
                 "Bone baseline aura DC.");
             Assertions.Equal(18, InfernalRules35.FearDc(12, 2, 0),
