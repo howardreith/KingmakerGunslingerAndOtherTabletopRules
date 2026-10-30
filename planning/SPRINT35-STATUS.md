@@ -185,3 +185,32 @@ Sprint 35 checkpoint; historical records are not current instructions.
   reclaiming only reproducible build/staging scratch, production compilation
   and the selected Sprint 35/correction group pass 7/7. The failed bytes will
   not be relaunched; a changed source-bound candidate is required.
+- Candidate `6df32ad8` passed strict packaging (ZIP
+  `b17238ce2490a41e7e4d7e972d846a908c96bf2cf949d24efc02549e07114551`;
+  DLL `eff9bf5be478cc41d7ab8157941f3bf3831eed26dd97ab38e8758d4a4db5c43d`;
+  MVID `517cc042-d437-4225-9de7-2a60c61bed06`). Guarded run
+  `20261030T1838360037546Z-ac19654a47c247f0b9878069c816f802`
+  closed the prior registration defect and produced real PASS rows for hidden
+  bootstrap, both distinct attached original bodies, ordinary-melee Barbed
+  Defense, the manufactured reach-glaive exception, nonrecursive retaliation,
+  and Bone's exact native sting/tail contact. The wall was not cast: the
+  observer's setup demanded a ten-meter chord around one isolated node even
+  though the accepted local graph/LoS search in the same run found 52 legal
+  combat lanes. The runtime result arrived just after the outer timeout,
+  classified the failure as that ineligible fixture setup, restored its world
+  fixture, and exited without save interaction; no owner process remains. The
+  wrapper restored the live mod tree to exact pre-run SHA-256
+  `216a9dc2b8e95cd644ba3cadc69a638463c25e60f40a11f8d4b2065c69d5aaf3`.
+  The package/receipt/test evidence and exact compile archive are preserved on
+  `E:` under manifests
+  `71323674f1ed70dc94b46e2ccbed6aaf05b65a2767d92412b2cf0c324e29504b`
+  and
+  `3bc624dbec6000035180b69d0bbb3354661e33b34d5cc75c79795cf2600128d1`;
+  both raw installation backups are preserved there under manifest
+  `ac5f40c82b72dc393a2156ef7bda3c136ce34eacace6fd3cae9c92eb4203dcee`.
+  The bounded observer repair now searches the already-proven party-local
+  graph, requiring same graph/area, a direct native trace, legal off-lane cast
+  point, LoS and party clearance; request-owned summons are parked off the
+  measured lane so they cannot supply the claimed obstruction. Production wall
+  behavior is unchanged. Production compilation and the selected group pass
+  7/7; the changed observer requires a new native run.

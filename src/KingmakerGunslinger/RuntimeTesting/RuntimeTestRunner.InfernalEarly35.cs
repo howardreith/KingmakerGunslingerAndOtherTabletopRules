@@ -354,21 +354,19 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData bone, List<UnitEntityData> owned,
             Action<string, bool, JObject, string> check)
         {
-            Vector3 start, midpoint, destination;
+            Vector3 start, midpoint, destination, casterPoint;
             JArray laneAttempts;
             if (!InfernalEarlyWallLane35(fixture, out start, out midpoint,
-                    out destination, out laneAttempts))
+                    out destination, out casterPoint, out laneAttempts))
                 throw new InvalidOperationException(
-                    "No direct native floor lane for the early wall candidate.");
+                    "No direct native floor lane for the early wall candidate: " +
+                    laneAttempts.ToString(Formatting.None));
             PlaceExpandedSummoningUnit(fixture.Caster, start);
-            Vector3 direction = (destination - start).normalized;
-            Vector3 side = new Vector3(-direction.z, 0f, direction.x);
-            var casterNode = ObstacleAnalyzer.GetNearestNode(
-                start + side * 5f);
-            if (casterNode.node == null || !casterNode.node.Walkable)
-                throw new InvalidOperationException(
-                    "No supported off-lane Bone Devil casting point.");
-            PlaceExpandedSummoningUnit(bone, casterNode.clampedPosition);
+            foreach (UnitEntityData actor in owned.Where(value =>
+                value != null && !value.Destroyed &&
+                !ReferenceEquals(value, bone)))
+                PlaceExpandedSummoningUnit(actor, casterPoint);
+            PlaceExpandedSummoningUnit(bone, casterPoint);
             var before = InfernalEarlyPath35(fixture.Caster, destination);
             bool losBefore = Kingmaker.Visual.FogOfWar.LineOfSightGeometry
                 .Instance.HasObstacle(start, destination, 0);
@@ -448,6 +446,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 ["start"] = Vec(start),
                 ["midpoint"] = Vec(midpoint),
                 ["destination"] = Vec(destination),
+                ["casterPoint"] = Vec(casterPoint),
                 ["laneAttempts"] = laneAttempts,
                 ["section"] = section?.UniqueId,
                 ["sectionBlueprint"] = section?.Blueprint?.AssetGuid,
@@ -478,42 +477,92 @@ namespace KingmakerGunslinger.RuntimeTesting
         private bool InfernalEarlyWallLane35(
             ExpandedSummoningCorrectionFixture fixture, out Vector3 start,
             out Vector3 midpoint, out Vector3 destination,
-            out JArray attempts)
+            out Vector3 casterPoint, out JArray attempts)
         {
             attempts = new JArray();
-            start = midpoint = destination = Vector3.zero;
-            Vector3 centre = Sprint25IsolatedAnchor(fixture);
-            for (int index = 0; index < 24; index++)
+            start = midpoint = destination = casterPoint = Vector3.zero;
+            var anchor = AstarPath.active.GetNearest(fixture.Caster.Position);
+            if (anchor.node == null || !anchor.node.Walkable) return false;
+            UnitEntityData[] party = Game.Instance.Player.Party.Where(value =>
+                value != null && value.IsInGame).ToArray();
+            const float laneLength = 6f;
+            for (int dx = -15; dx <= 15; dx += 3)
+            for (int dz = -15; dz <= 15; dz += 3)
+            for (int index = 0; index < CompassOffsets.Length; index++)
             {
-                Vector3 direction = Quaternion.Euler(0f, index * 15f, 0f) *
-                    Vector3.forward;
-                var from = ObstacleAnalyzer.GetNearestNode(
-                    centre - direction * 5f);
-                var to = ObstacleAnalyzer.GetNearestNode(
-                    centre + direction * 5f);
+                Vector3 requestedStart = anchor.clampedPosition +
+                    new Vector3(dx, 0f, dz);
+                Vector3 direction = CompassOffsets[index];
+                var from = AstarPath.active.GetNearest(requestedStart);
+                Vector3 requestedEnd = from.clampedPosition +
+                    direction * laneLength;
+                var to = AstarPath.active.GetNearest(requestedEnd);
                 bool nodes = from.node != null && to.node != null &&
                     from.node.Walkable && to.node.Walkable &&
+                    from.node.Area == anchor.node.Area &&
+                    to.node.Area == anchor.node.Area &&
+                    from.node.GraphIndex == anchor.node.GraphIndex &&
+                    to.node.GraphIndex == anchor.node.GraphIndex &&
                     Vector3.Distance(from.clampedPosition,
-                        centre - direction * 5f) < .3f &&
+                        requestedStart) <= .6f &&
                     Vector3.Distance(to.clampedPosition,
-                        centre + direction * 5f) < .3f;
+                        requestedEnd) <= .6f;
                 Vector3 traced = nodes ? ObstacleAnalyzer.TraceAlongNavmesh(
                     from.clampedPosition, to.clampedPosition) : Vector3.zero;
                 bool direct = nodes && Vector3.Distance(traced,
                     to.clampedPosition) < .1f;
-                attempts.Add(new JObject {
+                Vector3 middle = nodes ? (from.clampedPosition +
+                    to.clampedPosition) * .5f : Vector3.zero;
+                Vector3 side = new Vector3(-direction.z, 0f, direction.x);
+                Pathfinding.NNInfo offLane = default(Pathfinding.NNInfo);
+                bool caster = false;
+                foreach (float sign in new[] { 1f, -1f })
+                {
+                    Vector3 requestedCaster = middle + side * sign * 4f;
+                    var candidate = AstarPath.active.GetNearest(
+                        requestedCaster);
+                    bool exact = candidate.node != null &&
+                        candidate.node.Walkable &&
+                        candidate.node.Area == anchor.node.Area &&
+                        candidate.node.GraphIndex == anchor.node.GraphIndex &&
+                        Vector3.Distance(candidate.clampedPosition,
+                            requestedCaster) <= .6f &&
+                        !Kingmaker.Visual.FogOfWar.LineOfSightGeometry.Instance
+                            .HasObstacle(candidate.clampedPosition +
+                                Vector3.up * 1.2f,
+                                middle + Vector3.up * 1.2f, 0);
+                    if (!exact) continue;
+                    float partyGap = party.Length == 0 ? laneLength :
+                        party.Min(value => Math.Min(Vector3.Distance(
+                            value.Position, from.clampedPosition), Math.Min(
+                            Vector3.Distance(value.Position,
+                                to.clampedPosition), Vector3.Distance(
+                                value.Position,
+                                candidate.clampedPosition))));
+                    if (partyGap < 3.5f) continue;
+                    offLane = candidate;
+                    caster = true;
+                    break;
+                }
+                if (attempts.Count < 96) attempts.Add(new JObject {
+                    ["dx"] = dx,
+                    ["dz"] = dz,
                     ["index"] = index,
                     ["nodes"] = nodes,
                     ["direct"] = direct,
+                    ["caster"] = caster,
                     ["from"] = nodes ? Vec(from.clampedPosition) : null,
                     ["to"] = nodes ? Vec(to.clampedPosition) : null,
+                    ["casterPoint"] = caster ?
+                        Vec(offLane.clampedPosition) : null,
                     ["traceGap"] = nodes ?
                         Vector3.Distance(traced, to.clampedPosition) : -1f
                 });
-                if (!direct) continue;
+                if (!direct || !caster) continue;
                 start = from.clampedPosition;
                 destination = to.clampedPosition;
-                midpoint = (start + destination) * .5f;
+                midpoint = middle;
+                casterPoint = offLane.clampedPosition;
                 return true;
             }
             return false;
