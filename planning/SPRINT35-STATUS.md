@@ -546,3 +546,36 @@ Sprint 35 checkpoint; historical records are not current instructions.
   only causal production change before the next candidate. Production
   compilation passed in 29.0 seconds and the selected Sprint 35/correction
   group passed 8/8 in 5.1 seconds.
+- Exact candidate `615c1cbbab67905fe820310a950ebfd0e83360bc`
+  passed repository admission, the selected 8/8 group, exact-reference
+  compilation, strict 440-file packaging and package validation: source state
+  `dbe59ecc8332c86e3ccbc42dc652c4cc971495d1da17676628b051a4e8769c46`;
+  ZIP `a931880524302b611fce00ae6a1f1c1f70b246137ea20a9ed1accfc6a782dda7`;
+  DLL `2693622ec41395c64f1d7fbfd4b939fa4a22bc40678600898ff987adf45b7e9b`;
+  MVID `47f27d17-88a1-4ea2-8d18-e11e7ad6bb8b`. Its 162-file exact
+  build is preserved on `E:` under manifest
+  `4E92F0DC6BFF4B7218CDB3945146EE4A31796CBFBCB2DA524442323F4C1F67CB`.
+  Guarded run `20261030T2253208108579Z-ba0ad9c616cc4d4bbf81e356923c4303`
+  closed the feature-backed grab mapping and passed both independent-owner
+  Barbed Defense cells, claw fear, oversize rejection and maneuver-immunity
+  rejection. The first eligible real claw then dealt 18 HP damage and won its
+  one real grapple check (17 + 222 versus CMD -99); both reciprocal grapple
+  buffs were active and the command had acted, but the native attack command
+  retired as `Interrupt` after that successful state change. The observer
+  incorrectly required terminal `Success` before it would inspect those real
+  hold facts, so it reported a natural-refusal failure. This is an observer
+  defect, not a gameplay failure. The bounded correction accepts acted
+  `Success` or native `Interrupt` only while still requiring exactly one real
+  wounding claw, one successful attributed maneuver, the exact held target,
+  both reciprocal grapple parts and buffs, the establishing primary claw,
+  exact normal command cost, and no premature Impale. The run restored the
+  live mod tree to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no Kingmaker process remains and no save was staged. Candidate, snapshots,
+  raw FAIL and restoration are preserved as 309 verified files on `E:` under
+  manifest
+  `E499871960B2A5FC53316733A23266F59E0DE657138F41C6EFDDB0D2077A9E6F`.
+  The unchanged bytes will not be relaunched; the changed observer requires a
+  new source-bound candidate and one affected native rerun. Production
+  compilation and the selected Sprint 35/correction group pass 8/8 after the
+  observer repair (25.2 s / 5.8 s).
