@@ -25,8 +25,8 @@ fixture derives its position from the actual delivery ability/view radii and
 records native range/LOS before dispatch. CotW effects03 passed; stock effects01
 then exposed a grounded-position mismatch before dispatch. Both endpoints now
 use the existing connected-floor survey, with requested/actual positions retained.
-Both affected effects-only profiles need fresh proof; no cold-process boundary
-is combined.
+Stock effects02 and CotW effects04 then passed10/10 each on76c0788ee0f4.
+No cold-process boundary is combined.
 
 Sprint34 selects only `persistenceScope=infernal-outsiders` in the existing
 Working prepare, cleanup and absence trio: one Bearded Devil and one Kyton.
@@ -107,7 +107,7 @@ Cold listeners require their shared exact saved Lillend SourceId/preparation run
 and mutual relation, matching preparation; unrelated-intake guards remain exact.
 These corrections require fresh affected native execution, not reader-only reuse.
 
-Native91Ã¢â‚¬â€œ93 bounded observer corrections: grab damage compares semantic JSON
+Native91ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“93 bounded observer corrections: grab damage compares semantic JSON
 null because installed Newtonsoft8 constructs null-string JValue as String.
 Presentation waits for the exact body's native dissolve completion and records
 the same exact-body predicate at each live capture; legacy first-renderer intact
@@ -169,7 +169,7 @@ proven disposable initially idle profile anchor/caster can be passed and counted
 Lease refusal preserves foreign mode for outer rollback; independent cleanup
 still restores owned resources/settings. This does not claim movement or visuals.
 
-Historical native85Ã¢â‚¬â€œ90 selected SystemMechanics.FactionNeutrals after refusing
+Historical native85ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“90 selected SystemMechanics.FactionNeutrals after refusing
 any intake attack relation;90 disproved that fixed selection before spawning.
 SwitchFactions can construct stale Player group membership before assigning
 the new faction; only the proven unique one-member owned group receives native
@@ -614,7 +614,7 @@ research observations only, never gameplay, visual suitability or qualification.
 
 The fixed S30/S31 persistence scope 'outsider-celestial' selects exactly Lemure, Dretch, Hound Archon, retained Lantern Archon, Astral Deva and Trumpet Archon. Development admission requires exact purpose 'sprints30-31-persistence'; it does not change release identity or Working/baseline guards. One controlled six-owner mix uses the existing prepare, cold verify/cleanup and fresh-absence scenarios and source-bound installed-stack transactions. Native resource/slot spends and Menace/Aid victim buffs are explicitly saved preconditions, not cast/save/AI proof: Dretch cloud0/fear1; Astral Heal0/Blade1/Cure6/See7; one of Trumpet's two Heal slots spent in its native26-preparation CL14 book; Lemure receives two source-specific penalties and one immunity, Dretch a finite Hound Aid buff. All explicitly prepared victim state belongs to those six units; native auras retain their usual recipient rules. Actual cold aura recipients, AC/save consumers, ownership, nonloot items, finite effect deadlines, cleanup and private resource absence remain mandatory. This fixture refuses a preexisting selected aura rather than deleting unrelated effects. Preserve separate processes and restore original Working bytes/metadata before source work or stopping. No persistence pass is claimed by admission tests.
 
-The fixed S30/S31 `public-routes` phase uses the existing player-route helper in one save-free process: Lemure IIÃ¢â‚¬â€œIX (8), Dretch IIIÃ¢â‚¬â€œIX (7), Hound IVÃ¢â‚¬â€œIX (6), existing Lantern IIIÃ¢â‚¬â€œIX (7), Astral IX (1), Trumpet IX (1). It refuses any hidden/missing/extra affected family or tier before dispatch and retains each native parent/variant, slot, quantity, duration, alignment and exact per-route cleanup observation. No arbitrary subcase ordering is accepted.
+The fixed S30/S31 `public-routes` phase uses the existing player-route helper in one save-free process: Lemure IIÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“IX (8), Dretch IIIÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“IX (7), Hound IVÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“IX (6), existing Lantern IIIÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“IX (7), Astral IX (1), Trumpet IX (1). It refuses any hidden/missing/extra affected family or tier before dispatch and retains each native parent/variant, slot, quantity, duration, alignment and exact per-route cleanup observation. No arbitrary subcase ordering is accepted.
 
 The fixed S30/S31 `archon-boundaries` phase extends the existing mixed-emitter Menace fixture with Trumpet/Hound, actual native high/low Will outcomes, source-specific24-hour buff clocks, real unforced weapon-hit break, retained sibling/unrelated penalties, reentry and exact cleanup. High-Will natural1 outcomes remain penalties; at least one actual success is required. Timer evidence observes native expiry timestamps and finite time left, not an elapsed24-hour campaign. A bounded disposable BAB100 hit precondition supplies no roll or hit. Hound command observers now settle native Power Attack ON before attacking and capture each roll's buff state and source-attributed attack/damage terms; separate OFF rule comparisons remain. No production rule, identity or public route changes are selected.
 

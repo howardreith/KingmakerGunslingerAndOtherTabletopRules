@@ -10,7 +10,7 @@ namespace KingmakerGunslinger.DomainTests
 {
     internal static class InfernalRules34Tests
     {
-        internal static void HiddenRoutesHaveExactScopeAndQuantity()
+        internal static void PublicRoutesHaveExactScopeAndQuantity()
         {
             foreach (string key in new[] { "bearded-devil", "kyton-chain-devil" }) {
                 var creature = ExpandedSummoningCatalog.All.Single(value => value.Key == key);
@@ -21,7 +21,7 @@ namespace KingmakerGunslinger.DomainTests
                 Assertions.True(routes.Select(value => value.Multiplicity).SequenceEqual(new[] {
                     SummonMultiplicity.One, SummonMultiplicity.OneD3, SummonMultiplicity.OneD4PlusOne,
                     SummonMultiplicity.OneD4PlusOne, SummonMultiplicity.OneD4PlusOne }), "Printed quantity propagation.");
-                Assertions.True(routes.All(value => !SummonVisibilityCatalog.IsPublished(value)), "Early candidate routes remain hidden.");
+                Assertions.True(routes.All(SummonVisibilityCatalog.IsPublished), "Both qualified creatures expose their five routes.");
                 Assertions.True(!string.IsNullOrEmpty(SummonChoicePresentationPolicy.For(key).Label), "Each registered creature has its own menu identity.");
             }
             SummonVisibilityCatalog.Validate(); SummonChoicePresentationPolicy.Validate();
