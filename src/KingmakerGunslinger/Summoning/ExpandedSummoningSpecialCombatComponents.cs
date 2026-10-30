@@ -869,9 +869,11 @@ namespace KingmakerGunslinger.Summoning
         }
 
         /// <summary>
-        /// The owner's live grab component - the instance on its buff, which
-        /// knows its owner and its fact; the blueprint's own instance only as
-        /// a last resort for configuration reads.
+        /// The owner's grab component - first the established buff path (live
+        /// instance, with its prior blueprint fallback), then a hydrated
+        /// active feature component that knows its owner and fact. Sprint 35's
+        /// Barbed Devil is the first grab profile intentionally carried by a
+        /// BlueprintFeature.
         /// </summary>
         internal static SummonGrabComponent Find(UnitEntityData owner)
         {
@@ -886,6 +888,14 @@ namespace KingmakerGunslinger.Summoning
                 SummonGrabComponent grab = buff.Blueprint.ComponentsArray
                     .OfType<SummonGrabComponent>().FirstOrDefault();
                 if (grab != null) return grab;
+            }
+            foreach (var feature in owner.Descriptor.Progression.Features
+                .Enumerable)
+            {
+                if (feature == null || !feature.IsTurnedOn) continue;
+                SummonGrabComponent live = feature.SelectComponents<
+                    SummonGrabComponent>().FirstOrDefault();
+                if (live != null) return live;
             }
             return null;
         }
