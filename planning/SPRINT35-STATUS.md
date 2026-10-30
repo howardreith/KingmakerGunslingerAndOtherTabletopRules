@@ -90,6 +90,16 @@ Sprint 35 checkpoint; historical records are not current instructions.
   allies. Production compilation and the selected Sprint 35/correction group
   pass 8/8. The remaining named gaps are recorded in the rules contract and
   have not been replaced by generic spell buttons.
+- A separate `sprint35-infernal-barbed` phase now observes the bounded Unholy
+  consumer without entering the known Wall failure. It records one real
+  standard-action command, exact 1-to-0 resource debit, per-target SR/save/
+  damage and duration rolls, good-outsider/good/neutral/evil outcomes,
+  independent Sickened contexts, source-loss lifetime, and owned cleanup. The
+  observer distinguishes the damage roll from the separate 1d4 duration roll
+  and snapshots the shared parameter sentinel before casting. Production
+  compilation and the selected 8/8 group pass; exact phase admission/refusal
+  passes the 269-assertion orchestration suite and 1,170-check runtime
+  preflight suite. This is observer readiness, not native gameplay proof.
 - The required laptop intake is captured before staging: 968 current Mod-tree
   entries, 118 protected-save entries, 83 registry settings, unchanged Working
   SHA-256 `650bc9768cf46d419e0d9e6a1793c46493d82dadf1d3498773a8496c1f975850`,

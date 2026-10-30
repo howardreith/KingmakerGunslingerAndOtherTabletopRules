@@ -1981,6 +1981,9 @@ foreach ($phase in @('working-save-expanded-summoning-prepare',
 $s32Args = @{Scenario='disposable-expanded-summoning-sprint32-native-review';ExpectedVersion=$activeVersion;TimeoutSeconds=600;StartupTimeoutSeconds=180}
 Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='satyr-control'})) 's32-satyr-control-admitted'
 Assert-True (Test-KmgExactSummoningRuntimeBoundary $s32Args.Scenario) 's32-exact-restoration-boundary'
+Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint35-infernal-barbed'})) 's35-barbed-admitted'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase='sprint35-infernal-barbed'} } 's35-barbed-no-exit-refused'
+Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase='sprint35-infernal-barbed-extra'} } 's35-barbed-broader-suffix-refused'
 foreach ($phase in @('satyr-turn','lillend-turn','optional-suggestion','satyr-routes','lillend-routes','support-lifecycle','druid-input','wizard-input','sorcerer-input')) {
     Assert-True ($null -ne (Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $true -Parameters @{reviewPhase=$phase})) ('s32-turn-admitted-'+$phase)
     Assert-Throws { Assert-KmgRuntimeScenarioPreflight @s32Args -ExitAfterCompletion $false -Parameters @{reviewPhase=$phase} } ('s32-turn-no-exit-refused-'+$phase)
