@@ -46,6 +46,9 @@
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalBodies34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalMechanics34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalCombat34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalAi34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalEffects34.cs" />
+    <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalLifetime34.cs" />
     <Compile Include="RuntimeTesting\RuntimeTestRunner.InfernalRoutes34.cs" />
     <Compile Include="Summoning\InfernalActions34.cs" />
     <Compile Include="Summoning\DevilChills34.cs" />

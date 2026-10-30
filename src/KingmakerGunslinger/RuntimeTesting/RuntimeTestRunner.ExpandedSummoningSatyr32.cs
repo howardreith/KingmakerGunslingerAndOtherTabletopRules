@@ -36,7 +36,10 @@ namespace KingmakerGunslinger.RuntimeTesting
             try
             {
                 string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
-                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase ||
+                if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalAiPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalEffectsPhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalLifetimePhase ||
+                    phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalBodiesPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32ShadowMotionPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32GrabPhase ||
                     phase == ExpandedSummoningNativeProfilePolicy.Sprint32PresentationPhase ||
@@ -88,6 +91,24 @@ namespace KingmakerGunslinger.RuntimeTesting
         private IEnumerable<int> ReviewSprint32Core(ExpandedSummoningCorrectionFixture fixture)
         {
             string phase = RuntimeTestRequestParser.Sprint32ReviewPhase(_request);
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalAiPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalAi34(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalEffectsPhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalEffects34(fixture)) yield return frame;
+                yield break;
+            }
+            if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalLifetimePhase)
+            {
+                CreateSprint32TurnHostile(fixture);
+                foreach (int frame in ReviewInfernalLifetime34(fixture)) yield return frame;
+                yield break;
+            }
             if (phase == ExpandedSummoningNativeProfilePolicy.Sprint32InfernalRoutesPhase)
             {
                 ReviewInfernalRoutes34(fixture);

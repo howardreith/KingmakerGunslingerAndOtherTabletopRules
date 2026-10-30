@@ -1,80 +1,53 @@
 # Sprint 34 - hidden native qualification
 
-Current stage: functional bodies and initial mechanics observed; regeneration
-correction and remaining combat observers prepared. All ten routes remain hidden.
+Current stage: mechanics/combat/body development proof passed. New AI, unrelated-
+effect and lifetime observers passed focused compilation/review; native proof is next.
+All ten routes remain hidden. No final package or Working envelope has started.
 Product/build/promotion root `C:/Dev/KingmakerGunslingerLab/wt/s34`, branch
 `codex/expanded-summoning-sprint34-bearded-devil-kyton`. Reviewed base
 `4b7e3d914883ac695a4146c03de790b2024ea38c`; last remote check still that master,
 v171 latest and v172 free. Recheck upstream/version before final freeze.
-Sprint33 is CLOSED. Its original-source ON REUSED_PASS remains distinct from
-final-artifact OFF/combined executions. Historical deferred checks stay NOT_RUN.
+Sprint33 is CLOSED. Preserve its original-source ON REUSED_PASS distinction
+and historical NOT_RUN records; no historical campaign is selected.
 
-Latest executed development candidate: source
-`e4b7249f4f98381f02960be6956f772a649aae65`, purpose `sprint34-infernal-mechanics`.
-ZIP `f70c3259bcd6f11bdbb931b0a662aeedd6de076afe75ee2a0db16af19789645d`;
-DLL `27bf20bf1a60687df435082cf3fe60f77db7c9b8bd6ed15d0a7fffe7de36ee69`;
-MVID `f4bdacf1-e9ed-415c-b653-3b94918abeaa`;
-fingerprint `5fdadc194e88b918282cc65d48ce8d3845cac357ad1abb89fd19ed041b36d509`.
-Build03 PASS264.1s,11 focused tests and strict package validation.
-Mechanics03 RunId `20261030T0116405420915Z-c260bee0619f4fd786431fe43325b15e`
-FAIL380.0s/200381ms game. Support readiness fixed; good/silver following-round
-suppression/recovery again passed. Before Holy Smite, the footprint guard refused
-an actor outside fixture.Created. Source tracing establishes that this fixture
-tracks its exact private hostile separately (Hostile/HostileBlueprint/owned
-faction), while the existing lane selector permits enemies in the burst.
-The correction proves that private hostile identity and absence at intake before
-admitting it, records every footprint actor/role, and still excludes every real
-intake actor. No spell was cast across the rejected guard. Good-spell/fatal and
-combat proof remain open. Original raw FAIL remains unchanged; evidence prefix
-`20261030T0116405044292Z`. Transaction `compat-20261030T011413Z-0cfa6a3efe77`
-Restored; full intake Compare PASS. No Working envelope started.
+Latest executed development candidate: `22005fd292c363bf90f60e0604c3e7aefab8c4d9`,
+purpose `sprint34-infernal-mechanics`, developmentv171 (never a release).
+ZIP `d2d3d9b808ff220a5fdf8fbf356fe3fc49012c4c8aa473ee180481b191c2c0c3`;
+DLL `7ff07ad93654a636c1bc2f511a62a6fdd9e3e5ed485b07493bc592e4440e0555`;
+MVID `7c471153-228f-446c-aecd-5a6e6dee35a9`;
+fingerprint `ec696304f0e9c25fdedb3754b5060270c944cb59df914c9401ddb251e0805edd`.
+Build04 PASS266.923s,11 focused tests and strict package validation.
 
-Previous failed development candidate: source
-`44d965a96fe047c11f3ddd10cba548f1bbfd2b6c`, purpose `sprint34-infernal-mechanics`.
-ZIP `9880660328795730a5b6b8a33572a7ffdd65982635f590567443dd8a2c06d14f`;
-DLL `15319998500c01aa3fde2d243ee1a1aad7b3992764cfa049457c1f770293bead`;
-MVID `b6ed6f43-b093-4ec6-ad4b-05ea5c20ac97`;
-fingerprint `c3b57e04a0fb8a4bd01542754f6bdcf37642fef6d525f745e15586dd8f760b75`.
-Build02 PASS261.4s,11/2767 focused tests and strict package validation.
-Mechanics02 RunId `20261030T0056506795918Z-e4b597256e8c4965a827c07c7353929d`
-FAIL (26PASS/2FAIL),403.5s orchestration/217008ms game. Good and silver injury
-showed states1->2->0, no healing/death-prevention throughout suppression, then
-native2HP healing at12 seconds. The later support caster hit an observer-only
-body assumption: Outsider30NativeAppearance requires the S34 theropod renderer,
-which Astral Deva does not use. CanAct/movement/fade were ready. The changed
-observer now uses native support-caster readiness without changing any model.
-Good-spell/fatal-injury and new combat phase remain NOT_RUN. The failed original
-receipt stays FAIL; its subobservations are not final-package acceptance.
-Transaction `compat-20261030T005416Z-c810a20760b2` restored; full intake Compare
-PASS. No Working envelope started. The support-readiness correction was executed in mechanics03. Raw evidence prefix `20261030T0056506524312Z`.
+- Mechanics04 PASS33/33,399.311s orchestration/216797ms game, RunId
+  `20261030T0140496707227Z-d5a38731b04b4cc8910d4ac1816357b4`.
+  Positive Holy Smite37HP injury, native standard cost, suppression1->2->0
+  without early healing, then native2HP healing. Fatal ordinary196HP injury
+  retained life; subsequent positive good16HP damage permitted native death.
+  Profiles/typed defenses/gaze/native donor isolation also passed.
+- Combat01 PASS34/34,402.076s orchestration/220727ms game, RunId
+  `20261030T0149426827410Z-40cc49c275d84e0994c0eaaca13a21be`.
+  Both live signed weapon calculations; Barbazu Power Attack; actual single,
+  charge and normal/close/extended AoO commands. Both claws caused separate5HP
+  Beard and failed DC17 disease save; onset remained about4days, no early stat
+  damage, and real Remove Disease cured it. Kyton normal/controlled attacks passed.
 
-Prior successful development candidate: source
-`6c20b2f7e7f0ce47ba9b33b2f68c9361d19a5d88`, same purpose.
-ZIP `509682bb036c7d6e5a83480872a4fd4e9e3994c43f4dc0e46cf3324992c39fd4`;
-DLL `ac5f8762df5bfb2dd0a75daf511d26772e649cd3475974d766fbb04de6391045`;
-MVID `edda15b0-ce63-48b5-bf87-115c2186febc`;
-fingerprint `09f02cc36ff221fc4054573028abb37d071f25b8b2ca9f8b42e8ade574bbdfbe`.
-Build PASS267.1s. Developmentv171 artifacts are never eligible for release.
+Raw evidence prefixes `20261030T0140496480019Z` and `20261030T0149426514961Z`
+under runtime-evidence, suffix `disposable-expanded-summoning-sprint32-native-review`.
+Transactions `compat-20261030T013821Z-c6f8b98650ab` and
+`compat-20261030T014714Z-c16da1a85ce5` both Restored/verified; full intake Compare
+PASS after each. Native receipts retain their exact original identities.
+Development observations are never relabeled as final-artifact execution.
 
-- Mechanics01 RunId `20261030T0006062556247Z-80d1d82c96c346b6913ed7d2cc073c44`,
-  PASS27/27,378.960s orchestration/192317ms game. Both profiles, typed defenses,
-  donor isolation, chain armor stacking, gaze live DC15->17, actual standard
-  commands/normal costs, natural save success/failure, ally targeting, finite
-  expiry, sight and descriptor-immunity consumers observed. Ordinary/good/silver
-  regeneration injury and later healing observed. This receipt did not test the
-  whole following round, good-spell attribution or fatal injury; those remain open.
-- Body05 on the same artifact, RunId
-  `20261030T0014352465588Z-d0ed1ae39feb4339919786bd7dc387a6`, PASS32/32,
-  422.183s orchestration/235338ms game. Native glaive blade contact, both distinct
-  moving bodies, correct alternative clips, four ordinary/extended chains,
-  private resources/teardown and actual rendered chain follow-through observed.
-  Agent-reviewed images show contact at normal/extended reach. No personal owner
-  aesthetic approval; rough seams/simple motion/minor clipping remain cosmetics.
-
-Raw evidence remains under runtime-evidence with matching timestamp prefixes
-`20261030T0006062243674Z` and `20261030T0014352129047Z`, scenario suffix
-`disposable-expanded-summoning-sprint32-native-review`. Original receipts are
-immutable; development PASS is never relabeled as final-package execution.
+Functional presentation: body05 on source
+`6c20b2f7e7f0ce47ba9b33b2f68c9361d19a5d88`, RunId
+`20261030T0014352465588Z-d0ed1ae39feb4339919786bd7dc387a6`, PASS32/32,
+422.183s/235338ms. Actual glaive blade contact, normal/extended chain contact and
+follow-through, distinct moving original bodies, independent private resources
+and teardown observed. Agent inspected retained images; no personal owner
+aesthetic approval. Rough seams/simple motion/minor clipping remain cosmetics.
+ZIP `509682bb036c7d6e5a83480872a4fd4e9e3994c43f4dc0e46cf3324992c39fd4`,
+DLL `ac5f8762df5bfb2dd0a75daf511d26772e649cd3475974d766fbb04de6391045`,
+MVID `edda15b0-ce63-48b5-bf87-115c2186febc`.
 
 ## Reuse, gap and proof
 
@@ -111,7 +84,7 @@ immutable; development PASS is never relabeled as final-package execution.
 - New Kyton-only regeneration subclass addresses installed3-second recovery
   and missing good-spell descriptor handling. Native healing/death flag remain
   native; following-round suppression is serialized. Exact compiled interface
-  maps verified. Native acceptance of this changed behavior is pending.
+  maps verified. Development mechanics04 now proves following-round, good-spell and fatal-injury behavior; cold-load/final qualification remains.
 - Mixed persistence observer captures both sources, exact private items, wound,
   day-scale disease, finite gaze, owned chains and in-progress regeneration
   suppression. No Working envelope started. Final candidate only: one ON trio,
@@ -121,23 +94,21 @@ immutable; development PASS is never relabeled as final-package execution.
 
 | Group | Observed evidence | Remaining |
 |---|---|---|
-| Profiles/defenses/isolation | Mechanics01 profiles, DR/immunity/SR/armor and donor PASS | Final dependency-qualified coverage |
-| Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 actual two-claw Beard and alternative routines | Single/charge/AoO/live scaling, disease cure/onset, unrelated bleed/patient and lifetime controls |
-| Kyton chains/gaze/armor/regeneration | Early03 control/cost/four chains; mechanics01 gaze/defenses | Changed regeneration following-round/good-spell/fatal injury, other attack modes |
-| AI/actions/cleanup | Existing exact-owner fixtures reused | Actual RTWP/TB AI, cancellation/expiry/disarm/no-loot/lifetime |
+| Profiles/defenses/isolation | Mechanics04 PASS, including donor isolation | Final dependency-qualified coverage |
+| Barbazu modes/Beard/wound/disease | Early03 real healing/tick/source retirement; body05 routines; combat01 signed stats/Power Attack, single/charge/AoO, actual Beard/infection/day onset/native cure PASS | Unrelated bleed/patient and lifetime controls |
+| Kyton chains/gaze/armor/regeneration | Early03 control/four chains; mechanics04 gaze/defenses/following-round/good-spell/fatal injury; combat01 single/charge/AoO/live stats PASS | Final dependency-qualified coverage |
+| AI/actions/cleanup | Scoped observers implemented on existing exact-owner fixtures | Native AI/effects/lifetime phases NOT_RUN |
 | Models/icons/ten public routes | Body05 functional presentation, real icons/offline exports | Fresh final presentation and all ten actual public casts/slots/quantity/duration/cleanup |
 | Mixed persistence/integration | Scoped mixed observer implemented | Six fresh processes total, targeted highest-risk combined |
 | Package/publication/restoration | Exact publisher selector,42 acceptance/refusal checks PASS | Final Sprint gate, reproducibility, PR/merge/release/public download/records |
 
-Next executable action: build the reviewed, focused-compiled private-hostile
-footprint correction as one `sprint34-infernal-mechanics` candidate. Run its
-bounded mechanics phase and the new `sprint34-infernal-combat` phase on that same
-artifact, restoring each. Estimate4.5min build plus two7-10min guarded sessions
-from retained timings; stop/diagnose a contaminated or failed boundary before
-continuing. Combat covers actual single/charge/AoO commands, native live signed
-weapon/Power Attack calculations, real two-claw injury/disease onset and native
-Remove Disease. Bounded natural outcomes never become manufactured PASS.
-AI/disarm/lifetime/unrelated-effect controls remain next after these observations.
+Next executable action: commit/push the reviewed AI/effects/lifetime observer
+batch, then build one mechanics-purpose candidate. Select three guarded save-free phases on that artifact: AI (both
+modes, disarm fallback), unrelated patient/bleed, and lifecycle (cancellation,
+expiry/death, summoner and area consumers). Retained timings allocate about
+4.5min build and 7-8min each phase; these are estimates, not a new quota.
+Restore/compare after each; diagnose any failed boundary before continuing.
+The stock bleed branch also needs a focused standalone control before release.
 
 Final selection remains one coherent Sprint source/build/package gate (no
 redundant Tranche), grouped final behavior/presentation/routes, the two mixed
@@ -156,6 +127,9 @@ before final freeze. Do not rebuild to stamp merge/reporting commits.
 | Oct29 body02/30a81e4e/`20261029T2240404051528Z-1e8e7d65260c4264b281c434cdd29dd2` | FAIL349.9s; inactive MaybeWeapon exposed empty-hand fallback. Repaired to MaybeItem. Null-string clip sub-PASS rejected; raw retained. |
 | Oct29 body03/124c370b/`20261029T2310492875407Z-bc0e5dff17be464a8368ee3d7b68abfe` | Raw PASS29/29,403.9s; actual separate7HP Beard. Visual contact remained open. Prior43-check commentary was a transcription error. |
 | Oct29 body04/3f5fffa9/`20261029T2334112439495Z-50b8760a061240419bfd28f5c4bd1ca1` | Raw PASS29/29,421.8s; BakeMesh contact correct, subsequent frame reset. Fixed exact0.35s limb follow-through and measured glaive axis; body05 proves corrections. |
+| Oct30 mechanics01/6c20b2f7/`20261030T0006062556247Z-80d1d82c96c346b6913ed7d2cc073c44` | PASS27/27,378.960s; initial profiles/gaze/regen observations. Following-round/good-spell/fatal scope was absent and later proved in mechanics04. |
+| Oct30 mechanics02/44d965a9/`20261030T0056506795918Z-e4b597256e8c4965a827c07c7353929d` | FAIL403.453s; support caster readiness incorrectly required the S34 body renderer. Fixed native support readiness. |
+| Oct30 mechanics03/e4b7249f/`20261030T0116405420915Z-c260bee0619f4fd786431fe43325b15e` | FAIL380.026s before any Holy Smite cast; guard omitted separately tracked private hostile. Exact identity/intake exclusion repair then passed mechanics04. |
 
 Early03 exact identities: ZIP
 `b86aef9d5b3984fc34fc98139f19af6d793d882cc6af14c90290f72014c863b2`,
@@ -165,16 +139,14 @@ MVID `19c76e2e-4398-4a60-a5fd-cdd910109d24`, fingerprint
 Retain raw loaded identities/receipts for every other historical candidate;
 reuse requires exact dependency/source/observer/profile linkage.
 
-Focused gate26 PASS31.7s, production compilation and11/2767 selected tests;
-private-hostile footprint and explicit damage-source observer correction.
-Gate25 PASS31.2s for support readiness. Gate24 PASS34.9s with11/2767 tests.
-Gate23 failed compilation on one observer collection argument; fixed. Gate19/20
-had observer API errors, corrected before gate21 PASS35.2s and gate22 PASS41.1s.
-Gate17/18 passed11 focused tests;33 compiled persistence admission/refusal checks
-and two installed-stack development/case refusals passed. Publisher42 S34 plus18
-affected S33 checks passed; no historical gameplay campaign replayed. Public-route
-observer reuses actual prepared parent/child casts and existing slot/quantity/
-duration/cleanup fixture, with disclosed native command/animation pumping.
+
+Gate29 PASS31.444s after exact private-group disarm guard review;11/2767 tests.
+Gate28 PASS34.707s, production compilation and11/2767 focused tests.
+Gate27 FAIL20.359s on two observer lambda-name collisions; corrected together.
+Gate26 PASS31.708s, gate25 PASS31.248s and gate24 PASS34.912s (11/2767 tests).
+Earlier observer API/collection errors were corrected before their subsequent
+focused passes. Publisher42 S34 plus18 affected S33 refusal checks passed;
+33 persistence admission/refusal checks and two wrapper refusals passed.
 No final milestone gate or final qualification has run.
 
 ## Intake and restoration
@@ -183,8 +155,8 @@ HOWARD-LAPTOP; actual human installation0.0.117 observed, not a restoration pin.
 Sixteen private references hash-match installed Kingmaker2.1.7b/Harmony12/UMM.
 IntakeSHA256 `bfbef80b0beee9afdadc527211780b615f49f9ea87be7183405d220b8d1ca50d`
 covers967 mod entries,118 save entries,20 references,83 settings, sound bank,
-processes/tasks/leases. Latest transaction `compat-20261030T011413Z-0cfa6a3efe77` reached Restored
-with verified restoration; full intake Compare PASS after mechanics03. No game/lease/Working envelope active.
+processes/tasks/leases. Latest transaction `compat-20261030T014714Z-c16da1a85ce5` reached Restored
+with verified restoration; full intake Compare PASS after combat01. No game/lease/Working envelope active.
 KMG_AUTOMATION_BASELINE is immutable. Original Working remains unchanged.
 
 Only the two authorized push branches were added to the existing wrapper.
@@ -219,3 +191,21 @@ mapSHA256 `8311e65ddf0204ca73d187d0e86a1bca813de75f50126f70dfba1d1a19f7939c`.
 Its434-file extraction matched the retained e4b7249f primary ZIP
 (proofSHA256 `6ac20f250da798c1a1ab739a0448aa2a753333ace5068501ae6037031a1d6955`).
 Only verified redundant owned scratch was removed after E: archival.
+
+Archive09 (20261030T013740Z) retained135,388,659 bytes/399 redundant compilation
+files; map `bee16c9c75dd282265581b1b98eaa2871cf0501c3fb23ba69e7815000f76f9be`,
+proof `dd845ec9e8c0e4c269782b3be69c16180debd4dedfb57159ceaa1e33b3e089bc`.
+Archive10 (20261030T014554Z) retained321,640,251 bytes/1302 files;
+map `412698d956f43dc11cebe63b71205b4c14ab590e8d8e825e302e7842121c7fc5`,
+primary-ZIP proof `ba655c6e35e512648852d035ff2f68e369874db63586901d61246538ec6feed6`.
+Archive11 (20261030T015650Z) retained321,640,251 bytes/1302 files;
+map `4a71091d5ba65b5641ad1572af5493ca02b3250d2e567d4cbd79d27c49a7c250`,
+proof `edf2a8671e3fa948f8cf3340269d73182d464d790594289d1301348b74ada6c6`.
+All are byte-verified E: archives of redundant owned scratch; primary packages,
+original saves, references and raw evidence remain retained. No active game or
+lease. No release/completion claim.
+
+Archive12 (20261030T021420Z) retained74,174,718 bytes/155 redundant old build
+files; map `640b83c2209800e32afaaf49cfe4ddb89882ab4d0d1aa2ea8d4951961203cafd`,
+proof `b450d5c3a84fc0cfa264df8d73821f1d3f6207e7c44349f614fba2db80822cbe`.
+Every removed file also remains in the primary ZIP or archive09.
