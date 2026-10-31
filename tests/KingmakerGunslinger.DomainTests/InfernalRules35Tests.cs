@@ -383,5 +383,39 @@ namespace KingmakerGunslinger.DomainTests
                 TheropodVisualPolicy.DonorPrefabGuid),
                 "Bone cannot cross-bind the Barbed body.");
         }
+
+        internal static void WallOfIceKeepsFormationAndBreachRulesDistinct()
+        {
+            Assertions.Equal(18,
+                InfernalRules35.WallOfIceFormationDc(18),
+                "The CL12 Bone Devil uses its live Charisma for Wall DC18.");
+            Assertions.Equal(120, InfernalRules35.WallOfIceDurationRounds,
+                "Twelve minutes is 120 canonical combat rounds.");
+            Assertions.Equal(36,
+                InfernalRules35.WallOfIceSectionHitPoints,
+                "A CL12 ten-foot section has 12 inches times three HP.");
+            Assertions.True(Math.Abs(
+                InfernalRules35.WallDistanceToFootprint(2f, 0f,
+                    1.525f, .375f) - .475f) < .0001f,
+                "Placement distance is measured from the finite section end.");
+            Assertions.True(InfernalRules35.WallPlacementOccupied(.4f, .5f),
+                "A creature circle intersecting the plane makes placement illegal.");
+            Assertions.False(InfernalRules35.WallPlacementOccupied(.6f, .5f),
+                "A separated creature does not make the plane occupied.");
+            Assertions.True(InfernalRules35.WallFormationAdjacent(.6f, .5f),
+                "A separated creature within five feet receives formation admission.");
+            Assertions.False(InfernalRules35.WallFormationAdjacent(.4f, .5f),
+                "An overlapping creature is an illegal placement, not an adjacent save.");
+            Assertions.True(InfernalRules35.WallDamageUsesObjectHalf(false),
+                "Non-fire damage retains ordinary object halving.");
+            Assertions.False(InfernalRules35.WallDamageUsesObjectHalf(true),
+                "Fire deals full damage instead of acquiring object halving.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.WallDistanceToFootprint(float.NaN, 0f,
+                    1f, 1f), "Non-finite formation geometry is rejected.");
+            Assertions.Throws<ArgumentOutOfRangeException>(() =>
+                InfernalRules35.WallFormationAdjacent(-1f, .5f),
+                "Negative formation distance is rejected.");
+        }
     }
 }

@@ -37,6 +37,14 @@ namespace KingmakerGunslinger.Summoning
         internal const int UnholyBlightUses = 1;
         internal const int UnholyBlightOrdinaryDice = 5;
         internal const int UnholyBlightGoodOutsiderDice = 10;
+        internal const int WallOfIceSpellLevel = 4;
+        internal const int WallOfIceDurationRounds = 120;
+        internal const int WallOfIceSectionHitPoints = 36;
+        internal const int WallOfIceResidualDiceCount = 1;
+        internal const int WallOfIceResidualBonus = 12;
+        internal const float WallOfIceSectionLengthMeters = 3.05f;
+        internal const float WallOfIceSectionThicknessMeters = .75f;
+        internal const float WallOfIceAdjacencyMeters = 1.524f;
 
         internal static bool QualifiesForBarbedDefense(bool hit, bool melee,
             bool manufactured, float rawWeaponReachFeet,
@@ -102,6 +110,62 @@ namespace KingmakerGunslinger.Summoning
             return 10 + UnholyBlightSpellLevel +
                 AbilityModifier(liveCharismaScore);
         }
+
+        internal static int WallOfIceFormationDc(int liveCharismaScore)
+        {
+            return 10 + WallOfIceSpellLevel +
+                AbilityModifier(liveCharismaScore);
+        }
+
+        internal static float WallDistanceToFootprint(float alongMeters,
+            float acrossMeters, float halfLengthMeters,
+            float halfThicknessMeters)
+        {
+            if (halfLengthMeters <= 0 || halfThicknessMeters <= 0 ||
+                float.IsNaN(alongMeters) || float.IsNaN(acrossMeters) ||
+                float.IsNaN(halfLengthMeters) ||
+                float.IsNaN(halfThicknessMeters) ||
+                float.IsInfinity(alongMeters) ||
+                float.IsInfinity(acrossMeters) ||
+                float.IsInfinity(halfLengthMeters) ||
+                float.IsInfinity(halfThicknessMeters))
+                throw new ArgumentOutOfRangeException("Wall footprint");
+            float outsideAlong = Math.Max(0f,
+                Math.Abs(alongMeters) - halfLengthMeters);
+            float outsideAcross = Math.Max(0f,
+                Math.Abs(acrossMeters) - halfThicknessMeters);
+            return (float)Math.Sqrt(outsideAlong * outsideAlong +
+                outsideAcross * outsideAcross);
+        }
+
+        internal static bool WallPlacementOccupied(float footprintDistance,
+            float creatureRadius)
+        {
+            if (footprintDistance < 0 || creatureRadius < 0 ||
+                float.IsNaN(footprintDistance) ||
+                float.IsNaN(creatureRadius) ||
+                float.IsInfinity(footprintDistance) ||
+                float.IsInfinity(creatureRadius))
+                throw new ArgumentOutOfRangeException("Wall placement");
+            return footprintDistance <= creatureRadius;
+        }
+
+        internal static bool WallFormationAdjacent(float footprintDistance,
+            float creatureRadius)
+        {
+            if (footprintDistance < 0 || creatureRadius < 0 ||
+                float.IsNaN(footprintDistance) ||
+                float.IsNaN(creatureRadius) ||
+                float.IsInfinity(footprintDistance) ||
+                float.IsInfinity(creatureRadius))
+                throw new ArgumentOutOfRangeException("Wall formation");
+            return footprintDistance > creatureRadius &&
+                footprintDistance <= creatureRadius +
+                    WallOfIceAdjacencyMeters;
+        }
+
+        internal static bool WallDamageUsesObjectHalf(bool fireEnergy)
+        { return !fireEnergy; }
 
         internal static int UnholyBlightDiceCount(bool goodOutsider)
         {
@@ -204,6 +268,21 @@ namespace KingmakerGunslinger.Summoning
                 SpellLikeCasterLevel != 12 ||
                 UnholyBlightSpellLevel != 4 ||
                 UnholyBlightRadiusFeet != 20 || UnholyBlightUses != 1 ||
+                WallOfIceSpellLevel != 4 ||
+                WallOfIceDurationRounds != 120 ||
+                WallOfIceSectionHitPoints != 36 ||
+                WallOfIceResidualDiceCount != 1 ||
+                WallOfIceResidualBonus != 12 ||
+                WallOfIceFormationDc(18) != 18 ||
+                WallDistanceToFootprint(0, 0, 1.525f, .375f) != 0f ||
+                Math.Abs(WallDistanceToFootprint(2f, 0, 1.525f,
+                    .375f) - .475f) > .0001f ||
+                !WallPlacementOccupied(.4f, .5f) ||
+                WallPlacementOccupied(.6f, .5f) ||
+                !WallFormationAdjacent(.6f, .5f) ||
+                WallFormationAdjacent(.4f, .5f) ||
+                !WallDamageUsesObjectHalf(false) ||
+                WallDamageUsesObjectHalf(true) ||
                 UnholyBlightWillDc(18) != 18 ||
                 UnholyBlightDiceCount(false) != 5 ||
                 UnholyBlightDieSides(false) != 8 ||

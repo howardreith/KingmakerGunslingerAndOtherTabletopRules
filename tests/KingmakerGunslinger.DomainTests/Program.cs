@@ -1150,6 +1150,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-poison-gate", InfernalRules35Tests.PoisonRequiresTheWoundingSting),
             Case("expanded-summoning.sprint35-bone-invisibility-identity", InfernalRules35Tests.BoneInvisibilityOwnsItsAppendedEffectIdentity),
             Case("expanded-summoning.sprint35-private-wall-unit-donor", InfernalRules35Tests.PrivateWallUnitHasBoundedShellDonor),
+            Case("expanded-summoning.sprint35-wall-formation-breach", InfernalRules35Tests.WallOfIceKeepsFormationAndBreachRulesDistinct),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),
             Case("expanded-summoning.sprint18-registered-and-published", PrimateRulesTests.BothApesAreRegisteredAndPublished),

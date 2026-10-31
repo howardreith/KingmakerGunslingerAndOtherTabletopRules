@@ -124,7 +124,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                 row["weapon"] = evt.DamageBundle.Weapon?.Blueprint?.AssetGuid;
                 row["hasAttackRoll"] = evt.AttackRoll != null;
                 row["packets"] = new JArray(evt.DamageBundle.Select(value => new JObject {
-                    ["type"] = value.GetType().Name, ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus }));
+                    ["type"] = value.GetType().Name, ["dice"] = value.Dice.ToString(), ["bonus"] = value.Bonus,
+                    ["half"] = value.Half,
+                    ["energy"] = (value as EnergyDamage)?.EnergyType.ToString() }));
                 row["source"] = evt.Reason?.Context?.MaybeCaster?.UniqueId;
                 row["ability"] = (evt.SourceAbility ?? evt.Reason?.Ability?.Blueprint ?? evt.Reason?.Context?.SourceAbility)?.AssetGuid;
                 row["contextAbility"] = evt.Reason?.Context?.SourceAbility?.AssetGuid;
