@@ -62,6 +62,36 @@ namespace KingmakerGunslinger.RuntimeTesting
                         pair.Key.StartsWith(
                             ExpandedSummoningSpecialBuilder.Bone35Prefix,
                             StringComparison.Ordinal)).ToArray();
+                var expectedRegistrations = ExpandedSummoningIdentityCatalog
+                    .Build().Where(value => value.Symbol.StartsWith(
+                            ExpandedSummoningSpecialBuilder.Barbed35Prefix,
+                            StringComparison.Ordinal) ||
+                        value.Symbol.StartsWith(
+                            ExpandedSummoningSpecialBuilder.Bone35Prefix,
+                            StringComparison.Ordinal)).OrderBy(value =>
+                                value.Symbol, StringComparer.Ordinal).ToArray();
+                var actualBySymbol = registrations.ToDictionary(value =>
+                    value.Key, value => value.Value, StringComparer.Ordinal);
+                var missingRegistrations = expectedRegistrations.Where(value =>
+                    !actualBySymbol.ContainsKey(value.Symbol)).Select(value =>
+                        value.Symbol).ToArray();
+                var unexpectedRegistrations = registrations.Where(value =>
+                    !expectedRegistrations.Any(expected => String.Equals(
+                        expected.Symbol, value.Key, StringComparison.Ordinal)))
+                    .Select(value => value.Key).OrderBy(value => value,
+                        StringComparer.Ordinal).ToArray();
+                var wrongTypes = expectedRegistrations.Where(value =>
+                    actualBySymbol.ContainsKey(value.Symbol) &&
+                    (actualBySymbol[value.Symbol] == null ||
+                    !String.Equals(actualBySymbol[value.Symbol].GetType().Name,
+                        value.PlannedType, StringComparison.Ordinal))).Select(
+                            value => new JObject {
+                                ["symbol"] = value.Symbol,
+                                ["expected"] = value.PlannedType,
+                                ["actual"] = actualBySymbol[value.Symbol] == null ?
+                                    null : actualBySymbol[value.Symbol]
+                                        .GetType().Name
+                            }).ToArray();
                 var bootstrap = new JObject {
                     ["routeCount"] = routes.Length,
                     ["routes"] = new JArray(routes.Select(value => new JObject {
@@ -70,15 +100,27 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["quantity"] = value.Multiplicity.ToString(),
                         ["published"] = SummonVisibilityCatalog.IsPublished(value)
                     })),
+                    ["expectedRegistrationCount"] =
+                        expectedRegistrations.Length,
                     ["privateRegistrationCount"] = registrations.Length,
+                    ["privateSymbols"] = new JArray(registrations.Select(value =>
+                        value.Key).OrderBy(value => value,
+                            StringComparer.Ordinal)),
                     ["privateTypes"] = new JArray(registrations.Select(value =>
                         value.Value == null ? null : value.Value.GetType().Name)
-                        .OrderBy(value => value))
+                        .OrderBy(value => value)),
+                    ["missingRegistrations"] =
+                        new JArray(missingRegistrations),
+                    ["unexpectedRegistrations"] =
+                        new JArray(unexpectedRegistrations),
+                    ["wrongTypes"] = new JArray(wrongTypes)
                 };
                 check("hidden-bootstrap", routes.Length == 5 &&
                     routes.All(value => !SummonVisibilityCatalog.IsPublished(value)) &&
-                    registrations.Length == 46 &&
-                    registrations.All(value => value.Value != null), bootstrap,
+                    registrations.Length == expectedRegistrations.Length &&
+                    missingRegistrations.Length == 0 &&
+                    unexpectedRegistrations.Length == 0 &&
+                    wrongTypes.Length == 0, bootstrap,
                     "Both dependency-complete roots resolve while exactly five routes remain unpublished.");
 
                 receipt["nativeSpellCensus"] = InfernalNativeSpellCensus35(

@@ -1394,3 +1394,37 @@ Sprint 35 checkpoint; historical records are not current instructions.
   validation compiled production in 44.8 seconds and passed the selected 9/9
   Sprint 35/correction tests in 9.6 seconds. Package and native feasibility are
   not yet claimed; one source-bound early Wall run is next.
+- Hidden development candidate `70eaed6e6282bebc31ad75f797843f468ac71fba`
+  completed source-bound admission with source state
+  `299daabab9e06811a2a7f812164f7e8e48e1ab4034af4bf07d65676598e730a3`,
+  ZIP `24de584e2eed17c84de87f11bce5b02a5ff0fefb99cef10db9790e734a443623`,
+  DLL `0332a15aa2faebbcd2f2b5fe8684bb85184b4d008ec8183a6c073587bb8000ed`
+  and MVID `69a651c6-b213-46ca-ab8f-093b5b40d67a`; selected tests passed
+  9/9 and strict package validation passed. Its 162-file / 86,748,038-byte
+  exact-build scratch is preserved on E: under manifest SHA-256
+  `9349233FDAF697013EF676DC0EDE2DE1BB473572CC5C8D55C0CEE79BB8C75B2E`.
+  The first archive command was safely refused because a literal wildcard
+  copied nothing; the second refused the resulting zero-length manifest. The
+  final transaction verified every source/destination path, length and SHA-256
+  before removing only the redundant C: exact-build directory.
+- Guarded run `20261031T0905102628398Z-70002a764b304663b3411c72ce63969c`
+  under evidence directory
+  `20261031T0905102141533Z-disposable-expanded-summoning-sprint32-native-review`
+  timed out in the outer supervisor before the game flushed its result, so its
+  orchestration verdict remains ERROR and no Wall verdict is claimed. The
+  later immutable native result stopped at hidden bootstrap: all five routes
+  were present and hidden and all 47 registered private values were non-null,
+  but the observer still pinned the pre-correction count of 46. The append-only
+  Bone ordinary-invisibility buff is the legitimate forty-seventh identity.
+  No Wall cast occurred. The fixture references/clock and save guard restored;
+  no save interaction occurred. The outer wrapper restored the live 136-file
+  tree exactly to
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  The owned game process later wrote its retained FAIL, initiated automatic
+  exit, and is now absent. The corrected observer derives the exact prefix
+  symbol/type set from the append-only identity catalog and records missing,
+  unexpected and wrong-type entries instead of pinning another stale count.
+  Focused validation compiled production in 58.6 seconds and passed the
+  selected 9/9 Sprint 35/correction tests in 5.5 seconds. The observer DLL
+  changed, so the late raw FAIL is retained and a new source-bound early run is
+  required; the unchanged Wall production implementation is not yet proven.
