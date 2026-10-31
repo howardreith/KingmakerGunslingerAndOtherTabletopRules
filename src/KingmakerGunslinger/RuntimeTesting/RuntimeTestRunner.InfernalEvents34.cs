@@ -21,6 +21,7 @@ namespace KingmakerGunslinger.RuntimeTesting
         // dispatch error. This observer never changes a rule or game state.
         private sealed class InfernalEvents34 : IDisposable, IUnitCommandStartHandler,
             IUnitCommandActHandler, IUnitCommandEndHandler,
+            IUnitMakeOffensiveActionGlobalHandler,
             IGlobalRulebookHandler<RuleAttackWithWeapon>, IGlobalRulebookHandler<RuleAttackRoll>,
             IGlobalRulebookHandler<RuleDealDamage>, IGlobalRulebookHandler<RuleDealStatDamage>,
             IGlobalRulebookHandler<RuleHealDamage>, IGlobalRulebookHandler<RuleSavingThrow>,
@@ -68,6 +69,15 @@ namespace KingmakerGunslinger.RuntimeTesting
             public void HandleUnitCommandDidStart(UnitCommand command) { Command(command, "command-start"); }
             public void HandleUnitCommandDidAct(UnitCommand command) { Command(command, "command-act"); }
             public void HandleUnitCommandDidEnd(UnitCommand command) { Command(command, "command-end"); }
+            public void HandleUnitMakeOffensiveAction(UnitEntityData unit,
+                UnitEntityData target)
+            {
+                var row = Row("offensive-action-global", unit, target);
+                row["ownerIsEnemy"] = unit != null && target != null &&
+                    unit.IsEnemy(target);
+                row["ownerIsInGame"] = unit?.IsInGame;
+                row["targetIsInGame"] = target?.IsInGame;
+            }
             public void OnEventAboutToTrigger(RuleSpellResistanceCheck evt) { }
             public void OnEventDidTrigger(RuleSpellResistanceCheck evt)
             {
@@ -158,6 +168,45 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var row = Row("effect-application", evt.Reason?.Context?.MaybeCaster, evt.Initiator);
                 row["blueprint"] = evt.Blueprint?.AssetGuid; row["resultingBuffs"] = Buffs(evt.Initiator);
             }
+        }
+
+        // Read-only exact-owner listener for diagnosing the native actor-local
+        // offensive-action boundary. It records the same event that
+        // BuffInvisibility consumes and never changes rule or fact state.
+        private sealed class InfernalOffensiveOwner35 : IDisposable,
+            IUnitMakeOffensiveActionHandler, IUnitSubscriber
+        {
+            private readonly UnitEntityData owner;
+            private readonly JArray rows;
+
+            internal InfernalOffensiveOwner35(UnitEntityData owner,
+                JArray rows)
+            {
+                this.owner = owner ?? throw new ArgumentNullException(
+                    nameof(owner));
+                this.rows = rows ?? throw new ArgumentNullException(
+                    nameof(rows));
+                EventBus.Subscribe(this);
+            }
+
+            public UnitEntityData GetSubscribingUnit() { return owner; }
+
+            public void HandleUnitMakeOffensiveAction(UnitEntityData target)
+            {
+                rows.Add(new JObject {
+                    ["event"] = "offensive-action-owner",
+                    ["owner"] = owner.UniqueId,
+                    ["target"] = target?.UniqueId,
+                    ["gameSeconds"] = Game.Instance.TimeController.GameTime
+                        .TotalSeconds,
+                    ["ownerIsEnemy"] = target != null &&
+                        owner.IsEnemy(target),
+                    ["ownerIsInGame"] = owner.IsInGame,
+                    ["targetIsInGame"] = target?.IsInGame
+                });
+            }
+
+            public void Dispose() { EventBus.Unsubscribe(this); }
         }
     }
 }

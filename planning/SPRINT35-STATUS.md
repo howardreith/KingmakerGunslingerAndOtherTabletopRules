@@ -1049,3 +1049,48 @@ Sprint 35 checkpoint; historical records are not current instructions.
   wrapper already contains only the two exact authorized Sprint 35 branches,
   so it needs no allowlist edit. No persistence or publisher expansion will be
   frozen around the known-incomplete Wall candidate.
+- Exact candidate `ecdbb7ee6fc53bc801a087b46181d63c11b1faaa`
+  packaged and validated successfully before two guarded Bone-only attempts:
+  source state
+  `29377aaa19bd435b0633e125d3286634cf0e0952e41bd48c4f009ec27a8cbd66`,
+  ZIP `e5e6f0e0c14556eaaa7f7158c8b3317336615d89d61192b00bf3ae55eb65a5b3`,
+  DLL `105c50448bed5f97daf134b84aa8c2ed9035ea9d769603af01a8e3bd7e53f269`,
+  MVID `3b195405-095c-4e5d-acd1-37a29d6876ae`. Run
+  `20261031T0502069514965Z-ca181a64432d42b89f8dc4bde4dd026b`
+  stopped before fixture entry on cold-start menu readiness after the installed
+  compatibility catalog alone took 91.9 seconds; no save interaction or Sprint
+  35 mechanic occurred. The one evidence-backed retry enlarged only startup
+  allowance. Run
+  `20261031T0508174943855Z-99bbe4daaa224fd984429eeb2ddb3f73`
+  then passed private hostility, appearance, mapping, allied/hostile two-source
+  fear aura, non-sting poison negative, the complete four-limb attack plan,
+  wounding-sting poison, cadence and two-save cure. Standard Invisibility was
+  applied by its real command, and the subsequent real bite hit for 6 damage
+  with native `UnitAttack` result `Success`, but the owned effect remained.
+  Both attempts restored the live 136-file intake exactly to SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no process, lease or staged save remains.
+- The second failure disproves the earlier unverified theory that copying the
+  donor component's runtime `Fact`/listener fields was the cause: historical
+  installed graph evidence records the native blueprint component with null
+  `Fact`, `IsListeningEvents=false`, and serialized stealth bonus 20. The fresh
+  component also dropped that serialized field, but the prior complete clone
+  failed the same removal. The next candidate therefore adds observation only:
+  live component/fact/owner/listener identity plus the installed global and
+  exact-owner offensive-action dispatch. It waits for the successful command,
+  records the failed removal cell, and stops; it does not invoke the handler or
+  supply production behavior. Focused production compilation and all eight
+  Sprint 35 tests pass. The shared compiler server is disabled for this laptop
+  envelope after two measured attempts showed it retaining about 160 MiB of C:
+  backing space; compiled bytes and test semantics are unchanged.
+- All storage recovery preserved exact bytes before removal. The incomplete
+  diagnostic attempts and their changed partial test/build outputs are under
+  `E:\KingmakerGunslingerLab\s35-private-references\invisibility-diagnostic-gate-ecdbb7ee-incomplete`;
+  primary bin/obj manifest SHA-256
+  `8D9219C365A8BE2DBC5917D717FEBF2AD7EDAC7E2B7D994A6A373975D26C6058`,
+  current-candidate manifest
+  `57FB8CC5DCC20B6D7AE2CF0E4CC04D10882629029B94EEFA423A41B4B6E7D1ED`.
+  The final cleanup reverified 891 current files before removing only
+  reproducible `bin`, `obj`, `deploy-staging`, `tests`, and old development
+  candidate trees. Source, native evidence, saves and unique artifacts were
+  not removed.

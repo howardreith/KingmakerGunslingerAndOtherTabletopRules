@@ -622,14 +622,22 @@ namespace KingmakerGunslinger.RuntimeTesting
                 var standardParams = standardData.CalculateParams();
                 using (var economy = new FirearmReviewCosts(bone,
                     standardCosts))
+                using (var offensive = new InfernalOffensiveOwner35(bone,
+                    trace.Rows))
                 {
                     foreach (int frame in Sprint26Cast(bone, invisibility,
                         new TargetWrapper(bone), value =>
                             standardCommand = value)) yield return frame;
                     Buff standardEffect = InfernalBoneBuff35(bone,
                         invisible, bone);
+                    BuffInvisibility liveInvisibility = standardEffect?
+                        .SelectComponents<BuffInvisibility>().SingleOrDefault();
                     JObject standardEffectRow = standardEffect == null ?
                         null : InfernalSavedEffect34(standardEffect);
+                    if (standardEffectRow != null)
+                        standardEffectRow["liveComponentBeforeAttack"] =
+                            InfernalBoneInvisibilityComponent35(
+                                liveInvisibility, standardEffect, bone);
                     bool activeGuard = standardEffect != null &&
                         ReferenceEquals(standardEffect.Blueprint, invisible) &&
                         !invisAi.IsAvailable(selfDecision) &&
@@ -643,10 +651,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     };
                     bone.Commands.Run(breakAttack);
                     foreach (int frame in WaitInfernalCommand34(breakAttack,
-                        () => InfernalBoneBuff35(bone, invisible, bone) ==
-                            null, 25)) yield return frame;
+                        () => true, 25)) yield return frame;
                     JObject[] breakAttacks = InfernalBoneAttackRows35(trace,
                         breakStart, bone, target, breakAttack).ToArray();
+                    Buff effectAfterAttack = InfernalBoneBuff35(bone,
+                        invisible, bone);
+                    JObject liveAfterAttack =
+                        InfernalBoneInvisibilityComponent35(
+                            effectAfterAttack?.SelectComponents<
+                                BuffInvisibility>().SingleOrDefault(),
+                            effectAfterAttack, bone);
                     bool standardExact = standardAiBefore && quickAiBefore &&
                         standardCommand != null &&
                         standardCommand.Result ==
@@ -678,8 +692,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["breakingAttack"] = new JArray(breakAttacks),
                             ["effectAfterAttack"] = InfernalBoneBuff35(bone,
                                 invisible, bone) != null,
+                            ["liveComponentAfterAttack"] = liveAfterAttack,
+                            ["offensiveEvents"] = new JArray(trace.Rows
+                                .Skip(breakStart).Where(value =>
+                                    ((string)value["event"] ?? "")
+                                        .StartsWith("offensive-action",
+                                            StringComparison.Ordinal))),
                             ["costs"] = standardCosts
                         }, "A real standard-action ordinary Invisibility cast is source-attributed, makes both AI actions refuse redundant recasts, and a real bite breaks it.");
+                    if (!standardExact) throw new InvalidOperationException(
+                        "Bone standard invisibility live subscriber diagnostic failed.");
                 }
 
                 var quickRows = new JArray();
@@ -980,6 +1002,24 @@ namespace KingmakerGunslinger.RuntimeTesting
                         .ToArray());
                 ResetExpandedSummoningHostile(fixture);
             }
+        }
+
+        private static JObject InfernalBoneInvisibilityComponent35(
+            BuffInvisibility component, Buff fact, UnitEntityData owner)
+        {
+            return component == null ? null : new JObject {
+                ["name"] = component.name,
+                ["listening"] = component.IsListeningEvents,
+                ["factSame"] = ReferenceEquals(component.Fact, fact),
+                ["buffSame"] = ReferenceEquals(component.Buff, fact),
+                ["ownerSame"] = ReferenceEquals(component.Owner,
+                    owner?.Descriptor),
+                ["notDispellAfterOffensiveAction"] =
+                    component.NotDispellAfterOffensiveAction,
+                ["factActive"] = fact?.Active,
+                ["factTurnedOn"] = fact?.IsTurnedOn,
+                ["factDisposed"] = fact?.IsDisposed
+            };
         }
 
         private static IEnumerable<JObject> InfernalBoneRows35(
