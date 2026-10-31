@@ -1,6 +1,7 @@
 """Sprint35 exact reviewed product and append-only identities; native proof is separately attributed."""
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -17,6 +18,8 @@ VERSION = "0.0.173"
 INFORMATIONAL = VERSION + "-expanded-summoning-barbed-bone-devils"
 OLD_INFORMATIONAL = "0.0.172-expanded-summoning-bearded-devil-kyton"
 ASSEMBLY = "src/KingmakerGunslinger/Properties/AssemblyInfo.cs"
+OBSERVER = "src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.InfernalEarly35.cs"
+OBSERVER_SHA256 = "0840aca62ce12e33700276b2b6b1a89f5c8108626bbf6e9815bce7d0ba385171"
 ROOTS = ("src/KingmakerGunslinger", "assets", "assets-source", "blueprints")
 RECORD_KEY = "expandedSummoningSprint35Release173"
 RECORD = dict(releaseVersion=VERSION, releaseInformationalVersion=INFORMATIONAL,
@@ -27,8 +30,12 @@ RECORD = dict(releaseVersion=VERSION, releaseInformationalVersion=INFORMATIONAL,
               ownerPublicationAuthority="Sprint35 Barbed Devil and Bone Devil Fresh Codex Mission, with approved bounded movement-only Wall of Ice adaptation and explicit unsupported-SLA omissions")
 
 def check_product(changed, untracked):
-    if set(changed) - {ASSEMBLY} or untracked:
+    if set(changed) - {ASSEMBLY, OBSERVER} or untracked:
         raise AssertionError("Product/project/assets/identities differ from reviewed source")
+
+def check_observer(data):
+    if hashlib.sha256(data).hexdigest() != OBSERVER_SHA256:
+        raise AssertionError("Exact reviewed native observer correction differs")
 
 def check_metadata(old_info, info, old_props, props, old_assembly, assembly):
     if info != dict(old_info, Version=VERSION):
@@ -75,6 +82,7 @@ def validate(root):
     changed=subprocess.check_output(["git","diff","--name-only","--no-renames",PRODUCT,"--",*ROOTS],cwd=root).decode().splitlines()
     untracked=subprocess.check_output(["git","ls-files","--others","--exclude-standard","--",*ROOTS],cwd=root).decode().splitlines()
     check_product(changed,untracked)
+    check_observer((root/OBSERVER).read_bytes())
     check_metadata(json.loads(blob(PRODUCT,"Info.json")),common.document(root,"Info.json"),blob(PRODUCT,"Directory.Build.props"),(root/"Directory.Build.props").read_text(encoding="utf-8-sig"),blob(PRODUCT,ASSEMBLY),(root/ASSEMBLY).read_text(encoding="utf-8-sig"))
     path="blueprints/blueprints.json"
     check_ledger(json.loads(blob(RELEASED,path)),json.loads(blob(PRODUCT,path)),common.document(root,path))
@@ -82,7 +90,7 @@ def validate(root):
     check_census(parsed_creatures(),suppressed_keys(),released_creatures(root))
     result=subprocess.run([sys.executable,"-B",str(root/"tools/expanded_summoning_manifest.py")],cwd=root,capture_output=True,text=True)
     if result.returncode:raise AssertionError(result.stdout+result.stderr)
-    print("Sprint35 release173 PASS: exact reviewed product/assets, append-only released identities and exact two-creature public scope; version-only metadata. Native release qualification is separate.")
+    print("Sprint35 release173 PASS: exact reviewed product/assets and observer correction, append-only released identities and exact two-creature public scope; version-only metadata. Native release qualification is separate.")
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser();parser.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1])
