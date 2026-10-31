@@ -1201,3 +1201,30 @@ Sprint 35 checkpoint; historical records are not current instructions.
   attack-roll boundary while the previously passing fear, attack-plan, poison,
   cadence and resource rows remain unchanged. Only that affected Bone group is
   selected; Wall of Ice remains stopped on the explicit gameplay decision.
+- Exact candidate `24b955bdb22edfae8516e5e463d2d35063eaf9dc`
+  completed the supported development path with source state
+  `619156c1330a255240a6b53d2b1b87e19143791cbd153fbd092bec0a8b8be83f`,
+  ZIP `9b95a8a3d8d0b678c539c08eda5ccd463b829a531329d7bb17edd1ea8668536e`,
+  DLL `62ea58a4b758f4d4f8367aaf6aefefba8183301e5bd32d28cfb73402251045bc`
+  and MVID `fe53c788-e70a-4425-8226-3fccf96c3ac1`; its selected tests passed
+  9/9 and strict package validation passed. Its 1,067-file exact/reproducible
+  envelope (364,406,336 bytes) is preserved on E: under manifest SHA-256
+  `9253160D1D6A12EDBBBA48D54A1A9B8C82C1E24D60EA71157896A67C6A3F914B`.
+  Native run `20261031T0636450086522Z-08e88814ed8646b9b74bc0aa621e078b`
+  proves the attack-breaking correction: standard Invisibility and all three
+  quickened uses were applied by real commands, refused active-effect recasts,
+  and were each removed by a real hostile bite; every attack-plan, fear and
+  poison row also passed. The only failed gameplay row found a separate AI
+  admission defect after the third quickened use: the real resource was zero
+  and `AbilityData.IsAvailable` was false, but `InfernalSpellAi35.IsAvailable`
+  still returned true because the native base action did not inspect the
+  granted ability's exhausted resource. The exact-owner wrapper now requires
+  the owner's real granted `AbilityData` to be available before deferring to
+  the native base action. This preserves active-effect refusal and also applies
+  the same finite-use rule to the other Sprint 35 SLA buttons. The next affected
+  Bone rerun is justified only by that causal AI change: all four invisibility
+  removals should remain true and final quickened AI availability should become
+  false. The prior FAIL is retained, the live 136-file installation was restored
+  exactly to SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`,
+  and the unchanged failed candidate will not be relaunched.

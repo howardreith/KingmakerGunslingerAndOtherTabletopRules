@@ -86,6 +86,14 @@ namespace KingmakerGunslinger.Summoning
                 enemy;
         }
 
+        internal static bool SpellAiCanAct(bool exactOwner, bool inCombat,
+            bool hasActiveEffect, bool hasGrantedAbility,
+            bool grantedAbilityAvailable)
+        {
+            return exactOwner && inCombat && !hasActiveEffect &&
+                hasGrantedAbility && grantedAbilityAvailable;
+        }
+
         internal static int AbilityModifier(int score)
         { return (int)Math.Floor((score - 10) / 2.0); }
 
@@ -158,6 +166,12 @@ namespace KingmakerGunslinger.Summoning
                 ShouldBreakBoneInvisibility(true, true, false, true, true) ||
                 ShouldBreakBoneInvisibility(true, true, true, false, true) ||
                 ShouldBreakBoneInvisibility(true, true, true, true, false) ||
+                !SpellAiCanAct(true, true, false, true, true) ||
+                SpellAiCanAct(false, true, false, true, true) ||
+                SpellAiCanAct(true, false, false, true, true) ||
+                SpellAiCanAct(true, true, true, true, true) ||
+                SpellAiCanAct(true, true, false, false, true) ||
+                SpellAiCanAct(true, true, false, true, false) ||
                 SpellLikeCasterLevel != 12 ||
                 UnholyBlightSpellLevel != 4 ||
                 UnholyBlightRadiusFeet != 20 || UnholyBlightUses != 1 ||
