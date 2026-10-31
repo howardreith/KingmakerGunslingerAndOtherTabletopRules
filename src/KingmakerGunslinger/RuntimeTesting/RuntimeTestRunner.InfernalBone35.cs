@@ -955,11 +955,12 @@ namespace KingmakerGunslinger.RuntimeTesting
             // dispatches the result as RuleDealStatDamage.Bonus. The installed
             // engine therefore reports zero remaining dice here. DamageToParty
             // is the native selected-difficulty multiplier used by this saved
-            // hostile fixture; preserve it as an observed engine difference
-            // instead of forcing a favorable poison roll.
+            // hostile fixture, and RuleDealStatDamage truncates the scaled
+            // value. Preserve that observed engine difference instead of
+            // forcing a favorable poison roll.
             return roll >= 1 && roll <= 3 && damage >= 0 &&
                 (string)row["dice"] == "0" &&
-                damage == Mathf.RoundToInt(roll.Value * difficultyScale);
+                damage == (int)(roll.Value * difficultyScale);
         }
 
         private static IEnumerable<JObject> InfernalBoneAttackRows35(
