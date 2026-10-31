@@ -250,6 +250,18 @@ namespace KingmakerGunslinger.DomainTests
             Assertions.False(InfernalRules35.ShouldBreakBoneInvisibility(
                 true, true, true, true, false),
                 "A non-hostile target does not become an offensive-action surrogate.");
+            Assertions.True(InfernalRules35.SpellAiCanAct(
+                true, true, false, true, true),
+                "An exact in-combat owner may select a granted available SLA.");
+            Assertions.False(InfernalRules35.SpellAiCanAct(
+                true, true, true, true, true),
+                "AI refuses to recast while its effect remains active.");
+            Assertions.False(InfernalRules35.SpellAiCanAct(
+                true, true, false, true, false),
+                "AI refuses a granted SLA after its finite resource is spent.");
+            Assertions.False(InfernalRules35.SpellAiCanAct(
+                true, true, false, false, true),
+                "AI cannot select an ability the owner was not granted.");
         }
 
         internal static void PrivateWallUnitHasBoundedShellDonor()

@@ -386,11 +386,19 @@ namespace KingmakerGunslinger.Summoning
         public override bool IsAvailable(DecisionContext context)
         {
             var owner = context?.Unit;
-            if (owner == null || OwningBlueprint == null ||
-                !ReferenceEquals(owner.Blueprint, OwningBlueprint) ||
-                !owner.IsInCombat || ActiveBuff != null &&
+            bool exactOwner = owner?.Blueprint != null &&
+                OwningBlueprint != null && ReferenceEquals(owner.Blueprint,
+                    OwningBlueprint);
+            bool hasActiveEffect = owner != null && ActiveBuff != null &&
                 owner.Buffs.Enumerable.Any(buff => buff.IsTurnedOn &&
-                    ReferenceEquals(buff.Blueprint, ActiveBuff))) return false;
+                    ReferenceEquals(buff.Blueprint, ActiveBuff));
+            var granted = owner == null || Ability == null ? null :
+                owner.Descriptor.Abilities.GetAbility(Ability);
+            bool grantedAvailable = granted != null &&
+                new AbilityData(granted).IsAvailable;
+            if (!InfernalRules35.SpellAiCanAct(exactOwner,
+                    owner?.IsInCombat == true, hasActiveEffect,
+                    granted != null, grantedAvailable)) return false;
             return base.IsAvailable(context);
         }
 
