@@ -1166,3 +1166,23 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `runtime-20261031T055914Z-bc09689669aa4f519da72cf8be6d0746` are the next
   actions before any further native dispatch. No manual coordination-file
   creation or deletion has been performed.
+- Host cleanup validation is complete. The actual launcher/coordination fixture
+  passed 41 assertions, including present-lock leave-open, automatic exit,
+  interruption, timeout, foreign/busy ownership, inherited ownership, process
+  identity reuse, competing recovery, missing-lock `WhatIf`, and atomic exact
+  missing-lock recovery. It used the untouched released v0.0.172 ZIP SHA-256
+  `EF82D2028C636A00EAEBF2536FE6123921D1551716EA4A6CD9D6FFA75AC47D86`
+  only as its disposable external package boundary; no real Steam/game process
+  or installation was touched. The passing 465-file fixture is preserved on
+  `E:` under manifest SHA-256
+  `3D2E6D84BA70D1FCC2A3CC79E2C6FBEF3089E3C10EA7E5984DDB410BE9B7013C`;
+  the earlier dirty-tree/missing-candidate fixture records are separately
+  preserved under manifest
+  `87C9E7851D546D7C565B6D71D7FB1A1A4DB6668558AFC1AEA4087AC390E42925`.
+  Retained real lease
+  `runtime-20261031T055914Z-bc09689669aa4f519da72cf8be6d0746`
+  then completed through that validated path with native outcome unchanged.
+  Its journal is `Completed`, `recoveryRequired=false`; no Kingmaker process or
+  compatibility lock remains, and the live 136-file installation is still
+  exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
