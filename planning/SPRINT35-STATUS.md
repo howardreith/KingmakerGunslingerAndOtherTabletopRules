@@ -1119,3 +1119,50 @@ Sprint 35 checkpoint; historical records are not current instructions.
   result: identical compiler identity plus a validated package/receipt, which
   closes only the changed-observer admission needed for the narrow Bone event
   dispatch diagnosis; it does not broaden mechanic qualification.
+- Source-bound diagnostic candidate `ff40f69e232a9247ee04a200dc9606cf0b2edb88`
+  completed the supported development path: source state
+  `4795201c40f2eb84d4d2258f502d69d4b2054d86b75861545dd6644e5524a21b`,
+  ZIP `dbee716c3000b4ed434e2d430aaaeb72b56626005c61f67ed6db46b3739da0c0`,
+  DLL `6d4f6d7205bf7d2318e911a3d21eee947da59b2c8297a9d1c02abb91b925fbda`,
+  MVID `0c0f585b-843b-4a73-ba84-86ec29c26972`, and the intended 9/9
+  selected tests. Its 1,068-file exact build and reproducible build/test/staging
+  envelope (364,397,748 bytes) is preserved on `E:` under manifest SHA-256
+  `D08DF495549938E25360FA73B4F8FD9DCC344C61988B900D0769E6E1244C487C`;
+  the admitted ZIP, checksum, receipt and selected logs remain at their receipt
+  paths. A first guarded dispatch was refused before deployment because its
+  archived domain-test validator was not present; intake stayed exactly
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`.
+  Restoring the exact 54-file validator tree from that archive closed only that
+  package-admission prerequisite.
+- Guarded run `20261031T0559168539811Z-9006344faf9e4ed8b387b5113dbe066f`
+  produced a complete immutable native FAIL after the launcher had already
+  reached its 120-second result-wait boundary. All prior Bone rows again passed,
+  including real hostility, both appearances, allied/hostile two-source fear,
+  non-sting poison negative, bite/claw/claw/sting plan, wounding-sting poison,
+  cadence and two-save cure. Standard Invisibility cast successfully, both AI
+  actions refused redundant recasts, and a real bite hit the exact hostile for
+  7 damage. Immediately before and after that hit the live native
+  `BuffInvisibility` reported `listening=true`, exact Fact/Buff/Owner identity,
+  `NotDispellAfterOffensiveAction=false`, active/turned-on/non-disposed state;
+  nevertheless both global and exact-owner offensive-action observations were
+  empty and the effect remained. This disproves component hydration/listener
+  identity as the cause and demonstrates that the installed
+  `OffensiveActionsController` did not raise its global or actor-local event for
+  this real attack in the actual first-area contract. The observer supplied no
+  event or removal. Evidence is under
+  `20261031T0559167699797Z-disposable-expanded-summoning-sprint32-native-review`.
+  The outer wrapper restored the 136-file installation exactly to intake and
+  released its compatibility lock after the game exited.
+- That timeout exposed a separate host cleanup defect: the wrapper released its
+  own stale shared lock but retained the generic `RecoveryRequired` journal, so
+  the printed completion command then failed while reading the absent lock.
+  The bounded repair in `RuntimeCoordination.Common.ps1` permits only an exact
+  `RecoveryRequired` journal, after both recorded processes and every Kingmaker
+  process are gone, to atomically recreate its own lock with the existing
+  `CreateNew` owner primitive; active, intentional leave-open, racing and
+  foreign owners remain refused, and `WhatIf` creates nothing. The isolated
+  lifecycle test now reproduces that ordering. Validation and exact completion
+  of retained run
+  `runtime-20261031T055914Z-bc09689669aa4f519da72cf8be6d0746` are the next
+  actions before any further native dispatch. No manual coordination-file
+  creation or deletion has been performed.

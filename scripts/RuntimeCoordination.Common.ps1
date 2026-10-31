@@ -216,8 +216,26 @@ function Complete-KmgGenericRuntimeLease {
         if (@(Get-Process -Name Kingmaker -ErrorAction SilentlyContinue).Count) { throw 'Kingmaker is running; completion never kills or releases a running session.' }
     }
     & $assertOwnersExited
-    if ((Get-Content -LiteralPath $lockPath -Raw).Trim() -cne $RunId) { throw 'Generic runtime lock belongs to a foreign run.' }
+    # The outer exact-install restoration wrapper may outlive a timed-out
+    # generic launcher. Older wrappers released this run's shared lock after
+    # the identified game exited, then left the durable RecoveryRequired
+    # journal behind. Reclaim only that exact orphan, atomically, after both
+    # recorded processes are gone. Active and intentional leave-open leases
+    # still require their original lock; a racing or foreign owner wins the
+    # CreateNew operation and is never overwritten.
+    $reclaimMissingRecoveryLock = -not (Test-Path -LiteralPath $lockPath -PathType Leaf)
+    if ($reclaimMissingRecoveryLock -and
+        ($state.status -cne 'RecoveryRequired' -or -not $state.recoveryRequired)) {
+        throw 'Generic runtime lock is missing outside an exact RecoveryRequired lease.'
+    }
+    if (-not $reclaimMissingRecoveryLock -and
+        (Get-Content -LiteralPath $lockPath -Raw).Trim() -cne $RunId) {
+        throw 'Generic runtime lock belongs to a foreign run.'
+    }
     if (-not $PSCmdlet.ShouldProcess($statePath,'complete exact generic runtime ownership after process exit; no deployment/settings restoration')) { return }
+    if ($reclaimMissingRecoveryLock) {
+        [void](Acquire-KmgCompatibilityLock $StateRoot $RunId)
+    }
     # ReadWrite conflicts with active read leases AND another recovery. Keep the
     # handle through the guarded journal write; never delete a lock by age/PID.
     $stream=[IO.File]::Open($lockPath,[IO.FileMode]::Open,[IO.FileAccess]::ReadWrite,[IO.FileShare]::Read)
