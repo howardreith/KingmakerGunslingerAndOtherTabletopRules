@@ -748,6 +748,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 for (int attempt = 0; attempt < 4 &&
                     !formationDisrupted; attempt++)
                 {
+                    if (attempt > 0)
+                    {
+                        bone.Commands.InterruptAll(true);
+                        bone.Commands.RemoveFinishedAndUpdateQueue();
+                        foreach (int frame in InfernalBoneWaitGame35(6.2, 15))
+                            yield return frame;
+                    }
                     int formationStart = trace.Rows.Count;
                     var existing = new HashSet<string>(Game.Instance.State
                         .Units.Where(value => ReferenceEquals(value.Blueprint,
