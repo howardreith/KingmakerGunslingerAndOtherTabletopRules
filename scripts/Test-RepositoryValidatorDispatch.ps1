@@ -248,6 +248,19 @@ try {
         ($null -ne $failed172.Thrown -and $failed172.Thrown -match 'Sprint34 release source corruption fixtures failed') `
         ([string]$failed172.Thrown)
 
+    $sprint35 = 'test_expanded_summoning_sprint35_release173.py'
+    $r173 = Invoke-Dispatch -Version '0.0.173'
+    Check '0.0.173 selects its Sprint35 release child exactly once' `
+        (@($r173.Selected | Where-Object { $_ -eq $sprint35 }).Count -eq 1 -and
+         -not ($r173.Selected -contains $sprint34)) ($r173.Selected -join ', ')
+    Check '0.0.173 keeps shared Sprint23/24/27 children' `
+        ($r173.Selected -contains $sprint23 -and $r173.Selected -contains $sprint24 -and
+         $r173.Selected -contains 'test_expanded_summoning_sprint27161.py') ($r173.Selected -join ', ')
+    $failed173 = Invoke-Dispatch -Version '0.0.173' -FailOnChild $sprint35
+    Check 'a failing Sprint35 release child stops validation' `
+        ($null -ne $failed173.Thrown -and $failed173.Thrown -match 'Sprint35 release source corruption fixtures failed') `
+        ([string]$failed173.Thrown)
+
     # No dispatch statement may be nested inside another: that is the defect.
     $nested = @()
     foreach ($statement in $dispatchStatements) {

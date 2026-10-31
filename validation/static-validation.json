@@ -978,7 +978,7 @@
     "newNamedFirearms": 2,
     "publicReleaseAuthorized": true
   },
-  "milestone": "0.0.172-expanded-summoning-bearded-devil-kyton",
+  "milestone": "0.0.173-expanded-summoning-barbed-bone-devils",
   "overhaulSummonFatigue103": {
     "acadamaeActivatableStateAuthoritative": true,
     "acadamaeFreshProcessPersistenceHumanGated": true,
@@ -1604,7 +1604,7 @@
     "workingSaveSmokePass": true,
     "wreckedCombatAvailabilityOwnerDecisionPending": true
   },
-  "version": "0.0.172",
+  "version": "0.0.173",
   "weaponPresentation89": {
     "bodyFixtureCount": 6,
     "bodyMatrixCaptureCount": 336,
@@ -2732,5 +2732,16 @@
     "change": "Bearded Devil and Kyton, ten untemplated SM V-IX routes, source-owned mechanics and distinct original bodies/icons",
     "nativeEvidence": "Original evidence retains its execution artifact; final package requires scoped fresh persistence/integration and explicit affected-dependency reuse",
     "ownerPublicationAuthority": "Sprint34 Bearded Devil and Kyton Fresh Codex Mission, with approved owned-chain, targeted-gaze and omitted-Heal decisions"
+  },
+  "expandedSummoningSprint35Release173": {
+    "releaseVersion": "0.0.173",
+    "releaseInformationalVersion": "0.0.173-expanded-summoning-barbed-bone-devils",
+    "baseStableVersion": "0.0.172",
+    "reviewedProductSource": "dac431b8a0b06840cbfb388ca449ad51db7e0ed4",
+    "appendedIdentities": 74,
+    "releasedIdentityChanges": 0,
+    "change": "Barbed Devil and Bone Devil, five untemplated Monster VII-IX routes, distinct contact, poison, fear, invisibility, Wall consumers and original bodies/icons",
+    "nativeEvidence": "Final exact package requires fresh grouped public routes, persistence and affected integration; original failures and bounded reader re-evaluations remain attributed to their own artifacts",
+    "ownerPublicationAuthority": "Sprint35 Barbed Devil and Bone Devil Fresh Codex Mission, with approved bounded movement-only Wall of Ice adaptation and explicit unsupported-SLA omissions"
   }
 }

@@ -1658,3 +1658,17 @@ Sprint 35 checkpoint; historical records are not current instructions.
   the exact scope and passed 33 admission/refusal cases without creating
   evidence, deployment, game or save state. Native persistence remains pending
   on the frozen candidate.
+- The v0.0.173 release-input seam is now selected without changing production
+  gameplay after reviewed source `dac431b8`. Version-only metadata, the exact
+  append-only 74-identity delta from the v0.0.172 product merge, the two public
+  creature roots, five routes, 128-creature / 1,204-choice census, and preserved
+  historical static record pass 13 focused corruption/refusal tests. The real
+  repository dispatcher passes 36 checks. The guarded publisher adds one exact
+  Sprint35 selector rooted at `wt/s35`; its 25 offline checks require fresh
+  final-candidate evidence, the six distinct persistence processes, stable-only
+  v0.0.173 publication, and the approved Wall/SLA decision contract. All changed
+  PowerShell entry points parse. A post-review Focused run compiled production
+  in 45.0 seconds and passed the 16 selected Sprint35/correction tests of 2,776
+  registered in 9.2 seconds. The complete unfiltered suite, exact-reference
+  candidate, package/reproducibility and native qualification remain deferred
+  to the single selected Sprint boundary.
