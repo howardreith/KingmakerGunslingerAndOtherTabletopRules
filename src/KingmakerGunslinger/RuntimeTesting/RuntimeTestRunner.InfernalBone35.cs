@@ -365,6 +365,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.Strength.BaseValue = 60;
                 target.Stats.Strength.Damage = 0;
                 target.Damage = 0;
+                float statDamageScale = Game.Instance.Player.Difficulty
+                    .DamageToParty;
                 InfernalCombatLane34(fixture, bone, target, 3);
 
                 // A real wounding bite is the other-limb negative control.
@@ -410,6 +412,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 UnitAttack poisonCommand = null;
                 int poisonStart = 0;
                 Buff applied = null;
+                int initialStrengthBefore = target.Stats.Strength.Damage;
                 var poisonAttempts = new JArray();
                 for (int attempt = 0; attempt < 3 && applied == null;
                     attempt++)
@@ -469,8 +472,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                     injurySaves.Length == 1 &&
                     (bool?)injurySaves[0]["passed"] == false &&
                     initialStat.Length == 1 &&
-                    (int?)initialStat[0]["damage"] >= 1 &&
-                    (int?)initialStat[0]["damage"] <= 3 &&
+                    InfernalBoneNativeStatDamage35(initialStat[0],
+                        statDamageScale) &&
+                    target.Stats.Strength.Damage - initialStrengthBefore ==
+                        (int)initialStat[0]["damage"] &&
                     ReferenceEquals(applied.Context?.MaybeCaster, bone) &&
                     applied.Context?.Params?.DC == 20;
                 check("bone-sting-poison", fullPlan, new JObject {
@@ -481,10 +486,16 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["acceptedAttacks"] = new JArray(poisonAttacks),
                     ["injurySaves"] = new JArray(injurySaves),
                     ["initialStatDamage"] = new JArray(initialStat),
+                    ["strengthDamageBefore"] = initialStrengthBefore,
+                    ["strengthDamageAfter"] =
+                        target.Stats.Strength.Damage,
+                    ["nativeDifficultyDamageScale"] = statDamageScale,
+                    ["targetIsPlayersEnemy"] = target.IsPlayersEnemy,
                     ["poisonState"] = InfernalBonePoison35(applied)
                 }, "One real equal-role bite/claw/claw/sting plan delivers exactly one DC20 finite Strength poison from its wounding sting, without donor-edition secondary penalties.");
 
                 int cadenceStart = trace.Rows.Count;
+                int laterStrengthBefore = target.Stats.Strength.Damage;
                 double cadenceBegan = Game.Instance.TimeController.GameTime
                     .TotalSeconds;
                 foreach (int frame in InfernalBoneWaitGame35(6.2, 15))
@@ -495,10 +506,14 @@ namespace KingmakerGunslinger.RuntimeTesting
                     cadenceStart, bone, target).ToArray();
                 bool laterExposure = laterSaves.Length == 1 &&
                     ((bool?)laterSaves[0]["passed"] == true ?
-                        laterStat.Length == 0 :
+                        laterStat.Length == 0 &&
+                        target.Stats.Strength.Damage == laterStrengthBefore :
                         laterStat.Length == 1 &&
-                        (int?)laterStat[0]["damage"] >= 1 &&
-                        (int?)laterStat[0]["damage"] <= 3) &&
+                        InfernalBoneNativeStatDamage35(laterStat[0],
+                            statDamageScale) &&
+                        target.Stats.Strength.Damage -
+                            laterStrengthBefore ==
+                            (int)laterStat[0]["damage"]) &&
                     InfernalBoneBuff35(target, poison, bone) != null;
 
                 target.Stats.SaveFortitude.BaseValue = 100;
@@ -528,6 +543,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                             cadenceBegan,
                         ["laterSaves"] = new JArray(laterSaves),
                         ["laterStatDamage"] = new JArray(laterStat),
+                        ["strengthDamageBefore"] = laterStrengthBefore,
+                        ["strengthDamageAfter"] =
+                            target.Stats.Strength.Damage,
+                        ["nativeDifficultyDamageScale"] = statDamageScale,
                         ["highFortBase"] = 100,
                         ["cureSaves"] = new JArray(cureSaves),
                         ["presentAfterCure"] = InfernalBoneBuff35(target,
@@ -744,10 +763,15 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ReferenceEquals(afterSourceLoss.Context.MaybeCaster,
                         bone) && sourceLossSaves.Length == 1 &&
                     ((bool?)sourceLossSaves[0]["passed"] == true ?
-                        sourceLossStat.Length == 0 :
+                        sourceLossStat.Length == 0 &&
+                        target.Stats.Strength.Damage ==
+                            strengthBeforeSourceLoss :
                         sourceLossStat.Length == 1 &&
-                        (int?)sourceLossStat[0]["damage"] >= 1 &&
-                        (int?)sourceLossStat[0]["damage"] <= 3) &&
+                        InfernalBoneNativeStatDamage35(sourceLossStat[0],
+                            statDamageScale) &&
+                        target.Stats.Strength.Damage -
+                            strengthBeforeSourceLoss ==
+                            (int)sourceLossStat[0]["damage"]) &&
                     Sprint29OwnedAreas(bone, fearArea).Length == 0;
                 check("bone-poison-source-independence", poisonSurvives,
                     new JObject {
@@ -766,6 +790,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                         ["strengthDamageBefore"] =
                             strengthBeforeSourceLoss,
                         ["strengthDamageAfter"] = target.Stats.Strength.Damage,
+                        ["nativeDifficultyDamageScale"] = statDamageScale,
                         ["elapsedGameSeconds"] = Game.Instance.TimeController
                             .GameTime.TotalSeconds - sourceLossBegan,
                         ["ownedAuraAreas"] = Sprint29OwnedAreas(bone,
@@ -918,6 +943,23 @@ namespace KingmakerGunslinger.RuntimeTesting
                 (string)value["target"] == target?.UniqueId &&
                 (string)value["source"] == owner?.UniqueId &&
                 (string)value["stat"] == StatType.Strength.ToString());
+        }
+
+        private static bool InfernalBoneNativeStatDamage35(JObject row,
+            float difficultyScale)
+        {
+            if (row == null) return false;
+            int? roll = (int?)row["bonus"];
+            int? damage = (int?)row["damage"];
+            // BuffPoisonStatDamage pre-rolls its configured DiceFormula and
+            // dispatches the result as RuleDealStatDamage.Bonus. The installed
+            // engine therefore reports zero remaining dice here. DamageToParty
+            // is the native selected-difficulty multiplier used by this saved
+            // hostile fixture; preserve it as an observed engine difference
+            // instead of forcing a favorable poison roll.
+            return roll >= 1 && roll <= 3 && damage >= 0 &&
+                (string)row["dice"] == "0" &&
+                damage == Mathf.RoundToInt(roll.Value * difficultyScale);
         }
 
         private static IEnumerable<JObject> InfernalBoneAttackRows35(
