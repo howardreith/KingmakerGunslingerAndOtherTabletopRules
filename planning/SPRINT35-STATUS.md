@@ -1228,3 +1228,25 @@ Sprint 35 checkpoint; historical records are not current instructions.
   exactly to SHA-256
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`,
   and the unchanged failed candidate will not be relaunched.
+- Exact finite-resource candidate `f503f871b4e6c4296c669c32ea40c81d5bdf6cdb`
+  completed development admission with source state
+  `58e06e19758c67e38ce191171dd9165cce7e5b9cb4bac2b1c2fb7cb03dd7320f`,
+  ZIP `9d992bfcbfa6fffe150bb3905a5633026622f52c4570ed30a5c17ab4bd829a07`,
+  DLL `543de24b2651c41dc6cf5d5f2b0fa8cbc85062f72a53b0e5e82878b727feb9b1`
+  and MVID `ffed1c76-f6a5-44b6-a9dc-97fa053fc506`; selected tests passed
+  9/9 and strict package validation passed. Its 1,067-file, 364,414,946-byte
+  exact/reproducible envelope is preserved under manifest SHA-256
+  `2B787642E6C7ABC59C827266CA67AE07ADFBDD9B39EAFEF30B24F1FB433B4E35`.
+  Native run `20261031T0659029746015Z-2f67a1f246f848a9b4dd02acbdffad89`
+  stopped before invisibility on an unrelated chance-sensitive observer
+  assumption. The allied summoner naturally failed its DC19 aura save, but the
+  observer checked the failed-save source marker only after later hostile and
+  second-source setup. That marker deliberately shares the rolled 1d6-round
+  frightened lifetime, so a short natural result may expire before the late
+  check; earlier successful raw rows retained two-, four- and five-round
+  results long enough. Production rules and rolls are unchanged. The observer
+  now snapshots JSON for memory/frightened immediately after the allied save,
+  separately records later presence or lawful expiry, and retains no destroyed
+  Unity fact. One changed-observer Bone run is required; the unchanged
+  `f503f871` FAIL will not be relaunched. The live installation again restored
+  exactly to the same 136-file intake SHA-256 above.

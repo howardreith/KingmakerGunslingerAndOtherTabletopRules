@@ -236,6 +236,21 @@ namespace KingmakerGunslinger.RuntimeTesting
                 }
                 JObject[] allyFear = InfernalBoneSaveRows35(trace,
                     allyFearStart, bone, ally, 19).ToArray();
+                // Snapshot the source marker at the exposure boundary. On a
+                // naturally failed save it intentionally shares the rolled
+                // 1d6-round frightened lifetime; the later two-source hostile
+                // setup can outlast a lawful one-round result. Holding only
+                // JSON also avoids retaining a Unity fact after expiry.
+                Buff allyMemoryAtExposure = InfernalBoneBuff35(ally, memory,
+                    bone);
+                JObject allyMemoryAtExposureRow = allyMemoryAtExposure ==
+                    null ? null : InfernalSavedEffect34(
+                        allyMemoryAtExposure);
+                Buff allyFrightenedAtExposure = InfernalBoneBuff35(ally,
+                    frightened, bone);
+                JObject allyFrightenedAtExposureRow =
+                    allyFrightenedAtExposure == null ? null :
+                    InfernalSavedEffect34(allyFrightenedAtExposure);
 
                 Vector3 far;
                 string lane, direction;
@@ -350,7 +365,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                                 frightened, source))
                     }));
                 bool aura = allyFear.Length == 1 &&
-                    InfernalBoneBuff35(ally, memory, bone) != null &&
+                    allyMemoryAtExposureRow != null &&
                     fearOwners.All(source =>
                         InfernalBoneSaveRows35(trace, hostileFearStart,
                             source, target, 19).Count() == 1 &&
@@ -372,7 +387,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                         sourceFearPosition.y, sourceFearPosition.z),
                     ["allySourceDistanceMeters"] = allyFearDistance,
                     ["allySaves"] = new JArray(allyFear),
-                    ["allyMemory"] = InfernalBoneBuff35(ally, memory,
+                    ["allyMemoryAtExposure"] = allyMemoryAtExposureRow,
+                    ["allyFrightenedAtExposure"] =
+                        allyFrightenedAtExposureRow,
+                    ["allyMemoryAfterHostileSettle"] =
+                        InfernalBoneBuff35(ally, memory,
                         bone) == null ? null : InfernalSavedEffect34(
                             InfernalBoneBuff35(ally, memory, bone)),
                     ["hostile"] = target.UniqueId,
@@ -382,7 +401,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["settleGameSeconds"] = 1d,
                     ["boundedSources"] = fearOwners.Count,
                     ["forcedRolls"] = 0
-                }, "The real five-foot aura exposes an allied summoner and a hostile, uses one natural DC19 save and source-specific memory per Bone Devil, applies a naturally failed frightened result, and does not retry every frame.");
+                }, "The real five-foot aura exposes an allied summoner and a hostile, records source-specific memory at each natural DC19 exposure, applies a naturally failed frightened result, and does not retry every frame; a short failed-save memory may lawfully expire during later source setup.");
 
                 InfernalBoneRemoveEffects35(ally, fearOwners,
                     frightened, memory);
