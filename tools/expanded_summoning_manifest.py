@@ -1042,6 +1042,7 @@ def planned():
         ("KMG.Summoning.Infernal.BoneDevil.QuickenedInvisibilityAi", "InfernalSpellAi35"),
         ("KMG.Summoning.Infernal.BoneDevil.DimensionalAnchorAi", "InfernalSpellAi35"),
         ("KMG.Summoning.Infernal.BoneDevil.WallAi", "InfernalSpellAi35"),
+        ("KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff", "BlueprintBuff"),
     ))
     expected = sum(identity_count(name) for name in (
         "UnitCount", "LogicalAbilityCount", "TemplateBuffCount", "SpecialIdentityCount",
