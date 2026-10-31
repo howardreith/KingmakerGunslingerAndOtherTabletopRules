@@ -1148,6 +1148,7 @@ namespace KingmakerGunslinger.DomainTests
             Case("expanded-summoning.sprint35-live-modifiers", InfernalRules35Tests.LiveModifiersDerivePrintedContracts),
             Case("expanded-summoning.sprint35-unholy-blight", InfernalRules35Tests.UnholyBlightKeepsAlignmentAndSaveFractions),
             Case("expanded-summoning.sprint35-poison-gate", InfernalRules35Tests.PoisonRequiresTheWoundingSting),
+            Case("expanded-summoning.sprint35-bone-invisibility-identity", InfernalRules35Tests.BoneInvisibilityOwnsItsAppendedEffectIdentity),
             Case("expanded-summoning.sprint35-private-wall-unit-donor", InfernalRules35Tests.PrivateWallUnitHasBoundedShellDonor),
             Case("expanded-summoning.sprint35-original-models", InfernalRules35Tests.OwnedBodiesDecodeAndTailIsIsolated),
             Case("expanded-summoning.sprint18-twenty-six-roots", PrimateRulesTests.TwentySixRootsFollowFromTheCatalogTiers),

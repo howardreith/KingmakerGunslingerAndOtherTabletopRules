@@ -19,7 +19,6 @@ using Kingmaker.UnitLogic.Commands;
 using Kingmaker.UnitLogic.Commands.Base;
 using Kingmaker.Utility;
 using KingmakerGunslinger.Blueprints;
-using KingmakerGunslinger.Bootstrap;
 using KingmakerGunslinger.Summoning;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -76,10 +75,10 @@ namespace KingmakerGunslinger.RuntimeTesting
                 .Registered.BySymbol[prefix + "InvisibilityAi"];
             var quickAi = (InfernalSpellAi35)ExpandedSummoningBlueprints
                 .Registered.BySymbol[prefix + "QuickenedInvisibilityAi"];
-            var invisible = BlueprintLibraryLookup.RequireExact<BlueprintBuff>(
-                BlueprintBootstrap.Library,
-                "525f980cb29bc2240b93e953974cb325",
-                "native ordinary attack-breaking invisibility effect");
+            var invisible = (BlueprintBuff)ExpandedSummoningBlueprints
+                .Registered.BySymbol[prefix + "InvisibilityBuff"];
+            var invisibilityBehavior = invisible.ComponentsArray.OfType<
+                BuffInvisibility>().Single();
 
             int oldTargetAc = target.Stats.AC.BaseValue;
             int oldTargetFort = target.Stats.SaveFortitude.BaseValue;
@@ -172,6 +171,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     ["fearFeet"] = fearArea.Size.Value,
                     ["invisibility"] = invisibility.AssetGuid,
                     ["quickened"] = quick.AssetGuid,
+                    ["invisibilityBuff"] = invisible.AssetGuid,
+                    ["breaksOnOffensiveAction"] = !invisibilityBehavior
+                        .NotDispellAfterOffensiveAction,
                     ["quickenedUses"] = bone.Descriptor.Resources
                         .GetResourceAmount(quickResource)
                 };
@@ -199,6 +201,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     invisibility.ActionType ==
                         UnitCommand.CommandType.Standard &&
                     quick.ActionType == UnitCommand.CommandType.Swift &&
+                    !invisibilityBehavior.NotDispellAfterOffensiveAction &&
                     bone.Descriptor.Resources.GetResourceAmount(
                         quickResource) == 3 &&
                     ReferenceEquals(invisAi.ActiveBuff, invisible) &&
@@ -615,6 +618,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     JObject standardEffectRow = standardEffect == null ?
                         null : InfernalSavedEffect34(standardEffect);
                     bool activeGuard = standardEffect != null &&
+                        ReferenceEquals(standardEffect.Blueprint, invisible) &&
                         !invisAi.IsAvailable(selfDecision) &&
                         !quickAi.IsAvailable(selfDecision);
                     foreach (int frame in InfernalBoneWaitGame35(6.1, 15))
@@ -653,6 +657,11 @@ namespace KingmakerGunslinger.RuntimeTesting
                             ["quickAiBefore"] = quickAiBefore,
                             ["bothAiRefusedWhileActive"] = activeGuard,
                             ["effect"] = standardEffectRow,
+                            ["ownerIsInGame"] = bone.IsInGame,
+                            ["targetIsInGame"] = target.IsInGame,
+                            ["breaksOnOffensiveAction"] =
+                                !invisibilityBehavior
+                                    .NotDispellAfterOffensiveAction,
                             ["breakingAttack"] = new JArray(breakAttacks),
                             ["effectAfterAttack"] = InfernalBoneBuff35(bone,
                                 invisible, bone) != null,

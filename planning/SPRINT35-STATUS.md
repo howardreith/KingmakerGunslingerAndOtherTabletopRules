@@ -790,3 +790,59 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `58F1D0BFB34C2E21082182F61671D1F986366D1C5E59487DE4BB2CBD5038F722`.
   Barbed behavior is now closed on the hidden current source; its route and
   fresh-process lifecycle rows remain for the selected final grouped campaign.
+- The hidden Bone group then exposed four bounded observer/fixture assumptions
+  before reaching its spell rows. Runs
+  `20261031T0058029406866Z-8c656420208f4c4ca4ace16b1a5f1a44`,
+  `20261031T0112083719130Z-0fad3c24d50044e1b30ba473c874dcad`,
+  `20261031T0123557317856Z-f66fb97e1a5b4c088344d86922b2f6c9`, and
+  `20261031T0142299782664Z-da5c22984bec4c819fb21d90d8c7fb81`
+  respectively corrected the aura's real all-creature precondition, restored
+  the summoner anchor before native lane selection, recorded stat-damage
+  `Bonus` after the native roll, and matched Kingmaker's truncating difficulty
+  scale. Each raw FAIL, deployment, snapshots and restoration remains under
+  its named `failed-bone-native-*` archive on `E:`; their manifest SHA-256s are
+  `DBCB2EF7AFAD20C8BA6DDF0978E550559675935CE5BD3D1E34B110707BAE2123`,
+  `8654DDFEBD26CB26406ADDF80AE53E05770084A1E118C2F68CF87914CDCD413B`,
+  `099B7BE8F211E469D0CA67E825FB2C26628F4A4A3643A8302D69C1FAF80E69BA`,
+  and `04C94A99DE63309E72BF5AE34290FE1A8C5EF2F79CCCCA230D943DE5E445A710`.
+  These are retained failures, not retroactive PASS records.
+- Exact candidate `eb9cbf4af266ce256ae5b165727c8f321bb42b2b`
+  (source state
+  `57082cdd1675587b1cd3cd22449bf7dc72e86875a6232e318380514f58aadf72`,
+  ZIP `45c728f7b615602aa4ef6fa96145b237670ce2d404dbe7bee8cd74c6cc34ae4a`,
+  DLL `34f4e47c712443d3492c2ee4d9c8eac6a36351d56e8a5691494f1d0a1d786e4a`,
+  MVID `430fe348-dce7-4be1-9e2f-b0d862557392`) passed the aura, real four-attack
+  routine, wounding-sting poison, native cadence and two-save cure, then run
+  `20261031T0156018470556Z-c3e0b076e3dd4b7892f8d9d0e3472e4c`
+  proved its disposable target did not initially attack the Summoned faction.
+  The exact build remains under
+  `successful-development-candidate-eb9cbf4a-exact-build`; the failed native
+  transaction is preserved under manifest
+  `C0FF1415B3EEAA63896CE3784316F65CDC4C6AC2C1E524D1AD298FF1C984B740`.
+  Extending only the request-owned private faction to Summoned, with exact
+  restoration, established reciprocal hostility on the next candidate.
+- Exact candidate `b9f755726bff4ece850a6c7322655f3cb451536e`
+  (source state
+  `1683ffc0d7cc330e780b2204ead9332467cabf50a603ed9da9e8b5f1f552bc98`,
+  ZIP `4af94c3cf2c8895affb4fe8e83f4ba1de169d7d58bb4d921a78b887f68e0924e`,
+  DLL `e9a4e12a0dadfaa9b4f24a890b1e3600326d67445a3cddf0177ebca9bb51976b`,
+  MVID `fbca79ca-eb67-4dc3-941d-196f1f8f2811`) again passed all Bone rows through
+  poison cure and proved both hostility directions, yet real bite completion
+  in run
+  `20261031T0213584995495Z-b0a9a48b27d54b37ac63554539f09c21`
+  left the cloned native Invisibility effect active. The live tree restored to
+  intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  its 303-file copy-only archive is verified by manifest
+  `9E243F3A2FD269C5C811FC2EC2ABF97FAE9726239D1309B7B3F27B65D5948B4A`,
+  and every C: original remains. The bounded correction appends one Bone-only
+  buff identity, deep-clones the installed ordinary effect, explicitly keeps
+  `NotDispellAfterOffensiveAction=false`, and retargets exactly one native
+  apply action in each standard/quickened ability. Both AI guards now name the
+  owned effect. The observer records that component flag and both actors'
+  `IsInGame` state. The focused production compile and selected Sprint 35
+  group pass after this change (26.1 s / 5.0 s); the initial sandboxed
+  invocation stopped on generated-artifact access before producing a verdict,
+  while the approved identical invocation completed. A new exact candidate
+  and only the affected Bone native group are next; Wall of Ice still requires
+  the explicit bounded GridGraph gameplay decision above.
