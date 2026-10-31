@@ -71,6 +71,33 @@ $ledger=[pscustomobject]@{schemaVersion=1;mission='Sprint35InfernalReach';status
 $ledger.roster|Add-Member protectedIdentitySetsEqual $true
 function CopyLedger {$ledger|ConvertTo-Json -Depth 35|ConvertFrom-Json}
 Pass {Assert-KmgSprint35Qualification $ledger $candidate}
+function ObserverReuseLedger([string]$rowId) {
+    $copy=CopyLedger
+    $copy|Add-Member observerOnlyReuse ([pscustomobject]@{
+        reason='EXACT_RESOURCE_CACHE_OBSERVER_CLASSIFICATION_ONLY'
+        compiledObserver='src/KingmakerGunslinger/RuntimeTesting/RuntimeTestRunner.ExpandedSummoningResourceReceipts.cs'
+        allowedRows=@('early-wall-bootstrap','barbed-behavior','barbed-combat','bone-behavior','public-routes-presentation')
+        prior=[pscustomobject]@{
+            commit='f785c3035662c7baeae5e0c5f82e85973e03e489'
+            packageSha256='83b8432b04257615d79c66489ac162e4860ffbcdf50db86aaa7a0162fb953b53'
+            dllSha256='3c1bd7a69b65b6b7fe0f6f2e9de83f6db2a7201a5b8a3f615eb000ae7efd6bc1'
+            dllMvid='e50d50e9-9ada-446f-8f6a-28699fa1735a'
+            sourceStateSha256='c2887e734f84a3f5eb1744e7f26cf6e55da27b81b9f4ab0e9605d33ad129651c'
+        }
+    })
+    $priorRun='synthetic-prior-'+$rowId
+    $raw=Proof ('native-'+$priorRun) @{gitCommit=$copy.observerOnlyReuse.prior.commit;runId=$priorRun;status='PASS';assertions=@($allAssertions|ForEach-Object {@{name=$_;status='PASS'}})}
+    $source=[pscustomobject]@{source=$copy.observerOnlyReuse.prior.commit;runId=$priorRun;
+        packageSha256=$copy.observerOnlyReuse.prior.packageSha256;dllSha256=$copy.observerOnlyReuse.prior.dllSha256;
+        dllMvid=$copy.observerOnlyReuse.prior.dllMvid;nativeProof=$raw;requiredAssertions=$allAssertions}
+    $row=$copy.coverage|Where-Object id -ceq $rowId
+    $row.evidenceSources=@($source);$row.proofs=@($raw)
+    return $copy
+}
+Pass {$l=ObserverReuseLedger 'early-wall-bootstrap';Assert-KmgSprint35Qualification $l $candidate}
+Refuse {$l=ObserverReuseLedger 'early-wall-bootstrap';$l.observerOnlyReuse.prior.dllMvid='wrong';Assert-KmgSprint35Qualification $l $candidate}
+Refuse {$l=ObserverReuseLedger 'highest-risk-integration';Assert-KmgSprint35Qualification $l $candidate}
+Refuse {$l=ObserverReuseLedger 'early-wall-bootstrap';$l.PSObject.Properties.Remove('observerOnlyReuse');Assert-KmgSprint35Qualification $l $candidate}
 Pass {Assert-KmgClosureProofFiles -Ledger $ledger -Sprint35InfernalReach -Candidate $candidate}
 $pr=[pscustomobject]@{baseRefOid=('a'*40);baseRefName='master';state='OPEN';isDraft=$true;mergeable='MERGEABLE';headRefOid=$head}
 Pass {Assert-KmgSprint35PremergeAuthority $ledger $candidate $pr $head ('a'*40) ('a'*40) '86'}
