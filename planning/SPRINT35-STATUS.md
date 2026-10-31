@@ -843,6 +843,18 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `IsInGame` state. The focused production compile and selected Sprint 35
   group pass after this change (26.1 s / 5.0 s); the initial sandboxed
   invocation stopped on generated-artifact access before producing a verdict,
-  while the approved identical invocation completed. A new exact candidate
-  and only the affected Bone native group are next; Wall of Ice still requires
-  the explicit bounded GridGraph gameplay decision above.
+  while the approved identical invocation completed. The first attempted
+  `Build-Local.ps1` call omitted the required development-purpose arguments;
+  the unchanged Sprint 34 release guard refused the changed product before
+  compilation or packaging. The corrected development call then exposed the
+  actual missing dependency contract: the Python foundation plan had not yet
+  mirrored the appended identity. The repository allocator appended and
+  activated exactly
+  `KMG.Summoning.Infernal.BoneDevil.InvisibilityBuff` as GUID
+  `14899cf428314b63afbad5bf3cea99eb`; validation now derives 2,638 foundation
+  rows, 7,656 active and three retained reserved identities, with 4,021
+  alternate-source adapters. The post-allocation focused production compile
+  and selected Sprint 35/correction group pass (26.1 s / 5.2 s). Neither
+  refused build produced a package, DLL candidate or deployment. A new exact
+  candidate and only the affected Bone native group are next; Wall of Ice
+  still requires the explicit bounded GridGraph gameplay decision above.
