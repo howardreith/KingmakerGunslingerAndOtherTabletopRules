@@ -914,3 +914,60 @@ Sprint 35 checkpoint; historical records are not current instructions.
   Sprint 35/correction tests in 4.8 seconds. A new source-bound package and one
   affected Bone rerun are next. Wall of Ice remains stopped on the explicit
   bounded GridGraph gameplay decision.
+- Exact candidate `869d1e649548a5ef842ff5d2861acf9fcd479e9c`
+  passed development admission, selected 9/9 tests, exact-reference
+  compilation, strict packaging and package validation: source state
+  `cac7df4b3d6c1ba6de012312f30c638a563a4a044b130a4b7952ed35f6022b02`;
+  ZIP `f6084ade6b8faf257839d8284d868024d115d47d3e3d1aa9b1bf1498c4df376b`;
+  DLL `f68ac8ca42b048c5dd72ae7b1ab15f5bc7a63f7df8b185f672a2382e9a0dd777`;
+  MVID `e1e3a803-6ff6-4744-af64-91755b2ed9a8`. The successful exact build is
+  preserved on `E:` under manifest
+  `49BE7261554357B61296772CE570722DA85F80142EAABA4AA65B11625C135439`.
+  Two earlier attempts on the same source were preserved separately: one ran
+  out of C: space while creating the deterministic ZIP (manifest
+  `85B3B810595E4EE454419B2083D34DAB430634616F089BE438C38F3EB845E892`),
+  and one created the same final ZIP before validation exhausted default C:
+  temporary space (manifest
+  `AB2B97FF7B3782DC0C667304D455E5E27504F320D037DCC3242E527D171F8DA3`).
+  The successful invocation used the supported exact E: reference root and a
+  process-scoped E: temporary directory; neither changes candidate bytes.
+- Guarded run `20261031T0324061320699Z-964c0340b0b64272b9b9d79a20998cfe`
+  passed native appearance, private hostility, fear-aura isolation, the
+  other-limb poison negative, and the real wounding-sting poison row. Its sole
+  behavior failure was observer accounting at the two-save cure boundary: a
+  natural 20 made the scheduled cadence exposure the first successful native
+  Fortitude save, the following native save also succeeded, and the poison
+  correctly disappeared, but the observer reset its trace index between those
+  saves and demanded two more. The observer now evaluates the consecutive
+  save sequence across that boundary and records both subsets; production
+  poison code and balance are unchanged. The wrapper restored the live tree
+  to exact intake SHA-256
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no game process or lease remains. Candidate, raw FAIL, deployment, both
+  backups and restoration are preserved as 303 verified files (62,515,392
+  bytes) on E: under manifest
+  `455DF326397E1D3A06A788A763692AAAAF6B01A91A4F033FA50F8AF1EB6FC606`.
+  To recover build headroom without removing evidence, the nine exact
+  current-sprint runtime-backup directories were NTFS-compressed; all 1,224
+  before/after SHA-256 comparisons matched and C: recovered 431.5 MiB. The
+  unchanged candidate will not be relaunched. A new source-bound package and
+  only the affected Bone group are next; Wall of Ice remains decision-blocked.
+- The observer correction's first focused pass compiled production and passed
+  all eight Sprint 35 tests, then exposed a stale neighboring append-only
+  aggregate: `SummoningCurrentSurface` ended at Sprint 34 and did not include
+  Sprint 35's 2 units, 5 roots and 47 private dependencies. The bounded repair
+  adds one named `InfernalRules35.AppendedCatalogIdentityCount` (54), derives
+  the legacy aggregate from it, and verifies the actual current identity
+  catalog in the existing Sprint 35 route test. It changes no GUID, ledger row,
+  publication state or gameplay. The identical focused filter then passed 9/9:
+  production compilation 48.1 seconds and selected domain tests 8.9 seconds.
+  The compiler helper created by each completed gate was stopped after its
+  work, releasing its pagefile commitment without touching Steam or another
+  process. Reproducible focused-build scratch was hash-archived before removal:
+  the failed-neighbor pass under manifest
+  `FE23A032536577C9E5B1803BD574C1CB196E41BBB369957125563267B16D92E3`
+  and the final passing `bin`/`obj` under manifest
+  `027D96729EE97214D046519F7312FEA642EFC7DB243D89A07F9A354A5575CD6E`.
+  Retained test output remains available for guarded preflight. The next action
+  is one new exact Bone candidate from the coherent source, not a rerun of
+  `869d1e64`.
