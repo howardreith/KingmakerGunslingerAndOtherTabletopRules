@@ -265,6 +265,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 Sprint28SetBrainActivePreservingActions(sibling, false);
                 sibling.Commands.InterruptAll(true);
                 sibling.Commands.RemoveFinishedAndUpdateQueue();
+                // The summoner is deliberately parked beyond the shared
+                // combat lane above, so an additional source is born outside
+                // the currently presented lane even though its ordinary
+                // spawn state is healthy. Move only this disposable unit
+                // beside the already-visible first Bone before observing the
+                // native fade. Never write renderer or fader state.
+                PlaceExpandedSummoningUnit(sibling, bone.Position);
                 foreach (int frame in Outsider30NativeAppearance(sibling,
                     sibling.Blueprint.name)) yield return frame;
                 PlaceExpandedSummoningUnit(sibling,
@@ -295,6 +302,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                     Sprint28SetBrainActivePreservingActions(third, false);
                     third.Commands.InterruptAll(true);
                     third.Commands.RemoveFinishedAndUpdateQueue();
+                    PlaceExpandedSummoningUnit(third, bone.Position);
                     foreach (int frame in Outsider30NativeAppearance(third,
                         third.Blueprint.name)) yield return frame;
                     Vector3 thirdPosition = center + axis * 1.7f;
