@@ -114,7 +114,7 @@ function Assert-KmgSprint35Qualification($Ledger,$Candidate) {
             $evidenceCandidate=Get-KmgSprint35EvidenceCandidate $Ledger $Candidate $row $source
             Assert-KmgSprints3031FreshExecution $source $evidenceCandidate $row
             $native=Read-KmgSprints3031Proof $source.nativeProof
-            if($native.gitCommit -cne $Candidate.commit -or $native.runId -cne $source.runId -or $native.status -cne 'PASS' -or
+            if($native.gitCommit -cne $evidenceCandidate.commit -or $native.runId -cne $source.runId -or $native.status -cne 'PASS' -or
                @($native.assertions|Where-Object status -cne 'PASS').Count -or @($source.requiredAssertions).Count -eq 0){throw 'Fresh native proof incomplete.'}
             foreach($name in $source.requiredAssertions){if(@($native.assertions|Where-Object {$_.name -ceq $name -and $_.status -ceq 'PASS'}).Count -ne 1){throw 'Fresh required assertion absent.'}}
             if(@($row.proofs|Where-Object {$_.path -ceq $source.nativeProof.path -and $_.sha256 -ceq $source.nativeProof.sha256}).Count -ne 1){throw 'Fresh raw proof omitted.'}

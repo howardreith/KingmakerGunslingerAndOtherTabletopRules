@@ -1810,8 +1810,8 @@ Sprint 35 checkpoint; historical records are not current instructions.
   fail closed. Exact corrected observer SHA-256 is
   `9F9F656BC9A56EB9D11E2054745763C7EF155A1CE706121E0C198EC2187945ED`.
   Focused production compilation passed in 48.9 seconds; all 9 selected Sprint
-  35 tests passed, as did the exact release validator and 25 existing publisher
-  refusals. The release contract permits the exact `f785c303` behavior/public
+  35 tests passed, as did the exact release validator and 29 publisher
+  acceptance/refusal checks. The release contract permits the exact `f785c303` behavior/public
   proofs only for five unaffected rows and only when this observer is the sole
   compiled-source difference. Both persistence envelopes and highest-risk
   integration remain fresh on the corrected final candidate.
