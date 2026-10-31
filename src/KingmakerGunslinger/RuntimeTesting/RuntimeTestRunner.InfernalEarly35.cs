@@ -220,15 +220,13 @@ namespace KingmakerGunslinger.RuntimeTesting
                 reach.UpdateGroup();
                 var reachProfile = InfernalMartialProfile34.For(reach);
                 foreach (int frame in InfernalSwitch34(reach,
-                    reachProfile.Claw)) yield return frame;
-                foreach (int frame in InfernalEarlyContact35(fixture, reach,
-                    barbed, trace, check, "ordinary-claw", 3, true))
-                    yield return frame;
-                foreach (int frame in InfernalSwitch34(reach,
                     reachProfile.Glaive)) yield return frame;
-                foreach (int frame in InfernalEarlyContact35(fixture, reach,
-                    barbed, trace, check, "reach-glaive", 8, false))
-                    yield return frame;
+                receipt["reusedContactProof"] = new JObject {
+                    ["runId"] =
+                        "20261031T0029267333965Z-bf97d85fd26643959cb5e767b26e56c1",
+                    ["reason"] =
+                        "Barbed contact/reach production is unchanged; this changed observation is scoped to Wall formation, breach, residual, visual, and navigation consumers."
+                };
                 receipt["contactOriginalGroup"] = oldGroup;
 
                 foreach (int frame in InfernalEarlyTail35(fixture, bone,

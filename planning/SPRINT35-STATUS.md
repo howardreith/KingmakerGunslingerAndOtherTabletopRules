@@ -80,7 +80,7 @@ Sprint 35 checkpoint; historical records are not current instructions.
   occupied-space rejection, adjacent SR/Reflex disruption, attackable 36-HP
   section, auto-hit attacks, non-fire object halving, full fire damage,
   remaining-duration breach cold, ten-minute native fog after lethal fire,
-  exact source cleanup, and bounded AI admission. The selected 9/9 focused
+  exact source cleanup, and bounded AI admission. The selected 10/10 focused
   group and production compilation pass. These changed consumers still require
   the next hidden native run; no public-route, AI, or persistence verdict is
   inferred from focused validation.
@@ -1461,3 +1461,38 @@ Sprint 35 checkpoint; historical records are not current instructions.
   `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`,
   and no Kingmaker process remains. Feasibility is closed; formation geometry,
   Reflex/SR disruption, breach/residual cold, AI and persistence remain open.
+- Changed hidden candidate `160c282a4352f9321a5190eb9e1ebb75aebaa092`
+  completed source-bound development admission and strict packaging with source
+  state `3c72e72a3e6018d096fa0149d0c3bcb4d0b933b3603473224146a3a2d5dcf919`,
+  ZIP `8d5fae13fb8da2a01a092a5c9f3095b29089636a78ac6451522de5bf406ba18a`,
+  DLL `ac54ccb8f79a235a20b5a411e4076e4a21c587c4904fb6872d598159f5a1199d`
+  and MVID `cd4e2b01-6481-4d0e-aceb-f18f6844e159`. Its selected Sprint 35/
+  correction group passed 10/10 of 2,776 registered tests. The exact build and
+  reproducible outputs were copied and hash-verified on E: as 1,061 files /
+  350,208,393 bytes under manifest SHA-256
+  `D74F3F831C3D53A447D2480116C99C2F83CC4D685892421029EC2A12651C349C`.
+- The first guarded invocation for that candidate was safely refused before
+  deployment because the production package-validator executable had been
+  archived with reproducible test output. Its exact 54-file / 17,696,768-byte
+  directory was restored and hash-verified from the E: archive. A following
+  run `20261031T1020362913589Z-41723678fae14377b07879542af56146`
+  retained raw FAIL SHA-256
+  `7B560F4B74BCE631CE92C345FB690938DD59F4C0FC041082432A5619116A15A1`:
+  the runner's first main-thread update arrived after about 206 seconds, beyond
+  the request's 180-second startup limit, so no fixture event occurred. The
+  causal request limit was raised to the documented 600-second native budget.
+- Widened-startup run
+  `20261031T1026147333330Z-0ad5ddc599074adf8ce2679158bcdb8a` reached the
+  selected phase and retained raw FAIL SHA-256
+  `B250840B47823E03874787388289E6759C2345EEFDAA7DF97395E0A3FC3C3B90`.
+  Hidden bootstrap (47/47), both exact profiles, both original bodies and the
+  private Bone tail passed. The unchanged Barbed contact replay then exhausted
+  eight lawful native misses against AC 26: `6+8`, `13+6`, `9+8`, `17+8`,
+  `4+10`, `13+8`, `11+10`, and `2+8`; Wall was not reached. This is an
+  ineligible chance precondition, not a mechanics verdict. The redundant replay
+  is removed from the changed Wall observer, which cites the unchanged exact
+  contact/reach PASS `20261031T0029267333965Z-bf97d85fd26643959cb5e767b26e56c1`
+  and explicitly equips the real Bearded glaive witness before Wall. Both
+  guarded runs restored the 136-file live tree exactly to intake
+  `216A9DC2B8E95CD644BA3CADC69A638463C25E60F40A11F8D4B2065C69D5AAF3`;
+  no save interaction occurred and no Kingmaker process remains.
