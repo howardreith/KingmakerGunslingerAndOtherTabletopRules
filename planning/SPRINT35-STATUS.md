@@ -1826,3 +1826,16 @@ Sprint 35 checkpoint; historical records are not current instructions.
   to UTC for all five fixture arithmetic sites. The affected offline test now
   passes both publisher behavior (31) and isolated budget admission; no product
   source or release rule changed. A new committed source boundary is required.
+- Candidate-boundary retry on `cc84e732` passed the complete repository wrapper
+  but the 2,776-test suite retained **23 FAIL** (2,753 PASS), all from the same
+  absent private inspection input
+  `artifacts/inspection/bodyguard-native/Assembly-CSharp.il`; no exact build or
+  package ran. This was not a gameplay/test expectation failure. The verified
+  `805f077f` archive supplied the previously recorded exact IL SHA-256
+  `2AA7DC0BF64D791FE5DD75F9C7A2C3224B3BFBC0B21AB233FD81E461EE5FE50B`
+  and companion resource SHA-256
+  `071B40EC0BF55A075F4891DDBB39B73898ADD29ECB39CCB8102E88E3E4FBAC80`.
+  Both were restored byte-for-byte to the private inspection path. The five
+  affected test families then passed 113/113 in 5.8 seconds. No source,
+  installation, save, deployment or native state changed; the next full retry
+  is selected specifically to close the interrupted complete-suite boundary.
