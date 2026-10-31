@@ -52,6 +52,9 @@ namespace KingmakerGunslinger.RuntimeTesting
             UnitEntityData bone = null;
             UnitEntityData target = fixture.Hostile;
             UnitEntityData ally = fixture.Caster;
+            BlueprintFaction targetFaction = fixture.OwnedHostileFaction;
+            BlueprintFaction[] oldTargetAttackFactions = targetFaction?
+                .AttackFactions;
             string prefix = ExpandedSummoningSpecialBuilder.Bone35Prefix;
             var poison = (BlueprintBuff)ExpandedSummoningBlueprints
                 .Registered.BySymbol[prefix + "Poison"];
@@ -114,6 +117,39 @@ namespace KingmakerGunslinger.RuntimeTesting
                 bone.Commands.RemoveFinishedAndUpdateQueue();
                 foreach (int frame in Outsider30NativeAppearance(bone,
                     bone.Blueprint.name)) yield return frame;
+
+                // The shared turn-hostile fixture deliberately attacks only
+                // the native Player faction. Summons use the distinct native
+                // Summoned faction, so a manually dispatched attack can land
+                // without satisfying BuffInvisibility's real
+                // owner.IsEnemy(target) offensive-action predicate. Extend
+                // only this request-owned faction, then restore its exact
+                // original array before cleanup.
+                if (targetFaction == null || !ReferenceEquals(target.Faction,
+                        targetFaction))
+                    throw new InvalidOperationException(
+                        "Bone hostility fixture does not own its faction.");
+                targetFaction.AttackFactions = (oldTargetAttackFactions ??
+                    Array.Empty<BlueprintFaction>()).Concat(
+                        new[] { bone.Faction }).Distinct().ToArray();
+                bool boneHostility = bone.IsEnemy(target) &&
+                    target.IsEnemy(bone);
+                check("bone-private-hostility", boneHostility,
+                    new JObject {
+                        ["owner"] = bone.UniqueId,
+                        ["ownerFaction"] = bone.Faction.name,
+                        ["target"] = target.UniqueId,
+                        ["targetFaction"] = targetFaction.name,
+                        ["ownerIsEnemy"] = bone.IsEnemy(target),
+                        ["targetIsEnemy"] = target.IsEnemy(bone),
+                        ["originalAttackFactions"] = new JArray(
+                            (oldTargetAttackFactions ??
+                                Array.Empty<BlueprintFaction>()).Select(
+                                    value => value.name)),
+                        ["activeAttackFactions"] = new JArray(
+                            targetFaction.AttackFactions.Select(
+                                value => value.name))
+                    }, "The request-owned target is a real native enemy of the Bone Devil before attack-breaking invisibility is observed; no intake or production faction is changed.");
 
                 var profile = InfernalMartialProfile35.For(bone);
                 var poisonLogic = poison.ComponentsArray.OfType<
@@ -811,6 +847,7 @@ namespace KingmakerGunslinger.RuntimeTesting
                 target.Stats.Strength.Damage = oldTargetStrengthDamage;
                 target.Damage = oldTargetDamage;
                 ally.Stats.SaveWill.BaseValue = oldAllyWill;
+                targetFaction.AttackFactions = oldTargetAttackFactions;
                 PlaceExpandedSummoningUnit(target, oldTargetPosition);
                 target.Orientation = oldTargetOrientation;
                 PlaceExpandedSummoningUnit(ally, oldAllyPosition);
@@ -845,7 +882,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                     target.Stats.Strength.Damage ==
                         oldTargetStrengthDamage &&
                     target.Damage == oldTargetDamage &&
-                    ally.Stats.SaveWill.BaseValue == oldAllyWill;
+                    ally.Stats.SaveWill.BaseValue == oldAllyWill &&
+                    ReferenceEquals(targetFaction.AttackFactions,
+                        oldTargetAttackFactions);
                 check("bone-owned-cleanup", cleanup, new JObject {
                     ["actors"] = new JArray(owned.Select(value =>
                         new JObject {
@@ -867,6 +906,9 @@ namespace KingmakerGunslinger.RuntimeTesting
                         target.Damage == oldTargetDamage,
                     ["allyWillRestored"] = ally.Stats.SaveWill.BaseValue ==
                         oldAllyWill,
+                    ["privateHostilityRestored"] = ReferenceEquals(
+                        targetFaction.AttackFactions,
+                        oldTargetAttackFactions),
                     ["fixtureOnlyAbilityDamageRestore"] = true
                 }, "The grouped transaction retires every owned actor and active aura, removes only fixture-owned timed effects, and restores the disposable victims after recording that production poison and ability damage survived source loss.");
             }
@@ -880,6 +922,8 @@ namespace KingmakerGunslinger.RuntimeTesting
                 InfernalBoneRemoveEffects35(target, owned, poison,
                     frightened, memory, invisible);
                 InfernalBoneRemoveEffects35(ally, owned, frightened, memory);
+                if (targetFaction != null)
+                    targetFaction.AttackFactions = oldTargetAttackFactions;
                 if (target != null && !target.Destroyed)
                 {
                     target.Stats.AC.BaseValue = oldTargetAc;
